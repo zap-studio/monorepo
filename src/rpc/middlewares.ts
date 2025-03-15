@@ -7,7 +7,9 @@ export const authMiddleware = os.middleware(async ({ context, next }) => {
   });
 
   if (!session) {
-    throw new ORPCError("Unauthorized");
+    throw new ORPCError("UNAUTHORIZED", {
+      message: "You must be logged in.",
+    });
   }
 
   const result = await next({

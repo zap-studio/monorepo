@@ -8,9 +8,10 @@ export const maxDuration = 60;
 
 const bodySchema = z.object({
   prompt: z.string(),
-  provider: z.custom<AIProvider>((value) => {
-    return value;
-  }),
+  provider: z.enum([
+    "openai",
+    "mistral",
+  ] as const satisfies readonly AIProvider[]),
   apiKey: z.string(),
 });
 

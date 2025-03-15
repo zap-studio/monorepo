@@ -1,18 +1,17 @@
 import { SYSTEM_PROMPT } from "@/data/ai";
 import { getModel } from "@/lib/ai";
 import { AIProvider } from "@/store/ai.store";
-import { streamText, UIMessage } from "ai";
+import { streamText } from "ai";
 import { z } from "zod";
 
 export const maxDuration = 60;
 
 const bodySchema = z.object({
-  messages: z.custom<UIMessage[]>((value) => {
-    return value;
-  }),
-  provider: z.custom<AIProvider>((value) => {
-    return value;
-  }),
+  messages: z.any(),
+  provider: z.enum([
+    "openai",
+    "mistral",
+  ] as const satisfies readonly AIProvider[]),
   apiKey: z.string(),
 });
 
