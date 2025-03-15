@@ -1,3 +1,6 @@
+"use client";
+
+import ORPCProvider from "./orpc-provider";
 import PushNotificationProvider from "./push-notifications-provider";
 import { ThemeProvider } from "./theme-provider";
 
@@ -13,7 +16,9 @@ export default function Providers({ children }: ProvidersProps) {
       enableSystem
       disableTransitionOnChange
     >
-      <PushNotificationProvider>{children}</PushNotificationProvider>
+      <ORPCProvider>
+        <PushNotificationProvider>{children}</PushNotificationProvider>
+      </ORPCProvider>
     </ThemeProvider>
   );
 }

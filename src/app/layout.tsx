@@ -1,16 +1,11 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins as Font } from "next/font/google";
 import Providers from "@/providers/providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const font = Font({
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -25,10 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${font.className} antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

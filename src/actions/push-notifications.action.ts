@@ -1,6 +1,11 @@
 "use server";
 
+import { db } from "@/db";
+import { pushNotifications } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import webpush from "web-push";
+import { z } from "zod";
+import { getUserId } from "./authenticated.action";
 
 webpush.setVapidDetails(
   "mailto:your-email@example.com",
@@ -8,19 +13,45 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY!,
 );
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let subscription: PushSubscription | null = null;
+const subscribeUserSchema = z.object({
+  subscription: z.object({
+    endpoint: z.string(),
+    keys: z.object({
+      auth: z.string(),
+      p256dh: z.string(),
+    }),
+  }),
+});
 
 export async function subscribeUser(sub: PushSubscription) {
-  subscription = sub;
-  // In a production environment, you would want to store the subscription in a database
-  // For example: await db.subscriptions.create({ data: sub })
-  return { success: true };
+  const validatedParams = subscribeUserSchema.parse({
+    subscription: sub,
+  });
+
+  try {
+    const userId = await getUserId();
+
+    await db.insert(pushNotifications).values({
+      subscription: validatedParams.subscription,
+      userId,
+    });
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error };
+  }
 }
 
 export async function unsubscribeUser() {
-  subscription = null;
-  // In a production environment, you would want to remove the subscription from the database
-  // For example: await db.subscriptions.delete({ where: { ... } })
-  return { success: true };
+  try {
+    const userId = await getUserId();
+
+    await db
+      .delete(pushNotifications)
+      .where(eq(pushNotifications.userId, userId));
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error };
+  }
 }
