@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+// TODO: update the manifest with your own information
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Zap.ts",
