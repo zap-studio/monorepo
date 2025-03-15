@@ -1,12 +1,12 @@
 import "@/styles/animation.css";
 
-import { Zap, Shield, Brain, Code, Rocket } from "lucide-react";
+import { Zap, Shield, Brain, Code, Rocket, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex h-screen max-h-screen min-h-screen w-full flex-col justify-between bg-gradient-to-br from-black to-gray-800">
+    <div className="flex h-screen w-full flex-col justify-between bg-gradient-to-br from-black to-gray-800">
       <header className="flex items-center justify-between px-8 py-6">
         <div className="flex items-center space-x-3">
           <Zap className="h-8 w-8 animate-pulse text-yellow-400" />
@@ -15,11 +15,13 @@ export default function Home() {
           </h1>
         </div>
 
-        <Button variant="outline" asChild>
-          <Link href="https://github.com/trotelalexandre/zap.ts">
-            Get Started
-          </Link>
-        </Button>
+        <Link
+          href="https://github.com/trotelalexandre/zap.ts"
+          target="_blank"
+          className="inline-flex items-center rounded-md border border-yellow-500 bg-yellow-400 p-2 text-sm text-black hover:bg-yellow-300"
+        >
+          Get Started <ArrowUpRight className="ml-2 h-4 w-4" />
+        </Link>
       </header>
 
       <main className="flex flex-col items-center justify-center gap-8 px-8 py-20">
@@ -30,7 +32,7 @@ export default function Home() {
               Lightning Fast
             </span>
           </h2>
-          <p className="text-muted mx-auto max-w-xl text-center text-lg md:text-xl">
+          <p className="mx-auto max-w-xl text-center text-lg text-gray-300 md:text-xl">
             Next.js boilerplate with auth, AI, type-safe APIs, and the best
             tools to ship products in record time.
           </p>
@@ -62,7 +64,7 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="text-muted py-6 text-center text-sm">
+      <footer className="py-6 text-center text-sm text-gray-300">
         <p>Made with ⚡ by Alexandre Trotel</p>
       </footer>
     </div>
