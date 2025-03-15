@@ -1,7 +1,7 @@
 {
   "name": "zap-ts",
   "description": "The boilerplate to build application as fast as a zap.",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "private": false,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -61,6 +61,8 @@
     "@react-email/components": "0.0.33",
     "@tanstack/react-query": "^5.68.0",
     "@types/mdx": "^2.0.13",
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
     "ai": "^4.1.61",
     "better-auth": "^1.2.4",
     "class-variance-authority": "^0.7.1",

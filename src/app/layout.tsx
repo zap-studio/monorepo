@@ -3,6 +3,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Poppins as Font } from "next/font/google";
 import Providers from "@/providers/providers";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const font = Font({
   weight: ["400", "500", "600", "700"],
@@ -22,7 +24,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${font.className} antialiased`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+
+          <Analytics />
+          <SpeedInsights />
+        </Providers>
       </body>
     </html>
   );

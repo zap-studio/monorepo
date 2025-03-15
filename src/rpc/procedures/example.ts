@@ -1,7 +1,6 @@
-import { os } from "@orpc/server";
-import { authMiddleware } from "../middlewares";
+import { authMiddleware, base } from "../middlewares";
 
-export const example = os.use(authMiddleware).handler(async ({ context }) => {
+export const example = base.use(authMiddleware).handler(async ({ context }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const session = context.session;
   return { message: "Hello, World!" };
