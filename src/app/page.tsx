@@ -1,7 +1,6 @@
 import "@/styles/animation.css";
 
 import { Zap, Shield, Brain, Code, Rocket, ArrowUpRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function Home() {
