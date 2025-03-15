@@ -1,4 +1,4 @@
-import { useORPC } from "@/providers/orpc-provider";
+import { useORPC } from "@/stores/orpc.store";
 import useSWR from "swr";
 
 export const useExample = () => {

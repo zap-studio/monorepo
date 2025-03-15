@@ -1,14 +1,20 @@
 "use client";
 
-import ORPCProvider from "./orpc-provider";
-import PushNotificationProvider from "./push-notifications-provider";
+import { usePushNotificationStore } from "@/stores/push-notifications.store";
 import { ThemeProvider } from "./theme-provider";
+import { useEffect } from "react";
 
 interface ProvidersProps {
   children: React.ReactNode;
 }
 
 export default function Providers({ children }: ProvidersProps) {
+  const initialize = usePushNotificationStore((state) => state.initialize);
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
   return (
     <ThemeProvider
       attribute="class"
@@ -16,9 +22,7 @@ export default function Providers({ children }: ProvidersProps) {
       enableSystem
       disableTransitionOnChange
     >
-      <ORPCProvider>
-        <PushNotificationProvider>{children}</PushNotificationProvider>
-      </ORPCProvider>
+      {children}
     </ThemeProvider>
   );
 }
