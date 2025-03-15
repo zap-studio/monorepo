@@ -20,7 +20,7 @@ Welcome to **Zap.ts** ⚡—a turbocharged, type-safe Next.js boilerplate design
 - **Zod** - Schema validation that’s fast and reliable.
 - **React Email** + **Resend** - Send emails with style and speed.
 - **Polar.sh** - Payments made simple (placeholder ready).
-- **useSWR** - Data fetching that keeps up with your pace.
+- **ReactQuery** - Data fetching that keeps up with your pace.
 - **Tailwind CSS** - Styling that’s quick and beautiful.
 - **Prettier** + Tailwind Plugin - Code formatting that’s clean as a whistle.
 
