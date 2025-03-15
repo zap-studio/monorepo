@@ -85,7 +85,7 @@ Zap.ts is engineered for clarity and velocity:
 - **`lib/orpc.ts`**: oRPC router + client for lightning-fast APIs.
 - **`lib/email.ts`**: Send emails with React Email and Resend in a snap.
 - **`lib/ai.ts`**: Hook into Vercel AI SDK with your chosen provider.
-- **`lib/hooks.ts`**: SWR hooks to fetch data at hyperspeed.
+- **`lib/hooks.ts`**: ReactQuery + oRPC hooks to fetch data at hyperspeed.
 - **`store/ai.ts`**: Persisted Zustand store for AI provider keys—set it and forget it.
 
 ## Scripts ⚡
@@ -143,7 +143,6 @@ To turbocharge your start with Zap.ts, search for `// TODO` comments scattered t
 
 - **Polar.sh**: Add payment routes/webhooks per their docs—charge up your revenue!
 - **Better Auth**: Extend plugins in `lib/auth.ts` for more auth options.
-- **SWR**: Built-in by default—swap to React Query if you prefer a different vibe.
 
 ## Built with Bun ⚡
 
