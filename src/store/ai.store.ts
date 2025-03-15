@@ -1,34 +1,16 @@
 "use client";
 
+import { AI_PROVIDERS_OBJECT } from "@/data/ai";
+import { AIProviderEnum } from "@/schemas/ai.schema";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export const AI_PROVIDERS_OBJECT = [
-  {
-    provider: "openai" as AIProvider,
-    name: "OpenAI",
-    needsApiKey: true,
-  },
-
-  {
-    provider: "mistral" as AIProvider,
-    name: "Mistral AI",
-    needsApiKey: true,
-  },
-];
-
-export const AI_PROVIDERS = AI_PROVIDERS_OBJECT?.map(
-  (provider) => provider.provider,
-);
-
-export type AIProvider = "openai" | "mistral";
-
 interface AIProviderStore {
-  aiProvider: AIProvider;
-  apiKeys: Record<AIProvider, string>;
-  setAIProvider: (provider: AIProvider) => void;
-  setApiKey: (provider: AIProvider, apiKey: string) => void;
-  getProviderName: (provider: AIProvider) => string;
+  aiProvider: AIProviderEnum;
+  apiKeys: Record<AIProviderEnum, string>;
+  setAIProvider: (provider: AIProviderEnum) => void;
+  setApiKey: (provider: AIProviderEnum, apiKey: string) => void;
+  getProviderName: (provider: AIProviderEnum) => string;
 }
 
 export const useAIProviderStore = create<AIProviderStore>()(

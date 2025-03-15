@@ -6,9 +6,6 @@ import { createORPCReactQueryUtils } from "@orpc/react-query";
 
 export const link = new RPCLink({
   url: "http://localhost:3000/rpc",
-  headers: () => ({
-    "Content-Type": "application/json",
-  }),
 });
 
 export const client: RouterClient<typeof router> = createORPCClient(link);

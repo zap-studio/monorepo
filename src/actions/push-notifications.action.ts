@@ -4,8 +4,8 @@ import { db } from "@/db";
 import { pushNotifications } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import webpush from "web-push";
-import { z } from "zod";
 import { getUserId } from "./authenticated.action";
+import { SubscribeUserSchema } from "@/schemas/push-notifications.schema";
 
 webpush.setVapidDetails(
   "mailto:your-email@example.com",
@@ -13,18 +13,8 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY!,
 );
 
-const subscribeUserSchema = z.object({
-  subscription: z.object({
-    endpoint: z.string(),
-    keys: z.object({
-      auth: z.string(),
-      p256dh: z.string(),
-    }),
-  }),
-});
-
 export async function subscribeUser(sub: PushSubscription) {
-  const validatedParams = subscribeUserSchema.parse({
+  const validatedParams = SubscribeUserSchema.parse({
     subscription: sub,
   });
 

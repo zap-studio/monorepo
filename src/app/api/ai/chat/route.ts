@@ -1,23 +1,20 @@
 import { SYSTEM_PROMPT } from "@/data/ai";
 import { getModel } from "@/lib/ai";
-import { AIProvider } from "@/store/ai.store";
+import { AIProviderEnumSchema } from "@/schemas/ai.schema";
 import { streamText } from "ai";
 import { z } from "zod";
 
 export const maxDuration = 60;
 
-const bodySchema = z.object({
+const BodySchema = z.object({
   messages: z.any(),
-  provider: z.enum([
-    "openai",
-    "mistral",
-  ] as const satisfies readonly AIProvider[]),
+  provider: AIProviderEnumSchema,
   apiKey: z.string(),
 });
 
 export async function POST(req: Request) {
   const unvalidatedBody = await req.json();
-  const body = bodySchema.parse(unvalidatedBody);
+  const body = BodySchema.parse(unvalidatedBody);
 
   const result = streamText({
     model: getModel(body.provider, body.apiKey),

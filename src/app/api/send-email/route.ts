@@ -2,7 +2,7 @@ import { isUserAdmin } from "@/actions/authenticated.action";
 import { sendMail } from "@/actions/emails.action";
 import { z } from "zod";
 
-const sendMailSchema = z.object({
+const SendMailSchema = z.object({
   subject: z.string(),
   recipients: z.array(z.string()),
 });
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     }
 
     const unvalidatedBody = await req.json();
-    const body = sendMailSchema.parse(unvalidatedBody);
+    const body = SendMailSchema.parse(unvalidatedBody);
 
     const data = await sendMail(body.subject, body.recipients);
 
