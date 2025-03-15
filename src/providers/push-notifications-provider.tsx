@@ -1,3 +1,7 @@
+import {
+  subscribeUser,
+  unsubscribeUser,
+} from "@/actions/push-notifications.action";
 import { urlBase64ToUint8Array } from "@/lib/utils";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -8,11 +12,8 @@ interface PushNotificationContextType {
   unsubscribeFromPush: () => Promise<void>;
 }
 
-const PushNotificationContext = createContext<PushNotificationContextType | null>(
-  null,
-);
-
-
+const PushNotificationContext =
+  createContext<PushNotificationContextType | null>(null);
 
 interface PushSubscriptionProps {
   children: React.ReactNode;
@@ -72,6 +73,7 @@ export default function PushNotificationProvider({
     >
       {children}
     </PushNotificationContext.Provider>
+  );
 }
 
 export const usePushNotifications = () => {
