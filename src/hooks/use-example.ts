@@ -1,7 +1,7 @@
 import { useORPC } from "@/providers/orpc-provider";
-import { useQuery } from "@tanstack/react-query";
+import useSWR from "swr";
 
 export const useExample = () => {
   const orpc = useORPC();
-  return useQuery(orpc.example.queryOptions());
+  return useSWR(orpc.example.key, orpc.example.queryOptions().queryFn);
 };
