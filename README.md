@@ -20,7 +20,7 @@ Welcome to **Zap.ts** ⚡—a turbocharged, type-safe Next.js boilerplate design
 - **Zod** - Schema validation that’s fast and reliable.
 - **React Email** + **Resend** - Send emails with style and speed.
 - **Polar.sh** - Payments made simple (placeholder ready).
-- **ReactQuery** - Data fetching that keeps up with your pace.
+- **SWR** - Data fetching that keeps up with your pace.
 - **Tailwind CSS** - Styling that’s quick and beautiful.
 - **Prettier** + Tailwind Plugin - Code formatting that’s clean as a whistle.
 
@@ -85,7 +85,7 @@ Zap.ts is engineered for clarity and velocity:
 - **`lib/orpc.ts`**: oRPC router + client for lightning-fast APIs.
 - **`lib/email.ts`**: Send emails with React Email and Resend in a snap.
 - **`lib/ai.ts`**: Hook into Vercel AI SDK with your chosen provider.
-- **`lib/hooks.ts`**: ReactQuery + oRPC hooks to fetch data at hyperspeed.
+- **`lib/hooks.ts`**: useSWR + oRPC hooks to fetch data at hyperspeed.
 - **`store/ai.ts`**: Persisted Zustand store for AI provider keys—set it and forget it.
 
 ## Scripts ⚡
@@ -135,7 +135,7 @@ setApiKey("openai", "your-openai-key");
 const model = getModel("openai", "your-openai-key");
 ```
 
-## TODO ⚡ - Hit the Ground Running!
+## TODO - Hit the Ground Running! ⚡
 
 To turbocharge your start with Zap.ts, search for `// TODO` comments scattered throughout the codebase! These handy markers highlight key spots where you can plug in your custom logic, configs, or integrations. Whether it’s hooking up Polar.sh payments, adding more Better Auth providers, or tweaking the AI setup—those `// TODO` tags are your launchpads to get zapping fast! Just grep the code, jump in, and watch your project take off like a bolt of lightning!
 
