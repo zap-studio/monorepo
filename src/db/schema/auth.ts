@@ -4,16 +4,7 @@ import {
   integer,
   timestamp,
   boolean,
-  pgRole,
 } from "drizzle-orm/pg-core";
-
-// TODO: after the first migration, use pgRole("user").existing(); instead to avoid conflit
-export const userRole = pgRole("user");
-export const adminRole = pgRole("admin", {
-  createRole: true,
-  createDb: true,
-  inherit: true,
-});
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
