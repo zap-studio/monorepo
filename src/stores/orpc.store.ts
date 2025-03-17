@@ -1,3 +1,5 @@
+"use client";
+
 import { create } from "zustand";
 import { createORPCReactQueryUtils, RouterUtils } from "@orpc/react-query";
 import { RouterClient } from "@orpc/server";

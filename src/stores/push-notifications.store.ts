@@ -1,53 +1,66 @@
-import { create } from "zustand";
-import {
-  subscribeUser,
-  unsubscribeUser,
-} from "@/actions/push-notifications.action";
-import { urlBase64ToUint8Array } from "@/lib/utils";
+"use client";
 
-interface PushNotificationState {
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { useEffect } from "react";
+
+interface PushNotificationsStore {
   isSupported: boolean;
   subscription: PushSubscription | null;
-  initialize: () => Promise<void>;
-  subscribeToPush: () => Promise<void>;
-  unsubscribeFromPush: () => Promise<void>;
+  message: string;
+  isIOS: boolean;
+  isStandalone: boolean;
+  isSubscribed: boolean;
+  setMessage: (message: string) => void;
+  initialize: () => void;
 }
 
-export const usePushNotificationStore = create<PushNotificationState>(
-  (set) => ({
-    isSupported: false,
-    subscription: null,
+export const usePushNotificationsStore = create<PushNotificationsStore>()(
+  persist(
+    (set) => ({
+      isSupported: false,
+      subscription: null,
+      message: "",
+      isIOS: false,
+      isStandalone: false,
+      isSubscribed: false,
 
-    initialize: async () => {
-      if ("serviceWorker" in navigator && "PushManager" in window) {
-        set({ isSupported: true });
-        const registration = await navigator.serviceWorker.register("/sw.js", {
-          scope: "/",
-          updateViaCache: "none",
-        });
-        const sub = await registration.pushManager.getSubscription();
-        set({ subscription: sub });
-      }
-    },
+      setMessage: (message) => set({ message }),
 
-    subscribeToPush: async () => {
-      const registration = await navigator.serviceWorker.ready;
-      const sub = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-        ),
-      });
-      set({ subscription: sub });
-      const serializedSub = JSON.parse(JSON.stringify(sub));
-      await subscribeUser(serializedSub);
-    },
+      initialize: () => {
+        if (typeof window === "undefined" || typeof navigator === "undefined")
+          return;
 
-    unsubscribeFromPush: async () => {
-      const { subscription } = usePushNotificationStore.getState();
-      await subscription?.unsubscribe();
-      set({ subscription: null });
-      await unsubscribeUser();
-    },
-  }),
+        const isSupported =
+          "serviceWorker" in navigator && "PushManager" in window;
+        const isIOS =
+          /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          !(window as any).MSStream;
+        const isStandalone = window.matchMedia(
+          "(display-mode: standalone)",
+        ).matches;
+
+        set({ isSupported, isIOS, isStandalone });
+
+        if (isSupported) {
+          navigator.serviceWorker
+            .register("/sw.js", { scope: "/", updateViaCache: "none" })
+            .then(async (registration) => {
+              const sub = await registration.pushManager.getSubscription();
+              set({ subscription: sub, isSubscribed: !!sub });
+            });
+        }
+      },
+    }),
+    { name: "push-notifications" },
+  ),
 );
+
+export const usePushNotificationsInitializer = () => {
+  const { initialize } = usePushNotificationsStore();
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+};
