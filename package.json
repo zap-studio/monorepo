@@ -5,6 +5,7 @@
   "private": false,
   "scripts": {
     "dev": "next dev --turbopack",
+    "scan": "next dev --turbopack & bunx react-scan@latest localhost:3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -81,6 +82,7 @@
     "react-dom": "19.0.0",
     "react-hook-form": "^7.54.2",
     "react-resizable-panels": "^2.1.7",
+    "react-scan": "^0.3.2",
     "recharts": "^2.15.1",
     "resend": "^4.1.2",
     "server-only": "^0.0.1",
