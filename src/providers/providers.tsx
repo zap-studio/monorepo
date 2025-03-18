@@ -1,7 +1,7 @@
 "use client";
 
 import { usePushNotificationsStore } from "@/stores/push-notifications.store";
-import { ThemeProvider } from "./theme-provider";
+import { ThemeProvider } from "./theme.provider";
 import { useEffect } from "react";
 
 interface ProvidersProps {
