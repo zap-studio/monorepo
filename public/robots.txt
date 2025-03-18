@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.stockq.app
+
+# Sitemaps
+Sitemap: https://www.stockq.app/sitemap.xml

@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth-server";
 import { headers } from "next/headers";
 
 export const isAuthenticated = async () => {

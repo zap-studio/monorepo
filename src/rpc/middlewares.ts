@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth-server";
 import { ORPCError, os } from "@orpc/server";
 
 export const base = os.$context<{
