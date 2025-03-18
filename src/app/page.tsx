@@ -15,7 +15,7 @@ export default function Home() {
         </div>
 
         <Link
-          href="https://github.com/atrtde/zap.ts"
+          href="https://github.com/alexandretrotel/zap.ts"
           target="_blank"
           className="inline-flex items-center rounded-md border border-yellow-500 bg-yellow-400 p-2 text-sm text-black hover:bg-yellow-300"
         >
@@ -25,7 +25,7 @@ export default function Home() {
 
       <main className="flex flex-col items-center justify-center gap-8 px-8 py-20">
         <div className="flex flex-col gap-4 text-center">
-          <h2 className="text-5xl leading-tight font-extrabold tracking-tight text-white md:text-6xl lg:text-7xl">
+          <h2 className="text-5xl font-extrabold leading-tight tracking-tight text-white md:text-6xl lg:text-7xl">
             Build Apps{" "}
             <span className="animate-[gradient_4s_ease_infinite] bg-[linear-gradient(to_right,#facc15,#f97316,#ef4444,#f97316,#facc15)] bg-[length:300%_100%] bg-clip-text text-transparent">
               Lightning Fast

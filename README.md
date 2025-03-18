@@ -29,7 +29,7 @@ Welcome to **Zap.ts** ⚡—a turbocharged, type-safe Next.js boilerplate design
 1. **Clone the Lightning**:
 
    ```bash
-   git clone https://github.com/atrtde/zap.ts zap-ts
+   git clone https://github.com/alexandretrotel/zap.ts zap-ts
    cd zap-ts
    ```
 
