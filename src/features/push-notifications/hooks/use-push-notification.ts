@@ -1,5 +1,6 @@
 "use client";
 
+import ky from "ky";
 import useSWRMutation from "swr/mutation";
 import { toast } from "sonner";
 import { usePushNotificationsStore } from "@/stores/push-notifications.store";
@@ -30,14 +31,14 @@ export function usePushNotification() {
     >(
       "/api/user/notifications/subscribe",
       (url: string, { arg }: { arg: { subscription: PushSubscriptionJSON } }) =>
-        fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(arg),
-        }).then((res) => {
-          if (!res.ok) throw { message: "Subscription API failed" };
-          return res.json();
-        }),
+        ky
+          .post(url, {
+            json: arg,
+          })
+          .json<SubscriptionResponse>()
+          .catch(() => {
+            throw { message: "Subscription API failed" };
+          }),
       {
         optimisticData: { success: true, subscriptionId: "temp-id" },
         rollbackOnError: true,
@@ -62,13 +63,12 @@ export function usePushNotification() {
     useSWRMutation<UnsubscribeResponse, ApiError, string>(
       "/api/user/notifications/unsubscribe",
       (url: string) =>
-        fetch(url, {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-        }).then((res) => {
-          if (!res.ok) throw { message: "Unsubscribe API failed" };
-          return res.json();
-        }),
+        ky
+          .delete(url)
+          .json<SubscriptionResponse>()
+          .catch(() => {
+            throw { message: "Unsubscribe API failed" };
+          }),
       {
         optimisticData: { success: true },
         rollbackOnError: false,

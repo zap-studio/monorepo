@@ -75,6 +75,7 @@
     "drizzle-orm": "^0.40.0",
     "embla-carousel-react": "^8.5.2",
     "input-otp": "^1.4.2",
+    "ky": "^1.7.5",
     "lucide-react": "^0.482.0",
     "next": "15.2.2",
     "next-sitemap": "^4.2.3",
