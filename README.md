@@ -23,48 +23,6 @@ Welcome to **Zap.ts** ⚡—a turbocharged, type-safe Next.js boilerplate design
 - **SWR** - Data fetching that keeps up with your pace.
 - **Tailwind CSS** - Styling that’s quick and beautiful.
 - **Prettier** + Tailwind Plugin - Code formatting that’s clean as a whistle.
-
-## Get Started ⚡
-
-1. **Clone the Lightning**:
-
-   ```bash
-   git clone https://github.com/alexandretrotel/zap.ts zap-ts
-   cd zap-ts
-   ```
-
-2. **Install at Warp Speed**:
-
-   ```bash
-   bun install
-   ```
-
-3. **Charge Up Your Environment**:
-   Copy `.env.example` to `.env.local` and plug in your keys:
-
-   ```
-   DATABASE_URL=your_neon_database_url
-   RESEND_API_KEY=your_resend_api_key
-   POLAR_API_KEY=your_polar_api_key
-   AUTH_SECRET=your_auth_secret
-   GITHUB_CLIENT_ID=your_github_client_id
-   GITHUB_CLIENT_SECRET=your_github_client_secret
-   ```
-
-4. **Zap the Database**:
-
-   ```bash
-   bun run db:migrate
-   ```
-
-5. **Launch in a Flash**:
-
-   ```bash
-   bun run dev
-   ```
-
-   Open `http://localhost:3000` and feel the speed!
-
 ## Architecture ⚡
 
 Zap.ts is engineered for clarity and velocity:
@@ -135,7 +93,7 @@ setApiKey("openai", "your-openai-key");
 const model = getModel("openai", "your-openai-key");
 ```
 
-## TODO - Hit the Ground Running! ⚡
+## Do Your Homeworks! ⚡
 
 To turbocharge your start with Zap.ts, search for `// TODO` comments scattered throughout the codebase! These handy markers highlight key spots where you can plug in your custom logic, configs, or integrations. Whether it’s hooking up Polar.sh payments, adding more Better Auth providers, or tweaking the AI setup—those `// TODO` tags are your launchpads to get zapping fast! Just grep the code, jump in, and watch your project take off like a bolt of lightning!
 
