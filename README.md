@@ -1,50 +1,30 @@
 # Zap.ts ⚡
 
-Welcome to **Zap.ts** ⚡—a turbocharged, type-safe Next.js boilerplate designed to get your projects off the ground at lightning speed! Packed with modern tools and a sleek architecture, Zap.ts is your go-to foundation for building blazing-fast web applications.
+**Zap.ts** – named after ⚡️ – is a Next.js boilerplate designed to help you build applications faster using a modern set of tools.
 
-## Why Zap.ts? ⚡
+## Check The Docs ⚡
 
-- **Speed**: Built with Bun and optimized for performance—launch faster than ever!
-- **Type Safety**: Rock-solid TypeScript integration across the stack.
-- **Modern Stack**: Cutting-edge tools like oRPC, Drizzle, and Vercel AI SDK.
-- **Ready to Roll**: Pre-configured helpers and a clean structure to zap you straight to coding.
+You will find all you need to get started by reading the [documentation](https://zap-ts.alexandretrotel.org).
 
-## Tech Stack ⚡
+## How It Works ⚡
 
-- **Next.js** with App Router - The backbone of your app, turbocharged.
-- **oRPC** - Lightning-fast, type-safe API routes.
-- **Better Auth** - Secure auth with email/password + GitHub OAuth out of the box.
-- **Drizzle ORM** + **Neon Serverless PostgreSQL** - Database magic at warp speed.
-- **Vercel AI SDK** - AI-powered features, seamlessly integrated.
-- **Zustand** - Lightweight state management with a persisted AI store.
-- **Zod** - Schema validation that’s fast and reliable.
-- **React Email** + **Resend** - Send emails with style and speed.
-- **Polar.sh** - Payments made simple (placeholder ready).
-- **SWR** - Data fetching that keeps up with your pace.
-- **Tailwind CSS** - Styling that’s quick and beautiful.
-- **Prettier** + **Tailwind Plugin** - Code formatting that’s clean as a whistle.
-## Architecture ⚡
+Zap.ts is fast to set up and very easy to use. It comes with clear documentation and a carefully selected set of tools that make the developer experience (DX) modern and enjoyable.
 
-Zap.ts is engineered for clarity and velocity:
+## Why It Exists ⚡
 
-- **Database**: Neon PostgreSQL + Drizzle ORM (`lib/db.ts`, `drizzle/`)—data at lightning speed.
-- **Auth**: Better Auth with email/password + GitHub (`lib/auth.ts`, `lib/auth-client.ts`, `middleware.ts`)—secure and swift.
-- **API**: oRPC for type-safe endpoints (`lib/orpc.ts`, `app/api/orpc/`)—API calls that zip.
-- **State**: Zustand with a persisted AI store (`store/ai.ts`)—state management that doesn’t lag.
-- **Emails**: React Email + Resend (`lib/email.ts`, `components/emails/`)—send messages in a flash (protected with admin role).
-- **Payments**: Polar.sh placeholder (`lib/auth.ts`)—ready for your revenue stream and synced with Better Auth.
-- **AI**: Vercel AI SDK with provider management (`lib/ai.ts`, `store/ai.ts`)—smart and fast.
-- **Data Fetching**: useSWR (`hooks`)—fetch data at the speed of light.
-- **Formatting**: Prettier + Tailwind plugin (`prettier.config.js`)—code that shines.
+Starting a new web project always means repeating steps: setting up a database, adding login features, installing tools, handling payments, and creating email systems. A ready-made solution saves time and lets the focus stay on making something useful, not on setup. It gives one easy way to do things, improving the coding experience (DX). This means no need to worry about how it all works inside—just like shadcn/ui keeps things simple.
 
-## Turbocharged Helpers ⚡
+## Startups Love It ⚡
 
-- **`lib/db.ts`**: Your Drizzle ORM instance, plugged into Neon (or whatever you want).
-- **`lib/orpc.ts`**: oRPC router + client for lightning-fast APIs.
-- **`lib/email.ts`**: Send emails with React Email and Resend in a snap.
-- **`lib/ai.ts`**: Hook into Vercel AI SDK with your chosen provider.
-- **`lib/hooks.ts`**: useSWR + oRPC hooks to fetch data at hyperspeed.
-- **`store/ai.ts`**: Persisted Zustand store for AI provider keys—set it and forget it.
+Startups move fast and need tools that keep up. Zap.ts is built with startups in mind, offering a launchpad to go from idea to product in record time. Here’s why it’s a game-changer for your team:
+
+- **Speed to Market**: Pre-configured tools and seamless integrations mean you skip the setup grind and start building your MVP right away.
+- **Cost-Effective**: No need to reinvent the wheel or hire specialists for boilerplate tasks – Zap.ts gives you a production-ready stack for free.
+- **Scalability**: From prototype to scale, the modern libraries (like Drizzle and oRPC) ensure your app grows without breaking.
+- **Focus on Innovation**: Spend your energy on what makes your startup unique, not on plumbing. Authentication, UI, and APIs are ready out of the box.
+- **Future-Proof**: With flexible tools like better-auth and the AI Vercel SDK, you can adapt to new requirements or tech trends without a full rewrite.
+
+Whether you’re a solo founder or a small team, Zap.ts empowers you to ship fast, iterate often, and compete with the big players.
 
 ## Scripts ⚡
 
@@ -59,48 +39,17 @@ Zap.ts is engineered for clarity and velocity:
 - `bun run db:studio` - Open Drizzle Studio for a quick peek.
 - `bun run db:pull` - Pull database schema with ease.
 
-## Usage Examples ⚡
+## Tools Included ⚡
 
-### Zap an API Call with oRPC + SWR
+Zap.ts includes these libraries:
 
-```typescript
-import { useExample } from "@/hooks/use-example";
-
-const { data } = useExample();
-```
-
-### Send a Lightning Email
-
-```typescript
-import { sendEmail } from "@/lib/email";
-import WelcomeEmail from "@/emails/WelcomeEmail";
-
-await sendEmail("Welcome!", ["user@example.com"]);
-```
-
-### Power Up AI Providers
-
-```typescript
-import { useAIProviderStore } from "@/store/ai";
-import { getModel } from "@/lib/ai";
-
-// It uses Zustand and you can add as many providers as you want
-const { setAIProvider, setApiKey } = useAIProviderStore();
-setAIProvider("openai");
-setApiKey("openai", "your-openai-key");
-
-// Get your AI model from server side (needs the provider and associated apiKey - pass them in the body)
-const model = getModel("openai", "your-openai-key");
-```
-
-## Do Your Homeworks! ⚡
-
-To turbocharge your start with Zap.ts, search for `// TODO` comments scattered throughout the codebase! These handy markers highlight key spots where you can plug in your custom logic, configs, or integrations. Whether it’s hooking up Polar.sh payments, adding more Better Auth providers, or tweaking the AI setup—those `// TODO` tags are your launchpads to get zapping fast! Just grep the code, jump in, and watch your project take off like a bolt of lightning!
-
-## Notes ⚡
-
-- **Polar.sh**: Add payment routes/webhooks per their docs—charge up your revenue!
-- **Better Auth**: Extend plugins in `lib/auth.ts` for more auth options.
+- [shadcn/ui](https://ui.shadcn.com/): The best way to get ready-to-use UI components that you can customize however you like.
+- [better-auth](https://better-auth.com/): A simple and flexible way to set up authentication. It works with any framework, avoids vendor lock-in, and connects seamlessly to your database.
+- [drizzle](https://orm.drizzle.team/): An ORM that lets you write database schemas in TypeScript, sync them with your database, and is easy to use. It’s set up with [Neon](https://neon.tech/) by default, but you can switch databases easily.
+- [zustand](https://zustand-demo.pmnd.rs/): A lightweight alternative to Redux and React Context. It helps you write less code, do more, and supports local storage persistence out of the box.
+- [oRPC](https://orpc.unnoq.com/): An alternative to tRPC that supports OpenAPI specs, making it easy to build type-safe APIs for frontend and backend.
+- [AI Vercel SDK](https://sdk.vercel.ai/): A toolkit for streaming text, handling objects, using RAG (Retrieval-Augmented Generation), and more. It lets you switch between providers without depending on a specific SDK.
+- And more...
 
 ## Built with Bun ⚡
 
