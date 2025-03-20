@@ -28,7 +28,7 @@ export const getPromptAnswers = async () => {
       name: "optionalPlugins",
       message: "Select optional plugins:",
       choices: plugins
-        .filter((p) => (!p.category || p.category !== "orm") && !p.available)
+        .filter((p) => (!p.category || p.category !== "orm") && p.available)
         .map((p) => ({ title: p.name, value: p.name }))
         .sort((a, b) => a.title.localeCompare(b.title)),
     },
