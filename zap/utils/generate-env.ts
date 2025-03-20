@@ -24,7 +24,11 @@ export const generateEnv = async (selectedPlugins: string[]) => {
     .map((envVar) => {
       if (envVar === "BETTER_AUTH_SECRET") {
         const betterAuthSecret = generateBetterAuthSecret();
-        return `${envVar}=${betterAuthSecret}`;
+        return `${envVar}="${betterAuthSecret}"`;
+      }
+
+      if (envVar === "DATABASE_URL") {
+        return `${envVar}="postgresql://fake_user:fake_password@ep-example-database.us-west-1.aws.neon.tech/fake_db?sslmode=require"`;
       }
 
       return `${envVar}=your_${envVar.toLowerCase()}_here`;
