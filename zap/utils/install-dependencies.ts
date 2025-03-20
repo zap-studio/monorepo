@@ -49,5 +49,15 @@ export const installDependencies = async (
     }
   }
 
+  try {
+    execSync(`${packageManagerCommands[packageManager].install}`, {
+      stdio: "ignore",
+    });
+  } catch {
+    console.error(
+      "Failed to install core dependencies. Please check manually.",
+    );
+  }
+
   console.log("Dependencies installed successfully.");
 };
