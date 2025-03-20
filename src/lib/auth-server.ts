@@ -17,6 +17,7 @@ import {
   MINIMUM_USERNAME_LENGTH,
 } from "@/data/settings";
 import { passkey } from "better-auth/plugins/passkey";
+// ZAP_PLUGIN:polar:START
 import { Polar } from "@polar-sh/sdk";
 import { polar } from "@polar-sh/better-auth";
 
@@ -27,6 +28,7 @@ const polarClient = new Polar({
   // Access tokens obtained in Production are for instance not usable in the Sandbox environment.
   server: "production",
 });
+// ZAP_PLUGIN:polar:END
 
 export const auth = betterAuth({
   appName: "Zap.ts",
@@ -74,6 +76,7 @@ export const auth = betterAuth({
     passkey(),
     admin(),
     organization(),
+    // ZAP_PLUGIN:polar:START
     polar({
       client: polarClient,
       createCustomerOnSignUp: true,
@@ -96,5 +99,6 @@ export const auth = betterAuth({
         },
       },
     }),
+    // ZAP_PLUGIN:polar:END
   ],
 });

@@ -1,6 +1,8 @@
 "use client";
 
-import { usePushNotificationsStore } from "@/plugins/pwa/stores/push-notifications.store";
+// ZAP_PLUGIN:pwa:START
+import { usePushNotificationsStore } from "../stores/push-notifications.store";
+// ZAP_PLUGIN:pwa:END
 import { ThemeProvider } from "./theme.provider";
 import { useEffect } from "react";
 
@@ -9,11 +11,13 @@ interface ProvidersProps {
 }
 
 export default function Providers({ children }: ProvidersProps) {
+  // ZAP_PLUGIN:pwa:START
   const initialize = usePushNotificationsStore((state) => state.initialize);
 
   useEffect(() => {
     initialize();
   }, [initialize]);
+  // ZAP_PLUGIN:pwa:END
 
   return (
     <ThemeProvider
