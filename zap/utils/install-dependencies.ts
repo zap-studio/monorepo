@@ -26,30 +26,28 @@ export const installDependencies = async (
   );
 
   if (dependencies.length > 0) {
-    console.log("Installing dependencies:", dependencies.join(" "));
     const installCommand = packageManagerCommands[packageManager].add;
 
     try {
       execSync(`${installCommand} ${dependencies.join(" ")}`, {
         stdio: "ignore",
       });
-      console.log("Dependencies installed successfully.");
     } catch {
       console.error("Failed to install dependencies. Please check manually.");
     }
   }
 
   if (unusedDeps.length > 0) {
-    console.log("Removing unused optional dependencies:", unusedDeps.join(" "));
     const removeCommand = packageManagerCommands[packageManager].remove;
 
     try {
       execSync(`${removeCommand} ${unusedDeps.join(" ")}`, { stdio: "ignore" });
-      console.log("Optional unused dependencies removed successfully.");
     } catch {
       console.error(
         "Failed to remove optional unused dependencies. Please check manually.",
       );
     }
   }
+
+  console.log("Dependencies installed successfully.");
 };

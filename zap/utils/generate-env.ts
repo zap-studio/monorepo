@@ -23,5 +23,6 @@ export const generateEnv = async (selectedPlugins: string[]) => {
     .map((envVar) => `${envVar}=your_${envVar.toLowerCase()}_here`)
     .join("\n");
   writeFileSync(resolve(process.cwd(), ".env.local"), envContent);
+
   console.log("Generated .env.local with required environment variables");
 };
