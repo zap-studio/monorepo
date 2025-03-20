@@ -1,4 +1,4 @@
-import { example } from "./procedures/example";
+import { example } from "./procedures/example.rpc";
 
 export const router = {
   example,
