@@ -1,6 +1,7 @@
 import { writeFileSync } from "fs";
 import { resolve } from "path";
 import { plugins } from "../plugins-list";
+import { generateBetterAuthSecret } from "./generate-better-auth-secret";
 
 const coreEnv = [
   "BETTER_AUTH_SECRET",
@@ -20,7 +21,14 @@ export const generateEnv = async (selectedPlugins: string[]) => {
   const allEnvVars = [...coreEnv, ...pluginEnvVars].sort();
 
   const envContent = allEnvVars
-    .map((envVar) => `${envVar}=your_${envVar.toLowerCase()}_here`)
+    .map((envVar) => {
+      if (envVar === "BETTER_AUTH_SECRET") {
+        const betterAuthSecret = generateBetterAuthSecret();
+        return `${envVar}=${betterAuthSecret}`;
+      }
+
+      return `${envVar}=your_${envVar.toLowerCase()}_here`;
+    })
     .join("\n");
   writeFileSync(resolve(process.cwd(), ".env.local"), envContent);
 
