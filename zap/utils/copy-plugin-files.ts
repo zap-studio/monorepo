@@ -34,7 +34,7 @@ export const copyPluginFiles = (selectedPlugins: string[]) => {
         cpSync(source, dest, { recursive: true });
       }
     });
-
-    console.log(`Copied files for plugin ${pluginName}`);
   });
+
+  console.log("Plugin files copied successfully.");
 };
