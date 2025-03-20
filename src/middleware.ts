@@ -8,7 +8,7 @@ export async function middleware(request: NextRequest) {
   });
 
   if (!session) {
-    // TODO: what to do if the user is not authenticated?
+    // ZAP:TODO - what to do if the user is not authenticated?
   }
 
   const requestHeaders = new Headers(request.headers);

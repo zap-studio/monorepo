@@ -7,7 +7,7 @@ import webpush from "web-push";
 import { getUserId } from "@/actions/authenticated.action";
 import { SubscribeUserSchema } from "../schemas/push-notifications.schema";
 
-// TODO: replace with your email
+// ZAP:TODO - replace with your email
 webpush.setVapidDetails(
   "mailto:your-email@example.com",
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,

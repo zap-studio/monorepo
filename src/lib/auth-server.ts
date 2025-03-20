@@ -63,13 +63,13 @@ export const auth = betterAuth({
     anonymous(),
     magicLink({
       sendMagicLink: async (email, magicLink) => {
-        // TODO: send magic link to the user
+        // ZAP:TODO - send magic link to the user
         console.log("send magic link to the user", { email, magicLink });
       },
     }),
     emailOTP({
       async sendVerificationOTP({ email, otp, type }) {
-        // TODO: implement the sendVerificationOTP method to send the OTP to the user's email address
+        // ZAP:TODO - implement the sendVerificationOTP method to send the OTP to the user's email address
         console.log("sendVerificationOTP", { email, otp, type });
       },
     }),
@@ -85,8 +85,8 @@ export const auth = betterAuth({
         enabled: true,
         products: [
           {
-            productId: "123-456-789", // TODO: ID of Product from Polar Dashboard
-            slug: "zap-ts", // TODO: custom slug for easy reference in Checkout URL, e.g. /checkout/zap-ts
+            productId: "123-456-789", // ZAP:TODO - ID of Product from Polar Dashboard
+            slug: "zap-ts", // ZAP:TODO - custom slug for easy reference in Checkout URL, e.g. /checkout/zap-ts
           },
         ],
         successUrl: "/success?checkout_id={CHECKOUT_ID}",
@@ -95,7 +95,7 @@ export const auth = betterAuth({
         secret: process.env.POLAR_WEBHOOK_SECRET!,
         onPayload: async (payload) => {
           console.log("Polar Webhook Payload", payload);
-          // TODO: handle the webhook payload
+          // ZAP:TODO - handle the webhook payload
         },
       },
     }),
