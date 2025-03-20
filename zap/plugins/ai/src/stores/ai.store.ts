@@ -1,7 +1,7 @@
 "use client";
 
-import { AI_PROVIDERS_OBJECT } from "../data/ai";
-import { AIProviderEnum } from "../schemas/ai.schema";
+import { AI_PROVIDERS_OBJECT } from "@/data/ai";
+import { AIProviderEnum } from "@/schemas/ai.schema";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 

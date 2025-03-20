@@ -3,8 +3,8 @@
 import ky from "ky";
 import useSWRMutation from "swr/mutation";
 import { toast } from "sonner";
-import { usePushNotificationsStore } from "../../../stores/push-notifications.store";
-import { urlBase64ToUint8Array } from "../../../lib/pwa";
+import { usePushNotificationsStore } from "@/stores/push-notifications.store";
+import { urlBase64ToUint8Array } from "@/lib/pwa";
 
 interface SubscriptionResponse {
   success: boolean;

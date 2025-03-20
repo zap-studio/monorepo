@@ -1,5 +1,5 @@
 import { isUserAdmin } from "@/actions/authenticated.action";
-import { sendMail } from "../../../actions/emails.action";
+import { sendMail } from "@/actions/emails.action";
 import { z } from "zod";
 
 const SendMailSchema = z.object({

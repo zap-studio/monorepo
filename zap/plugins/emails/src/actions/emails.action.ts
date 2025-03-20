@@ -1,7 +1,7 @@
 "use server";
 
-import { resend } from "../lib/resend";
-import EmailTemplate from "../components/emails/template";
+import { resend } from "@/lib/resend";
+import EmailTemplate from "@/components/emails/template";
 
 // ZAP:TODO - change the settings below especially the from email address
 export const sendMail = async (subject: string, recipients: string[]) => {

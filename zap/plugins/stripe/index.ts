@@ -1,4 +1,4 @@
-import { PluginMetadata } from "../../schemas/plugins.schema";
+import { PluginMetadata } from "@/schemas/plugins.schema";
 
 export const stripePlugin: PluginMetadata = {
   name: "stripe",

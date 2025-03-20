@@ -1,11 +1,11 @@
 "use server";
 
-import { db } from "../../../drizzle/src/db";
-import { pushNotifications } from "../../../drizzle/src/db/schema";
+import { db } from "@/db";
+import { pushNotifications } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import webpush from "web-push";
 import { getUserId } from "@/actions/authenticated.action";
-import { SubscribeUserSchema } from "../schemas/push-notifications.schema";
+import { SubscribeUserSchema } from "@/schemas/push-notifications.schema";
 
 // ZAP:TODO - replace with your email
 webpush.setVapidDetails(

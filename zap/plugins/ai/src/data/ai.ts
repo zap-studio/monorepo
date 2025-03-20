@@ -1,4 +1,4 @@
-import { AIProviders } from "../schemas/ai.schema";
+import { AIProviders } from "@/schemas/ai.schema";
 
 export const SYSTEM_PROMPT = "";
 
