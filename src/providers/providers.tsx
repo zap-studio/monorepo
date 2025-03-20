@@ -1,6 +1,6 @@
 "use client";
 
-import { usePushNotificationsStore } from "@/stores/push-notifications.store";
+import { usePushNotificationsStore } from "@/plugins/pwa/stores/push-notifications.store";
 import { ThemeProvider } from "./theme.provider";
 import { useEffect } from "react";
 
