@@ -22,7 +22,7 @@ Welcome to **Zap.ts** ⚡—a turbocharged, type-safe Next.js boilerplate design
 - **Polar.sh** - Payments made simple (placeholder ready).
 - **SWR** - Data fetching that keeps up with your pace.
 - **Tailwind CSS** - Styling that’s quick and beautiful.
-- **Prettier** + Tailwind Plugin - Code formatting that’s clean as a whistle.
+- **Prettier** + **Tailwind Plugin** - Code formatting that’s clean as a whistle.
 ## Architecture ⚡
 
 Zap.ts is engineered for clarity and velocity:
