@@ -2,6 +2,6 @@ import { PluginMetadata } from "../../schemas/plugins.schema";
 
 export const pwaPlugin: PluginMetadata = {
   name: "pwa",
-  dependencies: ["ky"],
+  dependencies: ["ky", "web-push"],
   available: true,
 };
