@@ -10,6 +10,8 @@ export const installDependencies = async (
   packageManager: PackageManager,
   selectedPlugins: string[],
 ) => {
+  console.log("Installing dependencies... Please wait.");
+
   const dependencies = selectedPlugins
     .flatMap((name) => {
       const plugin = plugins.find((p) => p.name === name);
