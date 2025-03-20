@@ -15,7 +15,7 @@ export default function Home() {
         </div>
 
         <Link
-          href="https://zap-ts.vercel.app"
+          href="https://zap-ts.alexandretrotel.org"
           target="_blank"
           className="inline-flex items-center rounded-md border border-yellow-500 bg-yellow-400 p-2 text-sm text-black hover:bg-yellow-300"
         >
