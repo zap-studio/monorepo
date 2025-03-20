@@ -31,6 +31,10 @@ export const generateEnv = async (selectedPlugins: string[]) => {
         return `${envVar}="postgresql://fake_user:fake_password@ep-example-database.us-west-1.aws.neon.tech/fake_db?sslmode=require"`;
       }
 
+      if (envVar === "BETTER_AUTH_URL") {
+        return `${envVar}="http://localhost:3000"`;
+      }
+
       return `${envVar}=your_${envVar.toLowerCase()}_here`;
     })
     .join("\n");
