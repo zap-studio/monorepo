@@ -1,5 +1,6 @@
 import prompts from "prompts";
 import { plugins } from "../plugins-list";
+import { PackageManager } from "./install-dependencies";
 
 export const getPromptAnswers = async () => {
   const response = await prompts([
@@ -34,11 +35,7 @@ export const getPromptAnswers = async () => {
     },
   ]);
 
-  const packageManager = response.packageManager as
-    | "bun"
-    | "npm"
-    | "yarn"
-    | "pnpm";
+  const packageManager = response.packageManager as PackageManager;
   const selectedPlugins = [
     response.orm as "drizzle" | "prisma",
     ...(response.optionalPlugins as string[]),
