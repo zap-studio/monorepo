@@ -1,11 +1,8 @@
-import { registerPlugin, Plugin } from "..";
+import { PluginMetadata } from "../../schemas/plugins.schema";
 
-export const paymentStripePlugin: Plugin = {
+export const stripePlugin: PluginMetadata = {
   name: "stripe",
   dependencies: ["@better-auth/stripe", "stripe"],
-  setup: () => {
-    console.log("Payment with Stripe is now enabled!");
-  },
+  available: false,
+  env: ["STRIPE_WEBHOOK_SECRET", "STRIPE_SECRET_KEY"],
 };
-
-registerPlugin(paymentStripePlugin);

@@ -1,11 +1,7 @@
-import { registerPlugin, Plugin } from "..";
+import { PluginMetadata } from "../../schemas/plugins.schema";
 
-export const pwaPlugin: Plugin = {
+export const pwaPlugin: PluginMetadata = {
   name: "pwa",
   dependencies: ["ky"],
-  setup: () => {
-    console.log("PWA is now enabled!");
-  },
+  available: true,
 };
-
-registerPlugin(pwaPlugin);

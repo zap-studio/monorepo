@@ -1,11 +1,8 @@
-import { registerPlugin, Plugin } from "..";
+import { PluginMetadata } from "../../schemas/plugins.schema";
 
-export const emailResendPlugin: Plugin = {
+export const emailsPlugin: PluginMetadata = {
   name: "emails",
   dependencies: ["resend"],
-  setup: () => {
-    console.log("Email with Resend is now enabled! ");
-  },
+  available: true,
+  env: ["RESEND_API_KEY"],
 };
-
-registerPlugin(emailResendPlugin);

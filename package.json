@@ -4,7 +4,7 @@
   "version": "1.2.4",
   "private": false,
   "scripts": {
-    "zap:init": "bun run scripts/zap-init.ts",
+    "zap:init": "bun run zap/zap-init.ts",
     "dev": "next dev --turbopack",
     "scan": "next dev --turbopack & bunx react-scan@latest localhost:3000",
     "build": "next build",

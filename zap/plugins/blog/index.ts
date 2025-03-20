@@ -1,11 +1,7 @@
-import { registerPlugin, Plugin } from "..";
+import { PluginMetadata } from "../../schemas/plugins.schema";
 
-export const blogPlugin: Plugin = {
+export const blogPlugin: PluginMetadata = {
   name: "blog",
   dependencies: ["@mdx-js/react", "@mdx-js/loader", "@next/mdx", "@types/mdx"],
-  setup: () => {
-    console.log("Blog is now enabled!");
-  },
+  available: false,
 };
-
-registerPlugin(blogPlugin);

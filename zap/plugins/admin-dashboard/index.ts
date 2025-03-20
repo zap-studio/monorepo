@@ -1,10 +1,6 @@
-import { registerPlugin, Plugin } from "..";
+import { PluginMetadata } from "../../schemas/plugins.schema";
 
-export const adminDashboardPlugin: Plugin = {
+export const adminDashboardPlugin: PluginMetadata = {
   name: "admin-dashboard",
-  setup: () => {
-    console.log("Admin Dashboard is now enabled!");
-  },
+  available: false,
 };
-
-registerPlugin(adminDashboardPlugin);

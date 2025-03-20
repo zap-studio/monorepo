@@ -1,12 +1,9 @@
-import { registerPlugin, Plugin } from "..";
+import { PluginMetadata } from "../../schemas/plugins.schema";
 
-export const prismaPlugin: Plugin = {
+export const prismaPlugin: PluginMetadata = {
   name: "prisma",
   category: "orm",
   dependencies: ["prisma"],
-  setup: () => {
-    console.log("Prisma is now enabled!");
-  },
+  available: false,
+  env: ["DATABASE_URL"],
 };
-
-registerPlugin(prismaPlugin);

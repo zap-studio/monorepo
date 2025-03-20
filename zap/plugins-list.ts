@@ -1,40 +1,24 @@
-import { PluginsMetadata } from "./plugins";
+import { PluginsMetadata } from "./schemas/plugins.schema";
+import { adminDashboardPlugin } from "./plugins/admin-dashboard";
+import { aiPlugin } from "./plugins/ai";
+import { blogPlugin } from "./plugins/blog";
+import { drizzlePlugin } from "./plugins/drizzle";
+import { emailsPlugin } from "./plugins/emails";
+import { legalPlugin } from "./plugins/legal";
+import { polarPlugin } from "./plugins/polar";
+import { prismaPlugin } from "./plugins/prisma";
+import { pwaPlugin } from "./plugins/pwa";
+import { stripePlugin } from "./plugins/stripe";
 
 export const plugins: PluginsMetadata = [
-  {
-    name: "drizzle",
-    category: "orm",
-    dependencies: ["drizzle-orm", "@neondatabase/serverless"],
-  },
-  { name: "prisma", category: "orm", dependencies: ["prisma"] },
-  { name: "pwa", dependencies: [] },
-  {
-    name: "legal",
-    dependencies: [
-      "@mdx-js/react",
-      "@mdx-js/loader",
-      "@next/mdx",
-      "@types/mdx",
-    ],
-  },
-  { name: "admin-dashboard", dependencies: [] },
-  {
-    name: "blog",
-    dependencies: [
-      "@mdx-js/react",
-      "@mdx-js/loader",
-      "@next/mdx",
-      "@types/mdx",
-    ],
-  },
-  {
-    name: "polar",
-    dependencies: ["@polar-sh/better-auth", "@polar-sh/sdk"],
-  },
-  { name: "stripe", dependencies: ["@better-auth/stripe", "stripe"] },
-  { name: "emails", dependencies: ["resend", "react-email"] },
-  {
-    name: "ai",
-    dependencies: ["ai", "@ai-sdk/react", "@ai-sdk/openai", "@ai-sdk/mistral"],
-  },
+  adminDashboardPlugin,
+  aiPlugin,
+  blogPlugin,
+  drizzlePlugin,
+  emailsPlugin,
+  legalPlugin,
+  polarPlugin,
+  prismaPlugin,
+  pwaPlugin,
+  stripePlugin,
 ];

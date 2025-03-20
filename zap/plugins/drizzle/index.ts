@@ -1,12 +1,9 @@
-import { registerPlugin, Plugin } from "..";
+import { PluginMetadata } from "../../schemas/plugins.schema";
 
-export const drizzlePlugin: Plugin = {
+export const drizzlePlugin: PluginMetadata = {
   name: "drizzle",
   category: "orm",
   dependencies: ["drizzle-orm", "@neondatabase/serverless"],
-  setup: () => {
-    console.log("Drizzle is now enabled!");
-  },
+  available: true,
+  env: ["DATABASE_URL"],
 };
-
-registerPlugin(drizzlePlugin);

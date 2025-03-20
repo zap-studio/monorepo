@@ -1,11 +1,7 @@
-import { registerPlugin, Plugin } from "..";
+import { PluginMetadata } from "../../schemas/plugins.schema";
 
-export const legalPlugin: Plugin = {
+export const legalPlugin: PluginMetadata = {
   name: "legal",
   dependencies: ["@mdx-js/react", "@mdx-js/loader", "@next/mdx", "@types/mdx"],
-  setup: () => {
-    console.log("Legal templates are now available!");
-  },
+  available: false,
 };
-
-registerPlugin(legalPlugin);

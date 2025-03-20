@@ -1,11 +1,8 @@
-import { registerPlugin, Plugin } from "..";
+import { PluginMetadata } from "../../schemas/plugins.schema";
 
-export const paymentPolarPlugin: Plugin = {
+export const polarPlugin: PluginMetadata = {
   name: "polar",
   dependencies: ["@polar-sh/better-auth", "@polar-sh/sdk"],
-  setup: () => {
-    console.log("Payment with Polar is now enabled!");
-  },
+  available: false,
+  env: ["POLAR_ACCESS_TOKEN", "POLAR_WEBHOOK_SECRET"],
 };
-
-registerPlugin(paymentPolarPlugin);

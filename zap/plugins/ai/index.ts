@@ -1,11 +1,8 @@
-import { registerPlugin, Plugin } from "..";
+import { PluginMetadata } from "../../schemas/plugins.schema";
 
-export const aiSdkPlugin: Plugin = {
+export const aiPlugin: PluginMetadata = {
   name: "ai",
   dependencies: ["ai", "@ai-sdk/react", "@ai-sdk/openai", "@ai-sdk/mistral"],
-  setup: () => {
-    console.log("AI Vercel SDK is now enabled!");
-  },
+  available: true,
+  env: ["OPENAI_API_KEY", "MISTRAL_API_KEY"],
 };
-
-registerPlugin(aiSdkPlugin);
