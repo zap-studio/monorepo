@@ -5,6 +5,7 @@ import { Poppins as Font } from "next/font/google";
 import Providers from "@/providers/providers";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { FLAGS } from "@/data/flags";
 
 const font = Font({
   weight: ["400", "500", "600", "700"],
@@ -27,8 +28,8 @@ export default function RootLayout({
         <Providers>
           {children}
 
-          <Analytics />
-          <SpeedInsights />
+          {FLAGS.VERCEL.ANALYTICS_ENABLED && <Analytics />}
+          {FLAGS.VERCEL.SPEED_INSIGHTS_ENABLED && <SpeedInsights />}
         </Providers>
       </body>
     </html>
