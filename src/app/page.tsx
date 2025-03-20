@@ -1,5 +1,3 @@
-import "@/styles/animation.css";
-
 import { Zap, Shield, Brain, Code, Rocket, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
