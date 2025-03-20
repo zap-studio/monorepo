@@ -1,4 +1,4 @@
-# Zap.ts ⚡ - The Lightning-Fast Next.js Boilerplate
+# Zap.ts ⚡
 
 Welcome to **Zap.ts** ⚡—a turbocharged, type-safe Next.js boilerplate designed to get your projects off the ground at lightning speed! Packed with modern tools and a sleek architecture, Zap.ts is your go-to foundation for building blazing-fast web applications.
 
