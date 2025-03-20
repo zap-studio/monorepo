@@ -53,7 +53,6 @@ export const togglePluginCodeBlocks = (selectedPlugins: string[]) => {
 
     if (modified) {
       writeFileSync(filePath, content);
-      console.log(`Updated ${filePath} based on selected plugins`);
     }
   });
 };
