@@ -39,6 +39,7 @@ export const getPromptAnswers = async () => {
             }
 
             if (typeof p.available === "object") {
+              console.log(p.available[orm]);
               return p.available[orm];
             }
 
