@@ -37,7 +37,7 @@ export const generateEnv = async (selectedPlugins: PluginNames) => {
         return `${envVar}="http://localhost:3000"`;
       }
 
-      return `${envVar}=your_${envVar.toLowerCase()}_here`;
+      return `${envVar}="your_${envVar.toLowerCase()}_here"`;
     })
     .join("\n");
   writeFileSync(resolve(process.cwd(), ".env.local"), envContent);

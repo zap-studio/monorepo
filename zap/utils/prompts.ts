@@ -53,7 +53,11 @@ export const getPromptAnswers = async () => {
 
   const packageManager = response.packageManager as PackageManager;
   const orm = response.orm as ORM;
-  const selectedPlugins = [...response.optionalPlugins] as PluginNames;
+  const ormPlugin = orm === "drizzle" ? "drizzle-orm" : "prisma-orm";
+  const selectedPlugins = [
+    ...response.optionalPlugins,
+    ormPlugin,
+  ] as PluginNames;
 
   return { packageManager, selectedPlugins, orm };
 };
