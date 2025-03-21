@@ -2,6 +2,14 @@
 
 **Zap.ts** – named after ⚡️ – is a Next.js boilerplate designed to help you build applications faster using a modern set of tools.
 
+## Installation ⚡
+
+You can create a new Zap.ts project using your preferred package manager:
+
+```sh
+npx create-zap-ts
+```
+
 ## Check The Docs ⚡
 
 You will find all you need to get started by reading the [documentation](https://zap-ts.alexandretrotel.org).
