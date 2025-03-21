@@ -1,5 +1,5 @@
 import { pgTable, text } from "drizzle-orm/pg-core";
-import { user } from "./auth";
+import { user } from "@/db/schema/auth";
 import webpush from "web-push";
 
 export const pushNotifications = pgTable("push_notifications", {
