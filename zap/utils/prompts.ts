@@ -1,6 +1,7 @@
 import prompts from "prompts";
 import { plugins } from "../plugins-list";
 import { PackageManager } from "./install-dependencies";
+import { ORM, PluginNames } from "../schemas/plugins.schema";
 
 export const getPromptAnswers = async () => {
   const response = await prompts([
@@ -28,18 +29,31 @@ export const getPromptAnswers = async () => {
       type: "multiselect",
       name: "optionalPlugins",
       message: "Select optional plugins:",
-      choices: plugins
-        .filter((p) => (!p.category || p.category !== "orm") && p.available)
-        .map((p) => ({ title: p.name, value: p.name }))
-        .sort((a, b) => a.title.localeCompare(b.title)),
+      choices: (prev) => {
+        const orm = prev.orm as ORM;
+
+        return plugins
+          .filter((p) => {
+            if (typeof p.available === "boolean") {
+              return p.available;
+            }
+
+            if (typeof p.available === "object") {
+              return p.available[orm];
+            }
+
+            return false;
+          })
+          .filter((p) => !p.category?.includes("orm"))
+          .map((p) => ({ title: p.name, value: p.name }))
+          .sort((a, b) => a.title.localeCompare(b.title));
+      },
     },
   ]);
 
   const packageManager = response.packageManager as PackageManager;
-  const selectedPlugins = [
-    response.orm as "drizzle" | "prisma",
-    ...(response.optionalPlugins as string[]),
-  ];
+  const orm = response.orm as ORM;
+  const selectedPlugins = [...response.optionalPlugins] as PluginNames;
 
-  return { packageManager, selectedPlugins };
+  return { packageManager, selectedPlugins, orm };
 };
