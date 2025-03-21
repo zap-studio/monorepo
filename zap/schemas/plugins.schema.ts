@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+export const ORMSchema = z.union([z.literal("drizzle"), z.literal("prisma")]);
 export const PluginNameSchema = z.union([
   z.literal("admin-dashboard"),
   z.literal("ai"),
@@ -12,6 +13,7 @@ export const PluginNameSchema = z.union([
   z.literal("pwa"),
   z.literal("stripe"),
 ]);
+export const PluginNamesSchema = z.array(PluginNameSchema);
 export const PluginCategorySchema = z.literal("orm");
 export const PluginMetadataSchema = z.object({
   name: PluginNameSchema,
@@ -28,6 +30,8 @@ export const PluginMetadataSchema = z.object({
 });
 export const PluginsMetadataSchema = z.array(PluginMetadataSchema);
 
+export type ORM = z.infer<typeof ORMSchema>;
 export type PluginName = z.infer<typeof PluginNameSchema>;
+export type PluginNames = z.infer<typeof PluginNamesSchema>;
 export type PluginMetadata = z.infer<typeof PluginMetadataSchema>;
 export type PluginsMetadata = z.infer<typeof PluginsMetadataSchema>;

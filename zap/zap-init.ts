@@ -9,10 +9,10 @@ import { copyPluginFiles } from "./utils/copy-plugin-files";
 
 async function run() {
   alreadyInstalled();
-  const { packageManager, selectedPlugins } = await getPromptAnswers();
+  const { packageManager, selectedPlugins, orm } = await getPromptAnswers();
   await generateEnv(selectedPlugins);
   await installDependencies(packageManager, selectedPlugins);
-  copyPluginFiles(selectedPlugins);
+  copyPluginFiles(selectedPlugins, orm);
   togglePluginCodeBlocks(selectedPlugins);
 }
 
