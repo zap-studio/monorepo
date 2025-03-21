@@ -28,18 +28,29 @@ export const getPromptAnswers = async () => {
       type: "multiselect",
       name: "optionalPlugins",
       message: "Select optional plugins:",
-      choices: plugins
-        .filter((p) => (!p.category || p.category !== "orm") && p.available)
-        .map((p) => ({ title: p.name, value: p.name }))
-        .sort((a, b) => a.title.localeCompare(b.title)),
+      choices: (prev) => {
+        const orm = prev.orm as "drizzle" | "prisma";
+        return plugins
+          .filter((p) => {
+            if (typeof p.available === "boolean") {
+              return p.available;
+            }
+
+            if (typeof p.available === "object") {
+              return p.available[orm];
+            }
+
+            return false;
+          })
+          .map((p) => ({ title: p.name, value: p.name }))
+          .sort((a, b) => a.title.localeCompare(b.title));
+      },
     },
   ]);
 
   const packageManager = response.packageManager as PackageManager;
-  const selectedPlugins = [
-    response.orm as "drizzle" | "prisma",
-    ...(response.optionalPlugins as string[]),
-  ];
+  const orm = response.orm as "drizzle" | "prisma";
+  const selectedPlugins = [...response.optionalPlugins] as string[];
 
-  return { packageManager, selectedPlugins };
+  return { packageManager, selectedPlugins, orm };
 };
