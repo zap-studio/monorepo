@@ -25,6 +25,19 @@ export const copyPluginFiles = (selectedPlugins: string[]) => {
       },
     ];
 
+    if (pluginName === "drizzle") {
+      const drizzleConfigSource = resolve(pluginDir, "drizzle.config.ts");
+      const drizzleConfigDest = resolve(process.cwd(), "drizzle.config.ts");
+
+      if (existsSync(drizzleConfigSource)) {
+        cpSync(drizzleConfigSource, drizzleConfigDest);
+      } else {
+        console.warn(
+          "drizzle.config.ts not found in the drizzle plugin directory, skipping.",
+        );
+      }
+    }
+
     pathsToCopy.forEach(({ source, dest }) => {
       if (existsSync(source)) {
         if (!existsSync(dest)) {
