@@ -87,20 +87,6 @@
     "zod": "^3.24.2",
     "zustand": "^5.0.3"
   },
-  "optionalDependencies": {
-    "@ai-sdk/mistral": "^1.1.19",
-    "@ai-sdk/openai": "^1.2.7",
-    "@neondatabase/serverless": "^0.10.4",
-    "@polar-sh/better-auth": "^0.0.7",
-    "@polar-sh/sdk": "^0.31.0",
-    "@react-email/components": "0.0.33",
-    "ai": "^4.1.66",
-    "drizzle-orm": "^0.40.1",
-    "ky": "^1.7.5",
-    "resend": "^4.1.2",
-    "react-scan": "^0.3.2",
-    "web-push": "^3.6.7"
-  },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
     "@tailwindcss/postcss": "^4.0.14",

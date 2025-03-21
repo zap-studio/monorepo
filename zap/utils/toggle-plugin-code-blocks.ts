@@ -1,8 +1,9 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { getAllFiles } from "./get-all-files";
+import { PluginNames } from "../schemas/plugins.schema";
 
-export const togglePluginCodeBlocks = (selectedPlugins: string[]) => {
+export const togglePluginCodeBlocks = (selectedPlugins: PluginNames) => {
   const srcDir = resolve(process.cwd(), "src");
 
   if (!existsSync(srcDir)) {

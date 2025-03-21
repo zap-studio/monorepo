@@ -2,6 +2,7 @@ import { writeFileSync } from "fs";
 import { resolve } from "path";
 import { plugins } from "../plugins-list";
 import { generateBetterAuthSecret } from "./generate-better-auth-secret";
+import { PluginNames } from "../schemas/plugins.schema";
 
 const coreEnv = [
   "BETTER_AUTH_SECRET",
@@ -11,7 +12,7 @@ const coreEnv = [
   "SITE_URL",
 ];
 
-export const generateEnv = async (selectedPlugins: string[]) => {
+export const generateEnv = async (selectedPlugins: PluginNames) => {
   const pluginEnvVars = selectedPlugins
     .flatMap((name) => {
       const plugin = plugins.find((p) => p.name === name);

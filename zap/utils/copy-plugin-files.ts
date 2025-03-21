@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, cpSync, readdirSync, statSync } from "fs";
 import { resolve } from "path";
-import { ORM } from "../schemas/plugins.schema";
+import { ORM, PluginNames } from "../schemas/plugins.schema";
 
-export const copyPluginFiles = (selectedPlugins: string[], orm: ORM) => {
+export const copyPluginFiles = (selectedPlugins: PluginNames, orm: ORM) => {
   console.log("Copying plugin files for selected plugins... Please wait.");
 
   selectedPlugins.forEach((pluginName) => {

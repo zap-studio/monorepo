@@ -2,13 +2,14 @@ import { execSync } from "child_process";
 import { packageManagerCommands } from "./package-manager-commands";
 import { z } from "zod";
 import { plugins } from "../plugins-list";
+import { PluginNames } from "../schemas/plugins.schema";
 
 export const PackageManagerSchema = z.enum(["npm", "yarn", "pnpm", "bun"]);
 export type PackageManager = z.infer<typeof PackageManagerSchema>;
 
 export const installDependencies = async (
   packageManager: PackageManager,
-  selectedPlugins: string[],
+  selectedPlugins: PluginNames,
 ) => {
   console.log("Installing dependencies... Please wait.");
 
