@@ -30,7 +30,8 @@ export const getPromptAnswers = async () => {
       name: "optionalPlugins",
       message: "Select optional plugins:",
       choices: (prev) => {
-        const orm = prev.orm as "drizzle" | "prisma";
+        const orm = prev.orm as ORM;
+
         return plugins
           .filter((p) => {
             if (typeof p.available === "boolean") {
@@ -43,6 +44,7 @@ export const getPromptAnswers = async () => {
 
             return false;
           })
+          .filter((p) => !p.category?.includes("orm"))
           .map((p) => ({ title: p.name, value: p.name }))
           .sort((a, b) => a.title.localeCompare(b.title));
       },
