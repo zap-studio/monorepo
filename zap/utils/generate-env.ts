@@ -8,6 +8,7 @@ const coreEnv = [
   "BETTER_AUTH_URL",
   "GOOGLE_CLIENT_ID",
   "GOOGLE_CLIENT_SECRET",
+  "SITE_URL",
 ];
 
 export const generateEnv = async (selectedPlugins: string[]) => {
