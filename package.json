@@ -3,6 +3,8 @@
   "description": "The boilerplate to build application as fast as a zap.",
   "version": "1.2.4",
   "private": false,
+  "author": "Alexandre Trotel",
+  "license": "MIT",
   "scripts": {
     "zap:init": "bun run zap/zap-init.ts",
     "dev": "next dev --turbopack",
