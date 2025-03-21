@@ -5,11 +5,11 @@ export const PluginNameSchema = z.union([
   z.literal("admin-dashboard"),
   z.literal("ai"),
   z.literal("blog"),
-  z.literal("drizzle"),
+  z.literal("drizzle-orm"),
   z.literal("emails"),
   z.literal("legal"),
   z.literal("polar"),
-  z.literal("prisma"),
+  z.literal("prisma-orm"),
   z.literal("pwa"),
   z.literal("stripe"),
 ]);

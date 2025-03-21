@@ -1,7 +1,7 @@
 import { PluginMetadata } from "../../schemas/plugins.schema";
 
 export const prismaPlugin: PluginMetadata = {
-  name: "prisma",
+  name: "prisma-orm",
   category: "orm",
   dependencies: ["prisma"],
   available: false,
