@@ -25,13 +25,18 @@ export const getPromptAnswers = async () => {
         { title: "Prisma (not supported yet)", value: "prisma" },
       ],
     },
+  ]);
+
+  const packageManager = response.packageManager as PackageManager;
+  const orm = response.orm as ORM;
+  const ormPlugin = orm === "drizzle" ? "drizzle-orm" : "prisma-orm";
+
+  const pluginResponse = await prompts([
     {
       type: "multiselect",
       name: "optionalPlugins",
       message: "Select optional plugins:",
-      choices: (prev) => {
-        const orm = prev.orm as ORM;
-
+      choices: () => {
         return plugins
           .filter((p) => {
             if (typeof p.available === "boolean") {
@@ -39,7 +44,6 @@ export const getPromptAnswers = async () => {
             }
 
             if (typeof p.available === "object") {
-              console.log(p.available[orm]);
               return p.available[orm];
             }
 
@@ -52,11 +56,8 @@ export const getPromptAnswers = async () => {
     },
   ]);
 
-  const packageManager = response.packageManager as PackageManager;
-  const orm = response.orm as ORM;
-  const ormPlugin = orm === "drizzle" ? "drizzle-orm" : "prisma-orm";
   const selectedPlugins = [
-    ...response.optionalPlugins,
+    ...pluginResponse.optionalPlugins,
     ormPlugin,
   ] as PluginNames;
 
