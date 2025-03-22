@@ -11,12 +11,9 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node ./dist/index.js"
+    "start": "node dist/index.js"
   },
   "dependencies": {
-    "@zap-ts/plugins": "workspace:^",
-    "@zap-ts/schemas": "workspace:^",
-    "@zap-ts/utils": "workspace:^",
     "fs-extra": "^11.1.1",
     "inquirer": "^9.2.12"
   },

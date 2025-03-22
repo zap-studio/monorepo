@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
-import type { ORM } from "@zap-ts/schemas";
-import { handleFileCopy } from "./handle-file-copy";
+import type { ORM } from "../schemas/index.js";
+import { handleFileCopy } from "./handle-file-copy.js";
 
 /**
  * Recursively copies plugin files from the source directory to the destination directory.

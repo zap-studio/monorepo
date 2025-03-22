@@ -1,4 +1,3 @@
-// packages/utils/modify-db-schema.ts
 import { Project } from "ts-morph";
 import path from "path";
 

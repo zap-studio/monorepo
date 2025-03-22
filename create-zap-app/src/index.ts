@@ -11,15 +11,15 @@ import type {
   PluginNames,
   PluginsMetadata,
   PluginMetadata,
-} from "@zap-ts/schemas";
-import plugins from "@zap-ts/plugins";
+} from "./schemas/index.js";
+import plugins from "./plugins/index.js";
 import {
   copyPluginFiles,
   generateExampleEnv,
   addPwaInit,
   addPwaSchemaExport,
   modifyAuth,
-} from "@zap-ts/utils";
+} from "./utils/index.js";
 
 const execAsync = promisify(exec);
 

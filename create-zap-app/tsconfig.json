@@ -24,7 +24,19 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
   },
-  "exclude": ["node_modules", "dist"],
+  "include": ["src/**/*"],
+  "exclude": [
+    "src/plugins/admin-dashboard/**/*",
+    "src/plugins/ai/**/*",
+    "src/plugins/blog/**/*",
+    "src/plugins/drizzle-orm/**/*",
+    "src/plugins/emails/**/*",
+    "src/plugins/legal/**/*",
+    "src/plugins/polar/**/*",
+    "src/plugins/prisma-orm/**/*",
+    "src/plugins/pwa/**/*",
+    "src/plugins/stripe/**/*"
+  ],
   "paths": {
     "@zap-ts/*": ["../packages/*/src"]
   }

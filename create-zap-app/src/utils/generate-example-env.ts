@@ -1,8 +1,8 @@
 import { writeFileSync } from "fs";
 import { resolve } from "path";
-import plugins from "@zap-ts/plugins";
-import { generateBetterAuthSecret } from "./generate-better-auth-secret";
-import type { PluginNames } from "@zap-ts/schemas";
+import plugins from "../plugins/index.js";
+import { generateBetterAuthSecret } from "./generate-better-auth-secret.js";
+import type { PluginNames } from "../schemas/index.js";
 
 const coreEnv = [
   "BETTER_AUTH_SECRET",

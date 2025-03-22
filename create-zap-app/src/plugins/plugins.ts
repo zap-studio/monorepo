@@ -1,4 +1,4 @@
-import type { PluginMetadata, PluginsMetadata } from "@zap-ts/schemas";
+import type { PluginMetadata, PluginsMetadata } from "../schemas/index.js";
 
 export const adminDashboardPlugin: PluginMetadata = {
   name: "admin-dashboard",
