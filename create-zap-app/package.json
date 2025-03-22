@@ -13,7 +13,7 @@
     "drizzle",
     "bun"
   ],
-  "version": "1.0.19",
+  "version": "1.0.20",
   "module": "index.ts",
   "type": "module",
   "private": false,
@@ -25,6 +25,10 @@
   "funding": {
     "type": "individual",
     "url": "https://github.com/sponsors/alexandretrotel"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexandretrotel/zap.ts"
   },
   "bin": {
     "create-zap-app": "./dist/index.js"
