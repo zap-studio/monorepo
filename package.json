@@ -1,8 +1,4 @@
 {
   "name": "zap-ts-monorepo",
-  "private": true,
-  "workspaces": [
-    "packages/*",
-    "create-zap-app"
-  ]
+  "private": true
 }
