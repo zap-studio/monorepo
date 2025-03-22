@@ -2,10 +2,6 @@
   "name": "zap-ts-monorepo",
   "author": "Alexandre Trotel",
   "private": true,
-  "scripts": {
-    "build": "pnpm -r build",
-    "dev": "pnpm -r dev"
-  },
   "workspaces": [
     "packages/*",
     "create-zap-app"
