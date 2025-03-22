@@ -45,7 +45,7 @@ Zap.ts lets you pick an ORM to talk to your database. An ORM helps you write dat
 - **Drizzle**: Available and recommended. It’s lightweight and easy to use.
 - **Prisma**: Not available yet, but we’re working on it!
 
-When you run `npx create-zap-app@latest`, the script will ask you to pick an ORM. Let’s look at each one.
+When you run `bunx create-zap-app@latest`, the script will ask you to pick an ORM. Let’s look at each one.
 
 ## Drizzle
 
@@ -181,7 +181,7 @@ Drizzle allows for [RLS and policy support](https://orm.drizzle.team/docs/rls) d
 
 ## Prisma (Not Available Yet)
 
-Prisma is another ORM you can use with Zap.ts, but it’s not available yet. We’re working on adding support for it! When it’s ready, you’ll be able to choose Prisma when you run `npx create-zap-app@latest`. Prisma is great if you like a more visual way to manage your database schema, and it has a nice query builder.
+Prisma is another ORM you can use with Zap.ts, but it’s not available yet. We’re working on adding support for it! When it’s ready, you’ll be able to choose Prisma when you run `bunx create-zap-app@latest`. Prisma is great if you like a more visual way to manage your database schema, and it has a nice query builder.
 
 For now, we recommend using Drizzle. Check back later for updates on Prisma support!
 

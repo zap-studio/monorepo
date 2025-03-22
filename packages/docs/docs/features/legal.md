@@ -4,7 +4,7 @@ The `legal` plugin adds template pages for your Privacy Policy, Cookie Policy, a
 
 ## How It Works
 
-When you enable the `legal` plugin with `npx create-zap-app@latest`:
+When you enable the `legal` plugin with `bunx create-zap-app@latest`:
 
 - It copies the template pages to your app:
   - `src/app/privacy-policy/page.mdx` (for `/privacy-policy`)

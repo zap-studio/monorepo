@@ -19,7 +19,7 @@ To make `next-sitemap` work correctly, you need to tell it the URL of your websi
 
 ### Step 1: Open `.env.local`
 
-Open the `.env.local` file in the root of your Zap.ts project. If you don’t have this file yet, it will be created when you run `npx create-zap-app@latest`.
+Open the `.env.local` file in the root of your Zap.ts project. If you don’t have this file yet, it will be created when you run `bunx create-zap-app@latest`.
 
 ### Step 2: Add or Update `SITE_URL`
 

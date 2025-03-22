@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "Zap.ts ⚡️"
   text: "The boilerplate to build applications as fast as a zap."
-  tagline: "npx create-zap-app@latest"
+  tagline: "bunx create-zap-app@latest"
   actions:
     - theme: brand
       text: Get started
