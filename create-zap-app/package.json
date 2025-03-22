@@ -12,8 +12,7 @@
   "scripts": {
     "build": "bun build ./index.ts --outdir ./dist --target bun",
     "dev": "bun --watch ./index.ts",
-    "start": "./dist/index.js",
-    "publish": "bun run build && bun publish --access public"
+    "start": "./dist/index.js"
   },
   "dependencies": {
     "@zap-ts/core": "workspace:*",
