@@ -77,19 +77,6 @@ Use these commands to run Zap.ts. Pick your package manager:
 
 ::: code-group
 
-```bash [bun]
-bun run dev          # Start the dev server fast
-bun run build        # Build your app for production quickly
-bun run start        # Run the production app
-bun run lint         # Check your code with ESLint
-bun run format       # Make your code pretty with Prettier
-bun run db:push      # Update the database schema instantly
-bun run db:migrate   # Apply database changes fast
-bun run db:generate  # Create migration files in a flash
-bun run db:studio    # Open Drizzle Studio to see your database
-bun run db:pull      # Get the database schema easily
-```
-
 ```bash [npm]
 npm run dev          # Start the dev server fast
 npm run build        # Build your app for production quickly
@@ -127,6 +114,19 @@ pnpm db:migrate      # Apply database changes fast
 pnpm db:generate     # Create migration files in a flash
 pnpm db:studio       # Open Drizzle Studio to see your database
 pnpm db:pull         # Get the database schema easily
+```
+
+```bash [bun]
+bun run dev          # Start the dev server fast
+bun run build        # Build your app for production quickly
+bun run start        # Run the production app
+bun run lint         # Check your code with ESLint
+bun run format       # Make your code pretty with Prettier
+bun run db:push      # Update the database schema instantly
+bun run db:migrate   # Apply database changes fast
+bun run db:generate  # Create migration files in a flash
+bun run db:studio    # Open Drizzle Studio to see your database
+bun run db:pull      # Get the database schema easily
 ```
 
 :::

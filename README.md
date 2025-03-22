@@ -36,16 +36,16 @@ Whether you’re a solo founder or a small team, Zap.ts empowers you to ship fas
 
 ## Scripts ⚡
 
-- `bun run dev` - Ignite the dev server.
-- `bun run build` - Compile for production in a flash.
-- `bun run start` - Launch the production app.
-- `bun run lint` - Check your code with ESLint.
-- `bun run format` - Beautify code with Prettier.
-- `bun run db:push` - Push schema changes instantly.
-- `bun run db:migrate` - Run migrations at top speed.
-- `bun run db:generate` - Generate migrations in a blink.
-- `bun run db:studio` - Open Drizzle Studio for a quick peek.
-- `bun run db:pull` - Pull database schema with ease.
+- `dev` - Ignite the dev server.
+- `build` - Compile for production in a flash.
+- `start` - Launch the production app.
+- `lint` - Check your code with ESLint.
+- `format` - Beautify code with Prettier.
+- `db:push` - Push schema changes instantly.
+- `db:migrate` - Run migrations at top speed.
+- `db:generate` - Generate migrations in a blink.
+- `db:studio` - Open Drizzle Studio for a quick peek.
+- `db:pull` - Pull database schema with ease.
 
 ## Tools Included ⚡
 
@@ -58,7 +58,3 @@ Zap.ts includes these libraries:
 - [oRPC](https://orpc.unnoq.com/): An alternative to tRPC that supports OpenAPI specs, making it easy to build type-safe APIs for frontend and backend.
 - [AI Vercel SDK](https://sdk.vercel.ai/): A toolkit for streaming text, handling objects, using RAG (Retrieval-Augmented Generation), and more. It lets you switch between providers without depending on a specific SDK.
 - And more...
-
-## Built with Bun ⚡
-
-Zap.ts runs on **Bun**, the blazing-fast JavaScript runtime, ensuring your dev experience is as quick as lightning.

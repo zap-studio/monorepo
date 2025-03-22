@@ -45,7 +45,7 @@ Zap.ts lets you pick an ORM to talk to your database. An ORM helps you write dat
 - **Drizzle**: Available and recommended. It’s lightweight and easy to use.
 - **Prisma**: Not available yet, but we’re working on it!
 
-When you run `bun run zap:init`, the script will ask you to pick an ORM. Let’s look at each one.
+When you run `npx create-zap-app@latest`, the script will ask you to pick an ORM. Let’s look at each one.
 
 ## Drizzle
 
@@ -59,10 +59,10 @@ Drizzle supports two ways to work with your database:
 
 - **Codebase-First**: You write your database schema (structure) in TypeScript files, and Drizzle creates the database tables for you. This is great for new projects because you control everything in your code.
 
-  - Example: You write a `user` table in `src/db/schema/auth.ts`, then run `bun run db:push` to create the table in your database.
+  - Example: You write a `user` table in `src/db/schema/auth.ts`, then run `npm run db:push` to create the table in your database.
 
 - **Database-First**: You already have a database with tables, and Drizzle generates TypeScript code to match it. This is useful if you’re working with an existing database.
-  - Example: You have a database with a `user` table, and you run `bun run db:pull` to create a schema file in `src/db/schema/`.
+  - Example: You have a database with a `user` table, and you run `npm run db:pull` to create a schema file in `src/db/schema/`.
 
 In Zap.ts, we use the **codebase-first** approach by default because it’s easier to manage for new projects.
 
@@ -90,7 +90,7 @@ export const user = pgTable("user", {
 - `email: text("email").notNull().unique()`: A column named `email` that’s a text string, cannot be empty, and must be unique.
 - `createdAt: timestamp("created_at").notNull()`: A column named `created_at` that’s a timestamp and cannot be empty.
 
-After writing your schema, run `bun run db:push` to create the tables in your database.
+After writing your schema, run `npm run db:push` to create the tables in your database.
 
 #### Drizzle Structure in Zap.ts
 
@@ -181,7 +181,7 @@ Drizzle allows for [RLS and policy support](https://orm.drizzle.team/docs/rls) d
 
 ## Prisma (Not Available Yet)
 
-Prisma is another ORM you can use with Zap.ts, but it’s not available yet. We’re working on adding support for it! When it’s ready, you’ll be able to choose Prisma when you run `bun run zap:init`. Prisma is great if you like a more visual way to manage your database schema, and it has a nice query builder.
+Prisma is another ORM you can use with Zap.ts, but it’s not available yet. We’re working on adding support for it! When it’s ready, you’ll be able to choose Prisma when you run `npx create-zap-app@latest`. Prisma is great if you like a more visual way to manage your database schema, and it has a nice query builder.
 
 For now, we recommend using Drizzle. Check back later for updates on Prisma support!
 
@@ -306,7 +306,7 @@ export const pushNotifications = pgTable("push_notifications", {
 
 Now that your database is set up, you can:
 
-- Run `bun run db:push` to create your tables in the database.
+- Run `npm run db:push` to create your tables in the database.
 - Start building your app with Zap.ts!
 - If you need help, check the [Drizzle docs](https://orm.drizzle.team/docs/overview) or ask on [X](https://www.x.com/alexandretrotel/).
 

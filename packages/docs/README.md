@@ -11,7 +11,7 @@ This repository contains the documentation site for Zap.ts, built with [VitePres
 - **Built-in Auth ⚡️**: Secure email/password + OAuth with Better Auth
 - **AI-Ready ⚡️**: Vercel AI SDK with persisted Zustand store
 - **Typesafe Frontend & Backend ⚡️**: End-to-end TypeScript with oRPC and Drizzle ORM
-- **Turbocharged Stack ⚡️**: Next.js, Bun, Tailwind, and SWR
+- **Turbocharged Stack ⚡️**: Next.js, shadcn/ui, oRPC and SWR
 - **Database Magic ⚡️**: Neon PostgreSQL + Drizzle ORM
 - **Email & Payments ⚡️**: React Email + Resend and Polar.sh placeholders
 
@@ -26,25 +26,25 @@ git clone https://github.com/alexandretrotel/zap-ts-docs.git
 2. Install dependencies:
 
 ```bash
-bun install
+pnpm install
 ```
 
 3. Run development server:
 
 ```bash
-bun run docs:dev
+pnpm docs:dev
 ```
 
 4. Build for production:
 
 ```bash
-bun run docs:build
+pnpm docs:build
 ```
 
 5. Preview the built site:
 
 ```bash
-bun run docs:preview
+pnpm docs:preview
 ```
 
 ## Project Structure

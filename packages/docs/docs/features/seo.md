@@ -19,7 +19,7 @@ To make `next-sitemap` work correctly, you need to tell it the URL of your websi
 
 ### Step 1: Open `.env.local`
 
-Open the `.env.local` file in the root of your Zap.ts project. If you don’t have this file yet, it will be created when you run `bun run zap:init`.
+Open the `.env.local` file in the root of your Zap.ts project. If you don’t have this file yet, it will be created when you run `npx create-zap-app@latest`.
 
 ### Step 2: Add or Update `SITE_URL`
 
@@ -68,7 +68,7 @@ Check the [next-sitemap docs](https://github.com/iamvishnusankar/next-sitemap#co
 
 ## How It Works in Zap.ts
 
-When you build your Zap.ts app with `bun run build`, `next-sitemap` automatically runs and creates the `robots.txt` and `sitemaps.xml` files. These files are saved in the `public/` folder of your project, and Next.js serves them at:
+When you build your Zap.ts app with `npm run build`, `next-sitemap` automatically runs and creates the `robots.txt` and `sitemaps.xml` files. These files are saved in the `public/` folder of your project, and Next.js serves them at:
 
 - `https://your-site.com/robots.txt`
 - `https://your-site.com/sitemaps.xml`
@@ -77,7 +77,7 @@ Search engines like Google will find these files and use them to understand your
 
 ### Example
 
-Let’s say your `SITE_URL` is `https://myawesomeapp.com`. After running `bun run build`, your `sitemaps.xml` might look like this:
+Let’s say your `SITE_URL` is `https://myawesomeapp.com`. After running `npm run build`, your `sitemaps.xml` might look like this:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -234,7 +234,7 @@ After building your app, test your `robots.txt` and `sitemaps.xml` files:
 
 Now that your SEO is set up, you can:
 
-- Build your app with `bun run build` to generate the SEO files.
+- Build your app with `npm run build` to generate the SEO files.
 - Deploy your app and test your SEO setup.
 - Add more meta tags to your pages for better search results.
 - Check the [next-sitemap docs](https://github.com/iamvishnusankar/next-sitemap) for advanced features.

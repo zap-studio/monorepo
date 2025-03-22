@@ -9,7 +9,7 @@ This method involves manually setting up a DigitalOcean Droplet to host Zap.ts, 
 ### Prerequisites
 
 - A DigitalOcean account ([sign up here](https://www.digitalocean.com)).
-- Git and a package manager (e.g., bun, npm, yarn, or pnpm) installed locally.
+- Git and a package manager (e.g., npm, yarn, pnpm, or bun) installed locally.
 - A Zap.ts project pushed to a Git repository (e.g., GitHub).
 - (Optional) A domain name for custom DNS setup.
 
@@ -27,7 +27,7 @@ This method involves manually setting up a DigitalOcean Droplet to host Zap.ts, 
    - SSH into your Droplet: `ssh root@your-droplet-ip`.
    - Update the system: `sudo apt update && sudo apt upgrade -y`.
    - Install Node.js: `curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt install -y nodejs`.
-   - Install a package manager (e.g., `sudo npm install -g bun` for Bun).
+   - Install a package manager (e.g., `sudo npm install -g pnpm` for pnpm).
 
 3. **Clone Zap.ts**
 
@@ -38,10 +38,6 @@ This method involves manually setting up a DigitalOcean Droplet to host Zap.ts, 
 
 4. **Install Dependencies**
    ::: code-group
-
-   ```bash [bun]
-   bun install
-   ```
 
    ```bash [npm]
    npm install
@@ -55,6 +51,10 @@ This method involves manually setting up a DigitalOcean Droplet to host Zap.ts, 
    pnpm install
    ```
 
+   ```bash [bun]
+   bun install
+   ```
+
    :::
 
 5. **Configure Environment**
@@ -64,8 +64,8 @@ This method involves manually setting up a DigitalOcean Droplet to host Zap.ts, 
 
 6. **Build and Run**
 
-   - Build: `bun run build` (or equivalent).
-   - Start: `bun run start` (runs on port 3000 by default).
+   - Build: `npm run build` (or equivalent).
+   - Start: `npm run start` (runs on port 3000 by default).
 
 7. **Set Up Reverse Proxy with NGINX (Optional)**
 
@@ -95,7 +95,7 @@ This method involves manually setting up a DigitalOcean Droplet to host Zap.ts, 
 
 ### Notes
 
-- Use PM2 for production stability: `sudo npm install -g pm2; pm2 start "bun run start" --name zap-ts`.
+- Use PM2 for production stability: `sudo npm install -g pm2; pm2 start "npm run start" --name zap-ts`.
 - Open ports 80, 443, and 3000 in the DigitalOcean firewall (Networking > Firewalls).
 
 ## DigitalOcean App Platform Deployment (Recommended)
@@ -115,20 +115,26 @@ DigitalOcean’s App Platform is a managed PaaS that simplifies deploying Zap.ts
    - Clone your repo: `git clone <your-repository-url>`.
    - Install dependencies:
      ::: code-group
-     ```bash [bun]
-     bun install
-     ```
+
      ```bash [npm]
      npm install
      ```
+
      ```bash [yarn]
      yarn install
      ```
+
      ```bash [pnpm]
      pnpm install
      ```
+
+     ```bash [bun]
+     bun install
+     ```
+
      :::
-   - Test locally: `bun run build && bun run start`.
+
+   - Test locally: `npm run build && npm run start`.
 
 2. **Push to Git Repository**
 
