@@ -1,5 +1,6 @@
 {
   "name": "@zap-ts/docs",
+  "author": "Alexandre Trotel",
   "version": "1.0.0",
   "private": true,
   "scripts": {

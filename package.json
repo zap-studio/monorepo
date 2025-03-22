@@ -1,5 +1,6 @@
 {
   "name": "zap-ts-monorepo",
+  "author": "Alexandre Trotel",
   "private": true,
   "scripts": {
     "build": "pnpm -r build",
