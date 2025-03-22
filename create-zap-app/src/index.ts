@@ -229,6 +229,11 @@ async function main() {
           : "bun install";
   await execAsync(installCmd, { cwd: outputDir });
 
+  // After installing dependencies
+  spinner.clear();
+  spinner.text = "Ensuring executable permissions...";
+  await execAsync("chmod -R u+x node_modules/.bin/*", { cwd: outputDir });
+
   // Run prettier on the project
   spinner.clear();
   spinner.text = "Running Prettier on the project...";
