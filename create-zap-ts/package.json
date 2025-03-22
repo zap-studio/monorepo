@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "module": "index.ts",
   "type": "module",
-  "private": true,
+  "private": false,
   "bin": {
     "create-zap-ts": "./dist/index.js"
   },
