@@ -24,18 +24,5 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
   },
-  "include": ["src/index.ts", "src/schemas/**/*.ts", "src/utils/**/*.ts"],
-  "exclude": [
-    "src/plugins/admin-dashboard/**/*",
-    "src/plugins/ai/**/*",
-    "src/plugins/blog/**/*",
-    "src/plugins/drizzle-orm/**/*",
-    "src/plugins/emails/**/*",
-    "src/plugins/legal/**/*",
-    "src/plugins/polar/**/*",
-    "src/plugins/prisma-orm/**/*",
-    "src/plugins/pwa/**/*",
-    "src/plugins/stripe/**/*",
-    "src/core/**/*"
-  ]
+  "include": ["src/index.ts", "src/schemas/**/*.ts", "src/utils/**/*.ts"]
 }

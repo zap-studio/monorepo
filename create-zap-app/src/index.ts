@@ -94,8 +94,8 @@ async function main() {
 
   // Get useful directory paths
   const outputDir = path.join(process.cwd(), "my-zap-app");
-  const pluginsDir = path.join(__dirname, "./src/plugins");
-  const coreDir = path.join(__dirname, "./src/core");
+  const pluginsDir = path.join(__dirname, "./plugins");
+  const coreDir = path.join(__dirname, "./core");
 
   // Create output directory
   await fs.ensureDir(outputDir);
