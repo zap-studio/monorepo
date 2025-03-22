@@ -1,0 +1,9 @@
+{
+  "name": "@zap-ts/plugins",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@zap-ts/core": "workspace:*",
+    "@zap-ts/schemas": "workspace:*"
+  }
+}

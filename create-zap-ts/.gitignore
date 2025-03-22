@@ -5,6 +5,7 @@ node_modules
 out
 dist
 *.tgz
+my-zap-app
 
 # code coverage
 coverage

@@ -1,0 +1,40 @@
+{
+  "name": "create-zap-ts",
+  "description": "A CLI to bootstrap a modular Next.js project with plugins",
+  "version": "1.0.0",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "create-zap-ts": "./dist/index.js"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "bun build ./index.ts --outdir ./dist --target bun",
+    "dev": "bun --watch ./index.ts",
+    "start": "./dist/index.js",
+    "publish": "bun run build && bun publish --access public"
+  },
+  "dependencies": {
+    "@zap-ts/core": "workspace:*",
+    "@zap-ts/schemas": "workspace:*",
+    "@zap-ts/utils": "workspace:*",
+    "@zap-ts/plugins": "workspace:*",
+    "fs-extra": "^11.1.1",
+    "inquirer": "^9.2.12"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.7"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
