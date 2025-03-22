@@ -2,10 +2,19 @@
   "name": "create-zap-app",
   "description": "A CLI to bootstrap a modular Next.js project with plugins.",
   "author": "Alexandre Trotel",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "module": "index.ts",
   "type": "module",
   "private": false,
+  "homepage": "https://zap-ts.alexandretrotel.org",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alexandretrotel/zap.ts/issues"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/alexandretrotel"
+  },
   "bin": {
     "create-zap-app": "./dist/index.js"
   },
