@@ -1,7 +1,10 @@
 {
   "name": "@zap-ts/schemas",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "zod": "^3.24.2"
   }

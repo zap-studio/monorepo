@@ -1,7 +1,10 @@
 {
   "name": "@zap-ts/core",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "scan": "next dev --turbopack & bunx react-scan@latest localhost:3000",

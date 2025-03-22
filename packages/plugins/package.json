@@ -1,7 +1,10 @@
 {
   "name": "@zap-ts/plugins",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@zap-ts/core": "workspace:*",
     "@zap-ts/schemas": "workspace:*"
