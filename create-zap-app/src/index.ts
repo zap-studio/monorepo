@@ -20,7 +20,9 @@ import {
   addPwaSchemaExport,
   modifyAuth,
 } from "./utils/index.js";
+import { fileURLToPath } from "url";
 
+const __dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const execAsync = promisify(exec);
 
 async function main() {
@@ -92,7 +94,7 @@ async function main() {
 
   // Get useful directory paths
   const outputDir = path.join(process.cwd(), "my-zap-app");
-  const pluginsDir = path.join(__dirname, "../packages/plugins");
+  const pluginsDir = path.join(__dirname, "./src/plugins");
   const coreDir = path.join(__dirname, "../packages/core");
 
   // Create output directory
@@ -218,11 +220,11 @@ async function main() {
   spinner.text = "Installing dependencies...";
   const installCmd =
     packageManager === "npm"
-      ? "npm install"
+      ? "npm install --force"
       : packageManager === "yarn"
         ? "yarn"
         : packageManager === "pnpm"
-          ? "pnpm install"
+          ? "pnpm install --force"
           : "bun install";
   await execAsync(installCmd, { cwd: outputDir });
 
