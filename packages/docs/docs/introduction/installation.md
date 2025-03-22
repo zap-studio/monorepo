@@ -1,10 +1,10 @@
 # Installation
 
-Setting up **Zap.ts ⚡️** is now easier than ever! Use the following command to quickly create a new Zap.ts project.
+Setting up **Zap.ts ⚡️** is now easier than ever!
 
 ## Quick Installation
 
-To install Zap.ts with a single command:
+You can install Zap.ts with a single command:
 
 ::: code-group
 
