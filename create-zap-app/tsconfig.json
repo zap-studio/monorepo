@@ -24,7 +24,7 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
   },
-  "include": ["src/**/*"],
+  "include": ["src/index.ts", "src/schemas/**/*.ts", "src/utils/**/*.ts"],
   "exclude": [
     "src/plugins/admin-dashboard/**/*",
     "src/plugins/ai/**/*",
