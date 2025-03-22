@@ -35,9 +35,7 @@
     "src/plugins/polar/**/*",
     "src/plugins/prisma-orm/**/*",
     "src/plugins/pwa/**/*",
-    "src/plugins/stripe/**/*"
-  ],
-  "paths": {
-    "@zap-ts/*": ["../packages/*/src"]
-  }
+    "src/plugins/stripe/**/*",
+    "src/core/**/*"
+  ]
 }
