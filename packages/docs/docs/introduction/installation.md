@@ -9,19 +9,19 @@ You can install Zap.ts with a single command:
 ::: code-group
 
 ```bash [bun]
-bunx create-zap-ts
+bunx create-zap-app
 ```
 
 ```bash [npm]
-npx create-zap-ts
+npx create-zap-app
 ```
 
 ```bash [yarn]
-yarn dlx create-zap-ts
+yarn dlx create-zap-app
 ```
 
 ```bash [pnpm]
-pnpx create-zap-ts
+pnpx create-zap-app
 ```
 
 :::

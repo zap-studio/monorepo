@@ -1,4 +1,4 @@
-# create-zap-ts
+# create-zap-app
 
 To install dependencies:
 

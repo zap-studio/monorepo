@@ -26,7 +26,7 @@ const execAsync = promisify(exec);
 async function main() {
   console.log(
     chalk.bold.cyan(
-      "\n🚀 Welcome to create-zap-ts! Let’s build something awesome.\n"
+      "\n🚀 Welcome to create-zap-app! Let’s build something awesome.\n"
     )
   );
 

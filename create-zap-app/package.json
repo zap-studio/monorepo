@@ -1,12 +1,12 @@
 {
-  "name": "create-zap-ts",
+  "name": "create-zap-app",
   "description": "A CLI to bootstrap a modular Next.js project with plugins",
   "version": "1.0.0",
   "module": "index.ts",
   "type": "module",
   "private": false,
   "bin": {
-    "create-zap-ts": "./dist/index.js"
+    "create-zap-app": "./dist/index.js"
   },
   "main": "dist/index.js",
   "scripts": {
