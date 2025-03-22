@@ -10,6 +10,7 @@ import type {
   PackageManager,
   PluginNames,
   PluginsMetadata,
+  PluginMetadata,
 } from "@zap-ts/schemas";
 import plugins from "@zap-ts/plugins";
 import {
@@ -49,12 +50,12 @@ async function main() {
       message: chalk.yellow("Which ORM do you want?"),
       choices: plugins
         .filter(
-          (plugin) =>
+          (plugin: PluginMetadata) =>
             plugin.category === "orm" &&
             typeof plugin.available === "boolean" &&
             plugin.available
         )
-        .map((plugin) => plugin.name),
+        .map((plugin: PluginMetadata) => plugin.name),
     },
   ]);
   const orm = ormResponse.orm as ORM;
@@ -67,7 +68,7 @@ async function main() {
       message: chalk.yellow("Which plugins do you want?"),
       choices: plugins
         .filter(
-          (plugin) =>
+          (plugin: PluginMetadata) =>
             (plugin.category !== "orm" &&
               typeof plugin.available === "boolean" &&
               plugin.available) ||
@@ -76,15 +77,17 @@ async function main() {
                 ? plugin.available.drizzle
                 : plugin.available.prisma))
         )
-        .map((plugin) => plugin.name),
+        .map((plugin: PluginMetadata) => plugin.name),
     },
   ]);
   const selectedPluginsName = pluginsResponse.plugins as PluginNames;
 
   // Get plugin metadata
-  const ormPlugin = plugins.filter((plugin) => plugin.name === orm)[0];
-  const selectedPlugins = plugins.filter((plugin) =>
-    selectedPluginsName.includes(plugin.name)
+  const ormPlugin = plugins.filter(
+    (plugin: PluginMetadata) => plugin.name === orm
+  )[0];
+  const selectedPlugins: PluginsMetadata = plugins.filter(
+    (plugin: PluginMetadata) => selectedPluginsName.includes(plugin.name)
   );
 
   // Get useful directory paths
@@ -105,7 +108,9 @@ async function main() {
 
   // Determine required wrappers based on enabled plugins
   const pluginList: PluginsMetadata = [ormPlugin, ...selectedPlugins];
-  const pluginListNames = pluginList.map((plugin) => plugin.name);
+  const pluginListNames = pluginList.map(
+    (plugin: PluginMetadata) => plugin.name
+  );
   const requiredWrappers = new Set<string>();
 
   for (const plugin of pluginList) {
@@ -160,7 +165,7 @@ async function main() {
 
     // Add dependencies
     if (plugin.dependencies) {
-      plugin.dependencies.forEach((dep) => dependencies.add(dep));
+      plugin.dependencies.forEach((dep: string) => dependencies.add(dep));
     }
   }
 

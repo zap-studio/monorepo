@@ -9,8 +9,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@zap-ts/plugins": "workspace:*",
-    "@zap-ts/schemas": "workspace:*",
+    "@zap-ts/plugins": "workspace:^",
+    "@zap-ts/schemas": "workspace:^",
     "fs-extra": "^11.3.0",
     "inquirer": "^12.5.0",
     "ts-morph": "^25.0.1"

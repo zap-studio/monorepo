@@ -9,7 +9,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@zap-ts/core": "workspace:*",
-    "@zap-ts/schemas": "workspace:*"
+    "@zap-ts/core": "workspace:^",
+    "@zap-ts/schemas": "workspace:^"
   }
 }

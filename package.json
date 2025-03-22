@@ -1,4 +1,8 @@
 {
   "name": "zap-ts-monorepo",
-  "private": true
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r dev"
+  }
 }

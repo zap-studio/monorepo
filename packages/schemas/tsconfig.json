@@ -7,6 +7,7 @@
     "jsx": "react-jsx",
     "allowJs": true,
     "outDir": "./dist",
+    "rootDir": "./src",
 
     // Module resolution
     "moduleResolution": "Node",
