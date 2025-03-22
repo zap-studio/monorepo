@@ -2,9 +2,6 @@
   "name": "@zap-ts/schemas",
   "version": "1.0.1",
   "private": false,
-  "scripts": {
-    "build": "tsc"
-  },
   "publishConfig": {
     "access": "public"
   },
