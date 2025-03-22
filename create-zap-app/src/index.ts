@@ -234,6 +234,11 @@ async function main() {
   spinner.text = "Ensuring executable permissions...";
   await execAsync("chmod -R u+x node_modules/.bin/*", { cwd: outputDir });
 
+  // Update dependencies
+  spinner.clear();
+  spinner.text = "Updating dependencies...";
+  await execAsync(`${packageManager} update`, { cwd: outputDir });
+
   // Run prettier on the project
   spinner.clear();
   spinner.text = "Running Prettier on the project...";
