@@ -1,7 +1,7 @@
 {
   "name": "create-zap-app",
   "description": "A CLI to bootstrap a modular Next.js project with plugins.",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "module": "index.ts",
   "type": "module",
   "private": false,
@@ -10,8 +10,8 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "build": "bun build src/index.ts --outdir dist --target node",
+    "start": "bun run dist/index.js"
   },
   "dependencies": {
     "fs-extra": "^11.1.1",

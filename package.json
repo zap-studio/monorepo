@@ -4,5 +4,9 @@
   "scripts": {
     "build": "pnpm -r build",
     "dev": "pnpm -r dev"
-  }
+  },
+  "workspaces": [
+    "packages/*",
+    "create-zap-app"
+  ]
 }
