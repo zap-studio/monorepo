@@ -10,17 +10,14 @@ importers:
 
   create-zap-app:
     dependencies:
-      '@zap-ts/core':
-        specifier: workspace:*
-        version: link:../packages/core
       '@zap-ts/plugins':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../packages/plugins
       '@zap-ts/schemas':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../packages/schemas
       '@zap-ts/utils':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../packages/utils
       fs-extra:
         specifier: ^11.1.1
@@ -32,9 +29,6 @@ importers:
         specifier: ^5
         version: 5.8.2
     devDependencies:
-      '@types/bun':
-        specifier: latest
-        version: 1.2.5
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
@@ -2789,9 +2783,6 @@ packages:
   '@types/acorn@4.0.6':
     resolution: {integrity: sha512-veQTnWP+1D/xbxVrPC3zHnCZRjSrKfhbMUlEA43iMZLu7EsnTtkJklIuwrCPbOi8YkvDQAiW05VQQFvvz9oieQ==}
 
-  '@types/bun@1.2.5':
-    resolution: {integrity: sha512-w2OZTzrZTVtbnJew1pdFmgV99H0/L+Pvw+z1P67HaR18MHOzYnTYOi6qzErhK8HyT+DB782ADVPPE92Xu2/Opg==}
-
   '@types/cors@2.8.17':
     resolution: {integrity: sha512-8CGDvrBj1zgo2qE+oS3pOCyYNqCPryMWY2bGfwA0dcfopWGgxs+78df0Rs3rc9THP4JkOhLsAa+15VdpAqkcUA==}
 
@@ -2895,9 +2886,6 @@ packages:
 
   '@types/web-push@3.6.4':
     resolution: {integrity: sha512-GnJmSr40H3RAnj0s34FNTcJi1hmWFV5KXugE0mYWnYhgTAHLJ/dJKAwDmvPJYMke0RplY2XE9LnM4hqSqKIjhQ==}
-
-  '@types/ws@8.5.14':
-    resolution: {integrity: sha512-bd/YFLW+URhBzMXurx7lWByOu+xzU9+kb3RboOteXYDfW+tr+JZa99OyNmPINEGB/ahzKrEuc8rcv4gnpJmxTw==}
 
   '@typescript-eslint/eslint-plugin@8.27.0':
     resolution: {integrity: sha512-4henw4zkePi5p252c8ncBLzLce52SEUz2Ebj8faDnuUXz2UuHEONYcJ+G0oaCF+bYCWVZtrGzq3FD7YXetmnSA==}
@@ -3304,9 +3292,6 @@ packages:
 
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
-
-  bun-types@1.2.5:
-    resolution: {integrity: sha512-3oO6LVGGRRKI4kHINx5PIdIgnLRb7l/SprhzqXapmoYkFl5m4j6EvALvbDVuuBFaamB46Ap6HCUxIXNLCGy+tg==}
 
   busboy@1.6.0:
     resolution: {integrity: sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==}
@@ -7817,10 +7802,6 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.6
 
-  '@types/bun@1.2.5':
-    dependencies:
-      bun-types: 1.2.5
-
   '@types/cors@2.8.17':
     dependencies:
       '@types/node': 20.17.25
@@ -7926,10 +7907,6 @@ snapshots:
   '@types/web-bluetooth@0.0.21': {}
 
   '@types/web-push@3.6.4':
-    dependencies:
-      '@types/node': 20.17.25
-
-  '@types/ws@8.5.14':
     dependencies:
       '@types/node': 20.17.25
 
@@ -8371,11 +8348,6 @@ snapshots:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
-
-  bun-types@1.2.5:
-    dependencies:
-      '@types/node': 20.17.25
-      '@types/ws': 8.5.14
 
   busboy@1.6.0:
     dependencies:

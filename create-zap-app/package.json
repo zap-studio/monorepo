@@ -1,7 +1,7 @@
 {
   "name": "create-zap-app",
   "description": "A CLI to bootstrap a modular Next.js project with plugins",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "module": "index.ts",
   "type": "module",
   "private": false,
@@ -10,20 +10,17 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "build": "bun build ./index.ts --outdir ./dist --target bun",
-    "dev": "bun --watch ./index.ts",
-    "start": "./dist/index.js"
+    "build": "tsc",
+    "start": "node ./dist/index.js"
   },
   "dependencies": {
-    "@zap-ts/core": "workspace:*",
-    "@zap-ts/schemas": "workspace:*",
-    "@zap-ts/utils": "workspace:*",
-    "@zap-ts/plugins": "workspace:*",
+    "@zap-ts/plugins": "workspace:^",
+    "@zap-ts/schemas": "workspace:^",
+    "@zap-ts/utils": "workspace:^",
     "fs-extra": "^11.1.1",
     "inquirer": "^9.2.12"
   },
   "devDependencies": {
-    "@types/bun": "latest",
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.7"
   },
