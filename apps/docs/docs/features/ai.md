@@ -2,7 +2,7 @@
 
 Zap.ts integrates AI capabilities using the [Vercel AI SDK](https://sdk.vercel.ai/) and [Zustand](https://zustand-demo.pmnd.rs/) for client-side state management. Users can select an AI provider (OpenAI or Mistral by default) and input an API key via the frontend, which the backend uses to stream responses or generate completions. This guide explains how AI is implemented in Zap.ts and how to use it in your project.
 
-## What AI Brings to Zap.ts
+## Why AI could be cool?
 
 Zap.ts enables AI-driven features:
 
@@ -19,15 +19,6 @@ Zap.ts combines a client-side store with backend processing:
 1. **Client-Side (Zustand)**: The `useAIProviderStore` in `stores/ai.store.ts` lets users pick a provider (`openai` or `mistral`) and set API keys, persisted in local storage.
 2. **Backend (Vercel AI SDK)**: API routes (`/api/ai/completion` and `/api/ai/chat`) use `getModel` from `lib/ai.ts` to select the model based on the provider and API key, streaming responses via `@vercel/ai`.
 3. **Data**: `AI_PROVIDERS_OBJECT` in `data/ai.ts` defines the supported providers.
-
-### Key Files
-
-- **`stores/ai.store.ts`**: Zustand store for provider and API key management.
-- **`schemas/ai.schema.ts`**: Defines `AIProviderEnum` (`"openai"`, `"mistral"`).
-- **`lib/ai.ts`**: `getModel` utility selects the AI model.
-- **`data/ai.ts`**: Lists providers (OpenAI, Mistral, etc...).
-- **`app/api/ai/completion/route.ts`**: Streams text completions.
-- **`app/api/ai/chat/route.ts`**: Streams chat responses.
 
 ## Using AI Features
 

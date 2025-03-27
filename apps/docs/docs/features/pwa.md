@@ -22,24 +22,6 @@ Zap.ts integrates PWA support through a pre-configured setup. Here’s how it’
 3. **Next.js Integration**: The `next.config.ts` file includes headers for the service worker, ensuring it’s served correctly and secured with a Content Security Policy (CSP).
 4. **Automatic Registration**: Zap.ts uses a lightweight approach to register the service worker without additional client-side code, keeping your app lean.
 
-### Key Files
-
-- **`next.config.ts`**: Configures headers for `sw.js`:
-
-  ```ts
-  {
-    source: "/sw.js",
-    headers: [
-      { key: "Content-Type", value: "application/javascript; charset=utf-8" },
-      { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
-      { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
-    ],
-  }
-  ```
-
-- **`public/sw.js`**: The service worker file (not explicitly shown in the provided code but assumed to be part of the core setup).
-- **`src/app/manifest.ts`**: Defines the PWA manifest (configurable based on your setup).
-
 ## Configuring PWA in Zap.ts
 
 PWA support is enabled by default, but you can customize it to fit your needs. Here’s how:
