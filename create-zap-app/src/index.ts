@@ -231,7 +231,6 @@ async function main() {
 
   // After installing dependencies
   spinner.clear();
-  spinner.text = "Ensuring executable permissions...";
 
   // Update dependencies
   spinner.clear();
