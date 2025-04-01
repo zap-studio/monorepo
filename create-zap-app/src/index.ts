@@ -23,8 +23,6 @@ import {
 } from "./utils/index.js";
 import { fileURLToPath } from "url";
 
-const isWindows = process.platform === "win32";
-
 const __dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const execAsync = promisify(exec);
 
@@ -234,16 +232,6 @@ async function main() {
   // After installing dependencies
   spinner.clear();
   spinner.text = "Ensuring executable permissions...";
-  // await execAsync("chmod -R u+x node_modules/.bin/*", { cwd: outputDir });
-
-  // If Windows, use icacls to grant RX permissions
-  // If not Windows, use chmod to set executable permissions
-  if (isWindows) {
-    const binDir = path.join(outputDir, "node_modules/.bin");
-    await execAsync(`icacls "${binDir}" /grant %USERNAME%:RX /T`, { cwd: outputDir });
-  } else {
-    await execAsync("chmod u+x node_modules/.bin/*", { cwd: outputDir });
-  }
 
   // Update dependencies
   spinner.clear();
