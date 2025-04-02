@@ -229,9 +229,6 @@ async function main() {
           : "bun install";
   await execAsync(installCmd, { cwd: outputDir });
 
-  // After installing dependencies
-  spinner.clear();
-
   // Update dependencies
   spinner.clear();
   spinner.text = "Updating dependencies...";
