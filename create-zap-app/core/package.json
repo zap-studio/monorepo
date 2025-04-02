@@ -6,6 +6,7 @@
     "access": "public"
   },
   "scripts": {
+    "zap": "bunx create-zap-app@latest",
     "dev": "next dev --turbopack",
     "scan": "next dev --turbopack & bunx react-scan@latest localhost:3000",
     "build": "next build",
