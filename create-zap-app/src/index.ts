@@ -22,6 +22,7 @@ import {
   modifyAuth,
 } from "./utils/index.js";
 import { fileURLToPath } from "url";
+import { ObjectLiteralExpression, Project } from "ts-morph";
 
 const __dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const execAsync = promisify(exec);
@@ -253,7 +254,134 @@ async function main() {
   console.log(chalk.white(`  ${packageManager} dev\n`));
 }
 
-main().catch((error) => {
+async function createProcedure(procedureName: string) {
+  const projectDir = process.cwd();
+  const spinner = ora(`Creating procedure ${procedureName}...`).start();
+
+  try {
+    // Convert procedureName to kebab-case
+    const kebabCaseName = procedureName
+      .replace(/([a-z])([A-Z])/g, "$1-$2")
+      .replace(/\s+/g, "-")
+      .toLowerCase();
+
+    // Generate procedure file
+    const procedurePath = path.join(
+      projectDir,
+      "src/rpc/procedures",
+      `${kebabCaseName}.rpc.ts`
+    );
+    await fs.ensureDir(path.dirname(procedurePath));
+
+    const procedureContent = `
+import { procedure } from "../router";
+
+export const ${procedureName} = procedure.query(async ({ ctx }) => {
+  // Add your procedure logic here
+  return {
+    message: "Hello from ${procedureName}",
+    userId: ctx.user?.id,
+  };
+});
+    `.trim();
+
+    await fs.writeFile(procedurePath, procedureContent);
+    spinner.text = `Created ${kebabCaseName}.rpc.ts`;
+
+    // Update router.ts
+    const routerPath = path.join(projectDir, "src/rpc/router.ts");
+    const project = new Project();
+    const sourceFile = project.addSourceFileAtPath(routerPath);
+
+    // Add import
+    sourceFile.addImportDeclaration({
+      moduleSpecifier: `./procedures/${kebabCaseName}.rpc`,
+      namedImports: [procedureName],
+    });
+
+    // Find router object and add procedure
+    const routerVar = sourceFile.getVariableDeclaration("router");
+    const objectLiteral = routerVar?.getInitializerIfKindOrThrow(
+      254 /* ObjectLiteralExpression */
+    ) as ObjectLiteralExpression;
+
+    if (!objectLiteral) {
+      throw new Error("Router object not found");
+    }
+
+    objectLiteral.addPropertyAssignment({
+      name: procedureName,
+      initializer: procedureName,
+    });
+
+    await sourceFile.save();
+    spinner.text = `Updated router.ts`;
+
+    // Create hook file
+    const hookPath = path.join(
+      projectDir,
+      "src/hooks",
+      `use-${kebabCaseName}.ts`
+    );
+    await fs.ensureDir(path.dirname(hookPath));
+
+    const capitalizedProcedureName =
+      procedureName.charAt(0).toUpperCase() + procedureName.slice(1);
+    const hookContent = `
+"use client";
+
+import { useORPC } from "@/stores/orpc.store";
+import useSWR from "swr";
+
+export const use${capitalizedProcedureName} = () => {
+  const orpc = useORPC();
+  return useSWR(orpc.${procedureName}.key, orpc.${procedureName}.queryOptions().queryFn);
+};
+    `.trim();
+
+    await fs.writeFile(hookPath, hookContent);
+    spinner.text = `Created use-${procedureName}.ts`;
+
+    // Format files
+    spinner.text = "Formatting files...";
+    await execAsync("bun run format", { cwd: projectDir });
+
+    spinner.succeed(`Successfully created ${procedureName} procedure!`);
+    console.log(chalk.cyan("\nFiles created:"));
+    console.log(chalk.white(`- src/rpc/procedures/${kebabCaseName}.rpc.ts`));
+    console.log(chalk.white(`- src/hooks/use-${kebabCaseName}.ts`));
+    console.log(chalk.white("\nRouter updated:"));
+    console.log(chalk.white(`- src/rpc/router.ts`));
+  } catch (error) {
+    spinner.fail(
+      `Failed to create procedure: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
+    process.exit(1);
+  }
+}
+
+// CLI entry point
+async function run() {
+  const args = process.argv.slice(2);
+
+  if (args[0] === "create" && args[1] === "procedure" && args[2]) {
+    await createProcedure(args[2]);
+  } else if (args.length === 0) {
+    await main();
+  } else {
+    console.log(chalk.red("Invalid command"));
+    console.log(chalk.cyan("Usage:"));
+    console.log(chalk.white("  bunx create-zap-app # Create new project"));
+    console.log(
+      chalk.white(
+        "  bunx create-zap-app create procedure <name> # Create new procedure"
+      )
+    );
+    process.exit(1);
+  }
+}
+
+run().catch((error) => {
   console.error(chalk.bold.red("\n❌ An error occurred:"), error.message);
   process.exit(1);
 });
