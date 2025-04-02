@@ -301,14 +301,21 @@ export const ${procedureName} = procedure.query(async ({ ctx }) => {
 
     // Find router object and add procedure
     const routerVar = sourceFile.getVariableDeclaration("router");
-    const objectLiteral = routerVar?.getInitializerIfKindOrThrow(
-      254 /* ObjectLiteralExpression */
-    ) as ObjectLiteralExpression;
-
-    if (!objectLiteral) {
-      throw new Error("Router object not found");
+    if (!routerVar) {
+      throw new Error("Could not find 'router' variable in router.ts");
     }
 
+    // Get the initializer
+    const initializer = routerVar.getInitializer();
+    if (
+      !initializer ||
+      !initializer.isKind(254 /* ObjectLiteralExpression */)
+    ) {
+      throw new Error("Router initializer is not an object literal");
+    }
+
+    // Add procedure to router object
+    const objectLiteral = initializer as unknown as ObjectLiteralExpression;
     objectLiteral.addPropertyAssignment({
       name: procedureName,
       initializer: procedureName,
