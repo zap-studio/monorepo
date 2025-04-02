@@ -304,19 +304,13 @@ export const ${procedureName} = base.handler(async () => {
     // Get the initializer
     const initializer = routerVar.getInitializer();
 
-    if (
-      !initializer ||
-      !initializer.isKind(254 /* ObjectLiteralExpression */)
-    ) {
-      throw new Error("Router initializer is not an object literal");
+    if (!initializer) {
+      throw new Error("Could not find initializer for 'router' variable");
     }
 
     // Add procedure to router object
     const objectLiteral = initializer as unknown as ObjectLiteralExpression;
-    objectLiteral.addPropertyAssignment({
-      name: procedureName,
-      initializer: procedureName,
-    });
+    objectLiteral.addShorthandPropertyAssignment({ name: procedureName });
 
     await sourceFile.save();
     spinner.text = `Updated router.ts`;
