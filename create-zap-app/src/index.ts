@@ -231,8 +231,6 @@ async function main() {
 
   // After installing dependencies
   spinner.clear();
-  spinner.text = "Ensuring executable permissions...";
-  await execAsync("chmod -R u+x node_modules/.bin/*", { cwd: outputDir });
 
   // Update dependencies
   spinner.clear();
