@@ -181,6 +181,87 @@ async function fetchGreeting(name: string) {
 }
 ```
 
+## Using Zap CLI
+
+Zap.ts provides a CLI command to generate new API procedures, including the procedure file, router update, and a corresponding hook.
+
+#### Command
+
+Run the following command in your project directory to create a new procedure:
+
+```bash
+bun run zap create procedure <procedureName>
+```
+
+Alternatively, you can use the full command:
+
+```bash
+bunx create-zap-app@latest create procedure <procedureName>
+```
+
+Replace `<procedureName>` with your desired procedure name (e.g., `getUserData`).
+
+#### What It Does
+
+This command:
+
+1. Creates a new procedure file at `src/rpc/procedures/<procedure-name>.rpc.ts`.
+2. Updates the router in `src/rpc/router.ts` to include the new procedure.
+3. Generates a hook at `src/hooks/use-<procedure-name>.ts` for frontend use.
+
+#### Example
+
+```bash
+bun run zap create procedure getUserData
+```
+
+This generates:
+
+- `src/rpc/procedures/get-user-data.rpc.ts`:
+
+  ```ts
+  import { base } from "../middlewares";
+
+  export const getUserData = base.handler(async () => {
+    return { message: "Hello from getUserData" };
+  });
+  ```
+
+- Updates `src/rpc/router.ts` to include `getUserData`.
+- `src/hooks/use-get-user-data.ts`:
+
+  ```ts
+  "use client";
+
+  import { useORPC } from "@/stores/orpc.store";
+  import useSWR from "swr";
+
+  export const useGetUserData = () => {
+    const orpc = useORPC();
+    return useSWR(
+      orpc.getUserData.key,
+      orpc.getUserData.queryOptions().queryFn
+    );
+  };
+  ```
+
+### Using the Procedure
+
+In your frontend code, use the generated hook:
+
+```tsx
+import { useGetUserData } from "@/hooks/use-get-user-data";
+
+export default function UserDataComponent() {
+  const { data, error } = useGetUserData();
+
+  if (error) return <div>Error loading data</div>;
+  if (!data) return <div>Loading...</div>;
+
+  return <div>{data.message}</div>;
+}
+```
+
 ## Troubleshooting
 
 - **Procedure Not Found**: Ensure the procedure is defined in `router.ts` and matches the client call.
