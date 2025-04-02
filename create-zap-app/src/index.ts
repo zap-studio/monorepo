@@ -274,14 +274,10 @@ async function createProcedure(procedureName: string) {
     await fs.ensureDir(path.dirname(procedurePath));
 
     const procedureContent = `
-import { procedure } from "../router";
+import { base } from "../middlewares";
 
-export const ${procedureName} = procedure.query(async ({ ctx }) => {
-  // Add your procedure logic here
-  return {
-    message: "Hello from ${procedureName}",
-    userId: ctx.user?.id,
-  };
+export const ${procedureName} = base.handler(async () => {
+  return { message: "Hello from ${procedureName}" };
 });
     `.trim();
 
@@ -307,6 +303,7 @@ export const ${procedureName} = procedure.query(async ({ ctx }) => {
 
     // Get the initializer
     const initializer = routerVar.getInitializer();
+
     if (
       !initializer ||
       !initializer.isKind(254 /* ObjectLiteralExpression */)
