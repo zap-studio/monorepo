@@ -4,4 +4,5 @@ export const FLAGS = {
     ANALYTICS_ENABLED: true,
     SPEED_INSIGHTS_ENABLED: true,
   },
+  IS_SOCIAL_PROVIDER_ENABLED: true,
 };

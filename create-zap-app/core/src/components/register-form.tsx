@@ -34,6 +34,7 @@ import {
 } from "@/data/settings";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { FLAGS } from "@/data/flags";
 
 type Provider = "apple" | "google";
 
@@ -121,28 +122,34 @@ export function RegisterForm({
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Create your account</CardTitle>
-          <CardDescription>
-            Sign up with your Apple or Google account
-          </CardDescription>
+          {FLAGS.IS_SOCIAL_PROVIDER_ENABLED && (
+            <CardDescription>
+              Sign up with your Apple or Google account
+            </CardDescription>
+          )}
         </CardHeader>
         <CardContent>
           <div className="grid gap-6">
-            <div className="flex flex-col gap-4">
-              <SocialProviderButton
-                provider="apple"
-                redirectURL={REDIRECT_URL}
-              />
-              <SocialProviderButton
-                provider="google"
-                redirectURL={REDIRECT_URL}
-              />
-            </div>
+            {FLAGS.IS_SOCIAL_PROVIDER_ENABLED && (
+              <>
+                <div className="flex flex-col gap-4">
+                  <SocialProviderButton
+                    provider="apple"
+                    redirectURL={REDIRECT_URL}
+                  />
+                  <SocialProviderButton
+                    provider="google"
+                    redirectURL={REDIRECT_URL}
+                  />
+                </div>
 
-            <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-              <span className="bg-background text-muted-foreground relative z-10 px-2">
-                Or continue with
-              </span>
-            </div>
+                <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+                  <span className="bg-background text-muted-foreground relative z-10 px-2">
+                    Or continue with
+                  </span>
+                </div>
+              </>
+            )}
 
             <Form {...form}>
               <form
