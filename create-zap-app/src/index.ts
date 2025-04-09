@@ -18,7 +18,6 @@ import {
   generateExampleEnv,
   addPwaInit,
   addPwaSchemaExport,
-  modifyAuth,
 } from "./utils/index.js";
 import { fileURLToPath } from "url";
 import { ObjectLiteralExpression, Project } from "ts-morph";
@@ -143,27 +142,34 @@ async function main() {
     }
   }
 
+  // TODO: instead of adding depenedencies to package.json, install them so we don't need to update package.json or handle the version
   // Merge package.json
   const outputPkgPath = path.join(outputDir, "package.json");
   const outputPkg = await fs.readJson(outputPkgPath);
 
+  // Add dependencies to package.json
   const depEntries = Array.from(dependencies).map((dep) => {
     const atIndex = dep.lastIndexOf("@");
+
     if (atIndex > 0) {
       const name = dep.slice(0, atIndex);
       const version = dep.slice(atIndex + 1);
       return [name, version];
     }
+
     return [dep, "latest"];
   });
 
+  // Add devDependencies to package.json
   const devDepEntries = Array.from(devDependencies).map((dep) => {
     const atIndex = dep.lastIndexOf("@");
+
     if (atIndex > 0) {
       const name = dep.slice(0, atIndex);
       const version = dep.slice(atIndex + 1);
       return [name, version];
     }
+
     return [dep, "latest"];
   });
 
@@ -184,7 +190,6 @@ async function main() {
   const isPwaEnabled = selectedPluginsName.includes("pwa");
   await addPwaInit(outputDir, isPwaEnabled);
   await addPwaSchemaExport(outputDir, isPwaEnabled);
-  await modifyAuth(outputDir, pluginListNames);
 
   // Install dependencies
   spinner.clear();
@@ -198,6 +203,8 @@ async function main() {
           ? "pnpm install --force"
           : "bun install";
   await execAsync(installCmd, { cwd: outputDir });
+
+  // TODO: Install plugins dependencies and devDependencies
 
   // Update dependencies
   spinner.clear();

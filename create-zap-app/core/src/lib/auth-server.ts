@@ -16,9 +16,12 @@ import {
 } from "@/data/settings";
 import { passkey } from "better-auth/plugins/passkey";
 import { FLAGS } from "@/data/flags";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { db } from "@/db";
 
 export const auth = betterAuth({
   appName: "Zap.ts",
+  database: drizzleAdapter(db, { provider: "pg" }),
   emailAndPassword: {
     enabled: true,
     minPasswordLength: MINIMUM_PASSWORD_LENGTH,
