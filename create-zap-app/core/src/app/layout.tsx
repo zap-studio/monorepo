@@ -6,6 +6,7 @@ import Providers from "@/providers/providers";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FLAGS } from "@/data/flags";
+import { Toaster } from "@/components/ui/sonner";
 
 const font = Font({
   weight: ["400", "500", "600", "700"],
@@ -28,6 +29,7 @@ export default function RootLayout({
         <Providers>
           {children}
 
+          <Toaster />
           {FLAGS.VERCEL.ANALYTICS_ENABLED && <Analytics />}
           {FLAGS.VERCEL.SPEED_INSIGHTS_ENABLED && <SpeedInsights />}
         </Providers>

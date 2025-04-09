@@ -240,9 +240,9 @@ async function main() {
   spinner.text = "Running Prettier on the project...";
   await execAsync(`${packageManager} run format`, { cwd: outputDir });
 
-  // Generate .env.local file
+  // Generate .env file
   spinner.clear();
-  spinner.text = "Generating .env.local file...";
+  spinner.text = "Generating .env file...";
   await generateExampleEnv(outputDir, selectedPluginsName);
 
   spinner.succeed("Project setup complete!");
