@@ -202,7 +202,7 @@ export function LoginForm({
                 >
                   {loading ? (
                     <>
-                      <Loader2 size={16} className="mr-2 animate-spin" />
+                      <Loader2 size={16} className="animate-spin" />
                       Logging in...
                     </>
                   ) : cooldown > 0 ? (
