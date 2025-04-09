@@ -188,7 +188,7 @@ export function RegisterForm({
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="m@example.com"
+                          placeholder="you@example.com"
                           type="email"
                           autoComplete="email"
                           {...field}
