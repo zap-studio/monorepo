@@ -13,7 +13,7 @@
     "drizzle",
     "bun"
   ],
-  "version": "1.1.0",
+  "version": "1.1.1",
   "module": "index.ts",
   "type": "module",
   "private": false,
@@ -52,8 +52,24 @@
   },
   "files": [
     "dist/**/*",
-    "./plugins/**",
-    "./core/**/*"
+    "plugins/**/*.ts",
+    "plugins/**/*.tsx",
+    "plugins/**/*.js",
+    "plugins/**/*.md",
+    "core/public/**/*",
+    "core/src/**/*",
+    "core/*.ts",
+    "core/*.tsx",
+    "core/*.js",
+    "core/*.md",
+    "core/*.json",
+    "core/*.mjs",
+    "core/*.cjs",
+    "core/*.mdx",
+    "core/.prettierrc",
+    "core/.gitignore",
+    "core/LICENSE",
+    "README.md"
   ],
   "publishConfig": {
     "access": "public"
