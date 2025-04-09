@@ -105,7 +105,13 @@ export function RegisterForm({
       }
 
       if (data) {
-        toast.success("Registration successful!");
+        if (FLAGS.IS_EMAIL_VERIFICATION_REQUIRED) {
+          toast.success(
+            "Registration successful! Please check your email to verify your account.",
+          );
+        } else {
+          toast.success("Registration successful!");
+        }
         router.push(REDIRECT_URL);
       } else {
         toast.error("Registration failed. Please try again.");
