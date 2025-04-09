@@ -4,6 +4,7 @@ import { resend } from "@/lib/resend";
 import { ForgotPasswordEmail } from "@/components/emails/forgot-password";
 import { VerificationEmail } from "@/components/emails/verification";
 import { JSX } from "react";
+import { MagicLinkEmail } from "@/components/emails/magic-link";
 
 const from = "Zap.ts <hello@mail.alexandretrotel.org>";
 
@@ -71,3 +72,28 @@ export async function sendMail({ subject, recipients, react }: SendMailProps) {
 
   return data;
 }
+
+export const sendMagicLinkEmail = async ({
+  subject,
+  recipients,
+  url,
+}: {
+  subject: string;
+  recipients: string[];
+  url: string;
+}) => {
+  const from = "Zap.ts <hello@mail.alexandretrotel.org>";
+
+  const { data, error } = await resend.emails.send({
+    from,
+    to: recipients,
+    subject,
+    react: MagicLinkEmail({ url }),
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};

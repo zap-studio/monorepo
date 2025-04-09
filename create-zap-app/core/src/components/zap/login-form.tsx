@@ -25,10 +25,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { JSX, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { FLAGS } from "@/data/flags";
+import { EMAIL_RATE_LIMIT_SECONDS } from "@/data/settings";
 
 type Provider = "apple" | "google";
 
@@ -48,6 +49,14 @@ export function LoginForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const [loading, setLoading] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(formSchema),
@@ -71,8 +80,7 @@ export function LoginForm({
       });
 
       if (error) {
-        toast.error("Login failed. Please try again.");
-        return;
+        throw error;
       }
 
       if (data) {
@@ -83,9 +91,10 @@ export function LoginForm({
 
           await authClient.sendVerificationEmail({
             email,
-            callbackURL: "/app", // The redirect URL after verification
+            callbackURL: "/app",
           });
 
+          setCooldown(EMAIL_RATE_LIMIT_SECONDS);
           return;
         }
 
@@ -186,14 +195,21 @@ export function LoginForm({
                   )}
                 />
 
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading && (
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={loading || cooldown > 0}
+                >
+                  {loading ? (
                     <>
-                      <Loader2 size={16} className="animate-spin" />
+                      <Loader2 size={16} className="mr-2 animate-spin" />
                       Logging in...
                     </>
+                  ) : cooldown > 0 ? (
+                    `Please wait ${cooldown}s`
+                  ) : (
+                    "Login"
                   )}
-                  {!loading && "Login"}
                 </Button>
               </form>
             </Form>

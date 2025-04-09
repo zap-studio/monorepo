@@ -25,8 +25,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { JSX, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import {
+  EMAIL_RATE_LIMIT_SECONDS,
   MAXIMUM_PASSWORD_LENGTH,
   MAXIMUM_USERNAME_LENGTH,
   MINIMUM_PASSWORD_LENGTH,
@@ -73,6 +74,14 @@ export function RegisterForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const [loading, setLoading] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
@@ -99,9 +108,7 @@ export function RegisterForm({
       });
 
       if (error) {
-        toast.error("Registration failed. Please try again.");
-        setLoading(false);
-        return;
+        throw error;
       }
 
       if (data) {
@@ -109,6 +116,13 @@ export function RegisterForm({
           toast.success(
             "Registration successful! Please check your email to verify your account.",
           );
+
+          await authClient.sendVerificationEmail({
+            email,
+            callbackURL: "/login",
+          });
+
+          setCooldown(EMAIL_RATE_LIMIT_SECONDS);
         } else {
           toast.success("Registration successful!");
         }
@@ -237,14 +251,19 @@ export function RegisterForm({
                   )}
                 />
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={loading || cooldown > 0}
+                >
                   {loading && (
                     <>
                       <Loader2 className="animate-spin" />
                       Creating account...
                     </>
                   )}
-                  {!loading && "Create account"}
+                  {!loading && cooldown > 0 && `Please wait ${cooldown}s`}
+                  {!loading && cooldown === 0 && "Create account"}
                 </Button>
               </form>
             </Form>

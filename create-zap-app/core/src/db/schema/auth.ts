@@ -22,6 +22,7 @@ export const user = pgTable("user", {
   banned: boolean("banned"),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
+  lastEmailSentAt: timestamp("last_email_sent_at"),
 });
 
 export const session = pgTable("session", {

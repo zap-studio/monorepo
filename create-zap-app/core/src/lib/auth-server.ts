@@ -3,8 +3,6 @@ import {
   twoFactor,
   username,
   anonymous,
-  magicLink,
-  emailOTP,
   admin,
   organization,
 } from "better-auth/plugins";
@@ -22,6 +20,9 @@ import {
   sendForgotPasswordMail,
   sendVerificationEmail,
 } from "@/actions/emails.action";
+import { canSendEmail, updateLastEmailSent } from "@/lib/rate-limit";
+
+const MAIL_PREFIX = "Zap.ts"; // ZAP:TODO: Change this to your app name
 
 export const auth = betterAuth({
   appName: "Zap.ts",
@@ -32,20 +33,38 @@ export const auth = betterAuth({
     maxPasswordLength: MAXIMUM_PASSWORD_LENGTH,
     requireEmailVerification: FLAGS.IS_EMAIL_VERIFICATION_REQUIRED,
     sendResetPassword: async ({ user, url }) => {
+      const { canSend, timeLeft } = await canSendEmail(user.id);
+      if (!canSend) {
+        throw new Error(
+          `Please wait ${timeLeft} seconds before requesting another password reset email.`,
+        );
+      }
+
       await sendForgotPasswordMail({
         recipients: [user.email],
-        subject: "Reset your password",
+        subject: `${MAIL_PREFIX} - Reset your password`,
         url,
       });
+
+      await updateLastEmailSent(user.id);
     },
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
+      const { canSend, timeLeft } = await canSendEmail(user.id);
+      if (!canSend) {
+        throw new Error(
+          `Please wait ${timeLeft} seconds before requesting another password reset email.`,
+        );
+      }
+
       await sendVerificationEmail({
         recipients: [user.email],
-        subject: "Verify your email",
+        subject: `${MAIL_PREFIX} - Verify your email`,
         url,
       });
+
+      await updateLastEmailSent(user.id);
     },
   },
   socialProviders: {
@@ -63,16 +82,6 @@ export const auth = betterAuth({
       usernameValidator: (username) => username !== "admin",
     }),
     anonymous(),
-    magicLink({
-      sendMagicLink: async (email, magicLink) => {
-        console.log("send magic link to the user", { email, magicLink });
-      },
-    }),
-    emailOTP({
-      async sendVerificationOTP({ email, otp, type }) {
-        console.log("sendVerificationOTP", { email, otp, type });
-      },
-    }),
     passkey(),
     admin(),
     organization(),

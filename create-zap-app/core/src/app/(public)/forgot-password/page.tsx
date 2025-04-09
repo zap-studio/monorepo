@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -24,6 +24,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { EMAIL_RATE_LIMIT_SECONDS } from "@/data/settings";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -32,6 +33,15 @@ type FormSchema = z.infer<typeof formSchema>;
 
 export default function ForgotPasswordPage() {
   const [submitting, setSubmitting] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -55,6 +65,7 @@ export default function ForgotPasswordPage() {
       }
 
       toast.success("Check your email for the reset link!");
+      setCooldown(EMAIL_RATE_LIMIT_SECONDS);
     } catch {
       toast.error("An error occurred while sending the reset link.");
     } finally {
@@ -95,14 +106,19 @@ export default function ForgotPasswordPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={submitting}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={submitting || cooldown > 0}
+              >
                 {submitting && (
                   <>
                     <Loader2 size={16} className="animate-spin" />
                     Sending...
                   </>
                 )}
-                {!submitting && "Send reset link"}
+                {!submitting && cooldown > 0 && `Please wait ${cooldown}s`}
+                {!submitting && cooldown === 0 && "Send reset link"}
               </Button>
             </form>
           </Form>
