@@ -25,8 +25,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { JSX } from "react";
+import { JSX, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 type Provider = "apple" | "google";
 
@@ -45,6 +46,8 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,20 +59,31 @@ export function LoginForm({
   const router = useRouter();
 
   const onSubmit = async (values: LoginFormValues) => {
+    setLoading(true);
+
     const { email, password } = values;
 
-    const { data, error } = await authClient.signIn.email({ email, password });
+    try {
+      const { data, error } = await authClient.signIn.email({
+        email,
+        password,
+      });
 
-    if (error) {
-      toast.error("Login failed. Please try again.");
-      return;
-    }
+      if (error) {
+        toast.error("Login failed. Please try again.");
+        return;
+      }
 
-    if (data) {
-      toast.success("Login successful!");
-      router.push(REDIRECT_URL);
-    } else {
+      if (data) {
+        toast.success("Login successful!");
+        router.push(REDIRECT_URL);
+      } else {
+        toast.error("Login failed. Please try again.");
+      }
+    } catch {
       toast.error("Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -146,8 +160,14 @@ export function LoginForm({
                   )}
                 />
 
-                <Button type="submit" className="w-full">
-                  Login
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading && (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      Logging in...
+                    </>
+                  )}
+                  {!loading && "Login"}
                 </Button>
               </form>
             </Form>
@@ -179,16 +199,26 @@ function SocialProviderButton({
   provider,
   redirectURL,
 }: SocialProviderButtonProps) {
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
 
   const handleSocialLogin = async (provider: Provider) => {
-    const data = await authClient.signIn.social({ provider });
+    setLoading(true);
 
-    if (data) {
-      toast.success("Login successful!");
-      router.push(redirectURL);
-    } else {
+    try {
+      const data = await authClient.signIn.social({ provider });
+
+      if (data) {
+        toast.success("Login successful!");
+        router.push(redirectURL);
+      } else {
+        toast.error("Login failed. Please try again.");
+      }
+    } catch {
       toast.error("Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -222,8 +252,18 @@ function SocialProviderButton({
       className="w-full gap-2"
       onClick={() => handleSocialLogin(provider)}
     >
-      {icons[provider]}
-      {labels[provider]}
+      {loading && (
+        <>
+          <Loader2 size={16} className="animate-spin" />
+          Logging in...
+        </>
+      )}
+      {!loading && (
+        <>
+          {icons[provider]}
+          {labels[provider]}
+        </>
+      )}
     </Button>
   );
 }

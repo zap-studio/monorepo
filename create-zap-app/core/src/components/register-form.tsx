@@ -25,7 +25,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { JSX } from "react";
+import { JSX, useState } from "react";
 import {
   MAXIMUM_PASSWORD_LENGTH,
   MAXIMUM_USERNAME_LENGTH,
@@ -33,6 +33,7 @@ import {
   MINIMUM_USERNAME_LENGTH,
 } from "@/data/settings";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 type Provider = "apple" | "google";
 
@@ -70,6 +71,8 @@ export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -83,24 +86,33 @@ export function RegisterForm({
   const router = useRouter();
 
   const onSubmit = async (values: RegisterFormValues) => {
+    setLoading(true);
+
     const { name, email, password } = values;
 
-    const { data, error } = await authClient.signUp.email({
-      email,
-      password,
-      name,
-    });
+    try {
+      const { data, error } = await authClient.signUp.email({
+        email,
+        password,
+        name,
+      });
 
-    if (error) {
-      toast.error("Registration failed. Please try again.");
-      return;
-    }
+      if (error) {
+        toast.error("Registration failed. Please try again.");
+        setLoading(false);
+        return;
+      }
 
-    if (data) {
-      toast.success("Registration successful!");
-      router.push(REDIRECT_URL);
-    } else {
+      if (data) {
+        toast.success("Registration successful!");
+        router.push(REDIRECT_URL);
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
+    } catch {
       toast.error("Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -197,8 +209,14 @@ export function RegisterForm({
                   )}
                 />
 
-                <Button type="submit" className="w-full">
-                  Create account
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading && (
+                    <>
+                      <Loader2 className="animate-spin" />
+                      Creating account...
+                    </>
+                  )}
+                  {!loading && "Create account"}
                 </Button>
               </form>
             </Form>
@@ -230,16 +248,26 @@ function SocialProviderButton({
   provider,
   redirectURL,
 }: SocialProviderButtonProps) {
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
 
   const handleSocialLogin = async (provider: Provider) => {
-    const data = await authClient.signIn.social({ provider });
+    setLoading(true);
 
-    if (data) {
-      toast.success("Registration successful!");
-      router.push(redirectURL);
-    } else {
+    try {
+      const data = await authClient.signIn.social({ provider });
+
+      if (data) {
+        toast.success("Registration successful!");
+        router.push(redirectURL);
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
+    } catch {
       toast.error("Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -272,9 +300,20 @@ function SocialProviderButton({
       variant="outline"
       className="w-full gap-2"
       onClick={() => handleSocialLogin(provider)}
+      disabled={loading}
     >
-      {icons[provider]}
-      {labels[provider]}
+      {loading && (
+        <>
+          <Loader2 size={16} className="animate-spin" />
+          Creating account...
+        </>
+      )}
+      {!loading && (
+        <>
+          {icons[provider]}
+          {labels[provider]}
+        </>
+      )}
     </Button>
   );
 }
