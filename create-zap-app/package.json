@@ -17,6 +17,9 @@
   "module": "index.ts",
   "type": "module",
   "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "homepage": "https://zap-ts.alexandretrotel.org",
   "license": "MIT",
   "bugs": {
@@ -70,8 +73,5 @@
     "core/.gitignore",
     "core/LICENSE",
     "README.md"
-  ],
-  "publishConfig": {
-    "access": "public"
-  }
+  ]
 }
