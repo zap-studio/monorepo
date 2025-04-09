@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -42,6 +42,7 @@ type FormSchema = z.infer<typeof formSchema>;
 
 export default function ResetPasswordPage() {
   const [submitting, setSubmitting] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -53,7 +54,10 @@ export default function ResetPasswordPage() {
     },
   });
 
-  const token = new URLSearchParams(window.location.search).get("token");
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get("token");
+    setToken(token);
+  }, []);
 
   async function onSubmit(values: FormSchema) {
     setSubmitting(true);
