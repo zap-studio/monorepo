@@ -1,6 +1,6 @@
 {
   "name": "create-zap-app",
-  "description": "A CLI to bootstrap a modular Next.js project with plugins.",
+  "description": "A CLI to bootstrap a Next.js boilerplate with plugins customization.",
   "author": "Alexandre Trotel",
   "keywords": [
     "next.js",

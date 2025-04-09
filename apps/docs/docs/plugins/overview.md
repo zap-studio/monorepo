@@ -1,19 +1,6 @@
 # Using Plugins to Customize Zap.ts
 
-Zap.ts is highly modular, allowing you to select the features you want. Its core functionality is built on Next.js, Tailwind CSS, shadcn/ui, Better Auth, Zustand, and oRPC, while everything else is customizable. You’re required to pick at least one ORM (Drizzle or Prisma), but additional features are available as optional plugins.
-
-## Required Choice: ORM
-
-You must enable **one** of the following ORM plugins:
-
-| Plugin    | Description         | Dependencies                              | Available |
-| --------- | ------------------- | ----------------------------------------- | --------- |
-| `drizzle` | Sets up Drizzle ORM | `drizzle-orm`, `@neondatabase/serverless` | ✅        |
-| `prisma`  | Sets up Prisma ORM  | `prisma`                                  | ❌        |
-
-:::tip
-We recommend **Neon** as the default database for **Drizzle**. This is the database set up by default but you can replace it by another.
-:::
+Zap.ts allows you to select the features you want. For instance, you may need to have an admin dashboard to manage your users.
 
 ## Optional Plugins
 

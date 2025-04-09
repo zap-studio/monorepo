@@ -7,7 +7,6 @@ import ora from "ora";
 import { exec } from "child_process";
 import { promisify } from "util";
 import type {
-  ORM,
   PackageManager,
   PluginNames,
   PluginsMetadata,
@@ -46,24 +45,6 @@ async function main() {
   const packageManager =
     packageManagerResponse.packageManager as PackageManager;
 
-  // Prompt for ORM
-  const ormResponse = await inquirer.prompt([
-    {
-      type: "list",
-      name: "orm",
-      message: chalk.yellow("Which ORM do you want?"),
-      choices: plugins
-        .filter(
-          (plugin: PluginMetadata) =>
-            plugin.category === "orm" &&
-            typeof plugin.available === "boolean" &&
-            plugin.available
-        )
-        .map((plugin: PluginMetadata) => plugin.name),
-    },
-  ]);
-  const orm = ormResponse.orm as ORM;
-
   // Prompt for plugins
   const pluginsResponse = await inquirer.prompt([
     {
@@ -71,25 +52,12 @@ async function main() {
       name: "plugins",
       message: chalk.yellow("Which plugins do you want?"),
       choices: plugins
-        .filter(
-          (plugin: PluginMetadata) =>
-            (plugin.category !== "orm" &&
-              typeof plugin.available === "boolean" &&
-              plugin.available) ||
-            (typeof plugin.available === "object" &&
-              (orm === "drizzle-orm"
-                ? plugin.available.drizzle
-                : plugin.available.prisma))
-        )
+        .filter((plugin) => plugin.available)
         .map((plugin: PluginMetadata) => plugin.name),
     },
   ]);
   const selectedPluginsName = pluginsResponse.plugins as PluginNames;
 
-  // Get plugin metadata
-  const ormPlugin = plugins.filter(
-    (plugin: PluginMetadata) => plugin.name === orm
-  )[0];
   const selectedPlugins: PluginsMetadata = plugins.filter(
     (plugin: PluginMetadata) => selectedPluginsName.includes(plugin.name)
   );
@@ -111,7 +79,9 @@ async function main() {
   spinner.text = "Copied core files";
 
   // Determine required wrappers based on enabled plugins
-  const pluginList: PluginsMetadata = [ormPlugin, ...selectedPlugins];
+  const pluginList: PluginsMetadata = selectedPlugins.filter(
+    (plugin: PluginMetadata) => plugin.available
+  );
   const pluginListNames = pluginList.map(
     (plugin: PluginMetadata) => plugin.name
   );
@@ -165,7 +135,7 @@ async function main() {
     spinner.text = `Processing plugin: ${plugin}`;
 
     // Copy every files from the plugin folder
-    await copyPluginFiles(pluginPath, outputDir, spinner, orm);
+    await copyPluginFiles(pluginPath, outputDir, spinner);
 
     // Add dependencies
     if (plugin.dependencies) {
@@ -212,9 +182,8 @@ async function main() {
   spinner.text =
     "Configuring providers, index.tsx, and auth-server.ts files...";
   const isPwaEnabled = selectedPluginsName.includes("pwa");
-  const isDrizzleEnabled = orm === "drizzle-orm";
   await addPwaInit(outputDir, isPwaEnabled);
-  await addPwaSchemaExport(outputDir, isDrizzleEnabled, isPwaEnabled);
+  await addPwaSchemaExport(outputDir, isPwaEnabled);
   await modifyAuth(outputDir, pluginListNames);
 
   // Install dependencies
