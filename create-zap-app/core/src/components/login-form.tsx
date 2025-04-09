@@ -76,6 +76,11 @@ export function LoginForm({
       }
 
       if (data) {
+        if (!data.user.emailVerified) {
+          toast.error("Please verify your email address.");
+          return;
+        }
+
         toast.success("Login successful!");
         router.push(REDIRECT_URL);
       } else {

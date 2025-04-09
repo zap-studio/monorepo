@@ -15,6 +15,7 @@ import {
   MINIMUM_USERNAME_LENGTH,
 } from "@/data/settings";
 import { passkey } from "better-auth/plugins/passkey";
+import { FLAGS } from "@/data/flags";
 
 export const auth = betterAuth({
   appName: "Zap.ts",
@@ -22,6 +23,7 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: MINIMUM_PASSWORD_LENGTH,
     maxPasswordLength: MAXIMUM_PASSWORD_LENGTH,
+    requireEmailVerification: FLAGS.IS_EMAIL_VERIFICATION_REQUIRED,
   },
   socialProviders: {
     google: {

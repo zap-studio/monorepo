@@ -66,7 +66,7 @@ const formSchema = z
 
 type RegisterFormValues = z.infer<typeof formSchema>;
 
-const REDIRECT_URL = "/verify-email"; // ZAP:TODO: Change the redirect URL to the desired page after registration
+const REDIRECT_URL = "/login"; // ZAP:TODO: Change the redirect URL to the desired page after registration
 
 export function RegisterForm({
   className,

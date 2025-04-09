@@ -6,7 +6,6 @@ const publicPaths = [
   "/",
   "/login",
   "/register",
-  "/verify-email",
   "/forgot-password",
   "/reset-password",
 ];
@@ -33,7 +32,7 @@ export async function middleware(request: NextRequest) {
 
   // Check email verification
   if (!session.user.emailVerified) {
-    const verifyUrl = new URL("/verify-email", request.url);
+    const verifyUrl = new URL("/login", request.url);
     verifyUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(verifyUrl);
   }
