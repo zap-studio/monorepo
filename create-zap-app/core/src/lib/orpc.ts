@@ -3,9 +3,10 @@ import { RPCLink } from "@orpc/client/fetch";
 import { RouterClient } from "@orpc/server";
 import { router } from "@/rpc/router";
 import { createORPCReactQueryUtils } from "@orpc/react-query";
+import { BASE_URL } from "@/data/settings";
 
 export const link = new RPCLink({
-  url: "http://localhost:3000/rpc",
+  url: `${BASE_URL}/rpc`,
 });
 
 export const client: RouterClient<typeof router> = createORPCClient(link);

@@ -11,6 +11,8 @@ const publicPaths = [
   "/terms-of-service",
   "/privacy-policy",
   "/cookie-policy",
+  "/_vercel/speed-insights/vitals",
+  "/_vercel/insights/view",
 ];
 
 export async function middleware(request: NextRequest) {

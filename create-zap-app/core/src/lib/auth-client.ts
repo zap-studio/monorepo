@@ -1,3 +1,4 @@
+import { BASE_URL } from "@/data/settings";
 import {
   twoFactorClient,
   usernameClient,
@@ -9,7 +10,7 @@ import {
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-  baseURL: "http://localhost:3000",
+  baseURL: BASE_URL,
   plugins: [
     twoFactorClient(),
     usernameClient(),
