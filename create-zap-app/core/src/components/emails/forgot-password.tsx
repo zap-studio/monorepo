@@ -1,15 +1,18 @@
-import { BASE_URL } from "@/data/settings";
 import { Button, Html } from "@react-email/components";
 import * as React from "react";
 
-export function TemplateEmail() {
+interface EmailProps {
+  url: string;
+}
+
+export function ForgotPasswordEmail({ url }: EmailProps) {
   return (
     <Html>
       <Button
-        href={BASE_URL}
+        href={url}
         style={{ background: "#000", color: "#fff", padding: "12px 20px" }}
       >
-        Click me
+        Reset Password
       </Button>
     </Html>
   );

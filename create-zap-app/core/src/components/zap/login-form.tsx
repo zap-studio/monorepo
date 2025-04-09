@@ -26,68 +26,98 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { JSX, useState } from "react";
+import {
+  MAXIMUM_PASSWORD_LENGTH,
+  MAXIMUM_USERNAME_LENGTH,
+  MINIMUM_PASSWORD_LENGTH,
+  MINIMUM_USERNAME_LENGTH,
+} from "@/data/settings";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { FLAGS } from "@/data/flags";
 
 type Provider = "apple" | "google";
 
-const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
-  }),
-});
+const formSchema = z
+  .object({
+    name: z
+      .string()
+      .min(MINIMUM_USERNAME_LENGTH, {
+        message: `Name must be at least ${MINIMUM_USERNAME_LENGTH} characters.`,
+      })
+      .max(MAXIMUM_USERNAME_LENGTH, {
+        message: `Name must be at most ${MAXIMUM_USERNAME_LENGTH} characters.`,
+      }),
+    email: z.string().email(),
+    password: z
+      .string()
+      .min(MINIMUM_PASSWORD_LENGTH, {
+        message: `Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters.`,
+      })
+      .max(MAXIMUM_PASSWORD_LENGTH, {
+        message: `Password must be at most ${MAXIMUM_PASSWORD_LENGTH} characters.`,
+      }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
 
-type LoginFormValues = z.infer<typeof formSchema>;
+type RegisterFormValues = z.infer<typeof formSchema>;
 
-const REDIRECT_URL = "/app"; // ZAP:TODO: Change the redirect URL to the desired page after login
+const REDIRECT_URL = "/login"; // ZAP:TODO: Change the redirect URL to the desired page after registration
 
-export function LoginForm({
+export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<LoginFormValues>({
+  const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
   const router = useRouter();
 
-  const onSubmit = async (values: LoginFormValues) => {
+  const onSubmit = async (values: RegisterFormValues) => {
     setLoading(true);
 
-    const { email, password } = values;
+    const { name, email, password } = values;
 
     try {
-      const { data, error } = await authClient.signIn.email({
+      const { data, error } = await authClient.signUp.email({
         email,
         password,
+        name,
       });
 
       if (error) {
-        toast.error("Login failed. Please try again.");
+        toast.error("Registration failed. Please try again.");
+        setLoading(false);
         return;
       }
 
       if (data) {
-        if (!data.user.emailVerified) {
-          toast.error("Please verify your email address.");
-          return;
+        if (FLAGS.IS_EMAIL_VERIFICATION_REQUIRED) {
+          toast.success(
+            "Registration successful! Please check your email to verify your account.",
+          );
+        } else {
+          toast.success("Registration successful!");
         }
-
-        toast.success("Login successful!");
         router.push(REDIRECT_URL);
       } else {
-        toast.error("Login failed. Please try again.");
+        toast.error("Registration failed. Please try again.");
       }
     } catch {
-      toast.error("Login failed. Please try again.");
+      toast.error("Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -95,12 +125,12 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className="border shadow-none">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardTitle className="text-xl">Create your account</CardTitle>
           {FLAGS.IS_SOCIAL_PROVIDER_ENABLED && (
             <CardDescription>
-              Login with your Apple or Google account
+              Sign up with your Apple or Google account
             </CardDescription>
           )}
         </CardHeader>
@@ -134,6 +164,24 @@ export function LoginForm({
               >
                 <FormField
                   control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Your name"
+                          autoComplete="name"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
@@ -156,20 +204,31 @@ export function LoginForm({
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center justify-between">
-                        <FormLabel>Password</FormLabel>
-                        <Link
-                          href="/forgot-password"
-                          className="text-sm underline-offset-4 hover:underline"
-                        >
-                          Forgot your password?
-                        </Link>
-                      </div>
+                      <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
                           placeholder="*********"
-                          autoComplete="password"
+                          autoComplete="new-password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="*********"
+                          autoComplete="confirm-password"
                           {...field}
                         />
                       </FormControl>
@@ -181,19 +240,19 @@ export function LoginForm({
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading && (
                     <>
-                      <Loader2 size={16} className="animate-spin" />
-                      Logging in...
+                      <Loader2 className="animate-spin" />
+                      Creating account...
                     </>
                   )}
-                  {!loading && "Login"}
+                  {!loading && "Create account"}
                 </Button>
               </form>
             </Form>
 
             <div className="text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="underline underline-offset-4">
-                Sign up
+              Already have an account?{" "}
+              <Link href="/login" className="underline underline-offset-4">
+                Log in
               </Link>
             </div>
           </div>
@@ -228,13 +287,13 @@ function SocialProviderButton({
       const data = await authClient.signIn.social({ provider });
 
       if (data) {
-        toast.success("Login successful!");
+        toast.success("Registration successful!");
         router.push(redirectURL);
       } else {
-        toast.error("Login failed. Please try again.");
+        toast.error("Registration failed. Please try again.");
       }
     } catch {
-      toast.error("Login failed. Please try again.");
+      toast.error("Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -260,8 +319,8 @@ function SocialProviderButton({
   };
 
   const labels: Record<Provider, string> = {
-    apple: "Login with Apple",
-    google: "Login with Google",
+    apple: "Sign up with Apple",
+    google: "Sign up with Google",
   };
 
   return (
@@ -269,11 +328,12 @@ function SocialProviderButton({
       variant="outline"
       className="w-full gap-2"
       onClick={() => handleSocialLogin(provider)}
+      disabled={loading}
     >
       {loading && (
         <>
           <Loader2 size={16} className="animate-spin" />
-          Logging in...
+          Creating account...
         </>
       )}
       {!loading && (

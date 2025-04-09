@@ -1,15 +1,24 @@
 "use server";
 
 import { resend } from "@/lib/resend";
-import EmailTemplate from "@/components/emails/template";
+import { ForgotPasswordEmail } from "@/components/emails/forgot-password";
 
-// ZAP:TODO - change the settings below especially the from email address
-export const sendMail = async (subject: string, recipients: string[]) => {
+interface ForgotPasswordEmailProps {
+  subject: string;
+  recipients: string[];
+  url: string;
+}
+
+export const sendForgotPasswordMail = async ({
+  subject,
+  recipients,
+  url,
+}: ForgotPasswordEmailProps) => {
   const { data, error } = await resend.emails.send({
-    from: "Acme <onboarding@resend.dev>",
+    from: "Zap.ts <hello@mail.alexandretrotel.org>",
     to: recipients,
     subject,
-    react: EmailTemplate(),
+    react: ForgotPasswordEmail({ url }),
   });
 
   if (error) {

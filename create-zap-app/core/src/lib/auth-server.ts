@@ -18,6 +18,7 @@ import { passkey } from "better-auth/plugins/passkey";
 import { FLAGS } from "@/data/flags";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db";
+import { sendForgotPasswordMail } from "@/actions/emails.action";
 
 export const auth = betterAuth({
   appName: "Zap.ts",
@@ -27,6 +28,13 @@ export const auth = betterAuth({
     minPasswordLength: MINIMUM_PASSWORD_LENGTH,
     maxPasswordLength: MAXIMUM_PASSWORD_LENGTH,
     requireEmailVerification: FLAGS.IS_EMAIL_VERIFICATION_REQUIRED,
+    sendResetPassword: async ({ user, url }) => {
+      await sendForgotPasswordMail({
+        recipients: [user.email],
+        subject: "Reset your password",
+        url,
+      });
+    },
   },
   socialProviders: {
     google: {
