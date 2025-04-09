@@ -1,5 +1,5 @@
 import { Navbar } from "@/components/zap/navbar";
-import { AnimatedSection } from "@/components/zap/landing/animated";
+import { AnimatedSection } from "@/components/zap/animated";
 import { TestimonialSection } from "@/components/zap/landing/testimonial";
 import { PricingSection } from "@/components/zap/landing/pricing";
 import { FaqSection } from "@/components/zap/landing/faq";
