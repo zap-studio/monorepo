@@ -137,6 +137,7 @@ export function LoginForm({
                         <Input
                           placeholder="m@example.com"
                           type="email"
+                          autoComplete="email"
                           {...field}
                         />
                       </FormControl>
@@ -160,7 +161,12 @@ export function LoginForm({
                         </Link>
                       </div>
                       <FormControl>
-                        <Input type="password" {...field} />
+                        <Input
+                          type="password"
+                          placeholder="*********"
+                          autoComplete="password"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
