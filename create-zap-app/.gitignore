@@ -1,6 +1,9 @@
 # dependencies
 node_modules
 
+# feed your ai
+feedyourai.txt
+
 # output
 out
 dist
