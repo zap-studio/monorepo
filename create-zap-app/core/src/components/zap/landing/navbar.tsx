@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import { usePathname, useRouter } from "next/navigation";
 
 const navLinks = [
   { id: "hero", label: "Home" },
@@ -13,7 +14,15 @@ const navLinks = [
 ];
 
 export function Navbar() {
+  const pathname = usePathname();
+  const router = useRouter();
+
   const scrollToSection = (sectionId: string) => {
+    if (pathname !== "/") {
+      router.push("/");
+      return;
+    }
+
     const section = document.getElementById(sectionId);
     if (section) section.scrollIntoView({ behavior: "smooth" });
   };
