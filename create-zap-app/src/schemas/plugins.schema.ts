@@ -9,10 +9,8 @@ export const PluginNameSchema = z.union([
   z.literal("ai"),
   z.literal("blog"),
   z.literal("drizzle-orm"),
-  z.literal("polar"),
   z.literal("prisma-orm"),
   z.literal("pwa"),
-  z.literal("stripe"),
 ]);
 export const PluginNamesSchema = z.array(PluginNameSchema);
 export const PluginCategorySchema = z.literal("orm");

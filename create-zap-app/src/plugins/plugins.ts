@@ -28,13 +28,6 @@ export const drizzlePlugin: PluginMetadata = {
   env: ["DATABASE_URL"],
 };
 
-export const polarPlugin: PluginMetadata = {
-  name: "polar",
-  dependencies: ["@polar-sh/better-auth", "@polar-sh/sdk"],
-  available: false,
-  env: ["POLAR_ACCESS_TOKEN", "POLAR_WEBHOOK_SECRET"],
-};
-
 export const prismaPlugin: PluginMetadata = {
   name: "prisma-orm",
   category: "orm",
@@ -52,23 +45,11 @@ export const pwaPlugin: PluginMetadata = {
   },
 };
 
-export const stripePlugin: PluginMetadata = {
-  name: "stripe",
-  dependencies: ["@better-auth/stripe", "stripe"],
-  available: {
-    drizzle: false,
-    prisma: false,
-  },
-  env: ["STRIPE_WEBHOOK_SECRET", "STRIPE_SECRET_KEY"],
-};
-
 export const plugins: PluginsMetadata = [
   adminDashboardPlugin,
   aiPlugin,
   blogPlugin,
   drizzlePlugin,
-  polarPlugin,
   prismaPlugin,
   pwaPlugin,
-  stripePlugin,
 ];
