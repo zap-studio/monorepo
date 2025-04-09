@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://www.stockq.app
+Host: your_site_url_here
 
 # Sitemaps
-Sitemap: https://www.stockq.app/sitemap.xml
+Sitemap: your_site_url_here/sitemap.xml

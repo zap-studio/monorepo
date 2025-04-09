@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://www.stockq.app</loc><lastmod>2025-03-18T14:21:31.350Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.stockq.app/manifest.webmanifest</loc><lastmod>2025-03-18T14:21:31.350Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>your_site_url_here/register</loc><lastmod>2025-04-09T21:05:29.558Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>your_site_url_here/login</loc><lastmod>2025-04-09T21:05:29.559Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>your_site_url_here/reset-password</loc><lastmod>2025-04-09T21:05:29.559Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>your_site_url_here/forgot-password</loc><lastmod>2025-04-09T21:05:29.559Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>your_site_url_here/app</loc><lastmod>2025-04-09T21:05:29.559Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>your_site_url_here</loc><lastmod>2025-04-09T21:05:29.559Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>your_site_url_here/terms-of-service</loc><lastmod>2025-04-09T21:05:29.559Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>your_site_url_here/privacy-policy</loc><lastmod>2025-04-09T21:05:29.559Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>your_site_url_here/cookie-policy</loc><lastmod>2025-04-09T21:05:29.559Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>
