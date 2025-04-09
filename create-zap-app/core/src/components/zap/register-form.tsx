@@ -125,7 +125,7 @@ export function RegisterForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className="border shadow-none">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Create your account</CardTitle>
           {FLAGS.IS_SOCIAL_PROVIDER_ENABLED && (
@@ -284,7 +284,11 @@ function SocialProviderButton({
     setLoading(true);
 
     try {
-      const data = await authClient.signIn.social({ provider });
+      const { data, error } = await authClient.signIn.social({ provider });
+
+      if (error) {
+        throw error;
+      }
 
       if (data) {
         toast.success("Registration successful!");

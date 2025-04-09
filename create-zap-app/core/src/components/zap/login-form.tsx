@@ -233,7 +233,11 @@ function SocialProviderButton({
     setLoading(true);
 
     try {
-      const data = await authClient.signIn.social({ provider });
+      const { data, error } = await authClient.signIn.social({ provider });
+
+      if (error) {
+        throw error;
+      }
 
       if (data) {
         toast.success("Login successful!");
