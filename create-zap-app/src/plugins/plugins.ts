@@ -28,13 +28,6 @@ export const drizzlePlugin: PluginMetadata = {
   env: ["DATABASE_URL"],
 };
 
-export const emailsPlugin: PluginMetadata = {
-  name: "emails",
-  dependencies: ["resend", "react-email", "@react-email/components"],
-  available: true,
-  env: ["RESEND_API_KEY"],
-};
-
 export const polarPlugin: PluginMetadata = {
   name: "polar",
   dependencies: ["@polar-sh/better-auth", "@polar-sh/sdk"],
@@ -74,7 +67,6 @@ export const plugins: PluginsMetadata = [
   aiPlugin,
   blogPlugin,
   drizzlePlugin,
-  emailsPlugin,
   polarPlugin,
   prismaPlugin,
   pwaPlugin,

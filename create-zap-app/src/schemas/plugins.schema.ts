@@ -9,7 +9,6 @@ export const PluginNameSchema = z.union([
   z.literal("ai"),
   z.literal("blog"),
   z.literal("drizzle-orm"),
-  z.literal("emails"),
   z.literal("polar"),
   z.literal("prisma-orm"),
   z.literal("pwa"),

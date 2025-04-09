@@ -11,6 +11,7 @@ const coreEnv = [
   "GOOGLE_CLIENT_SECRET",
   "SITE_URL",
   "DATABASE_URL",
+  "RESEND_API_KEY",
 ];
 
 /**
