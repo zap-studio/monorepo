@@ -1,4 +1,4 @@
-# Emails and Notifications
+# Notifications & Emails
 
 Zap.ts empowers your app with real-time communication through push notifications via its Progressive Web App (PWA) setup and email capabilities using [Resend](https://resend.com/) and [React Email](https://react.email/). This guide covers how to leverage push notifications for user engagement and set up email sending with Resend, giving you the tools to keep users informed in a snap.
 

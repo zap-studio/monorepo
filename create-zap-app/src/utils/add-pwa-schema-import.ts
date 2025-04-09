@@ -9,14 +9,12 @@ import path from "path";
  * notifications schema.
  *
  * @param outputDir - The directory containing the `src/db/schema/index.ts` file.
- * @param isDrizzleEnabled - A boolean indicating whether the Drizzle plugin is enabled.
  * @param isPwaEnabled - A boolean indicating whether the PWA plugin is enabled.
  *
  * @throws {Error} If the `index.ts` file cannot be found or modified.
  */
 export const addPwaSchemaExport = async (
   outputDir: string,
-  isDrizzleEnabled: boolean,
   isPwaEnabled: boolean
 ) => {
   const project = new Project();
@@ -24,7 +22,7 @@ export const addPwaSchemaExport = async (
   const sourceFile = project.addSourceFileAtPath(schemaIndexPath);
 
   // Add export * from "@/db/schema/notifications" if PWA is enabled
-  if (isDrizzleEnabled && isPwaEnabled) {
+  if (isPwaEnabled) {
     sourceFile.addExportDeclaration({
       moduleSpecifier: "@/db/schema/notifications",
       isTypeOnly: false, // Ensure it's a value export, not just types

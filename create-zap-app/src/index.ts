@@ -7,7 +7,6 @@ import ora from "ora";
 import { exec } from "child_process";
 import { promisify } from "util";
 import type {
-  ORM,
   PackageManager,
   PluginNames,
   PluginsMetadata,
@@ -19,7 +18,6 @@ import {
   generateExampleEnv,
   addPwaInit,
   addPwaSchemaExport,
-  modifyAuth,
 } from "./utils/index.js";
 import { fileURLToPath } from "url";
 import { ObjectLiteralExpression, Project } from "ts-morph";
@@ -46,24 +44,6 @@ async function main() {
   const packageManager =
     packageManagerResponse.packageManager as PackageManager;
 
-  // Prompt for ORM
-  const ormResponse = await inquirer.prompt([
-    {
-      type: "list",
-      name: "orm",
-      message: chalk.yellow("Which ORM do you want?"),
-      choices: plugins
-        .filter(
-          (plugin: PluginMetadata) =>
-            plugin.category === "orm" &&
-            typeof plugin.available === "boolean" &&
-            plugin.available
-        )
-        .map((plugin: PluginMetadata) => plugin.name),
-    },
-  ]);
-  const orm = ormResponse.orm as ORM;
-
   // Prompt for plugins
   const pluginsResponse = await inquirer.prompt([
     {
@@ -71,25 +51,12 @@ async function main() {
       name: "plugins",
       message: chalk.yellow("Which plugins do you want?"),
       choices: plugins
-        .filter(
-          (plugin: PluginMetadata) =>
-            (plugin.category !== "orm" &&
-              typeof plugin.available === "boolean" &&
-              plugin.available) ||
-            (typeof plugin.available === "object" &&
-              (orm === "drizzle-orm"
-                ? plugin.available.drizzle
-                : plugin.available.prisma))
-        )
+        .filter((plugin) => plugin.available)
         .map((plugin: PluginMetadata) => plugin.name),
     },
   ]);
   const selectedPluginsName = pluginsResponse.plugins as PluginNames;
 
-  // Get plugin metadata
-  const ormPlugin = plugins.filter(
-    (plugin: PluginMetadata) => plugin.name === orm
-  )[0];
   const selectedPlugins: PluginsMetadata = plugins.filter(
     (plugin: PluginMetadata) => selectedPluginsName.includes(plugin.name)
   );
@@ -111,9 +78,8 @@ async function main() {
   spinner.text = "Copied core files";
 
   // Determine required wrappers based on enabled plugins
-  const pluginList: PluginsMetadata = [ormPlugin, ...selectedPlugins];
-  const pluginListNames = pluginList.map(
-    (plugin: PluginMetadata) => plugin.name
+  const pluginList: PluginsMetadata = selectedPlugins.filter(
+    (plugin: PluginMetadata) => plugin.available
   );
   const requiredWrappers = new Set<string>();
 
@@ -165,57 +131,25 @@ async function main() {
     spinner.text = `Processing plugin: ${plugin}`;
 
     // Copy every files from the plugin folder
-    await copyPluginFiles(pluginPath, outputDir, spinner, orm);
+    await copyPluginFiles(pluginPath, outputDir, spinner);
 
     // Add dependencies
     if (plugin.dependencies) {
       plugin.dependencies.forEach((dep: string) => dependencies.add(dep));
     }
+
+    if (plugin.devDependencies) {
+      plugin.devDependencies.forEach((dep: string) => devDependencies.add(dep));
+    }
   }
-
-  // Merge package.json
-  const outputPkgPath = path.join(outputDir, "package.json");
-  const outputPkg = await fs.readJson(outputPkgPath);
-
-  const depEntries = Array.from(dependencies).map((dep) => {
-    const atIndex = dep.lastIndexOf("@");
-    if (atIndex > 0) {
-      const name = dep.slice(0, atIndex);
-      const version = dep.slice(atIndex + 1);
-      return [name, version];
-    }
-    return [dep, "latest"];
-  });
-
-  const devDepEntries = Array.from(devDependencies).map((dep) => {
-    const atIndex = dep.lastIndexOf("@");
-    if (atIndex > 0) {
-      const name = dep.slice(0, atIndex);
-      const version = dep.slice(atIndex + 1);
-      return [name, version];
-    }
-    return [dep, "latest"];
-  });
-
-  outputPkg.dependencies = {
-    ...outputPkg.dependencies,
-    ...Object.fromEntries(depEntries),
-  };
-  outputPkg.devDependencies = {
-    ...outputPkg.devDependencies,
-    ...Object.fromEntries(devDepEntries),
-  };
-  await fs.writeJson(outputPkgPath, outputPkg, { spaces: 2 });
 
   // Modify providers.tsx to add plugin initializations (e.g., initPwa)
   spinner.clear();
   spinner.text =
     "Configuring providers, index.tsx, and auth-server.ts files...";
   const isPwaEnabled = selectedPluginsName.includes("pwa");
-  const isDrizzleEnabled = orm === "drizzle-orm";
   await addPwaInit(outputDir, isPwaEnabled);
-  await addPwaSchemaExport(outputDir, isDrizzleEnabled, isPwaEnabled);
-  await modifyAuth(outputDir, pluginListNames);
+  await addPwaSchemaExport(outputDir, isPwaEnabled);
 
   // Install dependencies
   spinner.clear();
@@ -230,6 +164,18 @@ async function main() {
           : "bun install";
   await execAsync(installCmd, { cwd: outputDir });
 
+  // Install plugins dependencies and devDependencies
+  spinner.clear();
+  spinner.text = "Installing plugin dependencies...";
+  if (dependencies.size > 0) {
+    const deps = Array.from(dependencies).join(" ");
+    await execAsync(`${packageManager} add ${deps}`, { cwd: outputDir });
+  }
+  if (devDependencies.size > 0) {
+    const devDeps = Array.from(devDependencies).join(" ");
+    await execAsync(`${packageManager} add -D ${devDeps}`, { cwd: outputDir });
+  }
+
   // Update dependencies
   spinner.clear();
   spinner.text = "Updating dependencies...";
@@ -240,9 +186,9 @@ async function main() {
   spinner.text = "Running Prettier on the project...";
   await execAsync(`${packageManager} run format`, { cwd: outputDir });
 
-  // Generate .env.local file
+  // Generate .env file
   spinner.clear();
-  spinner.text = "Generating .env.local file...";
+  spinner.text = "Generating .env file...";
   await generateExampleEnv(outputDir, selectedPluginsName);
 
   spinner.succeed("Project setup complete!");

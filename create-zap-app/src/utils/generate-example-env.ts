@@ -11,6 +11,7 @@ const coreEnv = [
   "GOOGLE_CLIENT_SECRET",
   "SITE_URL",
   "DATABASE_URL",
+  "RESEND_API_KEY",
 ];
 
 /**
@@ -69,6 +70,6 @@ export const generateExampleEnv = async (
     })
     .join("\n");
 
-  // Write .env.local file
-  writeFileSync(resolve(outputDir, ".env.local"), envContent);
+  // Write .env file
+  writeFileSync(resolve(outputDir, ".env"), envContent);
 };
