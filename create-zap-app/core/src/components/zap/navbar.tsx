@@ -60,7 +60,7 @@ export function Navbar() {
             {session && (
               <Button variant="ghost" asChild>
                 <Link href="/app" className={navButtonClass}>
-                  Dashboard
+                  Open App
                 </Link>
               </Button>
             )}
