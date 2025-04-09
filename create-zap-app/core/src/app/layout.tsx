@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FLAGS } from "@/data/flags";
 import { Toaster } from "@/components/ui/sonner";
+import NextTopLoader from "nextjs-toploader";
 
 const font = Font({
   weight: ["400", "500", "600", "700"],
@@ -27,6 +28,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${font.className} antialiased`}>
         <Providers>
+          <NextTopLoader
+            color="#3B82F6"
+            showSpinner={false}
+            easing="ease"
+            height={3}
+          />
+
           {children}
 
           <Toaster />
