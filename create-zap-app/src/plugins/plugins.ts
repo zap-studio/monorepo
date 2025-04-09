@@ -75,7 +75,6 @@ export const plugins: PluginsMetadata = [
   blogPlugin,
   drizzlePlugin,
   emailsPlugin,
-  legalPlugin,
   polarPlugin,
   prismaPlugin,
   pwaPlugin,
