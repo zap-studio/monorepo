@@ -8,6 +8,9 @@ const publicPaths = [
   "/register",
   "/forgot-password",
   "/reset-password",
+  "/terms-of-service",
+  "/privacy-policy",
+  "/cookie-policy",
 ];
 
 export async function middleware(request: NextRequest) {

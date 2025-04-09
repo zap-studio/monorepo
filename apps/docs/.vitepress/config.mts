@@ -76,16 +76,16 @@ export default defineConfig({
             link: "/docs/features/ai",
           },
           {
-            text: "Legal Templates",
-            link: "/docs/features/legal",
-          },
-          {
             text: "PWA Support",
             link: "/docs/features/pwa",
           },
           {
             text: "SEO Optimization",
             link: "/docs/features/seo",
+          },
+          {
+            text: "Legal Pages",
+            link: "/docs/features/legal",
           },
         ],
       },

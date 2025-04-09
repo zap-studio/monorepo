@@ -35,11 +35,6 @@ export const emailsPlugin: PluginMetadata = {
   env: ["RESEND_API_KEY"],
 };
 
-export const legalPlugin: PluginMetadata = {
-  name: "legal",
-  available: true,
-};
-
 export const polarPlugin: PluginMetadata = {
   name: "polar",
   dependencies: ["@polar-sh/better-auth", "@polar-sh/sdk"],

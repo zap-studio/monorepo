@@ -1,21 +1,35 @@
-# Legal Templates
+# Legal Pages
 
-The `legal` plugin adds template pages for your Privacy Policy, Cookie Policy, and Terms of Service. These pages are written in MDX (Markdown with JSX) and use placeholder text in Latin ("Lorem Ipsum"). You can customize them to fit your app’s needs.
+Zap.ts includes built-in legal pages as part of its core package, ensuring your application starts with essential compliance foundations. These pages—Cookie Policy, Privacy Policy, and Terms of Service—are pre-configured under the `/legal` route and written in MDX for easy customization.
 
-## How It Works
+## Customizing Legal Pages
 
-When you enable the `legal` plugin with `bunx create-zap-app@latest`:
+The legal pages are located in `src/app/(legal)/` and use MDX format, allowing you to edit content with a mix of Markdown and JSX. Here’s how to customize them:
 
-- It copies the template pages to your app:
-  - `src/app/privacy-policy/page.mdx` (for `/privacy-policy`)
-  - `src/app/cookie-policy/page.mdx` (for `/cookie-policy`)
-  - `src/app/terms-of-service/page.mdx` (for `/terms-of-service`)
-- It installs (if not already) dependencies needed for MDX: `@mdx-js/react`, `@mdx-js/loader`, `@next/mdx`, and `@types/mdx`.
+### File Locations
 
-## Customize the Templates
+- **Cookie Policy**: `src/app/(legal)/cookie-policy/page.mdx`
+- **Privacy Policy**: `src/app/(legal)/privacy-policy/page.mdx`
+- **Terms of Service**: `src/app/(legal)/terms-of-service/page.mdx`
+- **Layout**: `src/app/(legal)/layout.tsx`
 
-1. Open the `.mdx` files in `src/app/privacy-policy/`, `src/app/cookie-policy/`, and `src/app/terms-of-service/`.
-2. Replace the placeholder text (Lorem Ipsum) with your own details. For example, in the Privacy Policy, explain what data you collect and how you use it.
-3. Add your contact information in the "Contact Us" sections.
-4. Talk to a lawyer to make sure your policies follow the laws in your country (like GDPR in the EU).
-5. Add links to these pages in your app’s footer or navigation bar.
+### Steps to Customize
+
+1. **Locate the Files**:
+   Navigate to `src/app/(legal)/` in your Zap.ts project.
+
+2. **Edit the MDX Files**:
+   Open any of the `page.mdx` files. Replace the placeholder Latin text ("Lorem Ipsum") with your actual legal content. For example, in `cookie-policy/page.mdx`:
+
+   ```mdx
+   export const metadata = {
+     title: "Cookie Policy | YourApp",
+     description: "Learn how we use cookies on our website.",
+   };
+
+   # Cookie Policy
+
+   **Last Updated: March 21, 2025**
+
+   We use cookies to improve your experience on our site. This policy explains how we collect and use cookie data...
+   ```
