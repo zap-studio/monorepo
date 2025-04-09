@@ -176,10 +176,7 @@ function PricingToggle({ onToggle }: PricingToggleProps) {
         htmlFor="pricing-toggle"
         className={isYearly ? "font-medium" : "text-muted-foreground"}
       >
-        Yearly{" "}
-        <span className="ml-1 text-xs font-medium text-emerald-500">
-          Save 20%
-        </span>
+        Yearly
       </Label>
     </div>
   );
