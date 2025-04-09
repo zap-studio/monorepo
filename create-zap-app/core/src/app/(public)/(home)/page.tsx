@@ -1,9 +1,9 @@
-import { Navbar } from "@/components/zap/landing/navbar";
+import { Navbar } from "@/components/zap/navbar";
 import { AnimatedSection } from "@/components/zap/landing/animated";
 import { TestimonialSection } from "@/components/zap/landing/testimonial";
 import { PricingSection } from "@/components/zap/landing/pricing";
 import { FaqSection } from "@/components/zap/landing/faq";
-import Footer from "@/components/zap/landing/footer";
+import Footer from "@/components/zap/footer";
 import { HeroSection } from "@/components/zap/landing/hero";
 import { ProblemSection } from "@/components/zap/landing/problem";
 import { SolutionSection } from "@/components/zap/landing/solution";

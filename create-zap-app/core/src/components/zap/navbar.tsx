@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { usePathname, useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 const navLinks = [
   { id: "hero", label: "Home" },
@@ -16,6 +17,8 @@ const navLinks = [
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { data } = authClient.useSession();
+  const session = data?.session;
 
   const scrollToSection = (sectionId: string) => {
     if (pathname !== "/") {
@@ -54,18 +57,29 @@ export function Navbar() {
 
         <div className="flex flex-1 items-center justify-end space-x-6">
           <nav className="flex items-center space-x-4">
-            <Button variant="ghost" asChild>
-              <Link
-                href="/login"
-                className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
-              >
-                Login
-              </Link>
-            </Button>
+            {session && (
+              <Button variant="ghost" asChild>
+                <Link href="/app" className={navButtonClass}>
+                  Dashboard
+                </Link>
+              </Button>
+            )}
+            {!session && (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link
+                    href="/login"
+                    className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+                  >
+                    Login
+                  </Link>
+                </Button>
 
-            <Button size="sm" asChild>
-              <Link href="/register">Get Started</Link>
-            </Button>
+                <Button size="sm" asChild>
+                  <Link href="/register">Get Started</Link>
+                </Button>
+              </>
+            )}
           </nav>
 
           <ModeToggle />

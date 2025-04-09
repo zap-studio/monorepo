@@ -41,7 +41,7 @@ const formSchema = z.object({
 
 type LoginFormValues = z.infer<typeof formSchema>;
 
-const REDIRECT_URL = "/"; // ZAP:TODO: Change the redirect URL to the desired page after login
+const REDIRECT_URL = "/app"; // ZAP:TODO: Change the redirect URL to the desired page after login
 
 export function LoginForm({
   className,
