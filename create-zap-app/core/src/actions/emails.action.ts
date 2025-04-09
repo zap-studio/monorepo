@@ -3,6 +3,9 @@
 import { resend } from "@/lib/resend";
 import { ForgotPasswordEmail } from "@/components/emails/forgot-password";
 import { VerificationEmail } from "@/components/emails/verification";
+import { JSX } from "react";
+
+const from = "Zap.ts <hello@mail.alexandretrotel.org>";
 
 interface ForgotPasswordEmailProps {
   subject: string;
@@ -16,7 +19,7 @@ export const sendForgotPasswordMail = async ({
   url,
 }: ForgotPasswordEmailProps) => {
   const { data, error } = await resend.emails.send({
-    from: "Zap.ts <hello@mail.alexandretrotel.org>",
+    from,
     to: recipients,
     subject,
     react: ForgotPasswordEmail({ url }),
@@ -35,7 +38,7 @@ export const sendVerificationEmail = async ({
   url,
 }: ForgotPasswordEmailProps) => {
   const { data, error } = await resend.emails.send({
-    from: "Zap.ts <hello@mail.alexandretrotel.org>",
+    from,
     to: recipients,
     subject,
     react: VerificationEmail({ url }),
@@ -47,3 +50,24 @@ export const sendVerificationEmail = async ({
 
   return data;
 };
+
+interface SendMailProps {
+  subject: string;
+  recipients: string[];
+  react?: JSX.Element;
+}
+
+export async function sendMail({ subject, recipients, react }: SendMailProps) {
+  const { data, error } = await resend.emails.send({
+    from,
+    to: recipients,
+    subject,
+    react,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
