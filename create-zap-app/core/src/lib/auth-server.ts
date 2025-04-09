@@ -18,7 +18,10 @@ import { passkey } from "better-auth/plugins/passkey";
 import { FLAGS } from "@/data/flags";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db";
-import { sendForgotPasswordMail } from "@/actions/emails.action";
+import {
+  sendForgotPasswordMail,
+  sendVerificationEmail,
+} from "@/actions/emails.action";
 
 export const auth = betterAuth({
   appName: "Zap.ts",
@@ -32,6 +35,15 @@ export const auth = betterAuth({
       await sendForgotPasswordMail({
         recipients: [user.email],
         subject: "Reset your password",
+        url,
+      });
+    },
+  },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendVerificationEmail({
+        recipients: [user.email],
+        subject: "Verify your email",
         url,
       });
     },
