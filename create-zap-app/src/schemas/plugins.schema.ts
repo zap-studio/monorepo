@@ -12,6 +12,7 @@ export const PluginMetadataSchema = z.object({
   name: PluginNameSchema,
   category: z.string().optional(),
   dependencies: z.array(z.string()).optional(),
+  devDependencies: z.array(z.string()).optional(),
   available: z.boolean(),
   env: z.array(z.string()).optional(),
 });

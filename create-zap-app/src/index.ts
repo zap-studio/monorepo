@@ -81,9 +81,6 @@ async function main() {
   const pluginList: PluginsMetadata = selectedPlugins.filter(
     (plugin: PluginMetadata) => plugin.available
   );
-  const pluginListNames = pluginList.map(
-    (plugin: PluginMetadata) => plugin.name
-  );
   const requiredWrappers = new Set<string>();
 
   for (const plugin of pluginList) {
@@ -140,48 +137,11 @@ async function main() {
     if (plugin.dependencies) {
       plugin.dependencies.forEach((dep: string) => dependencies.add(dep));
     }
+
+    if (plugin.devDependencies) {
+      plugin.devDependencies.forEach((dep: string) => devDependencies.add(dep));
+    }
   }
-
-  // TODO: instead of adding depenedencies to package.json, install them so we don't need to update package.json or handle the version
-  // Merge package.json
-  const outputPkgPath = path.join(outputDir, "package.json");
-  const outputPkg = await fs.readJson(outputPkgPath);
-
-  // Add dependencies to package.json
-  const depEntries = Array.from(dependencies).map((dep) => {
-    const atIndex = dep.lastIndexOf("@");
-
-    if (atIndex > 0) {
-      const name = dep.slice(0, atIndex);
-      const version = dep.slice(atIndex + 1);
-      return [name, version];
-    }
-
-    return [dep, "latest"];
-  });
-
-  // Add devDependencies to package.json
-  const devDepEntries = Array.from(devDependencies).map((dep) => {
-    const atIndex = dep.lastIndexOf("@");
-
-    if (atIndex > 0) {
-      const name = dep.slice(0, atIndex);
-      const version = dep.slice(atIndex + 1);
-      return [name, version];
-    }
-
-    return [dep, "latest"];
-  });
-
-  outputPkg.dependencies = {
-    ...outputPkg.dependencies,
-    ...Object.fromEntries(depEntries),
-  };
-  outputPkg.devDependencies = {
-    ...outputPkg.devDependencies,
-    ...Object.fromEntries(devDepEntries),
-  };
-  await fs.writeJson(outputPkgPath, outputPkg, { spaces: 2 });
 
   // Modify providers.tsx to add plugin initializations (e.g., initPwa)
   spinner.clear();
@@ -204,7 +164,17 @@ async function main() {
           : "bun install";
   await execAsync(installCmd, { cwd: outputDir });
 
-  // TODO: Install plugins dependencies and devDependencies
+  // Install plugins dependencies and devDependencies
+  spinner.clear();
+  spinner.text = "Installing plugin dependencies...";
+  if (dependencies.size > 0) {
+    const deps = Array.from(dependencies).join(" ");
+    await execAsync(`${packageManager} add ${deps}`, { cwd: outputDir });
+  }
+  if (devDependencies.size > 0) {
+    const devDeps = Array.from(devDependencies).join(" ");
+    await execAsync(`${packageManager} add -D ${devDeps}`, { cwd: outputDir });
+  }
 
   // Update dependencies
   spinner.clear();
