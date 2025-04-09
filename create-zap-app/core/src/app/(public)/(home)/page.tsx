@@ -1,13 +1,13 @@
-import { Navbar } from "@/components/zap/navbar";
-import { AnimatedSection } from "@/components/zap/animated";
-import { TestimonialSection } from "@/components/zap/landing/testimonial";
-import { PricingSection } from "@/components/zap/landing/pricing";
-import { FaqSection } from "@/components/zap/landing/faq";
-import Footer from "@/components/zap/footer";
-import { HeroSection } from "@/components/zap/landing/hero";
-import { ProblemSection } from "@/components/zap/landing/problem";
-import { SolutionSection } from "@/components/zap/landing/solution";
-import { FeaturesSection } from "@/components/zap/landing/features";
+import { Navbar } from "@/components/zap/public/navbar";
+import { AnimatedSection } from "@/components/zap/public/animated";
+import { TestimonialSection } from "@/components/zap/public/landing/testimonial";
+import { PricingSection } from "@/components/zap/public/landing/pricing";
+import { FaqSection } from "@/components/zap/public/landing/faq";
+import Footer from "@/components/zap/public/footer";
+import { HeroSection } from "@/components/zap/public/landing/hero";
+import { ProblemSection } from "@/components/zap/public/landing/problem";
+import { SolutionSection } from "@/components/zap/public/landing/solution";
+import { FeaturesSection } from "@/components/zap/public/landing/features";
 
 const sections = [
   {

@@ -1,5 +1,5 @@
-import Footer from "@/components/zap/footer";
-import { Navbar } from "@/components/zap/navbar";
+import Footer from "@/components/zap/public/footer";
+import { Navbar } from "@/components/zap/public/navbar";
 import React from "react";
 
 interface LegalLayoutProps {

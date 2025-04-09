@@ -50,6 +50,7 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const [callbackURL, setCallbackURL] = useState<string | null>(null);
 
   useEffect(() => {
     if (cooldown > 0) {
@@ -57,6 +58,15 @@ export function LoginForm({
       return () => clearTimeout(timer);
     }
   }, [cooldown]);
+
+  useEffect(() => {
+    const callbackURL = new URLSearchParams(window.location.search).get(
+      "redirect",
+    );
+    if (callbackURL) {
+      setCallbackURL(callbackURL);
+    }
+  }, []);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(formSchema),
@@ -99,7 +109,7 @@ export function LoginForm({
         }
 
         toast.success("Login successful!");
-        router.push(REDIRECT_URL);
+        router.push(callbackURL || REDIRECT_URL);
       } else {
         toast.error("Login failed. Please try again.");
       }
