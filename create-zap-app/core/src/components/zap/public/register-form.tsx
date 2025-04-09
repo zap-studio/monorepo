@@ -33,7 +33,7 @@ import {
   MINIMUM_PASSWORD_LENGTH,
   MINIMUM_USERNAME_LENGTH,
 } from "@/data/settings";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { Loader2 } from "lucide-react";
 import { FLAGS } from "@/data/flags";
 

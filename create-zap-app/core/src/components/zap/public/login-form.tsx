@@ -26,7 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { JSX, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { Loader2 } from "lucide-react";
 import { FLAGS } from "@/data/flags";
 import { EMAIL_RATE_LIMIT_SECONDS } from "@/data/settings";

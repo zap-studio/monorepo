@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
+import { usePathname } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 
 const navLinks = [
