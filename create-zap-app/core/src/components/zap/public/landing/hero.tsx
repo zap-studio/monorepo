@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
@@ -14,50 +14,77 @@ interface HeroSectionProps {
   numberOfUsers: number;
 }
 
-export function HeroSection({ ratings, numberOfUsers }: HeroSectionProps) {
-  const [typedWord, setTypedWord] = useState("faster");
+const WORDS = ["faster", "efficiently", "smoothly", "securely", "easily"];
+const TYPING_SPEED = 100;
+const ERASING_SPEED = 50;
+const DELAY_BETWEEN_WORDS = 1500;
 
-  const words = useMemo(
-    () => ["faster", "efficiently", "smoothly", "securely", "easily"],
-    [],
-  );
-  const typingSpeed = 100; // ms per character
-  const erasingSpeed = 50; // ms per character
-  const delayBetweenWords = 1500; // delay before typing the next word
+export function HeroSection({ ratings, numberOfUsers }: HeroSectionProps) {
+  const [typedWord, setTypedWord] = useState(WORDS[0]);
+
+  const wordIndex = useRef(0);
+  const isErasing = useRef(false);
+  const current = useRef("");
 
   useEffect(() => {
-    let wordIndex = 0;
-    let isErasing = false;
-    let currentWord = "";
     let timeout: ReturnType<typeof setTimeout>;
 
-    const typeEffect = () => {
-      if (!isErasing && currentWord.length < words[wordIndex].length) {
-        currentWord += words[wordIndex][currentWord.length];
-        setTypedWord(currentWord);
-        timeout = setTimeout(typeEffect, typingSpeed);
-      } else if (isErasing && currentWord.length > 0) {
-        currentWord = currentWord.slice(0, -1);
-        setTypedWord(currentWord);
-        timeout = setTimeout(typeEffect, erasingSpeed);
+    const type = () => {
+      const fullWord = WORDS[wordIndex.current];
+
+      if (!isErasing.current && current.current.length < fullWord.length) {
+        current.current += fullWord[current.current.length];
+        setTypedWord(current.current);
+        timeout = setTimeout(type, TYPING_SPEED);
+      } else if (isErasing.current && current.current.length > 0) {
+        current.current = current.current.slice(0, -1);
+        setTypedWord(current.current);
+        timeout = setTimeout(type, ERASING_SPEED);
       } else {
-        isErasing = !isErasing;
-        if (!isErasing) {
-          wordIndex = (wordIndex + 1) % words.length;
+        isErasing.current = !isErasing.current;
+
+        if (!isErasing.current) {
+          wordIndex.current = (wordIndex.current + 1) % WORDS.length;
         }
+
         timeout = setTimeout(
-          typeEffect,
-          isErasing ? delayBetweenWords : typingSpeed,
+          type,
+          isErasing.current ? DELAY_BETWEEN_WORDS : TYPING_SPEED,
         );
       }
     };
 
-    typeEffect();
+    type();
+    return () => clearTimeout(timeout);
+  }, []);
 
-    return () => {
-      clearTimeout(timeout);
+  // Formatters
+  const ratingText = useMemo(() => {
+    const ratingFormatter = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+
+    const countFormatter = new Intl.NumberFormat("en-US");
+
+    return {
+      average: ratingFormatter.format(ratings.averageRating),
+      total: countFormatter.format(ratings.totalFeedbacks),
+      users: countFormatter.format(numberOfUsers),
     };
-  }, [words]);
+  }, [ratings, numberOfUsers]);
+
+  const stars = useMemo(() => {
+    const fullStars = Math.floor(ratings.averageRating);
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`h-4 w-4 ${
+          i < fullStars ? "fill-primary text-primary" : "text-primary"
+        }`}
+      />
+    ));
+  }, [ratings.averageRating]);
 
   return (
     <BeamsBackground>
@@ -87,39 +114,19 @@ export function HeroSection({ ratings, numberOfUsers }: HeroSectionProps) {
               </Link>
             </Button>
           </div>
+
           <div className="flex items-center justify-center space-x-4 text-sm">
             <div className="hidden items-center md:flex">
-              <div className="flex">
-                {Array(5)
-                  .fill(null)
-                  .map((_, i) => {
-                    const isFullStar = i < Math.floor(ratings.averageRating);
-
-                    return (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${
-                          isFullStar
-                            ? "fill-primary text-primary"
-                            : "text-primary"
-                        }`}
-                      />
-                    );
-                  })}
-              </div>
+              <div className="flex">{stars}</div>
               <span className="text-muted-foreground ml-2">
-                {new Intl.NumberFormat("en-US", {
-                  minimumFractionDigits: 1,
-                  maximumFractionDigits: 1,
-                }).format(ratings.averageRating)}{" "}
-                ({new Intl.NumberFormat("en-US").format(ratings.totalFeedbacks)}{" "}
-                rating{ratings.totalFeedbacks > 1 ? "s" : ""})
+                {ratingText.average} ({ratingText.total} rating
+                {ratings.totalFeedbacks > 1 ? "s" : ""})
               </span>
             </div>
             <div className="bg-border hidden h-4 w-px md:block" />
             <div className="text-muted-foreground">
-              Used by {new Intl.NumberFormat("en-US").format(numberOfUsers)}+{" "}
-              developer{numberOfUsers > 1 ? "s" : ""}
+              Used by {ratingText.users}+ developer
+              {numberOfUsers > 1 ? "s" : ""}
             </div>
           </div>
         </div>
