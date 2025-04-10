@@ -32,4 +32,27 @@ export const feedback = {
 
     return existingFeedback.length > 0 ? existingFeedback[0] : null;
   }),
+
+  getAverageRating: base.handler(async () => {
+    const feedbacks = await db
+      .select({
+        rating: feedbackTable.rating,
+      })
+      .from(feedbackTable);
+
+    if (feedbacks.length === 0) {
+      return {
+        averageRating: 0,
+        totalFeedbacks: 0,
+      };
+    }
+
+    const totalRating = feedbacks.reduce((acc, feedback) => {
+      return acc + feedback.rating;
+    }, 0);
+
+    const averageRating = totalRating / feedbacks.length;
+
+    return { averageRating: averageRating, totalFeedbacks: feedbacks.length };
+  }),
 };

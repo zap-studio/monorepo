@@ -8,39 +8,45 @@ import { HeroSection } from "@/components/zap/public/landing/hero";
 import { ProblemSection } from "@/components/zap/public/landing/problem";
 import { SolutionSection } from "@/components/zap/public/landing/solution";
 import { FeaturesSection } from "@/components/zap/public/landing/features";
+import { orpc } from "@/lib/orpc";
 
-const sections = [
-  {
-    id: "hero",
-    component: <HeroSection />,
-    delay: 0,
-    className:
-      "md:h-screen border-b bg-muted/50 flex items-center justify-center py-32 md:py-0",
-  },
-  { id: "problem", component: <ProblemSection />, delay: 0.1 },
-  {
-    id: "solution",
-    component: <SolutionSection />,
-    delay: 0.2,
-    className: "bg-muted/50 border-y",
-  },
-  { id: "testimonials", component: <TestimonialSection />, delay: 0.3 },
-  {
-    id: "features",
-    component: <FeaturesSection />,
-    delay: 0.4,
-    className: "bg-muted/50 border-y",
-  },
-  { id: "pricing", component: <PricingSection />, delay: 0.6 },
-  {
-    id: "faq",
-    component: <FaqSection />,
-    delay: 0.7,
-    className: "bg-muted/50 border-t",
-  },
-];
+export default async function LandingPage() {
+  const ratings = await orpc.feedback.getAverageRating.call();
+  const numberOfUsers = await orpc.users.getNumberOfUsers.call();
 
-export default function LandingPage() {
+  const sections = [
+    {
+      id: "hero",
+      component: (
+        <HeroSection ratings={ratings} numberOfUsers={numberOfUsers} />
+      ),
+      delay: 0,
+      className:
+        "md:h-screen border-b bg-muted/50 flex items-center justify-center py-32 md:py-0",
+    },
+    { id: "problem", component: <ProblemSection />, delay: 0.1 },
+    {
+      id: "solution",
+      component: <SolutionSection />,
+      delay: 0.2,
+      className: "bg-muted/50 border-y",
+    },
+    { id: "testimonials", component: <TestimonialSection />, delay: 0.3 },
+    {
+      id: "features",
+      component: <FeaturesSection />,
+      delay: 0.4,
+      className: "bg-muted/50 border-y",
+    },
+    { id: "pricing", component: <PricingSection />, delay: 0.6 },
+    {
+      id: "faq",
+      component: <FaqSection />,
+      delay: 0.7,
+      className: "bg-muted/50 border-t",
+    },
+  ];
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />

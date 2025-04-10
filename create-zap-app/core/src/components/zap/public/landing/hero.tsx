@@ -5,7 +5,15 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  ratings: {
+    averageRating: number;
+    totalFeedbacks: number;
+  };
+  numberOfUsers: number;
+}
+
+export function HeroSection({ ratings, numberOfUsers }: HeroSectionProps) {
   const [typedWord, setTypedWord] = useState("faster");
 
   const words = useMemo(
@@ -82,12 +90,18 @@ export function HeroSection() {
                 ))}
             </div>
             <span className="text-muted-foreground ml-2">
-              5.0 (2.5k+ reviews)
+              {new Intl.NumberFormat("en-US", {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+              }).format(ratings.averageRating)}{" "}
+              ({new Intl.NumberFormat("en-US").format(ratings.totalFeedbacks)}{" "}
+              ratings)
             </span>
           </div>
           <div className="bg-border hidden h-4 w-px md:block" />
           <div className="text-muted-foreground">
-            Used by 10,000+ developers
+            Used by {new Intl.NumberFormat("en-US").format(numberOfUsers)}+{" "}
+            developers
           </div>
         </div>
       </div>
