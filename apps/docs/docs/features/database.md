@@ -269,7 +269,7 @@ You can find all these tables in `src/db/schema/auth.ts` or by reading [Better A
 
 ### PWA Notifications Table
 
-If you enable the `pwa` plugin, there’s an extra table for push notifications:
+There’s an extra table for push notifications:
 
 ```typescript
 // src/db/schema/notifications.ts

@@ -6,19 +6,8 @@ import chalk from "chalk";
 import ora from "ora";
 import { exec } from "child_process";
 import { promisify } from "util";
-import type {
-  PackageManager,
-  PluginNames,
-  PluginsMetadata,
-  PluginMetadata,
-} from "./schemas/index.js";
-import plugins from "./plugins/index.js";
-import {
-  copyPluginFiles,
-  generateExampleEnv,
-  addPwaInit,
-  addPwaSchemaExport,
-} from "./utils/index.js";
+import type { PackageManager } from "./schemas/index.js";
+import { generateExampleEnv } from "./utils/index.js";
 import { fileURLToPath } from "url";
 import { ObjectLiteralExpression, Project } from "ts-morph";
 
@@ -44,23 +33,6 @@ async function main() {
   const packageManager =
     packageManagerResponse.packageManager as PackageManager;
 
-  // Prompt for plugins
-  const pluginsResponse = await inquirer.prompt([
-    {
-      type: "checkbox",
-      name: "plugins",
-      message: chalk.yellow("Which plugins do you want?"),
-      choices: plugins
-        .filter((plugin) => plugin.available)
-        .map((plugin: PluginMetadata) => plugin.name),
-    },
-  ]);
-  const selectedPluginsName = pluginsResponse.plugins as PluginNames;
-
-  const selectedPlugins: PluginsMetadata = plugins.filter(
-    (plugin: PluginMetadata) => selectedPluginsName.includes(plugin.name)
-  );
-
   // Get useful directory paths
   const outputDir = path.join(process.cwd(), "my-zap-app");
   const pluginsDir = path.join(__dirname, "./plugins");
@@ -77,80 +49,6 @@ async function main() {
   });
   spinner.text = "Copied core files";
 
-  // Determine required wrappers based on enabled plugins
-  const pluginList: PluginsMetadata = selectedPlugins.filter(
-    (plugin: PluginMetadata) => plugin.available
-  );
-  const requiredWrappers = new Set<string>();
-
-  for (const plugin of pluginList) {
-    requiredWrappers.add(plugin.name);
-  }
-
-  // Copy plugin wrappers from core/src/plugins/
-  const pluginsSrcDir = path.join(coreDir, "src/plugins");
-  const pluginsDestDir = path.join(outputDir, "src/plugins");
-  await fs.ensureDir(pluginsDestDir);
-
-  if (fs.existsSync(pluginsSrcDir)) {
-    const pluginWrapperFiles = await fs.readdir(pluginsSrcDir, {
-      withFileTypes: true,
-    });
-
-    for (const file of pluginWrapperFiles) {
-      if (!file.isFile()) continue;
-
-      const wrapperName = file.name.replace(".ts", "");
-
-      if (requiredWrappers.has(wrapperName)) {
-        const srcPath = path.join(pluginsSrcDir, file.name);
-        const destPath = path.join(pluginsDestDir, file.name);
-
-        await fs.copy(srcPath, destPath, { overwrite: true });
-
-        spinner.clear();
-        spinner.text = `Copied wrapper for ${wrapperName}`;
-      }
-    }
-  }
-
-  // Aggregate dependencies
-  const dependencies = new Set<string>();
-  const devDependencies = new Set<string>();
-
-  // Process each plugin
-  for (const plugin of pluginList) {
-    const pluginPath = path.join(pluginsDir, plugin.name);
-
-    if (!fs.existsSync(pluginPath)) {
-      spinner.fail(`Plugin ${plugin} not found`);
-      process.exit(1);
-    }
-
-    spinner.clear();
-    spinner.text = `Processing plugin: ${plugin}`;
-
-    // Copy every files from the plugin folder
-    await copyPluginFiles(pluginPath, outputDir, spinner);
-
-    // Add dependencies
-    if (plugin.dependencies) {
-      plugin.dependencies.forEach((dep: string) => dependencies.add(dep));
-    }
-
-    if (plugin.devDependencies) {
-      plugin.devDependencies.forEach((dep: string) => devDependencies.add(dep));
-    }
-  }
-
-  // Modify providers.tsx to add plugin initializations (e.g., initPwa)
-  spinner.clear();
-  spinner.text =
-    "Configuring providers, index.tsx, and auth-server.ts files...";
-  const isPwaEnabled = selectedPluginsName.includes("pwa");
-  await addPwaInit(outputDir, isPwaEnabled);
-  await addPwaSchemaExport(outputDir, isPwaEnabled);
-
   // Install dependencies
   spinner.clear();
   spinner.text = "Installing dependencies...";
@@ -163,18 +61,6 @@ async function main() {
           ? "pnpm install --force"
           : "bun install";
   await execAsync(installCmd, { cwd: outputDir });
-
-  // Install plugins dependencies and devDependencies
-  spinner.clear();
-  spinner.text = "Installing plugin dependencies...";
-  if (dependencies.size > 0) {
-    const deps = Array.from(dependencies).join(" ");
-    await execAsync(`${packageManager} add ${deps}`, { cwd: outputDir });
-  }
-  if (devDependencies.size > 0) {
-    const devDeps = Array.from(devDependencies).join(" ");
-    await execAsync(`${packageManager} add -D ${devDeps}`, { cwd: outputDir });
-  }
 
   // Update dependencies
   spinner.clear();
@@ -189,7 +75,7 @@ async function main() {
   // Generate .env file
   spinner.clear();
   spinner.text = "Generating .env file...";
-  await generateExampleEnv(outputDir, selectedPluginsName);
+  await generateExampleEnv(outputDir);
 
   spinner.succeed("Project setup complete!");
 

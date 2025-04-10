@@ -43,10 +43,6 @@ Zap.ts wants you to focus on building your app’s features, not on boring setup
 
 You can keep what you like or replace what you don’t need. For instance, if you don’t want push notifications, you can remove them.
 
-:::tip
-Check each plugin page to learn more. They explain how the plugin works and how to configure it.
-:::
-
 ## Environment Variables
 
 Update `.env.local` with your own settings. Example:

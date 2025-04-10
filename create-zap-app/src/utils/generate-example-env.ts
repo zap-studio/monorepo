@@ -1,8 +1,6 @@
 import { writeFileSync } from "fs";
 import { resolve } from "path";
-import plugins from "../plugins/index.js";
 import { generateBetterAuthSecret } from "./generate-better-auth-secret.js";
-import type { PluginNames } from "../schemas/index.js";
 
 const coreEnv = [
   "BETTER_AUTH_SECRET",
@@ -12,6 +10,10 @@ const coreEnv = [
   "SITE_URL",
   "DATABASE_URL",
   "RESEND_API_KEY",
+  "NEXT_PUBLIC_VAPID_PUBLIC_KEY",
+  "VAPID_PRIVATE_KEY",
+  "POLAR_ACCESS_TOKEN",
+  "POLAR_WEBHOOK_SECRET",
 ];
 
 /**
@@ -35,23 +37,9 @@ const coreEnv = [
  * // Generates an .env.local file with required env variables.
  * ```
  */
-export const generateExampleEnv = async (
-  outputDir: string,
-  selectedPlugins: PluginNames
-): Promise<void> => {
-  // Get all environment variables from selected plugins (without duplicates)
-  const pluginEnvVars = selectedPlugins
-    .flatMap((name) => {
-      const plugin = plugins.find((p) => p.name === name);
-      return plugin?.env || [];
-    })
-    .filter((envVar, index, self) => self.indexOf(envVar) === index);
-
-  // Sort all environment variables
-  const allEnvVars = [...coreEnv, ...pluginEnvVars].sort();
-
+export const generateExampleEnv = async (outputDir: string): Promise<void> => {
   // Generate .env.local content
-  const envContent = allEnvVars
+  const envContent = coreEnv
     .map((envVar) => {
       if (envVar === "BETTER_AUTH_SECRET") {
         const betterAuthSecret = generateBetterAuthSecret();

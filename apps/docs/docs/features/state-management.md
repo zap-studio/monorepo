@@ -125,16 +125,12 @@ export const usePushNotificationsStore = create<PushNotificationsStore>()(
 
 You can use `persist` in your own stores too! It’s great for things like user settings or form data that you want to keep.
 
-## More Stores in the Future
-
-As Zap.ts grows, new plugins might add more stores. For example, a `blog` plugin might add a store for managing blog posts. Since Zustand is the default way to manage state in Zap.ts, any new stores will follow the same pattern.
-
 ## Next Steps
 
 Now that you know how to use Zustand in Zap.ts, you can:
 
 - Try the counter example to practice creating your own store.
-- Enable the `pwa` plugin and use the `push-notifications` store to add push notifications.
+- Use the `push-notifications` store to add push notifications.
 - Check the [Zustand docs](https://zustand-demo.pmnd.rs/) for more features like middleware and devtools.
 
 If you need help, ask on [X](https://www.x.com/alexandretrotel/). Happy coding! ⚡

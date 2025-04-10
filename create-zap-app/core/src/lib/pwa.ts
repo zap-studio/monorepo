@@ -1,4 +1,11 @@
+import { usePushNotificationsStore } from "@/stores/push-notifications.store";
+import { useEffect } from "react";
 import * as webpush from "web-push";
+
+export const usePwa = () => {
+  const initialize = usePushNotificationsStore((state) => state.initialize);
+  useEffect(() => initialize(), [initialize]);
+};
 
 export function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);

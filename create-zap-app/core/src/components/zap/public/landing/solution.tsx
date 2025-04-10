@@ -112,18 +112,14 @@ function CommandCard({
         </AnimatedSpan>
 
         <AnimatedSpan delay={3000} className="text-green-500">
-          <span>✔ Installing plugin dependencies.</span>
-        </AnimatedSpan>
-
-        <AnimatedSpan delay={3500} className="text-green-500">
           <span>✔ Running prettier on the project.</span>
         </AnimatedSpan>
 
-        <AnimatedSpan delay={4000} className="text-blue-500">
+        <AnimatedSpan delay={3500} className="text-blue-500">
           <span>ℹ Added &apos;ai&apos; plugin.</span>
         </AnimatedSpan>
 
-        <TypingAnimation delay={4500} className="text-muted-foreground">
+        <TypingAnimation delay={4000} className="text-muted-foreground">
           Success! Project initialization completed.
         </TypingAnimation>
       </Terminal>

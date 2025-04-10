@@ -42,10 +42,22 @@ export default defineConfig({
             link: "/docs/features/overview",
           },
           {
+            text: "Admin Dashboard",
+            link: "/docs/features/admin-dashboard",
+          },
+          {
+            text: "AI Features",
+            link: "/docs/features/ai",
+          },
+          {
             text: "API Procedures",
             link: "/docs/features/api",
           },
           { text: "Authentication", link: "/docs/features/authentication" },
+          {
+            text: "Blog & CMS",
+            link: "/docs/features/blog",
+          },
           { text: "Database", link: "/docs/features/database" },
           {
             text: "Legal Pages",
@@ -60,37 +72,16 @@ export default defineConfig({
             link: "/docs/features/payments",
           },
           {
+            text: "PWA Support",
+            link: "/docs/features/pwa",
+          },
+          {
             text: "SEO Optimization",
             link: "/docs/features/seo",
           },
           {
             text: "State Management",
             link: "/docs/features/state-management",
-          },
-        ],
-      },
-      {
-        text: "Plugins",
-        items: [
-          {
-            text: "Overview",
-            link: "/docs/plugins/overview",
-          },
-          {
-            text: "Admin Dashboard",
-            link: "/docs/plugins/admin-dashboard",
-          },
-          {
-            text: "AI Features",
-            link: "/docs/plugins/ai",
-          },
-          {
-            text: "Blog & CMS",
-            link: "/docs/plugins/blog",
-          },
-          {
-            text: "PWA Support",
-            link: "/docs/plugins/pwa",
           },
         ],
       },

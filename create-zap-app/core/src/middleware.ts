@@ -14,12 +14,16 @@ const publicPaths = [
   "/_vercel/speed-insights/vitals",
   "/_vercel/insights/view",
 ];
+const blogPublicBasePath = "/blog";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public paths
-  if (publicPaths.includes(pathname)) {
+  if (
+    publicPaths.includes(pathname) ||
+    pathname.startsWith(blogPublicBasePath)
+  ) {
     return NextResponse.next();
   }
 

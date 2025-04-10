@@ -14,7 +14,7 @@ Zap.ts includes PWA support out of the box, enabling push notifications through 
 
 ### How It Works
 
-1. **PWA Plugin**: `src/plugins/pwa.ts` initializes push notifications using a Zustand store.
+1. **PWA Initialization**: `src/lib/pwa.ts` initializes push notifications using a Zustand store.
 2. **Store**: `src/stores/push-notifications.store.ts` manages subscription and notification logic.
 3. **Service Worker**: Handles background push events.
 
