@@ -3,7 +3,6 @@ import { defineConfig } from "vitepress";
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Zap.ts ⚡️",
-  description: "The boilerplate to build applications as fast as a zap.",
   lang: "en-US",
   head: [["link", { rel: "icon", href: "/favicon.ico" }]],
   lastUpdated: true,
