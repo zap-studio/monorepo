@@ -87,9 +87,6 @@ export function HeroSection({ ratings, numberOfUsers }: HeroSectionProps) {
                 .fill(null)
                 .map((_, i) => {
                   const isFullStar = i < Math.floor(ratings.averageRating);
-                  const isHalfStar =
-                    i === Math.floor(ratings.averageRating) &&
-                    ratings.averageRating % 1 !== 0;
 
                   return (
                     <Star
@@ -97,9 +94,7 @@ export function HeroSection({ ratings, numberOfUsers }: HeroSectionProps) {
                       className={`h-4 w-4 ${
                         isFullStar
                           ? "fill-primary text-primary"
-                          : isHalfStar
-                            ? "fill-primary text-muted-foreground"
-                            : "text-muted-foreground"
+                          : "text-primary"
                       }`}
                     />
                   );
