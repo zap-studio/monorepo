@@ -16,6 +16,16 @@ export default defineConfig({
         text: "The Team",
         link: "/team",
       },
+      {
+        text: "Demo",
+        link: "https://demo.zap-ts.alexandretrotel.org",
+        target: "_blank",
+      },
+      {
+        text: "GitHub",
+        link: "https://github.com/alexandretrotel/zap.ts",
+        target: "_blank",
+      },
     ],
 
     search: {
