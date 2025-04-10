@@ -5,7 +5,7 @@ import { createORPCReactQueryUtils, RouterUtils } from "@orpc/react-query";
 import { RouterClient } from "@orpc/server";
 import { router } from "@/rpc/router";
 import { createORPCClient } from "@orpc/client";
-import { link } from "@/lib/orpc";
+import { link } from "@/lib/orpc-client";
 
 type RouterClientType = RouterClient<typeof router>;
 type ORPCReactUtils = RouterUtils<RouterClient<typeof router>>;

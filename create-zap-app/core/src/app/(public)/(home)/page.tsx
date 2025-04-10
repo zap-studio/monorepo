@@ -8,11 +8,11 @@ import { HeroSection } from "@/components/zap/public/landing/hero";
 import { ProblemSection } from "@/components/zap/public/landing/problem";
 import { SolutionSection } from "@/components/zap/public/landing/solution";
 import { FeaturesSection } from "@/components/zap/public/landing/features";
-import { orpc } from "@/lib/orpc";
+import { orpcServer } from "@/lib/orpc-server";
 
 export default async function LandingPage() {
-  const ratings = await orpc.feedback.getAverageRating.call();
-  const numberOfUsers = await orpc.users.getNumberOfUsers.call();
+  const ratings = await orpcServer.feedback.getAverageRating();
+  const numberOfUsers = await orpcServer.users.getNumberOfUsers();
 
   const sections = [
     {

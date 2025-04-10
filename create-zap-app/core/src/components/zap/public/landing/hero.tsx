@@ -95,13 +95,13 @@ export function HeroSection({ ratings, numberOfUsers }: HeroSectionProps) {
                 maximumFractionDigits: 1,
               }).format(ratings.averageRating)}{" "}
               ({new Intl.NumberFormat("en-US").format(ratings.totalFeedbacks)}{" "}
-              ratings)
+              rating{ratings.totalFeedbacks > 1 ? "s" : ""})
             </span>
           </div>
           <div className="bg-border hidden h-4 w-px md:block" />
           <div className="text-muted-foreground">
             Used by {new Intl.NumberFormat("en-US").format(numberOfUsers)}+{" "}
-            developers
+            developer{numberOfUsers > 1 ? "s" : ""}
           </div>
         </div>
       </div>

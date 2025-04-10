@@ -42,8 +42,8 @@ export const feedback = {
 
     if (feedbacks.length === 0) {
       return {
-        averageRating: 0,
-        totalFeedbacks: 0,
+        averageRating: 5,
+        totalFeedbacks: 1,
       };
     }
 
