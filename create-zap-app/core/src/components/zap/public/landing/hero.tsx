@@ -85,9 +85,25 @@ export function HeroSection({ ratings, numberOfUsers }: HeroSectionProps) {
             <div className="flex">
               {Array(5)
                 .fill(null)
-                .map((_, i) => (
-                  <Star key={i} className="fill-primary text-primary h-4 w-4" />
-                ))}
+                .map((_, i) => {
+                  const isFullStar = i < Math.floor(ratings.averageRating);
+                  const isHalfStar =
+                    i === Math.floor(ratings.averageRating) &&
+                    ratings.averageRating % 1 !== 0;
+
+                  return (
+                    <Star
+                      key={i}
+                      className={`h-4 w-4 ${
+                        isFullStar
+                          ? "fill-primary text-primary"
+                          : isHalfStar
+                            ? "fill-primary text-muted-foreground"
+                            : "text-muted-foreground"
+                      }`}
+                    />
+                  );
+                })}
             </div>
             <span className="text-muted-foreground ml-2">
               {new Intl.NumberFormat("en-US", {
