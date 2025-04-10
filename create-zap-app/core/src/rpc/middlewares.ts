@@ -1,26 +1,32 @@
 import { auth } from "@/lib/auth-server";
-import { ORPCError, os } from "@orpc/server";
+import { os } from "@orpc/server";
 
-export const base = os.$context<{
-  headers: Headers;
-}>();
-
-export const authMiddleware = base.middleware(async ({ context, next }) => {
-  const session = await auth.api.getSession({
-    headers: context.headers,
+export const base = os
+  .$context<{
+    headers: Headers;
+  }>()
+  .errors({
+    UNAUTHORIZED: {},
   });
 
-  if (!session) {
-    throw new ORPCError("UNAUTHORIZED", {
-      message: "You must be logged in.",
+export const authMiddleware = base.middleware(
+  async ({ context, next, errors }) => {
+    const session = await auth.api.getSession({
+      headers: context.headers,
     });
-  }
 
-  const result = await next({
-    context: {
-      session,
-    },
-  });
+    if (!session) {
+      throw errors.UNAUTHORIZED({
+        message: "You must be logged in.",
+      });
+    }
 
-  return result;
-});
+    const result = await next({
+      context: {
+        session,
+      },
+    });
+
+    return result;
+  },
+);
