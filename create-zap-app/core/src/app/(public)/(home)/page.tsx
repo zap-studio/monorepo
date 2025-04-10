@@ -9,6 +9,7 @@ import { ProblemSection } from "@/components/zap/public/landing/problem";
 import { SolutionSection } from "@/components/zap/public/landing/solution";
 import { FeaturesSection } from "@/components/zap/public/landing/features";
 import { orpcServer } from "@/lib/orpc-server";
+import { cn } from "@/lib/utils";
 
 export default async function LandingPage() {
   const ratings = await orpcServer.feedback.getAverageRating();
@@ -22,7 +23,7 @@ export default async function LandingPage() {
       ),
       delay: 0,
       className:
-        "md:h-screen border-b bg-muted/50 flex items-center justify-center py-32 md:py-0",
+        "md:h-screen border-b bg-muted/50 flex items-center justify-center  md:py-0",
     },
     { id: "problem", component: <ProblemSection />, delay: 0.1 },
     {
@@ -56,7 +57,10 @@ export default async function LandingPage() {
           <AnimatedSection
             key={id}
             id={id}
-            className={`w-full py-12 md:py-24 lg:py-32 ${className}`}
+            className={cn(
+              id !== "hero" && `w-full py-12 md:py-24 lg:py-32`,
+              className,
+            )}
             delay={delay}
           >
             {component}
