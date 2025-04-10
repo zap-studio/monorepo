@@ -8,6 +8,7 @@ export const feedback = pgTable("feedback", {
     .default(sql`gen_random_uuid()`),
   userId: text("user_id")
     .notNull()
+    .unique()
     .references(() => user.id, { onDelete: "cascade" }),
   rating: integer("rating").notNull(),
   description: text("description"),
