@@ -58,6 +58,10 @@ export const ZAP_DEFAULT_SETTINGS = {
       },
     ],
   },
+  SENTRY: {
+    ORG: "example-org",
+    PROJECT: "example-project",
+  },
 };
 
 export const ZAP_DEFAULT_METADATA: Metadata = {
