@@ -79,6 +79,12 @@ async function main() {
 
   spinner.succeed("Project setup complete!");
 
+  console.log(
+    chalk.yellow(
+      "⚠️ After installation, please ensure you populate the .env file with the required values to get started."
+    )
+  );
+
   console.log(chalk.bold.green("\n🎉 Project created successfully!"));
   console.log("");
   console.log(chalk.cyan("Get started:"));
