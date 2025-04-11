@@ -11,11 +11,11 @@ import { execSync } from "child_process";
  *
  * @example
  * ```ts
- * const secret = generateBetterAuthSecret();
+ * const secret = generateAuthSecret();
  * console.log(secret); // Random base64 string
  * ```
  */
-export const generateBetterAuthSecret = (): string => {
+export const generateAuthSecret = (): string => {
   try {
     const secret = execSync("openssl rand -base64 32", {
       encoding: "utf-8",

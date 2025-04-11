@@ -7,7 +7,7 @@ import ora from "ora";
 import { exec } from "child_process";
 import { promisify } from "util";
 import type { PackageManager } from "./schemas/index.js";
-import { generateExampleEnv } from "./utils/index.js";
+import { generateEnv } from "./utils/index.js";
 import { fileURLToPath } from "url";
 import { ObjectLiteralExpression, Project } from "ts-morph";
 
@@ -75,7 +75,7 @@ async function main() {
   // Generate .env file
   spinner.clear();
   spinner.text = "Generating .env file...";
-  await generateExampleEnv(outputDir);
+  await generateEnv(outputDir);
 
   spinner.succeed("Project setup complete!");
 

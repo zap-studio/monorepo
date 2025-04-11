@@ -1,6 +1,6 @@
 import { writeFileSync } from "fs";
 import { resolve } from "path";
-import { generateBetterAuthSecret } from "./generate-better-auth-secret.js";
+import { generateAuthSecret } from "./generate-auth-secret.js";
 
 const coreEnv = [
   "BETTER_AUTH_SECRET",
@@ -35,16 +35,16 @@ const coreEnv = [
  *
  * @example
  * ```ts
- * await generateExampleEnv(["pluginA", "pluginB"]);
+ * await generateEnv(["pluginA", "pluginB"]);
  * // Generates an .env.local file with required env variables.
  * ```
  */
-export const generateExampleEnv = async (outputDir: string): Promise<void> => {
+export const generateEnv = async (outputDir: string): Promise<void> => {
   // Generate .env.local content
   const envContent = coreEnv
     .map((envVar) => {
       if (envVar === "BETTER_AUTH_SECRET") {
-        const betterAuthSecret = generateBetterAuthSecret();
+        const betterAuthSecret = generateAuthSecret();
         return `${envVar}="${betterAuthSecret}"`;
       }
 
