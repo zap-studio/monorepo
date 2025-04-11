@@ -1,4 +1,8 @@
-// ZAP:TODO - Change the current config file to your own configuration
+/**
+ * ZAP:TODO
+ * - Change the current config file to your own configuration
+ * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
+ */
 import { Metadata } from "next";
 
 export const VERCEL = process.env.VERCEL_ENV ? true : false;

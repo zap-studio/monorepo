@@ -20,5 +20,5 @@ self.addEventListener("notificationclick", function (event) {
   event.notification.close();
   event.waitUntil(
     clients.openWindow("https://demo.zap-ts.alexandretrotel.org"),
-  ); // ZAP:TODO - Add the URL of your website
+  ); // Make sure the URL matches your app's URL
 });
