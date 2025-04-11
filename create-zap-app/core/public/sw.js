@@ -17,5 +17,7 @@ self.addEventListener("push", function (event) {
 self.addEventListener("notificationclick", function (event) {
   console.log("Notification click received.");
   event.notification.close();
-  event.waitUntil(clients.openWindow("<https://your-website.com>")); // ZAP:TODO - Add the URL of your website
+  event.waitUntil(
+    clients.openWindow("https://demo.zap-ts.alexandretrotel.org"),
+  ); // ZAP:TODO - Add the URL of your website
 });
