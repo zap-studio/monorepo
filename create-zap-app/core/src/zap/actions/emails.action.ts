@@ -1,6 +1,6 @@
 "use server";
 
-import { resend } from "@/zap/lib/resend";
+import { resend } from "@/zap/lib/resend/server";
 import { ForgotPasswordEmail } from "@/zap/components/emails/forgot-password";
 import { VerificationEmail } from "@/zap/components/emails/verification";
 import { JSX } from "react";

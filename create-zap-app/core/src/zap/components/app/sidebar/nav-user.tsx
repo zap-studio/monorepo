@@ -12,7 +12,7 @@ import {
   Sparkles,
   LucideIcon,
 } from "lucide-react";
-import { authClient } from "@/zap/lib/auth-client";
+import { authClient } from "@/zap/lib/auth/client";
 import {
   useSidebar,
   SidebarMenu,

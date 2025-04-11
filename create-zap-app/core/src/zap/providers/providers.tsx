@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { ThemeProvider } from "../../providers/theme.provider";
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
-import SuspendedPostHogPageView from "@/zap/components/posthog-page-view";
+import SuspendedPostHogPageView from "@/zap/components/analytics/posthog-page-view";
 import { FLAGS } from "@/data/flags";
 
 interface ProvidersProps {

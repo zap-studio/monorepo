@@ -1,13 +1,13 @@
-import { Navbar } from "@/zap/components/public/navbar";
-import { AnimatedSection } from "@/zap/components/public/animated";
-import { TestimonialSection } from "@/zap/components/public/landing/testimonial";
-import { PricingSection } from "@/zap/components/public/landing/pricing";
-import { FaqSection } from "@/zap/components/public/landing/faq";
-import Footer from "@/zap/components/public/footer";
-import { HeroSection } from "@/zap/components/public/landing/hero";
-import { SolutionSection } from "@/zap/components/public/landing/solution";
-import { FeaturesSection } from "@/zap/components/public/landing/features";
-import { orpcServer } from "@/zap/lib/orpc-server";
+import { Navbar } from "@/zap/components/external/navbar";
+import { AnimatedSection } from "@/zap/components/external/animated";
+import { TestimonialSection } from "@/zap/components/external/landing/testimonial";
+import { PricingSection } from "@/zap/components/external/landing/pricing";
+import { FaqSection } from "@/zap/components/external/landing/faq";
+import Footer from "@/zap/components/external/footer";
+import { HeroSection } from "@/zap/components/external/landing/hero";
+import { SolutionSection } from "@/zap/components/external/landing/solution";
+import { FeaturesSection } from "@/zap/components/external/landing/features";
+import { orpcServer } from "@/zap/lib/orpc/server";
 import { cn } from "@/lib/utils";
 
 const DELAY_INCREMENT = 0.1;

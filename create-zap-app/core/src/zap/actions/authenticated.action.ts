@@ -1,8 +1,8 @@
 "use server";
 
-import { auth } from "@/zap/lib/auth-server";
+import { auth } from "@/zap/lib/auth/server";
 import { headers } from "next/headers";
-import type { Session } from "@/zap/lib/auth-client";
+import type { Session } from "@/zap/lib/auth/client";
 
 export const isAuthenticated = async () => {
   const session = await getSession();

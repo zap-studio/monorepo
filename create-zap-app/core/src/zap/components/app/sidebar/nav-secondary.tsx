@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { useState } from "react";
-import { FeedbackDialog } from "./ui/feedback-dialog";
+import { FeedbackDialog } from "./feedback-dialog";
 
 export function NavSecondary({
   ...props

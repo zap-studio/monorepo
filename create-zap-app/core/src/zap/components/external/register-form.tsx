@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { authClient } from "@/zap/lib/auth-client";
+import { authClient } from "@/zap/lib/auth/client";
 import { toast } from "sonner";
 import {
   Form,

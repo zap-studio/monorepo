@@ -19,7 +19,7 @@ interface ApiError {
   message: string;
 }
 
-export function usePushNotification() {
+export function usePushNotifications() {
   const store = usePushNotificationsStore();
 
   const { trigger: subscribeTrigger, isMutating: isSubscribing } =
