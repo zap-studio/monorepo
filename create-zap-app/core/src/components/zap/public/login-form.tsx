@@ -94,7 +94,7 @@ export function LoginForm({
       }
 
       if (data) {
-        if (FLAGS.IS_EMAIL_VERIFICATION_REQUIRED && !data.user.emailVerified) {
+        if (FLAGS.REQUIRE_EMAIL_VERIFICATION && !data.user.emailVerified) {
           toast.error(
             "Please verify your email address. An email has been sent.",
           );
@@ -125,7 +125,7 @@ export function LoginForm({
       <Card className="border shadow-none">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
-          {FLAGS.IS_SOCIAL_PROVIDER_ENABLED && (
+          {FLAGS.ENABLE_SOCIAL_PROVIDER && (
             <CardDescription>
               Login with your Apple or Google account
             </CardDescription>
@@ -133,7 +133,7 @@ export function LoginForm({
         </CardHeader>
         <CardContent>
           <div className="grid gap-6">
-            {FLAGS.IS_SOCIAL_PROVIDER_ENABLED && (
+            {FLAGS.ENABLE_SOCIAL_PROVIDER && (
               <>
                 <div className="flex flex-col gap-4">
                   <SocialProviderButton

@@ -1,9 +1,12 @@
+const IS_VERCEL = process.env.VERCEL === "1";
+
 // ZAP:TODO configure the flag and add your own
 export const FLAGS = {
   VERCEL: {
-    ANALYTICS_ENABLED: true,
-    SPEED_INSIGHTS_ENABLED: true,
+    ENABLE_ANALYTICS: IS_VERCEL,
+    ENABLE_SPEED_INSIGHTS: IS_VERCEL,
   },
-  IS_SOCIAL_PROVIDER_ENABLED: true,
-  IS_EMAIL_VERIFICATION_REQUIRED: true,
+  ENABLE_SOCIAL_PROVIDER: true,
+  REQUIRE_EMAIL_VERIFICATION: true,
+  ENABLE_POSTHOG: true,
 };

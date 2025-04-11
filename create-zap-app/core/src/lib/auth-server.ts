@@ -31,7 +31,7 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: MINIMUM_PASSWORD_LENGTH,
     maxPasswordLength: MAXIMUM_PASSWORD_LENGTH,
-    requireEmailVerification: FLAGS.IS_EMAIL_VERIFICATION_REQUIRED,
+    requireEmailVerification: FLAGS.REQUIRE_EMAIL_VERIFICATION,
     sendResetPassword: async ({ user, url }) => {
       const { canSend, timeLeft } = await canSendEmail(user.id);
       if (!canSend) {

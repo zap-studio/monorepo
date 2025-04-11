@@ -84,6 +84,8 @@
     "next-sitemap": "^4.2.3",
     "next-themes": "^0.4.6",
     "nextjs-toploader": "^3.8.16",
+    "posthog-js": "^1.235.5",
+    "posthog-node": "^4.11.3",
     "react": "19.0.0",
     "react-day-picker": "8.10.1",
     "react-dom": "19.0.0",
