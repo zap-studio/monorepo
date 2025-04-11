@@ -23,7 +23,7 @@ export default async function LandingPage() {
         <HeroSection ratings={ratings} numberOfUsers={numberOfUsers} />
       ),
       className:
-        "md:h-[calc(100vh-4rem)] border-b bg-muted/50 flex items-center justify-center md:py-0 overflow-hidden",
+        "h-[calc(100vh-4rem)] border-b bg-muted/50 flex items-center justify-center md:py-0 overflow-hidden",
     },
     {
       id: "solution",

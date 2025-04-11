@@ -205,7 +205,7 @@ function BeamsBackgroundComponent({
         style={{ backdropFilter: "blur(30px)" }}
       />
 
-      <div className="relative z-10 flex h-[500px] w-full items-center justify-center md:h-full">
+      <div className="relative z-10 flex h-full w-full items-center justify-center">
         {children}
       </div>
     </div>
