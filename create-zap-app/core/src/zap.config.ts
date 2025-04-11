@@ -92,7 +92,7 @@ export const ZAP_DEFAULT_METADATA: Metadata = {
     siteName: APP_NAME,
     images: [
       {
-        url: `/og.png`,
+        url: `${BASE_URL}/og.png`,
         width: 1200,
         height: 630,
         alt: `${APP_NAME} Open Graph Image`,
