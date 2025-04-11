@@ -2,7 +2,7 @@ import "./globals.css";
 
 import type { Metadata } from "next";
 import { Geist as Font } from "next/font/google";
-import Providers from "@/providers/providers";
+import Providers from "@/zap/providers/providers";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FLAGS } from "@/data/flags";

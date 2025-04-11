@@ -1,6 +1,6 @@
-import { SYSTEM_PROMPT } from "@/data/ai";
-import { getModel } from "@/lib/ai";
-import { AIProviderEnumSchema } from "@/schemas/ai.schema";
+import { SYSTEM_PROMPT } from "@/zap/data/ai";
+import { getModel } from "@/zap/lib/ai";
+import { AIProviderEnumSchema } from "@/zap/schemas/ai.schema";
 import { streamText } from "ai";
 import { z } from "zod";
 

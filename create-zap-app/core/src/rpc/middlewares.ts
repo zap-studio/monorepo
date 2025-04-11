@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth-server";
+import { auth } from "@/zap/lib/auth-server";
 import { os } from "@orpc/server";
 
 export const base = os

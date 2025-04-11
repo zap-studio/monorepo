@@ -1,13 +1,13 @@
-import { Navbar } from "@/components/zap/public/navbar";
-import { AnimatedSection } from "@/components/zap/public/animated";
-import { TestimonialSection } from "@/components/zap/public/landing/testimonial";
-import { PricingSection } from "@/components/zap/public/landing/pricing";
-import { FaqSection } from "@/components/zap/public/landing/faq";
-import Footer from "@/components/zap/public/footer";
-import { HeroSection } from "@/components/zap/public/landing/hero";
-import { SolutionSection } from "@/components/zap/public/landing/solution";
-import { FeaturesSection } from "@/components/zap/public/landing/features";
-import { orpcServer } from "@/lib/orpc-server";
+import { Navbar } from "@/zap/components/public/navbar";
+import { AnimatedSection } from "@/zap/components/public/animated";
+import { TestimonialSection } from "@/zap/components/public/landing/testimonial";
+import { PricingSection } from "@/zap/components/public/landing/pricing";
+import { FaqSection } from "@/zap/components/public/landing/faq";
+import Footer from "@/zap/components/public/footer";
+import { HeroSection } from "@/zap/components/public/landing/hero";
+import { SolutionSection } from "@/zap/components/public/landing/solution";
+import { FeaturesSection } from "@/zap/components/public/landing/features";
+import { orpcServer } from "@/zap/lib/orpc-server";
 import { cn } from "@/lib/utils";
 
 const DELAY_INCREMENT = 0.1;

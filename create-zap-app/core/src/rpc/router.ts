@@ -1,6 +1,6 @@
-import { example } from "./procedures/example.rpc";
-import { feedback } from "./procedures/feedback.rpc";
-import { users } from "./procedures/users.rpc";
+import { example } from "../zap/rpc/procedures/example.rpc";
+import { feedback } from "../zap/rpc/procedures/feedback.rpc";
+import { users } from "../zap/rpc/procedures/users.rpc";
 
 export const router = {
   example,
