@@ -61,6 +61,8 @@ RESEND_API_KEY=your_resend_api_key
 SITE_URL=your_site_url
 NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
 NEXT_PUBLIC_POSTHOG_HOST=your_posthog_host
+NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn
+SENTRY_AUTH_TOKEN_your_sentry_auth_token
 ```
 
 These connect your app to services like the database or email. You can remove the ones you don't need.
@@ -74,7 +76,7 @@ You can use `DATABASE_URL` with any database you like, such as Supabase or your 
 To get started, make sure to configure your app settings in:
 
 ```bash
-/src/zap.config.ts
+zap.config.ts
 ```
 
 This file defines environment-aware defaults, feature flags, and app behavior like:
