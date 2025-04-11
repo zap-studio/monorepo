@@ -13,14 +13,16 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils"; // assuming you use this for conditional class names
 
 export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
+  const yearlyDiscount = 0.2;
 
   const pricingPlans = [
     {
       title: "Free",
-      price: { monthly: "$0", yearly: "$0" },
+      price: { monthly: 0 },
       description: "Perfect for side projects and experiments",
       features: [
         "Core boilerplate code",
@@ -33,7 +35,7 @@ export function PricingSection() {
     },
     {
       title: "Pro",
-      price: { monthly: "$29", yearly: "$279" },
+      price: { monthly: 29 },
       description: "For professional developers and small teams",
       features: [
         "Everything in Free",
@@ -46,11 +48,10 @@ export function PricingSection() {
       buttonText: "Get Started",
       buttonVariant: "default" as const,
       popular: true,
-      savings: 50,
     },
     {
       title: "Enterprise",
-      price: { monthly: "Custom", yearly: "Custom" },
+      price: { monthly: "Custom" },
       description: "For large teams and organizations",
       features: [
         "Everything in Pro",
@@ -66,33 +67,34 @@ export function PricingSection() {
   ];
 
   const renderPrice = (plan: (typeof pricingPlans)[0]) => {
-    const price = isYearly ? plan.price.yearly : plan.price.monthly;
-    const period = isYearly ? "per year" : "per month";
+    const isCustom = typeof plan.price.monthly === "string";
 
-    const monthlyPrice = parseFloat(plan.price.monthly.replace("$", ""));
-    const yearlyPrice = parseFloat(plan.price.yearly.replace("$", ""));
-    const savings =
-      plan.savings && isYearly && plan.price.monthly !== plan.price.yearly
-        ? (monthlyPrice * 12 - yearlyPrice).toFixed(2)
-        : null;
+    let displayPrice: string | number = plan.price.monthly;
+
+    if (!isCustom && isYearly) {
+      const discountedMonthly =
+        Number(plan.price.monthly) * (1 - yearlyDiscount);
+      displayPrice = `$${discountedMonthly.toFixed(2)}`;
+    } else if (!isCustom) {
+      displayPrice = `$${Number(plan.price.monthly).toFixed(2)}`;
+    }
 
     return (
-      <div className="mt-2 flex flex-col items-start space-y-1 text-left">
+      <div
+        className={cn(
+          "mt-2 flex flex-col items-start space-y-1 text-left transition-all duration-500",
+        )}
+      >
         <div className="flex items-end space-x-2">
           <span className="text-4xl font-extrabold tracking-tight">
-            {price}
+            {displayPrice}
           </span>
-          {plan.title !== "Enterprise" && (
+          {!isCustom && (
             <span className="text-muted-foreground mb-1 text-sm font-medium">
-              {period}
+              /month
             </span>
           )}
         </div>
-        {savings && (
-          <span className="rounded-md bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
-            Save ${savings}
-          </span>
-        )}
       </div>
     );
   };
@@ -106,7 +108,11 @@ export function PricingSection() {
         <p className="text-muted-foreground max-w-[85%] md:text-xl">
           Choose the plan that&apos;s right for you and start building today.
         </p>
-        <PricingToggle onToggle={setIsYearly} />
+        <PricingToggle
+          isYearly={isYearly}
+          onToggle={setIsYearly}
+          yearlyDiscount={yearlyDiscount}
+        />
       </div>
 
       <div className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -149,13 +155,16 @@ export function PricingSection() {
 
 interface PricingToggleProps {
   onToggle: (isYearly: boolean) => void;
+  isYearly: boolean;
+  yearlyDiscount: number;
 }
 
-function PricingToggle({ onToggle }: PricingToggleProps) {
-  const [isYearly, setIsYearly] = useState(false);
-
+function PricingToggle({
+  onToggle,
+  isYearly,
+  yearlyDiscount = 0.2,
+}: PricingToggleProps) {
   const handleToggle = (checked: boolean) => {
-    setIsYearly(checked);
     onToggle(checked);
   };
 
@@ -172,12 +181,18 @@ function PricingToggle({ onToggle }: PricingToggleProps) {
         checked={isYearly}
         onCheckedChange={handleToggle}
       />
-      <Label
-        htmlFor="pricing-toggle"
-        className={isYearly ? "font-medium" : "text-muted-foreground"}
-      >
-        Yearly
-      </Label>
+      <div className="flex items-center space-x-1">
+        <Label
+          htmlFor="pricing-toggle"
+          className={isYearly ? "font-medium" : "text-muted-foreground"}
+        >
+          Yearly
+        </Label>
+
+        <span className="animate-pulse rounded-md bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+          Save {(yearlyDiscount * 100).toFixed(0)}%
+        </span>
+      </div>
     </div>
   );
 }

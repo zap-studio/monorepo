@@ -5,7 +5,6 @@ import { PricingSection } from "@/components/zap/public/landing/pricing";
 import { FaqSection } from "@/components/zap/public/landing/faq";
 import Footer from "@/components/zap/public/footer";
 import { HeroSection } from "@/components/zap/public/landing/hero";
-import { ProblemSection } from "@/components/zap/public/landing/problem";
 import { SolutionSection } from "@/components/zap/public/landing/solution";
 import { FeaturesSection } from "@/components/zap/public/landing/features";
 import { orpcServer } from "@/lib/orpc-server";
@@ -25,25 +24,24 @@ export default async function LandingPage() {
       className:
         "md:h-screen border-b bg-muted/50 flex items-center justify-center  md:py-0",
     },
-    { id: "problem", component: <ProblemSection />, delay: 0.1 },
     {
       id: "solution",
       component: <SolutionSection />,
-      delay: 0.2,
+      delay: 0.1,
       className: "bg-muted/50 border-y",
     },
-    { id: "testimonials", component: <TestimonialSection />, delay: 0.3 },
+    { id: "testimonials", component: <TestimonialSection />, delay: 0.2 },
     {
       id: "features",
       component: <FeaturesSection />,
-      delay: 0.4,
+      delay: 0.3,
       className: "bg-muted/50 border-y",
     },
-    { id: "pricing", component: <PricingSection />, delay: 0.6 },
+    { id: "pricing", component: <PricingSection />, delay: 0.4 },
     {
       id: "faq",
       component: <FaqSection />,
-      delay: 0.7,
+      delay: 0.5,
       className: "bg-muted/50 border-t",
     },
   ];
