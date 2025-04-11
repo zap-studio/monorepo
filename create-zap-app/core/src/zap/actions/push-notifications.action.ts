@@ -6,10 +6,10 @@ import { eq } from "drizzle-orm";
 import webpush from "web-push";
 import { getUserId } from "@/zap/actions/authenticated.action";
 import { SubscribeUserSchema } from "@/zap/schemas/push-notifications.schema";
+import { SETTINGS } from "@/data/settings";
 
-// ZAP:TODO - replace with your email
 webpush.setVapidDetails(
-  "mailto:your-email@example.com",
+  `mailto:${SETTINGS.NOTIFICATIONS.VAPID_MAIL}`,
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
   process.env.VAPID_PRIVATE_KEY!,
 );

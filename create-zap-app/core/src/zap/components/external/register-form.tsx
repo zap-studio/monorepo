@@ -59,8 +59,6 @@ const formSchema = z
 
 type RegisterFormValues = z.infer<typeof formSchema>;
 
-const REDIRECT_URL = "/login"; // ZAP:TODO: Change the redirect URL to the desired page after registration
-
 export function RegisterForm({
   className,
   ...props
@@ -118,7 +116,7 @@ export function RegisterForm({
         } else {
           toast.success("Registration successful!");
         }
-        router.push(REDIRECT_URL);
+        router.push(SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_UP);
       } else {
         toast.error("Registration failed. Please try again.");
       }
@@ -147,11 +145,11 @@ export function RegisterForm({
                 <div className="flex flex-col gap-4">
                   <SocialProviderButton
                     provider="apple"
-                    redirectURL={REDIRECT_URL}
+                    redirectURL={SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_UP}
                   />
                   <SocialProviderButton
                     provider="google"
-                    redirectURL={REDIRECT_URL}
+                    redirectURL={SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_UP}
                   />
                 </div>
 

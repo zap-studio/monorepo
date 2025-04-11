@@ -40,8 +40,6 @@ const formSchema = z.object({
 
 type LoginFormValues = z.infer<typeof formSchema>;
 
-const REDIRECT_URL = "/app"; // ZAP:TODO: Change the redirect URL to the desired page after login
-
 export function LoginForm({
   className,
   ...props
@@ -110,7 +108,7 @@ export function LoginForm({
         }
 
         toast.success("Login successful!");
-        router.push(callbackURL || REDIRECT_URL);
+        router.push(callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN);
       } else {
         toast.error("Login failed. Please try again.");
       }
@@ -139,11 +137,11 @@ export function LoginForm({
                 <div className="flex flex-col gap-4">
                   <SocialProviderButton
                     provider="apple"
-                    redirectURL={REDIRECT_URL}
+                    redirectURL={SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN}
                   />
                   <SocialProviderButton
                     provider="google"
-                    redirectURL={REDIRECT_URL}
+                    redirectURL={SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN}
                   />
                 </div>
 

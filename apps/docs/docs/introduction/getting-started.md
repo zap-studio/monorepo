@@ -45,7 +45,7 @@ You can keep what you like or replace what you don’t need. For instance, if yo
 
 ## Environment Variables
 
-Update `.env.local` with your own settings. Example:
+Update `.env` with your own settings. Example:
 
 ```
 DATABASE_URL=your_database_url
@@ -59,6 +59,8 @@ POLAR_ACCESS_TOKEN=your_polar_access_token
 POLAR_WEBHOOK_SECRET=your_polar_webhook_secret
 RESEND_API_KEY=your_resend_api_key
 SITE_URL=your_site_url
+NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
+NEXT_PUBLIC_POSTHOG_HOST=your_posthog_host
 ```
 
 These connect your app to services like the database or email. You can remove the ones you don't need.
@@ -66,6 +68,23 @@ These connect your app to services like the database or email. You can remove th
 ::: tip
 You can use `DATABASE_URL` with any database you like, such as Supabase or your own PostgreSQL, instead of Neon.
 :::
+
+## Configure the App
+
+To get started, make sure to configure your app settings in:
+
+```bash
+/src/zap.config.ts
+```
+
+This file defines environment-aware defaults, feature flags, and app behavior like:
+
+- Auth requirements and redirect paths
+- Whether to enable analytics with PostHog
+- PWA settings (icons, theme, description)
+- Email rate limiting and subject prefix
+
+It’s fully customizable and acts as the core config hub for your app logic.
 
 ## Quick Scripts
 

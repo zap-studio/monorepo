@@ -1,11 +1,9 @@
-// ZAP:TODO - add the assets for notification icon and badge
 self.addEventListener("push", function (event) {
   if (event.data) {
     const data = event.data.json();
     const options = {
       body: data.body,
       icon: data.icon || "/icon.png",
-      badge: "/badge.png",
       vibrate: [100, 50, 100],
       data: {
         dateOfArrival: Date.now(),
@@ -19,5 +17,5 @@ self.addEventListener("push", function (event) {
 self.addEventListener("notificationclick", function (event) {
   console.log("Notification click received.");
   event.notification.close();
-  event.waitUntil(clients.openWindow("<https://your-website.com>")); // ZAP:TODO - add the URL of your website
+  event.waitUntil(clients.openWindow("<https://your-website.com>")); // ZAP:TODO - Add the URL of your website
 });

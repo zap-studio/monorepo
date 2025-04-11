@@ -1,26 +1,15 @@
+import { SETTINGS } from "@/data/settings";
 import type { MetadataRoute } from "next";
 
-// ZAP:TODO - update the manifest with your own information
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Zap.ts",
-    short_name: "Zap.ts",
-    description: "The boilerplate to build application as fast as a zap.",
-    start_url: "/",
+    name: SETTINGS.PWA.NAME,
+    short_name: SETTINGS.PWA.SHORT_NAME,
+    description: SETTINGS.PWA.DESCRIPTION,
+    start_url: SETTINGS.PWA.START_URL,
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#000000",
-    icons: [
-      {
-        src: "/icon-192x192.png",
-        sizes: "192x192",
-        type: "image/png",
-      },
-      {
-        src: "/icon-512x512.png",
-        sizes: "512x512",
-        type: "image/png",
-      },
-    ],
+    background_color: SETTINGS.PWA.BACKGROUND_COLOR,
+    theme_color: SETTINGS.PWA.THEME_COLOR,
+    icons: SETTINGS.PWA.ICONS,
   };
 }
