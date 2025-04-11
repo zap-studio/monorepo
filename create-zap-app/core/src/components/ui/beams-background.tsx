@@ -45,7 +45,7 @@ function createBeam(width: number, height: number): Beam {
 function BeamsBackgroundComponent({
   children,
   className,
-  intensity = "subtle",
+  intensity = "strong",
 }: AnimatedGradientBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const beamsRef = useRef<Beam[]>([]);
@@ -185,7 +185,7 @@ function BeamsBackgroundComponent({
   return (
     <div
       className={cn(
-        "bg-muted/50 relative w-full overflow-hidden md:min-h-screen dark:bg-neutral-950",
+        "bg-muted/50 relative h-full w-full dark:bg-neutral-950",
         className,
       )}
     >
@@ -204,7 +204,8 @@ function BeamsBackgroundComponent({
         }}
         style={{ backdropFilter: "blur(30px)" }}
       />
-      <div className="relative z-10 flex h-[500px] w-full items-center justify-center md:h-screen">
+
+      <div className="relative z-10 flex h-[500px] w-full items-center justify-center md:h-full">
         {children}
       </div>
     </div>

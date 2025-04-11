@@ -10,6 +10,8 @@ import { FeaturesSection } from "@/components/zap/public/landing/features";
 import { orpcServer } from "@/lib/orpc-server";
 import { cn } from "@/lib/utils";
 
+const DELAY_INCREMENT = 0.1;
+
 export default async function LandingPage() {
   const ratings = await orpcServer.feedback.getAverageRating();
   const numberOfUsers = await orpcServer.users.getNumberOfUsers();
@@ -20,29 +22,33 @@ export default async function LandingPage() {
       component: (
         <HeroSection ratings={ratings} numberOfUsers={numberOfUsers} />
       ),
-      delay: 0,
       className:
-        "md:h-screen border-b bg-muted/50 flex items-center justify-center  md:py-0",
+        "md:h-[calc(100vh-4rem)] border-b bg-muted/50 flex items-center justify-center md:py-0 overflow-hidden",
     },
     {
       id: "solution",
       component: <SolutionSection />,
-      delay: 0.1,
-      className: "bg-muted/50 border-y",
+      className: "bg-muted/50 border-y w-full py-12 md:py-24 lg:py-32",
     },
-    { id: "testimonials", component: <TestimonialSection />, delay: 0.2 },
+    {
+      id: "testimonials",
+      component: <TestimonialSection />,
+      className: "w-full py-12 md:py-24 lg:py-32",
+    },
     {
       id: "features",
       component: <FeaturesSection />,
-      delay: 0.3,
-      className: "bg-muted/50 border-y",
+      className: "bg-muted/50 border-y w-full py-12 md:py-24 lg:py-32",
     },
-    { id: "pricing", component: <PricingSection />, delay: 0.4 },
+    {
+      id: "pricing",
+      component: <PricingSection />,
+      className: "w-full py-12 md:py-24 lg:py-32",
+    },
     {
       id: "faq",
       component: <FaqSection />,
-      delay: 0.5,
-      className: "bg-muted/50 border-t",
+      className: "bg-muted/50 border-t w-full py-12 md:py-24 lg:py-32",
     },
   ];
 
@@ -51,15 +57,12 @@ export default async function LandingPage() {
       <Navbar />
 
       <main className="flex-1">
-        {sections.map(({ id, component, delay, className = "" }) => (
+        {sections.map(({ id, component, className = "" }, index) => (
           <AnimatedSection
             key={id}
             id={id}
-            className={cn(
-              id !== "hero" && `w-full py-12 md:py-24 lg:py-32`,
-              className,
-            )}
-            delay={delay}
+            className={cn(className)}
+            delay={index * DELAY_INCREMENT}
           >
             {component}
           </AnimatedSection>
