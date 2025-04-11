@@ -84,6 +84,13 @@ async function main() {
   console.log(chalk.cyan("Get started:"));
   console.log(chalk.white(`  cd ${path.basename(outputDir)}`));
   console.log(chalk.white(`  ${packageManager} dev\n`));
+
+  console.log(
+    chalk.magentaBright(
+      "🌟 If you like this project, consider giving it a star on GitHub!"
+    )
+  );
+  console.log(chalk.white("👉 https://github.com/alexandretrotel/zap.ts\n"));
 }
 
 async function createProcedure(procedureName: string) {
