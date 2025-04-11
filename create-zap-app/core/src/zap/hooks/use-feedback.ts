@@ -11,7 +11,7 @@ export const useUserFeedback = () => {
   const orpc = useORPC();
 
   return useSWR(
-    orpc.feedback.getUserFeedback.key,
+    orpc.feedback.getUserFeedback.key(),
     orpc.feedback.getUserFeedback.queryOptions().queryFn,
   );
 };
@@ -49,7 +49,7 @@ export const useSubmitFeedback = (
     return orpc.feedback.submit.call(arg);
   };
 
-  return useSWRMutation(orpc.feedback.submit.key, giveFeedback, {
+  return useSWRMutation(orpc.feedback.submit.key(), giveFeedback, {
     optimisticData: (current) => ({ ...current, success: true }),
     rollbackOnError: true,
     revalidate: true,

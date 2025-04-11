@@ -62,7 +62,7 @@ import useSWR from "swr";
 
 export const useExample = () => {
   const orpc = useORPC();
-  return useSWR(orpc.example.key, orpc.example.queryOptions().queryFn);
+  return useSWR(orpc.example.key(), orpc.example.queryOptions().queryFn);
 };
 ```
 
@@ -148,7 +148,7 @@ Add a new procedure to the server router:
 
    export const useGreet = () => {
      const orpc = useORPC();
-     return useSWR(orpc.greet.key, orpc.greet.queryOptions().queryFn);
+     return useSWR(orpc.greet.key(), orpc.greet.queryOptions().queryFn);
    };
    ```
 
@@ -239,7 +239,7 @@ This generates:
   export const useGetUserData = () => {
     const orpc = useORPC();
     return useSWR(
-      orpc.getUserData.key,
+      orpc.getUserData.key(),
       orpc.getUserData.queryOptions().queryFn
     );
   };

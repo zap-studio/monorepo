@@ -178,7 +178,7 @@ import useSWR from "swr";
 
 export const use${capitalizedProcedureName} = () => {
   const orpc = useORPC();
-  return useSWR(orpc.${procedureName}.key, orpc.${procedureName}.queryOptions().queryFn);
+  return useSWR(orpc.${procedureName}.key(), orpc.${procedureName}.queryOptions().queryFn);
 };
     `.trim();
 

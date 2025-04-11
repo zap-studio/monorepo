@@ -3,5 +3,5 @@ import useSWR from "swr";
 
 export const useExample = () => {
   const orpc = useORPC();
-  return useSWR(orpc.example.key, orpc.example.queryOptions().queryFn);
+  return useSWR(orpc.example.key(), orpc.example.queryOptions().queryFn);
 };
