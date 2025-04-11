@@ -60,6 +60,10 @@ export default defineConfig({
             link: "/docs/features/ai",
           },
           {
+            text: "Analytics",
+            link: "/docs/features/analytics",
+          },
+          {
             text: "API Procedures",
             link: "/docs/features/api",
           },
