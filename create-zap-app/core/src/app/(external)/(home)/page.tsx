@@ -7,8 +7,9 @@ import Footer from "@/zap/components/external/footer";
 import { HeroSection } from "@/zap/components/external/landing/hero";
 import { SolutionSection } from "@/zap/components/external/landing/solution";
 import { FeaturesSection } from "@/zap/components/external/landing/features";
-import { orpcServer } from "@/zap/lib/orpc/server";
 import { cn } from "@/lib/utils";
+import { createOrpcServer } from "@/zap/lib/orpc/server";
+import { headers } from "next/headers";
 
 const DELAY_INCREMENT = 0.1;
 const sectionClassName = "w-full py-12 md:py-24 lg:py-32";
@@ -54,8 +55,9 @@ const sections = (
 ];
 
 export default async function LandingPage() {
-  const ratings = await orpcServer.feedback.getAverageRating();
-  const numberOfUsers = await orpcServer.users.getNumberOfUsers();
+  const orpcServer = createOrpcServer(await headers());
+  const ratings = await orpcServer.getAverageRating();
+  const numberOfUsers = await orpcServer.getNumberOfUsers();
 
   const sectionData = sections(ratings, numberOfUsers);
 
