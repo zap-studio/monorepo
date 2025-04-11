@@ -1,6 +1,14 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FeedbackFormValues, feedbackSchema } from "@/schemas/feedback.schema";
 import {
   Form,
   FormControl,
@@ -10,25 +18,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   useIsFeedbackSubmitted,
   useSubmitFeedback,
 } from "@/hooks/use-feedback";
 import { Loader2 } from "lucide-react";
-import { FeedbackFormValues, feedbackSchema } from "@/schemas/feedback.schema";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
-export default function FeedbackPage() {
+export function FeedbackDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const { isExistingFeedback, setIsExistingFeedback } =
     useIsFeedbackSubmitted();
   const { trigger: submitFeedback, isMutating: isSubmitting } =
@@ -49,12 +54,10 @@ export default function FeedbackPage() {
 
   const RatingButtons = () => {
     const rating = form.watch("rating");
-
     return (
       <div className="flex flex-wrap gap-2 pt-1">
         {Array.from({ length: 11 }, (_, i) => {
           const isActive = i <= rating;
-
           return (
             <Button
               key={i}
@@ -78,19 +81,15 @@ export default function FeedbackPage() {
     );
   };
 
-  const showThankYouCard = submitted || isExistingFeedback;
-
   return (
-    <div className="px-4">
-      {!showThankYouCard && (
-        <Card className="animate-fade-in mx-auto">
-          <CardHeader>
-            <CardTitle className="text-2xl">Share Your Feedback</CardTitle>
-            <CardDescription>
-              How likely are you to recommend us to a friend or colleague?
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        {!submitted && !isExistingFeedback ? (
+          <>
+            <DialogHeader>
+              <DialogTitle>Share Your Feedback</DialogTitle>
+            </DialogHeader>
+
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -109,7 +108,6 @@ export default function FeedbackPage() {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="description"
@@ -128,40 +126,33 @@ export default function FeedbackPage() {
                     </FormItem>
                   )}
                 />
-
                 <Button
                   type="submit"
-                  className="flex w-full items-center justify-center gap-2"
+                  className="w-full"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting && (
+                  {isSubmitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Submitting...
                     </>
+                  ) : (
+                    "Submit Feedback"
                   )}
-                  {!isSubmitting && "Submit Feedback"}
                 </Button>
               </form>
             </Form>
-          </CardContent>
-        </Card>
-      )}
-
-      {showThankYouCard && (
-        <Card className="animate-fade-in mx-auto">
-          <CardHeader>
-            <CardTitle>Thank You!</CardTitle>
-            <CardDescription>
+          </>
+        ) : (
+          <div className="space-y-2 text-center">
+            <h2 className="text-xl font-semibold">Thank you!</h2>
+            <p className="text-muted-foreground text-sm">
               We appreciate your input and will use it to improve your
               experience.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-muted-foreground text-sm">
-            If you have more to share, feel free to reach out anytime.
-          </CardContent>
-        </Card>
-      )}
-    </div>
+            </p>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }

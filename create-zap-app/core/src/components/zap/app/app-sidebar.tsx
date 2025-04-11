@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { HelpCircle, Home, Settings } from "lucide-react";
-
+import { Home } from "lucide-react";
 import { NavMain } from "@/components/zap/app/nav-main";
 import { NavUser } from "@/components/zap/app/nav-user";
 import { NavSecondary } from "./nav-secondary";
@@ -23,19 +22,6 @@ const MAIN_NAV_ITEMS = [
     title: "Home",
     url: "/app",
     icon: Home,
-  },
-];
-
-const SECONDARY_NAV_ITEMS = [
-  {
-    title: "Settings",
-    url: "/app/settings",
-    icon: Settings,
-  },
-  {
-    title: "Give Feedback",
-    url: "/app/feedback",
-    icon: HelpCircle,
   },
 ];
 
@@ -65,7 +51,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarContent>
         <NavMain items={MAIN_NAV_ITEMS} />
-        <NavSecondary items={SECONDARY_NAV_ITEMS} className="mt-auto" />
+        <NavSecondary className="mt-auto" />
       </SidebarContent>
 
       <SidebarFooter>

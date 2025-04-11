@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { LucideIcon } from "lucide-react";
-
+import { HelpCircle, Settings } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -11,33 +10,38 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { useState } from "react";
+import { FeedbackDialog } from "./ui/feedback-dialog";
 
 export function NavSecondary({
-  items,
   ...props
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon: LucideIcon;
-  }[];
-} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+}: {} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  const [isFeedbackOpen, setFeedbackOpen] = useState(false);
+
   return (
-    <SidebarGroup {...props}>
-      <SidebarGroupContent>
-        <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
+    <>
+      <SidebarGroup {...props}>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={() => setFeedbackOpen(true)}>
+                <HelpCircle />
+                <span>Give Feedback</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link href={item.url}>
-                  <item.icon />
-                  <span>{item.title}</span>
+                <Link href="/app/settings">
+                  <Settings />
+                  <span>Settings</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+
+      <FeedbackDialog open={isFeedbackOpen} onOpenChange={setFeedbackOpen} />
+    </>
   );
 }
