@@ -2,7 +2,7 @@
 import { Metadata } from "next";
 
 export const VERCEL = process.env.VERCEL_ENV ? true : false;
-export const DEV = process.env.NODE_ENV === "development";
+export const DEV = process.env.NODE_ENV !== "production";
 
 export const APP_NAME = "Zap.ts";
 export const APP_DESCRIPTION =
