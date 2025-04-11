@@ -16,7 +16,8 @@ export const ZAP_DEFAULT_FLAGS = {
     ENABLE_ANALYTICS: VERCEL,
     ENABLE_SPEED_INSIGHTS: VERCEL,
   },
-  ENABLE_POSTHOG: true,
+  ENABLE_POSTHOG: false,
+  ENABLE_SENTRY: false,
 };
 
 export const ZAP_DEFAULT_SETTINGS = {
