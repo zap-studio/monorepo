@@ -38,8 +38,8 @@ export default function RootLayout({
           {children}
 
           <Toaster />
-          {FLAGS.VERCEL.ANALYTICS_ENABLED && <Analytics />}
-          {FLAGS.VERCEL.SPEED_INSIGHTS_ENABLED && <SpeedInsights />}
+          {FLAGS.VERCEL.ENABLE_ANALYTICS && <Analytics />}
+          {FLAGS.VERCEL.ENABLE_SPEED_INSIGHTS && <SpeedInsights />}
         </Providers>
       </body>
     </html>

@@ -112,7 +112,7 @@ export function RegisterForm({
       }
 
       if (data) {
-        if (FLAGS.IS_EMAIL_VERIFICATION_REQUIRED) {
+        if (FLAGS.REQUIRE_EMAIL_VERIFICATION) {
           toast.success(
             "Registration successful! Please check your email to verify your account.",
           );
@@ -142,7 +142,7 @@ export function RegisterForm({
       <Card className="border shadow-none">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Create your account</CardTitle>
-          {FLAGS.IS_SOCIAL_PROVIDER_ENABLED && (
+          {FLAGS.REQUIRE_EMAIL_VERIFICATION && (
             <CardDescription>
               Sign up with your Apple or Google account
             </CardDescription>
@@ -150,7 +150,7 @@ export function RegisterForm({
         </CardHeader>
         <CardContent>
           <div className="grid gap-6">
-            {FLAGS.IS_SOCIAL_PROVIDER_ENABLED && (
+            {FLAGS.REQUIRE_EMAIL_VERIFICATION && (
               <>
                 <div className="flex flex-col gap-4">
                   <SocialProviderButton
