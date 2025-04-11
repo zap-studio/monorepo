@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +28,6 @@ import { JSX, useEffect, useState } from "react";
 import { SETTINGS } from "@/data/settings";
 import { useRouter } from "nextjs-toploader/app";
 import { Loader2 } from "lucide-react";
-import { FLAGS } from "@/data/flags";
 
 type Provider = "apple" | "google";
 
@@ -37,20 +35,20 @@ const formSchema = z
   .object({
     name: z
       .string()
-      .min(SETTINGS.MINIMUM_USERNAME_LENGTH, {
-        message: `Name must be at least ${SETTINGS.MINIMUM_USERNAME_LENGTH} characters.`,
+      .min(SETTINGS.AUTH.MINIMUM_USERNAME_LENGTH, {
+        message: `Name must be at least ${SETTINGS.AUTH.MINIMUM_USERNAME_LENGTH} characters.`,
       })
-      .max(SETTINGS.MAXIMUM_USERNAME_LENGTH, {
-        message: `Name must be at most ${SETTINGS.MAXIMUM_USERNAME_LENGTH} characters.`,
+      .max(SETTINGS.AUTH.MAXIMUM_USERNAME_LENGTH, {
+        message: `Name must be at most ${SETTINGS.AUTH.MAXIMUM_USERNAME_LENGTH} characters.`,
       }),
     email: z.string().email(),
     password: z
       .string()
-      .min(SETTINGS.MINIMUM_PASSWORD_LENGTH, {
-        message: `Password must be at least ${SETTINGS.MINIMUM_PASSWORD_LENGTH} characters.`,
+      .min(SETTINGS.AUTH.MINIMUM_PASSWORD_LENGTH, {
+        message: `Password must be at least ${SETTINGS.AUTH.MINIMUM_PASSWORD_LENGTH} characters.`,
       })
-      .max(SETTINGS.MAXIMUM_PASSWORD_LENGTH, {
-        message: `Password must be at most ${SETTINGS.MAXIMUM_PASSWORD_LENGTH} characters.`,
+      .max(SETTINGS.AUTH.MAXIMUM_PASSWORD_LENGTH, {
+        message: `Password must be at most ${SETTINGS.AUTH.MAXIMUM_PASSWORD_LENGTH} characters.`,
       }),
     confirmPassword: z.string(),
   })
@@ -106,7 +104,7 @@ export function RegisterForm({
       }
 
       if (data) {
-        if (FLAGS.REQUIRE_EMAIL_VERIFICATION) {
+        if (SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION) {
           toast.success(
             "Registration successful! Please check your email to verify your account.",
           );
@@ -116,7 +114,7 @@ export function RegisterForm({
             callbackURL: "/login",
           });
 
-          setCooldown(SETTINGS.EMAIL_RATE_LIMIT_SECONDS);
+          setCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
         } else {
           toast.success("Registration successful!");
         }
@@ -136,7 +134,7 @@ export function RegisterForm({
       <Card className="border shadow-none">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Create your account</CardTitle>
-          {FLAGS.ENABLE_SOCIAL_PROVIDER && (
+          {SETTINGS.AUTH.ENABLE_SOCIAL_PROVIDER && (
             <CardDescription>
               Sign up with your Apple or Google account
             </CardDescription>
@@ -144,7 +142,7 @@ export function RegisterForm({
         </CardHeader>
         <CardContent>
           <div className="grid gap-6">
-            {FLAGS.ENABLE_SOCIAL_PROVIDER && (
+            {SETTINGS.AUTH.ENABLE_SOCIAL_PROVIDER && (
               <>
                 <div className="flex flex-col gap-4">
                   <SocialProviderButton

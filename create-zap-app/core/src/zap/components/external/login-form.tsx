@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +27,6 @@ import {
 import { JSX, useEffect, useState } from "react";
 import { useRouter } from "nextjs-toploader/app";
 import { Loader2 } from "lucide-react";
-import { FLAGS } from "@/data/flags";
 import { SETTINGS } from "@/data/settings";
 
 type Provider = "apple" | "google";
@@ -94,7 +92,10 @@ export function LoginForm({
       }
 
       if (data) {
-        if (FLAGS.REQUIRE_EMAIL_VERIFICATION && !data.user.emailVerified) {
+        if (
+          SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION &&
+          !data.user.emailVerified
+        ) {
           toast.error(
             "Please verify your email address. An email has been sent.",
           );
@@ -104,7 +105,7 @@ export function LoginForm({
             callbackURL: "/app",
           });
 
-          setCooldown(SETTINGS.EMAIL_RATE_LIMIT_SECONDS);
+          setCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
           return;
         }
 
@@ -125,7 +126,7 @@ export function LoginForm({
       <Card className="border shadow-none">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
-          {FLAGS.ENABLE_SOCIAL_PROVIDER && (
+          {SETTINGS.AUTH.ENABLE_SOCIAL_PROVIDER && (
             <CardDescription>
               Login with your Apple or Google account
             </CardDescription>
@@ -133,7 +134,7 @@ export function LoginForm({
         </CardHeader>
         <CardContent>
           <div className="grid gap-6">
-            {FLAGS.ENABLE_SOCIAL_PROVIDER && (
+            {SETTINGS.AUTH.ENABLE_SOCIAL_PROVIDER && (
               <>
                 <div className="flex flex-col gap-4">
                   <SocialProviderButton

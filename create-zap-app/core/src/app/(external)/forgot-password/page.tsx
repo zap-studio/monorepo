@@ -65,7 +65,7 @@ export default function ForgotPasswordPage() {
       }
 
       toast.success("Check your email for the reset link!");
-      setCooldown(SETTINGS.EMAIL_RATE_LIMIT_SECONDS);
+      setCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
     } catch {
       toast.error("An error occurred while sending the reset link.");
     } finally {

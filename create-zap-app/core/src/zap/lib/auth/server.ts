@@ -8,7 +8,6 @@ import {
 } from "better-auth/plugins";
 import { SETTINGS } from "@/data/settings";
 import { passkey } from "better-auth/plugins/passkey";
-import { FLAGS } from "@/data/flags";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db";
 import {
@@ -17,16 +16,14 @@ import {
 } from "@/zap/actions/emails.action";
 import { canSendEmail, updateLastEmailSent } from "@/zap/lib/rate-limit";
 
-const MAIL_PREFIX = "Zap.ts"; // ZAP:TODO: Change this to your app name
-
 export const auth = betterAuth({
   appName: "Zap.ts",
   database: drizzleAdapter(db, { provider: "pg" }),
   emailAndPassword: {
     enabled: true,
-    minPasswordLength: SETTINGS.MINIMUM_PASSWORD_LENGTH,
-    maxPasswordLength: SETTINGS.MAXIMUM_PASSWORD_LENGTH,
-    requireEmailVerification: FLAGS.REQUIRE_EMAIL_VERIFICATION,
+    minPasswordLength: SETTINGS.AUTH.MINIMUM_PASSWORD_LENGTH,
+    maxPasswordLength: SETTINGS.AUTH.MAXIMUM_PASSWORD_LENGTH,
+    requireEmailVerification: SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION,
     sendResetPassword: async ({ user, url }) => {
       const { canSend, timeLeft } = await canSendEmail(user.id);
       if (!canSend) {
@@ -37,7 +34,7 @@ export const auth = betterAuth({
 
       await sendForgotPasswordMail({
         recipients: [user.email],
-        subject: `${MAIL_PREFIX} - Reset your password`,
+        subject: `${SETTINGS.MAIL.PREFIX} - Reset your password`,
         url,
       });
 
@@ -55,7 +52,7 @@ export const auth = betterAuth({
 
       await sendVerificationEmail({
         recipients: [user.email],
-        subject: `${MAIL_PREFIX} - Verify your email`,
+        subject: `${SETTINGS.MAIL.PREFIX} - Verify your email`,
         url,
       });
 
@@ -72,8 +69,8 @@ export const auth = betterAuth({
   plugins: [
     twoFactor(),
     username({
-      minUsernameLength: SETTINGS.MINIMUM_USERNAME_LENGTH,
-      maxUsernameLength: SETTINGS.MAXIMUM_USERNAME_LENGTH,
+      minUsernameLength: SETTINGS.AUTH.MINIMUM_USERNAME_LENGTH,
+      maxUsernameLength: SETTINGS.AUTH.MAXIMUM_USERNAME_LENGTH,
       usernameValidator: (username) => username !== "admin",
     }),
     anonymous(),
