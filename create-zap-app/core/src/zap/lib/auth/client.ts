@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/data/settings";
+import { BASE_URL } from "@/zap.config";
 import {
   twoFactorClient,
   usernameClient,

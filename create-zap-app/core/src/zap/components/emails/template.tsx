@@ -9,7 +9,7 @@ import {
   Button,
   Section,
 } from "@react-email/components";
-import { BASE_URL } from "@/data/settings";
+import { BASE_URL } from "@/zap.config";
 
 export function TemplateEmail() {
   return (

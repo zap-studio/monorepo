@@ -29,7 +29,7 @@ import { JSX, useEffect, useState } from "react";
 import { useRouter } from "nextjs-toploader/app";
 import { Loader2 } from "lucide-react";
 import { FLAGS } from "@/data/flags";
-import { EMAIL_RATE_LIMIT_SECONDS } from "@/data/settings";
+import { SETTINGS } from "@/data/settings";
 
 type Provider = "apple" | "google";
 
@@ -104,7 +104,7 @@ export function LoginForm({
             callbackURL: "/app",
           });
 
-          setCooldown(EMAIL_RATE_LIMIT_SECONDS);
+          setCooldown(SETTINGS.EMAIL_RATE_LIMIT_SECONDS);
           return;
         }
 

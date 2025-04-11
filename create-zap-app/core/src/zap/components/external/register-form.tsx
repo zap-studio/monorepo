@@ -26,13 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { JSX, useEffect, useState } from "react";
-import {
-  EMAIL_RATE_LIMIT_SECONDS,
-  MAXIMUM_PASSWORD_LENGTH,
-  MAXIMUM_USERNAME_LENGTH,
-  MINIMUM_PASSWORD_LENGTH,
-  MINIMUM_USERNAME_LENGTH,
-} from "@/data/settings";
+import { SETTINGS } from "@/data/settings";
 import { useRouter } from "nextjs-toploader/app";
 import { Loader2 } from "lucide-react";
 import { FLAGS } from "@/data/flags";
@@ -43,20 +37,20 @@ const formSchema = z
   .object({
     name: z
       .string()
-      .min(MINIMUM_USERNAME_LENGTH, {
-        message: `Name must be at least ${MINIMUM_USERNAME_LENGTH} characters.`,
+      .min(SETTINGS.MINIMUM_USERNAME_LENGTH, {
+        message: `Name must be at least ${SETTINGS.MINIMUM_USERNAME_LENGTH} characters.`,
       })
-      .max(MAXIMUM_USERNAME_LENGTH, {
-        message: `Name must be at most ${MAXIMUM_USERNAME_LENGTH} characters.`,
+      .max(SETTINGS.MAXIMUM_USERNAME_LENGTH, {
+        message: `Name must be at most ${SETTINGS.MAXIMUM_USERNAME_LENGTH} characters.`,
       }),
     email: z.string().email(),
     password: z
       .string()
-      .min(MINIMUM_PASSWORD_LENGTH, {
-        message: `Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters.`,
+      .min(SETTINGS.MINIMUM_PASSWORD_LENGTH, {
+        message: `Password must be at least ${SETTINGS.MINIMUM_PASSWORD_LENGTH} characters.`,
       })
-      .max(MAXIMUM_PASSWORD_LENGTH, {
-        message: `Password must be at most ${MAXIMUM_PASSWORD_LENGTH} characters.`,
+      .max(SETTINGS.MAXIMUM_PASSWORD_LENGTH, {
+        message: `Password must be at most ${SETTINGS.MAXIMUM_PASSWORD_LENGTH} characters.`,
       }),
     confirmPassword: z.string(),
   })
@@ -122,7 +116,7 @@ export function RegisterForm({
             callbackURL: "/login",
           });
 
-          setCooldown(EMAIL_RATE_LIMIT_SECONDS);
+          setCooldown(SETTINGS.EMAIL_RATE_LIMIT_SECONDS);
         } else {
           toast.success("Registration successful!");
         }

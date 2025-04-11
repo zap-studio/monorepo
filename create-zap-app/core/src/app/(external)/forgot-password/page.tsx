@@ -24,7 +24,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { EMAIL_RATE_LIMIT_SECONDS } from "@/data/settings";
+import { SETTINGS } from "@/data/settings";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -65,7 +65,7 @@ export default function ForgotPasswordPage() {
       }
 
       toast.success("Check your email for the reset link!");
-      setCooldown(EMAIL_RATE_LIMIT_SECONDS);
+      setCooldown(SETTINGS.EMAIL_RATE_LIMIT_SECONDS);
     } catch {
       toast.error("An error occurred while sending the reset link.");
     } finally {

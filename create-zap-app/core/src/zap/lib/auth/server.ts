@@ -6,12 +6,7 @@ import {
   admin,
   organization,
 } from "better-auth/plugins";
-import {
-  MAXIMUM_PASSWORD_LENGTH,
-  MAXIMUM_USERNAME_LENGTH,
-  MINIMUM_PASSWORD_LENGTH,
-  MINIMUM_USERNAME_LENGTH,
-} from "@/data/settings";
+import { SETTINGS } from "@/data/settings";
 import { passkey } from "better-auth/plugins/passkey";
 import { FLAGS } from "@/data/flags";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -29,8 +24,8 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg" }),
   emailAndPassword: {
     enabled: true,
-    minPasswordLength: MINIMUM_PASSWORD_LENGTH,
-    maxPasswordLength: MAXIMUM_PASSWORD_LENGTH,
+    minPasswordLength: SETTINGS.MINIMUM_PASSWORD_LENGTH,
+    maxPasswordLength: SETTINGS.MAXIMUM_PASSWORD_LENGTH,
     requireEmailVerification: FLAGS.REQUIRE_EMAIL_VERIFICATION,
     sendResetPassword: async ({ user, url }) => {
       const { canSend, timeLeft } = await canSendEmail(user.id);
@@ -77,8 +72,8 @@ export const auth = betterAuth({
   plugins: [
     twoFactor(),
     username({
-      minUsernameLength: MINIMUM_USERNAME_LENGTH,
-      maxUsernameLength: MAXIMUM_USERNAME_LENGTH,
+      minUsernameLength: SETTINGS.MINIMUM_USERNAME_LENGTH,
+      maxUsernameLength: SETTINGS.MAXIMUM_USERNAME_LENGTH,
       usernameValidator: (username) => username !== "admin",
     }),
     anonymous(),

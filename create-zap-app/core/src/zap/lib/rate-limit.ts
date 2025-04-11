@@ -1,4 +1,4 @@
-import { EMAIL_RATE_LIMIT_SECONDS } from "@/data/settings";
+import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { user } from "@/zap/db/schema/auth";
 import { eq } from "drizzle-orm";
@@ -21,10 +21,10 @@ export async function canSendEmail(userId: string): Promise<{
   const now = new Date();
   const timeElapsed = (now.getTime() - lastSent.getTime()) / 1000; // in seconds
 
-  if (timeElapsed < EMAIL_RATE_LIMIT_SECONDS) {
+  if (timeElapsed < SETTINGS.EMAIL_RATE_LIMIT_SECONDS) {
     return {
       canSend: false,
-      timeLeft: Math.ceil(EMAIL_RATE_LIMIT_SECONDS - timeElapsed),
+      timeLeft: Math.ceil(SETTINGS.EMAIL_RATE_LIMIT_SECONDS - timeElapsed),
     };
   }
 
