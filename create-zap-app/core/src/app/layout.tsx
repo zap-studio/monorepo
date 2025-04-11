@@ -8,16 +8,14 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FLAGS } from "@/data/flags";
 import { Toaster } from "@/components/ui/sonner";
 import NextTopLoader from "nextjs-toploader";
+import { ZAP_DEFAULT_METADATA } from "@/zap.config";
 
 const font = Font({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Zap.ts",
-  description: "The boilerplate to build application as fast as a zap.",
-};
+export const metadata: Metadata = ZAP_DEFAULT_METADATA;
 
 export default function RootLayout({
   children,

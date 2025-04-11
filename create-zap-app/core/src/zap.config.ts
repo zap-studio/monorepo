@@ -1,8 +1,12 @@
 // ZAP:TODO - Change the current config file to your own configuration
+import { Metadata } from "next";
+
 export const IS_VERCEL = process.env.VERCEL_ENV ? true : false;
 export const DEV = process.env.NODE_ENV === "development";
 
 export const APP_NAME = "Zap.ts";
+export const APP_DESCRIPTION =
+  "The boilerplate to build application as fast as a zap.";
 export const BASE_URL = DEV
   ? "http://localhost:3000"
   : "https://demo.zap-ts.alexandretrotel.org";
@@ -36,7 +40,7 @@ export const ZAP_DEFAULT_SETTINGS = {
   PWA: {
     NAME: APP_NAME,
     SHORT_NAME: APP_NAME,
-    DESCRIPTION: "The boilerplate to build application as fast as a zap.",
+    DESCRIPTION: APP_DESCRIPTION,
     START_URL: "/",
     BACKGROUND_COLOR: "#ffffff",
     THEME_COLOR: "#000000",
@@ -52,5 +56,85 @@ export const ZAP_DEFAULT_SETTINGS = {
         type: "image/png",
       },
     ],
+  },
+};
+
+export const ZAP_DEFAULT_METADATA: Metadata = {
+  title: APP_NAME,
+  description: APP_DESCRIPTION,
+  category: "technology",
+  generator: "Next.js",
+  applicationName: APP_NAME,
+  referrer: "origin-when-cross-origin",
+  keywords: [
+    "Zap.ts",
+    "typescript",
+    "nextjs",
+    "react",
+    "boilerplate",
+    "template",
+    "web",
+    "application",
+  ],
+  authors: [
+    {
+      name: "Alexandre Trotel",
+      url: "https://www.alexandretrotel.org",
+    },
+  ],
+  creator: "Alexandre Trotel",
+  publisher: "Alexandre Trotel",
+  metadataBase: new URL(BASE_URL),
+  openGraph: {
+    title: APP_NAME,
+    description: APP_DESCRIPTION,
+    url: BASE_URL,
+    siteName: APP_NAME,
+    images: [
+      {
+        url: `/og.png`,
+        width: 1200,
+        height: 630,
+        alt: `${APP_NAME} Open Graph Image`,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+    shortcut: "/favicon.ico",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: APP_NAME,
+    description: APP_DESCRIPTION,
+    creator: "@alexandretrotel",
+    images: [`${BASE_URL}/og.png`],
+  },
+  appleWebApp: {
+    title: APP_NAME,
+    statusBarStyle: "black-translucent",
+    capable: true,
+  },
+  appLinks: {
+    web: {
+      url: "https://demo.zap-ts.alexandretrotel.org",
+      should_fallback: true,
+    },
   },
 };
