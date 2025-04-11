@@ -142,7 +142,7 @@ export function RegisterForm({
       <Card className="border shadow-none">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Create your account</CardTitle>
-          {FLAGS.REQUIRE_EMAIL_VERIFICATION && (
+          {FLAGS.ENABLE_SOCIAL_PROVIDER && (
             <CardDescription>
               Sign up with your Apple or Google account
             </CardDescription>
@@ -150,7 +150,7 @@ export function RegisterForm({
         </CardHeader>
         <CardContent>
           <div className="grid gap-6">
-            {FLAGS.REQUIRE_EMAIL_VERIFICATION && (
+            {FLAGS.ENABLE_SOCIAL_PROVIDER && (
               <>
                 <div className="flex flex-col gap-4">
                   <SocialProviderButton
