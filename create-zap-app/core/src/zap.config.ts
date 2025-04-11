@@ -1,7 +1,7 @@
 // ZAP:TODO - Change the current config file to your own configuration
 import { Metadata } from "next";
 
-export const IS_VERCEL = process.env.VERCEL_ENV ? true : false;
+export const VERCEL = process.env.VERCEL_ENV ? true : false;
 export const DEV = process.env.NODE_ENV === "development";
 
 export const APP_NAME = "Zap.ts";
@@ -13,8 +13,8 @@ export const BASE_URL = DEV
 
 export const ZAP_DEFAULT_FLAGS = {
   VERCEL: {
-    ENABLE_ANALYTICS: IS_VERCEL,
-    ENABLE_SPEED_INSIGHTS: IS_VERCEL,
+    ENABLE_ANALYTICS: VERCEL,
+    ENABLE_SPEED_INSIGHTS: VERCEL,
   },
   ENABLE_POSTHOG: true,
 };
