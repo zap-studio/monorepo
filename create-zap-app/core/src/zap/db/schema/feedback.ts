@@ -9,5 +9,5 @@ export const feedback = pgTable("feedback", {
     .references(() => user.id, { onDelete: "cascade" }),
   rating: integer("rating").notNull(),
   description: text("description"),
-  submittedAt: timestamp("submitted_at").notNull(),
+  submittedAt: timestamp("submitted_at").defaultNow().notNull(),
 });
