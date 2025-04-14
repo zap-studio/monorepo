@@ -117,6 +117,21 @@ async function main() {
     // Remove the temp directory
     await fs.remove(tempDir);
 
+    // Clean up by removing lock files if they exist
+    const lockFiles = [
+      "package-lock.json",
+      "yarn.lock",
+      "pnpm-lock.yaml",
+      "bun.lockb",
+      "bun.lock",
+    ];
+    for (const lockFile of lockFiles) {
+      const lockFilePath = path.join(outputDir, lockFile);
+      if (fs.existsSync(lockFilePath)) {
+        await fs.remove(lockFilePath);
+      }
+    }
+
     spinner.clear();
     spinner.text = "Zap.ts template downloaded and extracted.";
   } catch (error) {
