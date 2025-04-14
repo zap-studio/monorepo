@@ -1,7 +1,7 @@
 {
   "name": "@zap-ts/core",
   "description": "Core package for Zap.ts, a TypeScript framework for building web applications.",
-  "version": "1.2.1",
+  "version": "1.0.0",
   "author": "Alexandre Trotel",
   "private": false,
   "publishConfig": {
