@@ -1,9 +1,11 @@
 import { db } from "@/db";
 import { userApiKeys } from "@/db/schema";
 import { authMiddleware, base } from "@/rpc/middlewares";
+import { BASE_URL } from "@/zap.config";
 import { decrypt, encrypt } from "@/zap/lib/crypto";
 import { AIProviderEnumSchema } from "@/zap/schemas/ai.schema";
 import { and, eq } from "drizzle-orm";
+import ky from "ky";
 import { z } from "zod";
 
 const InputGetAPIKeySchema = z.object({
@@ -163,10 +165,42 @@ const saveOrUpdateAPIKey = base
     return { success: true };
   });
 
+const InputTestAPIKeySchema = z.object({
+  provider: AIProviderEnumSchema,
+  apiKey: z.string(),
+});
+
+const testAPIKey = base
+  .use(authMiddleware)
+  .input(InputTestAPIKeySchema)
+  .handler(async ({ input, context }) => {
+    const provider = input.provider;
+    const apiKey = input.apiKey;
+    const headers = new Headers(context.headers);
+    headers.delete("content-length");
+    headers.delete("content-type");
+
+    try {
+      await ky.post(`${BASE_URL}/api/ai/test`, {
+        json: {
+          provider,
+          apiKey,
+        },
+        headers,
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error("Invalid API key");
+    }
+
+    return { success: true };
+  });
+
 export const ai = {
   getAPIKey,
   saveAPIKey,
   updateAPIKey,
   deleteAPIKey,
   saveOrUpdateAPIKey,
+  testAPIKey,
 };

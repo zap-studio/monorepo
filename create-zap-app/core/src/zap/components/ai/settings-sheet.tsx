@@ -79,6 +79,8 @@ interface AISettingsSheetProps {
 }
 
 export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
+  const [testing, setTesting] = useState(false);
+
   const form = useForm<AIFormValues>({
     resolver: zodResolver(aiFormSchema),
     defaultValues: {
@@ -97,6 +99,22 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
       onOpenChange(false);
     }
   };
+
+  async function handleTestApiKey() {
+    setTesting(true);
+    try {
+      await orpc.ai.testAPIKey.call({
+        provider: form.getValues("provider"),
+        apiKey: form.getValues("apiKey"),
+      });
+
+      toast.success("API key is valid!");
+    } catch {
+      toast.error("Invalid API key");
+    } finally {
+      setTesting(false);
+    }
+  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -121,6 +139,8 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
               control={form.control}
               disabled={isSaving || isDeleting || loading}
               loading={loading}
+              testing={testing}
+              handleTestApiKey={handleTestApiKey}
             />
             <ActionButtons
               isSaving={isSaving}
@@ -177,25 +197,48 @@ function ApiKeyInput({
   control,
   disabled,
   loading,
-}: FormFieldProps & { loading: boolean }) {
+  testing,
+  handleTestApiKey,
+}: FormFieldProps & {
+  loading: boolean;
+  testing: boolean;
+  handleTestApiKey: () => void;
+}) {
   return (
     <FormField
       control={control}
       name="apiKey"
       render={({ field }) => (
-        <FormItem>
-          <FormLabel>API Key</FormLabel>
-          <FormControl>
-            <Input
-              type="password"
-              placeholder={loading ? "Loading..." : "Enter your API key"}
-              {...field}
-              disabled={disabled}
-              className="font-mono"
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
+        <div className="flex items-end space-x-2">
+          <FormItem className="flex-1">
+            <FormLabel>API Key</FormLabel>
+            <FormControl>
+              <Input
+                type="password"
+                placeholder={loading ? "Loading..." : "Enter your API key"}
+                {...field}
+                disabled={disabled}
+                className="font-mono"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleTestApiKey}
+            disabled={disabled || !field.value || testing}
+          >
+            {testing ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Testing...
+              </>
+            ) : (
+              "Test API Key"
+            )}
+          </Button>
+        </div>
       )}
     />
   );
@@ -223,7 +266,7 @@ function ActionButtons({
       >
         {isDeleting ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
             Deleting...
           </>
         ) : (
@@ -237,7 +280,7 @@ function ActionButtons({
       >
         {isSaving ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
             Saving...
           </>
         ) : (
