@@ -82,10 +82,42 @@ async function main() {
       "-C",
       outputDir,
       "--strip-components=1",
-      "--wildcards",
-      "*/core/*",
     ]);
     await fs.remove(tarballPath);
+
+    // Move the all files from `core` folder to a `temp` folder in the output directory
+    const tempDir = path.join(outputDir, "temp");
+    await fs.ensureDir(tempDir);
+
+    const coreDir = path.join(outputDir, "apps/core");
+    const files = await fs.readdir(coreDir);
+    for (const file of files) {
+      const srcPath = path.join(coreDir, file);
+      const destPath = path.join(tempDir, file);
+      await fs.move(srcPath, destPath, { overwrite: true });
+    }
+
+    // Remove all files from output directory except the ones from copied from `temp` folder
+    const outputFiles = await fs.readdir(outputDir);
+    for (const file of outputFiles) {
+      const filePath = path.join(outputDir, file);
+      if (file !== "temp") {
+        await fs.remove(filePath);
+      }
+    }
+
+    // Move the files from `temp` folder to the output directory
+    const tempFiles = await fs.readdir(tempDir);
+    for (const file of tempFiles) {
+      const srcPath = path.join(tempDir, file);
+      const destPath = path.join(outputDir, file);
+      await fs.move(srcPath, destPath, { overwrite: true });
+    }
+
+    // Remove the temp directory
+    await fs.remove(tempDir);
+
+    spinner.clear();
     spinner.text = "Zap.ts template downloaded and extracted.";
   } catch (error) {
     spinner.fail(`Failed to download template.`);
@@ -131,7 +163,7 @@ async function main() {
   );
   console.log("");
   console.log(chalk.cyan("Get started:"));
-  console.log(chalk.white(`  cd ${path.basename(outputDir)}`));
+  console.log(chalk.white(`  cd ${projectName}`));
   console.log(chalk.white(`  ${packageManager} dev\n`));
 
   console.log(
