@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Control, useForm } from "react-hook-form";
+import { useForm, Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,76 +38,95 @@ import {
 import { orpc } from "@/zap/lib/orpc/client";
 import { useAPIKey } from "@/zap/hooks/use-api-key";
 
+const useApiKeyManager = (form: ReturnType<typeof useForm<AIFormValues>>) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const saveApiKey = async (values: AIFormValues) => {
+    setIsSaving(true);
+    try {
+      await orpc.ai.saveOrUpdateAPIKey.call(values);
+      toast.success("API key saved successfully");
+      form.setValue("apiKey", "", { shouldValidate: true });
+      return true;
+    } catch {
+      toast.error("Failed to save API key");
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const deleteApiKey = async (provider: AIProviderEnum) => {
+    setIsDeleting(true);
+    try {
+      await orpc.ai.deleteAPIKey.call({ provider });
+      toast.success("API key deleted successfully");
+      form.setValue("apiKey", "", { shouldValidate: true });
+    } catch {
+      toast.error("Failed to delete API key");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return { isSaving, isDeleting, saveApiKey, deleteApiKey };
+};
+
 interface AISettingsSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
-  const [submitting, setSubmitting] = useState(false);
-
   const form = useForm<AIFormValues>({
     resolver: zodResolver(aiFormSchema),
     defaultValues: {
-      provider: AIProviderEnumSchema.options[0] as AIProviderEnum,
+      provider: AIProviderEnumSchema.options[0],
       apiKey: "",
     },
   });
 
   const { loading } = useAPIKey(form);
+  const { isSaving, isDeleting, saveApiKey, deleteApiKey } =
+    useApiKeyManager(form);
 
-  const isBusy = submitting || loading;
-
-  const handleSave = async (values: AIFormValues) => {
-    setSubmitting(true);
-    try {
-      await orpc.ai.saveOrUpdateAPIKey.call(values);
-      toast.success("API key saved successfully!");
-      form.setValue("apiKey", "", { shouldValidate: true });
+  const handleSubmit = async (values: AIFormValues) => {
+    const success = await saveApiKey(values);
+    if (success) {
       onOpenChange(false);
-    } catch {
-      toast.error("Failed to save API key");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    setSubmitting(true);
-    try {
-      const provider = form.getValues("provider");
-      await orpc.ai.deleteAPIKey.call({ provider });
-      toast.success("API key deleted successfully!");
-      form.setValue("apiKey", "", { shouldValidate: true });
-    } catch {
-      toast.error("Failed to delete API key");
-    } finally {
-      setSubmitting(false);
     }
   };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>AI Provider Settings</SheetTitle>
+      <SheetContent className="sm:max-w-md">
+        <SheetHeader className="space-y-2">
+          <SheetTitle>AI Settings</SheetTitle>
+          <SheetDescription>
+            Configure your AI provider and API key securely.
+          </SheetDescription>
         </SheetHeader>
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(handleSave)}
-            className="mt-4 space-y-4"
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6 px-4"
           >
-            <ProviderSelect control={form.control} disabled={isBusy} />
+            <ProviderSelect
+              control={form.control}
+              disabled={isSaving || isDeleting}
+            />
             <ApiKeyInput
               control={form.control}
-              disabled={isBusy}
+              disabled={isSaving || isDeleting}
               loading={loading}
             />
             <ActionButtons
-              isBusy={isBusy}
-              hasKey={!!form.getValues("apiKey")}
-              onDelete={handleDelete}
+              isSaving={isSaving}
+              isDeleting={isDeleting}
+              hasKey={!!form.watch("apiKey")}
+              onDelete={() => deleteApiKey(form.getValues("provider"))}
             />
           </form>
         </Form>
@@ -115,30 +135,35 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
   );
 }
 
-function ProviderSelect({
-  control,
-  disabled,
-}: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  control: Control<any>;
+interface FormFieldProps {
+  control: Control<AIFormValues>;
   disabled: boolean;
-}) {
+}
+
+function ProviderSelect({ control, disabled }: FormFieldProps) {
   return (
     <FormField
       control={control}
       name="provider"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Provider</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value}>
+          <FormLabel>AI Provider</FormLabel>
+          <Select
+            onValueChange={field.onChange}
+            value={field.value}
+            disabled={disabled}
+          >
             <FormControl>
-              <SelectTrigger disabled={disabled}>
+              <SelectTrigger>
                 <SelectValue placeholder="Select a provider" />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              <SelectItem value="openai">OpenAI</SelectItem>
-              <SelectItem value="mistral">Mistral</SelectItem>
+              {AIProviderEnumSchema.options.map((provider) => (
+                <SelectItem key={provider} value={provider}>
+                  {provider.charAt(0).toUpperCase() + provider.slice(1)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <FormMessage />
@@ -152,12 +177,7 @@ function ApiKeyInput({
   control,
   disabled,
   loading,
-}: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  control: Control<any>;
-  disabled: boolean;
-  loading: boolean;
-}) {
+}: FormFieldProps & { loading: boolean }) {
   return (
     <FormField
       control={control}
@@ -171,6 +191,7 @@ function ApiKeyInput({
               placeholder={loading ? "Loading..." : "Enter your API key"}
               {...field}
               disabled={disabled}
+              className="font-mono"
             />
           </FormControl>
           <FormMessage />
@@ -181,34 +202,26 @@ function ApiKeyInput({
 }
 
 function ActionButtons({
-  isBusy,
+  isSaving,
+  isDeleting,
   hasKey,
   onDelete,
 }: {
-  isBusy: boolean;
+  isSaving: boolean;
+  isDeleting: boolean;
   hasKey: boolean;
   onDelete: () => void;
 }) {
   return (
-    <>
-      <Button type="submit" className="w-full" disabled={isBusy}>
-        {isBusy ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Saving...
-          </>
-        ) : (
-          "Save Settings"
-        )}
-      </Button>
+    <div className="grid grid-cols-2 gap-4">
       <Button
         type="button"
         variant="destructive"
         className="w-full"
-        disabled={isBusy || !hasKey}
+        disabled={isSaving || isDeleting || !hasKey}
         onClick={onDelete}
       >
-        {isBusy ? (
+        {isDeleting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Deleting...
@@ -217,6 +230,20 @@ function ActionButtons({
           "Delete API Key"
         )}
       </Button>
-    </>
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isSaving || isDeleting || !hasKey}
+      >
+        {isSaving ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Saving...
+          </>
+        ) : (
+          "Save Settings"
+        )}
+      </Button>
+    </div>
   );
 }

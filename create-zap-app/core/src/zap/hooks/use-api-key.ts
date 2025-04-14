@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { orpc } from "../lib/orpc/client";
-import { toast } from "sonner";
 import { UseFormReturn } from "react-hook-form";
 
 type Form = UseFormReturn<
@@ -34,8 +33,6 @@ export const useAPIKey = (form: Form) => {
         } else {
           form.setValue("apiKey", "", { shouldValidate: true });
         }
-      } catch {
-        toast.error("Failed to fetch API key");
       } finally {
         setLoading(false);
       }
