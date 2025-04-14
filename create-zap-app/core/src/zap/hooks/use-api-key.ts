@@ -15,11 +15,13 @@ type Form = UseFormReturn<
   }
 >;
 
-export const useAPIKey = (form: Form) => {
+export const useAPIKey = (form: Form, open: boolean) => {
   const [loading, setLoading] = useState(false);
 
+  const provider = form.watch("provider");
+
   useEffect(() => {
-    if (!form.getValues("provider")) return;
+    if (!open || !provider) return;
 
     const fetchApiKey = async () => {
       setLoading(true);
@@ -39,7 +41,7 @@ export const useAPIKey = (form: Form) => {
     };
 
     fetchApiKey();
-  }, [form]);
+  }, [form, open, provider]);
 
   return {
     loading,

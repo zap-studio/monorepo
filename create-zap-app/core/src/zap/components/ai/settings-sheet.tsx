@@ -87,7 +87,7 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
     },
   });
 
-  const { loading } = useAPIKey(form);
+  const { loading } = useAPIKey(form, open);
   const { isSaving, isDeleting, saveApiKey, deleteApiKey } =
     useApiKeyManager(form);
 
@@ -119,7 +119,7 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
             />
             <ApiKeyInput
               control={form.control}
-              disabled={isSaving || isDeleting}
+              disabled={isSaving || isDeleting || loading}
               loading={loading}
             />
             <ActionButtons
