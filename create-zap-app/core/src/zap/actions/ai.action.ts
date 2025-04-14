@@ -2,14 +2,16 @@
 
 import { db } from "@/db";
 import { userApiKeys } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { decrypt } from "../lib/crypto";
 
 export const getAPIKey = async (userId: string, provider: string) => {
   const [apiKeyRecord] = await db
     .select()
     .from(userApiKeys)
-    .where(eq(userApiKeys.userId, userId) && eq(userApiKeys.provider, provider))
+    .where(
+      and(eq(userApiKeys.userId, userId), eq(userApiKeys.provider, provider)),
+    )
     .limit(1);
 
   if (!apiKeyRecord) {

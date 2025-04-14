@@ -19,7 +19,7 @@ export const useAPIKey = (form: Form) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!open) return;
+    if (!form.getValues("provider")) return;
 
     const fetchApiKey = async () => {
       setLoading(true);
