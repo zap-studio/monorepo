@@ -8,10 +8,10 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import type { PackageManager } from "./schemas/index.js";
 import { generateEnv } from "./utils/index.js";
-import { fileURLToPath } from "url";
 import { ObjectLiteralExpression, Project } from "ts-morph";
+import ky from "ky";
+import { execa } from "execa";
 
-const __dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const execAsync = promisify(exec);
 
 async function main() {
@@ -20,6 +20,26 @@ async function main() {
       "\n🚀 Welcome to create-zap-app! Let’s build something awesome.\n"
     )
   );
+
+  // Prompt for project name with validation
+  const projectResponse = await inquirer.prompt([
+    {
+      type: "input",
+      name: "projectName",
+      message: chalk.yellow("What’s the name of your project?"),
+      default: "my-zap-app",
+      validate: (input: string) => {
+        if (!input.match(/^[a-zA-Z0-9-_]+$/)) {
+          return "Project name can only contain letters, numbers, hyphens, and underscores.";
+        }
+        if (fs.existsSync(path.join(process.cwd(), input))) {
+          return `Directory '${input}' already exists. Please choose a different name.`;
+        }
+        return true;
+      },
+    },
+  ]);
+  const projectName = projectResponse.projectName;
 
   // Prompt for package manager
   const packageManagerResponse = await inquirer.prompt([
@@ -33,21 +53,44 @@ async function main() {
   const packageManager =
     packageManagerResponse.packageManager as PackageManager;
 
-  // Get useful directory paths
-  const outputDir = path.join(process.cwd(), "my-zap-app");
-  const pluginsDir = path.join(__dirname, "./plugins");
-  const coreDir = path.join(__dirname, "./core");
+  // Get output directory
+  const outputDir = path.join(process.cwd(), projectName);
+  const spinner = ora(`Creating project '${projectName}'...`).start();
 
   // Create output directory
-  await fs.ensureDir(outputDir);
-  const spinner = ora("Setting up your project...").start();
+  try {
+    await fs.ensureDir(outputDir);
+  } catch {
+    spinner.fail(`Failed to create directory.`);
+    process.exit(1);
+  }
 
-  // Copy core files except plugins folder
-  await fs.copy(coreDir, outputDir, {
-    overwrite: false,
-    filter: (src) => !src.includes(path.join(coreDir, "src/plugins")),
-  });
-  spinner.text = "Copied core files";
+  // Download core template from GitHub
+  spinner.text = "Downloading Zap.ts template from GitHub...";
+  try {
+    const tarballUrl =
+      "https://api.github.com/repos/alexandretrotel/zap.ts/tarball/main";
+    const buffer = await ky(tarballUrl).arrayBuffer();
+    const tarballPath = path.join(outputDir, "zap.ts.tar.gz");
+    await fs.writeFile(tarballPath, Buffer.from(buffer));
+
+    // Extract core directory
+    spinner.text = "Extracting template...";
+    await execa("tar", [
+      "-xzf",
+      tarballPath,
+      "-C",
+      outputDir,
+      "--strip-components=1",
+      "--wildcards",
+      "*/core/*",
+    ]);
+    await fs.remove(tarballPath);
+    spinner.text = "Zap.ts template downloaded and extracted.";
+  } catch (error) {
+    spinner.fail(`Failed to download template.`);
+    process.exit(1);
+  }
 
   // Install dependencies
   spinner.clear();

@@ -1,5 +1,5 @@
 {
-  "name": "zap-ts-monorepo",
+  "name": "@zap-ts/monorepo",
   "author": "Alexandre Trotel",
   "private": true,
   "workspaces": [
