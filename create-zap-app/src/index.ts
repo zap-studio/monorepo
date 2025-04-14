@@ -75,7 +75,7 @@ async function main() {
     await fs.writeFile(tarballPath, Buffer.from(buffer));
 
     // Extract core directory
-    spinner.text = "Extracting template...";
+    spinner.text = "Extracting Zap.ts template...";
     await execa("tar", [
       "-xzf",
       tarballPath,
