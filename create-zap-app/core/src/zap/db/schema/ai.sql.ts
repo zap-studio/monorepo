@@ -1,5 +1,5 @@
 import { pgTable, text, uuid, timestamp } from "drizzle-orm/pg-core";
-import { user } from "./auth";
+import { user } from "./auth.sql";
 
 export const userApiKeys = pgTable("user_api_keys", {
   id: uuid("id").primaryKey().defaultRandom(),

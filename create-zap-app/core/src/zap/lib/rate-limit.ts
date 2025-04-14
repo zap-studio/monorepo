@@ -1,6 +1,6 @@
 import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
-import { user } from "@/zap/db/schema/auth";
+import { user } from "@/zap/db/schema/auth.sql";
 import { eq } from "drizzle-orm";
 
 export async function canSendEmail(userId: string): Promise<{
