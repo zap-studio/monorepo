@@ -13,7 +13,7 @@
     "drizzle",
     "bun"
   ],
-  "version": "1.2.0",
+  "version": "1.2.1",
   "module": "index.ts",
   "type": "module",
   "private": false,
@@ -42,8 +42,10 @@
     "start": "bun run dist/index.js"
   },
   "dependencies": {
+    "execa": "^9.5.2",
     "fs-extra": "^11.1.1",
     "inquirer": "^9.2.12",
+    "ky": "^1.8.1",
     "ts-morph": "^25.0.1"
   },
   "devDependencies": {
