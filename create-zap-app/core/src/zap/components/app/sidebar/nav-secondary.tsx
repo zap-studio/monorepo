@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { HelpCircle, Settings } from "lucide-react";
+import { Bot, HelpCircle, Settings } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -12,17 +12,25 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { FeedbackDialog } from "./feedback-dialog";
+import { AISettingsSheet } from "../../ai/settings-sheet";
 
 export function NavSecondary({
   ...props
 }: {} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   const [isFeedbackOpen, setFeedbackOpen] = useState(false);
+  const [isAISettingsOpen, setAISettingsOpen] = useState(false);
 
   return (
     <>
       <SidebarGroup {...props}>
         <SidebarGroupContent>
           <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={() => setAISettingsOpen(true)}>
+                <Bot />
+                <span>AI Settings</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton onClick={() => setFeedbackOpen(true)}>
                 <HelpCircle />
@@ -41,6 +49,10 @@ export function NavSecondary({
         </SidebarGroupContent>
       </SidebarGroup>
 
+      <AISettingsSheet
+        open={isAISettingsOpen}
+        onOpenChange={setAISettingsOpen}
+      />
       <FeedbackDialog open={isFeedbackOpen} onOpenChange={setFeedbackOpen} />
     </>
   );

@@ -233,6 +233,7 @@ Follow these naming rules for clarity:
 - For components: Use `feature-name.tsx` (e.g., `user-card.tsx`).
 - For stores: Use `your-store.store.ts` (e.g., `user.store.ts`).
 - For server actions: Use `your-action.action.ts` (e.g., `update-user.action.ts`).
+- For database schema: Use `your-schema.sql.ts` (e.g. `auth.sql.ts`).
 - For Zod schemas: Use `your-schema.schema.ts` (e.g., `user.schema.ts`) and prefer PascalCase for schema names (e.g., `UserSchema` over `userSchema`).
 - For RPC procedures: Use `your-procedure.rpc.ts` (e.g., `user.rpc.ts`).
 - For constants in the `data` folder: Use uppercase syntax like `FLAGS` or `BASE_URL` (e.g., `export const FLAGS = { ... }`).

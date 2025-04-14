@@ -63,6 +63,7 @@ NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
 NEXT_PUBLIC_POSTHOG_HOST=your_posthog_host
 NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn
 SENTRY_AUTH_TOKEN=your_sentry_auth_token
+ENCRYPTION_KEY=your_encryption_key
 ```
 
 These connect your app to services like the database or email. You can remove the ones you don't need.

@@ -1,3 +1,4 @@
-export * from "@/zap/db/schema/auth";
-export * from "@/zap/db/schema/notifications";
-export * from "@/zap/db/schema/feedback";
+export * from "@/zap/db/schema/auth.sql";
+export * from "@/zap/db/schema/notifications.sql";
+export * from "@/zap/db/schema/feedback.sql";
+export * from "@/zap/db/schema/ai.sql";

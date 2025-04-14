@@ -18,6 +18,7 @@ const coreEnv = [
   "NEXT_PUBLIC_POSTHOG_HOST",
   "NEXT_PUBLIC_SENTRY_DSN",
   "SENTRY_AUTH_TOKEN",
+  "ENCRYPTION_KEY",
 ];
 
 /**
