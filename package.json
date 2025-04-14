@@ -3,7 +3,6 @@
   "author": "Alexandre Trotel",
   "private": true,
   "workspaces": [
-    "packages/*",
     "apps/*",
     "create-zap-app"
   ]
