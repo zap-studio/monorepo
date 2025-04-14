@@ -4,8 +4,9 @@ import { db } from "@/db";
 import { userApiKeys } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { decrypt } from "../lib/crypto";
+import { AIProviderEnum } from "../schemas/ai.schema";
 
-export const getAPIKey = async (userId: string, provider: string) => {
+export const getAPIKey = async (userId: string, provider: AIProviderEnum) => {
   const [apiKeyRecord] = await db
     .select()
     .from(userApiKeys)
@@ -18,7 +19,7 @@ export const getAPIKey = async (userId: string, provider: string) => {
     throw new Error("API key not found");
   }
 
-  const { iv, encrypted } = JSON.parse(apiKeyRecord.encryptedApiKey);
+  const { iv, encrypted } = apiKeyRecord.encryptedApiKey;
   const apiKey = decrypt(iv, encrypted);
 
   return apiKey;

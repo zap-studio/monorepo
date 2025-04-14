@@ -1,8 +1,7 @@
 import { db } from "@/db";
 import { userApiKeys } from "@/db/schema";
 import { authMiddleware, base } from "@/rpc/middlewares";
-import { getAPIKey as getAPIKeyAction } from "@/zap/actions/ai.action";
-import { encrypt } from "@/zap/lib/crypto";
+import { decrypt, encrypt } from "@/zap/lib/crypto";
 import { AIProviderEnumSchema } from "@/zap/schemas/ai.schema";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
@@ -18,8 +17,26 @@ const getAPIKey = base
     const userId = context.session.user.id;
     const provider = input.provider;
 
-    const apiKey = await getAPIKeyAction(userId, provider);
-    return apiKey;
+    const apiKeys = await db
+      .select()
+      .from(userApiKeys)
+      .where(
+        and(eq(userApiKeys.userId, userId), eq(userApiKeys.provider, provider)),
+      )
+      .limit(1)
+      .execute();
+
+    const encryptedAPIKey = apiKeys[0]?.encryptedApiKey;
+    if (!encryptedAPIKey) {
+      throw new Error("API key not found");
+    }
+
+    const decryptedAPIKey = decrypt(
+      encryptedAPIKey.iv,
+      encryptedAPIKey.encrypted,
+    );
+
+    return decryptedAPIKey;
   });
 
 const InputSaveAPIKeySchema = z.object({
@@ -52,7 +69,7 @@ const saveAPIKey = base
     await db.insert(userApiKeys).values({
       userId,
       provider,
-      encryptedApiKey: encryptedAPIKey.encrypted,
+      encryptedApiKey: encryptedAPIKey,
     });
 
     return { success: true };
@@ -76,7 +93,7 @@ const updateAPIKey = base
     await db
       .update(userApiKeys)
       .set({
-        encryptedApiKey: encryptedAPIKey.encrypted,
+        encryptedApiKey: encryptedAPIKey,
       })
       .where(
         and(eq(userApiKeys.userId, userId), eq(userApiKeys.provider, provider)),
@@ -127,7 +144,7 @@ const saveOrUpdateAPIKey = base
       await db
         .update(userApiKeys)
         .set({
-          encryptedApiKey: encryptedAPIKey.encrypted,
+          encryptedApiKey: encryptedAPIKey,
         })
         .where(
           and(
@@ -139,7 +156,7 @@ const saveOrUpdateAPIKey = base
       await db.insert(userApiKeys).values({
         userId,
         provider,
-        encryptedApiKey: encryptedAPIKey.encrypted,
+        encryptedApiKey: encryptedAPIKey,
       });
     }
 
