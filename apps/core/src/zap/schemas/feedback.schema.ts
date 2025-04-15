@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const feedbackSchema = z.object({
+export const FeedbackSchema = z.object({
   rating: z.number().min(0).max(10),
   description: z
     .string()
@@ -8,4 +8,4 @@ export const feedbackSchema = z.object({
     .optional(),
 });
 
-export type FeedbackFormValues = z.infer<typeof feedbackSchema>;
+export type FeedbackFormValues = z.infer<typeof FeedbackSchema>;

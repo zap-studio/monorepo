@@ -2,7 +2,7 @@ import { getAPIKey } from "@/zap/actions/ai.action";
 import { SYSTEM_PROMPT } from "@/zap/data/ai";
 import { getModel } from "@/zap/lib/ai";
 import { auth } from "@/zap/lib/auth/server";
-import { AIProviderEnumSchema } from "@/zap/schemas/ai.schema";
+import { AIProviderEnumSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
 import { streamText } from "ai";
 import { z } from "zod";
 
@@ -11,6 +11,7 @@ export const maxDuration = 60;
 const BodySchema = z.object({
   prompt: z.string(),
   provider: AIProviderEnumSchema,
+  model: ModelNameSchema,
 });
 
 export async function POST(req: Request) {
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
   const apiKey = await getAPIKey(session.user.id, body.provider);
 
   const result = streamText({
-    model: getModel(body.provider, apiKey),
+    model: getModel(body.provider, apiKey, body.model),
     prompt: body.prompt,
     system: SYSTEM_PROMPT,
   });

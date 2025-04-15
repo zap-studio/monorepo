@@ -14,15 +14,15 @@ export type AIProviders = z.infer<typeof AIProvidersSchema>;
 
 export type AIProviderItem = z.infer<typeof AIProviderItemSchema>;
 
-export const modelNameSchema = z.enum([
+export const ModelNameSchema = z.enum([
   ...ModelsByProvider[AIProviderEnumSchema.options[0]],
   ...ModelsByProvider[AIProviderEnumSchema.options[1]],
 ]);
-export type ModelName = z.infer<typeof modelNameSchema>;
+export type ModelName = z.infer<typeof ModelNameSchema>;
 
-export const aiFormSchema = z.object({
+export const AIFormSchema = z.object({
   provider: AIProviderEnumSchema,
-  model: modelNameSchema,
+  model: ModelNameSchema,
   apiKey: z.string().min(1, "API key is required"),
 });
-export type AIFormValues = z.infer<typeof aiFormSchema>;
+export type AIFormValues = z.infer<typeof AIFormSchema>;

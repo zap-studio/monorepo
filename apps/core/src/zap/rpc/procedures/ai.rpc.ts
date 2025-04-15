@@ -3,7 +3,7 @@ import { userApiKeys } from "@/db/schema";
 import { authMiddleware, base } from "@/rpc/middlewares";
 import { BASE_URL } from "@/zap.config";
 import { decrypt, encrypt } from "@/zap/lib/crypto";
-import { AIProviderEnumSchema } from "@/zap/schemas/ai.schema";
+import { AIProviderEnumSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
 import { and, eq } from "drizzle-orm";
 import ky from "ky";
 import { z } from "zod";
@@ -168,6 +168,7 @@ const saveOrUpdateAPIKey = base
 const InputTestAPIKeySchema = z.object({
   provider: AIProviderEnumSchema,
   apiKey: z.string(),
+  model: ModelNameSchema,
 });
 
 const testAPIKey = base
@@ -176,6 +177,7 @@ const testAPIKey = base
   .handler(async ({ input, context }) => {
     const provider = input.provider;
     const apiKey = input.apiKey;
+    const model = input.model;
     const headers = new Headers(context.headers);
     headers.delete("content-length");
     headers.delete("content-type");
@@ -185,6 +187,7 @@ const testAPIKey = base
         json: {
           provider,
           apiKey,
+          model,
         },
         headers,
       });

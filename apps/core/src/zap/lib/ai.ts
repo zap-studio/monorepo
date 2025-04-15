@@ -1,18 +1,22 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { createMistral } from "@ai-sdk/mistral";
-import { AIProvider } from "@/zap/schemas/ai.schema";
+import { AIProvider, ModelName } from "@/zap/schemas/ai.schema";
 
-export const getModel = (provider: AIProvider, apiKey: string) => {
+export const getModel = (
+  provider: AIProvider,
+  apiKey: string,
+  modelName: ModelName,
+) => {
   const openAI = createOpenAI({ apiKey });
   const mistral = createMistral({ apiKey });
 
   let model = null;
   switch (provider) {
     case "openai":
-      model = openAI("gpt-4o-mini");
+      model = openAI(modelName);
       break;
     case "mistral":
-      model = mistral("mistral-large-latest");
+      model = mistral(modelName);
       break;
     default:
       throw new Error("Invalid provider");

@@ -30,7 +30,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import {
-  aiFormSchema,
+  AIFormSchema,
   AIFormValues,
   AIProvider,
   AIProviderEnumSchema,
@@ -54,7 +54,7 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
   const { models: savedModels, provider } = useAIProviderStore();
 
   const form = useForm<AIFormValues>({
-    resolver: zodResolver(aiFormSchema),
+    resolver: zodResolver(AIFormSchema),
     defaultValues: {
       provider: provider,
       model: ModelsByProvider[AIProviderEnumSchema.options[0]][0],
@@ -92,6 +92,7 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
       await orpc.ai.testAPIKey.call({
         provider: form.getValues("provider"),
         apiKey: form.getValues("apiKey"),
+        model: form.getValues("model"),
       });
       toast.success("API key is valid!");
       setIsValidated(true);

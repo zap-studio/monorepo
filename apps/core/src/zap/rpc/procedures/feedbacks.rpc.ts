@@ -1,12 +1,12 @@
 import { authMiddleware, base } from "@/rpc/middlewares";
 import { db } from "@/db";
 import { feedback as feedbackTable } from "@/db/schema";
-import { feedbackSchema } from "@/zap/schemas/feedback.schema";
+import { FeedbackSchema } from "@/zap/schemas/feedback.schema";
 import { eq } from "drizzle-orm";
 
 const submit = base
   .use(authMiddleware)
-  .input(feedbackSchema)
+  .input(FeedbackSchema)
   .handler(async ({ context, input }) => {
     const userId = context.session.user.id;
 
