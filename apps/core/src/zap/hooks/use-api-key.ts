@@ -1,21 +1,12 @@
 import { useEffect, useState } from "react";
 import { orpc } from "../lib/orpc/client";
-import { UseFormReturn } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { AIFormValues } from "../schemas/ai.schema";
 
-type Form = UseFormReturn<
-  {
-    provider: "openai" | "mistral";
-    apiKey: string;
-  },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  any,
-  {
-    provider: "openai" | "mistral";
-    apiKey: string;
-  }
->;
-
-export const useAPIKey = (form: Form, open: boolean) => {
+export const useAPIKey = (
+  form: ReturnType<typeof useForm<AIFormValues>>,
+  open: boolean,
+) => {
   const [loading, setLoading] = useState(false);
   const [apiKey, setApiKey] = useState<string | null>(null);
 

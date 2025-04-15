@@ -1,36 +1,38 @@
 "use client";
 
 import { AI_PROVIDERS_OBJECT } from "@/zap/data/ai";
-import { AIModels, AIProviderEnum } from "@/zap/schemas/ai.schema";
+import { AIProvider, ModelName } from "@/zap/schemas/ai.schema";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface AIProviderStore {
-  aiProvider: AIProviderEnum;
-  models: Record<AIProviderEnum, AIModels>;
-  setAIProvider: (provider: AIProviderEnum) => void;
-  setApiKey: (provider: AIProviderEnum, apiKey: string) => void;
-  getProviderName: (provider: AIProviderEnum) => string;
+  provider: AIProvider;
+  models: Record<AIProvider, ModelName>;
+
+  setProvider: (provider: AIProvider) => void;
+  setModel: (provider: AIProvider, model: ModelName) => void;
+  getProviderName: (provider: AIProvider) => string;
 }
+
+export const DEFAULT_MODEL: Record<AIProvider, ModelName> = {
+  openai: "gpt-4o-mini",
+  mistral: "mistral-small-latest",
+};
 
 export const useAIProviderStore = create<AIProviderStore>()(
   persist(
     (set) => ({
-      aiProvider: "openai",
-      models: {
-        openai: "gpt-4o-mini",
-        mistral: "mistral-small-latest",
-      },
+      provider: "openai",
+      models: DEFAULT_MODEL,
 
-      setAIProvider: (provider) => set({ aiProvider: provider }),
-      setApiKey: (provider, model) => {
+      setProvider: (provider) => set({ provider: provider }),
+      setModel: (provider, model) =>
         set((state) => ({
           models: {
             ...state.models,
             [provider]: model,
           },
-        }));
-      },
+        })),
       getProviderName: (provider) =>
         AI_PROVIDERS_OBJECT.find((p) => p.provider === provider)?.name ??
         "Select AI Provider",

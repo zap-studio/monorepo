@@ -1,8 +1,8 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { createMistral } from "@ai-sdk/mistral";
-import { AIProviderEnum } from "@/zap/schemas/ai.schema";
+import { AIProvider } from "@/zap/schemas/ai.schema";
 
-export const getModel = (provider: AIProviderEnum, apiKey: string) => {
+export const getModel = (provider: AIProvider, apiKey: string) => {
   const openAI = createOpenAI({ apiKey });
   const mistral = createMistral({ apiKey });
 

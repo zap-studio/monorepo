@@ -4,9 +4,9 @@ import { db } from "@/db";
 import { userApiKeys } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { decrypt } from "../lib/crypto";
-import { AIProviderEnum } from "../schemas/ai.schema";
+import { AIProvider } from "../schemas/ai.schema";
 
-export const getAPIKey = async (userId: string, provider: AIProviderEnum) => {
+export const getAPIKey = async (userId: string, provider: AIProvider) => {
   const [apiKeyRecord] = await db
     .select()
     .from(userApiKeys)

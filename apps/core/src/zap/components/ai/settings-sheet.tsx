@@ -32,51 +32,14 @@ import { Loader2, Eye, EyeOff } from "lucide-react";
 import {
   aiFormSchema,
   AIFormValues,
+  AIProvider,
   AIProviderEnumSchema,
 } from "@/zap/schemas/ai.schema";
 import { orpc } from "@/zap/lib/orpc/client";
 import { useAPIKey } from "@/zap/hooks/use-api-key";
-
-const useApiKeyManager = (form: ReturnType<typeof useForm<AIFormValues>>) => {
-  const [isSaving, setIsSaving] = useState(false);
-  const [isValidated, setIsValidated] = useState(false);
-  const [initialKey, setInitialKey] = useState<string | null>(null);
-
-  const saveApiKey = async (values: AIFormValues) => {
-    setIsSaving(true);
-    try {
-      if (!values.apiKey) {
-        // Delete API key when saving empty
-        await orpc.ai.deleteAPIKey.call({ provider: values.provider });
-        toast.success("API key deleted successfully");
-        form.setValue("apiKey", "", { shouldValidate: true });
-        setIsValidated(false);
-        setInitialKey(null);
-      } else {
-        await orpc.ai.saveOrUpdateAPIKey.call(values);
-        toast.success("API key saved successfully");
-        setInitialKey(values.apiKey);
-      }
-      return true;
-    } catch {
-      toast.error(
-        values.apiKey ? "Failed to save API key" : "Failed to delete API key",
-      );
-      return false;
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  return {
-    isSaving,
-    isValidated,
-    setIsValidated,
-    initialKey,
-    setInitialKey,
-    saveApiKey,
-  };
-};
+import { useAISettings } from "@/zap/hooks/use-ai-settings";
+import { AI_PROVIDERS_OBJECT, ModelsByProvider } from "@/zap/data/ai";
+import { useAIProviderStore } from "@/zap/stores/ai.store";
 
 interface AISettingsSheetProps {
   open: boolean;
@@ -87,29 +50,40 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
   const [testing, setTesting] = useState(false);
   const [initialApiKey, setInitialApiKey] = useState<string | null>(null);
 
+  const { isSaving, setIsValidated, saveApiKey } = useAISettings();
+  const { models: savedModels, provider } = useAIProviderStore();
+
   const form = useForm<AIFormValues>({
     resolver: zodResolver(aiFormSchema),
     defaultValues: {
-      provider: AIProviderEnumSchema.options[0],
+      provider: provider,
+      model: ModelsByProvider[AIProviderEnumSchema.options[0]][0],
       apiKey: "",
     },
   });
 
+  const selectedProvider = form.watch("provider");
+
   const { loading, apiKey } = useAPIKey(form, open);
-  const { isSaving, setIsValidated, saveApiKey } = useApiKeyManager(form);
 
   useEffect(() => {
     if (apiKey) {
       setInitialApiKey(apiKey);
       form.setValue("apiKey", apiKey, { shouldValidate: true });
     }
-  }, [apiKey, form]);
+  }, [apiKey, form, selectedProvider]);
+
+  useEffect(() => {
+    if (selectedProvider && savedModels) {
+      form.setValue("model", savedModels[selectedProvider], {
+        shouldValidate: true,
+      });
+    }
+  }, [form, savedModels, selectedProvider]);
 
   const handleSubmit = async (values: AIFormValues) => {
-    const success = await saveApiKey(values);
-    if (success) {
-      onOpenChange(false);
-    }
+    await saveApiKey(values);
+    onOpenChange(false);
   };
 
   async function handleTestApiKey() {
@@ -148,6 +122,11 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
             className="space-y-6 px-4"
           >
             <ProviderSelect control={form.control} disabled={isSaving} />
+            <ModelSelect
+              control={form.control}
+              disabled={isSaving}
+              provider={selectedProvider}
+            />
             <ApiKeyInput
               control={form.control}
               disabled={isSaving || loading}
@@ -192,7 +171,10 @@ function ProviderSelect({ control, disabled }: FormFieldProps) {
             <SelectContent>
               {AIProviderEnumSchema.options.map((provider) => (
                 <SelectItem key={provider} value={provider}>
-                  {provider.charAt(0).toUpperCase() + provider.slice(1)}
+                  {
+                    AI_PROVIDERS_OBJECT.find((p) => p.provider === provider)
+                      ?.name
+                  }
                 </SelectItem>
               ))}
             </SelectContent>
@@ -291,5 +273,46 @@ function ActionButtons({
         )}
       </Button>
     </div>
+  );
+}
+
+interface ModelSelectProps {
+  control: Control<AIFormValues>;
+  disabled: boolean;
+  provider: AIProvider;
+}
+
+function ModelSelect({ control, disabled, provider }: ModelSelectProps) {
+  const models = ModelsByProvider[provider];
+
+  return (
+    <FormField
+      control={control}
+      name="model"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Model</FormLabel>
+          <Select
+            onValueChange={field.onChange}
+            value={field.value}
+            disabled={disabled}
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a model" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              {models.map((model) => (
+                <SelectItem key={model} value={model}>
+                  {model}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 }
