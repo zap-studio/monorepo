@@ -17,6 +17,7 @@ type Form = UseFormReturn<
 
 export const useAPIKey = (form: Form, open: boolean) => {
   const [loading, setLoading] = useState(false);
+  const [apiKey, setApiKey] = useState<string | null>(null);
 
   const provider = form.watch("provider");
 
@@ -30,11 +31,7 @@ export const useAPIKey = (form: Form, open: boolean) => {
         const provider = form.getValues("provider");
         const apiKey = await orpc.ai.getAPIKey.call({ provider });
 
-        if (apiKey) {
-          form.setValue("apiKey", apiKey, { shouldValidate: true });
-        } else {
-          form.setValue("apiKey", "", { shouldValidate: true });
-        }
+        setApiKey(apiKey);
       } finally {
         setLoading(false);
       }
@@ -44,6 +41,8 @@ export const useAPIKey = (form: Form, open: boolean) => {
   }, [form, open, provider]);
 
   return {
+    apiKey,
+    setApiKey,
     loading,
     setLoading,
   };

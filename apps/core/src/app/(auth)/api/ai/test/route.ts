@@ -19,7 +19,6 @@ export async function POST(req: Request) {
   }
 
   const unvalidatedBody = await req.json();
-  console.log(unvalidatedBody);
   const body = BodySchema.parse(unvalidatedBody);
   const apiKey = body.apiKey;
 

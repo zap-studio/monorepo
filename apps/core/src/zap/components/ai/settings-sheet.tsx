@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -28,11 +28,10 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import {
   aiFormSchema,
   AIFormValues,
-  AIProviderEnum,
   AIProviderEnumSchema,
 } from "@/zap/schemas/ai.schema";
 import { orpc } from "@/zap/lib/orpc/client";
@@ -40,37 +39,43 @@ import { useAPIKey } from "@/zap/hooks/use-api-key";
 
 const useApiKeyManager = (form: ReturnType<typeof useForm<AIFormValues>>) => {
   const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isValidated, setIsValidated] = useState(false);
+  const [initialKey, setInitialKey] = useState<string | null>(null);
 
   const saveApiKey = async (values: AIFormValues) => {
     setIsSaving(true);
     try {
-      await orpc.ai.saveOrUpdateAPIKey.call(values);
-      toast.success("API key saved successfully");
-      form.setValue("apiKey", "", { shouldValidate: true });
+      if (!values.apiKey) {
+        // Delete API key when saving empty
+        await orpc.ai.deleteAPIKey.call({ provider: values.provider });
+        toast.success("API key deleted successfully");
+        form.setValue("apiKey", "", { shouldValidate: true });
+        setIsValidated(false);
+        setInitialKey(null);
+      } else {
+        await orpc.ai.saveOrUpdateAPIKey.call(values);
+        toast.success("API key saved successfully");
+        setInitialKey(values.apiKey);
+      }
       return true;
     } catch {
-      toast.error("Failed to save API key");
+      toast.error(
+        values.apiKey ? "Failed to save API key" : "Failed to delete API key",
+      );
       return false;
     } finally {
       setIsSaving(false);
     }
   };
 
-  const deleteApiKey = async (provider: AIProviderEnum) => {
-    setIsDeleting(true);
-    try {
-      await orpc.ai.deleteAPIKey.call({ provider });
-      toast.success("API key deleted successfully");
-      form.setValue("apiKey", "", { shouldValidate: true });
-    } catch {
-      toast.error("Failed to delete API key");
-    } finally {
-      setIsDeleting(false);
-    }
+  return {
+    isSaving,
+    isValidated,
+    setIsValidated,
+    initialKey,
+    setInitialKey,
+    saveApiKey,
   };
-
-  return { isSaving, isDeleting, saveApiKey, deleteApiKey };
 };
 
 interface AISettingsSheetProps {
@@ -80,6 +85,7 @@ interface AISettingsSheetProps {
 
 export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
   const [testing, setTesting] = useState(false);
+  const [initialApiKey, setInitialApiKey] = useState<string | null>(null);
 
   const form = useForm<AIFormValues>({
     resolver: zodResolver(aiFormSchema),
@@ -89,9 +95,15 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
     },
   });
 
-  const { loading } = useAPIKey(form, open);
-  const { isSaving, isDeleting, saveApiKey, deleteApiKey } =
-    useApiKeyManager(form);
+  const { loading, apiKey } = useAPIKey(form, open);
+  const { isSaving, setIsValidated, saveApiKey } = useApiKeyManager(form);
+
+  useEffect(() => {
+    if (apiKey) {
+      setInitialApiKey(apiKey);
+      form.setValue("apiKey", apiKey, { shouldValidate: true });
+    }
+  }, [apiKey, form]);
 
   const handleSubmit = async (values: AIFormValues) => {
     const success = await saveApiKey(values);
@@ -107,14 +119,18 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
         provider: form.getValues("provider"),
         apiKey: form.getValues("apiKey"),
       });
-
       toast.success("API key is valid!");
+      setIsValidated(true);
     } catch {
       toast.error("Invalid API key");
+      setIsValidated(false);
     } finally {
       setTesting(false);
     }
   }
+
+  const isSaveDisabled =
+    isSaving || testing || form.getValues("apiKey") === initialApiKey; // Key unchanged
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -131,22 +147,17 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-6 px-4"
           >
-            <ProviderSelect
-              control={form.control}
-              disabled={isSaving || isDeleting}
-            />
+            <ProviderSelect control={form.control} disabled={isSaving} />
             <ApiKeyInput
               control={form.control}
-              disabled={isSaving || isDeleting || loading}
+              disabled={isSaving || loading}
               loading={loading}
               testing={testing}
               handleTestApiKey={handleTestApiKey}
             />
             <ActionButtons
               isSaving={isSaving}
-              isDeleting={isDeleting}
-              hasKey={!!form.watch("apiKey")}
-              onDelete={() => deleteApiKey(form.getValues("provider"))}
+              isSaveDisabled={isSaveDisabled}
             />
           </form>
         </Form>
@@ -204,6 +215,8 @@ function ApiKeyInput({
   testing: boolean;
   handleTestApiKey: () => void;
 }) {
+  const [showKey, setShowKey] = useState(false);
+
   return (
     <FormField
       control={control}
@@ -212,14 +225,24 @@ function ApiKeyInput({
         <div className="flex items-end space-x-2">
           <FormItem className="flex-1">
             <FormLabel>API Key</FormLabel>
-            <FormControl>
-              <Input
-                type="password"
-                placeholder={loading ? "Loading..." : "Enter your API key"}
-                {...field}
-                disabled={disabled}
-                className="font-mono"
-              />
+            <FormControl className="relative flex-1">
+              <div className="relative">
+                <Input
+                  type={showKey ? "text" : "password"}
+                  placeholder={loading ? "Loading..." : "Enter your API key"}
+                  {...field}
+                  disabled={disabled}
+                  className="pr-10 font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowKey((prev) => !prev)}
+                  className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
+                  tabIndex={-1}
+                >
+                  {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -246,37 +269,17 @@ function ApiKeyInput({
 
 function ActionButtons({
   isSaving,
-  isDeleting,
-  hasKey,
-  onDelete,
+  isSaveDisabled,
 }: {
   isSaving: boolean;
-  isDeleting: boolean;
-  hasKey: boolean;
-  onDelete: () => void;
+  isSaveDisabled: boolean;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <Button
-        type="button"
-        variant="destructive"
-        className="w-full"
-        disabled={isSaving || isDeleting || !hasKey}
-        onClick={onDelete}
-      >
-        {isDeleting ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Deleting...
-          </>
-        ) : (
-          "Delete API Key"
-        )}
-      </Button>
+    <div className="flex justify-end">
       <Button
         type="submit"
-        className="w-full"
-        disabled={isSaving || isDeleting || !hasKey}
+        className="w-full sm:w-auto"
+        disabled={isSaving || isSaveDisabled}
       >
         {isSaving ? (
           <>
