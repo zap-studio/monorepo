@@ -1,6 +1,6 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/zap/components/app/sidebar/app-sidebar";
-import { NavHeader } from "@/zap/components/app/sidebar/nav-header";
+import { AppSidebar } from "@/zap/components/app/sidebar/sidebar";
+import { NavHeader } from "@/zap/components/app/sidebar/header";
 import { cookies } from "next/headers";
 
 export default async function AppLayout({

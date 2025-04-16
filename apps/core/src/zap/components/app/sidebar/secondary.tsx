@@ -12,7 +12,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { FeedbackDialog } from "./feedback-dialog";
-import { AISettingsSheet } from "../../ai/settings-sheet";
+import { AISettingsSheet } from "../../ai/settings-panel";
 
 export function NavSecondary({
   ...props

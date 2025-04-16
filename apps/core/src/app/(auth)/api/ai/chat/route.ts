@@ -28,6 +28,7 @@ export async function POST(req: Request) {
     model: getModel(provider, apiKey, model),
     messages: body.messages,
     system: SETTINGS.AI.SYSTEM_PROMPT,
+    maxTokens: SETTINGS.AI.CHAT_MAX_TOKENS,
   });
 
   return result.toDataStreamResponse();

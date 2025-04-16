@@ -1,0 +1,41 @@
+export interface ZapSettings {
+  AI: {
+    SYSTEM_PROMPT: string;
+    CHAT_MAX_TOKENS?: number;
+    COMPLETION_MAX_TOKENS?: number;
+  };
+  AUTH: {
+    REQUIRE_EMAIL_VERIFICATION: boolean;
+    ENABLE_SOCIAL_PROVIDER: boolean;
+    MINIMUM_USERNAME_LENGTH: number;
+    MAXIMUM_USERNAME_LENGTH: number;
+    MINIMUM_PASSWORD_LENGTH: number;
+    MAXIMUM_PASSWORD_LENGTH: number;
+    REDIRECT_URL_AFTER_SIGN_UP: string;
+    REDIRECT_URL_AFTER_SIGN_IN: string;
+  };
+  NOTIFICATIONS: {
+    VAPID_MAIL: string;
+  };
+  MAIL: {
+    PREFIX: string;
+    RATE_LIMIT_SECONDS: number;
+  };
+  PWA: {
+    NAME: string;
+    SHORT_NAME: string;
+    DESCRIPTION: string;
+    START_URL: string;
+    BACKGROUND_COLOR: string;
+    THEME_COLOR: string;
+    ICONS: Array<{
+      src: string;
+      sizes: string;
+      type: string;
+    }>;
+  };
+  SENTRY: {
+    ORG: string;
+    PROJECT: string;
+  };
+}

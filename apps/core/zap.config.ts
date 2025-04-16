@@ -3,6 +3,7 @@
  * - Change the current config file to your own configuration
  * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
  */
+import { ZapSettings } from "@/zap/types/zap.config.types";
 import { Metadata } from "next";
 
 export const VERCEL = process.env.VERCEL_ENV ? true : false;
@@ -26,7 +27,7 @@ export const ZAP_DEFAULT_FLAGS = {
 
 const AI_SYSTEM_PROMPT = "You are a helpful assistant.";
 
-export const ZAP_DEFAULT_SETTINGS = {
+export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   AI: {
     SYSTEM_PROMPT: AI_SYSTEM_PROMPT,
   },
