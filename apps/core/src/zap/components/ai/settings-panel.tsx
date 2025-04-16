@@ -33,7 +33,11 @@ import { AIFormSchema, AIProviderIdSchema } from "@/zap/schemas/ai.schema";
 import { orpc } from "@/zap/lib/orpc/client";
 import { useInitAISettings } from "@/zap/hooks/use-init-ai-settings";
 import { useAISettings } from "@/zap/hooks/use-ai-settings";
-import { AI_PROVIDERS_OBJECT, ModelsByProvider } from "@/zap/data/ai";
+import {
+  AI_PROVIDERS_OBJECT,
+  DEFAULT_MODEL,
+  ModelsByProvider,
+} from "@/zap/data/ai";
 import { AIFormValues, AIProviderId } from "@/zap/types/ai.types";
 
 interface AISettingsSheetProps {
@@ -64,12 +68,18 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
     if (apiKey) {
       setInitialApiKey(apiKey);
       form.setValue("apiKey", apiKey, { shouldValidate: true });
+    } else {
+      form.resetField("apiKey");
     }
   }, [apiKey, form, selectedProvider]);
 
   useEffect(() => {
     if (selectedProvider && savedModel) {
       form.setValue("model", savedModel, {
+        shouldValidate: true,
+      });
+    } else {
+      form.setValue("model", DEFAULT_MODEL[selectedProvider], {
         shouldValidate: true,
       });
     }
