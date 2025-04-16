@@ -1,11 +1,11 @@
-import { AIProvider, AIProviders, ModelName } from "@/zap/schemas/ai.schema";
+import { AIProvider, AIProviderId, ModelName } from "../types/ai.types";
 
-export const DEFAULT_MODEL: Record<AIProvider, ModelName> = {
+export const DEFAULT_MODEL: Record<AIProviderId, ModelName> = {
   openai: "gpt-4o-mini",
   mistral: "mistral-small-latest",
 };
 
-export const AI_PROVIDERS_OBJECT: AIProviders = [
+export const AI_PROVIDERS_OBJECT: AIProvider[] = [
   {
     provider: "openai",
     name: "OpenAI",

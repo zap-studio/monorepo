@@ -1,10 +1,10 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { createMistral } from "@ai-sdk/mistral";
-import { AIProvider, ModelName } from "@/zap/schemas/ai.schema";
 import { AI_PROVIDERS_OBJECT } from "../data/ai";
+import { AIProviderId, ModelName } from "../types/ai.types";
 
 export const getModel = (
-  provider: AIProvider,
+  provider: AIProviderId,
   apiKey: string,
   modelName: ModelName,
 ) => {
@@ -26,7 +26,7 @@ export const getModel = (
   return model;
 };
 
-export const getProviderName = (provider: AIProvider) => {
+export const getProviderName = (provider: AIProviderId) => {
   return (
     AI_PROVIDERS_OBJECT.find((p) => p.provider === provider)?.name ??
     "Select AI Provider"

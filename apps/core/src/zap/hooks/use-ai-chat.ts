@@ -2,9 +2,9 @@
 
 import { useChat } from "@ai-sdk/react";
 import { toast } from "sonner";
-import { AIProvider } from "../schemas/ai.schema";
+import { AIProviderId } from "../types/ai.types";
 
-export function useAIChat(provider: AIProvider) {
+export function useAIChat(provider: AIProviderId) {
   return useChat({
     api: "/api/ai/chat",
     headers: {

@@ -7,5 +7,3 @@ export const FeedbackSchema = z.object({
     .max(500, "Description must be 500 characters or less")
     .optional(),
 });
-
-export type FeedbackFormValues = z.infer<typeof FeedbackSchema>;

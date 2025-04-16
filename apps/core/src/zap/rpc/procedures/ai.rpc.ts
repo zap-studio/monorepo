@@ -3,13 +3,13 @@ import { userAISettings } from "@/db/schema";
 import { authMiddleware, base } from "@/rpc/middlewares";
 import { BASE_URL } from "@/zap.config";
 import { decrypt, encrypt } from "@/zap/lib/crypto";
-import { AIProviderEnumSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
+import { AIProviderIdSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
 import { and, eq } from "drizzle-orm";
 import ky from "ky";
 import { z } from "zod";
 
 const InputGetAPIKeySchema = z.object({
-  provider: AIProviderEnumSchema,
+  provider: AIProviderIdSchema,
 });
 
 const getAISettings = base
@@ -47,7 +47,7 @@ const getAISettings = base
   });
 
 const InputSaveAPIKeySchema = z.object({
-  provider: AIProviderEnumSchema,
+  provider: AIProviderIdSchema,
   model: ModelNameSchema,
   apiKey: z.string(),
 });
@@ -90,7 +90,7 @@ const saveAISettings = base
   });
 
 const InputUpdateAPIKeySchema = z.object({
-  provider: AIProviderEnumSchema,
+  provider: AIProviderIdSchema,
   model: ModelNameSchema,
   apiKey: z.string(),
 });
@@ -129,7 +129,7 @@ const updateAISettings = base
   });
 
 const InputDeleteAPIKeySchema = z.object({
-  provider: AIProviderEnumSchema,
+  provider: AIProviderIdSchema,
 });
 
 const deleteAPIKey = base
@@ -200,7 +200,7 @@ const saveOrUpdateAISettings = base
   });
 
 const InputTestAPIKeySchema = z.object({
-  provider: AIProviderEnumSchema,
+  provider: AIProviderIdSchema,
   apiKey: z.string(),
   model: ModelNameSchema,
 });

@@ -8,10 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  FeedbackFormValues,
-  FeedbackSchema,
-} from "@/zap/schemas/feedback.schema";
+import { FeedbackSchema } from "@/zap/schemas/feedback.schema";
 import {
   Form,
   FormControl,
@@ -29,6 +26,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { FeedbackFormValues } from "@/zap/types/feedback.types";
 
 export function FeedbackDialog({
   open,

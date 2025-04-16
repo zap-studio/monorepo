@@ -1,13 +1,13 @@
 import { getModel } from "@/zap/lib/ai";
 import { auth } from "@/zap/lib/auth/server";
-import { AIProviderEnumSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
+import { AIProviderIdSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
 import { generateText } from "ai";
 import { z } from "zod";
 
 export const maxDuration = 60;
 
 const BodySchema = z.object({
-  provider: AIProviderEnumSchema,
+  provider: AIProviderIdSchema,
   apiKey: z.string(),
   model: ModelNameSchema,
 });

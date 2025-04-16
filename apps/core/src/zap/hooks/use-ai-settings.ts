@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { orpc } from "../lib/orpc/client";
-import { AIFormValues } from "../schemas/ai.schema";
+import { AIFormValues } from "../types/ai.types";
 
 export const useAISettings = () => {
   const [isSaving, setIsSaving] = useState(false);

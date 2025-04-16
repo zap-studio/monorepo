@@ -1,8 +1,22 @@
 export interface ZapSettings {
   AI: {
     SYSTEM_PROMPT: string;
-    CHAT_MAX_TOKENS?: number;
-    COMPLETION_MAX_TOKENS?: number;
+    CHAT?: {
+      MAX_TOKENS?: number;
+      TEMPERATURE?: number;
+      PRESENCE_PENALTY?: number;
+      FREQUENCY_PENALTY?: number;
+      STOP_SEQUENCES?: string[];
+      MAX_RETRIES?: number;
+    };
+    COMPLETION?: {
+      MAX_TOKENS?: number;
+      TEMPERATURE?: number;
+      PRESENCE_PENALTY?: number;
+      FREQUENCY_PENALTY?: number;
+      STOP_SEQUENCES?: string[];
+      MAX_RETRIES?: number;
+    };
   };
   AUTH: {
     REQUIRE_EMAIL_VERIFICATION: boolean;

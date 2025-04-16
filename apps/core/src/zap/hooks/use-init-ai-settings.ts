@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { orpc } from "../lib/orpc/client";
 import { useForm } from "react-hook-form";
-import { AIFormValues, ModelName } from "../schemas/ai.schema";
+import { AIFormValues, ModelName } from "../types/ai.types";
 
 export const useInitAISettings = (
   form: ReturnType<typeof useForm<AIFormValues>>,

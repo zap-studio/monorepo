@@ -29,16 +29,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-import {
-  AIFormSchema,
-  AIFormValues,
-  AIProvider,
-  AIProviderEnumSchema,
-} from "@/zap/schemas/ai.schema";
+import { AIFormSchema, AIProviderIdSchema } from "@/zap/schemas/ai.schema";
 import { orpc } from "@/zap/lib/orpc/client";
 import { useInitAISettings } from "@/zap/hooks/use-init-ai-settings";
 import { useAISettings } from "@/zap/hooks/use-ai-settings";
 import { AI_PROVIDERS_OBJECT, ModelsByProvider } from "@/zap/data/ai";
+import { AIFormValues, AIProviderId } from "@/zap/types/ai.types";
 
 interface AISettingsSheetProps {
   open: boolean;
@@ -54,8 +50,8 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
   const form = useForm<AIFormValues>({
     resolver: zodResolver(AIFormSchema),
     defaultValues: {
-      provider: AIProviderEnumSchema.options[0],
-      model: ModelsByProvider[AIProviderEnumSchema.options[0]][0],
+      provider: AIProviderIdSchema.options[0],
+      model: ModelsByProvider[AIProviderIdSchema.options[0]][0],
       apiKey: "",
     },
   });
@@ -168,7 +164,7 @@ function ProviderSelect({ control, disabled }: FormFieldProps) {
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              {AIProviderEnumSchema.options.map((provider) => (
+              {AIProviderIdSchema.options.map((provider) => (
                 <SelectItem key={provider} value={provider}>
                   {
                     AI_PROVIDERS_OBJECT.find((p) => p.provider === provider)
@@ -278,7 +274,7 @@ function ActionButtons({
 interface ModelSelectProps {
   control: Control<AIFormValues>;
   disabled: boolean;
-  provider: AIProvider;
+  provider: AIProviderId;
 }
 
 function ModelSelect({ control, disabled, provider }: ModelSelectProps) {

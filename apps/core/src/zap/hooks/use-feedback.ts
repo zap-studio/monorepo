@@ -4,8 +4,8 @@ import { useORPC } from "@/zap/stores/orpc.store";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { toast } from "sonner";
-import { FeedbackFormValues } from "@/zap/schemas/feedback.schema";
 import React, { useEffect, useState } from "react";
+import { FeedbackFormValues } from "../types/feedback.types";
 
 export const useUserFeedback = () => {
   const orpc = useORPC();
