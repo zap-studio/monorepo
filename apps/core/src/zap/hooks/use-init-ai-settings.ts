@@ -28,6 +28,7 @@ export const useInitAISettings = (
         setModel(result.model);
       } catch {
         // If not found, set model to default according to provider
+        setApiKey(null);
         setModel(DEFAULT_MODEL[provider]);
       } finally {
         setLoading(false);
