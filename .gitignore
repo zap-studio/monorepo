@@ -1,20 +1,20 @@
 # dependencies
-node_modules
+node_modules/**
 
 # FeedYourAI
 feedyourai.txt
 
 # output
-out
-dist
+out/**
+dist/**
 *.tgz
 
 # code coverage
-coverage
+coverage/**
 *.lcov
 
 # logs
-logs
+logs/**
 _.log
 report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
@@ -35,3 +35,12 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Finder (MacOS) folder config
 .DS_Store
+
+bun.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+Cargo.lock
+uv.lock
+target/**
+build/**
