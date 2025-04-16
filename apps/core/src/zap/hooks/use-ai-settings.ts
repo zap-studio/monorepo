@@ -4,14 +4,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { orpc } from "../lib/orpc/client";
 import { AIFormValues } from "../schemas/ai.schema";
-import { useAIProviderStore } from "../stores/ai.store";
 
 export const useAISettings = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isValidated, setIsValidated] = useState(false);
   const [initialKey, setInitialKey] = useState<string | null>(null);
-
-  const { setModel, setProvider } = useAIProviderStore();
 
   const saveApiKey = async (values: AIFormValues) => {
     setIsSaving(true);
@@ -24,16 +21,12 @@ export const useAISettings = () => {
     try {
       if (!values.apiKey) {
         // Delete API key when saving empty
-        setProvider(values.provider);
-        setModel(values.provider, values.model);
         await orpc.ai.deleteAPIKey.call({ provider: values.provider });
         toast.success("API key deleted successfully");
         setIsValidated(false);
         setInitialKey(null);
       } else {
-        setProvider(values.provider);
-        setModel(values.provider, values.model);
-        await orpc.ai.saveOrUpdateAPIKey.call(values);
+        await orpc.ai.saveOrUpdateAISettings.call(values);
         toast.success("API key saved successfully");
         setInitialKey(values.apiKey);
       }

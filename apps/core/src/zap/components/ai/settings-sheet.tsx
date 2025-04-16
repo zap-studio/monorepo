@@ -36,10 +36,9 @@ import {
   AIProviderEnumSchema,
 } from "@/zap/schemas/ai.schema";
 import { orpc } from "@/zap/lib/orpc/client";
-import { useAPIKey } from "@/zap/hooks/use-api-key";
+import { useInitAISettings } from "@/zap/hooks/use-init-ai-settings";
 import { useAISettings } from "@/zap/hooks/use-ai-settings";
 import { AI_PROVIDERS_OBJECT, ModelsByProvider } from "@/zap/data/ai";
-import { useAIProviderStore } from "@/zap/stores/ai.store";
 
 interface AISettingsSheetProps {
   open: boolean;
@@ -51,12 +50,11 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
   const [initialApiKey, setInitialApiKey] = useState<string | null>(null);
 
   const { isSaving, setIsValidated, saveApiKey } = useAISettings();
-  const { models: savedModels, provider } = useAIProviderStore();
 
   const form = useForm<AIFormValues>({
     resolver: zodResolver(AIFormSchema),
     defaultValues: {
-      provider: provider,
+      provider: AIProviderEnumSchema.options[0],
       model: ModelsByProvider[AIProviderEnumSchema.options[0]][0],
       apiKey: "",
     },
@@ -64,7 +62,7 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
 
   const selectedProvider = form.watch("provider");
 
-  const { loading, apiKey } = useAPIKey(form, open);
+  const { loading, apiKey, model: savedModel } = useInitAISettings(form, open);
 
   useEffect(() => {
     if (apiKey) {
@@ -74,12 +72,12 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
   }, [apiKey, form, selectedProvider]);
 
   useEffect(() => {
-    if (selectedProvider && savedModels) {
-      form.setValue("model", savedModels[selectedProvider], {
+    if (selectedProvider && savedModel) {
+      form.setValue("model", savedModel, {
         shouldValidate: true,
       });
     }
-  }, [form, savedModels, selectedProvider]);
+  }, [form, savedModel, selectedProvider]);
 
   const handleSubmit = async (values: AIFormValues) => {
     await saveApiKey(values);

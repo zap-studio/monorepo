@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { userApiKeys } from "@/db/schema";
+import { userAISettings } from "@/db/schema";
 import { authMiddleware, base } from "@/rpc/middlewares";
 import { BASE_URL } from "@/zap.config";
 import { decrypt, encrypt } from "@/zap/lib/crypto";
@@ -12,65 +12,77 @@ const InputGetAPIKeySchema = z.object({
   provider: AIProviderEnumSchema,
 });
 
-const getAPIKey = base
+const getAISettings = base
   .use(authMiddleware)
   .input(InputGetAPIKeySchema)
   .handler(async ({ context, input }) => {
     const userId = context.session.user.id;
     const provider = input.provider;
 
-    const apiKeys = await db
+    const result = await db
       .select()
-      .from(userApiKeys)
+      .from(userAISettings)
       .where(
-        and(eq(userApiKeys.userId, userId), eq(userApiKeys.provider, provider)),
+        and(
+          eq(userAISettings.userId, userId),
+          eq(userAISettings.provider, provider),
+        ),
       )
       .limit(1)
       .execute();
 
-    const encryptedAPIKey = apiKeys[0]?.encryptedApiKey;
-    if (!encryptedAPIKey) {
-      throw new Error("API key not found");
+    if (!result.length) {
+      throw new Error("AI settings not found");
     }
+
+    const encryptedAPIKey = result[0]?.encryptedApiKey;
+    const model = result[0]?.model;
 
     const decryptedAPIKey = decrypt(
       encryptedAPIKey.iv,
       encryptedAPIKey.encrypted,
     );
 
-    return decryptedAPIKey;
+    return { apiKey: decryptedAPIKey, model };
   });
 
 const InputSaveAPIKeySchema = z.object({
   provider: AIProviderEnumSchema,
+  model: ModelNameSchema,
   apiKey: z.string(),
 });
 
-const saveAPIKey = base
+const saveAISettings = base
   .use(authMiddleware)
   .input(InputSaveAPIKeySchema)
   .handler(async ({ context, input }) => {
     const userId = context.session.user.id;
     const provider = input.provider;
     const apiKey = input.apiKey;
+    const model = input.model;
+
     const encryptedAPIKey = encrypt(apiKey);
 
-    const existingKey = await db
+    const existingSettings = await db
       .select()
-      .from(userApiKeys)
+      .from(userAISettings)
       .where(
-        and(eq(userApiKeys.userId, userId), eq(userApiKeys.provider, provider)),
+        and(
+          eq(userAISettings.userId, userId),
+          eq(userAISettings.provider, provider),
+        ),
       )
       .limit(1)
       .execute();
 
-    if (existingKey.length > 0) {
-      throw new Error("API key already exists for this provider");
+    if (existingSettings.length > 0) {
+      throw new Error("AI settings already exists");
     }
 
-    await db.insert(userApiKeys).values({
+    await db.insert(userAISettings).values({
       userId,
       provider,
+      model,
       encryptedApiKey: encryptedAPIKey,
     });
 
@@ -79,26 +91,38 @@ const saveAPIKey = base
 
 const InputUpdateAPIKeySchema = z.object({
   provider: AIProviderEnumSchema,
+  model: ModelNameSchema,
   apiKey: z.string(),
 });
 
-const updateAPIKey = base
+const updateAISettings = base
   .use(authMiddleware)
   .input(InputUpdateAPIKeySchema)
   .handler(async ({ context, input }) => {
     const userId = context.session.user.id;
     const provider = input.provider;
+    const model = input.model;
     const apiKey = input.apiKey;
 
     const encryptedAPIKey = encrypt(apiKey);
 
+    const existingSettings = await db.select().from(userAISettings);
+
+    if (!existingSettings.length) {
+      throw new Error("AI settings not found");
+    }
+
     await db
-      .update(userApiKeys)
+      .update(userAISettings)
       .set({
+        model,
         encryptedApiKey: encryptedAPIKey,
       })
       .where(
-        and(eq(userApiKeys.userId, userId), eq(userApiKeys.provider, provider)),
+        and(
+          eq(userAISettings.userId, userId),
+          eq(userAISettings.provider, provider),
+        ),
       );
 
     return { success: true };
@@ -116,48 +140,58 @@ const deleteAPIKey = base
     const provider = input.provider;
 
     await db
-      .delete(userApiKeys)
+      .delete(userAISettings)
       .where(
-        and(eq(userApiKeys.userId, userId), eq(userApiKeys.provider, provider)),
+        and(
+          eq(userAISettings.userId, userId),
+          eq(userAISettings.provider, provider),
+        ),
       );
 
     return { success: true };
   });
 
-const saveOrUpdateAPIKey = base
+const saveOrUpdateAISettings = base
   .use(authMiddleware)
   .input(InputSaveAPIKeySchema)
   .handler(async ({ context, input }) => {
     const userId = context.session.user.id;
     const provider = input.provider;
     const apiKey = input.apiKey;
+    const model = input.model;
+
     const encryptedAPIKey = encrypt(apiKey);
 
-    const existingKey = await db
+    const existingSettings = await db
       .select()
-      .from(userApiKeys)
+      .from(userAISettings)
       .where(
-        and(eq(userApiKeys.userId, userId), eq(userApiKeys.provider, provider)),
+        and(
+          eq(userAISettings.userId, userId),
+          eq(userAISettings.provider, provider),
+        ),
       )
       .limit(1)
       .execute();
 
-    if (existingKey.length > 0) {
+    if (existingSettings.length > 0) {
       await db
-        .update(userApiKeys)
+        .update(userAISettings)
         .set({
+          model,
           encryptedApiKey: encryptedAPIKey,
         })
         .where(
           and(
-            eq(userApiKeys.userId, userId),
-            eq(userApiKeys.provider, provider),
+            eq(userAISettings.userId, userId),
+            eq(userAISettings.provider, provider),
           ),
         );
     } else {
-      await db.insert(userApiKeys).values({
+      await db.insert(userAISettings).values({
         userId,
         provider,
+        model,
         encryptedApiKey: encryptedAPIKey,
       });
     }
@@ -200,10 +234,10 @@ const testAPIKey = base
   });
 
 export const ai = {
-  getAPIKey,
-  saveAPIKey,
-  updateAPIKey,
+  getAISettings,
+  saveAISettings,
+  updateAISettings,
   deleteAPIKey,
-  saveOrUpdateAPIKey,
+  saveOrUpdateAISettings,
   testAPIKey,
 };

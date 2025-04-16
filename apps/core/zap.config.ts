@@ -24,7 +24,12 @@ export const ZAP_DEFAULT_FLAGS = {
   ENABLE_SENTRY: false,
 };
 
+const AI_SYSTEM_PROMPT = "You are a helpful assistant.";
+
 export const ZAP_DEFAULT_SETTINGS = {
+  AI: {
+    SYSTEM_PROMPT: AI_SYSTEM_PROMPT,
+  },
   AUTH: {
     REQUIRE_EMAIL_VERIFICATION: true,
     ENABLE_SOCIAL_PROVIDER: true,

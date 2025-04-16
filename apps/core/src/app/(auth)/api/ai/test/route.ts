@@ -1,4 +1,3 @@
-import { SYSTEM_PROMPT } from "@/zap/data/ai";
 import { getModel } from "@/zap/lib/ai";
 import { auth } from "@/zap/lib/auth/server";
 import { AIProviderEnumSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
@@ -21,13 +20,12 @@ export async function POST(req: Request) {
 
   const unvalidatedBody = await req.json();
   const body = BodySchema.parse(unvalidatedBody);
-  const apiKey = body.apiKey;
+  const { provider, apiKey, model } = body;
 
   try {
     await generateText({
-      model: getModel(body.provider, apiKey, body.model),
+      model: getModel(provider, apiKey, model),
       prompt: "This is just a test, answer with 1 token.",
-      system: SYSTEM_PROMPT,
       maxTokens: 1,
     });
   } catch (error) {

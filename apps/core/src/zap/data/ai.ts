@@ -1,6 +1,9 @@
-import { AIProviders } from "@/zap/schemas/ai.schema";
+import { AIProvider, AIProviders, ModelName } from "@/zap/schemas/ai.schema";
 
-export const SYSTEM_PROMPT = "";
+export const DEFAULT_MODEL: Record<AIProvider, ModelName> = {
+  openai: "gpt-4o-mini",
+  mistral: "mistral-small-latest",
+};
 
 export const AI_PROVIDERS_OBJECT: AIProviders = [
   {

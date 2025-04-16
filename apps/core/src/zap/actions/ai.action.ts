@@ -1,17 +1,20 @@
 "use server";
 
 import { db } from "@/db";
-import { userApiKeys } from "@/db/schema";
+import { userAISettings } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { decrypt } from "../lib/crypto";
 import { AIProvider } from "../schemas/ai.schema";
 
-export const getAPIKey = async (userId: string, provider: AIProvider) => {
+export const getAISettings = async (userId: string, provider: AIProvider) => {
   const [apiKeyRecord] = await db
     .select()
-    .from(userApiKeys)
+    .from(userAISettings)
     .where(
-      and(eq(userApiKeys.userId, userId), eq(userApiKeys.provider, provider)),
+      and(
+        eq(userAISettings.userId, userId),
+        eq(userAISettings.provider, provider),
+      ),
     )
     .limit(1);
 
@@ -21,6 +24,7 @@ export const getAPIKey = async (userId: string, provider: AIProvider) => {
 
   const { iv, encrypted } = apiKeyRecord.encryptedApiKey;
   const apiKey = decrypt(iv, encrypted);
+  const model = apiKeyRecord.model;
 
-  return apiKey;
+  return { apiKey, model };
 };
