@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { orpc } from "../lib/orpc/client";
 import { useForm } from "react-hook-form";
 import { AIFormValues, ModelName } from "../types/ai.types";
+import { DEFAULT_MODEL } from "../data/ai";
 
 export const useInitAISettings = (
   form: ReturnType<typeof useForm<AIFormValues>>,
@@ -25,6 +26,9 @@ export const useInitAISettings = (
 
         setApiKey(result.apiKey);
         setModel(result.model);
+      } catch {
+        // If not found, set model to default according to provider
+        setModel(DEFAULT_MODEL[provider]);
       } finally {
         setLoading(false);
       }

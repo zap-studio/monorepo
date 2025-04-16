@@ -12,7 +12,6 @@ export const useAISettings = () => {
 
   const saveApiKey = async (values: AIFormValues) => {
     setIsSaving(true);
-    console.log("Saving API key", values);
     if (!values.model) {
       toast.error("Please select a model");
       return;
