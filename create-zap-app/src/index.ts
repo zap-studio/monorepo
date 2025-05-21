@@ -60,11 +60,8 @@ async function main() {
   try {
     await fs.ensureDir(outputDir);
   } catch {
-    spinner.clear();
-    console.log(
-      chalk.red(
-        `Failed to create project directory. Please check your permissions and try again.`
-      )
+    spinner.fail(
+      `Failed to create project directory. Please check your permissions and try again.`
     );
     process.exit(1);
   }
@@ -136,14 +133,10 @@ async function main() {
       }
     }
 
-    spinner.clear();
-    console.log(chalk.green("Zap.ts template downloaded and extracted."));
+    spinner.succeed("Zap.ts template downloaded and extracted.");
   } catch (error) {
-    spinner.clear();
-    console.log(
-      chalk.red(
-        `Failed to download or extract template: ${error instanceof Error ? error.message : "Unknown error"}`
-      )
+    spinner.fail(
+      `Failed to download or extract template. Please check your internet connection and try again.`
     );
     process.exit(1);
   }
@@ -152,6 +145,7 @@ async function main() {
   let installationSuccess = false;
   while (!installationSuccess) {
     spinner.text = `Installing dependencies with ${packageManager}...`;
+    spinner.start();
     const installCmd =
       packageManager === "npm"
         ? "npm install --force"
@@ -163,15 +157,9 @@ async function main() {
     try {
       await execAsync(installCmd, { cwd: outputDir });
       installationSuccess = true;
-      spinner.clear();
-      console.log(
-        chalk.green(`Dependencies installed with ${packageManager}.`)
-      );
+      spinner.succeed(`Dependencies installed with ${packageManager}.`);
     } catch (error) {
-      spinner.clear();
-      console.log(
-        chalk.red(`Failed to install dependencies with ${packageManager}.`)
-      );
+      spinner.fail(`Failed to install dependencies with ${packageManager}.`);
       if (["npm", "yarn", "pnpm", "bun"].length === 1) {
         console.log(
           chalk.red(
@@ -182,47 +170,41 @@ async function main() {
       }
 
       packageManager = await promptPackageManager(packageManager);
+      spinner.start();
     }
   }
 
   // Update dependencies
   spinner.text = "Updating dependencies...";
+  spinner.start();
   try {
     await execAsync(`${packageManager} update`, { cwd: outputDir });
-    spinner.clear();
-    console.log(chalk.green("Dependencies updated."));
+    spinner.succeed("Dependencies updated.");
   } catch (error) {
-    spinner.clear();
-    console.log(
-      chalk.yellow(`Failed to update dependencies, continuing anyway...`)
-    );
+    spinner.warn(`Failed to update dependencies, continuing anyway...`);
   }
 
   // Run prettier on the project
   spinner.text = "Running Prettier on the project...";
+  spinner.start();
   try {
     await execAsync(`${packageManager} run format`, { cwd: outputDir });
-    spinner.clear();
-    console.log(chalk.green("Prettier formatting complete."));
+    spinner.succeed("Prettier formatting complete.");
   } catch (error) {
-    spinner.clear();
-    console.log(chalk.yellow(`Failed to run Prettier, continuing anyway...`));
+    spinner.warn(`Failed to run Prettier, continuing anyway...`);
   }
 
   // Generate .env file
   spinner.text = "Generating .env file...";
+  spinner.start();
   try {
     await generateEnv(outputDir);
-    spinner.clear();
-    console.log(chalk.green(".env file generated."));
+    spinner.succeed(".env file generated.");
   } catch (error) {
-    spinner.clear();
-    console.log(
-      chalk.yellow(`Failed to generate .env file, continuing anyway...`)
-    );
+    spinner.warn(`Failed to generate .env file, continuing anyway...`);
   }
 
-  spinner.succeed("Project setup complete!");
+  console.log(chalk.green("Project setup complete!"));
 
   console.log(chalk.bold.green("\n🎉 Project created successfully!"));
   console.log("");
@@ -272,8 +254,7 @@ export const ${procedureName} = base.handler(async () => {
     `.trim();
 
     await fs.writeFile(procedurePath, procedureContent);
-    spinner.clear();
-    console.log(chalk.green(`Created ${kebabCaseName}.rpc.ts`));
+    spinner.succeed(`Created ${kebabCaseName}.rpc.ts`);
 
     // Update router.ts
     const routerPath = path.join(projectDir, "src/rpc/router.ts");
@@ -333,22 +314,21 @@ export const use${capitalizedProcedureName} = () => {
 
     // Format files
     spinner.text = "Formatting files...";
+    spinner.start();
     await execAsync("bun run format", { cwd: projectDir });
-    spinner.clear();
-    console.log(chalk.green("Files formatted."));
+    spinner.succeed("Files formatted.");
 
-    spinner.succeed(`Successfully created ${procedureName} procedure!`);
+    console.log(
+      chalk.green(`Successfully created ${procedureName} procedure!`)
+    );
     console.log(chalk.cyan("\nFiles created:"));
     console.log(chalk.white(`- src/rpc/procedures/${kebabCaseName}.rpc.ts`));
     console.log(chalk.white(`- src/hooks/use-${kebabCaseName}.ts`));
     console.log(chalk.white("\nRouter updated:"));
     console.log(chalk.white(`- src/rpc/router.ts`));
   } catch (error) {
-    spinner.clear();
-    console.error(
-      chalk.red(
-        `Failed to create procedure: ${error instanceof Error ? error.message : "Unknown error"}`
-      )
+    spinner.fail(
+      `Failed to create procedure: ${error instanceof Error ? error.message : "Unknown error"}`
     );
     process.exit(1);
   }

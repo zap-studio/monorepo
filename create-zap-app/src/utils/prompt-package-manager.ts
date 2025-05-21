@@ -12,9 +12,7 @@ export async function promptPackageManager(currentChoice: PackageManager) {
       {
         type: "list",
         name: "packageManager",
-        message: chalk.yellow(
-          `Installation with ${currentChoice} failed. Please choose another package manager:`
-        ),
+        message: chalk.yellow(`Please choose another package manager:`),
         choices,
       },
     ])
