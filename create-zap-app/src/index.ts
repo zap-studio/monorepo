@@ -60,7 +60,12 @@ async function main() {
   try {
     await fs.ensureDir(outputDir);
   } catch {
-    spinner.fail(`Failed to create directory.`);
+    spinner.clear();
+    console.log(
+      chalk.red(
+        `Failed to create project directory. Please check your permissions and try again.`
+      )
+    );
     process.exit(1);
   }
 
@@ -134,7 +139,12 @@ async function main() {
     spinner.clear();
     console.log(chalk.green("Zap.ts template downloaded and extracted."));
   } catch (error) {
-    spinner.fail(`Failed to download template.`);
+    spinner.clear();
+    console.log(
+      chalk.red(
+        `Failed to download or extract template: ${error instanceof Error ? error.message : "Unknown error"}`
+      )
+    );
     process.exit(1);
   }
 
@@ -158,11 +168,19 @@ async function main() {
         chalk.green(`Dependencies installed with ${packageManager}.`)
       );
     } catch (error) {
-      spinner.fail(`Failed to install dependencies with ${packageManager}.`);
+      spinner.clear();
+      console.log(
+        chalk.red(`Failed to install dependencies with ${packageManager}.`)
+      );
       if (["npm", "yarn", "pnpm", "bun"].length === 1) {
-        spinner.fail("No more package managers to try.");
+        console.log(
+          chalk.red(
+            `All package managers failed. Please check your internet connection and try again.`
+          )
+        );
         process.exit(1);
       }
+
       packageManager = await promptPackageManager(packageManager);
     }
   }
@@ -326,8 +344,11 @@ export const use${capitalizedProcedureName} = () => {
     console.log(chalk.white("\nRouter updated:"));
     console.log(chalk.white(`- src/rpc/router.ts`));
   } catch (error) {
-    spinner.fail(
-      `Failed to create procedure: ${error instanceof Error ? error.message : "Unknown error"}`
+    spinner.clear();
+    console.error(
+      chalk.red(
+        `Failed to create procedure: ${error instanceof Error ? error.message : "Unknown error"}`
+      )
     );
     process.exit(1);
   }
