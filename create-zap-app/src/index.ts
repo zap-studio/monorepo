@@ -6,8 +6,8 @@ import chalk from "chalk";
 import ora from "ora";
 import { exec } from "child_process";
 import { promisify } from "util";
-import type { PackageManager } from "./schemas/index.js";
-import { generateEnv } from "./utils/index.js";
+import type { PackageManager } from "@/schemas/index.js";
+import { generateEnv, promptPackageManager } from "@/utils/index.js";
 import { ObjectLiteralExpression, Project } from "ts-morph";
 import ky from "ky";
 import { execa } from "execa";
@@ -50,8 +50,7 @@ async function main() {
       choices: ["npm", "yarn", "pnpm", "bun"],
     },
   ]);
-  const packageManager =
-    packageManagerResponse.packageManager as PackageManager;
+  let packageManager = packageManagerResponse.packageManager as PackageManager;
 
   // Get output directory
   const outputDir = path.join(process.cwd(), projectName);
@@ -139,28 +138,49 @@ async function main() {
     process.exit(1);
   }
 
-  // Install dependencies
-  spinner.clear();
-  spinner.text = "Installing dependencies...";
-  const installCmd =
-    packageManager === "npm"
-      ? "npm install --force"
-      : packageManager === "yarn"
-        ? "yarn"
-        : packageManager === "pnpm"
-          ? "pnpm install --force"
-          : "bun install";
-  await execAsync(installCmd, { cwd: outputDir });
+  // Install dependencies with retry mechanism
+  let installationSuccess = false;
+  while (!installationSuccess) {
+    spinner.clear();
+    spinner.text = `Installing dependencies with ${packageManager}...`;
+    const installCmd =
+      packageManager === "npm"
+        ? "npm install --force"
+        : packageManager === "yarn"
+          ? "yarn"
+          : packageManager === "pnpm"
+            ? "pnpm install --force"
+            : "bun install";
+    try {
+      await execAsync(installCmd, { cwd: outputDir });
+      installationSuccess = true;
+    } catch (error) {
+      spinner.fail(`Failed to install dependencies with ${packageManager}.`);
+      if (["npm", "yarn", "pnpm", "bun"].length === 1) {
+        spinner.fail("No more package managers to try.");
+        process.exit(1);
+      }
+      packageManager = await promptPackageManager(packageManager);
+    }
+  }
 
   // Update dependencies
   spinner.clear();
   spinner.text = "Updating dependencies...";
-  await execAsync(`${packageManager} update`, { cwd: outputDir });
+  try {
+    await execAsync(`${packageManager} update`, { cwd: outputDir });
+  } catch (error) {
+    spinner.warn(`Failed to update dependencies, continuing anyway...`);
+  }
 
   // Run prettier on the project
   spinner.clear();
   spinner.text = "Running Prettier on the project...";
-  await execAsync(`${packageManager} run format`, { cwd: outputDir });
+  try {
+    await execAsync(`${packageManager} run format`, { cwd: outputDir });
+  } catch (error) {
+    spinner.warn(`Failed to run Prettier, continuing anyway...`);
+  }
 
   // Generate .env file
   spinner.clear();
