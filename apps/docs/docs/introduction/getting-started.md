@@ -12,36 +12,13 @@ Before proceeding, ensure that Zap.ts is installed by following the instructions
 
 ### Overview
 
-Zap.ts has many folders and files. Here’s a quick look at the main ones:
-
-- `/src/app`: Where your app’s pages live (like `page.tsx` for the homepage).
-- `/src/lib`: Tools and helper code (like `auth-server.ts` for login setup).
-- `/src/db`: Database connection and tables (like `schema/auth.ts` for users).
-
-### Key Folders
-
-To learn more about the way we recommend you structure your code, see the [best practices](/docs/misc/best-practices) page. In the meantime, here is a quick overview.
-
-- `/src/app`: Holds your app’s pages and routes. Example: `page.tsx` shows the homepage.
-- `/src/lib`: Has reusable code. Example: `utils.ts` helps combine styles with `cn()`.
-- `/src/db`: Connects to your database. Example: `index.ts` uses Neon for PostgreSQL.
-- `/src/schemas`: Rules for checking data (like `ai.schema.ts` for AI settings).
-- `/src/stores`: Manages app state (like `ai.store.ts` for AI provider choice).
-- `/src/actions`: Server actions for tasks (like `emails.action.ts` to send emails).
-- `/src/data`: Static data or flags (like `settings.ts` for app settings).
-- `/src/features`: Code for specific features (like `push-notifications` for notifications).
-- `/src/hooks`: Global reusable functions (like `use-mobile.ts` to check screen size).
-- `/src/rpc`: API procedures (like `router.ts` for server calls).
-- `/src/styles`: CSS stylesheets (like `animation.css` for animations).
-- `/src/providers`: React providers (like `theme.provider.tsx` for dark mode).
-
-### Why It’s Built This Way
-
 Zap.ts wants you to focus on building your app’s features, not on boring setup tasks. This structure saves time. You don’t need to create everything from zero. It keeps your code neat so you can find things easily. It also provides a framework so you don't overthink too much about it.
 
-### Flexibility
+Before getting started, read our [best practices](/docs/misc/best-practices.md) to learn more.
 
-You can keep what you like or replace what you don’t need. For instance, if you don’t want push notifications, you can remove them.
+:::tip
+You can keep what you like or get rid of what you don’t need. For instance, if you don’t want push notifications, you can remove them.
+:::
 
 ## Environment Variables
 
@@ -68,8 +45,8 @@ ENCRYPTION_KEY=your_encryption_key
 
 These connect your app to services like the database or email. You can remove the ones you don't need.
 
-::: tip
-You can use `DATABASE_URL` with any database you like, such as Supabase or your own PostgreSQL, instead of Neon.
+:::warning
+The above `.env` file serves as an example. You should only rely on the instance of Zap.ts that was present during its initial installation.
 :::
 
 ## Configure the App
@@ -91,7 +68,7 @@ It’s fully customizable and acts as the core config hub for your app logic.
 
 ## Quick Scripts
 
-Use these commands to run Zap.ts. Pick your package manager:
+Use these commands to run Zap.ts. Pick your favorite package manager:
 
 ::: code-group
 

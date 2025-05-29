@@ -21,7 +21,7 @@ yarn dlx create-zap-app@latest
 ```
 
 ```bash [pnpm]
-pnpx create-zap-app@latest
+pnpm dlx create-zap-app@latest
 ```
 
 :::

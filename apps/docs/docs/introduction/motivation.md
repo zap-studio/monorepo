@@ -28,7 +28,7 @@ Zap.ts includes these libraries:
 
 - [shadcn/ui](https://ui.shadcn.com/): The best way to get ready-to-use UI components that you can customize however you like.
 - [better-auth](https://better-auth.com/): A simple and flexible way to set up authentication. It works with any framework, avoids vendor lock-in, and connects seamlessly to your database.
-- [drizzle](https://orm.drizzle.team/): An ORM that lets you write database schemas in TypeScript, sync them with your database, and is easy to use. It’s set up with [Neon](https://neon.tech/) by default, but you can switch databases easily.
+- [drizzle](https://orm.drizzle.team/): An ORM that lets you write database schemas in TypeScript, sync them with your database, and is easy to use. Zap.ts is set up with [Neon](https://neon.tech/) by default, but you can switch databases easily.
 - [zustand](https://zustand-demo.pmnd.rs/): A lightweight alternative to Redux and React Context. It helps you write less code, do more, and supports local storage persistence out of the box.
 - [oRPC](https://orpc.unnoq.com/): An alternative to tRPC that supports OpenAPI specs, making it easy to build type-safe APIs for frontend and backend.
 - [AI Vercel SDK](https://sdk.vercel.ai/): A toolkit for streaming text, handling objects, using RAG (Retrieval-Augmented Generation), and more. It lets you switch between providers without depending on a specific SDK.

@@ -1,6 +1,6 @@
 # Deploying Zap.ts on Vercel
 
-Zap.ts is a Next.js boilerplate designed for rapid development and easy deployment. Built with modern tools like Next.js, Better Auth, AI SDK, Drizzle ORM, shadcn/ui, Tailwind CSS, oRPC, and MDX support, it’s optimized for deployment on platforms like [Vercel](https://vercel.com). This guide walks you through deploying your Zap.ts project to Vercel seamlessly.
+Zap.ts is a Next.js boilerplate designed for rapid development and easy deployment. This guide walks you through deploying your Zap.ts project to Vercel seamlessly.
 
 Since Zap.ts is a Next.js-based boilerplate, the deployment process follows the standard steps for deploying a Next.js app on Vercel. Let’s get started!
 
@@ -8,7 +8,7 @@ Since Zap.ts is a Next.js-based boilerplate, the deployment process follows the 
 
 Before you begin, ensure you have the following:
 
-- A Zap.ts project set up locally (clone it from [https://zap-ts.alexandretrotel.org](https://zap-ts.alexandretrotel.org) or your own fork).
+- A Zap.ts project set up locally.
 - A Vercel account ([sign up here](https://vercel.com/signup) if you don’t have one).
 - Git installed on your machine.
 - Your project pushed to a Git repository (GitHub, GitLab, or Bitbucket).
@@ -112,9 +112,5 @@ To use a custom domain:
 - **Build Errors**: Check the build logs in Vercel for details. Ensure all dependencies are listed in `package.json`.
 - **Environment Variables**: Verify they’re correctly set and scoped in Vercel.
 - **PWA Issues**: Ensure your `manifest.json` or `manifest.ts` and service worker files are correctly configured in the Zap.ts project.
-
-## Additional Notes
-
-- Zap.ts includes modern features like Drizzle ORM with Neon Database by default. Ensure your database is accessible from Vercel’s serverless environment.
 
 Happy deploying!

@@ -1,8 +1,8 @@
-# Best Practices for Structuring Your Zap.ts Project
+# The Zap.ts Way
 
 Zap.ts is built to help you create apps quickly with a clear and organized structure. This page explains the recommended way to set up your project in the `src` folder and why it works well for building modern apps.
 
-## Project Structure Overview
+## Project Structure
 
 The `src` folder in Zap.ts is organized to keep your code clean, easy to find, and ready to grow. Here’s what each folder does:
 
@@ -12,8 +12,7 @@ The `src` folder in Zap.ts is organized to keep your code clean, easy to find, a
   - **common**: General components used across the app, like a user profile card (e.g., `ProfileCard.tsx`).
   - **ui**: Components styled with shadcn/ui, focusing on design consistency (e.g., `Card.tsx`).
 - **data**: Keeps static data, like JSON files, and feature flags to turn features on or off at build time without a database.
-- **db**: Includes database-related code, such as Drizzle ORM migrations and queries.
-- **features**: Organizes app features into separate folders (e.g., `push-notifications`), each with its own `hooks` and `components` folder.
+- **db**: Includes database-related code, such as Drizzle ORM schemas.
 - **hooks**: Holds custom React hooks that can be shared across features.
 - **lib**: Stores shared utilities, like helper functions or API clients.
 - **providers**: Contains React context providers for app-wide state (but use Zustand stores when possible—see below).
@@ -22,57 +21,46 @@ The `src` folder in Zap.ts is organized to keep your code clean, easy to find, a
 - **stores**: Holds Zustand stores for lightweight state management.
 - **styles**: Includes global styles, such as Tailwind CSS configurations.
 
-## Focus on the Features Folder
+## Organizing Features
 
-The `features` folder organizes your app’s logic. Each feature (like `push-notifications`) gets its own folder with this structure:
+To make it easier to work with separate features and concerns, organize your code by creating subfolders for each feature within your folders such as `components`. For example:
 
-- **hooks**: Custom hooks for the feature, keeping logic reusable.
-- **components**: UI components tied to the feature, making code easy to manage.
-
-### Example: User Profile Feature
-
-Here’s how the `user-profile` feature might look:
-
-```
-features/
-  user-profile/
-    hooks/
-      use-user-profile.ts  # Fetches user data
-    components/
-      user-card.tsx       # Displays user info
-```
-
-In `use-user-profile.ts`:
-
-```typescript
-import useSWR from "swr";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-export function useUserProfile(userId: string) {
-  return useSWR(`/api/users/${userId}`, fetcher);
-}
+```bash
+components/
+  common/
+    ProfileCard.tsx
+  ui/
+    Card.tsx
+  features/
+    user/
+      UserCard.tsx
+      UserList.tsx
+    post/
+      PostForm.tsx
+      PostView.tsx
 ```
 
-In `user-card.tsx`:
+This way, you can easily find and manage components related to a specific feature without cluttering the main `components` folder.
 
-```typescript
-import { useUserProfile } from "./hooks/use-user-profile";
+## Pages vs. Routes
 
-export function UserCard({ userId }: { userId: string }) {
-  const { data: user, isLoading } = useUserProfile(userId);
+In the `app` folder, there are some main folders that help with organizing your code but don't affect routes. These include:
 
-  if (isLoading) return <div>Loading...</div>;
+- **api**: Holds only API endpoints (e.g., `/(api)/users.ts`)
+- **pages**: Contains only pages (e.g., `/(pages)/home.tsx`)
+- **public**: Accessible by everyone; contains pages or API routes not requiring authentication (e.g., `/(public)/(pages)/home.tsx`)
+- **auth-only**: Protected by authentication; contains pages or API routes that require a user to be logged in (e.g., `/(auth-only)/(api)/user/update-account.ts`)
 
-  if (error) return <>An error occured</>;
+These folders help you group related code and make it easier to find what you need.
 
-  return <div>{user.name}</div>;
-}
-```
+:::tip
+A route in Next.js can be either an API endpoint or a page that can be accessed directly by the user.
 
-This keeps the feature self-contained and easy to update.
+- **API Route**: An API route is a server-side function that handles HTTP requests and returns data. It's usually prefixed with `/api/` (e.g., `/api/users`) and is used to interact with your application through APIs.
+- **Page**: A page, on the other hand, is a React component that can be rendered on the client-side or the server-side by Next.js. Pages can have dynamic routes (e.g., `/users/[id]`) as well as API routes for handling parameterized URLs.
+  :::
 
-## Differences Between Components Subfolders
+## Components Subfolders
 
 The `components` folder splits into `common` and `ui` to organize your UI code:
 
@@ -81,62 +69,15 @@ The `components` folder splits into `common` and `ui` to organize your UI code:
 
 This split keeps your components organized and makes it clear which ones follow shadcn/ui’s design system.
 
-## Server Actions vs. API Routes with oRPC
+## Server Actions vs. API Routes
 
 **Server Actions** and **API Routes** both handle backend logic, but they work differently:
 
 - **Server Actions**: Server-side functions for tasks like form submissions. They run on the server and are good for one-off operations. They don’t need a separate endpoint.
 - **API Routes**: Next.js endpoints (e.g., `/api/users`) for reusable APIs. They’re better for parallel requests and external access. With oRPC, they become type-safe.
+- **Parallelism**: API routes can handle multiple requests at once, ideal for fetching data. Actions are sequential, better for single tasks like updates.
 
-### Example with oRPC
-
-Here’s how they differ in practice:
-
-**Server Action** (in `actions/update-user.action.ts`):
-
-```typescript
-"use server";
-
-export async function updateUser(userId: string, name: string) {
-  // Update user in database
-  return { success: true };
-}
-```
-
-**API Route with oRPC** (in `rpc/user.rpc.ts`):
-
-```typescript
-import { procedure, router } from "@orpc/server";
-
-export const userRouter = router({
-  getUser: procedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      return { id: input.id, name: "Alex" }; // Fetch from DB
-    }),
-});
-```
-
-**Usage** (in a component):
-
-```typescript
-import { userRouter } from "@/rpc/user.rpc";
-import { updateUser } from "@/actions/update-user";
-
-async function UserProfile({ userId }: { userId: string }) {
-  const user = await userRouter.getUser({ id: userId }); // API call with oRPC
-  const handleUpdate = async () => {
-    await updateUser(userId, "New Name"); // Server action
-  };
-
-  return <button onClick={handleUpdate}>Update Name</button>;
-}
-```
-
-- **Parallelism**: API routes with oRPC can handle multiple requests at once, ideal for fetching data. Actions are sequential, better for single tasks like updates.
-- **Usage with oRPC**: oRPC makes API routes type-safe, ensuring the frontend and backend match. oRPC is compatible with server actions.
-
-## Using the Data Folder
+## The Data Folder
 
 The `data` folder holds static data and feature flags, so you don’t need a database for everything. Feature flags let you turn features on or off at build time.
 
@@ -187,7 +128,7 @@ export const useUserStore = create((set) => ({
 }));
 ```
 
-## Using Schemas for Type-Safe APIs
+## Type-Safe APIs
 
 The `schemas` folder defines schemas for Drizzle ORM and API validation. With oRPC, you can use these schemas to ensure type safety and infer types for better app-wide type management.
 
@@ -211,12 +152,12 @@ In `rpc/user.rpc.ts`:
 
 ```typescript
 import { procedure, router } from "@orpc/server";
-import { userSchema } from "@/schemas/user.schema";
+import { UserSchema } from "@/schemas/user.schema";
 
 export const userRouter = router({
   getUser: procedure
     .input(z.object({ id: z.string() }))
-    .output(userSchema)
+    .output(UserSchema)
     .query(async ({ input }) => {
       return { id: input.id, name: "Alex", email: "alex@example.com" };
     }),
@@ -251,7 +192,7 @@ In VSCode, hold `CMD` (or `Ctrl` on Windows) and left-click a file name (e.g., `
 
 This setup makes building apps faster and easier:
 
-- **Find Things Quickly**: Folders like `features` and `components` keep code organized.
+- **Find Things Quickly**: Folders keep code organized.
 - **Grow Without Mess**: Add new features without cluttering the project.
 - **Work Together Better**: Teams can focus on their own features without conflicts.
 - **Build Faster**: Pre-organized folders mean less setup time.
