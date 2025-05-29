@@ -14,7 +14,7 @@ import {
   sendForgotPasswordMail,
   sendVerificationEmail,
 } from "@/zap/actions/emails.action";
-import { canSendEmail, updateLastEmailSent } from "@/zap/lib/rate-limit";
+import { canSendEmail, updateLastEmailSent } from "@/zap/lib/resend/rate-limit";
 
 export const auth = betterAuth({
   appName: "Zap.ts",

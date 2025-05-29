@@ -1,7 +1,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { createMistral } from "@ai-sdk/mistral";
-import { AI_PROVIDERS_OBJECT } from "../data/ai";
-import { AIProviderId, ModelName } from "../types/ai.types";
+import { AI_PROVIDERS_OBJECT } from "@/zap/data/ai";
+import { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
 export const getModel = (
   provider: AIProviderId,

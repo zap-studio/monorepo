@@ -3,9 +3,9 @@
 import * as React from "react";
 import Link from "next/link";
 import { Home } from "lucide-react";
-import { NavMain } from "@/zap/components/app/sidebar/main";
-import { NavUser } from "@/zap/components/app/sidebar/user";
-import { NavSecondary } from "@/zap/components/app/sidebar/secondary";
+import { NavMain } from "@/zap/components/app/sidebar/main/main";
+import { NavUser } from "@/zap/components/app/sidebar/user/user";
+import { NavSecondary } from "@/zap/components/app/sidebar/secondary/secondary";
 import { authClient } from "@/zap/lib/auth/client";
 import {
   Sidebar,

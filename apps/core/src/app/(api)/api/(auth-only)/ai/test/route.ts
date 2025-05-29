@@ -1,4 +1,4 @@
-import { getModel } from "@/zap/lib/ai";
+import { getModel } from "@/zap/lib/ai/ai";
 import { auth } from "@/zap/lib/auth/server";
 import { AIProviderIdSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
 import { generateText } from "ai";

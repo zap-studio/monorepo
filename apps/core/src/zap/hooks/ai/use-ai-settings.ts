@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { orpc } from "../lib/orpc/client";
-import { AIFormValues } from "../types/ai.types";
+import { orpc } from "@/zap/lib/orpc/client";
+import { AIFormValues } from "@/zap/types/ai.types";
 
 export const useAISettings = () => {
   const [isSaving, setIsSaving] = useState(false);

@@ -4,7 +4,7 @@ import ky from "ky";
 import useSWRMutation from "swr/mutation";
 import { toast } from "sonner";
 import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
-import { urlBase64ToUint8Array } from "@/zap/lib/pwa";
+import { urlBase64ToUint8Array } from "@/zap/lib/pwa/pwa";
 
 interface SubscriptionResponse {
   success: boolean;

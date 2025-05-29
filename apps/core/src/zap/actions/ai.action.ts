@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { userAISettings } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-import { decrypt } from "../lib/crypto";
+import { decrypt } from "../lib/crypto/crypto";
 import { AIProviderId } from "../types/ai.types";
 
 export const getAISettings = async (userId: string, provider: AIProviderId) => {

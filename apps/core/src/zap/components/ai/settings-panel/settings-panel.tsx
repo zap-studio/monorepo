@@ -31,8 +31,8 @@ import { toast } from "sonner";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { AIFormSchema, AIProviderIdSchema } from "@/zap/schemas/ai.schema";
 import { orpc } from "@/zap/lib/orpc/client";
-import { useInitAISettings } from "@/zap/hooks/use-init-ai-settings";
-import { useAISettings } from "@/zap/hooks/use-ai-settings";
+import { useInitAISettings } from "@/zap/hooks/ai/use-init-ai-settings";
+import { useAISettings } from "@/zap/hooks/ai/use-ai-settings";
 import {
   AI_PROVIDERS_OBJECT,
   DEFAULT_MODEL,

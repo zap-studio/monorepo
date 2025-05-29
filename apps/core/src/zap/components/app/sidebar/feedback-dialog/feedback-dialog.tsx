@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import {
   useIsFeedbackSubmitted,
   useSubmitFeedback,
-} from "@/zap/hooks/use-feedback";
+} from "@/zap/hooks/feedbacks/use-feedback";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";

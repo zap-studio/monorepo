@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { userAISettings } from "@/db/schema";
 import { authMiddleware, base } from "@/rpc/middlewares";
 import { BASE_URL } from "@/zap.config";
-import { decrypt, encrypt } from "@/zap/lib/crypto";
+import { decrypt, encrypt } from "@/zap/lib/crypto/crypto";
 import { AIProviderIdSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
 import { and, eq } from "drizzle-orm";
 import ky from "ky";

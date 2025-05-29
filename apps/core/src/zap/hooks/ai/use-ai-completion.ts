@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 import { useCompletion } from "@ai-sdk/react";
-import { AIProviderId } from "../types/ai.types";
+import { AIProviderId } from "@/zap/types/ai.types";
 
 export function useAICompletion(provider: AIProviderId) {
   return useCompletion({
