@@ -22,7 +22,6 @@ export const ZAP_DEFAULT_FLAGS = {
     ENABLE_SPEED_INSIGHTS: VERCEL,
   },
   ENABLE_POSTHOG: false,
-  ENABLE_SENTRY: false,
 };
 
 const AI_SYSTEM_PROMPT = "You are a helpful assistant.";
@@ -67,10 +66,6 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
         type: "image/png",
       },
     ],
-  },
-  SENTRY: {
-    ORG: "example-org",
-    PROJECT: "example-project",
   },
 };
 

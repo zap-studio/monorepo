@@ -48,8 +48,4 @@ export interface ZapSettings {
       type: string;
     }>;
   };
-  SENTRY: {
-    ORG: string;
-    PROJECT: string;
-  };
 }
