@@ -90,7 +90,7 @@ async function main() {
     const tempDir = path.join(outputDir, "temp");
     await fs.ensureDir(tempDir);
 
-    const coreDir = path.join(outputDir, "apps/core");
+    const coreDir = path.join(outputDir, "core");
     const files = await fs.readdir(coreDir);
     for (const file of files) {
       const srcPath = path.join(coreDir, file);
@@ -150,10 +150,10 @@ async function main() {
       packageManager === "npm"
         ? "npm install --force"
         : packageManager === "yarn"
-          ? "yarn"
-          : packageManager === "pnpm"
-            ? "pnpm install --force"
-            : "bun install";
+        ? "yarn"
+        : packageManager === "pnpm"
+        ? "pnpm install --force"
+        : "bun install";
     try {
       await execAsync(installCmd, { cwd: outputDir });
       installationSuccess = true;
@@ -328,7 +328,9 @@ export const use${capitalizedProcedureName} = () => {
     console.log(chalk.white(`- src/rpc/router.ts`));
   } catch (error) {
     spinner.fail(
-      `Failed to create procedure: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to create procedure: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
     );
     process.exit(1);
   }
