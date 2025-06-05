@@ -7,6 +7,10 @@ alwaysApply: true
 
 Adhere to Zap.ts’s philosophy, using Next.js, TypeScript, Drizzle ORM, oRPC, Zustand, and shadcn/ui.
 
+## Configuration
+
+The entry point and all configurations for Zap.ts are specified in [zap.config.ts](mdc:zap.config.ts).
+
 ## Rules
 
 ### Project Structure
@@ -94,7 +98,6 @@ apps/core/src/
 ├── globals.css
 ```
 
+## Package.json
 
-
-
-
+Ensure the correct dependency versions listed in [package.json](mdc:package.json) are used.
