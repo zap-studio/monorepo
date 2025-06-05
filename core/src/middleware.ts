@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { auth } from "./zap/lib/auth/server";
+import ky from "ky";
+import type { Session } from "@/zap/lib/auth/client";
 
 const publicPaths = [
   "/",
@@ -27,10 +28,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check session
-  const session = await auth.api.getSession({
-    headers: request.headers,
-  });
+  // Fetch session from API using ky (since we're on Edge Runtime)
+  let session: Session | null = null;
+  try {
+    const response = await ky.get("/api/auth/get-session", {
+      prefixUrl: request.nextUrl.origin,
+      headers: {
+        cookie: request.headers.get("cookie") || "",
+      },
+    });
+    if (response.ok) {
+      session = await response.json();
+    }
+  } catch {
+    session = null;
+  }
 
   if (!session) {
     // Redirect unauthenticated users to /login with the original path as a query param
@@ -40,7 +52,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Check email verification
-  if (!session.user.emailVerified) {
+  if (!session.user || !session.user.emailVerified) {
     const verifyUrl = new URL("/login", request.url);
     verifyUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(verifyUrl);
