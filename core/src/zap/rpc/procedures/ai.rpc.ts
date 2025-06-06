@@ -217,7 +217,8 @@ const testAPIKey = base
 
     try {
       await $fetch(`/api/ai/test`, {
-        json: {
+        method: "POST",
+        body: {
           provider,
           apiKey,
           model,
