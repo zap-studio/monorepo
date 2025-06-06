@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import ky from "ky";
 import type { Session } from "@/zap/lib/auth/client";
+import { $fetch } from "@/lib/fetch";
 
 const publicPaths = [
   "/",
@@ -28,21 +28,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Fetch session from API using ky (since we're on Edge Runtime)
+  // Fetch session from API
   let session: Session | null = null;
   try {
-    const response = await ky.get("/api/auth/get-session", {
-      prefixUrl: request.nextUrl.origin,
+    const data = await $fetch<Session>(`/api/auth/get-session`, {
       headers: {
         cookie: request.headers.get("cookie") || "",
       },
     });
-    if (response.ok) {
-      session = await response.json();
-    }
+
+    session = data;
   } catch {
     session = null;
   }
+
+  console.log("session", session);
 
   if (!session) {
     // Redirect unauthenticated users to /login with the original path as a query param
