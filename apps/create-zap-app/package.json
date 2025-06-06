@@ -13,7 +13,7 @@
     "drizzle",
     "bun"
   ],
-  "version": "1.2.10",
+  "version": "1.2.11",
   "module": "index.ts",
   "type": "module",
   "private": false,

@@ -10,13 +10,14 @@ import type { PackageManager } from "@/schemas/index.js";
 import { generateEnv, promptPackageManager } from "@/utils/index.js";
 import { ObjectLiteralExpression, Project } from "ts-morph";
 import { execa } from "execa";
+import { Effect } from "effect";
 
 const execAsync = promisify(exec);
 
 async function main() {
   console.log(
     chalk.bold.cyan(
-      "\n🚀 Welcome to create-zap-app! Let’s build something awesome.\n"
+      "\n🚀 Welcome to create-zap-app! Let's build something awesome.\n"
     )
   );
 
@@ -25,7 +26,7 @@ async function main() {
     {
       type: "input",
       name: "projectName",
-      message: chalk.yellow("What’s the name of your project?"),
+      message: chalk.yellow("What's the name of your project?"),
       default: "my-zap-app",
       validate: (input: string) => {
         if (!input.match(/^[a-zA-Z0-9-_]+$/)) {
