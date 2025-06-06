@@ -42,8 +42,6 @@ export async function middleware(request: NextRequest) {
     session = null;
   }
 
-  console.log("session", session);
-
   if (!session) {
     // Redirect unauthenticated users to /login with the original path as a query param
     const loginUrl = new URL("/login", request.url);
