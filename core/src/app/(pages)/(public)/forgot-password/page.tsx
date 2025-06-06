@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/card";
 import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/zap/hooks/utils/use-cooldown";
+import { Effect } from "effect";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -47,23 +48,30 @@ export default function ForgotPasswordPage() {
     setSubmitting(true);
     const { email } = values;
 
-    try {
-      const { error } = await authClient.forgetPassword({
-        email,
-        redirectTo: "/reset-password",
+    await Effect.tryPromise({
+      try: () =>
+        authClient.forgetPassword({
+          email,
+          redirectTo: "/reset-password",
+        }),
+      catch: () => ({ error: true }),
+    })
+      .pipe(
+        Effect.match({
+          onFailure: () => {
+            toast.error("An error occurred while sending the reset link.");
+          },
+          onSuccess: () => {
+            toast.success("Check your email for the reset link!");
+            startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
+          },
+        }),
+      )
+      .pipe(Effect.runPromise)
+      .catch(() => {
+        toast.error("An error occurred while sending the reset link.");
       });
-
-      if (error) {
-        throw error;
-      }
-
-      toast.success("Check your email for the reset link!");
-      startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
-    } catch {
-      toast.error("An error occurred while sending the reset link.");
-    } finally {
-      setSubmitting(false);
-    }
+    setSubmitting(false);
   }
 
   return (

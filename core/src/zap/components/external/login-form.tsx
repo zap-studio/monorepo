@@ -29,6 +29,7 @@ import { useRouter } from "nextjs-toploader/app";
 import { Loader2 } from "lucide-react";
 import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/zap/hooks/utils/use-cooldown";
+import { Effect } from "effect";
 
 type Provider = "apple" | "google";
 
@@ -70,47 +71,61 @@ export function LoginForm({
 
   const onSubmit = async (values: LoginFormValues) => {
     setLoading(true);
-
     const { email, password } = values;
+    await Effect.tryPromise({
+      try: () => authClient.signIn.email({ email, password }),
+      catch: () => ({ error: true }),
+    })
+      .pipe(
+        Effect.match({
+          onSuccess: ({ data, error }) => {
+            if (error) {
+              toast.error("Login failed. Please try again.");
+              return Effect.void;
+            }
 
-    try {
-      const { data, error } = await authClient.signIn.email({
-        email,
-        password,
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      if (data) {
-        if (
-          SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION &&
-          !data.user.emailVerified
-        ) {
-          toast.error(
-            "Please verify your email address. An email has been sent.",
-          );
-
-          await authClient.sendVerificationEmail({
-            email,
-            callbackURL: "/app",
-          });
-
-          startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
-          return;
-        }
-
-        toast.success("Login successful!");
-        router.push(callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN);
-      } else {
+            if (
+              SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION &&
+              !data?.user?.emailVerified
+            ) {
+              toast.error(
+                "Please verify your email address. An email has been sent.",
+              );
+              return Effect.tryPromise({
+                try: () =>
+                  authClient.sendVerificationEmail({
+                    email,
+                    callbackURL: "/app",
+                  }),
+                catch: () => ({ error: true }),
+              }).pipe(
+                Effect.tap(() =>
+                  Effect.sync(() => {
+                    startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
+                  }),
+                ),
+                Effect.runPromise,
+              );
+            }
+            toast.success("Login successful!");
+            router.push(
+              callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN,
+            );
+            return Effect.void;
+          },
+          onFailure: () => {
+            toast.error("Login failed. Please try again.");
+            return Effect.void;
+          },
+        }),
+      )
+      .pipe(Effect.runPromise)
+      .catch(() => {
         toast.error("Login failed. Please try again.");
-      }
-    } catch {
-      toast.error("Login failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -250,25 +265,38 @@ function SocialProviderButton({
 
   const handleSocialLogin = async (provider: Provider) => {
     setLoading(true);
-
-    try {
-      const { data, error } = await authClient.signIn.social({ provider });
-
-      if (error) {
-        throw error;
-      }
-
-      if (data) {
-        toast.success("Login successful!");
-        router.push(redirectURL);
-      } else {
+    await Effect.tryPromise({
+      try: () => authClient.signIn.social({ provider }),
+      catch: () => ({ error: true }),
+    })
+      .pipe(
+        Effect.match({
+          onSuccess: ({ data, error }) => {
+            if (error) {
+              toast.error("Login failed. Please try again.");
+              return Effect.void;
+            }
+            if (data) {
+              toast.success("Login successful!");
+              router.push(redirectURL);
+            } else {
+              toast.error("Login failed. Please try again.");
+            }
+            return Effect.void;
+          },
+          onFailure: () => {
+            toast.error("Login failed. Please try again.");
+            return Effect.void;
+          },
+        }),
+      )
+      .pipe(Effect.runPromise)
+      .catch(() => {
         toast.error("Login failed. Please try again.");
-      }
-    } catch {
-      toast.error("Login failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const icons: Record<Provider, JSX.Element> = {

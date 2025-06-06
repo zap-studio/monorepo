@@ -78,6 +78,7 @@
     "dotenv": "^16.5.0",
     "drizzle": "^1.4.0",
     "drizzle-orm": "^0.41.0",
+    "effect": "^3.16.4",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.482.0",

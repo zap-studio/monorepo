@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Effect } from "effect";
 
 type NavUserProps = {
   user: {
@@ -68,13 +69,23 @@ export function NavUser({ user }: NavUserProps) {
   const fallback = getInitials(user.name);
 
   const handleSignOut = async () => {
-    try {
-      await authClient.signOut();
-      toast.success("Successfully signed out");
-      router.push("/login");
-    } catch {
-      toast.error("Failed to sign out");
-    }
+    await Effect.tryPromise({
+      try: () => authClient.signOut(),
+      catch: () => ({ error: true }),
+    })
+      .pipe(
+        Effect.match({
+          onSuccess: () => {
+            toast.success("Successfully signed out");
+            router.push("/login");
+          },
+          onFailure: () => {
+            toast.error("Failed to sign out");
+          },
+        }),
+      )
+      .pipe(Effect.runPromise)
+      .catch(() => toast.error("Failed to sign out"));
   };
 
   const UserInfo = () => (

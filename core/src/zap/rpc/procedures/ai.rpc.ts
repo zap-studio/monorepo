@@ -6,6 +6,7 @@ import { AIProviderIdSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
 import { and, eq } from "drizzle-orm";
 import { $fetch } from "@/lib/fetch";
 import { z } from "zod";
+import { Effect } from "effect";
 
 const InputGetAPIKeySchema = z.object({
   provider: AIProviderIdSchema,
@@ -207,31 +208,28 @@ const InputTestAPIKeySchema = z.object({
 const testAPIKey = base
   .use(authMiddleware)
   .input(InputTestAPIKeySchema)
-  .handler(async ({ input, context }) => {
-    const provider = input.provider;
-    const apiKey = input.apiKey;
-    const model = input.model;
-    const headers = new Headers(context.headers);
-    headers.delete("content-length");
-    headers.delete("content-type");
-
-    try {
-      await $fetch(`/api/ai/test`, {
-        method: "POST",
-        body: {
-          provider,
-          apiKey,
-          model,
-        },
-        headers,
-      });
-    } catch (error) {
-      console.error(error);
-      throw new Error("Invalid API key");
-    }
-
-    return { success: true };
-  });
+  .handler(({ input, context }) =>
+    Effect.gen(function* (_) {
+      const provider = input.provider;
+      const apiKey = input.apiKey;
+      const model = input.model;
+      const headers = new Headers(context.headers);
+      headers.delete("content-length");
+      headers.delete("content-type");
+      yield* _(
+        Effect.tryPromise({
+          try: () =>
+            $fetch(`/api/ai/test`, {
+              method: "POST",
+              body: { provider, apiKey, model },
+              headers,
+            }),
+          catch: () => new Error("Invalid API key"),
+        }),
+      );
+      return { success: true };
+    }),
+  );
 
 export const ai = {
   getAISettings,

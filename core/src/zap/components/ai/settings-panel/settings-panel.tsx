@@ -39,6 +39,7 @@ import {
   ModelsByProvider,
 } from "@/zap/data/ai";
 import { AIFormValues, AIProviderId } from "@/zap/types/ai.types";
+import { Effect } from "effect";
 
 interface AISettingsSheetProps {
   open: boolean;
@@ -92,20 +93,32 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
 
   async function handleTestApiKey() {
     setTesting(true);
-    try {
-      await orpc.ai.testAPIKey.call({
-        provider: form.getValues("provider"),
-        apiKey: form.getValues("apiKey"),
-        model: form.getValues("model"),
+    await Effect.tryPromise({
+      try: () =>
+        orpc.ai.testAPIKey.call({
+          provider: form.getValues("provider"),
+          apiKey: form.getValues("apiKey"),
+          model: form.getValues("model"),
+        }),
+      catch: () => ({ error: true }),
+    })
+      .pipe(
+        Effect.match({
+          onSuccess: () => {
+            toast.success("API key is valid!");
+            setIsValidated(true);
+          },
+          onFailure: () => {
+            toast.error("Invalid API key");
+            setIsValidated(false);
+          },
+        }),
+      )
+      .pipe(Effect.runPromise)
+      .catch(() => {
+        toast.error("An error occurred while testing the API key");
       });
-      toast.success("API key is valid!");
-      setIsValidated(true);
-    } catch {
-      toast.error("Invalid API key");
-      setIsValidated(false);
-    } finally {
-      setTesting(false);
-    }
+    setTesting(false);
   }
 
   const isSaveDisabled =
