@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { FeedbackSchema } from "@/zap/schemas/feedback.schema";
 import {
   Form,
@@ -41,7 +41,7 @@ export function FeedbackDialog({
     useSubmitFeedback(setIsExistingFeedback);
 
   const form = useForm<FeedbackFormValues>({
-    resolver: zodResolver(FeedbackSchema),
+    resolver: standardSchemaResolver(FeedbackSchema),
     defaultValues: { rating: 0, description: "" },
   });
 

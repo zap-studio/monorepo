@@ -5,7 +5,7 @@ import { decrypt, encrypt } from "@/zap/lib/crypto/crypto";
 import { AIProviderIdSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
 import { and, eq } from "drizzle-orm";
 import { $fetch } from "@/lib/fetch";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { Effect } from "effect";
 
 const InputGetAPIKeySchema = z.object({

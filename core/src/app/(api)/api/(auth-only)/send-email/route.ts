@@ -1,6 +1,6 @@
 import { isUserAdmin } from "@/zap/actions/authenticated.action";
 import { sendMail } from "@/zap/actions/emails.action";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { Effect } from "effect";
 
 const SendMailSchema = z.object({

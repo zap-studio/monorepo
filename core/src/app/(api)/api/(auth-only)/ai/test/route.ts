@@ -2,7 +2,7 @@ import { getModel } from "@/zap/lib/ai/ai";
 import { auth } from "@/zap/lib/auth/server";
 import { AIProviderIdSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
 import { generateText } from "ai";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { Effect } from "effect";
 
 export const maxDuration = 60;

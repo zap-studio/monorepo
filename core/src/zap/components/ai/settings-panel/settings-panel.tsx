@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useForm, Control } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import {
   Sheet,
   SheetContent,
@@ -53,7 +53,7 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
   const { isSaving, setIsValidated, saveApiKey } = useAISettings();
 
   const form = useForm<AIFormValues>({
-    resolver: zodResolver(AIFormSchema),
+    resolver: standardSchemaResolver(AIFormSchema),
     defaultValues: {
       provider: AIProviderIdSchema.options[0],
       model: ModelsByProvider[AIProviderIdSchema.options[0]][0],
