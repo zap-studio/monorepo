@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { ModelsByProvider } from "../data/ai";
+import { z } from "zod/v4";
+import { ModelsByProvider } from "@/zap/data/ai";
 
 export const AIProviderIdSchema = z.enum(["openai", "mistral"]);
 

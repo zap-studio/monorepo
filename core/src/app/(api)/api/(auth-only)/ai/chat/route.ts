@@ -4,7 +4,7 @@ import { getModel } from "@/zap/lib/ai/ai";
 import { auth } from "@/zap/lib/auth/server";
 import { AIProviderIdSchema } from "@/zap/schemas/ai.schema";
 import { streamText } from "ai";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const maxDuration = 60;
 

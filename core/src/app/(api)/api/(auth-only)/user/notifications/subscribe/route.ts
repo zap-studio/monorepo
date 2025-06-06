@@ -3,7 +3,7 @@ import { db } from "@/db";
 import { pushNotifications } from "@/zap/db/schema/notifications.sql";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const subscribeSchema = z.object({
   subscription: z.object({
