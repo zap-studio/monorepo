@@ -7,6 +7,7 @@ import webpush from "web-push";
 import { getUserId } from "@/zap/actions/authenticated.action";
 import { SubscribeUserSchema } from "@/zap/schemas/push-notifications.schema";
 import { SETTINGS } from "@/data/settings";
+import { Effect } from "effect";
 
 webpush.setVapidDetails(
   `mailto:${SETTINGS.NOTIFICATIONS.VAPID_MAIL}`,
@@ -14,35 +15,50 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY!,
 );
 
-export async function subscribeUser(sub: PushSubscription) {
-  const validatedParams = SubscribeUserSchema.parse({
-    subscription: sub,
-  });
-
-  try {
-    const userId = await getUserId();
-
-    await db.insert(pushNotifications).values({
-      subscription: validatedParams.subscription,
-      userId,
+export const subscribeUser = (sub: PushSubscription) =>
+  Effect.gen(function* (_) {
+    const validatedParams = SubscribeUserSchema.parse({
+      subscription: sub,
     });
+    const userId = yield* _(
+      Effect.tryPromise({
+        try: () => getUserId(),
+        catch: (e) => e,
+      }),
+    );
+    yield* _(
+      Effect.tryPromise({
+        try: () =>
+          db.insert(pushNotifications).values({
+            subscription: validatedParams.subscription,
+            userId,
+          }),
+        catch: (e) => e,
+      }),
+    );
     return { success: true };
-  } catch (error) {
-    console.error(error);
-    return { success: false, error };
-  }
-}
+  }).pipe(
+    Effect.catchAll((error) => Effect.succeed({ success: false, error })),
+  );
 
-export async function unsubscribeUser() {
-  try {
-    const userId = await getUserId();
-
-    await db
-      .delete(pushNotifications)
-      .where(eq(pushNotifications.userId, userId));
+export const unsubscribeUser = () =>
+  Effect.gen(function* (_) {
+    const userId = yield* _(
+      Effect.tryPromise({
+        try: () => getUserId(),
+        catch: (e) => e,
+      }),
+    );
+    yield* _(
+      Effect.tryPromise({
+        try: () =>
+          db
+            .delete(pushNotifications)
+            .where(eq(pushNotifications.userId, userId)),
+        catch: (e) => e,
+      }),
+    );
     return { success: true };
-  } catch (error) {
-    console.error(error);
-    return { success: false, error };
-  }
-}
+  }).pipe(
+    Effect.catchAll((error) => Effect.succeed({ success: false, error })),
+  );

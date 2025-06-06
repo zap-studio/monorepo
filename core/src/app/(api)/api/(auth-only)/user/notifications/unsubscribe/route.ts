@@ -3,26 +3,41 @@ import { db } from "@/db";
 import { pushNotifications } from "@/zap/db/schema/notifications.sql";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { Effect } from "effect";
 
 export async function DELETE(req: Request) {
-  try {
-    // Get current user
-    const session = await auth.api.getSession({ headers: req.headers });
-    if (!session) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
-    // Delete the subscription
-    await db
-      .delete(pushNotifications)
-      .where(eq(pushNotifications.userId, session.user.id));
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Failed to unsubscribe from push notifications:", error);
-    return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 },
-    );
-  }
+  return Effect.runPromise(
+    Effect.gen(function* (_) {
+      // Get current user
+      const session = yield* _(
+        Effect.tryPromise({
+          try: () => auth.api.getSession({ headers: req.headers }),
+          catch: () => null,
+        }),
+      );
+      if (!session) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }
+      // Delete the subscription
+      yield* _(
+        Effect.tryPromise({
+          try: () =>
+            db
+              .delete(pushNotifications)
+              .where(eq(pushNotifications.userId, session.user.id)),
+          catch: (error) => error,
+        }),
+      );
+      return NextResponse.json({ success: true });
+    }).pipe(
+      Effect.catchAll(() =>
+        Effect.succeed(
+          NextResponse.json(
+            { message: "Internal server error" },
+            { status: 500 },
+          ),
+        ),
+      ),
+    ),
+  );
 }

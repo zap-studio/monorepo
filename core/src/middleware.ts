@@ -18,51 +18,57 @@ const publicPaths = [
 const blogPublicBasePath = "/blog";
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // Allow public paths
-  if (
-    publicPaths.includes(pathname) ||
-    pathname.startsWith(blogPublicBasePath)
-  ) {
-    return NextResponse.next();
-  }
-
-  // Fetch session from API
-  let session: Session | null = null;
   try {
-    const data = await $fetch<Session>(`/api/auth/get-session`, {
-      headers: {
-        cookie: request.headers.get("cookie") || "",
-      },
+    const { pathname } = request.nextUrl;
+
+    // Allow public paths
+    if (
+      publicPaths.includes(pathname) ||
+      pathname.startsWith(blogPublicBasePath)
+    ) {
+      return NextResponse.next();
+    }
+
+    // Fetch session from API
+    let session: Session | null = null;
+    try {
+      session = await $fetch<Session>(`/api/auth/get-session`, {
+        headers: {
+          cookie: request.headers.get("cookie") || "",
+        },
+      });
+    } catch {
+      // Session fetch failed, treat as unauthenticated
+      session = null;
+    }
+
+    if (!session) {
+      // Redirect unauthenticated users to /login with the original path as a query param
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // Check email verification
+    if (!session.user || !session.user.emailVerified) {
+      const verifyUrl = new URL("/login", request.url);
+      verifyUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(verifyUrl);
+    }
+
+    // Add session to headers for server-side use
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-user-session", JSON.stringify(session));
+
+    return NextResponse.next({
+      request: { headers: requestHeaders },
     });
-
-    session = data;
   } catch {
-    session = null;
-  }
-
-  if (!session) {
-    // Redirect unauthenticated users to /login with the original path as a query param
+    // Fallback: redirect to login on any unexpected error
     const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
+    loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
-
-  // Check email verification
-  if (!session.user || !session.user.emailVerified) {
-    const verifyUrl = new URL("/login", request.url);
-    verifyUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(verifyUrl);
-  }
-
-  // Add session to headers for server-side use
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-user-session", JSON.stringify(session));
-
-  return NextResponse.next({
-    request: { headers: requestHeaders },
-  });
 }
 
 export const config = {

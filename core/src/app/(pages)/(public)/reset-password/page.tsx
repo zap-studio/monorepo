@@ -25,6 +25,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useRouter } from "nextjs-toploader/app";
+import { Effect } from "effect";
 
 const formSchema = z
   .object({
@@ -65,27 +66,35 @@ export default function ResetPasswordPage() {
 
     if (!token) {
       toast.error("Invalid token. Please try again.");
+      setSubmitting(false);
       return;
     }
 
-    try {
-      const { error } = await authClient.resetPassword({
-        newPassword: password,
-        token,
+    await Effect.tryPromise({
+      try: () =>
+        authClient.resetPassword({
+          newPassword: password,
+          token,
+        }),
+      catch: () => ({ error: true }),
+    })
+      .pipe(
+        Effect.match({
+          onSuccess: () => {
+            toast.success("Password reset successfully!");
+            form.reset();
+            router.push("/login");
+          },
+          onFailure: () => {
+            toast.error("An error occurred while resetting your password.");
+          },
+        }),
+      )
+      .pipe(Effect.runPromise)
+      .catch(() => {
+        toast.error("An error occurred while resetting your password.");
       });
-
-      if (error) {
-        throw error;
-      }
-
-      toast.success("Password reset successfully!");
-      form.reset();
-      router.push("/login");
-    } catch {
-      toast.error("An error occurred while resetting your password.");
-    } finally {
-      setSubmitting(false);
-    }
+    setSubmitting(false);
   }
 
   return (

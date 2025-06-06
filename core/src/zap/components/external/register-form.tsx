@@ -29,6 +29,7 @@ import { SETTINGS } from "@/data/settings";
 import { useRouter } from "nextjs-toploader/app";
 import { Loader2 } from "lucide-react";
 import { useCooldown } from "@/zap/hooks/utils/use-cooldown";
+import { Effect } from "effect";
 
 type Provider = "apple" | "google";
 
@@ -81,44 +82,52 @@ export function RegisterForm({
 
   const onSubmit = async (values: RegisterFormValues) => {
     setLoading(true);
-
     const { name, email, password } = values;
-
-    try {
-      const { data, error } = await authClient.signUp.email({
-        email,
-        password,
-        name,
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      if (data) {
-        if (SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION) {
-          toast.success(
-            "Registration successful! Please check your email to verify your account.",
-          );
-
-          await authClient.sendVerificationEmail({
-            email,
-            callbackURL: "/login",
-          });
-
-          startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
-        } else {
-          toast.success("Registration successful!");
-        }
-        router.push(SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_UP);
-      } else {
+    await Effect.tryPromise({
+      try: () => authClient.signUp.email({ email, password, name }),
+      catch: () => ({ error: true }),
+    })
+      .pipe(
+        Effect.match({
+          onSuccess: async () => {
+            if (SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION) {
+              toast.success(
+                "Registration successful! Please check your email to verify your account.",
+              );
+              await Effect.tryPromise({
+                try: () =>
+                  authClient.sendVerificationEmail({
+                    email,
+                    callbackURL: "/login",
+                  }),
+                catch: () => ({ error: true }),
+              }).pipe(
+                Effect.tap(() =>
+                  Effect.sync(() => {
+                    startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
+                  }),
+                ),
+                Effect.runPromise,
+              );
+            } else {
+              toast.success("Registration successful!");
+            }
+            router.push(SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_UP);
+            return Effect.void;
+          },
+          onFailure: () => {
+            toast.error("Registration failed. Please try again.");
+            return Effect.void;
+          },
+        }),
+      )
+      .pipe(Effect.runPromise)
+      .catch(() => {
         toast.error("Registration failed. Please try again.");
-      }
-    } catch {
-      toast.error("Registration failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -285,25 +294,38 @@ function SocialProviderButton({
 
   const handleSocialLogin = async (provider: Provider) => {
     setLoading(true);
-
-    try {
-      const { data, error } = await authClient.signIn.social({ provider });
-
-      if (error) {
-        throw error;
-      }
-
-      if (data) {
-        toast.success("Registration successful!");
-        router.push(redirectURL);
-      } else {
+    await Effect.tryPromise({
+      try: () => authClient.signIn.social({ provider }),
+      catch: () => ({ error: true }),
+    })
+      .pipe(
+        Effect.match({
+          onSuccess: ({ data, error }) => {
+            if (error) {
+              toast.error("Registration failed. Please try again.");
+              return;
+            }
+            if (data) {
+              toast.success("Registration successful!");
+              router.push(redirectURL);
+            } else {
+              toast.error("Registration failed. Please try again.");
+            }
+          },
+          onFailure: () => {
+            toast.error("Registration failed. Please try again.");
+            return Effect.void;
+          },
+        }),
+      )
+      .pipe(Effect.runPromise)
+      .catch(() => {
         toast.error("Registration failed. Please try again.");
-      }
-    } catch {
-      toast.error("Registration failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+    setLoading(false);
   };
 
   const icons: Record<Provider, JSX.Element> = {

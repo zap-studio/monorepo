@@ -3,6 +3,7 @@ import { orpc } from "@/zap/lib/orpc/client";
 import { useForm } from "react-hook-form";
 import { AIFormValues, ModelName } from "@/zap/types/ai.types";
 import { DEFAULT_MODEL } from "@/zap/data/ai";
+import { Effect } from "effect";
 
 export const useInitAISettings = (
   form: ReturnType<typeof useForm<AIFormValues>>,
@@ -19,20 +20,32 @@ export const useInitAISettings = (
 
     const fetchApiKey = async () => {
       setLoading(true);
-
-      try {
-        const provider = form.getValues("provider");
-        const result = await orpc.ai.getAISettings.call({ provider });
-
-        setApiKey(result.apiKey);
-        setModel(result.model);
-      } catch {
-        // If not found, set model to default according to provider
-        setApiKey(null);
-        setModel(DEFAULT_MODEL[provider]);
-      } finally {
-        setLoading(false);
-      }
+      await Effect.runPromise(
+        Effect.gen(function* (_) {
+          const provider = form.getValues("provider");
+          const result = yield* _(
+            Effect.tryPromise({
+              try: () => orpc.ai.getAISettings.call({ provider }),
+              catch: () => undefined,
+            }),
+          );
+          if (result) {
+            setApiKey(result.apiKey);
+            setModel(result.model);
+          } else {
+            setApiKey(null);
+            setModel(DEFAULT_MODEL[provider]);
+          }
+        }).pipe(
+          Effect.catchAll(() =>
+            Effect.sync(() => {
+              setApiKey(null);
+              setModel(DEFAULT_MODEL[form.getValues("provider")]);
+            }),
+          ),
+        ),
+      );
+      setLoading(false);
     };
 
     fetchApiKey();

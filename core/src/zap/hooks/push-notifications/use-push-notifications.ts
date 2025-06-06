@@ -5,6 +5,7 @@ import useSWRMutation from "swr/mutation";
 import { toast } from "sonner";
 import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
 import { urlBase64ToUint8Array } from "@/zap/lib/pwa/pwa";
+import { Effect } from "effect";
 
 interface SubscriptionResponse {
   success: boolean;
@@ -80,43 +81,88 @@ export function usePushNotifications() {
     );
 
   const subscribeToPush = async () => {
-    try {
-      usePushNotificationsStore.setState({ isSubscribed: true });
-
-      const registration = await navigator.serviceWorker.ready;
-      const sub = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+    await Effect.runPromise(
+      Effect.gen(function* (_) {
+        usePushNotificationsStore.setState({ isSubscribed: true });
+        const registration = yield* _(
+          Effect.tryPromise({
+            try: () => navigator.serviceWorker.ready,
+            catch: () => {
+              throw new Error("Service worker not ready");
+            },
+          }),
+        );
+        const sub = yield* _(
+          Effect.tryPromise({
+            try: () =>
+              registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(
+                  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+                ),
+              }),
+            catch: () => {
+              throw new Error("Failed to subscribe to push manager");
+            },
+          }),
+        );
+        usePushNotificationsStore.setState({ subscription: sub });
+        const serializedSub = sub.toJSON();
+        yield* _(
+          Effect.tryPromise({
+            try: () => subscribeTrigger({ subscription: serializedSub }),
+            catch: () => {
+              throw new Error("Failed to trigger subscribe");
+            },
+          }),
+        );
+      }).pipe(
+        Effect.catchAll(() =>
+          Effect.sync(() => {
+            usePushNotificationsStore.setState({
+              subscription: null,
+              isSubscribed: false,
+            });
+            toast.error("Failed to subscribe to push notifications");
+          }),
         ),
-      });
-      usePushNotificationsStore.setState({ subscription: sub });
-
-      const serializedSub = sub.toJSON();
-      await subscribeTrigger({ subscription: serializedSub });
-    } catch {
-      usePushNotificationsStore.setState({
-        subscription: null,
-        isSubscribed: false,
-      });
-      toast.error("Failed to subscribe to push notifications");
-    }
+      ),
+    );
   };
 
   const unsubscribeFromPush = async () => {
     const { subscription } = store;
     if (!subscription) return;
-
-    try {
-      usePushNotificationsStore.setState({
-        subscription: null,
-        isSubscribed: false,
-      });
-      await subscription.unsubscribe();
-      await unsubscribeTrigger();
-    } catch {
-      toast.error("Failed to unsubscribe from push notifications");
-    }
+    await Effect.runPromise(
+      Effect.gen(function* (_) {
+        usePushNotificationsStore.setState({
+          subscription: null,
+          isSubscribed: false,
+        });
+        yield* _(
+          Effect.tryPromise({
+            try: () => subscription.unsubscribe(),
+            catch: () => {
+              throw new Error("Failed to unsubscribe");
+            },
+          }),
+        );
+        yield* _(
+          Effect.tryPromise({
+            try: () => unsubscribeTrigger(),
+            catch: () => {
+              throw new Error("Failed to trigger unsubscribe");
+            },
+          }),
+        );
+      }).pipe(
+        Effect.catchAll(() =>
+          Effect.sync(() => {
+            toast.error("Failed to unsubscribe from push notifications");
+          }),
+        ),
+      ),
+    );
   };
 
   return {

@@ -5,8 +5,4 @@
   "workspaces": [
     "apps/*"
   ],
-  "dependencies": {
-    "@hookform/resolvers": "^5.0.1",
-    "zod": "^3.25.0"
-  }
 }
