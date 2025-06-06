@@ -4,16 +4,9 @@
     "": {
       "name": "zap-ts-monorepo",
     },
-    "apps/docs": {
-      "name": "@zap-ts/docs",
-      "version": "1.0.0",
-      "devDependencies": {
-        "vitepress": "^1.6.3",
-      },
-    },
-    "create-zap-app": {
+    "apps/create-zap-app": {
       "name": "create-zap-app",
-      "version": "1.2.8",
+      "version": "1.2.9",
       "bin": {
         "create-zap-app": "./dist/index.js",
       },
@@ -21,7 +14,6 @@
         "execa": "^9.5.2",
         "fs-extra": "^11.1.1",
         "inquirer": "^9.2.12",
-        "ky": "^1.8.1",
         "ts-morph": "^25.0.1",
       },
       "devDependencies": {
@@ -30,6 +22,13 @@
       },
       "peerDependencies": {
         "typescript": "^5",
+      },
+    },
+    "apps/docs": {
+      "name": "@zap-ts/docs",
+      "version": "1.0.0",
+      "devDependencies": {
+        "vitepress": "^1.6.3",
       },
     },
   },
@@ -344,7 +343,7 @@
 
     "copy-anything": ["copy-anything@3.0.5", "", { "dependencies": { "is-what": "^4.1.8" } }, "sha512-yCEafptTtb4bk7GLEQoM8KVJpxAfdBJYaXyzQEgQQQgYrZiDp8SJmGKlYza6CYjEDNstAdNdKA3UuoULlEbS6w=="],
 
-    "create-zap-app": ["create-zap-app@workspace:create-zap-app"],
+    "create-zap-app": ["create-zap-app@workspace:apps/create-zap-app"],
 
     "cross-spawn": ["cross-spawn@7.0.6", "", { "dependencies": { "path-key": "^3.1.0", "shebang-command": "^2.0.0", "which": "^2.0.1" } }, "sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA=="],
 
@@ -463,8 +462,6 @@
     "isexe": ["isexe@2.0.0", "", {}, "sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw=="],
 
     "jsonfile": ["jsonfile@6.1.0", "", { "dependencies": { "universalify": "^2.0.0" }, "optionalDependencies": { "graceful-fs": "^4.1.6" } }, "sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ=="],
-
-    "ky": ["ky@1.8.1", "", {}, "sha512-7Bp3TpsE+L+TARSnnDpk3xg8Idi8RwSLdj6CMbNWoOARIrGrbuLGusV0dYwbZOm4bB3jHNxSw8Wk/ByDqJEnDw=="],
 
     "lightningcss": ["lightningcss@1.30.1", "", { "dependencies": { "detect-libc": "^2.0.3" }, "optionalDependencies": { "lightningcss-darwin-arm64": "1.30.1", "lightningcss-darwin-x64": "1.30.1", "lightningcss-freebsd-x64": "1.30.1", "lightningcss-linux-arm-gnueabihf": "1.30.1", "lightningcss-linux-arm64-gnu": "1.30.1", "lightningcss-linux-arm64-musl": "1.30.1", "lightningcss-linux-x64-gnu": "1.30.1", "lightningcss-linux-x64-musl": "1.30.1", "lightningcss-win32-arm64-msvc": "1.30.1", "lightningcss-win32-x64-msvc": "1.30.1" } }, "sha512-xi6IyHML+c9+Q3W0S4fCQJOym42pyurFiJUHEcEyHS0CeKzia4yZDEsLlqOFykxOdHpNy0NmvVO31vcSqAxJCg=="],
 

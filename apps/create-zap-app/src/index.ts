@@ -9,7 +9,6 @@ import { promisify } from "util";
 import type { PackageManager } from "@/schemas/index.js";
 import { generateEnv, promptPackageManager } from "@/utils/index.js";
 import { ObjectLiteralExpression, Project } from "ts-morph";
-import ky from "ky";
 import { execa } from "execa";
 
 const execAsync = promisify(exec);
@@ -71,7 +70,8 @@ async function main() {
   try {
     const tarballUrl =
       "https://api.github.com/repos/alexandretrotel/zap.ts/tarball/main";
-    const buffer = await ky(tarballUrl).arrayBuffer();
+    const response = await fetch(tarballUrl);
+    const buffer = await response.arrayBuffer();
     const tarballPath = path.join(outputDir, "zap.ts.tar.gz");
     await fs.writeFile(tarballPath, Buffer.from(buffer));
 
