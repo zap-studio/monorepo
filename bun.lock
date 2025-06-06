@@ -9,7 +9,7 @@
     },
     "apps/create-zap-app": {
       "name": "create-zap-app",
-      "version": "1.2.10",
+      "version": "1.2.12",
       "bin": {
         "create-zap-app": "./dist/index.js",
       },

@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import type { Session } from "@/zap/lib/auth/client";
 import { $fetch } from "@/lib/fetch";
-import { Effect } from "effect";
 
 const publicPaths = [
   "/",
@@ -19,63 +18,57 @@ const publicPaths = [
 const blogPublicBasePath = "/blog";
 
 export async function middleware(request: NextRequest) {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const { pathname } = request.nextUrl;
+  try {
+    const { pathname } = request.nextUrl;
 
-      // Allow public paths
-      if (
-        publicPaths.includes(pathname) ||
-        pathname.startsWith(blogPublicBasePath)
-      ) {
-        return NextResponse.next();
-      }
+    // Allow public paths
+    if (
+      publicPaths.includes(pathname) ||
+      pathname.startsWith(blogPublicBasePath)
+    ) {
+      return NextResponse.next();
+    }
 
-      // Fetch session from API
-      const session = yield* _(
-        Effect.tryPromise({
-          try: () =>
-            $fetch<Session>(`/api/auth/get-session`, {
-              headers: {
-                cookie: request.headers.get("cookie") || "",
-              },
-            }),
-          catch: () => null,
-        }),
-      );
-
-      if (!session) {
-        // Redirect unauthenticated users to /login with the original path as a query param
-        const loginUrl = new URL("/login", request.url);
-        loginUrl.searchParams.set("redirect", pathname);
-        return NextResponse.redirect(loginUrl);
-      }
-
-      // Check email verification
-      if (!session.user || !session.user.emailVerified) {
-        const verifyUrl = new URL("/login", request.url);
-        verifyUrl.searchParams.set("redirect", pathname);
-        return NextResponse.redirect(verifyUrl);
-      }
-
-      // Add session to headers for server-side use
-      const requestHeaders = new Headers(request.headers);
-      requestHeaders.set("x-user-session", JSON.stringify(session));
-
-      return NextResponse.next({
-        request: { headers: requestHeaders },
+    // Fetch session from API
+    let session: Session | null = null;
+    try {
+      session = await $fetch<Session>(`/api/auth/get-session`, {
+        headers: {
+          cookie: request.headers.get("cookie") || "",
+        },
       });
-    }).pipe(
-      Effect.catchAll(() =>
-        Effect.sync(() => {
-          // Fallback: redirect to login on any unexpected error
-          const loginUrl = new URL("/login", request.url);
-          loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
-          return NextResponse.redirect(loginUrl);
-        }),
-      ),
-    ),
-  );
+    } catch {
+      // Session fetch failed, treat as unauthenticated
+      session = null;
+    }
+
+    if (!session) {
+      // Redirect unauthenticated users to /login with the original path as a query param
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // Check email verification
+    if (!session.user || !session.user.emailVerified) {
+      const verifyUrl = new URL("/login", request.url);
+      verifyUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(verifyUrl);
+    }
+
+    // Add session to headers for server-side use
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-user-session", JSON.stringify(session));
+
+    return NextResponse.next({
+      request: { headers: requestHeaders },
+    });
+  } catch {
+    // Fallback: redirect to login on any unexpected error
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
 }
 
 export const config = {
