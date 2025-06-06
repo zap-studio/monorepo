@@ -28,6 +28,7 @@ import { JSX, useEffect, useState } from "react";
 import { useRouter } from "nextjs-toploader/app";
 import { Loader2 } from "lucide-react";
 import { SETTINGS } from "@/data/settings";
+import { useCooldown } from "@/zap/hooks/utils/use-cooldown";
 
 type Provider = "apple" | "google";
 
@@ -45,15 +46,8 @@ export function LoginForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const [loading, setLoading] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
+  const { cooldown, startCooldown, isInCooldown } = useCooldown();
   const [callbackURL, setCallbackURL] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (cooldown > 0) {
-      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [cooldown]);
 
   useEffect(() => {
     const callbackURL = new URLSearchParams(window.location.search).get(
@@ -103,7 +97,7 @@ export function LoginForm({
             callbackURL: "/app",
           });
 
-          setCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
+          startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
           return;
         }
 
@@ -207,14 +201,14 @@ export function LoginForm({
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={loading || cooldown > 0}
+                  disabled={loading || isInCooldown}
                 >
                   {loading ? (
                     <>
                       <Loader2 size={16} className="animate-spin" />
                       Logging in...
                     </>
-                  ) : cooldown > 0 ? (
+                  ) : isInCooldown ? (
                     `Please wait ${cooldown}s`
                   ) : (
                     "Login"

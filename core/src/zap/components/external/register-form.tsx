@@ -24,10 +24,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { JSX, useEffect, useState } from "react";
+import { JSX, useState } from "react";
 import { SETTINGS } from "@/data/settings";
 import { useRouter } from "nextjs-toploader/app";
 import { Loader2 } from "lucide-react";
+import { useCooldown } from "@/zap/hooks/utils/use-cooldown";
 
 type Provider = "apple" | "google";
 
@@ -64,14 +65,7 @@ export function RegisterForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const [loading, setLoading] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
-
-  useEffect(() => {
-    if (cooldown > 0) {
-      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [cooldown]);
+  const { cooldown, startCooldown, isInCooldown } = useCooldown();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
@@ -112,7 +106,7 @@ export function RegisterForm({
             callbackURL: "/login",
           });
 
-          setCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
+          startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
         } else {
           toast.success("Registration successful!");
         }
@@ -244,7 +238,7 @@ export function RegisterForm({
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={loading || cooldown > 0}
+                  disabled={loading || isInCooldown}
                 >
                   {loading && (
                     <>
@@ -252,8 +246,8 @@ export function RegisterForm({
                       Creating account...
                     </>
                   )}
-                  {!loading && cooldown > 0 && `Please wait ${cooldown}s`}
-                  {!loading && cooldown === 0 && "Create account"}
+                  {!loading && isInCooldown && `Please wait ${cooldown}s`}
+                  {!loading && !isInCooldown && "Create account"}
                 </Button>
               </form>
             </Form>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -25,6 +25,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { SETTINGS } from "@/data/settings";
+import { useCooldown } from "@/zap/hooks/utils/use-cooldown";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -33,15 +34,7 @@ type FormSchema = z.infer<typeof formSchema>;
 
 export default function ForgotPasswordPage() {
   const [submitting, setSubmitting] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
-
-  useEffect(() => {
-    if (cooldown <= 0) return;
-    const timer = setInterval(() => {
-      setCooldown((prev) => prev - 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [cooldown]);
+  const { cooldown, startCooldown, isInCooldown } = useCooldown();
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -65,7 +58,7 @@ export default function ForgotPasswordPage() {
       }
 
       toast.success("Check your email for the reset link!");
-      setCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
+      startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
     } catch {
       toast.error("An error occurred while sending the reset link.");
     } finally {
@@ -109,7 +102,7 @@ export default function ForgotPasswordPage() {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={submitting || cooldown > 0}
+                disabled={submitting || isInCooldown}
               >
                 {submitting && (
                   <>
@@ -117,8 +110,8 @@ export default function ForgotPasswordPage() {
                     Sending...
                   </>
                 )}
-                {!submitting && cooldown > 0 && `Please wait ${cooldown}s`}
-                {!submitting && cooldown === 0 && "Send reset link"}
+                {!submitting && isInCooldown && `Please wait ${cooldown}s`}
+                {!submitting && !isInCooldown && "Send reset link"}
               </Button>
             </form>
           </Form>
