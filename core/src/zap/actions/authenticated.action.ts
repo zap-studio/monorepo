@@ -5,35 +5,35 @@ import { headers } from "next/headers";
 import { Effect } from "effect";
 
 export const getSession = async () => {
-  return Effect.tryPromise({
-    try: async () => {
-      const headersList = await headers();
-      return auth.api.getSession({ headers: headersList });
-    },
-    catch: (e) => e,
-  });
+  return Effect.runPromise(
+    Effect.tryPromise({
+      try: async () => {
+        const headersList = await headers();
+        return auth.api.getSession({ headers: headersList });
+      },
+      catch: (e) => e,
+    }),
+  );
 };
 
 export const isAuthenticated = async () => {
-  return Effect.gen(function* (_) {
-    const sessionEffect = yield* _(Effect.promise(() => getSession()));
-    const session = yield* _(sessionEffect);
+  return Effect.runPromise(
+    Effect.gen(function* (_) {
+      const session = yield* _(Effect.promise(() => getSession()));
 
-    if (!session) {
-      return false;
-    }
+      if (!session) {
+        return false;
+      }
 
-    return true;
-  }).pipe(
-    Effect.catchAll((error) => Effect.succeed({ success: false, error })),
+      return true;
+    }),
   );
 };
 
 export const getUserId = async () => {
   return Effect.runPromise(
     Effect.gen(function* (_) {
-      const sessionEffect = yield* _(Effect.promise(() => getSession()));
-      const session = yield* _(sessionEffect);
+      const session = yield* _(Effect.promise(() => getSession()));
 
       if (!session) {
         return yield* _(Effect.fail(new Error("User not authenticated")));
@@ -45,16 +45,15 @@ export const getUserId = async () => {
 };
 
 export const isUserAdmin = async () => {
-  return Effect.gen(function* (_) {
-    const sessionEffect = yield* _(Effect.promise(() => getSession()));
-    const session = yield* _(sessionEffect);
+  return Effect.runPromise(
+    Effect.gen(function* (_) {
+      const session = yield* _(Effect.promise(() => getSession()));
 
-    if (!session) {
-      return false;
-    }
+      if (!session) {
+        return false;
+      }
 
-    return session.user.role === "admin";
-  }).pipe(
-    Effect.catchAll((error) => Effect.succeed({ success: false, error })),
+      return session.user.role === "admin";
+    }),
   );
 };

@@ -20,27 +20,27 @@ export const sendForgotPasswordMail = async ({
   recipients,
   url,
 }: ForgotPasswordEmailProps) => {
-  return Effect.gen(function* (_) {
-    const { data, error } = yield* _(
-      Effect.tryPromise({
-        try: () =>
-          resend.emails.send({
-            from,
-            to: recipients,
-            subject,
-            react: ForgotPasswordEmail({ url }),
-          }),
-        catch: (e) => e,
-      }),
-    );
+  return Effect.runPromise(
+    Effect.gen(function* (_) {
+      const { data, error } = yield* _(
+        Effect.tryPromise({
+          try: () =>
+            resend.emails.send({
+              from,
+              to: recipients,
+              subject,
+              react: ForgotPasswordEmail({ url }),
+            }),
+          catch: (e) => e,
+        }),
+      );
 
-    if (error) {
-      return yield* _(Effect.fail(error));
-    }
+      if (error) {
+        return yield* _(Effect.fail(error));
+      }
 
-    return data;
-  }).pipe(
-    Effect.catchAll((error) => Effect.succeed({ success: false, error })),
+      return data;
+    }),
   );
 };
 
@@ -49,27 +49,27 @@ export const sendVerificationEmail = async ({
   recipients,
   url,
 }: ForgotPasswordEmailProps) => {
-  return Effect.gen(function* (_) {
-    const { data, error } = yield* _(
-      Effect.tryPromise({
-        try: () =>
-          resend.emails.send({
-            from,
-            to: recipients,
-            subject,
-            react: VerificationEmail({ url }),
-          }),
-        catch: (e) => e,
-      }),
-    );
+  return Effect.runPromise(
+    Effect.gen(function* (_) {
+      const { data, error } = yield* _(
+        Effect.tryPromise({
+          try: () =>
+            resend.emails.send({
+              from,
+              to: recipients,
+              subject,
+              react: VerificationEmail({ url }),
+            }),
+          catch: (e) => e,
+        }),
+      );
 
-    if (error) {
-      return yield* _(Effect.fail(error));
-    }
+      if (error) {
+        return yield* _(Effect.fail(error));
+      }
 
-    return data;
-  }).pipe(
-    Effect.catchAll((error) => Effect.succeed({ success: false, error })),
+      return data;
+    }),
   );
 };
 
@@ -84,27 +84,27 @@ export const sendMail = async ({
   recipients,
   react,
 }: SendMailProps) => {
-  return Effect.gen(function* (_) {
-    const { data, error } = yield* _(
-      Effect.tryPromise({
-        try: () =>
-          resend.emails.send({
-            from,
-            to: recipients,
-            subject,
-            react,
-          }),
-        catch: (e) => e,
-      }),
-    );
+  return Effect.runPromise(
+    Effect.gen(function* (_) {
+      const { data, error } = yield* _(
+        Effect.tryPromise({
+          try: () =>
+            resend.emails.send({
+              from,
+              to: recipients,
+              subject,
+              react,
+            }),
+          catch: (e) => e,
+        }),
+      );
 
-    if (error) {
-      return yield* _(Effect.fail(error));
-    }
+      if (error) {
+        return yield* _(Effect.fail(error));
+      }
 
-    return data;
-  }).pipe(
-    Effect.catchAll((error) => Effect.succeed({ success: false, error })),
+      return data;
+    }),
   );
 };
 
@@ -117,26 +117,26 @@ export const sendMagicLinkEmail = async ({
   recipients: string[];
   url: string;
 }) => {
-  return Effect.gen(function* (_) {
-    const { data, error } = yield* _(
-      Effect.tryPromise({
-        try: () =>
-          resend.emails.send({
-            from,
-            to: recipients,
-            subject,
-            react: MagicLinkEmail({ url }),
-          }),
-        catch: (e) => e,
-      }),
-    );
+  return Effect.runPromise(
+    Effect.gen(function* (_) {
+      const { data, error } = yield* _(
+        Effect.tryPromise({
+          try: () =>
+            resend.emails.send({
+              from,
+              to: recipients,
+              subject,
+              react: MagicLinkEmail({ url }),
+            }),
+          catch: (e) => e,
+        }),
+      );
 
-    if (error) {
-      return yield* _(Effect.fail(error));
-    }
+      if (error) {
+        return yield* _(Effect.fail(error));
+      }
 
-    return data;
-  }).pipe(
-    Effect.catchAll((error) => Effect.succeed({ success: false, error })),
+      return data;
+    }),
   );
 };
