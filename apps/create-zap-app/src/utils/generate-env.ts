@@ -40,7 +40,6 @@ const coreEnv = [
  * - A default `BETTER_AUTH_URL`
  *
  * @param {string} outputDir - The output directory where the `.env.local` file will be written.
- * @param {PluginNames} selectedPlugins - An array of plugin names for which environment variables should be included.
  *
  * @returns {Promise<void>} A promise that resolves when the `.env.local` file is written.
  *
@@ -50,7 +49,7 @@ const coreEnv = [
  * // Generates an .env.local file with required env variables.
  * ```
  */
-export const generateEnv = async (outputDir: string): Promise<void> => {
+export const generateEnv = async (outputDir: string) => {
   // Generate .env.local content
   const envContent = coreEnv
     .map((envVar) => {
