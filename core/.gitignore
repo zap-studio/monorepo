@@ -2,7 +2,6 @@
 
 # dependencies
 /node_modules/**
-node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -50,6 +49,7 @@ Cargo.lock
 uv.lock
 target/**
 dist/**
+
 
 
 

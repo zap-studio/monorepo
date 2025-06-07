@@ -16,3 +16,5 @@ alwaysApply: false
 - Update `src/zap/rpc/router.ts` with new procedure.
 - Add feature flag in `src/data/settings.ts` (e.g., `FEATURE_FLAGS.enableChat = false`).
 - Run `bun run format` and `bun run lint`.
+
+Check [zap-ts-features.mdc](mdc:.cursor/rules/zap-ts-features.mdc) for more.

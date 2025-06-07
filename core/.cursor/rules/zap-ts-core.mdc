@@ -44,12 +44,14 @@ The entry point and all configurations for Zap.ts are specified in [zap.config.t
 - Stores: `<feature>.store.ts`.
 - Database schemas: `<feature>.sql.ts`.
 - Components: PascalCase (e.g., `ChatWindow`).
+- Drizzle queries: `<feature>.query.ts`.
 
 ### Type Safety
 - Use TypeScript with `strict: true` per [tsconfig.json](mdc:tsconfig.json).
 - Define Zod schemas in `src/zap/schemas/` for APIs (e.g., `@src/zap/schemas/user.schema.ts`).
 - Use oRPC in `src/zap/rpc/procedures/` with schemas from `src/zap/schemas/`.
 - Infer types from Drizzle schemas in `src/zap/db/schema/`.
+- Use Effect library to handle errors instead of usual try/catch.
 
 ### Performance and Simplicity
 - Server actions in `src/zap/actions/` for one-off tasks.
