@@ -58,9 +58,11 @@ export async function POST(req: Request) {
       const existingSubscription = yield* _(
         Effect.tryPromise({
           try: () =>
-            db.query.pushNotifications.findFirst({
-              where: eq(pushNotifications.userId, userId),
-            }),
+            db.query.pushNotifications
+              .findFirst({
+                where: eq(pushNotifications.userId, userId),
+              })
+              .execute(),
           catch: () => null,
         }),
       );
@@ -72,7 +74,8 @@ export async function POST(req: Request) {
               db
                 .update(pushNotifications)
                 .set({ subscription })
-                .where(eq(pushNotifications.userId, userId)),
+                .where(eq(pushNotifications.userId, userId))
+                .execute(),
             catch: () => null,
           }),
         );
@@ -92,7 +95,8 @@ export async function POST(req: Request) {
                 userId: userId,
                 subscription,
               })
-              .returning(),
+              .returning()
+              .execute(),
           catch: () => [],
         }),
       );

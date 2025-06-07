@@ -22,7 +22,8 @@ export const getAISettings = async (userId: string, provider: AIProviderId) => {
                   eq(userAISettings.provider, provider),
                 ),
               )
-              .limit(1),
+              .limit(1)
+              .execute(),
           catch: (e) => e,
         }),
       );

@@ -26,7 +26,8 @@ export async function DELETE(req: Request) {
           try: () =>
             db
               .delete(pushNotifications)
-              .where(eq(pushNotifications.userId, userId)),
+              .where(eq(pushNotifications.userId, userId))
+              .execute(),
           catch: (error) => error,
         }),
       );

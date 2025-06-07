@@ -100,12 +100,15 @@ const saveAISettings = base
         yield* _(
           Effect.tryPromise({
             try: () =>
-              db.insert(userAISettings).values({
-                userId,
-                provider,
-                model,
-                encryptedApiKey: encryptedAPIKey,
-              }),
+              db
+                .insert(userAISettings)
+                .values({
+                  userId,
+                  provider,
+                  model,
+                  encryptedApiKey: encryptedAPIKey,
+                })
+                .execute(),
             catch: (e) => e,
           }),
         );
@@ -136,7 +139,7 @@ const updateAISettings = base
 
         const existingSettings = yield* _(
           Effect.tryPromise({
-            try: () => db.select().from(userAISettings),
+            try: () => db.select().from(userAISettings).execute(),
             catch: (e) => e,
           }),
         );
@@ -159,7 +162,8 @@ const updateAISettings = base
                     eq(userAISettings.userId, userId),
                     eq(userAISettings.provider, provider),
                   ),
-                ),
+                )
+                .execute(),
             catch: (e) => e,
           }),
         );
@@ -192,7 +196,8 @@ const deleteAPIKey = base
                     eq(userAISettings.userId, userId),
                     eq(userAISettings.provider, provider),
                   ),
-                ),
+                )
+                .execute(),
             catch: (e) => e,
           }),
         );
@@ -248,7 +253,8 @@ const saveOrUpdateAISettings = base
                       eq(userAISettings.userId, userId),
                       eq(userAISettings.provider, provider),
                     ),
-                  ),
+                  )
+                  .execute(),
               catch: (e) => e,
             }),
           );
@@ -256,12 +262,15 @@ const saveOrUpdateAISettings = base
           yield* _(
             Effect.tryPromise({
               try: () =>
-                db.insert(userAISettings).values({
-                  userId,
-                  provider,
-                  model,
-                  encryptedApiKey: encryptedAPIKey,
-                }),
+                db
+                  .insert(userAISettings)
+                  .values({
+                    userId,
+                    provider,
+                    model,
+                    encryptedApiKey: encryptedAPIKey,
+                  })
+                  .execute(),
               catch: (e) => e,
             }),
           );

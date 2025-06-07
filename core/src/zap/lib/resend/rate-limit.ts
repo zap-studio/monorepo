@@ -14,7 +14,8 @@ export async function canSendEmail(userId: string) {
               .select({ lastEmailSentAt: user.lastEmailSentAt })
               .from(user)
               .where(eq(user.id, userId))
-              .limit(1),
+              .limit(1)
+              .execute(),
           catch: (e) => e,
         }),
       );
@@ -49,7 +50,8 @@ export async function updateLastEmailSent(userId: string) {
             db
               .update(user)
               .set({ lastEmailSentAt: new Date() })
-              .where(eq(user.id, userId)),
+              .where(eq(user.id, userId))
+              .execute(),
           catch: (e) => e,
         }),
       );

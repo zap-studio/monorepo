@@ -14,7 +14,8 @@ export const getUserIdFromMail = async (email: string) => {
             .select({ id: user.id })
             .from(user)
             .where(eq(user.email, email))
-            .limit(1),
+            .limit(1)
+            .execute(),
         catch: (e) => e,
       }),
     );

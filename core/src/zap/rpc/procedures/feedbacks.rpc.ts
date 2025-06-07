@@ -16,12 +16,15 @@ const submit = base
         yield* _(
           Effect.tryPromise({
             try: () =>
-              db.insert(feedbackTable).values({
-                userId,
-                rating: input.rating,
-                description: input.description || "",
-                submittedAt: new Date(),
-              }),
+              db
+                .insert(feedbackTable)
+                .values({
+                  userId,
+                  rating: input.rating,
+                  description: input.description || "",
+                  submittedAt: new Date(),
+                })
+                .execute(),
             catch: (e) => e,
           }),
         );
@@ -45,7 +48,8 @@ const getUserFeedback = base
                 .select()
                 .from(feedbackTable)
                 .where(eq(feedbackTable.userId, userId))
-                .limit(1),
+                .limit(1)
+                .execute(),
             catch: (e) => e,
           }),
         );
@@ -65,7 +69,8 @@ const getAverageRating = base.handler(async () => {
               .select({
                 rating: feedbackTable.rating,
               })
-              .from(feedbackTable),
+              .from(feedbackTable)
+              .execute(),
           catch: (e) => e,
         }),
       );
