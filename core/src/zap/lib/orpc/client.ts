@@ -1,8 +1,9 @@
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
-import { RouterClient } from "@orpc/server";
-import { router } from "@/rpc/router";
 import { createORPCReactQueryUtils } from "@orpc/react-query";
+import { RouterClient } from "@orpc/server";
+
+import { router } from "@/rpc/router";
 import { BASE_URL } from "@/zap.config";
 
 export const link = new RPCLink({

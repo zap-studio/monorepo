@@ -1,12 +1,13 @@
-import { authMiddleware, base } from "@/rpc/middlewares";
+import { Effect } from "effect";
+
 import { db } from "@/db";
 import { feedback as feedbackTable } from "@/db/schema";
-import { FeedbackSchema } from "@/zap/schemas/feedback.schema";
-import { Effect } from "effect";
+import { authMiddleware, base } from "@/rpc/middlewares";
 import {
   getAverageRatingQuery,
   getFeedbackForUserQuery,
 } from "@/zap/db/queries/feedbacks.query";
+import { FeedbackSchema } from "@/zap/schemas/feedback.schema";
 
 const submit = base
   .use(authMiddleware)

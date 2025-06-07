@@ -1,15 +1,16 @@
-import { Navbar } from "@/zap/components/external/navbar";
-import { AnimatedSection } from "@/zap/components/external/animated";
-import { TestimonialSection } from "@/zap/components/external/landing/testimonial";
-import { PricingSection } from "@/zap/components/external/landing/pricing";
-import { FaqSection } from "@/zap/components/external/landing/faq";
-import Footer from "@/zap/components/external/footer";
-import { HeroSection } from "@/zap/components/external/landing/hero";
-import { SolutionSection } from "@/zap/components/external/landing/solution";
-import { FeaturesSection } from "@/zap/components/external/landing/features";
-import { cn } from "@/lib/utils";
-import { createOrpcServer } from "@/zap/lib/orpc/server";
 import { headers } from "next/headers";
+
+import { cn } from "@/lib/utils";
+import { AnimatedSection } from "@/zap/components/external/animated";
+import Footer from "@/zap/components/external/footer";
+import { FaqSection } from "@/zap/components/external/landing/faq";
+import { FeaturesSection } from "@/zap/components/external/landing/features";
+import { HeroSection } from "@/zap/components/external/landing/hero";
+import { PricingSection } from "@/zap/components/external/landing/pricing";
+import { SolutionSection } from "@/zap/components/external/landing/solution";
+import { TestimonialSection } from "@/zap/components/external/landing/testimonial";
+import { Navbar } from "@/zap/components/external/navbar";
+import { createOrpcServer } from "@/zap/lib/orpc/server";
 
 const DELAY_INCREMENT = 0.1;
 const sectionClassName = "w-full py-12 md:py-24 lg:py-32";

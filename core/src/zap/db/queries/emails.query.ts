@@ -1,6 +1,7 @@
+import { eq, sql } from "drizzle-orm";
+
 import { db } from "@/db";
 import { user } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
 
 export const getUserIdFromEmailQuery = db
   .select({ userId: user.id })

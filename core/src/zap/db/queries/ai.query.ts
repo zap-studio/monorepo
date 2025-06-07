@@ -1,6 +1,7 @@
+import { and, eq, sql } from "drizzle-orm";
+
 import { db } from "@/db";
 import { userAISettings } from "@/db/schema";
-import { and, eq, sql } from "drizzle-orm";
 
 export const getApiSettingsForUserAndProviderQuery = db
   .select()

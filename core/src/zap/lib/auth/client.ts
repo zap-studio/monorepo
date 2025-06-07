@@ -1,13 +1,14 @@
-import { BASE_URL } from "@/zap.config";
 import {
+  adminClient,
+  anonymousClient,
+  organizationClient,
+  passkeyClient,
   twoFactorClient,
   usernameClient,
-  anonymousClient,
-  passkeyClient,
-  adminClient,
-  organizationClient,
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
+
+import { BASE_URL } from "@/zap.config";
 
 export const authClient = createAuthClient({
   baseURL: BASE_URL,

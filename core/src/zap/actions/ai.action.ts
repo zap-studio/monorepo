@@ -1,9 +1,11 @@
 "use server";
 
-import { decrypt } from "../lib/crypto/crypto";
-import { AIProviderId } from "@/zap/types/ai.types";
 import { Effect } from "effect";
+
+import { AIProviderId } from "@/zap/types/ai.types";
+
 import { getApiSettingsForUserAndProviderQuery } from "../db/queries/ai.query";
+import { decrypt } from "../lib/crypto/crypto";
 
 export const getAISettings = async (userId: string, provider: AIProviderId) => {
   return Effect.runPromise(

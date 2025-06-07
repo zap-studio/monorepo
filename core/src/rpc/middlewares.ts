@@ -1,7 +1,8 @@
-import { Session } from "@/zap/lib/auth/client";
-import { auth } from "@/zap/lib/auth/server";
 import { os } from "@orpc/server";
 import { Effect } from "effect";
+
+import { Session } from "@/zap/lib/auth/client";
+import { auth } from "@/zap/lib/auth/server";
 
 export interface SessionContext {
   readonly session: Session;

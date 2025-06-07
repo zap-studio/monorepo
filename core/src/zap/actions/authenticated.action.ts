@@ -1,8 +1,9 @@
 "use server";
 
-import { auth } from "@/zap/lib/auth/server";
-import { headers } from "next/headers";
 import { Effect } from "effect";
+import { headers } from "next/headers";
+
+import { auth } from "@/zap/lib/auth/server";
 
 export const getSession = async () => {
   return Effect.runPromise(

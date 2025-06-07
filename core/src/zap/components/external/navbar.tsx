@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
+
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { useRouter } from "nextjs-toploader/app";
-import { usePathname } from "next/navigation";
 import { authClient } from "@/zap/lib/auth/client";
 
 const navLinks = [

@@ -1,6 +1,8 @@
-import { pgTable, text, uuid, timestamp, jsonb } from "drizzle-orm/pg-core";
-import { user } from "./auth.sql";
+import { jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+
 import { ModelName } from "@/zap/types/ai.types";
+
+import { user } from "./auth.sql";
 
 export const userAISettings = pgTable("user_ai_settings", {
   id: uuid("id").primaryKey().defaultRandom(),

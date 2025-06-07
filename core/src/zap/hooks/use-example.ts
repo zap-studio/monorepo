@@ -1,5 +1,6 @@
-import { useORPC } from "@/zap/stores/orpc.store";
 import useSWR from "swr";
+
+import { useORPC } from "@/zap/stores/orpc.store";
 
 export const useExample = () => {
   const orpc = useORPC();

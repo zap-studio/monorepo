@@ -1,4 +1,5 @@
-import { pgTable, text, integer, timestamp, uuid } from "drizzle-orm/pg-core";
+import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+
 import { user } from "@/db/schema";
 
 export const feedback = pgTable("feedback", {

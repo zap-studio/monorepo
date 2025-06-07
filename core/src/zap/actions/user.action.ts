@@ -1,6 +1,7 @@
 "use server";
 
 import { Effect } from "effect";
+
 import { getUserIdFromEmailQuery } from "@/zap/db/queries/emails.query";
 
 export const getUserIdFromMail = async (email: string) => {

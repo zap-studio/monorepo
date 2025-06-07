@@ -1,9 +1,10 @@
-import { auth } from "@/zap/lib/auth/server";
+import { eq } from "drizzle-orm";
+import { Effect } from "effect";
+import { NextResponse } from "next/server";
+
 import { db } from "@/db";
 import { pushNotifications } from "@/zap/db/schema/notifications.sql";
-import { eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
-import { Effect } from "effect";
+import { auth } from "@/zap/lib/auth/server";
 
 export async function DELETE(req: Request) {
   return Effect.runPromise(

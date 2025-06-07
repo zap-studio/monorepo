@@ -1,11 +1,12 @@
 "use client";
 
-import { $fetch } from "@/lib/fetch";
-import useSWRMutation from "swr/mutation";
-import { toast } from "sonner";
-import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
-import { urlBase64ToUint8Array } from "@/zap/lib/pwa/pwa";
 import { Effect } from "effect";
+import { toast } from "sonner";
+import useSWRMutation from "swr/mutation";
+
+import { $fetch } from "@/lib/fetch";
+import { urlBase64ToUint8Array } from "@/zap/lib/pwa/pwa";
+import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
 
 interface SubscriptionResponse {
   success: boolean;

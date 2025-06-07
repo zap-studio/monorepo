@@ -1,13 +1,14 @@
+import { and, eq } from "drizzle-orm";
+import { Effect } from "effect";
+import { z } from "zod/v4";
+
 import { db } from "@/db";
 import { userAISettings } from "@/db/schema";
+import { $fetch } from "@/lib/fetch";
 import { authMiddleware, base } from "@/rpc/middlewares";
+import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
 import { decrypt, encrypt } from "@/zap/lib/crypto/crypto";
 import { AIProviderIdSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
-import { and, eq } from "drizzle-orm";
-import { $fetch } from "@/lib/fetch";
-import { z } from "zod/v4";
-import { Effect } from "effect";
-import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
 
 const InputGetAPIKeySchema = z.object({
   provider: AIProviderIdSchema,
@@ -280,10 +281,15 @@ const testAPIKey = base
         const provider = input.provider;
         const apiKey = input.apiKey;
         const model = input.model;
-        const headers = new Headers(context.headers);
+        let headers = new Headers(context.headers);
 
-        headers.delete("content-length");
-        headers.delete("content-type");
+        const filteredHeaders = new Headers();
+        for (const [key, value] of headers.entries()) {
+          if (key !== "content-length" && key !== "content-type") {
+            filteredHeaders.append(key, value);
+          }
+        }
+        headers = filteredHeaders;
 
         yield* _(
           Effect.tryPromise({

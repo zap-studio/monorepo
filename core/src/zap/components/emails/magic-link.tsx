@@ -1,14 +1,13 @@
-import * as React from "react";
 import {
-  Html,
-  Head,
-  Preview,
   Body,
-  Container,
-  Heading,
-  Text,
   Button,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
   Section,
+  Text,
 } from "@react-email/components";
 
 interface MagicLinkEmailProps {

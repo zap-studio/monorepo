@@ -1,11 +1,12 @@
-import { auth } from "@/zap/lib/auth/server";
-import { db } from "@/db";
-import { pushNotifications } from "@/zap/db/schema/notifications.sql";
 import { eq } from "drizzle-orm";
+import { Effect } from "effect";
 import { NextResponse } from "next/server";
 import { z } from "zod/v4";
-import { Effect } from "effect";
+
+import { db } from "@/db";
 import { getPushNotificationsByUserQuery } from "@/zap/db/queries/push-notifications.query";
+import { pushNotifications } from "@/zap/db/schema/notifications.sql";
+import { auth } from "@/zap/lib/auth/server";
 
 const subscribeSchema = z.object({
   subscription: z.object({

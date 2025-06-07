@@ -1,5 +1,6 @@
-import { router } from "@/rpc/router";
 import { RPCHandler, serve } from "@orpc/server/next";
+
+import { router } from "@/rpc/router";
 
 const handler = new RPCHandler(router);
 

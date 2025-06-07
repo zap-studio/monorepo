@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { Check, Clipboard } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+
 import {
   AnimatedSpan,
   Terminal,
   TypingAnimation,
 } from "@/components/magicui/terminal";
+import { Button } from "@/components/ui/button";
 
 const features = [
   "Authentication with BetterAuth",

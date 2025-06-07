@@ -1,14 +1,15 @@
 import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import {
+  admin,
+  anonymous,
+  organization,
   twoFactor,
   username,
-  anonymous,
-  admin,
-  organization,
 } from "better-auth/plugins";
-import { SETTINGS } from "@/data/settings";
 import { passkey } from "better-auth/plugins/passkey";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
+
+import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import {
   sendForgotPasswordMail,

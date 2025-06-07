@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useMemo, useRef, useState } from "react";
+
 import { BeamsBackground } from "@/components/ui/beams-background";
+import { Button } from "@/components/ui/button";
 
 interface HeroSectionProps {
   ratings: {

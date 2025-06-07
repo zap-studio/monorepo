@@ -1,7 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { motion } from "motion/react";
+import type { ReactNode } from "react";
 
 interface AnimatedSectionProps {
   children: ReactNode;

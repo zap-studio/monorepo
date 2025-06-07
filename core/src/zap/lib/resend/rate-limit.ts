@@ -1,9 +1,10 @@
-import { SETTINGS } from "@/data/settings";
-import { db } from "@/db";
-import { getLastEmailSentAtQuery } from "@/zap/db/queries/emails.query";
-import { user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Effect } from "effect";
+
+import { SETTINGS } from "@/data/settings";
+import { db } from "@/db";
+import { user } from "@/db/schema";
+import { getLastEmailSentAtQuery } from "@/zap/db/queries/emails.query";
 
 export async function canSendEmail(userId: string) {
   return Effect.runPromise(

@@ -1,7 +1,8 @@
-import { db } from "@/db";
-import { base } from "@/rpc/middlewares";
-import { user } from "@/db/schema";
 import { Effect } from "effect";
+
+import { db } from "@/db";
+import { user } from "@/db/schema";
+import { base } from "@/rpc/middlewares";
 
 const getNumberOfUsers = base.handler(async () => {
   return Effect.runPromise(

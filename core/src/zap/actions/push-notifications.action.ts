@@ -1,13 +1,14 @@
 "use server";
 
+import { eq } from "drizzle-orm";
+import { Effect } from "effect";
+import webpush from "web-push";
+
+import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { pushNotifications } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import webpush from "web-push";
 import { getUserId } from "@/zap/actions/authenticated.action";
 import { SubscribeUserSchema } from "@/zap/schemas/push-notifications.schema";
-import { SETTINGS } from "@/data/settings";
-import { Effect } from "effect";
 
 webpush.setVapidDetails(
   `mailto:${SETTINGS.NOTIFICATIONS.VAPID_MAIL}`,

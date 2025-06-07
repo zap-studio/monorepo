@@ -1,10 +1,11 @@
 "use client";
 
+import { Effect } from "effect";
 import { useState } from "react";
 import { toast } from "sonner";
+
 import { orpc } from "@/zap/lib/orpc/client";
 import { AIFormValues } from "@/zap/types/ai.types";
-import { Effect } from "effect";
 
 export const useAISettings = () => {
   const [isSaving, setIsSaving] = useState(false);

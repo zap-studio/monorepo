@@ -1,14 +1,13 @@
 import {
-  Html,
-  Head,
-  Preview,
   Body,
-  Container,
-  Text,
   Button,
+  Container,
+  Head,
+  Html,
+  Preview,
   Section,
+  Text,
 } from "@react-email/components";
-import * as React from "react";
 
 interface EmailProps {
   url: string;

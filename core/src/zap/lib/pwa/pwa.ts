@@ -1,6 +1,7 @@
-import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
 import { useEffect } from "react";
 import * as webpush from "web-push";
+
+import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
 
 export const usePwa = () => {
   const initialize = usePushNotificationsStore((state) => state.initialize);

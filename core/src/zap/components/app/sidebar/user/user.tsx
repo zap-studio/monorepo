@@ -1,24 +1,20 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "nextjs-toploader/app";
-import { toast } from "sonner";
+import { Effect } from "effect";
 import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
   CreditCard,
   LogOut,
-  Sparkles,
   LucideIcon,
+  Sparkles,
 } from "lucide-react";
-import { authClient } from "@/zap/lib/auth/client";
-import {
-  useSidebar,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+import Link from "next/link";
+import { useRouter } from "nextjs-toploader/app";
+import { toast } from "sonner";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,8 +24,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Effect } from "effect";
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import { authClient } from "@/zap/lib/auth/client";
 
 type NavUserProps = {
   user: {

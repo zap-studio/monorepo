@@ -1,6 +1,7 @@
 import { pgTable, text, uuid } from "drizzle-orm/pg-core";
-import { user } from "@/db/schema";
 import webpush from "web-push";
+
+import { user } from "@/db/schema";
 
 export const pushNotifications = pgTable("push_notifications", {
   id: uuid("uuid").primaryKey().defaultRandom(),

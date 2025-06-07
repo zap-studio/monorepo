@@ -1,11 +1,12 @@
 "use server";
 
-import { resend } from "@/zap/lib/resend/server";
-import { ForgotPasswordEmail } from "@/zap/components/emails/forgot-password";
-import { VerificationEmail } from "@/zap/components/emails/verification";
-import { JSX } from "react";
-import { MagicLinkEmail } from "@/zap/components/emails/magic-link";
 import { Effect } from "effect";
+import { JSX } from "react";
+
+import { ForgotPasswordEmail } from "@/zap/components/emails/forgot-password";
+import { MagicLinkEmail } from "@/zap/components/emails/magic-link";
+import { VerificationEmail } from "@/zap/components/emails/verification";
+import { resend } from "@/zap/lib/resend/server";
 
 const from = "Zap.ts <hello@mail.alexandretrotel.org>";
 

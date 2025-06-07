@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef } from "react";
 import { motion } from "motion/react";
+import React, { useEffect, useMemo, useRef } from "react";
+
 import { cn } from "@/lib/utils";
 
 interface AnimatedGradientBackgroundProps {

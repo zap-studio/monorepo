@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
-import { ThemeProvider } from "@/providers/theme.provider";
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
-import SuspendedPostHogPageView from "@/zap/components/analytics/posthog-page-view/posthog-page-view";
+import { useEffect } from "react";
+
 import { FLAGS } from "@/data/flags";
+import { ThemeProvider } from "@/providers/theme.provider";
+import SuspendedPostHogPageView from "@/zap/components/analytics/posthog-page-view/posthog-page-view";
 
 interface ProvidersProps {
   children: React.ReactNode;

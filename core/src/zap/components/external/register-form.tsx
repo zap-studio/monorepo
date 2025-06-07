@@ -1,9 +1,15 @@
 "use client";
 
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Effect } from "effect";
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "nextjs-toploader/app";
+import { JSX, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
-import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,10 +18,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { authClient } from "@/zap/lib/auth/client";
-import { toast } from "sonner";
 import {
   Form,
   FormControl,
@@ -24,12 +26,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { JSX, useState } from "react";
+import { Input } from "@/components/ui/input";
 import { SETTINGS } from "@/data/settings";
-import { useRouter } from "nextjs-toploader/app";
-import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useCooldown } from "@/zap/hooks/utils/use-cooldown";
-import { Effect } from "effect";
+import { authClient } from "@/zap/lib/auth/client";
 
 type Provider = "apple" | "google";
 

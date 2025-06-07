@@ -1,30 +1,27 @@
 {
   "name": "@zap-ts/core",
-  "description": "Core package for Zap.ts, a TypeScript framework for building web applications.",
   "version": "1.0.0",
-  "author": "Alexandre Trotel",
   "private": false,
-  "publishConfig": {
-    "access": "public"
-  },
+  "description": "Core package for Zap.ts, a TypeScript framework for building web applications.",
+  "author": "Alexandre Trotel",
   "scripts": {
-    "zap": "bunx create-zap-app@latest",
-    "dev": "next dev --turbopack",
-    "scan": "next dev --turbopack & bunx react-scan@latest localhost:3000",
     "build": "next build",
     "postbuild": "next-sitemap",
-    "start": "next start",
-    "lint": "next lint",
-    "format": "prettier --write .",
+    "db:check": "drizzle-kit check",
+    "db:export": "drizzle-kit export",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
     "db:pull": "drizzle-kit pull",
-    "db:export": "drizzle-kit export",
-    "db:check": "drizzle-kit check",
-    "db:up": "drizzle-kit up",
+    "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "mail:dev": "email dev"
+    "db:up": "drizzle-kit up",
+    "dev": "next dev --turbopack",
+    "format": "prettier --write .",
+    "lint": "next lint",
+    "mail:dev": "email dev",
+    "scan": "next dev --turbopack & bunx react-scan@latest localhost:3000",
+    "start": "next start",
+    "zap": "bunx create-zap-app@latest"
   },
   "dependencies": {
     "@ai-sdk/mistral": "^1.2.8",
@@ -117,14 +114,23 @@
     "@types/react-dom": "^19.1.6",
     "@types/web-push": "^3.6.4",
     "@types/ws": "^8.18.1",
+    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "@typescript-eslint/parser": "^8.33.1",
     "drizzle-kit": "^0.30.6",
     "eslint": "^9.28.0",
     "eslint-config-next": "15.2.2",
+    "eslint-plugin-drizzle": "^0.2.3",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "prettier": "^3.5.3",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "prettier-plugin-packagejson": "^2.5.15",
     "prettier-plugin-tailwindcss": "^0.6.12",
     "prompts": "^2.4.2",
     "tailwindcss": "^4.1.8",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

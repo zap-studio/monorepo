@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import type { Session } from "@/zap/lib/auth/client";
+import { NextResponse } from "next/server";
+
 import { $fetch } from "@/lib/fetch";
+import type { Session } from "@/zap/lib/auth/client";
 
 const publicPaths = [
   "/",

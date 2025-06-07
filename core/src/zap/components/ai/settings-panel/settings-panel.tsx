@@ -1,15 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useForm, Control } from "react-hook-form";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+import { Effect } from "effect";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Control, useForm } from "react-hook-form";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -19,6 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -26,20 +24,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { Loader2, Eye, EyeOff } from "lucide-react";
-import { AIFormSchema, AIProviderIdSchema } from "@/zap/schemas/ai.schema";
-import { orpc } from "@/zap/lib/orpc/client";
-import { useInitAISettings } from "@/zap/hooks/ai/use-init-ai-settings";
-import { useAISettings } from "@/zap/hooks/ai/use-ai-settings";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   AI_PROVIDERS_OBJECT,
   DEFAULT_MODEL,
   ModelsByProvider,
 } from "@/zap/data/ai";
+import { useAISettings } from "@/zap/hooks/ai/use-ai-settings";
+import { useInitAISettings } from "@/zap/hooks/ai/use-init-ai-settings";
+import { orpc } from "@/zap/lib/orpc/client";
+import { AIFormSchema, AIProviderIdSchema } from "@/zap/schemas/ai.schema";
 import { AIFormValues, AIProviderId } from "@/zap/types/ai.types";
-import { Effect } from "effect";
 
 interface AISettingsSheetProps {
   open: boolean;
