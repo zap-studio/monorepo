@@ -20,12 +20,14 @@ export const subscribeUser = (sub: PushSubscription) =>
     const validatedParams = SubscribeUserSchema.parse({
       subscription: sub,
     });
+
     const userId = yield* _(
       Effect.tryPromise({
         try: () => getUserId(),
         catch: (e) => e,
       }),
     );
+
     yield* _(
       Effect.tryPromise({
         try: () =>
@@ -36,6 +38,7 @@ export const subscribeUser = (sub: PushSubscription) =>
         catch: (e) => e,
       }),
     );
+
     return { success: true };
   }).pipe(
     Effect.catchAll((error) => Effect.succeed({ success: false, error })),
@@ -49,6 +52,7 @@ export const unsubscribeUser = () =>
         catch: (e) => e,
       }),
     );
+
     yield* _(
       Effect.tryPromise({
         try: () =>
@@ -58,6 +62,7 @@ export const unsubscribeUser = () =>
         catch: (e) => e,
       }),
     );
+
     return { success: true };
   }).pipe(
     Effect.catchAll((error) => Effect.succeed({ success: false, error })),

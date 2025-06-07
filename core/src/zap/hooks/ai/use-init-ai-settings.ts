@@ -23,12 +23,14 @@ export const useInitAISettings = (
       await Effect.runPromise(
         Effect.gen(function* (_) {
           const provider = form.getValues("provider");
+
           const result = yield* _(
             Effect.tryPromise({
               try: () => orpc.ai.getAISettings.call({ provider }),
               catch: () => undefined,
             }),
           );
+
           if (result) {
             setApiKey(result.apiKey);
             setModel(result.model);

@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { base } from "../../../rpc/middlewares";
+import { base } from "@/rpc/middlewares";
 import { user } from "@/db/schema";
 
 const getNumberOfUsers = base.handler(async () => {

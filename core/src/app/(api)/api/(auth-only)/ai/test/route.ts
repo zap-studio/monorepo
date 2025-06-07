@@ -22,17 +22,21 @@ export async function POST(req: Request) {
           catch: () => null,
         }),
       );
+
       if (!session) {
         return Response.json({ error: "Unauthorized" }, { status: 401 });
       }
+
       const unvalidatedBody = yield* _(
         Effect.tryPromise({
           try: () => req.json(),
           catch: () => new Error("Invalid JSON body"),
         }),
       );
+
       const body = BodySchema.parse(unvalidatedBody);
       const { provider, apiKey, model } = body;
+
       yield* _(
         Effect.tryPromise({
           try: () =>
@@ -44,6 +48,7 @@ export async function POST(req: Request) {
           catch: () => new Error("Invalid API key"),
         }),
       );
+
       return Response.json({ success: true }, { status: 200 });
     }).pipe(
       Effect.catchAll((err) =>

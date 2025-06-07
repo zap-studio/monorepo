@@ -5,7 +5,7 @@ import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { toast } from "sonner";
 import React, { useEffect, useState } from "react";
-import { FeedbackFormValues } from "../../types/feedback.types";
+import { FeedbackFormValues } from "@/zap/types/feedback.types";
 
 export const useUserFeedback = () => {
   const orpc = useORPC();
@@ -43,7 +43,7 @@ export const useSubmitFeedback = (
   }
 
   const giveFeedback = (
-    key: GiveFeedbackArgs["key"],
+    _key: GiveFeedbackArgs["key"],
     { arg }: GiveFeedbackArgs["arg"],
   ) => {
     return orpc.feedbacks.submit.call(arg);

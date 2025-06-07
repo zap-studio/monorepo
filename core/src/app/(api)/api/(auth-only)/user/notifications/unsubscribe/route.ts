@@ -8,26 +8,29 @@ import { Effect } from "effect";
 export async function DELETE(req: Request) {
   return Effect.runPromise(
     Effect.gen(function* (_) {
-      // Get current user
       const session = yield* _(
         Effect.tryPromise({
           try: () => auth.api.getSession({ headers: req.headers }),
           catch: () => null,
         }),
       );
+
       if (!session) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
       }
-      // Delete the subscription
+
+      const userId = session.user.id;
+
       yield* _(
         Effect.tryPromise({
           try: () =>
             db
               .delete(pushNotifications)
-              .where(eq(pushNotifications.userId, session.user.id)),
+              .where(eq(pushNotifications.userId, userId)),
           catch: (error) => error,
         }),
       );
+
       return NextResponse.json({ success: true });
     }).pipe(
       Effect.catchAll(() =>

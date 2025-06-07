@@ -13,14 +13,15 @@ export const useAISettings = () => {
 
   const saveApiKey = async (values: AIFormValues) => {
     setIsSaving(true);
+
     if (!values.model) {
       toast.error("Please select a model");
       return;
     }
+
     await Effect.runPromise(
       Effect.gen(function* (_) {
         if (!values.apiKey) {
-          // Delete API key when saving empty
           yield* _(
             Effect.tryPromise({
               try: () =>
@@ -30,6 +31,7 @@ export const useAISettings = () => {
               },
             }),
           );
+
           toast.success("API key deleted successfully");
           setIsValidated(false);
           setInitialKey(null);
@@ -42,6 +44,7 @@ export const useAISettings = () => {
               },
             }),
           );
+
           toast.success("API key saved successfully");
           setInitialKey(values.apiKey);
         }
@@ -57,6 +60,7 @@ export const useAISettings = () => {
         ),
       ),
     );
+
     setIsSaving(false);
   };
 

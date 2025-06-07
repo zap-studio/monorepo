@@ -94,6 +94,7 @@ export default function ResetPasswordPage() {
       .catch(() => {
         toast.error("An error occurred while resetting your password.");
       });
+
     setSubmitting(false);
   }
 

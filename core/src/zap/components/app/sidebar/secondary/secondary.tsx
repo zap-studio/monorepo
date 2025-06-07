@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { useState } from "react";
-import { FeedbackDialog } from "../feedback-dialog/feedback-dialog";
-import { AISettingsSheet } from "../../../ai/settings-panel/settings-panel";
+import { FeedbackDialog } from "@/zap/components/app/sidebar/feedback-dialog/feedback-dialog";
+import { AISettingsSheet } from "@/zap/components/ai/settings-panel/settings-panel";
 
 export function NavSecondary({
   ...props

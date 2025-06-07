@@ -23,23 +23,28 @@ export async function POST(req: Request) {
           catch: () => new Error("Unauthorized"),
         }),
       );
+
       if (!session) {
         return Response.json({ error: "Unauthorized" }, { status: 401 });
       }
+
       const unvalidatedBody = yield* _(
         Effect.tryPromise({
           try: () => req.json(),
           catch: () => new Error("Invalid JSON body"),
         }),
       );
+
       const body = BodySchema.parse(unvalidatedBody);
       const { provider } = body;
+
       const { apiKey, model } = yield* _(
         Effect.tryPromise({
           try: () => getAISettings(session.user.id, body.provider),
           catch: () => new Error("Failed to get AI settings"),
         }),
       );
+
       const result = streamText({
         model: getModel(provider, apiKey, model),
         messages: body.messages,
@@ -51,6 +56,7 @@ export async function POST(req: Request) {
         stopSequences: SETTINGS.AI.CHAT?.STOP_SEQUENCES,
         maxRetries: SETTINGS.AI.CHAT?.MAX_RETRIES,
       });
+
       return result.toDataStreamResponse();
     }).pipe(
       Effect.catchAll((err) =>

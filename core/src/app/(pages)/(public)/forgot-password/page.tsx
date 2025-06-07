@@ -58,12 +58,12 @@ export default function ForgotPasswordPage() {
     })
       .pipe(
         Effect.match({
-          onFailure: () => {
-            toast.error("An error occurred while sending the reset link.");
-          },
           onSuccess: () => {
             toast.success("Check your email for the reset link!");
             startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
+          },
+          onFailure: () => {
+            toast.error("An error occurred while sending the reset link.");
           },
         }),
       )
@@ -71,6 +71,7 @@ export default function ForgotPasswordPage() {
       .catch(() => {
         toast.error("An error occurred while sending the reset link.");
       });
+
     setSubmitting(false);
   }
 

@@ -17,16 +17,20 @@ export async function POST(req: Request) {
           catch: () => false,
         }),
       );
+
       if (!isAdmin) {
         return Response.json({ error: "Unauthorized" }, { status: 401 });
       }
+
       const unvalidatedBody = yield* _(
         Effect.tryPromise({
           try: () => req.json(),
           catch: () => new Error("Invalid JSON body"),
         }),
       );
+
       const body = SendMailSchema.parse(unvalidatedBody);
+
       const data = yield* _(
         Effect.tryPromise({
           try: () =>
@@ -37,6 +41,7 @@ export async function POST(req: Request) {
           catch: (error) => error,
         }),
       );
+
       return Response.json(data, { status: 200 });
     }).pipe(
       Effect.catchAll((err) =>

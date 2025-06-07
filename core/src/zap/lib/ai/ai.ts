@@ -2,29 +2,36 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { createMistral } from "@ai-sdk/mistral";
 import { AI_PROVIDERS_OBJECT } from "@/zap/data/ai";
 import { AIProviderId, ModelName } from "@/zap/types/ai.types";
+import { Effect } from "effect";
 
 export const getModel = (
   provider: AIProviderId,
   apiKey: string,
   modelName: ModelName,
-) => {
-  const openAI = createOpenAI({ apiKey });
-  const mistral = createMistral({ apiKey });
+) =>
+  Effect.gen(function* () {
+    const openAI = createOpenAI({ apiKey });
+    const mistral = createMistral({ apiKey });
 
-  let model = null;
-  switch (provider) {
-    case "openai":
-      model = openAI(modelName);
-      break;
-    case "mistral":
-      model = mistral(modelName);
-      break;
-    default:
-      throw new Error("Invalid provider");
-  }
+    const model = yield* Effect.try({
+      try: () => {
+        switch (provider) {
+          case "openai":
+            return openAI(modelName);
+          case "mistral":
+            return mistral(modelName);
+          default:
+            throw new Error(`Invalid provider: ${provider}`);
+        }
+      },
+      catch: (error) =>
+        new Error(
+          `Failed to create model ${modelName} for provider ${provider}: ${error}`,
+        ),
+    });
 
-  return model;
-};
+    return model;
+  });
 
 export const getProviderName = (provider: AIProviderId) => {
   return (

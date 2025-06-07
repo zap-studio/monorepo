@@ -84,6 +84,7 @@ export function usePushNotifications() {
     await Effect.runPromise(
       Effect.gen(function* (_) {
         usePushNotificationsStore.setState({ isSubscribed: true });
+
         const registration = yield* _(
           Effect.tryPromise({
             try: () => navigator.serviceWorker.ready,
@@ -92,6 +93,7 @@ export function usePushNotifications() {
             },
           }),
         );
+
         const sub = yield* _(
           Effect.tryPromise({
             try: () =>
@@ -106,14 +108,14 @@ export function usePushNotifications() {
             },
           }),
         );
+
         usePushNotificationsStore.setState({ subscription: sub });
         const serializedSub = sub.toJSON();
+
         yield* _(
           Effect.tryPromise({
             try: () => subscribeTrigger({ subscription: serializedSub }),
-            catch: () => {
-              throw new Error("Failed to trigger subscribe");
-            },
+            catch: (e) => e,
           }),
         );
       }).pipe(
@@ -139,6 +141,7 @@ export function usePushNotifications() {
           subscription: null,
           isSubscribed: false,
         });
+
         yield* _(
           Effect.tryPromise({
             try: () => subscription.unsubscribe(),
@@ -147,6 +150,7 @@ export function usePushNotifications() {
             },
           }),
         );
+
         yield* _(
           Effect.tryPromise({
             try: () => unsubscribeTrigger(),

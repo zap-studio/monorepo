@@ -5,6 +5,7 @@ import { ForgotPasswordEmail } from "@/zap/components/emails/forgot-password";
 import { VerificationEmail } from "@/zap/components/emails/verification";
 import { JSX } from "react";
 import { MagicLinkEmail } from "@/zap/components/emails/magic-link";
+import { Effect } from "effect";
 
 const from = "Zap.ts <hello@mail.alexandretrotel.org>";
 
@@ -19,18 +20,28 @@ export const sendForgotPasswordMail = async ({
   recipients,
   url,
 }: ForgotPasswordEmailProps) => {
-  const { data, error } = await resend.emails.send({
-    from,
-    to: recipients,
-    subject,
-    react: ForgotPasswordEmail({ url }),
-  });
+  return Effect.gen(function* (_) {
+    const { data, error } = yield* _(
+      Effect.tryPromise({
+        try: () =>
+          resend.emails.send({
+            from,
+            to: recipients,
+            subject,
+            react: ForgotPasswordEmail({ url }),
+          }),
+        catch: (e) => e,
+      }),
+    );
 
-  if (error) {
-    throw error;
-  }
+    if (error) {
+      return yield* _(Effect.fail(error));
+    }
 
-  return data;
+    return data;
+  }).pipe(
+    Effect.catchAll((error) => Effect.succeed({ success: false, error })),
+  );
 };
 
 export const sendVerificationEmail = async ({
@@ -38,18 +49,28 @@ export const sendVerificationEmail = async ({
   recipients,
   url,
 }: ForgotPasswordEmailProps) => {
-  const { data, error } = await resend.emails.send({
-    from,
-    to: recipients,
-    subject,
-    react: VerificationEmail({ url }),
-  });
+  return Effect.gen(function* (_) {
+    const { data, error } = yield* _(
+      Effect.tryPromise({
+        try: () =>
+          resend.emails.send({
+            from,
+            to: recipients,
+            subject,
+            react: VerificationEmail({ url }),
+          }),
+        catch: (e) => e,
+      }),
+    );
 
-  if (error) {
-    throw error;
-  }
+    if (error) {
+      return yield* _(Effect.fail(error));
+    }
 
-  return data;
+    return data;
+  }).pipe(
+    Effect.catchAll((error) => Effect.succeed({ success: false, error })),
+  );
 };
 
 interface SendMailProps {
@@ -58,20 +79,34 @@ interface SendMailProps {
   react?: JSX.Element;
 }
 
-export async function sendMail({ subject, recipients, react }: SendMailProps) {
-  const { data, error } = await resend.emails.send({
-    from,
-    to: recipients,
-    subject,
-    react,
-  });
+export const sendMail = async ({
+  subject,
+  recipients,
+  react,
+}: SendMailProps) => {
+  return Effect.gen(function* (_) {
+    const { data, error } = yield* _(
+      Effect.tryPromise({
+        try: () =>
+          resend.emails.send({
+            from,
+            to: recipients,
+            subject,
+            react,
+          }),
+        catch: (e) => e,
+      }),
+    );
 
-  if (error) {
-    throw error;
-  }
+    if (error) {
+      return yield* _(Effect.fail(error));
+    }
 
-  return data;
-}
+    return data;
+  }).pipe(
+    Effect.catchAll((error) => Effect.succeed({ success: false, error })),
+  );
+};
 
 export const sendMagicLinkEmail = async ({
   subject,
@@ -82,18 +117,26 @@ export const sendMagicLinkEmail = async ({
   recipients: string[];
   url: string;
 }) => {
-  const from = "Zap.ts <hello@mail.alexandretrotel.org>";
+  return Effect.gen(function* (_) {
+    const { data, error } = yield* _(
+      Effect.tryPromise({
+        try: () =>
+          resend.emails.send({
+            from,
+            to: recipients,
+            subject,
+            react: MagicLinkEmail({ url }),
+          }),
+        catch: (e) => e,
+      }),
+    );
 
-  const { data, error } = await resend.emails.send({
-    from,
-    to: recipients,
-    subject,
-    react: MagicLinkEmail({ url }),
-  });
+    if (error) {
+      return yield* _(Effect.fail(error));
+    }
 
-  if (error) {
-    throw error;
-  }
-
-  return data;
+    return data;
+  }).pipe(
+    Effect.catchAll((error) => Effect.succeed({ success: false, error })),
+  );
 };
