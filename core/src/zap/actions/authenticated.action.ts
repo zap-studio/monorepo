@@ -4,7 +4,7 @@ import { auth } from "@/zap/lib/auth/server";
 import { headers } from "next/headers";
 import { Effect } from "effect";
 
-export const getSession = () => {
+export const getSession = async () => {
   return Effect.tryPromise({
     try: async () => {
       const headersList = await headers();
@@ -15,8 +15,9 @@ export const getSession = () => {
 };
 
 export const isAuthenticated = async () => {
-  Effect.gen(function* (_) {
-    const session = yield* _(getSession());
+  return Effect.gen(function* (_) {
+    const sessionEffect = yield* _(Effect.promise(() => getSession()));
+    const session = yield* _(sessionEffect);
 
     if (!session) {
       return false;
@@ -29,22 +30,24 @@ export const isAuthenticated = async () => {
 };
 
 export const getUserId = async () => {
-  Effect.gen(function* (_) {
-    const session = yield* _(getSession());
+  return Effect.runPromise(
+    Effect.gen(function* (_) {
+      const sessionEffect = yield* _(Effect.promise(() => getSession()));
+      const session = yield* _(sessionEffect);
 
-    if (!session) {
-      return yield* _(Effect.fail(new Error("User not authenticated")));
-    }
+      if (!session) {
+        return yield* _(Effect.fail(new Error("User not authenticated")));
+      }
 
-    return session.user.id;
-  }).pipe(
-    Effect.catchAll((error) => Effect.succeed({ success: false, error })),
+      return session.user.id;
+    }),
   );
 };
 
-export const isUserAdmin = () => {
+export const isUserAdmin = async () => {
   return Effect.gen(function* (_) {
-    const session = yield* _(getSession());
+    const sessionEffect = yield* _(Effect.promise(() => getSession()));
+    const session = yield* _(sessionEffect);
 
     if (!session) {
       return false;

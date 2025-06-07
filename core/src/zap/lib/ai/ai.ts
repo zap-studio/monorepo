@@ -8,30 +8,33 @@ export const getModel = (
   provider: AIProviderId,
   apiKey: string,
   modelName: ModelName,
-) =>
-  Effect.gen(function* () {
-    const openAI = createOpenAI({ apiKey });
-    const mistral = createMistral({ apiKey });
+) => {
+  return Effect.runSync(
+    Effect.gen(function* () {
+      const openAI = createOpenAI({ apiKey });
+      const mistral = createMistral({ apiKey });
 
-    const model = yield* Effect.try({
-      try: () => {
-        switch (provider) {
-          case "openai":
-            return openAI(modelName);
-          case "mistral":
-            return mistral(modelName);
-          default:
-            throw new Error(`Invalid provider: ${provider}`);
-        }
-      },
-      catch: (error) =>
-        new Error(
-          `Failed to create model ${modelName} for provider ${provider}: ${error}`,
-        ),
-    });
+      const model = yield* Effect.try({
+        try: () => {
+          switch (provider) {
+            case "openai":
+              return openAI(modelName);
+            case "mistral":
+              return mistral(modelName);
+            default:
+              throw new Error(`Invalid provider: ${provider}`);
+          }
+        },
+        catch: (error) =>
+          new Error(
+            `Failed to create model ${modelName} for provider ${provider}: ${error}`,
+          ),
+      });
 
-    return model;
-  });
+      return model;
+    }),
+  );
+};
 
 export const getProviderName = (provider: AIProviderId) => {
   return (
