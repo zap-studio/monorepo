@@ -11,9 +11,11 @@
     "react",
     "tailwindcss",
     "drizzle",
-    "bun"
+    "bun",
+    "boilerplate",
+    "starter-kit"
   ],
-  "version": "1.2.12",
+  "version": "1.2.13",
   "module": "index.ts",
   "type": "module",
   "private": false,
