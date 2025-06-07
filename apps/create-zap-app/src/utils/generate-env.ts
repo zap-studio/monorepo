@@ -64,8 +64,8 @@ export const generateEnv = async (outputDir: string): Promise<void> => {
         case "BETTER_AUTH_URL":
           return `${envVar}="http://localhost:3000"`;
 
-        case "NOTION_API_HEADERS":
-          return `${envVar}='{"Authorization": "Bearer ntn_your_token", "Notion-Version": "2022-06-28"}'`;
+        case "MCP_NOTION_API_HEADERS":
+          return `${envVar}='{"Authorization": "Bearer ntn_your_token"}'`;
 
         default:
           return `${envVar}="your_${envVar.toLowerCase()}_here"`;
