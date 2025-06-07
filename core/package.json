@@ -119,6 +119,7 @@
     "drizzle-kit": "^0.30.6",
     "eslint": "^9.28.0",
     "eslint-config-next": "15.2.2",
+    "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-drizzle": "^0.2.3",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "prettier": "^3.5.3",
