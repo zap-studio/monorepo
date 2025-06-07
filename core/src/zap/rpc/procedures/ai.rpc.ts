@@ -7,6 +7,7 @@ import { and, eq } from "drizzle-orm";
 import { $fetch } from "@/lib/fetch";
 import { z } from "zod/v4";
 import { Effect } from "effect";
+import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
 
 const InputGetAPIKeySchema = z.object({
   provider: AIProviderIdSchema,
@@ -24,17 +25,10 @@ const getAISettings = base
         const result = yield* _(
           Effect.tryPromise({
             try: () =>
-              db
-                .select()
-                .from(userAISettings)
-                .where(
-                  and(
-                    eq(userAISettings.userId, userId),
-                    eq(userAISettings.provider, provider),
-                  ),
-                )
-                .limit(1)
-                .execute(),
+              getApiSettingsForUserAndProviderQuery.execute({
+                userId,
+                provider,
+              }),
             catch: (e) => e,
           }),
         );
@@ -78,17 +72,10 @@ const saveAISettings = base
         const existingSettings = yield* _(
           Effect.tryPromise({
             try: () =>
-              db
-                .select()
-                .from(userAISettings)
-                .where(
-                  and(
-                    eq(userAISettings.userId, userId),
-                    eq(userAISettings.provider, provider),
-                  ),
-                )
-                .limit(1)
-                .execute(),
+              getApiSettingsForUserAndProviderQuery.execute({
+                userId,
+                provider,
+              }),
             catch: (e) => e,
           }),
         );
@@ -139,7 +126,11 @@ const updateAISettings = base
 
         const existingSettings = yield* _(
           Effect.tryPromise({
-            try: () => db.select().from(userAISettings).execute(),
+            try: () =>
+              getApiSettingsForUserAndProviderQuery.execute({
+                userId,
+                provider,
+              }),
             catch: (e) => e,
           }),
         );
@@ -223,17 +214,10 @@ const saveOrUpdateAISettings = base
         const existingSettings = yield* _(
           Effect.tryPromise({
             try: () =>
-              db
-                .select()
-                .from(userAISettings)
-                .where(
-                  and(
-                    eq(userAISettings.userId, userId),
-                    eq(userAISettings.provider, provider),
-                  ),
-                )
-                .limit(1)
-                .execute(),
+              getApiSettingsForUserAndProviderQuery.execute({
+                userId,
+                provider,
+              }),
             catch: (e) => e,
           }),
         );

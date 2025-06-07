@@ -1,6 +1,7 @@
 import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
-import { user } from "@/zap/db/schema/auth.sql";
+import { getLastEmailSentAtQuery } from "@/zap/db/queries/emails.query";
+import { user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Effect } from "effect";
 
@@ -9,13 +10,7 @@ export async function canSendEmail(userId: string) {
     Effect.gen(function* (_) {
       const userRecords = yield* _(
         Effect.tryPromise({
-          try: () =>
-            db
-              .select({ lastEmailSentAt: user.lastEmailSentAt })
-              .from(user)
-              .where(eq(user.id, userId))
-              .limit(1)
-              .execute(),
+          try: () => getLastEmailSentAtQuery.execute({ userId }),
           catch: (e) => e,
         }),
       );

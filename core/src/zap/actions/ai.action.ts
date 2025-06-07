@@ -1,11 +1,9 @@
 "use server";
 
-import { db } from "@/db";
-import { userAISettings } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
 import { decrypt } from "../lib/crypto/crypto";
-import { AIProviderId } from "../types/ai.types";
+import { AIProviderId } from "@/zap/types/ai.types";
 import { Effect } from "effect";
+import { getApiSettingsForUserAndProviderQuery } from "../db/queries/ai.query";
 
 export const getAISettings = async (userId: string, provider: AIProviderId) => {
   return Effect.runPromise(
@@ -13,17 +11,10 @@ export const getAISettings = async (userId: string, provider: AIProviderId) => {
       const apiKeyRecords = yield* _(
         Effect.tryPromise({
           try: () =>
-            db
-              .select()
-              .from(userAISettings)
-              .where(
-                and(
-                  eq(userAISettings.userId, userId),
-                  eq(userAISettings.provider, provider),
-                ),
-              )
-              .limit(1)
-              .execute(),
+            getApiSettingsForUserAndProviderQuery.execute({
+              userId,
+              provider,
+            }),
           catch: (e) => e,
         }),
       );

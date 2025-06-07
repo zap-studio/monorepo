@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod/v4";
 import { Effect } from "effect";
+import { getPushNotificationsByUserQuery } from "@/zap/db/queries/push-notifications.query";
 
 const subscribeSchema = z.object({
   subscription: z.object({
@@ -57,12 +58,7 @@ export async function POST(req: Request) {
 
       const existingSubscription = yield* _(
         Effect.tryPromise({
-          try: () =>
-            db.query.pushNotifications
-              .findFirst({
-                where: eq(pushNotifications.userId, userId),
-              })
-              .execute(),
+          try: () => getPushNotificationsByUserQuery.execute({ userId }),
           catch: () => null,
         }),
       );

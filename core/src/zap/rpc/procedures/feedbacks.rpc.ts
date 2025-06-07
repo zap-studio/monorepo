@@ -2,8 +2,11 @@ import { authMiddleware, base } from "@/rpc/middlewares";
 import { db } from "@/db";
 import { feedback as feedbackTable } from "@/db/schema";
 import { FeedbackSchema } from "@/zap/schemas/feedback.schema";
-import { eq } from "drizzle-orm";
 import { Effect } from "effect";
+import {
+  getAverageRatingQuery,
+  getFeedbackForUserQuery,
+} from "@/zap/db/queries/feedbacks.query";
 
 const submit = base
   .use(authMiddleware)
@@ -43,13 +46,7 @@ const getUserFeedback = base
 
         const existingFeedback = yield* _(
           Effect.tryPromise({
-            try: () =>
-              db
-                .select()
-                .from(feedbackTable)
-                .where(eq(feedbackTable.userId, userId))
-                .limit(1)
-                .execute(),
+            try: () => getFeedbackForUserQuery.execute({ userId }),
             catch: (e) => e,
           }),
         );
@@ -64,13 +61,7 @@ const getAverageRating = base.handler(async () => {
     Effect.gen(function* (_) {
       const feedbacks = yield* _(
         Effect.tryPromise({
-          try: () =>
-            db
-              .select({
-                rating: feedbackTable.rating,
-              })
-              .from(feedbackTable)
-              .execute(),
+          try: () => getAverageRatingQuery.execute(),
           catch: (e) => e,
         }),
       );
