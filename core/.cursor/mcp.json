@@ -11,7 +11,7 @@
         "ghcr.io/github/github-mcp-server"
       ],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:github_token}"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:MCP_GITHUB_PERSONAL_ACCESS_TOKEN}"
       }
     },
     "Neon": {
@@ -20,7 +20,7 @@
     },
     "resend": {
       "type": "command",
-      "command": "node ABSOLUTE_PATH_TO_MCP_SEND_EMAIL_PROJECT/build/index.js --key=YOUR_RESEND_API_KEY --sender=YOUR_SENDER_EMAIL"
+      "command": "node ABSOLUTE_PATH_TO_MCP_SEND_EMAIL_PROJECT/build/index.js"
     },
     "posthog": {
       "command": "npx",
@@ -29,10 +29,10 @@
         "mcp-remote@latest",
         "https://mcp.posthog.com/sse",
         "--header",
-        "Authorization:${POSTHOG_AUTH_HEADER}"
+        "Authorization:${env:MCP_POSTHOG_AUTH_HEADER}"
       ],
       "env": {
-        "POSTHOG_AUTH_HEADER": "Bearer {INSERT_YOUR_PERSONAL_API_KEY_HERE}"
+        "POSTHOG_AUTH_HEADER": "${env:MCP_POSTHOG_AUTH_HEADER}"
       }
     },
     "supabase": {
@@ -41,25 +41,28 @@
         "-y",
         "@supabase/mcp-server-supabase@latest",
         "--access-token",
-        "<personal-access-token>"
+        "${env:MCP_SUPABASE_ACCESS_TOKEN}"
       ]
     },
     "@21st-dev/magic": {
       "command": "npx",
-      "args": ["-y", "@21st-dev/magic@latest", "API_KEY=\"your-api-key\""]
+      "args": ["-y", "@21st-dev/magic@latest"],
+      "env": {
+        "MAGIC_API_KEY": "${env:MCP_MAGIC_API_KEY}"
+      }
     },
     "mcp-server-firecrawl": {
       "command": "npx",
       "args": ["-y", "firecrawl-mcp"],
       "env": {
-        "FIRECRAWL_API_KEY": "YOUR_API_KEY"
+        "FIRECRAWL_API_KEY": "${env:MCP_FIRECRAWL_API_KEY}"
       }
     },
     "notionApi": {
       "command": "npx",
       "args": ["-y", "@notionhq/notion-mcp-server"],
       "env": {
-        "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer ntn_****\", \"Notion-Version\": \"2022-06-28\" }"
+        "OPENAPI_MCP_HEADERS": "${env:MCP_NOTION_API_HEADERS}"
       }
     },
     "perplexity-ask": {
@@ -73,14 +76,14 @@
         "mcp/perplexity-ask"
       ],
       "env": {
-        "PERPLEXITY_API_KEY": "YOUR_API_KEY_HERE"
+        "PERPLEXITY_API_KEY": "${env:MCP_PERPLEXITY_API_KEY}"
       }
     },
     "ElevenLabs": {
       "command": "uvx",
       "args": ["elevenlabs-mcp"],
       "env": {
-        "ELEVENLABS_API_KEY": "<insert-your-api-key-here>"
+        "ELEVENLABS_API_KEY": "${env:MCP_ELEVENLABS_API_KEY}"
       }
     },
     "sentry": {
@@ -88,8 +91,8 @@
       "args": [
         "-y",
         "@sentry/mcp-server@latest",
-        "--access-token=sentry-user-token",
-        "--host=sentry.example.com"
+        "--access-token=${env:MCP_SENTRY_ACCESS_TOKEN}",
+        "--host=${env:MCP_SENTRY_HOST}"
       ]
     }
   }

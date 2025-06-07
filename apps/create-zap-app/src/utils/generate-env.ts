@@ -17,6 +17,16 @@ const coreEnv = [
   "NEXT_PUBLIC_POSTHOG_KEY",
   "NEXT_PUBLIC_POSTHOG_HOST",
   "ENCRYPTION_KEY",
+  "MCP_GITHUB_PERSONAL_ACCESS_TOKEN",
+  "MCP_POSTHOG_AUTH_HEADER",
+  "MCP_SUPABASE_ACCESS_TOKEN",
+  "MCP_MAGIC_API_KEY",
+  "MCP_FIRECRAWL_API_KEY",
+  "MCP_NOTION_API_HEADERS",
+  "MCP_PERPLEXITY_API_KEY",
+  "MCP_ELEVENLABS_API_KEY",
+  "MCP_SENTRY_ACCESS_TOKEN",
+  "MCP_SENTRY_HOST",
 ];
 
 /**
@@ -44,20 +54,22 @@ export const generateEnv = async (outputDir: string): Promise<void> => {
   // Generate .env.local content
   const envContent = coreEnv
     .map((envVar) => {
-      if (envVar === "BETTER_AUTH_SECRET") {
-        const betterAuthSecret = generateAuthSecret();
-        return `${envVar}="${betterAuthSecret}"`;
-      }
+      switch (envVar) {
+        case "BETTER_AUTH_SECRET":
+          return `${envVar}="${generateAuthSecret()}"`;
 
-      if (envVar === "DATABASE_URL") {
-        return `${envVar}="postgresql://fake_user:fake_password@ep-example-database.us-west-1.aws.neon.tech/fake_db?sslmode=require"`;
-      }
+        case "DATABASE_URL":
+          return `${envVar}="postgresql://fake_user:fake_password@ep-example-database.us-west-1.aws.neon.tech/fake_db?sslmode=require"`;
 
-      if (envVar === "BETTER_AUTH_URL") {
-        return `${envVar}="http://localhost:3000"`;
-      }
+        case "BETTER_AUTH_URL":
+          return `${envVar}="http://localhost:3000"`;
 
-      return `${envVar}="your_${envVar.toLowerCase()}_here"`;
+        case "NOTION_API_HEADERS":
+          return `${envVar}='{"Authorization": "Bearer ntn_your_token", "Notion-Version": "2022-06-28"}'`;
+
+        default:
+          return `${envVar}="your_${envVar.toLowerCase()}_here"`;
+      }
     })
     .join("\n");
 
