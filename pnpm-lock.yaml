@@ -9,7 +9,7 @@ importers:
   .:
     devDependencies:
       turbo:
-        specifier: ^1.12.4
+        specifier: ^1.13.4
         version: 1.13.4
 
   apps/create-zap-app:
