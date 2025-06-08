@@ -75,7 +75,6 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
-    "drizzle": "^1.4.0",
     "drizzle-orm": "^0.44.2",
     "effect": "^3.16.4",
     "embla-carousel-react": "^8.6.0",
