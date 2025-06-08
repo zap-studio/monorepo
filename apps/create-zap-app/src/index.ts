@@ -18,8 +18,8 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
   return Effect.gen(function* (_) {
     console.log(
       chalk.bold.cyan(
-        "\n🚀 Welcome to create-zap-app! Let's build something awesome.\n",
-      ),
+        "\n🚀 Welcome to create-zap-app! Let's build something awesome.\n"
+      )
     );
 
     // Prompt for project name with validation
@@ -44,7 +44,7 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
             },
           ]),
         catch: (e) => new Error(`Prompt failed: ${String(e)}`),
-      }),
+      })
     );
     const projectName = projectResponse.projectName;
 
@@ -57,13 +57,13 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
               type: "list",
               name: "packageManager",
               message: chalk.yellow(
-                "Which package manager do you want to use?",
+                "Which package manager do you want to use?"
               ),
               choices: ["npm", "yarn", "pnpm"],
             },
           ]),
         catch: (e) => new Error(`Prompt failed: ${String(e)}`),
-      }),
+      })
     );
     let packageManager =
       packageManagerResponse.packageManager as PackageManager;
@@ -78,11 +78,11 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
         try: () => fs.ensureDir(outputDir),
         catch: () => {
           spinner.fail(
-            `Failed to create project directory. Please check your permissions and try again.`,
+            `Failed to create project directory. Please check your permissions and try again.`
           );
           process.exit(1);
         },
-      }),
+      })
     );
 
     // Download core template from GitHub
@@ -153,20 +153,30 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
             }
           }
 
+          // Remove packageManager field from package.json if it exists
+          const packageJsonPath = path.join(outputDir, "package.json");
+          if (fs.existsSync(packageJsonPath)) {
+            const packageJson = await fs.readJson(packageJsonPath);
+            if (packageJson.packageManager) {
+              delete packageJson.packageManager;
+              await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
+            }
+          }
+
           spinner.succeed("Zap.ts template downloaded and extracted.");
         },
         catch: () => {
           spinner.fail(
-            `Failed to download or extract template. Please check your internet connection and try again.`,
+            `Failed to download or extract template. Please check your internet connection and try again.`
           );
           process.exit(1);
         },
-      }),
+      })
     );
 
     // Install dependencies with retry mechanism using Effect
     function installWithRetry(
-      packageManager: PackageManager,
+      packageManager: PackageManager
     ): Effect.Effect<PackageManager, never, never> {
       spinner.text = `Installing dependencies with ${packageManager}...`;
       spinner.start();
@@ -189,7 +199,7 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
           Effect.tryPromise({
             try: () => {
               spinner.fail(
-                `Failed to install dependencies with ${packageManager}.`,
+                `Failed to install dependencies with ${packageManager}.`
               );
               return promptPackageManager(packageManager);
             },
@@ -197,10 +207,10 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
           }).pipe(
             Effect.catchAll(() => installWithRetry(packageManager)),
             Effect.flatMap((newPackageManager) =>
-              installWithRetry(newPackageManager as PackageManager),
-            ),
-          ),
-        ),
+              installWithRetry(newPackageManager as PackageManager)
+            )
+          )
+        )
       );
     }
 
@@ -215,7 +225,7 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
         try: () => execAsync(`${packageManager} update`, { cwd: outputDir }),
         catch: () =>
           spinner.warn(`Failed to update dependencies, continuing anyway...`),
-      }),
+      })
     );
     spinner.succeed("Dependencies updated.");
 
@@ -228,7 +238,7 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
           execAsync(`${packageManager} run format`, { cwd: outputDir }),
         catch: () =>
           spinner.warn(`Failed to run Prettier, continuing anyway...`),
-      }),
+      })
     );
     spinner.succeed("Prettier formatting complete.");
 
@@ -240,7 +250,7 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
         try: () => generateEnv(outputDir),
         catch: () =>
           spinner.warn(`Failed to generate .env file, continuing anyway...`),
-      }),
+      })
     );
     spinner.succeed(".env file generated.");
 
@@ -250,8 +260,8 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
     console.log("");
     console.log(
       chalk.yellow(
-        "⚠️ After installation, please ensure you populate the .env file with the required values to get started.",
-      ),
+        "⚠️ After installation, please ensure you populate the .env file with the required values to get started."
+      )
     );
     console.log("");
     console.log(chalk.cyan("Get started:"));
@@ -260,15 +270,15 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
 
     console.log(
       chalk.magentaBright(
-        "🌟 If you like this project, consider giving it a star on GitHub!",
-      ),
+        "🌟 If you like this project, consider giving it a star on GitHub!"
+      )
     );
     console.log(chalk.white("👉 https://github.com/alexandretrotel/zap.ts\n"));
   });
 }
 
 function createProcedureEffect(
-  procedureName: string,
+  procedureName: string
 ): Effect.Effect<void, unknown, never> {
   return Effect.gen(function* (_) {
     const projectDir = process.cwd();
@@ -284,7 +294,7 @@ function createProcedureEffect(
     const procedurePath = path.join(
       projectDir,
       "src/rpc/procedures",
-      `${kebabCaseName}.rpc.ts`,
+      `${kebabCaseName}.rpc.ts`
     );
     yield* _(
       Effect.tryPromise({
@@ -293,7 +303,7 @@ function createProcedureEffect(
           spinner.fail(`Failed to ensure procedure directory: ${String(e)}`);
           process.exit(1);
         },
-      }),
+      })
     );
 
     const procedureContent = `
@@ -311,7 +321,7 @@ export const ${procedureName} = base.handler(async () => {
           spinner.fail(`Failed to write procedure file: ${String(e)}`);
           process.exit(1);
         },
-      }),
+      })
     );
     spinner.succeed(`Created ${kebabCaseName}.rpc.ts`);
 
@@ -352,7 +362,7 @@ export const ${procedureName} = base.handler(async () => {
           spinner.fail(`Failed to save router.ts: ${String(e)}`);
           process.exit(1);
         },
-      }),
+      })
     );
     console.log(chalk.green(`Updated router.ts`));
 
@@ -360,7 +370,7 @@ export const ${procedureName} = base.handler(async () => {
     const hookPath = path.join(
       projectDir,
       "src/hooks",
-      `use-${kebabCaseName}.ts`,
+      `use-${kebabCaseName}.ts`
     );
     yield* _(
       Effect.tryPromise({
@@ -369,7 +379,7 @@ export const ${procedureName} = base.handler(async () => {
           spinner.fail(`Failed to ensure hook directory: ${String(e)}`);
           process.exit(1);
         },
-      }),
+      })
     );
 
     const capitalizedProcedureName =
@@ -393,7 +403,7 @@ export const use${capitalizedProcedureName} = () => {
           spinner.fail(`Failed to write hook file: ${String(e)}`);
           process.exit(1);
         },
-      }),
+      })
     );
     console.log(chalk.green(`Created use-${kebabCaseName}.ts`));
 
@@ -407,12 +417,12 @@ export const use${capitalizedProcedureName} = () => {
           spinner.fail(`Failed to format files: ${String(e)}`);
           process.exit(1);
         },
-      }),
+      })
     );
     spinner.succeed("Files formatted.");
 
     console.log(
-      chalk.green(`Successfully created ${procedureName} procedure!`),
+      chalk.green(`Successfully created ${procedureName} procedure!`)
     );
     console.log(chalk.cyan("\nFiles created:"));
     console.log(chalk.white(`- src/rpc/procedures/${kebabCaseName}.rpc.ts`));
@@ -432,7 +442,7 @@ async function run() {
     await Effect.runPromise(mainEffect()).catch((error) => {
       console.error(
         chalk.bold.red("\n❌ An error occurred:"),
-        error?.message ?? error,
+        error?.message ?? error
       );
       process.exit(1);
     });
@@ -442,8 +452,8 @@ async function run() {
     console.log(chalk.white("  pnpm dlx create-zap-app # Create new project"));
     console.log(
       chalk.white(
-        "  pnpm dlx create-zap-app create procedure <name> # Create new procedure",
-      ),
+        "  pnpm dlx create-zap-app create procedure <name> # Create new procedure"
+      )
     );
     process.exit(1);
   }
