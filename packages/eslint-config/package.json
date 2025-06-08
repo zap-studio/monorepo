@@ -1,0 +1,12 @@
+{
+  "name": "@zap-ts/eslint-config",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Alexandre Trotel",
+  "license": "MIT",
+  "packageManager": "pnpm@10.12.1",
+  "dependencies": {
+    "eslint-config-turbo": "^2.5.4"
+  }
+}
