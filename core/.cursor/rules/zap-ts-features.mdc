@@ -165,4 +165,4 @@ export default function ChatPage() {
    ```typescript
    export const FLAGS = { ..., enableChat: false };
    ```
-3. Run `bun run format` and `bun run lint` to ensure compliance.
+3. Run `npm run format` and `npm run lint` to ensure compliance.

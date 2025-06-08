@@ -4,7 +4,7 @@ layout: home
 
 hero:
   name: "Zap.ts ⚡️"
-  tagline: "bunx create-zap-app@latest"
+  tagline: "npx create-zap-app@latest"
   actions:
     - theme: brand
       text: Get started

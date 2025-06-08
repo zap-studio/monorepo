@@ -108,7 +108,7 @@ SITE_URL=https://your-domain.com
 
 1. Build and start your app:
    ```bash
-   bun run build && bun run start
+   npm run build && npm run start
    ```
 2. Open `http://localhost:3000` in Chrome.
 3. Use Chrome DevTools:

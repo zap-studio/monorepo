@@ -4,12 +4,18 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "clean": "rm -rf .vitepress/dist",
+    "format": "prettier . --write"
   },
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "vitepress": "^1.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3"
   }
 }

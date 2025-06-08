@@ -11,7 +11,7 @@
     "react",
     "tailwindcss",
     "drizzle",
-    "bun",
+    "pnpm",
     "boilerplate",
     "starter-kit"
   ],
@@ -40,18 +40,27 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target node",
-    "start": "bun run dist/index.js"
+    "build": "tsc && tsup src/index.ts --format esm,cjs --dts --clean",
+    "clean": "rm -rf dist",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\""
   },
   "dependencies": {
+    "chalk": "^5.4.1",
+    "effect": "^3.16.4",
     "execa": "^9.5.2",
     "fs-extra": "^11.1.1",
     "inquirer": "^9.2.12",
-    "ts-morph": "^25.0.1"
+    "ora": "^8.2.0",
+    "ts-morph": "^25.0.1",
+    "zod": "^3.25.56"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
-    "@types/inquirer": "^9.0.7"
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.11.19",
+    "prettier": "^3.2.5",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
   },
   "peerDependencies": {
     "typescript": "^5"

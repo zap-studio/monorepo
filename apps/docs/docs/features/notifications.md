@@ -67,7 +67,7 @@ The assumed `push-notifications.store.ts` handles permission and subscription.
 
 ### Testing Push Notifications
 
-1. Run `bun run dev`.
+1. Run `npm run dev`.
 2. Visit `http://localhost:3000`, allow notifications in your browser, and check the console for subscription logs.
 3. Trigger a test push from your server.
 
@@ -86,7 +86,7 @@ Zap.ts includes placeholders for Resend and React Email to send emails easily.
 #### 1. Install Resend
 
 ```bash
-bun add resend @react-email/components
+npm install resend @react-email/components
 ```
 
 #### 2. Configure Resend
@@ -159,7 +159,7 @@ export async function POST(req: Request) {
 
 ### Testing Emails
 
-1. Run `bun run dev`.
+1. Run `npm run dev`.
 2. Trigger the email (e.g., via a signup API call).
 3. Check your inbox or Resend’s dashboard for delivery.
 

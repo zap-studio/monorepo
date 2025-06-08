@@ -11,7 +11,7 @@ This method deploys Zap.ts on Heroku using a standard Node.js dyno, suitable for
 - A Heroku account ([sign up here](https://www.heroku.com)).
 - The Heroku CLI installed locally (`npm install -g heroku` or download from [Heroku](https://devcenter.heroku.com/articles/heroku-cli)).
 - A Zap.ts project pushed to a Git repository (e.g., GitHub or Heroku’s Git).
-- Node.js and a package manager (e.g., bun, npm, yarn, or pnpm) installed locally.
+- Node.js and a package manager (e.g., npm, yarn, or pnpm) installed locally.
 
 ### Steps
 
@@ -20,20 +20,22 @@ This method deploys Zap.ts on Heroku using a standard Node.js dyno, suitable for
    - Clone your repo: `git clone <your-repository-url>`.
    - Install dependencies:
      ::: code-group
-     ```bash [bun]
-     bun install
-     ```
+
      ```bash [npm]
      npm install
      ```
+
      ```bash [yarn]
      yarn install
      ```
+
      ```bash [pnpm]
      pnpm install
      ```
+
      :::
-   - Test locally: `bun run build && bun run start`.
+
+   - Test locally: `npm run build && npm run start`.
 
 2. **Set Up Heroku**
 
@@ -93,20 +95,22 @@ This approach uses a custom Next.js Buildpack to fully support Zap.ts’s featur
    - Clone your repo: `git clone <your-repository-url>`.
    - Install dependencies:
      ::: code-group
-     ```bash [bun]
-     bun install
-     ```
+
      ```bash [npm]
      npm install
      ```
+
      ```bash [yarn]
      yarn install
      ```
+
      ```bash [pnpm]
      pnpm install
      ```
+
      :::
-   - Test locally: `bun run build && bun run start`.
+
+   - Test locally: `npm run build && npm run start`.
 
 2. **Create a Heroku App**
 

@@ -115,8 +115,8 @@ export const usePushNotificationsStore = create<PushNotificationsStore>()(
     (set) => ({
       // ... store data and functions
     }),
-    { name: "push-notifications" }
-  )
+    { name: "push-notifications" },
+  ),
 );
 ```
 

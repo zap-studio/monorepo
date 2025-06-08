@@ -7,7 +7,7 @@
 You can create a new Zap.ts project using your preferred package manager:
 
 ```sh
-bunx create-zap-app@latest
+npx create-zap-app@latest
 ```
 
 ## Check The Docs ⚡

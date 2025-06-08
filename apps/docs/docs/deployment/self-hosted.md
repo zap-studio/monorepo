@@ -9,7 +9,7 @@ The classic approach involves manually setting up a server and deploying Zap.ts 
 ### Prerequisites
 
 - A server (e.g., VPS from DigitalOcean, Linode, or Hetzner) with SSH access.
-- Git, Node.js (v18+), and a package manager (e.g., bun, npm, yarn, or pnpm) installed.
+- Git, Node.js (v18+), and a package manager (e.g., npm, yarn, or pnpm) installed.
 - (Optional) Docker for containerized deployment.
 - A domain name (optional) and NGINX or similar for reverse proxying.
 
@@ -20,7 +20,7 @@ The classic approach involves manually setting up a server and deploying Zap.ts 
    - SSH into your server: `ssh user@your-server-ip`.
    - Update the system: `sudo apt update && sudo apt upgrade -y` (Ubuntu/Debian).
    - Install Node.js: `curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt install -y nodejs`.
-   - Install a package manager (e.g., `npm install -g bun` for Bun).
+   - Install a package manager (e.g., `corepack enable pnpm` for pnpm).
 
 2. **Clone Zap.ts**
 
@@ -31,10 +31,6 @@ The classic approach involves manually setting up a server and deploying Zap.ts 
 
 3. **Install Dependencies**
    ::: code-group
-
-   ```bash [bun]
-   bun install
-   ```
 
    ```bash [npm]
    npm install
@@ -57,8 +53,8 @@ The classic approach involves manually setting up a server and deploying Zap.ts 
 
 5. **Build and Run**
 
-   - Build: `bun run build` (or equivalent).
-   - Start: `bun run start` (runs on port 3000 by default).
+   - Build: `npm run build` (or equivalent).
+   - Start: `npm run start` (runs on port 3000 by default).
 
 6. **Set Up Reverse Proxy (Optional)**
 
@@ -126,7 +122,7 @@ Coolify is an open-source, self-hosted Platform-as-a-Service (PaaS) that simplif
 
    - Coolify auto-detects Next.js settings:
      - **Build Pack**: Nixpacks (default).
-     - **Install Command**: Auto-detected (e.g., `bun install`).
+     - **Install Command**: Auto-detected (e.g., `npm install`).
      - **Build Command**: `next build`.
      - **Start Command**: `next start`.
    - Set the port (e.g., 3000) and add environment variables (e.g., `DATABASE_URL`).

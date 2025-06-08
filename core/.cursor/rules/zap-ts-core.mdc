@@ -58,7 +58,6 @@ The entry point and all configurations for Zap.ts are specified in [zap.config.t
 - oRPC API routes in `src/app/(api)/` for reusable endpoints.
 - Prefer Zustand stores in `src/zap/stores/` over `src/zap/providers/`.
 - Use shadcn/ui in `src/components/ui/` for UI consistency.
-- Minimize dependencies per `apps/core/bun.lock`.
 
 ### Tool Integration
 - **Drizzle ORM**: Schemas in `src/zap/db/schema/`; use `drizzle-orm`.
@@ -72,8 +71,8 @@ The entry point and all configurations for Zap.ts are specified in [zap.config.t
 - **Resend**: Emails in `src/zap/lib/resend/` and `src/zap/components/emails/`.
 
 ### Formatting and Linting
-- Run `bun run format` with `.prettierrc`.
-- Ensure ESLint compliance with [eslint.config.mjs](mdc:eslint.config.mjs) (`bun run lint`).
+- Run `npm run format` with `.prettierrc`.
+- Ensure ESLint compliance with [eslint.config.mjs](mdc:eslint.config.mjs) (`npm run lint`).
 
 ## Example of Directory Structure
 ```

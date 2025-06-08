@@ -19,9 +19,9 @@
     "format": "prettier --write .",
     "lint": "next lint",
     "mail:dev": "email dev",
-    "scan": "next dev --turbopack & bunx react-scan@latest localhost:3000",
+    "scan": "next dev --turbopack & npx react-scan@latest localhost:3000",
     "start": "next start",
-    "zap": "bunx create-zap-app@latest"
+    "zap": "npx create-zap-app@latest"
   },
   "dependencies": {
     "@ai-sdk/mistral": "^1.2.8",

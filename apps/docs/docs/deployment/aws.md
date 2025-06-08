@@ -9,7 +9,7 @@ This method involves manually setting up an AWS EC2 instance to host Zap.ts, off
 ### Prerequisites
 
 - An AWS account ([sign up here](https://aws.amazon.com)).
-- Git and a package manager (e.g., bun, npm, yarn, or pnpm) installed locally.
+- Git and a package manager (e.g., npm, yarn, or pnpm) installed locally.
 - A Zap.ts project pushed to a Git repository (e.g., GitHub).
 - (Optional) A domain name and Route 53 for DNS management.
 
@@ -27,7 +27,7 @@ This method involves manually setting up an AWS EC2 instance to host Zap.ts, off
    - SSH into your instance: `ssh -i your-key.pem ec2-user@your-ec2-public-ip`.
    - Update the system: `sudo yum update -y`.
    - Install Node.js: `curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash - && sudo yum install -y nodejs`.
-   - Install a package manager (e.g., `sudo npm install -g bun` for Bun).
+   - Install a package manager (e.g., `corepack enable pnpm` for pnpm).
 
 3. **Clone Zap.ts**
 
@@ -38,10 +38,6 @@ This method involves manually setting up an AWS EC2 instance to host Zap.ts, off
 
 4. **Install Dependencies**
    ::: code-group
-
-   ```bash [bun]
-   bun install
-   ```
 
    ```bash [npm]
    npm install
@@ -64,8 +60,8 @@ This method involves manually setting up an AWS EC2 instance to host Zap.ts, off
 
 6. **Build and Run**
 
-   - Build: `bun run build` (or equivalent).
-   - Start: `bun run start` (runs on port 3000).
+   - Build: `npm run build` (or equivalent).
+   - Start: `npm run start` (runs on port 3000).
 
 7. **Set Up a Reverse Proxy with NGINX (Optional)**
 
@@ -94,7 +90,7 @@ This method involves manually setting up an AWS EC2 instance to host Zap.ts, off
 
 ### Notes
 
-- Use PM2 for production stability: `sudo npm install -g pm2; pm2 start "bun run start" --name zap-ts`.
+- Use PM2 for production stability: `sudo npm install -g pm2; pm2 start "npm run start" --name zap-ts`.
 - Adjust security group rules in the AWS Console if needed (e.g., open port 80).
 
 ## AWS Amplify Deployment (Recommended)
@@ -114,20 +110,22 @@ AWS Amplify simplifies deployment with a managed CI/CD pipeline, global CDN, and
    - Clone your repo: `git clone <your-repository-url>`.
    - Install dependencies:
      ::: code-group
-     ```bash [bun]
-     bun install
-     ```
+
      ```bash [npm]
      npm install
      ```
+
      ```bash [yarn]
      yarn install
      ```
+
      ```bash [pnpm]
      pnpm install
      ```
+
      :::
-   - Test locally: `bun run build && bun run start`.
+
+   - Test locally: `npm run build && npm run start`.
 
 2. **Push to Git Repository**
 

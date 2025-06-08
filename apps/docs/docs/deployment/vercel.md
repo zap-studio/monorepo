@@ -19,7 +19,7 @@ Before you begin, ensure you have the following:
 
 Ensure your Zap.ts project is ready for deployment:
 
-- Run `bun run build` (or your preferred package manager’s equivalent) locally to verify that your project builds successfully.
+- Run `npm run build` (or your preferred package manager’s equivalent) locally to verify that your project builds successfully.
 - Check your `.gitignore` file to ensure sensitive files (e.g., `.env`) are excluded from version control.
 - If your project uses environment variables (e.g., for Drizzle ORM with Neon Database or Better Auth), note them down—you’ll add them to Vercel later.
 
@@ -55,10 +55,6 @@ Vercel automatically detects that Zap.ts is a Next.js project and applies the ap
 - **Install Command**: Defaults to your package manager’s install command. For example:
 
   ::: code-group
-
-  ```bash [bun]
-  bun install
-  ```
 
   ```bash [npm]
   npm install

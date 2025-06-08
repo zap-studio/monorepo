@@ -15,6 +15,6 @@ alwaysApply: false
 - Add pages/routes in `src/app/(pages|api)/(public|auth-only)/chat/`.
 - Update `src/zap/rpc/router.ts` with new procedure.
 - Add feature flag in `src/data/settings.ts` (e.g., `FEATURE_FLAGS.enableChat = false`).
-- Run `bun run format` and `bun run lint`.
+- Run `npm run format` and `npm run lint` (prefer pnpm over npm if installed).
 
 Check [zap-ts-features.mdc](mdc:.cursor/rules/zap-ts-features.mdc) for more.

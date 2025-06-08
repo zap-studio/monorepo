@@ -68,8 +68,8 @@ export const useAIProviderStore = create<AIProviderStore>()(
     }),
     {
       name: "ai-provider-store",
-    }
-  )
+    },
+  ),
 );
 ```
 

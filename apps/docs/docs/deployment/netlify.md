@@ -19,19 +19,21 @@ This approach uses Netlify Functions to support Zap.ts’s full Next.js capabili
    - Clone your repo: `git clone <your-repository-url>`.
    - Install dependencies:
      ::: code-group
-     ```bash [bun]
-     bun install
-     ```
+
      ```bash [npm]
      npm install
      ```
+
      ```bash [yarn]
      yarn install
      ```
+
      ```bash [pnpm]
      pnpm install
      ```
+
      :::
+
    - Ensure your `next.config.js` is unmodified (no static export).
 
 2. **Add Netlify Configuration**

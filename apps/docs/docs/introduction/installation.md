@@ -8,10 +8,6 @@ You can install Zap.ts with a single command:
 
 ::: code-group
 
-```bash [bun]
-bunx create-zap-app@latest
-```
-
 ```bash [npm]
 npx create-zap-app@latest
 ```

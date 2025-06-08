@@ -190,13 +190,13 @@ Zap.ts provides a CLI command to generate new API procedures, including the proc
 Run the following command in your project directory to create a new procedure:
 
 ```bash
-bun run zap create procedure <procedureName>
+npm run zap create procedure <procedureName>
 ```
 
 Alternatively, you can use the full command:
 
 ```bash
-bunx create-zap-app@latest create procedure <procedureName>
+npx create-zap-app@latest create procedure <procedureName>
 ```
 
 Replace `<procedureName>` with your desired procedure name (e.g., `getUserData`).
@@ -212,7 +212,7 @@ This command:
 #### Example
 
 ```bash
-bun run zap create procedure getUserData
+npm run zap create procedure getUserData
 ```
 
 This generates:

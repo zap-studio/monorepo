@@ -38,7 +38,7 @@ export function SolutionSection() {
         </div>
 
         <CommandCard
-          command="bunx create-zap-app@latest"
+          command="npx create-zap-app@latest"
           description="One command sets up your entire project with all the best practices and tools already configured."
         />
       </div>
@@ -100,7 +100,7 @@ function CommandCard({
 
         <AnimatedSpan delay={1500} className="text-green-500">
           <span>
-            ✔ &apos;bun&apos; has been selected as the package manager.
+            ✔ &apos;pnpm&apos; has been selected as the package manager.
           </span>
         </AnimatedSpan>
 
@@ -112,12 +112,8 @@ function CommandCard({
           <span>✔ Installing dependencies.</span>
         </AnimatedSpan>
 
-        <AnimatedSpan delay={3000} className="text-green-500">
+        <AnimatedSpan delay={3000} className="text-blue-500">
           <span>✔ Running prettier on the project.</span>
-        </AnimatedSpan>
-
-        <AnimatedSpan delay={3500} className="text-blue-500">
-          <span>ℹ Added &apos;ai&apos; plugin.</span>
         </AnimatedSpan>
 
         <TypingAnimation delay={4000} className="text-muted-foreground">
