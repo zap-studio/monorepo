@@ -11,8 +11,6 @@
     "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.1",
-    "prettier": "^3.2.5",
     "turbo": "^1.12.4"
   }
 }
