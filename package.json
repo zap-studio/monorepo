@@ -14,9 +14,5 @@
     "@changesets/cli": "^2.27.1",
     "prettier": "^3.2.5",
     "turbo": "^1.12.4"
-  },
-  "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=10.0.0"
   }
 }
