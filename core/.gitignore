@@ -41,11 +41,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# lock files
 bun.lock
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
-Cargo.lock
-uv.lock
-target/**
-dist/**
