@@ -1,14 +1,23 @@
-import { RPCHandler, serve } from "@orpc/server/next";
+import { RPCHandler } from "@orpc/server/fetch";
 
 import { router } from "@/rpc/router";
 
 const handler = new RPCHandler(router);
 
-export const { GET, POST, PUT, PATCH, DELETE } = serve(handler, {
-  prefix: "/rpc",
-  context: async (req: Request) => {
-    return {
-      headers: req.headers,
-    };
-  },
-});
+async function handleRequest(request: Request) {
+  const { response } = await handler.handle(request, {
+    prefix: "/rpc",
+    context: {
+      headers: request.headers,
+    },
+  });
+
+  return response ?? new Response("Not found", { status: 404 });
+}
+
+export const HEAD = handleRequest;
+export const GET = handleRequest;
+export const POST = handleRequest;
+export const PUT = handleRequest;
+export const PATCH = handleRequest;
+export const DELETE = handleRequest;

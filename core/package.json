@@ -26,6 +26,7 @@
   "dependencies": {
     "@ai-sdk/mistral": "^1.2.8",
     "@ai-sdk/openai": "^1.3.22",
+    "@ai-sdk/react": "^1.2.12",
     "@better-fetch/fetch": "^1.1.18",
     "@bprogress/next": "^3.2.12",
     "@hookform/resolvers": "^4.1.3",
