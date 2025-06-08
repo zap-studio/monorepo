@@ -4,7 +4,6 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Geist as Font } from "next/font/google";
-import NextTopLoader from "nextjs-toploader";
 
 import { Toaster } from "@/components/ui/sonner";
 import { FLAGS } from "@/data/flags";
@@ -27,13 +26,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${font.className} antialiased`}>
         <Providers>
-          <NextTopLoader
-            color="#3B82F6"
-            showSpinner={false}
-            easing="ease"
-            height={3}
-          />
-
           {children}
 
           <Toaster />

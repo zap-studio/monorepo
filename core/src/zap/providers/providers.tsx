@@ -1,5 +1,6 @@
 "use client";
 
+import { ProgressProvider } from "@bprogress/next/app";
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { useEffect } from "react";
@@ -30,13 +31,20 @@ export default function Providers({ children }: ProvidersProps) {
       enableSystem
       disableTransitionOnChange
     >
-      {FLAGS.ENABLE_POSTHOG && (
-        <PHProvider client={posthog}>
-          <SuspendedPostHogPageView />
-          {children}
-        </PHProvider>
-      )}
-      {!FLAGS.ENABLE_POSTHOG && children}
+      <ProgressProvider
+        color="#3B82F6"
+        options={{ showSpinner: false }}
+        height="3px"
+        shallowRouting
+      >
+        {FLAGS.ENABLE_POSTHOG && (
+          <PHProvider client={posthog}>
+            <SuspendedPostHogPageView />
+            {children}
+          </PHProvider>
+        )}
+        {!FLAGS.ENABLE_POSTHOG && children}
+      </ProgressProvider>
     </ThemeProvider>
   );
 }

@@ -1,9 +1,9 @@
 "use client";
 
+import { useRouter } from "@bprogress/next/app";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Effect } from "effect";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "nextjs-toploader/app";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";

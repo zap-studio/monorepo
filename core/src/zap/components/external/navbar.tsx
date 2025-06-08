@@ -1,8 +1,8 @@
 "use client";
 
+import { useRouter } from "@bprogress/next/app";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRouter } from "nextjs-toploader/app";
 
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "@bprogress/next/app";
 import { Effect } from "effect";
 import {
   BadgeCheck,
@@ -11,7 +12,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "nextjs-toploader/app";
 import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
