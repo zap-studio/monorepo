@@ -12,5 +12,6 @@ updates:
       - "/packages/eslint-config"
       - "/apps/create-zap-app"
       - "/apps/docs"
+    open-pull-requests-limit: 5
     schedule:
       interval: "weekly"
