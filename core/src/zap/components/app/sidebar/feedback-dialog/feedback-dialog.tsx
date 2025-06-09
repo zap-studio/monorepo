@@ -1,6 +1,6 @@
 "use client";
 
-import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -42,7 +42,7 @@ export function FeedbackDialog({
     useSubmitFeedback(setIsExistingFeedback);
 
   const form = useForm<FeedbackFormValues>({
-    resolver: standardSchemaResolver(FeedbackSchema),
+    resolver: zodResolver(FeedbackSchema),
     defaultValues: { rating: 0, description: "" },
   });
 

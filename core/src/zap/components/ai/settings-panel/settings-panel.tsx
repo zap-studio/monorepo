@@ -1,6 +1,6 @@
 "use client";
 
-import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Effect } from "effect";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -54,7 +54,7 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
   const { isSaving, setIsValidated, saveApiKey } = useAISettings();
 
   const form = useForm<AIFormValues>({
-    resolver: standardSchemaResolver(AIFormSchema),
+    resolver: zodResolver(AIFormSchema),
     defaultValues: {
       provider: AIProviderIdSchema.options[0],
       model: ModelsByProvider[AIProviderIdSchema.options[0]][0],
