@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "chalk": "^5.4.1",
-    "effect": "^3.16.4",
+    "effect": "^3.16.5",
     "execa": "^9.6.0",
     "fs-extra": "^11.3.0",
     "inquirer": "^9.3.7",
