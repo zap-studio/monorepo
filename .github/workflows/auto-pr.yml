@@ -1,0 +1,22 @@
+name: Auto Pull Request
+
+on:
+  push:
+    branches-ignore:
+      - "main"
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: ${{ github.ref_name }}
+          title: "Auto PR: ${{ github.ref_name }} → main"
+          body: "This pull request was automatically created by a GitHub Action."
+          draft: false
