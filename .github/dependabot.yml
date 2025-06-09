@@ -15,3 +15,7 @@ updates:
     open-pull-requests-limit: 5
     schedule:
       interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
