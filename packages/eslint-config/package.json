@@ -1,12 +1,19 @@
 {
-  "name": "@zap-ts/eslint-config",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "author": "Alexandre Trotel",
-  "license": "MIT",
-  "packageManager": "pnpm@10.12.1",
-  "dependencies": {
-    "eslint-config-turbo": "^2.5.4"
-  }
+	"name": "@zap-ts/eslint-config",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"author": "Alexandre Trotel",
+	"license": "MIT",
+	"packageManager": "pnpm@10.12.1",
+	"scripts": {
+		"lint": "biome check .",
+		"format": "biome format --write ."
+	},
+	"dependencies": {
+		"eslint-config-turbo": "^2.5.4"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4"
+	}
 }

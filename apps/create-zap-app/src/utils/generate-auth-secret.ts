@@ -1,4 +1,4 @@
-import { execSync } from "child_process";
+import { execSync } from "node:child_process";
 import { Effect } from "effect";
 
 /**
@@ -17,12 +17,12 @@ import { Effect } from "effect";
  * ```
  */
 export const generateAuthSecret = (): string => {
-  return Effect.try({
-    try: () =>
-      execSync("openssl rand -base64 32", { encoding: "utf-8" }).trim(),
-    catch: () =>
-      Buffer.from(Math.random().toString(36).slice(2) + Date.now().toString(36))
-        .toString("base64")
-        .slice(0, 43),
-  }).pipe(Effect.runSync);
+	return Effect.try({
+		try: () =>
+			execSync("openssl rand -base64 32", { encoding: "utf-8" }).trim(),
+		catch: () =>
+			Buffer.from(Math.random().toString(36).slice(2) + Date.now().toString(36))
+				.toString("base64")
+				.slice(0, 43),
+	}).pipe(Effect.runSync);
 };

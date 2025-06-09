@@ -1,33 +1,33 @@
 {
-  "compilerOptions": {
-    // Enable latest features
-    "lib": ["ESNext", "DOM"],
-    "target": "ESNext",
-    "module": "ESNext",
-    "jsx": "react-jsx",
-    "allowJs": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
+	"compilerOptions": {
+		// Enable latest features
+		"lib": ["ESNext", "DOM"],
+		"target": "ESNext",
+		"module": "ESNext",
+		"jsx": "react-jsx",
+		"allowJs": true,
+		"outDir": "./dist",
+		"rootDir": "./src",
 
-    // Module resolution
-    "moduleResolution": "Node",
-    "verbatimModuleSyntax": true,
-    "allowSyntheticDefaultImports": true,
+		// Module resolution
+		"moduleResolution": "Node",
+		"verbatimModuleSyntax": true,
+		"allowSyntheticDefaultImports": true,
 
-    // Best practices
-    "strict": true,
-    "skipLibCheck": true,
-    "noFallthroughCasesInSwitch": true,
+		// Best practices
+		"strict": true,
+		"skipLibCheck": true,
+		"noFallthroughCasesInSwitch": true,
 
-    // Some stricter flags
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false,
+		// Some stricter flags
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"noPropertyAccessFromIndexSignature": false,
 
-    // Paths
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": ["src/**/*"]
+		// Paths
+		"paths": {
+			"@/*": ["./src/*"]
+		}
+	},
+	"include": ["src/**/*"]
 }
