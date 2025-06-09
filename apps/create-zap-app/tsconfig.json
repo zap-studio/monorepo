@@ -24,6 +24,10 @@
 		"noUnusedParameters": false,
 		"noPropertyAccessFromIndexSignature": false,
 
+		// Declaration
+		"declaration": true,
+		"declarationMap": true,
+
 		// Paths
 		"paths": {
 			"@/*": ["./src/*"]
