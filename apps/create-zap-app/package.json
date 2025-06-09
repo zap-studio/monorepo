@@ -57,7 +57,7 @@
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.8",
-    "@types/node": "^20.19.0",
+    "@types/node": "^22.15.30",
     "prettier": "^3.5.3",
     "tsdown": "^0.12.7",
     "typescript": "^5.8.3"
