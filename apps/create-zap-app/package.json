@@ -40,7 +40,7 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc && tsup src/index.ts --format esm,cjs --dts --clean",
+    "build": "tsc && tsdown src/index.ts --format esm,cjs --dts --clean",
     "clean": "rm -rf dist",
     "format": "prettier --write \"src/**/*.{ts,tsx}\""
   },
@@ -59,7 +59,7 @@
     "@types/inquirer": "^9.0.8",
     "@types/node": "^20.19.0",
     "prettier": "^3.5.3",
-    "tsup": "^8.5.0",
+    "tsdown": "^0.12.7",
     "typescript": "^5.8.3"
   },
   "peerDependencies": {
