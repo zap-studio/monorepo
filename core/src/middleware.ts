@@ -1,8 +1,11 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import createMiddleware from "next-intl/middleware";
 
 import { $fetch } from "@/lib/fetch";
 import type { Session } from "@/zap/lib/auth/client";
+
+import { routing } from "./i18n/routing";
 
 const publicPaths = [
   "/",
@@ -18,16 +21,28 @@ const publicPaths = [
 ];
 const blogPublicBasePath = "/blog";
 
+const intlMiddleware = createMiddleware(routing);
+
 export async function middleware(request: NextRequest) {
+  // We need to call next-intl middleware first before anything
+  // since all subsequent URL's depends on user's locale
+  const intlResponse = intlMiddleware(request);
+
+  if (intlResponse.status !== 200) return intlResponse;
+
+  const { pathname } = request.nextUrl;
+  const locale = request.nextUrl.pathname.split("/")[1];
+  const pathnameWithoutLocale = pathname.replace(`/${locale}`, "") || "/";
+
   try {
     const { pathname } = request.nextUrl;
 
-    // Allow public paths
+    // Allow public paths while preserving next-intl's headers
     if (
-      publicPaths.includes(pathname) ||
-      pathname.startsWith(blogPublicBasePath)
+      publicPaths.includes(pathnameWithoutLocale) ||
+      pathnameWithoutLocale.startsWith(blogPublicBasePath)
     ) {
-      return NextResponse.next();
+      return intlResponse;
     }
 
     // Fetch session from API
@@ -45,14 +60,14 @@ export async function middleware(request: NextRequest) {
 
     if (!session) {
       // Redirect unauthenticated users to /login with the original path as a query param
-      const loginUrl = new URL("/login", request.url);
+      const loginUrl = new URL(`/${locale}/login`, request.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
 
     // Check email verification
     if (!session.user || !session.user.emailVerified) {
-      const verifyUrl = new URL("/login", request.url);
+      const verifyUrl = new URL(`/${locale}/login`, request.url);
       verifyUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(verifyUrl);
     }
@@ -66,7 +81,7 @@ export async function middleware(request: NextRequest) {
     });
   } catch {
     // Fallback: redirect to login on any unexpected error
-    const loginUrl = new URL("/login", request.url);
+    const loginUrl = new URL(`/${locale}/login`, request.url);
     loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }

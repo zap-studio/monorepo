@@ -3,8 +3,10 @@
  * - Change the current config file to your own configuration
  * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
  */
-import { ZapSettings } from "@/zap/types/zap.config.types";
+import type { MetadataRoute } from "next";
 import { Metadata } from "next";
+
+import { ZapSettings } from "@/zap/types/zap.config.types";
 
 export const VERCEL = process.env.VERCEL_ENV ? true : false;
 export const DEV = process.env.NODE_ENV !== "production";
@@ -69,82 +71,91 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   },
 };
 
-export const ZAP_DEFAULT_METADATA: Metadata = {
-  title: APP_NAME,
-  description: APP_DESCRIPTION,
-  category: "technology",
-  generator: "Next.js",
-  applicationName: APP_NAME,
-  referrer: "origin-when-cross-origin",
-  keywords: [
-    "Zap.ts",
-    "typescript",
-    "nextjs",
-    "react",
-    "boilerplate",
-    "template",
-    "web",
-    "application",
-  ],
-  authors: [
-    {
-      name: "Alexandre Trotel",
-      url: "https://www.alexandretrotel.org",
-    },
-  ],
-  creator: "Alexandre Trotel",
-  publisher: "Alexandre Trotel",
-  metadataBase: new URL(BASE_URL),
-  openGraph: {
-    title: APP_NAME,
-    description: APP_DESCRIPTION,
-    url: BASE_URL,
-    siteName: APP_NAME,
-    images: [
+export function generateZapMetadata(
+  locale: string,
+  t: (key: string) => string,
+): Metadata {
+  const title = t("App.name") || APP_NAME;
+  const description = t("App.description") || APP_DESCRIPTION;
+
+  return {
+    title,
+    description,
+    category: "technology",
+    generator: "Next.js",
+    applicationName: title,
+    referrer: "origin-when-cross-origin",
+    keywords: [
+      "Zap.ts",
+      "typescript",
+      "nextjs",
+      "react",
+      "boilerplate",
+      "template",
+      "web",
+      "application",
+      ...(t("App.keywords")?.split(",") || []),
+    ],
+    authors: [
       {
-        url: `${BASE_URL}/og.png`,
-        width: 1200,
-        height: 630,
-        alt: `${APP_NAME} Open Graph Image`,
+        name: "Alexandre Trotel",
+        url: "https://www.alexandretrotel.org",
       },
     ],
-    locale: "en_US",
-    type: "website",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    nocache: false,
-    googleBot: {
+    creator: "Alexandre Trotel",
+    publisher: "Alexandre Trotel",
+    metadataBase: new URL(BASE_URL),
+    openGraph: {
+      title,
+      description,
+      url: BASE_URL,
+      siteName: title,
+      images: [
+        {
+          url: `${BASE_URL}/og.png`,
+          width: 1200,
+          height: 630,
+          alt: t("App.ogImageAlt") || `${title} Open Graph Image`,
+        },
+      ],
+      locale,
+      type: "website",
+    },
+    robots: {
       index: true,
       follow: true,
-      noimageindex: false,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      nocache: false,
+      googleBot: {
+        index: true,
+        follow: true,
+        noimageindex: false,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
-  },
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-    shortcut: "/favicon.ico",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: APP_NAME,
-    description: APP_DESCRIPTION,
-    creator: "@alexandretrotel",
-    images: [`${BASE_URL}/og.png`],
-  },
-  appleWebApp: {
-    title: APP_NAME,
-    statusBarStyle: "black-translucent",
-    capable: true,
-  },
-  appLinks: {
-    web: {
-      url: "https://demo.zap-ts.alexandretrotel.org",
-      should_fallback: true,
+    icons: {
+      icon: "/favicon.ico",
+      apple: "/apple-touch-icon.png",
+      shortcut: "/favicon.ico",
     },
-  },
-};
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      creator: "@alexandretrotel",
+      images: [`${BASE_URL}/og.png`],
+    },
+    appleWebApp: {
+      title,
+      statusBarStyle: "black-translucent",
+      capable: true,
+    },
+    appLinks: {
+      web: {
+        url: "https://demo.zap-ts.alexandretrotel.org",
+        should_fallback: true,
+      },
+    },
+  };
+}

@@ -4,6 +4,7 @@ packages:
   - core/
 
 onlyBuiltDependencies:
+  - '@biomejs/biome'
   - '@tailwindcss/oxide'
   - '@vercel/speed-insights'
   - core-js

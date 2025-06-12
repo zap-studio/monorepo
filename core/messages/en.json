@@ -1,0 +1,13 @@
+{
+  "HomePage": {
+    "title": "Hello world!",
+    "about": "Go to the about page"
+  },
+
+  "App": {
+    "name": "Zap.ts",
+    "description": "The boilerplate to build application as fast as a zap.",
+    "keywords": "framework,development,productivity,tools,nextjs,typescript",
+    "ogImageAlt": "Zap.ts - Lightning Fast Development"
+  }
+}

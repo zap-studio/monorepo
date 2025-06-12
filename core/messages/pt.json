@@ -1,0 +1,13 @@
+{
+  "HomePage": {
+    "title": "Olá mundo!",
+    "about": "Vá para a página sobre"
+  },
+
+  "App": {
+    "name": "Zap.ts",
+    "description": "O boilerplate para construir aplicações tão rápido quanto um raio.",
+    "keywords": "framework,desenvolvimento,produtividade,ferramentas,nextjs,typescript",
+    "ogImageAlt": "Zap.ts - Desenvolvimento Rápido como um Raio"
+  }
+}

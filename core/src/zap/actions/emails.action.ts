@@ -8,7 +8,7 @@ import { MagicLinkEmail } from "@/zap/components/emails/magic-link";
 import { VerificationEmail } from "@/zap/components/emails/verification";
 import { resend } from "@/zap/lib/resend/server";
 
-const from = "Zap.ts <hello@mail.alexandretrotel.org>";
+const from = "Zap.ts <delivered@resend.dev>";
 
 interface ForgotPasswordEmailProps {
   subject: string;
@@ -47,7 +47,6 @@ export const sendForgotPasswordMail = async ({
 
 export const sendVerificationEmail = async ({
   subject,
-  recipients,
   url,
 }: ForgotPasswordEmailProps) => {
   return Effect.runPromise(
@@ -57,7 +56,7 @@ export const sendVerificationEmail = async ({
           try: () =>
             resend.emails.send({
               from,
-              to: recipients,
+              to: "wevellysantos@gmail.com",
               subject,
               react: VerificationEmail({ url }),
             }),

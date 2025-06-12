@@ -1,6 +1,7 @@
 "use client";
 
 import { ProgressProvider } from "@bprogress/next/app";
+import { NextIntlClientProvider } from "next-intl";
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { useEffect } from "react";
@@ -11,9 +12,13 @@ import SuspendedPostHogPageView from "@/zap/components/analytics/posthog-page-vi
 
 interface ProvidersProps {
   children: React.ReactNode;
+  nextIntl: {
+    locale: string;
+  };
 }
 
-export default function Providers({ children }: ProvidersProps) {
+export default function Providers({ children, nextIntl }: ProvidersProps) {
+  const { locale } = nextIntl;
   useEffect(() => {
     if (!FLAGS.ENABLE_POSTHOG) return;
 
@@ -25,26 +30,28 @@ export default function Providers({ children }: ProvidersProps) {
   }, []);
 
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
-      <ProgressProvider
-        color="#3B82F6"
-        options={{ showSpinner: false }}
-        height="3px"
-        shallowRouting
+    <NextIntlClientProvider locale={locale}>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
       >
-        {FLAGS.ENABLE_POSTHOG && (
-          <PHProvider client={posthog}>
-            <SuspendedPostHogPageView />
-            {children}
-          </PHProvider>
-        )}
-        {!FLAGS.ENABLE_POSTHOG && children}
-      </ProgressProvider>
-    </ThemeProvider>
+        <ProgressProvider
+          color="#3B82F6"
+          options={{ showSpinner: false }}
+          height="3px"
+          shallowRouting
+        >
+          {FLAGS.ENABLE_POSTHOG && (
+            <PHProvider client={posthog}>
+              <SuspendedPostHogPageView />
+              {children}
+            </PHProvider>
+          )}
+          {!FLAGS.ENABLE_POSTHOG && children}
+        </ProgressProvider>
+      </ThemeProvider>
+    </NextIntlClientProvider>
   );
 }
