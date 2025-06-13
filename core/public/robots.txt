@@ -7,3 +7,4 @@ Host: your_site_url_here
 
 # Sitemaps
 Sitemap: your_site_url_here/sitemap.xml
+Sitemap: your_site_url_here/server-sitemap-index.xml
