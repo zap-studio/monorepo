@@ -2,6 +2,7 @@
  * ZAP:TODO
  * - Change the current config file to your own configuration
  * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
+ * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL (e.g. `https://yourdomain.com`)
  */
 import { ZapSettings } from "@/zap/types/zap.config.types";
 import { Metadata } from "next";
