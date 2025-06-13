@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { $fetch } from "@/lib/fetch";
+import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import type { Session } from "@/zap/lib/auth/client";
 
 const publicPaths = [
@@ -51,7 +52,10 @@ export async function middleware(request: NextRequest) {
     }
 
     // Check email verification
-    if (!session.user || !session.user.emailVerified) {
+    if (
+      ZAP_DEFAULT_SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION &&
+      (!session.user || !session.user.emailVerified)
+    ) {
       const verifyUrl = new URL("/login", request.url);
       verifyUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(verifyUrl);
