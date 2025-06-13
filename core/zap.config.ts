@@ -2,6 +2,7 @@
  * ZAP:TODO
  * - Change the current config file to your own configuration
  * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
+ * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL (e.g. `https://yourdomain.com`)
  */
 import { ZapSettings } from "@/zap/types/zap.config.types";
 import { Metadata } from "next";
@@ -12,6 +13,7 @@ export const DEV = process.env.NODE_ENV !== "production";
 export const APP_NAME = "Zap.ts";
 export const APP_DESCRIPTION =
   "The boilerplate to build application as fast as a zap.";
+export const MAIL = process.env.ZAP_MAIL || "hello@mail.alexandretrotel.org";
 export const BASE_URL = DEV
   ? "http://localhost:3000"
   : "https://demo.zap-ts.alexandretrotel.org";
@@ -41,11 +43,12 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
     REDIRECT_URL_AFTER_SIGN_IN: "/app",
   },
   NOTIFICATIONS: {
-    VAPID_MAIL: "hello@mail.alexandretrotel.org",
+    VAPID_MAIL: MAIL,
   },
   MAIL: {
     PREFIX: APP_NAME,
     RATE_LIMIT_SECONDS: 60,
+    FROM: `${APP_NAME} <${MAIL}>`,
   },
   PWA: {
     NAME: APP_NAME,

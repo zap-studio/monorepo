@@ -1,17 +1,21 @@
 {
-  "name": "@zap-ts/monorepo",
-  "author": "Alexandre Trotel",
-  "private": true,
-  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac",
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "turbo run format",
-    "clean": "turbo run clean && rm -rf node_modules"
-  },
-  "devDependencies": {
-    "@changesets/cli": "^2.29.4",
-    "turbo": "^2.5.4"
-  }
+	"name": "@zap-ts/monorepo",
+	"author": "Alexandre Trotel",
+	"private": true,
+	"packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac",
+	"scripts": {
+		"build": "turbo run build",
+		"dev": "turbo run dev",
+		"lint": "turbo run lint",
+		"format": "turbo run format",
+		"clean": "turbo run clean",
+		"prepare": "husky"
+	},
+	"devDependencies": {
+		"@changesets/cli": "^2.29.4",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.1.0",
+		"turbo": "^2.5.4"
+	},
+	"workspaces": ["packages/*", "apps/*", "core/"]
 }

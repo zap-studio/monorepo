@@ -27,6 +27,7 @@ const coreEnv = [
 	"MCP_ELEVENLABS_API_KEY",
 	"MCP_SENTRY_ACCESS_TOKEN",
 	"MCP_SENTRY_HOST",
+	"ZAP_MAIL",
 ];
 
 /**

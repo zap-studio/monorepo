@@ -34,6 +34,7 @@ export interface ZapSettings {
   MAIL: {
     PREFIX: string;
     RATE_LIMIT_SECONDS: number;
+    FROM: string;
   };
   PWA: {
     NAME: string;
