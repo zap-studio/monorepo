@@ -41,7 +41,6 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsdown src/index.ts --format esm --format cjs --dts --clean",
-		"clean": "rm -rf dist",
 		"lint": "biome check .",
 		"format": "biome format --write ."
 	},
@@ -66,5 +65,8 @@
 	"peerDependencies": {
 		"typescript": "^5.8.3"
 	},
-	"files": ["dist/**/*", "README.md"]
+	"files": ["dist/**/*", "README.md"],
+	"lint-staged": {
+		"**/*": ["biome check --fix .", "biome format --write ."]
+	}
 }

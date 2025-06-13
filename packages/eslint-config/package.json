@@ -15,5 +15,8 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4"
+	},
+	"lint-staged": {
+		"**/*": ["biome check --fix .", "biome format --write ."]
 	}
 }

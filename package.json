@@ -7,12 +7,14 @@
 		"build": "turbo run build",
 		"dev": "turbo run dev",
 		"lint": "turbo run lint",
-		"lint:fix": "turbo run lint -- --fix",
 		"format": "turbo run format",
-		"clean": "turbo run clean && rm -rf node_modules"
+		"clean": "turbo run clean && rm -rf node_modules",
+		"prepare": "husky"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.29.4",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.1.0",
 		"turbo": "^2.5.4"
 	}
 }
