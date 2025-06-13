@@ -6,7 +6,7 @@ import { $fetch } from "@/lib/fetch";
 import type { Session } from "@/zap/lib/auth/client";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 
-import { routing } from "./i18n/routing";
+import { routing } from "@/i18n/routing";
 
 const publicPaths = [
   "/",
