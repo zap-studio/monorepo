@@ -4,6 +4,7 @@ import createMiddleware from "next-intl/middleware";
 
 import { $fetch } from "@/lib/fetch";
 import type { Session } from "@/zap/lib/auth/client";
+import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 
 import { routing } from "./i18n/routing";
 
@@ -66,8 +67,11 @@ export async function middleware(request: NextRequest) {
     }
 
     // Check email verification
-    if (!session.user || !session.user.emailVerified) {
-      const verifyUrl = new URL(`/${locale}/login`, request.url);
+    if (
+      ZAP_DEFAULT_SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION &&
+      (!session.user || !session.user.emailVerified)
+    ) {
+      const verifyUrl = new URL("/login", request.url);
       verifyUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(verifyUrl);
     }
