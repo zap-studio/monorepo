@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ZAP_MAIL: "${{ secrets.ZAP_MAIL }}"
-      SITE_URL: "${{ secrets.SITE_URL }}"
-      BETTER_AUTH_URL: "${{ secrets.BETTER_AUTH_URL }}"
-      BETTER_AUTH_SECRET: "${{ secrets.BETTER_AUTH_SECRET }}"
-      DATABASE_URL: "${{ secrets.DATABASE_URL }}"
-      RESEND_API_KEY: "${{ secrets.RESEND_API_KEY }}"
+      ZAP_MAIL: ${{ secrets.ZAP_MAIL }}
+      SITE_URL: ${{ secrets.SITE_URL }}
+      BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
 
     steps:
       - uses: actions/checkout@v4.2.2
