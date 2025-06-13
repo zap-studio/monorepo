@@ -2,11 +2,10 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 
-import { $fetch } from "@/lib/fetch";
-import type { Session } from "@/zap/lib/auth/client";
-import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-
 import { routing } from "@/i18n/routing";
+import { $fetch } from "@/lib/fetch";
+import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import type { Session } from "@/zap/lib/auth/client";
 
 const publicPaths = [
   "/",
