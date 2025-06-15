@@ -1,7 +1,5 @@
 # Getting Started
 
-Welcome to Zap.ts! This page helps you learn how Zap.ts works and how to set it up for your project. It’s designed to make building apps fast and simple.
-
 ## Demo (in 5 minutes)
 
 **Note**: This will be added soon.
@@ -12,22 +10,18 @@ Before proceeding, ensure that Zap.ts is installed by following the instructions
 
 ### Overview
 
-Zap.ts wants you to focus on building your app’s features, not on boring setup tasks. This structure saves time. You don’t need to create everything from zero. It keeps your code neat so you can find things easily. It also provides a framework so you don't overthink too much about it.
+Before getting started, read our [best practices](/docs/misc/best-practices.md) to learn more about Zap.ts' philosophy.
 
-Before getting started, read our [best practices](/docs/misc/best-practices.md) to learn more.
-
-:::tip
-You can keep what you like or get rid of what you don’t need. For instance, if you don’t want push notifications, you can remove them.
-:::
+Since Zap.ts is _simply_ a **Next.js** starter kit, you own your code; therefore can keep what you like and get rid of things you don’t need.
 
 ## Environment Variables
 
-Update `.env` with your own settings. Example:
+The `.env` file connects your app to services like the database or email provider. You can remove the ones you don't need.
+
+Update it with your own settings. Example:
 
 ```
 DATABASE_URL=your_database_url
-NEXT_PUBLIC_VAPID_PUBLIC_KEY=your_vapid_public_key
-VAPID_PRIVATE_KEY=your_vapid_private_key
 BETTER_AUTH_SECRET=your_better_auth_secret
 BETTER_AUTH_URL=http://localhost:3000
 GOOGLE_CLIENT_ID=your_google_client_id
@@ -35,23 +29,17 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 POLAR_ACCESS_TOKEN=your_polar_access_token
 POLAR_WEBHOOK_SECRET=your_polar_webhook_secret
 RESEND_API_KEY=your_resend_api_key
-SITE_URL=your_site_url
-NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
-NEXT_PUBLIC_POSTHOG_HOST=your_posthog_host
-NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn
-SENTRY_AUTH_TOKEN=your_sentry_auth_token
-ENCRYPTION_KEY=your_encryption_key
 ```
 
-These connect your app to services like the database or email. You can remove the ones you don't need.
+Also, don’t forget to configure your environment variables in your **Zap.ts** deployment environment.
 
 :::warning
-The above `.env` file serves as an example. You should only rely on the instance of Zap.ts that was present during its initial installation.
+The above `.env` file serves as an example. You should only rely on the instance of **Zap.ts** that was present during its initial installation.
 :::
 
 ## Configure the App
 
-To get started, make sure to configure your app settings in:
+To get started, make sure to complete all the required steps in the below file — this is your single source of configuration, designed to simplify setup and ensure you don’t miss anything important.
 
 ```bash
 zap.config.ts
@@ -126,14 +114,6 @@ pnpm db:pull         # Get the database schema easily
 
 :::
 
-## Next Steps
-
-### Build Something
-
-Start making your app! Try adding a new page in `/src/app/` like `about.tsx`.
-
-### Ask Questions
-
-Need support? Ask the creator on [X (formerly Twitter)](https://www.x.com/alexandretrotel/).
-
-Happy coding with Zap.ts! ⚡
+:::warning
+This list of commands may not be exhaustive and can change over time as Zap.ts evolves. Always check your local package.json for the most up-to-date command list.
+:::

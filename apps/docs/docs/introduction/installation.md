@@ -1,6 +1,6 @@
 # Installation
 
-Setting up **Zap.ts ⚡️** is now easier than ever!
+_Setting up **Zap.ts ⚡️** is now easier than ever!_
 
 ## Quick Installation
 
@@ -20,10 +20,10 @@ yarn dlx create-zap-app@latest
 pnpm dlx create-zap-app@latest
 ```
 
+```bash [bun]
+bunx create-zap-app@latest
+```
+
 :::
 
 This will guide you through setting up your project with the necessary configurations and dependencies.
-
-## Next Steps
-
-After installation, visit the [Getting Started](/docs/introduction/getting-started) page to learn about Zap.ts’ structure and how to begin development.

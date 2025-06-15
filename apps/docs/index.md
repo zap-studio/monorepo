@@ -4,6 +4,7 @@ layout: home
 
 hero:
   name: "Zap.ts ⚡️"
+  text: "Build application as fast as a zap."
   tagline: "npx create-zap-app@latest"
   actions:
     - theme: brand
@@ -14,22 +15,22 @@ hero:
       link: /docs/introduction/motivation
 
 features:
-  - title: Built-in Auth ⚡️
-    details: Secure email/password + OAuth with Better Auth—ready to zap out of the box.
+  - title: Built-in Auth
+    details: Secure email/password + OAuth, with built-in RBAC and organization management — powered by Better Auth.
     icon: 🔒
-  - title: AI-Ready ⚡️
-    details: Vercel AI SDK with a persisted Zustand store—power up AI features in a flash.
+  - title: AI-Ready
+    details: Vercel AI SDK + encrypted Zustand store for secure API key and provider config management.
     icon: 🤖
-  - title: Typesafe Frontend & Backend ⚡️
-    details: End-to-end TypeScript safety with oRPC and Drizzle ORM—code with lightning precision.
+  - title: Typesafe Frontend & Backend
+    details: End-to-end type safety with oRPC, Drizzle ORM, and Effect — seamlessly handling business logic from frontend to backend.
     icon: 🛡️
-  - title: Turbocharged Stack ⚡️
-    details: Modern tools designed for super-fast development with support for Progressive Web Apps (PWA).
-    icon: 🚀
-  - title: Database Magic ⚡️
-    details: Neon PostgreSQL + Drizzle ORM—data flows at the speed of light.
+  - title: Headless Blog & CMS
+    details: Manage your content and blog with Payload CMS — a fully customizable, self-hosted CMS with a code-first approach.
+    icon: 📝
+  - title: Database Magic
+    details: Neon PostgreSQL + Drizzle ORM to manage your database entirely from your code in an efficient way.
     icon: ✨
-  - title: Email & Payments ⚡️
-    details: React Email + Resend and Polar.sh placeholders—send and earn in a snap.
+  - title: Email & Payments
+    details: React Email and Resend for templated emails, combined with Polar.sh for seamless, fast payments.
     icon: 💸
 ---

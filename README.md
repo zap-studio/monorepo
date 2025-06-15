@@ -1,60 +1,54 @@
-# Zap.ts ⚡
+# What's Zap.ts?
 
-**Zap.ts** – named after ⚡️ – is a Next.js boilerplate designed to help you build applications faster using a modern set of tools.
+**Zap.ts** – with the ⚡️ symbol – is a **Next.js** boilerplate designed to help you build applications _faster_ using a modern set of tools. It also comes with best practices to build _excellent_ modern web applications.
 
-## Installation ⚡
+Zap.ts is _fast_ to set up and very _easy_ to use. It comes with a clear documentation and a carefully selected set of tools that make the developer experience (DX) modern and enjoyable.
 
-You can create a new Zap.ts project using your preferred package manager:
+## Why it exists?
 
-```sh
-npx create-zap-app@latest
-```
+Starting a new web project always means repeating the _same_ steps:
 
-## Check The Docs ⚡
+- setting up a database
+- adding login features
+- installing tools such as linters
+- handling payments
+- creating email systems
+- and more...
 
-You will find all you need to get started by reading the [documentation](https://zap-ts.alexandretrotel.org).
+A ready-made solution saves time and lets the focus stay on making something useful, not on these boring setup tasks, right?
 
-## How It Works ⚡
+It gives one easy way to do things, a _framework_, improving the developer experience (DX).
 
-Zap.ts is fast to set up and very easy to use. It comes with clear documentation and a carefully selected set of tools that make the developer experience (DX) modern and enjoyable.
+This means no need to worry about how it all works inside—just use it, it's _**reliable**_ and _**simple**_.
 
-## Why It Exists ⚡
+## Who is it for?
 
-Starting a new web project always means repeating steps: setting up a database, adding login features, installing tools, handling payments, and creating email systems. A ready-made solution saves time and lets the focus stay on making something useful, not on setup. It gives one easy way to do things, improving the coding experience (DX). This means no need to worry about how it all works inside—just like shadcn/ui keeps things simple.
+_Zap.ts is designed for startups and solo developers who move fast and demand simplicity._
 
-## Startups Love It ⚡
+Startups need tools that keep pace with rapid iteration and scaling. Solo developers want solutions that are straightforward, fast to set up, and don’t get in the way.
 
-Startups move fast and need tools that keep up. Zap.ts is built with startups in mind, offering a launchpad to go from idea to product in record time. Here’s why it’s a game-changer for your team:
+Built with this in mind, Zap.ts acts as a launchpad to turn your idea into a working product faster than ever.
+
+Here’s why it’s a game-changer for your team:
 
 - **Speed to Market**: Pre-configured tools and seamless integrations mean you skip the setup grind and start building your MVP right away.
-- **Cost-Effective**: No need to reinvent the wheel or hire specialists for boilerplate tasks – Zap.ts gives you a production-ready stack for free.
-- **Scalability**: From prototype to scale, the modern libraries (like Drizzle and oRPC) ensure your app grows without breaking.
-- **Focus on Innovation**: Spend your energy on what makes your startup unique, not on plumbing. Authentication, UI, and APIs are ready out of the box.
-- **Future-Proof**: With flexible tools like better-auth and the AI Vercel SDK, you can adapt to new requirements or tech trends without a full rewrite.
+- **Cost-Effective**: No need to reinvent the wheel or hire specialists because Zap.ts gives you a production-ready stack for free.
+- **Scalability**: From prototype to scale, the modern libraries ensure your app grows without breaking.
+- **Vendor Lock-In Avoidance**: We prioritize agnostic, open tools that keep your stack flexible so you’re never tied to a single provider or ecosystem.
+- **Future-Proof**: With flexible tools, you can adapt to new requirements or tech trends without a full rewrite.
 
 Whether you’re a solo founder or a small team, Zap.ts empowers you to ship fast, iterate often, and compete with the big players.
 
-## Scripts ⚡
+## Credits
 
-- `dev` - Ignite the dev server.
-- `build` - Compile for production in a flash.
-- `start` - Launch the production app.
-- `lint` - Check your code with ESLint.
-- `format` - Beautify code with Prettier.
-- `db:push` - Push schema changes instantly.
-- `db:migrate` - Run migrations at top speed.
-- `db:generate` - Generate migrations in a blink.
-- `db:studio` - Open Drizzle Studio for a quick peek.
-- `db:pull` - Pull database schema with ease.
-
-## Tools Included ⚡
-
-Zap.ts includes these libraries:
+Zap.ts wouldn't exist without those _wonderful_ tools:
 
 - [shadcn/ui](https://ui.shadcn.com/): The best way to get ready-to-use UI components that you can customize however you like.
 - [better-auth](https://better-auth.com/): A simple and flexible way to set up authentication. It works with any framework, avoids vendor lock-in, and connects seamlessly to your database.
-- [drizzle](https://orm.drizzle.team/): An ORM that lets you write database schemas in TypeScript, sync them with your database, and is easy to use. It’s set up with [Neon](https://neon.tech/) by default, but you can switch databases easily.
+- [drizzle](https://orm.drizzle.team/): An ORM that lets you write database schemas in TypeScript, sync them with your database, and is easy to use.
 - [zustand](https://zustand-demo.pmnd.rs/): A lightweight alternative to Redux and React Context. It helps you write less code, do more, and supports local storage persistence out of the box.
 - [oRPC](https://orpc.unnoq.com/): An alternative to tRPC that supports OpenAPI specs, making it easy to build type-safe APIs for frontend and backend.
+- [Effect](https://effect.website/): A powerful functional library for modeling, managing, and propagating side effects and errors across your full stack with type safety.
+- [Payload CMS](https://payloadcms.com/): A self-hosted, developer-friendly CMS for managing your content and blogs with full customization and extensibility.
 - [AI Vercel SDK](https://sdk.vercel.ai/): A toolkit for streaming text, handling objects, using RAG (Retrieval-Augmented Generation), and more. It lets you switch between providers without depending on a specific SDK.
 - And more...

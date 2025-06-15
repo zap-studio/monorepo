@@ -7,7 +7,9 @@
 		"dev": "vitepress dev",
 		"build": "vitepress build",
 		"preview": "vitepress preview",
-		"clean": "rm -rf .vitepress/dist"
+		"clean": "rm -rf .vitepress/dist",
+		"format": "biome format .",
+		"lint": "biome check ."
 	},
 	"dependencies": {
 		"vitepress": "^1.6.3"

@@ -162,7 +162,7 @@ Here’s how to set up Supabase with RLS in Zap.ts:
 4. **Test Your Setup**:
    - Test your app to make sure RLS is working—users should only see data they’re allowed to see.
 
-:::tip
+:::tip Row-Level Security (RLS)
 Drizzle allows for [RLS and policy support](https://orm.drizzle.team/docs/rls) directly within the codebase-first approach, eliminating the need for step 2.
 :::
 

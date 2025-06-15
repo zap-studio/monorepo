@@ -1,200 +1,194 @@
-# The Zap.ts Way
+# Best Practices
 
-Zap.ts is built to help you create apps quickly with a clear and organized structure. This page explains the recommended way to set up your project in the `src` folder and why it works well for building modern apps.
+Zap.ts is built to help you create apps _quickly_ with a _**clear**_ and _**organized**_ structure.
+
+This page explains the recommended way to set up your project and why it works well for building modern apps.
 
 ## Project Structure
 
-The `src` folder in Zap.ts is organized to keep your code clean, easy to find, and ready to grow. Here’s what each folder does:
+The `src` folder in Zap.ts is organized to keep your code _clean_, _easy to find_, and _ready to grow_. Here’s what each folder does:
 
-- **actions**: Holds server actions for handling backend tasks, like form submissions (more on this below).
+- **actions**: Holds server actions for handling backend tasks.
 - **app**: Contains Next.js app router files, such as pages and layouts.
-- **components**: Stores reusable UI components, split into `common` and `ui` subfolders:
-  - **common**: General components used across the app, like a user profile card (e.g., `ProfileCard.tsx`).
-  - **ui**: Components styled with shadcn/ui, focusing on design consistency (e.g., `Card.tsx`).
+- **components**: Stores reusable UI components.
+  - **common**: General components used across the app.
+  - **ui**: Components styled with [shadcn/ui](https://ui.shadcn.com/), focusing on design consistency.
 - **data**: Keeps static data, like JSON files, and feature flags to turn features on or off at build time without a database.
-- **db**: Includes database-related code, such as Drizzle ORM schemas.
+- **db**: Includes database-related code, such as schemas.
 - **hooks**: Holds custom React hooks that can be shared across features.
 - **lib**: Stores shared utilities, like helper functions or API clients.
-- **providers**: Contains React context providers for app-wide state (but use Zustand stores when possible—see below).
-- **rpc**: Manages oRPC code for type-safe API communication.
-- **schemas**: Defines Drizzle ORM schemas and API validation schemas for type safety.
-- **stores**: Holds Zustand stores for lightweight state management.
-- **styles**: Includes global styles, such as Tailwind CSS configurations.
-
-## Organizing Features
-
-To make it easier to work with separate features and concerns, organize your code by creating subfolders for each feature within your folders such as `components`. For example:
-
-```bash
-components/
-  common/
-    ProfileCard.tsx
-  ui/
-    Card.tsx
-  features/
-    user/
-      UserCard.tsx
-      UserList.tsx
-    post/
-      PostForm.tsx
-      PostView.tsx
-```
-
-This way, you can easily find and manage components related to a specific feature without cluttering the main `components` folder.
+- **providers**: Contains React context providers for app-wide state.
+- **rpc**: Manages code for type-safe API communication.
+- **schemas**: Defines schemas and API validation schemas for type safety.
+- **stores**: Holds stores for lightweight state management.
+- **styles**: Includes global styles.
 
 ## Pages vs. Routes
 
-In the `app` folder, there are some main folders that help with organizing your code but don't affect routes. These include:
+Inside the `app` folder, you'll find some special folders that help you organize your code. These **do not affect your route structure** — they just make things easier to manage:
 
-- **api**: Holds only API endpoints (e.g., `/(api)/users.ts`)
-- **pages**: Contains only pages (e.g., `/(pages)/home.tsx`)
-- **public**: Accessible by everyone; contains pages or API routes not requiring authentication (e.g., `/(public)/(pages)/home.tsx`)
-- **auth-only**: Protected by authentication; contains pages or API routes that require a user to be logged in (e.g., `/(auth-only)/(api)/user/update-account.ts`)
+- **api** – For API routes only
 
-These folders help you group related code and make it easier to find what you need.
+> Example: `/(api)/users.ts`
 
-:::tip
-A route in Next.js can be either an API endpoint or a page that can be accessed directly by the user.
+- **pages** – For page components (UI screens)
 
-- **API Route**: An API route is a server-side function that handles HTTP requests and returns data. It's usually prefixed with `/api/` (e.g., `/api/users`) and is used to interact with your application through APIs.
-- **Page**: A page, on the other hand, is a React component that can be rendered on the client-side or the server-side by Next.js. Pages can have dynamic routes (e.g., `/users/[id]`) as well as API routes for handling parameterized URLs.
-  :::
+> Example: `/(pages)/home.tsx`
 
-## Components Subfolders
+- **public** – For public-facing pages and APIs (no auth required)
 
-The `components` folder splits into `common` and `ui` to organize your UI code:
+> Example: `/(public)/(pages)/home.tsx`
 
-- **common**: For general components that don’t rely on specific styling libraries. Example: a `ProfileCard.tsx` that you style manually.
-- **ui**: For components built with shadcn/ui, ensuring consistent design. Example: a `Card.tsx` using shadcn/ui’s styles.
+- **auth-only** – For protected routes (auth required)
 
-This split keeps your components organized and makes it clear which ones follow shadcn/ui’s design system.
+> Example: `/(auth-only)/(api)/user/update-account.ts`
+
+These folders let you group your logic by access level or type (like pages vs. APIs) without affecting the final URL structure.
+
+:::tip Understanding Routes
+
+In Next.js, routes come in _two main types_:
+
+* **API**: A backend endpoint for handling HTTP requests. Used for data fetching, mutations, etc.
+* **Page**: A UI screen rendered by a React component. These can be public or protected, static or dynamic.
+
+Learn more in the [Next.js documentation](https://nextjs.org/docs/app/getting-started/project-structure#routing-files).
+
+:::
 
 ## Server Actions vs. API Routes
 
-**Server Actions** and **API Routes** both handle backend logic, but they work differently:
+**Server Actions** and **API Routes** both handle _backend_ logic, but they work differently:
 
 - **Server Actions**: Server-side functions for tasks like form submissions. They run on the server and are good for one-off operations. They don’t need a separate endpoint.
 - **API Routes**: Next.js endpoints (e.g., `/api/users`) for reusable APIs. They’re better for parallel requests and external access. With oRPC, they become type-safe.
-- **Parallelism**: API routes can handle multiple requests at once, ideal for fetching data. Actions are sequential, better for single tasks like updates.
 
-## The Data Folder
-
-The `data` folder holds static data and feature flags, so you don’t need a database for everything. Feature flags let you turn features on or off at build time.
-
-### Example: Feature Flags
-
-In `data/settings.ts`:
-
-```typescript
-export const FEATURE_FLAGS = {
-  enablePushNotifications: false,
-  showNewDashboard: true,
-};
-```
-
-In a component:
-
-```typescript
-import { FEATURE_FLAGS } from "@/data/feature-flags";
-
-function Dashboard() {
-  if (!FEATURE_FLAGS.showNewDashboard) {
-    return <div>Old Dashboard</div>;
-  }
-  return <div>New Dashboard</div>;
-}
-```
-
-This lets you control features without changing code or using a database.
+It's important to note that **API Routes** handle concurrent requests, making them ideal for data fetching and external APIs, while **Server Actions** run sequentially and are better suited for isolated _mutation_ tasks.
 
 ## Providers vs. Zustand Stores
 
 The `providers` folder is for React context providers, but we recommend using Zustand stores for state management whenever possible.
 
+**React Context** is great for static or infrequently changing values (like themes or locales), but it can lead to unnecessary re-renders when used for dynamic state.
+
+**Zustand**, on the other hand, is a lightweight state manager that avoids this problem by isolating updates and keeping your components more performant.
+
+We recommend you to check [Zustand documentation](https://zustand.docs.pmnd.rs/getting-started/introduction) to learn more.
+
 ::: tip
 Use `providers` only when you have no other choice (e.g., for third-party libraries requiring context). For app state, use Zustand stores in the `stores` folder—they’re lighter and easier to manage.
 :::
 
-Example Zustand store (in `stores/user.store.ts`):
-
-```typescript
-"use client";
-
-import { create } from "zustand";
-
-export const useUserStore = create((set) => ({
-  user: null,
-  setUser: (user) => set({ user }),
-}));
-```
-
 ## Type-Safe APIs
 
-The `schemas` folder defines schemas for Drizzle ORM and API validation. With oRPC, you can use these schemas to ensure type safety and infer types for better app-wide type management.
+The `schemas` folder uses **Zod** to define validation schemas for your database and API requests.
 
-### Example: Type-Safe API
+These schemas ensure your data always matches the expected shape, reducing bugs and runtime errors.
 
-In `schemas/user.schema.ts`:
+With **oRPC**, you leverage these schemas to enforce **end-to-end type safety**—from frontend to backend—so your types are automatically inferred and consistent across your entire app.
 
-```typescript
-import { z } from "zod";
+Moreover, we consider **TypeScript mandatory** because it catches errors early, improves developer productivity, and makes your codebase more maintainable and scalable as it grows.
 
-export const UserSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  email: z.string().email(),
-});
+Contrary to common belief, focusing on type safety and strong typing actually helps you build _**faster**_ and with _**more confidence**_—by preventing subtle bugs and costly refactors down the line, not to mention enabling **powerful IntelliSense** that speeds up development.
 
-export type User = z.infer<typeof UserSchema>;
-```
+## Error Handling
 
-In `rpc/user.rpc.ts`:
+Managing errors gracefully is crucial for robust apps. Zap.ts encourages using [Effect](https://effect.website) — a modern, composable effect system for TypeScript and JavaScript.
 
-```typescript
-import { procedure, router } from "@orpc/server";
-import { UserSchema } from "@/schemas/user.schema";
+Effect helps you write **type-safe**, **declarative** error handling and async workflows that are:
 
-export const userRouter = router({
-  getUser: procedure
-    .input(z.object({ id: z.string() }))
-    .output(UserSchema)
-    .query(async ({ input }) => {
-      return { id: input.id, name: "Alex", email: "alex@example.com" };
-    }),
-});
-```
+* Predictable and composable
+* Easy to test and maintain
+* Seamlessly integrated with TypeScript’s type system
 
-This ensures the API response matches the `User` type, and your IDE will catch type errors early.
+By modeling failures explicitly, you avoid unexpected crashes and make your app’s behavior more reliable.
+
+Learn more about [Effect](https://effect.website/docs) and how it can elevate your error handling strategy here.
+
+## Performance & Optimization
+
+Performance directly impacts user experience and SEO. Here are the key Next.js _optimization strategies_ to understand:
+
+- **SSR vs SSG vs ISR**  
+  - *SSR ([Server-Side Rendering](https://nextjs.org/docs/app/guides/migrating/app-router-migration#server-side-rendering-getserversideprops))*: Best for dynamic pages that need fresh data on every request such as user dashboards.  
+  - *SSG ([Static Site Generation](https://nextjs.org/docs/app/guides/migrating/app-router-migration#static-site-generation-getstaticprops))*: Ideal for mostly static pages that rarely change like marketing pages.  
+  - *ISR ([_Incremental Static Generation_](https://nextjs.org/docs/app/guides/incremental-static-regeneration))*: A hybrid approach for mostly static pages with occasional updates, like blogs with frequent content changes.  
+
+- **Lazy Loading (Dynamic Import)**  
+  Use [dynamic imports](https://nextjs.org/docs/app/guides/lazy-loading) (`dynamic()`) to load heavy or rarely used components on demand, reducing the initial bundle size and speeding up page loads.
+
+- **Route Prefetching**  
+  Take advantage of Next.js’s automatic [link prefetching](https://nextjs.org/docs/app/api-reference/components/link#prefetch) (`<Link prefetch>`) to preload pages users are likely to visit next, enabling faster navigation.
+
+- **Bundle Analysis**  
+  Regularly analyze your bundles with tools like [`@next/bundle-analyzer`](https://www.npmjs.com/package/@next/bundle-analyzer) to find and reduce large dependencies or unnecessary code.
+
+## Middleware
+
+Next.js **Middleware** lets you intercept HTTP requests before they reach your pages or APIs, use it to:
+
+- Handle authentication and conditional redirects  
+- Modify HTTP headers for security (CSP, CORS)  
+- Implement dynamic routing or localization
+
+It leverages the **Edge Runtime** that runs your code at the network edge, _closest to users_, providing _ultra-low latency_ and _instant scalability_.
 
 ## Naming Files
 
 Follow these naming rules for clarity:
 
-- For hooks: Use `use-hook.ts` (e.g., `use-user-profile.ts`).
-- For components: Use `feature-name.tsx` (e.g., `user-card.tsx`).
-- For stores: Use `your-store.store.ts` (e.g., `user.store.ts`).
-- For server actions: Use `your-action.action.ts` (e.g., `update-user.action.ts`).
-- For database schema: Use `your-schema.sql.ts` (e.g. `auth.sql.ts`).
-- For Zod schemas: Use `your-schema.schema.ts` (e.g., `user.schema.ts`) and prefer PascalCase for schema names (e.g., `UserSchema` over `userSchema`).
-- For RPC procedures: Use `your-procedure.rpc.ts` (e.g., `user.rpc.ts`).
-- For constants in the `data` folder: Use uppercase syntax like `FLAGS` or `BASE_URL` (e.g., `export const FLAGS = { ... }`).
-- Otherwise, follow React naming rules (e.g., PascalCase for components).
+- **Hooks:** Use `use-hook.ts`  
 
-## Navigate Easily with Your IDE
+> Example: `use-user-profile.ts`
 
-It may sound cliché, but take advantage of your IDE’s search function to navigate between files quickly.
+- **Components:** Use `component-name.tsx`  
 
-::: tip
+> Example: `user-card.tsx`
+
+- **Stores:** Use `your-store.store.ts`  
+
+> Example: `user.store.ts`
+
+- **Server Actions:** Use `your-action.action.ts`  
+
+> Example: `update-user.action.ts`
+
+- **Database Schema:** Use `your-schema.sql.ts`  
+
+> Example: `auth.sql.ts`
+
+- **Zod Schemas:** Use `your-schema.schema.ts` and prefer PascalCase for schema names  
+
+> Example file: `user.schema.ts`  
+> Example schema name: `UserSchema` (not `userSchema`)
+
+- **RPC Procedures:** Use `your-procedure.rpc.ts`  
+
+> Example: `user.rpc.ts`
+
+- **Constants (in the `data` folder):** Use uppercase naming  
+
+> Examples: `FLAGS`, `BASE_URL`
+
+- **Other files:** Follow React naming conventions, like PascalCase for components.
+
+## Maximize Your IDE Efficiency
+
+It may sound _cliché_, but using your IDE’s search and navigation features can save you a lot of time when jumping between files.
+
+::: tip VSCode Navigation
 In VSCode, hold `CMD` (or `Ctrl` on Windows) and left-click a file name (e.g., `use-user-profile.ts`) to open it quickly.
 :::
 
-## Why This Structure?
+## Rationale
 
-This setup makes building apps faster and easier:
+Zap.ts’s structure and best practices are designed with *scalability*, *maintainability*, and *developer experience* in mind:
 
-- **Find Things Quickly**: Folders keep code organized.
-- **Grow Without Mess**: Add new features without cluttering the project.
-- **Work Together Better**: Teams can focus on their own features without conflicts.
-- **Build Faster**: Pre-organized folders mean less setup time.
+* **Clear separation of concerns** keeps your code modular, making it easier to navigate and update without breaking unrelated parts.
+* Using **type-safe APIs** drastically reduces runtime errors and boosts confidence by catching bugs early during development.
+* Favoring **Zustand over React context** for app state prevents unnecessary re-renders and improves performance.
+* Emphasizing **TypeScript as mandatory** ensures consistent code quality, better refactoring, and superior tooling support (like IntelliSense).
+* Leveraging **Next.js’s file-system routing** alongside logical folder grouping makes your app structure intuitive without complicating URLs.
+* Encouraging **IDE efficiency** habits minimizes friction in your workflow, allowing you to focus more on building features than on hunting down files.
 
-Follow this structure to get the most out of Zap.ts—happy coding!
+In short, this approach balances *speed*, *robustness*, and *clarity* to help you build modern apps that last.
