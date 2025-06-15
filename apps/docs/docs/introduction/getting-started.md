@@ -6,13 +6,9 @@
 
 ## Project Structure
 
-Before proceeding, ensure that Zap.ts is installed by following the instructions on the [installation](/docs/introduction/installation.md) page.
+Before proceeding, ensure that **Zap.ts** is installed by following the instructions on the [installation](/docs/introduction/installation.md) page and make sure to read our [best practices](/docs/misc/best-practices.md) to learn more about **Zap.ts**' philosophy.
 
-### Overview
-
-Before getting started, read our [best practices](/docs/misc/best-practices.md) to learn more about Zap.ts' philosophy.
-
-Since Zap.ts is _simply_ a **Next.js** starter kit, you own your code; therefore can keep what you like and get rid of things you don’t need.
+Since **Zap.ts** is _simply_ a **Next.js** starter kit, you own your code; therefore can keep what you like and get rid of things you don’t need.
 
 ## Environment Variables
 

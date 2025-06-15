@@ -17,6 +17,11 @@ export default defineConfig({
 				link: "/contributors",
 			},
 			{
+				text: "Discussions",
+				link: "https://github.com/alexandretrotel/zap.ts/discussions",
+				target: "_blank",
+			},
+			{
 				text: "Demo",
 				link: "https://demo.zap-ts.alexandretrotel.org",
 				target: "_blank",
@@ -121,8 +126,8 @@ export default defineConfig({
 		socialLinks: [
 			{ icon: "github", link: "https://github.com/alexandretrotel/zap.ts" },
 			{
-				icon: "twitter",
-				link: "https://twitter.com/alexandretrotel",
+				icon: "x",
+				link: "https://x.com/alexandretrotel",
 			},
 		],
 

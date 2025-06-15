@@ -2,7 +2,7 @@
 
 **Zap.ts** leverages [oRPC](https://orpc.unnoq.com/) to provide type-safe API procedures between the frontend and backend.
 
-Built on top of **Next.js API routes**, **oRPC** ensures _seamless_ communication with **OpenAPI** spec support, making it a powerful alternative to **tRPC**.
+Built on top of **Next.js API routes**, **oRPC** ensures _seamless_ communication with **OpenAPI** spec support, making it a powerful alternative to [**tRPC**](https://trpc.io/).
 
 For **data fetching**, **mutations** and **caching** on the client, **Zap.ts** uses [SWR](https://swr.vercel.app/) for a _fast_ and _reactive_ developer experience.
 
