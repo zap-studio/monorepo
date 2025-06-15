@@ -12,8 +12,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { AISettingsSheet } from "@/zap/components/ai/settings-panel/settings-panel";
-import { FeedbackDialog } from "@/zap/components/app/sidebar/feedback-dialog/feedback-dialog";
+import { AISettingsSheet } from "@/zap/components/features/ai/settings-panel/settings-panel";
+import { FeedbackDialog } from "@/zap/components/features/app/sidebar/feedback-dialog/feedback-dialog";
 
 export function NavSecondary({
   ...props

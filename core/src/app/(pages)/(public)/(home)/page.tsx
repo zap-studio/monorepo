@@ -1,15 +1,15 @@
 import { headers } from "next/headers";
 
 import { cn } from "@/lib/utils";
-import { AnimatedSection } from "@/zap/components/external/animated";
-import Footer from "@/zap/components/external/footer";
-import { FaqSection } from "@/zap/components/external/landing/faq";
-import { FeaturesSection } from "@/zap/components/external/landing/features";
-import { HeroSection } from "@/zap/components/external/landing/hero";
-import { PricingSection } from "@/zap/components/external/landing/pricing";
-import { SolutionSection } from "@/zap/components/external/landing/solution";
-import { TestimonialSection } from "@/zap/components/external/landing/testimonial";
-import { Navbar } from "@/zap/components/external/navbar";
+import { AnimatedSection } from "@/zap/components/features/external/animated";
+import Footer from "@/zap/components/features/external/footer";
+import { FaqSection } from "@/zap/components/features/external/landing/faq";
+import { FeaturesSection } from "@/zap/components/features/external/landing/features";
+import { HeroSection } from "@/zap/components/features/external/landing/hero";
+import { PricingSection } from "@/zap/components/features/external/landing/pricing";
+import { SolutionSection } from "@/zap/components/features/external/landing/solution";
+import { TestimonialSection } from "@/zap/components/features/external/landing/testimonial";
+import { Navbar } from "@/zap/components/features/external/navbar";
 import { createOrpcServer } from "@/zap/lib/orpc/server";
 
 const DELAY_INCREMENT = 0.1;

@@ -1,7 +1,7 @@
 import React from "react";
 
-import Footer from "@/zap/components/external/footer";
-import { Navbar } from "@/zap/components/external/navbar";
+import Footer from "@/zap/components/features/external/footer";
+import { Navbar } from "@/zap/components/features/external/navbar";
 
 interface LegalLayoutProps {
   children: React.ReactNode;

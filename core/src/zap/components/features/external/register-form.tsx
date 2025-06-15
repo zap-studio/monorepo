@@ -28,8 +28,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { SETTINGS } from "@/data/settings";
+import { useCooldown } from "@/hooks/utils/use-cooldown";
 import { cn } from "@/lib/utils";
-import { useCooldown } from "@/zap/hooks/utils/use-cooldown";
 import { authClient } from "@/zap/lib/auth/client";
 
 type Provider = "apple" | "google";

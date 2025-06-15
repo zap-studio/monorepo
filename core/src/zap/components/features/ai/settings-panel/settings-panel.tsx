@@ -36,8 +36,8 @@ import {
   DEFAULT_MODEL,
   ModelsByProvider,
 } from "@/zap/data/ai";
-import { useAISettings } from "@/zap/hooks/ai/use-ai-settings";
-import { useInitAISettings } from "@/zap/hooks/ai/use-init-ai-settings";
+import { useAISettings } from "@/zap/hooks/features/ai/use-ai-settings";
+import { useInitAISettings } from "@/zap/hooks/features/ai/use-init-ai-settings";
 import { orpc } from "@/zap/lib/orpc/client";
 import { AIFormSchema, AIProviderIdSchema } from "@/zap/schemas/ai.schema";
 import { AIFormValues, AIProviderId } from "@/zap/types/ai.types";

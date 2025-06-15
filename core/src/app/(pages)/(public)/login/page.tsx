@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { LoginForm } from "@/zap/components/external/login-form";
+import { LoginForm } from "@/zap/components/features/external/login-form";
 
 export default function LoginPage() {
   return (

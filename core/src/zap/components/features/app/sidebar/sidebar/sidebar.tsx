@@ -13,9 +13,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { NavMain } from "@/zap/components/app/sidebar/main/main";
-import { NavSecondary } from "@/zap/components/app/sidebar/secondary/secondary";
-import { NavUser } from "@/zap/components/app/sidebar/user/user";
+import { NavMain } from "@/zap/components/features/app/sidebar/main/main";
+import { NavSecondary } from "@/zap/components/features/app/sidebar/secondary/secondary";
+import { NavUser } from "@/zap/components/features/app/sidebar/user/user";
 import { authClient } from "@/zap/lib/auth/client";
 
 const MAIN_NAV_ITEMS = [
