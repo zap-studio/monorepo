@@ -55,10 +55,6 @@ export default defineConfig({
 						text: "Analytics",
 						link: "/docs/features/analytics",
 					},
-					{
-						text: "API Procedures",
-						link: "/docs/features/api",
-					},
 					{ text: "Authentication", link: "/docs/features/authentication" },
 					{
 						text: "Blog & CMS",
@@ -96,6 +92,10 @@ export default defineConfig({
 					{
 						text: "State Management",
 						link: "/docs/features/state-management",
+					},
+					{
+						text: "Type-Safe API",
+						link: "/docs/features/api",
 					},
 				],
 			},

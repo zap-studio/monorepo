@@ -1,4 +1,4 @@
-# API Procedures
+# Type-Safe API
 
 **Zap.ts** leverages [oRPC](https://orpc.unnoq.com/) to provide type-safe API procedures between the frontend and backend.
 
