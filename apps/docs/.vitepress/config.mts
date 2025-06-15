@@ -41,61 +41,61 @@ export default defineConfig({
 				],
 			},
 			{
-				text: "Concepts",
+				text: "Features",
 				items: [
 					{
 						text: "Overview",
-						link: "/docs/concepts/overview",
+						link: "/docs/features/overview",
 					},
 					{
 						text: "Admin Dashboard",
-						link: "/docs/concepts/admin-dashboard",
-					},
-					{
-						text: "AI Features",
-						link: "/docs/concepts/ai",
+						link: "/docs/features/admin-dashboard",
 					},
 					{
 						text: "Analytics",
-						link: "/docs/concepts/analytics",
+						link: "/docs/features/analytics",
 					},
 					{
 						text: "API Procedures",
-						link: "/docs/concepts/api",
+						link: "/docs/features/api",
 					},
-					{ text: "Authentication", link: "/docs/concepts/authentication" },
+					{ text: "Authentication", link: "/docs/features/authentication" },
 					{
 						text: "Blog & CMS",
-						link: "/docs/concepts/blog",
+						link: "/docs/features/blog",
 					},
-					{ text: "Database", link: "/docs/concepts/database" },
+					{ text: "Database", link: "/docs/features/database" },
 					{
 						text: "Internationalization",
-						link: "/docs/concepts/internationalization",
+						link: "/docs/features/internationalization",
+					},
+					{
+						text: "Large Language Models (LLMs)",
+						link: "/docs/features/llms",
 					},
 					{
 						text: "Legal Pages",
-						link: "/docs/concepts/legal",
+						link: "/docs/features/legal",
 					},
 					{
 						text: "Notifications & Emails",
-						link: "/docs/concepts/notifications",
+						link: "/docs/features/notifications",
 					},
 					{
 						text: "Payments & Subscriptions",
-						link: "/docs/concepts/payments",
+						link: "/docs/features/payments",
 					},
 					{
 						text: "Progressive Web App (PWA)",
-						link: "/docs/concepts/pwa",
+						link: "/docs/features/pwa",
 					},
 					{
 						text: "SEO Optimization",
-						link: "/docs/concepts/seo",
+						link: "/docs/features/seo",
 					},
 					{
 						text: "State Management",
-						link: "/docs/concepts/state-management",
+						link: "/docs/features/state-management",
 					},
 				],
 			},
@@ -132,7 +132,8 @@ export default defineConfig({
 		},
 
 		editLink: {
-			pattern: "https://github.com/alexandretrotel/zap.ts-docs/edit/main/:path",
+			pattern:
+				"https://github.com/alexandretrotel/zap.ts/edit/main/apps/docs/:path",
 			text: "Edit this page on GitHub",
 		},
 	},

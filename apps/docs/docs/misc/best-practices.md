@@ -182,7 +182,7 @@ In VSCode, hold `CMD` (or `Ctrl` on Windows) and left-click a file name (e.g., `
 
 ## Rationale
 
-Zap.ts’s structure and best practices are designed with *scalability*, *maintainability*, and *developer experience* in mind:
+These best practices are designed with *scalability*, *maintainability*, and *developer experience* in mind:
 
 * **Clear separation of concerns** keeps your code modular, making it easier to navigate and update without breaking unrelated parts.
 * Using **type-safe APIs** drastically reduces runtime errors and boosts confidence by catching bugs early during development.

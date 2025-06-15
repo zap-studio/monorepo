@@ -1,14 +1,12 @@
 # Model Context Protocols (MCPs)
 
-## What's MCP?
-
 [MCP (Model Context Protocol)](https://docs.cursor.com/context/model-context-protocol) allows **Cursor** to connect AI directly to your services—whether it’s _GitHub for pull requests_, _Supabase for databases_, or _PostHog for analytics_.
 
 This turns the LLM from a passive assistant into an **active agent** that can interact with APIs, services, or CLIs.
 
 ## Built-In MCPs
 
-*Zap.ts* comes preconfigured with the most commonly used services to save you setup time. These are defined in the `.cursor/mcp.json` file and require minimal configuration.
+**Zap.ts** comes preconfigured with the most commonly used services to save you setup time. These are defined in the `.cursor/mcp.json` file and require minimal configuration.
 
 Here are the built-in MCPs:
 

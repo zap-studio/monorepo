@@ -2,7 +2,7 @@
 
 **Zap.ts** – with the ⚡️ symbol – is a **Next.js** boilerplate designed to help you build applications _faster_ using a modern set of tools. It also comes with best practices to build _excellent_ modern web applications.
 
-Zap.ts is _fast_ to set up and very _easy_ to use. It comes with a clear documentation and a carefully selected set of tools that make the developer experience (DX) modern and enjoyable.
+It's _fast_ to set up and very _easy_ to use. It comes with clear documentation and a carefully selected set of tools that make the developer experience (DX) modern and enjoyable.
 
 ## Why it exists?
 

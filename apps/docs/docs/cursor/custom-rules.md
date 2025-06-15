@@ -1,7 +1,5 @@
 # Custom Rules
 
-## What Are Cursor Rules?
-
 [**Rules**](https://docs.cursor.com/context/rules) are instructions that guide how the AI operates within your project.
 
 - Preferred libraries, conventions, and architecture

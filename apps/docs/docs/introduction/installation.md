@@ -4,7 +4,7 @@ _Setting up **Zap.ts ⚡️** is now easier than ever!_
 
 ## Quick Installation
 
-You can install Zap.ts with a single command:
+You can install **Zap.ts** with a single command:
 
 ::: code-group
 
