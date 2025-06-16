@@ -145,6 +145,8 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
 						"package-lock.json",
 						"yarn.lock",
 						"pnpm-lock.yaml",
+						"bun.lockb",
+						"bun.lock",
 					];
 					for (const lockFile of lockFiles) {
 						const lockFilePath = path.join(outputDir, lockFile);
@@ -439,7 +441,7 @@ async function run() {
 	const args = process.argv.slice(2);
 
 	if (args[0] === "create" && args[1] === "procedure" && args[2]) {
-		await createProcedureEffect(args[2]);
+		await Effect.runPromise(createProcedureEffect(args[2]));
 	} else if (args.length === 0) {
 		await Effect.runPromise(mainEffect()).catch((error) => {
 			console.error(
