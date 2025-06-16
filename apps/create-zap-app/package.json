@@ -40,7 +40,7 @@
 	},
 	"main": "dist/index.js",
 	"scripts": {
-		"build": "tsdown src/index.ts --format esm --format cjs --dts --clean",
+		"build": "tsdown src/index.ts --format esm,cjs --dts --clean",
 		"lint": "biome check .",
 		"format": "biome format --write ."
 	},
