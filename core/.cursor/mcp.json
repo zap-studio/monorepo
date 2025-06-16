@@ -94,6 +94,10 @@
         "--access-token=${env:MCP_SENTRY_ACCESS_TOKEN}",
         "--host=${env:MCP_SENTRY_HOST}"
       ]
+    },
+    "llms-txt-explorer": {
+      "command": "npx",
+      "args": ["-y", "@thedaviddias/mcp-llms-txt-explorer"]
     }
   }
 }
