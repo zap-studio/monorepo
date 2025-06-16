@@ -43,7 +43,7 @@
     "@next/bundle-analyzer": "^15.3.3",
     "@next/mdx": "^15.3.3",
     "@orpc/client": "^1.5.1",
-    "@orpc/react-query": "^1.5.1",
+    "@orpc/react-query": "^1.5.2",
     "@orpc/server": "^1.5.1",
     "@react-email/components": "^0.0.42",
     "@types/mdx": "^2.0.13",

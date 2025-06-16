@@ -125,8 +125,8 @@ importers:
         specifier: ^1.5.1
         version: 1.5.1
       '@orpc/react-query':
-        specifier: ^1.5.1
-        version: 1.5.1(@orpc/client@1.5.1)(@tanstack/query-core@5.80.6)(@tanstack/react-query@5.80.6(react@19.1.0))(react@19.1.0)
+        specifier: ^1.5.2
+        version: 1.5.2(@orpc/client@1.5.1)(@tanstack/query-core@5.80.6)(@tanstack/react-query@5.80.6(react@19.1.0))(react@19.1.0)
       '@orpc/server':
         specifier: ^1.5.1
         version: 1.5.1
@@ -1584,10 +1584,10 @@ packages:
   '@orpc/contract@1.5.1':
     resolution: {integrity: sha512-sZ4m1SfT+tjo2mnBC1feSwQVMRNlVdWoANje374JN08QVpf/ERcSFhwPLbM8255GuV6lxxUy6lNBLWDj29UcOA==}
 
-  '@orpc/react-query@1.5.1':
-    resolution: {integrity: sha512-3NwDOYI2AqeRMKlW6uy7a/LSZwUzNHJ14IZ8+VcBVAnJ9fVONYtf6CGltag4/tYnTKQKwxyCG7ePr2iZv+oRYw==}
+  '@orpc/react-query@1.5.2':
+    resolution: {integrity: sha512-Bm1l6XJWvoS4X/X/NwUVLS2rjQbRbSG6zcpHPlQShid04IDsyaonAGWdzI3L+ehh/qzDwM/7ffk4tWc2wSac8Q==}
     peerDependencies:
-      '@orpc/client': 1.5.1
+      '@orpc/client': 1.5.2
       '@tanstack/react-query': '>=5.80.2'
       react: '>=18.3.0'
 
@@ -1605,6 +1605,9 @@ packages:
   '@orpc/shared@1.5.1':
     resolution: {integrity: sha512-9E1AsVmGJ/oUvqzjivBW8xGMPufvnOSMAkVDvivYkbIFE3B72XTv9KDH7JHqe49X3FU8Zk2mYkukIAjhpqFj6w==}
 
+  '@orpc/shared@1.5.2':
+    resolution: {integrity: sha512-cOfXv2EJ3OtcDQF1I0/0JS264zcexanm6bPOA7BHFu0sCivcUhMMoh5egKO4P2GWfDUbXSdH9Z5MDHBiN6IIZw==}
+
   '@orpc/standard-server-aws-lambda@1.5.1':
     resolution: {integrity: sha512-qK7WUCl6wDNmdvXvNHfgr3NNmqwjdVay5skvHPu9j/PJ88pzZ03ipHXByLMzHLR0ic5kIzd/PDpLGX5m2pcC0g==}
 
@@ -1620,10 +1623,10 @@ packages:
   '@orpc/standard-server@1.5.1':
     resolution: {integrity: sha512-jPw9ScoAxscgK9Mg6X/JXKKRm/l0P3gK8biOedSrxVVLRlcJM0kr3AHREvm+klh7hig2wD9/mrjhwv9qZazZtA==}
 
-  '@orpc/tanstack-query@1.5.1':
-    resolution: {integrity: sha512-6GBa1SwvE4aFqoDZjwvSqWO2a0I58+j9B0max6WYjSZmbo6E1Z/ZG0/g5D04oS3qZFdkyiqAwFEeNySUZpvaKw==}
+  '@orpc/tanstack-query@1.5.2':
+    resolution: {integrity: sha512-6yPTEz4+V8+djLhE6NO30gKlt3Ex0n3haH54Km0O6k0Y5L4sPYPyhqap47o5Zm7X3C3WYUwV0EQ9MWZfwCP8qw==}
     peerDependencies:
-      '@orpc/client': 1.5.1
+      '@orpc/client': 1.5.2
       '@tanstack/query-core': '>=5.80.2'
 
   '@oxc-project/runtime@0.72.2':
@@ -7755,11 +7758,11 @@ snapshots:
       '@standard-schema/spec': 1.0.0
       openapi-types: 12.1.3
 
-  '@orpc/react-query@1.5.1(@orpc/client@1.5.1)(@tanstack/query-core@5.80.6)(@tanstack/react-query@5.80.6(react@19.1.0))(react@19.1.0)':
+  '@orpc/react-query@1.5.2(@orpc/client@1.5.1)(@tanstack/query-core@5.80.6)(@tanstack/react-query@5.80.6(react@19.1.0))(react@19.1.0)':
     dependencies:
       '@orpc/client': 1.5.1
-      '@orpc/shared': 1.5.1
-      '@orpc/tanstack-query': 1.5.1(@orpc/client@1.5.1)(@tanstack/query-core@5.80.6)
+      '@orpc/shared': 1.5.2
+      '@orpc/tanstack-query': 1.5.2(@orpc/client@1.5.1)(@tanstack/query-core@5.80.6)
       '@tanstack/react-query': 5.80.6(react@19.1.0)
       react: 19.1.0
     transitivePeerDependencies:
@@ -7777,6 +7780,11 @@ snapshots:
       '@orpc/standard-server-peer': 1.5.1
 
   '@orpc/shared@1.5.1':
+    dependencies:
+      radash: 12.1.0
+      type-fest: 4.41.0
+
+  '@orpc/shared@1.5.2':
     dependencies:
       radash: 12.1.0
       type-fest: 4.41.0
@@ -7808,10 +7816,10 @@ snapshots:
     dependencies:
       '@orpc/shared': 1.5.1
 
-  '@orpc/tanstack-query@1.5.1(@orpc/client@1.5.1)(@tanstack/query-core@5.80.6)':
+  '@orpc/tanstack-query@1.5.2(@orpc/client@1.5.1)(@tanstack/query-core@5.80.6)':
     dependencies:
       '@orpc/client': 1.5.1
-      '@orpc/shared': 1.5.1
+      '@orpc/shared': 1.5.2
       '@tanstack/query-core': 5.80.6
 
   '@oxc-project/runtime@0.72.2': {}
