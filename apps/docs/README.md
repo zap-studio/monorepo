@@ -6,15 +6,6 @@ The official documentation for [Zap.ts](https://github.com/alexandretrotel/zap.t
 
 This repository contains the documentation site for Zap.ts, built with [VitePress](https://vitepress.dev/). Zap.ts is a modern boilerplate that accelerates web application development with a turbocharged stack and built-in features.
 
-## Features
-
-- **Built-in Auth ⚡️**: Secure email/password + OAuth with Better Auth
-- **AI-Ready ⚡️**: Vercel AI SDK with persisted Zustand store
-- **Typesafe Frontend & Backend ⚡️**: End-to-end TypeScript with oRPC and Drizzle ORM
-- **Turbocharged Stack ⚡️**: Next.js, shadcn/ui, oRPC and SWR
-- **Database Magic ⚡️**: Neon PostgreSQL + Drizzle ORM
-- **Email & Payments ⚡️**: React Email + Resend and Polar.sh placeholders
-
 ## Getting Started
 
 1. Clone the repository:
@@ -46,24 +37,6 @@ pnpm docs:build
 ```bash
 pnpm docs:preview
 ```
-
-## Project Structure
-
-- `index.md`: Home page configuration
-- `docs/`: Documentation content
-  - `[page].md`: Any page of the documentation
-- `.vitepress/config.mts`: VitePress configuration
-- `package.json`: Project dependencies and scripts
-
-## Development
-
-The documentation uses VitePress and includes:
-
-- Syntax highlighting with Shiki
-- Custom containers (info, tip, warning, danger, details)
-- Runtime API examples
-- TypeScript configuration
-- Custom theme configuration
 
 ## Contributing
 
