@@ -1,7 +1,11 @@
 import { defineConfig } from "vitepress";
+import llmstxt from "vitepress-plugin-llms";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+	vite: {
+		plugins: [llmstxt()],
+	},
 	title: "Zap.ts ⚡️",
 	description: "Build applications as fast as a zap.",
 	lang: "en-US",
@@ -66,6 +70,14 @@ export default defineConfig({
 						link: "/docs/features/blog",
 					},
 					{ text: "Database", link: "/docs/features/database" },
+					{
+						text: "Error Handling",
+						link: "/docs/features/error-handling",
+					},
+					{
+						text: "File Storage",
+						link: "/docs/features/file-storage",
+					},
 					{
 						text: "Internationalization",
 						link: "/docs/features/internationalization",
