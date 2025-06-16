@@ -59,7 +59,7 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
 							message: chalk.yellow(
 								"Which package manager do you want to use?",
 							),
-							choices: ["npm", "yarn", "pnpm"],
+							choices: ["npm", "yarn", "pnpm", "bun"],
 						},
 					]),
 				catch: (e) => new Error(`Prompt failed: ${String(e)}`),
@@ -185,7 +185,9 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
 					? "npm install --legacy-peer-deps"
 					: packageManager === "yarn"
 						? "yarn"
-						: "pnpm install";
+						: packageManager === "pnpm"
+							? "pnpm install"
+							: "bun install";
 
 			return Effect.tryPromise({
 				try: () => execAsync(installCmd, { cwd: outputDir }),

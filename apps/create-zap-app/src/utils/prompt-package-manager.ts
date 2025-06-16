@@ -3,7 +3,7 @@ import chalk from "chalk";
 import inquirer from "inquirer";
 
 export async function promptPackageManager(currentChoice: PackageManager) {
-	const choices = ["npm", "yarn", "pnpm"].filter(
+	const choices = ["npm", "yarn", "pnpm", "bun"].filter(
 		(choice) => choice !== currentChoice,
 	);
 
