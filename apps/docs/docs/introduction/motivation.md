@@ -44,9 +44,9 @@ Whether you’re a solo founder or a small team, Zap.ts empowers you to ship fas
 Zap.ts wouldn't exist without those _wonderful_ tools:
 
 - [shadcn/ui](https://ui.shadcn.com/): The best way to get ready-to-use UI components that you can customize however you like.
-- [better-auth](https://better-auth.com/): A simple and flexible way to set up authentication. It works with any framework, avoids vendor lock-in, and connects seamlessly to your database.
-- [drizzle](https://orm.drizzle.team/): An ORM that lets you write database schemas in TypeScript, sync them with your database, and is easy to use.
-- [zustand](https://zustand-demo.pmnd.rs/): A lightweight alternative to Redux and React Context. It helps you write less code, do more, and supports local storage persistence out of the box.
+- [Better Auth](https://better-auth.com/): A simple and flexible way to set up authentication. It works with any framework, avoids vendor lock-in, and connects seamlessly to your database.
+- [Drizzle ORM](https://orm.drizzle.team/): An ORM that lets you write database schemas in TypeScript, sync them with your database, and is easy to use.
+- [Zustand](https://zustand-demo.pmnd.rs/): A lightweight alternative to Redux and React Context. It helps you write less code, do more, and supports local storage persistence out of the box.
 - [oRPC](https://orpc.unnoq.com/): An alternative to [tRPC](https://trpc.io/) that supports OpenAPI specs, making it easy to build type-safe APIs for frontend and backend.
 - [Effect](https://effect.website/): A powerful functional library for modeling, managing, and propagating side effects and errors across your full stack with type safety.
 - [Payload CMS](https://payloadcms.com/): A self-hosted, developer-friendly CMS for managing your content and blogs with full customization and extensibility.
