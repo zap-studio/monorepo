@@ -31,7 +31,7 @@ import { Metadata } from "next";
 
 export const APP_NAME = "Zap.ts";
 export const APP_DESCRIPTION =
-    "The boilerplate to build application as fast as a zap.";
+    "Build application as fast as a zap.";
 export const BASE_URL = DEV
     ? "http://localhost:3000"
     : "https://demo.zap-ts.alexandretrotel.org";

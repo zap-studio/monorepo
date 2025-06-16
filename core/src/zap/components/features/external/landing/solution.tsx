@@ -26,7 +26,7 @@ export function SolutionSection() {
           <div className="flex flex-col space-y-2">
             <span className="text-primary text-sm font-medium">Solution</span>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              The boilerplate to build applications as fast as a zap
+              Build applications as fast as a zap
             </h2>
           </div>
           <p className="text-muted-foreground max-w-[600px] md:text-lg">
