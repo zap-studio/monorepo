@@ -32,7 +32,7 @@ Make sure to define them in your local `.env` file or shell environment.
 
 **Example:**
 
-```env
+```txt
 MCP_SUPABASE_ACCESS_TOKEN=your_supabase_token
 MCP_POSTHOG_AUTH_HEADER=Bearer your_posthog_token
 ```
