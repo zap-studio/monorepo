@@ -65,6 +65,10 @@ Learn more in the [Next.js documentation](https://nextjs.org/docs/app/getting-st
 
 It's important to note that **API Routes** handle concurrent requests, making them ideal for data fetching and external APIs, while **Server Actions** run sequentially and are better suited for isolated _mutation_ tasks.
 
+:::warning
+In general, we advise against using **Server Actions**. They are essentially another way to define **API Routes**, but with less control and flexibility.
+:::
+
 ## Providers vs. Zustand Stores
 
 The `providers` folder is for React context providers, but we recommend using Zustand stores for state management whenever possible.
