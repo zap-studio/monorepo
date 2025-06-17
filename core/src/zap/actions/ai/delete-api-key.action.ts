@@ -3,12 +3,13 @@ import { Effect } from "effect";
 
 import { db } from "@/db";
 import { userAISettings } from "@/db/schema";
+import type { AIProviderId } from "@/zap/types/ai.types";
 
 interface DeleteAPIKeyContext {
   session: { user: { id: string } };
 }
 interface DeleteAPIKeyInput {
-  provider: string;
+  provider: AIProviderId;
 }
 
 export const deleteAPIKeyAction = async ({

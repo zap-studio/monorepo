@@ -2,12 +2,13 @@ import { Effect } from "effect";
 
 import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
 import { decrypt } from "@/zap/lib/crypto/decrypt";
+import type { AIProviderId } from "@/zap/types/ai.types";
 
 interface GetAISettingsContext {
   session: { user: { id: string } };
 }
 interface GetAISettingsInput {
-  provider: string;
+  provider: AIProviderId;
 }
 
 export const getAISettingsAction = async ({
