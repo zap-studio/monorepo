@@ -1,8 +1,8 @@
 import { Effect } from "effect";
 import { z } from "zod/v4";
 
-import { isUserAdmin } from "@/zap/actions/authenticated.action";
-import { sendMail } from "@/zap/actions/emails.action";
+import { isUserAdmin } from "@/zap/actions/auth/authenticated.action";
+import { sendMail } from "@/zap/actions/emails/send-mail.action";
 
 const SendMailSchema = z.object({
   subject: z.string(),

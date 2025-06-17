@@ -3,8 +3,8 @@ import { Effect } from "effect";
 import { z } from "zod/v4";
 
 import { SETTINGS } from "@/data/settings";
-import { getAISettings } from "@/zap/actions/ai.action";
-import { getModel } from "@/zap/lib/ai/ai";
+import { getAISettingsAction } from "@/zap/actions/ai/get-ai-settings.action";
+import { getModel } from "@/zap/lib/ai/get-model";
 import { auth } from "@/zap/lib/auth/server";
 import { AIProviderIdSchema } from "@/zap/schemas/ai.schema";
 
@@ -41,7 +41,11 @@ export async function POST(req: Request) {
 
       const { apiKey, model } = yield* _(
         Effect.tryPromise({
-          try: () => getAISettings(session.user.id, body.provider),
+          try: () =>
+            getAISettingsAction({
+              context: { session },
+              input: { provider },
+            }),
           catch: () => new Error("Failed to get AI settings"),
         }),
       );

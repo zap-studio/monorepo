@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 import { FLAGS } from "@/data/flags";
 import { ThemeProvider } from "@/providers/theme.provider";
-import SuspendedPostHogPageView from "@/zap/components/features/analytics/posthog-page-view/posthog-page-view";
+import SuspendedPostHogPageView from "@/zap/components/analytics/analytics-posthog-page-view";
 
 interface ProvidersProps {
   children: React.ReactNode;

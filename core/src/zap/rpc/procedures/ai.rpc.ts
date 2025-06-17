@@ -1,312 +1,47 @@
-import { and, eq } from "drizzle-orm";
-import { Effect } from "effect";
-import { z } from "zod/v4";
-
-import { db } from "@/db";
-import { userAISettings } from "@/db/schema";
-import { $fetch } from "@/lib/fetch";
 import { authMiddleware, base } from "@/rpc/middlewares";
-import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
-import { decrypt, encrypt } from "@/zap/lib/crypto/crypto";
-import { AIProviderIdSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
-
-const InputGetAPIKeySchema = z.object({
-  provider: AIProviderIdSchema,
-});
+import { deleteAPIKeyAction } from "@/zap/actions/ai/delete-api-key.action";
+import { getAISettingsAction } from "@/zap/actions/ai/get-ai-settings.action";
+import { saveAISettingsAction } from "@/zap/actions/ai/save-ai-settings.action";
+import { saveOrUpdateAISettingsAction } from "@/zap/actions/ai/save-or-update-ai-settings.action";
+import { testAPIKeyAction } from "@/zap/actions/ai/test-api-key.action";
+import { updateAISettingsAction } from "@/zap/actions/ai/update-ai-settings.action";
+import {
+  InputDeleteAPIKeySchema,
+  InputGetAPIKeySchema,
+  InputSaveAPIKeySchema,
+  InputTestAPIKeySchema,
+  InputUpdateAPIKeySchema,
+} from "@/zap/schemas/ai.schema";
 
 const getAISettings = base
   .use(authMiddleware)
   .input(InputGetAPIKeySchema)
-  .handler(async ({ context, input }) => {
-    return Effect.runPromise(
-      Effect.gen(function* (_) {
-        const userId = context.session.user.id;
-        const provider = input.provider;
-
-        const result = yield* _(
-          Effect.tryPromise({
-            try: () =>
-              getApiSettingsForUserAndProviderQuery.execute({
-                userId,
-                provider,
-              }),
-            catch: (e) => e,
-          }),
-        );
-
-        if (!result.length) {
-          return yield* _(Effect.fail(new Error("AI settings not found")));
-        }
-
-        const encryptedAPIKey = result[0]?.encryptedApiKey;
-        const model = result[0]?.model;
-
-        const decryptedAPIKey = decrypt(
-          encryptedAPIKey.iv,
-          encryptedAPIKey.encrypted,
-        );
-
-        return { apiKey: decryptedAPIKey, model };
-      }),
-    );
-  });
-
-const InputSaveAPIKeySchema = z.object({
-  provider: AIProviderIdSchema,
-  model: ModelNameSchema,
-  apiKey: z.string(),
-});
+  .handler(getAISettingsAction);
 
 const saveAISettings = base
   .use(authMiddleware)
   .input(InputSaveAPIKeySchema)
-  .handler(async ({ context, input }) => {
-    return Effect.runPromise(
-      Effect.gen(function* (_) {
-        const userId = context.session.user.id;
-        const provider = input.provider;
-        const apiKey = input.apiKey;
-        const model = input.model;
-
-        const encryptedAPIKey = encrypt(apiKey);
-
-        const existingSettings = yield* _(
-          Effect.tryPromise({
-            try: () =>
-              getApiSettingsForUserAndProviderQuery.execute({
-                userId,
-                provider,
-              }),
-            catch: (e) => e,
-          }),
-        );
-
-        if (existingSettings.length > 0) {
-          return yield* _(Effect.fail(new Error("AI settings already exists")));
-        }
-
-        yield* _(
-          Effect.tryPromise({
-            try: () =>
-              db
-                .insert(userAISettings)
-                .values({
-                  userId,
-                  provider,
-                  model,
-                  encryptedApiKey: encryptedAPIKey,
-                })
-                .execute(),
-            catch: (e) => e,
-          }),
-        );
-
-        return { success: true };
-      }),
-    );
-  });
-
-const InputUpdateAPIKeySchema = z.object({
-  provider: AIProviderIdSchema,
-  model: ModelNameSchema,
-  apiKey: z.string(),
-});
+  .handler(saveAISettingsAction);
 
 const updateAISettings = base
   .use(authMiddleware)
   .input(InputUpdateAPIKeySchema)
-  .handler(async ({ context, input }) => {
-    return Effect.runPromise(
-      Effect.gen(function* (_) {
-        const userId = context.session.user.id;
-        const provider = input.provider;
-        const model = input.model;
-        const apiKey = input.apiKey;
-
-        const encryptedAPIKey = encrypt(apiKey);
-
-        const existingSettings = yield* _(
-          Effect.tryPromise({
-            try: () =>
-              getApiSettingsForUserAndProviderQuery.execute({
-                userId,
-                provider,
-              }),
-            catch: (e) => e,
-          }),
-        );
-
-        if (!existingSettings.length) {
-          return yield* _(Effect.fail(new Error("AI settings not found")));
-        }
-
-        yield* _(
-          Effect.tryPromise({
-            try: () =>
-              db
-                .update(userAISettings)
-                .set({
-                  model,
-                  encryptedApiKey: encryptedAPIKey,
-                })
-                .where(
-                  and(
-                    eq(userAISettings.userId, userId),
-                    eq(userAISettings.provider, provider),
-                  ),
-                )
-                .execute(),
-            catch: (e) => e,
-          }),
-        );
-
-        return { success: true };
-      }),
-    );
-  });
-
-const InputDeleteAPIKeySchema = z.object({
-  provider: AIProviderIdSchema,
-});
+  .handler(updateAISettingsAction);
 
 const deleteAPIKey = base
   .use(authMiddleware)
   .input(InputDeleteAPIKeySchema)
-  .handler(async ({ context, input }) => {
-    return Effect.runPromise(
-      Effect.gen(function* (_) {
-        const userId = context.session.user.id;
-        const provider = input.provider;
-
-        yield* _(
-          Effect.tryPromise({
-            try: () =>
-              db
-                .delete(userAISettings)
-                .where(
-                  and(
-                    eq(userAISettings.userId, userId),
-                    eq(userAISettings.provider, provider),
-                  ),
-                )
-                .execute(),
-            catch: (e) => e,
-          }),
-        );
-
-        return { success: true };
-      }),
-    );
-  });
+  .handler(deleteAPIKeyAction);
 
 const saveOrUpdateAISettings = base
   .use(authMiddleware)
   .input(InputSaveAPIKeySchema)
-  .handler(async ({ context, input }) => {
-    return Effect.runPromise(
-      Effect.gen(function* (_) {
-        const userId = context.session.user.id;
-        const provider = input.provider;
-        const apiKey = input.apiKey;
-        const model = input.model;
-
-        const encryptedAPIKey = encrypt(apiKey);
-
-        const existingSettings = yield* _(
-          Effect.tryPromise({
-            try: () =>
-              getApiSettingsForUserAndProviderQuery.execute({
-                userId,
-                provider,
-              }),
-            catch: (e) => e,
-          }),
-        );
-
-        if (existingSettings.length > 0) {
-          yield* _(
-            Effect.tryPromise({
-              try: () =>
-                db
-                  .update(userAISettings)
-                  .set({
-                    model,
-                    encryptedApiKey: encryptedAPIKey,
-                  })
-                  .where(
-                    and(
-                      eq(userAISettings.userId, userId),
-                      eq(userAISettings.provider, provider),
-                    ),
-                  )
-                  .execute(),
-              catch: (e) => e,
-            }),
-          );
-        } else {
-          yield* _(
-            Effect.tryPromise({
-              try: () =>
-                db
-                  .insert(userAISettings)
-                  .values({
-                    userId,
-                    provider,
-                    model,
-                    encryptedApiKey: encryptedAPIKey,
-                  })
-                  .execute(),
-              catch: (e) => e,
-            }),
-          );
-        }
-
-        return { success: true };
-      }),
-    );
-  });
-
-const InputTestAPIKeySchema = z.object({
-  provider: AIProviderIdSchema,
-  apiKey: z.string(),
-  model: ModelNameSchema,
-});
+  .handler(saveOrUpdateAISettingsAction);
 
 const testAPIKey = base
   .use(authMiddleware)
   .input(InputTestAPIKeySchema)
-  .handler(({ input, context }) => {
-    return Effect.runPromise(
-      Effect.gen(function* (_) {
-        const provider = input.provider;
-        const apiKey = input.apiKey;
-        const model = input.model;
-        let headers = new Headers(context.headers);
-
-        const filteredHeaders = new Headers();
-        for (const [key, value] of headers.entries()) {
-          if (key !== "content-length" && key !== "content-type") {
-            filteredHeaders.append(key, value);
-          }
-        }
-        headers = filteredHeaders;
-
-        yield* _(
-          Effect.tryPromise({
-            try: () =>
-              $fetch(`/api/ai/test`, {
-                method: "POST",
-                body: { provider, apiKey, model },
-                headers,
-              }),
-            catch: () => new Error("Invalid API key"),
-          }),
-        );
-
-        return { success: true };
-      }),
-    );
-  });
+  .handler(testAPIKeyAction);
 
 export const ai = {
   getAISettings,

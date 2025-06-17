@@ -1,22 +1,7 @@
-import { Effect } from "effect";
-
-import { db } from "@/db";
-import { user } from "@/db/schema";
 import { base } from "@/rpc/middlewares";
+import { getNumberOfUsersAction } from "@/zap/actions/users/get-number-of-users.action";
 
-const getNumberOfUsers = base.handler(async () => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const numberOfUsers = yield* _(
-        Effect.tryPromise({
-          try: () => db.$count(user),
-          catch: (e) => e,
-        }),
-      );
-      return numberOfUsers;
-    }),
-  );
-});
+const getNumberOfUsers = base.handler(getNumberOfUsersAction);
 
 export const users = {
   getNumberOfUsers,

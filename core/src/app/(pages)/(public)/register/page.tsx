@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { RegisterForm } from "@/zap/components/features/external/register-form";
+import { RegisterForm } from "@/zap/components/common/register-form";
 
 export default function RegisterPage() {
   return (

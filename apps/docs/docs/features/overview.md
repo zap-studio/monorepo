@@ -1,12 +1,12 @@
 # Overview
 
-**Zap.ts ⚡️** is designed to accelerate web application development with a *powerful* and *modern* feature set. Each **feature** and **concept** is detailed in its dedicated section.
+**Zap.ts ⚡️** is designed to accelerate web application development with a _powerful_ and _modern_ feature set. Each **feature** and **concept** is detailed in its dedicated section.
 
 It provides everything you need to kickstart your app—from authentication to payments and subscriptions.
 
 Looking ahead, **Zap.ts** plans to be modular, using a _**plugin injection system**_ that lets you plug and play only what you need, as simply as possible.
 
-We’ll leverage *tree shakeability* to keep your bundle size optimized.
+We’ll leverage _tree shakeability_ to keep your bundle size optimized.
 
 :::tip Tree Shakeability Explained
 

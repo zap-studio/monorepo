@@ -20,3 +20,29 @@ export const AIFormSchema = z.object({
   model: ModelNameSchema,
   apiKey: z.string().min(1, "API key is required"),
 });
+
+export const InputGetAPIKeySchema = z.object({
+  provider: AIProviderIdSchema,
+});
+
+export const InputSaveAPIKeySchema = z.object({
+  provider: AIProviderIdSchema,
+  model: ModelNameSchema,
+  apiKey: z.string(),
+});
+
+export const InputUpdateAPIKeySchema = z.object({
+  provider: AIProviderIdSchema,
+  model: ModelNameSchema,
+  apiKey: z.string(),
+});
+
+export const InputDeleteAPIKeySchema = z.object({
+  provider: AIProviderIdSchema,
+});
+
+export const InputTestAPIKeySchema = z.object({
+  provider: AIProviderIdSchema,
+  apiKey: z.string(),
+  model: ModelNameSchema,
+});

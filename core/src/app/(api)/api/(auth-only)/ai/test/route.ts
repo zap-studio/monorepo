@@ -2,7 +2,7 @@ import { generateText } from "ai";
 import { Effect } from "effect";
 import { z } from "zod/v4";
 
-import { getModel } from "@/zap/lib/ai/ai";
+import { getModel } from "@/zap/lib/ai/get-model";
 import { auth } from "@/zap/lib/auth/server";
 import { AIProviderIdSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
 
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
       Effect.catchAll((err) =>
         Effect.succeed(
           Response.json(
-            { error: err && err.message ? err.message : "Internal error" },
+            { error: err?.message ? err.message : "Internal error" },
             { status: 401 },
           ),
         ),

@@ -1,24 +1,21 @@
 ---
-description: Core architectural and coding standards for Zap.ts projects.
-globs:
-  - "**/*"
+description: 
+globs: 
 alwaysApply: true
 ---
-
 # Zap.ts Architecture & Conventions
 
 These rules define the structural and development standards for any project based on the Zap.ts stack.
 
 They exist to maintain consistency, reliability, and clarity across codebases.
 
-## 1. Project Structure
+## Project Structure
 
 Organize all logic under the `src/` directory, using the following layout:
 
 * `actions/` — Server actions (e.g., `update-user.action.ts`)
 * `app/` — Next.js app routes (pages, layouts, metadata)
 * `components/` — Reusable UI components
-
   * `ui/` — Low-level primitives
   * `common/` — Feature-specific blocks
 * `data/` — Static values, constants (UPPERCASE)
@@ -30,7 +27,7 @@ Organize all logic under the `src/` directory, using the following layout:
 * `stores/` — Zustand stores for app state
 * `types/` — Global types and Zod schemas
 
-## 2. Naming Conventions
+## Naming Conventions
 
 Use file names that reflect function and context:
 
@@ -45,14 +42,14 @@ Use file names that reflect function and context:
 | RPC Procedure   | `*.rpc.ts`    | `user.rpc.ts`           |
 | Constants       | Uppercase     | `BASE_URL` in `data/`   |
 
-## 3. Type Safety
+## Type Safety
 
 * TypeScript is mandatory.
 * All input/output validation must use Zod (`src/types/*.schema.ts`).
 * Prefer Zustand over React Context.
 * RPC must be type-safe with oRPC.
 
-## 4. State Management
+## State Management
 
 * Use Zustand (`src/stores/`) for local/global state.
 * Middleware: Use `persist` where needed.
@@ -72,10 +69,10 @@ export const useUserStore = create<UserState>((set) => ({
 }));
 ```
 
-## 5. Type-Safe API
+## Type-Safe API
 
 * Define oRPC functions in `src/rpc/procedures/`.
-* Register them in \[@rpc/router.ts].
+* Register them in [router.ts](mdc:core/src/rpc/router.ts).
 * Use SWR or custom hooks for fetching client-side.
 
 ```ts
@@ -88,17 +85,17 @@ export const useUserProfile = () => {
 };
 ```
 
-## 6. Authentication
+## Authentication
 
 * Use the Better Auth package.
-* Place auth logic in \[@auth/].
+* Place auth logic in [server.ts](mdc:core/src/zap/lib/auth/server.ts).
 * Use server actions for login/session handling.
 
-## 7. Database
+## Database
 
 * Use Drizzle ORM with PostgreSQL.
 * Define schemas in `src/db/schema/`.
-* Re-export from \[@schema/index.ts].
+* Re-export from [index.ts](mdc:core/src/db/schema/index.ts).
 
 ```ts
 import { z } from "zod";
@@ -109,31 +106,76 @@ export const userSchema = z.object({
 });
 ```
 
-## 8. Error Handling
+## Error Handling
 
-* Use [Effect](https://effect.website) for typed async flows and errors.
+* Use [Effect](mdc:https:/effect.website) for typed async flows and errors.
 * Avoid try/catch; prefer declarative error modeling.
 
-## 9. Environment Variables
+## Environment Variables
 
 * Store secrets/config in `.env`.
 * Prefix anything MCP-specific with `MCP_`.
 
-## 10. PWA / SEO / Analytics
+## PWA / SEO / Analytics
 
-* Configure all in \[@zap.config.ts].
+* Configure all in [zap.config.ts](mdc:core/zap.config.ts).
 * PWA manifest is generated from config.
 * Use `next-sitemap` for automated SEO sitemap generation.
 
-## 11. Dependencies
+## AI/LLM Integration
 
-* Use correct versions and constraints from \[@package.json].
+* Use Vercel AI SDK for streaming responses.
+* Store encrypted API keys in database.
+* Support multiple providers (OpenAI, Mistral).
+* Use type-safe settings management with RPC.
+
+```ts
+// AI Settings Management
+const { isSaving, saveApiKey } = useAISettings();
+await saveApiKey({ provider: "openai", model: "gpt-4o-mini", apiKey: "..." });
+
+// Streaming AI Responses
+const { messages, input, handleSubmit } = useChat({
+  api: "/api/ai/chat",
+});
+```
+
+## Push Notifications
+
+* Use browser Push API with service workers.
+* Store subscriptions in database with user associations.
+* Implement VAPID key management.
+* Use web-push library for server-side sending.
+
+```ts
+// Subscribe to notifications
+const { subscribe } = usePushNotifications();
+await subscribe();
+
+// Send notification (server-side)
+await webpush.sendNotification(subscription, JSON.stringify({
+  title: "New message",
+  body: "You have a new message"
+}));
+```
+
+## Email System
+
+* Use Resend for transactional emails.
+* Create React email templates.
+* Implement rate limiting and tracking.
+* Use Effect for error handling.
+
+```ts
+// Send verification email
+await sendVerificationEmail({
+  subject: "Verify your email",
+  recipients: ["user@example.com"],
+  url: "https://app.com/verify?token=abc123"
+});
+```
+
+## Dependencies
+
+* Use correct versions and constraints from [package.json](mdc:core/package.json).
 * Avoid implicit version upgrades unless explicitly updated.
-
-##  References
-
-* @package.json: Project configuration, versions, conventions
-* @zap.config.ts: Global PWA, SEO, analytics config
-* @rpc/router.ts: RPC procedure registration
-* @schema/index.ts: Central DB schema exports
-* @auth/: Auth logic for Better Auth integration

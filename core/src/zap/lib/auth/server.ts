@@ -11,11 +11,10 @@ import { passkey } from "better-auth/plugins/passkey";
 
 import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
-import {
-  sendForgotPasswordMail,
-  sendVerificationEmail,
-} from "@/zap/actions/emails.action";
-import { canSendEmail, updateLastEmailSent } from "@/zap/lib/resend/rate-limit";
+import { sendForgotPasswordMail } from "@/zap/actions/emails/send-forgot-password-mail.action";
+import { sendVerificationEmail } from "@/zap/actions/emails/send-verification-email.action";
+import { canSendEmail } from "@/zap/lib/emails/can-send-mail";
+import { updateLastTimestampEmailSent } from "@/zap/lib/emails/update-last-timestamp-email-sent";
 
 export const auth = betterAuth({
   appName: "Zap.ts",
@@ -39,7 +38,7 @@ export const auth = betterAuth({
         url,
       });
 
-      await updateLastEmailSent(user.id);
+      await updateLastTimestampEmailSent(user.id);
     },
   },
   emailVerification: {
@@ -57,7 +56,7 @@ export const auth = betterAuth({
         url,
       });
 
-      await updateLastEmailSent(user.id);
+      await updateLastTimestampEmailSent(user.id);
     },
   },
   socialProviders: {
