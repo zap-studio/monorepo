@@ -4,6 +4,12 @@
 
 It's _fast_ to set up and very _easy_ to use. It comes with clear documentation and a carefully selected set of tools that make the developer experience (DX) modern and enjoyable.
 
+## Installation
+
+```env
+npx create-zap-app@latest
+```
+
 ## Why it exists?
 
 Starting a new web project always means repeating the _same_ steps:
