@@ -4,11 +4,11 @@
 
 ## Overview
 
-- **Offline Support:** Users can access your app even without an internet connection.
-- **Installable:** Users can install your app to their home screen or desktop.
-- **Push Notifications:** Real-time notifications delivered via the browser's Push API and service worker.
-- **Performance:** Faster load times and improved reliability with caching strategies.
 - **Customizable:** Easily update icons, theme color, and manifest settings.
+- **Installable:** Users can install your app to their home screen or desktop.
+- **Offline Support:** Users can access your app even without an internet connection.
+- **Performance:** Faster load times and improved reliability with caching strategies.
+- **Push Notifications:** Real-time notifications delivered via the browser's Push API and service worker.
 
 ## How it works?
 
@@ -68,9 +68,9 @@ See [Notifications & Emails](/docs/features/notifications.md) for details on sub
 
 ### 4. Customizing Your PWA
 
-- **Update icons:** Replace the icon files in `public/`.
 - **Edit manifest:** Change `PWA` settings to update app name, colors, and icons.
 - **Extend service worker:** Add caching strategies or custom logic in `sw.js`.
+- **Update icons:** Replace the icon files in `public/`.
 
 ## References
 

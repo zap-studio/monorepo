@@ -4,20 +4,20 @@
 
 ## Overview
 
-- **Push Notifications:** Real-time web push notifications using the browser's Push API and service workers.
 - **Emails:** Transactional emails for verification, password reset, magic links, and more.
-- **Type-safe:** All notification and email actions are fully typed with TypeScript and Zod.
 - **Extensible:** Easily customize notification channels, templates, and triggers.
+- **Push Notifications:** Real-time web push notifications using the browser's Push API and service workers.
+- **Type-safe:** All notification and email actions are fully typed with TypeScript and Zod.
 
 ## Push Notifications
 
 **Zap.ts** uses the browser Push API and a PWA service worker (`/sw.js`) to deliver real-time notifications.
 
-- **Subscription:** Users can subscribe to push notifications, which stores their subscription in the database.
-- **Service Worker:** The service worker (`public/sw.js`) handles displaying notifications when received.
 - **API Endpoints:**  
   - `POST /api/(auth-only)/user/notifications/subscribe` — Subscribe a user to push notifications.
   - `DELETE /api/(auth-only)/user/notifications/unsubscribe` — Unsubscribe a user.
+- **Subscription:** Users can subscribe to push notifications, which stores their subscription in the database.
+- **Service Worker:** The service worker (`public/sw.js`) handles displaying notifications when received.
 
 For more, see the [MDN Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API) and [Next.js PWA Guide](https://nextjs.org/docs/app/guides/progressive-web-apps).
 
@@ -25,9 +25,9 @@ For more, see the [MDN Push API](https://developer.mozilla.org/en-US/docs/Web/AP
 
 **Zap.ts** uses [Resend](https://resend.com/) for transactional email delivery. Email actions are defined in `src/zap/actions/emails.action.ts` and support:
 
-- **Verification emails**
 - **Forgot password emails**
 - **Magic link emails**
+- **Verification emails**
 - **Custom emails**
 
 **Example: Sending a Verification Email**

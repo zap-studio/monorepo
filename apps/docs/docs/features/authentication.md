@@ -6,9 +6,9 @@ It supports modern authentication flows, strong security defaults, and easy inte
 
 ## Overview
 
+- **Extensible:** Add or remove providers, customize flows, and hook into authentication events.
 - **Multi-provider:** Email/password, passkey, anonymous, username, admin, and organization logins.
 - **Secure:** Built-in support for 2FA, email verification, and password policies.
-- **Extensible:** Add or remove providers, customize flows, and hook into authentication events.
 - **Type-safe:** All authentication logic is fully typed with TypeScript.
 
 ## How authentication works?

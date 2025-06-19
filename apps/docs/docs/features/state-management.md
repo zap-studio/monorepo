@@ -4,11 +4,11 @@
 
 ## Overview
 
-- **Lightweight:** Zustand is a minimal state management library with a small bundle size.
-- **Type-safe:** All stores are fully typed with TypeScript.
-- **Persistent:** Easily persist state to localStorage or sessionStorage.
 - **Composable:** Stores can be split by feature and composed as needed.
+- **Lightweight:** Zustand is a minimal state management library with a small bundle size.
 - **No boilerplate:** Create and use stores with minimal code.
+- **Persistent:** Easily persist state to localStorage or sessionStorage.
+- **Type-safe:** All stores are fully typed with TypeScript.
 
 ## How it works?
 

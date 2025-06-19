@@ -6,13 +6,13 @@
 
 - **Automatic sitemap generation:** Keep search engines up to date with your latest pages.
 - **Meta tags & Open Graph:** Easily configure titles, descriptions, and social sharing images.
+- **Performance:** Fast load times and optimized assets for better rankings.
 - **Robots.txt:** Control which pages are indexed by search engines.
 - **Structured data:** Add JSON-LD for rich results.
-- **Performance:** Fast load times and optimized assets for better rankings.
 
 ## Definitions
 
-- **Sitemap:** A [sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview) is a file where you provide information about the pages, videos, and other files on your site, and the relationships between them.
+- **sitemap.xml:** A [sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview) is a file where you provide information about the pages, videos, and other files on your site, and the relationships between them.
 
 - **robots.txt:** A [robots.txt](https://developers.google.com/search/docs/crawling-indexing/robots/intro) file tells search engine crawlers which pages or files they can or can't request from your site. This helps control indexing and crawling behavior.
 

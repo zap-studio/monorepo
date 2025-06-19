@@ -4,9 +4,9 @@
 
 ## Overview
 
-- **Zero-config:** Vercel Analytics and Speed Insights are enabled by default.
 - **Custom events:** Easily track custom events and user actions.
 - **Extensible:** Swap out or extend analytics providers as needed.
+- **Zero-config:** Vercel Analytics and Speed Insights are enabled by default.
 
 ## Providers
 
@@ -26,9 +26,9 @@ It is automatically included in your app layout and requires no setup if you dep
 
 It is integrated via a custom `Providers` component that initializes PostHog only if `FLAGS.ENABLE_POSTHOG` is enabled.
 
-- **Initialization:** PostHog is set up using your environment variables.
-- **Pageviews:** Pageview tracking is handled by the `SuspendedPostHogPageView` component.
-- **Custom Events:** You can track custom events anywhere in your app using **PostHog SDK**.
+1. **Initialization:** PostHog is set up using your environment variables.
+2. **Pageviews:** Pageview tracking is handled by the `SuspendedPostHogPageView` component.
+3. **Custom Events:** You can track custom events anywhere in your app using **PostHog SDK**.
 
 To use PostHog, set the appropriate environment variables (`NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST`) and enable the feature flag in `zap.config.ts`.
 

@@ -8,12 +8,12 @@ The **SDK** provides a lightweight, React-friendly abstraction over streaming re
 
 ## Overview
 
-- **Multi-provider support:** Out of the box, **Zap.ts** supports [OpenAI](https://openai.com/) and [Mistral](https://mistral.ai/), with the ability to add more [providers](https://ai-sdk.dev/providers/ai-sdk-providers).
-- **Streaming responses:** Both completions and chat endpoints stream results for a responsive UI.
-- **User-configurable:** Users can select their AI provider and manage API keys directly from the frontend.
-- **Type-safe:** All API routes and stores use Zod schemas and TypeScript for safety and autocompletion.
 - **API key encryption:** API keys are always encrypted before being stored in the database, ensuring _security_ and _privacy_.
+- **Multi-provider support:** Out of the box, **Zap.ts** supports [OpenAI](https://openai.com/) and [Mistral](https://mistral.ai/), with the ability to add more [providers](https://ai-sdk.dev/providers/ai-sdk-providers).
 - **Settings persistence:** User AI settings are saved per-provider and automatically loaded.
+- **Streaming responses:** Both completions and chat endpoints stream results for a responsive UI.
+- **Type-safe:** All API routes and stores use Zod schemas and TypeScript for safety and autocompletion.
+- **User-configurable:** Users can select their AI provider and manage API keys directly from the frontend.
 
 ## Architecture
 

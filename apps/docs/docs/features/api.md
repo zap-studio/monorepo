@@ -8,10 +8,10 @@ For **data fetching**, **mutations** and **caching** on the client, **Zap.ts** u
 
 ## Overview
 
-- **Type-safe:** All procedures and inputs are validated with Zod schemas and TypeScript types.
+- **Extensible:** Add new procedures, middleware, and custom logic with minimal boilerplate.
 - **OpenAPI-ready:** oRPC can generate OpenAPI specs for your endpoints.
 - **React-friendly:** Hooks are generated for easy data fetching with SWR or React Query.
-- **Extensible:** Add new procedures, middleware, and custom logic with minimal boilerplate.
+- **Type-safe:** All procedures and inputs are validated with Zod schemas and TypeScript types.
 
 ## Server vs. Client
 
