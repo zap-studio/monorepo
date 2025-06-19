@@ -35,7 +35,7 @@ Inside the `app` folder, you'll find some special folders that help you organize
 
 > Example: `/api/(protected)/user/update-account/route.ts`
 
-These folders let you group your logic by access level or type (like pages vs. APIs) without affecting the final URL structure.
+These folders let you group your logic by access level without affecting the final URL structure.
 
 :::tip Understanding Routes
 
