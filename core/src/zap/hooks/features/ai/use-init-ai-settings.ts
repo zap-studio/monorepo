@@ -1,10 +1,10 @@
 import { Effect } from "effect";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import type { useForm } from "react-hook-form";
 
 import { DEFAULT_MODEL } from "@/zap/data/ai";
 import { orpc } from "@/zap/lib/orpc/client";
-import { AIFormValues, ModelName } from "@/zap/types/ai.types";
+import type { AIFormValues, ModelName } from "@/zap/types/ai.types";
 
 export const useInitAISettings = (
   form: ReturnType<typeof useForm<AIFormValues>>,

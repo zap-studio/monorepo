@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 
 import { useORPC } from "@/zap/stores/orpc.store";
-import { FeedbackFormValues } from "@/zap/types/feedback.types";
+import type { FeedbackFormValues } from "@/zap/types/feedback.types";
 
 export const useUserFeedback = () => {
   const orpc = useORPC();
