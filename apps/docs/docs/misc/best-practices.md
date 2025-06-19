@@ -27,21 +27,13 @@ The `src` folder in Zap.ts is organized to keep your code _clean_, _easy to find
 
 Inside the `app` folder, you'll find some special folders that help you organize your code. These **do not affect your route structure** — they just make things easier to manage:
 
-- **api** – For API routes only
-
-> Example: `/(api)/users.ts`
-
-- **pages** – For page components (UI screens)
-
-> Example: `/(pages)/home.tsx`
-
 - **public** – For public-facing pages and APIs (no auth required)
 
-> Example: `/(public)/(pages)/home.tsx`
+> Example: `/(public)/index.tsx`
 
-- **auth-only** – For protected routes (auth required)
+- **protected** – For protected routes (auth required)
 
-> Example: `/(auth-only)/(api)/user/update-account.ts`
+> Example: `/api/(protected)/user/update-account/route.ts`
 
 These folders let you group your logic by access level or type (like pages vs. APIs) without affecting the final URL structure.
 

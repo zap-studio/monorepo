@@ -25,16 +25,21 @@ export interface ZapSettings {
     MAXIMUM_USERNAME_LENGTH: number;
     MINIMUM_PASSWORD_LENGTH: number;
     MAXIMUM_PASSWORD_LENGTH: number;
+    LOGIN_URL: string;
     REDIRECT_URL_AFTER_SIGN_UP: string;
     REDIRECT_URL_AFTER_SIGN_IN: string;
+    PUBLIC_PATHS: string[];
   };
-  NOTIFICATIONS: {
-    VAPID_MAIL: string;
+  BLOG: {
+    BASE_PATH: string;
   };
   MAIL: {
     PREFIX: string;
     RATE_LIMIT_SECONDS: number;
     FROM: string;
+  };
+  NOTIFICATIONS: {
+    VAPID_MAIL: string;
   };
   PWA: {
     NAME: string;

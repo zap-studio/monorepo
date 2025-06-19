@@ -5,19 +5,7 @@ import { $fetch } from "@/lib/fetch";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import type { Session } from "@/zap/lib/auth/client";
 
-const publicPaths = [
-  "/",
-  "/login",
-  "/register",
-  "/forgot-password",
-  "/reset-password",
-  "/terms-of-service",
-  "/privacy-policy",
-  "/cookie-policy",
-  "/_vercel/speed-insights/vitals",
-  "/_vercel/insights/view",
-];
-const blogPublicBasePath = "/blog";
+const LOGIN_URL = ZAP_DEFAULT_SETTINGS.AUTH.LOGIN_URL;
 
 export async function middleware(request: NextRequest) {
   try {
@@ -25,8 +13,8 @@ export async function middleware(request: NextRequest) {
 
     // Allow public paths
     if (
-      publicPaths.includes(pathname) ||
-      pathname.startsWith(blogPublicBasePath)
+      ZAP_DEFAULT_SETTINGS.AUTH.PUBLIC_PATHS.includes(pathname) ||
+      pathname.startsWith(ZAP_DEFAULT_SETTINGS.BLOG.BASE_PATH)
     ) {
       return NextResponse.next();
     }
@@ -34,7 +22,7 @@ export async function middleware(request: NextRequest) {
     // Fetch session from API
     let session: Session | null = null;
     try {
-      session = await $fetch<Session>(`/api/auth/get-session`, {
+      session = await $fetch<Session>("/api/auth/get-session", {
         headers: {
           cookie: request.headers.get("cookie") || "",
         },
@@ -46,7 +34,7 @@ export async function middleware(request: NextRequest) {
 
     if (!session) {
       // Redirect unauthenticated users to /login with the original path as a query param
-      const loginUrl = new URL("/login", request.url);
+      const loginUrl = new URL(LOGIN_URL, request.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
@@ -56,7 +44,7 @@ export async function middleware(request: NextRequest) {
       ZAP_DEFAULT_SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION &&
       (!session.user || !session.user.emailVerified)
     ) {
-      const verifyUrl = new URL("/login", request.url);
+      const verifyUrl = new URL(LOGIN_URL, request.url);
       verifyUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(verifyUrl);
     }
@@ -70,7 +58,7 @@ export async function middleware(request: NextRequest) {
     });
   } catch {
     // Fallback: redirect to login on any unexpected error
-    const loginUrl = new URL("/login", request.url);
+    const loginUrl = new URL(LOGIN_URL, request.url);
     loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }

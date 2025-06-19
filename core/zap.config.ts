@@ -4,10 +4,10 @@
  * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
  * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL (e.g. `https://yourdomain.com`)
  */
-import { ZapSettings } from "@/zap/types/zap.config.types";
-import { Metadata } from "next";
+import type { ZapSettings } from "@/zap/types/zap.config.types";
+import type { Metadata } from "next";
 
-export const VERCEL = process.env.VERCEL_ENV ? true : false;
+export const VERCEL = !!process.env.VERCEL_ENV;
 export const DEV = process.env.NODE_ENV !== "production";
 
 export const APP_NAME = "Zap.ts";
@@ -38,16 +38,32 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
     MAXIMUM_USERNAME_LENGTH: 20,
     MINIMUM_PASSWORD_LENGTH: 8,
     MAXIMUM_PASSWORD_LENGTH: 128,
+    LOGIN_URL: "/login",
     REDIRECT_URL_AFTER_SIGN_UP: "/login",
     REDIRECT_URL_AFTER_SIGN_IN: "/app",
+    PUBLIC_PATHS: [
+      "/",
+      "/login",
+      "/register",
+      "/forgot-password",
+      "/reset-password",
+      "/terms-of-service",
+      "/privacy-policy",
+      "/cookie-policy",
+      "/_vercel/speed-insights/vitals",
+      "/_vercel/insights/view",
+    ],
   },
-  NOTIFICATIONS: {
-    VAPID_MAIL: MAIL,
+  BLOG: {
+    BASE_PATH: "/blog",
   },
   MAIL: {
     PREFIX: APP_NAME,
     RATE_LIMIT_SECONDS: 60,
     FROM: `${APP_NAME} <${MAIL}>`,
+  },
+  NOTIFICATIONS: {
+    VAPID_MAIL: MAIL,
   },
   PWA: {
     NAME: APP_NAME,
