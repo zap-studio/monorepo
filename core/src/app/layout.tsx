@@ -1,3 +1,4 @@
+import "../zap/lib/orpc/server";
 import "./globals.css";
 
 import { Analytics } from "@vercel/analytics/react";
