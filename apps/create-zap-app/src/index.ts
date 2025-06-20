@@ -391,7 +391,7 @@ export const ${procedureName} = base.handler(async () => {
 		const hookContent = `
 "use client";
 
-import { useORPC } from "@/stores/orpc.store";
+import { useORPC } from "@/zap/stores/orpc.store";
 import useSWR from "swr";
 
 export const use${capitalizedProcedureName} = () => {

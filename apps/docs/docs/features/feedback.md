@@ -730,7 +730,7 @@ export const useUserStore = create<UserState>((set) => ({
 - Use SWR or custom hooks for fetching client-side.
 
 ```ts
-import { useORPC } from "@/stores/orpc.store";
+import { useORPC } from "@/zap/stores/orpc.store";
 import useSWR from "swr";
 
 export const useUserProfile = () => {

@@ -6,6 +6,8 @@ Built on top of **Next.js API routes**, **oRPC** ensures _seamless_ communicatio
 
 For **data fetching**, **mutations** and **caching** on the client, **Zap.ts** uses [SWR](https://swr.vercel.app/) for a _fast_ and _reactive_ developer experience.
 
+Recently, it has also been [optimized](https://orpc.unnoq.com/docs/best-practices/optimize-ssr) for **Server-Side Rendering** (SSR), with a _client-side fallback_.
+
 ## Overview
 
 - **Extensible:** Add new procedures, middleware, and custom logic with minimal boilerplate.
@@ -50,33 +52,23 @@ import { hello } from "./procedures/hello.rpc";
 export const router = { hello /* ...other procedures */ };
 ```
 
-3. **Register it for server-side usage (optional, for internal/server-to-server calls):**
+3. **Server-side usage (optional):**
 
 ```ts
-// src/zap/lib/orpc/server.ts
-import { createRouterClient } from "@orpc/server";
-import { hello } from "@/zap/rpc/procedures/hello.rpc";
+// src/app/some-page/page.tsx
+import { router } from "@/rpc/router";
 
-export const createOrpcServer = (headers: Headers) => {
-  return createRouterClient(
-    {
-      hello,
-      // ...other procedures
-    },
-    {
-      context: {
-        headers,
-      },
-    },
-  );
-};
+export default async function SomePage() {
+  const data = await router.hello(); // Server-side query
+  return <div>{data.message}</div>;
+}
 ```
 
-4. **Create a hook:**
+4. **Client-side usage, create a hook:**
 
 ```ts
 // src/hooks/use-hello.ts
-import { useORPC } from "@/stores/orpc.store";
+import { useORPC } from "@/zap/stores/orpc.store";
 import useSWR from "swr";
 
 export const useHello = (input) => {
