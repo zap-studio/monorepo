@@ -32,7 +32,7 @@ export default function Providers({ children }: ProvidersProps) {
       disableTransitionOnChange
     >
       <ProgressProvider
-        color="#3B82F6"
+        color="#efb100"
         options={{ showSpinner: false }}
         height="3px"
         shallowRouting
