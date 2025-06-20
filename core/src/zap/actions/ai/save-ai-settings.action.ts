@@ -1,3 +1,6 @@
+"use server";
+import "server-only";
+
 import { Effect } from "effect";
 
 import { db } from "@/db";

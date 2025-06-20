@@ -1,3 +1,6 @@
+"use server";
+import "server-only";
+
 import { Effect } from "effect";
 
 import { getFeedbackForUserQuery } from "@/zap/db/queries/feedbacks.query";

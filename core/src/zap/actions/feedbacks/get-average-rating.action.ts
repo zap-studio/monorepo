@@ -1,3 +1,6 @@
+"use server";
+import "server-only";
+
 import { Effect } from "effect";
 
 import { getAverageRatingQuery } from "@/zap/db/queries/feedbacks.query";
