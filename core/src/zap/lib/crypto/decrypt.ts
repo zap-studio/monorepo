@@ -1,10 +1,27 @@
-import { createDecipheriv } from "node:crypto";
+import { algorithm, hexToBuffer } from ".";
 
-import { algorithm, key } from "@/zap/lib/crypto";
+export async function decrypt(
+  ivHex: string,
+  encryptedHex: string,
+  keyHex: string,
+) {
+  const iv = new Uint8Array(hexToBuffer(ivHex));
+  const encryptedBuffer = hexToBuffer(encryptedHex);
+  const keyBuffer = hexToBuffer(keyHex);
 
-export function decrypt(iv: string, encrypted: string): string {
-  const decipher = createDecipheriv(algorithm, key, Buffer.from(iv, "hex"));
-  let decrypted = decipher.update(encrypted, "hex", "utf8");
-  decrypted += decipher.final("utf8");
-  return decrypted;
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    keyBuffer,
+    { name: algorithm },
+    false,
+    ["decrypt"],
+  );
+
+  const decrypted = await crypto.subtle.decrypt(
+    { name: algorithm, iv },
+    cryptoKey,
+    encryptedBuffer,
+  );
+
+  return new TextDecoder().decode(decrypted);
 }

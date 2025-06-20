@@ -1,3 +1,16 @@
-export const algorithm = "aes-256-cbc";
-export const key = Buffer.from(process.env.ENCRYPTION_KEY || "", "hex");
-export const ivLength = 16;
+export const algorithm = "AES-CBC";
+export const encryptionKeyHex = process.env.ENCRYPTION_KEY || "";
+export const ivLength = 16; // bytes
+
+export function hexToBuffer(hex: string): ArrayBuffer {
+  const bytes = new Uint8Array(
+    hex.match(/.{1,2}/g)!.map((b) => parseInt(b, 16)),
+  );
+  return bytes.buffer;
+}
+
+export function bufferToHex(buffer: ArrayBuffer): string {
+  return [...new Uint8Array(buffer)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}

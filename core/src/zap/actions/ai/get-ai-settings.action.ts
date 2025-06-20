@@ -4,6 +4,7 @@ import "server-only";
 import { Effect } from "effect";
 
 import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
+import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { decrypt } from "@/zap/lib/crypto/decrypt";
 import type { AIProviderId } from "@/zap/types/ai.types";
 
@@ -44,9 +45,16 @@ export const getAISettingsAction = async ({
       const encryptedAPIKey = result[0]?.encryptedApiKey;
       const model = result[0]?.model;
 
-      const decryptedAPIKey = decrypt(
-        encryptedAPIKey.iv,
-        encryptedAPIKey.encrypted,
+      const decryptedAPIKey = yield* _(
+        Effect.tryPromise({
+          try: () =>
+            decrypt(
+              encryptedAPIKey.iv,
+              encryptedAPIKey.encrypted,
+              encryptionKeyHex,
+            ),
+          catch: (e) => e,
+        }),
       );
 
       return { apiKey: decryptedAPIKey, model };

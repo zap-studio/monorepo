@@ -7,6 +7,7 @@ import { Effect } from "effect";
 import { db } from "@/db";
 import { userAISettings } from "@/db/schema";
 import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
+import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { encrypt } from "@/zap/lib/crypto/encrypt";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
@@ -33,7 +34,12 @@ export const saveOrUpdateAISettingsAction = async ({
       const apiKey = input.apiKey;
       const model = input.model;
 
-      const encryptedAPIKey = encrypt(apiKey);
+      const encryptedAPIKey = yield* _(
+        Effect.tryPromise({
+          try: () => encrypt(apiKey, encryptionKeyHex),
+          catch: (e) => e,
+        }),
+      );
 
       const existingSettings = yield* _(
         Effect.tryPromise({
