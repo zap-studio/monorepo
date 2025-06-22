@@ -5,15 +5,20 @@
  * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL (e.g. `https://yourdomain.com`)
  * - Change `social-provider-button.tsx` to customize icon for each auth provider
  */
+import { requireEnv, warnOptionalEnv } from "@/lib/env";
 import type { ZapSettings } from "@/zap/types/zap.config.types";
 import type { Metadata } from "next";
 
-export const VERCEL = !!process.env.VERCEL_ENV;
-export const DEV = process.env.NODE_ENV !== "production";
+const VERCEL_ENV = warnOptionalEnv("VERCEL_ENV");
+const NODE_ENV = requireEnv("NODE_ENV");
+const ZAP_MAIL = warnOptionalEnv("ZAP_MAIL");
+
+export const VERCEL = !!VERCEL_ENV;
+export const DEV = NODE_ENV !== "production";
 
 export const APP_NAME = "Zap.ts";
 export const APP_DESCRIPTION = "Build application as fast as a zap.";
-export const MAIL = process.env.ZAP_MAIL || "hello@mail.alexandretrotel.org";
+export const MAIL = ZAP_MAIL || "";
 export const BASE_URL = DEV
   ? "http://localhost:3000"
   : "https://demo.zap-ts.alexandretrotel.org";

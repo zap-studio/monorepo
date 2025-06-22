@@ -6,6 +6,7 @@ import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { useEffect } from "react";
 
 import { FLAGS } from "@/data/flags";
+import { warnOptionalEnv } from "@/lib/env";
 import { ThemeProvider } from "@/providers/theme.provider";
 import SuspendedPostHogPageView from "@/zap/components/analytics/posthog-page-view";
 
@@ -13,12 +14,15 @@ interface ProvidersProps {
   children: React.ReactNode;
 }
 
+const NEXT_PUBLIC_POSTHOG_HOST = warnOptionalEnv("NEXT_PUBLIC_POSTHOG_HOST");
+const NEXT_PUBLIC_POSTHOG_KEY = warnOptionalEnv("NEXT_PUBLIC_POSTHOG_KEY");
+
 export default function Providers({ children }: ProvidersProps) {
   useEffect(() => {
     if (!FLAGS.ENABLE_POSTHOG) return;
 
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || "", {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "",
+    posthog.init(NEXT_PUBLIC_POSTHOG_KEY || "", {
+      api_host: NEXT_PUBLIC_POSTHOG_HOST || "",
       capture_pageview: false, // Disable automatic pageview tracking
       capture_pageleave: true, // Enable automatic pageleave tracking
     });

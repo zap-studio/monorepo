@@ -1,5 +1,9 @@
+import { warnOptionalEnv } from "@/lib/env";
+
+const ENCRYPTION_KEY = warnOptionalEnv("ENCRYPTION_KEY");
+
 export const algorithm = "AES-CBC";
-export const encryptionKeyHex = process.env.ENCRYPTION_KEY || "";
+export const encryptionKeyHex = ENCRYPTION_KEY || "";
 export const ivLength = 16; // bytes
 
 export function hexToBuffer(hex: string): ArrayBuffer {
