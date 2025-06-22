@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { AISettingsSheet } from "@/zap/components/ai/ai-settings-panel";
+import { AISettingsSheet } from "@/zap/components/ai/ai-settings-sheet";
 import { FeedbackDialog } from "@/zap/components/sidebar/sidebar-feedback-dialog";
 
 export function NavSecondary({

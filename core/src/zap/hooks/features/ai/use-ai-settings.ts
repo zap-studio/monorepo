@@ -2,13 +2,17 @@
 
 import { Effect } from "effect";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { orpc } from "@/zap/lib/orpc/client";
 import type { AIFormValues } from "@/zap/types/ai.types";
 
-export const useAISettings = () => {
+export const useAISettings = (
+  form: ReturnType<typeof useForm<AIFormValues>>,
+) => {
   const [isSaving, setIsSaving] = useState(false);
+  const [testing, setTesting] = useState(false);
   const [isValidated, setIsValidated] = useState(false);
   const [initialKey, setInitialKey] = useState<string | null>(null);
 
@@ -65,6 +69,36 @@ export const useAISettings = () => {
     setIsSaving(false);
   };
 
+  async function handleTestApiKey() {
+    setTesting(true);
+    await Effect.tryPromise({
+      try: () =>
+        orpc.ai.testAPIKey.call({
+          provider: form.getValues("provider"),
+          apiKey: form.getValues("apiKey"),
+          model: form.getValues("model"),
+        }),
+      catch: () => ({ error: true }),
+    })
+      .pipe(
+        Effect.match({
+          onSuccess: () => {
+            toast.success("API key is valid!");
+            setIsValidated(true);
+          },
+          onFailure: () => {
+            toast.error("Invalid API key");
+            setIsValidated(false);
+          },
+        }),
+      )
+      .pipe(Effect.runPromise)
+      .catch(() => {
+        toast.error("An error occurred while testing the API key");
+      });
+    setTesting(false);
+  }
+
   return {
     isSaving,
     isValidated,
@@ -72,5 +106,8 @@ export const useAISettings = () => {
     initialKey,
     setInitialKey,
     saveApiKey,
+    testing,
+    setTesting,
+    handleTestApiKey,
   };
 };
