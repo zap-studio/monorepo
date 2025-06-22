@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/zap/lib/auth/client";
+import { handleCompromisedPasswordError } from "@/zap/lib/auth/utils";
 
 const formSchema = z
   .object({
@@ -86,8 +87,8 @@ export default function ResetPasswordPage() {
             form.reset();
             router.push("/login");
           },
-          onFailure: () => {
-            toast.error("An error occurred while resetting your password.");
+          onFailure: (error: unknown) => {
+            handleCompromisedPasswordError(error);
           },
         }),
       )

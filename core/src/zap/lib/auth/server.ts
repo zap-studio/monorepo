@@ -3,6 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import {
   admin,
   anonymous,
+  haveIBeenPwned,
   organization,
   twoFactor,
   username,
@@ -12,6 +13,7 @@ import { passkey } from "better-auth/plugins/passkey";
 import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { ENV } from "@/lib/env.server";
+import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { sendForgotPasswordMail } from "@/zap/actions/mails/send-forgot-password-mail.action";
 import { sendVerificationMail } from "@/zap/actions/mails/send-verification-mail.action";
 import { canSendMail } from "@/zap/lib/mails/can-send-mail";
@@ -78,5 +80,9 @@ export const auth = betterAuth({
     passkey(),
     admin(),
     organization(),
+    haveIBeenPwned({
+      customPasswordCompromisedMessage:
+        ZAP_DEFAULT_SETTINGS.AUTH.PASSWORD_COMPROMISED_MESSAGE,
+    }),
   ],
 });
