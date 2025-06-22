@@ -17,8 +17,8 @@ import { ModelSelect } from "@/zap/components/ai/model-select";
 import { ProviderSelect } from "@/zap/components/ai/provider-select";
 import { SaveSettings } from "@/zap/components/ai/save-settings";
 import { DEFAULT_MODEL, ModelsByProvider } from "@/zap/data/ai";
-import { useAISettings } from "@/zap/hooks/features/ai/use-ai-settings";
-import { useInitAISettings } from "@/zap/hooks/features/ai/use-init-ai-settings";
+import { useAISettings } from "@/zap/hooks/ai/use-ai-settings";
+import { useInitAISettings } from "@/zap/hooks/ai/use-init-ai-settings";
 import { AIFormSchema, AIProviderIdSchema } from "@/zap/schemas/ai.schema";
 import { AIFormValues } from "@/zap/types/ai.types";
 

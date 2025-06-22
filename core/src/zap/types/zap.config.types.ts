@@ -1,3 +1,5 @@
+import { Provider } from "@/zap.config";
+
 export interface ZapSettings {
   AI: {
     SYSTEM_PROMPT: string;
@@ -28,6 +30,7 @@ export interface ZapSettings {
     LOGIN_URL: string;
     REDIRECT_URL_AFTER_SIGN_UP: string;
     REDIRECT_URL_AFTER_SIGN_IN: string;
+    PROVIDERS: Provider[];
     PUBLIC_PATHS: string[];
   };
   BLOG: {

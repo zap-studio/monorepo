@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { authClient } from "@/zap/lib/auth/client";
 
-const navLinks = [
+const NAV_LINKS = [
   { id: "hero", label: "Home" },
   { id: "testimonials", label: "Testimonials" },
   { id: "features", label: "Features" },
@@ -16,10 +16,13 @@ const navLinks = [
   { id: "faq", label: "FAQ" },
 ];
 
+const NAV_BUTTON_CLASSNAME =
+  "text-muted-foreground hover:text-foreground flex items-center text-sm font-medium transition-colors";
+
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { data } = authClient.useSession();
+  const { data, isPending } = authClient.useSession();
   const session = data?.session;
 
   const scrollToSection = (sectionId: string) => {
@@ -32,9 +35,6 @@ export function Navbar() {
     if (section) section.scrollIntoView({ behavior: "smooth" });
   };
 
-  const navButtonClass =
-    "text-muted-foreground hover:text-foreground flex items-center text-sm font-medium transition-colors";
-
   return (
     <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
       <div className="mx-auto flex h-16 w-full items-center space-x-4 px-4 sm:justify-between sm:space-x-0 md:px-8">
@@ -44,12 +44,12 @@ export function Navbar() {
           </Link>
 
           <nav className="hidden gap-2 md:flex">
-            {navLinks.map(({ id, label }) => (
+            {NAV_LINKS.map(({ id, label }) => (
               <Button
                 key={id}
                 variant="ghost"
                 onClick={() => scrollToSection(id)}
-                className={navButtonClass}
+                className={NAV_BUTTON_CLASSNAME}
               >
                 {label}
               </Button>
@@ -66,7 +66,7 @@ export function Navbar() {
             )}
             {!session && (
               <>
-                <Button variant="ghost" asChild>
+                <Button variant="ghost" disabled={isPending} asChild>
                   <Link
                     href="/login"
                     className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
@@ -75,7 +75,7 @@ export function Navbar() {
                   </Link>
                 </Button>
 
-                <Button size="sm" asChild>
+                <Button size="sm" disabled={isPending} asChild>
                   <Link href="/register">Get Started</Link>
                 </Button>
               </>

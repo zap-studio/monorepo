@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 import {
   useIsFeedbackSubmitted,
   useSubmitFeedback,
-} from "@/zap/hooks/features/feedbacks/use-feedback";
+} from "@/zap/hooks/feedbacks/use-feedback";
 import { FeedbackSchema } from "@/zap/schemas/feedback.schema";
 import { FeedbackFormValues } from "@/zap/types/feedback.types";
 

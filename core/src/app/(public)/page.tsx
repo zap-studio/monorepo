@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
-import { AnimatedSection } from "@/zap/components/common/animated";
+import { AnimatedSection } from "@/zap/components/common/animated-section";
 import { Footer } from "@/zap/components/common/footer";
-import { Navbar } from "@/zap/components/common/navbar";
+import { Navbar } from "@/zap/components/common/header";
 import { FaqSection } from "@/zap/components/landing/landing-faq";
 import { FeaturesSection } from "@/zap/components/landing/landing-features";
 import { HeroSection } from "@/zap/components/landing/landing-hero";
@@ -10,72 +10,58 @@ import { SolutionSection } from "@/zap/components/landing/landing-solution";
 import { TestimonialSection } from "@/zap/components/landing/landing-testimonial";
 import { client } from "@/zap/lib/orpc/client";
 
-const DELAY_INCREMENT = 0.1;
-const sectionClassName = "w-full py-12 md:py-24 lg:py-32";
-
-const sections = (
-  ratings: {
-    averageRating: number;
-    totalFeedbacks: number;
-  },
-  numberOfUsers: number,
-) => [
+const SECTION_CLASSNAME = "w-full py-12 md:py-24 lg:py-32";
+const SECTIONS = [
   {
     id: "hero",
-    component: <HeroSection ratings={ratings} numberOfUsers={numberOfUsers} />,
+    component: HeroSection,
     className:
       "h-[calc(100vh-4rem)] border-b bg-muted/50 flex items-center justify-center md:py-0 overflow-hidden min-h-[500px]",
   },
   {
     id: "solution",
-    component: <SolutionSection />,
-    className: `bg-muted/50 border-y ${sectionClassName}`,
+    component: SolutionSection,
+    className: `bg-muted/50 border-y ${SECTION_CLASSNAME}`,
   },
   {
     id: "testimonials",
-    component: <TestimonialSection />,
-    className: sectionClassName,
+    component: TestimonialSection,
+    className: SECTION_CLASSNAME,
   },
   {
     id: "features",
-    component: <FeaturesSection />,
-    className: `bg-muted/50 border-y ${sectionClassName}`,
+    component: FeaturesSection,
+    className: `bg-muted/50 border-y ${SECTION_CLASSNAME}`,
   },
-  {
-    id: "pricing",
-    component: <PricingSection />,
-    className: sectionClassName,
-  },
+  { id: "pricing", component: PricingSection, className: SECTION_CLASSNAME },
   {
     id: "faq",
-    component: <FaqSection />,
-    className: `bg-muted/50 border-t ${sectionClassName}`,
+    component: FaqSection,
+    className: `bg-muted/50 border-t ${SECTION_CLASSNAME}`,
   },
 ];
 
 export default async function LandingPage() {
-  const ratings = await client.feedbacks.getAverageRating();
-  const numberOfUsers = await client.users.getNumberOfUsers();
-
-  const sectionData = sections(ratings, numberOfUsers);
+  const [ratings, numberOfUsers] = await Promise.all([
+    client.feedbacks.getAverageRating(),
+    client.users.getNumberOfUsers(),
+  ]);
 
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
-
       <main className="flex-1">
-        {sectionData.map(({ id, component, className }, index) => (
+        {SECTIONS.map(({ id, component: Component, className }, index) => (
           <AnimatedSection
             key={id}
             id={id}
             className={cn(className)}
-            delay={index * DELAY_INCREMENT}
+            delay={index * 0.1}
           >
-            {component}
+            <Component {...{ ratings, numberOfUsers }} />
           </AnimatedSection>
         ))}
       </main>
-
       <Footer />
     </div>
   );

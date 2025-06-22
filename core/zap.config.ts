@@ -3,6 +3,7 @@
  * - Change the current config file to your own configuration
  * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
  * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL (e.g. `https://yourdomain.com`)
+ * - Change `social-provider-button.tsx` to customize icon for each auth provider
  */
 import type { ZapSettings } from "@/zap/types/zap.config.types";
 import type { Metadata } from "next";
@@ -25,7 +26,9 @@ export const ZAP_DEFAULT_FLAGS = {
   ENABLE_POSTHOG: false,
 };
 
-const AI_SYSTEM_PROMPT = "You are a helpful assistant.";
+export const AI_SYSTEM_PROMPT = "You are a helpful assistant.";
+
+export type Provider = "apple" | "google";
 
 export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   AI: {
@@ -41,6 +44,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
     LOGIN_URL: "/login",
     REDIRECT_URL_AFTER_SIGN_UP: "/login",
     REDIRECT_URL_AFTER_SIGN_IN: "/app",
+    PROVIDERS: ["apple", "google"],
     PUBLIC_PATHS: [
       "/",
       "/login",

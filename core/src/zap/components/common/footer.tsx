@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const FooterLinks = [
+const FOOTER_LINKS = [
   { href: "/terms-of-service", label: "Terms of Service" },
   { href: "/privacy-policy", label: "Privacy Policy" },
   { href: "/cookie-policy", label: "Cookie Policy" },
@@ -19,22 +19,17 @@ export function Footer() {
           </p>
         </div>
         <div className="flex gap-4">
-          {FooterLinks.map((link) => (
-            <FooterLink key={link.href} href={link.href} label={link.label} />
+          {FOOTER_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-muted-foreground text-sm underline-offset-4 hover:underline"
+            >
+              {link.label}
+            </Link>
           ))}
         </div>
       </div>
     </footer>
-  );
-}
-
-function FooterLink({ href, label }: { href: string; label: string }) {
-  return (
-    <Link
-      href={href}
-      className="text-muted-foreground text-sm underline-offset-4 hover:underline"
-    >
-      {label}
-    </Link>
   );
 }
