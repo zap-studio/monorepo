@@ -9,11 +9,11 @@ import {
   Text,
 } from "@react-email/components";
 
-interface EmailProps {
+interface MailProps {
   url: string;
 }
 
-export function ForgotPasswordEmail({ url }: EmailProps) {
+export function ForgotPasswordMail({ url }: MailProps) {
   return (
     <Html>
       <Head />

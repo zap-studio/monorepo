@@ -5,7 +5,7 @@ import { Effect } from "effect";
 
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import type { ForgotPasswordEmailProps } from "@/zap/actions/emails/send-forgot-password-mail.action";
-import { VerificationEmail } from "@/zap/components/emails/verification-email";
+import { VerificationMail } from "@/zap/components/emails/verification-mail";
 import { resend } from "@/zap/lib/resend/server";
 
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
@@ -24,7 +24,7 @@ export const sendVerificationEmail = async ({
               from,
               to: recipients,
               subject,
-              react: VerificationEmail({ url }),
+              react: VerificationMail({ url }),
             }),
           catch: (e) => e,
         }),

@@ -35,6 +35,7 @@ Use file names that reflect function and context:
 | --------------- | ------------- | ----------------------- |
 | Hook            | `use-*.ts`    | `use-user-profile.ts`   |
 | Component       | `*.tsx`       | `user-card.tsx`         |
+| Mails.          | `*.mail.tsx`  | `template.mail.tsx`     |
 | Store           | `*.store.ts`  | `user.store.ts`         |
 | Server Action   | `*.action.ts` | `update-user.action.ts` |
 | DB Schema (SQL) | `*.sql.ts`    | `auth.sql.ts`           |

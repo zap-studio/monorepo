@@ -9,29 +9,34 @@ import {
   Text,
 } from "@react-email/components";
 
-import { BASE_URL } from "@/zap.config";
+interface MailProps {
+  url: string;
+}
 
-export function TemplateMail() {
+export function VerificationMail({ url }: MailProps) {
   return (
     <Html>
       <Head />
-      <Preview>A simple email from us</Preview>
+      <Preview>Verify your email address</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={heading}>Hey there 👋</Text>
+          <Text style={heading}>Verify your email address</Text>
           <Text style={paragraph}>
-            Just a quick note with a button you can click. No strings attached.
+            Thanks for signing up! Click the button below to confirm your email
+            and activate your account.
           </Text>
           <Section style={buttonWrapper}>
-            <Button href={BASE_URL} style={button}>
-              Click me
+            <Button href={url} style={button}>
+              Verify Email
             </Button>
           </Section>
           <Text style={footer}>
-            If the button doesn’t work, you can paste this link into your
-            browser:
+            If you didn’t sign up, you can safely ignore this email.
+          </Text>
+          <Text style={urlText}>
+            Or copy and paste this link into your browser:
             <br />
-            {BASE_URL}
+            {url}
           </Text>
         </Container>
       </Body>
@@ -56,10 +61,10 @@ const container = {
 };
 
 const heading = {
-  fontSize: "22px",
+  fontSize: "24px",
   fontWeight: "bold" as const,
-  marginBottom: "16px",
   color: "#111827",
+  marginBottom: "16px",
 };
 
 const paragraph = {
@@ -75,18 +80,23 @@ const buttonWrapper = {
 };
 
 const button = {
-  backgroundColor: "#000000",
-  color: "#ffffff",
+  backgroundColor: "#000",
+  color: "#fff",
   padding: "12px 24px",
   borderRadius: "6px",
-  fontWeight: "bold" as const,
   textDecoration: "none",
+  fontWeight: "bold" as const,
   display: "inline-block",
 };
 
 const footer = {
   fontSize: "14px",
   color: "#6B7280",
-  lineHeight: "1.5",
+  marginBottom: "16px",
+};
+
+const urlText = {
+  fontSize: "14px",
+  color: "#9CA3AF",
   wordBreak: "break-word" as const,
 };

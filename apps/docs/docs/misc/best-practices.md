@@ -143,6 +143,9 @@ Follow these naming rules for clarity:
 - **Hooks:** Use `use-hook.ts`  
   > Example: `use-user-profile.ts`
 
+- **Mails:** Use `your-mail.mail.ts`
+  > Example: `template.mail.tsx`
+
 - **Queries:** Use `your-query.query.ts`  
   > Example: `get-users.query.ts`
 

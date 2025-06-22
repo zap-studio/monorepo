@@ -4,7 +4,7 @@ import "server-only";
 import { Effect } from "effect";
 
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { MagicLinkEmail } from "@/zap/components/emails/magic-link-email";
+import { MagicLinkMail } from "@/zap/components/emails/magic-link-mail";
 import { resend } from "@/zap/lib/resend/server";
 
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
@@ -29,7 +29,7 @@ export const sendMagicLinkEmail = async ({
               from,
               to: recipients,
               subject,
-              react: MagicLinkEmail({ url }),
+              react: MagicLinkMail({ url }),
             }),
           catch: (e) => e,
         }),

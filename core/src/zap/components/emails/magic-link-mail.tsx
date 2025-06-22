@@ -3,38 +3,40 @@ import {
   Button,
   Container,
   Head,
+  Heading,
   Html,
   Preview,
   Section,
   Text,
 } from "@react-email/components";
 
-interface EmailProps {
+interface MailProps {
   url: string;
 }
 
-export function VerificationEmail({ url }: EmailProps) {
+export function MagicLinkMail({ url }: MailProps) {
   return (
     <Html>
       <Head />
-      <Preview>Verify your email address</Preview>
+      <Preview>Your sign-in link to Zap.ts</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={heading}>Verify your email address</Text>
+          <Heading style={heading}>Your Magic Link to Zap.ts</Heading>
           <Text style={paragraph}>
-            Thanks for signing up! Click the button below to confirm your email
-            and activate your account.
+            Tap the button below to sign in. This link will expire in 15
+            minutes.
           </Text>
           <Section style={buttonWrapper}>
             <Button href={url} style={button}>
-              Verify Email
+              Sign In Now
             </Button>
           </Section>
           <Text style={footer}>
-            If you didn’t sign up, you can safely ignore this email.
+            Didn’t request this link? You can safely ignore this email.
           </Text>
           <Text style={urlText}>
-            Or copy and paste this link into your browser:
+            If the button doesn’t work, copy and paste this link into your
+            browser:
             <br />
             {url}
           </Text>
@@ -62,15 +64,14 @@ const container = {
 
 const heading = {
   fontSize: "24px",
-  fontWeight: "bold" as const,
+  marginBottom: "20px",
   color: "#111827",
-  marginBottom: "16px",
 };
 
 const paragraph = {
   fontSize: "16px",
-  lineHeight: "1.5",
   color: "#374151",
+  lineHeight: "1.5",
   marginBottom: "24px",
 };
 
@@ -80,8 +81,9 @@ const buttonWrapper = {
 };
 
 const button = {
-  backgroundColor: "#000",
-  color: "#fff",
+  backgroundColor: "#3B82F6",
+  color: "#ffffff",
+  fontSize: "16px",
   padding: "12px 24px",
   borderRadius: "6px",
   textDecoration: "none",

@@ -4,7 +4,7 @@ import "server-only";
 import { Effect } from "effect";
 
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { ForgotPasswordEmail } from "@/zap/components/emails/forgot-password-email";
+import { ForgotPasswordMail } from "@/zap/components/emails/forgot-password-mail";
 import { resend } from "@/zap/lib/resend/server";
 
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
@@ -29,7 +29,7 @@ export const sendForgotPasswordMail = async ({
               from,
               to: recipients,
               subject,
-              react: ForgotPasswordEmail({ url }),
+              react: ForgotPasswordMail({ url }),
             }),
           catch: (e) => e,
         }),

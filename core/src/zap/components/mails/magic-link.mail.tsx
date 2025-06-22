@@ -3,35 +3,42 @@ import {
   Button,
   Container,
   Head,
+  Heading,
   Html,
   Preview,
   Section,
   Text,
 } from "@react-email/components";
 
-import { BASE_URL } from "@/zap.config";
+interface MailProps {
+  url: string;
+}
 
-export function TemplateMail() {
+export function MagicLinkMail({ url }: MailProps) {
   return (
     <Html>
       <Head />
-      <Preview>A simple email from us</Preview>
+      <Preview>Your sign-in link to Zap.ts</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={heading}>Hey there 👋</Text>
+          <Heading style={heading}>Your Magic Link to Zap.ts</Heading>
           <Text style={paragraph}>
-            Just a quick note with a button you can click. No strings attached.
+            Tap the button below to sign in. This link will expire in 15
+            minutes.
           </Text>
           <Section style={buttonWrapper}>
-            <Button href={BASE_URL} style={button}>
-              Click me
+            <Button href={url} style={button}>
+              Sign In Now
             </Button>
           </Section>
           <Text style={footer}>
-            If the button doesn’t work, you can paste this link into your
+            Didn’t request this link? You can safely ignore this email.
+          </Text>
+          <Text style={urlText}>
+            If the button doesn’t work, copy and paste this link into your
             browser:
             <br />
-            {BASE_URL}
+            {url}
           </Text>
         </Container>
       </Body>
@@ -56,16 +63,15 @@ const container = {
 };
 
 const heading = {
-  fontSize: "22px",
-  fontWeight: "bold" as const,
-  marginBottom: "16px",
+  fontSize: "24px",
+  marginBottom: "20px",
   color: "#111827",
 };
 
 const paragraph = {
   fontSize: "16px",
-  lineHeight: "1.5",
   color: "#374151",
+  lineHeight: "1.5",
   marginBottom: "24px",
 };
 
@@ -75,18 +81,24 @@ const buttonWrapper = {
 };
 
 const button = {
-  backgroundColor: "#000000",
+  backgroundColor: "#3B82F6",
   color: "#ffffff",
+  fontSize: "16px",
   padding: "12px 24px",
   borderRadius: "6px",
-  fontWeight: "bold" as const,
   textDecoration: "none",
+  fontWeight: "bold" as const,
   display: "inline-block",
 };
 
 const footer = {
   fontSize: "14px",
   color: "#6B7280",
-  lineHeight: "1.5",
+  marginBottom: "16px",
+};
+
+const urlText = {
+  fontSize: "14px",
+  color: "#9CA3AF",
   wordBreak: "break-word" as const,
 };
