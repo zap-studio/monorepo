@@ -13,4 +13,6 @@ export function handleCompromisedPasswordError(error: unknown): void {
   } else {
     toast.error("An error occurred during authentication. Please try again.");
   }
+
+  throw error;
 }

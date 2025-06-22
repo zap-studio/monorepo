@@ -55,8 +55,9 @@ export function useAuth() {
               callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN,
             );
           },
-          onFailure: () => {
+          onFailure: (e) => {
             toast.error("Login failed. Please check your credentials.");
+            throw e;
           },
         }),
       )
