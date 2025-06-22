@@ -4,22 +4,22 @@ import "server-only";
 import { Effect } from "effect";
 
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { MagicLinkMail } from "@/zap/components/emails/magic-link-mail";
+import { MagicLinkMail } from "@/zap/components/mails/magic-link.mail";
 import { resend } from "@/zap/lib/resend/server";
 
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
 
-export interface SendMagicLinkEmailProps {
+export interface SendMagicLinkMailProps {
   subject: string;
   recipients: string[];
   url: string;
 }
 
-export const sendMagicLinkEmail = async ({
+export const sendMagicLinkMail = async ({
   subject,
   recipients,
   url,
-}: SendMagicLinkEmailProps) => {
+}: SendMagicLinkMailProps) => {
   return Effect.runPromise(
     Effect.gen(function* (_) {
       const { data, error } = yield* _(

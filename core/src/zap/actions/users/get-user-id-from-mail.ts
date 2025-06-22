@@ -3,14 +3,14 @@ import "server-only";
 
 import { Effect } from "effect";
 
-import { getUserIdFromEmailQuery } from "@/zap/db/queries/emails.query";
+import { getUserIdFromMailQuery } from "@/zap/db/queries/emails.query";
 
 export const getUserIdFromMail = async (email: string) => {
   return Effect.runPromise(
     Effect.gen(function* (_) {
       const records = yield* _(
         Effect.tryPromise({
-          try: () => getUserIdFromEmailQuery.execute({ email }),
+          try: () => getUserIdFromMailQuery.execute({ email }),
           catch: (e) => e,
         }),
       );

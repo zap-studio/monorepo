@@ -96,7 +96,7 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: SETTINGS.AUTH.MINIMUM_PASSWORD_LENGTH,
     maxPasswordLength: SETTINGS.AUTH.MAXIMUM_PASSWORD_LENGTH,
-    requireEmailVerification: SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION,
+    requireEmailVerification: SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION,
     sendResetPassword: async ({ user, url }) => {
       const { canSend, timeLeft } = await canSendEmail(user.id);
       if (!canSend) {

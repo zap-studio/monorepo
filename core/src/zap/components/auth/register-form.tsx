@@ -38,7 +38,7 @@ export function RegisterForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { registerWithEmail, isInCooldown, cooldown } = useAuth();
+  const { registerWithMail, isInCooldown, cooldown } = useAuth();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(RegisterFormSchema),
@@ -53,7 +53,7 @@ export function RegisterForm({
   const onSubmit = async (values: RegisterFormValues) => {
     setIsSubmitting(true);
     try {
-      await registerWithEmail(values);
+      await registerWithMail(values);
     } catch {
       // Errors are handled in useAuth
     } finally {

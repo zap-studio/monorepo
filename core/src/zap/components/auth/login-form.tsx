@@ -39,7 +39,7 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const [callbackURL, setCallbackURL] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { loginWithEmail, isInCooldown, cooldown } = useAuth();
+  const { loginWithMail, isInCooldown, cooldown } = useAuth();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -58,7 +58,7 @@ export function LoginForm({
   const onSubmit = async (values: LoginFormValues) => {
     setIsSubmitting(true);
     try {
-      await loginWithEmail(values, callbackURL);
+      await loginWithMail(values, callbackURL);
     } catch {
       // Error is handled in useAuth
     } finally {

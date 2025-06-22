@@ -21,7 +21,7 @@ export interface ZapSettings {
     };
   };
   AUTH: {
-    REQUIRE_EMAIL_VERIFICATION: boolean;
+    REQUIRE_MAIL_VERIFICATION: boolean;
     ENABLE_SOCIAL_PROVIDER: boolean;
     MINIMUM_USERNAME_LENGTH: number;
     MAXIMUM_USERNAME_LENGTH: number;

@@ -39,9 +39,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    // Check email verification
+    // Check mail verification
     if (
-      ZAP_DEFAULT_SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION &&
+      ZAP_DEFAULT_SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION &&
       (!session.user || !session.user.emailVerified)
     ) {
       const verifyUrl = new URL(LOGIN_URL, request.url);

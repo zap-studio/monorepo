@@ -35,7 +35,7 @@ For more, see the [MDN Push API](https://developer.mozilla.org/en-US/docs/Web/AP
 ```ts
 // src/zap/actions/emails.action.ts
 import { resend } from "@/zap/lib/resend/server";
-import { VerificationEmail } from "@/zap/components/features/emails/verification";
+import { VerificationEmail } from "@/zap/components/features/mails/verification";
 
 export const sendVerificationEmail = async ({
   subject,
@@ -638,7 +638,7 @@ export const sendMail = async ({
 ### `TemplateEmail`
 
 ```tsx
-// src/zap/components/features/emails/template.tsx
+// src/zap/components/features/mails/template.tsx
 import {
   Body,
   Button,

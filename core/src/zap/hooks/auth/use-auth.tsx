@@ -15,7 +15,7 @@ export function useAuth() {
   const router = useRouter();
   const { cooldown, startCooldown, isInCooldown } = useCooldown();
 
-  const sendVerificationEmail = async (email: string, callbackURL: string) => {
+  const sendVerificationMail = async (email: string, callbackURL: string) => {
     try {
       await Effect.tryPromise({
         try: () => authClient.sendVerificationEmail({ email, callbackURL }),
@@ -31,7 +31,7 @@ export function useAuth() {
     }
   };
 
-  const loginWithEmail = async (
+  const loginWithMail = async (
     values: LoginFormValues,
     callbackURL?: string | null,
   ) => {
@@ -45,10 +45,10 @@ export function useAuth() {
           Effect.match({
             onSuccess: async (response) => {
               if (
-                SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION &&
+                SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION &&
                 !response.data?.user?.emailVerified
               ) {
-                await sendVerificationEmail(email, "/app");
+                await sendVerificationMail(email, "/app");
                 throw new Error("Please verify your email address.");
               }
 
@@ -72,7 +72,7 @@ export function useAuth() {
     }
   };
 
-  const registerWithEmail = async (
+  const registerWithMail = async (
     values: RegisterFormValues,
     callbackURL?: string | null,
   ) => {
@@ -85,8 +85,8 @@ export function useAuth() {
         .pipe(
           Effect.match({
             onSuccess: async () => {
-              if (SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION) {
-                await sendVerificationEmail(email, "/login");
+              if (SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION) {
+                await sendVerificationMail(email, "/login");
                 toast.success(
                   "Registration successful! Please check your email to verify your account.",
                 );
@@ -112,5 +112,5 @@ export function useAuth() {
     }
   };
 
-  return { loginWithEmail, registerWithEmail, isInCooldown, cooldown };
+  return { loginWithMail, registerWithMail, isInCooldown, cooldown };
 }

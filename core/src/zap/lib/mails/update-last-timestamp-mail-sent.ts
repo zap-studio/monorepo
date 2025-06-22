@@ -4,7 +4,7 @@ import { Effect } from "effect";
 import { db } from "@/db";
 import { user } from "@/db/schema";
 
-export async function updateLastTimestampEmailSent(userId: string) {
+export async function updateLastTimestampMailSent(userId: string) {
   return Effect.runPromise(
     Effect.gen(function* (_) {
       yield* _(

@@ -4,22 +4,17 @@ import "server-only";
 import { Effect } from "effect";
 
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { ForgotPasswordMail } from "@/zap/components/emails/forgot-password-mail";
+import type { ForgotPasswordMailProps } from "@/zap/actions/mails/send-forgot-password-mail.action";
+import { VerificationMail } from "@/zap/components/mails/verification.mail";
 import { resend } from "@/zap/lib/resend/server";
 
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
 
-export interface ForgotPasswordEmailProps {
-  subject: string;
-  recipients: string[];
-  url: string;
-}
-
-export const sendForgotPasswordMail = async ({
+export const sendVerificationMail = async ({
   subject,
   recipients,
   url,
-}: ForgotPasswordEmailProps) => {
+}: ForgotPasswordMailProps) => {
   return Effect.runPromise(
     Effect.gen(function* (_) {
       const { data, error } = yield* _(
@@ -29,7 +24,7 @@ export const sendForgotPasswordMail = async ({
               from,
               to: recipients,
               subject,
-              react: ForgotPasswordMail({ url }),
+              react: VerificationMail({ url }),
             }),
           catch: (e) => e,
         }),

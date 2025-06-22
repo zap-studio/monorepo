@@ -1,14 +1,14 @@
 import { Effect } from "effect";
 
 import { SETTINGS } from "@/data/settings";
-import { getLastEmailSentAtQuery } from "@/zap/db/queries/emails.query";
+import { getLastMailSentAtQuery } from "@/zap/db/queries/emails.query";
 
-export async function canSendEmail(userId: string) {
+export async function canSendMail(userId: string) {
   return Effect.runPromise(
     Effect.gen(function* (_) {
       const userRecords = yield* _(
         Effect.tryPromise({
-          try: () => getLastEmailSentAtQuery.execute({ userId }),
+          try: () => getLastMailSentAtQuery.execute({ userId }),
           catch: (e) => e,
         }),
       );
