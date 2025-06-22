@@ -26,8 +26,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { handleCompromisedPasswordError } from "@/zap/hooks/auth/use-auth";
 import { authClient } from "@/zap/lib/auth/client";
+import { handleCompromisedPasswordError } from "@/zap/lib/auth/utils";
 
 const formSchema = z
   .object({
