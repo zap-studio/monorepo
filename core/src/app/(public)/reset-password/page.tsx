@@ -86,8 +86,19 @@ export default function ResetPasswordPage() {
             form.reset();
             router.push("/login");
           },
-          onFailure: () => {
-            toast.error("An error occurred while resetting your password.");
+          onFailure: (error: unknown) => {
+            if (
+              typeof error === "object" &&
+              error !== null &&
+              "code" in error &&
+              (error as { code?: string }).code === "PASSWORD_COMPROMISED"
+            ) {
+              toast.error(
+                "This password has been exposed in a data breach. Please choose a stronger, unique password.",
+              );
+            } else {
+              toast.error("An error occurred while resetting your password.");
+            }
           },
         }),
       )

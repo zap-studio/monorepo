@@ -3,6 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import {
   admin,
   anonymous,
+  haveIBeenPwned,
   organization,
   twoFactor,
   username,
@@ -78,5 +79,9 @@ export const auth = betterAuth({
     passkey(),
     admin(),
     organization(),
+    haveIBeenPwned({
+      customPasswordCompromisedMessage:
+        "This password has been exposed in a data breach. Please choose a stronger, unique password.",
+    }),
   ],
 });

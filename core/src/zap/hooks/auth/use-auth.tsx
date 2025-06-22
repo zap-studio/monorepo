@@ -59,9 +59,7 @@ export function useAuth() {
                 callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN,
               );
             },
-            onFailure: () => {
-              throw new Error("Login failed.");
-            },
+            onFailure: (e) => e,
           }),
         )
         .pipe(Effect.runPromise);
@@ -99,8 +97,18 @@ export function useAuth() {
                 callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_UP,
               );
             },
-            onFailure: () => {
-              throw new Error("Registration failed.");
+            onFailure: (error: unknown) => {
+              if (
+                typeof error === "object" &&
+                error !== null &&
+                "code" in error &&
+                (error as { code?: string }).code === "PASSWORD_COMPROMISED"
+              ) {
+                throw new Error(
+                  "This password has been exposed in a data breach. Please choose a stronger, unique password.",
+                );
+              }
+              throw new Error("Registration failed. Please try again.");
             },
           }),
         )
