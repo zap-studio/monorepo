@@ -91,7 +91,7 @@ export function SocialProviderButton({
       {!loading && (
         <>
           {icons[provider]}
-          Login with ${provider.charAt(0).toUpperCase() + provider.slice(1)}
+          {`Login with ${provider.charAt(0).toUpperCase() + provider.slice(1)}`}
         </>
       )}
     </Button>
