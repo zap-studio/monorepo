@@ -8,7 +8,7 @@ const members = [
 		title: "Author",
 		links: [
 			{ icon: "github", link: "https://github.com/alexandretrotel" },
-			{ icon: "twitter", link: "https://twitter.com/alexandretrotel" },
+			{ icon: "x", link: "https://x.com/alexandretrotel" },
 		],
 	},
 	{

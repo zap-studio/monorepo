@@ -70,7 +70,7 @@ export default defineConfig({
 						link: "/docs/features/blog",
 					},
 					{ text: "Database", link: "/docs/features/database" },
-					{text: "Environment Variables", link: "/docs/features/env"},
+					{ text: "Environment Variables", link: "/docs/features/env" },
 					{
 						text: "Error Handling",
 						link: "/docs/features/error-handling",
