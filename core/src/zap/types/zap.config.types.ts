@@ -31,6 +31,7 @@ export interface ZapSettings {
     REDIRECT_URL_AFTER_SIGN_UP: string;
     REDIRECT_URL_AFTER_SIGN_IN: string;
     PROVIDERS: Provider[];
+    PASSWORD_COMPROMISED_MESSAGE: string;
     PUBLIC_PATHS: string[];
   };
   BLOG: {

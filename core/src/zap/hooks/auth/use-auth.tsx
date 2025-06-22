@@ -59,7 +59,9 @@ export function useAuth() {
                 callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN,
               );
             },
-            onFailure: (e) => e,
+            onFailure: (e) => {
+              throw e;
+            },
           }),
         )
         .pipe(Effect.runPromise);

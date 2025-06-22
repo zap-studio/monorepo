@@ -13,6 +13,7 @@ import { passkey } from "better-auth/plugins/passkey";
 import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { ENV } from "@/lib/env.server";
+import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { sendForgotPasswordMail } from "@/zap/actions/mails/send-forgot-password-mail.action";
 import { sendVerificationMail } from "@/zap/actions/mails/send-verification-mail.action";
 import { canSendMail } from "@/zap/lib/mails/can-send-mail";
@@ -81,7 +82,7 @@ export const auth = betterAuth({
     organization(),
     haveIBeenPwned({
       customPasswordCompromisedMessage:
-        "This password has been exposed in a data breach. Please choose a stronger, unique password.",
+        ZAP_DEFAULT_SETTINGS.AUTH.PASSWORD_COMPROMISED_MESSAGE,
     }),
   ],
 });

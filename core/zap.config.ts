@@ -40,6 +40,8 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
     REDIRECT_URL_AFTER_SIGN_UP: "/login",
     REDIRECT_URL_AFTER_SIGN_IN: "/app",
     PROVIDERS: ["apple", "google"],
+    PASSWORD_COMPROMISED_MESSAGE:
+      "This password has been exposed in a data breach. Please choose a stronger, unique password.",
     PUBLIC_PATHS: [
       "/",
       "/login",
