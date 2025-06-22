@@ -3,16 +3,14 @@
  * - Change the current config file to your own configuration
  * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
  * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL (e.g. `https://yourdomain.com`)
+ * - Change `social-provider-button.tsx` to customize icon for each auth provider
  */
-import { ZapSettings } from "@/zap/types/zap.config.types";
-import { Metadata } from "next";
-
-export const VERCEL = process.env.VERCEL_ENV ? true : false;
-export const DEV = process.env.NODE_ENV !== "production";
+import { DEV, VERCEL, ENV } from "@/lib/env.client";
+import type { ZapSettings } from "@/zap/types/zap.config.types";
+import type { Metadata } from "next";
 
 export const APP_NAME = "Zap.ts";
 export const APP_DESCRIPTION = "Build application as fast as a zap.";
-export const MAIL = process.env.ZAP_MAIL || "hello@mail.alexandretrotel.org";
 export const BASE_URL = DEV
   ? "http://localhost:3000"
   : "https://demo.zap-ts.alexandretrotel.org";
@@ -25,29 +23,46 @@ export const ZAP_DEFAULT_FLAGS = {
   ENABLE_POSTHOG: false,
 };
 
-const AI_SYSTEM_PROMPT = "You are a helpful assistant.";
+export type Provider = "apple" | "google";
 
 export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   AI: {
-    SYSTEM_PROMPT: AI_SYSTEM_PROMPT,
+    SYSTEM_PROMPT: "You are a helpful assistant.",
   },
   AUTH: {
-    REQUIRE_EMAIL_VERIFICATION: true,
+    REQUIRE_MAIL_VERIFICATION: true,
     ENABLE_SOCIAL_PROVIDER: true,
     MINIMUM_USERNAME_LENGTH: 3,
     MAXIMUM_USERNAME_LENGTH: 20,
     MINIMUM_PASSWORD_LENGTH: 8,
     MAXIMUM_PASSWORD_LENGTH: 128,
+    LOGIN_URL: "/login",
     REDIRECT_URL_AFTER_SIGN_UP: "/login",
     REDIRECT_URL_AFTER_SIGN_IN: "/app",
+    PROVIDERS: ["apple", "google"],
+    PUBLIC_PATHS: [
+      "/",
+      "/login",
+      "/register",
+      "/forgot-password",
+      "/reset-password",
+      "/terms-of-service",
+      "/privacy-policy",
+      "/cookie-policy",
+      "/_vercel/speed-insights/vitals",
+      "/_vercel/insights/view",
+    ],
   },
-  NOTIFICATIONS: {
-    VAPID_MAIL: MAIL,
+  BLOG: {
+    BASE_PATH: "/blog",
   },
   MAIL: {
     PREFIX: APP_NAME,
     RATE_LIMIT_SECONDS: 60,
-    FROM: `${APP_NAME} <${MAIL}>`,
+    FROM: `${APP_NAME} <${ENV.ZAP_MAIL}>`,
+  },
+  NOTIFICATIONS: {
+    VAPID_MAIL: ENV.ZAP_MAIL,
   },
   PWA: {
     NAME: APP_NAME,

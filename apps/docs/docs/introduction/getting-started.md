@@ -17,9 +17,9 @@ The `.env` file connects your app to services like the database or email provide
 Update it with your own settings. Example:
 
 ```
-DATABASE_URL=your_database_url
 BETTER_AUTH_SECRET=your_better_auth_secret
 BETTER_AUTH_URL=http://localhost:3000
+DATABASE_URL=your_database_url
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 POLAR_ACCESS_TOKEN=your_polar_access_token
@@ -44,9 +44,9 @@ zap.config.ts
 This file defines environment-aware defaults, feature flags, and app behavior like:
 
 - Auth requirements and redirect paths
-- Whether to enable analytics with PostHog
-- PWA settings (icons, theme, description)
 - Email rate limiting and subject prefix
+- PWA settings (icons, theme, description)
+- Whether to enable analytics with PostHog
 
 It’s fully customizable and acts as the core config hub for your app logic.
 

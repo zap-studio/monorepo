@@ -1,90 +1,17 @@
-import { Effect } from "effect";
-
-import { db } from "@/db";
-import { feedback as feedbackTable } from "@/db/schema";
 import { authMiddleware, base } from "@/rpc/middlewares";
-import {
-  getAverageRatingQuery,
-  getFeedbackForUserQuery,
-} from "@/zap/db/queries/feedbacks.query";
+import { getAverageRatingAction } from "@/zap/actions/feedbacks/get-average-rating.action";
+import { getUserFeedbackAction } from "@/zap/actions/feedbacks/get-user-feedback.action";
+import { submitFeedbackAction } from "@/zap/actions/feedbacks/submit-feedback.action";
 import { FeedbackSchema } from "@/zap/schemas/feedback.schema";
 
 const submit = base
   .use(authMiddleware)
   .input(FeedbackSchema)
-  .handler(async ({ context, input }) => {
-    return Effect.runPromise(
-      Effect.gen(function* (_) {
-        const userId = context.session.user.id;
+  .handler(submitFeedbackAction);
 
-        yield* _(
-          Effect.tryPromise({
-            try: () =>
-              db
-                .insert(feedbackTable)
-                .values({
-                  userId,
-                  rating: input.rating,
-                  description: input.description || "",
-                  submittedAt: new Date(),
-                })
-                .execute(),
-            catch: (e) => e,
-          }),
-        );
+const getUserFeedback = base.use(authMiddleware).handler(getUserFeedbackAction);
 
-        return { success: true };
-      }),
-    );
-  });
-
-const getUserFeedback = base
-  .use(authMiddleware)
-  .handler(async ({ context }) => {
-    return Effect.runPromise(
-      Effect.gen(function* (_) {
-        const userId = context.session.user.id;
-
-        const existingFeedback = yield* _(
-          Effect.tryPromise({
-            try: () => getFeedbackForUserQuery.execute({ userId }),
-            catch: (e) => e,
-          }),
-        );
-
-        return existingFeedback.length > 0 ? existingFeedback[0] : null;
-      }),
-    );
-  });
-
-const getAverageRating = base.handler(async () => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const feedbacks = yield* _(
-        Effect.tryPromise({
-          try: () => getAverageRatingQuery.execute(),
-          catch: (e) => e,
-        }),
-      );
-
-      if (feedbacks.length === 0) {
-        return {
-          averageRating: 5,
-          totalFeedbacks: 1,
-        };
-      }
-
-      const totalRating = feedbacks.reduce((acc, feedback) => {
-        return acc + feedback.rating;
-      }, 0);
-
-      const averageRatingOnTen = totalRating / feedbacks.length;
-      const averageRating = (averageRatingOnTen / 10) * 5;
-
-      return { averageRating, totalFeedbacks: feedbacks.length };
-    }),
-  );
-});
+const getAverageRating = base.handler(getAverageRatingAction);
 
 export const feedbacks = {
   submit,

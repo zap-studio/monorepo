@@ -8,11 +8,11 @@ It's _fast_ to set up and very _easy_ to use. It comes with clear documentation 
 
 Starting a new web project always means repeating the _same_ steps:
 
+- installing tools such as linters
 - setting up a database
 - adding login features
-- installing tools such as linters
-- handling payments
 - creating email systems
+- handling payments
 - and more...
 
 A ready-made solution saves time and lets the focus stay on making something useful, not on these boring setup tasks, right?
@@ -31,11 +31,11 @@ Built with this in mind, Zap.ts acts as a launchpad to turn your idea into a wor
 
 Here’s why it’s a game-changer for your team:
 
-- **Speed to Market**: Pre-configured tools and seamless integrations mean you skip the setup grind and start building your MVP right away.
 - **Cost-Effective**: No need to reinvent the wheel or hire specialists because Zap.ts gives you a production-ready stack for free.
-- **Scalability**: From prototype to scale, the modern libraries ensure your app grows without breaking.
-- **Vendor Lock-In Avoidance**: We prioritize agnostic, open tools that keep your stack flexible so you’re never tied to a single provider or ecosystem.
 - **Future-Proof**: With flexible tools, you can adapt to new requirements or tech trends without a full rewrite.
+- **Scalability**: From prototype to scale, the modern libraries ensure your app grows without breaking.
+- **Speed to Market**: Pre-configured tools and seamless integrations mean you skip the setup grind and start building your MVP right away.
+- **Vendor Lock-In Avoidance**: We prioritize agnostic, open tools that keep your stack flexible so you’re never tied to a single provider or ecosystem.
 
 Whether you’re a solo founder or a small team, Zap.ts empowers you to ship fast, iterate often, and compete with the big players.
 
@@ -43,12 +43,12 @@ Whether you’re a solo founder or a small team, Zap.ts empowers you to ship fas
 
 Zap.ts wouldn't exist without those _wonderful_ tools:
 
-- [shadcn/ui](https://ui.shadcn.com/): The best way to get ready-to-use UI components that you can customize however you like.
+- [AI Vercel SDK](https://sdk.vercel.ai/): A toolkit for streaming text, handling objects, using RAG (Retrieval-Augmented Generation), and more. It lets you switch between providers without depending on a specific SDK.
 - [Better Auth](https://better-auth.com/): A simple and flexible way to set up authentication. It works with any framework, avoids vendor lock-in, and connects seamlessly to your database.
 - [Drizzle ORM](https://orm.drizzle.team/): An ORM that lets you write database schemas in TypeScript, sync them with your database, and is easy to use.
-- [Zustand](https://zustand-demo.pmnd.rs/): A lightweight alternative to Redux and React Context. It helps you write less code, do more, and supports local storage persistence out of the box.
-- [oRPC](https://orpc.unnoq.com/): An alternative to [tRPC](https://trpc.io/) that supports OpenAPI specs, making it easy to build type-safe APIs for frontend and backend.
 - [Effect](https://effect.website/): A powerful functional library for modeling, managing, and propagating side effects and errors across your full stack with type safety.
+- [oRPC](https://orpc.unnoq.com/): An alternative to [tRPC](https://trpc.io/) that supports OpenAPI specs, making it easy to build type-safe APIs for frontend and backend.
 - [Payload CMS](https://payloadcms.com/): A self-hosted, developer-friendly CMS for managing your content and blogs with full customization and extensibility.
-- [AI Vercel SDK](https://sdk.vercel.ai/): A toolkit for streaming text, handling objects, using RAG (Retrieval-Augmented Generation), and more. It lets you switch between providers without depending on a specific SDK.
+- [shadcn/ui](https://ui.shadcn.com/): The best way to get ready-to-use UI components that you can customize however you like.
+- [Zustand](https://zustand-demo.pmnd.rs/): A lightweight alternative to Redux and React Context. It helps you write less code, do more, and supports local storage persistence out of the box.
 - And more...

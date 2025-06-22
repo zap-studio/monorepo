@@ -3,16 +3,16 @@ import { eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { user } from "@/db/schema";
 
-export const getUserIdFromEmailQuery = db
+export const getUserIdFromMailQuery = db
   .select({ userId: user.id })
   .from(user)
   .where(eq(user.email, sql.placeholder("email")))
   .limit(1)
-  .prepare("getUserIdFromEmail");
+  .prepare("getUserIdFromMail");
 
-export const getLastEmailSentAtQuery = db
+export const getLastMailSentAtQuery = db
   .select({ lastEmailSentAt: user.lastEmailSentAt })
   .from(user)
   .where(eq(user.id, sql.placeholder("userId")))
   .limit(1)
-  .prepare("getLastEmailSentAt");
+  .prepare("getLastMailSentAt");

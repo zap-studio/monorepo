@@ -10,17 +10,17 @@ This turns the LLM from a passive assistant into an **active agent** that can in
 
 Here are the built-in MCPs:
 
-* [GitHub](https://github.com) — Automate PRs, issues, and more.
-* [Supabase](https://supabase.com) — Query and mutate your database directly.
-* [PostHog](https://posthog.com) — Analyze events, user sessions, and feature flags.
-* [Notion](https://www.notion.com) — Read and write structured Notion content via the API.
-* [Resend](https://resend.com) — Send transactional emails with ease.
-* [Firecrawl](https://firecrawl.dev) — Crawl and extract structured data from websites.
 * [ElevenLabs](https://www.elevenlabs.io) — Use realistic text-to-speech directly from your IDE.
+* [Firecrawl](https://firecrawl.dev) — Crawl and extract structured data from websites.
+* [GitHub](https://github.com) — Automate PRs, issues, and more.
 * [Magic by 21st.dev](https://21st.dev/magic) — Secure authentication with a few lines of code.
 * [Neon](https://neon.tech) — A modern Postgres platform, optimized for serverless.
+* [Notion](https://www.notion.com) — Read and write structured Notion content via the API.
 * [Perplexity](https://www.perplexity.ai) — Ask factual questions via API.
+* [PostHog](https://posthog.com) — Analyze events, user sessions, and feature flags.
+* [Resend](https://resend.com) — Send transactional emails with ease.
 * [Sentry](https://sentry.io) — Monitor and manage application errors from inside Cursor.
+* [Supabase](https://supabase.com) — Query and mutate your database directly.
 
 :::tip Environment Setup
 
@@ -33,8 +33,8 @@ Make sure to define them in your local `.env` file or shell environment.
 **Example:**
 
 ```txt
-MCP_SUPABASE_ACCESS_TOKEN=your_supabase_token
 MCP_POSTHOG_AUTH_HEADER=Bearer your_posthog_token
+MCP_SUPABASE_ACCESS_TOKEN=your_supabase_token
 ```
 
 :::

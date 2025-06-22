@@ -6,13 +6,13 @@
 
 - **Automatic sitemap generation:** Keep search engines up to date with your latest pages.
 - **Meta tags & Open Graph:** Easily configure titles, descriptions, and social sharing images.
+- **Performance:** Fast load times and optimized assets for better rankings.
 - **Robots.txt:** Control which pages are indexed by search engines.
 - **Structured data:** Add JSON-LD for rich results.
-- **Performance:** Fast load times and optimized assets for better rankings.
 
 ## Definitions
 
-- **Sitemap:** A [sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview) is a file where you provide information about the pages, videos, and other files on your site, and the relationships between them.
+- **sitemap.xml:** A [sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview) is a file where you provide information about the pages, videos, and other files on your site, and the relationships between them.
 
 - **robots.txt:** A [robots.txt](https://developers.google.com/search/docs/crawling-indexing/robots/intro) file tells search engine crawlers which pages or files they can or can't request from your site. This helps control indexing and crawling behavior.
 
@@ -76,29 +76,3 @@ Sitemap: your_site_url_here/server-sitemap-index.xml
 You can add [JSON-LD](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data) structured data to your pages for rich search results.
 
 Follow the [Next.js JSON-LD Guide](https://nextjs.org/docs/app/guides/json-ld) for more details. We recommend to use [schema-dts](https://www.npmjs.com/package/schema-dts) for type-safety.
-
-## References
-
-### `next-sitemap.config.js`
-
-```js
-// next-sitemap.config.js
-module.exports = {
-  siteUrl: process.env.SITE_URL || "http://localhost:3000",
-  changefreq: "daily",
-  priority: 0.7,
-  generateRobotsTxt: true,
-  exclude: ["/server-sitemap-index.xml", "/404", "/admin/**", "/api/**"],
-  alternateRefs: [
-    { href: process.env.SITE_URL || "http://localhost:3000", hreflang: "en" },
-    { href: `${process.env.SITE_URL || "http://localhost:3000"}/fr`, hreflang: "fr" },
-    { href: `${process.env.SITE_URL || "http://localhost:3000"}/pt`, hreflang: "pt" },
-  ],
-  robotsTxtOptions: {
-    policies: [
-      { userAgent: "*", allow: "/" },
-    ],
-    additionalSitemaps: [`${process.env.SITE_URL}/server-sitemap-index.xml`],
-  },
-};
-```

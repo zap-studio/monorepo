@@ -7,10 +7,10 @@ The setup is designed for _flexibility_, _developer productivity_, and _end-to-e
 ## Overview
 
 - **Drizzle ORM:** Type-safe, SQL-friendly ORM for schema definition and queries.
-- **PostgreSQL:** Production-ready, scalable relational database.
-- **Migrations:** Simple, reliable schema migrations with Drizzle CLI.
-- **Type Safety:** All schemas and queries are fully typed with TypeScript.
 - **Extensible:** Easily add new tables, relations, or swap out the database.
+- **Migrations:** Simple, reliable schema migrations with Drizzle CLI.
+- **PostgreSQL:** Production-ready, scalable relational database.
+- **Type Safety:** All schemas and queries are fully typed with TypeScript.
 
 ## How it works?
 
@@ -96,36 +96,7 @@ This pattern is recommended for queries used in **API routes**, **server actions
 ## Customizing the database
 
 - **Add a table:** Create a new `.sql.ts` file in `src/db/schema/` and export your table.
-- **Edit a table:** Update the schema file and generate a migration.
 - **Change database:** Update your `DATABASE_URL` in `.env` and Drizzle config.
+- **Edit a table:** Update the schema file and generate a migration.
 
 For more, see the [Drizzle ORM documentation](https://orm.drizzle.team/docs/overview).
-
-## References
-
-### `schema/index.ts`
-
-```ts
-// src/db/schema/index.ts
-export * from "@/zap/db/schema/ai.sql";
-export * from "@/zap/db/schema/auth.sql";
-export * from "@/zap/db/schema/feedback.sql";
-export * from "@/zap/db/schema/notifications.sql";
-```
-
-###  `db`
-
-```ts
-// src/db/index.ts
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
-
-import * as schema from "./schema";
-
-const databaseUrl = process.env.DATABASE_URL;
-if (!databaseUrl) {
-  throw new Error("DATABASE_URL environment variable is not set");
-}
-const sql = neon(databaseUrl);
-export const db = drizzle({ client: sql, schema });
-```

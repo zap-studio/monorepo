@@ -11,11 +11,11 @@ import { passkey } from "better-auth/plugins/passkey";
 
 import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
-import {
-  sendForgotPasswordMail,
-  sendVerificationEmail,
-} from "@/zap/actions/emails.action";
-import { canSendEmail, updateLastEmailSent } from "@/zap/lib/resend/rate-limit";
+import { ENV } from "@/lib/env.server";
+import { sendForgotPasswordMail } from "@/zap/actions/mails/send-forgot-password-mail.action";
+import { sendVerificationMail } from "@/zap/actions/mails/send-verification-mail.action";
+import { canSendMail } from "@/zap/lib/mails/can-send-mail";
+import { updateLastTimestampMailSent } from "@/zap/lib/mails/update-last-timestamp-mail-sent";
 
 export const auth = betterAuth({
   appName: "Zap.ts",
@@ -24,9 +24,9 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: SETTINGS.AUTH.MINIMUM_PASSWORD_LENGTH,
     maxPasswordLength: SETTINGS.AUTH.MAXIMUM_PASSWORD_LENGTH,
-    requireEmailVerification: SETTINGS.AUTH.REQUIRE_EMAIL_VERIFICATION,
+    requireEmailVerification: SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION,
     sendResetPassword: async ({ user, url }) => {
-      const { canSend, timeLeft } = await canSendEmail(user.id);
+      const { canSend, timeLeft } = await canSendMail(user.id);
       if (!canSend) {
         throw new Error(
           `Please wait ${timeLeft} seconds before requesting another password reset email.`,
@@ -39,32 +39,32 @@ export const auth = betterAuth({
         url,
       });
 
-      await updateLastEmailSent(user.id);
+      await updateLastTimestampMailSent(user.id);
     },
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
-      const { canSend, timeLeft } = await canSendEmail(user.id);
+      const { canSend, timeLeft } = await canSendMail(user.id);
       if (!canSend) {
         throw new Error(
           `Please wait ${timeLeft} seconds before requesting another password reset email.`,
         );
       }
 
-      await sendVerificationEmail({
+      await sendVerificationMail({
         recipients: [user.email],
         subject: `${SETTINGS.MAIL.PREFIX} - Verify your email`,
         url,
       });
 
-      await updateLastEmailSent(user.id);
+      await updateLastTimestampMailSent(user.id);
     },
   },
   socialProviders: {
     google: {
       enabled: true,
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: ENV.GOOGLE_CLIENT_ID || "",
+      clientSecret: ENV.GOOGLE_CLIENT_SECRET || "",
     },
   },
   plugins: [

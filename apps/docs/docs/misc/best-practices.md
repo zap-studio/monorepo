@@ -27,23 +27,13 @@ The `src` folder in Zap.ts is organized to keep your code _clean_, _easy to find
 
 Inside the `app` folder, you'll find some special folders that help you organize your code. These **do not affect your route structure** — they just make things easier to manage:
 
-- **api** – For API routes only
-
-> Example: `/(api)/users.ts`
-
-- **pages** – For page components (UI screens)
-
-> Example: `/(pages)/home.tsx`
-
 - **public** – For public-facing pages and APIs (no auth required)
+  > Example: `/(public)/index.tsx`
 
-> Example: `/(public)/(pages)/home.tsx`
+- **protected** – For protected routes (auth required)
+  > Example: `/api/(protected)/user/update-account/route.ts`
 
-- **auth-only** – For protected routes (auth required)
-
-> Example: `/(auth-only)/(api)/user/update-account.ts`
-
-These folders let you group your logic by access level or type (like pages vs. APIs) without affecting the final URL structure.
+These folders let you group your logic by access level without affecting the final URL structure.
 
 :::tip Understanding Routes
 
@@ -113,19 +103,19 @@ Learn more about [Effect](https://effect.website/docs) and how it can elevate yo
 
 Performance directly impacts user experience and SEO. Here are the key Next.js _optimization strategies_ to understand:
 
-- **SSR vs SSG vs ISR**  
-  - *SSR ([Server-Side Rendering](https://nextjs.org/docs/app/guides/migrating/app-router-migration#server-side-rendering-getserversideprops))*: Best for dynamic pages that need fresh data on every request such as user dashboards.  
-  - *SSG ([Static Site Generation](https://nextjs.org/docs/app/guides/migrating/app-router-migration#static-site-generation-getstaticprops))*: Ideal for mostly static pages that rarely change like marketing pages.  
-  - *ISR ([_Incremental Static Generation_](https://nextjs.org/docs/app/guides/incremental-static-regeneration))*: A hybrid approach for mostly static pages with occasional updates, like blogs with frequent content changes.  
+- **Bundle Analysis**  
+  Regularly analyze your bundles with tools like [`@next/bundle-analyzer`](https://www.npmjs.com/package/@next/bundle-analyzer) to find and reduce large dependencies or unnecessary code.
 
 - **Lazy Loading (Dynamic Import)**  
-  Use [dynamic imports](https://nextjs.org/docs/app/guides/lazy-loading) (`dynamic()`) to load heavy or rarely used components on demand, reducing the initial bundle size and speeding up page loads.
+  Use [dynamic imports](https://nextjs.org/docs/app/guides/lazy-loading) (`dynamic()`) to load heavy or rarely used components on demand, reducing the initial bundle size and speeding up page loads. 
 
 - **Route Prefetching**  
   Take advantage of Next.js’s automatic [link prefetching](https://nextjs.org/docs/app/api-reference/components/link#prefetch) (`<Link prefetch>`) to preload pages users are likely to visit next, enabling faster navigation.
 
-- **Bundle Analysis**  
-  Regularly analyze your bundles with tools like [`@next/bundle-analyzer`](https://www.npmjs.com/package/@next/bundle-analyzer) to find and reduce large dependencies or unnecessary code.
+- **SSR vs SSG vs ISR**  
+  - *SSR ([Server-Side Rendering](https://nextjs.org/docs/app/guides/migrating/app-router-migration#server-side-rendering-getserversideprops))*: Best for dynamic pages that need fresh data on every request such as user dashboards.  
+  - *SSG ([Static Site Generation](https://nextjs.org/docs/app/guides/migrating/app-router-migration#static-site-generation-getstaticprops))*: Ideal for mostly static pages that rarely change like marketing pages.  
+  - *ISR ([_Incremental Static Generation_](https://nextjs.org/docs/app/guides/incremental-static-regeneration))*: A hybrid approach for mostly static pages with occasional updates, like blogs with frequent content changes. 
 
 ## Middleware
 
@@ -141,38 +131,36 @@ It leverages the **Edge Runtime** that runs your code at the network edge, _clos
 
 Follow these naming rules for clarity:
 
-- **Hooks:** Use `use-hook.ts`  
-
-> Example: `use-user-profile.ts`
-
 - **Components:** Use `component-name.tsx`  
-
-> Example: `user-card.tsx`
-
-- **Stores:** Use `your-store.store.ts`  
-
-> Example: `user.store.ts`
-
-- **Server Actions:** Use `your-action.action.ts`  
-
-> Example: `update-user.action.ts`
-
-- **Database Schema:** Use `your-schema.sql.ts`  
-
-> Example: `auth.sql.ts`
-
-- **Zod Schemas:** Use `your-schema.schema.ts` and prefer PascalCase for schema names  
-
-> Example file: `user.schema.ts`  
-> Example schema name: `UserSchema` (not `userSchema`)
-
-- **RPC Procedures:** Use `your-procedure.rpc.ts`  
-
-> Example: `user.rpc.ts`
+  > Example: `user-card.tsx`
 
 - **Constants (in the `data` folder):** Use uppercase naming  
+  > Examples: `FLAGS`, `BASE_URL`
 
-> Examples: `FLAGS`, `BASE_URL`
+- **Database Schema:** Use `your-schema.sql.ts`  
+  > Example: `auth.sql.ts`
+
+- **Hooks:** Use `use-hook.ts`  
+  > Example: `use-user-profile.ts`
+
+- **Mails:** Use `your-mail.mail.ts`
+  > Example: `template.mail.tsx`
+
+- **Queries:** Use `your-query.query.ts`  
+  > Example: `get-users.query.ts`
+
+- **RPC Procedures:** Use `your-procedure.rpc.ts`  
+  > Example: `user.rpc.ts`
+
+- **Server Actions:** Use `your-action.action.ts`  
+  > Example: `update-user.action.ts`
+
+- **Stores:** Use `your-store.store.ts`  
+  > Example: `user.store.ts`
+
+- **Zod Schemas:** Use `your-schema.schema.ts` and prefer PascalCase for schema names  
+  > Example file: `user.schema.ts`  
+  > Example schema name: `UserSchema` (not `userSchema`)
 
 - **Other files:** Follow React naming conventions, like PascalCase for components.
 

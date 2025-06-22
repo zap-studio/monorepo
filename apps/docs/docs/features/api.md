@@ -6,12 +6,14 @@ Built on top of **Next.js API routes**, **oRPC** ensures _seamless_ communicatio
 
 For **data fetching**, **mutations** and **caching** on the client, **Zap.ts** uses [SWR](https://swr.vercel.app/) for a _fast_ and _reactive_ developer experience.
 
+Recently, it has also been [optimized](https://orpc.unnoq.com/docs/best-practices/optimize-ssr) for **Server-Side Rendering** (SSR), with a _client-side fallback_.
+
 ## Overview
 
-- **Type-safe:** All procedures and inputs are validated with Zod schemas and TypeScript types.
+- **Extensible:** Add new procedures, middleware, and custom logic with minimal boilerplate.
 - **OpenAPI-ready:** oRPC can generate OpenAPI specs for your endpoints.
 - **React-friendly:** Hooks are generated for easy data fetching with SWR or React Query.
-- **Extensible:** Add new procedures, middleware, and custom logic with minimal boilerplate.
+- **Type-safe:** All procedures and inputs are validated with Zod schemas and TypeScript types.
 
 ## Server vs. Client
 
@@ -50,33 +52,23 @@ import { hello } from "./procedures/hello.rpc";
 export const router = { hello /* ...other procedures */ };
 ```
 
-3. **Register it for server-side usage (optional, for internal/server-to-server calls):**
+3. **Server-side usage (optional):**
 
 ```ts
-// src/zap/lib/orpc/server.ts
-import { createRouterClient } from "@orpc/server";
-import { hello } from "@/zap/rpc/procedures/hello.rpc";
+// src/app/some-page/page.tsx
+import { router } from "@/rpc/router";
 
-export const createOrpcServer = (headers: Headers) => {
-  return createRouterClient(
-    {
-      hello,
-      // ...other procedures
-    },
-    {
-      context: {
-        headers,
-      },
-    },
-  );
-};
+export default async function SomePage() {
+  const data = await router.hello(); // Server-side query
+  return <div>{data.message}</div>;
+}
 ```
 
-4. **Create a hook:**
+4. **Client-side usage, create a hook:**
 
 ```ts
 // src/hooks/use-hello.ts
-import { useORPC } from "@/stores/orpc.store";
+import { useORPC } from "@/zap/stores/orpc.store";
 import useSWR from "swr";
 
 export const useHello = (input) => {
@@ -107,157 +99,3 @@ export default function HelloComponent() {
 - **OpenAPI:** Generate OpenAPI specs for your API.
 
 For more, see the [oRPC documentation](https://orpc.unnoq.com/).
-
-## References
-
-### `router`
-
-The main router that registers all procedures.
-
-```ts
-// src/rpc/router.ts
-import { greet } from "./procedures/greet.rpc";
-export const router = { greet };
-```
-
----
-
-### `orpc`
-
-The `orpc` object provides React Query-compatible utilities for calling your oRPC procedures from the client, making it easy to fetch and mutate data in your React components.
-
-```ts
-// src/zap/lib/orpc.ts
-import { createORPCClient } from "@orpc/client";
-import { RPCLink } from "@orpc/client/fetch";
-import { RouterClient } from "@orpc/server";
-import { router } from "@/rpc/router";
-import { createORPCReactQueryUtils } from "@orpc/react-query";
-
-export const link = new RPCLink({ url: "/rpc" });
-export const client: RouterClient<typeof router> = createORPCClient(link);
-export const orpc = createORPCReactQueryUtils(client);
-```
-
----
-
-### `middlewares`
-
-Middleware can be used to add authentication, logging, or other logic to your procedures.
-
-```ts
-// src/rpc/middlewares.ts
-import { os } from "@orpc/server";
-import { Effect } from "effect";
-import { auth } from "@/zap/lib/auth/server";
-
-export const base = os
-  .$context<{ headers: Headers }>()
-  .errors({ UNAUTHORIZED: {} });
-
-export const authMiddleware = base.middleware(
-  async ({ context, next, errors }) => {
-    const program = Effect.gen(function* (_) {
-      const session = yield* _(
-        Effect.tryPromise({
-          try: () => auth.api.getSession({ headers: context.headers }),
-          catch: (error) => new Error(`Failed to get session: ${error}`),
-        }),
-      );
-
-      if (!session) {
-        return yield* _(
-          Effect.fail(
-            errors.UNAUTHORIZED({
-              message: "Unauthorized access",
-            }),
-          ),
-        );
-      }
-
-      return yield* _(
-        Effect.try({
-          try: () =>
-            next({
-              context: {
-                session,
-                headers: context.headers,
-              },
-            }),
-        }),
-      );
-    });
-
-    return Effect.runPromise(
-      program.pipe(
-        Effect.catchAll((error: unknown) => {
-          return Effect.fail(error);
-        }),
-      ),
-    );
-  },
-);
-```
-
----
-
-### `RPCHandler`
-
-Set up the oRPC handler for your API routes on the server:
-
-```ts
-// src/app/(api)/rpc/[[...rest]]/route.ts
-import { RPCHandler } from "@orpc/server/fetch";
-import { router } from "@/rpc/router";
-
-const handler = new RPCHandler(router);
-
-async function handleRequest(request: Request) {
-  const { response } = await handler.handle(request, {
-    prefix: "/rpc",
-    context: {
-      headers: request.headers,
-    },
-  });
-
-  return response ?? new Response("Not found", { status: 404 });
-}
-
-export const HEAD = handleRequest;
-export const GET = handleRequest;
-export const POST = handleRequest;
-export const PUT = handleRequest;
-export const PATCH = handleRequest;
-export const DELETE = handleRequest;
-```
-
----
-
-### `createOrpcServer`
-
-You can set up server-side oRPC procedure handlers for internal or server-to-server calls using the oRPC server utilities.
-
-```ts
-// src/zap/lib/orpc/server.ts
-import { createRouterClient } from "@orpc/server";
-
-import { feedbacks } from "@/zap/rpc/procedures/feedbacks.rpc";
-import { users } from "@/zap/rpc/procedures/users.rpc";
-
-const { getAverageRating } = feedbacks;
-const { getNumberOfUsers } = users;
-
-export const createOrpcServer = (headers: Headers) => {
-  return createRouterClient(
-    {
-      getAverageRating,
-      getNumberOfUsers,
-    },
-    {
-      context: {
-        headers,
-      },
-    },
-  );
-};
-```

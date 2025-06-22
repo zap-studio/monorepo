@@ -1,6 +1,6 @@
-import { z } from "zod/v4";
+import type { z } from "zod/v4";
 
-import {
+import type {
   AIFormSchema,
   AIProviderIdSchema,
   AIProviderSchema,

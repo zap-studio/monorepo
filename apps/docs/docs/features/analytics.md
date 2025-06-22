@@ -4,9 +4,9 @@
 
 ## Overview
 
-- **Zero-config:** Vercel Analytics and Speed Insights are enabled by default.
 - **Custom events:** Easily track custom events and user actions.
 - **Extensible:** Swap out or extend analytics providers as needed.
+- **Zero-config:** Vercel Analytics and Speed Insights are enabled by default.
 
 ## Providers
 
@@ -26,65 +26,10 @@ It is automatically included in your app layout and requires no setup if you dep
 
 It is integrated via a custom `Providers` component that initializes PostHog only if `FLAGS.ENABLE_POSTHOG` is enabled.
 
-- **Initialization:** PostHog is set up using your environment variables.
-- **Pageviews:** Pageview tracking is handled by the `SuspendedPostHogPageView` component.
-- **Custom Events:** You can track custom events anywhere in your app using **PostHog SDK**.
+1. **Initialization:** PostHog is set up using your environment variables.
+2. **Pageviews:** Pageview tracking is handled by the `SuspendedPostHogPageView` component.
+3. **Custom Events:** You can track custom events anywhere in your app using **PostHog SDK**.
 
 To use PostHog, set the appropriate environment variables (`NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST`) and enable the feature flag in `zap.config.ts`.
 
 For more, see the [PostHog documentation](https://posthog.com/docs).
-
-## References
-
-### `Analytics` and `SpeedInsights`
-
-Imported from Vercel packages and rendered in the app layout.
-
-```tsx
-// src/app/layout.tsx
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-
-<Analytics />
-<SpeedInsights />
-```
-
----
-
-### `PostHogProvider`
-
-PostHog is initialized and provided to your app via the custom `Providers` component.  
-
-This enables event tracking and pageview analytics when `FLAGS.ENABLE_POSTHOG` is enabled.
-
-```ts
-// src/zap/providers/providers.tsx
-import posthog from "posthog-js";
-import { PostHogProvider as PHProvider } from "posthog-js/react";
-import { useEffect } from "react";
-import { FLAGS } from "@/data/flags";
-import SuspendedPostHogPageView from "@/zap/components/features/analytics/posthog-page-view/posthog-page-view";
-
-export default function Providers({ children }: ProvidersProps) {
-  useEffect(() => {
-    if (!FLAGS.ENABLE_POSTHOG) return;
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST!,
-      capture_pageview: false,
-      capture_pageleave: true,
-    });
-  }, []);
-
-  return (
-    <>
-      {FLAGS.ENABLE_POSTHOG && (
-        <PHProvider client={posthog}>
-          <SuspendedPostHogPageView />
-          {children}
-        </PHProvider>
-      )}
-      {!FLAGS.ENABLE_POSTHOG && children}
-    </>
-  );
-}
-```

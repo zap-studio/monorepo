@@ -1,3 +1,5 @@
+import { Provider } from "@/zap.config";
+
 export interface ZapSettings {
   AI: {
     SYSTEM_PROMPT: string;
@@ -19,22 +21,28 @@ export interface ZapSettings {
     };
   };
   AUTH: {
-    REQUIRE_EMAIL_VERIFICATION: boolean;
+    REQUIRE_MAIL_VERIFICATION: boolean;
     ENABLE_SOCIAL_PROVIDER: boolean;
     MINIMUM_USERNAME_LENGTH: number;
     MAXIMUM_USERNAME_LENGTH: number;
     MINIMUM_PASSWORD_LENGTH: number;
     MAXIMUM_PASSWORD_LENGTH: number;
+    LOGIN_URL: string;
     REDIRECT_URL_AFTER_SIGN_UP: string;
     REDIRECT_URL_AFTER_SIGN_IN: string;
+    PROVIDERS: Provider[];
+    PUBLIC_PATHS: string[];
   };
-  NOTIFICATIONS: {
-    VAPID_MAIL: string;
+  BLOG: {
+    BASE_PATH: string;
   };
   MAIL: {
     PREFIX: string;
     RATE_LIMIT_SECONDS: number;
     FROM: string;
+  };
+  NOTIFICATIONS: {
+    VAPID_MAIL?: string;
   };
   PWA: {
     NAME: string;

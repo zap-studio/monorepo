@@ -4,6 +4,7 @@
 	"globalEnv": ["*"],
 	"tasks": {
 		"build": {
+			"cache": false,
 			"dependsOn": ["^build"],
 			"outputs": [".next/**", "!.next/cache/**", "dist/**", ".vitepress/**"]
 		},

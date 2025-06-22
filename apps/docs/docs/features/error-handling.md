@@ -8,10 +8,10 @@ Most people sprinkle `try/catch` or `.catch()` throughout their code — and it 
 
 **Effect** fixes that by giving you:
 
+- **Better testability** — effects are easy to simulate/mock
+- **Composable** workflows — you can chain logic clearly
 - **Explicit** error handling — no hidden surprises
 - **Type-safe** async code — TypeScript actually helps you
-- **Composable** workflows — you can chain logic clearly
-- **Better testability** — effects are easy to simulate/mock
 
 Instead of letting errors blow up in random places, you model them as data. That makes your app’s behavior predictable and easier to reason about.
 
@@ -65,10 +65,10 @@ Effect.runPromise(safeFetch).then((result) => {
 
 What’s happening here? Let's try to understand the above code.
 
-- You try to fetch the user.
-- If it fails, you catch the error and return it as a regular value.
-- Now everything — success and failure — is part of the same flow.
-- No surprises, no runtime crashes.
+1. You try to fetch the user.
+2. If it fails, you catch the error and return it as a regular value.
+3. Now everything — success and failure — is part of the same flow.
+4. No surprises, no runtime crashes.
 
 ## Learn More
 

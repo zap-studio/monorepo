@@ -4,9 +4,9 @@
 
 ## Overview
 
+- **Cookie Policy:** Details what cookies are used, why, and how users can manage them.
 - **Privacy Policy:** Explains how user data is collected, used, and protected.
 - **Terms of Service:** Outlines the rules for using your app and your responsibilities.
-- **Cookie Policy:** Details what cookies are used, why, and how users can manage them.
 
 All legal pages are located in the `/legal` route and rendered using MDX for easy editing.
 
@@ -34,6 +34,6 @@ export const metadata = {
 
 ## Tips
 
-- **Keep your legal pages up to date** with changes in your app or regulations.
 - **Add your contact information** in each policy so users can reach you.
 - **Consult a lawyer** to ensure your policies meet legal requirements for your region and audience.
+- **Keep your legal pages up to date** with changes in your app or regulations.

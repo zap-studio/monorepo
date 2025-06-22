@@ -1,6 +1,6 @@
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { generateAuthSecret } from "./generate-auth-secret.js";
+import { generateSecret } from "./generate-secret.js";
 
 const coreEnv = [
 	"BETTER_AUTH_SECRET",
@@ -56,7 +56,7 @@ export const generateEnv = async (outputDir: string) => {
 		.map((envVar) => {
 			switch (envVar) {
 				case "BETTER_AUTH_SECRET":
-					return `${envVar}="${generateAuthSecret()}"`;
+					return `${envVar}="${generateSecret()}"`;
 
 				case "DATABASE_URL":
 					return `${envVar}="postgresql://fake_user:fake_password@ep-example-database.us-west-1.aws.neon.tech/fake_db?sslmode=require"`;
@@ -66,6 +66,9 @@ export const generateEnv = async (outputDir: string) => {
 
 				case "MCP_NOTION_API_HEADERS":
 					return `${envVar}='{"Authorization": "Bearer ntn_your_token"}'`;
+
+				case "ENCRYPTION_KEY":
+					return `${envVar}="${generateSecret()}"`;
 
 				default:
 					return `${envVar}="your_${envVar.toLowerCase()}_here"`;
