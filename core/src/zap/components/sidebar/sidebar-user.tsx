@@ -8,7 +8,6 @@ import {
   ChevronsUpDown,
   CreditCard,
   LogOut,
-  LucideIcon,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
@@ -32,7 +31,22 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/zap/lib/auth/client";
 
-type NavUserProps = {
+type MenuItem = {
+  label: string;
+  icon: React.ComponentType;
+  href?: string;
+  onClick?: () => void;
+};
+
+const UPGRADE_ITEM: MenuItem[] = [{ label: "Upgrade to Pro", icon: Sparkles }];
+
+const ACCOUNT_ITEMS: MenuItem[] = [
+  { label: "Account", icon: BadgeCheck, href: "/app/account" },
+  { label: "Billing", icon: CreditCard, href: "/app/billing" },
+  { label: "Notifications", icon: Bell, href: "/app/notifications" },
+];
+
+type SidebarUserProps = {
   user: {
     name: string;
     email: string;
@@ -40,22 +54,7 @@ type NavUserProps = {
   };
 };
 
-type MenuItem = {
-  label: string;
-  icon: LucideIcon;
-  href?: string;
-  onClick?: () => void;
-};
-
-const upgradeItem: MenuItem[] = [{ label: "Upgrade to Pro", icon: Sparkles }];
-
-const accountItems: MenuItem[] = [
-  { label: "Account", icon: BadgeCheck, href: "/app/account" },
-  { label: "Billing", icon: CreditCard, href: "/app/billing" },
-  { label: "Notifications", icon: Bell, href: "/app/notifications" },
-];
-
-export function NavUser({ user }: NavUserProps) {
+export function SidebarUser({ user }: SidebarUserProps) {
   const { isMobile } = useSidebar();
   const router = useRouter();
 
@@ -146,9 +145,9 @@ export function NavUser({ user }: NavUserProps) {
             </DropdownMenuLabel>
 
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>{renderItems(upgradeItem)}</DropdownMenuGroup>
+            <DropdownMenuGroup>{renderItems(UPGRADE_ITEM)}</DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>{renderItems(accountItems)}</DropdownMenuGroup>
+            <DropdownMenuGroup>{renderItems(ACCOUNT_ITEMS)}</DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               {renderItems([

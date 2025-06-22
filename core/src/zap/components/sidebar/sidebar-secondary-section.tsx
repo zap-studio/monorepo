@@ -13,9 +13,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { AISettingsSheet } from "@/zap/components/ai/ai-settings-sheet";
-import { FeedbackDialog } from "@/zap/components/sidebar/sidebar-feedback-dialog";
+import { FeedbackDialog } from "@/zap/components/sidebar/feedback-dialog";
 
-export function NavSecondary({
+export function SidebarSecondarySection({
   ...props
 }: {} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   const [isFeedbackOpen, setFeedbackOpen] = useState(false);

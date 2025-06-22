@@ -1,3 +1,5 @@
+"use client";
+
 import { useCompletion } from "@ai-sdk/react";
 import { toast } from "sonner";
 

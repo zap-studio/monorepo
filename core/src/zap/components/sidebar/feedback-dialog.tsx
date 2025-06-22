@@ -22,20 +22,19 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import {
-  useIsFeedbackSubmitted,
-  useSubmitFeedback,
-} from "@/zap/hooks/feedbacks/use-feedback";
+import { useIsFeedbackSubmitted } from "@/zap/hooks/feedbacks/use-is-feedback-submitted";
+import { useSubmitFeedback } from "@/zap/hooks/feedbacks/use-submit-feedback";
 import { FeedbackSchema } from "@/zap/schemas/feedback.schema";
 import { FeedbackFormValues } from "@/zap/types/feedback.types";
 
-export function FeedbackDialog({
-  open,
-  onOpenChange,
-}: {
+interface FeedbackDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}) {
+}
+
+export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
+  const [submitted, setSubmitted] = useState(false);
+
   const { isExistingFeedback, setIsExistingFeedback } =
     useIsFeedbackSubmitted();
   const { trigger: submitFeedback, isMutating: isSubmitting } =
@@ -45,8 +44,6 @@ export function FeedbackDialog({
     resolver: zodResolver(FeedbackSchema),
     defaultValues: { rating: 0, description: "" },
   });
-
-  const [submitted, setSubmitted] = useState(false);
 
   const onSubmit = async (data: FeedbackFormValues) => {
     await submitFeedback(data);

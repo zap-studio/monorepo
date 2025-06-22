@@ -13,9 +13,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { NavMain } from "@/zap/components/sidebar/sidebar-main-section";
-import { NavSecondary } from "@/zap/components/sidebar/sidebar-secondary-section";
-import { NavUser } from "@/zap/components/sidebar/sidebar-user-panel";
+import { SidebarMainSection } from "@/zap/components/sidebar/sidebar-main-section";
+import { SidebarSecondarySection } from "@/zap/components/sidebar/sidebar-secondary-section";
+import { SidebarUser } from "@/zap/components/sidebar/sidebar-user";
 import { authClient } from "@/zap/lib/auth/client";
 
 const MAIN_NAV_ITEMS = [
@@ -51,12 +51,12 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={MAIN_NAV_ITEMS} />
-        <NavSecondary className="mt-auto" />
+        <SidebarMainSection items={MAIN_NAV_ITEMS} />
+        <SidebarSecondarySection className="mt-auto" />
       </SidebarContent>
 
       <SidebarFooter>
-        <NavUser user={userData} />
+        <SidebarUser user={userData} />
       </SidebarFooter>
     </Sidebar>
   );

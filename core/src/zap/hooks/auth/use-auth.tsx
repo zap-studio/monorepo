@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "@bprogress/next/app";
 import { Effect } from "effect";
 import { toast } from "sonner";

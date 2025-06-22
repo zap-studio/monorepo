@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/zap/components/sidebar/sidebar";
-import { NavHeader } from "@/zap/components/sidebar/sidebar-header";
+import { SidebarHeader } from "@/zap/components/sidebar/sidebar-header";
 
 export default async function AppLayout({
   children,
@@ -16,7 +16,7 @@ export default async function AppLayout({
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
       <SidebarInset>
-        <NavHeader />
+        <SidebarHeader />
         <main className="mt-4">{children}</main>
       </SidebarInset>
     </SidebarProvider>

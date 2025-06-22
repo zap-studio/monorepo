@@ -1,38 +1,11 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 
 import { useORPC } from "@/zap/stores/orpc.store";
 import type { FeedbackFormValues } from "@/zap/types/feedback.types";
-
-export const useUserFeedback = () => {
-  const orpc = useORPC();
-
-  return useSWR(
-    orpc.feedbacks.getUserFeedback.key(),
-    orpc.feedbacks.getUserFeedback.queryOptions().queryFn,
-  );
-};
-
-export const useIsFeedbackSubmitted = () => {
-  const [isExistingFeedback, setIsExistingFeedback] = useState(false);
-
-  const { data: existingFeedback } = useUserFeedback();
-
-  useEffect(() => {
-    if (existingFeedback) {
-      setIsExistingFeedback(true);
-    } else {
-      setIsExistingFeedback(false);
-    }
-  }, [existingFeedback]);
-
-  return { isExistingFeedback, setIsExistingFeedback };
-};
 
 export const useSubmitFeedback = (
   setIsExistingFeedback: React.Dispatch<React.SetStateAction<boolean>>,

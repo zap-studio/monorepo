@@ -20,9 +20,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
-export function NavMain({
-  items,
-}: {
+interface SidebarMainSectionProps {
   items: {
     title: string;
     url: string;
@@ -33,7 +31,9 @@ export function NavMain({
       url: string;
     }[];
   }[];
-}) {
+}
+
+export function SidebarMainSection({ items }: SidebarMainSectionProps) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Application</SidebarGroupLabel>
