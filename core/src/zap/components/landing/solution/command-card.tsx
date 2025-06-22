@@ -1,5 +1,3 @@
-"use client";
-
 import { Check, Clipboard } from "lucide-react";
 import { useState } from "react";
 
@@ -10,65 +8,12 @@ import {
 } from "@/components/magicui/terminal";
 import { Button } from "@/components/ui/button";
 
-const features = [
-  "Authentication with BetterAuth",
-  "Database with Drizzle & PostgreSQL",
-  "Styling with Tailwind CSS",
-  "Type-safe API routes with oRPC",
-  "Plugins for everything",
-];
-
-export function SolutionSection() {
-  return (
-    <div className="w-full px-4 md:px-6">
-      <div className="mx-auto grid max-w-5xl gap-10 py-12 lg:grid-cols-2 lg:gap-16">
-        <div className="flex flex-col justify-center space-y-6">
-          <div className="flex flex-col space-y-2">
-            <span className="text-primary text-sm font-medium">Solution</span>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              Build applications as fast as a zap
-            </h2>
-          </div>
-          <p className="text-muted-foreground max-w-[600px] md:text-lg">
-            Zap.ts is carefully crafted so it includes all the essential tools
-            and configurations you need to build production-ready applications
-            without the bloat.
-          </p>
-          <FeatureList />
-        </div>
-
-        <CommandCard
-          command="npx create-zap-app@latest"
-          description="One command sets up your entire project with all the best practices and tools already configured."
-        />
-      </div>
-    </div>
-  );
-}
-
-function FeatureList() {
-  return (
-    <ul className="grid gap-2">
-      {features.map((feature) => (
-        <li
-          key={feature}
-          className="flex items-center gap-2 text-sm md:text-base"
-        >
-          <Check className="text-primary h-4 w-4" />
-          <span className="text-foreground">{feature}</span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function CommandCard({
-  command,
-  description,
-}: {
+interface CommandCardProps {
   command: string;
   description: string;
-}) {
+}
+
+export function CommandCard({ command, description }: CommandCardProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {

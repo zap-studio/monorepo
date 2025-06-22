@@ -26,13 +26,11 @@ export const ZAP_DEFAULT_FLAGS = {
   ENABLE_POSTHOG: false,
 };
 
-export const AI_SYSTEM_PROMPT = "You are a helpful assistant.";
-
 export type Provider = "apple" | "google";
 
 export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   AI: {
-    SYSTEM_PROMPT: AI_SYSTEM_PROMPT,
+    SYSTEM_PROMPT: "You are a helpful assistant.",
   },
   AUTH: {
     REQUIRE_MAIL_VERIFICATION: true,

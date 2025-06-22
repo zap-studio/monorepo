@@ -2,12 +2,12 @@ import { cn } from "@/lib/utils";
 import { AnimatedSection } from "@/zap/components/common/animated-section";
 import { Footer } from "@/zap/components/common/footer";
 import { Navbar } from "@/zap/components/common/header";
-import { FaqSection } from "@/zap/components/landing/landing-faq";
-import { FeaturesSection } from "@/zap/components/landing/landing-features";
-import { HeroSection } from "@/zap/components/landing/landing-hero";
-import { PricingSection } from "@/zap/components/landing/landing-pricing";
-import { SolutionSection } from "@/zap/components/landing/landing-solution";
-import { TestimonialSection } from "@/zap/components/landing/landing-testimonial";
+import { FaqSection } from "@/zap/components/landing/faq/faq-section";
+import { FeaturesSection } from "@/zap/components/landing/features/features-section";
+import { HeroSection } from "@/zap/components/landing/hero/hero-section";
+import { PricingSection } from "@/zap/components/landing/pricing/pricing-section";
+import { SolutionSection } from "@/zap/components/landing/solution/solution-section";
+import { TestimonialSection } from "@/zap/components/landing/testimonials/testimonial-section";
 import { client } from "@/zap/lib/orpc/client";
 
 const SECTION_CLASSNAME = "w-full py-12 md:py-24 lg:py-32";

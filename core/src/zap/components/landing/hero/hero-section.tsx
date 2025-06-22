@@ -59,7 +59,6 @@ export function HeroSection({ ratings, numberOfUsers }: HeroSectionProps) {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Formatters
   const ratingText = useMemo(() => {
     const ratingFormatter = new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 1,

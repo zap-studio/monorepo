@@ -12,62 +12,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils"; // assuming you use this for conditional class names
+import { cn } from "@/lib/utils";
+import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
+import { PRICING_PLANS } from "@/zap/data/landing";
 
 export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
   const yearlyDiscount = 0.2;
 
-  const pricingPlans = [
-    {
-      title: "Free",
-      price: { monthly: 0 },
-      description: "Perfect for side projects and experiments",
-      features: [
-        "Core boilerplate code",
-        "Basic authentication",
-        "Community support",
-        "GitHub repository access",
-      ],
-      buttonText: "Get Started",
-      buttonVariant: "outline" as const,
-    },
-    {
-      title: "Pro",
-      price: { monthly: 29 },
-      description: "For professional developers and small teams",
-      features: [
-        "Everything in Free",
-        "Advanced authentication",
-        "Premium components",
-        "Priority support",
-        "1-click deployments",
-        "Team collaboration",
-      ],
-      buttonText: "Get Started",
-      buttonVariant: "default" as const,
-      popular: true,
-    },
-    {
-      title: "Enterprise",
-      price: { monthly: "Custom" },
-      description: "For large teams and organizations",
-      features: [
-        "Everything in Pro",
-        "Custom integrations",
-        "Dedicated support",
-        "SLA guarantees",
-        "Custom branding",
-        "On-premise options",
-      ],
-      buttonText: "Contact Sales",
-      buttonVariant: "outline" as const,
-    },
-  ];
-
-  const renderPrice = (plan: (typeof pricingPlans)[0]) => {
+  const renderPrice = (plan: (typeof PRICING_PLANS)[0]) => {
     const isCustom = typeof plan.price.monthly === "string";
 
     let displayPrice: string | number = plan.price.monthly;
@@ -117,7 +70,7 @@ export function PricingSection() {
       </div>
 
       <div className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {pricingPlans.map((plan, i) => (
+        {PRICING_PLANS.map((plan, i) => (
           <Card
             key={i}
             className="bg-muted/50 relative flex flex-col justify-between border shadow-none transition-all duration-300"
@@ -149,50 +102,6 @@ export function PricingSection() {
             </CardContent>
           </Card>
         ))}
-      </div>
-    </div>
-  );
-}
-
-interface PricingToggleProps {
-  onToggle: (isYearly: boolean) => void;
-  isYearly: boolean;
-  yearlyDiscount: number;
-}
-
-function PricingToggle({
-  onToggle,
-  isYearly,
-  yearlyDiscount = 0.2,
-}: PricingToggleProps) {
-  const handleToggle = (checked: boolean) => {
-    onToggle(checked);
-  };
-
-  return (
-    <div className="flex items-center justify-center space-x-2">
-      <Label
-        htmlFor="pricing-toggle"
-        className={!isYearly ? "font-medium" : "text-muted-foreground"}
-      >
-        Monthly
-      </Label>
-      <Switch
-        id="pricing-toggle"
-        checked={isYearly}
-        onCheckedChange={handleToggle}
-      />
-      <div className="flex items-center space-x-1">
-        <Label
-          htmlFor="pricing-toggle"
-          className={isYearly ? "font-medium" : "text-muted-foreground"}
-        >
-          Yearly
-        </Label>
-
-        <span className="animate-pulse rounded-md bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
-          Save {(yearlyDiscount * 100).toFixed(0)}%
-        </span>
       </div>
     </div>
   );
