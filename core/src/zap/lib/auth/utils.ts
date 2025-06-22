@@ -1,3 +1,7 @@
+import { toast } from "sonner";
+
+import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+
 export function handleCompromisedPasswordError(error: unknown): void {
   if (
     typeof error === "object" &&
@@ -5,9 +9,8 @@ export function handleCompromisedPasswordError(error: unknown): void {
     "code" in error &&
     (error as { code?: string }).code === "PASSWORD_COMPROMISED"
   ) {
-    throw new Error(
-      "This password has been exposed in a data breach. Please choose a stronger, unique password.",
-    );
+    toast.error(ZAP_DEFAULT_SETTINGS.AUTH.PASSWORD_COMPROMISED_MESSAGE);
+  } else {
+    toast.error("An error occurred during authentication. Please try again.");
   }
-  throw new Error("An error occurred during authentication. Please try again.");
 }
