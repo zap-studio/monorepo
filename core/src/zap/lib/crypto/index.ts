@@ -1,4 +1,4 @@
-import { ENV } from "@/lib/env";
+import { ENV } from "@/lib/env.server";
 
 export const algorithm = "AES-CBC";
 export const encryptionKeyHex = ENV.ENCRYPTION_KEY;

@@ -6,7 +6,7 @@ import { Geist as Font } from "next/font/google";
 
 import { Toaster } from "@/components/ui/sonner";
 import { FLAGS } from "@/data/flags";
-import { VERCEL } from "@/lib/env";
+import { VERCEL } from "@/lib/env.client";
 import { ZAP_DEFAULT_METADATA } from "@/zap.config";
 import Providers from "@/zap/providers/providers";
 

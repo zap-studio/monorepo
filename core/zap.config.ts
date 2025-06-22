@@ -5,7 +5,7 @@
  * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL (e.g. `https://yourdomain.com`)
  * - Change `social-provider-button.tsx` to customize icon for each auth provider
  */
-import { DEV, VERCEL, ENV } from "@/lib/env";
+import { DEV, VERCEL, ENV } from "@/lib/env.client";
 import type { ZapSettings } from "@/zap/types/zap.config.types";
 import type { Metadata } from "next";
 

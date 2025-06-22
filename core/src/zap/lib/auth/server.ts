@@ -11,14 +11,11 @@ import { passkey } from "better-auth/plugins/passkey";
 
 import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
-import { warnOptionalEnv } from "@/lib/env";
+import { ENV } from "@/lib/env.server";
 import { sendForgotPasswordMail } from "@/zap/actions/mails/send-forgot-password-mail.action";
 import { sendVerificationMail } from "@/zap/actions/mails/send-verification-mail.action";
 import { canSendMail } from "@/zap/lib/mails/can-send-mail";
 import { updateLastTimestampMailSent } from "@/zap/lib/mails/update-last-timestamp-mail-sent";
-
-const GOOGLE_CLIENT_ID = warnOptionalEnv("GOOGLE_CLIENT_ID");
-const GOOGLE_CLIENT_SECRET = warnOptionalEnv("GOOGLE_CLIENT_SECRET");
 
 export const auth = betterAuth({
   appName: "Zap.ts",
@@ -66,8 +63,8 @@ export const auth = betterAuth({
   socialProviders: {
     google: {
       enabled: true,
-      clientId: GOOGLE_CLIENT_ID || "",
-      clientSecret: GOOGLE_CLIENT_SECRET || "",
+      clientId: ENV.GOOGLE_CLIENT_ID || "",
+      clientSecret: ENV.GOOGLE_CLIENT_SECRET || "",
     },
   },
   plugins: [

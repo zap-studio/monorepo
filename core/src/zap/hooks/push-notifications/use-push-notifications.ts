@@ -4,7 +4,7 @@ import { Effect } from "effect";
 import { toast } from "sonner";
 import useSWRMutation from "swr/mutation";
 
-import { ENV } from "@/lib/env";
+import { ENV } from "@/lib/env.client";
 import { $fetch } from "@/lib/fetch";
 import { urlBase64ToUint8Array } from "@/zap/lib/pwa/pwa";
 import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";

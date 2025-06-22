@@ -1,6 +1,5 @@
 import { Resend } from "resend";
 
-import { warnOptionalEnv } from "@/lib/env";
+import { ENV } from "@/lib/env.server";
 
-const RESEND_API_KEY = warnOptionalEnv("RESEND_API_KEY");
-export const resend = new Resend(RESEND_API_KEY);
+export const resend = new Resend(ENV.RESEND_API_KEY);

@@ -6,7 +6,8 @@ import { Effect } from "effect";
 import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { pushNotifications } from "@/db/schema";
-import { ENV } from "@/lib/env";
+import { ENV as CLIENT_ENV } from "@/lib/env.client";
+import { ENV as SERVER_ENV } from "@/lib/env.server";
 import { getUserId } from "@/zap/actions/auth/authenticated.action";
 import { SubscribeUserSchema } from "@/zap/schemas/push-notifications.schema";
 
@@ -18,8 +19,8 @@ export async function getWebPush() {
   }
 
   if (
-    !ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
-    !ENV.VAPID_PRIVATE_KEY ||
+    !CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
+    !SERVER_ENV.VAPID_PRIVATE_KEY ||
     !SETTINGS.NOTIFICATIONS.VAPID_MAIL
   ) {
     throw new Error(
@@ -31,8 +32,8 @@ export async function getWebPush() {
 
   webpush.default.setVapidDetails(
     `mailto:${SETTINGS.NOTIFICATIONS.VAPID_MAIL}`,
-    ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-    ENV.VAPID_PRIVATE_KEY,
+    CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+    SERVER_ENV.VAPID_PRIVATE_KEY,
   );
 
   webpushInstance = webpush.default;
