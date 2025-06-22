@@ -21,7 +21,7 @@ export function useAuth() {
   const sendVerificationMail = async (email: string, callbackURL: string) => {
     await Effect.tryPromise({
       try: () => authClient.sendVerificationEmail({ email, callbackURL }),
-      catch: () => ({ error: true }),
+      catch: (e) => e,
     }).pipe(
       Effect.tap(() =>
         Effect.sync(() => startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS)),
@@ -42,12 +42,20 @@ export function useAuth() {
       .pipe(
         Effect.match({
           onSuccess: async (response) => {
+            if (response.error) {
+              toast.error("Login failed. Please check your credentials.");
+              return;
+            }
+
             if (
               SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION &&
               !response.data?.user?.emailVerified
             ) {
               await sendVerificationMail(email, "/app");
-              throw new Error("Please verify your email address.");
+              toast.error(
+                "Please verify your email address. A verification email has been sent.",
+              );
+              return;
             }
 
             toast.success("Login successful!");
@@ -76,7 +84,12 @@ export function useAuth() {
     })
       .pipe(
         Effect.match({
-          onSuccess: async () => {
+          onSuccess: async (response) => {
+            if (response.error) {
+              handleCompromisedPasswordError(response.error);
+              return;
+            }
+
             if (SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION) {
               await sendVerificationMail(email, "/login");
               toast.success(
