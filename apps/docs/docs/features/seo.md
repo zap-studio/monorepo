@@ -76,29 +76,3 @@ Sitemap: your_site_url_here/server-sitemap-index.xml
 You can add [JSON-LD](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data) structured data to your pages for rich search results.
 
 Follow the [Next.js JSON-LD Guide](https://nextjs.org/docs/app/guides/json-ld) for more details. We recommend to use [schema-dts](https://www.npmjs.com/package/schema-dts) for type-safety.
-
-## References
-
-### `next-sitemap.config.js`
-
-```js
-// next-sitemap.config.js
-module.exports = {
-  siteUrl: process.env.SITE_URL || "http://localhost:3000",
-  changefreq: "daily",
-  priority: 0.7,
-  generateRobotsTxt: true,
-  exclude: ["/server-sitemap-index.xml", "/404", "/admin/**", "/api/**"],
-  alternateRefs: [
-    { href: process.env.SITE_URL || "http://localhost:3000", hreflang: "en" },
-    { href: `${process.env.SITE_URL || "http://localhost:3000"}/fr`, hreflang: "fr" },
-    { href: `${process.env.SITE_URL || "http://localhost:3000"}/pt`, hreflang: "pt" },
-  ],
-  robotsTxtOptions: {
-    policies: [
-      { userAgent: "*", allow: "/" },
-    ],
-    additionalSitemaps: [`${process.env.SITE_URL}/server-sitemap-index.xml`],
-  },
-};
-```
