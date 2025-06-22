@@ -1,5 +1,11 @@
 # create-zap-app
 
+## 1.2.19
+
+### Patch Changes
+
+- 9f05e5e: Generate ENCRYPTION_KEY by default
+
 ## 1.2.17
 
 ### Patch Changes
