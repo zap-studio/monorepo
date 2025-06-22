@@ -26,6 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { handleCompromisedPasswordError } from "@/zap/hooks/auth/use-auth";
 import { authClient } from "@/zap/lib/auth/client";
 
 const formSchema = z
@@ -87,18 +88,7 @@ export default function ResetPasswordPage() {
             router.push("/login");
           },
           onFailure: (error: unknown) => {
-            if (
-              typeof error === "object" &&
-              error !== null &&
-              "code" in error &&
-              (error as { code?: string }).code === "PASSWORD_COMPROMISED"
-            ) {
-              toast.error(
-                "This password has been exposed in a data breach. Please choose a stronger, unique password.",
-              );
-            } else {
-              toast.error("An error occurred while resetting your password.");
-            }
+            handleCompromisedPasswordError(error);
           },
         }),
       )

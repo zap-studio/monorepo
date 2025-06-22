@@ -8,6 +8,7 @@ import { z } from "zod/v4";
 import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
 import { authClient } from "@/zap/lib/auth/client";
+import { handleCompromisedPasswordError } from "@/zap/lib/auth/utils";
 import { LoginFormSchema, RegisterFormSchema } from "@/zap/schemas/auth.schema";
 
 type LoginFormValues = z.infer<typeof LoginFormSchema>;
@@ -100,17 +101,7 @@ export function useAuth() {
               );
             },
             onFailure: (error: unknown) => {
-              if (
-                typeof error === "object" &&
-                error !== null &&
-                "code" in error &&
-                (error as { code?: string }).code === "PASSWORD_COMPROMISED"
-              ) {
-                throw new Error(
-                  "This password has been exposed in a data breach. Please choose a stronger, unique password.",
-                );
-              }
-              throw new Error("Registration failed. Please try again.");
+              handleCompromisedPasswordError(error);
             },
           }),
         )
