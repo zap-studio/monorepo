@@ -16,7 +16,7 @@ import { Effect } from "effect";
  * console.log(secret); // Random base64 string
  * ```
  */
-export const generateAuthSecret = (): string => {
+export const generateSecret = (): string => {
 	return Effect.try({
 		try: () =>
 			execSync("openssl rand -base64 32", { encoding: "utf-8" }).trim(),
