@@ -5,7 +5,7 @@ const members = [
 	{
 		avatar: "https://www.github.com/alexandretrotel.png",
 		name: "Alexandre Trotel",
-		title: "Founder",
+		title: "Author",
 		links: [
 			{ icon: "github", link: "https://github.com/alexandretrotel" },
 			{ icon: "twitter", link: "https://twitter.com/alexandretrotel" },

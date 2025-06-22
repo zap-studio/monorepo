@@ -3,13 +3,16 @@
 import { useRouter } from "@bprogress/next/app";
 import { Effect } from "effect";
 import { toast } from "sonner";
-import { z } from "zod/v4";
+import type { z } from "zod/v4";
 
 import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
 import { authClient } from "@/zap/lib/auth/client";
 import { handleCompromisedPasswordError } from "@/zap/lib/auth/utils";
-import { LoginFormSchema, RegisterFormSchema } from "@/zap/schemas/auth.schema";
+import type {
+  LoginFormSchema,
+  RegisterFormSchema,
+} from "@/zap/schemas/auth.schema";
 
 type LoginFormValues = z.infer<typeof LoginFormSchema>;
 type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
