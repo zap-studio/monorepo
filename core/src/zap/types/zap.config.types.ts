@@ -42,7 +42,7 @@ export interface ZapSettings {
     FROM: string;
   };
   NOTIFICATIONS: {
-    VAPID_MAIL: string;
+    VAPID_MAIL?: string;
   };
   PWA: {
     NAME: string;
