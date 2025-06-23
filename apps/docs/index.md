@@ -25,7 +25,7 @@ features:
     details: End-to-end type safety with oRPC, Drizzle ORM, and Effect — seamlessly handling business logic from frontend to backend.
     icon: 🛡️
   - title: Headless Blog & CMS
-    details: Manage your content and blog with Payload CMS — a fully customizable, self-hosted CMS with a code-first approach.
+    details: Manage your content and blog with MDX and Frontmatter — a fully customizable, self-hosted CMS with a code-first approach.
     icon: 📝
   - title: Database Magic
     details: Neon PostgreSQL + Drizzle ORM to manage your database entirely from your code in an efficient way.
