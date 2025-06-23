@@ -95,7 +95,7 @@
     "@types/react-dom": "^19.1.6",
     "@types/web-push": "^3.6.4",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
-    "@typescript-eslint/parser": "^8.34.1",
+    "@typescript-eslint/parser": "^8.35.0",
     "drizzle-kit": "^0.31.1",
     "eslint": "^9.29.0",
     "eslint-config-next": "^15.3.4",
