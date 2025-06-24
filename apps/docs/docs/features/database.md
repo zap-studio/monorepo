@@ -100,3 +100,7 @@ This pattern is recommended for queries used in **API routes**, **server actions
 - **Edit a table:** Update the schema file and generate a migration.
 
 For more, see the [Drizzle ORM documentation](https://orm.drizzle.team/docs/overview).
+
+:::warning
+You may need to disable your VPN when applying migrations, as VPN connections can sometimes interfere with database connectivity and cause connection timeouts.
+:::
