@@ -8,6 +8,7 @@
 import { DEV, VERCEL, ENV } from "@/lib/env.client";
 import type { ZapSettings } from "@/zap/types/zap.config.types";
 import type { Metadata } from "next";
+import { flag } from "flags/next";
 
 export const APP_NAME = "Zap.ts";
 export const APP_DESCRIPTION = "Build application as fast as a zap.";
@@ -16,11 +17,21 @@ export const BASE_URL = DEV
   : "https://demo.zap-ts.alexandretrotel.org";
 
 export const ZAP_DEFAULT_FLAGS = {
-  VERCEL: {
-    ENABLE_ANALYTICS: VERCEL,
-    ENABLE_SPEED_INSIGHTS: VERCEL,
-  },
-  ENABLE_POSTHOG: false,
+  VERCEL_ENABLE_ANALYTICS: flag({
+    key: "vercel-enable-analytics",
+    defaultValue: VERCEL,
+    decide: () => VERCEL,
+  }),
+  VERCEL_ENABLE_SPEED_INSIGHTS: flag({
+    key: "vercel-enable-speed-insights",
+    defaultValue: VERCEL,
+    decide: () => VERCEL,
+  }),
+  POSTHOG_ENABLE_ANALYTICS: flag({
+    key: "posthog-enable-analytics",
+    defaultValue: false,
+    decide: () => false,
+  }),
 };
 
 export type Provider = "apple" | "google";
