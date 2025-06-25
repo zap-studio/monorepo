@@ -1,0 +1,103 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:MCP_GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "Neon": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.neon.tech/sse"]
+    },
+    "resend": {
+      "type": "command",
+      "command": "node ABSOLUTE_PATH_TO_MCP_SEND_EMAIL_PROJECT/build/index.js"
+    },
+    "posthog": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://mcp.posthog.com/sse",
+        "--header",
+        "Authorization:${env:MCP_POSTHOG_AUTH_HEADER}"
+      ],
+      "env": {
+        "POSTHOG_AUTH_HEADER": "${env:MCP_POSTHOG_AUTH_HEADER}"
+      }
+    },
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "${env:MCP_SUPABASE_ACCESS_TOKEN}"
+      ]
+    },
+    "@21st-dev/magic": {
+      "command": "npx",
+      "args": ["-y", "@21st-dev/magic@latest"],
+      "env": {
+        "MAGIC_API_KEY": "${env:MCP_MAGIC_API_KEY}"
+      }
+    },
+    "mcp-server-firecrawl": {
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "env": {
+        "FIRECRAWL_API_KEY": "${env:MCP_FIRECRAWL_API_KEY}"
+      }
+    },
+    "notionApi": {
+      "command": "npx",
+      "args": ["-y", "@notionhq/notion-mcp-server"],
+      "env": {
+        "OPENAPI_MCP_HEADERS": "${env:MCP_NOTION_API_HEADERS}"
+      }
+    },
+    "perplexity-ask": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "PERPLEXITY_API_KEY",
+        "mcp/perplexity-ask"
+      ],
+      "env": {
+        "PERPLEXITY_API_KEY": "${env:MCP_PERPLEXITY_API_KEY}"
+      }
+    },
+    "ElevenLabs": {
+      "command": "uvx",
+      "args": ["elevenlabs-mcp"],
+      "env": {
+        "ELEVENLABS_API_KEY": "${env:MCP_ELEVENLABS_API_KEY}"
+      }
+    },
+    "sentry": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@sentry/mcp-server@latest",
+        "--access-token=${env:MCP_SENTRY_ACCESS_TOKEN}",
+        "--host=${env:MCP_SENTRY_HOST}"
+      ]
+    },
+    "llms-txt-explorer": {
+      "command": "npx",
+      "args": ["-y", "@thedaviddias/mcp-llms-txt-explorer"]
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "chat.mcp.enabled": true,
+  "chat.mcp.discovery.enabled": true
+}

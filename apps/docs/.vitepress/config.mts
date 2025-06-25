@@ -122,19 +122,19 @@ export default defineConfig({
 				],
 			},
 			{
-				text: "Cursor IDE",
+				text: "AI-powered IDE",
 				items: [
 					{
 						text: "Overview",
-						link: "/docs/cursor/overview",
+						link: "/docs/ai-powered-ide/overview",
 					},
 					{
 						text: "Custom Rules",
-						link: "/docs/cursor/custom-rules",
+						link: "/docs/ai-powered-ide/custom-rules",
 					},
 					{
 						text: "Model Context Protocols (MCPs)",
-						link: "/docs/cursor/mcps",
+						link: "/docs/ai-powered-ide/mcps",
 					},
 				],
 			},
