@@ -1,10 +1,6 @@
 ---
-description: 
-globs: 
-alwaysApply: true
+applyTo: "**"
 ---
-
-# Zap.ts
 
 These rules define the structural and development standards for any project based on the Zap.ts stack. They exist to maintain consistency, reliability, and clarity across codebases.
 
@@ -69,9 +65,9 @@ export const useUserStore = create<UserState>((set) => ({
 
 ## Type-Safe API
 
-* Define oRPC functions in `src/rpc/procedures/`.
-* Register them in `src/rpc/router.ts`.
-* Use SWR or custom hooks for fetching client-side.
+- Define oRPC functions in `src/rpc/procedures/`.
+- Register them in `src/rpc/router.ts`.
+- Use SWR or custom hooks for fetching client-side.
 
 ```ts
 import { useORPC } from "@/zap/stores/orpc.store";
@@ -79,21 +75,24 @@ import useSWR from "swr";
 
 export const useUserProfile = () => {
   const orpc = useORPC();
-  return useSWR(orpc.userProfile.key(), orpc.userProfile.queryOptions().queryFn);
+  return useSWR(
+    orpc.userProfile.key(),
+    orpc.userProfile.queryOptions().queryFn,
+  );
 };
 ```
 
 ## Authentication
 
-* Use the Better Auth package.
-* Auth logic lives in `src/zap/lib/auth/server.ts`.
-* Use server actions for login/session handling.
+- Use the Better Auth package.
+- Auth logic lives in `src/zap/lib/auth/server.ts`.
+- Use server actions for login/session handling.
 
 ## Database
 
-* Use Drizzle ORM with PostgreSQL.
-* Define schemas in `src/db/schema/`.
-* Re-export them via `src/db/schema/index.ts`.
+- Use Drizzle ORM with PostgreSQL.
+- Define schemas in `src/db/schema/`.
+- Re-export them via `src/db/schema/index.ts`.
 
 ```ts
 import { z } from "zod";
@@ -106,26 +105,26 @@ export const userSchema = z.object({
 
 ## Error handling
 
-* Use [Effect](https://effect.website) for typed async flows.
-* Avoid `try/catch`; prefer declarative error modeling.
+- Use [Effect](https://effect.website) for typed async flows.
+- Avoid `try/catch`; prefer declarative error modeling.
 
 ## Environment Variables
 
-* Store secrets in `.env`.
-* Prefix project-specific variables with `MCP_`.
+- Store secrets in `.env`.
+- Prefix project-specific variables with `MCP_`.
 
 ## PWA / SEO / Analytics
 
-* Configure via `zap.config.ts`.
-* Auto-generate PWA manifest from config.
-* Use `next-sitemap` for SEO sitemaps.
+- Configure via `zap.config.ts`.
+- Auto-generate PWA manifest from config.
+- Use `next-sitemap` for SEO sitemaps.
 
 ## AI/LLM integration
 
-* Use Vercel AI SDK for streaming responses.
-* Store encrypted API keys in DB.
-* Support OpenAI, Mistral, etc.
-* Use type-safe settings via RPC.
+- Use Vercel AI SDK for streaming responses.
+- Store encrypted API keys in DB.
+- Support OpenAI, Mistral, etc.
+- Use type-safe settings via RPC.
 
 ```ts
 const { isSaving, saveApiKey } = useAISettings();
@@ -138,33 +137,36 @@ const { messages, input, handleSubmit } = useChat({
 
 ## Push notifications
 
-* Use the browser Push API with service workers.
-* Store subscriptions in DB.
-* Use web-push for sending.
+- Use the browser Push API with service workers.
+- Store subscriptions in DB.
+- Use web-push for sending.
 
 ```ts
-await webpush.sendNotification(subscription, JSON.stringify({
-  title: "New message",
-  body: "You have a new message"
-}));
+await webpush.sendNotification(
+  subscription,
+  JSON.stringify({
+    title: "New message",
+    body: "You have a new message",
+  }),
+);
 ```
 
 ## Email system
 
-* Use Resend for transactional emails.
-* Use React-based email templates.
-* Implement rate limiting and tracking.
-* Use Effect for errors.
+- Use Resend for transactional emails.
+- Use React-based email templates.
+- Implement rate limiting and tracking.
+- Use Effect for errors.
 
 ```ts
 await sendVerificationEmail({
   subject: "Verify your email",
   recipients: ["user@example.com"],
-  url: "https://app.com/verify?token=abc123"
+  url: "https://app.com/verify?token=abc123",
 });
 ```
 
 ## Dependencies
 
-* Respect versions from `package.json`.
-* No implicit upgrades unless manually approved.
+- Respect versions from `package.json`.
+- No implicit upgrades unless manually approved.
