@@ -76,6 +76,10 @@ export default defineConfig({
 						link: "/docs/features/error-handling",
 					},
 					{
+						text: "Feature Flags",
+	  link: "/docs/features/flags",
+					},
+					{
 						text: "File Storage",
 						link: "/docs/features/file-storage",
 					},

@@ -29,17 +29,19 @@ export default async function RootLayout({
     ? (await import("@vercel/speed-insights/next")).SpeedInsights
     : null;
 
+  const ENABLE_ANALYTICS = await FLAGS.VERCEL_ENABLE_ANALYTICS();
+  const ENABLE_SPEED_INSIGHTS = await FLAGS.VERCEL_ENABLE_SPEED_INSIGHTS();
+  const ENABLE_POSTHOG = await FLAGS.POSTHOG_ENABLE_ANALYTICS();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${font.className} antialiased`}>
-        <Providers>
+        <Providers ENABLE_POSTHOG={ENABLE_POSTHOG}>
           {children}
 
           <Toaster />
-          {FLAGS.VERCEL.ENABLE_ANALYTICS && Analytics && <Analytics />}
-          {FLAGS.VERCEL.ENABLE_SPEED_INSIGHTS && SpeedInsights && (
-            <SpeedInsights />
-          )}
+          {ENABLE_ANALYTICS && Analytics && <Analytics />}
+          {ENABLE_SPEED_INSIGHTS && SpeedInsights && <SpeedInsights />}
         </Providers>
       </body>
     </html>
