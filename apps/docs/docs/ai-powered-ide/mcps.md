@@ -1,14 +1,18 @@
 # Model Context Protocols (MCPs)
 
-[MCP (Model Context Protocol)](https://docs.cursor.com/context/model-context-protocol) allows **Cursor** to connect AI directly to your services—whether it’s _GitHub for pull requests_, _Supabase for databases_, or _PostHog for analytics_.
+[MCP (Model Context Protocol)](https://docs.cursor.com/context/model-context-protocol) allows **AI-powered editors** to connect AI directly to your services—whether it’s _GitHub for pull requests_, _Supabase for databases_, or _PostHog for analytics_.
 
 This turns the LLM from a passive assistant into an **active agent** that can interact with APIs, services, or CLIs.
 
 ## Built-In MCPs
 
-**Zap.ts** comes preconfigured with the most commonly used services to save you setup time. These are defined in the `.cursor/mcp.json` file and require minimal configuration.
+**Zap.ts** comes preconfigured with the most commonly used services to save you setup time. These are defined in configuration files for each editor:
 
-Here are the built-in MCPs:
+- **Cursor**: `.cursor/mcp.json`
+- **VS Code**: `.vscode/mcp.json`
+- **Windsurf**: `.windsurf/mcp.json`
+
+Here are some of the built-in MCPs:
 
 * [ElevenLabs](https://www.elevenlabs.io) — Use realistic text-to-speech directly from your IDE.
 * [Firecrawl](https://firecrawl.dev) — Crawl and extract structured data from websites.
@@ -21,6 +25,8 @@ Here are the built-in MCPs:
 * [Resend](https://resend.com) — Send transactional emails with ease.
 * [Sentry](https://sentry.io) — Monitor and manage application errors from inside Cursor.
 * [Supabase](https://supabase.com) — Query and mutate your database directly.
+
+Of course, you can customize them as you wish.
 
 :::tip Environment Setup
 
