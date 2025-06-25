@@ -19,7 +19,6 @@
       "args": ["-y", "mcp-remote", "https://mcp.neon.tech/sse"]
     },
     "resend": {
-      "type": "stdio",
       "command": "node ABSOLUTE_PATH_TO_MCP_SEND_EMAIL_PROJECT/build/index.js"
     },
     "posthog": {

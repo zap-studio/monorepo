@@ -127,7 +127,7 @@ But in the meantime, here is a _concise_ overview of what the CLI does when inst
 
 Running `create-zap-app` without arguments sets up a new Zap.ts project.
 
-The followings steps are done to install the project:
+The following steps are done to install the project:
 
 1. Asks for a name (default: `my-zap-app`) and ensuring everything is okay.
 2. Lets you choose your _favorite_ package manager (e.g. `npm`, `yarn`, `pnpm`, or `bun`).
