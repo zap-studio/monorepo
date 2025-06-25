@@ -2,8 +2,6 @@
 import { exec } from "node:child_process";
 import path from "node:path";
 import { promisify } from "node:util";
-import type { PackageManager } from "@/schemas/index.js";
-import { generateEnv, promptPackageManager } from "@/utils/index.js";
 import chalk from "chalk";
 import { Effect } from "effect";
 import { execa } from "execa";
@@ -11,6 +9,8 @@ import fs from "fs-extra";
 import inquirer from "inquirer";
 import ora from "ora";
 import { type ObjectLiteralExpression, Project } from "ts-morph";
+import type { PackageManager } from "@/schemas/index.js";
+import { generateEnv, promptPackageManager } from "@/utils/index.js";
 
 const execAsync = promisify(exec);
 
