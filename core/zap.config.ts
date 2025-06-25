@@ -5,34 +5,15 @@
  * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL (e.g. `https://yourdomain.com`)
  * - Change `social-provider-button.tsx` to customize icon for each auth provider
  */
-import { DEV, VERCEL, ENV } from "@/lib/env.client";
+import { DEV, ENV } from "@/lib/env.client";
 import type { ZapSettings } from "@/zap/types/zap.config.types";
 import type { Metadata } from "next";
-import { flag } from "flags/next";
 
 export const APP_NAME = "Zap.ts";
 export const APP_DESCRIPTION = "Build application as fast as a zap.";
 export const BASE_URL = DEV
   ? "http://localhost:3000"
   : "https://demo.zap-ts.alexandretrotel.org";
-
-export const ZAP_DEFAULT_FLAGS = {
-  VERCEL_ENABLE_ANALYTICS: flag({
-    key: "vercel-enable-analytics",
-    defaultValue: VERCEL,
-    decide: () => VERCEL,
-  }),
-  VERCEL_ENABLE_SPEED_INSIGHTS: flag({
-    key: "vercel-enable-speed-insights",
-    defaultValue: VERCEL,
-    decide: () => VERCEL,
-  }),
-  POSTHOG_ENABLE_ANALYTICS: flag({
-    key: "posthog-enable-analytics",
-    defaultValue: false,
-    decide: () => false,
-  }),
-};
 
 export type Provider = "apple" | "google";
 
