@@ -14,9 +14,12 @@
 		"eslint-config-turbo": "^2.5.4"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.9.4"
+		"@biomejs/biome": "2.0.5"
 	},
 	"lint-staged": {
-		"**/*": ["biome check --fix .", "biome format --write ."]
+		"**/*": [
+			"biome check --fix .",
+			"biome format --write ."
+		]
 	}
 }
