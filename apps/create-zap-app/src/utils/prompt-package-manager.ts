@@ -1,6 +1,6 @@
-import type { PackageManager } from "@/schemas";
 import chalk from "chalk";
 import inquirer from "inquirer";
+import type { PackageManager } from "@/schemas";
 
 export async function promptPackageManager(currentChoice: PackageManager) {
 	const choices = ["npm", "yarn", "pnpm", "bun"].filter(
