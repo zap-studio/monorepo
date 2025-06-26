@@ -14,7 +14,7 @@ export const getNumberOfPeopleInWaitlist = async () => {
     const record = result[0];
 
     if (!record) {
-      return yield* Effect.fail(new Error("No people in waitlist"));
+      return yield* Effect.fail(new Error("Error fetching waitlist count"));
     }
 
     return record.count;
