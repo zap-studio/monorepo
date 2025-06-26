@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { FLAGS } from "@/data/flags";
+import { FLAGS } from "@/lib/flags";
 
 type FlagKey = keyof typeof FLAGS;
 
