@@ -21,7 +21,7 @@ interface ModeToggleProps {
     | "link";
 }
 
-export function ModeToggle({ variant }: ModeToggleProps) {
+export function ModeToggle({ variant = "default" }: ModeToggleProps) {
   const { setTheme } = useTheme();
 
   return (
