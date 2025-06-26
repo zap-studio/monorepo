@@ -82,6 +82,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   WAITLIST: {
     TITLE: "try Zap.ts",
     DESCRIPTION: "be the first to build applications as fast as a zap.",
+    SHOW_COUNT: true,
   },
 };
 

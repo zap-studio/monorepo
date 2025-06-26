@@ -77,7 +77,7 @@ export default defineConfig({
 					},
 					{
 						text: "Feature Flags",
-	  link: "/docs/features/flags",
+						link: "/docs/features/flags",
 					},
 					{
 						text: "File Storage",
@@ -118,6 +118,10 @@ export default defineConfig({
 					{
 						text: "Type-Safe API",
 						link: "/docs/features/api",
+					},
+					{
+						text: "Waitlist",
+						link: "/docs/features/waitlist",
 					},
 				],
 			},

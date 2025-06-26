@@ -35,12 +35,15 @@ export function WaitlistSection() {
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="w-full"
         >
-          <Badge variant={"secondary"} className="mb-4">
-            <span className="font-semibold">
-              <AnimatedNumber value={waitlistCount} />
-            </span>{" "}
-            people already joined the waitlist
-          </Badge>
+          {ZAP_DEFAULT_SETTINGS.WAITLIST.SHOW_COUNT && (
+            <Badge variant={"secondary"} className="mb-4">
+              <span className="font-semibold">
+                <AnimatedNumber value={waitlistCount} />
+              </span>{" "}
+              people already joined the waitlist
+            </Badge>
+          )}
+
           <h1 className="text-2xl font-semibold">
             {ZAP_DEFAULT_SETTINGS.WAITLIST.TITLE}
           </h1>

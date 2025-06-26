@@ -61,5 +61,6 @@ export interface ZapSettings {
   WAITLIST: {
     TITLE: string;
     DESCRIPTION: string;
+    SHOW_COUNT: boolean;
   };
 }
