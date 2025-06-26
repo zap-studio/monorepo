@@ -4,6 +4,7 @@
  * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
  * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL (e.g. `https://yourdomain.com`)
  * - Change `social-provider-button.tsx` to customize icon for each auth provider
+ * - Configure and customize flags in `src/zap/lib/flags/flags.ts` and `src/lib/flags.ts`
  */
 import { DEV, ENV } from "@/lib/env.client";
 import type { ZapSettings } from "@/zap/types/zap.config.types";
@@ -77,6 +78,11 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
         type: "image/png",
       },
     ],
+  },
+  WAITLIST: {
+    TITLE: "try Zap.ts",
+    DESCRIPTION: "be the first to build applications as fast as a zap.",
+    SHOW_COUNT: true,
   },
 };
 

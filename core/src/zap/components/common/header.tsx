@@ -82,7 +82,7 @@ export function Navbar() {
             )}
           </nav>
 
-          <ModeToggle />
+          <ModeToggle variant={"outline"} />
         </div>
       </div>
     </header>

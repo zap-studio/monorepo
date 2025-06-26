@@ -5,8 +5,8 @@ import type { Metadata } from "next";
 import { Geist as Font } from "next/font/google";
 
 import { Toaster } from "@/components/ui/sonner";
-import { FLAGS } from "@/data/flags";
 import { VERCEL } from "@/lib/env.client";
+import { FLAGS } from "@/lib/flags";
 import { ZAP_DEFAULT_METADATA } from "@/zap.config";
 import Providers from "@/zap/providers/providers";
 

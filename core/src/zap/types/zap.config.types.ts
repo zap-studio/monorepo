@@ -1,4 +1,4 @@
-import { Provider } from "@/zap.config";
+import type { Provider } from "@/zap.config";
 
 export interface ZapSettings {
   AI: {
@@ -57,5 +57,10 @@ export interface ZapSettings {
       sizes: string;
       type: string;
     }>;
+  };
+  WAITLIST: {
+    TITLE: string;
+    DESCRIPTION: string;
+    SHOW_COUNT: boolean;
   };
 }

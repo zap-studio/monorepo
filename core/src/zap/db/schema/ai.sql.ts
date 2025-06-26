@@ -1,6 +1,6 @@
 import { jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-import { ModelName } from "@/zap/types/ai.types";
+import type { ModelName } from "@/zap/types/ai.types";
 
 import { user } from "./auth.sql";
 
