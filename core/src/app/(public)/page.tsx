@@ -1,3 +1,4 @@
+import { FLAGS } from "@/lib/flags";
 import { cn } from "@/lib/utils";
 import { AnimatedSection } from "@/zap/components/common/animated-section";
 import { Footer } from "@/zap/components/common/footer";
@@ -8,6 +9,7 @@ import { HeroSection } from "@/zap/components/landing/hero/hero-section";
 import { PricingSection } from "@/zap/components/landing/pricing/pricing-section";
 import { SolutionSection } from "@/zap/components/landing/solution/solution-section";
 import { TestimonialSection } from "@/zap/components/landing/testimonials/testimonial-section";
+import { WaitlistSection } from "@/zap/components/waitlist/waitlist-section";
 import { client } from "@/zap/lib/orpc/client";
 
 const SECTION_CLASSNAME = "w-full py-12 md:py-24 lg:py-32";
@@ -42,6 +44,10 @@ const SECTIONS = [
 ];
 
 export default async function LandingPage() {
+  if (await FLAGS.ENABLE_WAITLIST_PAGE()) {
+    return <WaitlistSection />;
+  }
+
   const [ratings, numberOfUsers] = await Promise.all([
     client.feedbacks.getAverageRating(),
     client.users.getNumberOfUsers(),

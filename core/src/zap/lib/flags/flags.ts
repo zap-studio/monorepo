@@ -28,7 +28,7 @@ export const ZAP_DEFAULT_FLAGS = {
   }),
   ENABLE_WAITLIST_PAGE: flag({
     key: "enable-waitlist-page",
-    defaultValue: true,
-    decide: () => true,
+    defaultValue: false,
+    decide: () => false,
   }),
 };
