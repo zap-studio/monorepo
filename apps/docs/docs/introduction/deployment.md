@@ -4,4 +4,4 @@
 
 To deploy **Zap.ts**, refer to the [official Next.js deployment guide](https://nextjs.org/docs/app/getting-started/deploying).
 
-This documentation explain how to deploy a **Next.js** app to platforms like [Digital Ocean](https://www.digitalocean.com/), [Docker](https://www.docker.com/), and more.
+It explains how to deploy a **Next.js** app to platforms like [Digital Ocean](https://www.digitalocean.com/), [Docker](https://www.docker.com/), and more.
