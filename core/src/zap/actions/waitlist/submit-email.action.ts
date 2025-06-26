@@ -10,7 +10,7 @@ import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";
 export async function submitWaitlistEmail(formData: FormData) {
   const action = Effect.gen(function* () {
     const { email } = yield* Effect.try(() =>
-      WaitlistSchema.parse({ email: formData.get("email") }),
+      WaitlistSchema.parse({ email: formData.get("email")?.trim() }),
     );
 
     const existing = yield* Effect.tryPromise({
