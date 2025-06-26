@@ -1,6 +1,6 @@
 # State Management
 
-**Zap.ts** uses [Zustand](https://zustand-demo.pmnd.rs/) for state management, providing a _simple_, _scalable_, and _type-safe_ way to manage application state across your app.
+Zap.ts uses [Zustand](https://zustand-demo.pmnd.rs/) for state management, providing a _simple_, _scalable_, and _type-safe_ way to manage application state across your app.
 
 ## Overview
 
@@ -48,7 +48,7 @@ export default function Profile() {
 
 ### 3. Persisting state
 
-**Zap.ts** uses Zustand's `persist` middleware to persist state to localStorage or sessionStorage when needed.
+Zap.ts uses Zustand's `persist` middleware to persist state to localStorage or sessionStorage when needed.
 
 ```ts
 // src/stores/theme.store.ts

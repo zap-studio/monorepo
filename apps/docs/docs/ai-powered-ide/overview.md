@@ -9,7 +9,7 @@ In this section, we’ll explain what these features are and how **Zap.ts ⚡️
 :::warning
 However, we strongly recommend reviewing all AI-generated code carefully and avoiding blind _“vibe coding”_.
 
-While **Zap.ts** provides a framework and best practices to guide LLMs, understanding your code remains essential.
+While Zap.ts provides a framework and best practices to guide LLMs, understanding your code remains essential.
 
 **We are not responsible for any issues from unchecked AI output.**
 :::

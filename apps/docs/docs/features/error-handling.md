@@ -1,6 +1,6 @@
 # Error Handling
 
-Building reliable apps isn't just about making things _work_. It’s about making sure things **fail gracefully** when they don’t. That’s where [Effect](https://effect.website) comes in — a modern, composable effect system for TypeScript and JavaScript — aligning with **Zap.ts**' philosophy.
+Building reliable apps isn't just about making things _work_. It’s about making sure things **fail gracefully** when they don’t. That’s where [Effect](https://effect.website) comes in — a modern, composable effect system for TypeScript and JavaScript — aligning with Zap.ts' philosophy.
 
 ## Why use Effect?
 

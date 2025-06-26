@@ -1,6 +1,6 @@
 # Analytics
 
-**Zap.ts** provides built-in analytics to help you understand user behavior, _track events_, and _monitor your app’s performance_. Fort that, we use [PostHog](https://posthog.com/) and [Vercel Analytics](https://vercel.com/docs/analytics) for analytics by default.
+Zap.ts provides built-in analytics to help you understand user behavior, _track events_, and _monitor your app’s performance_. Fort that, we use [PostHog](https://posthog.com/) and [Vercel Analytics](https://vercel.com/docs/analytics) for analytics by default.
 
 ## Overview
 
@@ -12,7 +12,7 @@
 
 ### Vercel Analytics
 
-**Zap.ts** uses [Vercel Analytics](https://vercel.com/docs/analytics) for out-of-the-box pageview and performance tracking.  
+Zap.ts uses [Vercel Analytics](https://vercel.com/docs/analytics) for out-of-the-box pageview and performance tracking.  
 
 It is automatically included in your app layout and requires no setup if you deploy on Vercel.
 

@@ -1,15 +1,15 @@
 # Large Language Models (LLMs)
 
-**Zap.ts** makes it easy to add _AI-powered features_ to your app, with a focus on _flexibility_, _type safety_, and a great _developer experience_.
+Zap.ts makes it easy to add _AI-powered features_ to your app, with a focus on _flexibility_, _type safety_, and a great _developer experience_.
 
-For that, **Zap.ts** strongly leverages the [Vercel AI SDK](https://sdk.vercel.ai) to simplify the integration of AI-powered chat and completion features.
+For that, Zap.ts strongly leverages the [Vercel AI SDK](https://sdk.vercel.ai) to simplify the integration of AI-powered chat and completion features.
 
 The **SDK** provides a lightweight, React-friendly abstraction over streaming responses from large language models (LLMs).
 
 ## Overview
 
 - **API key encryption:** API keys are always encrypted before being stored in the database, ensuring _security_ and _privacy_.
-- **Multi-provider support:** Out of the box, **Zap.ts** supports [OpenAI](https://openai.com/) and [Mistral](https://mistral.ai/), with the ability to add more [providers](https://ai-sdk.dev/providers/ai-sdk-providers).
+- **Multi-provider support:** Out of the box, Zap.ts supports [OpenAI](https://openai.com/) and [Mistral](https://mistral.ai/), with the ability to add more [providers](https://ai-sdk.dev/providers/ai-sdk-providers).
 - **Settings persistence:** User AI settings are saved per-provider and automatically loaded.
 - **Streaming responses:** Both completions and chat endpoints stream results for a responsive UI.
 - **Type-safe:** All API routes and stores use Zod schemas and TypeScript for safety and autocompletion.
@@ -17,7 +17,7 @@ The **SDK** provides a lightweight, React-friendly abstraction over streaming re
 
 ## Architecture
 
-The AI system in **Zap.ts** is split between the frontend and backend:
+The AI system in Zap.ts is split between the frontend and backend:
 
 ### 1. Client-side: Provider Selection & API Key Management
 

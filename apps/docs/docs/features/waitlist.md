@@ -1,6 +1,6 @@
 # Waitlist
 
-**Zap.ts** provides a _built-in_ waitlist feature to gauge product interest and collect potential user emails before launching your application.
+Zap.ts provides a _built-in_ waitlist feature to gauge product interest and collect potential user emails before launching your application.
 
 ## Overview
 
@@ -24,7 +24,7 @@ Waitlists are often used before launching your real products. A lot of modern st
 
 ### Toggle the waitlist using feature flags
 
-The waitlist can be dynamically enabled or disabled using **Zap.ts** default flags without redeploying your application (if configured with an adapter).
+The waitlist can be dynamically enabled or disabled using Zap.ts default flags without redeploying your application (if configured with an adapter).
 
 ```ts
 // src/zap/lib/flags/flags.ts

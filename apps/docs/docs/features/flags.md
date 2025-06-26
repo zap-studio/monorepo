@@ -1,6 +1,6 @@
 # Feature Flags
 
-**Zap.ts** provides a _robust_ feature flag system using the [Flags SDK](https://flags-sdk.dev/) to enable dynamic toggling of features without redeploying your application.
+Zap.ts provides a _robust_ feature flag system using the [Flags SDK](https://flags-sdk.dev/) to enable dynamic toggling of features without redeploying your application.
 
 ## Overview
 
@@ -12,7 +12,7 @@
 
 ### Flags SDK
 
-**Zap.ts** uses the [Flags SDK](https://flags-sdk.dev/) for managing feature flags. It allows for server-side and client-side flag evaluation with support for multiple providers.
+Zap.ts uses the [Flags SDK](https://flags-sdk.dev/) for managing feature flags. It allows for server-side and client-side flag evaluation with support for multiple providers.
 
 Flags are defined in the `@/data/flags` module and can be extended with custom logic or external services.
 

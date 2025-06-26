@@ -1,6 +1,6 @@
 # Progressive Web App (PWA)
 
-**Zap.ts** comes with built-in support for **Progressive Web Apps (PWA)**, allowing your app to _work offline_, _send push notifications_, and provide a _native-like experience_ on any device.
+Zap.ts comes with built-in support for **Progressive Web Apps (PWA)**, allowing your app to _work offline_, _send push notifications_, and provide a _native-like experience_ on any device.
 
 ## Overview
 
@@ -63,7 +63,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
 
 ### 3. Push Notifications
 
-**Zap.ts** integrates push notifications using the browser Push API and the service worker.  
+Zap.ts integrates push notifications using the browser Push API and the service worker.  
 See [Notifications & Emails](/docs/features/notifications.md) for details on subscribing users and handling push events.
 
 ### 4. Customizing Your PWA

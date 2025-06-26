@@ -1,6 +1,6 @@
 # Environment Variables
 
-**Zap.ts** provides a structured approach to managing environment variables for both _client-side_ and _server-side_ usage, ensuring security, type safety, and ease of configuration.
+Zap.ts provides a structured approach to managing environment variables for both _client-side_ and _server-side_ usage, ensuring security, type safety, and ease of configuration.
 
 ## Overview
 
@@ -38,7 +38,7 @@ ZAP_MAIL="your_email_here"
 
 Server-side environment variables are accessed via `process.env` and are validated using Zod schemas for type safety.
 
-**Zap.ts** provides two utility files to manage this:
+Zap.ts provides two utility files to manage this:
 
 - **`src/lib/env.server.ts`**: Defines and validates server-only environment variables.
 - **`src/lib/env.client.ts`**: Defines and validates client and server environment variables (such as those prefixed with `NEXT_PUBLIC_`).

@@ -6,7 +6,7 @@ This turns the LLM from a passive assistant into an **active agent** that can in
 
 ## Built-In MCPs
 
-**Zap.ts** comes preconfigured with the most commonly used services to save you setup time. These are defined in configuration files for each editor:
+Zap.ts comes preconfigured with the most commonly used services to save you setup time. These are defined in configuration files for each editor:
 
 - **Cursor**: `.cursor/mcp.json`
 - **VS Code**: `.vscode/mcp.json`

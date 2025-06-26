@@ -1,6 +1,6 @@
 # Feedback System
 
-**Zap.ts** includes a comprehensive feedback system that allows users to provide ratings and detailed feedback about your application. This system is designed to be user-friendly, type-safe, and easily extensible.
+Zap.ts includes a comprehensive feedback system that allows users to provide ratings and detailed feedback about your application. This system is designed to be user-friendly, type-safe, and easily extensible.
 
 ## Overview
 

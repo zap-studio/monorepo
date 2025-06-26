@@ -8,7 +8,7 @@
 
 ## The Core Rule
 
-In **Zap.ts**, we use one _central_ **Always Rule** that _synthesizes the full architecture and best practices_ defined in the docs—so **Cursor** always understands:
+In Zap.ts, we use one _central_ **Always Rule** that _synthesizes the full architecture and best practices_ defined in the docs—so **Cursor** always understands:
 
 - How to write type-safe APIs
 - The naming conventions to follow

@@ -6,9 +6,9 @@
 
 ## Project structure
 
-Before proceeding, ensure that **Zap.ts** is installed by following the instructions on the [installation](/docs/introduction/installation.md) page and make sure to read our [best practices](/docs/misc/best-practices.md) to learn more about **Zap.ts**' philosophy.
+Before proceeding, ensure that Zap.ts is installed by following the instructions on the [installation](/docs/introduction/installation.md) page and make sure to read our [best practices](/docs/misc/best-practices.md) to learn more about Zap.ts' philosophy.
 
-Since **Zap.ts** is _simply_ a **Next.js** starter kit, you own your code; therefore can keep what you like and get rid of things you don’t need.
+Since Zap.ts is _simply_ a **Next.js starter kit**, you own your code; therefore can keep what you like and get rid of things you don’t need.
 
 ## Environment variables
 
@@ -27,10 +27,10 @@ POLAR_WEBHOOK_SECRET=your_polar_webhook_secret
 RESEND_API_KEY=your_resend_api_key
 ```
 
-Also, don’t forget to configure your environment variables in your **Zap.ts** deployment environment.
+Also, don’t forget to configure your environment variables in your Zap.ts deployment environment.
 
 :::warning
-The above `.env` file serves as an example. You should only rely on the instance of **Zap.ts** that was present during its initial installation.
+The above `.env` file serves as an example. You should only rely on the instance of Zap.ts that was present during its initial installation.
 :::
 
 ## Configure the app
@@ -117,7 +117,7 @@ This list of commands may not be exhaustive and can change over time as Zap.ts e
 
 ## Command-Line Interface (CLI)
 
-The `create-zap-app` CLI is a tool for _quickly_ setting up a **Zap.ts** project or adding procedures to an existing one.
+The `create-zap-app` CLI is a tool for _quickly_ setting up a Zap.ts project or adding procedures to an existing one.
 
 Also, you should note that more features will be added from time to time. You can run `create-zap-app --help` to check the latest CLI available commands.
 

@@ -7,7 +7,7 @@ I do not maintain or patch older versions. If you're using an outdated version, 
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in **Zap.ts** (CLI, boilerplate, or documentation site), please **report it privately** to avoid potential abuse before a fix is available.
+If you discover a security vulnerability in Zap.ts (CLI, boilerplate, or documentation site), please **report it privately** to avoid potential abuse before a fix is available.
 
 ### How to report
 

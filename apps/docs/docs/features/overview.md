@@ -4,7 +4,7 @@
 
 It provides everything you need to kickstart your app—from authentication to payments and subscriptions.
 
-Looking ahead, **Zap.ts** plans to be modular, using a _**plugin injection system**_ that lets you plug and play only what you need, as simply as possible.
+Looking ahead, Zap.ts plans to be modular, using a _**plugin injection system**_ that lets you plug and play only what you need, as simply as possible.
 
 We’ll leverage _tree shakeability_ to keep your bundle size optimized.
 

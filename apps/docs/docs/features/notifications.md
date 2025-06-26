@@ -1,6 +1,6 @@
 # Notifications & Emails
 
-**Zap.ts** provides a unified system for sending notifications and transactional emails to your users. This includes _push notifications_, and _email delivery_, all with type safety and extensibility in mind.
+Zap.ts provides a unified system for sending notifications and transactional emails to your users. This includes _push notifications_, and _email delivery_, all with type safety and extensibility in mind.
 
 ## Overview
 
@@ -11,7 +11,7 @@
 
 ## Push Notifications
 
-**Zap.ts** uses the browser Push API and a PWA service worker (`/sw.js`) to deliver real-time notifications.
+Zap.ts uses the browser Push API and a PWA service worker (`/sw.js`) to deliver real-time notifications.
 
 - **API Endpoints:**  
   - `POST /api/(auth-only)/user/notifications/subscribe` — Subscribe a user to push notifications.
@@ -23,7 +23,7 @@ For more, see the [MDN Push API](https://developer.mozilla.org/en-US/docs/Web/AP
 
 ## Emails
 
-**Zap.ts** uses [Resend](https://resend.com/) for transactional email delivery. Email actions are defined in `src/zap/actions/emails.action.ts` and support:
+Zap.ts uses [Resend](https://resend.com/) for transactional email delivery. Email actions are defined in `src/zap/actions/emails.action.ts` and support:
 
 - **Forgot password emails**
 - **Magic link emails**

@@ -1,6 +1,6 @@
 # Authentication
 
-**Zap.ts** provides a _robust_, _extensible_ authentication system out of the box, powered by [Better Auth](https://www.better-auth.com/).
+Zap.ts provides a _robust_, _extensible_ authentication system out of the box, powered by [Better Auth](https://www.better-auth.com/).
 
 It supports modern authentication flows, strong security defaults, and easy integration with your app.
 

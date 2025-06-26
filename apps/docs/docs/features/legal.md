@@ -1,6 +1,6 @@
 # Legal Pages
 
-**Zap.ts** includes templates for _essential legal pages_ to integrate them even faster. These pages are fully customizable and can be found in the public legal routes of your app.
+Zap.ts includes templates for _essential legal pages_ to integrate them even faster. These pages are fully customizable and can be found in the public legal routes of your app.
 
 ## Overview
 

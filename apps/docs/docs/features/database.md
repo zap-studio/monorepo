@@ -1,6 +1,6 @@
 # Database
 
-**Zap.ts** uses a _modern_, _type-safe_ database stack built on [Drizzle ORM](https://orm.drizzle.team/) and [PostgreSQL](https://www.postgresql.org/) by default.
+Zap.ts uses a _modern_, _type-safe_ database stack built on [Drizzle ORM](https://orm.drizzle.team/) and [PostgreSQL](https://www.postgresql.org/) by default.
 
 The setup is designed for _flexibility_, _developer productivity_, and _end-to-end type safety_.
 

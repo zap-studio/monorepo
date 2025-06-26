@@ -1,6 +1,6 @@
 # SEO Optimization
 
-**Zap.ts** is designed with SEO best practices in mind, leveraging Next.js features and the [next-sitemap](https://www.npmjs.com/package/next-sitemap) package to help your app _rank higher_ and be _more discoverable_ with (almost) _no effort_.
+Zap.ts is designed with SEO best practices in mind, leveraging Next.js features and the [next-sitemap](https://www.npmjs.com/package/next-sitemap) package to help your app _rank higher_ and be _more discoverable_ with (almost) _no effort_.
 
 ## Overview
 
@@ -49,7 +49,7 @@ export const ZAP_DEFAULT_METADATA: Metadata = {
 
 ### 2. Sitemap generation with next-sitemap
 
-**Zap.ts** uses the [next-sitemap](https://www.npmjs.com/package/next-sitemap) package to automatically generate `sitemap.xml` and `robots.txt` files at build time.
+Zap.ts uses the [next-sitemap](https://www.npmjs.com/package/next-sitemap) package to automatically generate `sitemap.xml` and `robots.txt` files at build time.
 
 The configuration file is located at `next-sitemap.config.js`.
 
