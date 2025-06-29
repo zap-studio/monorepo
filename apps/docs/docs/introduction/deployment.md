@@ -8,6 +8,8 @@ It explains how to deploy a **Next.js** app to platforms like [Digital Ocean](ht
 
 ## Docker
 
-For [Docker](https://www.docker.com/), we already included a `Dockerfile` and a `.dockerignore` file that you can customize how you like.
+For [Docker](https://www.docker.com/), a `Dockerfile` and `.dockerignore` are already included—you can modify them as needed.
 
-They were made following the Next.js recommandation from the above documentation.
+They were created based on the Next.js recommendations from the documentation above.
+
+Make sure to enable the [standalone](https://nextjs.org/docs/app/api-reference/config/next-config-js/output#automatically-copying-traced-files) option in the `next.config.ts` file.
