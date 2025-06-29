@@ -1,13 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod/v4";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -24,6 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ZapButton } from "@/components/zap-ui/button";
 import { SETTINGS } from "@/data/settings";
 import { cn } from "@/lib/utils";
 import { PolicyLinks } from "@/zap/components/auth/policy-links";
@@ -163,22 +162,17 @@ export function RegisterForm({
                     </FormItem>
                   )}
                 />
-                <Button
+                <ZapButton
                   type="submit"
                   className="w-full"
-                  disabled={isSubmitting || isInCooldown}
+                  disabled={isInCooldown}
+                  loading={isSubmitting}
+                  loadingText="Creating account..."
                 >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 size={16} className="animate-spin" />
-                      Creating account...
-                    </>
-                  ) : isInCooldown ? (
-                    `Please wait ${cooldown}s`
-                  ) : (
-                    "Create account"
-                  )}
-                </Button>
+                  {!isInCooldown
+                    ? "Create account"
+                    : `Please wait ${cooldown}s`}
+                </ZapButton>
               </form>
             </Form>
 

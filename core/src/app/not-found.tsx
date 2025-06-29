@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { ZapButton } from "@/components/zap-ui/button";
 
 export default function NotFoundPage() {
   return (
@@ -14,9 +14,9 @@ export default function NotFoundPage() {
             Looks like you&apos;ve found the edge case...{" "}
           </p>
         </div>
-        <Button asChild>
+        <ZapButton asChild>
           <Link href="/">Return to website</Link>
-        </Button>
+        </ZapButton>
       </div>
     </div>
   );

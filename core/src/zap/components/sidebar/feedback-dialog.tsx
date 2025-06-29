@@ -1,11 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { ZapButton } from "@/components/zap-ui/button";
 import { cn } from "@/lib/utils";
 import { useIsFeedbackSubmitted } from "@/zap/hooks/feedbacks/use-is-feedback-submitted";
 import { useSubmitFeedback } from "@/zap/hooks/feedbacks/use-submit-feedback";
@@ -58,7 +57,7 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
         {Array.from({ length: 11 }, (_, i) => {
           const isActive = i <= rating;
           return (
-            <Button
+            <ZapButton
               key={i}
               variant={isActive ? "default" : "outline"}
               size="sm"
@@ -73,7 +72,7 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
               disabled={isSubmitting || !!isExistingFeedback}
             >
               {i}
-            </Button>
+            </ZapButton>
           );
         })}
       </div>
@@ -125,20 +124,14 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
                     </FormItem>
                   )}
                 />
-                <Button
+                <ZapButton
+                  loading={isSubmitting}
+                  loadingText="Submitting..."
                   type="submit"
                   className="w-full"
-                  disabled={isSubmitting}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Submitting...
-                    </>
-                  ) : (
-                    "Submit Feedback"
-                  )}
-                </Button>
+                  Submit Feedback
+                </ZapButton>
               </form>
             </Form>
           </>

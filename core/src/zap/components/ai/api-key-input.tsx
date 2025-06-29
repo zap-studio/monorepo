@@ -1,7 +1,6 @@
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import {
   FormControl,
   FormField,
@@ -10,6 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ZapButton } from "@/components/zap-ui/button";
 import { FormFieldProps } from "@/zap/components/ai/provider-select";
 
 export function ApiKeyInput({
@@ -54,21 +54,16 @@ export function ApiKeyInput({
             </FormControl>
             <FormMessage />
           </FormItem>
-          <Button
+          <ZapButton
+            loading={testing}
+            loadingText="Testing..."
             type="button"
             variant="outline"
             onClick={handleTestApiKey}
-            disabled={disabled || !field.value || testing}
+            disabled={disabled || !field.value}
           >
-            {testing ? (
-              <>
-                <Loader2 size={16} className="animate-spin" />
-                Testing...
-              </>
-            ) : (
-              "Test API Key"
-            )}
-          </Button>
+            Test API Key
+          </ZapButton>
         </div>
       )}
     />

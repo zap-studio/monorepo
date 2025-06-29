@@ -2,13 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Effect } from "effect";
-import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod/v4";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -25,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ZapButton } from "@/components/zap-ui/button";
 import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
 import { authClient } from "@/zap/lib/auth/client";
@@ -109,20 +108,15 @@ export default function ForgotPasswordPage() {
                   </FormItem>
                 )}
               />
-              <Button
+              <ZapButton
+                loading={submitting}
+                disabled={isInCooldown}
+                loadingText="Sending..."
                 type="submit"
                 className="w-full"
-                disabled={submitting || isInCooldown}
               >
-                {submitting && (
-                  <>
-                    <Loader2 size={16} className="animate-spin" />
-                    Sending...
-                  </>
-                )}
-                {!submitting && isInCooldown && `Please wait ${cooldown}s`}
-                {!submitting && !isInCooldown && "Send reset link"}
-              </Button>
+                {!isInCooldown ? "Send reset link" : `Please wait ${cooldown}s`}
+              </ZapButton>
             </form>
           </Form>
         </CardContent>

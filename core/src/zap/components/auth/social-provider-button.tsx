@@ -1,10 +1,9 @@
 import { useRouter } from "@bprogress/next/app";
 import { Effect } from "effect";
-import { Loader2 } from "lucide-react";
 import { JSX, useState } from "react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { ZapButton } from "@/components/zap-ui/button";
 import { Provider } from "@/zap.config";
 import { authClient } from "@/zap/lib/auth/client";
 
@@ -77,23 +76,15 @@ export function SocialProviderButton({
   };
 
   return (
-    <Button
+    <ZapButton
+      loading={loading}
+      loadingText="Logging in..."
       variant="outline"
       className="w-full gap-2"
       onClick={() => handleSocialLogin(provider)}
     >
-      {loading && (
-        <>
-          <Loader2 size={16} className="animate-spin" />
-          Logging in...
-        </>
-      )}
-      {!loading && (
-        <>
-          {icons[provider]}
-          {`Login with ${provider.charAt(0).toUpperCase() + provider.slice(1)}`}
-        </>
-      )}
-    </Button>
+      {icons[provider]}
+      {`Login with ${provider.charAt(0).toUpperCase() + provider.slice(1)}`}
+    </ZapButton>
   );
 }

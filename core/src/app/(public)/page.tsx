@@ -18,7 +18,7 @@ const SECTIONS = [
     id: "hero",
     component: HeroSection,
     className:
-      "h-[calc(100vh-4rem)] border-b bg-muted/50 flex items-center justify-center md:py-0 overflow-hidden min-h-[500px]",
+      "h-[calc(100vh-4rem)] border-b flex items-center justify-center md:py-0 overflow-hidden min-h-[500px]",
   },
   {
     id: "solution",

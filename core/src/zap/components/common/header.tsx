@@ -4,8 +4,8 @@ import { useRouter } from "@bprogress/next/app";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import { ZapButton } from "@/components/zap-ui/button";
 import { authClient } from "@/zap/lib/auth/client";
 
 const NAV_LINKS = [
@@ -45,14 +45,14 @@ export function Navbar() {
 
           <nav className="hidden gap-2 md:flex">
             {NAV_LINKS.map(({ id, label }) => (
-              <Button
+              <ZapButton
                 key={id}
                 variant="ghost"
                 onClick={() => scrollToSection(id)}
                 className={NAV_BUTTON_CLASSNAME}
               >
                 {label}
-              </Button>
+              </ZapButton>
             ))}
           </nav>
         </div>
@@ -60,24 +60,24 @@ export function Navbar() {
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-2">
             {session && (
-              <Button size="sm" asChild>
+              <ZapButton size="sm" asChild>
                 <Link href="/app">Open App</Link>
-              </Button>
+              </ZapButton>
             )}
             {!session && (
               <>
-                <Button variant="ghost" disabled={isPending} asChild>
+                <ZapButton variant="ghost" disabled={isPending} asChild>
                   <Link
                     href="/login"
                     className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
                   >
                     Login
                   </Link>
-                </Button>
+                </ZapButton>
 
-                <Button size="sm" disabled={isPending} asChild>
+                <ZapButton size="sm" disabled={isPending} asChild>
                   <Link href="/register">Get Started</Link>
-                </Button>
+                </ZapButton>
               </>
             )}
           </nav>

@@ -3,13 +3,11 @@
 import { useRouter } from "@bprogress/next/app";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Effect } from "effect";
-import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod/v4";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -26,6 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ZapButton } from "@/components/zap-ui/button";
 import { authClient } from "@/zap/lib/auth/client";
 import { handleCompromisedPasswordError } from "@/zap/lib/auth/utils";
 
@@ -150,15 +149,14 @@ export default function ResetPasswordPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={submitting}>
-                {submitting && (
-                  <>
-                    <Loader2 size={16} className="animate-spin" />
-                    Resetting...
-                  </>
-                )}
-                {!submitting && "Reset Password"}
-              </Button>
+              <ZapButton
+                loading={submitting}
+                loadingText="Resetting..."
+                type="submit"
+                className="w-full"
+              >
+                Reset Password
+              </ZapButton>
             </form>
           </Form>
         </CardContent>

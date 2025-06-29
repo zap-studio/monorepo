@@ -1,6 +1,4 @@
-import { Loader2 } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
+import { ZapButton } from "@/components/zap-ui/button";
 
 interface SaveSettingsProps {
   isSaving: boolean;
@@ -10,20 +8,15 @@ interface SaveSettingsProps {
 export function SaveSettings({ isSaving, isSaveDisabled }: SaveSettingsProps) {
   return (
     <div className="flex justify-end">
-      <Button
+      <ZapButton
         type="submit"
         className="w-full sm:w-auto"
-        disabled={isSaving || isSaveDisabled}
+        disabled={isSaveDisabled}
+        loading={isSaving}
+        loadingText="Saving..."
       >
-        {isSaving ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Saving...
-          </>
-        ) : (
-          "Save Settings"
-        )}
-      </Button>
+        Save Settings
+      </ZapButton>
     </div>
   );
 }

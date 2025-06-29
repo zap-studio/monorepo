@@ -4,7 +4,6 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ZapButton } from "@/components/zap-ui/button";
 import { cn } from "@/lib/utils";
 import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
 import { PRICING_PLANS } from "@/zap/data/landing";
@@ -95,9 +95,13 @@ export function PricingSection() {
                 ))}
               </ul>
               <div className="mt-6">
-                <Button className="w-full" variant={plan.buttonVariant} asChild>
+                <ZapButton
+                  className="w-full"
+                  variant={plan.buttonVariant}
+                  asChild
+                >
                   <Link href="/register">{plan.buttonText}</Link>
-                </Button>
+                </ZapButton>
               </div>
             </CardContent>
           </Card>

@@ -4,8 +4,7 @@ import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { BeamsBackground } from "@/components/ui/beams-background";
-import { Button } from "@/components/ui/button";
+import { ZapButton } from "@/components/zap-ui/button";
 
 interface HeroSectionProps {
   ratings: {
@@ -87,50 +86,47 @@ export function HeroSection({ ratings, numberOfUsers }: HeroSectionProps) {
   }, [ratings.averageRating]);
 
   return (
-    <BeamsBackground>
-      <div className="flex w-full items-center justify-center px-4 pb-32 md:px-6 md:pb-48">
-        <div className="mx-auto max-w-4xl space-y-4 text-center">
-          <h1 className="text-foreground text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-            Ship <span className="text-primary">{typedWord}</span> with Zap.ts
-            ⚡️
-          </h1>
-          <p className="text-muted-foreground mx-auto max-w-[700px] md:text-xl">
-            The ultimate Next.js boilerplate with everything you need to build
-            production-ready applications in minutes, not months.
-          </p>
-          <div className="flex flex-col justify-center gap-2 min-[400px]:flex-row">
-            <Button size="lg" asChild>
-              <Link href="/register">
-                Get Started <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <Link
-                className="text-foreground"
-                href="https://zap-ts.alexandretrotel.org"
-                target="_blank"
-              >
-                View Documentation <ArrowUpRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+    <div className="flex w-full items-center justify-center px-4 pb-32 md:px-6 md:pb-48">
+      <div className="mx-auto max-w-4xl space-y-4 text-center">
+        <h1 className="text-foreground text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+          Ship <span className="text-primary">{typedWord}</span> with Zap.ts ⚡️
+        </h1>
+        <p className="text-muted-foreground mx-auto max-w-[700px] md:text-xl">
+          The ultimate Next.js boilerplate with everything you need to build
+          production-ready applications in minutes, not months.
+        </p>
+        <div className="flex flex-col justify-center gap-2 min-[400px]:flex-row">
+          <ZapButton size="lg" asChild>
+            <Link href="/register">
+              Get Started <ArrowRight className="h-4 w-4" />
+            </Link>
+          </ZapButton>
+          <ZapButton variant="outline" size="lg" asChild>
+            <Link
+              className="text-foreground"
+              href="https://zap-ts.alexandretrotel.org"
+              target="_blank"
+            >
+              View Documentation <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          </ZapButton>
+        </div>
 
-          <div className="flex items-center justify-center space-x-4 text-sm">
-            <div className="hidden items-center md:flex">
-              <div className="flex">{stars}</div>
-              <span className="text-muted-foreground ml-2">
-                {ratingText.average} ({ratingText.total} rating
-                {ratings.totalFeedbacks > 1 ? "s" : ""})
-              </span>
-            </div>
-            <div className="bg-border hidden h-4 w-px md:block" />
-            <div className="text-muted-foreground">
-              Used by {ratingText.users}+ developer
-              {numberOfUsers > 1 ? "s" : ""}
-            </div>
+        <div className="flex items-center justify-center space-x-4 text-sm">
+          <div className="hidden items-center md:flex">
+            <div className="flex">{stars}</div>
+            <span className="text-muted-foreground ml-2">
+              {ratingText.average} ({ratingText.total} rating
+              {ratings.totalFeedbacks > 1 ? "s" : ""})
+            </span>
+          </div>
+          <div className="bg-border hidden h-4 w-px md:block" />
+          <div className="text-muted-foreground">
+            Used by {ratingText.users}+ developer
+            {numberOfUsers > 1 ? "s" : ""}
           </div>
         </div>
       </div>
-    </BeamsBackground>
+    </div>
   );
 }

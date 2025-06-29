@@ -1,10 +1,8 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -14,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import { ZapButton } from "@/components/zap-ui/button";
 import { cn } from "@/lib/utils";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { AnimatedNumber } from "@/zap/components/misc/animated-number";
@@ -73,15 +72,14 @@ export function WaitlistSection() {
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {!loading && "Join Waitlist"}
-              {loading && (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Joining...
-                </>
-              )}
-            </Button>
+            <ZapButton
+              loading={loading}
+              loadingText="Joining..."
+              type="submit"
+              className="w-full"
+            >
+              Join Waitlist
+            </ZapButton>
 
             <AnimatePresence>
               {result && (
