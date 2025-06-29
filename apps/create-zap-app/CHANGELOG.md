@@ -1,5 +1,12 @@
 # create-zap-app
 
+## 1.2.20
+
+### Patch Changes
+
+- 1176bc8: refactor code and use process.stdout.write instead of console
+- 1b9f34d: add default ZAP_MAIL env var
+
 ## 1.2.19
 
 ### Patch Changes
