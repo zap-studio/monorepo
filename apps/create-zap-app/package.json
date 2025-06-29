@@ -1,78 +1,80 @@
 {
-	"name": "create-zap-app",
-	"description": "A CLI to bootstrap a Next.js boilerplate with plugins customization.",
-	"author": "Alexandre Trotel",
-	"keywords": [
-		"next.js",
-		"cli",
-		"typescript",
-		"plugins",
-		"oRPC",
-		"react",
-		"tailwindcss",
-		"drizzle",
-		"pnpm",
-		"boilerplate",
-		"starter-kit"
-	],
-	"version": "1.2.19",
-	"module": "index.ts",
-	"type": "module",
-	"private": false,
-	"publishConfig": {
-		"access": "public"
-	},
-	"homepage": "https://zap-ts.alexandretrotel.org",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/alexandretrotel/zap.ts/issues"
-	},
-	"funding": {
-		"type": "individual",
-		"url": "https://github.com/sponsors/alexandretrotel"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/alexandretrotel/zap.ts"
-	},
-	"bin": {
-		"create-zap-app": "./dist/index.js"
-	},
-	"main": "dist/index.js",
-	"scripts": {
-		"build": "tsdown src/index.ts --format esm,cjs --dts --clean",
-		"lint": "biome check .",
-		"format": "biome format --write ."
-	},
-	"dependencies": {
-		"chalk": "^5.4.1",
-		"effect": "^3.16.9",
-		"execa": "^9.6.0",
-		"fs-extra": "^11.3.0",
-		"inquirer": "^12.6.3",
-		"ora": "^8.2.0",
-		"ts-morph": "^26.0.0",
-		"zod": "^3.25.67"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.0.5",
-		"@types/fs-extra": "^11.0.4",
-		"@types/inquirer": "^9.0.8",
-		"@types/node": "^24.0.4",
-		"tsdown": "^0.12.9",
-		"typescript": "^5.8.3"
-	},
-	"peerDependencies": {
-		"typescript": "^5.8.3"
-	},
-	"files": [
-		"dist/**/*",
-		"README.md"
-	],
-	"lint-staged": {
-		"**/*": [
-			"biome check --fix .",
-			"biome format --write ."
-		]
-	}
+  "name": "create-zap-app",
+  "description": "A CLI to bootstrap a Next.js boilerplate with plugins customization.",
+  "author": "Alexandre Trotel",
+  "keywords": [
+    "next.js",
+    "cli",
+    "typescript",
+    "plugins",
+    "oRPC",
+    "react",
+    "tailwindcss",
+    "drizzle",
+    "pnpm",
+    "boilerplate",
+    "starter-kit"
+  ],
+  "version": "1.2.19",
+  "module": "index.ts",
+  "type": "module",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://zap-ts.alexandretrotel.org",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alexandretrotel/zap.ts/issues"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/alexandretrotel"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexandretrotel/zap.ts"
+  },
+  "bin": {
+    "create-zap-app": "./dist/index.js"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsdown src/index.ts --format esm,cjs --dts --clean",
+    "lint": "biome check .",
+    "lint:fix": "biome check --fix .",
+    "format": "biome format --write ."
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "effect": "^3.16.9",
+    "execa": "^9.6.0",
+    "fs-extra": "^11.3.0",
+    "inquirer": "^12.6.3",
+    "ora": "^8.2.0",
+    "ts-morph": "^26.0.0",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.0.5",
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.8",
+    "@types/node": "^24.0.4",
+    "tsdown": "^0.12.9",
+    "typescript": "^5.8.3",
+    "ultracite": "5.0.26"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "lint-staged": {
+    "**/*": [
+      "biome check --fix .",
+      "biome format --write ."
+    ]
+  }
 }

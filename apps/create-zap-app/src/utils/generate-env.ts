@@ -1,33 +1,33 @@
-import { writeFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { generateSecret } from "./generate-secret.js";
+import { writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { generateSecret } from './generate-secret.js';
 
 const coreEnv = [
-	"BETTER_AUTH_SECRET",
-	"BETTER_AUTH_URL",
-	"GOOGLE_CLIENT_ID",
-	"GOOGLE_CLIENT_SECRET",
-	"SITE_URL",
-	"DATABASE_URL",
-	"RESEND_API_KEY",
-	"NEXT_PUBLIC_VAPID_PUBLIC_KEY",
-	"VAPID_PRIVATE_KEY",
-	"POLAR_ACCESS_TOKEN",
-	"POLAR_WEBHOOK_SECRET",
-	"NEXT_PUBLIC_POSTHOG_KEY",
-	"NEXT_PUBLIC_POSTHOG_HOST",
-	"ENCRYPTION_KEY",
-	"MCP_GITHUB_PERSONAL_ACCESS_TOKEN",
-	"MCP_POSTHOG_AUTH_HEADER",
-	"MCP_SUPABASE_ACCESS_TOKEN",
-	"MCP_MAGIC_API_KEY",
-	"MCP_FIRECRAWL_API_KEY",
-	"MCP_NOTION_API_HEADERS",
-	"MCP_PERPLEXITY_API_KEY",
-	"MCP_ELEVENLABS_API_KEY",
-	"MCP_SENTRY_ACCESS_TOKEN",
-	"MCP_SENTRY_HOST",
-	"ZAP_MAIL",
+  'BETTER_AUTH_SECRET',
+  'BETTER_AUTH_URL',
+  'GOOGLE_CLIENT_ID',
+  'GOOGLE_CLIENT_SECRET',
+  'SITE_URL',
+  'DATABASE_URL',
+  'RESEND_API_KEY',
+  'NEXT_PUBLIC_VAPID_PUBLIC_KEY',
+  'VAPID_PRIVATE_KEY',
+  'POLAR_ACCESS_TOKEN',
+  'POLAR_WEBHOOK_SECRET',
+  'NEXT_PUBLIC_POSTHOG_KEY',
+  'NEXT_PUBLIC_POSTHOG_HOST',
+  'ENCRYPTION_KEY',
+  'MCP_GITHUB_PERSONAL_ACCESS_TOKEN',
+  'MCP_POSTHOG_AUTH_HEADER',
+  'MCP_SUPABASE_ACCESS_TOKEN',
+  'MCP_MAGIC_API_KEY',
+  'MCP_FIRECRAWL_API_KEY',
+  'MCP_NOTION_API_HEADERS',
+  'MCP_PERPLEXITY_API_KEY',
+  'MCP_ELEVENLABS_API_KEY',
+  'MCP_SENTRY_ACCESS_TOKEN',
+  'MCP_SENTRY_HOST',
+  'ZAP_MAIL',
 ];
 
 /**
@@ -50,32 +50,32 @@ const coreEnv = [
  * // Generates an .env.local file with required env variables.
  * ```
  */
-export const generateEnv = async (outputDir: string) => {
-	// Generate .env.local content
-	const envContent = coreEnv
-		.map((envVar) => {
-			switch (envVar) {
-				case "BETTER_AUTH_SECRET":
-					return `${envVar}="${generateSecret()}"`;
+export const generateEnv = (outputDir: string) => {
+  // Generate .env.local content
+  const envContent = coreEnv
+    .map((envVar) => {
+      switch (envVar) {
+        case 'BETTER_AUTH_SECRET':
+          return `${envVar}="${generateSecret()}"`;
 
-				case "DATABASE_URL":
-					return `${envVar}="postgresql://fake_user:fake_password@ep-example-database.us-west-1.aws.neon.tech/fake_db?sslmode=require"`;
+        case 'DATABASE_URL':
+          return `${envVar}="postgresql://fake_user:fake_password@ep-example-database.us-west-1.aws.neon.tech/fake_db?sslmode=require"`;
 
-				case "BETTER_AUTH_URL":
-					return `${envVar}="http://localhost:3000"`;
+        case 'BETTER_AUTH_URL':
+          return `${envVar}="http://localhost:3000"`;
 
-				case "MCP_NOTION_API_HEADERS":
-					return `${envVar}='{"Authorization": "Bearer ntn_your_token"}'`;
+        case 'MCP_NOTION_API_HEADERS':
+          return `${envVar}='{"Authorization": "Bearer ntn_your_token"}'`;
 
-				case "ENCRYPTION_KEY":
-					return `${envVar}="${generateSecret()}"`;
+        case 'ENCRYPTION_KEY':
+          return `${envVar}="${generateSecret()}"`;
 
-				default:
-					return `${envVar}="your_${envVar.toLowerCase()}_here"`;
-			}
-		})
-		.join("\n");
+        default:
+          return `${envVar}="your_${envVar.toLowerCase()}_here"`;
+      }
+    })
+    .join('\n');
 
-	// Write .env file
-	writeFileSync(resolve(outputDir, ".env"), envContent);
+  // Write .env file
+  writeFileSync(resolve(outputDir, '.env'), envContent);
 };
