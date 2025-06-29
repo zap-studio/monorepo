@@ -208,7 +208,7 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
       )
     );
     process.stdout.write(
-      chalk.white('👉 https://github.com/alexandretrotel/zap.ts')
+      chalk.white('👉 https://github.com/alexandretrotel/zap.ts\n')
     );
   });
 }
