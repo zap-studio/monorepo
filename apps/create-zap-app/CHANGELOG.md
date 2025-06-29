@@ -1,5 +1,11 @@
 # create-zap-app
 
+## 1.2.21
+
+### Patch Changes
+
+- 95d5cb3: format github link to new line
+
 ## 1.2.20
 
 ### Patch Changes
