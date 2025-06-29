@@ -204,11 +204,11 @@ function mainEffect(): Effect.Effect<void, unknown, never> {
 
     process.stdout.write(
       chalk.magentaBright(
-        '🌟 If you like this project, consider giving it a star on GitHub!'
+        '🌟 If you like this project, consider giving it a star on GitHub!\n'
       )
     );
     process.stdout.write(
-      chalk.white('👉 https://github.com/alexandretrotel/zap.ts\n')
+      chalk.white('👉 https://github.com/alexandretrotel/zap.ts')
     );
   });
 }

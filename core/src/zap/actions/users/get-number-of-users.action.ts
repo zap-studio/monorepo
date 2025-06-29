@@ -15,7 +15,7 @@ export const getNumberOfUsersAction = async () => {
       }),
     );
     return numberOfUsers;
-  });
+  }).pipe(Effect.catchAll(() => Effect.succeed(0)));
 
   return await Effect.runPromise(effect);
 };
