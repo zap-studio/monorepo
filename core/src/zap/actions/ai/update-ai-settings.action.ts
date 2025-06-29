@@ -27,56 +27,56 @@ export const updateAISettingsAction = async ({
   context: UpdateAISettingsContext;
   input: UpdateAISettingsInput;
 }) => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const userId = context.session.user.id;
-      const provider = input.provider;
-      const model = input.model;
-      const apiKey = input.apiKey;
+  const effect = Effect.gen(function* (_) {
+    const userId = context.session.user.id;
+    const provider = input.provider;
+    const model = input.model;
+    const apiKey = input.apiKey;
 
-      const encryptedAPIKey = yield* _(
-        Effect.tryPromise({
-          try: () => encrypt(apiKey, encryptionKeyHex),
-          catch: (e) => e,
-        }),
-      );
+    const encryptedAPIKey = yield* _(
+      Effect.tryPromise({
+        try: () => encrypt(apiKey, encryptionKeyHex),
+        catch: () => new Error("Failed to encrypt API key"),
+      }),
+    );
 
-      const existingSettings = yield* _(
-        Effect.tryPromise({
-          try: () =>
-            getApiSettingsForUserAndProviderQuery.execute({
-              userId,
-              provider,
-            }),
-          catch: (e) => e,
-        }),
-      );
+    const existingSettings = yield* _(
+      Effect.tryPromise({
+        try: () =>
+          getApiSettingsForUserAndProviderQuery.execute({
+            userId,
+            provider,
+          }),
+        catch: () => new Error("Failed to get AI settings"),
+      }),
+    );
 
-      if (!existingSettings.length) {
-        return yield* _(Effect.fail(new Error("AI settings not found")));
-      }
+    if (!existingSettings.length) {
+      return yield* _(Effect.fail(new Error("AI settings not found")));
+    }
 
-      yield* _(
-        Effect.tryPromise({
-          try: () =>
-            db
-              .update(userAISettings)
-              .set({
-                model,
-                encryptedApiKey: encryptedAPIKey,
-              })
-              .where(
-                and(
-                  eq(userAISettings.userId, userId),
-                  eq(userAISettings.provider, provider),
-                ),
-              )
-              .execute(),
-          catch: (e) => e,
-        }),
-      );
+    yield* _(
+      Effect.tryPromise({
+        try: () =>
+          db
+            .update(userAISettings)
+            .set({
+              model,
+              encryptedApiKey: encryptedAPIKey,
+            })
+            .where(
+              and(
+                eq(userAISettings.userId, userId),
+                eq(userAISettings.provider, provider),
+              ),
+            )
+            .execute(),
+        catch: () => new Error("Failed to update AI settings"),
+      }),
+    );
 
-      return { success: true };
-    }),
-  );
+    return { success: true };
+  });
+
+  return await Effect.runPromise(effect);
 };

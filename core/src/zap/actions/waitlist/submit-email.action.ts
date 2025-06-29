@@ -5,23 +5,27 @@ import { Effect } from "effect";
 
 import { db } from "@/db";
 import { waitlist } from "@/db/schema";
-import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";
 
-export async function submitWaitlistEmail(formData: FormData) {
-  const action = Effect.gen(function* () {
-    const { email } = yield* Effect.try(() => {
-      const rawEmail = formData.get("email");
-      const emailValue = typeof rawEmail === "string" ? rawEmail.trim() : "";
-      return WaitlistSchema.parse({ email: emailValue });
-    });
+interface SubmitWaitlistEmailInput {
+  email: string;
+}
+
+export const submitWaitlistEmailAction = async ({
+  input,
+}: {
+  input: SubmitWaitlistEmailInput;
+}) => {
+  const effect = Effect.gen(function* () {
+    const email = input.email;
 
     const existing = yield* Effect.tryPromise({
-      try: async () =>
-        await db
+      try: () =>
+        db
           .select()
           .from(waitlist)
           .where(eq(waitlist.email, email))
-          .limit(1),
+          .limit(1)
+          .execute(),
       catch: () => new Error("Failed to check existing email"),
     });
 
@@ -30,7 +34,7 @@ export async function submitWaitlistEmail(formData: FormData) {
     }
 
     yield* Effect.tryPromise({
-      try: async () => await db.insert(waitlist).values({ email }),
+      try: () => db.insert(waitlist).values({ email }).execute(),
       catch: () => new Error("Failed to save email"),
     });
 
@@ -40,7 +44,7 @@ export async function submitWaitlistEmail(formData: FormData) {
     };
   });
 
-  const recoveredAction = action.pipe(
+  const handledEffect = effect.pipe(
     Effect.catchAll((error) =>
       Effect.succeed({
         success: false,
@@ -52,5 +56,5 @@ export async function submitWaitlistEmail(formData: FormData) {
     ),
   );
 
-  return Effect.runPromise(recoveredAction);
-}
+  return await Effect.runPromise(handledEffect);
+};

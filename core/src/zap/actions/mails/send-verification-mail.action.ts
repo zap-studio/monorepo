@@ -4,37 +4,42 @@ import "server-only";
 import { Effect } from "effect";
 
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import type { ForgotPasswordMailProps } from "@/zap/actions/mails/send-forgot-password-mail.action";
 import { VerificationMail } from "@/zap/components/mails/verification.mail";
 import { resend } from "@/zap/lib/resend/server";
 
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
 
-export const sendVerificationMail = async ({
-  subject,
-  recipients,
-  url,
-}: ForgotPasswordMailProps) => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const { data, error } = yield* _(
-        Effect.tryPromise({
-          try: () =>
-            resend.emails.send({
-              from,
-              to: recipients,
-              subject,
-              react: VerificationMail({ url }),
-            }),
-          catch: (e) => e,
-        }),
-      );
+interface SendVerificationMailProps {
+  input: { subject: string; recipients: string[]; url: string };
+}
 
-      if (error) {
-        return yield* _(Effect.fail(error));
-      }
+export const sendVerificationMailAction = async ({
+  input,
+}: SendVerificationMailProps) => {
+  const effect = Effect.gen(function* (_) {
+    const subject = input.subject;
+    const recipients = input.recipients;
+    const url = input.url;
 
-      return data;
-    }),
-  );
+    const { data, error } = yield* _(
+      Effect.tryPromise({
+        try: () =>
+          resend.emails.send({
+            from,
+            to: recipients,
+            subject,
+            react: VerificationMail({ url }),
+          }),
+        catch: () => new Error("Failed to send verification mail"),
+      }),
+    );
+
+    if (error) {
+      return yield* _(Effect.fail(error));
+    }
+
+    return data;
+  });
+
+  return await Effect.runPromise(effect);
 };

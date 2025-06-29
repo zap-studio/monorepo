@@ -6,30 +6,30 @@ import { Effect } from "effect";
 
 import { db } from "@/db";
 import { pushNotifications } from "@/db/schema";
-import { getUserId } from "@/zap/actions/auth/authenticated.action";
+import { client } from "@/zap/lib/orpc/client";
 
-export const unsubscribeUser = async () => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const userId = yield* _(
-        Effect.tryPromise({
-          try: () => getUserId(),
-          catch: (e) => e,
-        }),
-      );
+export const unsubscribeUserAction = async () => {
+  const effect = Effect.gen(function* (_) {
+    const userId = yield* _(
+      Effect.tryPromise({
+        try: () => client.auth.getUserId(),
+        catch: () => new Error("Failed to get user ID"),
+      }),
+    );
 
-      yield* _(
-        Effect.tryPromise({
-          try: () =>
-            db
-              .delete(pushNotifications)
-              .where(eq(pushNotifications.userId, userId))
-              .execute(),
-          catch: (e) => e,
-        }),
-      );
+    yield* _(
+      Effect.tryPromise({
+        try: () =>
+          db
+            .delete(pushNotifications)
+            .where(eq(pushNotifications.userId, userId))
+            .execute(),
+        catch: () => new Error("Failed to unsubscribe user"),
+      }),
+    );
 
-      return { success: true };
-    }),
-  );
+    return { success: true };
+  });
+
+  return await Effect.runPromise(effect);
 };

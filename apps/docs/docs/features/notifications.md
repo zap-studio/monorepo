@@ -42,7 +42,7 @@ export const sendVerificationEmail = async ({
   recipients,
   url,
 }) => {
-  return Effect.runPromise(
+  return await Effect.runPromise(
     Effect.gen(function* (_) {
       const { data, error } = yield* _(
         Effect.tryPromise({
@@ -53,7 +53,7 @@ export const sendVerificationEmail = async ({
               subject,
               react: VerificationEmail({ url }),
             }),
-          catch: (e) => e,
+          catch: (e) => new Error("Failed to send the verification mail"),
         }),
       );
       if (error) throw error;

@@ -21,27 +21,27 @@ export const submitFeedbackAction = async ({
   context: SubmitFeedbackContext;
   input: SubmitFeedbackInput;
 }) => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const userId = context.session.user.id;
+  const effect = Effect.gen(function* (_) {
+    const userId = context.session.user.id;
 
-      yield* _(
-        Effect.tryPromise({
-          try: () =>
-            db
-              .insert(feedbackTable)
-              .values({
-                userId,
-                rating: input.rating,
-                description: input.description || "",
-                submittedAt: new Date(),
-              })
-              .execute(),
-          catch: (e) => e,
-        }),
-      );
+    yield* _(
+      Effect.tryPromise({
+        try: () =>
+          db
+            .insert(feedbackTable)
+            .values({
+              userId,
+              rating: input.rating,
+              description: input.description || "",
+              submittedAt: new Date(),
+            })
+            .execute(),
+        catch: () => new Error("Failed to submit feedback"),
+      }),
+    );
 
-      return { success: true };
-    }),
-  );
+    return { success: true };
+  });
+
+  return await Effect.runPromise(effect);
 };

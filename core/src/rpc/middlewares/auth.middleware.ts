@@ -12,7 +12,7 @@ export interface SessionContext {
 
 export const authMiddleware = base.middleware(
   async ({ context, next, errors }) => {
-    const program = Effect.gen(function* (_) {
+    const effect = Effect.gen(function* (_) {
       const session = yield* _(
         Effect.tryPromise({
           try: () => auth.api.getSession({ headers: context.headers }),
@@ -45,12 +45,6 @@ export const authMiddleware = base.middleware(
       );
     });
 
-    return Effect.runPromise(
-      program.pipe(
-        Effect.catchAll((error: unknown) => {
-          return Effect.fail(error);
-        }),
-      ),
-    );
+    return await Effect.runPromise(effect);
   },
 );

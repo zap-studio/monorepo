@@ -14,10 +14,7 @@ import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { ENV } from "@/lib/env.server";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { sendForgotPasswordMail } from "@/zap/actions/mails/send-forgot-password-mail.action";
-import { sendVerificationMail } from "@/zap/actions/mails/send-verification-mail.action";
-import { canSendMail } from "@/zap/lib/mails/can-send-mail";
-import { updateLastTimestampMailSent } from "@/zap/lib/mails/update-last-timestamp-mail-sent";
+import { client } from "@/zap/lib/orpc/client";
 
 export const auth = betterAuth({
   appName: "Zap.ts",
@@ -28,38 +25,42 @@ export const auth = betterAuth({
     maxPasswordLength: SETTINGS.AUTH.MAXIMUM_PASSWORD_LENGTH,
     requireEmailVerification: SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION,
     sendResetPassword: async ({ user, url }) => {
-      const { canSend, timeLeft } = await canSendMail(user.id);
+      const { canSend, timeLeft } = await client.mails.canSendMail({
+        userId: user.id,
+      });
       if (!canSend) {
         throw new Error(
           `Please wait ${timeLeft} seconds before requesting another password reset email.`,
         );
       }
 
-      await sendForgotPasswordMail({
+      await client.mails.sendForgotPasswordMail({
         recipients: [user.email],
         subject: `${SETTINGS.MAIL.PREFIX} - Reset your password`,
         url,
       });
 
-      await updateLastTimestampMailSent(user.id);
+      await client.mails.updateLastTimestampMailSent({ userId: user.id });
     },
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
-      const { canSend, timeLeft } = await canSendMail(user.id);
+      const { canSend, timeLeft } = await client.mails.canSendMail({
+        userId: user.id,
+      });
       if (!canSend) {
         throw new Error(
           `Please wait ${timeLeft} seconds before requesting another password reset email.`,
         );
       }
 
-      await sendVerificationMail({
+      await client.mails.sendVerificationMail({
         recipients: [user.email],
         subject: `${SETTINGS.MAIL.PREFIX} - Verify your email`,
         url,
       });
 
-      await updateLastTimestampMailSent(user.id);
+      await client.mails.updateLastTimestampMailSent({ userId: user.id });
     },
   },
   socialProviders: {

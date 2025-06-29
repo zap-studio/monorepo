@@ -10,36 +10,36 @@ import { resend } from "@/zap/lib/resend/server";
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
 
 export interface ForgotPasswordMailProps {
-  subject: string;
-  recipients: string[];
-  url: string;
+  input: { subject: string; recipients: string[]; url: string };
 }
 
-export const sendForgotPasswordMail = async ({
-  subject,
-  recipients,
-  url,
+export const sendForgotPasswordMailAction = async ({
+  input,
 }: ForgotPasswordMailProps) => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const { data, error } = yield* _(
-        Effect.tryPromise({
-          try: () =>
-            resend.emails.send({
-              from,
-              to: recipients,
-              subject,
-              react: ForgotPasswordMail({ url }),
-            }),
-          catch: (e) => e,
-        }),
-      );
+  const effect = Effect.gen(function* (_) {
+    const subject = input.subject;
+    const recipients = input.recipients;
+    const url = input.url;
 
-      if (error) {
-        return yield* _(Effect.fail(error));
-      }
+    const { data, error } = yield* _(
+      Effect.tryPromise({
+        try: () =>
+          resend.emails.send({
+            from,
+            to: recipients,
+            subject,
+            react: ForgotPasswordMail({ url }),
+          }),
+        catch: () => new Error("Failed to send forgot password mail"),
+      }),
+    );
 
-      return data;
-    }),
-  );
+    if (error) {
+      return yield* _(Effect.fail(error));
+    }
+
+    return data;
+  });
+
+  return await Effect.runPromise(effect);
 };

@@ -22,34 +22,34 @@ export const testAPIKeyAction = async ({
   input: TestAPIKeyInput;
   context: TestAPIKeyContext;
 }) => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const provider = input.provider;
-      const apiKey = input.apiKey;
-      const model = input.model;
-      let headers = new Headers(context.headers);
+  const effect = Effect.gen(function* (_) {
+    const provider = input.provider;
+    const apiKey = input.apiKey;
+    const model = input.model;
+    let headers = new Headers(context.headers);
 
-      const filteredHeaders = new Headers();
-      for (const [key, value] of headers.entries()) {
-        if (key !== "content-length" && key !== "content-type") {
-          filteredHeaders.append(key, value);
-        }
+    const filteredHeaders = new Headers();
+    for (const [key, value] of headers.entries()) {
+      if (key !== "content-length" && key !== "content-type") {
+        filteredHeaders.append(key, value);
       }
-      headers = filteredHeaders;
+    }
+    headers = filteredHeaders;
 
-      yield* _(
-        Effect.tryPromise({
-          try: () =>
-            $fetch("/api/ai/test", {
-              method: "POST",
-              body: { provider, apiKey, model },
-              headers,
-            }),
-          catch: () => new Error("Invalid API key"),
-        }),
-      );
+    yield* _(
+      Effect.tryPromise({
+        try: () =>
+          $fetch("/api/ai/test", {
+            method: "POST",
+            body: { provider, apiKey, model },
+            headers,
+          }),
+        catch: () => new Error("Failed to test API key"),
+      }),
+    );
 
-      return { success: true };
-    }),
-  );
+    return { success: true };
+  });
+
+  return await Effect.runPromise(effect);
 };

@@ -5,8 +5,7 @@ import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import type z from "zod/v4";
 
-import { getNumberOfPeopleInWaitlist } from "@/zap/actions/waitlist/get-number-of-people-in-waitlist.action";
-import { submitWaitlistEmail } from "@/zap/actions/waitlist/submit-email.action";
+import { client } from "@/zap/lib/orpc/client";
 import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";
 
 export const useWaitlist = () => {
@@ -18,7 +17,7 @@ export const useWaitlist = () => {
   const { data: waitlistCount } = useSWR("waitlist-count", async () => {
     const effect = Effect.gen(function* () {
       const count = yield* Effect.tryPromise(() =>
-        getNumberOfPeopleInWaitlist(),
+        client.waitlist.getNumberOfPeopleInWaitlist(),
       );
 
       return count;
@@ -31,11 +30,8 @@ export const useWaitlist = () => {
     "submit-waitlist",
     async (_key, { arg }: { arg: z.infer<typeof WaitlistSchema> }) => {
       const effect = Effect.gen(function* () {
-        const formData = new FormData();
-        formData.append("email", arg.email);
-
         const result = yield* Effect.tryPromise(() =>
-          submitWaitlistEmail(formData),
+          client.waitlist.submitWaitlistEmail({ email: arg.email }),
         );
 
         if (result.success) {

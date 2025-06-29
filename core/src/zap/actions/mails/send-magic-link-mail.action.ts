@@ -10,36 +10,36 @@ import { resend } from "@/zap/lib/resend/server";
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
 
 export interface SendMagicLinkMailProps {
-  subject: string;
-  recipients: string[];
-  url: string;
+  input: { subject: string; recipients: string[]; url: string };
 }
 
-export const sendMagicLinkMail = async ({
-  subject,
-  recipients,
-  url,
+export const sendMagicLinkMailAction = async ({
+  input,
 }: SendMagicLinkMailProps) => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const { data, error } = yield* _(
-        Effect.tryPromise({
-          try: () =>
-            resend.emails.send({
-              from,
-              to: recipients,
-              subject,
-              react: MagicLinkMail({ url }),
-            }),
-          catch: (e) => e,
-        }),
-      );
+  const effect = Effect.gen(function* (_) {
+    const subject = input.subject;
+    const recipients = input.recipients;
+    const url = input.url;
 
-      if (error) {
-        return yield* _(Effect.fail(error));
-      }
+    const { data, error } = yield* _(
+      Effect.tryPromise({
+        try: () =>
+          resend.emails.send({
+            from,
+            to: recipients,
+            subject,
+            react: MagicLinkMail({ url }),
+          }),
+        catch: () => new Error("Failed to send magic link mail"),
+      }),
+    );
 
-      return data;
-    }),
-  );
+    if (error) {
+      return yield* _(Effect.fail(error));
+    }
+
+    return data;
+  });
+
+  return await Effect.runPromise(effect);
 };

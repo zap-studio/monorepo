@@ -5,7 +5,7 @@ import { Effect } from "effect";
 
 import { getNumberOfPeopleInWaitlistQuery } from "@/zap/db/queries/waitlist.query";
 
-export const getNumberOfPeopleInWaitlist = async () => {
+export const getNumberOfPeopleInWaitlistAction = async () => {
   const effect = Effect.gen(function* () {
     const result = yield* Effect.tryPromise(() =>
       getNumberOfPeopleInWaitlistQuery.execute(),
@@ -20,5 +20,5 @@ export const getNumberOfPeopleInWaitlist = async () => {
     return record.count;
   });
 
-  return Effect.runPromise(effect);
+  return await Effect.runPromise(effect);
 };

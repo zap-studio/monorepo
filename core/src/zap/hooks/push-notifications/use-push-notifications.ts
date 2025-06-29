@@ -122,7 +122,7 @@ export function usePushNotifications() {
         yield* _(
           Effect.tryPromise({
             try: () => subscribeTrigger({ subscription: serializedSub }),
-            catch: (e) => e,
+            catch: () => new Error("Failed to subscribe to push notifications"),
           }),
         );
       }).pipe(

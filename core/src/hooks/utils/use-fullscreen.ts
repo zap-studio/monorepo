@@ -37,7 +37,7 @@ export function useFullscreen({
             await (targetElement as any).msRequestFullscreen();
           }
         },
-        catch: (error) => error,
+        catch: () => new Error("Failed to enter fullscreen mode"),
       }).pipe(
         Effect.catchAll((error) =>
           Effect.sync(() => {
@@ -71,7 +71,7 @@ export function useFullscreen({
             await (document as any).msExitFullscreen();
           }
         },
-        catch: (error) => error,
+        catch: () => new Error("Failed to exit fullscreen mode"),
       }).pipe(
         Effect.catchAll((error) =>
           Effect.sync(() => {

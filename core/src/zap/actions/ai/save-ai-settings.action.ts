@@ -26,52 +26,52 @@ export const saveAISettingsAction = async ({
   context: SaveAISettingsContext;
   input: SaveAISettingsInput;
 }) => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const userId = context.session.user.id;
-      const provider = input.provider;
-      const apiKey = input.apiKey;
-      const model = input.model;
+  const effect = Effect.gen(function* (_) {
+    const userId = context.session.user.id;
+    const provider = input.provider;
+    const apiKey = input.apiKey;
+    const model = input.model;
 
-      const encryptedAPIKey = yield* _(
-        Effect.tryPromise({
-          try: () => encrypt(apiKey, encryptionKeyHex),
-          catch: (e) => e,
-        }),
-      );
+    const encryptedAPIKey = yield* _(
+      Effect.tryPromise({
+        try: () => encrypt(apiKey, encryptionKeyHex),
+        catch: () => new Error("Failed to encrypt API key"),
+      }),
+    );
 
-      const existingSettings = yield* _(
-        Effect.tryPromise({
-          try: () =>
-            getApiSettingsForUserAndProviderQuery.execute({
+    const existingSettings = yield* _(
+      Effect.tryPromise({
+        try: () =>
+          getApiSettingsForUserAndProviderQuery.execute({
+            userId,
+            provider,
+          }),
+        catch: () => new Error("Failed to get AI settings"),
+      }),
+    );
+
+    if (existingSettings.length > 0) {
+      return yield* _(Effect.fail(new Error("AI settings already exists")));
+    }
+
+    yield* _(
+      Effect.tryPromise({
+        try: () =>
+          db
+            .insert(userAISettings)
+            .values({
               userId,
               provider,
-            }),
-          catch: (e) => e,
-        }),
-      );
+              model,
+              encryptedApiKey: encryptedAPIKey,
+            })
+            .execute(),
+        catch: () => new Error("Failed to save AI settings"),
+      }),
+    );
 
-      if (existingSettings.length > 0) {
-        return yield* _(Effect.fail(new Error("AI settings already exists")));
-      }
+    return { success: true };
+  });
 
-      yield* _(
-        Effect.tryPromise({
-          try: () =>
-            db
-              .insert(userAISettings)
-              .values({
-                userId,
-                provider,
-                model,
-                encryptedApiKey: encryptedAPIKey,
-              })
-              .execute(),
-          catch: (e) => e,
-        }),
-      );
-
-      return { success: true };
-    }),
-  );
+  return await Effect.runPromise(effect);
 };

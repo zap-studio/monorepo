@@ -10,36 +10,34 @@ import { resend } from "@/zap/lib/resend/server";
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
 
 export interface SendMailProps {
-  subject: string;
-  recipients: string[];
-  react?: JSX.Element;
+  input: { subject: string; recipients: string[]; react?: JSX.Element };
 }
 
-export const sendMail = async ({
-  subject,
-  recipients,
-  react,
-}: SendMailProps) => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const { data, error } = yield* _(
-        Effect.tryPromise({
-          try: () =>
-            resend.emails.send({
-              from,
-              to: recipients,
-              subject,
-              react,
-            }),
-          catch: (e) => e,
-        }),
-      );
+export const sendMailAction = async ({ input }: SendMailProps) => {
+  const effect = Effect.gen(function* (_) {
+    const subject = input.subject;
+    const recipients = input.recipients;
+    const react = input.react;
 
-      if (error) {
-        return yield* _(Effect.fail(error));
-      }
+    const { data, error } = yield* _(
+      Effect.tryPromise({
+        try: () =>
+          resend.emails.send({
+            from,
+            to: recipients,
+            subject,
+            react,
+          }),
+        catch: () => new Error("Failed to send mail"),
+      }),
+    );
 
-      return data;
-    }),
-  );
+    if (error) {
+      return yield* _(Effect.fail(error));
+    }
+
+    return data;
+  });
+
+  return await Effect.runPromise(effect);
 };

@@ -2,80 +2,55 @@
 import "server-only";
 
 import { Effect } from "effect";
+import type webpush from "web-push";
 
-import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { pushNotifications } from "@/db/schema";
-import { ENV as CLIENT_ENV } from "@/lib/env.client";
-import { ENV as SERVER_ENV } from "@/lib/env.server";
-import { getUserId } from "@/zap/actions/auth/authenticated.action";
-import { SubscribeUserSchema } from "@/zap/schemas/push-notifications.schema";
+import { getWebPushAction } from "@/zap/actions/push-notifications/get-web-push.action";
+import { client } from "@/zap/lib/orpc/client";
 
-let webpushInstance: typeof import("web-push") | null = null;
-
-export async function getWebPush() {
-  if (webpushInstance) {
-    return webpushInstance;
-  }
-
-  if (
-    !CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
-    !SERVER_ENV.VAPID_PRIVATE_KEY ||
-    !SETTINGS.NOTIFICATIONS.VAPID_MAIL
-  ) {
-    throw new Error(
-      "VAPID configuration is incomplete. Push notifications are not available.",
-    );
-  }
-
-  const webpush = await import("web-push");
-
-  webpush.default.setVapidDetails(
-    `mailto:${SETTINGS.NOTIFICATIONS.VAPID_MAIL}`,
-    CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-    SERVER_ENV.VAPID_PRIVATE_KEY,
-  );
-
-  webpushInstance = webpush.default;
-  return webpushInstance;
+interface SubscribeUserActionProps {
+  input: {
+    subscription: webpush.PushSubscription;
+  };
 }
 
-export const subscribeUser = async (sub: PushSubscription) => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      yield* _(
-        Effect.tryPromise({
-          try: () => getWebPush(),
-          catch: (e) => e,
-        }),
-      );
+export const subscribeUserAction = async ({
+  input,
+}: SubscribeUserActionProps) => {
+  const effect = Effect.gen(function* (_) {
+    const subscription = input.subscription;
 
-      const validatedParams = SubscribeUserSchema.parse({
-        subscription: sub,
-      });
+    yield* _(
+      Effect.tryPromise({
+        try: () => getWebPushAction(),
+        catch: () => new Error("Failed to get web push"),
+      }),
+    );
 
-      const userId = yield* _(
-        Effect.tryPromise({
-          try: () => getUserId(),
-          catch: (e) => e,
-        }),
-      );
+    const userId = yield* _(
+      Effect.tryPromise({
+        try: () => client.auth.getUserId(),
+        catch: () => new Error("Failed to get user ID"),
+      }),
+    );
 
-      yield* _(
-        Effect.tryPromise({
-          try: () =>
-            db
-              .insert(pushNotifications)
-              .values({
-                subscription: validatedParams.subscription,
-                userId,
-              })
-              .execute(),
-          catch: (e) => e,
-        }),
-      );
+    yield* _(
+      Effect.tryPromise({
+        try: () =>
+          db
+            .insert(pushNotifications)
+            .values({
+              subscription,
+              userId,
+            })
+            .execute(),
+        catch: () => new Error("Failed to subscribe user"),
+      }),
+    );
 
-      return { success: true };
-    }),
-  );
+    return { success: true };
+  });
+
+  return await Effect.runPromise(effect);
 };

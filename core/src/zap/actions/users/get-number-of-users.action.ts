@@ -7,15 +7,15 @@ import { db } from "@/db";
 import { user } from "@/db/schema";
 
 export const getNumberOfUsersAction = async () => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const numberOfUsers = yield* _(
-        Effect.tryPromise({
-          try: () => db.$count(user),
-          catch: (e) => e,
-        }),
-      );
-      return numberOfUsers;
-    }),
-  );
+  const effect = Effect.gen(function* (_) {
+    const numberOfUsers = yield* _(
+      Effect.tryPromise({
+        try: () => db.$count(user),
+        catch: () => new Error("Failed to get number of users"),
+      }),
+    );
+    return numberOfUsers;
+  });
+
+  return await Effect.runPromise(effect);
 };

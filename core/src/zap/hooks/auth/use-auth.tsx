@@ -22,15 +22,16 @@ export function useAuth() {
   const { cooldown, startCooldown, isInCooldown } = useCooldown();
 
   const sendVerificationMail = async (email: string, callbackURL: string) => {
-    await Effect.tryPromise({
+    const effect = Effect.tryPromise({
       try: () => authClient.sendVerificationEmail({ email, callbackURL }),
-      catch: (e) => e,
+      catch: () => new Error("Failed to send verification email"),
     }).pipe(
       Effect.tap(() =>
         Effect.sync(() => startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS)),
       ),
-      Effect.runPromise,
     );
+
+    return await Effect.runPromise(effect);
   };
 
   const loginWithMail = async (
@@ -40,7 +41,7 @@ export function useAuth() {
     const { email, password } = values;
     const result = await Effect.tryPromise({
       try: () => authClient.signIn.email({ email, password }),
-      catch: (e) => e,
+      catch: () => new Error("Failed to login"),
     })
       .pipe(
         Effect.match({
@@ -83,7 +84,7 @@ export function useAuth() {
     const { name, email, password } = values;
     const result = await Effect.tryPromise({
       try: () => authClient.signUp.email({ email, password, name }),
-      catch: (e) => e,
+      catch: () => new Error("Failed to register"),
     })
       .pipe(
         Effect.match({

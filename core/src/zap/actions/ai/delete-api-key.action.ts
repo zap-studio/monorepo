@@ -22,28 +22,28 @@ export const deleteAPIKeyAction = async ({
   context: DeleteAPIKeyContext;
   input: DeleteAPIKeyInput;
 }) => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const userId = context.session.user.id;
-      const provider = input.provider;
+  const effect = Effect.gen(function* (_) {
+    const userId = context.session.user.id;
+    const provider = input.provider;
 
-      yield* _(
-        Effect.tryPromise({
-          try: () =>
-            db
-              .delete(userAISettings)
-              .where(
-                and(
-                  eq(userAISettings.userId, userId),
-                  eq(userAISettings.provider, provider),
-                ),
-              )
-              .execute(),
-          catch: (e) => e,
-        }),
-      );
+    yield* _(
+      Effect.tryPromise({
+        try: () =>
+          db
+            .delete(userAISettings)
+            .where(
+              and(
+                eq(userAISettings.userId, userId),
+                eq(userAISettings.provider, provider),
+              ),
+            )
+            .execute(),
+        catch: () => new Error("Failed to delete API key"),
+      }),
+    );
 
-      return { success: true };
-    }),
-  );
+    return { success: true };
+  });
+
+  return await Effect.runPromise(effect);
 };

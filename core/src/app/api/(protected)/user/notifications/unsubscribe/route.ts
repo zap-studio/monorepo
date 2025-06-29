@@ -7,42 +7,42 @@ import { pushNotifications } from "@/zap/db/schema/notifications.sql";
 import { auth } from "@/zap/lib/auth/server";
 
 export async function DELETE(req: Request) {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const session = yield* _(
-        Effect.tryPromise({
-          try: () => auth.api.getSession({ headers: req.headers }),
-          catch: () => null,
-        }),
-      );
+  const effect = Effect.gen(function* (_) {
+    const session = yield* _(
+      Effect.tryPromise({
+        try: () => auth.api.getSession({ headers: req.headers }),
+        catch: () => null,
+      }),
+    );
 
-      if (!session) {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-      }
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-      const userId = session.user.id;
+    const userId = session.user.id;
 
-      yield* _(
-        Effect.tryPromise({
-          try: () =>
-            db
-              .delete(pushNotifications)
-              .where(eq(pushNotifications.userId, userId))
-              .execute(),
-          catch: (error) => error,
-        }),
-      );
+    yield* _(
+      Effect.tryPromise({
+        try: () =>
+          db
+            .delete(pushNotifications)
+            .where(eq(pushNotifications.userId, userId))
+            .execute(),
+        catch: () => new Error("Failed to unsubscribe from push notifications"),
+      }),
+    );
 
-      return NextResponse.json({ success: true });
-    }).pipe(
-      Effect.catchAll(() =>
-        Effect.succeed(
-          NextResponse.json(
-            { message: "Internal server error" },
-            { status: 500 },
-          ),
+    return NextResponse.json({ success: true });
+  }).pipe(
+    Effect.catchAll(() =>
+      Effect.succeed(
+        NextResponse.json(
+          { message: "Internal server error" },
+          { status: 500 },
         ),
       ),
     ),
   );
+
+  return await Effect.runPromise(effect);
 }

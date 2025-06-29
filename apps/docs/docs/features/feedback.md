@@ -43,7 +43,7 @@ export const submitFeedbackAction = async ({
   context: SubmitFeedbackContext;
   input: SubmitFeedbackInput;
 }) => {
-  return Effect.runPromise(
+  return await Effect.runPromise(
     Effect.gen(function* (_) {
       const userId = context.session.user.id;
 
@@ -59,7 +59,7 @@ export const submitFeedbackAction = async ({
                 submittedAt: new Date(),
               })
               .execute(),
-          catch: (e) => e,
+          catch: (e) => new Error("Field to insert feedback"),
         })
       );
 

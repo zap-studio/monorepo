@@ -5,22 +5,32 @@ import { Effect } from "effect";
 
 import { getUserIdFromMailQuery } from "@/zap/db/queries/emails.query";
 
-export const getUserIdFromMail = async (email: string) => {
-  return Effect.runPromise(
-    Effect.gen(function* (_) {
-      const records = yield* _(
-        Effect.tryPromise({
-          try: () => getUserIdFromMailQuery.execute({ email }),
-          catch: (e) => e,
-        }),
-      );
+interface GetUserIdFromMailActionProps {
+  input: {
+    email: string;
+  };
+}
 
-      const record = records[0];
-      if (!record) {
-        return yield* _(Effect.fail(new Error("User not found")));
-      }
+export const getUserIdFromMailAction = async ({
+  input,
+}: GetUserIdFromMailActionProps) => {
+  const effect = Effect.gen(function* (_) {
+    const email = input.email;
 
-      return record.userId;
-    }),
-  );
+    const records = yield* _(
+      Effect.tryPromise({
+        try: () => getUserIdFromMailQuery.execute({ email }),
+        catch: () => new Error("Failed to get user ID from mail"),
+      }),
+    );
+
+    const record = records[0];
+    if (!record) {
+      return yield* _(Effect.fail(new Error("User not found")));
+    }
+
+    return record.userId;
+  });
+
+  return await Effect.runPromise(effect);
 };
