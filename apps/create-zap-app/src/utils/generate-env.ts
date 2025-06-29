@@ -70,6 +70,9 @@ export const generateEnv = (outputDir: string) => {
         case 'ENCRYPTION_KEY':
           return `${envVar}="${generateSecret()}"`;
 
+        case 'ZAP_MAIL':
+          return `${envVar}="example@zap.ts"`;
+
         default:
           return `${envVar}="your_${envVar.toLowerCase()}_here"`;
       }
