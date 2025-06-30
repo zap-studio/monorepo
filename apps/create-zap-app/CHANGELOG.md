@@ -1,5 +1,11 @@
 # create-zap-app
 
+## 1.2.23
+
+### Patch Changes
+
+- ca3a873: update generate-secret utility to use crypto module for secure secret generation
+
 ## 1.2.21
 
 ### Patch Changes
