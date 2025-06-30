@@ -42,7 +42,7 @@ const coreEnv = [
  *
  * @param {string} outputDir - The output directory where the `.env.local` file will be written.
  *
- * @returns {Promise<void>} A promise that resolves when the `.env.local` file is written.
+ * A promise that resolves when the `.env.local` file is written.
  *
  * @example
  * ```ts
