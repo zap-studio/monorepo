@@ -1,6 +1,7 @@
 "use client";
 
 import { ProgressProvider } from "@bprogress/next/app";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { useEffect } from "react";
@@ -29,26 +30,28 @@ export default function Providers({
   }, [ENABLE_POSTHOG]);
 
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
-      <ProgressProvider
-        color="#efb100"
-        options={{ showSpinner: false }}
-        height="3px"
-        shallowRouting
+    <NuqsAdapter>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
       >
-        {ENABLE_POSTHOG && (
-          <PHProvider client={posthog}>
-            <SuspendedPostHogPageView />
-            {children}
-          </PHProvider>
-        )}
-        {!ENABLE_POSTHOG && children}
-      </ProgressProvider>
-    </ThemeProvider>
+        <ProgressProvider
+          color="#efb100"
+          options={{ showSpinner: false }}
+          height="3px"
+          shallowRouting
+        >
+          {ENABLE_POSTHOG && (
+            <PHProvider client={posthog}>
+              <SuspendedPostHogPageView />
+              {children}
+            </PHProvider>
+          )}
+          {!ENABLE_POSTHOG && children}
+        </ProgressProvider>
+      </ThemeProvider>
+    </NuqsAdapter>
   );
 }
