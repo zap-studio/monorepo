@@ -37,8 +37,8 @@ export function LoginForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const [callbackURL, setCallbackURL] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { loginWithMail, isInCooldown, cooldown } = useAuth();
+  const { isInCooldown, cooldown, isSubmitting, handleLoginSubmit } =
+    useAuth(callbackURL);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -53,17 +53,6 @@ export function LoginForm({
       password: "",
     },
   });
-
-  const onSubmit = async (values: LoginFormValues) => {
-    setIsSubmitting(true);
-    try {
-      await loginWithMail(values, callbackURL);
-    } catch {
-      // Error is handled in useAuth
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -93,7 +82,7 @@ export function LoginForm({
 
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(handleLoginSubmit)}
                 className="grid gap-6"
               >
                 <FormField

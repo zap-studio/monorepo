@@ -2,6 +2,7 @@
 
 import { useRouter } from "@bprogress/next/app";
 import { Effect } from "effect";
+import { useState } from "react";
 import { toast } from "sonner";
 import type { z } from "zod/v4";
 
@@ -17,7 +18,8 @@ import type {
 type LoginFormValues = z.infer<typeof LoginFormSchema>;
 type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
 
-export function useAuth() {
+export function useAuth(callbackURL?: string | null) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { cooldown, startCooldown, isInCooldown } = useCooldown();
 
@@ -115,5 +117,35 @@ export function useAuth() {
     return result;
   };
 
-  return { loginWithMail, registerWithMail, isInCooldown, cooldown };
+  const withSubmitWrapper = async <T,>(
+    action: () => Promise<T>,
+  ): Promise<T | undefined> => {
+    setIsSubmitting(true);
+
+    const effect = Effect.tryPromise({
+      try: () => action(),
+      catch: () => new Error("Authentification failed"),
+    }).pipe(
+      Effect.tap(() => Effect.sync(() => setIsSubmitting(false))),
+      Effect.catchAll(() => Effect.sync(() => undefined)),
+    );
+
+    return await Effect.runPromise(effect);
+  };
+
+  const handleLoginSubmit = (values: LoginFormValues) =>
+    withSubmitWrapper(() => loginWithMail(values, callbackURL));
+
+  const handleRegisterSubmit = (values: RegisterFormValues) =>
+    withSubmitWrapper(() => registerWithMail(values, callbackURL));
+
+  return {
+    loginWithMail,
+    registerWithMail,
+    isInCooldown,
+    cooldown,
+    handleLoginSubmit,
+    handleRegisterSubmit,
+    isSubmitting,
+  };
 }

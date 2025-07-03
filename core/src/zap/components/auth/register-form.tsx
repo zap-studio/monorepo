@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod/v4";
 
@@ -36,8 +35,8 @@ export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { registerWithMail, isInCooldown, cooldown } = useAuth();
+  const { isInCooldown, cooldown, isSubmitting, handleRegisterSubmit } =
+    useAuth();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(RegisterFormSchema),
@@ -48,17 +47,6 @@ export function RegisterForm({
       confirmPassword: "",
     },
   });
-
-  const onSubmit = async (values: RegisterFormValues) => {
-    setIsSubmitting(true);
-    try {
-      await registerWithMail(values);
-    } catch {
-      // Errors are handled in useAuth
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -88,7 +76,7 @@ export function RegisterForm({
 
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(handleRegisterSubmit)}
                 className="grid gap-6"
               >
                 <FormField
