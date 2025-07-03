@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/components/zap-ui/button";
-import { FormFieldProps } from "@/zap/components/ai/provider-select";
+import type { FormFieldProps } from "@/zap/components/ai/provider-select";
 
 export function ApiKeyInput({
   control,
