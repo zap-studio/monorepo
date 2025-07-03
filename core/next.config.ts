@@ -1,3 +1,4 @@
+import MillionLint from "@million/lint";
 import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
 import createBundleAnalyzer from "@next/bundle-analyzer";
@@ -58,4 +59,7 @@ const withBundleAnalyzer = createBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
-export default withBundleAnalyzer(withMDX(nextConfig));
+export default MillionLint.next({
+  enabled: true,
+  rsc: true,
+})(withBundleAnalyzer(withMDX(nextConfig)));
