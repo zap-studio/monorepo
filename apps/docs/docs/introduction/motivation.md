@@ -48,6 +48,7 @@ Zap.ts wouldn't exist without those _wonderful_ tools:
 - [Drizzle ORM](https://orm.drizzle.team/): An ORM that lets you write database schemas in TypeScript, sync them with your database, and is easy to use.
 - [Effect](https://effect.website/): A powerful functional library for modeling, managing, and propagating side effects and errors across your full stack with type safety.
 - [Flags SDK](https://flags-sdk.dev/): A free SDK to use feature flags that works with any provider.
+- [nuqs](https://nuqs.vercel.app/): A library for managing URL state in Next.js applications with type safety and automatic serialization.
 - [oRPC](https://orpc.unnoq.com/): An alternative to [tRPC](https://trpc.io/) that supports OpenAPI specs, making it easy to build type-safe APIs for frontend and backend.
 - [shadcn/ui](https://ui.shadcn.com/): The best way to get ready-to-use UI components that you can customize however you like.
 - [Zustand](https://zustand-demo.pmnd.rs/): A lightweight alternative to Redux and React Context. It helps you write less code, do more, and supports local storage persistence out of the box.

@@ -73,6 +73,17 @@ We recommend you to check [Zustand documentation](https://zustand.docs.pmnd.rs/g
 Use `providers` only when you have no other choice (e.g., for third-party libraries requiring context). For app state, use Zustand stores in the `stores` folder—they’re lighter and easier to manage.
 :::
 
+## URL State Management
+
+For state that should be **shareable via URL** (like filters, search terms, or pagination), use [nuqs](https://nuqs.vercel.app/) — a powerful library that makes URL state management as simple as `useState`.
+
+**nuqs** provides hooks that automatically sync your component state with URL search parameters, enabling:
+
+- **Shareable URLs** — Users can bookmark or share filtered views
+- **Browser navigation** — Back/forward buttons work naturally with your app state
+- **Deep linking** — Direct links to specific app states
+- **SEO-friendly URLs** — Search engines can index different states of your app
+
 ## Type-Safe APIs
 
 The `schemas` folder uses **Zod** to define validation schemas for your database and API requests.
