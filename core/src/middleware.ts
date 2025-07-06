@@ -30,17 +30,6 @@ function buildCSPHeader(nonce: string): string {
   return directives.join("; ");
 }
 
-// Helper function to build Permissions-Policy header
-function buildPermissionsPolicyHeader(): string {
-  const { PERMISSIONS_POLICY } = ZAP_DEFAULT_SETTINGS.SECURITY;
-
-  const policies = Object.entries(PERMISSIONS_POLICY)
-    .map(([feature, values]) => `${feature}=${values.join(", ")}`)
-    .join(", ");
-
-  return policies;
-}
-
 export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl;
@@ -48,7 +37,6 @@ export async function middleware(request: NextRequest) {
     // Generate CSP nonce and headers
     const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
     const cspHeader = buildCSPHeader(nonce);
-    const permissionsPolicyHeader = buildPermissionsPolicyHeader();
 
     // Allow public paths
     if (
@@ -58,13 +46,11 @@ export async function middleware(request: NextRequest) {
       const requestHeaders = new Headers(request.headers);
       requestHeaders.set("x-nonce", nonce);
       requestHeaders.set("Content-Security-Policy", cspHeader);
-      requestHeaders.set("Permissions-Policy", permissionsPolicyHeader);
 
       const response = NextResponse.next({
         request: { headers: requestHeaders },
       });
       response.headers.set("Content-Security-Policy", cspHeader);
-      response.headers.set("Permissions-Policy", permissionsPolicyHeader);
       return response;
     }
 
@@ -103,13 +89,11 @@ export async function middleware(request: NextRequest) {
     requestHeaders.set("x-user-session", JSON.stringify(session));
     requestHeaders.set("x-nonce", nonce);
     requestHeaders.set("Content-Security-Policy", cspHeader);
-    requestHeaders.set("Permissions-Policy", permissionsPolicyHeader);
 
     const response = NextResponse.next({
       request: { headers: requestHeaders },
     });
     response.headers.set("Content-Security-Policy", cspHeader);
-    response.headers.set("Permissions-Policy", permissionsPolicyHeader);
 
     return response;
   } catch {

@@ -6,7 +6,7 @@ Zap.ts is designed with **security** as a first-class concern. Two of the most i
 
 - **CSP**: Prevents XSS and code injection by restricting what scripts, styles, and resources can run on your site.
 - **Permissions Policy**: Controls access to powerful browser features (camera, geolocation, etc.) on a per-feature basis.
-- **Type-safe config**: All settings are defined in `zap.config.ts` and applied automatically via middleware.
+- **Type-safe config**: All settings are defined in `zap.config.ts` and applied automatically via middleware and Next.js config.
 
 ## Why use CSP and Permissions Policy?
 
@@ -16,7 +16,11 @@ Zap.ts is designed with **security** as a first-class concern. Two of the most i
 
 ## How it works in Zap.ts
 
-Zap.ts applies these headers to all app routes using the Next.js middleware in `src/middleware.ts` and `next.config.ts`. The configuration is centralized in `zap.config.ts` under the `SECURITY` key.
+Zap.ts applies these headers to all app routes using:
+- **CSP**: Set dynamically in `src/middleware.ts` (with a nonce for scripts/styles).
+- **Permissions Policy**: Set statically in `next.config.ts`.
+
+The configuration is centralized in `zap.config.ts` under the `SECURITY` key.
 
 ### Example configuration
 
@@ -49,7 +53,9 @@ export const ZAP_DEFAULT_SETTINGS = {
 
 ### How headers are set
 
-The middleware generates a unique nonce for each request and builds the CSP and Permissions Policy headers dynamically:
+#### Content Security Policy (CSP)
+
+The middleware generates a unique nonce for each request and builds the CSP header dynamically:
 
 ```ts
 // src/middleware.ts
@@ -67,23 +73,41 @@ function buildCSPHeader(nonce: string): string {
   return directives.join("; ");
 }
 
-function buildPermissionsPolicyHeader(): string {
-  const { PERMISSIONS_POLICY } = ZAP_DEFAULT_SETTINGS.SECURITY;
-  return Object.entries(PERMISSIONS_POLICY)
-    .map(([feature, values]) => `${feature}=${values.join(", ")}`)
-    .join(", ");
-}
-```
-
-The middleware then attaches these headers to every response:
-
-```ts
+// In the middleware:
 const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 const cspHeader = buildCSPHeader(nonce);
-const permissionsPolicyHeader = buildPermissionsPolicyHeader();
-
 response.headers.set("Content-Security-Policy", cspHeader);
-response.headers.set("Permissions-Policy", permissionsPolicyHeader);
+```
+
+#### Permissions Policy
+
+Permissions Policy is now set in `next.config.ts` for all routes, making the middleware lighter and more efficient (no nonce or per-request logic needed):
+
+```ts
+// next.config.ts
+import { ZAP_DEFAULT_SETTINGS } from "./zap.config";
+
+const permissionsPolicy = Object.entries(ZAP_DEFAULT_SETTINGS.SECURITY.PERMISSIONS_POLICY)
+  .map(([feature, values]) => `${feature}=${values.join(", ")}`)
+  .join(", ");
+
+const nextConfig = {
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          // ...other headers
+          {
+            key: "Permissions-Policy",
+            value: permissionsPolicy,
+          },
+        ],
+      },
+    ];
+  },
+  // ...
+};
 ```
 
 ## Customizing your policy
@@ -99,7 +123,7 @@ response.headers.set("Permissions-Policy", permissionsPolicyHeader);
 
 ## Best practices
 
-- **Use nonces**: Zap.ts automatically adds a unique nonce to scripts and styles for maximum security.
+- **Use nonces for CSP**: Zap.ts automatically adds a unique nonce to scripts and styles for maximum security.
 - **Start strict, relax as needed**: Begin with the most restrictive policy and only allow what you need.
 - **Test thoroughly**: Use browser devtools to check headers and ensure your app works as expected.
 - **Review regularly**: Update your policy as your app evolves and new features are added.
@@ -109,3 +133,4 @@ response.headers.set("Permissions-Policy", permissionsPolicyHeader);
 - [Content Security Policy (MDN)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 - [Next.js Guide on Content Security Policy](https://nextjs.org/docs/app/guides/content-security-policy)
 - [Permission Policy (MDN)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy)
+- [OWASP Secure Headers Project](https://owasp.org/www-project-secure-headers/)
