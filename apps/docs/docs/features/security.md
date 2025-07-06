@@ -116,9 +116,9 @@ const nextConfig = {
   ```ts
   SCRIPT_SRC: ["'self'", "https://cdn.example.com"],
   ```
-- **Permissions Policy**: Set features to `"()"` to disable, or specify origins to allow. For example, to allow camera for a specific domain:
+- **Permissions Policy**: Set features to `"()"` to disable, or specify origins to allow. For example, to allow camera for your domain and a specific domain:
   ```ts
-  CAMERA: ["https://trusted.example.com"],
+  CAMERA: ["'self'", "https://trusted.example.com"],
   ```
 
 ## Best practices
