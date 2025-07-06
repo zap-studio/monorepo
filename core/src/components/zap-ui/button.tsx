@@ -10,12 +10,17 @@ interface ZapButtonProps extends ButtonProps {
   children: React.ReactNode;
 }
 
-export function ZapButton({ children, ...props }: ZapButtonProps) {
-  if (props.loading) {
+export function ZapButton({
+  children,
+  loading,
+  loadingText,
+  ...props
+}: ZapButtonProps) {
+  if (loading) {
     return (
       <Button {...props} disabled>
         <Loader2 className="animate-spin" size={16} />
-        {props.loadingText || children}
+        {loadingText || children}
       </Button>
     );
   }
