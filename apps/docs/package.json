@@ -1,25 +1,25 @@
 {
-	"name": "@zap-ts/docs",
-	"author": "Alexandre Trotel",
-	"version": "1.0.0",
-	"private": true,
-	"scripts": {
-		"dev": "vitepress dev",
-		"build": "vitepress build",
-		"preview": "vitepress preview",
-		"clean": "rm -rf .vitepress/dist",
-		"format": "biome format .",
-		"lint": "biome check .",
-		"lint:fix": "biome check --fix ."
-	},
-	"dependencies": {
-		"vitepress": "^1.6.3"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.0.6",
-		"@types/node": "^24.0.4",
-		"typescript": "^5.8.3",
-		"ultracite": "5.0.26",
-		"vitepress-plugin-llms": "^1.5.1"
-	}
+  "name": "@zap-ts/docs",
+  "author": "Alexandre Trotel",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "clean": "rm -rf .vitepress/dist",
+    "format": "biome format .",
+    "lint": "biome check .",
+    "lint:fix": "biome check --fix ."
+  },
+  "dependencies": {
+    "vitepress": "^1.6.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.0.6",
+    "@types/node": "^24.0.4",
+    "typescript": "^5.8.3",
+    "ultracite": "5.0.26",
+    "vitepress-plugin-llms": "^1.5.1"
+  }
 }
