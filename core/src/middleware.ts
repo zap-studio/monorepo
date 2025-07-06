@@ -11,6 +11,26 @@ export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl;
 
+    // Generate CSP nonce and headers
+    const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+    const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
+    style-src 'self' 'nonce-${nonce}';
+    img-src 'self' blob: data:;
+    font-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    upgrade-insecure-requests;
+`;
+
+    // Replace newline characters and spaces
+    const contentSecurityPolicyHeaderValue = cspHeader
+      .replace(/\s{2,}/g, " ")
+      .trim();
+
     // Allow public paths
     if (
       ZAP_DEFAULT_SETTINGS.AUTH.PUBLIC_PATHS.includes(pathname) ||
@@ -49,13 +69,24 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(verifyUrl);
     }
 
-    // Add session to headers for server-side use
+    // Add session and CSP nonce to headers
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-user-session", JSON.stringify(session));
+    requestHeaders.set("x-nonce", nonce);
+    requestHeaders.set(
+      "Content-Security-Policy",
+      contentSecurityPolicyHeaderValue,
+    );
 
-    return NextResponse.next({
+    const response = NextResponse.next({
       request: { headers: requestHeaders },
     });
+    response.headers.set(
+      "Content-Security-Policy",
+      contentSecurityPolicyHeaderValue,
+    );
+
+    return response;
   } catch {
     // Fallback: redirect to login on any unexpected error
     const loginUrl = new URL(LOGIN_URL, request.url);
@@ -65,7 +96,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
+  matcher: {
     /*
      * Match all request paths except for the ones starting with:
      * - api (API routes)
@@ -79,6 +110,11 @@ export const config = {
      * - badge.png, favicon-16x16.png, favicon-32x32.png (favicon files)
      * - og.png (Open Graph image)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|sitemap-0.xml|robots.txt|sw.js|manifest.json|manifest.webmanifest|icon-192x192.png|icon-512x512.png|apple-touch-icon.png|badge.png|favicon-16x16.png|favicon-32x32.png|og.png|_vercel/.*).*)",
-  ],
+    source:
+      "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|sitemap-0.xml|robots.txt|sw.js|manifest.json|manifest.webmanifest|icon-192x192.png|icon-512x512.png|apple-touch-icon.png|badge.png|favicon-16x16.png|favicon-32x32.png|og.png|_vercel/.*).*)",
+    missing: [
+      { type: "header", key: "next-router-prefetch" },
+      { type: "header", key: "purpose", value: "prefetch" },
+    ],
+  },
 };
