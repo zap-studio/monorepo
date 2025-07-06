@@ -1,4 +1,4 @@
-# Security: CSP & Permissions Policy
+# Security
 
 Zap.ts is designed with **security** as a first-class concern. Two of the most important web security headers—**Content Security Policy (CSP)** and **Permissions Policy**—are built in and easy to configure.
 
