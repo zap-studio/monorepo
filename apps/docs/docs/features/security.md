@@ -6,7 +6,7 @@ Zap.ts is designed with **security** as a first-class concern. Two of the most i
 
 - **CSP**: Prevents XSS and code injection by restricting what scripts, styles, and resources can run on your site.
 - **Permissions Policy**: Controls access to powerful browser features (camera, geolocation, etc.) on a per-feature basis.
-- **Type-safe config**: All settings are defined in `zap.config.ts` and applied automatically via middleware and Next.js config.
+- **Type-safe config**: All settings are defined in `zap.config.ts` and applied automatically via Next.js config.
 
 ## Why use CSP and Permissions Policy?
 
@@ -16,9 +16,9 @@ Zap.ts is designed with **security** as a first-class concern. Two of the most i
 
 ## How it works in Zap.ts
 
-Zap.ts applies these headers to all app routes using:
-- **CSP**: Set dynamically in `src/middleware.ts` (with a nonce for scripts/styles).
-- **Permissions Policy**: Set statically in `next.config.ts`.
+Zap.ts applies these headers to all app routes using Next.js's built-in header configuration:
+- **CSP**: Set statically in `next.config.ts` for consistent security across all routes.
+- **Permissions Policy**: Set statically in `next.config.ts` for efficient policy enforcement.
 
 The configuration is centralized in `zap.config.ts` under the `SECURITY` key.
 
@@ -31,14 +31,15 @@ export const ZAP_DEFAULT_SETTINGS = {
   SECURITY: {
     CSP: {
       DEFAULT_SRC: ["'self'"],
-      SCRIPT_SRC: ["'self'", "'strict-dynamic'"],
-      STYLE_SRC: ["'self'"],
+      SCRIPT_SRC: ["'self'", "'unsafe-eval'", "'unsafe-inline'"],
+      STYLE_SRC: ["'self'", "'unsafe-inline'"],
       IMG_SRC: ["'self'", "blob:", "data:"],
       FONT_SRC: ["'self'"],
       OBJECT_SRC: ["'none'"],
       BASE_URI: ["'self'"],
       FORM_ACTION: ["'self'"],
       FRAME_ANCESTORS: ["'none'"],
+      BLOCK_ALL_MIXED_CONTENT: false,
       UPGRADE_INSECURE_REQUESTS: true,
     },
     PERMISSIONS_POLICY: {
@@ -53,43 +54,43 @@ export const ZAP_DEFAULT_SETTINGS = {
 
 ### How headers are set
 
-#### Content Security Policy (CSP)
-
-The middleware generates a unique nonce for each request and builds the CSP header dynamically:
-
-```ts
-// src/middleware.ts
-function buildCSPHeader(nonce: string): string {
-  const { CSP } = ZAP_DEFAULT_SETTINGS.SECURITY;
-  const directives = [
-    `default-src ${CSP.DEFAULT_SRC.join(" ")}`,
-    `script-src ${CSP.SCRIPT_SRC.join(" ")} 'nonce-${nonce}'`,
-    `style-src ${CSP.STYLE_SRC.join(" ")} 'nonce-${nonce}'`,
-    // ...
-  ];
-  if (CSP.UPGRADE_INSECURE_REQUESTS) {
-    directives.push("upgrade-insecure-requests");
-  }
-  return directives.join("; ");
-}
-
-// In the middleware:
-const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
-const cspHeader = buildCSPHeader(nonce);
-response.headers.set("Content-Security-Policy", cspHeader);
-```
-
-#### Permissions Policy
-
-Permissions Policy is now set in `next.config.ts` for all routes, making the middleware lighter and more efficient (no nonce or per-request logic needed):
+Both CSP and Permissions Policy headers are set in `next.config.ts` for optimal performance and consistency:
 
 ```ts
 // next.config.ts
 import { ZAP_DEFAULT_SETTINGS } from "./zap.config";
 
-const permissionsPolicy = Object.entries(ZAP_DEFAULT_SETTINGS.SECURITY.PERMISSIONS_POLICY)
-  .map(([feature, values]) => `${feature}=${values.join(", ")}`)
-  .join(", ");
+function buildCSPHeader(): string {
+  const { CSP } = ZAP_DEFAULT_SETTINGS.SECURITY;
+
+  const directives = [
+    `default-src ${CSP.DEFAULT_SRC.join(" ")}`,
+    `script-src ${CSP.SCRIPT_SRC.join(" ")}`,
+    `style-src ${CSP.STYLE_SRC.join(" ")}`,
+    `img-src ${CSP.IMG_SRC.join(" ")}`,
+    `font-src ${CSP.FONT_SRC.join(" ")}`,
+    `object-src ${CSP.OBJECT_SRC.join(" ")}`,
+    `base-uri ${CSP.BASE_URI.join(" ")}`,
+    `form-action ${CSP.FORM_ACTION.join(" ")}`,
+    `frame-ancestors ${CSP.FRAME_ANCESTORS.join(" ")}`,
+  ];
+
+  if (CSP.BLOCK_ALL_MIXED_CONTENT) {
+    directives.push("block-all-mixed-content");
+  }
+
+  if (CSP.UPGRADE_INSECURE_REQUESTS) {
+    directives.push("upgrade-insecure-requests");
+  }
+
+  return directives.join("; ");
+}
+
+function buildPermissionsPolicy(): string {
+  return Object.entries(ZAP_DEFAULT_SETTINGS.SECURITY.PERMISSIONS_POLICY)
+    .map(([feature, values]) => `${feature}=${values.join(", ")}`)
+    .join(", ");
+}
 
 const nextConfig = {
   async headers() {
@@ -97,11 +98,15 @@ const nextConfig = {
       {
         source: "/(.*)",
         headers: [
-          // ...other headers
+          {
+            key: "Content-Security-Policy",
+            value: buildCSPHeader(),
+          },
           {
             key: "Permissions-Policy",
-            value: permissionsPolicy,
+            value: buildPermissionsPolicy(),
           },
+          // ...other security headers
         ],
       },
     ];
@@ -123,10 +128,10 @@ const nextConfig = {
 
 ## Best practices
 
-- **Use nonces for CSP**: Zap.ts automatically adds a unique nonce to scripts and styles for maximum security.
 - **Start strict, relax as needed**: Begin with the most restrictive policy and only allow what you need.
 - **Test thoroughly**: Use browser devtools to check headers and ensure your app works as expected.
 - **Review regularly**: Update your policy as your app evolves and new features are added.
+- **Use static configuration**: Setting headers in `next.config.ts` provides better performance than dynamic middleware generation.
 
 ## Learn more
 
