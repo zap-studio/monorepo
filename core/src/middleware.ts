@@ -105,25 +105,27 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: {
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-     * - sw.js (service worker)
-     * - manifest.json, manifest.ts, manifest.webmanifest (PWA manifest files)
-     * - icon-192x192.png, icon-512x512.png (PWA icons)
-     * - /_vercel/.* (Vercel specific files)
-     * - badge.png, favicon-16x16.png, favicon-32x32.png (favicon files)
-     * - og.png (Open Graph image)
-     */
-    source:
-      "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|sitemap-0.xml|robots.txt|sw.js|manifest.json|manifest.webmanifest|icon-192x192.png|icon-512x512.png|apple-touch-icon.png|badge.png|favicon-16x16.png|favicon-32x32.png|og.png|_vercel/.*).*)",
-    missing: [
-      { type: "header", key: "next-router-prefetch" },
-      { type: "header", key: "purpose", value: "prefetch" },
-    ],
-  },
+  matcher: [
+    {
+      /*
+       * Match all request paths except for the ones starting with:
+       * - api (API routes)
+       * - _next/static (static files)
+       * - _next/image (image optimization files)
+       * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+       * - sw.js (service worker)
+       * - manifest.json, manifest.ts, manifest.webmanifest (PWA manifest files)
+       * - icon-192x192.png, icon-512x512.png (PWA icons)
+       * - /_vercel/.* (Vercel specific files)
+       * - badge.png, favicon-16x16.png, favicon-32x32.png (favicon files)
+       * - og.png (Open Graph image)
+       */
+      source:
+        "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|sitemap-0.xml|robots.txt|sw.js|manifest.json|manifest.webmanifest|icon-192x192.png|icon-512x512.png|apple-touch-icon.png|badge.png|favicon-16x16.png|favicon-32x32.png|og.png|_vercel/.*).*)",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+  ],
 };
