@@ -3,6 +3,38 @@ import type { NextConfig } from "next";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import { ZAP_DEFAULT_SETTINGS } from "./zap.config";
 
+function buildCSPHeader(): string {
+  const { CSP } = ZAP_DEFAULT_SETTINGS.SECURITY;
+
+  const directives = [
+    `default-src ${CSP.DEFAULT_SRC.join(" ")}`,
+    `script-src ${CSP.SCRIPT_SRC.join(" ")}`,
+    `style-src ${CSP.STYLE_SRC.join(" ")}`,
+    `img-src ${CSP.IMG_SRC.join(" ")}`,
+    `font-src ${CSP.FONT_SRC.join(" ")}`,
+    `object-src ${CSP.OBJECT_SRC.join(" ")}`,
+    `base-uri ${CSP.BASE_URI.join(" ")}`,
+    `form-action ${CSP.FORM_ACTION.join(" ")}`,
+    `frame-ancestors ${CSP.FRAME_ANCESTORS.join(" ")}`,
+  ];
+
+  if (CSP.BLOCK_ALL_MIXED_CONTENT) {
+    directives.push("block-all-mixed-content");
+  }
+
+  if (CSP.UPGRADE_INSECURE_REQUESTS) {
+    directives.push("upgrade-insecure-requests");
+  }
+
+  return directives.join("; ");
+}
+
+function buildPermissionsPolicy(): string {
+  return Object.entries(ZAP_DEFAULT_SETTINGS.SECURITY.PERMISSIONS_POLICY)
+    .map(([feature, values]) => `${feature}=${values.join(", ")}`)
+    .join(", ");
+}
+
 const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
   images: {
@@ -14,13 +46,6 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
-    // Build Permissions-Policy header from config
-    const permissionsPolicy = Object.entries(
-      ZAP_DEFAULT_SETTINGS.SECURITY.PERMISSIONS_POLICY,
-    )
-      .map(([feature, values]) => `${feature}=${values.join(", ")}`)
-      .join(", ");
-
     return [
       {
         source: "/(.*)",
@@ -38,8 +63,12 @@ const nextConfig: NextConfig = {
             value: "strict-origin-when-cross-origin",
           },
           {
+            key: "Content-Security-Policy",
+            value: buildCSPHeader(),
+          },
+          {
             key: "Permissions-Policy",
-            value: permissionsPolicy,
+            value: buildPermissionsPolicy(),
           },
         ],
       },

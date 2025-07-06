@@ -82,14 +82,15 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   SECURITY: {
     CSP: {
       DEFAULT_SRC: ["'self'"],
-      SCRIPT_SRC: ["'self'", "'strict-dynamic'"],
-      STYLE_SRC: ["'self'"],
+      SCRIPT_SRC: ["'self'", "'unsafe-eval'", "'unsafe-inline'"],
+      STYLE_SRC: ["'self'", "'unsafe-inline'"],
       IMG_SRC: ["'self'", "blob:", "data:"],
       FONT_SRC: ["'self'"],
       OBJECT_SRC: ["'none'"],
       BASE_URI: ["'self'"],
       FORM_ACTION: ["'self'"],
       FRAME_ANCESTORS: ["'none'"],
+      BLOCK_ALL_MIXED_CONTENT: false,
       UPGRADE_INSECURE_REQUESTS: true,
     },
     PERMISSIONS_POLICY: {

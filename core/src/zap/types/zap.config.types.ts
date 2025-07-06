@@ -70,6 +70,7 @@ export interface ZapSettings {
       FORM_ACTION: string[];
       FRAME_ANCESTORS: string[];
       UPGRADE_INSECURE_REQUESTS: boolean;
+      BLOCK_ALL_MIXED_CONTENT: boolean;
     };
     PERMISSIONS_POLICY: {
       ACCELEROMETER: string[];
