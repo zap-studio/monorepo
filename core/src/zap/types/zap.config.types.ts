@@ -58,6 +58,49 @@ export interface ZapSettings {
       type: string;
     }>;
   };
+  SECURITY: {
+    CSP: {
+      DEFAULT_SRC: string[];
+      SCRIPT_SRC: string[];
+      STYLE_SRC: string[];
+      IMG_SRC: string[];
+      FONT_SRC: string[];
+      OBJECT_SRC: string[];
+      BASE_URI: string[];
+      FORM_ACTION: string[];
+      FRAME_ANCESTORS: string[];
+      UPGRADE_INSECURE_REQUESTS: boolean;
+    };
+    PERMISSIONS_POLICY: {
+      ACCELEROMETER: string[];
+      AMBIENT_LIGHT_SENSOR: string[];
+      AUTOPLAY: string[];
+      BATTERY: string[];
+      CAMERA: string[];
+      CROSS_ORIGIN_ISOLATED: string[];
+      DISPLAY_CAPTURE: string[];
+      DOCUMENT_DOMAIN: string[];
+      ENCRYPTED_MEDIA: string[];
+      EXECUTION_WHILE_NOT_RENDERED: string[];
+      EXECUTION_WHILE_OUT_OF_VIEWPORT: string[];
+      FULLSCREEN: string[];
+      GEOLOCATION: string[];
+      GYROSCOPE: string[];
+      KEYBOARD_MAP: string[];
+      MAGNETOMETER: string[];
+      MICROPHONE: string[];
+      MIDI: string[];
+      NAVIGATION_OVERRIDE: string[];
+      PAYMENT: string[];
+      PICTURE_IN_PICTURE: string[];
+      PUBLICKEY_CREDENTIALS_GET: string[];
+      SCREEN_WAKE_LOCK: string[];
+      SYNC_XHR: string[];
+      USB: string[];
+      WEB_SHARE: string[];
+      XR_SPATIAL_TRACKING: string[];
+    };
+  };
   WAITLIST: {
     TITLE: string;
     DESCRIPTION: string;

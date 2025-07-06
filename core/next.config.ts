@@ -1,6 +1,7 @@
 import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
 import createBundleAnalyzer from "@next/bundle-analyzer";
+import { ZAP_DEFAULT_SETTINGS } from "./zap.config";
 
 const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
@@ -13,6 +14,13 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
+    // Build Permissions-Policy header from config
+    const permissionsPolicy = Object.entries(
+      ZAP_DEFAULT_SETTINGS.SECURITY.PERMISSIONS_POLICY,
+    )
+      .map(([feature, values]) => `${feature}=${values.join(", ")}`)
+      .join(", ");
+
     return [
       {
         source: "/(.*)",
@@ -28,6 +36,10 @@ const nextConfig: NextConfig = {
           {
             key: "Referrer-Policy",
             value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: permissionsPolicy,
           },
         ],
       },

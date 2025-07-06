@@ -108,6 +108,10 @@ export default defineConfig({
             link: '/docs/features/pwa',
           },
           {
+            text: 'Security',
+            link: '/docs/features/security',
+          },
+          {
             text: 'SEO Optimization',
             link: '/docs/features/seo',
           },
