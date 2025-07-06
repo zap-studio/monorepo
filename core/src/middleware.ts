@@ -7,36 +7,65 @@ import type { Session } from "@/zap/lib/auth/client";
 
 const LOGIN_URL = ZAP_DEFAULT_SETTINGS.AUTH.LOGIN_URL;
 
+// Helper function to build CSP header
+function buildCSPHeader(nonce: string): string {
+  const { CSP } = ZAP_DEFAULT_SETTINGS.SECURITY;
+
+  const directives = [
+    `default-src ${CSP.DEFAULT_SRC.join(" ")}`,
+    `script-src ${CSP.SCRIPT_SRC.join(" ")} 'nonce-${nonce}'`,
+    `style-src ${CSP.STYLE_SRC.join(" ")} 'nonce-${nonce}'`,
+    `img-src ${CSP.IMG_SRC.join(" ")}`,
+    `font-src ${CSP.FONT_SRC.join(" ")}`,
+    `object-src ${CSP.OBJECT_SRC.join(" ")}`,
+    `base-uri ${CSP.BASE_URI.join(" ")}`,
+    `form-action ${CSP.FORM_ACTION.join(" ")}`,
+    `frame-ancestors ${CSP.FRAME_ANCESTORS.join(" ")}`,
+  ];
+
+  if (CSP.UPGRADE_INSECURE_REQUESTS) {
+    directives.push("upgrade-insecure-requests");
+  }
+
+  return directives.join("; ");
+}
+
+// Helper function to build Permissions-Policy header
+function buildPermissionsPolicyHeader(): string {
+  const { PERMISSIONS_POLICY } = ZAP_DEFAULT_SETTINGS.SECURITY;
+
+  const policies = Object.entries(PERMISSIONS_POLICY)
+    .map(([feature, values]) => `${feature}=${values.join(", ")}`)
+    .join(", ");
+
+  return policies;
+}
+
 export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl;
 
     // Generate CSP nonce and headers
     const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
-    const cspHeader = `
-    default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
-    style-src 'self' 'nonce-${nonce}';
-    img-src 'self' blob: data:;
-    font-src 'self';
-    object-src 'none';
-    base-uri 'self';
-    form-action 'self';
-    frame-ancestors 'none';
-    upgrade-insecure-requests;
-`;
-
-    // Replace newline characters and spaces
-    const contentSecurityPolicyHeaderValue = cspHeader
-      .replace(/\s{2,}/g, " ")
-      .trim();
+    const cspHeader = buildCSPHeader(nonce);
+    const permissionsPolicyHeader = buildPermissionsPolicyHeader();
 
     // Allow public paths
     if (
       ZAP_DEFAULT_SETTINGS.AUTH.PUBLIC_PATHS.includes(pathname) ||
       pathname.startsWith(ZAP_DEFAULT_SETTINGS.BLOG.BASE_PATH)
     ) {
-      return NextResponse.next();
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set("x-nonce", nonce);
+      requestHeaders.set("Content-Security-Policy", cspHeader);
+      requestHeaders.set("Permissions-Policy", permissionsPolicyHeader);
+
+      const response = NextResponse.next({
+        request: { headers: requestHeaders },
+      });
+      response.headers.set("Content-Security-Policy", cspHeader);
+      response.headers.set("Permissions-Policy", permissionsPolicyHeader);
+      return response;
     }
 
     // Fetch session from API
@@ -69,22 +98,18 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(verifyUrl);
     }
 
-    // Add session and CSP nonce to headers
+    // Add session and security headers for authenticated requests
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-user-session", JSON.stringify(session));
     requestHeaders.set("x-nonce", nonce);
-    requestHeaders.set(
-      "Content-Security-Policy",
-      contentSecurityPolicyHeaderValue,
-    );
+    requestHeaders.set("Content-Security-Policy", cspHeader);
+    requestHeaders.set("Permissions-Policy", permissionsPolicyHeader);
 
     const response = NextResponse.next({
       request: { headers: requestHeaders },
     });
-    response.headers.set(
-      "Content-Security-Policy",
-      contentSecurityPolicyHeaderValue,
-    );
+    response.headers.set("Content-Security-Policy", cspHeader);
+    response.headers.set("Permissions-Policy", permissionsPolicyHeader);
 
     return response;
   } catch {
