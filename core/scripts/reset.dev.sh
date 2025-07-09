@@ -18,6 +18,17 @@ rm -rf .next
 # Remove drizzle generated files
 rm -rf drizzle
 
+# Detect package manager
+if [ -f "package-lock.json" ]; then
+    PACKAGE_MANAGER="npm"
+elif [ -f "yarn.lock" ]; then
+    PACKAGE_MANAGER="yarn"
+elif [ -f "pnpm-lock.yaml" ]; then
+    PACKAGE_MANAGER="pnpm"
+else
+    PACKAGE_MANAGER="bun"
+fi
+
 echo "Cleaned up development environment"
 echo ""
-echo "Run 'npm run dev:setup' to start fresh" 
+echo "Run '$PACKAGE_MANAGER run dev:setup' to start fresh" 
