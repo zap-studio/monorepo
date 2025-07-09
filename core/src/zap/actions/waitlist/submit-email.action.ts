@@ -10,11 +10,11 @@ interface SubmitWaitlistEmailInput {
   email: string;
 }
 
-export const submitWaitlistEmailAction = async ({
+export async function submitWaitlistEmailAction({
   input,
 }: {
   input: SubmitWaitlistEmailInput;
-}) => {
+}) {
   const effect = Effect.gen(function* () {
     const email = input.email;
 
@@ -57,4 +57,4 @@ export const submitWaitlistEmailAction = async ({
   );
 
   return await Effect.runPromise(handledEffect);
-};
+}

@@ -5,7 +5,7 @@ import { Effect } from "effect";
 
 import { getSessionAction } from "@/zap/actions/auth/get-session.action";
 
-export const isUserAdminAction = async () => {
+export async function isUserAdminAction() {
   const effect = Effect.gen(function* (_) {
     const session = yield* _(Effect.promise(() => getSessionAction()));
 
@@ -17,4 +17,4 @@ export const isUserAdminAction = async () => {
   });
 
   return await Effect.runPromise(effect);
-};
+}

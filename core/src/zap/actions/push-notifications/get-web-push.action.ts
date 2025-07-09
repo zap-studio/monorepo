@@ -4,7 +4,7 @@ import { ENV as SERVER_ENV } from "@/lib/env.server";
 
 let webpushInstance: typeof import("web-push") | null = null;
 
-export const getWebPushAction = async () => {
+export async function getWebPushAction() {
   if (webpushInstance) {
     return webpushInstance;
   }
@@ -29,4 +29,4 @@ export const getWebPushAction = async () => {
 
   webpushInstance = webpush.default;
   return webpushInstance;
-};
+}

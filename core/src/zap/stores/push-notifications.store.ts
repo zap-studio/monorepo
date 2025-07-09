@@ -57,10 +57,10 @@ export const usePushNotificationsStore = create<PushNotificationsStore>()(
   ),
 );
 
-export const usePushNotificationsInitializer = () => {
+export function usePushNotificationsInitializer() {
   const { initialize } = usePushNotificationsStore();
 
   useEffect(() => {
     initialize();
   }, [initialize]);
-};
+}

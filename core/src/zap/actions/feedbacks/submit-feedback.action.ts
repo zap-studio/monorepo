@@ -14,13 +14,13 @@ interface SubmitFeedbackInput {
   description?: string;
 }
 
-export const submitFeedbackAction = async ({
+export async function submitFeedbackAction({
   context,
   input,
 }: {
   context: SubmitFeedbackContext;
   input: SubmitFeedbackInput;
-}) => {
+}) {
   const effect = Effect.gen(function* (_) {
     const userId = context.session.user.id;
 
@@ -44,4 +44,4 @@ export const submitFeedbackAction = async ({
   });
 
   return await Effect.runPromise(effect);
-};
+}

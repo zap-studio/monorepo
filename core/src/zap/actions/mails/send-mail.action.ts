@@ -13,7 +13,7 @@ export interface SendMailProps {
   input: { subject: string; recipients: string[]; react?: JSX.Element };
 }
 
-export const sendMailAction = async ({ input }: SendMailProps) => {
+export async function sendMailAction({ input }: SendMailProps) {
   const effect = Effect.gen(function* (_) {
     const subject = input.subject;
     const recipients = input.recipients;
@@ -40,4 +40,4 @@ export const sendMailAction = async ({ input }: SendMailProps) => {
   });
 
   return await Effect.runPromise(effect);
-};
+}

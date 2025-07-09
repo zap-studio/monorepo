@@ -6,7 +6,7 @@ import { Effect } from "effect";
 import { db } from "@/db";
 import { user } from "@/db/schema";
 
-export const getNumberOfUsersAction = async () => {
+export async function getNumberOfUsersAction() {
   const effect = Effect.gen(function* (_) {
     const numberOfUsers = yield* _(
       Effect.tryPromise({
@@ -18,4 +18,4 @@ export const getNumberOfUsersAction = async () => {
   }).pipe(Effect.catchAll(() => Effect.succeed(0)));
 
   return await Effect.runPromise(effect);
-};
+}

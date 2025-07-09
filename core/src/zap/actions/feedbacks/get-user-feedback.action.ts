@@ -9,11 +9,11 @@ interface GetUserFeedbackContext {
   session: { user: { id: string } };
 }
 
-export const getUserFeedbackAction = async ({
+export async function getUserFeedbackAction({
   context,
 }: {
   context: GetUserFeedbackContext;
-}) => {
+}) {
   const effect = Effect.gen(function* (_) {
     const userId = context.session.user.id;
 
@@ -28,4 +28,4 @@ export const getUserFeedbackAction = async ({
   });
 
   return await Effect.runPromise(effect);
-};
+}

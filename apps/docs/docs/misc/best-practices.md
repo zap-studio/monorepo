@@ -96,6 +96,90 @@ Moreover, we consider **TypeScript mandatory** because it catches errors early, 
 
 Contrary to common belief, focusing on type safety and strong typing actually helps you build _**faster**_ and with _**more confidence**_—by preventing subtle bugs and costly refactors down the line, not to mention enabling **powerful IntelliSense** that speeds up development.
 
+## Arrow Functions
+
+Understanding when to use arrow functions versus named functions is crucial for writing clean, maintainable code.
+
+Each has specific use cases where they excel:
+
+### Use Arrow Functions For:
+
+- **Event handlers and callbacks** — They automatically bind `this` and are more concise
+  ```tsx
+  const handleClick = () => {
+    setCount(prev => prev + 1)
+  }
+  ```
+
+- **Simple utility functions** — When the function is short and focused
+  ```tsx
+  const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`
+  ```
+
+- **Array methods** — For map, filter, reduce operations
+  ```tsx
+  const doubled = numbers.map(n => n * 2)
+  ```
+
+### Use Named Functions For:
+
+- **Complex logic** — When the function has multiple responsibilities or is longer
+  ```tsx
+  function validateUserInput(input: UserInput): ValidationResult {
+    const errors = []
+    
+    if (!input.email) {
+      errors.push('Email is required')
+    }
+    
+    if (input.password.length < 8) {
+      errors.push('Password must be at least 8 characters')
+    }
+    
+    return { isValid: errors.length === 0, errors }
+  }
+  ```
+
+- **Recursive functions** — Named functions can reference themselves
+  ```tsx
+  function factorial(n: number): number {
+    return n <= 1 ? 1 : n * factorial(n - 1)
+  }
+  ```
+
+- **Functions that need hoisting** — When you need to call the function before it's defined
+  ```tsx
+  function processData() {
+    return transformData(validateData())
+  }
+  
+  function validateData() { /* ... */ }
+  function transformData() { /* ... */ }
+  ```
+
+- **Class methods** — For object-oriented patterns
+  ```tsx
+  class UserService {
+    async getUser(id: string) {
+      return await this.api.get(`/users/${id}`)
+    }
+  }
+  ```
+
+### Explanations
+
+**Hoisting** is a JavaScript mechanism where function and variable declarations are moved to the top of their scope during the compilation phase.
+
+**Named function** declarations are _fully hoisted_, meaning you can call them before they're defined in your code.
+
+However, arrow functions are not hoisted because they're assigned to variables using `const` or `let`, which follow the temporal dead zone rule.
+
+Additionally, **React DevTools** displays component names more clearly when using named functions.
+
+Indeed, arrow functions assigned to variables often show up as "Anonymous" or with less descriptive names in the component tree, making debugging more difficult.
+
+Thus, named functions offer superior debugging capabilities and component identification in React DevTools compared to anonymous arrow functions.
+
 ## Error Handling
 
 Managing errors gracefully is crucial for robust apps. Zap.ts encourages using [Effect](https://effect.website) — a modern, composable effect system for TypeScript and JavaScript.

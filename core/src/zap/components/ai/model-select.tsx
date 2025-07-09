@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ModelsByProvider } from "@/zap/data/ai";
-import { AIFormValues, AIProviderId } from "@/zap/types/ai.types";
+import type { AIFormValues, AIProviderId } from "@/zap/types/ai.types";
 
 interface ModelSelectProps {
   control: Control<AIFormValues>;

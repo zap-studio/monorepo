@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
     },
   });
 
-  async function onSubmit(values: FormSchema) {
+  const onSubmit = async (values: FormSchema) => {
     setSubmitting(true);
     const { email } = values;
 
@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
       });
 
     setSubmitting(false);
-  }
+  };
 
   return (
     <div className="bg-muted/50 flex min-h-screen items-center justify-center px-4">

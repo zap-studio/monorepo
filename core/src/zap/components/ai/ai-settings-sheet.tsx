@@ -20,7 +20,7 @@ import { DEFAULT_MODEL, ModelsByProvider } from "@/zap/data/ai";
 import { useAISettings } from "@/zap/hooks/ai/use-ai-settings";
 import { useInitAISettings } from "@/zap/hooks/ai/use-init-ai-settings";
 import { AIFormSchema, AIProviderIdSchema } from "@/zap/schemas/ai.schema";
-import { AIFormValues } from "@/zap/types/ai.types";
+import type { AIFormValues } from "@/zap/types/ai.types";
 
 interface AISettingsSheetProps {
   open: boolean;
@@ -53,7 +53,7 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
     } else {
       form.resetField("apiKey");
     }
-  }, [apiKey, form, selectedProvider]);
+  }, [apiKey, form]);
 
   useEffect(() => {
     if (selectedProvider && savedModel) {

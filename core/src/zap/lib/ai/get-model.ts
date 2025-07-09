@@ -4,11 +4,11 @@ import { Effect } from "effect";
 
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
-export const getModel = (
+export function getModel(
   provider: AIProviderId,
   apiKey: string,
   modelName: ModelName,
-) => {
+) {
   return Effect.runSync(
     Effect.gen(function* () {
       const openAI = createOpenAI({ apiKey });
@@ -34,4 +34,4 @@ export const getModel = (
       return model;
     }),
   );
-};
+}

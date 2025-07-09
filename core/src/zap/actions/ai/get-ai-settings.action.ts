@@ -15,13 +15,13 @@ interface GetAISettingsInput {
   provider: AIProviderId;
 }
 
-export const getAISettingsAction = async ({
+export async function getAISettingsAction({
   context,
   input,
 }: {
   context: GetAISettingsContext;
   input: GetAISettingsInput;
-}) => {
+}) {
   const effect = Effect.gen(function* (_) {
     const userId = context.session.user.id;
     const provider = input.provider;
@@ -60,4 +60,4 @@ export const getAISettingsAction = async ({
   });
 
   return await Effect.runPromise(effect);
-};
+}

@@ -20,13 +20,13 @@ interface UpdateAISettingsInput {
   apiKey: string;
 }
 
-export const updateAISettingsAction = async ({
+export async function updateAISettingsAction({
   context,
   input,
 }: {
   context: UpdateAISettingsContext;
   input: UpdateAISettingsInput;
-}) => {
+}) {
   const effect = Effect.gen(function* (_) {
     const userId = context.session.user.id;
     const provider = input.provider;
@@ -79,4 +79,4 @@ export const updateAISettingsAction = async ({
   });
 
   return await Effect.runPromise(effect);
-};
+}

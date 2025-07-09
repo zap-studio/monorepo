@@ -77,7 +77,10 @@ export function HeroSection({ ratings, numberOfUsers }: HeroSectionProps) {
     const fullStars = Math.floor(ratings.averageRating);
     return Array.from({ length: 5 }, (_, i) => (
       <Star
-        key={i}
+        key={`star-${
+          // biome-ignore lint/suspicious/noArrayIndexKey: no other way to do this
+          i
+        }`}
         className={`h-4 w-4 ${
           i < fullStars ? "fill-primary text-primary" : "text-primary"
         }`}

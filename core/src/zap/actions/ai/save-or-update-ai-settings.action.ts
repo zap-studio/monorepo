@@ -20,13 +20,13 @@ interface SaveOrUpdateAISettingsInput {
   apiKey: string;
 }
 
-export const saveOrUpdateAISettingsAction = async ({
+export async function saveOrUpdateAISettingsAction({
   context,
   input,
 }: {
   context: SaveOrUpdateAISettingsContext;
   input: SaveOrUpdateAISettingsInput;
-}) => {
+}) {
   const effect = Effect.gen(function* (_) {
     const userId = context.session.user.id;
     const provider = input.provider;
@@ -93,4 +93,4 @@ export const saveOrUpdateAISettingsAction = async ({
   });
 
   return await Effect.runPromise(effect);
-};
+}
