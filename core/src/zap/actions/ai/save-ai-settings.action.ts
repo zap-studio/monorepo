@@ -19,13 +19,13 @@ interface SaveAISettingsInput {
   apiKey: string;
 }
 
-export const saveAISettingsAction = async ({
+export async function saveAISettingsAction({
   context,
   input,
 }: {
   context: SaveAISettingsContext;
   input: SaveAISettingsInput;
-}) => {
+}) {
   const effect = Effect.gen(function* (_) {
     const userId = context.session.user.id;
     const provider = input.provider;
@@ -74,4 +74,4 @@ export const saveAISettingsAction = async ({
   });
 
   return await Effect.runPromise(effect);
-};
+}

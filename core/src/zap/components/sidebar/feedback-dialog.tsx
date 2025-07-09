@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 import { useIsFeedbackSubmitted } from "@/zap/hooks/feedbacks/use-is-feedback-submitted";
 import { useSubmitFeedback } from "@/zap/hooks/feedbacks/use-submit-feedback";
 import { FeedbackSchema } from "@/zap/schemas/feedback.schema";
-import { FeedbackFormValues } from "@/zap/types/feedback.types";
+import type { FeedbackFormValues } from "@/zap/types/feedback.types";
 
 interface FeedbackDialogProps {
   open: boolean;
@@ -58,7 +58,10 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
           const isActive = i <= rating;
           return (
             <ZapButton
-              key={i}
+              key={`rating-${
+                // biome-ignore lint/suspicious/noArrayIndexKey: no other way to do this
+                i
+              }`}
               variant={isActive ? "default" : "outline"}
               size="sm"
               className={cn(

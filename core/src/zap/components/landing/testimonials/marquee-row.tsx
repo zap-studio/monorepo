@@ -1,6 +1,6 @@
 import { Marquee } from "@/components/magicui/marquee";
 import { ReviewCard } from "@/zap/components/landing/testimonials/review-card";
-import { TESTIMONIALS } from "@/zap/data/landing";
+import type { TESTIMONIALS } from "@/zap/data/landing";
 
 interface MarqueeRowProps {
   reviews: typeof TESTIMONIALS;

@@ -61,7 +61,7 @@ export default function ResetPasswordPage() {
     setToken(token);
   }, []);
 
-  async function onSubmit(values: FormSchema) {
+  const onSubmit = async (values: FormSchema) => {
     setSubmitting(true);
     const { password } = values;
 
@@ -97,7 +97,7 @@ export default function ResetPasswordPage() {
       });
 
     setSubmitting(false);
-  }
+  };
 
   return (
     <div className="bg-muted/50 flex min-h-screen items-center justify-center px-4">

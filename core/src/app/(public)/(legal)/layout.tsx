@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 import { Footer } from "@/zap/components/common/footer";
 import { Navbar } from "@/zap/components/common/header";

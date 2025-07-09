@@ -7,9 +7,9 @@ import useSWRMutation from "swr/mutation";
 import { useORPC } from "@/zap/stores/orpc.store";
 import type { FeedbackFormValues } from "@/zap/types/feedback.types";
 
-export const useSubmitFeedback = (
+export function useSubmitFeedback(
   setIsExistingFeedback: React.Dispatch<React.SetStateAction<boolean>>,
-) => {
+) {
   const orpc = useORPC();
 
   interface GiveFeedbackArgs {
@@ -37,4 +37,4 @@ export const useSubmitFeedback = (
       toast.error("Failed to submit feedback. Please try again.");
     },
   });
-};
+}

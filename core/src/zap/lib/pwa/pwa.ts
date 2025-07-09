@@ -1,12 +1,12 @@
 import { useEffect } from "react";
-import * as webpush from "web-push";
+import type * as webpush from "web-push";
 
 import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
 
-export const usePwa = () => {
+export function usePwa() {
   const initialize = usePushNotificationsStore((state) => state.initialize);
   useEffect(() => initialize(), [initialize]);
-};
+}
 
 export function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);

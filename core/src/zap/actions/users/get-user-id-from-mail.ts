@@ -11,9 +11,9 @@ interface GetUserIdFromMailActionProps {
   };
 }
 
-export const getUserIdFromMailAction = async ({
+export async function getUserIdFromMailAction({
   input,
-}: GetUserIdFromMailActionProps) => {
+}: GetUserIdFromMailActionProps) {
   const effect = Effect.gen(function* (_) {
     const email = input.email;
 
@@ -33,4 +33,4 @@ export const getUserIdFromMailAction = async ({
   });
 
   return await Effect.runPromise(effect);
-};
+}

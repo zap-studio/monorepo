@@ -13,9 +13,9 @@ interface SendVerificationMailProps {
   input: { subject: string; recipients: string[]; url: string };
 }
 
-export const sendVerificationMailAction = async ({
+export async function sendVerificationMailAction({
   input,
-}: SendVerificationMailProps) => {
+}: SendVerificationMailProps) {
   const effect = Effect.gen(function* (_) {
     const subject = input.subject;
     const recipients = input.recipients;
@@ -42,4 +42,4 @@ export const sendVerificationMailAction = async ({
   });
 
   return await Effect.runPromise(effect);
-};
+}

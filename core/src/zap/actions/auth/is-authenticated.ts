@@ -2,7 +2,7 @@ import { Effect } from "effect";
 
 import { getSessionAction } from "@/zap/actions/auth/get-session.action";
 
-export const isAuthenticatedAction = async () => {
+export async function isAuthenticatedAction() {
   const effect = Effect.gen(function* (_) {
     const session = yield* _(Effect.promise(() => getSessionAction()));
 
@@ -14,4 +14,4 @@ export const isAuthenticatedAction = async () => {
   });
 
   return await Effect.runPromise(effect);
-};
+}

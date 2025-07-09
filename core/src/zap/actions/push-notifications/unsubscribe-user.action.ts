@@ -8,7 +8,7 @@ import { db } from "@/db";
 import { pushNotifications } from "@/db/schema";
 import { client } from "@/zap/lib/orpc/client";
 
-export const unsubscribeUserAction = async () => {
+export async function unsubscribeUserAction() {
   const effect = Effect.gen(function* (_) {
     const userId = yield* _(
       Effect.tryPromise({
@@ -32,4 +32,4 @@ export const unsubscribeUserAction = async () => {
   });
 
   return await Effect.runPromise(effect);
-};
+}

@@ -4,7 +4,7 @@ import { FLAGS } from "@/lib/flags";
 
 type FlagKey = keyof typeof FLAGS;
 
-export const useFlag = (flagKey: FlagKey) => {
+export function useFlag(flagKey: FlagKey) {
   const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -27,4 +27,4 @@ export const useFlag = (flagKey: FlagKey) => {
   }, [fetchFlag]);
 
   return { enabled, loading };
-};
+}
