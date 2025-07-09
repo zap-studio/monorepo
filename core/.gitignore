@@ -52,7 +52,6 @@ public/robots.txt
 public/sitemap*.xml
 
 # docker
-.dockerignore
 .env.local
 .env.production
 .env.staging
