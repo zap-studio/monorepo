@@ -1,0 +1,54 @@
+# Development environment - PostgreSQL with pgAdmin
+# URL: postgresql://zap_ts_user:zap_ts_password@localhost:5432/zap_ts_db?sslmode=disable
+services:
+  postgres:
+    image: postgres:17.5-alpine
+    container_name: zap-ts-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: zap_ts_db
+      POSTGRES_USER: zap_ts_user
+      POSTGRES_PASSWORD: zap_ts_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: postgres -c log_statement=all -c log_min_duration_statement=0
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zap_ts_user -d zap_ts_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: zap-ts-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@zap-ts.local
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:80/misc/ping || exit 1",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data:
+  pgadmin_data:

@@ -50,5 +50,14 @@ pnpm-lock.yaml
 # public seo files
 public/robots.txt
 public/sitemap*.xml
-# Million Lint
-.million
+
+# docker
+.dockerignore
+.env.local
+.env.production
+.env.staging
+
+# database
+*.db
+*.sqlite
+*.sqlite3
