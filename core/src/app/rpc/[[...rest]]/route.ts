@@ -1,3 +1,5 @@
+import "server-only";
+
 import { RPCHandler } from "@orpc/server/fetch";
 
 import { router } from "@/rpc/router";

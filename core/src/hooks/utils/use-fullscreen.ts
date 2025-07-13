@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import "client-only";
 
 import { Effect } from "effect";
 import * as React from "react";

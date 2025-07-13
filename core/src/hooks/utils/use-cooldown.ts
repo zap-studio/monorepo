@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import { useCallback, useEffect, useState } from "react";
 

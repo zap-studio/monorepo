@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import type { DependencyList } from "react";
 import * as React from "react";

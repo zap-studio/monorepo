@@ -1,3 +1,6 @@
+"use client";
+import "client-only";
+
 import { ArrowUpRight } from "lucide-react";
 import type { MDXComponents } from "mdx/types";
 import Image, { type ImageProps } from "next/image";
