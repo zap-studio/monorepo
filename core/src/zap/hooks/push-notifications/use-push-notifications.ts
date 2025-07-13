@@ -7,7 +7,7 @@ import useSWRMutation from "swr/mutation";
 
 import { ENV } from "@/lib/env.client";
 import { $fetch } from "@/lib/fetch";
-import { urlBase64ToUint8Array } from "@/zap/lib/pwa/pwa";
+import { urlBase64ToUint8Array } from "@/zap/lib/pwa/utils";
 import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
 
 interface SubscriptionResponse {
