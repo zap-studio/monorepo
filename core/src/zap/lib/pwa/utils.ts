@@ -23,7 +23,7 @@ export function arrayBufferToBase64(buffer: ArrayBuffer) {
   return window.btoa(binary);
 }
 
-export function subscriptonToWebPushSubscription(
+export function subscriptionToWebPushSubscription(
   subscription: PushSubscription,
 ): webpush.PushSubscription {
   const p256dh = subscription.getKey("p256dh");
