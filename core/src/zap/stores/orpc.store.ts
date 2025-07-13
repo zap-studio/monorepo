@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import { createORPCClient } from "@orpc/client";
 import { createORPCReactQueryUtils, type RouterUtils } from "@orpc/react-query";

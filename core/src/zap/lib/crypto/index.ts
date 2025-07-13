@@ -1,3 +1,5 @@
+import "server-only";
+
 import { ENV } from "@/lib/env.server";
 
 export const algorithm = "AES-CBC";

@@ -1,3 +1,6 @@
+"use client";
+import "client-only";
+
 import { useCallback, useEffect, useState } from "react";
 
 import { FLAGS } from "@/lib/flags";

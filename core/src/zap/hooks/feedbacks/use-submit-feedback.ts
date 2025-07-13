@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import type React from "react";
 import { toast } from "sonner";

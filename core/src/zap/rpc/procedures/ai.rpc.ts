@@ -1,3 +1,5 @@
+import "server-only";
+
 import { authMiddleware, base } from "@/rpc/middlewares";
 import { deleteAPIKeyAction } from "@/zap/actions/ai/delete-api-key.action";
 import { getAISettingsAction } from "@/zap/actions/ai/get-ai-settings.action";

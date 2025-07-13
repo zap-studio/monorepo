@@ -1,3 +1,5 @@
+import "server-only";
+
 import { base } from "@/rpc/middlewares";
 import { getNumberOfUsersAction } from "@/zap/actions/users/get-number-of-users.action";
 import { getUserIdFromMailAction } from "@/zap/actions/users/get-user-id-from-mail";

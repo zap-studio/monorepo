@@ -1,3 +1,5 @@
+import "server-only";
+
 import { authMiddleware, base } from "@/rpc/middlewares";
 
 export const example = base.use(authMiddleware).handler(async ({ context }) => {

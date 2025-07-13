@@ -1,3 +1,6 @@
+"use server";
+import "server-only";
+
 import { count } from "drizzle-orm";
 
 import { db } from "@/db";

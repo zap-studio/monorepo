@@ -1,3 +1,5 @@
+import "server-only";
+
 import { algorithm, bufferToHex, hexToBuffer, ivLength } from ".";
 
 export async function encrypt(text: string, keyHex: string) {

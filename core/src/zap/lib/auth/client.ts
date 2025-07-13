@@ -1,3 +1,5 @@
+import "client-only";
+
 import {
   adminClient,
   anonymousClient,
