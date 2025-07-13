@@ -25,5 +25,11 @@
     "packages/*",
     "apps/*",
     "core/"
-  ]
+  ],
+  "lint-staged": {
+    "**/*": [
+      "biome check --fix",
+      "biome format --write"
+    ]
+  }
 }
