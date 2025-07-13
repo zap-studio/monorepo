@@ -1,5 +1,5 @@
 import { pgTable, text, uuid } from "drizzle-orm/pg-core";
-import webpush from "web-push";
+import type webpush from "web-push";
 
 import { user } from "@/db/schema";
 
