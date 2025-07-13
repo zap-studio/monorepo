@@ -9,7 +9,7 @@
 			"outputs": [".next/**", "!.next/cache/**", "dist/**", ".vitepress/**"]
 		},
 		"lint": {
-			"outputs": []
+			"cache": false
 		},
 		"lint:fix": {
 			"cache": false
@@ -22,7 +22,7 @@
 			"cache": false
 		},
 		"format": {
-			"outputs": []
+			"cache": false
 		}
 	}
 }
