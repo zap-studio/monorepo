@@ -14,6 +14,9 @@
 		"lint:fix": {
 			"cache": false
 		},
+		"lint:ci": {
+			"cache": false
+		},
 		"dev": {
 			"cache": false,
 			"persistent": true

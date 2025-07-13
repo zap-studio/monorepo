@@ -43,6 +43,7 @@
     "build": "tsdown src/index.ts --format esm,cjs --dts --clean",
     "lint": "biome check .",
     "lint:fix": "biome check --fix .",
+    "lint:ci": "biome ci .",
     "format": "biome format --write ."
   },
   "dependencies": {

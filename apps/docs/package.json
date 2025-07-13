@@ -10,7 +10,8 @@
     "clean": "rm -rf .vitepress/dist",
     "format": "biome format .",
     "lint": "biome check .",
-    "lint:fix": "biome check --fix ."
+    "lint:fix": "biome check --fix .",
+    "lint:ci": "biome ci ."
   },
   "dependencies": {
     "vitepress": "^1.6.3"
