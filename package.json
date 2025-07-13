@@ -28,8 +28,7 @@
   ],
   "lint-staged": {
     "**/*": [
-      "biome check --fix",
-      "biome format --write"
+      "npx ultracite format"
     ]
   }
 }
