@@ -41,10 +41,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsdown src/index.ts --format esm,cjs --dts --clean",
-    "lint": "biome check .",
-    "lint:fix": "biome check --fix .",
-    "lint:ci": "biome ci .",
-    "format": "biome format --write ."
+    "lint": "biome check",
+    "lint:fix": "biome check --fix",
+    "lint:ci": "biome ci",
+    "format": "biome format --write"
   },
   "dependencies": {
     "chalk": "^5.4.1",
@@ -74,8 +74,8 @@
   ],
   "lint-staged": {
     "**/*": [
-      "biome check --fix .",
-      "biome format --write ."
+      "biome check --fix",
+      "biome format --write"
     ]
   }
 }

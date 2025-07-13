@@ -8,10 +8,10 @@
     "build": "vitepress build",
     "preview": "vitepress preview",
     "clean": "rm -rf .vitepress/dist",
-    "format": "biome format .",
-    "lint": "biome check .",
-    "lint:fix": "biome check --fix .",
-    "lint:ci": "biome ci ."
+    "format": "biome format",
+    "lint": "biome check",
+    "lint:fix": "biome check --fix",
+    "lint:ci": "biome ci"
   },
   "dependencies": {
     "vitepress": "^1.6.3"
@@ -22,5 +22,11 @@
     "typescript": "^5.8.3",
     "ultracite": "5.0.32",
     "vitepress-plugin-llms": "^1.7.0"
+  },
+  "lint-staged": {
+    "**/*": [
+      "biome check --fix",
+      "biome format --write"
+    ]
   }
 }
