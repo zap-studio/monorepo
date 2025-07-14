@@ -30,8 +30,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run Linter
-        run: pnpm lint
-
       - name: Debug config.mts contents
         run: cat apps/docs/.vitepress/config.mts
+
+      - name: Run Linter
+        run: pnpm lint
