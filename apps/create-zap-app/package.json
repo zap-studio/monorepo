@@ -41,10 +41,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsdown src/index.ts --format esm,cjs --dts --clean",
-    "lint": "npx ultracite lint",
-    "lint:fix": "npx ultracite format",
-    "lint:ci": "npx ultracite lint",
-    "format": "npx ultracite format"
+    "lint": "npx ultracite@latest lint",
+    "lint:fix": "npx ultracite@latest format",
+    "lint:ci": "npx ultracite@latest lint",
+    "format": "npx ultracite@latest format"
   },
   "dependencies": {
     "chalk": "^5.4.1",
@@ -74,7 +74,7 @@
   ],
   "lint-staged": {
     "**/*": [
-      "npx ultracite format"
+      "npx ultracite@latest format"
     ]
   }
 }

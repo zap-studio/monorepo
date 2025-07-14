@@ -8,10 +8,10 @@
     "build": "vitepress build",
     "preview": "vitepress preview",
     "clean": "rm -rf .vitepress/dist",
-    "lint": "npx ultracite lint",
-    "lint:fix": "npx ultracite format",
-    "lint:ci": "npx ultracite lint",
-    "format": "npx ultracite format"
+    "lint": "npx ultracite@latest lint",
+    "lint:fix": "npx ultracite@latest format",
+    "lint:ci": "npx ultracite@latest lint",
+    "format": "npx ultracite@latest format"
   },
   "dependencies": {
     "vitepress": "^1.6.3"
@@ -25,7 +25,7 @@
   },
   "lint-staged": {
     "**/*": [
-      "npx ultracite format"
+      "npx ultracite@latest format"
     ]
   }
 }

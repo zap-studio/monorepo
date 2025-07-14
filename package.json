@@ -28,7 +28,7 @@
   ],
   "lint-staged": {
     "**/*": [
-      "npx ultracite format"
+      "npx ultracite@latest format"
     ]
   }
 }
