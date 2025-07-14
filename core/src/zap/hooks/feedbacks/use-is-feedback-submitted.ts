@@ -1,3 +1,6 @@
+"use client";
+import "client-only";
+
 import { useEffect, useState } from "react";
 
 import { useUserFeedback } from "@/zap/hooks/feedbacks/use-user-feedback";

@@ -1,3 +1,6 @@
+"use server";
+import "server-only";
+
 import { SETTINGS } from "@/data/settings";
 import { ENV as CLIENT_ENV } from "@/lib/env.client";
 import { ENV as SERVER_ENV } from "@/lib/env.server";

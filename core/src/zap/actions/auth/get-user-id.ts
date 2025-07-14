@@ -1,3 +1,6 @@
+"use server";
+import "server-only";
+
 import { Effect } from "effect";
 
 import { getSessionAction } from "@/zap/actions/auth/get-session.action";

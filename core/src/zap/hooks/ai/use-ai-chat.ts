@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import { useChat } from "@ai-sdk/react";
 import { toast } from "sonner";

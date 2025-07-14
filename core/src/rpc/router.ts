@@ -1,3 +1,5 @@
+import "server-only";
+
 import { ai } from "@/zap/rpc/procedures/ai.rpc";
 import { auth } from "@/zap/rpc/procedures/auth.rpc";
 import { example } from "@/zap/rpc/procedures/example.rpc";

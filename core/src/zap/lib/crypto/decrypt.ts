@@ -1,3 +1,5 @@
+import "server-only";
+
 import { algorithm, hexToBuffer } from ".";
 
 export async function decrypt(

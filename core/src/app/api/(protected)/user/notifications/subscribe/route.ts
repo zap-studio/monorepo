@@ -1,3 +1,5 @@
+import "server-only";
+
 import { eq } from "drizzle-orm";
 import { Effect } from "effect";
 import { NextResponse } from "next/server";

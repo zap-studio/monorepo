@@ -1,3 +1,5 @@
+import "server-only";
+
 import { authMiddleware, base } from "@/rpc/middlewares";
 import { getAverageRatingAction } from "@/zap/actions/feedbacks/get-average-rating.action";
 import { getUserFeedbackAction } from "@/zap/actions/feedbacks/get-user-feedback.action";

@@ -1,3 +1,6 @@
+"use client";
+import "client-only";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Effect } from "effect";
 import { useForm } from "react-hook-form";

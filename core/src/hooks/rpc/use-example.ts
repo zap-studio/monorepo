@@ -1,3 +1,6 @@
+"use client";
+import "client-only";
+
 import useSWR from "swr";
 
 import { useORPC } from "@/zap/stores/orpc.store";

@@ -1,3 +1,5 @@
+import "server-only";
+
 import { authMiddleware, base } from "@/rpc/middlewares";
 import { getSessionAction } from "@/zap/actions/auth/get-session.action";
 import { getUserIdAction } from "@/zap/actions/auth/get-user-id";

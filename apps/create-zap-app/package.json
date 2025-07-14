@@ -41,9 +41,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsdown src/index.ts --format esm,cjs --dts --clean",
-    "lint": "biome check .",
-    "lint:fix": "biome check --fix .",
-    "format": "biome format --write ."
+    "lint": "ultracite lint",
+    "format": "ultracite format"
   },
   "dependencies": {
     "chalk": "^5.4.1",
@@ -56,13 +55,13 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.0.6",
+    "@biomejs/biome": "2.1.1",
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.8",
     "@types/node": "^24.0.4",
     "tsdown": "^0.12.9",
     "typescript": "^5.8.3",
-    "ultracite": "5.0.26"
+    "ultracite": "5.0.35"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"
@@ -72,9 +71,8 @@
     "README.md"
   ],
   "lint-staged": {
-    "**/*": [
-      "biome check --fix .",
-      "biome format --write ."
+    "*": [
+      "ultracite format"
     ]
   }
 }
