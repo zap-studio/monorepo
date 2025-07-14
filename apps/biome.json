@@ -1,7 +1,4 @@
 {
   "root": false,
-  "extends": "//",
-  "files": {
-    "includes": ["apps/docs/.vitepress/**"]
-  }
+  "extends": "//"
 }
