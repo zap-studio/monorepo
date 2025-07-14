@@ -41,10 +41,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsdown src/index.ts --format esm,cjs --dts --clean",
-    "lint": "biome check",
-    "lint:fix": "biome check --fix",
-    "lint:ci": "biome ci",
-    "format": "biome format --write"
+    "lint": "npx ultracite lint",
+    "lint:fix": "npx ultracite format",
+    "lint:ci": "npx ultracite lint",
+    "format": "npx ultracite format"
   },
   "dependencies": {
     "chalk": "^5.4.1",
