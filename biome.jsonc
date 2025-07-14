@@ -2,10 +2,6 @@
   "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
   "extends": ["ultracite"],
   "files": {
-    "includes": [
-      "**/*",
-      ".github/workflows/**",
-      "apps/docs/.vitepress/config.mts"
-    ]
+    "includes": ["**/*", ".*/**/*"]
   }
 }
