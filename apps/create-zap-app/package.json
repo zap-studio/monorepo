@@ -71,7 +71,7 @@
     "README.md"
   ],
   "lint-staged": {
-    "**/*": [
+    "*": [
       "ultracite format"
     ]
   }

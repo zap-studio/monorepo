@@ -26,7 +26,7 @@
     "zap": "npx create-zap-app@latest"
   },
   "lint-staged": {
-    "**/*": [
+    "*": [
       "next lint --fix .",
       "prettier --write ."
     ]
