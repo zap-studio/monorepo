@@ -3,6 +3,7 @@
   "author": "Alexandre Trotel",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
