@@ -23,10 +23,5 @@
     "packages/*",
     "apps/*",
     "core/"
-  ],
-  "lint-staged": {
-    "*": [
-      "ultracite format"
-    ]
-  }
+  ]
 }

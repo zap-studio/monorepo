@@ -61,7 +61,7 @@
     "@types/node": "^24.0.4",
     "tsdown": "^0.12.9",
     "typescript": "^5.8.3",
-    "ultracite": "5.0.32"
+    "ultracite": "5.0.35"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"

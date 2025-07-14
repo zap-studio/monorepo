@@ -18,7 +18,7 @@
     "@biomejs/biome": "2.1.1",
     "@types/node": "^24.0.13",
     "typescript": "^5.8.3",
-    "ultracite": "5.0.32",
+    "ultracite": "5.0.35",
     "vitepress-plugin-llms": "^1.7.0"
   },
   "lint-staged": {

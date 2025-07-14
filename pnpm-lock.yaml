@@ -73,8 +73,8 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
       ultracite:
-        specifier: 5.0.32
-        version: 5.0.32(@types/debug@4.1.12)(@types/node@24.0.13)(jiti@2.4.2)(lightningcss@1.30.1)(yaml@2.8.0)
+        specifier: 5.0.35
+        version: 5.0.35(@types/debug@4.1.12)(@types/node@24.0.13)(jiti@2.4.2)(lightningcss@1.30.1)(yaml@2.8.0)
 
   apps/docs:
     dependencies:
@@ -92,8 +92,8 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
       ultracite:
-        specifier: 5.0.32
-        version: 5.0.32(@types/debug@4.1.12)(@types/node@24.0.13)(jiti@2.4.2)(lightningcss@1.30.1)(yaml@2.8.0)
+        specifier: 5.0.35
+        version: 5.0.35(@types/debug@4.1.12)(@types/node@24.0.13)(jiti@2.4.2)(lightningcss@1.30.1)(yaml@2.8.0)
       vitepress-plugin-llms:
         specifier: ^1.7.0
         version: 1.7.0
@@ -6590,10 +6590,6 @@ packages:
 
   uc.micro@2.1.0:
     resolution: {integrity: sha512-ARDJmphmdvUk6Glw7y9DQ2bFkKBHwQHLi2lsaH6PPmz/Ka9sFOBsBluozhDltWmnv9u/cF6Rt87znRTPV+yp/A==}
-
-  ultracite@5.0.32:
-    resolution: {integrity: sha512-JjVNswL1mkIaOkPVh1nuEGnbEaCa94+ftqJ9hpRX2Y+jt72pcv32JeWg3Dqhkz/e3l449f7KAzMHO4x6IbxFZQ==}
-    hasBin: true
 
   ultracite@5.0.35:
     resolution: {integrity: sha512-Gvv5JoJw/8VaQwVW7Y9UQFncdrahvgoCh3QV8APLNoq6HZe4wpYHZJ3wuSpgq/CR8nKSOM2dnERbhb9jSC1nGg==}
@@ -13567,34 +13563,6 @@ snapshots:
   typescript@5.8.3: {}
 
   uc.micro@2.1.0: {}
-
-  ultracite@5.0.32(@types/debug@4.1.12)(@types/node@24.0.13)(jiti@2.4.2)(lightningcss@1.30.1)(yaml@2.8.0):
-    dependencies:
-      '@clack/prompts': 0.11.0
-      commander: 14.0.0
-      deepmerge: 4.3.1
-      jsonc-parser: 3.3.1
-      vitest: 3.2.4(@types/debug@4.1.12)(@types/node@24.0.13)(jiti@2.4.2)(lightningcss@1.30.1)(yaml@2.8.0)
-    transitivePeerDependencies:
-      - '@edge-runtime/vm'
-      - '@types/debug'
-      - '@types/node'
-      - '@vitest/browser'
-      - '@vitest/ui'
-      - happy-dom
-      - jiti
-      - jsdom
-      - less
-      - lightningcss
-      - msw
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
 
   ultracite@5.0.35(@types/debug@4.1.12)(@types/node@24.0.13)(jiti@2.4.2)(lightningcss@1.30.1)(yaml@2.8.0):
     dependencies:
