@@ -1,31 +1,25 @@
 {
-	"$schema": "https://turbo.build/schema.json",
-	"globalDependencies": ["**/.env", "apps/**/*"],
-	"globalEnv": ["*"],
-	"tasks": {
-		"build": {
-			"cache": false,
-			"dependsOn": ["^build"],
-			"outputs": [".next/**", "!.next/cache/**", "dist/**", ".vitepress/**"]
-		},
-		"lint": {
-			"cache": false
-		},
-		"lint:fix": {
-			"cache": false
-		},
-		"lint:ci": {
-			"cache": false
-		},
-		"dev": {
-			"cache": false,
-			"persistent": true
-		},
-		"clean": {
-			"cache": false
-		},
-		"format": {
-			"cache": false
-		}
-	}
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env", "apps/**/*"],
+  "globalEnv": ["*"],
+  "tasks": {
+    "build": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", ".vitepress/**"]
+    },
+    "lint": {
+      "cache": false
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false
+    },
+    "format": {
+      "cache": false
+    }
+  }
 }

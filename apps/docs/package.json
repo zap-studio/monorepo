@@ -9,8 +9,6 @@
     "preview": "vitepress preview",
     "clean": "rm -rf .vitepress/dist",
     "lint": "npx ultracite@latest lint",
-    "lint:fix": "npx ultracite@latest format",
-    "lint:ci": "npx ultracite@latest lint",
     "format": "npx ultracite@latest format"
   },
   "dependencies": {

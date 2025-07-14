@@ -20,8 +20,6 @@
     "dev": "next dev --turbopack",
     "format": "prettier --write .",
     "lint": "next lint",
-    "lint:ci": "next lint",
-    "lint:fix": "next lint --fix .",
     "mail:dev": "email dev",
     "scan": "next dev --turbopack & npx react-scan@latest localhost:3000",
     "start": "next start",
