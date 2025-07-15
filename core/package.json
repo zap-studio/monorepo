@@ -63,6 +63,7 @@
     "effect": "^3.16.13",
     "embla-carousel-react": "^8.6.0",
     "flags": "^4.0.1",
+    "gray-matter": "^4.0.3",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.525.0",
     "motion": "^12.23.3",
