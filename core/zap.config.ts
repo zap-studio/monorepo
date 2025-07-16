@@ -46,6 +46,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       "/cookie-policy",
       "/_vercel/speed-insights/vitals",
       "/_vercel/insights/view",
+      "/opengraph-image",
     ],
   },
   BLOG: {
