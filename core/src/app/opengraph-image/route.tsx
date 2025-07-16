@@ -5,8 +5,6 @@ export function GET(request: Request) {
   const title =
     url.searchParams.get("title") ||
     "Zap.ts - Build applications as fast as a zap.";
-  const description =
-    url.searchParams.get("description") || "npx create-zap-app@latest";
 
   return new ImageResponse(
     (
@@ -18,7 +16,6 @@ export function GET(request: Request) {
           >
             {title}
           </h2>
-          <p tw="text-lg text-gray-300 mt-4">{description}</p>
         </div>
       </div>
     ),

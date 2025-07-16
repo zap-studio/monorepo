@@ -172,7 +172,7 @@ export const ZAP_DEFAULT_METADATA: Metadata = {
     siteName: APP_NAME,
     images: [
       {
-        url: `${BASE_URL}/og.png`,
+        url: `${BASE_URL}/opengraph-image?title=${encodeURIComponent(APP_NAME)}`,
         width: 1200,
         height: 630,
         alt: `${APP_NAME} Open Graph Image`,
@@ -204,7 +204,9 @@ export const ZAP_DEFAULT_METADATA: Metadata = {
     title: APP_NAME,
     description: APP_DESCRIPTION,
     creator: "@alexandretrotel",
-    images: [`${BASE_URL}/og.png`],
+    images: [
+      `${BASE_URL}/opengraph-image?title=${encodeURIComponent(APP_NAME)}`,
+    ],
   },
   appleWebApp: {
     title: APP_NAME,
