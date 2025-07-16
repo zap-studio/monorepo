@@ -1,10 +1,12 @@
 import { ImageResponse } from "next/og";
 
+import { ZAP_DEFAULT_METADATA } from "@/zap.config";
+
 export function GET(request: Request) {
   const url = new URL(request.url);
   const title =
     url.searchParams.get("title") ||
-    "Zap.ts - Build applications as fast as a zap.";
+    `${ZAP_DEFAULT_METADATA.openGraph?.title} - ${ZAP_DEFAULT_METADATA.openGraph?.description}`;
 
   return new ImageResponse(
     (
