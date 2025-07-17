@@ -75,6 +75,14 @@ export async function getBlogPosts() {
   return await getMDXData(path.join(process.cwd(), "src", "blog"));
 }
 
+export async function getBlogPostsMetadata() {
+  const posts = await getBlogPosts();
+  return posts.map((post) => ({
+    ...post.metadata,
+    slug: post.slug,
+  }));
+}
+
 export async function getBlogPost(slug: string) {
   const effect = Effect.tryPromise({
     try: () =>

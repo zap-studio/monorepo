@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 import { ZAP_DEFAULT_METADATA } from "@/zap.config";
-import { formatDate, getBlogPosts } from "@/zap/lib/blog/utils";
+import { formatDate, getBlogPostsMetadata } from "@/zap/lib/blog/utils";
 
 export const metadata: Metadata = {
   title: `${ZAP_DEFAULT_METADATA.title} | Blog`,
 };
 
 export default async function BlogPage() {
-  const posts = await getBlogPosts();
+  const posts = await getBlogPostsMetadata();
 
   return (
     <div className="mx-auto flex min-h-screen max-w-lg flex-col py-24">
@@ -20,16 +20,14 @@ export default async function BlogPage() {
       <ul className="mt-8 space-y-6">
         {posts.map((post) => (
           <li key={post.slug} className="border-b pb-6">
-            <h2 className="text-xl font-bold">{post.metadata.title}</h2>
+            <h2 className="text-xl font-bold">{post.title}</h2>
 
             <p className="mt-1 text-sm text-gray-600">
-              {post.metadata.date
-                ? formatDate(post.metadata.date, true)
-                : "No date provided"}
+              {post.date ? formatDate(post.date, true) : "No date provided"}
             </p>
 
-            {post.metadata.description && (
-              <p className="mt-2 text-gray-800">{post.metadata.description}</p>
+            {post.description && (
+              <p className="mt-2 text-gray-800">{post.description}</p>
             )}
           </li>
         ))}
