@@ -5,7 +5,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { Effect } from "effect";
 import matter from "gray-matter";
 
-import type { Metadata } from "@/zap/types/blog.types";
+import type { PostMetadata } from "@/zap/types/blog.types";
 
 function parseFrontmatter(fileContent: string) {
   return Effect.try({
@@ -16,7 +16,7 @@ function parseFrontmatter(fileContent: string) {
       ),
   }).pipe(
     Effect.map(({ data: metadata, content }) => ({
-      metadata: metadata as Metadata,
+      metadata: metadata as PostMetadata,
       content,
     })),
   );
