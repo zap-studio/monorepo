@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { ZAP_DEFAULT_METADATA } from "@/zap.config";
 import { formatDate, getBlogPostsMetadata } from "@/zap/lib/blog/utils";
@@ -11,27 +12,33 @@ export default async function BlogPage() {
   const posts = await getBlogPostsMetadata();
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-lg flex-col py-24">
-      <h1 className="text-2xl font-semibold">Blog</h1>
-      <p className="mt-2 text-gray-700">
-        Welcome to the blog page. Here you will find various articles and posts.
-      </p>
+    <div className="container mx-auto max-w-4xl py-12">
+      <div className="flex flex-col">
+        {posts.map((post, index) => (
+          <div
+            key={post.slug}
+            className={`py-6 ${index < posts.length - 1 ? "border-b" : ""}`}
+          >
+            <Link href={`/blog/${post.slug}`}>
+              <div className="hover:bg-muted rounded-md p-4">
+                {post.date && (
+                  <p className="text-muted-foreground mb-2 text-xs">
+                    {formatDate(post.date, true)}
+                  </p>
+                )}
 
-      <ul className="mt-8 space-y-6">
-        {posts.map((post) => (
-          <li key={post.slug} className="border-b pb-6">
-            <h2 className="text-xl font-bold">{post.title}</h2>
+                <h2 className="mb-2 text-3xl font-semibold">{post.title}</h2>
 
-            <p className="mt-1 text-sm text-gray-600">
-              {post.date ? formatDate(post.date, true) : "No date provided"}
-            </p>
-
-            {post.description && (
-              <p className="mt-2 text-gray-800">{post.description}</p>
-            )}
-          </li>
+                {post.description && (
+                  <p className="text-muted-foreground text-base">
+                    {post.description}
+                  </p>
+                )}
+              </div>
+            </Link>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
