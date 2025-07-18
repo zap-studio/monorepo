@@ -1,11 +1,10 @@
-import "@/app/globals.css";
-
 import { ArrowUpRight } from "lucide-react";
 import Image, { type ImageProps } from "next/image";
 import Link, { type LinkProps } from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import React from "react";
-import { highlight } from "sugar-high";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
 interface TableProps {
   data: {
@@ -15,24 +14,31 @@ interface TableProps {
 }
 
 function Table({ data }: TableProps) {
-  const headers = data.headers.map((header, index) => (
-    <th key={`header-${header}-${index}`}>{header}</th>
+  const headers = data.headers.map((header) => (
+    <th className="border px-4 py-2 text-left" key={`header-${header}`}>
+      {header}
+    </th>
   ));
-  const rows = data.rows.map((row, index) => (
-    <tr key={`row-${index}`}>
-      {row.map((cell, cellIndex) => (
-        <td key={`cell-${index}-${cellIndex}`}>{cell}</td>
+  const rows = data.rows.map((row, i) => (
+    <tr className="even:bg-muted/40" key={`row-${i}`}>
+      {row.map((cell, j) => (
+        <td className="border px-4 py-2" key={`cell-${i}-${j}`}>
+          {cell}
+        </td>
       ))}
     </tr>
   ));
 
   return (
-    <table>
-      <thead>
-        <tr>{headers}</tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </table>
+    <div className="mt-6 overflow-x-auto">
+      <table className="w-full border-collapse text-sm">
+        {/* table style applied here */}
+        <thead className="bg-muted">
+          {headers.length > 0 && <tr>{headers}</tr>}
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    </div>
   );
 }
 
@@ -46,7 +52,7 @@ function CustomLink(props: CustomLinkProps) {
 
   if (href.startsWith("/")) {
     return (
-      <Link href={href} {...restProps}>
+      <Link href={href} {...restProps} className="text-primary hover:underline">
         {children}
       </Link>
     );
@@ -54,7 +60,7 @@ function CustomLink(props: CustomLinkProps) {
 
   if (href.startsWith("#")) {
     return (
-      <a href={href} {...restProps}>
+      <a href={href} {...restProps} className="text-primary hover:underline">
         {children}
       </a>
     );
@@ -62,19 +68,15 @@ function CustomLink(props: CustomLinkProps) {
 
   return (
     <a
+      aria-label={`${children} (opens in a new tab)`}
+      className="text-primary inline-flex items-center gap-1 hover:underline focus-visible:outline-none"
       href={href}
       rel="noopener noreferrer"
-      style={{
-        color: "hsl(var(--primary))",
-        display: "inline-flex",
-        alignItems: "center",
-        textDecoration: "none",
-      }}
       target="_blank"
-      aria-label={`${children} (opens in a new tab)`}
       {...restProps}
     >
-      {children} <ArrowUpRight size={16} />
+      {children}
+      <ArrowUpRight size={16} />
     </a>
   );
 }
@@ -88,33 +90,10 @@ function RoundedImage(props: RoundedImageProps) {
   return (
     <Image
       alt={alt}
-      className="rounded-lg"
+      className="border-muted rounded-lg border shadow-md"
+      loading="lazy"
       sizes="100vw"
-      style={{ width: "100%", height: "auto" }}
       {...restProps}
-    />
-  );
-}
-
-interface CodeProps {
-  children: string;
-}
-
-function Code({ children, ...props }: CodeProps) {
-  const codeHTML = highlight(children);
-  return (
-    <code
-      dangerouslySetInnerHTML={{ __html: codeHTML }}
-      style={{
-        position: "relative",
-        borderRadius: "4px",
-        backgroundColor: "hsl(var(--muted))",
-        padding: "0.2rem 0.3rem",
-        fontFamily: "monospace",
-        fontSize: "0.875rem",
-        fontWeight: "600",
-      }}
-      {...props}
     />
   );
 }
@@ -123,76 +102,77 @@ function slugify(str: string) {
   return str
     .toString()
     .toLowerCase()
-    .trim() // Remove whitespace from both ends of a string
-    .replace(/\s+/g, "-") // Replace spaces with -
-    .replace(/&/g, "-and-") // Replace & with 'and'
-    .replace(/[^\w-]+/g, "") // Remove all non-word characters except for -
-    .replace(/--+/g, "-"); // Replace multiple - with single -
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/&/g, "-and-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-");
 }
 
 function createHeading(level: number) {
   const Heading = ({ children }: { children: string }) => {
     const slug = slugify(children);
 
-    const getHeadingStyle = (headingLevel: number) => {
-      switch (headingLevel) {
-        case 1:
-          return {
-            scrollMargin: 20,
-            fontSize: "2.25rem",
-            fontWeight: "700",
-            letterSpacing: "-0.02em",
-            lineHeight: "1.2",
-          };
-        case 2:
-          return {
-            marginTop: "2.5rem",
-            scrollMargin: 20,
-            borderBottom: "1px solid hsl(var(--border))",
-            paddingBottom: "0.5rem",
-            fontSize: "1.875rem",
-            fontWeight: "600",
-            letterSpacing: "-0.01em",
-          };
-        case 3:
-          return {
-            marginTop: "2rem",
-            scrollMargin: 20,
-            fontSize: "1.5rem",
-            fontWeight: "600",
-            letterSpacing: "-0.005em",
-          };
-        default:
-          return {
-            scrollMargin: 20,
-            fontSize: "1.25rem",
-            fontWeight: "600",
-            letterSpacing: "-0.005em",
-          };
-      }
+    const headingClassMap: Record<number, string> = {
+      1: "scroll-mt-20 text-4xl font-bold tracking-tight leading-tight",
+      2: "scroll-mt-20 mt-10 pb-2 border-b border-border text-3xl font-semibold tracking-tight",
+      3: "scroll-mt-20 mt-8 text-2xl font-semibold tracking-tight",
+      4: "scroll-mt-20 mt-6 text-xl font-semibold",
+      5: "scroll-mt-20 mt-4 text-lg font-semibold",
+      6: "scroll-mt-20 mt-4 text-base font-semibold",
     };
 
     return React.createElement(
       `h${level}`,
       {
         id: slug,
-        style: getHeadingStyle(level),
+        className: `${headingClassMap[level] || ""} group`,
       },
-      [
-        React.createElement("a", {
-          href: `#${slug}`,
-          key: `link-${slug}`,
-          className: "anchor",
-        }),
-      ],
-      children,
+      <>
+        {children}
+        <a
+          className="anchor text-muted-foreground ml-2 opacity-0 transition-opacity group-hover:opacity-100"
+          href={`#${slug}`}
+          key={`link-${slug}`}
+        >
+          #
+        </a>
+      </>,
     );
   };
 
   Heading.displayName = `Heading${level}`;
-
   return Heading;
 }
+
+const YouTube = ({ id }: { id: string }) => (
+  <div className="my-6 aspect-video w-full">
+    <iframe
+      allowFullScreen
+      className="h-full w-full rounded border"
+      src={`https://www.youtube.com/embed/${id}`}
+      title="YouTube video"
+    />
+  </div>
+);
+
+const Callout = ({
+  type = "info",
+  text,
+}: {
+  type?: "info" | "warning" | "error";
+  text: string;
+}) => {
+  const typeMap = {
+    info: "border-blue-500 bg-blue-50 text-blue-800 dark:border-blue-700 dark:bg-blue-200",
+    warning:
+      "border-yellow-500 bg-yellow-50 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-200",
+    error:
+      "border-red-500 bg-red-50 text-red-800 dark:border-red-700 dark:bg-red-200",
+  };
+
+  return <div className={`my-4 border-l-4 p-4 ${typeMap[type]}`}>{text}</div>;
+};
 
 const components = {
   h1: createHeading(1),
@@ -202,62 +182,44 @@ const components = {
   h5: createHeading(5),
   h6: createHeading(6),
   p: ({ children }: { children: React.ReactNode }) => (
-    <p style={{ lineHeight: "1.75", marginTop: "1.5rem" }}>{children}</p>
+    <p className="text-foreground mt-6 text-base leading-7">{children}</p>
   ),
   blockquote: ({ children }: { children: React.ReactNode }) => (
-    <blockquote
-      style={{
-        marginTop: "1.5rem",
-        borderLeft: "2px solid hsl(var(--border))",
-        paddingLeft: "1.5rem",
-        fontStyle: "italic",
-      }}
-    >
+    <blockquote className="text-muted-foreground mt-6 border-l-4 pl-4 italic">
       {children}
     </blockquote>
   ),
   ul: ({ children }: { children: React.ReactNode }) => (
-    <ul
-      style={{
-        margin: "1.5rem 0",
-        paddingLeft: "1.5rem",
-        listStyleType: "disc",
-      }}
-    >
-      {children}
-    </ul>
+    <ul className="my-6 list-inside list-disc">{children}</ul>
   ),
   ol: ({ children }: { children: React.ReactNode }) => (
-    <ol
-      style={{
-        margin: "1.5rem 0",
-        paddingLeft: "1.5rem",
-        listStyleType: "decimal",
-      }}
-    >
-      {children}
-    </ol>
+    <ol className="my-6 list-inside list-decimal">{children}</ol>
   ),
   inlineCode: ({ children }: { children: React.ReactNode }) => (
-    <code
-      style={{
-        position: "relative",
-        borderRadius: "4px",
-        backgroundColor: "hsl(var(--muted))",
-        padding: "0.2rem 0.3rem",
-        fontFamily: "monospace",
-        fontSize: "0.875rem",
-        fontWeight: "600",
-      }}
-    >
+    <code className="not-prose bg-muted rounded px-[0.25rem] py-[0.125rem] font-mono text-sm font-semibold whitespace-nowrap">
       {children}
     </code>
   ),
+  code: ({
+    className,
+    children,
+  }: {
+    className?: string;
+    children: string | string[];
+  }) => {
+    const language = className?.replace("language-", "") || "";
+    return (
+      <SyntaxHighlighter language={language} PreTag="div" style={tomorrow}>
+        {typeof children === "string" ? children.trim() : children.join("")}
+      </SyntaxHighlighter>
+    );
+  },
   Image: RoundedImage,
   img: RoundedImage,
   a: CustomLink,
-  code: Code,
   Table,
+  YouTube,
+  Callout,
 };
 
 interface CustomMDXProps
@@ -267,9 +229,11 @@ interface CustomMDXProps
 
 export function CustomMDX(props: CustomMDXProps) {
   return (
-    <MDXRemote
-      {...props}
-      components={{ ...components, ...(props.components || {}) }}
-    />
+    <div className="prose prose-neutral dark:prose-invert max-w-none">
+      <MDXRemote
+        {...props}
+        components={{ ...components, ...(props.components || {}) }}
+      />
+    </div>
   );
 }
