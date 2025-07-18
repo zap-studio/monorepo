@@ -63,7 +63,6 @@ function CustomLink(props: CustomLinkProps) {
   return (
     <a
       href={href}
-      target="_blank"
       rel="noopener noreferrer"
       style={{
         color: "hsl(var(--primary))",
@@ -71,6 +70,7 @@ function CustomLink(props: CustomLinkProps) {
         alignItems: "center",
         textDecoration: "none",
       }}
+      target="_blank"
       {...restProps}
     >
       {children} <ArrowUpRight size={16} />
@@ -103,6 +103,7 @@ function Code({ children, ...props }: CodeProps) {
   const codeHTML = highlight(children);
   return (
     <code
+      dangerouslySetInnerHTML={{ __html: codeHTML }}
       style={{
         position: "relative",
         borderRadius: "4px",
@@ -112,7 +113,6 @@ function Code({ children, ...props }: CodeProps) {
         fontSize: "0.875rem",
         fontWeight: "600",
       }}
-      dangerouslySetInnerHTML={{ __html: codeHTML }}
       {...props}
     />
   );
