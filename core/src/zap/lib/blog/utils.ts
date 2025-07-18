@@ -7,6 +7,8 @@ import matter from "gray-matter";
 
 import { postMetadataSchema } from "@/zap/schemas/blog.schema";
 
+const BLOG_DIR = path.join(process.cwd(), "src", "blog");
+
 function parseFrontmatter(fileContent: string) {
   return Effect.try({
     try: () => matter(fileContent),
@@ -80,7 +82,7 @@ async function getMDXData(dir: string) {
 }
 
 export async function getBlogPosts() {
-  return await getMDXData(path.join(process.cwd(), "src", "blog"));
+  return await getMDXData(BLOG_DIR);
 }
 
 export async function getBlogPostsMetadata() {
@@ -93,8 +95,7 @@ export async function getBlogPostsMetadata() {
 
 export async function getBlogPost(slug: string) {
   const effect = Effect.tryPromise({
-    try: () =>
-      readMDXFile(path.join(process.cwd(), "src", "blog", `${slug}.mdx`)),
+    try: () => readMDXFile(path.join(BLOG_DIR, `${slug}.mdx`)),
     catch: (error) => new Error(`Failed to read blog post ${slug}: ${error}`),
   }).pipe(
     Effect.map(({ metadata, content }) => ({
