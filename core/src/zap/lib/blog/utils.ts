@@ -5,7 +5,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { Effect } from "effect";
 import matter from "gray-matter";
 
-import type { PostMetadata } from "@/zap/types/blog.types";
+import { postMetadataSchema } from "@/zap/schemas/blog.schema";
 
 function parseFrontmatter(fileContent: string) {
   return Effect.try({
@@ -15,10 +15,18 @@ function parseFrontmatter(fileContent: string) {
         `Failed to parse frontmatter: ${error instanceof Error ? error.message : String(error)}`,
       ),
   }).pipe(
-    Effect.map(({ data: metadata, content }) => ({
-      metadata: metadata as PostMetadata,
-      content,
-    })),
+    Effect.flatMap(({ data: metadata, content }) =>
+      Effect.try({
+        try: () => ({
+          metadata: postMetadataSchema.parse(metadata),
+          content,
+        }),
+        catch: (error) =>
+          new Error(
+            `Invalid frontmatter structure: ${error instanceof Error ? error.message : String(error)}`,
+          ),
+      }),
+    ),
   );
 }
 
