@@ -71,6 +71,7 @@ function CustomLink(props: CustomLinkProps) {
         textDecoration: "none",
       }}
       target="_blank"
+      aria-label={`${children} (opens in a new tab)`}
       {...restProps}
     >
       {children} <ArrowUpRight size={16} />
