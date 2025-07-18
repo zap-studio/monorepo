@@ -102,6 +102,7 @@
     "@types/node": "^24.0.13",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "@types/serialize-javascript": "^5.0.4",
     "@types/web-push": "^3.6.4",
     "@typescript-eslint/eslint-plugin": "^8.36.0",
