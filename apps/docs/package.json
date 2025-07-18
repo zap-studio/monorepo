@@ -22,7 +22,7 @@
     "vitepress-plugin-llms": "^1.7.0"
   },
   "lint-staged": {
-    "*": [
+    "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
       "ultracite format"
     ]
   }

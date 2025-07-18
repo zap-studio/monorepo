@@ -71,7 +71,7 @@
     "README.md"
   ],
   "lint-staged": {
-    "*": [
+    "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
       "ultracite format"
     ]
   }

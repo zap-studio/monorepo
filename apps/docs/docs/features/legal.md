@@ -8,28 +8,59 @@ Zap.ts includes templates for _essential legal pages_ to integrate them even fas
 - **Privacy Policy:** Explains how user data is collected, used, and protected.
 - **Terms of Service:** Outlines the rules for using your app and your responsibilities.
 
-All legal pages are located in the `/legal` route and rendered using MDX for easy editing.
+All legal page content is located in the `src/zap/legal/` directory as MDX files. These are rendered in the `/legal` route using dedicated page components.
+
+Each page component uses the `LegalPage` component which loads and renders the corresponding MDX file by slug. 
 
 ## Customizing legal pages
 
-You can edit the MDX files in `src/app/(pages)/(public)/(legal)/` to update the content, add your company details, or translate them to other languages.
+To update the content, add your company details, or translate the legal pages, edit the MDX files in `src/zap/legal/`.
 
-Each file includes a `metadata` export for SEO and page titles.
+In addition, metadata for SEO and page titles can be provided in the MDX file as either frontmatter (YAML) or as an exported `metadata` object. The loader supports both formats.
 
-Example:
+- You can use YAML frontmatter (at the top of the file, between `---` lines) _or_ export a `metadata` object in JavaScript/TypeScript syntax.
+- Both are supported and will be picked up for SEO and page titles.
+
+**Example (YAML frontmatter):**
 
 ```mdx
-// src/app/(pages)/(public)/(legal)/privacy-policy/page.mdx
+---
+title: "Cookie Policy | Zap.ts"
+description: "Learn how we use cookies on our website."
+---
+
+# Cookie Policy
+...
+```
+
+**Example (exported metadata):**
+
+```mdx
 export const metadata = {
   title: "Privacy Policy | Zap.ts",
   description: "Learn how we handle your personal information.",
 };
 
 # Privacy Policy
+...
+```
 
-**Last Updated: March 21, 2025**
+**Page component example:**
 
-> **Note**: This is a template. Replace the placeholder text with your real policy and consult a legal expert to ensure compliance.
+```tsx
+// src/app/(public)/(legal)/privacy-policy/page.tsx
+import {
+  LegalPage,
+  generateLegalMetadata,
+} from '@/zap/components/legal/legal-template';
+
+const SLUG = 'privacy-policy';
+
+export const generateMetadata = () => generateLegalMetadata(SLUG);
+
+export default function PrivacyPolicyPage() {
+  return <LegalPage slug={SLUG} />;
+}
 ```
 
 ## Tips
