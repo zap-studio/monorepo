@@ -6,23 +6,16 @@ import React from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
-interface TableProps {
-  data: {
-    headers: string[];
-    rows: string[][];
-  };
-}
-
-function Table({ data }: TableProps) {
+function Table({ data }: { data: { headers: string[]; rows: string[][] } }) {
   const headers = data.headers.map((header) => (
     <th className="border px-4 py-2 text-left" key={`header-${header}`}>
       {header}
     </th>
   ));
   const rows = data.rows.map((row, i) => (
-    <tr className="even:bg-muted/40" key={`row-${i}`}>
+    <tr className="even:bg-muted/40" key={`row-${i}-${row.join("-")}`}>
       {row.map((cell, j) => (
-        <td className="border px-4 py-2" key={`cell-${i}-${j}`}>
+        <td className="border px-4 py-2" key={`cell-${i}-${j}-${cell}`}>
           {cell}
         </td>
       ))}
@@ -174,6 +167,62 @@ const Callout = ({
   return <div className={`my-4 border-l-4 p-4 ${typeMap[type]}`}>{text}</div>;
 };
 
+const InlineCode = ({ children }: { children: React.ReactNode }) => (
+  <code className="not-prose bg-muted rounded px-[0.25rem] py-[0.125rem] font-mono text-sm font-semibold whitespace-nowrap">
+    {children}
+  </code>
+);
+
+const Paragraph = ({ children }: { children: React.ReactNode }) => (
+  <p className="text-foreground mt-6 text-base leading-7">{children}</p>
+);
+
+const Blockquote = ({ children }: { children: React.ReactNode }) => (
+  <blockquote className="text-muted-foreground mt-6 border-l-4 pl-4 italic">
+    {children}
+  </blockquote>
+);
+
+const UnorderedList = ({ children }: { children: React.ReactNode }) => (
+  <ul className="my-6 list-inside list-disc">{children}</ul>
+);
+
+const OrderedList = ({ children }: { children: React.ReactNode }) => (
+  <ol className="my-6 list-inside list-decimal">{children}</ol>
+);
+
+const ListItem = ({ children }: { children: React.ReactNode }) => (
+  <li className="mt-2">{children}</li>
+);
+
+const CodeBlock = ({ children }: { children: React.ReactNode }) => (
+  <div className="border-muted bg-muted my-6 rounded-lg border p-4">
+    {children}
+  </div>
+);
+
+const Code = ({
+  children,
+  className,
+  ...props
+}: {
+  children: string | string[];
+  className?: string;
+}) => {
+  const language = className?.replace("language-", "") || "";
+  const isBlock = !!className;
+
+  if (isBlock) {
+    return (
+      <SyntaxHighlighter language={language} PreTag="div" style={tomorrow}>
+        {typeof children === "string" ? children.trim() : children.join("")}
+      </SyntaxHighlighter>
+    );
+  }
+
+  return <InlineCode {...props}>{children}</InlineCode>;
+};
+
 const components = {
   h1: createHeading(1),
   h2: createHeading(2),
@@ -181,39 +230,14 @@ const components = {
   h4: createHeading(4),
   h5: createHeading(5),
   h6: createHeading(6),
-  p: ({ children }: { children: React.ReactNode }) => (
-    <p className="text-foreground mt-6 text-base leading-7">{children}</p>
-  ),
-  blockquote: ({ children }: { children: React.ReactNode }) => (
-    <blockquote className="text-muted-foreground mt-6 border-l-4 pl-4 italic">
-      {children}
-    </blockquote>
-  ),
-  ul: ({ children }: { children: React.ReactNode }) => (
-    <ul className="my-6 list-inside list-disc">{children}</ul>
-  ),
-  ol: ({ children }: { children: React.ReactNode }) => (
-    <ol className="my-6 list-inside list-decimal">{children}</ol>
-  ),
-  inlineCode: ({ children }: { children: React.ReactNode }) => (
-    <code className="not-prose bg-muted rounded px-[0.25rem] py-[0.125rem] font-mono text-sm font-semibold whitespace-nowrap">
-      {children}
-    </code>
-  ),
-  code: ({
-    className,
-    children,
-  }: {
-    className?: string;
-    children: string | string[];
-  }) => {
-    const language = className?.replace("language-", "") || "";
-    return (
-      <SyntaxHighlighter language={language} PreTag="div" style={tomorrow}>
-        {typeof children === "string" ? children.trim() : children.join("")}
-      </SyntaxHighlighter>
-    );
-  },
+  p: Paragraph,
+  blockquote: Blockquote,
+  ul: UnorderedList,
+  ol: OrderedList,
+  li: ListItem,
+  inlineCode: InlineCode,
+  codeBlock: CodeBlock,
+  code: Code,
   Image: RoundedImage,
   img: RoundedImage,
   a: CustomLink,
