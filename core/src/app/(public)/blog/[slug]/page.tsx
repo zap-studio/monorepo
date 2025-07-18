@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { MDXRemote } from "next-mdx-remote/rsc";
 
 import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
+import { CustomMDX } from "@/zap/components/blog/mdx";
 import {
   formatDate,
   getBlogPost,
@@ -76,7 +76,7 @@ export default async function BlogSlugPage({ params }: Props) {
         </div>
 
         <div className="prose-content">
-          <MDXRemote source={post.content} />
+          <CustomMDX source={post.content} />
         </div>
       </article>
     </div>
