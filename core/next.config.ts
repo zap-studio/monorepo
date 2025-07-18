@@ -1,6 +1,6 @@
+import createBundleAnalyzer from "@next/bundle-analyzer";
 import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
-import createBundleAnalyzer from "@next/bundle-analyzer";
 import { ZAP_DEFAULT_SETTINGS } from "./zap.config";
 
 function buildCSPHeader(): string {
@@ -93,7 +93,12 @@ const nextConfig: NextConfig = {
   },
 };
 
-const withMDX = createMDX({});
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: [],
+    rehypePlugins: [],
+  },
+});
 
 const withBundleAnalyzer = createBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
