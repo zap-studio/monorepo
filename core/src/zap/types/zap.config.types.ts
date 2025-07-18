@@ -71,6 +71,7 @@ export interface ZapSettings {
       FRAME_ANCESTORS: string[];
       UPGRADE_INSECURE_REQUESTS: boolean;
       BLOCK_ALL_MIXED_CONTENT: boolean;
+      FRAME_SRC: string[];
     };
     PERMISSIONS_POLICY: {
       ACCELEROMETER: string[];

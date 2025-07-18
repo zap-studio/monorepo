@@ -16,6 +16,7 @@ function buildCSPHeader(): string {
     `base-uri ${CSP.BASE_URI.join(" ")}`,
     `form-action ${CSP.FORM_ACTION.join(" ")}`,
     `frame-ancestors ${CSP.FRAME_ANCESTORS.join(" ")}`,
+    `frame-src ${CSP.FRAME_SRC.join(" ")}`,
   ];
 
   if (CSP.BLOCK_ALL_MIXED_CONTENT) {
@@ -46,7 +47,7 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
-    return [
+    return await Promise.resolve([
       {
         source: "/(.*)",
         headers: [
@@ -89,7 +90,7 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-    ];
+    ]);
   },
 };
 

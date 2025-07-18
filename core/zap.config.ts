@@ -6,9 +6,10 @@
  * - Change `social-provider-button.tsx` to customize icon for each auth provider
  * - Configure and customize flags in `src/zap/lib/flags/flags.ts` and `src/lib/flags.ts`
  */
+
+import type { Metadata } from "next";
 import { DEV, ENV } from "@/lib/env.client";
 import type { ZapSettings } from "@/zap/types/zap.config.types";
-import type { Metadata } from "next";
 
 export const APP_NAME = "Zap.ts";
 export const APP_DESCRIPTION = "Build applications as fast as a zap.";
@@ -91,6 +92,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       BASE_URI: ["'self'"],
       FORM_ACTION: ["'self'"],
       FRAME_ANCESTORS: ["'none'"],
+      FRAME_SRC: ["'self'", "https://www.youtube.com"],
       BLOCK_ALL_MIXED_CONTENT: false,
       UPGRADE_INSECURE_REQUESTS: true,
     },
