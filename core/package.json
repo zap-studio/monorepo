@@ -83,6 +83,8 @@
     "react-resizable-panels": "^3.0.3",
     "recharts": "^2.15.4",
     "resend": "^4.6.0",
+    "schema-dts": "^1.1.5",
+    "serialize-javascript": "^6.0.2",
     "server-only": "^0.0.1",
     "sonner": "^2.0.6",
     "sugar-high": "^0.9.3",
