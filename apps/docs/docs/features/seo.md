@@ -47,7 +47,7 @@ export const ZAP_DEFAULT_METADATA: Metadata = {
 };
 ```
 
-### 2. Sitemap generation with next-sitemap
+### 2. Sitemap Generation with next-sitemap
 
 Zap.ts uses the [next-sitemap](https://www.npmjs.com/package/next-sitemap) package to automatically generate `sitemap.xml` and `robots.txt` files at build time.
 

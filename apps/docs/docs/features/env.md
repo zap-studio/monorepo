@@ -17,7 +17,7 @@ The server file contains variables that are only accessible on the server side, 
 
 ## How it works?
 
-### 1. Environment variable storage
+### 1. Environment Variable Storage
 
 Environment variables are stored in `.env` files, typically `.env` or `.env.local`, which are loaded by Next.js during _build time_.
 
@@ -34,7 +34,7 @@ ZAP_MAIL="your_email_here"
 - **Sensitive variables**: Variables like `BETTER_AUTH_SECRET` or `DATABASE_URL` are server-only and never exposed to the client.
 - **Public variables**: Variables prefixed with `NEXT_PUBLIC_` (e.g., `NEXT_PUBLIC_VAPID_PUBLIC_KEY`) are bundled into the client-side JavaScript and can be accessed in the browser.
 
-### 2. Server-side environment variables
+### 2. Server-side Environment Variables
 
 Server-side environment variables are accessed via `process.env` and are validated using Zod schemas for type safety.
 
@@ -56,7 +56,7 @@ const dbConfig = {
 
 Since `env.server.ts` is only imported in server-side contexts, sensitive variables remain secure and are never included in client-side bundles.
 
-### 3. Client-side environment variables
+### 3. Client-side Environment Variables
 
 Client-side environment variables must be prefixed with `NEXT_PUBLIC_` to be included in the client bundle by Next.js. These are validated in `src/lib/env.client.ts`.
 
@@ -73,7 +73,7 @@ export function PushNotifications() {
 
 Only include variables in `env.client.ts` that are safe to expose to the browser. Never include sensitive data like API keys or database credentials.
 
-### 4. Type safety and validation
+### 4. Type Safety and Validation
 
 Both `env.server.ts` and `env.client.ts` use Zod to validate environment variables at runtime, ensuring that:
 
@@ -97,14 +97,14 @@ ZodError: [
 ]
 ```
 
-### 5. Generating `.env` files
+### 5. Generating `.env` Files
 
 The `create-zap-app` CLI generates an `.env` file with placeholders for required variables.
 
 - **Placeholders**: Provides sample values or placeholders for other variables, like `DATABASE_URL` or `ZAP_MAIL`.
 - **Secure secrets**: Automatically generates secure values for `BETTER_AUTH_SECRET` and `ENCRYPTION_KEY` using `generateSecret()`.
 
-### 6. Best practices
+### 6. Best Practices
 
 - **Never commit `.env` files**: The `.gitignore` file includes `.env*` to prevent accidental commits. Use `.env.example` to share sample configurations.
 - **Use `.env.local` for development**: Next.js prioritizes `.env.local` for local development, allowing you to override variables without modifying `.env`.

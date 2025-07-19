@@ -17,7 +17,7 @@ In Zap.ts, we use one _central_ **Always Rule** that _synthesizes the full archi
 
 This rule is meant to _scale with you_; if your architecture evolves, update this rule according to your needs.
 
-## Setting up rules
+## Setting Up Rules
 
 You can add rules and customize them how you like.
 

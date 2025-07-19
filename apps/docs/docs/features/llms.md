@@ -143,7 +143,7 @@ export function CompletionComponent() {
 }
 ```
 
-## Adding new providers
+## Adding New Providers
 
 To add a new AI provider:
 
@@ -157,7 +157,7 @@ To add a new AI provider:
 
 5. **Update UI:** The `AISettingsSheet` component will automatically include your new provider.
 
-## Customizing models
+## Customizing Models
 
 To customize or add models for a provider:
 

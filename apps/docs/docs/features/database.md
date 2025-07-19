@@ -14,7 +14,7 @@ The setup is designed for _flexibility_, _developer productivity_, and _end-to-e
 
 ## How it works?
 
-### 1. Schema definition
+### 1. Schema Definition
 
 All database schemas are defined using Drizzle's SQL-like schema syntax in the `src/db/schema/` directory.
 
@@ -31,11 +31,11 @@ export const users = pgTable("users", {
 });
 ```
 
-### 2. Database client
+### 2. Database Client
 
 The Drizzle client is set up in `src/db/index.ts` and used throughout your app for queries and mutations.
 
-### 3. Running migrations
+### 3. Running Migrations
 
 Migrations are managed with the Drizzle CLI. You can generate, run, and manage migrations using the following commands:
 
@@ -48,7 +48,7 @@ pnpm db:studio     # Open Drizzle Studio to inspect your database
 
 See [Getting Started > Quick Scripts](/docs/introduction/getting-started.md#quick-scripts) for more.
 
-### 4. Querying the database
+### 4. Querying the Database
 
 Use the Drizzle client (`db`) in your server actions, API routes, or procedures:
 
@@ -60,7 +60,7 @@ import { users } from "@/db/schema";
 const allUsers = await db.select().from(users);
 ```
 
-### 5. Prepare queries and execute them
+### 5. Prepare Queries and Execute Them
 
 For performance and security, you can use Drizzle's `.prepare()` and `.execute()` methods to optimize and safely reuse queries.
 
@@ -93,7 +93,7 @@ So, in short:
 
 This pattern is recommended for queries used in **API routes**, **server actions**, and **oRPC procedures**.
 
-## Customizing the database
+## Customizing the Database
 
 - **Add a table:** Create a new `.sql.ts` file in `src/db/schema/` and export your table.
 - **Change database:** Update your `DATABASE_URL` in `.env` and Drizzle config.
