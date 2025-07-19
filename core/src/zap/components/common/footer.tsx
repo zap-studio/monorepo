@@ -13,7 +13,6 @@ export function Footer() {
     <footer className="bg-background w-full border-t px-8">
       <div className="mx-auto max-w-6xl py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          {/* Legal Links Column */}
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-2">
               <Link className="flex items-center space-x-2" href="/">

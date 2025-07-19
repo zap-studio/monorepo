@@ -11,9 +11,9 @@ import {
   getBlogPostsMetadata,
 } from "@/zap/lib/blog/utils";
 
-type Props = {
+interface Props {
   params: Promise<{ slug: string }>;
-};
+}
 
 export async function generateMetadata({
   params,

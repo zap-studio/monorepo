@@ -1,7 +1,9 @@
+import "server-only";
+
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { format, formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow, parseISO } from "date-fns";
 import { Effect } from "effect";
 import matter from "gray-matter";
 
@@ -109,7 +111,7 @@ export async function getBlogPost(slug: string) {
 }
 
 export function formatDate(date: string, includeRelative = false) {
-  const targetDate = new Date(date.includes("T") ? date : `${date}T00:00:00`);
+  const targetDate = parseISO(date);
   const fullDate = format(targetDate, "MMMM d, yyyy");
 
   if (includeRelative) {

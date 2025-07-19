@@ -5,6 +5,9 @@
  * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL (e.g. `https://yourdomain.com`)
  * - Change `social-provider-button.tsx` to customize icon for each auth provider
  * - Configure and customize flags in `src/zap/lib/flags/flags.ts` and `src/lib/flags.ts`
+ * - Change the blog directory in `src/zap/lib/blog/utils.ts` (if you want to use a different directory)
+ * - Change the legal directory in `src/zap/lib/legal/utils.ts` (if you want to use a different directory)
+ * - Customize open graph image generation in `src/app/opengraph-image/route.tsx`
  */
 
 import type { Metadata } from "next";

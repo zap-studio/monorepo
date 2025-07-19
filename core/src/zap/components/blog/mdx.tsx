@@ -25,7 +25,6 @@ function Table({ data }: { data: { headers: string[]; rows: string[][] } }) {
   return (
     <div className="mt-6 overflow-x-auto">
       <table className="w-full border-collapse text-sm">
-        {/* table style applied here */}
         <thead className="bg-muted">
           {headers.length > 0 && <tr>{headers}</tr>}
         </thead>
