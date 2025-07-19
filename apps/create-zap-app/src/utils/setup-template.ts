@@ -9,6 +9,30 @@ import { moveCoreFiles } from '@/utils/setup-template/move-core-files.js';
 import { moveTempFilesToOutput } from '@/utils/setup-template/move-temp-files-to-output.js';
 import { removeLockFiles } from '@/utils/setup-template/remove-lock-files.js';
 
+/**
+ * Sets up a new Zap.ts project by downloading, extracting, and configuring the template.
+ *
+ * This function orchestrates the complete template setup process:
+ * 1. Downloads the latest Zap.ts template tarball
+ * 2. Extracts the template to the output directory
+ * 3. Moves core files to a temporary location
+ * 4. Cleans up the output directory structure
+ * 5. Moves files from temp back to output with proper organization
+ * 6. Removes temporary files and lock files
+ * 7. Cleans up package.json for the new project
+ *
+ * @param outputDir - The directory where the new Zap.ts project will be created
+ * @param spinner - An Ora spinner instance for displaying progress updates
+ *
+ * @example
+ * ```typescript
+ * import ora from 'ora';
+ *
+ * const spinner = ora('Setting up template...').start();
+ * await setupTemplate('/path/to/new-project', spinner);
+ * spinner.succeed('Template setup complete!');
+ * ```
+ */
 export async function setupTemplate(outputDir: string, spinner: Ora) {
   // Download template
   const tarballPath = await downloadTemplate(outputDir);

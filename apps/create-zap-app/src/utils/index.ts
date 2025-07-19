@@ -1,3 +1,4 @@
+export * from './cli.js';
 export * from './generate-env.js';
 export * from './generate-secret.js';
 export * from './prompt-package-manager.js';
