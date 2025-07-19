@@ -33,7 +33,10 @@ import { removeLockFiles } from '@/utils/template/setup-template/remove-lock-fil
  * spinner.succeed('Template setup complete!');
  * ```
  */
-export async function setupTemplate(outputDir: string, spinner: Ora) {
+export async function setupTemplate(
+  outputDir: string,
+  spinner: Ora
+): Promise<void> {
   // Download template
   const tarballPath = await downloadTemplate(outputDir);
 

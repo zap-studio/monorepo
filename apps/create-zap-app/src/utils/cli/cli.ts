@@ -9,6 +9,19 @@ import figlet from 'figlet';
  * Uses fs/promises to read the package.json file and extracts the version field.
  * @returns A promise that resolves to the version string from package.json
  * @throws {Error} If the package.json file cannot be read or parsed
+ *
+ * @example
+ * ```typescript
+ * import { getPackageVersion } from './cli';
+ *
+ * // Get the current package version
+ * const version = await getPackageVersion();
+ * console.log(`Current version: ${version}`);
+ * // Outputs: Current version: 1.0.0
+ *
+ * // Can be used in CLI version display
+ * displayInfo(` create-zap-app v${await getPackageVersion()}\n`);
+ * ```
  */
 export async function getPackageVersion(): Promise<string> {
   const __filename = fileURLToPath(import.meta.url);
@@ -98,6 +111,18 @@ export function displaySuccess(message: string): void {
 /**
  * Displays an informational message to stdout with cyan formatting.
  * @param message - The informational message to display.
+ *
+ * @example
+ * ```typescript
+ * import { displayInfo } from './cli';
+ *
+ * // Display informational message during setup
+ * displayInfo('📦 Installing dependencies...\n');
+ * // Outputs: 📦 Installing dependencies... (in cyan)
+ *
+ * // Can be used for progress updates
+ * displayInfo('🔧 Configuring project settings...\n');
+ * ```
  */
 export function displayInfo(message: string): void {
   process.stdout.write(chalk.cyan(message));
@@ -106,6 +131,18 @@ export function displayInfo(message: string): void {
 /**
  * Displays a warning message to stdout with yellow formatting.
  * @param message - The warning message to display.
+ *
+ * @example
+ * ```typescript
+ * import { displayWarning } from './cli';
+ *
+ * // Display warning about deprecated features
+ * displayWarning('⚠️  This feature will be deprecated in the next version\n');
+ * // Outputs: ⚠️  This feature will be deprecated in the next version (in yellow)
+ *
+ * // Can be used for configuration warnings
+ * displayWarning('🔧 Using default configuration values\n');
+ * ```
  */
 export function displayWarning(message: string): void {
   process.stdout.write(chalk.yellow(message));
