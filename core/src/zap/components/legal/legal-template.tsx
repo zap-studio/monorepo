@@ -1,33 +1,11 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-
-import matter from "gray-matter";
-import type { Metadata } from "next";
-
 import { CustomMDX } from "@/zap/components/blog/mdx";
+import { getMdxContent } from "@/zap/lib/legal/utils";
 
-async function getMdxContent(slug: string) {
-  const MDX_PATH = path.join(
-    process.cwd(),
-    "src",
-    "zap",
-    "legal",
-    `${slug}.mdx`,
-  );
-  const raw = await fs.readFile(MDX_PATH, "utf-8");
-  const { data: metadata, content } = matter(raw);
-  return { metadata, content };
+interface LegalPageProps {
+  slug: string;
 }
 
-export async function generateLegalMetadata(slug: string): Promise<Metadata> {
-  const { metadata } = await getMdxContent(slug);
-  return {
-    title: metadata.title,
-    description: metadata.description,
-  };
-}
-
-export async function LegalPage({ slug }: { slug: string }) {
+export async function LegalPage({ slug }: LegalPageProps) {
   const { content } = await getMdxContent(slug);
   return (
     <div className="container mx-auto max-w-3xl py-12">
