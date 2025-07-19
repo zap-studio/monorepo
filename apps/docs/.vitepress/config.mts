@@ -66,7 +66,7 @@ export default defineConfig({
           },
           { text: 'Authentication', link: '/docs/features/authentication' },
           {
-            text: 'Blog & CMS',
+            text: 'Blog',
             link: '/docs/features/blog',
           },
           { text: 'Database', link: '/docs/features/database' },
