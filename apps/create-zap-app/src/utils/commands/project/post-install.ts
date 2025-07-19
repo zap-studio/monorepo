@@ -14,6 +14,13 @@ const execAsync = promisify(exec);
  * @param outputDir - The project directory
  * @param spinner - The ora spinner instance for user feedback
  * @returns Effect that resolves when formatting is complete
+ *
+ * @example
+ * ```typescript
+ * import { runPrettierFormatting } from '@/utils/commands/project/post-install.js';
+ *
+ * runPrettierFormatting('npm', '/path/to/project', spinner);
+ * ```
  */
 export function runPrettierFormatting(
   packageManager: PackageManager,
@@ -38,6 +45,13 @@ export function runPrettierFormatting(
  * @param outputDir - The project directory
  * @param spinner - The ora spinner instance for user feedback
  * @returns Effect that resolves when .env file is generated
+ *
+ * @example
+ * ```typescript
+ * import { generateEnvFile } from '@/utils/commands/project/post-install.js';
+ *
+ * generateEnvFile('/path/to/project', spinner);
+ * ```
  */
 export function generateEnvFile(
   outputDir: string,
@@ -61,6 +75,13 @@ export function generateEnvFile(
  * Displays the final success message and instructions.
  * @param projectName - The name of the created project
  * @param packageManager - The package manager used
+ *
+ * @example
+ * ```typescript
+ * import { displaySuccessMessage } from '@/utils/commands/project/post-install.js';
+ *
+ * displaySuccessMessage('my-project', 'npm');
+ * ```
  */
 export function displaySuccessMessage(
   projectName: string,

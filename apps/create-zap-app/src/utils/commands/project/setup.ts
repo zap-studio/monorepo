@@ -8,6 +8,13 @@ import { setupTemplate } from '@/utils/index.js';
  * @param outputDir - The directory path to create
  * @param spinner - The ora spinner instance for user feedback
  * @returns Effect that resolves when directory is created
+ *
+ * @example
+ * ```typescript
+ * import { createProjectDirectory } from '@/utils/commands/project/setup.js';
+ *
+ * createProjectDirectory('/path/to/project', spinner);
+ * ```
  */
 export function createProjectDirectory(
   outputDir: string,
@@ -29,6 +36,13 @@ export function createProjectDirectory(
  * @param outputDir - The directory where the template should be set up
  * @param spinner - The ora spinner instance for user feedback
  * @returns Effect that resolves when template is set up
+ *
+ * @example
+ * ```typescript
+ * import { setupProjectTemplate } from '@/utils/commands/project/setup.js';
+ *
+ * setupProjectTemplate('/path/to/project', spinner);
+ * ```
  */
 export function setupProjectTemplate(
   outputDir: string,

@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { generateSecret } from './generate-secret.js';
+import { generateSecret } from '@/utils/generation/generate-secret.js';
 
 const coreEnv = [
   'BETTER_AUTH_SECRET',

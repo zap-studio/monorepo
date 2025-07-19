@@ -14,7 +14,7 @@ const execAsync = promisify(exec);
  *
  * @example
  * ```typescript
- * import { getInstallCommand } from './dependencies';
+ * import { getInstallCommand } from '@/utils/commands/project/dependencies.js';
  *
  * getInstallCommand('npm'); // Returns 'npm install --legacy-peer-deps'
  * getInstallCommand('yarn'); // Returns 'yarn'
@@ -42,13 +42,24 @@ export function getInstallCommand(pm: PackageManager): string {
  * @param pm - The package manager to use for installation
  * @param outputDir - The directory where dependencies should be installed
  * @param spinner - The ora spinner instance for user feedback
+ * @param retryCount - The current retry count (internal use)
  * @returns Effect that resolves to the final package manager used
+ *
+ * @example
+ * ```typescript
+ * import { installDependenciesWithRetry } from '@/utils/commands/project/dependencies.js';
+ *
+ * installDependenciesWithRetry('npm', '/path/to/project', spinner);
+ * ```
  */
 export function installDependenciesWithRetry(
   pm: PackageManager,
   outputDir: string,
-  spinner: Ora
+  spinner: Ora,
+  retryCount = 0
 ): Effect.Effect<PackageManager, Error, never> {
+  const maxRetries = 3;
+
   spinner.text = `Installing dependencies with ${pm}...`;
   spinner.start();
 
@@ -62,26 +73,48 @@ export function installDependenciesWithRetry(
       spinner.succeed(`Dependencies installed with ${pm}.`);
       return pm;
     }),
-    Effect.catchAll(() =>
-      Effect.tryPromise({
-        try: () => {
-          spinner.fail(`Failed to install dependencies with ${pm}.`);
-          return promptPackageManager(pm);
-        },
-        catch: (e) => (e instanceof Error ? e : new Error(String(e))),
-      }).pipe(
-        Effect.catchAll(() =>
-          installDependenciesWithRetry(pm, outputDir, spinner)
-        ),
-        Effect.flatMap((newPackageManager) =>
-          installDependenciesWithRetry(
-            newPackageManager as PackageManager,
-            outputDir,
-            spinner
+    Effect.catchAll(() => {
+      if (retryCount >= maxRetries) {
+        return Effect.fail(
+          new Error(
+            `Failed to install dependencies after ${maxRetries} attempts. Please try installing manually.`
           )
-        )
-      )
-    )
+        );
+      }
+
+      return Effect.sync(() => {
+        spinner.fail(`Failed to install dependencies with ${pm}.`);
+      })
+        .pipe(Effect.flatMap(() => promptPackageManager(pm)))
+        .pipe(
+          Effect.catchAll((error) => {
+            const errorMessage =
+              error instanceof Error ? error.message : String(error);
+            if (
+              errorMessage.includes('User force closed') ||
+              errorMessage.includes('User interrupted') ||
+              errorMessage.includes('SIGINT') ||
+              errorMessage.includes('SIGTERM')
+            ) {
+              process.exit(1);
+            }
+            return installDependenciesWithRetry(
+              pm,
+              outputDir,
+              spinner,
+              retryCount + 1
+            );
+          }),
+          Effect.flatMap((newPackageManager) =>
+            installDependenciesWithRetry(
+              newPackageManager as PackageManager,
+              outputDir,
+              spinner,
+              0
+            )
+          )
+        );
+    })
   );
 }
 
@@ -95,7 +128,7 @@ export function installDependenciesWithRetry(
  * @example
  * ```typescript
  * import { Effect } from 'effect';
- * import { updateDependencies } from './dependencies';
+ * import { updateDependencies } from '@/utils/commands/project/dependencies.js';
  * import ora from 'ora';
  *
  * const spinner = ora().start();

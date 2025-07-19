@@ -1,1 +1,1 @@
-export * from './prompt-package-manager.js';
+export * from '@/utils/prompts/prompt-package-manager.js';

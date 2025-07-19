@@ -9,6 +9,13 @@ import { PROJECT_NAME_REGEX } from '@/types/cli.js';
 /**
  * Prompts the user for project name and validates the input.
  * @returns Effect that resolves to the project name
+ *
+ * @example
+ * ```typescript
+ * import { promptProjectName } from '@/utils/commands/project/prompts.js';
+ *
+ * promptProjectName();
+ * ```
  */
 export function promptProjectName(): Effect.Effect<string, Error, never> {
   return Effect.tryPromise({
@@ -30,13 +37,31 @@ export function promptProjectName(): Effect.Effect<string, Error, never> {
           },
         },
       ]),
-    catch: (e) => new Error(`Project name prompt failed: ${String(e)}`),
+    catch: (e) => {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      if (
+        errorMessage.includes('User force closed') ||
+        errorMessage.includes('User interrupted') ||
+        errorMessage.includes('SIGINT') ||
+        errorMessage.includes('SIGTERM')
+      ) {
+        process.exit(1);
+      }
+      return new Error(`Project name prompt failed: ${String(e)}`);
+    },
   }).pipe(Effect.map((response) => response.projectName));
 }
 
 /**
  * Prompts the user to select a package manager.
  * @returns Effect that resolves to the selected package manager
+ *
+ * @example
+ * ```typescript
+ * import { promptPackageManagerSelection } from '@/utils/commands/project/prompts.js';
+ *
+ * promptPackageManagerSelection();
+ * ```
  */
 export function promptPackageManagerSelection(): Effect.Effect<
   PackageManager,
@@ -53,6 +78,17 @@ export function promptPackageManagerSelection(): Effect.Effect<
           choices: ['npm', 'yarn', 'pnpm', 'bun'],
         },
       ]),
-    catch: (e) => new Error(`Package manager prompt failed: ${String(e)}`),
+    catch: (e) => {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      if (
+        errorMessage.includes('User force closed') ||
+        errorMessage.includes('User interrupted') ||
+        errorMessage.includes('SIGINT') ||
+        errorMessage.includes('SIGTERM')
+      ) {
+        process.exit(1);
+      }
+      return new Error(`Package manager prompt failed: ${String(e)}`);
+    },
   }).pipe(Effect.map((response) => response.packageManager as PackageManager));
 }
