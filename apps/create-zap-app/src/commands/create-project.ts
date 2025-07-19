@@ -8,7 +8,6 @@ import inquirer from 'inquirer';
 import ora from 'ora';
 import type { PackageManager } from '@/schemas/index.js';
 import { PROJECT_NAME_REGEX } from '@/types/cli.js';
-import { displayWelcome } from '@/utils/cli.js';
 import {
   generateEnv,
   promptPackageManager,
@@ -19,8 +18,6 @@ const execAsync = promisify(exec);
 
 export function createProjectEffect(): Effect.Effect<void, unknown, never> {
   return Effect.gen(function* (_) {
-    displayWelcome();
-
     // Prompt for project name with validation
     const projectResponse = yield* _(
       Effect.tryPromise({

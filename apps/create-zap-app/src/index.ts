@@ -1,26 +1,67 @@
 #!/usr/bin/env node
-import { Effect } from 'effect';
+import { Command } from 'commander';
+import { Effect, Exit } from 'effect';
 import {
   createProcedureEffect,
   createProjectEffect,
-} from './commands/index.js';
-import { displayError, displayUsage } from './utils/cli.js';
+} from '@/commands/index.js';
+import { displayWelcome, getPackageVersion } from '@/utils/cli.js';
 
-// CLI entry point
-async function run() {
-  const args = process.argv.slice(2);
+async function main() {
+  const version = await getPackageVersion();
 
-  if (args[0] === 'create' && args[1] === 'procedure' && args[2]) {
-    await Effect.runPromise(createProcedureEffect(args[2]));
-  } else if (args.length === 0) {
-    await Effect.runPromise(createProjectEffect()).catch((error) => {
-      displayError(error);
-      process.exit(1);
+  const program = new Command();
+
+  program
+    .name('create-zap-app')
+    .description(
+      'A CLI to bootstrap a Next.js boilerplate with plugins customization.'
+    )
+    .version(version);
+
+  program
+    .command('create-zap-app')
+    .alias('new')
+    .description('Create a new Next.js project with Zap.ts boilerplate')
+    .action(async () => {
+      displayWelcome();
+      const exit = await Effect.runPromiseExit(createProjectEffect());
+
+      if (Exit.isFailure(exit)) {
+        process.exit(1);
+      }
     });
-  } else {
-    displayUsage();
-    process.exit(1);
-  }
+
+  program
+    .command('create-procedure')
+    .alias('procedure')
+    .description('Create a new oRPC procedure')
+    .argument('<name>', 'Name of the procedure')
+    .action(async (name: string) => {
+      const exit = await Effect.runPromiseExit(createProcedureEffect(name));
+
+      if (Exit.isFailure(exit)) {
+        process.exit(1);
+      }
+    });
+
+  program.action(async () => {
+    displayWelcome();
+    const exit = await Effect.runPromiseExit(createProjectEffect());
+
+    if (Exit.isFailure(exit)) {
+      process.exit(1);
+    }
+  });
+
+  program.parse(process.argv);
+
+  process.on('SIGINT', () => {
+    process.exit();
+  });
 }
 
-run();
+main().catch((error) => {
+  process.stderr.write(`Failed to start CLI: ${error}\n`);
+  process.exit(1);
+});
