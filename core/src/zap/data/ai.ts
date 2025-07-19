@@ -1,4 +1,4 @@
-import { AIProvider, AIProviderId, ModelName } from "@/zap/types/ai.types";
+import type { AIProvider, AIProviderId, ModelName } from "@/zap/types/ai.types";
 
 export const DEFAULT_MODEL: Record<AIProviderId, ModelName> = {
   openai: "gpt-4o-mini",

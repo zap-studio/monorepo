@@ -70,9 +70,9 @@ export function PricingSection() {
       </div>
 
       <div className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {PRICING_PLANS.map((plan, i) => (
+        {PRICING_PLANS.map((plan) => (
           <Card
-            key={i}
+            key={plan.title}
             className="bg-muted/50 relative flex flex-col justify-between border shadow-none transition-all duration-300"
           >
             {plan.popular && (
@@ -87,8 +87,8 @@ export function PricingSection() {
             </CardHeader>
             <CardContent className="flex h-full flex-col justify-between">
               <ul className="grid gap-2">
-                {plan.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-center gap-2">
                     <Check className="text-primary h-4 w-4" />
                     <span>{feature}</span>
                   </li>

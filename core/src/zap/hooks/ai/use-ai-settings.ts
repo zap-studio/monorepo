@@ -1,16 +1,15 @@
 "use client";
+import "client-only";
 
 import { Effect } from "effect";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import type { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { orpc } from "@/zap/lib/orpc/client";
 import type { AIFormValues } from "@/zap/types/ai.types";
 
-export const useAISettings = (
-  form: ReturnType<typeof useForm<AIFormValues>>,
-) => {
+export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
   const [isSaving, setIsSaving] = useState(false);
   const [testing, setTesting] = useState(false);
   const [isValidated, setIsValidated] = useState(false);
@@ -110,4 +109,4 @@ export const useAISettings = (
     setTesting,
     handleTestApiKey,
   };
-};
+}

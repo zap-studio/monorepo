@@ -13,9 +13,9 @@ export interface SendMagicLinkMailProps {
   input: { subject: string; recipients: string[]; url: string };
 }
 
-export const sendMagicLinkMailAction = async ({
+export async function sendMagicLinkMailAction({
   input,
-}: SendMagicLinkMailProps) => {
+}: SendMagicLinkMailProps) {
   const effect = Effect.gen(function* (_) {
     const subject = input.subject;
     const recipients = input.recipients;
@@ -42,4 +42,4 @@ export const sendMagicLinkMailAction = async ({
   });
 
   return await Effect.runPromise(effect);
-};
+}

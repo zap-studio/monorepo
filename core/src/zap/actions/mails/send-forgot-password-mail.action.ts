@@ -13,9 +13,9 @@ export interface ForgotPasswordMailProps {
   input: { subject: string; recipients: string[]; url: string };
 }
 
-export const sendForgotPasswordMailAction = async ({
+export async function sendForgotPasswordMailAction({
   input,
-}: ForgotPasswordMailProps) => {
+}: ForgotPasswordMailProps) {
   const effect = Effect.gen(function* (_) {
     const subject = input.subject;
     const recipients = input.recipients;
@@ -42,4 +42,4 @@ export const sendForgotPasswordMailAction = async ({
   });
 
   return await Effect.runPromise(effect);
-};
+}

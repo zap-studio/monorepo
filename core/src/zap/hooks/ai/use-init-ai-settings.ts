@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import { Effect } from "effect";
 import { useEffect, useState } from "react";
@@ -8,10 +9,10 @@ import { DEFAULT_MODEL } from "@/zap/data/ai";
 import { orpc } from "@/zap/lib/orpc/client";
 import type { AIFormValues, ModelName } from "@/zap/types/ai.types";
 
-export const useInitAISettings = (
+export function useInitAISettings(
   form: ReturnType<typeof useForm<AIFormValues>>,
   open: boolean,
-) => {
+) {
   const [loading, setLoading] = useState(false);
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [model, setModel] = useState<ModelName | null>(null);
@@ -64,4 +65,4 @@ export const useInitAISettings = (
     model,
     setModel,
   };
-};
+}

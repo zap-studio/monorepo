@@ -15,13 +15,13 @@ interface DeleteAPIKeyInput {
   provider: AIProviderId;
 }
 
-export const deleteAPIKeyAction = async ({
+export async function deleteAPIKeyAction({
   context,
   input,
 }: {
   context: DeleteAPIKeyContext;
   input: DeleteAPIKeyInput;
-}) => {
+}) {
   const effect = Effect.gen(function* (_) {
     const userId = context.session.user.id;
     const provider = input.provider;
@@ -46,4 +46,4 @@ export const deleteAPIKeyAction = async ({
   });
 
   return await Effect.runPromise(effect);
-};
+}

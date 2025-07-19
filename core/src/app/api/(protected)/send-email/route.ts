@@ -1,3 +1,5 @@
+import "server-only";
+
 import { Effect } from "effect";
 import { z } from "zod/v4";
 

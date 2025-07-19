@@ -1,4 +1,4 @@
-import { Control } from "react-hook-form";
+import type { Control } from "react-hook-form";
 
 import {
   FormControl,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { AI_PROVIDERS_OBJECT } from "@/zap/data/ai";
 import { AIProviderIdSchema } from "@/zap/schemas/ai.schema";
-import { AIFormValues } from "@/zap/types/ai.types";
+import type { AIFormValues } from "@/zap/types/ai.types";
 
 export interface FormFieldProps {
   control: Control<AIFormValues>;

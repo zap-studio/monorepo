@@ -15,13 +15,13 @@ interface TestAPIKeyInput {
   model: ModelName;
 }
 
-export const testAPIKeyAction = async ({
+export async function testAPIKeyAction({
   input,
   context,
 }: {
   input: TestAPIKeyInput;
   context: TestAPIKeyContext;
-}) => {
+}) {
   const effect = Effect.gen(function* (_) {
     const provider = input.provider;
     const apiKey = input.apiKey;
@@ -52,4 +52,4 @@ export const testAPIKeyAction = async ({
   });
 
   return await Effect.runPromise(effect);
-};
+}

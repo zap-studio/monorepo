@@ -14,6 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2.6.0
+        with:
+          version: latest
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4.1.0
 
@@ -21,10 +26,9 @@ jobs:
         uses: actions/setup-node@v4.4.0
         with:
           node-version: 24.2.0
-          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run Linter
+      - name: Run linter
         run: pnpm lint

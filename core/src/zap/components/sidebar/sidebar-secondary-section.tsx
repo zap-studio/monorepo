@@ -2,7 +2,7 @@
 
 import { Bot, HelpCircle, Settings } from "lucide-react";
 import Link from "next/link";
-import * as React from "react";
+import type * as React from "react";
 import { useState } from "react";
 
 import {

@@ -1,11 +1,12 @@
 "use client";
+import "client-only";
 
 import { createORPCClient } from "@orpc/client";
-import { createORPCReactQueryUtils, RouterUtils } from "@orpc/react-query";
-import { RouterClient } from "@orpc/server";
+import { createORPCReactQueryUtils, type RouterUtils } from "@orpc/react-query";
+import type { RouterClient } from "@orpc/server";
 import { create } from "zustand";
 
-import { router } from "@/rpc/router";
+import type { router } from "@/rpc/router";
 import { link } from "@/zap/lib/orpc/client";
 
 type RouterClientType = RouterClient<typeof router>;

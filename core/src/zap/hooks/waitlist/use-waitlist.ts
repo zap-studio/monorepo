@@ -1,3 +1,6 @@
+"use client";
+import "client-only";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Effect } from "effect";
 import { useForm } from "react-hook-form";
@@ -8,7 +11,7 @@ import type z from "zod/v4";
 import { client } from "@/zap/lib/orpc/client";
 import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";
 
-export const useWaitlist = () => {
+export function useWaitlist() {
   const form = useForm<z.infer<typeof WaitlistSchema>>({
     resolver: zodResolver(WaitlistSchema),
     defaultValues: { email: "" },
@@ -57,4 +60,4 @@ export const useWaitlist = () => {
     error: error,
     waitlistCount: waitlistCount ?? 0,
   };
-};
+}

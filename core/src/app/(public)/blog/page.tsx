@@ -1,0 +1,44 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
+import { ZAP_DEFAULT_METADATA } from "@/zap.config";
+import { formatDate, getBlogPostsMetadata } from "@/zap/lib/blog/utils";
+
+export const metadata: Metadata = {
+  title: `${ZAP_DEFAULT_METADATA.title} | Blog`,
+};
+
+export default async function BlogPage() {
+  const posts = await getBlogPostsMetadata();
+
+  return (
+    <div className="container mx-auto max-w-4xl py-12">
+      <div className="flex flex-col">
+        {posts.map((post, index) => (
+          <div
+            className={`py-6 ${index < posts.length - 1 ? "border-b" : ""}`}
+            key={post.slug}
+          >
+            <Link href={`/blog/${post.slug}`}>
+              <div className="hover:bg-muted rounded-md p-4">
+                {post.date && (
+                  <p className="text-muted-foreground mb-2 text-xs">
+                    {formatDate(post.date, true)}
+                  </p>
+                )}
+
+                <h2 className="mb-2 text-3xl font-semibold">{post.title}</h2>
+
+                {post.description && (
+                  <p className="text-muted-foreground text-base">
+                    {post.description}
+                  </p>
+                )}
+              </div>
+            </Link>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

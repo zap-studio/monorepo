@@ -134,3 +134,14 @@ The following steps are done to install the project:
 3. Fetches the Zap.ts template from GitHub and extracts it.
 4. Installs dependencies using the selected package manager.
 5. Creates an `.env.local` file with placeholders.
+
+## Community and support
+
+Join the Zap.ts community to showcase your apps, stay updated with the latest news, get help, and discuss with other developers.
+
+**Connect with us:**
+
+- [**GitHub Discussions**](https://github.com/alexandretrotel/zap.ts/discussions) – Perfect for feature requests, questions, and community discussions.
+- [**Discord**](https://discord.gg/24hXMC3eAa) – Real-time chat with the community.
+
+We're excited to see what you build with Zap.ts!

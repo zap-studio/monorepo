@@ -20,7 +20,7 @@ export function FaqSection() {
         <Accordion type="single" collapsible className="w-full">
           {FAQS.map((faq, index) => (
             <FaqItem
-              key={index}
+              key={faq.question}
               question={faq.question}
               answer={faq.answer}
               index={index}

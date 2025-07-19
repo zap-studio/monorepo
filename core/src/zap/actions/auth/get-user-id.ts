@@ -1,8 +1,11 @@
+"use server";
+import "server-only";
+
 import { Effect } from "effect";
 
 import { getSessionAction } from "@/zap/actions/auth/get-session.action";
 
-export const getUserIdAction = async () => {
+export async function getUserIdAction() {
   const effect = Effect.gen(function* (_) {
     const session = yield* _(Effect.promise(() => getSessionAction()));
 
@@ -14,4 +17,4 @@ export const getUserIdAction = async () => {
   });
 
   return await Effect.runPromise(effect);
-};
+}

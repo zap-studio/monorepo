@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
-import { TESTIMONIALS } from "@/zap/data/landing";
+import type { TESTIMONIALS } from "@/zap/data/landing";
 
 type ReviewCardProps = (typeof TESTIMONIALS)[number];
 

@@ -15,9 +15,7 @@ interface SubscribeUserActionProps {
   };
 }
 
-export const subscribeUserAction = async ({
-  input,
-}: SubscribeUserActionProps) => {
+export async function subscribeUserAction({ input }: SubscribeUserActionProps) {
   const effect = Effect.gen(function* (_) {
     const subscription = input.subscription;
 
@@ -53,4 +51,4 @@ export const subscribeUserAction = async ({
   });
 
   return await Effect.runPromise(effect);
-};
+}

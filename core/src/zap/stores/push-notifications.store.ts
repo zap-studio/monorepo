@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import { useEffect } from "react";
 import { create } from "zustand";
@@ -57,10 +58,10 @@ export const usePushNotificationsStore = create<PushNotificationsStore>()(
   ),
 );
 
-export const usePushNotificationsInitializer = () => {
+export function usePushNotificationsInitializer() {
   const { initialize } = usePushNotificationsStore();
 
   useEffect(() => {
     initialize();
   }, [initialize]);
-};
+}

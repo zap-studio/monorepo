@@ -5,7 +5,7 @@ import { Effect } from "effect";
 
 import { getAverageRatingQuery } from "@/zap/db/queries/feedbacks.query";
 
-export const getAverageRatingAction = async () => {
+export async function getAverageRatingAction() {
   const effect = Effect.gen(function* (_) {
     const feedbacks = yield* _(
       Effect.tryPromise({
@@ -36,4 +36,4 @@ export const getAverageRatingAction = async () => {
   );
 
   return await Effect.runPromise(effect);
-};
+}

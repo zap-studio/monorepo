@@ -1,3 +1,5 @@
+import "server-only";
+
 import { base } from "@/rpc/middlewares";
 import { canSendMailAction } from "@/zap/actions/mails/can-send-mail.action";
 import { sendForgotPasswordMailAction } from "@/zap/actions/mails/send-forgot-password-mail.action";

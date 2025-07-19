@@ -1,3 +1,5 @@
+import "server-only";
+
 import { base } from "@/rpc/middlewares";
 import { authMiddleware } from "@/rpc/middlewares";
 import { subscribeUserAction } from "@/zap/actions/push-notifications/subscribe-user.action";

@@ -8,18 +8,22 @@
     "build": "vitepress build",
     "preview": "vitepress preview",
     "clean": "rm -rf .vitepress/dist",
-    "format": "biome format .",
-    "lint": "biome check .",
-    "lint:fix": "biome check --fix ."
+    "lint": "ultracite lint",
+    "format": "ultracite format"
   },
   "dependencies": {
     "vitepress": "^1.6.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.0.6",
-    "@types/node": "^24.0.4",
+    "@biomejs/biome": "2.1.2",
+    "@types/node": "^24.0.15",
     "typescript": "^5.8.3",
-    "ultracite": "5.0.26",
-    "vitepress-plugin-llms": "^1.5.1"
+    "ultracite": "5.0.46",
+    "vitepress-plugin-llms": "^1.7.1"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,jsonc,css,scss,mdx}": [
+      "ultracite format"
+    ]
   }
 }
