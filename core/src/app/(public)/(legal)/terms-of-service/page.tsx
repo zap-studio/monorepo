@@ -1,7 +1,5 @@
-import {
-  generateLegalMetadata,
-  LegalPage,
-} from "@/zap/components/legal/legal-template";
+import { LegalPage } from "@/zap/components/legal/legal-template";
+import { generateLegalMetadata } from "@/zap/lib/legal/utils";
 
 const SLUG = "terms-of-service";
 
