@@ -16,8 +16,8 @@ export default async function BlogPage() {
       <div className="flex flex-col">
         {posts.map((post, index) => (
           <div
-            key={post.slug}
             className={`py-6 ${index < posts.length - 1 ? "border-b" : ""}`}
+            key={post.slug}
           >
             <Link href={`/blog/${post.slug}`}>
               <div className="hover:bg-muted rounded-md p-4">

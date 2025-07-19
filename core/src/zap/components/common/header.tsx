@@ -16,6 +16,8 @@ const NAV_LINKS = [
   { id: "faq", label: "FAQ" },
 ];
 
+const EXTERNAL_LINKS = [{ href: "/blog", label: "Blog" }];
+
 const NAV_BUTTON_CLASSNAME =
   "text-muted-foreground hover:text-foreground flex items-center text-sm font-medium transition-colors";
 
@@ -32,26 +34,38 @@ export function Navbar() {
     }
 
     const section = document.getElementById(sectionId);
-    if (section) section.scrollIntoView({ behavior: "smooth" });
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
     <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
       <div className="mx-auto flex h-16 w-full items-center space-x-4 px-4 sm:justify-between sm:space-x-0 md:px-8">
         <div className="flex gap-6 md:gap-10">
-          <Link href="/" className="flex items-center space-x-2">
+          <Link className="flex items-center space-x-2" href="/">
             <span className="inline-block font-bold">Zap.ts ⚡️</span>
           </Link>
 
           <nav className="hidden gap-2 md:flex">
             {NAV_LINKS.map(({ id, label }) => (
               <ZapButton
-                key={id}
-                variant="ghost"
-                onClick={() => scrollToSection(id)}
                 className={NAV_BUTTON_CLASSNAME}
+                key={id}
+                onClick={() => scrollToSection(id)}
+                variant="ghost"
               >
                 {label}
+              </ZapButton>
+            ))}
+            {EXTERNAL_LINKS.map(({ href, label }) => (
+              <ZapButton asChild key={href} variant="ghost">
+                <Link
+                  className="text-muted-foreground hover:text-foreground flex items-center text-sm font-medium transition-colors"
+                  href={href}
+                >
+                  {label}
+                </Link>
               </ZapButton>
             ))}
           </nav>
@@ -60,22 +74,22 @@ export function Navbar() {
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-2">
             {session && (
-              <ZapButton size="sm" asChild>
+              <ZapButton asChild size="sm">
                 <Link href="/app">Open App</Link>
               </ZapButton>
             )}
             {!session && (
               <>
-                <ZapButton variant="ghost" disabled={isPending} asChild>
+                <ZapButton asChild disabled={isPending} variant="ghost">
                   <Link
-                    href="/login"
                     className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+                    href="/login"
                   >
                     Login
                   </Link>
                 </ZapButton>
 
-                <ZapButton size="sm" disabled={isPending} asChild>
+                <ZapButton asChild disabled={isPending} size="sm">
                   <Link href="/register">Get Started</Link>
                 </ZapButton>
               </>
