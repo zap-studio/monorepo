@@ -5,8 +5,10 @@ import chalk from 'chalk';
 import figlet from 'figlet';
 
 /**
- * Reads the version from package.json file.
- * @returns The version string from package.json
+ * Reads the version from package.json file asynchronously.
+ * Uses fs/promises to read the package.json file and extracts the version field.
+ * @returns A promise that resolves to the version string from package.json
+ * @throws {Error} If the package.json file cannot be read or parsed
  */
 export async function getPackageVersion(): Promise<string> {
   const __filename = fileURLToPath(import.meta.url);
@@ -19,8 +21,18 @@ export async function getPackageVersion(): Promise<string> {
 /**
  * Displays a welcome banner with the Zap.ts logo and introduction message.
  * Uses figlet to create an ASCII art banner and chalk for colored output.
+ *
+ * @example
+ * ```typescript
+ * import { displayWelcome } from './cli';
+ *
+ * // Display welcome banner when CLI starts
+ * displayWelcome();
+ * // Outputs:
+ * //  🚀 Welcome to create-zap-app! Let's build something awesome.
+ * ```
  */
-export function displayWelcome() {
+export function displayWelcome(): void {
   process.stdout.write('\x1B[2J\x1B[0f');
   process.stdout.write('\n');
   const banner = figlet.textSync('Zap.ts', {
@@ -38,8 +50,25 @@ export function displayWelcome() {
 /**
  * Displays an error message to stderr with red formatting.
  * @param error - The error to display. Can be an Error object or any other value.
+ *
+ * @example
+ * ```typescript
+ * import { displayError } from './cli';
+ *
+ * try {
+ *   // Some operation that might fail
+ *   throw new Error('Something went wrong');
+ * } catch (error) {
+ *   displayError(error);
+ *   // Outputs: ❌ An error occurred: Something went wrong
+ * }
+ *
+ * // Can also handle non-Error objects
+ * displayError('Custom error message');
+ * // Outputs: ❌ An error occurred: Custom error message
+ * ```
  */
-export function displayError(error: unknown) {
+export function displayError(error: unknown): void {
   process.stderr.write(
     chalk.bold.red('\n❌ An error occurred: ') +
       (error instanceof Error ? error.message : String(error))
@@ -49,8 +78,20 @@ export function displayError(error: unknown) {
 /**
  * Displays a success message to stdout with green formatting.
  * @param message - The success message to display.
+ *
+ * @example
+ * ```typescript
+ * import { displaySuccess } from './cli';
+ *
+ * // Display success message after operation completes
+ * displaySuccess('✅ Project created successfully!\n');
+ * // Outputs: ✅ Project created successfully! (in green)
+ *
+ * // Can be used for any success feedback
+ * displaySuccess('🎉 All dependencies installed!\n');
+ * ```
  */
-export function displaySuccess(message: string) {
+export function displaySuccess(message: string): void {
   process.stdout.write(chalk.green(message));
 }
 
@@ -58,7 +99,7 @@ export function displaySuccess(message: string) {
  * Displays an informational message to stdout with cyan formatting.
  * @param message - The informational message to display.
  */
-export function displayInfo(message: string) {
+export function displayInfo(message: string): void {
   process.stdout.write(chalk.cyan(message));
 }
 
@@ -66,6 +107,6 @@ export function displayInfo(message: string) {
  * Displays a warning message to stdout with yellow formatting.
  * @param message - The warning message to display.
  */
-export function displayWarning(message: string) {
+export function displayWarning(message: string): void {
   process.stdout.write(chalk.yellow(message));
 }

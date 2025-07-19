@@ -1,4 +1,4 @@
-import { writeFileSync } from 'node:fs';
+import { writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { generateSecret } from './generate-secret.js';
 
@@ -50,8 +50,7 @@ const coreEnv = [
  * // Generates an .env.local file with required env variables.
  * ```
  */
-export const generateEnv = (outputDir: string) => {
-  // Generate .env.local content
+export async function generateEnv(outputDir: string): Promise<void> {
   const envContent = coreEnv
     .map((envVar) => {
       switch (envVar) {
@@ -79,6 +78,5 @@ export const generateEnv = (outputDir: string) => {
     })
     .join('\n');
 
-  // Write .env file
-  writeFileSync(resolve(outputDir, '.env'), envContent);
-};
+  await writeFile(resolve(outputDir, '.env'), envContent);
+}

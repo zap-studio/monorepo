@@ -7,7 +7,7 @@ import {
 } from '@/commands/index.js';
 import { displayWelcome, getPackageVersion } from '@/utils/cli.js';
 
-async function main() {
+async function main(): Promise<void> {
   const version = await getPackageVersion();
 
   const program = new Command();
