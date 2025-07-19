@@ -14,3 +14,9 @@ We’ll leverage _tree shakeability_ to keep your bundle size optimized.
 
 This means if you don’t use a feature or module, it won’t be included in your app’s code, keeping your app lean and fast.
 :::
+
+## Modularity
+
+Zap.ts aims to be modular and let you opt in and opt out of every Zap.ts' features.
+
+_This is not ready yet..._

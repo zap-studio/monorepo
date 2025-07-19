@@ -1,6 +1,6 @@
+import createBundleAnalyzer from "@next/bundle-analyzer";
 import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
-import createBundleAnalyzer from "@next/bundle-analyzer";
 import { ZAP_DEFAULT_SETTINGS } from "./zap.config";
 
 function buildCSPHeader(): string {
@@ -16,6 +16,7 @@ function buildCSPHeader(): string {
     `base-uri ${CSP.BASE_URI.join(" ")}`,
     `form-action ${CSP.FORM_ACTION.join(" ")}`,
     `frame-ancestors ${CSP.FRAME_ANCESTORS.join(" ")}`,
+    `frame-src ${CSP.FRAME_SRC.join(" ")}`,
   ];
 
   if (CSP.BLOCK_ALL_MIXED_CONTENT) {
@@ -46,7 +47,7 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
-    return [
+    return await Promise.resolve([
       {
         source: "/(.*)",
         headers: [
@@ -89,11 +90,16 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-    ];
+    ]);
   },
 };
 
-const withMDX = createMDX({});
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: [],
+    rehypePlugins: [],
+  },
+});
 
 const withBundleAnalyzer = createBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",

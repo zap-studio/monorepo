@@ -5,13 +5,17 @@
  * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL (e.g. `https://yourdomain.com`)
  * - Change `social-provider-button.tsx` to customize icon for each auth provider
  * - Configure and customize flags in `src/zap/lib/flags/flags.ts` and `src/lib/flags.ts`
+ * - Change the blog directory in `src/zap/lib/blog/utils.ts` (if you want to use a different directory)
+ * - Change the legal directory in `src/zap/lib/legal/utils.ts` (if you want to use a different directory)
+ * - Customize open graph image generation in `src/app/opengraph-image/route.tsx`
  */
+
+import type { Metadata } from "next";
 import { DEV, ENV } from "@/lib/env.client";
 import type { ZapSettings } from "@/zap/types/zap.config.types";
-import type { Metadata } from "next";
 
 export const APP_NAME = "Zap.ts";
-export const APP_DESCRIPTION = "Build application as fast as a zap.";
+export const APP_DESCRIPTION = "Build applications as fast as a zap.";
 export const BASE_URL = DEV
   ? "http://localhost:3000"
   : "https://demo.zap-ts.alexandretrotel.org";
@@ -46,6 +50,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       "/cookie-policy",
       "/_vercel/speed-insights/vitals",
       "/_vercel/insights/view",
+      "/opengraph-image",
     ],
   },
   BLOG: {
@@ -90,6 +95,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       BASE_URI: ["'self'"],
       FORM_ACTION: ["'self'"],
       FRAME_ANCESTORS: ["'none'"],
+      FRAME_SRC: ["'self'", "https://www.youtube.com"],
       BLOCK_ALL_MIXED_CONTENT: false,
       UPGRADE_INSECURE_REQUESTS: true,
     },
@@ -172,7 +178,7 @@ export const ZAP_DEFAULT_METADATA: Metadata = {
     siteName: APP_NAME,
     images: [
       {
-        url: `${BASE_URL}/og.png`,
+        url: `${BASE_URL}/opengraph-image?title=${encodeURIComponent(APP_NAME)}`,
         width: 1200,
         height: 630,
         alt: `${APP_NAME} Open Graph Image`,
@@ -204,7 +210,9 @@ export const ZAP_DEFAULT_METADATA: Metadata = {
     title: APP_NAME,
     description: APP_DESCRIPTION,
     creator: "@alexandretrotel",
-    images: [`${BASE_URL}/og.png`],
+    images: [
+      `${BASE_URL}/opengraph-image?title=${encodeURIComponent(APP_NAME)}`,
+    ],
   },
   appleWebApp: {
     title: APP_NAME,

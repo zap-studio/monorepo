@@ -49,7 +49,7 @@ export async function middleware(request: NextRequest) {
     // Check mail verification
     if (
       ZAP_DEFAULT_SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION &&
-      (!session.user || !session.user.emailVerified)
+      !session.user.emailVerified
     ) {
       const verifyUrl = new URL(LOGIN_URL, request.url);
       verifyUrl.searchParams.set("redirect", pathname);
@@ -88,9 +88,10 @@ export const config = {
        * - /_vercel/.* (Vercel specific files)
        * - badge.png, favicon-16x16.png, favicon-32x32.png (favicon files)
        * - og.png (Open Graph image)
+       * - opengraph-image (OpenGraph image route)
        */
       source:
-        "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|sitemap-0.xml|robots.txt|sw.js|manifest.json|manifest.webmanifest|icon-192x192.png|icon-512x512.png|apple-touch-icon.png|badge.png|favicon-16x16.png|favicon-32x32.png|og.png|_vercel/.*).*)",
+        "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|sitemap-0.xml|robots.txt|sw.js|manifest.json|manifest.webmanifest|icon-192x192.png|icon-512x512.png|apple-touch-icon.png|badge.png|favicon-16x16.png|favicon-32x32.png|og.png|opengraph-image.*|_vercel/.*).*)",
       missing: [
         { type: "header", key: "next-router-prefetch" },
         { type: "header", key: "purpose", value: "prefetch" },

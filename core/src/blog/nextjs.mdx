@@ -1,0 +1,63 @@
+---
+title: "Introduction to Next.js"
+description: "Next.js is a React framework for building server-rendered and statically generated web applications."
+date: "2025-07-16"
+---
+
+Next.js is a popular React framework that enables **server-side rendering** and **static site generation** out of the box. It simplifies building React applications by handling routing, code splitting, and performance optimizations automatically.
+
+## Key Features
+
+- **File-based routing:** Create pages by adding files in the `pages/` directory.
+- **Server-side rendering (SSR):** Render pages on the server for faster initial load and better SEO.
+- **Static site generation (SSG):** Pre-render pages at build time.
+- **API routes:** Build backend endpoints inside your Next.js app.
+- **Fast refresh:** Instant feedback while developing.
+
+## Example
+
+Here is a simple Next.js page:
+
+```jsx
+export default function Home() {
+  return (
+    <main>
+      <h1>Welcome to Next.js!</h1>
+      <p>This is a server-rendered React app.</p>
+    </main>
+  );
+}
+```
+
+## Why use Next.js?
+
+Next.js reduces the complexity of setting up React projects with SSR and SSG, making your apps faster and more SEO-friendly without extra configuration.
+
+## Comparison Table
+
+<Table
+  data={{
+    headers: ["Feature", "Create React App", "Next.js"],
+    rows: [
+      ["File-based Routing", "❌", "✅"],
+      ["Server-side Rendering", "❌", "✅"],
+      ["Static Site Generation", "❌", "✅"],
+      ["API Routes", "❌", "✅"],
+      ["Built-in Image Optimization", "❌", "✅"],
+    ],
+  }}
+/>
+
+## Custom Components Examples
+
+### YouTube Embed Example
+
+<YouTube id="D1GXeSgCn30" />
+
+### Callout Example
+
+<Callout type="info" text="This is an informational callout." />
+
+<Callout type="warning" text="This is a warning callout." />
+
+<Callout type="error" text="This is an error callout." />

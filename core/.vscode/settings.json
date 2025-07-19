@@ -1,5 +1,13 @@
 {
   "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+
   "chat.mcp.enabled": true,
-  "chat.mcp.discovery.enabled": true
+  "chat.mcp.discovery.enabled": true,
+
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  }
 }
