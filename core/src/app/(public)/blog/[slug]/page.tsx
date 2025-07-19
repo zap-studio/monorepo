@@ -73,10 +73,12 @@ export default async function BlogSlugPage({ params }: Props) {
       post.metadata.image ||
       `${BASE_URL}/opengraph-image?title=${post.metadata.title}`,
     url: `${BASE_URL}/blog/${post.slug}`,
-    author: {
-      "@type": "Person",
-      name: post.metadata.author,
-    },
+    ...(post.metadata.author && {
+      author: {
+        "@type": "Person",
+        name: post.metadata.author,
+      },
+    }),
   };
 
   return (
