@@ -104,10 +104,12 @@ const jsonLd: WithContext<BlogPosting> = {
   description: post.metadata.description,
   image: post.metadata.image || `${BASE_URL}/opengraph-image?title=${post.metadata.title}`,
   url: `${BASE_URL}/blog/${post.slug}`,
-  author: {
-    "@type": "Person",
-    name: post.metadata.author,
-  },
+  ...(post.metadata.author && {
+    author: {
+      "@type": "Person",
+      name: post.metadata.author,
+    },
+  }),
 };
 ```
 
