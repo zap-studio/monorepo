@@ -5,7 +5,7 @@ import {
   createProcedureEffect,
   createProjectEffect,
 } from '@/commands/index.js';
-import { displayWelcome, getPackageVersion } from '@/utils/cli.js';
+import { displayWelcome, getPackageVersion } from '@/utils/cli/index.js';
 
 async function main(): Promise<void> {
   const version = await getPackageVersion();

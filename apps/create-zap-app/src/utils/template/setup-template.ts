@@ -1,13 +1,13 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import type { Ora } from 'ora';
-import { cleanupOutputDirectory } from '@/utils/setup-template/cleanup-output-directory.js';
-import { cleanupPackageJson } from '@/utils/setup-template/cleanup-package-json.js';
-import { downloadTemplate } from '@/utils/setup-template/download-template.js';
-import { extractTemplate } from '@/utils/setup-template/extract-template.js';
-import { moveCoreFiles } from '@/utils/setup-template/move-core-files.js';
-import { moveTempFilesToOutput } from '@/utils/setup-template/move-temp-files-to-output.js';
-import { removeLockFiles } from '@/utils/setup-template/remove-lock-files.js';
+import { cleanupOutputDirectory } from '@/utils/template/setup-template/cleanup-output-directory.js';
+import { cleanupPackageJson } from '@/utils/template/setup-template/cleanup-package-json.js';
+import { downloadTemplate } from '@/utils/template/setup-template/download-template.js';
+import { extractTemplate } from '@/utils/template/setup-template/extract-template.js';
+import { moveCoreFiles } from '@/utils/template/setup-template/move-core-files.js';
+import { moveTempFilesToOutput } from '@/utils/template/setup-template/move-temp-files-to-output.js';
+import { removeLockFiles } from '@/utils/template/setup-template/remove-lock-files.js';
 
 /**
  * Sets up a new Zap.ts project by downloading, extracting, and configuring the template.
