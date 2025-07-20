@@ -37,14 +37,42 @@ The Drizzle client is set up in `src/db/index.ts` and used throughout your app f
 
 ### 3. Running Migrations
 
-Migrations are managed with the Drizzle CLI. You can generate, run, and manage migrations using the following commands:
+Migrations are managed with the Drizzle CLI. Zap.ts supports two database configurations:
+
+- **Development**: Local PostgreSQL database (requires `DATABASE_URL_DEV` in your `.env`)
+- **Production**: Neon PostgreSQL database (uses `DATABASE_URL`)
+
+#### Development Commands
 
 ```bash
-pnpm db:generate   # Create migration files
-pnpm db:migrate    # Run pending migrations
-pnpm db:push       # Apply schema changes to the database
-pnpm db:studio     # Open Drizzle Studio to inspect your database
+pnpm db:generate:dev   # Create migration files for local database
+pnpm db:migrate:dev    # Run pending migrations on local database
+pnpm db:push:dev       # Apply schema changes to local database
+pnpm db:studio:dev     # Open Drizzle Studio for local database
 ```
+
+#### Production Commands
+
+```bash
+pnpm db:generate       # Create migration files for production database
+pnpm db:migrate        # Run pending migrations on production database
+pnpm db:push           # Apply schema changes to production database
+pnpm db:studio         # Open Drizzle Studio for production database
+```
+
+#### Environment Setup
+
+For development, add to your `.env` file:
+
+```bash
+# Production database
+DATABASE_URL="postgresql://user:password@host:port/database?sslmode=require"
+
+# Development database (Local PostgreSQL)
+DATABASE_URL_DEV="postgresql://user:password@localhost:5432/zap_dev"
+```
+
+The application automatically switches between development and production databases based on the `NODE_ENV` environment variable.
 
 See [Getting Started > Quick Scripts](/docs/introduction/getting-started.md#quick-scripts) for more.
 
@@ -93,13 +121,67 @@ So, in short:
 
 This pattern is recommended for queries used in **API routes**, **server actions**, and **oRPC procedures**.
 
+## Database Configuration
+
+Zap.ts uses a dual database configuration system:
+
+### Development vs Production
+
+- **Development**: Uses local PostgreSQL database with `DATABASE_URL_DEV`
+- **Production**: Uses Neon or the PostgreSQL database of your choice with `DATABASE_URL`
+
+The application automatically detects the environment and switches between configurations based on:
+- `NODE_ENV` environment variable
+- Presence of `DATABASE_URL_DEV` in your environment
+
+### Configuration Files
+
+- `drizzle.config.dev.ts` - Development configuration (Local PostgreSQL)
+- `drizzle.config.prod.ts` - Explicit production configuration (Neon with SSL or the provider of your choice)
+
+### Database Client
+
+The database client in `src/db/index.ts` automatically handles the connection switching:
+
+```ts
+// Automatically uses local PostgreSQL in development
+// and your provider in production
+import { db } from "@/db";
+```
+
 ## Customizing the Database
 
 - **Add a table:** Create a new `.sql.ts` file in `src/db/schema/` and export your table.
-- **Change database:** Update your `DATABASE_URL` in `.env` and Drizzle config.
+- **Change database:** Update your `DATABASE_URL` and `DATABASE_URL_DEV` in `.env`.
 - **Edit a table:** Update the schema file and generate a migration.
 
 For more, see the [Drizzle ORM documentation](https://orm.drizzle.team/docs/overview).
+
+## Setting Up Local PostgreSQL
+
+To use the development database configuration, you'll need a local PostgreSQL instance:
+
+### Using Homebrew (macOS)
+
+```bash
+# Install PostgreSQL
+brew install postgresql@17
+
+# Start PostgreSQL service
+brew services start postgresql@17
+
+# Create database
+createdb zap_dev
+
+# Your DATABASE_URL_DEV would be:
+# postgresql://$(whoami)@localhost:5432/zap_dev
+```
+
+### Using PostgreSQL Installer
+
+1. Download and install PostgreSQL from [postgresql.org](https://www.postgresql.org/download/)
+2. Create a database named `zap_dev`
+3. Update your `.env` with the connection string
 
 :::warning
 You may need to disable your VPN when applying migrations, as VPN connections can sometimes interfere with database connectivity and cause connection timeouts.
