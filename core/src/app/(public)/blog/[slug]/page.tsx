@@ -66,8 +66,8 @@ export default async function BlogSlugPage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.metadata.title,
-    datePublished: post.metadata.date,
-    dateModified: post.metadata.date,
+    datePublished: new Date(post.metadata.date).toISOString(),
+    dateModified: new Date(post.metadata.date).toISOString(),
     description: post.metadata.description,
     image:
       post.metadata.image ||

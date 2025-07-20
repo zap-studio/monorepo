@@ -50,5 +50,3 @@ pnpm-lock.yaml
 # public seo files
 public/robots.txt
 public/sitemap*.xml
-# Million Lint
-.million
