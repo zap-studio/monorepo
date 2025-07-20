@@ -4,6 +4,9 @@ import { z } from "zod";
 
 const ServerEnvSchema = z.object({
   DATABASE_URL: z.string().url({ message: "DATABASE_URL must be a valid URL" }),
+  DATABASE_URL_DEV: z
+    .string()
+    .url({ message: "DATABASE_URL_DEV must be a valid URL" }),
   ENCRYPTION_KEY: z.string().min(1),
   VAPID_PRIVATE_KEY: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
@@ -13,6 +16,7 @@ const ServerEnvSchema = z.object({
 
 export const SERVER_ENV = ServerEnvSchema.safeParse({
   DATABASE_URL: process.env.DATABASE_URL,
+  DATABASE_URL_DEV: process.env.DATABASE_URL_DEV,
   ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
   VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY,
   VERCEL_ENV: process.env.VERCEL_ENV,
