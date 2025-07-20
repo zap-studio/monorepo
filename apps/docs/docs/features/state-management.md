@@ -12,7 +12,7 @@ Zap.ts uses [Zustand](https://zustand-demo.pmnd.rs/) for state management, provi
 
 ## How it works?
 
-### 1. Creating a store
+### 1. Creating a Store
 
 Stores are defined in the `src/zap/stores/` directory. You can create a new store using Zustand's `create` function.
 
@@ -31,7 +31,7 @@ export const useUserStore = create<UserState>((set) => ({
 }));
 ```
 
-### 2. Using a store in components
+### 2. Using a Store in Components
 
 Access and update state in your React components using the custom hook exported by your store.
 
@@ -46,7 +46,7 @@ export default function Profile() {
 }
 ```
 
-### 3. Persisting state
+### 3. Persisting State
 
 Zap.ts uses Zustand's `persist` middleware to persist state to localStorage or sessionStorage when needed.
 

@@ -1,1 +1,1 @@
-export * from './package-manager.schema.js';
+export * from '@/schemas/package-manager.schema.js';

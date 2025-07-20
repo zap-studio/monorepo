@@ -14,7 +14,7 @@ Zap.ts is designed with **security** as a first-class concern. Two of the most i
 - **Limit browser features**: Permissions Policy lets you disable or restrict APIs like camera, microphone, fullscreen, and more, reducing your attack surface.
 - **Comply with best practices**: Modern security standards (OWASP, Google, Mozilla) recommend both headers for all production apps.
 
-## How it works in Zap.ts
+## How it works?
 
 Zap.ts applies these headers to all app routes using Next.js's built-in header configuration:
 - **CSP**: Set statically in `next.config.ts` for consistent security across all routes.
@@ -22,7 +22,7 @@ Zap.ts applies these headers to all app routes using Next.js's built-in header c
 
 The configuration is centralized in `zap.config.ts` under the `SECURITY` key.
 
-### Example configuration
+### Example Configuration
 
 ```ts
 // zap.config.ts
@@ -52,7 +52,7 @@ export const ZAP_DEFAULT_SETTINGS = {
 };
 ```
 
-### How headers are set
+### How Headers Are Set
 
 Both CSP and Permissions Policy headers are set in `next.config.ts` for optimal performance and consistency:
 
@@ -115,7 +115,7 @@ const nextConfig = {
 };
 ```
 
-## Customizing your policy
+## Customizing Your Policy
 
 - **CSP**: Add or remove sources in `zap.config.ts` to allow only what your app needs. For example, to allow scripts from a CDN:
   ```ts
@@ -126,14 +126,14 @@ const nextConfig = {
   CAMERA: ["'self'", "https://trusted.example.com"],
   ```
 
-## Best practices
+## Best Practices
 
 - **Start strict, relax as needed**: Begin with the most restrictive policy and only allow what you need.
 - **Test thoroughly**: Use browser devtools to check headers and ensure your app works as expected.
 - **Review regularly**: Update your policy as your app evolves and new features are added.
 - **Use static configuration**: Setting headers in `next.config.ts` provides better performance than dynamic middleware generation.
 
-## Learn more
+## Learn More
 
 - [Content Security Policy (MDN)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 - [Next.js Guide on Content Security Policy](https://nextjs.org/docs/app/guides/content-security-policy)

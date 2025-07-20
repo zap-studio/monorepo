@@ -22,7 +22,7 @@ Waitlists are often used before launching your real products. A lot of modern st
 
 ## Configuration
 
-### Toggle the waitlist using feature flags
+### Toggle the Waitlist using Feature Flags
 
 The waitlist can be dynamically enabled or disabled using Zap.ts default flags without redeploying your application (if configured with an adapter).
 
@@ -39,7 +39,7 @@ export const ZAP_DEFAULT_FLAGS = {
 };
 ```
 
-### Customize the waitlist
+### Customize the Waitlist
 
 The waitlist appearance and behavior can be customized through the `ZAP_DEFAULT_SETTINGS` configuration:
 
@@ -55,7 +55,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
 };
 ```
 
-#### Configuration options
+#### Configuration Options
 
 - **`TITLE`**: The main heading displayed on the waitlist page
 - **`DESCRIPTION`**: Subtitle or tagline explaining the value proposition

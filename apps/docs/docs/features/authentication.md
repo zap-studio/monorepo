@@ -23,7 +23,7 @@ You can use `authClient` in your React components to sign in, sign out, register
 
 The server-side auth logic is configured in `src/zap/lib/auth/server.ts` using the `betterAuth` function and your database adapter.
 
-## Customizing authentication
+## Customizing Authentication
 
 - **Add/remove providers:** Edit the `plugins` array in `authClient` and `betterAuth` setup.
 - **Change password/email policies:** Update the options in your `betterAuth` config.

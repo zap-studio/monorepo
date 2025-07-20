@@ -16,8 +16,8 @@ import { Effect } from 'effect';
  * console.log(secret); // Random base64 string
  * ```
  */
-export const generateSecret = () => {
+export function generateSecret(): string {
   return Effect.runSync(
     Effect.succeed(randomBytes(32).toString('base64').slice(0, 43))
   );
-};
+}

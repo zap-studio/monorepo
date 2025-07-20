@@ -17,18 +17,18 @@ Recently, it has also been [optimized](https://orpc.unnoq.com/docs/best-practice
 
 ## Server vs. Client
 
-### 1. Defining procedures (server-side)
+### 1. Defining Procedures (server-side)
 
 - Procedures are defined in `src/rpc/procedures/` as `.rpc.ts` files.
 - Each procedure uses Zod schemas for input validation and can include middleware for authentication or other logic.
 - All procedures are registered in the main router (`src/rpc/router.ts`).
 
-### 2. Consuming procedures (client-side)
+### 2. Consuming Procedures (client-side)
 
 - The oRPC client is set up in `src/zap/lib/orpc.ts`.
 - Each procedure is easily transformed into a hook, making it easy to fetch or mutate data in your React components.
 
-## Adding a new procedure
+## Adding a New Procedure
 
 1. **Create the procedure:**
 

@@ -12,7 +12,7 @@ All legal page content is located in the `src/zap/legal/` directory as MDX files
 
 Each page component uses the `LegalPage` component which loads and renders the corresponding MDX file by slug. 
 
-## Customizing legal pages
+## Customizing Legal Pages
 
 To update the content, add your company details, or translate the legal pages, edit the MDX files in `src/zap/legal/`.
 
