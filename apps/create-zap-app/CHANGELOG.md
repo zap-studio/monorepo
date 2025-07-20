@@ -1,5 +1,11 @@
 # create-zap-app
 
+## 1.4.0
+
+### Minor Changes
+
+- a2c155a: add .env generation command as a standalone command
+
 ## 1.3.1
 
 ### Patch Changes
