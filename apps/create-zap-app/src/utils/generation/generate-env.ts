@@ -62,7 +62,7 @@ export async function generateEnv(outputDir: string): Promise<void> {
           return `${envVar}="postgresql://your_username:your_password@your_database_host/your_database_name?sslmode=require"`;
 
         case 'DATABASE_URL_DEV':
-          return `${envVar}="postgresql://your_username:your_password@localhost:5432/zap_dev"`;
+          return `${envVar}="postgresql://zap_user:zap_password@localhost:5432/zap_dev"`;
 
         case 'BETTER_AUTH_URL':
           return `${envVar}="http://localhost:3000"`;
