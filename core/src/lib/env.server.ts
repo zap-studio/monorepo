@@ -10,7 +10,8 @@ const ServerEnvSchema = z.object({
   DATABASE_URL: z.string().url({ message: "DATABASE_URL must be a valid URL" }),
   DATABASE_URL_DEV: z
     .string()
-    .url({ message: "DATABASE_URL_DEV must be a valid URL" }),
+    .url({ message: "DATABASE_URL_DEV must be a valid URL" })
+    .optional(),
   ENCRYPTION_KEY: z.string().min(1),
   VAPID_PRIVATE_KEY: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
