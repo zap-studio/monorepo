@@ -21,28 +21,16 @@ import fs from 'fs-extra';
  * @throws {Error} If the temp directory cannot be created or files cannot be moved
  */
 export async function moveCoreFiles(outputDir: string): Promise<void> {
-  const coreFiles = [
-    'package.json',
-    'package-lock.json',
-    'yarn.lock',
-    'pnpm-lock.yaml',
-    'README.md',
-    '.gitignore',
-    '.env.example',
-  ];
-
   const tempDir = path.join(outputDir, 'temp');
   await fs.ensureDir(tempDir);
 
-  await Promise.all(
-    coreFiles.map(async (file) => {
-      const sourcePath = path.join(outputDir, file);
-      const destPath = path.join(tempDir, file);
-      if (fs.existsSync(sourcePath)) {
-        await fs.move(sourcePath, destPath);
-      }
-    })
-  );
+  const coreDir = path.join(outputDir, 'core');
+  const files = await fs.readdir(coreDir);
+  for (const file of files) {
+    const srcPath = path.join(coreDir, file);
+    const destPath = path.join(tempDir, file);
+    fs.moveSync(srcPath, destPath, { overwrite: true });
+  }
 }
 
 /**
@@ -71,11 +59,9 @@ export async function moveTempFilesToOutput(
   tempDir: string
 ): Promise<void> {
   const tempFiles = await fs.readdir(tempDir);
-  await Promise.all(
-    tempFiles.map(async (file) => {
-      const sourcePath = path.join(tempDir, file);
-      const destPath = path.join(outputDir, file);
-      await fs.move(sourcePath, destPath);
-    })
-  );
+  for (const file of tempFiles) {
+    const srcPath = path.join(tempDir, file);
+    const destPath = path.join(outputDir, file);
+    fs.moveSync(srcPath, destPath, { overwrite: true });
+  }
 }

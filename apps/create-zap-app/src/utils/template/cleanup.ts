@@ -19,14 +19,12 @@ import fs from 'fs-extra';
  */
 export async function cleanupOutputDirectory(outputDir: string): Promise<void> {
   const outputFiles = await fs.readdir(outputDir);
-  await Promise.all(
-    outputFiles
-      .filter((file) => file !== 'temp')
-      .map(async (file) => {
-        const filePath = path.join(outputDir, file);
-        await fs.remove(filePath);
-      })
-  );
+  for (const file of outputFiles) {
+    const filePath = path.join(outputDir, file);
+    if (file !== 'temp') {
+      fs.removeSync(filePath);
+    }
+  }
 }
 
 /**
@@ -47,7 +45,13 @@ export async function cleanupOutputDirectory(outputDir: string): Promise<void> {
  * ```
  */
 export function removeLockFiles(outputDir: string): void {
-  const lockFiles = ['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'];
+  const lockFiles = [
+    'package-lock.json',
+    'yarn.lock',
+    'pnpm-lock.yaml',
+    'bun.lockb',
+    'bun.lock',
+  ];
   for (const lockFile of lockFiles) {
     const lockFilePath = path.join(outputDir, lockFile);
     if (fs.existsSync(lockFilePath)) {
@@ -78,17 +82,9 @@ export async function cleanupPackageJson(outputDir: string): Promise<void> {
   const packageJsonPath = path.join(outputDir, 'package.json');
   if (fs.existsSync(packageJsonPath)) {
     const packageJson = await fs.readJson(packageJsonPath);
-    const {
-      name: _name,
-      description: _description,
-      author: _author,
-      license: _license,
-      repository: _repository,
-      homepage: _homepage,
-      bugs: _bugs,
-      keywords: _keywords,
-      ...cleanedPackageJson
-    } = packageJson;
-    await fs.writeJson(packageJsonPath, cleanedPackageJson, { spaces: 2 });
+    if (packageJson.packageManager) {
+      packageJson.packageManager = undefined;
+      await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
+    }
   }
 }
