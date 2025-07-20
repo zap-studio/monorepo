@@ -7,7 +7,7 @@ import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { useEffect } from "react";
 
-import { ENV } from "@/lib/env.client";
+import { CLIENT_ENV } from "@/lib/env.client";
 import { ThemeProvider } from "@/providers/theme.provider";
 import SuspendedPostHogPageView from "@/zap/components/analytics/posthog-page-view";
 
@@ -21,10 +21,12 @@ export default function Providers({
   ENABLE_POSTHOG,
 }: ProvidersProps) {
   useEffect(() => {
-    if (!ENABLE_POSTHOG) return;
+    if (!ENABLE_POSTHOG) {
+      return;
+    }
 
-    posthog.init(ENV.NEXT_PUBLIC_POSTHOG_KEY || "", {
-      api_host: ENV.NEXT_PUBLIC_POSTHOG_HOST || "",
+    posthog.init(CLIENT_ENV.NEXT_PUBLIC_POSTHOG_KEY || "", {
+      api_host: CLIENT_ENV.NEXT_PUBLIC_POSTHOG_HOST || "",
       capture_pageview: false, // Disable automatic pageview tracking
       capture_pageleave: true, // Enable automatic pageleave tracking
     });
@@ -35,13 +37,13 @@ export default function Providers({
       <ThemeProvider
         attribute="class"
         defaultTheme="system"
-        enableSystem
         disableTransitionOnChange
+        enableSystem
       >
         <ProgressProvider
           color="#efb100"
-          options={{ showSpinner: false }}
           height="3px"
+          options={{ showSpinner: false }}
           shallowRouting
         >
           {ENABLE_POSTHOG && (

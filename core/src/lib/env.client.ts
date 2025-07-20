@@ -20,7 +20,7 @@ const ClientEnvSchema = z.object({
     .optional(),
 });
 
-const CLIENT_ENV = ClientEnvSchema.safeParse({
+const envParseResult = ClientEnvSchema.safeParse({
   NODE_ENV: process.env.NODE_ENV,
   VERCEL_ENV: process.env.VERCEL_ENV,
   NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
@@ -29,8 +29,8 @@ const CLIENT_ENV = ClientEnvSchema.safeParse({
   ZAP_MAIL: process.env.ZAP_MAIL,
 });
 
-if (!CLIENT_ENV.success) {
-  const formattedErrors = CLIENT_ENV.error.issues.map((issue) => {
+if (!envParseResult.success) {
+  const formattedErrors = envParseResult.error.issues.map((issue) => {
     const { path, message } = issue;
     return `  - ${path.join(".")}: ${message}`;
   });
@@ -45,8 +45,8 @@ if (!CLIENT_ENV.success) {
   throw new Error(errorMessage);
 }
 
-export const ENV = CLIENT_ENV.data;
+export const CLIENT_ENV = envParseResult.data;
 
 // Derived values
-export const VERCEL = !!ENV.VERCEL_ENV;
-export const DEV = ENV.NODE_ENV !== "production";
+export const VERCEL = !!CLIENT_ENV.VERCEL_ENV;
+export const DEV = CLIENT_ENV.NODE_ENV !== "production";

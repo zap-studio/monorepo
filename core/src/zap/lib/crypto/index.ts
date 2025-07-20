@@ -1,9 +1,9 @@
 import "server-only";
 
-import { ENV } from "@/lib/env.server";
+import { SERVER_ENV } from "@/lib/env.server";
 
 export const algorithm = "AES-CBC";
-export const encryptionKeyHex = ENV.ENCRYPTION_KEY;
+export const encryptionKeyHex = SERVER_ENV.ENCRYPTION_KEY;
 export const ivLength = 16; // bytes
 
 export function hexToBuffer(hex: string): ArrayBuffer {
@@ -15,7 +15,7 @@ export function hexToBuffer(hex: string): ArrayBuffer {
 
   const bytes = new Uint8Array(
     // biome-ignore lint/style/noNonNullAssertion: it is (almost) guaranteed to be non-empty
-    hex.match(/.{1,2}/g)!.map((b) => parseInt(b, 16)),
+    hex.match(/.{1,2}/g)!.map((b) => Number.parseInt(b, 16)),
   );
 
   return bytes.buffer;

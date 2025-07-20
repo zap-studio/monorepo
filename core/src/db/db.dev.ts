@@ -7,9 +7,9 @@ import {
 import { Pool } from "pg";
 
 import * as schema from "@/db/schema";
-import { ENV } from "@/lib/env.server";
+import { SERVER_ENV } from "@/lib/env.server";
 
-const pool = new Pool({ connectionString: ENV.DATABASE_URL_DEV });
+const pool = new Pool({ connectionString: SERVER_ENV.DATABASE_URL_DEV });
 
 export const db: NodePgDatabase<typeof schema> = drizzlePg({
   client: pool,

@@ -5,7 +5,7 @@ import { Effect } from "effect";
 import { toast } from "sonner";
 import useSWRMutation from "swr/mutation";
 
-import { ENV } from "@/lib/env.client";
+import { CLIENT_ENV } from "@/lib/env.client";
 import { $fetch } from "@/lib/fetch";
 import { urlBase64ToUint8Array } from "@/zap/lib/pwa/utils";
 import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
@@ -100,14 +100,14 @@ export function usePushNotifications() {
         const sub = yield* _(
           Effect.tryPromise({
             try: () => {
-              if (!ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
+              if (!CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
                 throw new Error("VAPID public key is not set");
               }
 
               return registration.pushManager.subscribe({
                 userVisibleOnly: true,
                 applicationServerKey: urlBase64ToUint8Array(
-                  ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+                  CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
                 ),
               });
             },
