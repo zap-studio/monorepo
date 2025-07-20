@@ -4,6 +4,7 @@ import { Effect, Exit } from 'effect';
 import {
   createProcedureEffect,
   createProjectEffect,
+  generateEnvEffect,
 } from '@/commands/index.js';
 import { displayWelcome, getPackageVersion } from '@/utils/cli/index.js';
 
@@ -39,6 +40,21 @@ async function main(): Promise<void> {
     .argument('<name>', 'Name of the procedure')
     .action(async (name: string) => {
       const exit = await Effect.runPromiseExit(createProcedureEffect(name));
+
+      if (Exit.isFailure(exit)) {
+        process.exit(1);
+      }
+    });
+
+  program
+    .command('generate-env')
+    .description('Generate environment variables for the project')
+    .argument(
+      '[filename]',
+      'Name of the environment file (default: .env.template)'
+    )
+    .action(async (filename = '.env.template') => {
+      const exit = await Effect.runPromiseExit(generateEnvEffect(filename));
 
       if (Exit.isFailure(exit)) {
         process.exit(1);

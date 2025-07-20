@@ -2,7 +2,7 @@ import { writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { generateSecret } from '@/utils/generation/generate-secret.js';
 
-const coreEnv = [
+const CORE_ENV = [
   'BETTER_AUTH_SECRET',
   'BETTER_AUTH_URL',
   'GOOGLE_CLIENT_ID',
@@ -32,55 +32,90 @@ const coreEnv = [
 ];
 
 /**
- * Generates an `.env.local` file with required environment variables.
+ * Get the environment variable content with optional template formatting
+ * This function provides default values for required environment variables.
+ * It formats the content based on whether the file is a template or not.
  *
- * This function collects core environment variables and additional variables
- * from the selected plugins. It then generates an `.env.local` file with placeholders
+ * @param envVar - The name of the environment variable
+ * @returns The formatted content for the environment variable
+ */
+function getEnvVarContent(envVar: string): string {
+  let content: string;
+
+  switch (envVar) {
+    case 'BETTER_AUTH_SECRET':
+      content = `${envVar}="${generateSecret()}"`;
+      break;
+
+    case 'DATABASE_URL':
+      content = `${envVar}="postgresql://your_username:your_password@your_database_host/your_database_name?sslmode=require"`;
+      break;
+
+    case 'DATABASE_URL_DEV':
+      content = `${envVar}="postgresql://postgres:password@localhost:5432/zap_dev"`;
+      break;
+
+    case 'BETTER_AUTH_URL':
+      content = `${envVar}="http://localhost:3000"`;
+      break;
+
+    case 'ENCRYPTION_KEY':
+      content = `${envVar}="${generateSecret()}"`;
+      break;
+
+    case 'ZAP_MAIL':
+      content = `# ${envVar}="example@zap.ts"`;
+      break;
+
+    default:
+      return getOptionalEnvVarContent(envVar);
+  }
+
+  return content;
+}
+
+/**
+ * Get optional environment variable content with template formatting
+ * This function provides default values for optional environment variables.
+ * It formats the content based on whether the file is a template or not.
+ *
+ * @param envVar - The name of the environment variable
+ * @returns The formatted content for the environment variable
+ */
+function getOptionalEnvVarContent(envVar: string): string {
+  return `${envVar}="your_${envVar.toLowerCase()}_here"`;
+}
+
+/**
+ * Generates an environment file with required environment variables.
+ *
+ * This function collects core environment variables and generates an environment file with placeholders
  * or appropriate values, such as:
  * - A securely generated `BETTER_AUTH_SECRET`
  * - A sample `DATABASE_URL`
  * - A default `BETTER_AUTH_URL`
  *
- * @param {string} outputDir - The output directory where the `.env.local` file will be written.
+ * @param outputDir - The output directory where the environment file will be written.
+ * @param filename - The name of the environment file (default: '.env').
  *
- * A promise that resolves when the `.env.local` file is written.
+ * A promise that resolves when the environment file is written.
  *
  * @example
  * ```ts
- * await generateEnv(["pluginA", "pluginB"]);
- * // Generates an .env.local file with required env variables.
+ * // Generate a regular .env file
+ * await generateEnv("./project");
+ *
+ * // Generate a template file
+ * await generateEnv("./project", ".env.template", true);
  * ```
  */
-export async function generateEnv(outputDir: string): Promise<void> {
-  const envContent = coreEnv
-    .map((envVar) => {
-      switch (envVar) {
-        case 'BETTER_AUTH_SECRET':
-          return `${envVar}="${generateSecret()}"`;
+export async function generateEnv(
+  outputDir: string,
+  filename = '.env'
+): Promise<void> {
+  const envContent = CORE_ENV.map((envVar) => getEnvVarContent(envVar)).join(
+    '\n'
+  );
 
-        case 'DATABASE_URL':
-          return `${envVar}="postgresql://your_username:your_password@your_database_host/your_database_name?sslmode=require"`;
-
-        case 'DATABASE_URL_DEV':
-          return `${envVar}="postgresql://postgres:password@localhost:5432/zap_dev"`;
-
-        case 'BETTER_AUTH_URL':
-          return `${envVar}="http://localhost:3000"`;
-
-        case 'MCP_NOTION_API_HEADERS':
-          return `${envVar}='{"Authorization": "Bearer ntn_your_token"}'`;
-
-        case 'ENCRYPTION_KEY':
-          return `${envVar}="${generateSecret()}"`;
-
-        case 'ZAP_MAIL':
-          return `${envVar}="example@zap.ts"`;
-
-        default:
-          return `${envVar}="your_${envVar.toLowerCase()}_here"`;
-      }
-    })
-    .join('\n');
-
-  await writeFile(resolve(outputDir, '.env'), envContent);
+  await writeFile(resolve(outputDir, filename), envContent);
 }
