@@ -1,30 +1,12 @@
 import "server-only";
 
-import { neon } from "@neondatabase/serverless";
-import { drizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http";
-import {
-  drizzle as drizzlePg,
-  type NodePgDatabase,
-} from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
 
-import * as schema from "@/db/schema";
-import { ENV as CLIENT_ENV } from "@/lib/env.client";
-import { ENV } from "@/lib/env.server";
+import { db as dbDev } from "@/db/db.dev";
+import { db as dbProd } from "@/db/db.prod";
+import type * as schema from "@/db/schema";
+import { ENV } from "@/lib/env.client";
 
-type DatabaseClient =
-  | NeonHttpDatabase<typeof schema>
-  | NodePgDatabase<typeof schema>;
-
-let dbClient: DatabaseClient;
-if (CLIENT_ENV.NODE_ENV === "development") {
-  const pool = new Pool({
-    connectionString: ENV.DATABASE_URL_DEV,
-  });
-  dbClient = drizzlePg({ client: pool, schema });
-} else {
-  const sql = neon(ENV.DATABASE_URL);
-  dbClient = drizzle({ client: sql, schema });
-}
-
-export const db = dbClient;
+// this is a workaround to make the db type compatible with the neon and node-postgres databases (FIXME: this may be removed in the future)
+type CommonDB = NeonHttpDatabase<typeof schema>;
+export const db = (ENV.NODE_ENV === "production" ? dbProd : dbDev) as CommonDB;
