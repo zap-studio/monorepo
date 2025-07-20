@@ -9,6 +9,7 @@ const coreEnv = [
   'GOOGLE_CLIENT_SECRET',
   'SITE_URL',
   'DATABASE_URL',
+  'DATABASE_URL_DEV',
   'RESEND_API_KEY',
   'NEXT_PUBLIC_VAPID_PUBLIC_KEY',
   'VAPID_PRIVATE_KEY',
@@ -58,7 +59,10 @@ export async function generateEnv(outputDir: string): Promise<void> {
           return `${envVar}="${generateSecret()}"`;
 
         case 'DATABASE_URL':
-          return `${envVar}="postgresql://fake_user:fake_password@ep-example-database.us-west-1.aws.neon.tech/fake_db?sslmode=require"`;
+          return `${envVar}="postgresql://your_username:your_password@your_database_host/your_database_name?sslmode=require"`;
+
+        case 'DATABASE_URL_DEV':
+          return `${envVar}="postgresql://postgres:password@localhost:5432/zap_dev"`;
 
         case 'BETTER_AUTH_URL':
           return `${envVar}="http://localhost:3000"`;

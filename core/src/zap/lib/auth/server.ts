@@ -14,7 +14,7 @@ import { passkey } from "better-auth/plugins/passkey";
 
 import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
-import { ENV } from "@/lib/env.server";
+import { SERVER_ENV } from "@/lib/env.server";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { client } from "@/zap/lib/orpc/client";
 
@@ -68,8 +68,8 @@ export const auth = betterAuth({
   socialProviders: {
     google: {
       enabled: true,
-      clientId: ENV.GOOGLE_CLIENT_ID || "",
-      clientSecret: ENV.GOOGLE_CLIENT_SECRET || "",
+      clientId: SERVER_ENV.GOOGLE_CLIENT_ID || "",
+      clientSecret: SERVER_ENV.GOOGLE_CLIENT_SECRET || "",
     },
   },
   plugins: [

@@ -20,6 +20,7 @@ Update it with your own settings. Example:
 BETTER_AUTH_SECRET=your_better_auth_secret
 BETTER_AUTH_URL=http://localhost:3000
 DATABASE_URL=your_database_url
+DATABASE_URL_DEV=postgresql://postgres:password@localhost:5432/zap_dev
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 POLAR_ACCESS_TOKEN=your_polar_access_token

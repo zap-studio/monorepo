@@ -1,12 +1,12 @@
 import { createPostHogAdapter } from "@flags-sdk/posthog";
 import { flag } from "flags/next";
 
-import { ENV, VERCEL } from "@/lib/env.client";
+import { CLIENT_ENV, VERCEL } from "@/lib/env.client";
 
 export const postHogAdapter = createPostHogAdapter({
-  postHogKey: ENV.NEXT_PUBLIC_POSTHOG_KEY || "",
+  postHogKey: CLIENT_ENV.NEXT_PUBLIC_POSTHOG_KEY || "",
   postHogOptions: {
-    host: ENV.NEXT_PUBLIC_POSTHOG_HOST,
+    host: CLIENT_ENV.NEXT_PUBLIC_POSTHOG_HOST,
   },
 });
 

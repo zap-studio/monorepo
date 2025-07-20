@@ -11,7 +11,7 @@
  */
 
 import type { Metadata } from "next";
-import { DEV, ENV } from "@/lib/env.client";
+import { CLIENT_ENV, DEV } from "@/lib/env.client";
 import type { ZapSettings } from "@/zap/types/zap.config.types";
 
 export const APP_NAME = "Zap.ts";
@@ -59,10 +59,10 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   MAIL: {
     PREFIX: APP_NAME,
     RATE_LIMIT_SECONDS: 60,
-    FROM: `${APP_NAME} <${ENV.ZAP_MAIL}>`,
+    FROM: `${APP_NAME} <${CLIENT_ENV.ZAP_MAIL}>`,
   },
   NOTIFICATIONS: {
-    VAPID_MAIL: ENV.ZAP_MAIL,
+    VAPID_MAIL: CLIENT_ENV.ZAP_MAIL,
   },
   PWA: {
     NAME: APP_NAME,

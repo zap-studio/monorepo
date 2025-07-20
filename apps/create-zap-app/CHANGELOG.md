@@ -1,5 +1,11 @@
 # create-zap-app
 
+## 1.3.1
+
+### Patch Changes
+
+- da7ec81: add DATABASE_URL_DEV to .env generation file
+
 ## 1.2.23
 
 ### Patch Changes
