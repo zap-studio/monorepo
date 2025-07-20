@@ -69,7 +69,7 @@ For development, add to your `.env` file:
 DATABASE_URL="postgresql://user:password@host:port/database?sslmode=require"
 
 # Development database (Local PostgreSQL)
-DATABASE_URL_DEV="postgresql://zap_user:zap_password@localhost:5432/zap_dev"
+DATABASE_URL_DEV="postgresql://postgres:password@localhost:5432/zap_dev"
 ```
 
 The application automatically switches between development and production databases based on the `NODE_ENV` environment variable.
@@ -159,7 +159,9 @@ For more, see the [Drizzle ORM documentation](https://orm.drizzle.team/docs/over
 
 ## Setting Up Local PostgreSQL
 
-To use the development database configuration, you'll need a local PostgreSQL instance:
+To use the development database configuration, you'll need a local PostgreSQL instance.
+
+**Why we use the `postgres` user**: We default to using the `postgres` superuser for local development to avoid permission issues. The `postgres` user has full privileges and can create, modify, and access all schemas and tables without additional configuration.
 
 ### Using Homebrew (macOS)
 
@@ -170,17 +172,11 @@ brew install postgresql@17
 # Start PostgreSQL service
 brew services start postgresql@17
 
-# Connect to PostgreSQL and create user/database
+# Connect to PostgreSQL and create database
 psql postgres
-
-# Create the database user
-CREATE USER zap_user WITH PASSWORD 'zap_password';
 
 # Create the database
 CREATE DATABASE zap_dev;
-
-# Grant privileges
-GRANT ALL PRIVILEGES ON DATABASE zap_dev TO zap_user;
 
 # Exit psql
 \q
@@ -188,7 +184,17 @@ GRANT ALL PRIVILEGES ON DATABASE zap_dev TO zap_user;
 
 Your `DATABASE_URL_DEV` would be:
 ```
-postgresql://zap_user:zap_password@localhost:5432/zap_dev
+postgresql://postgres:password@localhost:5432/zap_dev
+```
+
+**Note**: We use the default `postgres` user to avoid permission issues. Make sure to set a password for the postgres user if you haven't already:
+
+```bash
+# Set password for postgres user (if not already set)
+psql postgres
+\password postgres
+# Enter your desired password
+\q
 ```
 
 ### Using Docker
@@ -199,13 +205,13 @@ If you prefer using Docker for PostgreSQL:
 # Create a Docker container for PostgreSQL
 docker run --name zap-postgres \
   -e POSTGRES_DB=zap_dev \
-  -e POSTGRES_USER=zap_user \
-  -e POSTGRES_PASSWORD=zap_password \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=password \
   -p 5432:5432 \
   -d postgres:15
 
 # Your DATABASE_URL_DEV would be:
-# postgresql://zap_user:zap_password@localhost:5432/zap_dev
+# postgresql://postgres:password@localhost:5432/zap_dev
 ```
 
 ### Using PostgreSQL Installer
