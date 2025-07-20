@@ -60,6 +60,10 @@ pnpm db:push           # Apply schema changes to production database
 pnpm db:studio         # Open Drizzle Studio for production database
 ```
 
+:::warning
+You may need to disable your VPN when applying migrations, as VPN connections can sometimes interfere with database connectivity and cause connection timeouts.
+:::
+
 #### Environment Setup
 
 For development, add to your `.env` file:
@@ -187,16 +191,6 @@ Your `DATABASE_URL_DEV` would be:
 postgresql://postgres:password@localhost:5432/zap_dev
 ```
 
-**Note**: We use the default `postgres` user to avoid permission issues. Make sure to set a password for the postgres user if you haven't already:
-
-```bash
-# Set password for postgres user (if not already set)
-psql postgres
-\password postgres
-# Enter your desired password
-\q
-```
-
 ### Using Docker
 
 If you prefer using Docker for PostgreSQL:
@@ -219,7 +213,3 @@ docker run --name zap-postgres \
 1. Download and install PostgreSQL from [postgresql.org](https://www.postgresql.org/download/)
 2. Create a database named `zap_dev`
 3. Update your `.env` with the connection string
-
-:::warning
-You may need to disable your VPN when applying migrations, as VPN connections can sometimes interfere with database connectivity and cause connection timeouts.
-:::
