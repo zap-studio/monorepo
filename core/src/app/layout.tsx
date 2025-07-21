@@ -2,18 +2,13 @@ import "../zap/lib/orpc/server";
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Geist as Font } from "next/font/google";
 
 import { Toaster } from "@/components/ui/sonner";
 import { VERCEL } from "@/lib/env.client";
 import { FLAGS } from "@/lib/flags";
+import { font } from "@/lib/font";
 import { ZAP_DEFAULT_METADATA } from "@/zap.config";
 import Providers from "@/zap/providers/providers";
-
-const font = Font({
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = ZAP_DEFAULT_METADATA;
 
@@ -22,16 +17,23 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const Analytics = VERCEL
-    ? (await import("@vercel/analytics/react")).Analytics
-    : null;
-  const SpeedInsights = VERCEL
-    ? (await import("@vercel/speed-insights/next")).SpeedInsights
-    : null;
-
-  const ENABLE_ANALYTICS = await FLAGS.VERCEL_ENABLE_ANALYTICS();
-  const ENABLE_SPEED_INSIGHTS = await FLAGS.VERCEL_ENABLE_SPEED_INSIGHTS();
-  const ENABLE_POSTHOG = await FLAGS.POSTHOG_ENABLE_ANALYTICS();
+  const [
+    Analytics,
+    SpeedInsights,
+    ENABLE_ANALYTICS,
+    ENABLE_SPEED_INSIGHTS,
+    ENABLE_POSTHOG,
+  ] = await Promise.all([
+    VERCEL
+      ? import("@vercel/analytics/react").then((mod) => mod.Analytics)
+      : Promise.resolve(null),
+    VERCEL
+      ? import("@vercel/speed-insights/next").then((mod) => mod.SpeedInsights)
+      : Promise.resolve(null),
+    FLAGS.VERCEL_ENABLE_ANALYTICS(),
+    FLAGS.VERCEL_ENABLE_SPEED_INSIGHTS(),
+    FLAGS.POSTHOG_ENABLE_ANALYTICS(),
+  ]);
 
   return (
     <html lang="en" suppressHydrationWarning>
