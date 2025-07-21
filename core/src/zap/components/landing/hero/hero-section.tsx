@@ -9,7 +9,7 @@ import { Stats, StatsSkeleton } from "@/zap/components/landing/hero/stats";
 
 export function HeroSection() {
   return (
-    <AnimatedSection>
+    <AnimatedSection isNotSection>
       <div className="flex w-full items-center justify-center px-4 pb-32 md:px-6 md:pb-48">
         <div className="mx-auto max-w-4xl space-y-4 text-center">
           <h1 className="text-foreground text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">

@@ -50,9 +50,9 @@ export default async function LandingPage() {
       <Navbar />
       <main className="flex-1">
         {SECTIONS.map(({ id, component: Component, className }) => (
-          <div className={className} key={id}>
+          <section className={className} id={id} key={id}>
             <Component />
-          </div>
+          </section>
         ))}
       </main>
       <Footer />
