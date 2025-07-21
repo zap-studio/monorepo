@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { client } from "@/zap/lib/orpc/client";
 
 export async function Stats() {
@@ -42,7 +43,7 @@ export async function Stats() {
           {ratings.totalFeedbacks > 1 ? "s" : ""})
         </span>
       </div>
-      <div className="bg-border hidden h-4 w-px md:block" />
+      <div className="hidden h-4 w-px border-l md:block" />
       <div className="text-muted-foreground">
         Used by {ratingText.users}+ developer
         {numberOfUsers > 1 ? "s" : ""}
@@ -52,18 +53,23 @@ export async function Stats() {
 }
 
 export function StatsSkeleton() {
+  const skeletonStars = Array.from(
+    { length: 5 },
+    (_, i) => `skeleton-star-${i}`,
+  );
+
   return (
     <div className="flex animate-pulse items-center justify-center space-x-4 text-sm">
       <div className="hidden items-center space-x-2 md:flex">
         <div className="flex space-x-1">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div className="bg-muted h-4 w-4 rounded" key={i} />
+          {skeletonStars.map((starKey) => (
+            <Skeleton className="h-4 w-4 rounded" key={starKey} />
           ))}
         </div>
-        <div className="bg-muted ml-2 h-4 w-24 rounded" />
+        <Skeleton className="ml-2 h-4 w-24 rounded" />
       </div>
-      <div className="bg-border hidden h-4 w-px md:block" />
-      <div className="bg-muted h-4 w-28 rounded" />
+      <div className="hidden h-4 w-px border-l md:block" />
+      <Skeleton className="h-4 w-28 rounded" />
     </div>
   );
 }
