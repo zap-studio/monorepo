@@ -20,7 +20,7 @@ export default async function BlogPage() {
             key={post.slug}
           >
             <Link href={`/blog/${post.slug}`}>
-              <div className="hover:bg-muted rounded-md p-4">
+              <div className="hover:bg-muted rounded-md p-4 px-0 md:px-4">
                 {post.date && (
                   <p className="text-muted-foreground mb-2 text-xs">
                     {formatDate(post.date, true)}
