@@ -59,10 +59,10 @@ export default async function LandingPage() {
       <main className="flex-1">
         {SECTIONS.map(({ id, component: Component, className }, index) => (
           <AnimatedSection
-            key={id}
-            id={id}
             className={cn(className)}
             delay={index * 0.1}
+            id={id}
+            key={id}
           >
             <Component {...{ ratings, numberOfUsers }} />
           </AnimatedSection>
