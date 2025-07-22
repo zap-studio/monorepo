@@ -33,11 +33,11 @@ export async function GET(request: Request) {
         {titleParam ? (
           <div tw="flex flex-col py-12 px-8 text-left justify-center">
             <h2
-              tw="text-6xl font-semibold"
               style={{
                 color: "#e6d63b",
                 fontFamily: "Geist SemiBold, sans-serif",
               }}
+              tw="text-6xl font-semibold"
             >
               {String(titleParam)}
             </h2>
@@ -45,17 +45,17 @@ export async function GET(request: Request) {
         ) : (
           <div tw="flex flex-col py-12 px-8 text-left justify-center">
             <h2
-              tw="text-8xl font-semibold"
               style={{
                 color: "#e6d63b",
                 fontFamily: "Geist SemiBold, sans-serif",
               }}
+              tw="text-8xl font-semibold"
             >
               {String(title)}
             </h2>
             <p
-              tw="text-4xl text-white mt-0"
               style={{ fontFamily: "Geist, sans-serif" }}
+              tw="text-4xl text-white mt-0"
             >
               {description}
             </p>

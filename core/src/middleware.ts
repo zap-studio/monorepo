@@ -13,6 +13,15 @@ export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl;
 
+    // Redirect to waitlist if feature is enabled and user is not on waitlist page
+    if (
+      ZAP_DEFAULT_SETTINGS.WAITLIST.ENABLE_WAITLIST_PAGE &&
+      pathname !== "/waitlist"
+    ) {
+      const waitlistUrl = new URL("/waitlist", request.url);
+      return NextResponse.redirect(waitlistUrl);
+    }
+
     // Allow public paths
     if (
       ZAP_DEFAULT_SETTINGS.AUTH.PUBLIC_PATHS.includes(pathname) ||
