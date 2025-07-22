@@ -19,22 +19,24 @@ Organize all logic under the `src/` directory, using the following layout:
 - `lib/` — Shared utilities (API clients, helpers)
 - `providers/` — React context providers
 - `rpc/` — oRPC type-safe procedures
+- `services/` - Business logic and domain operations (e.g., `update-user.service.ts`)
 - `stores/` — Zustand stores for app state
 - `types/` — Global types and Zod schemas
 
 ## Naming conventions
 
-| Type            | Pattern       | Example                 |
-| --------------- | ------------- | ----------------------- |
-| Hook            | `use-*.ts`    | `use-user-profile.ts`   |
-| Component       | `*.tsx`       | `user-card.tsx`         |
-| Mail Template   | `*.mail.tsx`  | `template.mail.tsx`     |
-| Store           | `*.store.ts`  | `user.store.ts`         |
-| Server Action   | `*.action.ts` | `update-user.action.ts` |
-| DB Schema (SQL) | `*.sql.ts`    | `auth.sql.ts`           |
-| Zod Schema      | `*.schema.ts` | `user.schema.ts`        |
-| RPC Procedure   | `*.rpc.ts`    | `user.rpc.ts`           |
-| Constants       | UPPERCASE     | `BASE_URL` in `data/`   |
+| Type            | Pattern        | Example                  |
+| --------------- | -------------- | ------------------------ |
+| Hook            | `use-*.ts`     | `use-user-profile.ts`    |
+| Component       | `*.tsx`        | `user-card.tsx`          |
+| Mail Template   | `*.mail.tsx`   | `template.mail.tsx`      |
+| Store           | `*.store.ts`   | `user.store.ts`          |
+| Server Action   | `*.action.ts`  | `update-user.action.ts`  |
+| Service.        | `*.service.ts` | `update-user.service.ts` |
+| DB Schema (SQL) | `*.sql.ts`     | `auth.sql.ts`            |
+| Zod Schema      | `*.schema.ts`  | `user.schema.ts`         |
+| RPC Procedure   | `*.rpc.ts`     | `user.rpc.ts`            |
+| Constants       | UPPERCASE      | `BASE_URL` in `data/`    |
 
 ## Type safety
 
@@ -86,7 +88,6 @@ export const useUserProfile = () => {
 
 - Use the Better Auth package.
 - Auth logic lives in `src/zap/lib/auth/server.ts`.
-- Use server actions for login/session handling.
 
 ## Database
 

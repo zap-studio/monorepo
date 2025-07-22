@@ -1,16 +1,16 @@
 import "server-only";
 
 import { base } from "@/rpc/middlewares";
-import { getNumberOfPeopleInWaitlistAction } from "@/zap/actions/waitlist/get-number-of-people-in-waitlist.action";
-import { submitWaitlistEmailAction } from "@/zap/actions/waitlist/submit-email.action";
 import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";
+import { getNumberOfPeopleInWaitlistService } from "@/zap/services/waitlist/get-number-of-people-in-waitlist.service";
+import { submitWaitlistEmailService } from "@/zap/services/waitlist/submit-email.service";
 
 const getNumberOfPeopleInWaitlist = base.handler(
-  getNumberOfPeopleInWaitlistAction,
+  getNumberOfPeopleInWaitlistService,
 );
 const submitWaitlistEmail = base
   .input(WaitlistSchema)
-  .handler(submitWaitlistEmailAction);
+  .handler(submitWaitlistEmailService);
 
 export const waitlist = {
   getNumberOfPeopleInWaitlist,

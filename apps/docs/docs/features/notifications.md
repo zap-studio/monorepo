@@ -23,7 +23,7 @@ For more, see the [MDN Push API](https://developer.mozilla.org/en-US/docs/Web/AP
 
 ## Emails
 
-Zap.ts uses [Resend](https://resend.com/) for transactional email delivery. Email actions are defined in `src/zap/actions/emails.action.ts` and support:
+Zap.ts uses [Resend](https://resend.com/) for transactional email delivery. Email support:
 
 - **Forgot password emails**
 - **Magic link emails**
@@ -33,34 +33,51 @@ Zap.ts uses [Resend](https://resend.com/) for transactional email delivery. Emai
 **Example: Sending a Verification Email**
 
 ```ts
-// src/zap/actions/emails.action.ts
-import { resend } from "@/zap/lib/resend/server";
-import { VerificationEmail } from "@/zap/components/features/mails/verification";
+// src/zap/services/mails/send-verification-mail.service.ts
+import "server-only";
 
-export const sendVerificationEmail = async ({
-  subject,
-  recipients,
-  url,
-}) => {
-  return await Effect.runPromise(
-    Effect.gen(function* (_) {
-      const { data, error } = yield* _(
-        Effect.tryPromise({
-          try: () =>
-            resend.emails.send({
-              from: "noreply@yourdomain.com",
-              to: recipients,
-              subject,
-              react: VerificationEmail({ url }),
-            }),
-          catch: (e) => new Error("Failed to send the verification mail"),
-        }),
-      );
-      if (error) throw error;
-      return data;
-    }),
-  );
-};
+import { Effect } from "effect";
+
+import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { VerificationMail } from "@/zap/components/mails/verification.mail";
+import { resend } from "@/zap/lib/resend/server";
+
+const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
+
+interface SendVerificationMailProps {
+  input: { subject: string; recipients: string[]; url: string };
+}
+
+export async function sendVerificationMailService({
+  input,
+}: SendVerificationMailProps) {
+  const effect = Effect.gen(function* (_) {
+    const subject = input.subject;
+    const recipients = input.recipients;
+    const url = input.url;
+
+    const { data, error } = yield* _(
+      Effect.tryPromise({
+        try: () =>
+          resend.emails.send({
+            from,
+            to: recipients,
+            subject,
+            react: VerificationMail({ url }),
+          }),
+        catch: () => new Error("Failed to send verification mail"),
+      }),
+    );
+
+    if (error) {
+      return yield* _(Effect.fail(error));
+    }
+
+    return data;
+  });
+
+  return await Effect.runPromise(effect);
+}
 ```
 
 For more, see the [Resend documentation](https://resend.com/docs).
@@ -103,12 +120,12 @@ if (subscription) {
 
 To send a transactional email (verification, password reset, magic link, etc):
 
-**Call the appropriate action:** Use the exported functions from `emails.action.ts` such as `sendVerificationEmail`, `sendForgotPasswordMail`, or `sendMagicLinkEmail`.
+**Call the appropriate action:** Use the exported functions from `services/mails/*.service.ts` such as `sendVerificationEmail`, `sendForgotPasswordMail`, or `sendMagicLinkEmail`.
 
 **Example: Sending a verification email**
 
 ```ts
-import { sendVerificationEmail } from "@/zap/actions/emails.action";
+import { sendVerificationEmail } from "@/zap/services/emails.service";
 
 await sendVerificationEmail({
   subject: "Verify your email address",

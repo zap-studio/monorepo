@@ -30,13 +30,13 @@ export const feedback = pgTable("feedback", {
 });
 ```
 
-### 2. Server Actions
+### 2. Services
 
-Feedback submission is handled through type-safe server actions:
+Feedback submission is handled through type-safe services:
 
 ```ts
-// src/zap/actions/feedbacks/submit-feedback.action.ts
-export const submitFeedbackAction = async ({
+// src/zap/services/feedbacks/submit-feedback.service.ts
+export const submitFeedbackService = async ({
   context,
   input,
 }: {
@@ -63,7 +63,7 @@ export const submitFeedbackAction = async ({
         })
       );
 
-      return { success: true };
+      return { success: true, message: "The feedback has been submitted" };
     })
   );
 };

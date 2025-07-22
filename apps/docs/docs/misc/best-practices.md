@@ -20,6 +20,7 @@ The `src` folder in Zap.ts is organized to keep your code _clean_, _easy to find
 - **providers**: Contains React context providers for app-wide state.
 - **rpc**: Manages code for type-safe API communication.
 - **schemas**: Defines schemas and API validation schemas for type safety.
+- **services**: Encapsulates your business logic and domain operations
 - **stores**: Holds stores for lightweight state management.
 - **styles**: Includes global styles.
 
@@ -249,6 +250,9 @@ Follow these naming rules for clarity:
 
 - **Server Actions:** Use `your-action.action.ts`  
   > Example: `update-user.action.ts`
+
+- **Services:** Use `your-service.service.ts`  
+  > Example: `update-user.service.ts`
 
 - **Stores:** Use `your-store.store.ts`  
   > Example: `user.store.ts`

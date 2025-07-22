@@ -1,12 +1,6 @@
 import "server-only";
 
 import { base } from "@/rpc/middlewares";
-import { canSendMailAction } from "@/zap/actions/mails/can-send-mail.action";
-import { sendForgotPasswordMailAction } from "@/zap/actions/mails/send-forgot-password-mail.action";
-import { sendMagicLinkMailAction } from "@/zap/actions/mails/send-magic-link-mail.action";
-import { sendMailAction } from "@/zap/actions/mails/send-mail.action";
-import { sendVerificationMailAction } from "@/zap/actions/mails/send-verification-mail.action";
-import { updateLastTimestampMailSentAction } from "@/zap/actions/mails/update-last-timestamp-mail-sent.action";
 import {
   InputCanSendMailSchema,
   InputSendForgotPasswordMailSchema,
@@ -15,23 +9,29 @@ import {
   InputSendVerificationMailSchema,
   InputUpdateLastTimestampMailSentSchema,
 } from "@/zap/schemas/mails.schema";
+import { canSendMailService } from "@/zap/services/mails/can-send-mail.service";
+import { sendForgotPasswordMailService } from "@/zap/services/mails/send-forgot-password-mail.service";
+import { sendMagicLinkMailService } from "@/zap/services/mails/send-magic-link-mail.service";
+import { sendMailService } from "@/zap/services/mails/send-mail.service";
+import { sendVerificationMailService } from "@/zap/services/mails/send-verification-mail.service";
+import { updateLastTimestampMailSentService } from "@/zap/services/mails/update-last-timestamp-mail-sent.service";
 
 const canSendMail = base
   .input(InputCanSendMailSchema)
-  .handler(canSendMailAction);
+  .handler(canSendMailService);
 const updateLastTimestampMailSent = base
   .input(InputUpdateLastTimestampMailSentSchema)
-  .handler(updateLastTimestampMailSentAction);
+  .handler(updateLastTimestampMailSentService);
 const sendForgotPasswordMail = base
   .input(InputSendForgotPasswordMailSchema)
-  .handler(sendForgotPasswordMailAction);
+  .handler(sendForgotPasswordMailService);
 const sendVerificationMail = base
   .input(InputSendVerificationMailSchema)
-  .handler(sendVerificationMailAction);
+  .handler(sendVerificationMailService);
 const sendMagicLinkMail = base
   .input(InputSendMagicLinkMailSchema)
-  .handler(sendMagicLinkMailAction);
-const sendMail = base.input(InputSendMailSchema).handler(sendMailAction);
+  .handler(sendMagicLinkMailService);
+const sendMail = base.input(InputSendMailSchema).handler(sendMailService);
 
 export const mails = {
   sendForgotPasswordMail,

@@ -1,19 +1,21 @@
 import "server-only";
 
 import { authMiddleware, base } from "@/rpc/middlewares";
-import { getAverageRatingAction } from "@/zap/actions/feedbacks/get-average-rating.action";
-import { getUserFeedbackAction } from "@/zap/actions/feedbacks/get-user-feedback.action";
-import { submitFeedbackAction } from "@/zap/actions/feedbacks/submit-feedback.action";
 import { FeedbackSchema } from "@/zap/schemas/feedback.schema";
+import { getAverageRatingService } from "@/zap/services/feedbacks/get-average-rating.service";
+import { getUserFeedbackService } from "@/zap/services/feedbacks/get-user-feedback.service";
+import { submitFeedbackService } from "@/zap/services/feedbacks/submit-feedback.service";
 
 const submit = base
   .use(authMiddleware)
   .input(FeedbackSchema)
-  .handler(submitFeedbackAction);
+  .handler(submitFeedbackService);
 
-const getUserFeedback = base.use(authMiddleware).handler(getUserFeedbackAction);
+const getUserFeedback = base
+  .use(authMiddleware)
+  .handler(getUserFeedbackService);
 
-const getAverageRating = base.handler(getAverageRatingAction);
+const getAverageRating = base.handler(getAverageRatingService);
 
 export const feedbacks = {
   submit,

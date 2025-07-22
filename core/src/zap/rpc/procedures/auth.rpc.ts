@@ -1,19 +1,19 @@
 import "server-only";
 
 import { authMiddleware, base } from "@/rpc/middlewares";
-import { getSessionAction } from "@/zap/actions/auth/get-session.action";
-import { getUserIdAction } from "@/zap/actions/auth/get-user-id";
-import { isAuthenticatedAction } from "@/zap/actions/auth/is-authenticated";
-import { isUserAdminAction } from "@/zap/actions/auth/is-user-admin";
+import { getSessionService } from "@/zap/services/auth/get-session.service";
+import { getUserIdService } from "@/zap/services/auth/get-user-id.service";
+import { isAuthenticatedService } from "@/zap/services/auth/is-authenticated.service";
+import { isUserAdminService } from "@/zap/services/auth/is-user-admin.service";
 
-const isUserAdmin = base.handler(isUserAdminAction);
-const getUserId = base.use(authMiddleware).handler(getUserIdAction);
-const getSession = base.use(authMiddleware).handler(getSessionAction);
-const isAuthenticated = base.handler(isAuthenticatedAction);
+const isAuthenticated = base.handler(isAuthenticatedService);
+const getUserId = base.use(authMiddleware).handler(getUserIdService);
+const getSession = base.use(authMiddleware).handler(getSessionService);
+const isUserAdmin = base.use(authMiddleware).handler(isUserAdminService);
 
 export const auth = {
-  isUserAdmin,
   getUserId,
   getSession,
   isAuthenticated,
+  isUserAdmin,
 };

@@ -1,14 +1,14 @@
 import "server-only";
 
 import { base } from "@/rpc/middlewares";
-import { getNumberOfUsersAction } from "@/zap/actions/users/get-number-of-users.action";
-import { getUserIdFromMailAction } from "@/zap/actions/users/get-user-id-from-mail";
 import { InputGetUserIdFromMailSchema } from "@/zap/schemas/users.schema";
+import { getNumberOfUsersService } from "@/zap/services/users/get-number-of-users.service";
+import { getUserIdFromMailService } from "@/zap/services/users/get-user-id-from-mail.service";
 
-const getNumberOfUsers = base.handler(getNumberOfUsersAction);
+const getNumberOfUsers = base.handler(getNumberOfUsersService);
 const getUserIdFromMail = base
   .input(InputGetUserIdFromMailSchema)
-  .handler(getUserIdFromMailAction);
+  .handler(getUserIdFromMailService);
 
 export const users = {
   getNumberOfUsers,
