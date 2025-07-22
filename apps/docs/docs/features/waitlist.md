@@ -22,31 +22,13 @@ Waitlists are often used before launching your real products. A lot of modern st
 
 ## Configuration
 
-### Toggle the Waitlist using Feature Flags
-
-The waitlist can be dynamically enabled or disabled using Zap.ts default flags without redeploying your application (if configured with an adapter).
-
-```ts
-// src/zap/lib/flags/flags.ts
-import { flag } from "flags/next";
-
-export const ZAP_DEFAULT_FLAGS = {
-  ENABLE_WAITLIST_PAGE: flag({
-    key: "enable-waitlist-page",
-    defaultValue: false,
-    decide: () => false, // Set to true to enable waitlist mode
-  }),
-};
-```
-
-### Customize the Waitlist
-
 The waitlist appearance and behavior can be customized through the `ZAP_DEFAULT_SETTINGS` configuration:
 
 ```ts
 // zap.config.ts
 export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   WAITLIST: {
+    ENABLE_WAITLIST_PAGE: false,
     TITLE: "try Zap.ts",
     DESCRIPTION: "be the first to build applications as fast as a zap.",
     SHOW_COUNT: true, // Display current signup count
@@ -57,6 +39,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
 
 #### Configuration Options
 
+- **`ENABLE_WAITLIST_AGE`**: The flag to enable this feature or not.
 - **`TITLE`**: The main heading displayed on the waitlist page
 - **`DESCRIPTION`**: Subtitle or tagline explaining the value proposition
 - **`SHOW_COUNT`**: Show or hide the current number of signups

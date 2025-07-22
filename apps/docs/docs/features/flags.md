@@ -20,10 +20,7 @@ Flags are defined in the `@/data/flags` module and can be extended with custom l
 // src/data/flags.ts
 import { flag } from "flags/next";
 
-import { ZAP_DEFAULT_FLAGS } from "@/zap.config";
-
 export const FLAGS = {
-  ...ZAP_DEFAULT_FLAGS,
   EXAMPLE_FLAG: flag({
     key: "example-flag",
     defaultValue: false,
@@ -33,96 +30,60 @@ export const FLAGS = {
 
 ```
 
-### PostHog Adapter
-
-The PostHog adapter integrates feature flags with [PostHog](https://posthog.com/) for analytics-driven flag decisions.
-
-It is initialized with environment variables (`NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST`).
-
-```ts
-// src/zap/lib/flags/flags.ts
-import { createPostHogAdapter } from "@flags-sdk/posthog";
-
-import { ENV } from "@/lib/env.client";
-
-export const postHogAdapter = createPostHogAdapter({
-  postHogKey: ENV.NEXT_PUBLIC_POSTHOG_KEY || "",
-  postHogOptions: {
-    host: ENV.NEXT_PUBLIC_POSTHOG_HOST,
-  },
-});
-
-```
-
-### Vercel Integration
-
-Feature flags control Vercel-specific features like [Vercel Analytics](https://vercel.com/docs/analytics) and [Speed Insights](https://vercel.com/docs/speed-insights).
-
-These are enabled conditionally based on the `VERCEL` environment variable and corresponding flags (`VERCEL_ENABLE_ANALYTICS` and `VERCEL_ENABLE_SPEED_INSIGHTS`).
-
 ## Usage
 
 ### Server-side
 
-For example, flags are used in the `RootLayout` to conditionally render analytics and performance components.
+In a specific route, like a dashboard page, feature flags can be evaluated server-side to decide whether to show experimental features to a given user or segment.
 
 ```typescript
-// src/app/layout.tsx
+// src/app/dashboard/page.tsx
 import { FLAGS } from "@/data/flags";
-import { VERCEL } from "@/lib/env.client";
-import Providers from "@/zap/providers/providers";
+import { ExperimentalWidget } from "@/components/ExperimentalWidget";
+import { ClassicWidget } from "@/components/ClassicWidget";
 
-export default async function RootLayout({ children }) {
-  const Analytics = VERCEL ? (await import("@vercel/analytics/react")).Analytics : null;
-  const SpeedInsights = VERCEL ? (await import("@vercel/speed-insights/next")).SpeedInsights : null;
-
-  const ENABLE_ANALYTICS = await FLAGS.VERCEL_ENABLE_ANALYTICS();
-  const ENABLE_SPEED_INSIGHTS = await FLAGS.VERCEL_ENABLE_SPEED_INSIGHTS();
-  const ENABLE_POSTHOG = await FLAGS.POSTHOG_ENABLE_ANALYTICS();
+export default async function DashboardPage() {
+  const SHOW_EXPERIMENTAL_WIDGET = await FLAGS.EXPERIMENTAL_DASHBOARD_WIDGET(); // A/B test flag
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
-        <Providers ENABLE_POSTHOG={ENABLE_POSTHOG}>
-          {children}
-          {ENABLE_ANALYTICS && Analytics && <Analytics />}
-          {ENABLE_SPEED_INSIGHTS && SpeedInsights && <SpeedInsights />}
-        </Providers>
-      </body>
-    </html>
+    <main>
+      <h1>Dashboard</h1>
+      {SHOW_EXPERIMENTAL_WIDGET ? (
+        <ExperimentalWidget />
+      ) : (
+        <ClassicWidget />
+      )}
+    </main>
   );
 }
 ```
 
 ### Client-side
 
-On the client, the `useFlag` hook allows components to access flag states and handle loading or error states in a type-safe way.
+If the feature should be toggled dynamically on the client side (e.g. to support real-time rollout changes or non-blocking rendering), use the `useFlag` hook:
 
 ```typescript
+// src/components/DashboardWidget.tsx
 import { useFlag } from "@/hooks/useFlag";
+import { ExperimentalWidget } from "@/components/ExperimentalWidget";
+import { ClassicWidget } from "@/components/ClassicWidget";
 
-export const ExampleComponent = () => {
-  const { enabled: showNewFeature, loading } = useFlag("EXAMPLE_FLAG"); // type-safe
-  const { enabled: analyticsEnabled } = useFlag("POSTHOG_ENABLE_ANALYTICS");
+export const DashboardWidget = () => {
+  const { enabled: showExperimental, loading } = useFlag("EXPERIMENTAL_DASHBOARD_WIDGET");
 
   if (loading) {
-    return <div>Loading feature flags...</div>;
+    return <p>Loading widget...</p>;
   }
 
-  return (
-    <div>
-      {showNewFeature && (
-        <div>
-          <p>This feature is dynamically controlled by a flag.</p>
-        </div>
-      )}
-      
-      {analyticsEnabled && (
-        <div>Analytics tracking is enabled</div>
-      )}
-    </div>
-  );
+  return showExperimental ? <ExperimentalWidget /> : <ClassicWidget />;
 };
 ```
+
+### When to Use Server-side vs. Client-side Flags
+
+* Use **server-side flags** when rendering critical layout or routing logic that must not flicker.
+* Use **client-side flags** when flags can change at runtime or don’t affect above-the-fold rendering.
+
+### Learn More
 
 For more details, see the [Flags SDK documentation](https://flags-sdk.dev/) and [PostHog documentation](https://posthog.com/docs).

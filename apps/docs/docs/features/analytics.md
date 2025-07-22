@@ -24,7 +24,7 @@ It is automatically included in your app layout and requires no setup if you dep
 
 [PostHog](https://posthog.com/) is used for advanced event tracking, user analytics, and product insights.  
 
-It is integrated via a custom `Providers` component that initializes PostHog only if `FLAGS.ENABLE_POSTHOG` is enabled.
+It is integrated via a custom `Providers` component that initializes PostHog only if the feature is enabled.
 
 1. **Initialization:** PostHog is set up using your environment variables.
 2. **Pageviews:** Pageview tracking is handled by the `SuspendedPostHogPageView` component.
