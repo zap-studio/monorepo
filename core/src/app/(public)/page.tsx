@@ -1,4 +1,4 @@
-import { FLAGS } from "@/lib/flags";
+import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { Footer } from "@/zap/components/common/footer";
 import { Navbar } from "@/zap/components/common/header";
 import { FaqSection } from "@/zap/components/landing/faq/faq-section";
@@ -40,8 +40,8 @@ const SECTIONS = [
   },
 ];
 
-export default async function LandingPage() {
-  if (await FLAGS.ENABLE_WAITLIST_PAGE()) {
+export default function LandingPage() {
+  if (ZAP_DEFAULT_SETTINGS.WAITLIST.ENABLE_WAITLIST_PAGE) {
     return <WaitlistSection />;
   }
 
