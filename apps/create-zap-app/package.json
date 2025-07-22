@@ -47,11 +47,11 @@
   "dependencies": {
     "chalk": "^5.4.1",
     "commander": "^14.0.0",
-    "effect": "^3.16.16",
+    "effect": "^3.17.0",
     "execa": "^9.6.0",
     "figlet": "^1.8.2",
     "fs-extra": "^11.3.0",
-    "inquirer": "^12.7.0",
+    "inquirer": "^12.8.2",
     "ora": "^8.2.0",
     "ts-morph": "^26.0.0",
     "zod": "^4.0.5"
@@ -61,7 +61,7 @@
     "@types/figlet": "^1.7.0",
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.8",
-    "@types/node": "^24.0.15",
+    "@types/node": "^24.1.0",
     "tsdown": "^0.12.9",
     "typescript": "^5.8.3",
     "ultracite": "5.0.46"
