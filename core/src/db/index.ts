@@ -12,12 +12,13 @@ import {
 import { Pool } from "pg";
 
 import * as schema from "@/db/schema";
+import { PROD } from "@/lib/env.client";
 import { SERVER_ENV } from "@/lib/env.server";
 
 type Database = NodePgDatabase<typeof schema> | NeonHttpDatabase<typeof schema>;
 
 function createDatabase(): Database {
-  if (SERVER_ENV.NODE_ENV === "production") {
+  if (PROD) {
     const client = neon(SERVER_ENV.DATABASE_URL);
     return drizzleNeon({ client, schema });
   }

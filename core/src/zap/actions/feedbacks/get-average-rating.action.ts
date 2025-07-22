@@ -29,11 +29,7 @@ export async function getAverageRatingAction() {
     const averageRating = (averageRatingOnTen / 10) * 5;
 
     return { averageRating, totalFeedbacks: feedbacks.length };
-  }).pipe(
-    Effect.catchAll(() =>
-      Effect.succeed({ averageRating: 5, totalFeedbacks: 1 }),
-    ),
-  );
+  });
 
   return await Effect.runPromise(effect);
 }

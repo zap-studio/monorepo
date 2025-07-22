@@ -6,6 +6,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { useEffect } from "react";
+import { SWRConfig } from "swr";
 
 import { CLIENT_ENV } from "@/lib/env.client";
 import { ThemeProvider } from "@/providers/theme.provider";
@@ -33,28 +34,30 @@ export default function Providers({
   }, [ENABLE_POSTHOG]);
 
   return (
-    <NuqsAdapter>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        disableTransitionOnChange
-        enableSystem
-      >
-        <ProgressProvider
-          color="#efb100"
-          height="3px"
-          options={{ showSpinner: false }}
-          shallowRouting
+    <SWRConfig value={{ provider: () => new Map() }}>
+      <NuqsAdapter>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          disableTransitionOnChange
+          enableSystem
         >
-          {ENABLE_POSTHOG && (
-            <PHProvider client={posthog}>
-              <SuspendedPostHogPageView />
-              {children}
-            </PHProvider>
-          )}
-          {!ENABLE_POSTHOG && children}
-        </ProgressProvider>
-      </ThemeProvider>
-    </NuqsAdapter>
+          <ProgressProvider
+            color="#efb100"
+            height="3px"
+            options={{ showSpinner: false }}
+            shallowRouting
+          >
+            {ENABLE_POSTHOG && (
+              <PHProvider client={posthog}>
+                <SuspendedPostHogPageView />
+                {children}
+              </PHProvider>
+            )}
+            {!ENABLE_POSTHOG && children}
+          </ProgressProvider>
+        </ThemeProvider>
+      </NuqsAdapter>
+    </SWRConfig>
   );
 }

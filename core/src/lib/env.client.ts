@@ -50,3 +50,4 @@ export const CLIENT_ENV = envParseResult.data;
 // Derived values
 export const VERCEL = !!CLIENT_ENV.VERCEL_ENV;
 export const DEV = CLIENT_ENV.NODE_ENV !== "production";
+export const PROD = CLIENT_ENV.NODE_ENV === "production";

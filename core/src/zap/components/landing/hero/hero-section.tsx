@@ -1,11 +1,10 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { Suspense } from "react";
 
 import { ZapButton } from "@/components/zap-ui/button";
 import { AnimatedSection } from "@/zap/components/common/animated-section";
 import { AnimatedText } from "@/zap/components/landing/hero/animated-text";
-import { Stats, StatsSkeleton } from "@/zap/components/landing/hero/stats";
+import { Stats } from "@/zap/components/landing/hero/stats";
 
 export function HeroSection() {
   return (
@@ -36,9 +35,7 @@ export function HeroSection() {
             </ZapButton>
           </div>
 
-          <Suspense fallback={<StatsSkeleton />}>
-            <Stats />
-          </Suspense>
+          <Stats />
         </div>
       </div>
     </AnimatedSection>
