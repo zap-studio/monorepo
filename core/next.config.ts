@@ -1,7 +1,7 @@
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
-import { ZAP_DEFAULT_SETTINGS } from "./zap.config";
+import { BASE_URL, ZAP_DEFAULT_SETTINGS } from "./zap.config";
 
 function buildCSPHeader(): string {
   const { CSP } = ZAP_DEFAULT_SETTINGS.SECURITY;
@@ -68,6 +68,10 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: [
+          {
+            key: "Access-Control-Allow-Origin",
+            value: `'self' ${BASE_URL}`.trim(),
+          },
           {
             key: "X-Content-Type-Options",
             value: "nosniff",

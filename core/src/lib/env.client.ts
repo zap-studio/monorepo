@@ -41,7 +41,7 @@ if (!envParseResult.success) {
     "\nPlease check your client-side environment configuration (e.g., .env.local or Next.js environment variables) and ensure all required variables are set correctly.",
   ].join("\n");
 
-  process.stderr.write(errorMessage);
+  console.error(errorMessage);
   throw new Error(errorMessage);
 }
 
