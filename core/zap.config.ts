@@ -105,42 +105,53 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       UPGRADE_INSECURE_REQUESTS: true,
     },
     PERMISSIONS_POLICY: {
-      // High-risk features - keep blocked or allow self-origin
+      // 1. High‑Risk Features (allow only same‑origin “self”)
       CAMERA: ["self"],
-      MICROPHONE: ["self"],
       GEOLOCATION: ["self"],
+      MICROPHONE: ["self"],
       PAYMENT: ["self"],
-      USB: [],
-      MIDI: [],
 
-      // Medium-risk features - allow self-origin
+      // 2. Medium‑Risk Features (allow only “self”)
+      CAPTURED_SURFACE_CONTROL: [],
+      DISPLAY_CAPTURE: ["self"],
       FULLSCREEN: ["self"],
       PICTURE_IN_PICTURE: ["self"],
-      DISPLAY_CAPTURE: ["self"],
 
-      // Low-risk features - allow self-origin
+      // 3. Low‑Risk Features (allow only “self”)
       AUTOPLAY: ["self"],
       ENCRYPTED_MEDIA: ["self"],
       WEB_SHARE: ["self"],
 
-      // Features that should generally be allowed
+      // 4. Generally Allowed Sensors & Controls (allow “self”)
       ACCELEROMETER: ["self"],
-      AMBIENT_LIGHT_SENSOR: ["self"],
-      BATTERY: ["self"],
       GYROSCOPE: ["self"],
       MAGNETOMETER: ["self"],
       SCREEN_WAKE_LOCK: ["self"],
 
-      // Security-focused features - keep restricted
-      CROSS_ORIGIN_ISOLATED: [],
-      DOCUMENT_DOMAIN: [],
-      EXECUTION_WHILE_NOT_RENDERED: [],
-      EXECUTION_WHILE_OUT_OF_VIEWPORT: [],
-      KEYBOARD_MAP: [],
-      NAVIGATION_OVERRIDE: [],
-      PUBLICKEY_CREDENTIALS_GET: [],
-      SYNC_XHR: [],
+      // 5. Experimental / Advanced (blocked by default)
+      COMPUTE_PRESSURE: [],
+      DEFERRED_FETCH: [],
+      DEFERRED_FETCH_MINIMAL: [],
+      GAMEPAD: [],
+      HID: [],
+      IDENTITY_CREDENTIALS_GET: [],
+      IDLE_DETECTION: [],
+      LANGUAGE_DETECTOR: [],
+      LOCAL_FONTS: [],
+      MIDI: [],
+      BLUETOOTH: [],
+      PUBLICKEY_CREDENTIALS_CREATE: [],
+      SERIAL: [],
+      STORAGE_ACCESS: [],
+      SUMMARIZER: [],
+      TRANSLATOR: [],
+      WINDOW_MANAGEMENT: [],
       XR_SPATIAL_TRACKING: [],
+
+      // 6. Security‑Focused (blocked by default)
+      CROSS_ORIGIN_ISOLATED: [],
+      PUBLICKEY_CREDENTIALS_GET: [],
+      USB: [],
     },
   },
   WAITLIST: {

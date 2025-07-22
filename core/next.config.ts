@@ -32,7 +32,24 @@ function buildCSPHeader(): string {
 
 function buildPermissionsPolicy(): string {
   return Object.entries(ZAP_DEFAULT_SETTINGS.SECURITY.PERMISSIONS_POLICY)
-    .map(([feature, values]) => `${feature}=${values.join(", ")}`)
+    .map(([feature, values]) => {
+      const policyFeature = feature.toLowerCase().replace(/_/g, "-");
+      if (values.length === 0) {
+        return `${policyFeature}=()`;
+      }
+
+      const formattedValues = values
+        .map((val) => {
+          if (val === "self" || val === "*") {
+            return val;
+          }
+
+          return `"${val}"`;
+        })
+        .join(" ");
+
+      return `${policyFeature}=(${formattedValues})`;
+    })
     .join(", ");
 }
 
