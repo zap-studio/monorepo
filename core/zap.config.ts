@@ -112,7 +112,6 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       PAYMENT: ["self"],
 
       // 2. Medium‑Risk Features (allow only “self”)
-      CAPTURED_SURFACE_CONTROL: [],
       DISPLAY_CAPTURE: ["self"],
       FULLSCREEN: ["self"],
       PICTURE_IN_PICTURE: ["self"],
@@ -129,23 +128,13 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       SCREEN_WAKE_LOCK: ["self"],
 
       // 5. Experimental / Advanced (blocked by default)
-      COMPUTE_PRESSURE: [],
-      DEFERRED_FETCH: [],
-      DEFERRED_FETCH_MINIMAL: [],
       GAMEPAD: [],
       HID: [],
-      IDENTITY_CREDENTIALS_GET: [],
       IDLE_DETECTION: [],
-      LANGUAGE_DETECTOR: [],
       LOCAL_FONTS: [],
       MIDI: [],
       BLUETOOTH: [],
-      PUBLICKEY_CREDENTIALS_CREATE: [],
       SERIAL: [],
-      STORAGE_ACCESS: [],
-      SUMMARIZER: [],
-      TRANSLATOR: [],
-      WINDOW_MANAGEMENT: [],
       XR_SPATIAL_TRACKING: [],
 
       // 6. Security‑Focused (blocked by default)
