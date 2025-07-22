@@ -20,6 +20,11 @@ export interface ZapSettings {
       MAX_RETRIES?: number;
     };
   };
+  ANALYTICS: {
+    ENABLE_POSTHOG: boolean;
+    ENABLE_VERCEL_ANALYTICS: boolean;
+    ENABLE_VERCEL_SPEED_INSIGHTS: boolean;
+  };
   AUTH: {
     REQUIRE_MAIL_VERIFICATION: boolean;
     ENABLE_SOCIAL_PROVIDER: boolean;
@@ -104,6 +109,7 @@ export interface ZapSettings {
     };
   };
   WAITLIST: {
+    ENABLE_WAITLIST_PAGE: boolean;
     TITLE: string;
     DESCRIPTION: string;
     SHOW_COUNT: boolean;

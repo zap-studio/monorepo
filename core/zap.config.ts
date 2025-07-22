@@ -11,7 +11,7 @@
  */
 
 import type { Metadata } from "next";
-import { CLIENT_ENV, DEV } from "@/lib/env.client";
+import { CLIENT_ENV, DEV, VERCEL } from "@/lib/env.client";
 import type { ZapSettings } from "@/zap/types/zap.config.types";
 
 export const APP_NAME = "Zap.ts";
@@ -25,6 +25,11 @@ export type Provider = "apple" | "google";
 export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   AI: {
     SYSTEM_PROMPT: "You are a helpful assistant.",
+  },
+  ANALYTICS: {
+    ENABLE_POSTHOG: false,
+    ENABLE_VERCEL_ANALYTICS: VERCEL,
+    ENABLE_VERCEL_SPEED_INSIGHTS: VERCEL,
   },
   AUTH: {
     REQUIRE_MAIL_VERIFICATION: true,
@@ -139,6 +144,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
     },
   },
   WAITLIST: {
+    ENABLE_WAITLIST_PAGE: false,
     TITLE: "try Zap.ts",
     DESCRIPTION: "be the first to build applications as fast as a zap.",
     SHOW_COUNT: true,
