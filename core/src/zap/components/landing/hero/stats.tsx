@@ -5,14 +5,14 @@ import { getAverageRatingService } from "@/zap/services/feedbacks/get-average-ra
 import { getNumberOfUsersService } from "@/zap/services/users/get-number-of-users.service";
 
 const getStatsData = cache(async () => {
-  const [{ averageRating, totalFeedbacks }, numberOfUsers] = await Promise.all([
+  const [averageRatingData, numberOfUsers] = await Promise.all([
     getAverageRatingService(),
     getNumberOfUsersService(),
   ]);
 
   return {
-    averageRating,
-    totalFeedbacks,
+    averageRating: averageRatingData.averageRating,
+    totalFeedbacks: averageRatingData.totalFeedbacks,
     numberOfUsers,
   };
 });

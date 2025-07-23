@@ -70,6 +70,33 @@ What’s happening here? Let's try to understand the above code.
 3. Now everything — success and failure — is part of the same flow.
 4. No surprises, no runtime crashes.
 
+## Utility Classes
+
+Zap.ts includes pre-built error classes in `src/lib/effect.ts` to help you get started quickly:
+
+```ts
+import { Data } from 'effect';
+
+export class DatabaseFetchError extends Data.TaggedError(
+  'DatabaseFetchError'
+) {}
+```
+
+These utility classes follow Effect's patterns for creating **tagged errors** — making it easy to distinguish between different error types in your application. You can import and use them directly:
+
+```ts
+import { Effect } from 'effect';
+import { DatabaseFetchError } from '@/lib/effect';
+
+const fetchUserFromDb = (id: string) =>
+  Effect.tryPromise({
+    try: () => db.user.findUnique({ where: { id } }),
+    catch: () => new DatabaseFetchError(),
+  });
+```
+
+This approach gives you **type-safe error handling** where you can pattern match on specific error types rather than dealing with generic `Error` objects.
+
 ## Learn More
 
 We recommend you to check the [Effect Documentation](https://effect.website/docs) to learn more. While it can be a **_mind shift_**, once you get it, your code will be _way more_ predictable.
