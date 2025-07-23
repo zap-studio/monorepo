@@ -1,4 +1,4 @@
-name: Discord notification on PR merge
+name: Discord Notification on PR Merge
 permissions:
   contents: read
   pull-requests: read

@@ -1,0 +1,32 @@
+name: Auto Pull Request to Staging
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - staging
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create PR to staging
+        run: |
+          SOURCE_BRANCH=$(echo "${GITHUB_REF#refs/heads/}")
+          gh pr list --state open --head "$SOURCE_BRANCH" --base staging --json number | jq length > open_pr_count.txt
+          COUNT=$(cat open_pr_count.txt)
+          
+          if [ "$COUNT" -eq "0" ]; then
+            gh pr create \
+              --title "Auto PR: $SOURCE_BRANCH → staging" \
+              --body "Automated PR from $SOURCE_BRANCH to staging" \
+              --base staging \
+              --head "$SOURCE_BRANCH"
+          else
+            echo "PR already exists."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
