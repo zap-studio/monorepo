@@ -1,6 +1,13 @@
 "use client";
 
-export default function AppPage() {
+import { headers } from "next/headers";
+
+import { getAuthDataOrRedirectToLogin } from "@/zap/lib/auth/redirects";
+
+export default async function AppPage() {
+  const _headers = await headers();
+  const result = await getAuthDataOrRedirectToLogin(_headers);
+
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
