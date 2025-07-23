@@ -6,7 +6,8 @@ import { ZapButton } from "@/components/zap-ui/button";
 import { authClient } from "@/zap/lib/auth/client";
 
 export function SessionButton() {
-  const session = authClient.useSession();
+  const { data: result } = authClient.useSession();
+  const session = result?.session;
 
   if (session) {
     return (
