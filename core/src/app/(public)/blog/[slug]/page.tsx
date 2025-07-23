@@ -54,6 +54,8 @@ export async function generateStaticParams() {
   }));
 }
 
+export const dynamicParams = false; // posts not generated with `generateStaticParams` will return 404
+
 export default async function BlogSlugPage({ params }: Props) {
   const { slug } = await params;
   const post = await getBlogPost(slug);
