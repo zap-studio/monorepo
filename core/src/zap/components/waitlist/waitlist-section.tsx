@@ -18,9 +18,14 @@ import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { AnimatedNumber } from "@/zap/components/misc/animated-number";
 import { useWaitlist } from "@/zap/hooks/waitlist/use-waitlist";
 
-export function WaitlistSection() {
-  const { form, onSubmit, result, loading, waitlistCount, hasJoined } =
-    useWaitlist();
+interface WaitlistSectionClientProps {
+  waitlistCount: number;
+}
+
+export function WaitlistSectionClient({
+  waitlistCount,
+}: WaitlistSectionClientProps) {
+  const { form, onSubmit, result, loading, hasJoined } = useWaitlist();
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center p-4">
