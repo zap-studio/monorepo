@@ -1,5 +1,3 @@
-"use client";
-
 import { headers } from "next/headers";
 
 import { getAuthDataOrRedirectToLogin } from "@/zap/lib/auth/redirects";
