@@ -1,52 +1,56 @@
 import "server-only";
 
 import { Effect } from "effect";
+import { headers } from "next/headers";
 
+import { base } from "@/rpc/middlewares/base.middleware";
 import type { Session } from "@/zap/lib/auth/client";
 import { auth } from "@/zap/lib/auth/server";
-
-import { base } from "./base.middleware";
 
 export interface SessionContext {
   readonly session: Session;
   readonly headers: Headers;
 }
 
-export const authMiddleware = base.middleware(
-  async ({ context, next, errors }) => {
-    const effect = Effect.gen(function* (_) {
-      const session = yield* _(
-        Effect.tryPromise({
-          try: () => auth.api.getSession({ headers: context.headers }),
-          catch: (error) => new Error(`Failed to get session: ${error}`),
-        }),
-      );
+export const authMiddleware = base.middleware(async ({ next, errors }) => {
+  const effect = Effect.gen(function* (_) {
+    const _headers = yield* _(
+      Effect.tryPromise({
+        try: () => headers(),
+        catch: () => new Error("Failed to get headers"),
+      }),
+    );
 
-      if (!session) {
-        return yield* _(
-          Effect.fail(
-            errors.UNAUTHORIZED({
-              message: "Unauthorized access",
-            }),
-          ),
-        );
-      }
+    const session = yield* _(
+      Effect.tryPromise({
+        try: async () => auth.api.getSession({ headers: _headers }),
+        catch: () => new Error("Failed to get session"),
+      }),
+    );
 
+    if (!session) {
       return yield* _(
-        Effect.try({
-          try: () =>
-            next({
-              context: {
-                session,
-                headers: context.headers,
-              },
-            }),
-          catch: (error) =>
-            new Error(`Failed to execute next middleware: ${error}`),
-        }),
+        Effect.fail(
+          errors.UNAUTHORIZED({
+            message: "Unauthorized access",
+          }),
+        ),
       );
-    });
+    }
 
-    return await Effect.runPromise(effect);
-  },
-);
+    return yield* _(
+      Effect.tryPromise({
+        try: async () =>
+          next({
+            context: {
+              session,
+              headers: _headers,
+            },
+          }),
+        catch: () => new Error("Failed to execute next middleware"),
+      }),
+    );
+  });
+
+  return await Effect.runPromise(effect);
+});
