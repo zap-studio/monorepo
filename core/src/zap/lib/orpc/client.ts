@@ -24,6 +24,6 @@ export const link = new RPCLink({
 /**
  * Fallback to client-side client if server-side client is not available.
  */
-export const client: RouterClient<typeof router> =
+export const orpcClient: RouterClient<typeof router> =
   globalThis.$client ?? createORPCClient(link);
-export const orpc = createORPCReactQueryUtils(client);
+export const orpc = createORPCReactQueryUtils(orpcClient);

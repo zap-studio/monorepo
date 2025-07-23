@@ -7,7 +7,7 @@ import { z } from "zod/v4";
 import { SETTINGS } from "@/data/settings";
 import { getModel } from "@/zap/lib/ai/get-model";
 import { auth } from "@/zap/lib/auth/server";
-import { client } from "@/zap/lib/orpc/client";
+import { orpcClient } from "@/zap/lib/orpc/client";
 import { AIProviderIdSchema } from "@/zap/schemas/ai.schema";
 
 export const maxDuration = 60;
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     const { apiKey, model } = yield* _(
       Effect.tryPromise({
         try: () =>
-          client.ai.getAISettings({
+          orpcClient.ai.getAISettings({
             provider,
           }),
         catch: () => new Error("Failed to get AI settings"),
