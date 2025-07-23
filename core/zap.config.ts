@@ -16,7 +16,7 @@ import type { ZapSettings } from "@/zap/types/zap.config.types";
 
 export const APP_NAME = "Zap.ts | Build applications as fast as a zap";
 export const APP_DESCRIPTION =
-  "Zap.ts – with the ⚡️ symbol – is a Next.js boilerplate designed to help you build applications faster using a modern set of tools. It also comes with best practices to build excellent modern web applications. It's fast to set up and very easy to use. It comes with clear documentation and a carefully selected set of tools that make the developer experience (DX) modern and enjoyable.";
+  "Zap.ts is a Next.js boilerplate designed to help you build applications faster using a modern set of tools.";
 export const BASE_URL = DEV
   ? "http://localhost:3000"
   : "https://demo.zap-ts.alexandretrotel.org";

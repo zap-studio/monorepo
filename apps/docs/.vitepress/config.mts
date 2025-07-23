@@ -8,12 +8,14 @@ export default defineConfig({
   },
   title: 'Zap.ts | Build applications as fast as a zap',
   description:
-    "Zap.ts – with the ⚡️ symbol – is a Next.js boilerplate designed to help you build applications faster using a modern set of tools. It also comes with best practices to build excellent modern web applications. It's fast to set up and very easy to use. It comes with clear documentation and a carefully selected set of tools that make the developer experience (DX) modern and enjoyable.",
+    'Zap.ts is a Next.js boilerplate designed to help you build applications faster using a modern set of tools.',
   lang: 'en-US',
   head: [['link', { rel: 'icon', href: '/favicon.ico' }]],
   lastUpdated: true,
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
+    siteTitle: 'Zap.ts',
+
     nav: [
       { text: 'Home', link: '/docs/introduction/motivation' },
       { text: 'Best Practices', link: '/docs/misc/best-practices' },
