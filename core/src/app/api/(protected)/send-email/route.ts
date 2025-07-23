@@ -3,7 +3,7 @@ import "server-only";
 import { Effect } from "effect";
 import { z } from "zod/v4";
 
-import { orpcClient } from "@/zap/lib/orpc/client";
+import { orpcServer } from "@/zap/lib/orpc/server";
 
 const SendMailSchema = z.object({
   subject: z.string(),
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   const effect = Effect.gen(function* (_) {
     const isAdmin = yield* _(
       Effect.tryPromise({
-        try: () => orpcClient.auth.isUserAdmin(),
+        try: () => orpcServer.auth.isUserAdmin(),
         catch: () => false,
       }),
     );
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     const data = yield* _(
       Effect.tryPromise({
         try: () =>
-          orpcClient.mails.sendMail({
+          orpcServer.mails.sendMail({
             subject: body.subject,
             recipients: body.recipients,
           }),
