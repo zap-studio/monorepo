@@ -25,7 +25,7 @@ jobs:
           
           if [ "$COUNT" -eq "0" ]; then
             gh pr create \
-              --title "Auto PR: $SOURCE_BRANCH → staging" \
+              --title "$SOURCE_BRANCH → staging" \
               --body "Automated PR from $SOURCE_BRANCH to staging" \
               --base staging \
               --head "$SOURCE_BRANCH"

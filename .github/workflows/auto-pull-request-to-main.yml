@@ -23,7 +23,7 @@ jobs:
 
           if [ "$COUNT" -eq "0" ]; then
             gh pr create \
-              --title "Auto PR: staging → main" \
+              --title "staging → main" \
               --body "Automated PR from staging to main" \
               --base main \
               --head staging
