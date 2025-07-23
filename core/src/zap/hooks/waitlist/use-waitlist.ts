@@ -10,8 +10,12 @@ import type z from "zod/v4";
 
 import { client } from "@/zap/lib/orpc/client";
 import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";
+import { useWaitlistStore } from "@/zap/stores/waitlist.store";
 
 export function useWaitlist() {
+  const hasJoined = useWaitlistStore((state) => state.hasJoined);
+  const setHasJoined = useWaitlistStore((state) => state.setHasJoined);
+
   const form = useForm<z.infer<typeof WaitlistSchema>>({
     resolver: zodResolver(WaitlistSchema),
     defaultValues: { email: "" },
@@ -50,6 +54,7 @@ export function useWaitlist() {
 
   const onSubmit = async (data: z.infer<typeof WaitlistSchema>) => {
     await trigger(data);
+    setHasJoined(true);
   };
 
   return {
@@ -57,7 +62,8 @@ export function useWaitlist() {
     onSubmit,
     result: data,
     loading: isMutating,
-    error: error,
+    error,
     waitlistCount: waitlistCount ?? 0,
+    hasJoined,
   };
 }

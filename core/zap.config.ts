@@ -54,6 +54,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       "/terms-of-service",
       "/privacy-policy",
       "/cookie-policy",
+      "/waitlist",
       "/_vercel/speed-insights/vitals",
       "/_vercel/insights/view",
       "/opengraph-image",

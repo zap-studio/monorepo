@@ -19,7 +19,8 @@ import { AnimatedNumber } from "@/zap/components/misc/animated-number";
 import { useWaitlist } from "@/zap/hooks/waitlist/use-waitlist";
 
 export function WaitlistSection() {
-  const { form, onSubmit, result, loading, waitlistCount } = useWaitlist();
+  const { form, onSubmit, result, loading, waitlistCount, hasJoined } =
+    useWaitlist();
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center p-4">
@@ -29,13 +30,13 @@ export function WaitlistSection() {
 
       <div className="mx-auto max-w-md">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
           className="w-full"
+          initial={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
         >
           {ZAP_DEFAULT_SETTINGS.WAITLIST.SHOW_COUNT && (
-            <Badge variant={"secondary"} className="mb-4">
+            <Badge className="mb-4" variant={"secondary"}>
               <span className="font-semibold">
                 <AnimatedNumber value={waitlistCount} />
               </span>{" "}
@@ -53,10 +54,10 @@ export function WaitlistSection() {
 
         <Form {...form}>
           <motion.form
-            onSubmit={form.handleSubmit(onSubmit)}
+            animate={{ opacity: 1, scale: 1 }}
             className="w-full max-w-md space-y-4"
             initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            onSubmit={form.handleSubmit(onSubmit)}
             transition={{ duration: 0.4 }}
           >
             <FormField
@@ -73,10 +74,11 @@ export function WaitlistSection() {
             />
 
             <ZapButton
+              className="w-full"
+              disabled={hasJoined}
               loading={loading}
               loadingText="Joining..."
               type="submit"
-              className="w-full"
             >
               Join Waitlist
             </ZapButton>
@@ -84,15 +86,15 @@ export function WaitlistSection() {
             <AnimatePresence>
               {result && (
                 <motion.p
-                  key="form-message"
-                  initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  transition={{ duration: 0.3 }}
                   className={cn(
                     "text-sm",
                     result.success ? "text-green-600" : "text-destructive",
                   )}
+                  exit={{ opacity: 0, y: -5 }}
+                  initial={{ opacity: 0, y: -5 }}
+                  key="form-message"
+                  transition={{ duration: 0.3 }}
                 >
                   {result.message}
                 </motion.p>
