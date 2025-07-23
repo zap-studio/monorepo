@@ -4,11 +4,10 @@ import "client-only";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Effect } from "effect";
 import { useForm } from "react-hook-form";
-import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import type z from "zod/v4";
 
-import { client } from "@/zap/lib/orpc/client";
+import { orpcClient } from "@/zap/lib/orpc/client";
 import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";
 import { useWaitlistStore } from "@/zap/stores/waitlist.store";
 
@@ -21,24 +20,12 @@ export function useWaitlist() {
     defaultValues: { email: "" },
   });
 
-  const { data: waitlistCount } = useSWR("waitlist-count", async () => {
-    const effect = Effect.gen(function* () {
-      const count = yield* Effect.tryPromise(() =>
-        client.waitlist.getNumberOfPeopleInWaitlist(),
-      );
-
-      return count;
-    });
-
-    return await Effect.runPromise(effect);
-  });
-
   const { trigger, data, isMutating, error } = useSWRMutation(
     "submit-waitlist",
     async (_key, { arg }: { arg: z.infer<typeof WaitlistSchema> }) => {
       const effect = Effect.gen(function* () {
         const result = yield* Effect.tryPromise(() =>
-          client.waitlist.submitWaitlistEmail({ email: arg.email }),
+          orpcClient.waitlist.submitWaitlistEmail({ email: arg.email }),
         );
 
         if (result.success) {
@@ -63,7 +50,6 @@ export function useWaitlist() {
     result: data,
     loading: isMutating,
     error,
-    waitlistCount: waitlistCount ?? 0,
     hasJoined,
   };
 }

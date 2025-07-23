@@ -1,17 +1,24 @@
-"use client";
-
 import { Star } from "lucide-react";
+import { cache } from "react";
 
-import { useAverageRating } from "@/zap/hooks/feedbacks/use-average-rating";
-import { useNumberOfUsers } from "@/zap/hooks/users/use-number-of-users";
+import { getAverageRatingService } from "@/zap/services/feedbacks/get-average-rating.service";
+import { getNumberOfUsersService } from "@/zap/services/users/get-number-of-users.service";
 
-export function Stats() {
-  const { data: ratingsData } = useAverageRating();
-  const { data: userCount } = useNumberOfUsers();
+const getStatsData = cache(async () => {
+  const [{ averageRating, totalFeedbacks }, numberOfUsers] = await Promise.all([
+    getAverageRatingService(),
+    getNumberOfUsersService(),
+  ]);
 
-  const averageRating = ratingsData?.averageRating ?? 0;
-  const totalFeedbacks = ratingsData?.totalFeedbacks ?? 0;
-  const numberOfUsers = userCount ?? 0;
+  return {
+    averageRating,
+    totalFeedbacks,
+    numberOfUsers,
+  };
+});
+
+export async function Stats() {
+  const { averageRating, totalFeedbacks, numberOfUsers } = await getStatsData();
 
   const renderStars = () => {
     const fullStars = Math.floor(averageRating);

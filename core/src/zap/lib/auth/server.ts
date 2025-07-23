@@ -16,7 +16,7 @@ import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { SERVER_ENV } from "@/lib/env.server";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { client } from "@/zap/lib/orpc/client";
+import { orpcServer } from "@/zap/lib/orpc/server";
 
 export const auth = betterAuth({
   appName: "Zap.ts",
@@ -27,7 +27,7 @@ export const auth = betterAuth({
     maxPasswordLength: SETTINGS.AUTH.MAXIMUM_PASSWORD_LENGTH,
     requireEmailVerification: SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION,
     sendResetPassword: async ({ user, url }) => {
-      const { canSend, timeLeft } = await client.mails.canSendMail({
+      const { canSend, timeLeft } = await orpcServer.mails.canSendMail({
         userId: user.id,
       });
       if (!canSend) {
@@ -36,18 +36,18 @@ export const auth = betterAuth({
         );
       }
 
-      await client.mails.sendForgotPasswordMail({
+      await orpcServer.mails.sendForgotPasswordMail({
         recipients: [user.email],
         subject: `${SETTINGS.MAIL.PREFIX} - Reset your password`,
         url,
       });
 
-      await client.mails.updateLastTimestampMailSent({ userId: user.id });
+      await orpcServer.mails.updateLastTimestampMailSent({ userId: user.id });
     },
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
-      const { canSend, timeLeft } = await client.mails.canSendMail({
+      const { canSend, timeLeft } = await orpcServer.mails.canSendMail({
         userId: user.id,
       });
       if (!canSend) {
@@ -56,13 +56,13 @@ export const auth = betterAuth({
         );
       }
 
-      await client.mails.sendVerificationMail({
+      await orpcServer.mails.sendVerificationMail({
         recipients: [user.email],
         subject: `${SETTINGS.MAIL.PREFIX} - Verify your email`,
         url,
       });
 
-      await client.mails.updateLastTimestampMailSent({ userId: user.id });
+      await orpcServer.mails.updateLastTimestampMailSent({ userId: user.id });
     },
   },
   socialProviders: {

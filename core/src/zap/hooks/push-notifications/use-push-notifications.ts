@@ -24,7 +24,16 @@ interface ApiError {
 }
 
 export function usePushNotifications() {
-  const store = usePushNotificationsStore();
+  const subscription = usePushNotificationsStore((state) => state.subscription);
+  const setSubscription = usePushNotificationsStore(
+    (state) => state.setSubscription,
+  );
+  const setSubscribed = usePushNotificationsStore(
+    (state) => state.setSubscribed,
+  );
+  const setSubscriptionState = usePushNotificationsStore(
+    (state) => state.setSubscriptionState,
+  );
 
   const { trigger: subscribeTrigger, isMutating: isSubscribing } =
     useSWRMutation<
@@ -49,9 +58,9 @@ export function usePushNotifications() {
           toast.success("Subscribed to notifications!");
         },
         onError: (error) => {
-          if (store.subscription) {
-            store.subscription.unsubscribe().catch(() => {});
-            usePushNotificationsStore.setState({
+          if (subscription) {
+            subscription.unsubscribe().catch(() => {});
+            setSubscriptionState({
               subscription: null,
               isSubscribed: false,
             });
@@ -86,7 +95,7 @@ export function usePushNotifications() {
   const subscribeToPush = async () => {
     await Effect.runPromise(
       Effect.gen(function* (_) {
-        usePushNotificationsStore.setState({ isSubscribed: true });
+        setSubscribed(true);
 
         const registration = yield* _(
           Effect.tryPromise({
@@ -117,7 +126,7 @@ export function usePushNotifications() {
           }),
         );
 
-        usePushNotificationsStore.setState({ subscription: sub });
+        setSubscription(sub);
         const serializedSub = sub.toJSON();
 
         yield* _(
@@ -129,7 +138,7 @@ export function usePushNotifications() {
       }).pipe(
         Effect.catchAll(() =>
           Effect.sync(() => {
-            usePushNotificationsStore.setState({
+            setSubscriptionState({
               subscription: null,
               isSubscribed: false,
             });
@@ -141,11 +150,11 @@ export function usePushNotifications() {
   };
 
   const unsubscribeFromPush = async () => {
-    const { subscription } = store;
     if (!subscription) return;
+
     await Effect.runPromise(
       Effect.gen(function* (_) {
-        usePushNotificationsStore.setState({
+        setSubscriptionState({
           subscription: null,
           isSubscribed: false,
         });

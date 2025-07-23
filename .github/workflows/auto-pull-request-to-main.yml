@@ -5,6 +5,10 @@ on:
     branches:
       - staging
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   create-pr:
     runs-on: ubuntu-latest
@@ -19,7 +23,7 @@ jobs:
 
           if [ "$COUNT" -eq "0" ]; then
             gh pr create \
-              --title "Auto PR: staging → main" \
+              --title "staging → main" \
               --body "Automated PR from staging to main" \
               --base main \
               --head staging
@@ -27,4 +31,4 @@ jobs:
             echo "PR already exists."
           fi
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}

@@ -12,11 +12,11 @@ import { link } from "@/zap/lib/orpc/client";
 type RouterClientType = RouterClient<typeof router>;
 type ORPCReactUtils = RouterUtils<RouterClient<typeof router>>;
 
-interface ORPCStore {
+interface ORPCStoreState {
   orpc: ORPCReactUtils;
 }
 
-export const useORPCStore = create<ORPCStore>(() => {
+export const useORPCStore = create<ORPCStoreState>(() => {
   const client: RouterClientType = createORPCClient(link);
   const orpc = createORPCReactQueryUtils(client);
 
@@ -26,6 +26,6 @@ export const useORPCStore = create<ORPCStore>(() => {
 });
 
 export function useORPC() {
-  const { orpc } = useORPCStore();
+  const orpc = useORPCStore((state) => state.orpc);
   return orpc;
 }

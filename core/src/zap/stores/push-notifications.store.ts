@@ -5,18 +5,32 @@ import { useEffect } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface PushNotificationsStore {
+interface PushNotificationsStoreState {
   isSupported: boolean;
   subscription: PushSubscription | null;
   message: string;
   isIOS: boolean;
   isStandalone: boolean;
   isSubscribed: boolean;
+}
+
+interface PushNotificationsStoreActions {
   setMessage: (message: string) => void;
+  setSubscribed: (isSubscribed: boolean) => void;
+  setSubscription: (subscription: PushSubscription | null) => void;
+  setSubscriptionState: ({
+    subscription,
+    isSubscribed,
+  }: {
+    subscription: PushSubscription | null;
+    isSubscribed: boolean;
+  }) => void;
   initialize: () => void;
 }
 
-export const usePushNotificationsStore = create<PushNotificationsStore>()(
+export const usePushNotificationsStore = create<
+  PushNotificationsStoreState & PushNotificationsStoreActions
+>()(
   persist(
     (set) => ({
       isSupported: false,
@@ -27,6 +41,13 @@ export const usePushNotificationsStore = create<PushNotificationsStore>()(
       isSubscribed: false,
 
       setMessage: (message) => set({ message }),
+
+      setSubscribed: (isSubscribed) => set({ isSubscribed }),
+
+      setSubscription: (subscription) => set({ subscription }),
+
+      setSubscriptionState: ({ subscription, isSubscribed }) =>
+        set({ subscription, isSubscribed }),
 
       initialize: () => {
         if (typeof window === "undefined" || typeof navigator === "undefined")
@@ -59,7 +80,7 @@ export const usePushNotificationsStore = create<PushNotificationsStore>()(
 );
 
 export function usePushNotificationsInitializer() {
-  const { initialize } = usePushNotificationsStore();
+  const initialize = usePushNotificationsStore((state) => state.initialize);
 
   useEffect(() => {
     initialize();
