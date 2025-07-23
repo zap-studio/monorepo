@@ -38,6 +38,8 @@ const SECTIONS = [
   },
 ];
 
+export const revalidate = 3600; // revalidate every hour
+
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
