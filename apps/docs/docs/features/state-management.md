@@ -40,7 +40,8 @@ Access and update state in your React components using the custom hook exported 
 import { useUserStore } from "@/stores/user.store";
 
 export default function Profile() {
-  const { user, setUser } = useUserStore();
+  const user = useUserStore((state) => state.user);
+  const setUser = useUserStore((state) => state.setUser);
 
   // ...
 }
