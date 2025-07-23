@@ -6,8 +6,9 @@ export default defineConfig({
   vite: {
     plugins: [llmstxt()],
   },
-  title: 'Zap.ts ⚡️',
-  description: 'Build applications as fast as a zap.',
+  title: 'Zap.ts | Build applications as fast as a zap',
+  description:
+    "Zap.ts – with the ⚡️ symbol – is a Next.js boilerplate designed to help you build applications faster using a modern set of tools. It also comes with best practices to build excellent modern web applications. It's fast to set up and very easy to use. It comes with clear documentation and a carefully selected set of tools that make the developer experience (DX) modern and enjoyable.",
   lang: 'en-US',
   head: [['link', { rel: 'icon', href: '/favicon.ico' }]],
   lastUpdated: true,
