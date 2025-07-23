@@ -19,8 +19,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
 
   const titleParam = url.searchParams.get("title");
-  const title = ZAP_DEFAULT_METADATA.openGraph?.title || "Zap.ts";
-  const description = ZAP_DEFAULT_METADATA.openGraph?.description;
+  const title = titleParam || ZAP_DEFAULT_METADATA.openGraph?.title || "Zap.ts";
 
   const [geist, geistSemiBold] = await Promise.all([
     readFile(join(process.cwd(), FONT_PATHS.GEIST_REGULAR)),
@@ -30,37 +29,17 @@ export async function GET(request: Request) {
   return new ImageResponse(
     (
       <div tw="flex flex-col w-full h-full items-center justify-center bg-black">
-        {titleParam ? (
-          <div tw="flex flex-col py-12 px-8 text-left justify-center">
-            <h2
-              style={{
-                color: "#e6d63b",
-                fontFamily: "Geist SemiBold, sans-serif",
-              }}
-              tw="text-6xl font-semibold"
-            >
-              {String(titleParam)}
-            </h2>
-          </div>
-        ) : (
-          <div tw="flex flex-col py-12 px-8 text-left justify-center">
-            <h2
-              style={{
-                color: "#e6d63b",
-                fontFamily: "Geist SemiBold, sans-serif",
-              }}
-              tw="text-8xl font-semibold"
-            >
-              {String(title)}
-            </h2>
-            <p
-              style={{ fontFamily: "Geist, sans-serif" }}
-              tw="text-4xl text-white mt-0"
-            >
-              {description}
-            </p>
-          </div>
-        )}
+        <div tw="flex flex-col py-12 px-8 text-left justify-center">
+          <h2
+            style={{
+              color: "#e6d63b",
+              fontFamily: "Geist SemiBold, sans-serif",
+            }}
+            tw="text-6xl font-semibold"
+          >
+            {String(title)}
+          </h2>
+        </div>
       </div>
     ),
     {
