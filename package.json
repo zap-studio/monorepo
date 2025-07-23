@@ -17,7 +17,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "turbo": "^2.5.5",
-    "ultracite": "5.0.46"
+    "ultracite": "5.0.47"
   },
   "workspaces": [
     "packages/*",

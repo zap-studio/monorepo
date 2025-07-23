@@ -47,7 +47,7 @@
   "dependencies": {
     "chalk": "^5.4.1",
     "commander": "^14.0.0",
-    "effect": "^3.17.0",
+    "effect": "^3.17.1",
     "execa": "^9.6.0",
     "figlet": "^1.8.2",
     "fs-extra": "^11.3.0",
@@ -62,9 +62,9 @@
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.8",
     "@types/node": "^24.1.0",
-    "tsdown": "^0.12.9",
+    "tsdown": "^0.13.0",
     "typescript": "^5.8.3",
-    "ultracite": "5.0.46"
+    "ultracite": "5.0.47"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"
