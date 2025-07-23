@@ -15,11 +15,18 @@ const FONT_PATHS = {
   GEIST_SEMIBOLD: "public/fonts/Geist-SemiBold.ttf",
 };
 
+const SEPARATORS_REGEX = /[|•·—–-]/;
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
 
   const titleParam = url.searchParams.get("title");
-  const title = titleParam || ZAP_DEFAULT_METADATA.openGraph?.title || "Zap.ts";
+  const title =
+    titleParam ||
+    String(ZAP_DEFAULT_METADATA.openGraph?.title).split(
+      SEPARATORS_REGEX,
+    )?.[0] ||
+    "Zap.ts";
 
   const [geist, geistSemiBold] = await Promise.all([
     readFile(join(process.cwd(), FONT_PATHS.GEIST_REGULAR)),
