@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { Effect, Exit } from 'effect';
+import { Console, Effect, Exit, pipe } from 'effect';
 import { createProcedureEffect } from './commands/create-procedure.js';
 import { createProjectEffect } from './commands/create-project.js';
 import { generateEnvEffect } from './commands/generate-env.js';
 import { displayWelcome, getPackageVersion } from './utils/cli/cli.js';
 
-const main = Effect.tryPromise(() => getPackageVersion()).pipe(
+const main = pipe(
+  getPackageVersion(),
   Effect.tap((version) => {
     const program = new Command();
 
@@ -22,7 +23,7 @@ const main = Effect.tryPromise(() => getPackageVersion()).pipe(
       .alias('new')
       .description('Create a new Next.js project with Zap.ts boilerplate')
       .action(() => {
-        displayWelcome();
+        Effect.runSync(displayWelcome);
         Effect.runPromiseExit(createProjectEffect()).then((exit) => {
           if (Exit.isFailure(exit)) {
             process.exit(1);
@@ -59,7 +60,7 @@ const main = Effect.tryPromise(() => getPackageVersion()).pipe(
       });
 
     program.action(() => {
-      displayWelcome();
+      Effect.runSync(displayWelcome);
       Effect.runPromiseExit(createProjectEffect()).then((exit) => {
         if (Exit.isFailure(exit)) {
           process.exit(1);
@@ -76,6 +77,6 @@ const main = Effect.tryPromise(() => getPackageVersion()).pipe(
 );
 
 Effect.runPromise(main).catch((error) => {
-  process.stderr.write(`Failed to start CLI: ${error}`);
+  Console.log(`An error occurred: ${error}`);
   process.exit(1);
 });

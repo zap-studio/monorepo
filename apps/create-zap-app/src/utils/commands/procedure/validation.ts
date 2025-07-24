@@ -2,9 +2,7 @@ import { Effect } from 'effect';
 
 const PROCEDURE_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9]*$/;
 
-export function validateProcedureName(
-  procedureName: string
-): Effect.Effect<string, Error, never> {
+export function validateProcedureName(procedureName: string) {
   if (!procedureName || typeof procedureName !== 'string') {
     return Effect.fail(new Error('Procedure name must be a non-empty string'));
   }

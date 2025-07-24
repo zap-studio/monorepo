@@ -1,28 +1,25 @@
 import path from 'node:path';
 import { Effect } from 'effect';
-import fs from 'fs-extra';
+import {
+  ensureDirEffect,
+  joinPathEffect,
+  writeFileEffect,
+} from '@/utils/index.js';
 import { toPascalCase } from './validation.js';
-
-function ensureDir(procedurePath: string) {
-  return Effect.tryPromise(() => fs.ensureDir(path.dirname(procedurePath)));
-}
-
-function writeFile(procedurePath: string, procedureContent: string) {
-  return Effect.tryPromise(() => fs.writeFile(procedurePath, procedureContent));
-}
 
 export function generateProcedureFile(
   projectDir: string,
   procedureName: string,
   kebabCaseName: string
 ) {
-  const procedurePath = path.join(
-    projectDir,
-    'src/rpc/procedures',
-    `${kebabCaseName}.rpc.ts`
-  );
+  const program = Effect.gen(function* () {
+    const procedurePath = yield* joinPathEffect(
+      projectDir,
+      'src/rpc/procedures',
+      `${kebabCaseName}.rpc.ts`
+    );
 
-  const procedureContent = `
+    const procedureContent = `
 import { base } from "../middlewares";
 
 export const ${procedureName} = base.handler(async () => {
@@ -30,10 +27,11 @@ export const ${procedureName} = base.handler(async () => {
 });
   `.trim();
 
-  return Effect.gen(function* () {
-    yield* ensureDir(path.dirname(procedurePath));
-    yield* writeFile(procedurePath, procedureContent);
+    yield* ensureDirEffect(path.dirname(procedurePath));
+    yield* writeFileEffect(procedurePath, procedureContent);
   });
+
+  return program;
 }
 
 export function generateHookFile(
@@ -41,14 +39,15 @@ export function generateHookFile(
   procedureName: string,
   kebabCaseName: string
 ) {
-  const hookPath = path.join(
-    projectDir,
-    'src/hooks',
-    `use-${kebabCaseName}.ts`
-  );
+  const program = Effect.gen(function* () {
+    const hookPath = yield* joinPathEffect(
+      projectDir,
+      'src/hooks',
+      `use-${kebabCaseName}.ts`
+    );
 
-  const capitalizedProcedureName = toPascalCase(procedureName);
-  const hookContent = `
+    const capitalizedProcedureName = toPascalCase(procedureName);
+    const hookContent = `
 "use client";
 
 import { useORPC } from "@/zap/stores/orpc.store";
@@ -60,8 +59,9 @@ export const use${capitalizedProcedureName} = () => {
 };
   `.trim();
 
-  return Effect.gen(function* () {
-    yield* ensureDir(path.dirname(hookPath));
-    yield* writeFile(hookPath, hookContent);
+    yield* ensureDirEffect(path.dirname(hookPath));
+    yield* writeFileEffect(hookPath, hookContent);
   });
+
+  return program;
 }

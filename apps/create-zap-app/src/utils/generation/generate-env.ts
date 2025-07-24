@@ -1,45 +1,11 @@
-import { writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { Effect } from 'effect/index';
+import type { Ora } from 'ora';
+import { CORE_ENV } from '@/data/env';
 import { generateSecret } from '@/utils/generation/generate-secret.js';
+import { writeFileEffect } from '..';
 
-const CORE_ENV = [
-  'BETTER_AUTH_SECRET',
-  'BETTER_AUTH_URL',
-  'GOOGLE_CLIENT_ID',
-  'GOOGLE_CLIENT_SECRET',
-  'SITE_URL',
-  'DATABASE_URL',
-  'DATABASE_URL_DEV',
-  'RESEND_API_KEY',
-  'NEXT_PUBLIC_VAPID_PUBLIC_KEY',
-  'VAPID_PRIVATE_KEY',
-  'POLAR_ACCESS_TOKEN',
-  'POLAR_WEBHOOK_SECRET',
-  'NEXT_PUBLIC_POSTHOG_KEY',
-  'NEXT_PUBLIC_POSTHOG_HOST',
-  'ENCRYPTION_KEY',
-  'MCP_GITHUB_PERSONAL_ACCESS_TOKEN',
-  'MCP_POSTHOG_AUTH_HEADER',
-  'MCP_SUPABASE_ACCESS_TOKEN',
-  'MCP_MAGIC_API_KEY',
-  'MCP_FIRECRAWL_API_KEY',
-  'MCP_NOTION_API_HEADERS',
-  'MCP_PERPLEXITY_API_KEY',
-  'MCP_ELEVENLABS_API_KEY',
-  'MCP_SENTRY_ACCESS_TOKEN',
-  'MCP_SENTRY_HOST',
-  'ZAP_MAIL',
-];
-
-/**
- * Get the environment variable content with optional template formatting
- * This function provides default values for required environment variables.
- * It formats the content based on whether the file is a template or not.
- *
- * @param envVar - The name of the environment variable
- * @returns The formatted content for the environment variable
- */
-function getEnvVarContent(envVar: string): string {
+function getEnvVarContent(envVar: string) {
   let content: string;
 
   switch (envVar) {
@@ -71,51 +37,33 @@ function getEnvVarContent(envVar: string): string {
       return getOptionalEnvVarContent(envVar);
   }
 
-  return content;
+  return Effect.succeed(content);
 }
 
-/**
- * Get optional environment variable content with template formatting
- * This function provides default values for optional environment variables.
- * It formats the content based on whether the file is a template or not.
- *
- * @param envVar - The name of the environment variable
- * @returns The formatted content for the environment variable
- */
-function getOptionalEnvVarContent(envVar: string): string {
-  return `${envVar}="your_${envVar.toLowerCase()}_here"`;
+function getOptionalEnvVarContent(envVar: string) {
+  return Effect.succeed(`${envVar}="your_${envVar.toLowerCase()}_here"`);
 }
 
-/**
- * Generates an environment file with required environment variables.
- *
- * This function collects core environment variables and generates an environment file with placeholders
- * or appropriate values, such as:
- * - A securely generated `BETTER_AUTH_SECRET`
- * - A sample `DATABASE_URL`
- * - A default `BETTER_AUTH_URL`
- *
- * @param outputDir - The output directory where the environment file will be written.
- * @param filename - The name of the environment file (default: '.env').
- *
- * A promise that resolves when the environment file is written.
- *
- * @example
- * ```ts
- * // Generate a regular .env file
- * await generateEnv("./project");
- *
- * // Generate a template file
- * await generateEnv("./project", ".env.template", true);
- * ```
- */
-export async function generateEnv(
-  outputDir: string,
-  filename = '.env'
-): Promise<void> {
-  const envContent = CORE_ENV.map((envVar) => getEnvVarContent(envVar)).join(
-    '\n'
-  );
+interface GenerateEnvOptions {
+  outputDir: string;
+  filename?: string;
+  spinner?: Ora | null;
+}
 
-  await writeFile(resolve(outputDir, filename), envContent);
+export function generateEnv({
+  outputDir,
+  filename = '.env',
+  spinner,
+}: GenerateEnvOptions) {
+  const program = Effect.gen(function* () {
+    const envContent = CORE_ENV.map((envVar) => getEnvVarContent(envVar)).join(
+      '\n'
+    );
+
+    yield* writeFileEffect(resolve(outputDir, filename), envContent);
+
+    spinner?.succeed('.env file generated.');
+  });
+
+  return program;
 }

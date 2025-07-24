@@ -1,10 +1,10 @@
-import path from 'node:path';
 import { Effect } from 'effect';
 import {
   type ObjectLiteralExpression,
   Project,
   type SourceFile,
 } from 'ts-morph';
+import { joinPathEffect } from '@/utils';
 
 function saveRouterFile(sourceFile: SourceFile) {
   return Effect.tryPromise(() => sourceFile.save());
@@ -72,13 +72,14 @@ export function updateRouterFile(
   procedureName: string,
   kebabCaseName: string
 ) {
-  const routerPath = path.join(projectDir, 'src/rpc/router.ts');
-
   return Effect.gen(function* () {
+    const routerPath = yield* joinPathEffect(projectDir, 'src/rpc/router.ts');
     const sourceFile = yield* loadSourceFile(routerPath);
+
     yield* addImportDeclaration(sourceFile, kebabCaseName, procedureName);
     const routerVar = yield* findRouterVariable(sourceFile);
     const objectLiteral = yield* getRouterInitializer(routerVar);
+
     yield* addProcedureToRouter(objectLiteral, procedureName);
     yield* saveRouterFile(sourceFile);
   });

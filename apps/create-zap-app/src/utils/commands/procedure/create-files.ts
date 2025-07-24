@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { Effect, pipe } from 'effect';
+import { Console, Effect, pipe } from 'effect';
 import type { Ora } from 'ora';
 import { ProcessExitError } from '@/lib/effect';
 import { generateHookFile, generateProcedureFile } from './file-generation';
@@ -39,7 +39,7 @@ function updateRouterEffect(
       );
     }),
     Effect.tap(() => {
-      process.stdout.write(chalk.green('Updated router.ts\n'));
+      Console.log(chalk.green('Updated router.ts\n'));
     })
   );
 }
@@ -59,7 +59,7 @@ function createHookEffect(
       );
     }),
     Effect.tap(() => {
-      process.stdout.write(chalk.green(`Created use-${kebabCaseName}.ts\n`));
+      Console.log(chalk.green(`Created use-${kebabCaseName}.ts\n`));
     })
   );
 
