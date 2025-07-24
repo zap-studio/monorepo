@@ -1,5 +1,11 @@
 # create-zap-app
 
+## 1.4.2
+
+### Patch Changes
+
+- f1cf682: fix big issue with writing files
+
 ## 1.4.1
 
 ### Patch Changes
