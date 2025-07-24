@@ -1,158 +1,100 @@
-import { exec } from 'node:child_process';
-import { promisify } from 'node:util';
-import { Effect } from 'effect';
+import { Effect, pipe } from 'effect';
 import type { Ora } from 'ora';
-import type { PackageManager } from '@/schemas/index.js';
-import { promptPackageManager } from '@/utils/index.js';
+import type { PackageManager } from '@/schemas/package-manager.schema';
+import { execAsync } from '@/utils';
+import { handlePromptError } from '@/utils/prompts/prompt-package-manager';
+import { promptPackageManagerSelection } from './prompts';
 
-const execAsync = promisify(exec);
-
-/**
- * Gets the install command for a specific package manager.
- * @param pm - The package manager to get the command for
- * @returns The install command string
- *
- * @example
- * ```typescript
- * import { getInstallCommand } from '@/utils/commands/project/dependencies.js';
- *
- * getInstallCommand('npm'); // Returns 'npm install --legacy-peer-deps'
- * getInstallCommand('yarn'); // Returns 'yarn'
- * getInstallCommand('pnpm'); // Returns 'pnpm install'
- * getInstallCommand('bun'); // Returns 'bun install'
- * ```
- */
-export function getInstallCommand(pm: PackageManager): string {
+export function getInstallCommand(pm: PackageManager) {
   switch (pm) {
     case 'npm':
-      return 'npm install --legacy-peer-deps';
+      return Effect.succeed('npm install --legacy-peer-deps');
     case 'yarn':
-      return 'yarn';
+      return Effect.succeed('yarn');
     case 'pnpm':
-      return 'pnpm install';
+      return Effect.succeed('pnpm install');
     case 'bun':
-      return 'bun install';
+      return Effect.succeed('bun install');
     default:
-      return 'npm install --legacy-peer-deps';
+      return Effect.succeed('npm install --legacy-peer-deps');
   }
 }
 
-/**
- * Installs dependencies with retry mechanism using Effect.
- * @param pm - The package manager to use for installation
- * @param outputDir - The directory where dependencies should be installed
- * @param spinner - The ora spinner instance for user feedback
- * @param retryCount - The current retry count (internal use)
- * @returns Effect that resolves to the final package manager used
- *
- * @example
- * ```typescript
- * import { installDependenciesWithRetry } from '@/utils/commands/project/dependencies.js';
- *
- * installDependenciesWithRetry('npm', '/path/to/project', spinner);
- * ```
- */
 export function installDependenciesWithRetry(
-  pm: PackageManager,
+  initialPM: PackageManager,
   outputDir: string,
-  spinner: Ora,
-  retryCount = 0
-): Effect.Effect<PackageManager, Error, never> {
+  spinner: Ora
+) {
   const maxRetries = 3;
 
-  spinner.text = `Installing dependencies with ${pm}...`;
-  spinner.start();
+  const program = Effect.gen(function* () {
+    let retryCount = 0;
+    let currentPM: PackageManager = initialPM;
 
-  const installCmd = getInstallCommand(pm);
+    while (retryCount <= maxRetries) {
+      spinner.text = `Installing dependencies with ${currentPM}...`;
+      spinner.start();
 
-  return Effect.tryPromise({
-    try: () => execAsync(installCmd, { cwd: outputDir }),
-    catch: (e) => (e instanceof Error ? e : new Error(String(e))),
-  }).pipe(
-    Effect.map(() => {
-      spinner.succeed(`Dependencies installed with ${pm}.`);
-      return pm;
-    }),
-    Effect.catchAll(() => {
-      if (retryCount >= maxRetries) {
-        return Effect.fail(
+      const installCmd = yield* getInstallCommand(currentPM);
+
+      const success = yield* pipe(
+        Effect.tryPromise(() => execAsync(installCmd, { cwd: outputDir })),
+        Effect.map(() => {
+          spinner.succeed(`Dependencies installed with ${currentPM}.`);
+          return true;
+        }),
+        Effect.catchAll(() => Effect.succeed(false))
+      );
+
+      if (success) {
+        return currentPM;
+      }
+
+      retryCount++;
+      spinner.fail(`Failed to install dependencies with ${currentPM}.`);
+
+      if (retryCount > maxRetries) {
+        return yield* Effect.fail(
           new Error(
             `Failed to install dependencies after ${maxRetries} attempts. Please try installing manually.`
           )
         );
       }
 
-      return Effect.sync(() => {
-        spinner.fail(`Failed to install dependencies with ${pm}.`);
-      })
-        .pipe(Effect.flatMap(() => promptPackageManager(pm)))
-        .pipe(
-          Effect.catchAll((error) => {
-            const errorMessage =
-              error instanceof Error ? error.message : String(error);
-            if (
-              errorMessage.includes('User force closed') ||
-              errorMessage.includes('User interrupted') ||
-              errorMessage.includes('SIGINT') ||
-              errorMessage.includes('SIGTERM')
-            ) {
-              process.exit(1);
-            }
-            return installDependenciesWithRetry(
-              pm,
-              outputDir,
-              spinner,
-              retryCount + 1
-            );
-          }),
-          Effect.flatMap((newPackageManager) =>
-            installDependenciesWithRetry(
-              newPackageManager as PackageManager,
-              outputDir,
-              spinner,
-              0
-            )
-          )
-        );
-    })
-  );
+      const newPM = yield* pipe(
+        promptPackageManagerSelection(currentPM),
+        Effect.catchAll(handlePromptError)
+      );
+
+      currentPM = newPM as PackageManager;
+    }
+
+    return currentPM;
+  });
+
+  return program;
 }
 
-/**
- * Updates project dependencies.
- * @param packageManager - The package manager to use
- * @param outputDir - The project directory
- * @param spinner - The ora spinner instance for user feedback
- * @returns Effect that resolves when dependencies are updated
- *
- * @example
- * ```typescript
- * import { Effect } from 'effect';
- * import { updateDependencies } from '@/utils/commands/project/dependencies.js';
- * import ora from 'ora';
- *
- * const spinner = ora().start();
- * const effect = updateDependencies('npm', '/path/to/project', spinner);
- *
- * // Run the effect
- * Effect.runPromise(effect).then(() => {
- *   console.log('Dependencies updated successfully');
- * }).catch(console.error);
- * ```
- */
 export function updateDependencies(
   packageManager: PackageManager,
   outputDir: string,
   spinner: Ora
-): Effect.Effect<void, Error, never> {
-  spinner.text = 'Updating dependencies...';
-  spinner.start();
-  return Effect.tryPromise({
-    try: () => execAsync(`${packageManager} update`, { cwd: outputDir }),
-    catch: () =>
-      spinner.warn('Failed to update dependencies, continuing anyway...'),
-  }).pipe(
-    Effect.tap(() => spinner.succeed('Dependencies updated.')),
-    Effect.catchAll(() => Effect.succeed(undefined))
+) {
+  const program = Effect.gen(function* () {
+    spinner.text = 'Updating dependencies...';
+    spinner.start();
+
+    yield* Effect.tryPromise(() =>
+      execAsync(`${packageManager} update`, { cwd: outputDir })
+    );
+    spinner.succeed('Dependencies updated successfully.');
+  });
+
+  return pipe(
+    program,
+    Effect.catchAll(() => {
+      spinner.warn('Failed to update dependencies, continuing anyway...');
+      return Effect.succeed(undefined);
+    })
   );
 }

@@ -1,4 +1,4 @@
-export * from '@/utils/cli/index.js';
-export * from '@/utils/generation/index.js';
-export * from '@/utils/prompts/index.js';
-export * from '@/utils/template/index.js';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
+
+export const execAsync = promisify(exec);

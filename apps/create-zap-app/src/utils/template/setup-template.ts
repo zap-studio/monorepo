@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { Effect, pipe } from 'effect';
 import fs from 'fs-extra';
 import type { Ora } from 'ora';
 import {
@@ -13,49 +14,68 @@ import {
   moveTempFilesToOutput,
 } from '@/utils/template/files.js';
 
-/**
- * Sets up a new Zap.ts project by downloading, extracting, and configuring the template.
- *
- * This function orchestrates the complete template setup process:
- * 1. Downloads the latest Zap.ts template tarball
- * 2. Extracts the template to the output directory
- * 3. Moves core files to a temporary location
- * 4. Cleans up the output directory structure
- * 5. Moves files from temp back to output with proper organization
- * 6. Removes temporary files and lock files
- * 7. Cleans up package.json for the new project
- *
- * @param outputDir - The directory where the new Zap.ts project will be created
- * @param spinner - An Ora spinner instance for displaying progress updates
- *
- * @example
- * ```typescript
- * import ora from 'ora';
- *
- * const spinner = ora('Setting up template...').start();
- * await setupTemplate('/path/to/new-project', spinner);
- * spinner.succeed('Template setup complete!');
- * ```
- */
-export async function setupTemplate(
-  outputDir: string,
-  spinner: Ora
-): Promise<void> {
-  const tarballPath = await downloadTemplate(outputDir);
+export function setupTemplate(outputDir: string, spinner: Ora) {
+  const program = Effect.gen(function* () {
+    const tarballPath = yield* pipe(
+      downloadTemplate(outputDir),
+      Effect.catchAll((error) => {
+        spinner.fail(`Failed to download template: ${String(error)}`);
+        return Effect.fail(new Error('Downloading template failed'));
+      })
+    );
 
-  spinner.text = 'Extracting Zap.ts template...';
-  await extractTemplate(outputDir, tarballPath);
+    spinner.text = 'Extracting Zap.ts template...';
+    yield* pipe(
+      extractTemplate(outputDir, tarballPath),
+      Effect.catchAll((error) => {
+        spinner.fail(`Failed to extract template: ${String(error)}`);
+        return Effect.fail(new Error('Extracting template failed'));
+      })
+    );
 
-  await moveCoreFiles(outputDir);
+    yield* pipe(
+      moveCoreFiles(outputDir),
+      Effect.catchAll((error) => {
+        spinner.fail(`Failed to move core files: ${String(error)}`);
+        return Effect.fail(new Error('Moving core files failed'));
+      })
+    );
 
-  await cleanupOutputDirectory(outputDir);
+    yield* pipe(
+      cleanupOutputDirectory(outputDir),
+      Effect.catchAll((error) => {
+        spinner.fail(`Failed to clean up output directory: ${String(error)}`);
+        return Effect.fail(new Error('Cleaning up output directory failed'));
+      })
+    );
 
-  const tempDir = path.join(outputDir, 'temp');
-  await moveTempFilesToOutput(outputDir, tempDir);
+    const tempDir = yield* Effect.try(() => path.join(outputDir, 'temp'));
+    yield* pipe(
+      moveTempFilesToOutput(outputDir, tempDir),
+      Effect.catchAll((error) => {
+        spinner.fail(`Failed to move temporary files: ${String(error)}`);
+        return Effect.fail(new Error('Moving temporary files failed'));
+      })
+    );
 
-  await fs.remove(tempDir);
+    yield* Effect.tryPromise(() => fs.remove(tempDir));
 
-  removeLockFiles(outputDir);
+    yield* pipe(
+      removeLockFiles(outputDir),
+      Effect.catchAll((error) => {
+        spinner.fail(`Failed to remove lock files: ${String(error)}`);
+        return Effect.fail(new Error('Removing lock files failed'));
+      })
+    );
 
-  await cleanupPackageJson(outputDir);
+    yield* pipe(
+      cleanupPackageJson(outputDir),
+      Effect.catchAll((error) => {
+        spinner.fail(`Failed to clean up package.json: ${String(error)}`);
+        return Effect.fail(new Error('Cleaning up package.json failed'));
+      })
+    );
+  });
+
+  return program;
 }

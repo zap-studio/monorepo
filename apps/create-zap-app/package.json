@@ -15,7 +15,7 @@
     "boilerplate",
     "starter-kit"
   ],
-  "version": "1.4.0",
+  "version": "1.4.2",
   "module": "index.ts",
   "type": "module",
   "private": false,
@@ -45,6 +45,7 @@
     "format": "ultracite format"
   },
   "dependencies": {
+    "@effect/platform": "^0.90.0",
     "chalk": "^5.4.1",
     "commander": "^14.0.0",
     "effect": "^3.17.1",

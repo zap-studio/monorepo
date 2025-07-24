@@ -1,92 +1,57 @@
-import { exec } from 'node:child_process';
-import { promisify } from 'node:util';
 import chalk from 'chalk';
-import { Effect } from 'effect';
+import { Effect, pipe } from 'effect';
 import type { Ora } from 'ora';
-import type { PackageManager } from '@/schemas/index.js';
-import { generateEnv } from '@/utils/index.js';
+import type { PackageManager } from '@/schemas/package-manager.schema';
+import { execAsync } from '@/utils';
+import { generateEnv } from '@/utils/generation/generate-env';
 
-const execAsync = promisify(exec);
-
-/**
- * Runs Prettier formatting on the project.
- * @param packageManager - The package manager to use
- * @param outputDir - The project directory
- * @param spinner - The ora spinner instance for user feedback
- * @returns Effect that resolves when formatting is complete
- *
- * @example
- * ```typescript
- * import { runPrettierFormatting } from '@/utils/commands/project/post-install.js';
- *
- * runPrettierFormatting('npm', '/path/to/project', spinner);
- * ```
- */
 export function runPrettierFormatting(
   packageManager: PackageManager,
   outputDir: string,
   spinner: Ora
-): Effect.Effect<void, Error, never> {
-  spinner.text = 'Running Prettier on the project...';
-  spinner.start();
-  return Effect.tryPromise({
-    try: () => execAsync(`${packageManager} run format`, { cwd: outputDir }),
-    catch: () => spinner.warn('Failed to run Prettier, continuing anyway...'),
-  }).pipe(
-    Effect.tap(() => {
-      spinner.succeed('Prettier formatting complete.');
-    }),
-    Effect.catchAll(() => Effect.succeed(undefined))
+) {
+  const program = Effect.gen(function* () {
+    spinner.text = 'Running Prettier on the project...';
+    spinner.start();
+
+    pipe(
+      Effect.tryPromise(() =>
+        execAsync(`${packageManager} run format`, {
+          cwd: outputDir,
+        })
+      ),
+      Effect.tap(() => {
+        spinner.succeed('Prettier formatting complete.');
+      })
+    );
+  });
+
+  const recovered = pipe(
+    program,
+    Effect.catchAll(() => {
+      spinner.warn('Failed to run Prettier, continuing anyway...');
+      return Effect.succeed(undefined);
+    })
   );
+
+  return recovered;
 }
 
-/**
- * Generates the .env file for the project.
- * @param outputDir - The project directory
- * @param spinner - The ora spinner instance for user feedback
- * @returns Effect that resolves when .env file is generated
- *
- * @example
- * ```typescript
- * import { generateEnvFile } from '@/utils/commands/project/post-install.js';
- *
- * generateEnvFile('/path/to/project', spinner);
- * ```
- */
-export function generateEnvFile(
-  outputDir: string,
-  spinner: Ora
-): Effect.Effect<void, Error, never> {
-  spinner.text = 'Generating .env file...';
-  spinner.start();
-  return Effect.try({
-    try: () => generateEnv(outputDir),
-    catch: () =>
-      spinner.warn('Failed to generate .env file, continuing anyway...'),
-  }).pipe(
-    Effect.tap(() => {
-      spinner.succeed('.env file generated.');
-    }),
-    Effect.catchAll(() => Effect.succeed(undefined))
-  );
+export function generateEnvFile(outputDir: string, spinner: Ora) {
+  const program = Effect.gen(function* () {
+    spinner.text = 'Generating .env file...';
+    spinner.start();
+
+    yield* generateEnv({ outputDir, spinner });
+  });
+
+  return program;
 }
 
-/**
- * Displays the final success message and instructions.
- * @param projectName - The name of the created project
- * @param packageManager - The package manager used
- *
- * @example
- * ```typescript
- * import { displaySuccessMessage } from '@/utils/commands/project/post-install.js';
- *
- * displaySuccessMessage('my-project', 'npm');
- * ```
- */
 export function displaySuccessMessage(
   projectName: string,
   packageManager: PackageManager
-): void {
+) {
   process.stdout.write(chalk.green('Project setup complete!'));
   process.stdout.write('\n\n');
   process.stdout.write(chalk.bold.green('🎉 Project created successfully!'));
