@@ -3,33 +3,19 @@ import { Effect } from 'effect';
 import fs from 'fs-extra';
 import { toPascalCase } from './validation.js';
 
-/**
- * Generates a new RPC procedure file with the standard template.
- *
- * Creates the procedure file at `src/rpc/procedures/{kebabCaseName}.rpc.ts` with:
- * - Import of the base middleware
- * - Exported procedure handler with a default message response
- *
- * @param projectDir - The root directory of the project
- * @param procedureName - The original procedure name (camelCase)
- * @param kebabCaseName - The kebab-case version of the procedure name for the filename
- * @returns An Effect that resolves when the file is successfully created
- *
- * @example
- * ```typescript
- * const effect = generateProcedureFile(
- *   "/path/to/project",
- *   "getUserData",
- *   "get-user-data"
- * );
- * // Creates: src/rpc/procedures/get-user-data.rpc.ts
- * ```
- */
+function ensureDir(procedurePath: string) {
+  return Effect.tryPromise(() => fs.ensureDir(path.dirname(procedurePath)));
+}
+
+function writeFile(procedurePath: string, procedureContent: string) {
+  return Effect.tryPromise(() => fs.writeFile(procedurePath, procedureContent));
+}
+
 export function generateProcedureFile(
   projectDir: string,
   procedureName: string,
   kebabCaseName: string
-): Effect.Effect<void, Error, never> {
+) {
   const procedurePath = path.join(
     projectDir,
     'src/rpc/procedures',
@@ -44,53 +30,17 @@ export const ${procedureName} = base.handler(async () => {
 });
   `.trim();
 
-  return Effect.gen(function* (_) {
-    yield* _(
-      Effect.tryPromise({
-        try: () => fs.ensureDir(path.dirname(procedurePath)),
-        catch: (e) =>
-          new Error(`Failed to ensure procedure directory: ${String(e)}`),
-      })
-    );
-
-    yield* _(
-      Effect.tryPromise({
-        try: () => fs.writeFile(procedurePath, procedureContent),
-        catch: (e) => new Error(`Failed to write procedure file: ${String(e)}`),
-      })
-    );
+  return Effect.gen(function* () {
+    yield* ensureDir(path.dirname(procedurePath));
+    yield* writeFile(procedurePath, procedureContent);
   });
 }
 
-/**
- * Generates a React hook file for the RPC procedure.
- *
- * Creates the hook file at `src/hooks/use-{kebabCaseName}.ts` with:
- * - Client-side directive
- * - Import of ORPC store and SWR
- * - Exported hook that uses SWR for data fetching
- *
- * @param projectDir - The root directory of the project
- * @param procedureName - The original procedure name (camelCase)
- * @param kebabCaseName - The kebab-case version of the procedure name for the filename
- * @returns An Effect that resolves when the file is successfully created
- *
- * @example
- * ```typescript
- * const effect = generateHookFile(
- *   "/path/to/project",
- *   "getUserData",
- *   "get-user-data"
- * );
- * // Creates: src/hooks/use-get-user-data.ts
- * // Exports: useGetUserData hook
- * ```
- */
 export function generateHookFile(
   projectDir: string,
   procedureName: string,
   kebabCaseName: string
-): Effect.Effect<void, Error, never> {
+) {
   const hookPath = path.join(
     projectDir,
     'src/hooks',
@@ -110,20 +60,8 @@ export const use${capitalizedProcedureName} = () => {
 };
   `.trim();
 
-  return Effect.gen(function* (_) {
-    yield* _(
-      Effect.tryPromise({
-        try: () => fs.ensureDir(path.dirname(hookPath)),
-        catch: (e) =>
-          new Error(`Failed to ensure hook directory: ${String(e)}`),
-      })
-    );
-
-    yield* _(
-      Effect.tryPromise({
-        try: () => fs.writeFile(hookPath, hookContent),
-        catch: (e) => new Error(`Failed to write hook file: ${String(e)}`),
-      })
-    );
+  return Effect.gen(function* () {
+    yield* ensureDir(path.dirname(hookPath));
+    yield* writeFile(hookPath, hookContent);
   });
 }

@@ -2,41 +2,23 @@ import path from 'node:path';
 import { Effect } from 'effect';
 import ora from 'ora';
 import {
-  createProjectDirectory,
+  installDependenciesWithRetry,
+  updateDependencies,
+} from '@/utils/commands/project/dependencies';
+import {
   displaySuccessMessage,
   generateEnvFile,
-  installDependenciesWithRetry,
+  runPrettierFormatting,
+} from '@/utils/commands/project/post-install';
+import {
   promptPackageManagerSelection,
   promptProjectName,
-  runPrettierFormatting,
+} from '@/utils/commands/project/prompts';
+import {
+  createProjectDirectory,
   setupProjectTemplate,
-  updateDependencies,
-} from '@/utils/commands/project';
+} from '@/utils/commands/project/setup';
 
-/**
- * Main effect for creating a new Zap.ts project.
- * Handles the entire project creation workflow including prompts,
- * template setup, dependency installation, and final setup.
- *
- * @example
- * ```typescript
- * import { Effect } from 'effect';
- * import { createProjectEffect } from './create-project';
- *
- * // Run the project creation effect
- * const program = Effect.runPromise(createProjectEffect());
- *
- * // Or handle errors explicitly
- * const programWithErrorHandling = Effect.runPromise(
- *   Effect.catchAll(createProjectEffect(), (error) => {
- *     console.error('Failed to create project:', error);
- *     return Effect.fail(error);
- *   })
- * );
- * ```
- *
- * @returns Effect that resolves when project creation is complete
- */
 export function createProjectEffect(): Effect.Effect<void, Error, never> {
   return Effect.gen(function* (_) {
     const projectName = yield* _(promptProjectName());
