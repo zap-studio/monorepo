@@ -1,5 +1,11 @@
 # create-zap-app
 
+## 1.4.1
+
+### Patch Changes
+
+- aec411f: refactored the whole CLI app to leverage Effect error handling and more
+
 ## 1.4.0
 
 ### Minor Changes
