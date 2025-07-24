@@ -1,10 +1,6 @@
 import path from 'node:path';
 import { Effect } from 'effect';
-import {
-  ensureDirEffect,
-  joinPathEffect,
-  writeFileEffect,
-} from '@/utils/index.js';
+import fs from 'fs-extra';
 import { toPascalCase } from './validation.js';
 
 export function generateProcedureFile(
@@ -13,10 +9,8 @@ export function generateProcedureFile(
   kebabCaseName: string
 ) {
   const program = Effect.gen(function* () {
-    const procedurePath = yield* joinPathEffect(
-      projectDir,
-      'src/rpc/procedures',
-      `${kebabCaseName}.rpc.ts`
+    const procedurePath = yield* Effect.try(() =>
+      path.join(projectDir, 'src/rpc/procedures', `${kebabCaseName}.rpc.ts`)
     );
 
     const procedureContent = `
@@ -27,8 +21,10 @@ export const ${procedureName} = base.handler(async () => {
 });
   `.trim();
 
-    yield* ensureDirEffect(path.dirname(procedurePath));
-    yield* writeFileEffect(procedurePath, procedureContent);
+    yield* Effect.tryPromise(() => fs.ensureDir(path.dirname(procedurePath)));
+    yield* Effect.tryPromise(() =>
+      fs.writeFile(procedurePath, procedureContent)
+    );
   });
 
   return program;
@@ -40,10 +36,8 @@ export function generateHookFile(
   kebabCaseName: string
 ) {
   const program = Effect.gen(function* () {
-    const hookPath = yield* joinPathEffect(
-      projectDir,
-      'src/hooks',
-      `use-${kebabCaseName}.ts`
+    const hookPath = yield* Effect.try(() =>
+      path.join(projectDir, 'src/hooks', `use-${kebabCaseName}.ts`)
     );
 
     const capitalizedProcedureName = toPascalCase(procedureName);
@@ -59,8 +53,8 @@ export const use${capitalizedProcedureName} = () => {
 };
   `.trim();
 
-    yield* ensureDirEffect(path.dirname(hookPath));
-    yield* writeFileEffect(hookPath, hookContent);
+    yield* Effect.tryPromise(() => fs.ensureDir(path.dirname(hookPath)));
+    yield* Effect.tryPromise(() => fs.writeFile(hookPath, hookContent));
   });
 
   return program;

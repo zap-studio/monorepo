@@ -1,9 +1,9 @@
 import { resolve } from 'node:path';
 import { Effect } from 'effect/index';
+import fs from 'fs-extra';
 import type { Ora } from 'ora';
 import { CORE_ENV } from '@/data/env';
 import { generateSecret } from '@/utils/generation/generate-secret.js';
-import { writeFileEffect } from '..';
 
 function getEnvVarContent(envVar: string) {
   let content: string;
@@ -60,7 +60,9 @@ export function generateEnv({
       '\n'
     );
 
-    yield* writeFileEffect(resolve(outputDir, filename), envContent);
+    yield* Effect.tryPromise(() =>
+      fs.writeFile(resolve(outputDir, filename), envContent)
+    );
 
     spinner?.succeed('.env file generated.');
   });

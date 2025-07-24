@@ -1,22 +1,16 @@
+import path from 'node:path';
 import { Effect } from 'effect';
+import fs from 'fs-extra';
 import { LOCKFILES } from '@/data/package-manager';
-import {
-  existsSyncEffect,
-  joinPathEffect,
-  readdirEffect,
-  readJsonEffect,
-  removeFileEffect,
-  writeJsonEffect,
-} from '..';
 
 export function cleanupOutputDirectory(outputDir: string) {
   const program = Effect.gen(function* () {
-    const ouputFiles = yield* readdirEffect(outputDir);
+    const ouputFiles = yield* Effect.tryPromise(() => fs.readdir(outputDir));
 
     for (const file of ouputFiles) {
-      const filePath = yield* joinPathEffect(outputDir, file);
+      const filePath = yield* Effect.try(() => path.join(outputDir, file));
       if (file !== 'temp') {
-        yield* removeFileEffect(filePath);
+        yield* Effect.tryPromise(() => fs.remove(filePath));
       }
     }
   });
@@ -27,9 +21,11 @@ export function cleanupOutputDirectory(outputDir: string) {
 export function removeLockFiles(outputDir: string) {
   const program = Effect.gen(function* () {
     for (const lockFile of LOCKFILES) {
-      const lockFilePath = yield* joinPathEffect(outputDir, lockFile);
-      if (yield* existsSyncEffect(lockFilePath)) {
-        yield* removeFileEffect(lockFilePath);
+      const lockFilePath = yield* Effect.try(() =>
+        path.join(outputDir, lockFile)
+      );
+      if (yield* Effect.try(() => fs.existsSync(lockFilePath))) {
+        yield* Effect.tryPromise(() => fs.remove(lockFilePath));
       }
     }
   });
@@ -39,13 +35,19 @@ export function removeLockFiles(outputDir: string) {
 
 export function cleanupPackageJson(outputDir: string) {
   const program = Effect.gen(function* () {
-    const packageJsonPath = yield* joinPathEffect(outputDir, 'package.json');
-    if (yield* existsSyncEffect(packageJsonPath)) {
-      const packageJson = yield* readJsonEffect(packageJsonPath);
+    const packageJsonPath = yield* Effect.try(() =>
+      path.join(outputDir, 'package.json')
+    );
+    if (yield* Effect.try(() => fs.existsSync(packageJsonPath))) {
+      const packageJson = yield* Effect.tryPromise(() =>
+        fs.readJson(packageJsonPath)
+      );
 
       if (packageJson.packageManager) {
         packageJson.packageManager = undefined;
-        yield* writeJsonEffect(packageJsonPath, packageJson, { spaces: 2 });
+        yield* Effect.try(() =>
+          fs.writeJson(packageJsonPath, packageJson, { spaces: 2 })
+        );
       }
     }
   });

@@ -1,7 +1,7 @@
 import { Effect, pipe } from 'effect';
 import type { Ora } from 'ora';
 import type { PackageManager } from '@/schemas/package-manager.schema';
-import { execAsyncEffect } from '@/utils';
+import { execAsync } from '@/utils';
 import { handlePromptError } from '@/utils/prompts/prompt-package-manager';
 import { promptPackageManagerSelection } from './prompts';
 
@@ -38,7 +38,7 @@ export function installDependenciesWithRetry(
       const installCmd = yield* getInstallCommand(currentPM);
 
       const success = yield* pipe(
-        execAsyncEffect(installCmd, { cwd: outputDir }),
+        Effect.tryPromise(() => execAsync(installCmd, { cwd: outputDir })),
         Effect.map(() => {
           spinner.succeed(`Dependencies installed with ${currentPM}.`);
           return true;
@@ -84,7 +84,9 @@ export function updateDependencies(
     spinner.text = 'Updating dependencies...';
     spinner.start();
 
-    yield* execAsyncEffect(`${packageManager} update`, { cwd: outputDir });
+    yield* Effect.tryPromise(() =>
+      execAsync(`${packageManager} update`, { cwd: outputDir })
+    );
     spinner.succeed('Dependencies updated successfully.');
   });
 

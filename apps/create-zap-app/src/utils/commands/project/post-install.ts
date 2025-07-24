@@ -1,8 +1,8 @@
 import chalk from 'chalk';
-import { Console, Effect, pipe } from 'effect';
+import { Effect, pipe } from 'effect';
 import type { Ora } from 'ora';
 import type { PackageManager } from '@/schemas/package-manager.schema';
-import { execAsyncEffect } from '@/utils';
+import { execAsync } from '@/utils';
 import { generateEnv } from '@/utils/generation/generate-env';
 
 export function runPrettierFormatting(
@@ -15,9 +15,11 @@ export function runPrettierFormatting(
     spinner.start();
 
     pipe(
-      execAsyncEffect(`${packageManager} run format`, {
-        cwd: outputDir,
-      }),
+      Effect.tryPromise(() =>
+        execAsync(`${packageManager} run format`, {
+          cwd: outputDir,
+        })
+      ),
       Effect.tap(() => {
         spinner.succeed('Prettier formatting complete.');
       })
@@ -50,24 +52,26 @@ export function displaySuccessMessage(
   projectName: string,
   packageManager: PackageManager
 ) {
-  Console.log(chalk.green('Project setup complete!'));
-  Console.log('\n\n');
-  Console.log(chalk.bold.green('🎉 Project created successfully!'));
-  Console.log('\n\n');
-  Console.log(
+  process.stdout.write(chalk.green('Project setup complete!'));
+  process.stdout.write('\n\n');
+  process.stdout.write(chalk.bold.green('🎉 Project created successfully!'));
+  process.stdout.write('\n\n');
+  process.stdout.write(
     chalk.yellow(
       '⚠️ After installation, please ensure you populate the .env file with the required values to get started.'
     )
   );
-  Console.log('\n\n');
-  Console.log(chalk.cyan('Get started:\n'));
-  Console.log(chalk.white(`  cd ${projectName}\n`));
-  Console.log(chalk.white(`  ${packageManager} dev\n\n`));
+  process.stdout.write('\n\n');
+  process.stdout.write(chalk.cyan('Get started:\n'));
+  process.stdout.write(chalk.white(`  cd ${projectName}\n`));
+  process.stdout.write(chalk.white(`  ${packageManager} dev\n\n`));
 
-  Console.log(
+  process.stdout.write(
     chalk.magentaBright(
       '🌟 If you like this project, consider giving it a star on GitHub!\n'
     )
   );
-  Console.log(chalk.white('👉 https://github.com/alexandretrotel/zap.ts\n'));
+  process.stdout.write(
+    chalk.white('👉 https://github.com/alexandretrotel/zap.ts\n')
+  );
 }

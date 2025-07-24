@@ -1,6 +1,7 @@
+import path from 'node:path';
 import { Effect } from 'effect';
+import fs from 'fs-extra';
 import ora from 'ora';
-import { ensureDirEffect, joinPathEffect } from '@/utils';
 import {
   installDependenciesWithRetry,
   updateDependencies,
@@ -23,10 +24,12 @@ export function createProjectEffect() {
       'Which package manager do you want to use?'
     );
 
-    const outputDir = yield* joinPathEffect(process.cwd(), projectName);
+    const outputDir = yield* Effect.try(() =>
+      path.join(process.cwd(), projectName)
+    );
     const spinner = ora(`Creating project '${projectName}'...`).start();
 
-    yield* ensureDirEffect(outputDir);
+    yield* Effect.tryPromise(() => fs.ensureDir(outputDir));
     yield* setupProjectTemplate(outputDir, spinner);
 
     const finalPackageManager = yield* installDependenciesWithRetry(

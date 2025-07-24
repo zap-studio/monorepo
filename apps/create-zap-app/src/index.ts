@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { Console, Effect, Exit, pipe } from 'effect';
+import { Effect, Exit, pipe } from 'effect';
 import { createProcedureEffect } from './commands/create-procedure.js';
 import { createProjectEffect } from './commands/create-project.js';
 import { generateEnvEffect } from './commands/generate-env.js';
@@ -23,9 +23,10 @@ const main = pipe(
       .alias('new')
       .description('Create a new Next.js project with Zap.ts boilerplate')
       .action(() => {
-        Effect.runSync(displayWelcome);
+        displayWelcome();
         Effect.runPromiseExit(createProjectEffect()).then((exit) => {
           if (Exit.isFailure(exit)) {
+            process.stderr.write(`Failed to create project: ${exit.cause}\n`);
             process.exit(1);
           }
         });
@@ -39,6 +40,7 @@ const main = pipe(
       .action((name: string) => {
         Effect.runPromiseExit(createProcedureEffect(name)).then((exit) => {
           if (Exit.isFailure(exit)) {
+            process.stderr.write(`Failed to create procedure: ${exit.cause}\n`);
             process.exit(1);
           }
         });
@@ -54,15 +56,19 @@ const main = pipe(
       .action((filename = '.env.template') => {
         Effect.runPromiseExit(generateEnvEffect(filename)).then((exit) => {
           if (Exit.isFailure(exit)) {
+            process.stderr.write(
+              `Failed to generate environment file: ${exit.cause}\n`
+            );
             process.exit(1);
           }
         });
       });
 
     program.action(() => {
-      Effect.runSync(displayWelcome);
+      displayWelcome();
       Effect.runPromiseExit(createProjectEffect()).then((exit) => {
         if (Exit.isFailure(exit)) {
+          process.stderr.write(`Failed to create project: ${exit.cause}\n`);
           process.exit(1);
         }
       });
@@ -76,7 +82,4 @@ const main = pipe(
   })
 );
 
-Effect.runPromise(main).catch((error) => {
-  Console.log(`An error occurred: ${error}`);
-  process.exit(1);
-});
+Effect.runPromise(main);
