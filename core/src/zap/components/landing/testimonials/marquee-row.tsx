@@ -9,7 +9,7 @@ interface MarqueeRowProps {
 
 export function MarqueeRow({ reviews, reverse = false }: MarqueeRowProps) {
   return (
-    <Marquee pauseOnHover reverse={reverse} className="w-full [--duration:20s]">
+    <Marquee className="w-full [--duration:20s]" pauseOnHover reverse={reverse}>
       {reviews.map((review) => (
         <ReviewCard key={review.username} {...review} />
       ))}

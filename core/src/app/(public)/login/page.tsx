@@ -1,19 +1,19 @@
-import Link from "next/link";
-
+import { SETTINGS } from "@/data/settings";
+import { AuthPage } from "@/zap/components/auth/auth-page";
 import { LoginForm } from "@/zap/components/auth/login-form";
 
 export default function LoginPage() {
   return (
-    <div className="bg-muted/50 flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-      <div className="flex w-full max-w-sm flex-col gap-6">
-        <Link
-          href="/"
-          className="flex items-center gap-2 self-center font-medium"
-        >
-          Zap.ts ⚡️
-        </Link>
-        <LoginForm />
-      </div>
-    </div>
+    <AuthPage
+      bottomText={{
+        label: "Don't have an account?",
+        linkText: "Sign up",
+        linkHref: "/register",
+      }}
+      description="Login with your Apple or Google account"
+      form={<LoginForm />}
+      redirectURL={SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN}
+      title="Welcome back"
+    />
   );
 }

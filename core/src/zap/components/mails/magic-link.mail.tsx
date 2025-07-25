@@ -22,18 +22,22 @@ export function MagicLinkMail({ url }: MailProps) {
       <Body style={main}>
         <Container style={container}>
           <Heading style={heading}>Your Magic Link to Zap.ts</Heading>
+
           <Text style={paragraph}>
             Tap the button below to sign in. This link will expire in 15
             minutes.
           </Text>
+
           <Section style={buttonWrapper}>
             <Button href={url} style={button}>
               Sign In Now
             </Button>
           </Section>
+
           <Text style={footer}>
             Didn’t request this link? You can safely ignore this email.
           </Text>
+
           <Text style={urlText}>
             If the button doesn’t work, copy and paste this link into your
             browser:

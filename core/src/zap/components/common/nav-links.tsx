@@ -20,15 +20,12 @@ interface ExternalLink {
   label: string;
 }
 
-interface NavLinksClientProps {
+interface NavLinksProps {
   navLinks: NavLink[];
   externalLinks: ExternalLink[];
 }
 
-export function NavLinksClient({
-  navLinks,
-  externalLinks,
-}: NavLinksClientProps) {
+export function NavLinks({ navLinks, externalLinks }: NavLinksProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -61,6 +58,7 @@ export function NavLinksClient({
           {label}
         </ZapButton>
       ))}
+
       {externalLinks.map(({ href, label }) => (
         <ZapButton asChild key={href} variant="ghost">
           <Link

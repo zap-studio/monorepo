@@ -14,6 +14,7 @@ export async function LatestBlogPosts() {
   return (
     <div className="flex flex-col space-y-4">
       <h3 className="font-semibold">Latest Articles</h3>
+
       <div className="flex flex-col space-y-3">
         {latestPosts.map((post) => (
           <Link
@@ -24,6 +25,7 @@ export async function LatestBlogPosts() {
             <h4 className="text-foreground group-hover:text-primary text-sm font-medium transition-colors">
               {post.title}
             </h4>
+
             {post.date && (
               <p className="text-muted-foreground text-xs">
                 {formatDate(post.date, true)}
@@ -32,6 +34,7 @@ export async function LatestBlogPosts() {
           </Link>
         ))}
       </div>
+
       <Link
         className="text-muted-foreground w-fit text-sm underline-offset-4 hover:underline"
         href="/blog"

@@ -21,18 +21,22 @@ export function VerificationMail({ url }: MailProps) {
       <Body style={main}>
         <Container style={container}>
           <Text style={heading}>Verify your email address</Text>
+
           <Text style={paragraph}>
             Thanks for signing up! Click the button below to confirm your email
             and activate your account.
           </Text>
+
           <Section style={buttonWrapper}>
             <Button href={url} style={button}>
               Verify Email
             </Button>
           </Section>
+
           <Text style={footer}>
             If you didn’t sign up, you can safely ignore this email.
           </Text>
+
           <Text style={urlText}>
             Or copy and paste this link into your browser:
             <br />

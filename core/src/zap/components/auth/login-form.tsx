@@ -4,15 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import type * as z from "zod/v4";
+import type z from "zod/v4";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -23,19 +16,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/components/zap-ui/button";
-import { SETTINGS } from "@/data/settings";
-import { cn } from "@/lib/utils";
-import { PolicyLinks } from "@/zap/components/auth/policy-links";
-import { SocialProviders } from "@/zap/components/auth/social-providers";
 import { useAuth } from "@/zap/hooks/auth/use-auth";
 import { LoginFormSchema } from "@/zap/schemas/auth.schema";
 
 type LoginFormValues = z.infer<typeof LoginFormSchema>;
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export function LoginForm() {
   const [callbackURL, setCallbackURL] = useState<string | null>(null);
   const { isInCooldown, cooldown, isSubmitting, handleLoginSubmit } =
     useAuth(callbackURL);
@@ -43,7 +29,10 @@ export function LoginForm({
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const redirect = urlParams.get("redirect");
-    if (redirect) setCallbackURL(redirect);
+
+    if (redirect) {
+      setCallbackURL(redirect);
+    }
   }, []);
 
   const form = useForm<LoginFormValues>({
@@ -55,105 +44,67 @@ export function LoginForm({
   });
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="border shadow-none">
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
-          {SETTINGS.AUTH.ENABLE_SOCIAL_PROVIDER && (
-            <CardDescription>
-              Login with your Apple or Google account
-            </CardDescription>
+    <Form {...form}>
+      <form
+        className="grid gap-6"
+        onSubmit={form.handleSubmit(handleLoginSubmit)}
+      >
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  type="email"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-6">
-            {SETTINGS.AUTH.ENABLE_SOCIAL_PROVIDER && (
-              <>
-                <SocialProviders
-                  redirectURL={SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN}
-                />
-                <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-                  <span className="bg-card text-muted-foreground relative z-10 px-2">
-                    Or continue with
-                  </span>
-                </div>
-              </>
-            )}
+        />
 
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(handleLoginSubmit)}
-                className="grid gap-6"
-              >
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="you@example.com"
-                          type="email"
-                          autoComplete="email"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center justify-between">
-                        <FormLabel>Password</FormLabel>
-                        <Link
-                          href="/forgot-password"
-                          className="text-sm underline-offset-4 hover:underline"
-                        >
-                          Forgot your password?
-                        </Link>
-                      </div>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="*********"
-                          autoComplete="password"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <ZapButton
-                  type="submit"
-                  className="w-full"
-                  disabled={isInCooldown}
-                  loading={isSubmitting}
-                  loadingText="Logging in..."
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <div className="flex items-center justify-between">
+                <FormLabel>Password</FormLabel>
+                <Link
+                  className="text-sm underline-offset-4 hover:underline"
+                  href="/forgot-password"
                 >
-                  {!isInCooldown ? "Login" : `Please wait ${cooldown}s`}
-                </ZapButton>
-              </form>
-            </Form>
+                  Forgot your password?
+                </Link>
+              </div>
+              <FormControl>
+                <Input
+                  autoComplete="password"
+                  placeholder="*********"
+                  type="password"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <div className="text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="underline underline-offset-4">
-                Sign up
-              </Link>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <PolicyLinks />
-    </div>
+        <ZapButton
+          className="w-full"
+          disabled={isInCooldown}
+          loading={isSubmitting}
+          loadingText="Logging in..."
+          type="submit"
+        >
+          {isInCooldown ? `Please wait ${cooldown}s` : "Login"}
+        </ZapButton>
+      </form>
+    </Form>
   );
 }

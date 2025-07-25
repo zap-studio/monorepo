@@ -1,5 +1,3 @@
-"use client";
-
 import { CommandCard } from "@/zap/components/landing/solution/command-card";
 import { SolutionList } from "@/zap/components/landing/solution/solution-list";
 
@@ -14,11 +12,13 @@ export function SolutionSection() {
               Build applications as fast as a zap
             </h2>
           </div>
+
           <p className="text-muted-foreground max-w-[600px] md:text-lg">
             Zap.ts is carefully crafted so it includes all the essential tools
             and configurations you need to build production-ready applications
             without the bloat.
           </p>
+
           <SolutionList />
         </div>
 

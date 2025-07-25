@@ -19,17 +19,19 @@ export function ReviewCard({ img, name, username, body }: ReviewCardProps) {
     >
       <div className="flex items-center gap-3">
         <Image
-          className="rounded-full"
-          width="32"
-          height="32"
           alt={`${name}'s avatar`}
+          className="rounded-full"
+          height="32"
           src={img}
+          width="32"
         />
+
         <div className="flex flex-col">
           <figcaption className="text-sm font-semibold">{name}</figcaption>
           <span className="text-muted-foreground text-xs">{username}</span>
         </div>
       </div>
+
       <blockquote className="text-muted-foreground mt-3 text-sm">
         {body}
       </blockquote>

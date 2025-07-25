@@ -1,4 +1,4 @@
-import { Control } from "react-hook-form";
+import type { Control } from "react-hook-form";
 
 import {
   FormControl,
@@ -34,9 +34,9 @@ export function ModelSelect({ control, disabled, provider }: ModelSelectProps) {
         <FormItem>
           <FormLabel>Model</FormLabel>
           <Select
+            disabled={disabled}
             onValueChange={field.onChange}
             value={field.value}
-            disabled={disabled}
           >
             <FormControl>
               <SelectTrigger>

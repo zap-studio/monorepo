@@ -1,19 +1,18 @@
 "use client";
 
 import { useRouter } from "@bprogress/next/app";
-import { Effect } from "effect";
 import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
   CreditCard,
   LogOut,
+  type LucideIcon,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,22 +28,15 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { UserInfo } from "@/zap/components/sidebar/user-info";
 import { authClient } from "@/zap/lib/auth/client";
 
 type MenuItem = {
   label: string;
-  icon: React.ComponentType;
+  icon: LucideIcon;
   href?: string;
   onClick?: () => void;
 };
-
-const UPGRADE_ITEM: MenuItem[] = [{ label: "Upgrade to Pro", icon: Sparkles }];
-
-const ACCOUNT_ITEMS: MenuItem[] = [
-  { label: "Account", icon: BadgeCheck, href: "/app/account" },
-  { label: "Billing", icon: CreditCard, href: "/app/billing" },
-  { label: "Notifications", icon: Bell, href: "/app/notifications" },
-];
 
 type SidebarUserProps = {
   user: {
@@ -69,50 +61,41 @@ export function SidebarUser({ user }: SidebarUserProps) {
   const fallback = getInitials(user.name);
 
   const handleSignOut = async () => {
-    await Effect.tryPromise({
-      try: () => authClient.signOut(),
-      catch: () => ({ error: true }),
-    })
-      .pipe(
-        Effect.match({
-          onSuccess: () => {
-            toast.success("Successfully signed out");
-            router.push("/login");
-          },
-          onFailure: () => {
-            toast.error("Failed to sign out");
-          },
-        }),
-      )
-      .pipe(Effect.runPromise)
-      .catch(() => toast.error("Failed to sign out"));
+    try {
+      await authClient.signOut();
+      toast.success("Successfully signed out");
+      router.push("/login");
+    } catch {
+      toast.error("Failed to sign out");
+    }
   };
 
-  const UserInfo = () => (
-    <>
-      <Avatar className="h-8 w-8 rounded-lg">
-        <AvatarImage src={user.avatar ?? ""} alt={user.name} />
-        <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
-      </Avatar>
-      <div className="grid flex-1 text-left text-sm leading-tight">
-        <span className="truncate font-semibold">{user.name}</span>
-        <span className="truncate text-xs">{user.email}</span>
-      </div>
-    </>
-  );
+  const UPGRADE_ITEM: MenuItem[] = [
+    { label: "Upgrade to Pro", icon: Sparkles },
+  ];
 
-  const renderItems = (items: MenuItem[]) =>
+  const ACCOUNT_ITEMS: MenuItem[] = [
+    { label: "Account", icon: BadgeCheck, href: "/app/account" },
+    { label: "Billing", icon: CreditCard, href: "/app/billing" },
+    { label: "Notifications", icon: Bell, href: "/app/notifications" },
+  ];
+
+  const ACTION_ITEMS: MenuItem[] = [
+    { label: "Log out", icon: LogOut, onClick: handleSignOut },
+  ];
+
+  const renderMenuItems = (items: MenuItem[]) =>
     items.map(({ label, icon: Icon, href, onClick }) =>
       href ? (
         <DropdownMenuItem asChild key={label}>
           <Link href={href}>
-            <Icon />
+            <Icon className="mr-2 size-4" />
             {label}
           </Link>
         </DropdownMenuItem>
       ) : (
         <DropdownMenuItem key={label} onClick={onClick}>
-          <Icon />
+          <Icon className="mr-2 size-4" />
           {label}
         </DropdownMenuItem>
       ),
@@ -124,35 +107,37 @@ export function SidebarUser({ user }: SidebarUserProps) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
-              size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              size="lg"
             >
-              <UserInfo />
+              <UserInfo fallback={fallback} user={user} />
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent
+            align="end"
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
-            align="end"
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <UserInfo />
+                <UserInfo fallback={fallback} user={user} />
               </div>
             </DropdownMenuLabel>
 
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>{renderItems(UPGRADE_ITEM)}</DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>{renderItems(ACCOUNT_ITEMS)}</DropdownMenuGroup>
+            <DropdownMenuGroup>
+              {renderMenuItems(UPGRADE_ITEM)}
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              {renderItems([
-                { label: "Log out", icon: LogOut, onClick: handleSignOut },
-              ])}
+              {renderMenuItems(ACCOUNT_ITEMS)}
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              {renderMenuItems(ACTION_ITEMS)}
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>

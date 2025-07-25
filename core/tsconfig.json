@@ -20,7 +20,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/zap.config": ["./zap.config"]
+      "@/zap.config": ["./zap.config"],
+      "@/fonts": ["./src/styles/fonts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

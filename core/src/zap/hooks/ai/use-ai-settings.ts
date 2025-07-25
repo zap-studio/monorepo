@@ -1,7 +1,6 @@
 "use client";
 import "client-only";
 
-import { Effect } from "effect";
 import { useState } from "react";
 import type { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -23,79 +22,50 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
       return;
     }
 
-    await Effect.runPromise(
-      Effect.gen(function* (_) {
-        if (!values.apiKey) {
-          yield* _(
-            Effect.tryPromise({
-              try: () =>
-                orpc.ai.deleteAPIKey.call({ provider: values.provider }),
-              catch: () => {
-                throw new Error("Failed to delete API key");
-              },
-            }),
-          );
+    try {
+      if (values.apiKey) {
+        await orpc.ai.saveOrUpdateAISettings.call(values);
 
-          toast.success("API key deleted successfully");
-          setIsValidated(false);
-          setInitialKey(null);
-        } else {
-          yield* _(
-            Effect.tryPromise({
-              try: () => orpc.ai.saveOrUpdateAISettings.call(values),
-              catch: () => {
-                throw new Error("Failed to save API key");
-              },
-            }),
-          );
+        toast.success("API key saved successfully");
+        setInitialKey(values.apiKey);
+      } else {
+        await orpc.ai.deleteAPIKey.call({ provider: values.provider });
 
-          toast.success("API key saved successfully");
-          setInitialKey(values.apiKey);
-        }
-      }).pipe(
-        Effect.catchAll(() =>
-          Effect.sync(() => {
-            toast.error(
-              values.apiKey
-                ? "Failed to save API key"
-                : "Failed to delete API key",
-            );
-          }),
-        ),
-      ),
-    );
-
-    setIsSaving(false);
+        toast.success("API key deleted successfully");
+        setIsValidated(false);
+        setInitialKey(null);
+      }
+    } catch {
+      toast.error(
+        values.apiKey ? "Failed to save API key" : "Failed to delete API key",
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   async function handleTestApiKey() {
     setTesting(true);
-    await Effect.tryPromise({
-      try: () =>
-        orpc.ai.testAPIKey.call({
-          provider: form.getValues("provider"),
-          apiKey: form.getValues("apiKey"),
-          model: form.getValues("model"),
-        }),
-      catch: () => ({ error: true }),
-    })
-      .pipe(
-        Effect.match({
-          onSuccess: () => {
-            toast.success("API key is valid!");
-            setIsValidated(true);
-          },
-          onFailure: () => {
-            toast.error("Invalid API key");
-            setIsValidated(false);
-          },
-        }),
-      )
-      .pipe(Effect.runPromise)
-      .catch(() => {
-        toast.error("An error occurred while testing the API key");
+
+    try {
+      const { success } = await orpc.ai.testAPIKey.call({
+        provider: form.getValues("provider"),
+        apiKey: form.getValues("apiKey"),
+        model: form.getValues("model"),
       });
-    setTesting(false);
+
+      if (success) {
+        toast.success("API key is valid!");
+        setIsValidated(true);
+      } else {
+        toast.error("Invalid API key");
+        setIsValidated(false);
+      }
+    } catch {
+      toast.error("An error occurred while testing the API key");
+    } finally {
+      setTesting(false);
+    }
   }
 
   return {

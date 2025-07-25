@@ -1,19 +1,19 @@
-import Link from "next/link";
-
+import { SETTINGS } from "@/data/settings";
+import { AuthPage } from "@/zap/components/auth/auth-page";
 import { RegisterForm } from "@/zap/components/auth/register-form";
 
 export default function RegisterPage() {
   return (
-    <div className="bg-muted/50 flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-      <div className="flex w-full max-w-sm flex-col gap-6">
-        <Link
-          href="/"
-          className="flex items-center gap-2 self-center font-medium"
-        >
-          Zap.ts ⚡️
-        </Link>
-        <RegisterForm />
-      </div>
-    </div>
+    <AuthPage
+      bottomText={{
+        label: "Already have an account?",
+        linkText: "Log in",
+        linkHref: "/login",
+      }}
+      description="Sign up with your Apple or Google account"
+      form={<RegisterForm />}
+      redirectURL={SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_UP}
+      title="Create your account"
+    />
   );
 }

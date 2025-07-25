@@ -16,7 +16,10 @@ import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { SERVER_ENV } from "@/lib/env.server";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { orpcServer } from "@/zap/lib/orpc/server";
+import { canSendMailService } from "@/zap/services/mails/can-send-mail.service";
+import { sendForgotPasswordMailService } from "@/zap/services/mails/send-forgot-password-mail.service";
+import { sendVerificationMailService } from "@/zap/services/mails/send-verification-mail.service";
+import { updateLastTimestampMailSentService } from "@/zap/services/mails/update-last-timestamp-mail-sent.service";
 
 export const auth = betterAuth({
   appName: "Zap.ts",
@@ -27,42 +30,52 @@ export const auth = betterAuth({
     maxPasswordLength: SETTINGS.AUTH.MAXIMUM_PASSWORD_LENGTH,
     requireEmailVerification: SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION,
     sendResetPassword: async ({ user, url }) => {
-      const { canSend, timeLeft } = await orpcServer.mails.canSendMail({
-        userId: user.id,
+      const { canSend, timeLeft } = await canSendMailService({
+        input: { userId: user.id },
       });
+
       if (!canSend) {
         throw new Error(
           `Please wait ${timeLeft} seconds before requesting another password reset email.`,
         );
       }
 
-      await orpcServer.mails.sendForgotPasswordMail({
-        recipients: [user.email],
-        subject: `${SETTINGS.MAIL.PREFIX} - Reset your password`,
-        url,
+      await sendForgotPasswordMailService({
+        input: {
+          recipients: [user.email],
+          subject: `${SETTINGS.MAIL.PREFIX} - Reset your password`,
+          url,
+        },
       });
 
-      await orpcServer.mails.updateLastTimestampMailSent({ userId: user.id });
+      await updateLastTimestampMailSentService({
+        input: { userId: user.id },
+      });
     },
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
-      const { canSend, timeLeft } = await orpcServer.mails.canSendMail({
-        userId: user.id,
+      const { canSend, timeLeft } = await canSendMailService({
+        input: { userId: user.id },
       });
+
       if (!canSend) {
         throw new Error(
           `Please wait ${timeLeft} seconds before requesting another password reset email.`,
         );
       }
 
-      await orpcServer.mails.sendVerificationMail({
-        recipients: [user.email],
-        subject: `${SETTINGS.MAIL.PREFIX} - Verify your email`,
-        url,
+      await sendVerificationMailService({
+        input: {
+          recipients: [user.email],
+          subject: `${SETTINGS.MAIL.PREFIX} - Verify your email`,
+          url,
+        },
       });
 
-      await orpcServer.mails.updateLastTimestampMailSent({ userId: user.id });
+      await updateLastTimestampMailSentService({
+        input: { userId: user.id },
+      });
     },
   },
   socialProviders: {
@@ -77,7 +90,7 @@ export const auth = betterAuth({
     username({
       minUsernameLength: SETTINGS.AUTH.MINIMUM_USERNAME_LENGTH,
       maxUsernameLength: SETTINGS.AUTH.MAXIMUM_USERNAME_LENGTH,
-      usernameValidator: (username) => username !== "admin",
+      usernameValidator: (name) => name !== "admin",
     }),
     anonymous(),
     passkey(),

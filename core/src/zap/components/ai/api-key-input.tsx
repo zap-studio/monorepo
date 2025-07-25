@@ -36,17 +36,17 @@ export function ApiKeyInput({
             <FormControl className="relative flex-1">
               <div className="relative">
                 <Input
-                  type={showKey ? "text" : "password"}
                   placeholder={loading ? "Loading..." : "Enter your API key"}
+                  type={showKey ? "text" : "password"}
                   {...field}
-                  disabled={disabled}
                   className="pr-10 font-mono"
+                  disabled={disabled}
                 />
                 <button
-                  type="button"
-                  onClick={() => setShowKey((prev) => !prev)}
                   className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
+                  onClick={() => setShowKey((prev) => !prev)}
                   tabIndex={-1}
+                  type="button"
                 >
                   {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -55,12 +55,12 @@ export function ApiKeyInput({
             <FormMessage />
           </FormItem>
           <ZapButton
+            disabled={disabled || !field.value}
             loading={testing}
             loadingText="Testing..."
+            onClick={handleTestApiKey}
             type="button"
             variant="outline"
-            onClick={handleTestApiKey}
-            disabled={disabled || !field.value}
           >
             Test API Key
           </ZapButton>

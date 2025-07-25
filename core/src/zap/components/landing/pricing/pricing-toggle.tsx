@@ -19,20 +19,22 @@ export function PricingToggle({
   return (
     <div className="flex items-center justify-center space-x-2">
       <Label
+        className={isYearly ? "text-muted-foreground" : "font-medium"}
         htmlFor="pricing-toggle"
-        className={!isYearly ? "font-medium" : "text-muted-foreground"}
       >
         Monthly
       </Label>
+
       <Switch
-        id="pricing-toggle"
         checked={isYearly}
+        id="pricing-toggle"
         onCheckedChange={handleToggle}
       />
+
       <div className="flex items-center space-x-1">
         <Label
-          htmlFor="pricing-toggle"
           className={isYearly ? "font-medium" : "text-muted-foreground"}
+          htmlFor="pricing-toggle"
         >
           Yearly
         </Label>

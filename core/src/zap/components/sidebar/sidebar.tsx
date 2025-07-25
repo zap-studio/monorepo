@@ -2,7 +2,7 @@
 
 import { Home } from "lucide-react";
 import Link from "next/link";
-import type * as React from "react";
+import type React from "react";
 
 import {
   Sidebar,
@@ -29,7 +29,9 @@ const MAIN_NAV_ITEMS = [
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const { data } = authClient.useSession();
 
-  if (!data?.user) return null;
+  if (!data?.user) {
+    return null;
+  }
 
   const { email, name, image } = data.user;
   const userData = { email, name, avatar: image ?? null };
@@ -39,7 +41,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
+            <SidebarMenuButton asChild size="lg">
               <Link href="/">
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">Zap.ts ⚡️</span>

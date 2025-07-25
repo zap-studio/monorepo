@@ -19,9 +19,11 @@ export function Footer() {
                 <span className="inline-block font-bold">Zap.ts ⚡️</span>
               </Link>
             </div>
+
             <p className="text-muted-foreground text-sm leading-loose">
               &copy; {new Date().getFullYear()} Zap.ts. All rights reserved.
             </p>
+
             <div className="flex flex-wrap gap-4">
               {LEGAL_LINKS.map((link) => (
                 <Link
