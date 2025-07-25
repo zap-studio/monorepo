@@ -12,7 +12,7 @@ import { auth } from "@/zap/lib/auth/server";
 
 const subscribeSchema = z.object({
   subscription: z.object({
-    endpoint: z.string().url(),
+    endpoint: z.url(),
     keys: z.object({
       p256dh: z.string(),
       auth: z.string(),
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
           db
             .insert(pushNotifications)
             .values({
-              userId: userId,
+              userId,
               subscription,
             })
             .returning()

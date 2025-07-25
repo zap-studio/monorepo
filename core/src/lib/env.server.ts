@@ -1,13 +1,13 @@
 import "server-only";
 
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const ServerEnvSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
   VERCEL_ENV: z.string().optional(),
-  DATABASE_URL: z.string().url({ message: "DATABASE_URL must be a valid URL" }),
+  DATABASE_URL: z.url({ message: "DATABASE_URL must be a valid URL" }),
   DATABASE_URL_DEV: z
     .string()
     .url({ message: "DATABASE_URL_DEV must be a valid URL" })
