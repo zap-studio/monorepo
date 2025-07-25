@@ -7,10 +7,6 @@ import type { router } from "@/rpc/router";
 
 export const link = new RPCLink({
   url: `${typeof window !== "undefined" ? window.location.origin : "http://localhost:3000"}/rpc`,
-  headers: async () => {
-    const { headers } = await import("next/headers");
-    return Object.fromEntries(await headers());
-  },
 });
 
 export const orpcClient: RouterClient<typeof router> = createORPCClient(link);
