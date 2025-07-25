@@ -1,7 +1,6 @@
 "use client";
 import "client-only";
 
-import { Effect } from "effect";
 import { toast } from "sonner";
 import useSWRMutation from "swr/mutation";
 
@@ -47,8 +46,6 @@ export function usePushNotifications() {
         $fetch<SubscriptionResponse>(url, {
           method: "POST",
           body: arg,
-        }).catch(() => {
-          throw { message: "Subscription API failed" };
         }),
       {
         optimisticData: { success: true, subscriptionId: "temp-id" },
@@ -57,14 +54,18 @@ export function usePushNotifications() {
         onSuccess: () => {
           toast.success("Subscribed to notifications!");
         },
-        onError: (error) => {
+        onError: async (error) => {
           if (subscription) {
-            subscription.unsubscribe().catch(() => {});
-            setSubscriptionState({
-              subscription: null,
-              isSubscribed: false,
-            });
+            try {
+              await subscription.unsubscribe();
+            } finally {
+              setSubscriptionState({
+                subscription: null,
+                isSubscribed: false,
+              });
+            }
           }
+
           toast.error(`Failed to subscribe: ${error.message}`);
         },
       },
@@ -76,8 +77,6 @@ export function usePushNotifications() {
       (url: string) =>
         $fetch<UnsubscribeResponse>(url, {
           method: "DELETE",
-        }).catch(() => {
-          throw { message: "Unsubscribe API failed" };
         }),
       {
         optimisticData: { success: true },
@@ -93,97 +92,64 @@ export function usePushNotifications() {
     );
 
   const subscribeToPush = async () => {
-    await Effect.runPromise(
-      Effect.gen(function* (_) {
-        setSubscribed(true);
+    setSubscribed(true);
 
-        const registration = yield* _(
-          Effect.tryPromise({
-            try: () => navigator.serviceWorker.ready,
-            catch: () => {
-              throw new Error("Service worker not ready");
-            },
-          }),
-        );
+    try {
+      const registration = await navigator.serviceWorker.ready;
 
-        const sub = yield* _(
-          Effect.tryPromise({
-            try: () => {
-              if (!CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
-                throw new Error("VAPID public key is not set");
-              }
+      if (!CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
+        throw new Error("VAPID public key is not set");
+      }
 
-              return registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(
-                  CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-                ),
-              });
-            },
-            catch: () => {
-              throw new Error("Failed to subscribe to push manager");
-            },
-          }),
-        );
+      const applicationServerKey = urlBase64ToUint8Array(
+        CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+      );
 
-        setSubscription(sub);
-        const serializedSub = sub.toJSON();
+      const sub = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey,
+      });
 
-        yield* _(
-          Effect.tryPromise({
-            try: () => subscribeTrigger({ subscription: serializedSub }),
-            catch: () => new Error("Failed to subscribe to push notifications"),
-          }),
-        );
-      }).pipe(
-        Effect.catchAll(() =>
-          Effect.sync(() => {
-            setSubscriptionState({
-              subscription: null,
-              isSubscribed: false,
-            });
-            toast.error("Failed to subscribe to push notifications");
-          }),
-        ),
-      ),
-    );
+      setSubscription(sub);
+
+      const serializedSub = sub.toJSON();
+
+      await subscribeTrigger({ subscription: serializedSub });
+    } catch (error) {
+      const message =
+        (error instanceof Error && error.message) || "An error occurred";
+
+      if (message.includes("ServiceWorker")) {
+        toast.error("Service worker not ready");
+      } else if (message.includes("VAPID")) {
+        toast.error(message);
+      } else {
+        toast.error("Failed to subscribe to push notifications");
+      }
+
+      setSubscriptionState({
+        subscription: null,
+        isSubscribed: false,
+      });
+    }
   };
 
   const unsubscribeFromPush = async () => {
-    if (!subscription) return;
+    if (!subscription) {
+      return;
+    }
 
-    await Effect.runPromise(
-      Effect.gen(function* (_) {
-        setSubscriptionState({
-          subscription: null,
-          isSubscribed: false,
-        });
+    setSubscriptionState({
+      subscription: null,
+      isSubscribed: false,
+    });
 
-        yield* _(
-          Effect.tryPromise({
-            try: () => subscription.unsubscribe(),
-            catch: () => {
-              throw new Error("Failed to unsubscribe");
-            },
-          }),
-        );
-
-        yield* _(
-          Effect.tryPromise({
-            try: () => unsubscribeTrigger(),
-            catch: () => {
-              throw new Error("Failed to trigger unsubscribe");
-            },
-          }),
-        );
-      }).pipe(
-        Effect.catchAll(() =>
-          Effect.sync(() => {
-            toast.error("Failed to unsubscribe from push notifications");
-          }),
-        ),
-      ),
-    );
+    try {
+      await subscription.unsubscribe();
+      await unsubscribeTrigger();
+    } catch {
+      toast.error("Failed to unsubscribe from push notifications");
+    }
   };
 
   return {

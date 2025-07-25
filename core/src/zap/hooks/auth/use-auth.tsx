@@ -2,7 +2,6 @@
 import "client-only";
 
 import { useRouter } from "@bprogress/next/app";
-import { Effect } from "effect";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { z } from "zod/v4";
@@ -25,16 +24,12 @@ export function useAuth(callbackURL?: string | null) {
   const { cooldown, startCooldown, isInCooldown } = useCooldown();
 
   const sendVerificationMail = async (email: string, callbackURL: string) => {
-    const effect = Effect.tryPromise({
-      try: () => authClient.sendVerificationEmail({ email, callbackURL }),
-      catch: () => new Error("Failed to send verification email"),
-    }).pipe(
-      Effect.tap(() =>
-        Effect.sync(() => startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS)),
-      ),
-    );
-
-    return await Effect.runPromise(effect);
+    try {
+      await authClient.sendVerificationEmail({ email, callbackURL });
+      startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
+    } catch {
+      toast.error("Failed to send verification email");
+    }
   };
 
   const loginWithMail = async (
@@ -42,42 +37,31 @@ export function useAuth(callbackURL?: string | null) {
     callbackURL?: string | null,
   ) => {
     const { email, password } = values;
-    const result = await Effect.tryPromise({
-      try: () => authClient.signIn.email({ email, password }),
-      catch: () => new Error("Failed to login"),
-    })
-      .pipe(
-        Effect.match({
-          onSuccess: async (response) => {
-            if (response.error) {
-              toast.error("Login failed. Please check your credentials.");
-              return;
-            }
 
-            if (
-              SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION &&
-              !response.data?.user?.emailVerified
-            ) {
-              await sendVerificationMail(email, "/app");
-              toast.error(
-                "Please verify your email address. A verification email has been sent.",
-              );
-              return;
-            }
+    try {
+      const response = await authClient.signIn.email({ email, password });
 
-            toast.success("Login successful!");
-            router.push(
-              callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN,
-            );
-          },
-          onFailure: (e) => {
-            toast.error("Login failed. Please check your credentials.");
-            throw e;
-          },
-        }),
-      )
-      .pipe(Effect.runPromise);
-    return result;
+      if (response.error) {
+        toast.error("Login failed. Please check your credentials.");
+        return;
+      }
+
+      if (
+        SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION &&
+        !response.data?.user?.emailVerified
+      ) {
+        await sendVerificationMail(email, "/app");
+        toast.error(
+          "Please verify your email address. A verification email has been sent.",
+        );
+        return;
+      }
+
+      toast.success("Login successful!");
+      router.push(callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN);
+    } catch {
+      toast.error("Login failed. Please check your credentials.");
+    }
   };
 
   const registerWithMail = async (
@@ -85,53 +69,41 @@ export function useAuth(callbackURL?: string | null) {
     callbackURL?: string | null,
   ) => {
     const { name, email, password } = values;
-    const result = await Effect.tryPromise({
-      try: () => authClient.signUp.email({ email, password, name }),
-      catch: () => new Error("Failed to register"),
-    })
-      .pipe(
-        Effect.match({
-          onSuccess: async (response) => {
-            if (response.error) {
-              handleCompromisedPasswordError(response.error);
-              return;
-            }
 
-            if (SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION) {
-              await sendVerificationMail(email, "/login");
-              toast.success(
-                "Registration successful! Please check your email to verify your account.",
-              );
-            } else {
-              toast.success("Registration successful!");
-            }
-            router.push(
-              callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_UP,
-            );
-          },
-          onFailure: (e) => {
-            handleCompromisedPasswordError(e);
-          },
-        }),
-      )
-      .pipe(Effect.runPromise);
-    return result;
+    try {
+      const response = await authClient.signUp.email({ email, password, name });
+
+      if (response.error) {
+        handleCompromisedPasswordError(response.error);
+        return;
+      }
+
+      if (SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION) {
+        await sendVerificationMail(email, "/login");
+        toast.success(
+          "Registration successful! Please check your email to verify your account.",
+        );
+      } else {
+        toast.success("Registration successful!");
+      }
+
+      router.push(callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_UP);
+    } catch (e) {
+      handleCompromisedPasswordError(e);
+    }
   };
 
-  const withSubmitWrapper = async <T,>(
-    action: () => Promise<T>,
-  ): Promise<T | undefined> => {
+  const withSubmitWrapper = async <T,>(action: () => Promise<T>) => {
     setIsSubmitting(true);
 
-    const effect = Effect.tryPromise({
-      try: () => action(),
-      catch: () => new Error("Authentification failed"),
-    }).pipe(
-      Effect.tap(() => Effect.sync(() => setIsSubmitting(false))),
-      Effect.catchAll(() => Effect.sync(() => {})),
-    );
+    let result: T | undefined;
+    try {
+      result = await action();
+    } finally {
+      setIsSubmitting(false);
+    }
 
-    return await Effect.runPromise(effect);
+    return result;
   };
 
   const handleLoginSubmit = (values: LoginFormValues) =>

@@ -2,7 +2,6 @@
 import "client-only";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Effect } from "effect";
 import { useForm } from "react-hook-form";
 import useSWRMutation from "swr/mutation";
 import type z from "zod/v4";
@@ -23,24 +22,20 @@ export function useWaitlist() {
   const { trigger, data, isMutating, error } = useSWRMutation(
     "submit-waitlist",
     async (_key, { arg }: { arg: z.infer<typeof WaitlistSchema> }) => {
-      const effect = Effect.gen(function* () {
-        const result = yield* Effect.tryPromise(() =>
-          orpcClient.waitlist.submitWaitlistEmail({ email: arg.email }),
-        );
-
-        if (result.success) {
-          yield* Effect.sync(() => form.reset());
-        }
-
-        return result;
+      const result = await orpcClient.waitlist.submitWaitlistEmail({
+        email: arg.email,
       });
 
-      return await Effect.runPromise(effect);
+      if (result.success) {
+        form.reset();
+      }
+
+      return result;
     },
   );
 
-  const onSubmit = async (data: z.infer<typeof WaitlistSchema>) => {
-    await trigger(data);
+  const onSubmit = async (_data: z.infer<typeof WaitlistSchema>) => {
+    await trigger(_data);
     setHasJoined(true);
   };
 

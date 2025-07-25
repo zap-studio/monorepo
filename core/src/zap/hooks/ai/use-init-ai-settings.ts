@@ -1,8 +1,7 @@
 "use client";
 import "client-only";
 
-import { Effect } from "effect";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { useForm } from "react-hook-form";
 
 import { DEFAULT_MODEL } from "@/zap/data/ai";
@@ -19,43 +18,38 @@ export function useInitAISettings(
 
   const provider = form.watch("provider");
 
-  useEffect(() => {
-    if (!open || !provider) return;
+  const fetchApiKey = useCallback(async () => {
+    setLoading(true);
 
-    const fetchApiKey = async () => {
-      setLoading(true);
-      await Effect.runPromise(
-        Effect.gen(function* (_) {
-          const provider = form.getValues("provider");
+    try {
+      const _provider = form.getValues("provider");
 
-          const result = yield* _(
-            Effect.tryPromise({
-              try: () => orpc.ai.getAISettings.call({ provider }),
-              catch: () => undefined,
-            }),
-          );
+      const result = await orpc.ai.getAISettings.call({
+        provider: _provider,
+      });
 
-          if (result) {
-            setApiKey(result.apiKey);
-            setModel(result.model);
-          } else {
-            setApiKey(null);
-            setModel(DEFAULT_MODEL[provider]);
-          }
-        }).pipe(
-          Effect.catchAll(() =>
-            Effect.sync(() => {
-              setApiKey(null);
-              setModel(DEFAULT_MODEL[form.getValues("provider")]);
-            }),
-          ),
-        ),
-      );
+      if (result) {
+        setApiKey(result.apiKey);
+        setModel(result.model);
+      } else {
+        setApiKey(null);
+        setModel(DEFAULT_MODEL[_provider]);
+      }
+    } catch {
+      setApiKey(null);
+      setModel(DEFAULT_MODEL[form.getValues("provider")]);
+    } finally {
       setLoading(false);
-    };
+    }
+  }, [form]);
+
+  useEffect(() => {
+    if (!(open && provider)) {
+      return;
+    }
 
     fetchApiKey();
-  }, [form, open, provider]);
+  }, [open, provider, fetchApiKey]);
 
   return {
     apiKey,

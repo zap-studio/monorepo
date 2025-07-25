@@ -18,7 +18,7 @@ export function useFlag(flagKey: FlagKey) {
       const value = await flag();
       setEnabled(value);
     } catch {
-      const fallback = FLAGS[flagKey]?.defaultValue || false;
+      const fallback = !!FLAGS[flagKey]?.defaultValue;
       setEnabled(fallback);
     } finally {
       setLoading(false);
