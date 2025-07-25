@@ -2,7 +2,7 @@
 
 import { Bot, HelpCircle, Settings } from "lucide-react";
 import Link from "next/link";
-import type * as React from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import { useState } from "react";
 
 import {
@@ -15,39 +15,54 @@ import {
 import { AISettingsSheet } from "@/zap/components/ai/ai-settings-sheet";
 import { FeedbackDialog } from "@/zap/components/sidebar/feedback-dialog";
 
-export function SidebarSecondarySection({
-  ...props
-}: {} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+type SidebarSecondarySectionProps = ComponentPropsWithoutRef<
+  typeof SidebarGroup
+>;
+
+export function SidebarSecondarySection(props: SidebarSecondarySectionProps) {
   const [isFeedbackOpen, setFeedbackOpen] = useState(false);
   const [isAISettingsOpen, setAISettingsOpen] = useState(false);
+
+  const menuItems = [
+    {
+      label: "AI Settings",
+      icon: <Bot />,
+      onClick: () => setAISettingsOpen(true),
+    },
+    {
+      label: "Give Feedback",
+      icon: <HelpCircle />,
+      onClick: () => setFeedbackOpen(true),
+    },
+    {
+      label: "Settings",
+      icon: <Settings />,
+      href: "/app/settings",
+    },
+  ];
 
   return (
     <>
       <SidebarGroup {...props}>
         <SidebarGroupContent>
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton onClick={() => setAISettingsOpen(true)}>
-                <Bot />
-                <span>AI Settings</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton onClick={() => setFeedbackOpen(true)}>
-                <HelpCircle />
-                <span>Give Feedback</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link href="/app/settings">
-                  <Settings />
-                  <span>Settings</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            {menuItems.map(({ label, icon, onClick, href }) => (
+              <SidebarMenuItem key={label}>
+                <SidebarMenuButton asChild={!!href} onClick={onClick}>
+                  {href ? (
+                    <Link href={href}>
+                      {icon}
+                      <span>{label}</span>
+                    </Link>
+                  ) : (
+                    <>
+                      {icon}
+                      <span>{label}</span>
+                    </>
+                  )}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>
@@ -56,7 +71,6 @@ export function SidebarSecondarySection({
         onOpenChange={setAISettingsOpen}
         open={isAISettingsOpen}
       />
-
       <FeedbackDialog onOpenChange={setFeedbackOpen} open={isFeedbackOpen} />
     </>
   );

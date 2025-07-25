@@ -7,6 +7,7 @@ import {
   ChevronsUpDown,
   CreditCard,
   LogOut,
+  type LucideIcon,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
@@ -32,18 +33,10 @@ import { authClient } from "@/zap/lib/auth/client";
 
 type MenuItem = {
   label: string;
-  icon: React.ComponentType;
+  icon: LucideIcon;
   href?: string;
   onClick?: () => void;
 };
-
-const UPGRADE_ITEM: MenuItem[] = [{ label: "Upgrade to Pro", icon: Sparkles }];
-
-const ACCOUNT_ITEMS: MenuItem[] = [
-  { label: "Account", icon: BadgeCheck, href: "/app/account" },
-  { label: "Billing", icon: CreditCard, href: "/app/billing" },
-  { label: "Notifications", icon: Bell, href: "/app/notifications" },
-];
 
 type SidebarUserProps = {
   user: {
@@ -70,7 +63,6 @@ export function SidebarUser({ user }: SidebarUserProps) {
   const handleSignOut = async () => {
     try {
       await authClient.signOut();
-
       toast.success("Successfully signed out");
       router.push("/login");
     } catch {
@@ -78,18 +70,32 @@ export function SidebarUser({ user }: SidebarUserProps) {
     }
   };
 
-  const renderItems = (items: MenuItem[]) =>
+  const UPGRADE_ITEM: MenuItem[] = [
+    { label: "Upgrade to Pro", icon: Sparkles },
+  ];
+
+  const ACCOUNT_ITEMS: MenuItem[] = [
+    { label: "Account", icon: BadgeCheck, href: "/app/account" },
+    { label: "Billing", icon: CreditCard, href: "/app/billing" },
+    { label: "Notifications", icon: Bell, href: "/app/notifications" },
+  ];
+
+  const ACTION_ITEMS: MenuItem[] = [
+    { label: "Log out", icon: LogOut, onClick: handleSignOut },
+  ];
+
+  const renderMenuItems = (items: MenuItem[]) =>
     items.map(({ label, icon: Icon, href, onClick }) =>
       href ? (
         <DropdownMenuItem asChild key={label}>
           <Link href={href}>
-            <Icon />
+            <Icon className="mr-2 size-4" />
             {label}
           </Link>
         </DropdownMenuItem>
       ) : (
         <DropdownMenuItem key={label} onClick={onClick}>
-          <Icon />
+          <Icon className="mr-2 size-4" />
           {label}
         </DropdownMenuItem>
       ),
@@ -122,14 +128,16 @@ export function SidebarUser({ user }: SidebarUserProps) {
             </DropdownMenuLabel>
 
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>{renderItems(UPGRADE_ITEM)}</DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>{renderItems(ACCOUNT_ITEMS)}</DropdownMenuGroup>
+            <DropdownMenuGroup>
+              {renderMenuItems(UPGRADE_ITEM)}
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              {renderItems([
-                { label: "Log out", icon: LogOut, onClick: handleSignOut },
-              ])}
+              {renderMenuItems(ACCOUNT_ITEMS)}
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              {renderMenuItems(ACTION_ITEMS)}
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
