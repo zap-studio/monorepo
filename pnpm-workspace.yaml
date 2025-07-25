@@ -8,5 +8,6 @@ onlyBuiltDependencies:
   - '@vercel/speed-insights'
   - core-js
   - esbuild
+  - msgpackr-extract
   - sharp
   - unrs-resolver
