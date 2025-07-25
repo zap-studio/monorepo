@@ -4,8 +4,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 import { Toaster } from "@/components/ui/sonner";
+import { geist } from "@/fonts";
 import { VERCEL } from "@/lib/env.client";
-import { geist } from "@/lib/font";
 import { ZAP_DEFAULT_METADATA, ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import Providers from "@/zap/providers/providers";
 
@@ -38,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geist.className} antialiased`}>
+      <body className={`${geist.variable} antialiased`}>
         <Providers
           ENABLE_POSTHOG={ZAP_DEFAULT_SETTINGS.ANALYTICS.ENABLE_POSTHOG}
         >
