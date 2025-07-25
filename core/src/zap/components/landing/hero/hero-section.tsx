@@ -14,16 +14,19 @@ export function HeroSection() {
           <h1 className="text-foreground text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
             Ship <AnimatedText /> with Zap.ts ⚡️
           </h1>
+
           <p className="text-muted-foreground mx-auto max-w-[700px] md:text-xl">
             The ultimate Next.js boilerplate with everything you need to build
             production-ready applications in minutes, not months.
           </p>
+
           <div className="flex flex-col justify-center gap-2 min-[400px]:flex-row">
             <ZapButton asChild size="lg">
               <Link href="/register">
                 Get Started <ArrowRight className="h-4 w-4" />
               </Link>
             </ZapButton>
+
             <ZapButton asChild size="lg" variant="outline">
               <Link
                 className="text-foreground"

@@ -19,14 +19,17 @@ export function TemplateMail() {
       <Body style={main}>
         <Container style={container}>
           <Text style={heading}>Hey there 👋</Text>
+
           <Text style={paragraph}>
             Just a quick note with a button you can click. No strings attached.
           </Text>
+
           <Section style={buttonWrapper}>
             <Button href={BASE_URL} style={button}>
               Click me
             </Button>
           </Section>
+
           <Text style={footer}>
             If the button doesn’t work, you can paste this link into your
             browser:

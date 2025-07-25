@@ -11,6 +11,7 @@ export function TestimonialSection() {
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
           Trusted by developers worldwide
         </h2>
+
         <p className="text-muted-foreground max-w-[85%] md:text-xl">
           Join thousands of developers who are shipping faster with Zap.ts
         </p>
@@ -18,7 +19,7 @@ export function TestimonialSection() {
 
       <div className="relative mt-12 flex w-full flex-col items-center gap-2 overflow-hidden">
         <MarqueeRow reviews={firstRow} />
-        <MarqueeRow reviews={secondRow} reverse />
+        <MarqueeRow reverse reviews={secondRow} />
         <div className="from-background pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r" />
         <div className="from-background pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l" />
       </div>

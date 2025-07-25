@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { ZapButton } from "@/components/zap-ui/button";
-import { cn } from "@/lib/utils";
+import { RatingButtons } from "@/zap/components/sidebar/rating-buttons";
 import { useIsFeedbackSubmitted } from "@/zap/hooks/feedbacks/use-is-feedback-submitted";
 import { useSubmitFeedback } from "@/zap/hooks/feedbacks/use-submit-feedback";
 import { FeedbackSchema } from "@/zap/schemas/feedback.schema";
@@ -50,42 +50,18 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
     form.reset();
   };
 
-  const RatingButtons = () => {
-    const rating = form.watch("rating");
-    return (
-      <div className="flex flex-wrap gap-2 pt-1">
-        {Array.from({ length: 11 }, (_, i) => {
-          const isActive = i <= rating;
-          return (
-            <ZapButton
-              key={`rating-${
-                // biome-ignore lint/suspicious/noArrayIndexKey: no other way to do this
-                i
-              }`}
-              variant={isActive ? "default" : "outline"}
-              size="sm"
-              className={cn(
-                "h-10 w-10 rounded-md p-0 text-sm",
-                "transform transition-all duration-200 ease-in-out",
-                "hover:scale-110",
-                isActive && "bg-primary text-white",
-              )}
-              onClick={() => form.setValue("rating", i)}
-              aria-label={`Rate ${i}`}
-              disabled={isSubmitting || !!isExistingFeedback}
-            >
-              {i}
-            </ZapButton>
-          );
-        })}
-      </div>
-    );
-  };
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>
-        {!submitted && !isExistingFeedback ? (
+        {submitted || isExistingFeedback ? (
+          <div className="space-y-2 text-center">
+            <h2 className="text-xl font-semibold">Thank you!</h2>
+            <p className="text-muted-foreground text-sm">
+              We appreciate your input and will use it to improve your
+              experience.
+            </p>
+          </div>
+        ) : (
           <>
             <DialogHeader>
               <DialogTitle>Share Your Feedback</DialogTitle>
@@ -93,8 +69,8 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
 
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
+                onSubmit={form.handleSubmit(onSubmit)}
               >
                 <FormField
                   control={form.control}
@@ -103,12 +79,17 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
                     <FormItem>
                       <FormLabel>Rate us (0–10)</FormLabel>
                       <FormControl>
-                        <RatingButtons />
+                        <RatingButtons
+                          form={form}
+                          isExistingFeedback={isExistingFeedback}
+                          isSubmitting={isSubmitting}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="description"
@@ -119,33 +100,26 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
                         <Textarea
                           placeholder="Share your thoughts..."
                           {...field}
-                          disabled={isSubmitting}
                           aria-label="Feedback text area"
+                          disabled={isSubmitting}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
                 <ZapButton
+                  className="w-full"
                   loading={isSubmitting}
                   loadingText="Submitting..."
                   type="submit"
-                  className="w-full"
                 >
                   Submit Feedback
                 </ZapButton>
               </form>
             </Form>
           </>
-        ) : (
-          <div className="space-y-2 text-center">
-            <h2 className="text-xl font-semibold">Thank you!</h2>
-            <p className="text-muted-foreground text-sm">
-              We appreciate your input and will use it to improve your
-              experience.
-            </p>
-          </div>
         )}
       </DialogContent>
     </Dialog>

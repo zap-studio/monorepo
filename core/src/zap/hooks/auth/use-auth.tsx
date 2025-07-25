@@ -128,7 +128,7 @@ export function useAuth(callbackURL?: string | null) {
       catch: () => new Error("Authentification failed"),
     }).pipe(
       Effect.tap(() => Effect.sync(() => setIsSubmitting(false))),
-      Effect.catchAll(() => Effect.sync(() => undefined)),
+      Effect.catchAll(() => Effect.sync(() => {})),
     );
 
     return await Effect.runPromise(effect);

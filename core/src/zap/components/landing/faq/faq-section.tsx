@@ -1,5 +1,3 @@
-"use client";
-
 import { Accordion } from "@/components/ui/accordion";
 import { FaqItem } from "@/zap/components/landing/faq/faq-item";
 import { FAQS } from "@/zap/data/landing";
@@ -17,13 +15,13 @@ export function FaqSection() {
       </header>
 
       <div className="mx-auto mt-12 max-w-3xl space-y-4">
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion className="w-full" collapsible type="single">
           {FAQS.map((faq, index) => (
             <FaqItem
-              key={faq.question}
-              question={faq.question}
               answer={faq.answer}
               index={index}
+              key={faq.question}
+              question={faq.question}
             />
           ))}
         </Accordion>

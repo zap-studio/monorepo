@@ -21,16 +21,19 @@ export function ForgotPasswordMail({ url }: MailProps) {
       <Body style={main}>
         <Container style={container}>
           <Text style={heading}>Reset your password</Text>
+
           <Text style={paragraph}>
             We received a request to reset your password. Click the button below
             to set a new one. If you didn&apos;t make this request, you can
             safely ignore this email.
           </Text>
+
           <Section style={buttonWrapper}>
             <Button href={url} style={button}>
               Reset Password
             </Button>
           </Section>
+
           <Text style={footer}>
             If the button doesn&apos;t work, copy and paste this URL into your
             browser:

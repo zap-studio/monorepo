@@ -32,12 +32,14 @@ export function SidebarSecondarySection({
                 <span>AI Settings</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
+
             <SidebarMenuItem>
               <SidebarMenuButton onClick={() => setFeedbackOpen(true)}>
                 <HelpCircle />
                 <span>Give Feedback</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
+
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link href="/app/settings">
@@ -51,10 +53,11 @@ export function SidebarSecondarySection({
       </SidebarGroup>
 
       <AISettingsSheet
-        open={isAISettingsOpen}
         onOpenChange={setAISettingsOpen}
+        open={isAISettingsOpen}
       />
-      <FeedbackDialog open={isFeedbackOpen} onOpenChange={setFeedbackOpen} />
+
+      <FeedbackDialog onOpenChange={setFeedbackOpen} open={isFeedbackOpen} />
     </>
   );
 }

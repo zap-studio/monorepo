@@ -3,10 +3,11 @@ import { notFound } from "next/navigation";
 import type { BlogPosting, WithContext } from "schema-dts";
 import serialize from "serialize-javascript";
 
-import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
+import { BASE_URL } from "@/zap.config";
 import { CustomMDX } from "@/zap/components/blog/mdx";
 import {
   formatDate,
+  generateBlogPostMetadata,
   getBlogPost,
   getBlogPostsMetadata,
 } from "@/zap/lib/blog/utils";
@@ -19,32 +20,7 @@ export async function generateMetadata({
   params,
 }: Props): Promise<Metadata | undefined> {
   const { slug } = await params;
-  const post = await getBlogPost(slug);
-
-  if (!post) {
-    return;
-  }
-
-  const openGraphImage =
-    post.metadata.image ||
-    `${BASE_URL}/opengraph-image?title=${post.metadata.title}`;
-
-  return {
-    title: `${post.metadata.title} | ${ZAP_DEFAULT_METADATA.title}`,
-    description: post.metadata.description,
-    openGraph: {
-      title: post.metadata.title,
-      description: post.metadata.description,
-      url: `${BASE_URL}/blog/${slug}`,
-      images: [{ url: openGraphImage }],
-    },
-    twitter: {
-      title: post.metadata.title,
-      description: post.metadata.description,
-      card: "summary_large_image",
-      images: [openGraphImage],
-    },
-  };
+  return await generateBlogPostMetadata(slug);
 }
 
 export async function generateStaticParams() {
@@ -54,9 +30,7 @@ export async function generateStaticParams() {
   }));
 }
 
-export const dynamicParams = false; // posts not generated with `generateStaticParams` will return 404
-
-export default async function BlogSlugPage({ params }: Props) {
+export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = await getBlogPost(slug);
 

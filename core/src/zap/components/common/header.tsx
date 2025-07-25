@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { NavLinksClient } from "@/zap/components/common/nav-links";
+import { NavLinks } from "@/zap/components/common/nav-links";
 import { SessionButton } from "@/zap/components/common/session-button";
 
 const NAV_LINKS = [
@@ -28,10 +28,7 @@ export function Navbar() {
           </Link>
 
           <nav className="hidden gap-2 md:flex">
-            <NavLinksClient
-              externalLinks={EXTERNAL_LINKS}
-              navLinks={NAV_LINKS}
-            />
+            <NavLinks externalLinks={EXTERNAL_LINKS} navLinks={NAV_LINKS} />
           </nav>
         </div>
 

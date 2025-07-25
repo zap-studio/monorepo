@@ -43,6 +43,7 @@ export function PricingSection() {
           <span className="text-4xl font-extrabold tracking-tight">
             {displayPrice}
           </span>
+
           {!isCustom && (
             <span className="text-muted-foreground mb-1 text-sm font-medium">
               /month
@@ -59,9 +60,11 @@ export function PricingSection() {
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
           Simple, transparent pricing
         </h2>
+
         <p className="text-muted-foreground max-w-[85%] md:text-xl">
           Choose the plan that&apos;s right for you and start building today.
         </p>
+
         <PricingToggle
           isYearly={isYearly}
           onToggle={setIsYearly}
@@ -72,33 +75,36 @@ export function PricingSection() {
       <div className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {PRICING_PLANS.map((plan) => (
           <Card
-            key={plan.title}
             className="bg-muted/50 relative flex flex-col justify-between border shadow-none transition-all duration-300"
+            key={plan.title}
           >
             {plan.popular && (
               <div className="bg-primary text-primary-foreground absolute -top-4 right-0 left-0 mx-auto w-fit rounded-full px-3 py-1 text-xs font-medium">
                 Most Popular
               </div>
             )}
+
             <CardHeader>
               <CardTitle>{plan.title}</CardTitle>
               {renderPrice(plan)}
               <CardDescription>{plan.description}</CardDescription>
             </CardHeader>
+
             <CardContent className="flex h-full flex-col justify-between">
               <ul className="grid gap-2">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-2">
+                  <li className="flex items-center gap-2" key={feature}>
                     <Check className="text-primary h-4 w-4" />
                     <span>{feature}</span>
                   </li>
                 ))}
               </ul>
+
               <div className="mt-6">
                 <ZapButton
+                  asChild
                   className="w-full"
                   variant={plan.buttonVariant}
-                  asChild
                 >
                   <Link href="/register">{plan.buttonText}</Link>
                 </ZapButton>

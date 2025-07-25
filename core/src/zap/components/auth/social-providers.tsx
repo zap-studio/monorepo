@@ -1,6 +1,5 @@
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-
-import { SocialProviderButton } from "./social-provider-button";
+import { SocialProviderButton } from "@/zap/components/auth/social-provider-button";
 
 interface SocialProvidersProps {
   redirectURL: string;

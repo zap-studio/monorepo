@@ -7,6 +7,7 @@ import { format, formatDistanceToNow, parseISO } from "date-fns";
 import { Effect } from "effect";
 import matter from "gray-matter";
 
+import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
 import { postMetadataSchema } from "@/zap/schemas/blog.schema";
 
 const BLOG_DIR = path.join(process.cwd(), "src", "blog");
@@ -120,4 +121,33 @@ export function formatDate(date: string, includeRelative = false) {
   }
 
   return fullDate;
+}
+
+export async function generateBlogPostMetadata(slug: string) {
+  const post = await getBlogPost(slug);
+
+  if (!post) {
+    return;
+  }
+
+  const openGraphImage =
+    post.metadata.image ||
+    `${BASE_URL}/opengraph-image?title=${post.metadata.title}`;
+
+  return {
+    title: `${post.metadata.title} | ${ZAP_DEFAULT_METADATA.title}`,
+    description: post.metadata.description,
+    openGraph: {
+      title: post.metadata.title,
+      description: post.metadata.description,
+      url: `${BASE_URL}/blog/${slug}`,
+      images: [{ url: openGraphImage }],
+    },
+    twitter: {
+      title: post.metadata.title,
+      description: post.metadata.description,
+      card: "summary_large_image",
+      images: [openGraphImage],
+    },
+  };
 }
