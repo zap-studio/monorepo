@@ -1,5 +1,5 @@
 import { Footer } from "@/zap/components/common/footer";
-import { Navbar } from "@/zap/components/common/header";
+import { Header } from "@/zap/components/common/header";
 import { FaqSection } from "@/zap/components/landing/faq/faq-section";
 import { FeaturesSection } from "@/zap/components/landing/features/features-section";
 import { HeroSection } from "@/zap/components/landing/hero/hero-section";
@@ -42,8 +42,8 @@ export const revalidate = 3600; // revalidate every hour
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <Navbar />
+    <div className="relative flex min-h-screen flex-col">
+      <Header />
       <main className="flex-1">
         {SECTIONS.map(({ id, component: Component, className }) => (
           <section className={className} id={id} key={id}>
