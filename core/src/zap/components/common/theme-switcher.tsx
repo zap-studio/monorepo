@@ -11,6 +11,8 @@ export function ThemeSwitcher() {
     setTheme(value);
   };
 
+  const currentTheme = theme || "system";
+
   const activeClassName =
     "text-foreground bg-accent cursor-pointer p-2 rounded-full";
   const inactiveClassName =
@@ -20,24 +22,25 @@ export function ThemeSwitcher() {
     <RadioGroup.Root
       aria-label="Theme Switcher"
       className="flex w-fit items-center space-x-2 rounded-full border p-1"
-      defaultValue="system"
+      onValueChange={handleThemeChange}
+      value={currentTheme}
     >
       <RadioGroup.Item
-        className={`${theme === "light" ? activeClassName : inactiveClassName}`}
+        className={`${currentTheme === "light" ? activeClassName : inactiveClassName}`}
         onClick={() => handleThemeChange("light")}
         value="light"
       >
         <Sun className="h-4 w-4" />
       </RadioGroup.Item>
       <RadioGroup.Item
-        className={`${theme === "system" ? activeClassName : inactiveClassName}`}
+        className={`${currentTheme === "system" ? activeClassName : inactiveClassName}`}
         onClick={() => handleThemeChange("system")}
         value="system"
       >
         <Monitor className="h-4 w-4" />
       </RadioGroup.Item>
       <RadioGroup.Item
-        className={`${theme === "dark" ? activeClassName : inactiveClassName}`}
+        className={`${currentTheme === "dark" ? activeClassName : inactiveClassName}`}
         onClick={() => handleThemeChange("dark")}
         value="dark"
       >
