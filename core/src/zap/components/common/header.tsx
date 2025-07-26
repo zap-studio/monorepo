@@ -1,6 +1,5 @@
 "use client";
 
-import { ModeToggle } from "@/components/ui/mode-toggle";
 import { useDetectDevice } from "@/hooks/utils/use-detect-device";
 import { Logo } from "@/zap/components/common/logo";
 import { MenuLinks } from "@/zap/components/common/menu-links";
@@ -37,7 +36,6 @@ export function Header() {
 
         <div className="flex flex-1 items-center justify-end space-x-4">
           <SessionButton />
-          <ModeToggle variant="outline" />
         </div>
       </div>
     </header>
