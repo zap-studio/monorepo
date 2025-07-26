@@ -6,26 +6,12 @@ import { usePathname } from "next/navigation";
 
 import { ZapButton } from "@/components/zap-ui/button";
 
-const HEADER_HEIGHT = 64; // 16 * 4px (Tailwind's h-16)
+import { EXTERNAL_LINKS, HEADER_HEIGHT, NAV_LINKS } from "./header";
+
 const NAV_BUTTON_CLASSNAME =
   "text-muted-foreground hover:text-foreground flex items-center text-sm font-medium transition-colors";
 
-interface NavLink {
-  id: string;
-  label: string;
-}
-
-interface ExternalLink {
-  href: string;
-  label: string;
-}
-
-interface NavLinksProps {
-  navLinks: NavLink[];
-  externalLinks: ExternalLink[];
-}
-
-export function NavLinks({ navLinks, externalLinks }: NavLinksProps) {
+export function NavLinks() {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -48,7 +34,7 @@ export function NavLinks({ navLinks, externalLinks }: NavLinksProps) {
 
   return (
     <>
-      {navLinks.map(({ id, label }) => (
+      {NAV_LINKS.map(({ id, label }) => (
         <ZapButton
           className={NAV_BUTTON_CLASSNAME}
           key={id}
@@ -59,7 +45,7 @@ export function NavLinks({ navLinks, externalLinks }: NavLinksProps) {
         </ZapButton>
       ))}
 
-      {externalLinks.map(({ href, label }) => (
+      {EXTERNAL_LINKS.map(({ href, label }) => (
         <ZapButton asChild key={href} variant="ghost">
           <Link
             className="text-muted-foreground hover:text-foreground flex items-center text-sm font-medium transition-colors"
