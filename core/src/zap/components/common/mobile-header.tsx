@@ -4,7 +4,6 @@ import { AlignJustify, X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Logo } from "@/zap/components/common/logo";
 import { MenuLinks } from "@/zap/components/common/menu-links";
 
@@ -34,10 +33,6 @@ export function MobileHeader() {
             <MenuLinks onClick={() => setIsOpen(false)} variant="mobile" />
           </div>
         </nav>
-
-        <div className="flex items-center justify-end px-4 py-4">
-          <ModeToggle variant="outline" />
-        </div>
       </div>
     );
   }
