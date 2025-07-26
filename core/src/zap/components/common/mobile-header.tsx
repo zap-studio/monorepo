@@ -4,6 +4,7 @@ import { AlignJustify, X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Logo } from "@/zap/components/common/logo";
 import { MenuLinks } from "@/zap/components/common/menu-links";
 
@@ -12,7 +13,7 @@ export function MobileHeader() {
 
   if (isOpen) {
     return (
-      <div className="bg-background/95 supports-[backdrop-filter]:bg-background/90 fixed top-0 z-50 h-screen w-full border-b backdrop-blur">
+      <div className="bg-background/95 supports-[backdrop-filter]:bg-background/90 fixed top-0 z-50 flex h-screen w-full flex-col border-b backdrop-blur">
         <div className="mx-auto flex h-16 w-full items-center justify-between px-4">
           <Logo />
           <Button
@@ -20,12 +21,12 @@ export function MobileHeader() {
             onClick={() => setIsOpen(false)}
             variant="ghost"
           >
-            <X className="h-5 w-5" />
             Menu
+            <X className="h-5 w-5" />
           </Button>
         </div>
 
-        <nav className="flex flex-col items-start space-y-2 px-4 py-8">
+        <nav className="flex flex-1 flex-col items-start space-y-2 overflow-y-auto px-4 py-8">
           <div className="flex flex-col gap-2">
             <span className="text-muted-foreground text-sm font-medium">
               Menu
@@ -33,6 +34,10 @@ export function MobileHeader() {
             <MenuLinks onClick={() => setIsOpen(false)} variant="mobile" />
           </div>
         </nav>
+
+        <div className="flex items-center justify-end px-4 py-4">
+          <ModeToggle variant="outline" />
+        </div>
       </div>
     );
   }
@@ -46,8 +51,8 @@ export function MobileHeader() {
           onClick={() => setIsOpen(true)}
           variant="ghost"
         >
-          <AlignJustify className="h-5 w-5" />
           Menu
+          <AlignJustify className="h-5 w-5" />
         </Button>
       </div>
     </header>
