@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { LatestBlogPosts } from "@/zap/components/blog/latest-blog-posts";
+import { ThemeSwitcher } from "@/zap/components/common/theme-switcher";
 
 const LEGAL_LINKS = [
   { href: "/terms-of-service", label: "Terms of Service" },
@@ -35,6 +36,8 @@ export function Footer() {
                 </Link>
               ))}
             </div>
+
+            <ThemeSwitcher />
           </div>
 
           <LatestBlogPosts />
