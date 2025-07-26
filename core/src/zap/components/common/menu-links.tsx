@@ -11,9 +11,7 @@ interface MenuLinksProps {
 }
 
 export function MenuLinks({ onClick, variant = "desktop" }: MenuLinksProps) {
-  const scrollToSection = useScrollToSection(
-    variant === "mobile" ? 0 : undefined,
-  );
+  const scrollToSection = useScrollToSection();
 
   const linkClassName =
     variant === "mobile"
