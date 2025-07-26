@@ -12,7 +12,7 @@ export default async function BlogPage() {
   const posts = await getBlogPostsMetadata();
 
   return (
-    <div className="container mx-auto max-w-4xl py-12">
+    <div className="container mx-auto max-w-4xl py-6">
       <div className="flex flex-col">
         {posts.map((post, index) => (
           <div
