@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { ZapButton } from "@/components/zap-ui/button";
 import { AUTH_ICONS } from "@/data/auth-icons";
-import type { Provider } from "@/zap.config";
+import { type Provider, ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { authClient } from "@/zap/lib/auth/client";
 
 interface SocialProviderButtonProps {
@@ -19,7 +19,10 @@ export function SocialProviderButton({ provider }: SocialProviderButtonProps) {
     setLoading(true);
 
     try {
-      const { data, error } = await authClient.signIn.social({ provider });
+      const { data, error } = await authClient.signIn.social({
+        provider,
+        callbackURL: ZAP_DEFAULT_SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN,
+      });
 
       if (error) {
         toast.error("Login failed. Please try again.");
