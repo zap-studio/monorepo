@@ -76,7 +76,7 @@ export function LoginForm() {
               <div className="flex items-center justify-between">
                 <FormLabel>Password</FormLabel>
                 <Link
-                  className="text-sm underline-offset-4 hover:underline"
+                  className="text-sm underline-offset-4 hover:underline active:underline"
                   href="/forgot-password"
                 >
                   Forgot your password?

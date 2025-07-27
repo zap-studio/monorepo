@@ -44,7 +44,11 @@ function CustomLink(props: CustomLinkProps) {
 
   if (href.startsWith("/")) {
     return (
-      <Link href={href} {...restProps} className="text-primary hover:underline">
+      <Link
+        href={href}
+        {...restProps}
+        className="text-primary hover:underline active:underline"
+      >
         {children}
       </Link>
     );
@@ -52,7 +56,11 @@ function CustomLink(props: CustomLinkProps) {
 
   if (href.startsWith("#")) {
     return (
-      <a href={href} {...restProps} className="text-primary hover:underline">
+      <a
+        href={href}
+        {...restProps}
+        className="text-primary hover:underline active:underline"
+      >
         {children}
       </a>
     );
@@ -61,7 +69,7 @@ function CustomLink(props: CustomLinkProps) {
   return (
     <a
       aria-label={`${children} (opens in a new tab)`}
-      className="text-primary inline-flex items-center gap-1 hover:underline focus-visible:outline-none"
+      className="text-primary inline-flex items-center gap-1 hover:underline focus-visible:outline-none active:underline"
       href={href}
       rel="noopener noreferrer"
       target="_blank"
@@ -123,7 +131,7 @@ function createHeading(level: number) {
       <>
         {children}
         <a
-          className="anchor text-muted-foreground ml-2 opacity-0 transition-opacity group-hover:opacity-100"
+          className="anchor text-muted-foreground ml-2 opacity-0 transition-opacity group-hover:opacity-100 group-active:opacity-100"
           href={`#${slug}`}
           key={`link-${slug}`}
         >

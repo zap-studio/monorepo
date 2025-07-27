@@ -28,7 +28,7 @@ export function RatingButtons({
             className={cn(
               "h-10 w-10 rounded-md p-0 text-sm",
               "transform transition-all duration-200 ease-in-out",
-              "hover:scale-110",
+              "hover:scale-110 active:scale-110",
               isActive && "bg-primary text-white",
             )}
             disabled={isSubmitting || !!isExistingFeedback}

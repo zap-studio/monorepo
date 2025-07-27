@@ -28,7 +28,7 @@ export function Footer() {
             <div className="flex flex-wrap gap-4">
               {LEGAL_LINKS.map((link) => (
                 <Link
-                  className="text-muted-foreground text-sm underline-offset-4 hover:underline"
+                  className="text-muted-foreground text-sm underline-offset-4 hover:underline active:underline"
                   href={link.href}
                   key={link.href}
                 >

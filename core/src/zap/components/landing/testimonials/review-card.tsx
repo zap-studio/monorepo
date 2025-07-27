@@ -11,9 +11,9 @@ export function ReviewCard({ img, name, username, body }: ReviewCardProps) {
       className={cn(
         "relative h-full w-64 shrink-0 cursor-pointer overflow-hidden rounded-xl border p-4",
         // light
-        "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
+        "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05] active:bg-gray-950/[.05]",
         // dark
-        "dark:border-gray-50/[.1] dark:bg-gray-50/[.08] dark:hover:bg-gray-50/[.12]",
+        "dark:border-gray-50/[.1] dark:bg-gray-50/[.08] dark:hover:bg-gray-50/[.12] dark:active:bg-gray-50/[.12]",
         "transition-colors",
       )}
     >

@@ -6,7 +6,7 @@ export function PolicyLinks({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "text-muted-foreground [&_a]:hover:text-primary text-center text-xs text-balance [&_a]:underline [&_a]:underline-offset-4",
+        "text-muted-foreground [&_a]:hover:text-primary [&_a]:active:text-primary text-center text-xs text-balance [&_a]:underline [&_a]:underline-offset-4",
         className,
       )}
     >
