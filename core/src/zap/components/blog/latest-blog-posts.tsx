@@ -22,7 +22,7 @@ export async function LatestBlogPosts() {
             href={`/blog/${post.slug}`}
             key={post.slug}
           >
-            <h4 className="text-foreground group-hover:text-primary text-sm font-medium transition-colors">
+            <h4 className="text-foreground group-hover:text-primary group-active:text-primary text-sm font-medium transition-colors">
               {post.title}
             </h4>
 
@@ -36,7 +36,7 @@ export async function LatestBlogPosts() {
       </div>
 
       <Link
-        className="text-muted-foreground w-fit text-sm underline-offset-4 hover:underline"
+        className="text-muted-foreground w-fit text-sm underline-offset-4 hover:underline active:underline"
         href="/blog"
       >
         View all articles →

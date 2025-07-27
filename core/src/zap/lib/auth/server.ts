@@ -79,6 +79,10 @@ export const auth = betterAuth({
     },
   },
   socialProviders: {
+    github: {
+      clientId: SERVER_ENV.GITHUB_CLIENT_ID || "",
+      clientSecret: SERVER_ENV.GITHUB_CLIENT_SECRET || "",
+    },
     google: {
       enabled: true,
       clientId: SERVER_ENV.GOOGLE_CLIENT_ID || "",

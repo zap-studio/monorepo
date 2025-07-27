@@ -16,7 +16,6 @@ interface AuthPageProps {
   title: string;
   description?: string;
   form: React.ReactNode;
-  redirectURL: string;
   bottomText: {
     label: string;
     linkText: string;
@@ -28,7 +27,6 @@ export function AuthPage({
   title,
   description,
   form,
-  redirectURL,
   bottomText,
 }: AuthPageProps) {
   return (
@@ -54,7 +52,7 @@ export function AuthPage({
               <div className="grid gap-6">
                 {SETTINGS.AUTH.ENABLE_SOCIAL_PROVIDER && (
                   <>
-                    <SocialProviders redirectURL={redirectURL} />
+                    <SocialProviders />
                     <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                       <span className="bg-card text-muted-foreground relative z-10 px-2">
                         Or continue with

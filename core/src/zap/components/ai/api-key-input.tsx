@@ -43,7 +43,7 @@ export function ApiKeyInput({
                   disabled={disabled}
                 />
                 <button
-                  className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
+                  className="text-muted-foreground hover:text-foreground active:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
                   onClick={() => setShowKey((prev) => !prev)}
                   tabIndex={-1}
                   type="button"

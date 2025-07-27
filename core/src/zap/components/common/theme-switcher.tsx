@@ -16,7 +16,7 @@ export function ThemeSwitcher() {
   const activeClassName =
     "text-foreground bg-accent cursor-pointer p-2 rounded-full";
   const inactiveClassName =
-    "text-muted-foreground hover:bg-accent bg-background hover:text-accent-foreground cursor-pointer p-2 rounded-full";
+    "text-muted-foreground hover:bg-accent bg-background hover:text-accent-foreground active:bg-accent active:text-accent-foreground cursor-pointer p-2 rounded-full";
 
   return (
     <RadioGroup.Root

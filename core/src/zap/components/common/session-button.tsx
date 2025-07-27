@@ -21,7 +21,7 @@ export function SessionButton() {
     <>
       <ZapButton asChild variant="ghost">
         <Link
-          className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+          className="text-muted-foreground hover:text-foreground active:text-foreground text-sm font-medium transition-colors"
           href="/login"
         >
           Login

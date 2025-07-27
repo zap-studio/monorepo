@@ -16,7 +16,7 @@ export function MenuLinks({ onClick, variant = "desktop" }: MenuLinksProps) {
   const linkClassName =
     variant === "mobile"
       ? "flex items-center text-2xl font-semibold"
-      : "flex items-center rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground";
+      : "flex items-center rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground active:bg-accent active:text-accent-foreground";
 
   return (
     <>

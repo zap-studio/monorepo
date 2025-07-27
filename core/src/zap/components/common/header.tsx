@@ -4,6 +4,7 @@ import { AlignJustify, X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/zap/components/common/logo";
 import { MenuLinks } from "@/zap/components/common/menu-links";
@@ -22,6 +23,7 @@ export const HEADER_HEIGHT = 64; // Tailwind's h-16
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  useBodyScrollLock(isOpen);
 
   return (
     <header

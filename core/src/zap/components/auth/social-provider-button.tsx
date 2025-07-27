@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "@bprogress/next/app";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -11,16 +10,10 @@ import { authClient } from "@/zap/lib/auth/client";
 
 interface SocialProviderButtonProps {
   provider: Provider;
-  redirectURL: string;
 }
 
-export function SocialProviderButton({
-  provider,
-  redirectURL,
-}: SocialProviderButtonProps) {
+export function SocialProviderButton({ provider }: SocialProviderButtonProps) {
   const [loading, setLoading] = useState(false);
-
-  const router = useRouter();
 
   const handleSocialLogin = async (provider: Provider) => {
     setLoading(true);
@@ -34,7 +27,6 @@ export function SocialProviderButton({
 
       if (data) {
         toast.success("Login successful!");
-        router.push(redirectURL);
       } else {
         toast.error("Login failed. Please try again.");
       }
