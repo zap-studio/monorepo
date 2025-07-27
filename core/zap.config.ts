@@ -10,9 +10,9 @@
  * - Customize open graph image generation in `src/app/opengraph-image/route.tsx`
  */
 
-import type { Metadata } from "next";
 import { CLIENT_ENV, DEV, VERCEL } from "@/lib/env.client";
 import type { ZapSettings } from "@/zap/types/zap.config.types";
+import type { Metadata } from "next";
 
 export const APP_NAME = "Zap.ts | Build applications as fast as a zap";
 export const APP_DESCRIPTION =
@@ -21,7 +21,7 @@ export const BASE_URL = DEV
   ? "http://localhost:3000"
   : "https://demo.zap-ts.alexandretrotel.org";
 
-export type Provider = "apple" | "google";
+export type Provider = "github" | "google";
 
 export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   AI: {
@@ -42,7 +42,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
     LOGIN_URL: "/login",
     REDIRECT_URL_AFTER_SIGN_UP: "/login",
     REDIRECT_URL_AFTER_SIGN_IN: "/app",
-    PROVIDERS: ["apple", "google"],
+    PROVIDERS: ["github", "google"],
     PASSWORD_COMPROMISED_MESSAGE:
       "This password has been exposed in a data breach. Please choose a stronger, unique password.",
     PUBLIC_PATHS: [
