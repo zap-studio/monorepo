@@ -38,6 +38,7 @@ export interface ZapSettings {
     PROVIDERS: Provider[];
     PASSWORD_COMPROMISED_MESSAGE: string;
     PUBLIC_PATHS: string[];
+    VERIFIED_EMAIL_PATH: string;
   };
   BLOG: {
     BASE_PATH: string;

@@ -50,6 +50,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       "/login",
       "/register",
       "/forgot-password",
+      "/mail-verified",
       "/reset-password",
       "/terms-of-service",
       "/privacy-policy",
@@ -59,6 +60,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       "/_vercel/insights/view",
       "/opengraph-image",
     ],
+    VERIFIED_EMAIL_PATH: "/mail-verified",
   },
   BLOG: {
     BASE_PATH: "/blog",
