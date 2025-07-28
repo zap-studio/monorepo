@@ -23,7 +23,7 @@ export default function GlobalError({ reset }: ErrorBoundaryProps) {
                 An unexpected error occurred.
               </p>
             </div>
-            <ZapButton asChild onClick={() => reset()} variant={"ghost"}>
+            <ZapButton onClick={() => reset()} variant={"ghost"}>
               Try again
             </ZapButton>
           </div>

@@ -7,7 +7,7 @@ type ButtonProps = React.ComponentProps<typeof Button>;
 interface ZapButtonProps extends ButtonProps {
   loading?: boolean;
   loadingText?: string;
-  children?: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export function ZapButton({
