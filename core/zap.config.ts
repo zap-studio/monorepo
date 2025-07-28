@@ -14,7 +14,8 @@ import { CLIENT_ENV, DEV, VERCEL } from "@/lib/env.client";
 import type { ZapSettings } from "@/zap/types/zap.config.types";
 import type { Metadata } from "next";
 
-export const APP_NAME = "Zap.ts | Build applications as fast as a zap";
+export const NAME = "Zap.ts";
+export const APP_NAME = `${NAME} | Build applications as fast as a zap`;
 export const APP_DESCRIPTION =
   "Zap.ts is a Next.js boilerplate designed to help you build applications faster using a modern set of tools.";
 export const BASE_URL = DEV
@@ -66,16 +67,16 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
     BASE_PATH: "/blog",
   },
   MAIL: {
-    PREFIX: APP_NAME,
+    PREFIX: NAME,
     RATE_LIMIT_SECONDS: 60,
-    FROM: `${APP_NAME} <${CLIENT_ENV.ZAP_MAIL}>`,
+    FROM: `${NAME} <${CLIENT_ENV.ZAP_MAIL}>`,
   },
   NOTIFICATIONS: {
     VAPID_MAIL: CLIENT_ENV.ZAP_MAIL,
   },
   PWA: {
-    NAME: APP_NAME,
-    SHORT_NAME: APP_NAME,
+    NAME,
+    SHORT_NAME: NAME,
     DESCRIPTION: APP_DESCRIPTION,
     START_URL: "/",
     BACKGROUND_COLOR: "#ffffff",
