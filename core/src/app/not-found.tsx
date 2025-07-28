@@ -14,7 +14,7 @@ export default function NotFoundPage() {
             Looks like you&apos;ve found the edge case...{" "}
           </p>
         </div>
-        <ZapButton asChild>
+        <ZapButton asChild variant={"ghost"}>
           <Link href="/">Return to website</Link>
         </ZapButton>
       </div>
