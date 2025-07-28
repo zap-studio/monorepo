@@ -22,7 +22,7 @@ import { LoginFormSchema } from "@/zap/schemas/auth.schema";
 type LoginFormValues = z.infer<typeof LoginFormSchema>;
 
 export function LoginForm() {
-  const [callbackURL, setCallbackURL] = useState<string | null>(null);
+  const [callbackURL, setCallbackURL] = useState<string | undefined>(undefined);
   const { isInCooldown, cooldown, isSubmitting, handleLoginSubmit } =
     useAuth(callbackURL);
 
