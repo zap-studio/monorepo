@@ -54,6 +54,8 @@ export const auth = betterAuth({
     },
   },
   emailVerification: {
+    autoSignInAfterVerification: true,
+
     sendVerificationEmail: async ({ user, url }) => {
       const { canSend, timeLeft } = await canSendMailService({
         input: { userId: user.id },
@@ -65,11 +67,19 @@ export const auth = betterAuth({
         );
       }
 
+      const verificationUrl = new URL(url);
+      verificationUrl.searchParams.set(
+        "callbackURL",
+        ZAP_DEFAULT_SETTINGS.AUTH.VERIFIED_EMAIL_PATH,
+      );
+
+      const modifiedUrl = verificationUrl.toString();
+
       await sendVerificationMailService({
         input: {
           recipients: [user.email],
           subject: `${SETTINGS.MAIL.PREFIX} - Verify your email`,
-          url,
+          url: modifiedUrl,
         },
       });
 
