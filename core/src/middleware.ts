@@ -55,16 +55,6 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    // Check mail verification
-    if (
-      ZAP_DEFAULT_SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION &&
-      !session.user.emailVerified
-    ) {
-      const verifyUrl = new URL(LOGIN_URL, request.url);
-      verifyUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(verifyUrl);
-    }
-
     // Add session and security headers for authenticated requests
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-user-session", JSON.stringify(session));
