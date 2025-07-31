@@ -45,7 +45,7 @@ export async function POST(req: Request) {
           generateText({
             model: getModel(provider, apiKey, model),
             prompt: "This is just a test, answer with 1 token.",
-            maxOutputTokens: 1,
+            maxOutputTokens: 16,
           }),
         catch: () => new Error("Invalid API key"),
       }),
