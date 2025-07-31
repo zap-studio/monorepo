@@ -1,6 +1,6 @@
 import "server-only";
 
-import { z } from "zod/v4";
+import { z } from "zod";
 
 const ServerEnvSchema = z.object({
   NODE_ENV: z

@@ -4,7 +4,7 @@ import "client-only";
 import { useRouter } from "@bprogress/next/app";
 import { useState } from "react";
 import { toast } from "sonner";
-import type { z } from "zod/v4";
+import type { z } from "zod";
 
 import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";

@@ -4,7 +4,7 @@ export interface ZapSettings {
   AI: {
     SYSTEM_PROMPT: string;
     CHAT?: {
-      MAX_TOKENS?: number;
+      MAX_OUTPUT_TOKENS?: number;
       TEMPERATURE?: number;
       PRESENCE_PENALTY?: number;
       FREQUENCY_PENALTY?: number;
@@ -12,7 +12,7 @@ export interface ZapSettings {
       MAX_RETRIES?: number;
     };
     COMPLETION?: {
-      MAX_TOKENS?: number;
+      MAX_OUTPUT_TOKENS?: number;
       TEMPERATURE?: number;
       PRESENCE_PENALTY?: number;
       FREQUENCY_PENALTY?: number;

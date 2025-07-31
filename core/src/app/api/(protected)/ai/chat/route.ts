@@ -2,7 +2,7 @@ import "server-only";
 
 import { streamText } from "ai";
 import { Effect } from "effect";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 import { SETTINGS } from "@/data/settings";
 import { getModel } from "@/zap/lib/ai/get-model";
@@ -49,12 +49,17 @@ export async function POST(req: Request) {
         catch: () => new Error("Failed to get AI settings"),
       }),
     );
-
+    if (!apiKey) {
+      return Response.json(
+        { error: "API key is required for the selected provider" },
+        { status: 400 },
+      );
+    }
     const result = streamText({
       model: getModel(provider, apiKey, model),
       messages: body.messages,
       system: SETTINGS.AI.SYSTEM_PROMPT,
-      maxTokens: SETTINGS.AI.CHAT?.MAX_TOKENS,
+      maxOutputTokens: SETTINGS.AI.CHAT?.MAX_OUTPUT_TOKENS,
       temperature: SETTINGS.AI.CHAT?.TEMPERATURE,
       presencePenalty: SETTINGS.AI.CHAT?.PRESENCE_PENALTY,
       frequencyPenalty: SETTINGS.AI.CHAT?.FREQUENCY_PENALTY,
@@ -62,7 +67,7 @@ export async function POST(req: Request) {
       maxRetries: SETTINGS.AI.CHAT?.MAX_RETRIES,
     });
 
-    return result.toDataStreamResponse();
+    return result.toUIMessageStreamResponse();
   }).pipe(
     Effect.catchAll((err) =>
       Effect.succeed(

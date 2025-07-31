@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 
 export const FeedbackSchema = z.object({
   rating: z.number().min(0).max(10),

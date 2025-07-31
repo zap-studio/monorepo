@@ -1,7 +1,7 @@
 import "server-only";
 
 import { Effect } from "effect";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 import { orpcServer } from "@/zap/lib/orpc/server";
 

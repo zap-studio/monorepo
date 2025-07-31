@@ -2,7 +2,7 @@ import "server-only";
 
 import { generateText } from "ai";
 import { Effect } from "effect";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 import { getModel } from "@/zap/lib/ai/get-model";
 import { auth } from "@/zap/lib/auth/server";
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
           generateText({
             model: getModel(provider, apiKey, model),
             prompt: "This is just a test, answer with 1 token.",
-            maxTokens: 1,
+            maxOutputTokens: 1,
           }),
         catch: () => new Error("Invalid API key"),
       }),
