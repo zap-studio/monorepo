@@ -3,7 +3,7 @@ import "server-only";
 import { eq } from "drizzle-orm";
 import { Effect } from "effect";
 import { NextResponse } from "next/server";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 import { db } from "@/db";
 import { getPushNotificationsByUserQuery } from "@/zap/db/queries/push-notifications.query";

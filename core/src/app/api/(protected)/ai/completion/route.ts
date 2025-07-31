@@ -2,7 +2,7 @@ import "server-only";
 
 import { streamText } from "ai";
 import { Effect } from "effect";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 import { SETTINGS } from "@/data/settings";
 import { getModel } from "@/zap/lib/ai/get-model";
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
       model: getModel(provider, apiKey, model),
       prompt: body.prompt,
       system: SETTINGS.AI.SYSTEM_PROMPT,
-      maxTokens: SETTINGS.AI.COMPLETION?.MAX_TOKENS,
+      maxOutputTokens: SETTINGS.AI.COMPLETION?.MAX_OUTPUT_TOKENS,
       temperature: SETTINGS.AI.COMPLETION?.TEMPERATURE,
       presencePenalty: SETTINGS.AI.COMPLETION?.PRESENCE_PENALTY,
       frequencyPenalty: SETTINGS.AI.COMPLETION?.FREQUENCY_PENALTY,
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
       maxRetries: SETTINGS.AI.COMPLETION?.MAX_RETRIES,
     });
 
-    return result.toDataStreamResponse();
+    return result.toUIMessageStreamResponse();
   }).pipe(
     Effect.catchAll((err) =>
       Effect.succeed(

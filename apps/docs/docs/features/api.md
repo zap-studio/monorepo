@@ -35,7 +35,7 @@ Recently, it has also been [optimized](https://orpc.unnoq.com/docs/best-practice
 ```ts
 // src/rpc/procedures/hello.rpc.ts
 import { base } from "../middlewares";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 export const hello = base
   .input(z.object({ name: z.string() }))

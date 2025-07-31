@@ -4,7 +4,7 @@ import "client-only";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import useSWRMutation from "swr/mutation";
-import type z from "zod/v4";
+import type z from "zod";
 
 import { orpcClient } from "@/zap/lib/orpc/client";
 import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";

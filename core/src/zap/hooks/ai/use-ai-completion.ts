@@ -15,8 +15,10 @@ export function useAICompletion(provider: AIProviderId) {
     body: {
       provider,
     },
-    onError: (error) => {
-      toast.error(`Completion error: ${error.message}`);
+    onError: (error: unknown) => {
+      toast.error(
+        `Completion error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     },
   });
 }
