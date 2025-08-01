@@ -43,6 +43,7 @@ export function ModelSelect({ control, disabled, provider }: ModelSelectProps) {
                 <SelectValue placeholder="Select a model" />
               </SelectTrigger>
             </FormControl>
+
             <SelectContent>
               {models.map((model) => (
                 <SelectItem key={model} value={model}>

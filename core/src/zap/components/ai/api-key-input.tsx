@@ -42,6 +42,7 @@ export function ApiKeyInput({
                   className="pr-10 font-mono"
                   disabled={disabled}
                 />
+
                 <button
                   className="text-muted-foreground hover:text-foreground active:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
                   onClick={() => setShowKey((prev) => !prev)}
@@ -54,6 +55,7 @@ export function ApiKeyInput({
             </FormControl>
             <FormMessage />
           </FormItem>
+
           <ZapButton
             disabled={disabled || !field.value}
             loading={testing}

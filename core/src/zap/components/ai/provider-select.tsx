@@ -32,15 +32,16 @@ export function ProviderSelect({ control, disabled }: FormFieldProps) {
         <FormItem>
           <FormLabel>AI Provider</FormLabel>
           <Select
+            disabled={disabled}
             onValueChange={field.onChange}
             value={field.value}
-            disabled={disabled}
           >
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Select a provider" />
               </SelectTrigger>
             </FormControl>
+
             <SelectContent>
               {AIProviderIdSchema.options.map((provider) => (
                 <SelectItem key={provider} value={provider}>
