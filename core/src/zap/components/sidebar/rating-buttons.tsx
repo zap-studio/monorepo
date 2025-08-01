@@ -35,6 +35,7 @@ export function RatingButtons({
             key={`rating-${i}`}
             onClick={() => form.setValue("rating", i)}
             size="sm"
+            type="button"
             variant={isActive ? "default" : "outline"}
           >
             {i}
