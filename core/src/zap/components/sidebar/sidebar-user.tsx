@@ -71,7 +71,7 @@ export function SidebarUser({ user }: SidebarUserProps) {
   };
 
   const UPGRADE_ITEM: MenuItem[] = [
-    { label: "Upgrade to Pro", icon: Sparkles },
+    { label: "Upgrade to Pro", icon: Sparkles, href: "/app/billing" },
   ];
 
   const ACCOUNT_ITEMS: MenuItem[] = [

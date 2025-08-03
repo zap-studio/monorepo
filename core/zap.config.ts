@@ -25,6 +25,32 @@ export const BASE_URL = DEV
 
 export type Provider = "github" | "google";
 
+const PRODUCTS = {
+  sandbox: [
+    {
+      productId: "cd396dd5-b6ea-461c-a8de-e97539749480",
+      slug: "pro-monthly",
+    },
+    {
+      productId: "d07e65a0-9798-42c8-8f32-eca20d1be230",
+      slug: "pro-yearly",
+    },
+  ],
+  production: [
+    {
+      productId: "6e21c61f-b711-4ce5-b925-e4a20871074c",
+      slug: "pro-monthly",
+    },
+    {
+      productId: "ad7d7325-3d72-42e5-8164-d4706c513468",
+      slug: "pro-yearly",
+    },
+  ],
+};
+
+const POLAR_ENV =
+  CLIENT_ENV.NODE_ENV === "production" ? "production" : "sandbox";
+
 export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   AI: {
     SYSTEM_PROMPT: "You are a helpful assistant.",
@@ -79,18 +105,8 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
     POLAR: {
       AUTHENTICATED_USERS_ONLY: true,
       CREATE_CUSTOMER_ON_SIGNUP: true,
-      ENVIRONMENT:
-        CLIENT_ENV.NODE_ENV === "production" ? "production" : "sandbox",
-      PRODUCTS: [
-        {
-          productId: "6e21c61f-b711-4ce5-b925-e4a20871074c",
-          slug: "pro-monthly",
-        },
-        {
-          productId: "ad7d7325-3d72-42e5-8164-d4706c513468",
-          slug: "pro-yearly",
-        },
-      ],
+      ENVIRONMENT: POLAR_ENV,
+      PRODUCTS: PRODUCTS[POLAR_ENV],
     },
   },
   PWA: {
