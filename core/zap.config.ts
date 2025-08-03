@@ -55,9 +55,6 @@ const FEATURES = [
   "Early access to new features",
 ];
 
-const POLAR_ENV =
-  CLIENT_ENV.NODE_ENV === "production" ? "production" : "sandbox";
-
 const PRODUCT_IDS = {
   sandbox: {
     monthly: "cd396dd5-b6ea-461c-a8de-e97539749480",
@@ -86,7 +83,7 @@ export const PRODUCTS_METADATA: Record<string, ProductMetadata> = {
     ],
   },
   "pro-monthly": {
-    productId: PRODUCT_IDS[POLAR_ENV].monthly,
+    productId: PRODUCT_IDS[CLIENT_ENV.POLAR_ENV].monthly,
     slug: "pro-monthly",
     name: "Pro (Monthly)",
     description: "Monthly subscription for Pro features",
@@ -96,7 +93,7 @@ export const PRODUCTS_METADATA: Record<string, ProductMetadata> = {
     features: FEATURES,
   },
   "pro-yearly": {
-    productId: PRODUCT_IDS[POLAR_ENV].yearly,
+    productId: PRODUCT_IDS[CLIENT_ENV.POLAR_ENV].yearly,
     slug: "pro-yearly",
     name: "Pro (Yearly)",
     description: "Yearly subscription for Pro features",
@@ -182,11 +179,13 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
     POLAR: {
       AUTHENTICATED_USERS_ONLY: true,
       CREATE_CUSTOMER_ON_SIGNUP: true,
-      ENVIRONMENT: POLAR_ENV,
-      PRODUCTS: Object.values(PRODUCT_IDS[POLAR_ENV]).map((id, idx) => ({
-        productId: id,
-        slug: idx === 0 ? "pro-monthly" : "pro-yearly",
-      })),
+      ENVIRONMENT: CLIENT_ENV.POLAR_ENV,
+      PRODUCTS: Object.values(PRODUCT_IDS[CLIENT_ENV.POLAR_ENV]).map(
+        (id, idx) => ({
+          productId: id,
+          slug: idx === 0 ? "pro-monthly" : "pro-yearly",
+        }),
+      ),
       SUCCESS_URL: "/app/billing/success",
     },
   },

@@ -15,7 +15,7 @@ import { ZapButton } from "@/components/zap-ui/button";
 import { PRODUCTS_METADATA, type RecurringInterval } from "@/zap.config";
 import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
 
-const yearlyDiscount = 0.2;
+const yearlyDiscount = 20;
 
 export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
@@ -30,9 +30,6 @@ export function PricingSection() {
       : product.recurringInterval === "month";
   });
 
-  const getMonthlyEquivalentPrice = (yearlyPrice: number) =>
-    (yearlyPrice / 12) * (1 - yearlyDiscount);
-
   const renderPrice = (price: number | string, interval: RecurringInterval) => {
     let displayPrice: string;
     let intervalText: string;
@@ -41,8 +38,7 @@ export function PricingSection() {
       displayPrice = price;
       intervalText = "";
     } else if (interval === "year") {
-      const discountedMonthly = getMonthlyEquivalentPrice(price);
-      displayPrice = `$${discountedMonthly.toFixed(2)}`;
+      displayPrice = `$${(price / 12).toFixed(2)}`;
       intervalText = "/month";
     } else if (interval === "month") {
       displayPrice = `$${price.toFixed(2)}`;
@@ -119,7 +115,7 @@ export function PricingSection() {
 
               <div className="mt-6">
                 <ZapButton className="w-full">
-                  <Link href="/register">Get Started</Link>
+                  <Link href="/app/billing">Get Started</Link>
                 </ZapButton>
               </div>
             </CardContent>
