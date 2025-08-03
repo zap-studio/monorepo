@@ -119,7 +119,7 @@ export function PricingSection() {
 
               <div className="mt-6">
                 <ZapButton className="w-full">
-                  <Link href="/register">Get Started</Link>
+                  <Link href="/app/billing">Get Started</Link>
                 </ZapButton>
               </div>
             </CardContent>
