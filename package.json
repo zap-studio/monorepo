@@ -2,6 +2,7 @@
   "name": "@zap-ts/monorepo",
   "author": "Alexandre Trotel",
   "private": true,
+  "packageManager": "bun@1.2.19",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
@@ -22,5 +23,11 @@
     "packages/*",
     "apps/*",
     "core/"
+  ],
+  "trustedDependencies": [
+    "@tailwindcss/oxide",
+    "@vercel/speed-insights",
+    "core-js",
+    "unrs-resolver"
   ]
 }

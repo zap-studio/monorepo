@@ -38,12 +38,4 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .DS_Store
 
 # Turborepo
-.turbo
-bun.lock
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-Cargo.lock
-uv.lock
-target/**
-build/**
+.turbo/
