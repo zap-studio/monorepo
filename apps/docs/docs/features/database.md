@@ -45,19 +45,19 @@ Migrations are managed with the Drizzle CLI. Zap.ts supports two database config
 #### Development Commands
 
 ```bash
-pnpm db:generate:dev   # Create migration files for local database
-pnpm db:migrate:dev    # Run pending migrations on local database
-pnpm db:push:dev       # Apply schema changes to local database
-pnpm db:studio:dev     # Open Drizzle Studio for local database
+npm db:generate:dev   # Create migration files for local database
+npm db:migrate:dev    # Run pending migrations on local database
+npm db:push:dev       # Apply schema changes to local database
+npm db:studio:dev     # Open Drizzle Studio for local database
 ```
 
 #### Production Commands
 
 ```bash
-pnpm db:generate       # Create migration files for production database
-pnpm db:migrate        # Run pending migrations on production database
-pnpm db:push           # Apply schema changes to production database
-pnpm db:studio         # Open Drizzle Studio for production database
+npm db:generate       # Create migration files for production database
+npm db:migrate        # Run pending migrations on production database
+npm db:push           # Apply schema changes to production database
+npm db:studio         # Open Drizzle Studio for production database
 ```
 
 :::warning
