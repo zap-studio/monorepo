@@ -14,11 +14,12 @@ const ClientEnvSchema = z.object({
   NEXT_PUBLIC_POSTHOG_HOST: z
     .string({ message: "NEXT_PUBLIC_POSTHOG_HOST must be a valid string" })
     .optional(),
-  POLAR_ENV: z.enum(["sandbox", "production"], {
-    message: "POLAR_ENV must be either 'sandbox' or 'production'",
-  }),
+  POLAR_ENV: z
+    .enum(["sandbox", "production"], {
+      message: "POLAR_ENV must be either 'sandbox' or 'production'",
+    })
+    .optional(),
   ZAP_MAIL: z
-    .string()
     .email({ message: "ZAP_MAIL must be a valid email address" })
     .optional(),
 });

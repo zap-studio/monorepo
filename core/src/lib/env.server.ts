@@ -16,9 +16,11 @@ const ServerEnvSchema = z.object({
     .enum(["development", "production", "test"])
     .default("development"),
   POLAR_ACCESS_TOKEN: z.string().optional(),
-  POLAR_ENV: z.enum(["sandbox", "production"], {
-    message: "POLAR_ENV must be either 'sandbox' or 'production'",
-  }),
+  POLAR_ENV: z
+    .enum(["sandbox", "production"], {
+      message: "POLAR_ENV must be either 'sandbox' or 'production'",
+    })
+    .optional(),
   POLAR_WEBHOOK_SECRET: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   VAPID_PRIVATE_KEY: z.string().optional(),
