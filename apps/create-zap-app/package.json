@@ -12,6 +12,10 @@
     "tailwindcss",
     "drizzle",
     "pnpm",
+    "npm",
+    "yarn",
+    "pnpm",
+    "bun",
     "boilerplate",
     "starter-kit"
   ],

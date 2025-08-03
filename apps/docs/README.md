@@ -17,25 +17,25 @@ git clone https://github.com/alexandretrotel/zap-ts-docs.git
 2. Install dependencies:
 
 ```bash
-pnpm install
+bun install
 ```
 
 3. Run development server:
 
 ```bash
-pnpm docs:dev
+bun run docs:dev
 ```
 
 4. Build for production:
 
 ```bash
-pnpm docs:build
+bun run docs:build
 ```
 
 5. Preview the built site:
 
 ```bash
-pnpm docs:preview
+bun run docs:preview
 ```
 
 ## Contributing
