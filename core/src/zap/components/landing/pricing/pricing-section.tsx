@@ -33,7 +33,7 @@ export function PricingSection() {
   const getMonthlyEquivalentPrice = (yearlyPrice: number) =>
     (yearlyPrice / 12) * (1 - yearlyDiscount);
 
-  const renderPrice = (price: number, interval: RecurringInterval) => {
+  const renderPrice = (price: number | string, interval: RecurringInterval) => {
     let displayPrice: string;
     let intervalText: string;
 
