@@ -51,8 +51,12 @@ export function BillingCards({ products }: BillingCardsProps) {
     <div className="mx-auto grid w-full max-w-4xl gap-6 lg:grid-cols-2">
       {products.map((product) => {
         const isPopular = product.metadata.popular === "true";
-        const priceAmount = product.prices?.[0].priceAmount / 100;
-        const priceCurrency = product.prices?.[0].priceCurrency;
+        const priceItem = product.prices?.find(
+          (price) => price.amountType === "fixed",
+        );
+
+        const priceAmount = priceItem?.priceAmount || 0;
+        const priceCurrency = priceItem?.priceCurrency || "usd";
 
         const formattedPrice = new Intl.NumberFormat("en-US", {
           style: "currency",

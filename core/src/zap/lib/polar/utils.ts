@@ -1,5 +1,5 @@
-import { type CheckoutOptions } from "@polar-sh/better-auth";
-import { ListResourceProduct } from "@polar-sh/sdk/models/components/listresourceproduct.js";
+import type { CheckoutOptions } from "@polar-sh/better-auth";
+import type { ListResourceProduct } from "@polar-sh/sdk/models/components/listresourceproduct.js";
 
 type ExtractProductType<T> = T extends {
   products?: infer P | (() => Promise<infer Q>);
@@ -22,10 +22,10 @@ export function getProduct({
   products?: ProductMetadata[];
   productId: string | null;
 }) {
-  if (!products || !productId) {
+  if (!(products && productId)) {
     return null;
   }
 
-  const product = products.find((product) => product.id === productId);
+  const product = products.find((p) => p.id === productId);
   return product || null;
 }

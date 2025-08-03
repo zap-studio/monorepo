@@ -5,6 +5,8 @@ import { Polar } from "@polar-sh/sdk";
 import { SERVER_ENV } from "@/lib/env.server";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 
+import type { ProductMetadata } from "./utils";
+
 export const polarClient = new Polar({
   accessToken: SERVER_ENV.POLAR_ACCESS_TOKEN,
   // Use 'sandbox' if you're using the Polar Sandbox environment
