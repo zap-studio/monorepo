@@ -1,19 +1,5 @@
-import type { CheckoutOptions } from "@polar-sh/better-auth";
-
 import type { Provider } from "@/zap.config";
-
-type ExtractProductType<T> = T extends {
-  products?: infer P | (() => Promise<infer Q>);
-}
-  ? P extends unknown[]
-    ? P[number]
-    : Q extends unknown[]
-      ? Q[number]
-      : P extends () => Promise<unknown>
-        ? never
-        : P
-  : never;
-type Product = ExtractProductType<CheckoutOptions>;
+import { Product } from "@/zap/lib/polar/utils";
 
 export interface ZapSettings {
   AI: {
