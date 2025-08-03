@@ -79,7 +79,8 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
     POLAR: {
       AUTHENTICATED_USERS_ONLY: true,
       CREATE_CUSTOMER_ON_SIGNUP: true,
-      ENVIRONMENT: "sandbox", // or 'production'
+      ENVIRONMENT:
+        CLIENT_ENV.NODE_ENV === "production" ? "production" : "sandbox",
       PRODUCTS: [
         {
           productId: "6e21c61f-b711-4ce5-b925-e4a20871074c",
