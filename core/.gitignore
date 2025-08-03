@@ -41,12 +41,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# lock files
-bun.lock
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
 # public seo files
 public/robots.txt
 public/sitemap*.xml
