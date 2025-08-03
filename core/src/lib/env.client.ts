@@ -18,7 +18,7 @@ const ClientEnvSchema = z.object({
     .enum(["sandbox", "production"], {
       message: "POLAR_ENV must be either 'sandbox' or 'production'",
     })
-    .optional(),
+    .default("sandbox"),
   ZAP_MAIL: z
     .email({ message: "ZAP_MAIL must be a valid email address" })
     .optional(),
