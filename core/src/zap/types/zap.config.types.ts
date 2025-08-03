@@ -51,6 +51,11 @@ export interface ZapSettings {
   NOTIFICATIONS: {
     VAPID_MAIL?: string;
   };
+  PAYMENTS: {
+    POLAR: {
+      ENVIRONMENT: "sandbox" | "production" | undefined;
+    };
+  };
   PWA: {
     NAME: string;
     SHORT_NAME: string;

@@ -10,9 +10,10 @@
  * - Customize open graph image generation in `src/app/opengraph-image/route.tsx`
  */
 
+import type { Metadata } from "next";
+
 import { CLIENT_ENV, DEV, VERCEL } from "@/lib/env.client";
 import type { ZapSettings } from "@/zap/types/zap.config.types";
-import type { Metadata } from "next";
 
 export const NAME = "Zap.ts";
 export const APP_NAME = `${NAME} | Build applications as fast as a zap`;
@@ -73,6 +74,11 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   },
   NOTIFICATIONS: {
     VAPID_MAIL: CLIENT_ENV.ZAP_MAIL,
+  },
+  PAYMENTS: {
+    POLAR: {
+      ENVIRONMENT: "sandbox", // or 'production'
+    },
   },
   PWA: {
     NAME,
