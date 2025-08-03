@@ -12,20 +12,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ZapButton } from "@/components/zap-ui/button";
-import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import type { ProductMetadata } from "@/zap.config";
 import { authClient } from "@/zap/lib/auth/client";
-import type { ProductMetadata } from "@/zap/lib/polar/utils";
-
-const FEATURES = [
-  "Unlimited projects",
-  "Advanced AI features",
-  "Priority support",
-  "Custom integrations",
-  "Advanced analytics",
-  "Team collaboration",
-  "Export capabilities",
-  "API access",
-];
 
 interface BillingCardsProps {
   products: ProductMetadata[];
@@ -34,41 +22,50 @@ interface BillingCardsProps {
 export function BillingCards({ products }: BillingCardsProps) {
   const handleCheckout = async (productId: string) => {
     try {
-      const productSlug = ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.PRODUCTS?.find(
-        (product) => product.productId === productId,
-      )?.slug;
+      const product = products.find((p) => p.productId === productId);
+
+      if (!product) {
+        throw new Error("Product not found");
+      }
 
       await authClient.checkout({
         products: [productId],
-        slug: productSlug,
+        slug: product.slug,
       });
     } catch {
       toast.error("Failed to initiate checkout. Please try again.");
     }
   };
 
+  const formatPrice = (price = 0, currency = "usd") =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+    }).format(price);
+
+  const filteredProducts = products.filter(
+    (product): product is typeof product & { price: number } => {
+      return (
+        typeof product.price === "number" &&
+        product.price > 0 &&
+        product.recurringInterval !== "one-time"
+      );
+    },
+  );
+
+  const sortedProducts = filteredProducts.sort((a, b) => a.price - b.price);
+
   return (
     <div className="mx-auto grid w-full max-w-4xl gap-6 lg:grid-cols-2">
-      {products.map((product) => {
-        const isPopular = product.metadata.popular === "true";
-        const priceItem = product.prices?.find(
-          (price) => price.amountType === "fixed",
-        );
-
-        const priceAmount = priceItem?.priceAmount || 0;
-        const priceCurrency = priceItem?.priceCurrency || "usd";
-
-        const formattedPrice = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: priceCurrency,
-        }).format(priceAmount);
+      {sortedProducts.map((product) => {
+        const formattedPrice = formatPrice(product.price, product.currency);
 
         return (
           <Card
-            className={`relative ${isPopular ? "border-primary shadow-lg" : ""}`}
-            key={product.id}
+            className={`relative ${product.popular ? "border-primary shadow-lg" : ""}`}
+            key={product.productId}
           >
-            {isPopular && (
+            {product.popular && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 transform">
                 <Badge className="bg-primary text-primary-foreground">
                   <Zap className="mr-1 size-3" />
@@ -82,34 +79,34 @@ export function BillingCards({ products }: BillingCardsProps) {
               <CardDescription className="text-base">
                 {product.description}
               </CardDescription>
-              <div className="mt-4">
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-bold">{formattedPrice}</span>
-                  <span className="text-muted-foreground">
-                    /{product.recurringInterval}
-                  </span>
-                </div>
+              <div className="mt-4 flex items-baseline justify-center gap-1">
+                <span className="text-4xl font-bold">{formattedPrice}</span>
+                <span className="text-muted-foreground">
+                  /{product.recurringInterval}
+                </span>
               </div>
             </CardHeader>
 
             <CardContent className="space-y-6">
-              <div className="space-y-3">
-                <h4 className="font-semibold">What&apos;s included:</h4>
-                <ul className="space-y-2">
-                  {FEATURES.map((feature) => (
-                    <li className="flex items-center gap-2" key={feature}>
-                      <Check className="size-4 shrink-0 text-green-500" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {(product.features?.length || 0) > 0 && (
+                <div className="space-y-3">
+                  <h4 className="font-semibold">What&apos;s included:</h4>
+                  <ul className="space-y-2">
+                    {product.features?.map((feature) => (
+                      <li className="flex items-center gap-2" key={feature}>
+                        <Check className="size-4 shrink-0 text-green-500" />
+                        <span className="text-sm">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <ZapButton
                 className="w-full"
-                onClick={() => handleCheckout(product.id)}
+                onClick={() => handleCheckout(product.productId)}
                 size="lg"
-                variant={isPopular ? "default" : "outline"}
+                variant={product.popular ? "default" : "outline"}
               >
                 Subscribe to {product.name}
               </ZapButton>

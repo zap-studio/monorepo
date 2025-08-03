@@ -14,12 +14,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import type { ProductMetadata } from "@/zap.config";
 import { SidebarMainSection } from "@/zap/components/sidebar/sidebar-main-section";
 import { SidebarSecondarySection } from "@/zap/components/sidebar/sidebar-secondary-section";
 import { SidebarUser } from "@/zap/components/sidebar/sidebar-user";
 import { authClient } from "@/zap/lib/auth/client";
 import { useActiveSubscriptionProduct } from "@/zap/lib/polar/client";
-import { type ProductMetadata } from "@/zap/lib/polar/utils";
 
 const MAIN_NAV_ITEMS = [
   {
@@ -52,8 +52,8 @@ export function AppSidebar({ products, ...props }: AppSidebarProps) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg">
               <Link
-                href="/"
                 className="flex items-center justify-between gap-2"
+                href="/"
               >
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">Zap.ts ⚡️</span>
@@ -77,7 +77,7 @@ export function AppSidebar({ products, ...props }: AppSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarUser user={userData} products={products} />
+        <SidebarUser products={products} user={userData} />
       </SidebarFooter>
     </Sidebar>
   );

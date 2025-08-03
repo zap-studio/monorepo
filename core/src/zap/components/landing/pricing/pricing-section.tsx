@@ -12,41 +12,58 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ZapButton } from "@/components/zap-ui/button";
-import { cn } from "@/lib/utils";
+import { PRODUCTS_METADATA, type RecurringInterval } from "@/zap.config";
 import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
-import { PRICING_PLANS } from "@/zap/data/landing";
+
+const yearlyDiscount = 0.2;
 
 export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
-  const yearlyDiscount = 0.2;
 
-  const renderPrice = (plan: (typeof PRICING_PLANS)[0]) => {
-    const isCustom = typeof plan.price.monthly === "string";
+  const productsArray = Object.values(PRODUCTS_METADATA).filter((product) => {
+    if (product.recurringInterval === "one-time") {
+      return true;
+    }
 
-    let displayPrice: string | number = plan.price.monthly;
+    return isYearly
+      ? product.recurringInterval === "year"
+      : product.recurringInterval === "month";
+  });
 
-    if (!isCustom && isYearly) {
-      const discountedMonthly =
-        Number(plan.price.monthly) * (1 - yearlyDiscount);
+  const getMonthlyEquivalentPrice = (yearlyPrice: number) =>
+    (yearlyPrice / 12) * (1 - yearlyDiscount);
+
+  const renderPrice = (price: number, interval: RecurringInterval) => {
+    let displayPrice: string;
+    let intervalText: string;
+
+    if (typeof price === "string") {
+      displayPrice = price;
+      intervalText = "";
+    } else if (interval === "year") {
+      const discountedMonthly = getMonthlyEquivalentPrice(price);
       displayPrice = `$${discountedMonthly.toFixed(2)}`;
-    } else if (!isCustom) {
-      displayPrice = `$${Number(plan.price.monthly).toFixed(2)}`;
+      intervalText = "/month";
+    } else if (interval === "month") {
+      displayPrice = `$${price.toFixed(2)}`;
+      intervalText = "/month";
+    } else if (interval === "one-time") {
+      displayPrice = `$${price.toFixed(2)}`;
+      intervalText = "one-time";
+    } else {
+      displayPrice = `$${price.toFixed(2)}`;
+      intervalText = "";
     }
 
     return (
-      <div
-        className={cn(
-          "mt-2 flex flex-col items-start space-y-1 text-left transition-all duration-500",
-        )}
-      >
+      <div className="mt-2 flex flex-col items-start space-y-1 text-left transition-all duration-500">
         <div className="flex items-end space-x-2">
           <span className="text-4xl font-extrabold tracking-tight">
             {displayPrice}
           </span>
-
-          {!isCustom && (
+          {intervalText && (
             <span className="text-muted-foreground mb-1 text-sm font-medium">
-              /month
+              {intervalText}
             </span>
           )}
         </div>
@@ -73,26 +90,26 @@ export function PricingSection() {
       </div>
 
       <div className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {PRICING_PLANS.map((plan) => (
+        {productsArray.map((product) => (
           <Card
             className="bg-muted/50 relative flex flex-col justify-between border shadow-none transition-all duration-300"
-            key={plan.title}
+            key={product.slug}
           >
-            {plan.popular && (
+            {product.popular && (
               <div className="bg-primary text-primary-foreground absolute -top-4 right-0 left-0 mx-auto w-fit rounded-full px-3 py-1 text-xs font-medium">
                 Most Popular
               </div>
             )}
 
             <CardHeader>
-              <CardTitle>{plan.title}</CardTitle>
-              {renderPrice(plan)}
-              <CardDescription>{plan.description}</CardDescription>
+              <CardTitle>{product.name}</CardTitle>
+              {renderPrice(product.price, product.recurringInterval)}
+              <CardDescription>{product.description}</CardDescription>
             </CardHeader>
 
             <CardContent className="flex h-full flex-col justify-between">
               <ul className="grid gap-2">
-                {plan.features.map((feature) => (
+                {product.features?.map((feature) => (
                   <li className="flex items-center gap-2" key={feature}>
                     <Check className="text-primary h-4 w-4" />
                     <span>{feature}</span>
@@ -101,12 +118,8 @@ export function PricingSection() {
               </ul>
 
               <div className="mt-6">
-                <ZapButton
-                  asChild
-                  className="w-full"
-                  variant={plan.buttonVariant}
-                >
-                  <Link href="/register">{plan.buttonText}</Link>
+                <ZapButton className="w-full">
+                  <Link href="/register">Get Started</Link>
                 </ZapButton>
               </div>
             </CardContent>

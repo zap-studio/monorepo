@@ -1,31 +1,16 @@
-import type { CheckoutOptions } from "@polar-sh/better-auth";
-import type { ListResourceProduct } from "@polar-sh/sdk/models/components/listresourceproduct.js";
+import { type ProductMetadata, PRODUCTS_METADATA } from "@/zap.config";
 
-type ExtractProductType<T> = T extends {
-  products?: infer P | (() => Promise<infer Q>);
+export function getProducts() {
+  const products = Object.values(PRODUCTS_METADATA);
+  return products;
 }
-  ? P extends unknown[]
-    ? P[number]
-    : Q extends unknown[]
-      ? Q[number]
-      : P extends () => Promise<unknown>
-        ? never
-        : P
-  : never;
-export type Product = ExtractProductType<CheckoutOptions>;
-export type ProductMetadata = ListResourceProduct["items"][number];
 
 export function getProduct({
   products,
   productId,
 }: {
-  products?: ProductMetadata[];
-  productId: string | null;
+  products: ProductMetadata[];
+  productId: string;
 }) {
-  if (!(products && productId)) {
-    return null;
-  }
-
-  const product = products.find((p) => p.id === productId);
-  return product || null;
+  return products.find((product) => product.productId === productId) || null;
 }

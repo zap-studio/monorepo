@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/zap/components/sidebar/sidebar";
 import { SidebarHeader } from "@/zap/components/sidebar/sidebar-header";
-import { getActiveProducts } from "@/zap/lib/polar/server";
+import { getProducts } from "@/zap/lib/polar/utils";
 
 export default async function AppLayout({
   children,
@@ -12,8 +12,7 @@ export default async function AppLayout({
 }) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
-
-  const products = await getActiveProducts();
+  const products = getProducts();
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>

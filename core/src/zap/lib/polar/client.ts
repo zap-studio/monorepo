@@ -2,8 +2,9 @@ import "client-only";
 
 import useSWR from "swr";
 
+import type { ProductMetadata } from "@/zap.config";
 import { authClient } from "@/zap/lib/auth/client";
-import { getProduct, ProductMetadata } from "@/zap/lib/polar/utils";
+import { getProduct } from "@/zap/lib/polar/utils";
 
 const fetchCustomerState = async () => {
   const state = await authClient.customer.state();
@@ -39,11 +40,10 @@ export const useActiveSubscriptionProductId = () => {
 export const useActiveSubscriptionProduct = (products?: ProductMetadata[]) => {
   const productId = useActiveSubscriptionProductId();
 
-  if (!productId || !products) {
+  if (!(productId && products)) {
     return null;
   }
 
   const product = getProduct({ products, productId });
-
   return product;
 };

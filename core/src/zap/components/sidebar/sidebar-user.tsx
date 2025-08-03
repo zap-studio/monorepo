@@ -28,10 +28,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import type { ProductMetadata } from "@/zap.config";
 import { UserInfo } from "@/zap/components/sidebar/user-info";
 import { authClient } from "@/zap/lib/auth/client";
-import { useActiveSubscriptionProductId } from "@/zap/lib/polar/client";
-import { getProduct, type ProductMetadata } from "@/zap/lib/polar/utils";
+import { useActiveSubscriptionProduct } from "@/zap/lib/polar/client";
 
 type MenuItem = {
   label: string;
@@ -52,8 +52,7 @@ interface SidebarUserProps {
 export function SidebarUser({ user, products }: SidebarUserProps) {
   const { isMobile } = useSidebar();
   const router = useRouter();
-  const productId = useActiveSubscriptionProductId();
-  const product = getProduct({ products, productId });
+  const product = useActiveSubscriptionProduct(products);
 
   const getInitials = (name: string) =>
     name
