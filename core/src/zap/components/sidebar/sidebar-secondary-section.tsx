@@ -25,7 +25,7 @@ export function SidebarSecondarySection(props: SidebarSecondarySectionProps) {
 
   const menuItems = [
     {
-      label: "AI Settings",
+      label: "AI Providers",
       icon: <Bot />,
       onClick: () => setAISettingsOpen(true),
     },

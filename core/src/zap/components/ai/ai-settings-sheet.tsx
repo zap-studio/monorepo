@@ -18,7 +18,7 @@ export function AISettingsSheet({ open, onOpenChange }: AISettingsSheetProps) {
     <Sheet onOpenChange={onOpenChange} open={open}>
       <SheetContent className="sm:max-w-md">
         <SheetHeader className="space-y-2">
-          <SheetTitle>AI Settings</SheetTitle>
+          <SheetTitle>AI Providers</SheetTitle>
           <SheetDescription>
             Configure your AI provider and API key securely.
           </SheetDescription>

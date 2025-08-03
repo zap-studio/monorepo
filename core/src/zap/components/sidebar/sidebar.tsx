@@ -1,9 +1,10 @@
 "use client";
 
-import { Home } from "lucide-react";
+import { Crown, Home } from "lucide-react";
 import Link from "next/link";
 import type React from "react";
 
+import { Badge } from "@/components/ui/badge";
 import {
   Sidebar,
   SidebarContent,
@@ -13,10 +14,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import type { ProductMetadata } from "@/zap.config";
 import { SidebarMainSection } from "@/zap/components/sidebar/sidebar-main-section";
 import { SidebarSecondarySection } from "@/zap/components/sidebar/sidebar-secondary-section";
 import { SidebarUser } from "@/zap/components/sidebar/sidebar-user";
 import { authClient } from "@/zap/lib/auth/client";
+import { useActiveSubscriptionProduct } from "@/zap/lib/polar/client";
 
 const MAIN_NAV_ITEMS = [
   {
@@ -26,8 +29,14 @@ const MAIN_NAV_ITEMS = [
   },
 ];
 
-export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+interface AppSidebarProps {
+  props?: React.ComponentProps<typeof Sidebar>;
+  products?: ProductMetadata[];
+}
+
+export function AppSidebar({ products, ...props }: AppSidebarProps) {
   const { data } = authClient.useSession();
+  const product = useActiveSubscriptionProduct(products);
 
   if (!data?.user) {
     return null;
@@ -42,10 +51,20 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg">
-              <Link href="/">
+              <Link
+                className="flex items-center justify-between gap-2"
+                href="/"
+              >
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">Zap.ts ⚡️</span>
                 </div>
+
+                {product && (
+                  <Badge className="hidden md:inline-flex">
+                    <Crown />
+                    {product.name.split(" ")[0]}
+                  </Badge>
+                )}
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -58,7 +77,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarUser user={userData} />
+        <SidebarUser products={products} user={userData} />
       </SidebarFooter>
     </Sidebar>
   );

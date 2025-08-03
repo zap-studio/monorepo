@@ -1,4 +1,5 @@
 import type { Provider } from "@/zap.config";
+import type { Product } from "@/zap/lib/polar/utils";
 
 export interface ZapSettings {
   AI: {
@@ -50,6 +51,15 @@ export interface ZapSettings {
   };
   NOTIFICATIONS: {
     VAPID_MAIL?: string;
+  };
+  PAYMENTS: {
+    POLAR?: {
+      AUTHENTICATED_USERS_ONLY: boolean;
+      CREATE_CUSTOMER_ON_SIGNUP: boolean;
+      ENVIRONMENT: "sandbox" | "production" | undefined;
+      PRODUCTS?: Product[];
+      SUCCESS_URL?: string;
+    };
   };
   PWA: {
     NAME: string;

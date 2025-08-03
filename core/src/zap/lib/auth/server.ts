@@ -1,5 +1,6 @@
 import "server-only";
 
+import { checkout, polar, portal } from "@polar-sh/better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import {
@@ -16,6 +17,7 @@ import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { SERVER_ENV } from "@/lib/env.server";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { polarClient } from "@/zap/lib/polar/server";
 import { canSendMailService } from "@/zap/services/mails/can-send-mail.service";
 import { sendForgotPasswordMailService } from "@/zap/services/mails/send-forgot-password-mail.service";
 import { sendVerificationMailService } from "@/zap/services/mails/send-verification-mail.service";
@@ -100,6 +102,20 @@ export const auth = betterAuth({
     },
   },
   plugins: [
+    polar({
+      client: polarClient,
+      createCustomerOnSignUp:
+        ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.CREATE_CUSTOMER_ON_SIGNUP,
+      use: [
+        checkout({
+          products: ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.PRODUCTS,
+          successUrl: `${ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.SUCCESS_URL}?checkout_id={CHECKOUT_ID}`,
+          authenticatedUsersOnly:
+            ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.AUTHENTICATED_USERS_ONLY,
+        }),
+        portal(),
+      ],
+    }),
     twoFactor(),
     username({
       minUsernameLength: SETTINGS.AUTH.MINIMUM_USERNAME_LENGTH,
