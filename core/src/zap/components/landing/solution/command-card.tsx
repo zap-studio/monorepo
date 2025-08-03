@@ -48,7 +48,7 @@ export function CommandCard({ command, description }: CommandCardProps) {
 
         <AnimatedSpan className="text-green-500" delay={1500}>
           <span>
-            ✔ &apos;pnpm&apos; has been selected as the package manager.
+            ✔ &apos;bun&apos; has been selected as the package manager.
           </span>
         </AnimatedSpan>
 

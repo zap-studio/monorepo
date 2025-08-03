@@ -12,6 +12,9 @@
     "tailwindcss",
     "drizzle",
     "pnpm",
+    "npm",
+    "yarn",
+    "bun",
     "boilerplate",
     "starter-kit"
   ],
@@ -63,7 +66,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.8",
     "@types/node": "^24.1.0",
-    "tsdown": "^0.13.0",
+    "tsdown": "^0.13.1",
     "typescript": "^5.9.2",
     "ultracite": "5.1.2"
   },
