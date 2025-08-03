@@ -37,11 +37,22 @@ export function BillingCards({ products }: BillingCardsProps) {
     }
   };
 
-  const formatPrice = (price = 0, currency = "usd") =>
-    new Intl.NumberFormat("en-US", {
+  const formatPrice = (price: number | string = 0, currency = "usd") => {
+    let numericPrice: number;
+    if (typeof price === "string") {
+      numericPrice = Number(price);
+      if (Number.isNaN(numericPrice)) {
+        return "N/A";
+      }
+    } else {
+      numericPrice = price;
+    }
+
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency,
-    }).format(price);
+    }).format(numericPrice);
+  };
 
   const filteredProducts = products.filter(
     (product): product is typeof product & { price: number } => {
