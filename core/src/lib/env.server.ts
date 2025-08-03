@@ -16,6 +16,7 @@ const ServerEnvSchema = z.object({
     .enum(["development", "production", "test"])
     .default("development"),
   POLAR_ACCESS_TOKEN: z.string().optional(),
+  POLAR_WEBHOOK_SECRET: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   VAPID_PRIVATE_KEY: z.string().optional(),
   VERCEL_ENV: z.string().optional(),
@@ -31,6 +32,7 @@ const envParseResult = ServerEnvSchema.safeParse({
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   NODE_ENV: process.env.NODE_ENV,
   POLAR_ACCESS_TOKEN: process.env.POLAR_ACCESS_TOKEN,
+  POLAR_WEBHOOK_SECRET: process.env.POLAR_WEBHOOK_SECRET,
   RESEND_API_KEY: process.env.RESEND_API_KEY,
   VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY,
   VERCEL_ENV: process.env.VERCEL_ENV,
