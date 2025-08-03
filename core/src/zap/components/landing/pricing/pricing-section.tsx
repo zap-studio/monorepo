@@ -15,6 +15,8 @@ import { ZapButton } from "@/components/zap-ui/button";
 import { PRODUCTS_METADATA, type RecurringInterval } from "@/zap.config";
 import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
 
+const yearlyDiscount = 20;
+
 export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
 
