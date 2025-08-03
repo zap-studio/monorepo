@@ -77,7 +77,19 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   },
   PAYMENTS: {
     POLAR: {
+      AUTHENTICATED_USERS_ONLY: true,
+      CREATE_CUSTOMER_ON_SIGNUP: true,
       ENVIRONMENT: "sandbox", // or 'production'
+      PRODUCTS: [
+        {
+          productId: "6e21c61f-b711-4ce5-b925-e4a20871074c",
+          slug: "pro-monthly",
+        },
+        {
+          productId: "ad7d7325-3d72-42e5-8164-d4706c513468",
+          slug: "pro-yearly",
+        },
+      ],
     },
   },
   PWA: {

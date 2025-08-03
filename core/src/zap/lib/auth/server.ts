@@ -1,6 +1,6 @@
 import "server-only";
 
-import { checkout, polar, portal, usage } from "@polar-sh/better-auth";
+import { checkout, polar, portal } from "@polar-sh/better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import {
@@ -104,20 +104,16 @@ export const auth = betterAuth({
   plugins: [
     polar({
       client: polarClient,
-      createCustomerOnSignUp: true,
+      createCustomerOnSignUp:
+        ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.CREATE_CUSTOMER_ON_SIGNUP,
       use: [
         checkout({
-          products: [
-            {
-              productId: "123-456-789", // ID of Product from Polar Dashboard
-              slug: "pro", // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
-            },
-          ],
+          products: ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.PRODUCTS,
           successUrl: "/success?checkout_id={CHECKOUT_ID}",
-          authenticatedUsersOnly: true,
+          authenticatedUsersOnly:
+            ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.AUTHENTICATED_USERS_ONLY,
         }),
         portal(),
-        usage(),
       ],
     }),
     twoFactor(),

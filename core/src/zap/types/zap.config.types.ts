@@ -1,4 +1,19 @@
+import type { CheckoutOptions } from "@polar-sh/better-auth";
+
 import type { Provider } from "@/zap.config";
+
+type ExtractProductType<T> = T extends {
+  products?: infer P | (() => Promise<infer Q>);
+}
+  ? P extends unknown[]
+    ? P[number]
+    : Q extends unknown[]
+      ? Q[number]
+      : P extends () => Promise<unknown>
+        ? never
+        : P
+  : never;
+type Product = ExtractProductType<CheckoutOptions>;
 
 export interface ZapSettings {
   AI: {
@@ -52,8 +67,11 @@ export interface ZapSettings {
     VAPID_MAIL?: string;
   };
   PAYMENTS: {
-    POLAR: {
+    POLAR?: {
+      AUTHENTICATED_USERS_ONLY: boolean;
+      CREATE_CUSTOMER_ON_SIGNUP: boolean;
       ENVIRONMENT: "sandbox" | "production" | undefined;
+      PRODUCTS?: Product[];
     };
   };
   PWA: {
