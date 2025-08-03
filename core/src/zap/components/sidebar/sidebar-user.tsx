@@ -98,29 +98,31 @@ export function SidebarUser({ user, products }: SidebarUserProps) {
   ];
 
   const renderMenuItems = (items: MenuItem[]) => {
-    return items.map(({ label, icon: Icon, href, onClick }) => {
-      if (label === "Billing" && !product) {
-        return null;
-      }
+    return items
+      .map(({ label, icon: Icon, href, onClick }) => {
+        if (label === "Billing" && !product) {
+          return null;
+        }
 
-      if (href) {
+        if (href) {
+          return (
+            <DropdownMenuItem asChild key={label}>
+              <Link href={href}>
+                <Icon className="mr-2 size-4" />
+                {label}
+              </Link>
+            </DropdownMenuItem>
+          );
+        }
+
         return (
-          <DropdownMenuItem asChild key={label}>
-            <Link href={href}>
-              <Icon className="mr-2 size-4" />
-              {label}
-            </Link>
+          <DropdownMenuItem key={label} onClick={onClick}>
+            <Icon className="mr-2 size-4" />
+            {label}
           </DropdownMenuItem>
         );
-      }
-
-      return (
-        <DropdownMenuItem key={label} onClick={onClick}>
-          <Icon className="mr-2 size-4" />
-          {label}
-        </DropdownMenuItem>
-      );
-    });
+      })
+      .filter((item) => item !== null);
   };
 
   return (

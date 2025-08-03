@@ -5,10 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ZapButton } from "@/components/zap-ui/button";
 import { BillingCards } from "@/zap/components/payments/billing-cards";
 import { getAuthDataOrRedirectToLogin } from "@/zap/lib/auth/redirects";
+import { getActiveProducts } from "@/zap/lib/polar/server";
 
 export default async function BillingPage() {
   const _headers = await headers();
   await getAuthDataOrRedirectToLogin(_headers);
+
+  const products = await getActiveProducts();
 
   return (
     <div className="flex flex-1 flex-col gap-8 p-6">
@@ -24,7 +27,7 @@ export default async function BillingPage() {
         </p>
       </div>
 
-      <BillingCards />
+      <BillingCards products={products} />
 
       <div className="mx-auto w-full max-w-2xl space-y-6">
         <h2 className="text-center text-2xl font-bold">

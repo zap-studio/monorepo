@@ -12,3 +12,9 @@ export const polarClient = new Polar({
   // Access tokens obtained in Production are for instance not usable in the Sandbox environment.
   server: ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.ENVIRONMENT,
 });
+
+export const getActiveProducts = async () => {
+  const response = await polarClient.products.list({});
+  const products = response.result.items;
+  return products.filter((product) => !product.isArchived);
+};
