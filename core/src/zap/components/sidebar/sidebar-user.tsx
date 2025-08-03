@@ -28,8 +28,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import type { ProductMetadata } from "@/zap.config";
 import { UserInfo } from "@/zap/components/sidebar/user-info";
 import { authClient } from "@/zap/lib/auth/client";
+import { useActiveSubscriptionProduct } from "@/zap/lib/polar/client";
 
 type MenuItem = {
   label: string;
@@ -38,17 +40,19 @@ type MenuItem = {
   onClick?: () => void;
 };
 
-type SidebarUserProps = {
+interface SidebarUserProps {
   user: {
     name: string;
     email: string;
     avatar: string | null;
   };
-};
+  products?: ProductMetadata[];
+}
 
-export function SidebarUser({ user }: SidebarUserProps) {
+export function SidebarUser({ user, products }: SidebarUserProps) {
   const { isMobile } = useSidebar();
   const router = useRouter();
+  const product = useActiveSubscriptionProduct(products);
 
   const getInitials = (name: string) =>
     name
@@ -59,6 +63,10 @@ export function SidebarUser({ user }: SidebarUserProps) {
       .slice(0, 2);
 
   const fallback = getInitials(user.name);
+
+  const handleCustomerPortal = async () => {
+    await authClient.customer.portal();
+  };
 
   const handleSignOut = async () => {
     try {
@@ -71,12 +79,16 @@ export function SidebarUser({ user }: SidebarUserProps) {
   };
 
   const UPGRADE_ITEM: MenuItem[] = [
-    { label: "Upgrade to Pro", icon: Sparkles },
+    { label: "Upgrade to Pro", icon: Sparkles, href: "/app/billing" },
   ];
 
   const ACCOUNT_ITEMS: MenuItem[] = [
     { label: "Account", icon: BadgeCheck, href: "/app/account" },
-    { label: "Billing", icon: CreditCard, href: "/app/billing" },
+    {
+      label: "Billing",
+      icon: CreditCard,
+      onClick: handleCustomerPortal,
+    },
     { label: "Notifications", icon: Bell, href: "/app/notifications" },
   ];
 
@@ -84,22 +96,33 @@ export function SidebarUser({ user }: SidebarUserProps) {
     { label: "Log out", icon: LogOut, onClick: handleSignOut },
   ];
 
-  const renderMenuItems = (items: MenuItem[]) =>
-    items.map(({ label, icon: Icon, href, onClick }) =>
-      href ? (
-        <DropdownMenuItem asChild key={label}>
-          <Link href={href}>
+  const renderMenuItems = (items: MenuItem[]) => {
+    return items
+      .map(({ label, icon: Icon, href, onClick }) => {
+        if (label === "Billing" && !product) {
+          return null;
+        }
+
+        if (href) {
+          return (
+            <DropdownMenuItem asChild key={label}>
+              <Link href={href}>
+                <Icon className="mr-2 size-4" />
+                {label}
+              </Link>
+            </DropdownMenuItem>
+          );
+        }
+
+        return (
+          <DropdownMenuItem key={label} onClick={onClick}>
             <Icon className="mr-2 size-4" />
             {label}
-          </Link>
-        </DropdownMenuItem>
-      ) : (
-        <DropdownMenuItem key={label} onClick={onClick}>
-          <Icon className="mr-2 size-4" />
-          {label}
-        </DropdownMenuItem>
-      ),
-    );
+          </DropdownMenuItem>
+        );
+      })
+      .filter((item) => item !== null);
+  };
 
   return (
     <SidebarMenu>
@@ -127,11 +150,18 @@ export function SidebarUser({ user }: SidebarUserProps) {
               </div>
             </DropdownMenuLabel>
 
+            {!product && (
+              <>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuGroup>
+                  {renderMenuItems(UPGRADE_ITEM)}
+                </DropdownMenuGroup>
+              </>
+            )}
+
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              {renderMenuItems(UPGRADE_ITEM)}
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+
             <DropdownMenuGroup>
               {renderMenuItems(ACCOUNT_ITEMS)}
             </DropdownMenuGroup>

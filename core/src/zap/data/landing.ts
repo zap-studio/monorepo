@@ -58,53 +58,6 @@ export const FEATURES = [
   },
 ];
 
-export const PRICING_PLANS = [
-  {
-    title: "Free",
-    price: { monthly: 0 },
-    description: "Perfect for side projects and experiments",
-    features: [
-      "Core boilerplate code",
-      "Basic authentication",
-      "Community support",
-      "GitHub repository access",
-    ],
-    buttonText: "Get Started",
-    buttonVariant: "outline" as const,
-  },
-  {
-    title: "Pro",
-    price: { monthly: 29 },
-    description: "For professional developers and small teams",
-    features: [
-      "Everything in Free",
-      "Advanced authentication",
-      "Premium components",
-      "Priority support",
-      "1-click deployments",
-      "Team collaboration",
-    ],
-    buttonText: "Get Started",
-    buttonVariant: "default" as const,
-    popular: true,
-  },
-  {
-    title: "Enterprise",
-    price: { monthly: "Custom" },
-    description: "For large teams and organizations",
-    features: [
-      "Everything in Pro",
-      "Custom integrations",
-      "Dedicated support",
-      "SLA guarantees",
-      "Custom branding",
-      "On-premise options",
-    ],
-    buttonText: "Contact Sales",
-    buttonVariant: "outline" as const,
-  },
-];
-
 export const BENEFITS = [
   "Authentication with BetterAuth",
   "Database with Drizzle & PostgreSQL",

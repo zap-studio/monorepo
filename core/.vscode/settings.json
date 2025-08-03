@@ -9,5 +9,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit"
-  }
+  },
+
+  "biome.enabled": false
 }

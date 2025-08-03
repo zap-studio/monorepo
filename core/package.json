@@ -56,6 +56,8 @@
     "@orpc/client": "^1.7.7",
     "@orpc/react-query": "^1.7.7",
     "@orpc/server": "^1.7.7",
+    "@polar-sh/better-auth": "^1.0.8",
+    "@polar-sh/sdk": "^0.34.9",
     "@react-email/components": "^0.4.0",
     "@types/mdx": "^2.0.13",
     "@vercel/analytics": "^1.5.0",

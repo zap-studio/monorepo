@@ -10,10 +10,14 @@
  * - Customize open graph image generation in `src/app/opengraph-image/route.tsx`
  */
 
-import { CLIENT_ENV, DEV, VERCEL } from "@/lib/env.client";
-import type { ZapSettings } from "@/zap/types/zap.config.types";
 import type { Metadata } from "next";
 
+import { CLIENT_ENV, DEV, VERCEL } from "@/lib/env.client";
+import type { ZapSettings } from "@/zap/types/zap.config.types";
+
+// ─────────────────────────────────────────────────────────────
+// Core App Info
+// ─────────────────────────────────────────────────────────────
 export const NAME = "Zap.ts";
 export const APP_NAME = `${NAME} | Build applications as fast as a zap`;
 export const APP_DESCRIPTION =
@@ -21,9 +25,109 @@ export const APP_DESCRIPTION =
 export const BASE_URL = DEV
   ? "http://localhost:3000"
   : "https://demo.zap-ts.alexandretrotel.org";
+export const SUPPORT_EMAIL = "your-email@example.com";
 
 export type Provider = "github" | "google";
 
+// ─────────────────────────────────────────────────────────────
+// Product Metadata
+// ─────────────────────────────────────────────────────────────
+export type RecurringInterval = "month" | "year" | "one-time";
+export type Currency = "usd" | "eur";
+
+export type ProductMetadata = {
+  productId: string;
+  slug: string;
+  name: string;
+  description: string;
+  price: number | string;
+  currency: Currency;
+  recurringInterval: RecurringInterval;
+  popular?: boolean;
+  features?: string[];
+};
+
+const FEATURES = [
+  "Unlimited projects",
+  "Unlimited users",
+  "Priority support",
+  "Access to all features",
+  "Early access to new features",
+];
+
+const POLAR_ENV =
+  CLIENT_ENV.NODE_ENV === "production" ? "production" : "sandbox";
+
+const PRODUCT_IDS = {
+  sandbox: {
+    monthly: "cd396dd5-b6ea-461c-a8de-e97539749480",
+    yearly: "d07e65a0-9798-42c8-8f32-eca20d1be230",
+  },
+  production: {
+    monthly: "6e21c61f-b711-4ce5-b925-e4a20871074c",
+    yearly: "ad7d7325-3d72-42e5-8164-d4706c513468",
+  },
+};
+
+export const PRODUCTS_METADATA: Record<string, ProductMetadata> = {
+  free: {
+    productId: "",
+    slug: "free",
+    name: "Free",
+    description: "Free plan with limited features",
+    price: 0,
+    currency: "usd",
+    recurringInterval: "one-time",
+    features: [
+      "Limited projects",
+      "Limited users",
+      "Community support",
+      "Access to basic features",
+    ],
+  },
+  "pro-monthly": {
+    productId: PRODUCT_IDS[POLAR_ENV].monthly,
+    slug: "pro-monthly",
+    name: "Pro (Monthly)",
+    description: "Monthly subscription for Pro features",
+    price: 20,
+    currency: "usd",
+    recurringInterval: "month",
+    features: FEATURES,
+  },
+  "pro-yearly": {
+    productId: PRODUCT_IDS[POLAR_ENV].yearly,
+    slug: "pro-yearly",
+    name: "Pro (Yearly)",
+    description: "Yearly subscription for Pro features",
+    price: 192, // 20% discount applied
+    currency: "usd",
+    recurringInterval: "year",
+    popular: true,
+    features: FEATURES,
+  },
+  enterprise: {
+    productId: "",
+    slug: "enterprise",
+    name: "Enterprise",
+    description: "Custom solutions for large organizations",
+    price: "Contact us",
+    currency: "usd",
+    recurringInterval: "one-time",
+    features: [
+      "Custom projects",
+      "Custom users",
+      "Dedicated support",
+      "Access to all features",
+      "Custom SLAs",
+      "Custom integrations",
+    ],
+  },
+};
+
+// ─────────────────────────────────────────────────────────────
+// Default Settings
+// ─────────────────────────────────────────────────────────────
 export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   AI: {
     SYSTEM_PROMPT: "You are a helpful assistant.",
@@ -74,6 +178,18 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   NOTIFICATIONS: {
     VAPID_MAIL: CLIENT_ENV.ZAP_MAIL,
   },
+  PAYMENTS: {
+    POLAR: {
+      AUTHENTICATED_USERS_ONLY: true,
+      CREATE_CUSTOMER_ON_SIGNUP: true,
+      ENVIRONMENT: POLAR_ENV,
+      PRODUCTS: Object.values(PRODUCT_IDS[POLAR_ENV]).map((id, idx) => ({
+        productId: id,
+        slug: idx === 0 ? "pro-monthly" : "pro-yearly",
+      })),
+      SUCCESS_URL: "/app/billing/success",
+    },
+  },
   PWA: {
     NAME,
     SHORT_NAME: NAME,
@@ -82,16 +198,8 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
     BACKGROUND_COLOR: "#ffffff",
     THEME_COLOR: "#000000",
     ICONS: [
-      {
-        src: "/icon-192x192.png",
-        sizes: "192x192",
-        type: "image/png",
-      },
-      {
-        src: "/icon-512x512.png",
-        sizes: "512x512",
-        type: "image/png",
-      },
+      { src: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { src: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
     ],
   },
   SECURITY: {
@@ -99,7 +207,13 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       DEFAULT_SRC: ["'self'"],
       SCRIPT_SRC: ["'self'", "'unsafe-eval'", "'unsafe-inline'"],
       STYLE_SRC: ["'self'", "'unsafe-inline'"],
-      IMG_SRC: ["'self'", "blob:", "data:"],
+      IMG_SRC: [
+        "'self'",
+        "blob:",
+        "data:",
+        "https://www.gravatar.com",
+        "https://*.googleusercontent.com",
+      ],
       FONT_SRC: ["'self'"],
       OBJECT_SRC: ["'none'"],
       BASE_URI: ["'self'"],
@@ -110,29 +224,20 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       UPGRADE_INSECURE_REQUESTS: true,
     },
     PERMISSIONS_POLICY: {
-      // 1. High‑Risk Features (allow only same‑origin “self”)
       CAMERA: ["self"],
       GEOLOCATION: ["self"],
       MICROPHONE: ["self"],
       PAYMENT: ["self"],
-
-      // 2. Medium‑Risk Features (allow only “self”)
       DISPLAY_CAPTURE: ["self"],
       FULLSCREEN: ["self"],
       PICTURE_IN_PICTURE: ["self"],
-
-      // 3. Low‑Risk Features (allow only “self”)
       AUTOPLAY: ["self"],
       ENCRYPTED_MEDIA: ["self"],
       WEB_SHARE: ["self"],
-
-      // 4. Generally Allowed Sensors & Controls (allow “self”)
       ACCELEROMETER: ["self"],
       GYROSCOPE: ["self"],
       MAGNETOMETER: ["self"],
       SCREEN_WAKE_LOCK: ["self"],
-
-      // 5. Experimental / Advanced (blocked by default)
       GAMEPAD: [],
       HID: [],
       IDLE_DETECTION: [],
@@ -141,8 +246,6 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       BLUETOOTH: [],
       SERIAL: [],
       XR_SPATIAL_TRACKING: [],
-
-      // 6. Security‑Focused (blocked by default)
       CROSS_ORIGIN_ISOLATED: [],
       PUBLICKEY_CREDENTIALS_GET: [],
       USB: [],
@@ -156,6 +259,9 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   },
 };
 
+// ─────────────────────────────────────────────────────────────
+// Default Metadata (SEO / OG)
+// ─────────────────────────────────────────────────────────────
 export const ZAP_DEFAULT_METADATA: Metadata = {
   title: APP_NAME,
   description: APP_DESCRIPTION,
@@ -174,10 +280,7 @@ export const ZAP_DEFAULT_METADATA: Metadata = {
     "application",
   ],
   authors: [
-    {
-      name: "Alexandre Trotel",
-      url: "https://www.alexandretrotel.org",
-    },
+    { name: "Alexandre Trotel", url: "https://www.alexandretrotel.org" },
   ],
   creator: "Alexandre Trotel",
   publisher: "Alexandre Trotel",
@@ -230,7 +333,7 @@ export const ZAP_DEFAULT_METADATA: Metadata = {
   },
   appLinks: {
     web: {
-      url: "https://demo.zap-ts.alexandretrotel.org",
+      url: BASE_URL,
       should_fallback: true,
     },
   },

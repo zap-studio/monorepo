@@ -1,5 +1,6 @@
 import "client-only";
 
+import { polarClient } from "@polar-sh/better-auth";
 import {
   adminClient,
   anonymousClient,
@@ -21,6 +22,7 @@ export const authClient = createAuthClient({
     passkeyClient(),
     adminClient(),
     organizationClient(),
+    polarClient(),
   ],
 });
 
