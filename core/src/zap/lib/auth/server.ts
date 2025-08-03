@@ -109,7 +109,7 @@ export const auth = betterAuth({
       use: [
         checkout({
           products: ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.PRODUCTS,
-          successUrl: "/success?checkout_id={CHECKOUT_ID}",
+          successUrl: `${ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.SUCCESS_URL}?checkout_id={CHECKOUT_ID}`,
           authenticatedUsersOnly:
             ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.AUTHENTICATED_USERS_ONLY,
         }),

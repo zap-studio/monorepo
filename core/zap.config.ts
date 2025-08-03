@@ -107,6 +107,7 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       CREATE_CUSTOMER_ON_SIGNUP: true,
       ENVIRONMENT: POLAR_ENV,
       PRODUCTS: PRODUCTS[POLAR_ENV],
+      SUCCESS_URL: "/app/billing/success",
     },
   },
   PWA: {

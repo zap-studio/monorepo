@@ -72,6 +72,7 @@ export interface ZapSettings {
       CREATE_CUSTOMER_ON_SIGNUP: boolean;
       ENVIRONMENT: "sandbox" | "production" | undefined;
       PRODUCTS?: Product[];
+      SUCCESS_URL?: string;
     };
   };
   PWA: {
