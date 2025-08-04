@@ -15,10 +15,7 @@ import { ZapButton } from "@/components/zap-ui/button";
 import { PRODUCTS_METADATA } from "@/zap.config";
 import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
 import { PriceDisplay } from "@/zap/components/payments/price-display";
-import {
-  getProductBillingDetails,
-  getSortedProducts,
-} from "@/zap/lib/payments/utils";
+import { getBillingDetails, getSortedProducts } from "@/zap/lib/payments/utils";
 
 const yearlyDiscount = 20;
 
@@ -50,7 +47,7 @@ export function PricingSection() {
 
       <div className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {sortedProducts.map((product) => {
-          const { price, recurringInterval } = getProductBillingDetails(
+          const { price, recurringInterval } = getBillingDetails(
             product,
             isYearly,
           );

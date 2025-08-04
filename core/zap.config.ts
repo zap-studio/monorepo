@@ -41,10 +41,11 @@ export interface ProductMetadata {
   name: string;
   description: string;
   price?: number | string;
-  currency: string;
+  currency: Currency;
   recurringInterval?: "one-time" | "month" | "year";
   features: string[];
   popular?: boolean;
+  contactSales?: boolean;
   billingOptions?: {
     monthly?: BillingOption;
     yearly?: BillingOption;
@@ -120,6 +121,7 @@ export const PRODUCTS_METADATA: Record<string, ProductMetadata> = {
     price: "Contact us",
     currency: "usd",
     recurringInterval: "one-time",
+    contactSales: true,
     features: [
       "Custom projects",
       "Custom users",

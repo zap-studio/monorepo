@@ -11,22 +11,6 @@ export function getBillingDetails(product: ProductMetadata, isYearly: boolean) {
   };
 }
 
-export function getProductBillingDetails(
-  productData: ProductMetadata,
-  yearlyMode: boolean,
-) {
-  const billingKey = yearlyMode ? "yearly" : "monthly";
-  const billingOption = productData.billingOptions?.[billingKey];
-
-  return {
-    price: productData.price ?? billingOption?.price ?? 0,
-    recurringInterval:
-      productData.recurringInterval ??
-      billingOption?.recurringInterval ??
-      "month",
-  };
-}
-
 export function getProductsArray(
   products: ProductMetadata[],
   isYearly: boolean,
@@ -64,16 +48,20 @@ export function getSortedProducts(
 ) {
   const productsArray = getProductsArray(products, isYearly);
 
-  return productsArray.sort((a, b) => {
-    const aPrice = getBillingDetails(a, isYearly).price;
-    const bPrice = getBillingDetails(b, isYearly).price;
+  const productsWithPrices = productsArray.map((product) => ({
+    product,
+    price: getBillingDetails(product, isYearly).price,
+  }));
 
-    if (typeof aPrice === "string" || typeof bPrice === "string") {
-      return 0;
-    }
+  return productsWithPrices
+    .sort((a, b) => {
+      if (typeof a.price === "string" || typeof b.price === "string") {
+        return 0;
+      }
 
-    return aPrice - bPrice;
-  });
+      return a.price - b.price;
+    })
+    .map(({ product }) => product);
 }
 
 export function getPriceDisplay(

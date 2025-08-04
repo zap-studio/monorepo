@@ -17,10 +17,7 @@ import { SUPPORT_EMAIL } from "@/zap.config";
 import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
 import { PriceDisplay } from "@/zap/components/payments/price-display";
 import { authClient } from "@/zap/lib/auth/client";
-import {
-  getProductBillingDetails,
-  getSortedProducts,
-} from "@/zap/lib/payments/utils";
+import { getBillingDetails, getSortedProducts } from "@/zap/lib/payments/utils";
 import { useActiveSubscriptionSlug } from "@/zap/lib/polar/client";
 
 interface BillingCardsProps {
@@ -37,9 +34,10 @@ export function BillingCards({ products }: BillingCardsProps) {
     productId: string,
     slug: string,
     price: number | string,
+    contactSales?: boolean,
   ) => {
     try {
-      if (typeof price === "string") {
+      if (contactSales) {
         window.open(`mailto:${SUPPORT_EMAIL}`);
         return;
       }
@@ -76,14 +74,14 @@ export function BillingCards({ products }: BillingCardsProps) {
 
       <div className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {sortedProducts.map((product) => {
-          const { price, recurringInterval } = getProductBillingDetails(
+          const { price, recurringInterval } = getBillingDetails(
             product,
             isYearly,
           );
 
           const isCurrentPlan = activeSubscriptionSlug === product.slug;
           const isFree = price === 0;
-          const isContactSales = typeof price === "string";
+          const isContactSales = product?.contactSales;
           const isDisabled = isCurrentPlan || isFree;
 
           const getButtonText = () => {
@@ -161,6 +159,7 @@ export function BillingCards({ products }: BillingCardsProps) {
                         product.productId || "",
                         product.slug,
                         price,
+                        product?.contactSales,
                       )
                     }
                     size="lg"
