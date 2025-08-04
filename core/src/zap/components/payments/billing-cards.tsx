@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { ZapButton } from "@/components/zap-ui/button";
 import type { ProductMetadata } from "@/zap.config";
-import { SUPPORT_EMAIL } from "@/zap.config";
+import { SALES_EMAIL } from "@/zap.config";
 import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
 import { PriceDisplay } from "@/zap/components/payments/price-display";
 import { authClient } from "@/zap/lib/auth/client";
@@ -38,7 +38,7 @@ export function BillingCards({ products }: BillingCardsProps) {
   ) => {
     try {
       if (contactSales) {
-        window.open(`mailto:${SUPPORT_EMAIL}`);
+        window.open(`mailto:${SALES_EMAIL}`);
         return;
       }
 

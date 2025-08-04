@@ -25,7 +25,8 @@ export const APP_DESCRIPTION =
 export const BASE_URL = DEV
   ? "http://localhost:3000"
   : "https://demo.zap-ts.alexandretrotel.org";
-export const SUPPORT_EMAIL = "your-email@example.com";
+export const SALES_EMAIL = "sales@example.com";
+export const SUPPORT_EMAIL = "support@example.com";
 
 export type Provider = "github" | "google";
 
