@@ -108,35 +108,56 @@ Products are configured in `zap.config.ts`:
 // zap.config.ts
 export const PRODUCTS_METADATA: Record<string, ProductMetadata> = {
   free: {
-    productId: "",
-    slug: "free",
-    name: "Free",
-    description: "Free plan with limited features",
+    productId: '',
+    slug: 'free',
+    name: 'Free',
+    description: 'Free plan with limited features',
     price: 0,
-    currency: "usd",
-    recurringInterval: "one-time",
-    features: ["Limited projects", "Community support"],
+    currency: 'usd',
+    recurringInterval: 'one-time',
+    features: [
+      'Limited projects',
+      'Limited users',
+      'Community support',
+      'Access to basic features',
+    ],
   },
-  "pro-monthly": {
-    productId: "your_polar_product_id", // From Polar dashboard
-    slug: "pro-monthly",
-    name: "Pro (Monthly)",
-    description: "Monthly subscription for Pro features",
-    price: 20,
-    currency: "usd",
-    recurringInterval: "month",
-    features: ["Unlimited projects", "Priority support"],
-  },
-  "pro-yearly": {
-    productId: "your_polar_yearly_product_id",
-    slug: "pro-yearly",
-    name: "Pro (Yearly)",
-    description: "Yearly subscription with 20% discount",
-    price: 192, // 20% discount applied
-    currency: "usd",
-    recurringInterval: "year",
+  pro: {
+    slug: 'pro',
+    name: 'Pro',
+    description: 'Advanced features for professionals',
+    currency: 'usd',
+    billingOptions: {
+      monthly: {
+        productId: PRODUCT_IDS[CLIENT_ENV.POLAR_ENV].monthly,
+        price: 20,
+        recurringInterval: 'month',
+      },
+      yearly: {
+        productId: PRODUCT_IDS[CLIENT_ENV.POLAR_ENV].yearly,
+        price: 192, // 20% discount
+        recurringInterval: 'year',
+      },
+    },
     popular: true,
-    features: ["Unlimited projects", "Priority support"],
+    features: FEATURES,
+  },
+  enterprise: {
+    productId: '',
+    slug: 'enterprise',
+    name: 'Enterprise',
+    description: 'Custom solutions for large organizations',
+    price: 'Contact us',
+    currency: 'usd',
+    recurringInterval: 'one-time',
+    features: [
+      'Custom projects',
+      'Custom users',
+      'Dedicated support',
+      'Access to all features',
+      'Custom SLAs',
+      'Custom integrations',
+    ],
   },
 };
 ```

@@ -35,17 +35,28 @@ export type Provider = "github" | "google";
 export type RecurringInterval = "month" | "year" | "one-time";
 export type Currency = "usd" | "eur";
 
-export type ProductMetadata = {
-  productId: string;
+export interface ProductMetadata {
+  productId?: string;
   slug: string;
   name: string;
   description: string;
-  price: number | string;
+  price?: number | string;
   currency: Currency;
-  recurringInterval: RecurringInterval;
+  recurringInterval?: "one-time" | "month" | "year";
+  features: string[];
   popular?: boolean;
-  features?: string[];
-};
+  contactSales?: boolean;
+  billingOptions?: {
+    monthly?: BillingOption;
+    yearly?: BillingOption;
+  };
+}
+
+interface BillingOption {
+  productId: string;
+  price: number;
+  recurringInterval: "month" | "year";
+}
 
 const FEATURES = [
   "Unlimited projects",
@@ -82,24 +93,23 @@ export const PRODUCTS_METADATA: Record<string, ProductMetadata> = {
       "Access to basic features",
     ],
   },
-  "pro-monthly": {
-    productId: PRODUCT_IDS[CLIENT_ENV.POLAR_ENV].monthly,
-    slug: "pro-monthly",
-    name: "Pro (Monthly)",
-    description: "Monthly subscription for Pro features",
-    price: 20,
+  pro: {
+    slug: "pro",
+    name: "Pro",
+    description: "Advanced features for professionals",
     currency: "usd",
-    recurringInterval: "month",
-    features: FEATURES,
-  },
-  "pro-yearly": {
-    productId: PRODUCT_IDS[CLIENT_ENV.POLAR_ENV].yearly,
-    slug: "pro-yearly",
-    name: "Pro (Yearly)",
-    description: "Yearly subscription for Pro features",
-    price: 192, // 20% discount applied
-    currency: "usd",
-    recurringInterval: "year",
+    billingOptions: {
+      monthly: {
+        productId: PRODUCT_IDS[CLIENT_ENV.POLAR_ENV].monthly,
+        price: 20,
+        recurringInterval: "month",
+      },
+      yearly: {
+        productId: PRODUCT_IDS[CLIENT_ENV.POLAR_ENV].yearly,
+        price: 192, // 20% discount
+        recurringInterval: "year",
+      },
+    },
     popular: true,
     features: FEATURES,
   },
@@ -111,6 +121,7 @@ export const PRODUCTS_METADATA: Record<string, ProductMetadata> = {
     price: "Contact us",
     currency: "usd",
     recurringInterval: "one-time",
+    contactSales: true,
     features: [
       "Custom projects",
       "Custom users",

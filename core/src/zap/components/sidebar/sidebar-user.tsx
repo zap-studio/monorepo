@@ -65,7 +65,12 @@ export function SidebarUser({ user, products }: SidebarUserProps) {
   const fallback = getInitials(user.name);
 
   const handleCustomerPortal = async () => {
-    await authClient.customer.portal();
+    try {
+      toast.loading("Redirecting to customer portal...");
+      await authClient.customer.portal();
+    } catch {
+      toast.error("Failed to redirect to customer portal");
+    }
   };
 
   const handleSignOut = async () => {
