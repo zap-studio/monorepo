@@ -1,5 +1,11 @@
 # create-zap-app
 
+## 1.4.3
+
+### Patch Changes
+
+- 8c5fcf1: add 'zap' alias to the CLI tool
+
 ## 1.4.2
 
 ### Patch Changes
