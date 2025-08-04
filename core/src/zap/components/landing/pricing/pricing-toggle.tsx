@@ -40,7 +40,7 @@ export function PricingToggle({
         </Label>
 
         <span className="animate-pulse rounded-md bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
-          Save {(yearlyDiscount * 100).toFixed(0)}%
+          Save {yearlyDiscount.toFixed(0)}%
         </span>
       </div>
     </div>
