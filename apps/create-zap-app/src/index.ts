@@ -13,6 +13,7 @@ const main = pipe(
 
     program
       .name('create-zap-app')
+      .alias('zap')
       .description(
         'A CLI to bootstrap a Zap.ts project with plugins customization.'
       )

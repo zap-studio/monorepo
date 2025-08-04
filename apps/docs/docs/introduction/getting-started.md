@@ -118,9 +118,9 @@ This list of commands may not be exhaustive and can change over time as Zap.ts e
 
 ## Command-Line Interface (CLI)
 
-The `create-zap-app` CLI is a tool for _quickly_ setting up a Zap.ts project or adding procedures to an existing one.
+The `create-zap-app` or `zap` CLI is a tool for _quickly_ setting up a Zap.ts project or adding procedures to an existing one.
 
-Also, you should note that more features will be added from time to time. You can run `create-zap-app --help` to check the latest CLI available commands.
+Also, you should note that more features will be added from time to time. You can run `create-zap-app --help` or `zap --help` to check the latest CLI available commands.
 
 But in the meantime, here is a _concise_ overview of what the CLI does when installing your project.
 

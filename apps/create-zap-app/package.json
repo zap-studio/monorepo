@@ -39,7 +39,8 @@
     "url": "git+https://github.com/alexandretrotel/zap.ts"
   },
   "bin": {
-    "create-zap-app": "./dist/index.js"
+    "create-zap-app": "./dist/index.js",
+    "zap": "./dist/index.js"
   },
   "main": "dist/index.js",
   "scripts": {
