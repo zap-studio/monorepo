@@ -5,7 +5,7 @@ Zap.ts provides a structured approach to managing environment variables for both
 ## Overview
 
 - **Client-side**: Variables prefixed with `NEXT_PUBLIC_` are exposed to the client, ensuring sensitive data remains secure.
-- **Configuration**: Variables are stored in `.env` files, generated automatically by the `create-zap-app` CLI.
+- **Configuration**: Variables are stored in `.env` files, generated automatically by the `create-zap-app` or `zap` CLI.
 - **Server-side**: Environment variables are securely accessed using Node.js's `process.env` and validated with type safety.
 - **Type Safety**: Environment variables are defined and validated using [TypeScript](https://www.typescriptlang.org/) and [Zod](https://zod.dev/) for robust typing.
 
@@ -21,7 +21,7 @@ The server file contains variables that are only accessible on the server side, 
 
 Environment variables are stored in `.env` files, typically `.env` or `.env.local`, which are loaded by Next.js during _build time_.
 
-To make it easier for you, the `create-zap-app` CLI generates an `.env` file with required variables during project setup:
+To make it easier for you, the `create-zap-app` or `zap` CLI generates an `.env` file with required variables during project setup:
 
 ```ts
 // Example .env content
@@ -99,7 +99,7 @@ ZodError: [
 
 ### 5. Generating `.env` Files
 
-The `create-zap-app` CLI generates an `.env` file with placeholders for required variables.
+The `create-zap-app` or `zap` CLI generates an `.env` file with placeholders for required variables.
 
 - **Placeholders**: Provides sample values or placeholders for other variables, like `DATABASE_URL` or `ZAP_MAIL`.
 - **Secure secrets**: Automatically generates secure values for `BETTER_AUTH_SECRET` and `ENCRYPTION_KEY` using `generateSecret()`.

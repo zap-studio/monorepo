@@ -18,7 +18,7 @@
     "boilerplate",
     "starter-kit"
   ],
-  "version": "1.4.2",
+  "version": "1.4.3",
   "module": "index.ts",
   "type": "module",
   "private": false,
@@ -39,7 +39,8 @@
     "url": "git+https://github.com/alexandretrotel/zap.ts"
   },
   "bin": {
-    "create-zap-app": "./dist/index.js"
+    "create-zap-app": "./dist/index.js",
+    "zap": "./dist/index.js"
   },
   "main": "dist/index.js",
   "scripts": {
