@@ -14,7 +14,7 @@ export default async function BillingPage() {
   const products = getProducts();
 
   return (
-    <div className="flex min-h-screen flex-1 flex-col gap-8 px-4 py-12 md:py-24">
+    <div className="flex min-h-screen flex-1 flex-col gap-4 px-4 py-12 md:py-24">
       <div className="flex flex-col items-center space-y-4 text-center">
         <h1 className="text-3xl font-bold">Upgrade to Pro</h1>
         <p className="text-muted-foreground max-w-2xl">
