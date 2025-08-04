@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { ZapButton } from "@/components/zap-ui/button";
 import type { ProductMetadata } from "@/zap.config";
+import { SUPPORT_EMAIL } from "@/zap.config";
 import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
 import { PriceDisplay } from "@/zap/components/payments/price-display";
 import { authClient } from "@/zap/lib/auth/client";
@@ -20,6 +21,7 @@ import {
   getProductBillingDetails,
   getSortedProducts,
 } from "@/zap/lib/payments/utils";
+import { useActiveSubscriptionSlug } from "@/zap/lib/polar/client";
 
 interface BillingCardsProps {
   products: ProductMetadata[];
@@ -29,9 +31,24 @@ const yearlyDiscount = 20;
 
 export function BillingCards({ products }: BillingCardsProps) {
   const [isYearly, setIsYearly] = useState(false);
+  const activeSubscriptionSlug = useActiveSubscriptionSlug(products, isYearly);
 
-  const handleCheckout = async (productId: string, slug: string) => {
+  const handleCheckout = async (
+    productId: string,
+    slug: string,
+    price: number | string,
+  ) => {
     try {
+      if (typeof price === "string") {
+        window.open(`mailto:${SUPPORT_EMAIL}`);
+        return;
+      }
+
+      if (price === 0) {
+        toast.info("This is a free plan. No checkout required.");
+        return;
+      }
+
       if (!productId) {
         throw new Error("Product ID not found");
       }
@@ -63,6 +80,39 @@ export function BillingCards({ products }: BillingCardsProps) {
             product,
             isYearly,
           );
+
+          const isCurrentPlan = activeSubscriptionSlug === product.slug;
+          const isFree = price === 0;
+          const isContactSales = typeof price === "string";
+          const isDisabled = isCurrentPlan || isFree;
+
+          const getButtonText = () => {
+            if (isCurrentPlan) {
+              return "Current Plan";
+            }
+
+            if (isContactSales) {
+              return "Contact Sales";
+            }
+
+            if (isFree) {
+              return "Free Plan";
+            }
+
+            return `Subscribe to ${product.name}`;
+          };
+
+          const getButtonVariant = () => {
+            if (isCurrentPlan) {
+              return "secondary" as const;
+            }
+
+            if (product.popular && !isDisabled) {
+              return "default" as const;
+            }
+
+            return "outline" as const;
+          };
 
           return (
             <Card
@@ -105,15 +155,18 @@ export function BillingCards({ products }: BillingCardsProps) {
                 <div className="mt-6">
                   <ZapButton
                     className="w-full cursor-pointer"
+                    disabled={isDisabled}
                     onClick={() =>
-                      handleCheckout(product.productId || "", product.slug)
+                      handleCheckout(
+                        product.productId || "",
+                        product.slug,
+                        price,
+                      )
                     }
                     size="lg"
-                    variant={product.popular ? "default" : "outline"}
+                    variant={getButtonVariant()}
                   >
-                    {typeof product.price === "string"
-                      ? "Contact Sales"
-                      : `Subscribe to ${product.name}`}
+                    {getButtonText()}
                   </ZapButton>
                 </div>
               </CardContent>

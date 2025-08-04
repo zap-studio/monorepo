@@ -6,16 +6,16 @@ import type { ProductMetadata } from "@/zap.config";
 import { authClient } from "@/zap/lib/auth/client";
 import { getProduct } from "@/zap/lib/polar/utils";
 
-const fetchCustomerState = async () => {
+async function fetchCustomerState() {
   const state = await authClient.customer.state();
   return state;
-};
+}
 
-export const useCustomerState = () => {
+export function useCustomerState() {
   return useSWR("customer-state", fetchCustomerState);
-};
+}
 
-export const useActiveSubscriptions = () => {
+export function useActiveSubscriptions() {
   const { data: customerState, error } = useCustomerState();
 
   if (error || !customerState) {
@@ -23,9 +23,9 @@ export const useActiveSubscriptions = () => {
   }
 
   return customerState.data?.activeSubscriptions;
-};
+}
 
-export const useActiveSubscriptionProductId = () => {
+export function useActiveSubscriptionProductId() {
   const activeSubscriptions = useActiveSubscriptions();
 
   const activeSubscriptionProductId = activeSubscriptions?.[0]?.productId;
@@ -35,9 +35,9 @@ export const useActiveSubscriptionProductId = () => {
   }
 
   return activeSubscriptionProductId;
-};
+}
 
-export const useActiveSubscriptionProduct = (products?: ProductMetadata[]) => {
+export function useActiveSubscriptionProduct(products?: ProductMetadata[]) {
   const productId = useActiveSubscriptionProductId();
 
   if (!(productId && products)) {
@@ -46,4 +46,22 @@ export const useActiveSubscriptionProduct = (products?: ProductMetadata[]) => {
 
   const product = getProduct({ products, productId });
   return product;
-};
+}
+
+export function useActiveSubscriptionSlug(
+  products?: ProductMetadata[],
+  isYearly?: boolean,
+) {
+  const activeProduct = useActiveSubscriptionProduct(products);
+
+  if (!activeProduct) {
+    return null;
+  }
+
+  if (activeProduct.billingOptions && isYearly !== undefined) {
+    const interval = isYearly ? "yearly" : "monthly";
+    return `${activeProduct.slug}-${interval}`;
+  }
+
+  return activeProduct.slug;
+}
