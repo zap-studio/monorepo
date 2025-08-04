@@ -114,7 +114,7 @@ export function PricingSection() {
               </ul>
 
               <div className="mt-6">
-                <ZapButton className="w-full">
+                <ZapButton asChild className="w-full">
                   <Link href="/app/billing">Get Started</Link>
                 </ZapButton>
               </div>
