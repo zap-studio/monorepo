@@ -12,77 +12,23 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ZapButton } from "@/components/zap-ui/button";
-import { PRODUCTS_METADATA, type RecurringInterval } from "@/zap.config";
+import { PRODUCTS_METADATA } from "@/zap.config";
 import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
-import { getBillingDetails } from "@/zap/lib/payments/utils";
+import { PriceDisplay } from "@/zap/components/payments/price-display";
+import {
+  getProductBillingDetails,
+  getSortedProducts,
+} from "@/zap/lib/payments/utils";
 
 const yearlyDiscount = 20;
 
 export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
 
-  const productsArray = Object.values(PRODUCTS_METADATA).flatMap((product) => {
-    if (product.billingOptions) {
-      const key = isYearly ? "yearly" : "monthly";
-      const billing = product.billingOptions[key];
-
-      if (!billing) {
-        return [];
-      }
-
-      return {
-        ...product,
-        ...billing,
-        slug: `${product.slug}-${key}`,
-      };
-    }
-
-    if (
-      product.recurringInterval === "one-time" ||
-      !(product.billingOptions || product.recurringInterval)
-    ) {
-      return product;
-    }
-
-    return [];
-  });
-
-  const renderPrice = (price: number | string, interval: RecurringInterval) => {
-    let displayPrice: string;
-    let intervalText: string;
-
-    if (typeof price === "string") {
-      displayPrice = price;
-      intervalText = "";
-    } else if (interval === "year") {
-      displayPrice = `$${(price / 12).toFixed(2)}`;
-      intervalText = "/month";
-    } else if (interval === "month") {
-      displayPrice = `$${price.toFixed(2)}`;
-      intervalText = "/month";
-    } else if (interval === "one-time") {
-      displayPrice = `$${price.toFixed(2)}`;
-      intervalText = "one-time";
-    } else {
-      displayPrice = `$${price.toFixed(2)}`;
-      intervalText = "";
-    }
-
-    return (
-      <div className="mt-2 flex flex-col items-start space-y-1 text-left transition-all duration-500">
-        <div className="flex items-end space-x-2">
-          <span className="text-4xl font-extrabold tracking-tight">
-            {displayPrice}
-          </span>
-          {intervalText && (
-            <span className="text-muted-foreground mb-1 text-sm font-medium">
-              {intervalText}
-            </span>
-          )}
-        </div>
-      </div>
-    );
-  };
+  const sortedProducts = getSortedProducts(
+    Object.values(PRODUCTS_METADATA),
+    isYearly,
+  );
 
   return (
     <div className="w-full px-4 md:px-6">
@@ -103,8 +49,8 @@ export function PricingSection() {
       </div>
 
       <div className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {productsArray.map((product) => {
-          const { price, recurringInterval } = getBillingDetails(
+        {sortedProducts.map((product) => {
+          const { price, recurringInterval } = getProductBillingDetails(
             product,
             isYearly,
           );
@@ -122,7 +68,11 @@ export function PricingSection() {
 
               <CardHeader>
                 <CardTitle>{product.name}</CardTitle>
-                {renderPrice(price, recurringInterval)}
+                <PriceDisplay
+                  alignment="left"
+                  interval={recurringInterval}
+                  price={price}
+                />
                 <CardDescription>{product.description}</CardDescription>
               </CardHeader>
 
