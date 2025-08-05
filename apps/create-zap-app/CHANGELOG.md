@@ -1,5 +1,11 @@
 # create-zap-app
 
+## 1.4.4
+
+### Patch Changes
+
+- 5e0cce2: remove effect dependency and fix generate env spinner
+
 ## 1.4.3
 
 ### Patch Changes
