@@ -1,10 +1,11 @@
 import "server-only";
 
+import type webpush from "web-push";
 import { z } from "zod";
 
-import { getAuthenticatedUserId, parseRequestBody } from "@/zap/lib/api/utils";
+import { parseRequestBody } from "@/zap/lib/api/utils";
 import { withApiHandler } from "@/zap/lib/error-handling/handlers";
-import { subscribeToPushNotifications } from "@/zap/services/push-notifications.service";
+import { subscribeUserService } from "@/zap/services/push-notifications/subscribe-user.service";
 
 const subscribeSchema = z.object({
   subscription: z.object({
@@ -17,8 +18,11 @@ const subscribeSchema = z.object({
 });
 
 export const POST = withApiHandler(async (req: Request) => {
-  const userId = await getAuthenticatedUserId(req);
   const { subscription } = await parseRequestBody(req, subscribeSchema);
-  const result = await subscribeToPushNotifications(userId, subscription);
+
+  const result = await subscribeUserService({
+    input: { subscription: subscription as webpush.PushSubscription },
+  });
+
   return Response.json(result, { status: 200 });
 });

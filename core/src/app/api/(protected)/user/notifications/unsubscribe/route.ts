@@ -1,11 +1,9 @@
 import "server-only";
 
-import { getAuthenticatedUserId } from "@/zap/lib/api/utils";
 import { withApiHandler } from "@/zap/lib/error-handling/handlers";
-import { unsubscribeFromPushNotifications } from "@/zap/services/push-notifications.service";
+import { unsubscribeUserService } from "@/zap/services/push-notifications/unsubscribe-user.service";
 
-export const DELETE = withApiHandler(async (req: Request) => {
-  const userId = await getAuthenticatedUserId(req);
-  const result = await unsubscribeFromPushNotifications(userId);
+export const DELETE = withApiHandler(async () => {
+  const result = await unsubscribeUserService();
   return Response.json(result, { status: 200 });
 });
