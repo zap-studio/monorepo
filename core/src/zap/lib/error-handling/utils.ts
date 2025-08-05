@@ -1,7 +1,10 @@
 import { ZodError } from "zod";
 
 import { DEV } from "@/lib/env.public";
-import { AppError, InternalServerError } from "@/zap/lib/error-handling/errors";
+import {
+  BaseError,
+  InternalServerError,
+} from "@/zap/lib/error-handling/errors";
 import { logError } from "@/zap/lib/error-handling/logger";
 
 export type HandlerFunction<T extends unknown[], R> = (
@@ -35,7 +38,7 @@ export function createErrorResponse(
 ): { response: ErrorResponse; statusCode: number } {
   const timestamp = new Date().toISOString();
 
-  if (error instanceof AppError) {
+  if (error instanceof BaseError) {
     return {
       response: {
         error: error.name,
@@ -118,8 +121,8 @@ export function logSuccess(
   );
 }
 
-export function transformError(error: unknown): AppError {
-  if (error instanceof AppError) {
+export function transformError(error: unknown): BaseError {
+  if (error instanceof BaseError) {
     return error;
   }
 
