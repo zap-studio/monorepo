@@ -1,7 +1,6 @@
 import "server-only";
 
 import { $fetch } from "@/lib/fetch";
-import { InternalServerError } from "@/zap/lib/error-handling/errors";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
 interface TestAPIKeyContext {
@@ -37,9 +36,5 @@ export async function testAPIKeyService({
     method: "POST",
     body: { provider, apiKey, model },
     headers,
-  }).catch((error) => {
-    throw new InternalServerError(
-      `Failed to test API key for provider ${provider}: ${error.message}`,
-    );
   });
 }

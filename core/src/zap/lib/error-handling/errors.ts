@@ -4,12 +4,12 @@ type Operation = "CREATE" | "READ" | "UPDATE" | "DELETE";
 export class AppError extends Error {
   statusCode: HttpStatusCode;
   code: string;
-  cause: unknown | null;
+  cause?: unknown;
   constructor(
     message: string,
     statusCode: HttpStatusCode = 500,
     code = "INTERNAL_ERROR",
-    cause: unknown | null = null,
+    cause?: unknown,
   ) {
     super(message);
     this.name = this.constructor.name;
@@ -30,37 +30,37 @@ export class AppError extends Error {
 }
 
 export class InternalServerError extends AppError {
-  constructor(message = "Internal Server Error", cause: unknown | null = null) {
+  constructor(message = "Internal Server Error", cause?: unknown) {
     super(message, 500, "INTERNAL_SERVER_ERROR", cause);
   }
 }
 
 export class NotFoundError extends AppError {
-  constructor(message = "Not Found", cause: unknown | null = null) {
+  constructor(message = "Not Found", cause?: unknown) {
     super(message, 404, "NOT_FOUND", cause);
   }
 }
 
 export class BadRequestError extends AppError {
-  constructor(message = "Bad Request", cause: unknown | null = null) {
+  constructor(message = "Bad Request", cause?: unknown) {
     super(message, 400, "BAD_REQUEST", cause);
   }
 }
 
 export class UnauthorizedError extends AppError {
-  constructor(message = "Unauthorized", cause: unknown | null = null) {
+  constructor(message = "Unauthorized", cause?: unknown) {
     super(message, 401, "UNAUTHORIZED", cause);
   }
 }
 
 export class ForbiddenError extends AppError {
-  constructor(message = "Forbidden", cause: unknown | null = null) {
+  constructor(message = "Forbidden", cause?: unknown) {
     super(message, 403, "FORBIDDEN", cause);
   }
 }
 
 export class ConflictError extends AppError {
-  constructor(message = "Conflict", cause: unknown | null = null) {
+  constructor(message = "Conflict", cause?: unknown) {
     super(message, 409, "CONFLICT", cause);
   }
 }
@@ -70,7 +70,7 @@ export class ValidationError extends AppError {
   constructor(
     message = "Validation Failed",
     details: Record<string, string> = {},
-    cause: unknown | null = null,
+    cause?: unknown,
   ) {
     super(message, 400, "VALIDATION_FAILED", cause);
     this.details = details;
@@ -86,13 +86,18 @@ export class ValidationError extends AppError {
 
 export class DatabaseError extends AppError {
   operation: Operation;
-  cause: unknown | null;
   constructor(
     message = "Database Error",
     operation: Operation,
-    cause: unknown | null = null,
+    cause?: unknown,
   ) {
     super(message, 500, "DATABASE_ERROR", cause);
     this.operation = operation;
+  }
+}
+
+export class AuthenticationError extends AppError {
+  constructor(message = "Authentication Error", cause?: unknown) {
+    super(message, 401, "AUTHENTICATION_ERROR", cause);
   }
 }

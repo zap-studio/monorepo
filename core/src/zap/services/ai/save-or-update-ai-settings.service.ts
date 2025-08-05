@@ -7,10 +7,6 @@ import { userAISettings } from "@/db/schema";
 import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
 import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { encrypt } from "@/zap/lib/crypto/encrypt";
-import {
-  DatabaseError,
-  InternalServerError,
-} from "@/zap/lib/error-handling/errors";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
 interface SaveOrUpdateAISettingsContext {
@@ -34,20 +30,12 @@ export async function saveOrUpdateAISettingsService({
   const apiKey = input.apiKey;
   const model = input.model;
 
-  const encryptedAPIKey = await encrypt(apiKey, encryptionKeyHex).catch(
-    (error) => {
-      throw new InternalServerError("Failed to encrypt API key", error);
-    },
-  );
+  const encryptedAPIKey = await encrypt(apiKey, encryptionKeyHex);
 
-  const existingSettings = await getApiSettingsForUserAndProviderQuery
-    .execute({
-      userId,
-      provider,
-    })
-    .catch((error) => {
-      throw new DatabaseError("Failed to get AI settings", "READ", error);
-    });
+  const existingSettings = await getApiSettingsForUserAndProviderQuery.execute({
+    userId,
+    provider,
+  });
 
   if (existingSettings.length > 0) {
     await db
@@ -62,14 +50,7 @@ export async function saveOrUpdateAISettingsService({
           eq(userAISettings.provider, provider),
         ),
       )
-      .execute()
-      .catch((error) => {
-        throw new DatabaseError(
-          "Failed to update AI settings",
-          "UPDATE",
-          error,
-        );
-      });
+      .execute();
   } else {
     await db
       .insert(userAISettings)
@@ -79,14 +60,7 @@ export async function saveOrUpdateAISettingsService({
         model,
         encryptedApiKey: encryptedAPIKey,
       })
-      .execute()
-      .catch((error) => {
-        throw new DatabaseError(
-          "Failed to create AI settings",
-          "CREATE",
-          error,
-        );
-      });
+      .execute();
   }
 
   return { success: true };

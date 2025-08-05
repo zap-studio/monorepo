@@ -7,11 +7,7 @@ import { userAISettings } from "@/db/schema";
 import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
 import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { encrypt } from "@/zap/lib/crypto/encrypt";
-import {
-  DatabaseError,
-  InternalServerError,
-  NotFoundError,
-} from "@/zap/lib/error-handling/errors";
+import { NotFoundError } from "@/zap/lib/error-handling/errors";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
 interface UpdateAISettingsContext {
@@ -35,24 +31,12 @@ export async function updateAISettingsService({
   const model = input.model;
   const apiKey = input.apiKey;
 
-  const encryptedAPIKey = await encrypt(apiKey, encryptionKeyHex).catch(
-    (error) => {
-      throw new InternalServerError("Failed to encrypt API key", error);
-    },
-  );
+  const encryptedAPIKey = await encrypt(apiKey, encryptionKeyHex);
 
-  const existingSettings = await getApiSettingsForUserAndProviderQuery
-    .execute({
-      userId,
-      provider,
-    })
-    .catch((error) => {
-      throw new DatabaseError(
-        "Failed to fetch existing AI settings",
-        "READ",
-        error,
-      );
-    });
+  const existingSettings = await getApiSettingsForUserAndProviderQuery.execute({
+    userId,
+    provider,
+  });
 
   if (!existingSettings.length) {
     throw new NotFoundError("AI settings not found");
@@ -70,10 +54,7 @@ export async function updateAISettingsService({
         eq(userAISettings.provider, provider),
       ),
     )
-    .execute()
-    .catch((error) => {
-      throw new DatabaseError("Failed to update AI settings", "UPDATE", error);
-    });
+    .execute();
 
   return { success: true };
 }
