@@ -107,11 +107,6 @@ export const userSchema = z.object({
 });
 ```
 
-## Error handling
-
-- Use [Effect](https://effect.website) for typed async flows.
-- Avoid `try/catch`; prefer declarative error modeling.
-
 ## Environment Variables
 
 - Store secrets in `.env`.
@@ -160,7 +155,6 @@ await webpush.sendNotification(
 - Use Resend for transactional emails.
 - Use React-based email templates.
 - Implement rate limiting and tracking.
-- Use Effect for errors.
 
 ```ts
 await sendVerificationEmail({

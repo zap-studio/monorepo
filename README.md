@@ -52,7 +52,6 @@ Zap.ts wouldn't exist without those _wonderful_ tools:
 - [AI Vercel SDK](https://sdk.vercel.ai/): A toolkit for streaming text, handling objects, using RAG (Retrieval-Augmented Generation), and more. It lets you switch between providers without depending on a specific SDK.
 - [Better Auth](https://better-auth.com/): A simple and flexible way to set up authentication. It works with any framework, avoids vendor lock-in, and connects seamlessly to your database.
 - [Drizzle ORM](https://orm.drizzle.team/): An ORM that lets you write database schemas in TypeScript, sync them with your database, and is easy to use.
-- [Effect](https://effect.website/): A powerful functional library for modeling, managing, and propagating side effects and errors across your full stack with type safety.
 - [Flags SDK](https://flags-sdk.dev/): A free SDK to use feature flags that works with any provider.
 - [nuqs](https://nuqs.vercel.app/): A library for managing URL state in Next.js applications with type safety and automatic serialization.
 - [oRPC](https://orpc.unnoq.com/): An alternative to [tRPC](https://trpc.io/) that supports OpenAPI specs, making it easy to build type-safe APIs for frontend and backend.

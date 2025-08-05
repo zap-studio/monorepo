@@ -1,23 +1,24 @@
 # Notifications & Emails
 
-Zap.ts provides a unified system for sending notifications and transactional emails to your users. This includes _push notifications_, and _email delivery_, all with type safety and extensibility in mind.
+Zap.ts provides a unified system for sending notifications and transactional emails to your users. This includes *push notifications*, and *email delivery*, all with type safety and extensibility in mind.
 
 ## Overview
 
-- **Emails:** Transactional emails for verification, password reset, magic links, and more.
-- **Extensible:** Easily customize notification channels, templates, and triggers.
-- **Push Notifications:** Real-time web push notifications using the browser's Push API and service workers.
-- **Type-safe:** All notification and email actions are fully typed with TypeScript and Zod.
+* **Emails:** Transactional emails for verification, password reset, magic links, and more.
+* **Extensible:** Easily customize notification channels, templates, and triggers.
+* **Push Notifications:** Real-time web push notifications using the browser's Push API and service workers.
+* **Type-safe:** All notification and email actions are fully typed with TypeScript and Zod.
 
 ## Push Notifications
 
 Zap.ts uses the browser Push API and a PWA service worker (`/sw.js`) to deliver real-time notifications.
 
-- **API Endpoints:**  
-  - `POST /api/(auth-only)/user/notifications/subscribe` — Subscribe a user to push notifications.
-  - `DELETE /api/(auth-only)/user/notifications/unsubscribe` — Unsubscribe a user.
-- **Subscription:** Users can subscribe to push notifications, which stores their subscription in the database.
-- **Service Worker:** The service worker (`public/sw.js`) handles displaying notifications when received.
+* **API Endpoints:**
+
+  * `POST /api/(auth-only)/user/notifications/subscribe` — Subscribe a user to push notifications.
+  * `DELETE /api/(auth-only)/user/notifications/unsubscribe` — Unsubscribe a user.
+* **Subscription:** Users can subscribe to push notifications, which stores their subscription in the database.
+* **Service Worker:** The service worker (`public/sw.js`) handles displaying notifications when received.
 
 For more, see the [MDN Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API) and [Next.js PWA Guide](https://nextjs.org/docs/app/guides/progressive-web-apps).
 
@@ -25,18 +26,16 @@ For more, see the [MDN Push API](https://developer.mozilla.org/en-US/docs/Web/AP
 
 Zap.ts uses [Resend](https://resend.com/) for transactional email delivery. Email support:
 
-- **Forgot password emails**
-- **Magic link emails**
-- **Verification emails**
-- **Custom emails**
+* **Forgot password emails**
+* **Magic link emails**
+* **Verification emails**
+* **Custom emails**
 
 **Example: Sending a Verification Email**
 
 ```ts
 // src/zap/services/mails/send-verification-mail.service.ts
 import "server-only";
-
-import { Effect } from "effect";
 
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { VerificationMail } from "@/zap/components/mails/verification.mail";
@@ -51,32 +50,26 @@ interface SendVerificationMailProps {
 export async function sendVerificationMailService({
   input,
 }: SendVerificationMailProps) {
-  const effect = Effect.gen(function* (_) {
-    const subject = input.subject;
-    const recipients = input.recipients;
-    const url = input.url;
+  const subject = input.subject;
+  const recipients = input.recipients;
+  const url = input.url;
 
-    const { data, error } = yield* _(
-      Effect.tryPromise({
-        try: () =>
-          resend.emails.send({
-            from,
-            to: recipients,
-            subject,
-            react: VerificationMail({ url }),
-          }),
-        catch: () => new Error("Failed to send verification mail"),
-      }),
-    );
+  try {
+    const { data, error } = await resend.emails.send({
+      from,
+      to: recipients,
+      subject,
+      react: VerificationMail({ url }),
+    });
 
     if (error) {
-      return yield* _(Effect.fail(error));
+      throw error;
     }
 
     return data;
-  });
-
-  return await Effect.runPromise(effect);
+  } catch (error) {
+    throw new Error("Failed to send verification mail");
+  }
 }
 ```
 

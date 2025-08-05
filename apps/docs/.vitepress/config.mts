@@ -75,10 +75,6 @@ export default defineConfig({
           { text: 'Database', link: '/docs/features/database' },
           { text: 'Environment Variables', link: '/docs/features/env' },
           {
-            text: 'Error Handling',
-            link: '/docs/features/error-handling',
-          },
-          {
             text: 'Feature Flags',
             link: '/docs/features/flags',
           },
