@@ -39,7 +39,7 @@ export const authMiddleware = base.middleware(async ({ next, errors }) => {
         headers: _headers,
       },
     });
-  } catch {
-    throw new Error("Failed to execute next middleware");
+  } catch (err) {
+    throw new Error("Failed to execute next middleware", { cause: err });
   }
 });
