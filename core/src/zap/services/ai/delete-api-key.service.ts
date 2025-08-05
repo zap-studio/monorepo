@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { userAISettings } from "@/db/schema";
+import { DatabaseError } from "@/zap/lib/error-handling/errors";
 import type { AIProviderId } from "@/zap/types/ai.types";
 
 interface DeleteAPIKeyContext {
@@ -20,22 +21,21 @@ export async function deleteAPIKeyService({
   context: DeleteAPIKeyContext;
   input: DeleteAPIKeyInput;
 }) {
-  try {
-    const userId = context.session.user.id;
-    const provider = input.provider;
+  const userId = context.session.user.id;
+  const provider = input.provider;
 
-    await db
-      .delete(userAISettings)
-      .where(
-        and(
-          eq(userAISettings.userId, userId),
-          eq(userAISettings.provider, provider),
-        ),
-      )
-      .execute();
+  await db
+    .delete(userAISettings)
+    .where(
+      and(
+        eq(userAISettings.userId, userId),
+        eq(userAISettings.provider, provider),
+      ),
+    )
+    .execute()
+    .catch((error) => {
+      throw new DatabaseError("Failed to delete API key", "DELETE", error);
+    });
 
-    return { success: true };
-  } catch {
-    throw new Error("Failed to delete API key");
-  }
+  return { success: true };
 }

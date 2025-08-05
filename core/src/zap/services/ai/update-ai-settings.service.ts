@@ -7,6 +7,11 @@ import { userAISettings } from "@/db/schema";
 import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
 import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { encrypt } from "@/zap/lib/crypto/encrypt";
+import {
+  DatabaseError,
+  InternalServerError,
+  NotFoundError,
+} from "@/zap/lib/error-handling/errors";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
 interface UpdateAISettingsContext {
@@ -30,44 +35,45 @@ export async function updateAISettingsService({
   const model = input.model;
   const apiKey = input.apiKey;
 
-  let encryptedAPIKey;
-  try {
-    encryptedAPIKey = await encrypt(apiKey, encryptionKeyHex);
-  } catch {
-    throw new Error("Failed to encrypt API key");
-  }
+  const encryptedAPIKey = await encrypt(apiKey, encryptionKeyHex).catch(
+    (error) => {
+      throw new InternalServerError("Failed to encrypt API key", error);
+    },
+  );
 
-  let existingSettings;
-  try {
-    existingSettings = await getApiSettingsForUserAndProviderQuery.execute({
+  const existingSettings = await getApiSettingsForUserAndProviderQuery
+    .execute({
       userId,
       provider,
+    })
+    .catch((error) => {
+      throw new DatabaseError(
+        "Failed to fetch existing AI settings",
+        "READ",
+        error,
+      );
     });
-  } catch {
-    throw new Error("Failed to get AI settings");
-  }
 
   if (!existingSettings.length) {
-    throw new Error("AI settings not found");
+    throw new NotFoundError("AI settings not found");
   }
 
-  try {
-    await db
-      .update(userAISettings)
-      .set({
-        model,
-        encryptedApiKey: encryptedAPIKey,
-      })
-      .where(
-        and(
-          eq(userAISettings.userId, userId),
-          eq(userAISettings.provider, provider),
-        ),
-      )
-      .execute();
-  } catch {
-    throw new Error("Failed to update AI settings");
-  }
+  await db
+    .update(userAISettings)
+    .set({
+      model,
+      encryptedApiKey: encryptedAPIKey,
+    })
+    .where(
+      and(
+        eq(userAISettings.userId, userId),
+        eq(userAISettings.provider, provider),
+      ),
+    )
+    .execute()
+    .catch((error) => {
+      throw new DatabaseError("Failed to update AI settings", "UPDATE", error);
+    });
 
   return { success: true };
 }
