@@ -2,8 +2,8 @@ import "server-only";
 
 import { z } from "zod";
 
-import { getAuthenticatedSession, parseRequestBody } from "@/zap/lib/api/utils";
-import { withApiHandler } from "@/zap/lib/error-handling/handlers";
+import { parseRequestBody } from "@/zap/lib/api/utils";
+import { withAuthenticatedApiHandler } from "@/zap/lib/error-handling/handlers";
 import { AIProviderIdSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
 import { testAPIKeyService } from "@/zap/services/ai/test-api-key.service";
 
@@ -15,8 +15,7 @@ const BodySchema = z.object({
   model: ModelNameSchema,
 });
 
-export const POST = withApiHandler(async (req: Request) => {
-  await getAuthenticatedSession(req);
+export const POST = withAuthenticatedApiHandler(async (req: Request) => {
   const { provider, apiKey, model } = await parseRequestBody(req, BodySchema);
 
   await testAPIKeyService({

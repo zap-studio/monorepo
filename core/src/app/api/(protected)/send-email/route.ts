@@ -3,7 +3,7 @@ import "server-only";
 import { z } from "zod";
 
 import { parseRequestBody } from "@/zap/lib/api/utils";
-import { withApiHandler } from "@/zap/lib/error-handling/handlers";
+import { withAuthenticatedApiHandler } from "@/zap/lib/error-handling/handlers";
 import { sendAdminEmailService } from "@/zap/services/mails/send-admin-email.service";
 
 const SendMailSchema = z.object({
@@ -11,7 +11,7 @@ const SendMailSchema = z.object({
   recipients: z.array(z.string()),
 });
 
-export const POST = withApiHandler(async (req: Request) => {
+export const POST = withAuthenticatedApiHandler(async (req: Request) => {
   const { subject, recipients } = await parseRequestBody(req, SendMailSchema);
 
   const data = await sendAdminEmailService({

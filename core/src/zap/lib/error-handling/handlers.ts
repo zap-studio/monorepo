@@ -1,4 +1,5 @@
 import { DEV } from "@/lib/env.public";
+import { getAuthenticatedSession } from "@/zap/lib/api/utils";
 import {
   generateCorrelationId,
   handleError,
@@ -37,6 +38,24 @@ export function withApiHandler<T extends unknown[], R>(
     ...options,
     handlerType: "api-route",
   });
+}
+
+export function withAuthenticatedApiHandler<T extends unknown[], R>(
+  handler: HandlerFunction<T, R>,
+  options: HandlerOptions = {},
+) {
+  return createHandler(
+    async (...args: T): Promise<R> => {
+      const request = args[0] as Request;
+      await getAuthenticatedSession(request);
+
+      return handler(...args);
+    },
+    {
+      ...options,
+      handlerType: "authenticated-api-route",
+    },
+  );
 }
 
 export function withRpcHandler<T extends unknown[], R>(

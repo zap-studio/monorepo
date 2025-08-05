@@ -4,7 +4,7 @@ import type webpush from "web-push";
 import { z } from "zod";
 
 import { parseRequestBody } from "@/zap/lib/api/utils";
-import { withApiHandler } from "@/zap/lib/error-handling/handlers";
+import { withAuthenticatedApiHandler } from "@/zap/lib/error-handling/handlers";
 import { subscribeUserService } from "@/zap/services/push-notifications/subscribe-user.service";
 
 const subscribeSchema = z.object({
@@ -17,7 +17,7 @@ const subscribeSchema = z.object({
   }),
 });
 
-export const POST = withApiHandler(async (req: Request) => {
+export const POST = withAuthenticatedApiHandler(async (req: Request) => {
   const { subscription } = await parseRequestBody(req, subscribeSchema);
 
   const result = await subscribeUserService({

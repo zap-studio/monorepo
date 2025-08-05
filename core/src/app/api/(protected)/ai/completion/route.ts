@@ -2,8 +2,8 @@ import "server-only";
 
 import { z } from "zod";
 
-import { getAuthenticatedSession, parseRequestBody } from "@/zap/lib/api/utils";
-import { withApiHandler } from "@/zap/lib/error-handling/handlers";
+import { parseRequestBody } from "@/zap/lib/api/utils";
+import { withAuthenticatedApiHandler } from "@/zap/lib/error-handling/handlers";
 import { AIProviderIdSchema } from "@/zap/schemas/ai.schema";
 import { streamCompletionService } from "@/zap/services/ai/stream-completion.service";
 
@@ -14,8 +14,7 @@ const BodySchema = z.object({
   provider: AIProviderIdSchema,
 });
 
-export const POST = withApiHandler(async (req: Request) => {
-  await getAuthenticatedSession(req);
+export const POST = withAuthenticatedApiHandler(async (req: Request) => {
   const { provider, prompt } = await parseRequestBody(req, BodySchema);
 
   const result = await streamCompletionService({
