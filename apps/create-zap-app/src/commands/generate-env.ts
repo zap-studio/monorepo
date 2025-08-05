@@ -10,6 +10,7 @@ export async function generateEnv(filename = '.env.template') {
   try {
     await generateEnvironment({ outputDir, filename });
     spinner.text = `Environment file ${chalk.green(filename)} generated successfully`;
+    spinner.succeed();
 
     displayNextSteps(filename);
   } catch (error) {
