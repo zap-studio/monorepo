@@ -12,7 +12,7 @@
 
 import type { Metadata } from "next";
 
-import { CLIENT_ENV, DEV, VERCEL } from "@/lib/env.client";
+import { DEV, PUBLIC_ENV, VERCEL } from "@/lib/env.public";
 import type { ZapSettings } from "@/zap/types/zap.config.types";
 
 // ─────────────────────────────────────────────────────────────
@@ -101,12 +101,12 @@ export const PRODUCTS_METADATA: Record<string, ProductMetadata> = {
     currency: "usd",
     billingOptions: {
       monthly: {
-        productId: PRODUCT_IDS[CLIENT_ENV.POLAR_ENV].monthly,
+        productId: PRODUCT_IDS[PUBLIC_ENV.POLAR_ENV].monthly,
         price: 20,
         recurringInterval: "month",
       },
       yearly: {
-        productId: PRODUCT_IDS[CLIENT_ENV.POLAR_ENV].yearly,
+        productId: PRODUCT_IDS[PUBLIC_ENV.POLAR_ENV].yearly,
         price: 192, // 20% discount
         recurringInterval: "year",
       },
@@ -182,17 +182,17 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
   MAIL: {
     PREFIX: NAME,
     RATE_LIMIT_SECONDS: 60,
-    FROM: `${NAME} <${CLIENT_ENV.ZAP_MAIL}>`,
+    FROM: `${NAME} <${PUBLIC_ENV.ZAP_MAIL}>`,
   },
   NOTIFICATIONS: {
-    VAPID_MAIL: CLIENT_ENV.ZAP_MAIL,
+    VAPID_MAIL: PUBLIC_ENV.ZAP_MAIL,
   },
   PAYMENTS: {
     POLAR: {
       AUTHENTICATED_USERS_ONLY: true,
       CREATE_CUSTOMER_ON_SIGNUP: true,
-      ENVIRONMENT: CLIENT_ENV.POLAR_ENV,
-      PRODUCTS: Object.values(PRODUCT_IDS[CLIENT_ENV.POLAR_ENV]).map(
+      ENVIRONMENT: PUBLIC_ENV.POLAR_ENV,
+      PRODUCTS: Object.values(PRODUCT_IDS[PUBLIC_ENV.POLAR_ENV]).map(
         (id, idx) => ({
           productId: id,
           slug: idx === 0 ? "pro-monthly" : "pro-yearly",

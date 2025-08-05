@@ -4,7 +4,7 @@ import "client-only";
 import { toast } from "sonner";
 import useSWRMutation from "swr/mutation";
 
-import { CLIENT_ENV } from "@/lib/env.client";
+import { PUBLIC_ENV } from "@/lib/env.public";
 import { $fetch } from "@/lib/fetch";
 import { urlBase64ToUint8Array } from "@/zap/lib/pwa/utils";
 import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
@@ -97,12 +97,12 @@ export function usePushNotifications() {
     try {
       const registration = await navigator.serviceWorker.ready;
 
-      if (!CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
+      if (!PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
         throw new Error("VAPID public key is not set");
       }
 
       const applicationServerKey = urlBase64ToUint8Array(
-        CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+        PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
       );
 
       const sub = await registration.pushManager.subscribe({

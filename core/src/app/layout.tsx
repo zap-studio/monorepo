@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 import { Toaster } from "@/components/ui/sonner";
 import { geist } from "@/fonts";
-import { VERCEL } from "@/lib/env.client";
+import { VERCEL } from "@/lib/env.public";
 import { ZAP_DEFAULT_METADATA, ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import Providers from "@/zap/providers/providers";
 

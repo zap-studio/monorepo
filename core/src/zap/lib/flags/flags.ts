@@ -1,10 +1,10 @@
 import { createPostHogAdapter } from "@flags-sdk/posthog";
 
-import { CLIENT_ENV } from "@/lib/env.client";
+import { PUBLIC_ENV } from "@/lib/env.public";
 
 export const postHogAdapter = createPostHogAdapter({
-  postHogKey: CLIENT_ENV.NEXT_PUBLIC_POSTHOG_KEY || "",
+  postHogKey: PUBLIC_ENV.NEXT_PUBLIC_POSTHOG_KEY || "",
   postHogOptions: {
-    host: CLIENT_ENV.NEXT_PUBLIC_POSTHOG_HOST,
+    host: PUBLIC_ENV.NEXT_PUBLIC_POSTHOG_HOST,
   },
 });

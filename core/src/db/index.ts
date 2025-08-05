@@ -12,7 +12,7 @@ import {
 import { Pool } from "pg";
 
 import * as schema from "@/db/schema";
-import { PROD } from "@/lib/env.client";
+import { PROD } from "@/lib/env.public";
 import { SERVER_ENV } from "@/lib/env.server";
 
 type Database = NodePgDatabase<typeof schema> | NeonHttpDatabase<typeof schema>;
