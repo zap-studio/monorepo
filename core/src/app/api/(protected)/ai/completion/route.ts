@@ -1,7 +1,6 @@
 import "server-only";
 
 import { streamText } from "ai";
-import { Effect } from "effect";
 import { z } from "zod";
 
 import { SETTINGS } from "@/data/settings";
@@ -18,37 +17,43 @@ const BodySchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const effect = Effect.gen(function* (_) {
-    const session = yield* _(
-      Effect.tryPromise({
-        try: () => auth.api.getSession({ headers: req.headers }),
-        catch: () => new Error("Unauthorized"),
-      }),
-    );
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
 
     if (!session) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const unvalidatedBody = yield* _(
-      Effect.tryPromise({
-        try: () => req.json(),
-        catch: () => new Error("Invalid JSON body"),
-      }),
-    );
+    let unvalidatedBody;
+    try {
+      unvalidatedBody = await req.json();
+    } catch {
+      return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
 
     const body = BodySchema.parse(unvalidatedBody);
     const { provider } = body;
 
-    const { apiKey, model } = yield* _(
-      Effect.tryPromise({
-        try: () =>
-          orpcServer.ai.getAISettings({
-            provider,
-          }),
-        catch: () => new Error("Failed to get AI settings"),
-      }),
-    );
+    let aiSettings;
+    try {
+      aiSettings = await orpcServer.ai.getAISettings({
+        provider,
+      });
+    } catch {
+      return Response.json(
+        { error: "Failed to get AI settings" },
+        { status: 500 },
+      );
+    }
+
+    const { apiKey, model } = aiSettings;
+
+    if (!apiKey) {
+      return Response.json(
+        { error: "API key is required for the selected provider" },
+        { status: 400 },
+      );
+    }
 
     const result = streamText({
       model: getModel(provider, apiKey, model),
@@ -63,16 +68,8 @@ export async function POST(req: Request) {
     });
 
     return result.toUIMessageStreamResponse();
-  }).pipe(
-    Effect.catchAll((err) =>
-      Effect.succeed(
-        Response.json(
-          { error: err.message || "Internal error" },
-          { status: 500 },
-        ),
-      ),
-    ),
-  );
-
-  return await Effect.runPromise(effect);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Internal error";
+    return Response.json({ error: message }, { status: 500 });
+  }
 }

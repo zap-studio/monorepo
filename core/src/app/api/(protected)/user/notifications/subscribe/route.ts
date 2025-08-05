@@ -1,7 +1,6 @@
 import "server-only";
 
 import { eq } from "drizzle-orm";
-import { Effect } from "effect";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -21,13 +20,8 @@ const subscribeSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const effect = Effect.gen(function* (_) {
-    const session = yield* _(
-      Effect.tryPromise({
-        try: () => auth.api.getSession({ headers: req.headers }),
-        catch: () => null,
-      }),
-    );
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
 
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -35,48 +29,45 @@ export async function POST(req: Request) {
 
     const userId = session.user.id;
 
-    const body = yield* _(
-      Effect.tryPromise({
-        try: () => req.json(),
-        catch: () => new Error("Invalid JSON body"),
-      }),
-    );
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json(
+        { message: "Invalid JSON body" },
+        { status: 400 },
+      );
+    }
 
-    const subscriptionResult = yield* _(
-      Effect.try({
-        try: () => subscribeSchema.parse(body).subscription,
-        catch: () => new Error("Invalid subscription data"),
-      }).pipe(Effect.either),
-    );
-
-    if (subscriptionResult._tag === "Left") {
+    let subscription;
+    try {
+      subscription = subscribeSchema.parse(body).subscription;
+    } catch {
       return NextResponse.json(
         { message: "Invalid subscription data" },
         { status: 400 },
       );
     }
 
-    const subscription = subscriptionResult.right;
-
-    const existingSubscription = yield* _(
-      Effect.tryPromise({
-        try: () => getPushNotificationsByUserQuery.execute({ userId }),
-        catch: () => null,
-      }),
-    );
+    let existingSubscription;
+    try {
+      existingSubscription = await getPushNotificationsByUserQuery.execute({
+        userId,
+      });
+    } catch {
+      existingSubscription = null;
+    }
 
     if (existingSubscription) {
-      yield* _(
-        Effect.tryPromise({
-          try: () =>
-            db
-              .update(pushNotifications)
-              .set({ subscription })
-              .where(eq(pushNotifications.userId, userId))
-              .execute(),
-          catch: () => null,
-        }),
-      );
+      try {
+        await db
+          .update(pushNotifications)
+          .set({ subscription })
+          .where(eq(pushNotifications.userId, userId))
+          .execute();
+      } catch {
+        // Continue silently
+      }
 
       return NextResponse.json({
         success: true,
@@ -84,20 +75,19 @@ export async function POST(req: Request) {
       });
     }
 
-    const newSubscriptionArr = yield* _(
-      Effect.tryPromise({
-        try: () =>
-          db
-            .insert(pushNotifications)
-            .values({
-              userId,
-              subscription,
-            })
-            .returning()
-            .execute(),
-        catch: () => [],
-      }),
-    );
+    let newSubscriptionArr: (typeof pushNotifications.$inferSelect)[] = [];
+    try {
+      newSubscriptionArr = await db
+        .insert(pushNotifications)
+        .values({
+          userId,
+          subscription,
+        })
+        .returning()
+        .execute();
+    } catch {
+      newSubscriptionArr = [];
+    }
 
     const newSubscription = newSubscriptionArr[0];
 
@@ -105,21 +95,13 @@ export async function POST(req: Request) {
       success: true,
       subscriptionId: newSubscription?.id,
     });
-  }).pipe(
-    Effect.catchAll((err) =>
-      Effect.succeed(
-        NextResponse.json(
-          {
-            message:
-              err instanceof z.ZodError
-                ? "Invalid subscription data"
-                : "Internal server error",
-          },
-          { status: err instanceof z.ZodError ? 400 : 500 },
-        ),
-      ),
-    ),
-  );
+  } catch (error) {
+    const message =
+      error instanceof z.ZodError
+        ? "Invalid subscription data"
+        : "Internal server error";
+    const status = error instanceof z.ZodError ? 400 : 500;
 
-  return await Effect.runPromise(effect);
+    return NextResponse.json({ message }, { status });
+  }
 }

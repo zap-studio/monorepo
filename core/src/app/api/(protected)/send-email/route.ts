@@ -1,6 +1,5 @@
 import "server-only";
 
-import { Effect } from "effect";
 import { z } from "zod";
 
 import { orpcServer } from "@/zap/lib/orpc/server";
@@ -11,54 +10,35 @@ const SendMailSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const effect = Effect.gen(function* (_) {
-    const isAdmin = yield* _(
-      Effect.tryPromise({
-        try: () => orpcServer.auth.isUserAdmin(),
-        catch: () => false,
-      }),
-    );
+  try {
+    const isAdmin = await orpcServer.auth.isUserAdmin();
 
     if (!isAdmin) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const unvalidatedBody = yield* _(
-      Effect.tryPromise({
-        try: () => req.json(),
-        catch: () => new Error("Invalid JSON body"),
-      }),
-    );
+    let unvalidatedBody;
+    try {
+      unvalidatedBody = await req.json();
+    } catch {
+      return Response.json({ error: "Invalid JSON body" }, { status: 500 });
+    }
 
     const body = SendMailSchema.parse(unvalidatedBody);
 
-    const data = yield* _(
-      Effect.tryPromise({
-        try: () =>
-          orpcServer.mails.sendMail({
-            subject: body.subject,
-            recipients: body.recipients,
-          }),
-        catch: () => new Error("Failed to send email"),
-      }),
-    );
+    let data;
+    try {
+      data = await orpcServer.mails.sendMail({
+        subject: body.subject,
+        recipients: body.recipients,
+      });
+    } catch {
+      return Response.json({ error: "Failed to send email" }, { status: 500 });
+    }
 
     return Response.json(data, { status: 200 });
-  }).pipe(
-    Effect.catchAll((err) =>
-      Effect.succeed(
-        Response.json(
-          {
-            error:
-              err && typeof err === "object" && "message" in err
-                ? (err as Error).message
-                : "Internal error",
-          },
-          { status: 500 },
-        ),
-      ),
-    ),
-  );
-
-  return await Effect.runPromise(effect);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Internal error";
+    return Response.json({ error: message }, { status: 500 });
+  }
 }

@@ -1,7 +1,6 @@
 import "server-only";
 
 import { and, eq } from "drizzle-orm";
-import { Effect } from "effect";
 
 import { db } from "@/db";
 import { userAISettings } from "@/db/schema";
@@ -26,56 +25,53 @@ export async function updateAISettingsService({
   context: UpdateAISettingsContext;
   input: UpdateAISettingsInput;
 }) {
-  const effect = Effect.gen(function* (_) {
+  try {
     const userId = context.session.user.id;
     const provider = input.provider;
     const model = input.model;
     const apiKey = input.apiKey;
 
-    const encryptedAPIKey = yield* _(
-      Effect.tryPromise({
-        try: () => encrypt(apiKey, encryptionKeyHex),
-        catch: () => new Error("Failed to encrypt API key"),
-      }),
-    );
-
-    const existingSettings = yield* _(
-      Effect.tryPromise({
-        try: () =>
-          getApiSettingsForUserAndProviderQuery.execute({
-            userId,
-            provider,
-          }),
-        catch: () => new Error("Failed to get AI settings"),
-      }),
-    );
-
-    if (!existingSettings.length) {
-      return yield* _(Effect.fail(new Error("AI settings not found")));
+    let encryptedAPIKey;
+    try {
+      encryptedAPIKey = await encrypt(apiKey, encryptionKeyHex);
+    } catch {
+      throw new Error("Failed to encrypt API key");
     }
 
-    yield* _(
-      Effect.tryPromise({
-        try: () =>
-          db
-            .update(userAISettings)
-            .set({
-              model,
-              encryptedApiKey: encryptedAPIKey,
-            })
-            .where(
-              and(
-                eq(userAISettings.userId, userId),
-                eq(userAISettings.provider, provider),
-              ),
-            )
-            .execute(),
-        catch: () => new Error("Failed to update AI settings"),
-      }),
-    );
+    let existingSettings;
+    try {
+      existingSettings = await getApiSettingsForUserAndProviderQuery.execute({
+        userId,
+        provider,
+      });
+    } catch {
+      throw new Error("Failed to get AI settings");
+    }
+
+    if (!existingSettings.length) {
+      throw new Error("AI settings not found");
+    }
+
+    try {
+      await db
+        .update(userAISettings)
+        .set({
+          model,
+          encryptedApiKey: encryptedAPIKey,
+        })
+        .where(
+          and(
+            eq(userAISettings.userId, userId),
+            eq(userAISettings.provider, provider),
+          ),
+        )
+        .execute();
+    } catch {
+      throw new Error("Failed to update AI settings");
+    }
 
     return { success: true };
-  });
-
-  return await Effect.runPromise(effect);
+  } catch (error) {
+    throw error;
+  }
 }

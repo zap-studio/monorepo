@@ -1,7 +1,5 @@
 import "server-only";
 
-import { Effect } from "effect";
-
 import { db } from "@/db";
 import { userAISettings } from "@/db/schema";
 import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
@@ -25,52 +23,39 @@ export async function saveAISettingsService({
   context: SaveAISettingsContext;
   input: SaveAISettingsInput;
 }) {
-  const effect = Effect.gen(function* (_) {
+  try {
     const userId = context.session.user.id;
     const provider = input.provider;
     const apiKey = input.apiKey;
     const model = input.model;
 
-    const encryptedAPIKey = yield* _(
-      Effect.tryPromise({
-        try: () => encrypt(apiKey, encryptionKeyHex),
-        catch: () => new Error("Failed to encrypt API key"),
-      }),
-    );
+    const encryptedAPIKey = await encrypt(apiKey, encryptionKeyHex);
 
-    const existingSettings = yield* _(
-      Effect.tryPromise({
-        try: () =>
-          getApiSettingsForUserAndProviderQuery.execute({
-            userId,
-            provider,
-          }),
-        catch: () => new Error("Failed to get AI settings"),
-      }),
-    );
+    const existingSettings =
+      await getApiSettingsForUserAndProviderQuery.execute({
+        userId,
+        provider,
+      });
 
     if (existingSettings.length > 0) {
-      return yield* _(Effect.fail(new Error("AI settings already exists")));
+      throw new Error("AI settings already exists");
     }
 
-    yield* _(
-      Effect.tryPromise({
-        try: () =>
-          db
-            .insert(userAISettings)
-            .values({
-              userId,
-              provider,
-              model,
-              encryptedApiKey: encryptedAPIKey,
-            })
-            .execute(),
-        catch: () => new Error("Failed to save AI settings"),
-      }),
-    );
+    await db
+      .insert(userAISettings)
+      .values({
+        userId,
+        provider,
+        model,
+        encryptedApiKey: encryptedAPIKey,
+      })
+      .execute();
 
     return { success: true };
-  });
-
-  return await Effect.runPromise(effect);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("Failed to save AI settings");
+  }
 }

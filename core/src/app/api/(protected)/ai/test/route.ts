@@ -1,7 +1,6 @@
 import "server-only";
 
 import { generateText } from "ai";
-import { Effect } from "effect";
 import { z } from "zod";
 
 import { getModel } from "@/zap/lib/ai/get-model";
@@ -17,51 +16,36 @@ const BodySchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const effect = Effect.gen(function* (_) {
-    const session = yield* _(
-      Effect.tryPromise({
-        try: () => auth.api.getSession({ headers: req.headers }),
-        catch: () => null,
-      }),
-    );
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
 
     if (!session) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const unvalidatedBody = yield* _(
-      Effect.tryPromise({
-        try: () => req.json(),
-        catch: () => new Error("Invalid JSON body"),
-      }),
-    );
+    let unvalidatedBody;
+    try {
+      unvalidatedBody = await req.json();
+    } catch {
+      return Response.json({ error: "Invalid JSON body" }, { status: 401 });
+    }
 
     const body = BodySchema.parse(unvalidatedBody);
     const { provider, apiKey, model } = body;
 
-    yield* _(
-      Effect.tryPromise({
-        try: () =>
-          generateText({
-            model: getModel(provider, apiKey, model),
-            prompt: "This is just a test, answer with 1 token.",
-            maxOutputTokens: 16,
-          }),
-        catch: () => new Error("Invalid API key"),
-      }),
-    );
+    try {
+      await generateText({
+        model: getModel(provider, apiKey, model),
+        prompt: "This is just a test, answer with 1 token.",
+        maxOutputTokens: 16,
+      });
+    } catch {
+      return Response.json({ error: "Invalid API key" }, { status: 401 });
+    }
 
     return Response.json({ success: true }, { status: 200 });
-  }).pipe(
-    Effect.catchAll((err) =>
-      Effect.succeed(
-        Response.json(
-          { error: err?.message ? err.message : "Internal error" },
-          { status: 401 },
-        ),
-      ),
-    ),
-  );
-
-  return await Effect.runPromise(effect);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Internal error";
+    return Response.json({ error: message }, { status: 401 });
+  }
 }

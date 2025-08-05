@@ -1,7 +1,6 @@
 import "server-only";
 
 import { and, eq } from "drizzle-orm";
-import { Effect } from "effect";
 
 import { db } from "@/db";
 import { userAISettings } from "@/db/schema";
@@ -21,28 +20,22 @@ export async function deleteAPIKeyService({
   context: DeleteAPIKeyContext;
   input: DeleteAPIKeyInput;
 }) {
-  const effect = Effect.gen(function* (_) {
+  try {
     const userId = context.session.user.id;
     const provider = input.provider;
 
-    yield* _(
-      Effect.tryPromise({
-        try: () =>
-          db
-            .delete(userAISettings)
-            .where(
-              and(
-                eq(userAISettings.userId, userId),
-                eq(userAISettings.provider, provider),
-              ),
-            )
-            .execute(),
-        catch: () => new Error("Failed to delete API key"),
-      }),
-    );
+    await db
+      .delete(userAISettings)
+      .where(
+        and(
+          eq(userAISettings.userId, userId),
+          eq(userAISettings.provider, provider),
+        ),
+      )
+      .execute();
 
     return { success: true };
-  });
-
-  return await Effect.runPromise(effect);
+  } catch {
+    throw new Error("Failed to delete API key");
+  }
 }

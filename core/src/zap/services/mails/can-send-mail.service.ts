@@ -1,7 +1,5 @@
 import "server-only";
 
-import { Effect } from "effect";
-
 import { SETTINGS } from "@/data/settings";
 import { getLastMailSentAtQuery } from "@/zap/db/queries/emails.query";
 
@@ -12,15 +10,15 @@ interface CanSendMailServiceProps {
 }
 
 export async function canSendMailService({ input }: CanSendMailServiceProps) {
-  const effect = Effect.gen(function* (_) {
+  try {
     const userId = input.userId;
 
-    const userRecords = yield* _(
-      Effect.tryPromise({
-        try: () => getLastMailSentAtQuery.execute({ userId }),
-        catch: () => new Error("Failed to get last mail sent at"),
-      }),
-    );
+    let userRecords;
+    try {
+      userRecords = await getLastMailSentAtQuery.execute({ userId });
+    } catch {
+      throw new Error("Failed to get last mail sent at");
+    }
 
     const userRecord = userRecords[0];
     if (!userRecord?.lastEmailSentAt) {
@@ -39,7 +37,7 @@ export async function canSendMailService({ input }: CanSendMailServiceProps) {
     }
 
     return { canSend: true, timeLeft: 0 };
-  });
-
-  return await Effect.runPromise(effect);
+  } catch (error) {
+    throw error;
+  }
 }
