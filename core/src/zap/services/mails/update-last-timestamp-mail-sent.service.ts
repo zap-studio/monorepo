@@ -14,15 +14,11 @@ interface UpdateLastTimestampMailSentServiceProps {
 export async function updateLastTimestampMailSentService({
   input,
 }: UpdateLastTimestampMailSentServiceProps) {
-  try {
-    const userId = input.userId;
+  const userId = input.userId;
 
-    await db
-      .update(user)
-      .set({ lastEmailSentAt: new Date() })
-      .where(eq(user.id, userId))
-      .execute();
-  } catch {
-    throw new Error("Failed to update last timestamp mail sent");
-  }
+  await db
+    .update(user)
+    .set({ lastEmailSentAt: new Date() })
+    .where(eq(user.id, userId))
+    .execute();
 }

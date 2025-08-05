@@ -18,30 +18,17 @@ export async function subscribeUserService({
 }: SubscribeUserServiceProps) {
   const subscription = input.subscription;
 
-  try {
-    await getWebPushService();
-  } catch {
-    throw new Error("Failed to get web push");
-  }
+  await getWebPushService();
 
-  let userId;
-  try {
-    userId = await getUserIdService();
-  } catch {
-    throw new Error("Failed to get user ID");
-  }
+  const userId = await getUserIdService();
 
-  try {
-    await db
-      .insert(pushNotifications)
-      .values({
-        subscription,
-        userId,
-      })
-      .execute();
-  } catch {
-    throw new Error("Failed to subscribe user");
-  }
+  await db
+    .insert(pushNotifications)
+    .values({
+      subscription,
+      userId,
+    })
+    .execute();
 
   return { success: true, message: "User subscribed successfully" };
 }

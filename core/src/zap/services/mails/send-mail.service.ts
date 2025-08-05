@@ -3,6 +3,7 @@ import "server-only";
 import type { JSX } from "react";
 
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { MailError } from "@/zap/lib/error-handling/errors";
 import { resend } from "@/zap/lib/resend/server";
 
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
@@ -12,24 +13,20 @@ export interface SendMailProps {
 }
 
 export async function sendMailService({ input }: SendMailProps) {
-  try {
-    const subject = input.subject;
-    const recipients = input.recipients;
-    const react = input.react;
+  const subject = input.subject;
+  const recipients = input.recipients;
+  const react = input.react;
 
-    const { data, error } = await resend.emails.send({
-      from,
-      to: recipients,
-      subject,
-      react,
-    });
+  const { data, error } = await resend.emails.send({
+    from,
+    to: recipients,
+    subject,
+    react,
+  });
 
-    if (error) {
-      throw error;
-    }
-
-    return data;
-  } catch {
-    throw new Error("Failed to send mail");
+  if (error) {
+    throw new MailError(`Failed to send mail: ${error.message}`, error);
   }
+
+  return data;
 }

@@ -3,6 +3,7 @@ import "server-only";
 import { SETTINGS } from "@/data/settings";
 import { CLIENT_ENV } from "@/lib/env.client";
 import { SERVER_ENV } from "@/lib/env.server";
+import { PushNotificationError } from "@/zap/lib/error-handling/errors";
 
 let webpushInstance: typeof import("web-push") | null = null;
 
@@ -18,8 +19,8 @@ export async function getWebPushService() {
       SETTINGS.NOTIFICATIONS.VAPID_MAIL
     )
   ) {
-    throw new Error(
-      "VAPID configuration is incomplete. Push notifications are not available.",
+    throw new PushNotificationError(
+      "Web Push service is not properly configured. Please check your VAPID keys and email settings.",
     );
   }
 

@@ -1,5 +1,4 @@
 type HttpStatusCode = 400 | 401 | 403 | 404 | 409 | 500;
-type Operation = "CREATE" | "READ" | "UPDATE" | "DELETE";
 
 export class AppError extends Error {
   statusCode: HttpStatusCode;
@@ -65,39 +64,20 @@ export class ConflictError extends AppError {
   }
 }
 
-export class ValidationError extends AppError {
-  details: Record<string, string>;
-  constructor(
-    message = "Validation Failed",
-    details: Record<string, string> = {},
-    cause?: unknown,
-  ) {
-    super(message, 400, "VALIDATION_FAILED", cause);
-    this.details = details;
-  }
-
-  toJSON() {
-    return {
-      ...super.toJSON(),
-      details: this.details,
-    };
-  }
-}
-
-export class DatabaseError extends AppError {
-  operation: Operation;
-  constructor(
-    message = "Database Error",
-    operation: Operation,
-    cause?: unknown,
-  ) {
-    super(message, 500, "DATABASE_ERROR", cause);
-    this.operation = operation;
-  }
-}
-
 export class AuthenticationError extends AppError {
   constructor(message = "Authentication Error", cause?: unknown) {
     super(message, 401, "AUTHENTICATION_ERROR", cause);
+  }
+}
+
+export class MailError extends AppError {
+  constructor(message = "Mail Error", cause?: unknown) {
+    super(message, 500, "MAIL_ERROR", cause);
+  }
+}
+
+export class PushNotificationError extends AppError {
+  constructor(message = "Push Notification Error", cause?: unknown) {
+    super(message, 500, "PUSH_NOTIFICATION_ERROR", cause);
   }
 }

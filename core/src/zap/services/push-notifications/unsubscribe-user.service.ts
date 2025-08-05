@@ -7,21 +7,12 @@ import { pushNotifications } from "@/db/schema";
 import { getUserIdService } from "@/zap/services/auth/get-user-id.service";
 
 export async function unsubscribeUserService() {
-  let userId;
-  try {
-    userId = await getUserIdService();
-  } catch {
-    throw new Error("Failed to get user ID");
-  }
+  const userId = await getUserIdService();
 
-  try {
-    await db
-      .delete(pushNotifications)
-      .where(eq(pushNotifications.userId, userId))
-      .execute();
-  } catch {
-    throw new Error("Failed to unsubscribe user");
-  }
+  await db
+    .delete(pushNotifications)
+    .where(eq(pushNotifications.userId, userId))
+    .execute();
 
   return { success: true, message: "User unsubscribed successfully" };
 }

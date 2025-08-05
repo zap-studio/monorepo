@@ -16,10 +16,6 @@ function computeAverage(feedbacks: { rating: number }[]) {
 }
 
 export async function getAverageRatingService() {
-  try {
-    const feedbacks = await getAverageRatingQuery.execute();
-    return computeAverage(feedbacks);
-  } catch {
-    return { averageRating: 0, totalFeedbacks: 0 };
-  }
+  const feedbacks = await getAverageRatingQuery.execute();
+  return computeAverage(feedbacks);
 }

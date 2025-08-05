@@ -5,7 +5,7 @@ import { userAISettings } from "@/db/schema";
 import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
 import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { encrypt } from "@/zap/lib/crypto/encrypt";
-import { ValidationError } from "@/zap/lib/error-handling/errors";
+import { BadRequestError } from "@/zap/lib/error-handling/errors";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
 interface SaveAISettingsContext {
@@ -37,7 +37,7 @@ export async function saveAISettingsService({
   });
 
   if (existingSettings.length > 0) {
-    throw new ValidationError("AI settings already exists");
+    throw new BadRequestError("AI settings already exists");
   }
 
   await db

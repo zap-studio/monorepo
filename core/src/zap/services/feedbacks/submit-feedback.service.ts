@@ -18,21 +18,17 @@ export async function submitFeedbackService({
   context: SubmitFeedbackContext;
   input: SubmitFeedbackInput;
 }) {
-  try {
-    const userId = context.session.user.id;
+  const userId = context.session.user.id;
 
-    await db
-      .insert(feedbackTable)
-      .values({
-        userId,
-        rating: input.rating,
-        description: input.description || "",
-        submittedAt: new Date(),
-      })
-      .execute();
+  await db
+    .insert(feedbackTable)
+    .values({
+      userId,
+      rating: input.rating,
+      description: input.description || "",
+      submittedAt: new Date(),
+    })
+    .execute();
 
-    return { success: true };
-  } catch {
-    throw new Error("Failed to submit feedback");
-  }
+  return { success: true };
 }

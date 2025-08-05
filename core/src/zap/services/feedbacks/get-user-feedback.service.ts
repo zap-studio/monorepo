@@ -11,13 +11,13 @@ export async function getUserFeedbackService({
 }: {
   context: GetUserFeedbackContext;
 }) {
-  try {
-    const userId = context.session.user.id;
+  const userId = context.session.user.id;
 
-    const existingFeedback = await getFeedbackForUserQuery.execute({ userId });
+  const existingFeedback = await getFeedbackForUserQuery.execute({ userId });
 
-    return existingFeedback.length > 0 ? existingFeedback[0] : null;
-  } catch {
-    throw new Error("Failed to get user feedback");
+  if (!existingFeedback.length) {
+    return null;
   }
+
+  return existingFeedback[0];
 }
