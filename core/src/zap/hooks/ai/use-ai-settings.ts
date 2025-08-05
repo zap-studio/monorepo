@@ -48,21 +48,17 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
     setTesting(true);
 
     try {
-      const { success } = await orpc.ai.testAPIKey.call({
+      await orpc.ai.testAPIKey.call({
         provider: form.getValues("provider"),
         apiKey: form.getValues("apiKey"),
         model: form.getValues("model"),
       });
 
-      if (success) {
-        toast.success("API key is valid!");
-        setIsValidated(true);
-      } else {
-        toast.error("Invalid API key");
-        setIsValidated(false);
-      }
+      toast.success("API key is valid!");
+      setIsValidated(true);
     } catch {
       toast.error("An error occurred while testing the API key");
+      setIsValidated(false);
     } finally {
       setTesting(false);
     }
