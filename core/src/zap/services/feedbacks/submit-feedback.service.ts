@@ -1,7 +1,5 @@
 import "server-only";
 
-import { Effect } from "effect";
-
 import { db } from "@/db";
 import { feedback as feedbackTable } from "@/db/schema";
 
@@ -20,27 +18,21 @@ export async function submitFeedbackService({
   context: SubmitFeedbackContext;
   input: SubmitFeedbackInput;
 }) {
-  const effect = Effect.gen(function* (_) {
+  try {
     const userId = context.session.user.id;
 
-    yield* _(
-      Effect.tryPromise({
-        try: () =>
-          db
-            .insert(feedbackTable)
-            .values({
-              userId,
-              rating: input.rating,
-              description: input.description || "",
-              submittedAt: new Date(),
-            })
-            .execute(),
-        catch: () => new Error("Failed to submit feedback"),
-      }),
-    );
+    await db
+      .insert(feedbackTable)
+      .values({
+        userId,
+        rating: input.rating,
+        description: input.description || "",
+        submittedAt: new Date(),
+      })
+      .execute();
 
     return { success: true };
-  });
-
-  return await Effect.runPromise(effect);
+  } catch {
+    throw new Error("Failed to submit feedback");
+  }
 }

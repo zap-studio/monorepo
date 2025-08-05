@@ -1,7 +1,6 @@
 import "server-only";
 
 import { eq } from "drizzle-orm";
-import { Effect } from "effect";
 
 import { db } from "@/db";
 import { waitlist } from "@/db/schema";
@@ -15,46 +14,34 @@ interface SubmitWaitlistEmailInput {
 export async function submitWaitlistEmailService({
   input,
 }: SubmitWaitlistEmailInput) {
-  const effect = Effect.gen(function* () {
+  try {
     const email = input.email;
 
-    const existing = yield* Effect.tryPromise({
-      try: () =>
-        db
-          .select()
-          .from(waitlist)
-          .where(eq(waitlist.email, email))
-          .limit(1)
-          .execute(),
-      catch: () => new Error("Failed to check existing email"),
-    });
+    const existing = await db
+      .select()
+      .from(waitlist)
+      .where(eq(waitlist.email, email))
+      .limit(1)
+      .execute();
 
     if (existing.length > 0) {
-      return yield* Effect.fail(new Error("Email already registered"));
+      return {
+        success: false,
+        message: "Email already registered",
+      };
     }
 
-    yield* Effect.tryPromise({
-      try: () => db.insert(waitlist).values({ email }).execute(),
-      catch: () => new Error("Failed to save email"),
-    });
+    await db.insert(waitlist).values({ email }).execute();
 
     return {
       success: true,
       message: "Successfully joined the waitlist",
     };
-  });
-
-  const handledEffect = effect.pipe(
-    Effect.catchAll((error) =>
-      Effect.succeed({
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
-      }),
-    ),
-  );
-
-  return await Effect.runPromise(handledEffect);
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
 }

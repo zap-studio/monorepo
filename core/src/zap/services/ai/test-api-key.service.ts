@@ -1,7 +1,5 @@
 import "server-only";
 
-import { Effect } from "effect";
-
 import { $fetch } from "@/lib/fetch";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
@@ -21,7 +19,7 @@ export async function testAPIKeyService({
   input: TestAPIKeyInput;
   context: TestAPIKeyContext;
 }) {
-  const effect = Effect.gen(function* (_) {
+  try {
     const provider = input.provider;
     const apiKey = input.apiKey;
     const model = input.model;
@@ -35,20 +33,14 @@ export async function testAPIKeyService({
     }
     headers = filteredHeaders;
 
-    yield* _(
-      Effect.tryPromise({
-        try: () =>
-          $fetch("/api/ai/test", {
-            method: "POST",
-            body: { provider, apiKey, model },
-            headers,
-          }),
-        catch: () => new Error("Failed to test API key"),
-      }),
-    );
+    await $fetch("/api/ai/test", {
+      method: "POST",
+      body: { provider, apiKey, model },
+      headers,
+    });
 
     return { success: true };
-  });
-
-  return await Effect.runPromise(effect);
+  } catch {
+    throw new Error("Failed to test API key");
+  }
 }

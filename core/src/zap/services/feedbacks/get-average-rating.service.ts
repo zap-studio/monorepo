@@ -1,14 +1,6 @@
 import "server-only";
 
-import { Effect, pipe } from "effect";
-
-import { DatabaseFetchError } from "@/lib/effect";
 import { getAverageRatingQuery } from "@/zap/db/queries/feedbacks.query";
-
-const fetchFeedbacks = Effect.tryPromise({
-  try: () => getAverageRatingQuery.execute(),
-  catch: () => new DatabaseFetchError({ message: "Failed to fetch feedbacks" }),
-});
 
 function computeAverage(feedbacks: { rating: number }[]) {
   const totalFeedbacks = feedbacks.length;
@@ -24,13 +16,10 @@ function computeAverage(feedbacks: { rating: number }[]) {
 }
 
 export async function getAverageRatingService() {
-  const program = pipe(
-    fetchFeedbacks,
-    Effect.map(computeAverage),
-    Effect.catchAll(() =>
-      Effect.succeed({ averageRating: 0, totalFeedbacks: 0 }),
-    ),
-  );
-
-  return await Effect.runPromise(program);
+  try {
+    const feedbacks = await getAverageRatingQuery.execute();
+    return computeAverage(feedbacks);
+  } catch {
+    return { averageRating: 0, totalFeedbacks: 0 };
+  }
 }

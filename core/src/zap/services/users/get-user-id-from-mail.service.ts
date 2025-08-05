@@ -1,7 +1,5 @@
 import "server-only";
 
-import { Effect } from "effect";
-
 import { getUserIdFromMailQuery } from "@/zap/db/queries/emails.query";
 
 interface GetUserIdFromMailServiceProps {
@@ -13,23 +11,18 @@ interface GetUserIdFromMailServiceProps {
 export async function getUserIdFromMailService({
   input,
 }: GetUserIdFromMailServiceProps) {
-  const effect = Effect.gen(function* (_) {
+  try {
     const email = input.email;
 
-    const records = yield* _(
-      Effect.tryPromise({
-        try: () => getUserIdFromMailQuery.execute({ email }),
-        catch: () => new Error("Failed to get user ID from mail"),
-      }),
-    );
+    const records = await getUserIdFromMailQuery.execute({ email });
 
     const record = records[0];
     if (!record) {
-      return yield* _(Effect.fail(new Error("User not found")));
+      throw new Error("User not found");
     }
 
     return record.userId;
-  });
-
-  return await Effect.runPromise(effect);
+  } catch {
+    throw new Error("Failed to get user ID from mail");
+  }
 }

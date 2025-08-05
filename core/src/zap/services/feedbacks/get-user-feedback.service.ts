@@ -1,7 +1,5 @@
 import "server-only";
 
-import { Effect } from "effect";
-
 import { getFeedbackForUserQuery } from "@/zap/db/queries/feedbacks.query";
 
 interface GetUserFeedbackContext {
@@ -13,18 +11,13 @@ export async function getUserFeedbackService({
 }: {
   context: GetUserFeedbackContext;
 }) {
-  const effect = Effect.gen(function* (_) {
+  try {
     const userId = context.session.user.id;
 
-    const existingFeedback = yield* _(
-      Effect.tryPromise({
-        try: () => getFeedbackForUserQuery.execute({ userId }),
-        catch: () => new Error("Failed to get user feedback"),
-      }),
-    );
+    const existingFeedback = await getFeedbackForUserQuery.execute({ userId });
 
     return existingFeedback.length > 0 ? existingFeedback[0] : null;
-  });
-
-  return await Effect.runPromise(effect);
+  } catch {
+    throw new Error("Failed to get user feedback");
+  }
 }

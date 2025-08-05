@@ -1,6 +1,5 @@
 import "server-only";
 
-import { Effect } from "effect";
 import { headers } from "next/headers";
 
 import { base } from "@/rpc/middlewares/base.middleware";
@@ -13,44 +12,34 @@ export interface SessionContext {
 }
 
 export const authMiddleware = base.middleware(async ({ next, errors }) => {
-  const effect = Effect.gen(function* (_) {
-    const _headers = yield* _(
-      Effect.tryPromise({
-        try: () => headers(),
-        catch: () => new Error("Failed to get headers"),
-      }),
-    );
+  let _headers: Headers;
+  try {
+    _headers = await headers();
+  } catch {
+    throw new Error("Failed to get headers");
+  }
 
-    const session = yield* _(
-      Effect.tryPromise({
-        try: async () => auth.api.getSession({ headers: _headers }),
-        catch: () => new Error("Failed to get session"),
-      }),
-    );
+  let session: Session | null;
+  try {
+    session = await auth.api.getSession({ headers: _headers });
+  } catch {
+    throw new Error("Failed to get session");
+  }
 
-    if (!session) {
-      return yield* _(
-        Effect.fail(
-          errors.UNAUTHORIZED({
-            message: "Unauthorized access",
-          }),
-        ),
-      );
-    }
+  if (!session) {
+    throw errors.UNAUTHORIZED({
+      message: "Unauthorized access",
+    });
+  }
 
-    return yield* _(
-      Effect.tryPromise({
-        try: async () =>
-          next({
-            context: {
-              session,
-              headers: _headers,
-            },
-          }),
-        catch: () => new Error("Failed to execute next middleware"),
-      }),
-    );
-  });
-
-  return await Effect.runPromise(effect);
+  try {
+    return await next({
+      context: {
+        session,
+        headers: _headers,
+      },
+    });
+  } catch {
+    throw new Error("Failed to execute next middleware");
+  }
 });

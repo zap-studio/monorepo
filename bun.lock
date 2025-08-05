@@ -14,7 +14,7 @@
     },
     "apps/create-zap-app": {
       "name": "create-zap-app",
-      "version": "1.4.2",
+      "version": "1.4.3",
       "bin": {
         "create-zap-app": "./dist/index.js",
       },
@@ -93,7 +93,6 @@
         "date-fns": "^4.1.0",
         "dotenv": "^17.2.1",
         "drizzle-orm": "^0.44.4",
-        "effect": "^3.17.4",
         "embla-carousel-react": "^8.6.0",
         "flags": "^4.0.1",
         "gray-matter": "^4.0.3",
