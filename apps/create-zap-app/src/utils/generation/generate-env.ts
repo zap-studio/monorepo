@@ -1,8 +1,8 @@
 import { resolve } from 'node:path';
-import { Effect } from 'effect/index';
 import fs from 'fs-extra';
 import type { Ora } from 'ora';
 import { CORE_ENV } from '@/data/env';
+import { FileSystemError } from '@/lib/errors';
 import { generateSecret } from '@/utils/generation/generate-secret.js';
 
 function getEnvVarContent(envVar: string) {
@@ -34,14 +34,14 @@ function getEnvVarContent(envVar: string) {
       break;
 
     default:
-      return getOptionalEnvVarContent(envVar);
+      content = getOptionalEnvVarContent(envVar);
   }
 
-  return Effect.succeed(content);
+  return content;
 }
 
-function getOptionalEnvVarContent(envVar: string) {
-  return Effect.succeed(`${envVar}="your_${envVar.toLowerCase()}_here"`);
+function getOptionalEnvVarContent(envVar: string): string {
+  return `${envVar}="your_${envVar.toLowerCase()}_here"`;
 }
 
 interface GenerateEnvOptions {
@@ -50,22 +50,19 @@ interface GenerateEnvOptions {
   spinner?: Ora | null;
 }
 
-export function generateEnv({
+export async function generateEnv({
   outputDir,
   filename = '.env',
   spinner,
 }: GenerateEnvOptions) {
-  const program = Effect.gen(function* () {
+  try {
     const envContent = CORE_ENV.map((envVar) => getEnvVarContent(envVar)).join(
       '\n'
     );
 
-    yield* Effect.tryPromise(() =>
-      fs.writeFile(resolve(outputDir, filename), envContent)
-    );
-
+    await fs.writeFile(resolve(outputDir, filename), envContent);
     spinner?.succeed('.env file generated.');
-  });
-
-  return program;
+  } catch (error) {
+    throw new FileSystemError(`Failed to generate env file: ${error}`);
+  }
 }

@@ -1,22 +1,21 @@
-import { Effect, pipe } from 'effect';
 import type { Ora } from 'ora';
+import { ProcessExitError, PromptError } from '@/lib/errors';
 import type { PackageManager } from '@/schemas/package-manager.schema';
 import { execAsync } from '@/utils';
-import { handlePromptError } from '@/utils/prompts/prompt-package-manager';
 import { promptPackageManagerSelection } from './prompts';
 
 export function getInstallCommand(pm: PackageManager) {
   switch (pm) {
     case 'npm':
-      return Effect.succeed('npm install --legacy-peer-deps');
+      return 'npm install --legacy-peer-deps';
     case 'yarn':
-      return Effect.succeed('yarn');
+      return 'yarn';
     case 'pnpm':
-      return Effect.succeed('pnpm install');
+      return 'pnpm install';
     case 'bun':
-      return Effect.succeed('bun install');
+      return 'bun install';
     default:
-      return Effect.succeed('npm install --legacy-peer-deps');
+      return 'npm install --legacy-peer-deps';
   }
 }
 
@@ -26,75 +25,55 @@ export function installDependenciesWithRetry(
   spinner: Ora
 ) {
   const maxRetries = 3;
+  let currentPM: PackageManager = initialPM;
 
-  const program = Effect.gen(function* () {
-    let retryCount = 0;
-    let currentPM: PackageManager = initialPM;
+  const attemptInstall = async (retryCount: number) => {
+    spinner.text = `Installing dependencies with ${currentPM}...`;
+    spinner.start();
 
-    while (retryCount <= maxRetries) {
-      spinner.text = `Installing dependencies with ${currentPM}...`;
-      spinner.start();
+    const installCmd = getInstallCommand(currentPM);
 
-      const installCmd = yield* getInstallCommand(currentPM);
-
-      const success = yield* pipe(
-        Effect.tryPromise(() => execAsync(installCmd, { cwd: outputDir })),
-        Effect.map(() => {
-          spinner.succeed(`Dependencies installed with ${currentPM}.`);
-          return true;
-        }),
-        Effect.catchAll(() => Effect.succeed(false))
-      );
-
-      if (success) {
-        return currentPM;
-      }
-
-      retryCount++;
+    try {
+      await execAsync(installCmd, { cwd: outputDir });
+      spinner.succeed(`Dependencies installed with ${currentPM}.`);
+      return currentPM;
+    } catch {
       spinner.fail(`Failed to install dependencies with ${currentPM}.`);
 
-      if (retryCount > maxRetries) {
-        return yield* Effect.fail(
-          new Error(
-            `Failed to install dependencies after ${maxRetries} attempts. Please try installing manually.`
-          )
+      if (retryCount >= maxRetries) {
+        throw new ProcessExitError(
+          `Failed to install dependencies after ${maxRetries} attempts. Please try installing manually.`
         );
       }
 
-      const newPM = yield* pipe(
-        promptPackageManagerSelection(currentPM),
-        Effect.catchAll(handlePromptError)
-      );
-
-      currentPM = newPM as PackageManager;
+      try {
+        currentPM = await promptPackageManagerSelection(
+          `${currentPM} failed. Which package manager would you like to try?`
+        );
+        return attemptInstall(retryCount + 1);
+      } catch (error) {
+        throw new PromptError(
+          `Failed to get package manager selection: ${error}`
+        );
+      }
     }
+  };
 
-    return currentPM;
-  });
-
-  return program;
+  return attemptInstall(0);
 }
 
-export function updateDependencies(
+export async function updateDependencies(
   packageManager: PackageManager,
   outputDir: string,
   spinner: Ora
 ) {
-  const program = Effect.gen(function* () {
+  try {
     spinner.text = 'Updating dependencies...';
     spinner.start();
 
-    yield* Effect.tryPromise(() =>
-      execAsync(`${packageManager} update`, { cwd: outputDir })
-    );
+    await execAsync(`${packageManager} update`, { cwd: outputDir });
     spinner.succeed('Dependencies updated successfully.');
-  });
-
-  return pipe(
-    program,
-    Effect.catchAll(() => {
-      spinner.warn('Failed to update dependencies, continuing anyway...');
-      return Effect.succeed(undefined);
-    })
-  );
+  } catch {
+    spinner.warn('Failed to update dependencies, continuing anyway...');
+  }
 }

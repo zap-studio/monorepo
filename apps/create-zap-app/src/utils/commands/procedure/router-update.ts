@@ -1,20 +1,26 @@
 import path from 'node:path';
-import { Effect } from 'effect';
 import {
   type ObjectLiteralExpression,
   Project,
   type SourceFile,
 } from 'ts-morph';
+import { FileSystemError } from '@/lib/errors';
 
-function saveRouterFile(sourceFile: SourceFile) {
-  return Effect.tryPromise(() => sourceFile.save());
+async function saveRouterFile(sourceFile: SourceFile): Promise<void> {
+  try {
+    await sourceFile.save();
+  } catch (error) {
+    throw new FileSystemError(`Failed to save router file: ${error}`);
+  }
 }
 
-function loadSourceFile(routerPath: string) {
-  return Effect.try(() => {
+function loadSourceFile(routerPath: string): SourceFile {
+  try {
     const project = new Project();
     return project.addSourceFileAtPath(routerPath);
-  });
+  } catch (error) {
+    throw new FileSystemError(`Failed to load source file: ${error}`);
+  }
 }
 
 function addImportDeclaration(
@@ -22,67 +28,63 @@ function addImportDeclaration(
   kebabCaseName: string,
   procedureName: string
 ) {
-  return Effect.try(() => {
+  try {
     sourceFile.addImportDeclaration({
       moduleSpecifier: `./procedures/${kebabCaseName}.rpc`,
       namedImports: [procedureName],
     });
     return sourceFile;
-  });
+  } catch (error) {
+    throw new FileSystemError(`Failed to add import declaration: ${error}`);
+  }
 }
 
 function findRouterVariable(sourceFile: SourceFile) {
-  return Effect.gen(function* () {
-    const routerVar = sourceFile.getVariableDeclaration('router');
-    if (!routerVar) {
-      return yield* Effect.fail(
-        new Error("Could not find 'router' variable in router.ts")
-      );
-    }
-    return routerVar;
-  });
+  const routerVar = sourceFile.getVariableDeclaration('router');
+  if (!routerVar) {
+    throw new Error("Could not find 'router' variable in router.ts");
+  }
+  return routerVar;
 }
 
 function getRouterInitializer(
   routerVar: ReturnType<SourceFile['getVariableDeclaration']>
 ) {
-  return Effect.gen(function* () {
-    const initializer = routerVar?.getInitializer();
-    if (!initializer) {
-      return yield* Effect.fail(
-        new Error("Could not find initializer for 'router' variable")
-      );
-    }
-    return initializer as unknown as ObjectLiteralExpression;
-  });
+  const initializer = routerVar?.getInitializer();
+  if (!initializer) {
+    throw new Error("Could not find initializer for 'router' variable");
+  }
+  return initializer as unknown as ObjectLiteralExpression;
 }
 
 function addProcedureToRouter(
   objectLiteral: ObjectLiteralExpression,
   procedureName: string
 ) {
-  return Effect.try(() => {
+  try {
     objectLiteral.addShorthandPropertyAssignment({ name: procedureName });
     return objectLiteral;
-  });
+  } catch (error) {
+    throw new FileSystemError(`Failed to add procedure to router: ${error}`);
+  }
 }
 
-export function updateRouterFile(
+export async function updateRouterFile(
   projectDir: string,
   procedureName: string,
   kebabCaseName: string
 ) {
-  return Effect.gen(function* () {
-    const routerPath = yield* Effect.try(() =>
-      path.join(projectDir, 'src/rpc/router.ts')
-    );
-    const sourceFile = yield* loadSourceFile(routerPath);
+  try {
+    const routerPath = path.join(projectDir, 'src/rpc/router.ts');
+    const sourceFile = loadSourceFile(routerPath);
 
-    yield* addImportDeclaration(sourceFile, kebabCaseName, procedureName);
-    const routerVar = yield* findRouterVariable(sourceFile);
-    const objectLiteral = yield* getRouterInitializer(routerVar);
+    addImportDeclaration(sourceFile, kebabCaseName, procedureName);
+    const routerVar = findRouterVariable(sourceFile);
+    const objectLiteral = getRouterInitializer(routerVar);
 
-    yield* addProcedureToRouter(objectLiteral, procedureName);
-    yield* saveRouterFile(sourceFile);
-  });
+    addProcedureToRouter(objectLiteral, procedureName);
+    await saveRouterFile(sourceFile);
+  } catch (error) {
+    throw new FileSystemError(`Failed to update router file: ${error}`);
+  }
 }

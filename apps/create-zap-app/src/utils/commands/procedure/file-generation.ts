@@ -1,16 +1,18 @@
 import path from 'node:path';
-import { Effect } from 'effect';
 import fs from 'fs-extra';
+import { FileSystemError } from '@/lib/errors';
 import { toPascalCase } from './validation.js';
 
-export function generateProcedureFile(
+export async function generateProcedureFile(
   projectDir: string,
   procedureName: string,
   kebabCaseName: string
 ) {
-  const program = Effect.gen(function* () {
-    const procedurePath = yield* Effect.try(() =>
-      path.join(projectDir, 'src/rpc/procedures', `${kebabCaseName}.rpc.ts`)
+  try {
+    const procedurePath = path.join(
+      projectDir,
+      'src/rpc/procedures',
+      `${kebabCaseName}.rpc.ts`
     );
 
     const procedureContent = `
@@ -21,23 +23,23 @@ export const ${procedureName} = base.handler(async () => {
 });
   `.trim();
 
-    yield* Effect.tryPromise(() => fs.ensureDir(path.dirname(procedurePath)));
-    yield* Effect.tryPromise(() =>
-      fs.writeFile(procedurePath, procedureContent)
-    );
-  });
-
-  return program;
+    await fs.ensureDir(path.dirname(procedurePath));
+    await fs.writeFile(procedurePath, procedureContent);
+  } catch (error) {
+    throw new FileSystemError(`Failed to generate procedure file: ${error}`);
+  }
 }
 
-export function generateHookFile(
+export async function generateHookFile(
   projectDir: string,
   procedureName: string,
   kebabCaseName: string
 ) {
-  const program = Effect.gen(function* () {
-    const hookPath = yield* Effect.try(() =>
-      path.join(projectDir, 'src/hooks', `use-${kebabCaseName}.ts`)
+  try {
+    const hookPath = path.join(
+      projectDir,
+      'src/hooks',
+      `use-${kebabCaseName}.ts`
     );
 
     const capitalizedProcedureName = toPascalCase(procedureName);
@@ -53,9 +55,9 @@ export const use${capitalizedProcedureName} = () => {
 };
   `.trim();
 
-    yield* Effect.tryPromise(() => fs.ensureDir(path.dirname(hookPath)));
-    yield* Effect.tryPromise(() => fs.writeFile(hookPath, hookContent));
-  });
-
-  return program;
+    await fs.ensureDir(path.dirname(hookPath));
+    await fs.writeFile(hookPath, hookContent);
+  } catch (error) {
+    throw new FileSystemError(`Failed to generate hook file: ${error}`);
+  }
 }

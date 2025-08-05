@@ -1,90 +1,61 @@
 import chalk from 'chalk';
-import { Effect, pipe } from 'effect';
 import type { Ora } from 'ora';
-import { ProcessExitError } from '@/lib/effect';
+import { ProcessExitError } from '@/lib/errors';
 import { generateHookFile, generateProcedureFile } from './file-generation';
 import { updateRouterFile } from './router-update';
 
-function createProcedureEffect(
+async function createProcedure(
   projectDir: string,
   validatedName: string,
   kebabCaseName: string,
   spinner: Ora
 ) {
-  return generateProcedureFile(projectDir, validatedName, kebabCaseName).pipe(
-    Effect.catchAll((error) => {
-      spinner.fail(`Failed to create procedure file: ${String(error)}`);
-      return Effect.fail(
-        new ProcessExitError({ message: 'Creating procedure file failed' })
-      );
-    }),
-    Effect.tap(() => {
-      spinner.succeed(`Created ${kebabCaseName}.rpc.ts`);
-    })
-  );
+  try {
+    await generateProcedureFile(projectDir, validatedName, kebabCaseName);
+    spinner.succeed(`Created ${kebabCaseName}.rpc.ts`);
+  } catch (error) {
+    spinner.fail(`Failed to create procedure file: ${String(error)}`);
+    throw new ProcessExitError('Creating procedure file failed');
+  }
 }
 
-function updateRouterEffect(
+async function updateRouter(
   projectDir: string,
   validatedName: string,
   kebabCaseName: string,
   spinner: Ora
 ) {
-  return pipe(
-    updateRouterFile(projectDir, validatedName, kebabCaseName),
-    Effect.catchAll((error) => {
-      spinner.fail(`Failed to update router: ${String(error)}`);
-      return Effect.fail(
-        new ProcessExitError({ message: 'Updating router failed' })
-      );
-    }),
-    Effect.tap(() => {
-      process.stdout.write(chalk.green('Updated router.ts\n'));
-    })
-  );
+  try {
+    await updateRouterFile(projectDir, validatedName, kebabCaseName);
+    process.stdout.write(chalk.green('Updated router.ts\n'));
+  } catch (error) {
+    spinner.fail(`Failed to update router: ${String(error)}`);
+    throw new ProcessExitError('Updating router failed');
+  }
 }
 
-function createHookEffect(
+async function createHook(
   projectDir: string,
   validatedName: string,
   kebabCaseName: string,
   spinner: Ora
 ) {
-  const recovered = pipe(
-    generateHookFile(projectDir, validatedName, kebabCaseName),
-    Effect.catchAll((error) => {
-      spinner.fail(`Failed to create hook file: ${String(error)}`);
-      return Effect.fail(
-        new ProcessExitError({ message: 'Creating hook file failed' })
-      );
-    }),
-    Effect.tap(() => {
-      process.stdout.write(chalk.green(`Created use-${kebabCaseName}.ts\n`));
-    })
-  );
-
-  return recovered;
+  try {
+    await generateHookFile(projectDir, validatedName, kebabCaseName);
+    process.stdout.write(chalk.green(`Created use-${kebabCaseName}.ts\n`));
+  } catch (error) {
+    spinner.fail(`Failed to create hook file: ${String(error)}`);
+    throw new ProcessExitError('Creating hook file failed');
+  }
 }
 
-export function createFiles(
+export async function createFiles(
   projectDir: string,
   validatedName: string,
   kebabCaseName: string,
   spinner: Ora
 ) {
-  return Effect.gen(function* () {
-    yield* createProcedureEffect(
-      projectDir,
-      validatedName,
-      kebabCaseName,
-      spinner
-    );
-    yield* updateRouterEffect(
-      projectDir,
-      validatedName,
-      kebabCaseName,
-      spinner
-    );
-    yield* createHookEffect(projectDir, validatedName, kebabCaseName, spinner);
-  });
+  await createProcedure(projectDir, validatedName, kebabCaseName, spinner);
+  await updateRouter(projectDir, validatedName, kebabCaseName, spinner);
+  await createHook(projectDir, validatedName, kebabCaseName, spinner);
 }

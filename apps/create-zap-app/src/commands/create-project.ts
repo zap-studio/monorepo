@@ -1,7 +1,7 @@
 import path from 'node:path';
-import { Effect } from 'effect';
 import fs from 'fs-extra';
 import ora from 'ora';
+import { FileSystemError } from '@/lib/errors';
 import {
   installDependenciesWithRetry,
   updateDependencies,
@@ -17,32 +17,33 @@ import {
 } from '@/utils/commands/project/prompts';
 import { setupProjectTemplate } from '@/utils/commands/project/setup';
 
-export function createProjectEffect() {
-  return Effect.gen(function* () {
-    const projectName = yield* promptProjectName();
-    let packageManager = yield* promptPackageManagerSelection(
-      'Which package manager do you want to use?'
-    );
+export async function createProject() {
+  const projectName = await promptProjectName();
+  let packageManager = await promptPackageManagerSelection(
+    'Which package manager do you want to use?'
+  );
 
-    const outputDir = yield* Effect.try(() =>
-      path.join(process.cwd(), projectName)
-    );
-    const spinner = ora(`Creating project '${projectName}'...`).start();
+  const outputDir = path.join(process.cwd(), projectName);
+  const spinner = ora(`Creating project '${projectName}'...`).start();
 
-    yield* Effect.tryPromise(() => fs.ensureDir(outputDir));
-    yield* setupProjectTemplate(outputDir, spinner);
+  try {
+    await fs.ensureDir(outputDir);
+  } catch (error) {
+    throw new FileSystemError(`Failed to create project directory: ${error}`);
+  }
 
-    const finalPackageManager = yield* installDependenciesWithRetry(
-      packageManager,
-      outputDir,
-      spinner
-    );
-    packageManager = finalPackageManager;
+  await setupProjectTemplate(outputDir, spinner);
 
-    yield* updateDependencies(packageManager, outputDir, spinner);
-    yield* runPrettierFormatting(packageManager, outputDir, spinner);
-    yield* generateEnvFile(outputDir, spinner);
+  const finalPackageManager = await installDependenciesWithRetry(
+    packageManager,
+    outputDir,
+    spinner
+  );
+  packageManager = finalPackageManager;
 
-    displaySuccessMessage(projectName, packageManager);
-  });
+  await updateDependencies(packageManager, outputDir, spinner);
+  await runPrettierFormatting(packageManager, outputDir, spinner);
+  await generateEnvFile(outputDir, spinner);
+
+  displaySuccessMessage(projectName, packageManager);
 }
