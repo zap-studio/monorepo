@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { getPushNotificationsByUserQuery } from "@/zap/db/queries/push-notifications.query";
 import { pushNotifications } from "@/zap/db/schema/notifications.sql";
 import { auth } from "@/zap/lib/auth/server";
+import { withApiHandler } from "@/zap/lib/error-handling/handlers";
 
 const subscribeSchema = z.object({
   subscription: z.object({
@@ -19,89 +20,53 @@ const subscribeSchema = z.object({
   }),
 });
 
-export async function POST(req: Request) {
-  try {
-    const session = await auth.api.getSession({ headers: req.headers });
+export const POST = withApiHandler(async (req: Request) => {
+  const session = await auth.api.getSession({ headers: req.headers });
 
-    if (!session) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
 
-    const userId = session.user.id;
+  const userId = session.user.id;
+  const body = await req.json();
+  const { subscription } = subscribeSchema.parse(body);
 
-    let body;
-    try {
-      body = await req.json();
-    } catch {
-      return NextResponse.json(
-        { message: "Invalid JSON body" },
-        { status: 400 },
-      );
-    }
+  const existingSubscription = await getPushNotificationsByUserQuery
+    .execute({
+      userId,
+    })
+    .catch(() => null);
 
-    let subscription;
-    try {
-      subscription = subscribeSchema.parse(body).subscription;
-    } catch {
-      return NextResponse.json(
-        { message: "Invalid subscription data" },
-        { status: 400 },
-      );
-    }
-
-    let existingSubscription;
-    try {
-      existingSubscription = await getPushNotificationsByUserQuery.execute({
-        userId,
+  if (existingSubscription) {
+    await db
+      .update(pushNotifications)
+      .set({ subscription })
+      .where(eq(pushNotifications.userId, userId))
+      .execute()
+      .catch(() => {
+        // Continue silently if update fails
       });
-    } catch {
-      existingSubscription = null;
-    }
-
-    if (existingSubscription) {
-      try {
-        await db
-          .update(pushNotifications)
-          .set({ subscription })
-          .where(eq(pushNotifications.userId, userId))
-          .execute();
-      } catch {
-        // Continue silently
-      }
-
-      return NextResponse.json({
-        success: true,
-        subscriptionId: existingSubscription.id,
-      });
-    }
-
-    let newSubscriptionArr: (typeof pushNotifications.$inferSelect)[] = [];
-    try {
-      newSubscriptionArr = await db
-        .insert(pushNotifications)
-        .values({
-          userId,
-          subscription,
-        })
-        .returning()
-        .execute();
-    } catch {
-      newSubscriptionArr = [];
-    }
-
-    const newSubscription = newSubscriptionArr[0];
 
     return NextResponse.json({
       success: true,
-      subscriptionId: newSubscription?.id,
+      subscriptionId: existingSubscription.id,
     });
-  } catch (error) {
-    const message =
-      error instanceof z.ZodError
-        ? "Invalid subscription data"
-        : "Internal server error";
-    const status = error instanceof z.ZodError ? 400 : 500;
-
-    return NextResponse.json({ message }, { status });
   }
-}
+
+  const newSubscriptionArr = await db
+    .insert(pushNotifications)
+    .values({
+      userId,
+      subscription,
+    })
+    .returning()
+    .execute()
+    .catch(() => []);
+
+  const newSubscription = newSubscriptionArr[0];
+
+  return NextResponse.json({
+    success: true,
+    subscriptionId: newSubscription?.id,
+  });
+});

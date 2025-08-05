@@ -1,6 +1,7 @@
 import "server-only";
 
 import { authMiddleware, base } from "@/rpc/middlewares";
+import { withRpcHandler } from "@/zap/lib/error-handling/handlers";
 import {
   InputDeleteAPIKeySchema,
   InputGetAPIKeySchema,
@@ -18,32 +19,32 @@ import { updateAISettingsService } from "@/zap/services/ai/update-ai-settings.se
 const getAISettings = base
   .use(authMiddleware)
   .input(InputGetAPIKeySchema)
-  .handler(getAISettingsService);
+  .handler(withRpcHandler(getAISettingsService));
 
 const saveAISettings = base
   .use(authMiddleware)
   .input(InputSaveAPIKeySchema)
-  .handler(saveAISettingsService);
+  .handler(withRpcHandler(saveAISettingsService));
 
 const updateAISettings = base
   .use(authMiddleware)
   .input(InputUpdateAPIKeySchema)
-  .handler(updateAISettingsService);
+  .handler(withRpcHandler(updateAISettingsService));
 
 const deleteAPIKey = base
   .use(authMiddleware)
   .input(InputDeleteAPIKeySchema)
-  .handler(deleteAPIKeyService);
+  .handler(withRpcHandler(deleteAPIKeyService));
 
 const saveOrUpdateAISettings = base
   .use(authMiddleware)
   .input(InputSaveAPIKeySchema)
-  .handler(saveOrUpdateAISettingsService);
+  .handler(withRpcHandler(saveOrUpdateAISettingsService));
 
 const testAPIKey = base
   .use(authMiddleware)
   .input(InputTestAPIKeySchema)
-  .handler(testAPIKeyService);
+  .handler(withRpcHandler(testAPIKeyService));
 
 export const ai = {
   getAISettings,

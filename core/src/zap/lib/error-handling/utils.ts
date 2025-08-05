@@ -152,10 +152,17 @@ export function handleError<R>(
     },
   );
 
+  // For RPC procedures, let oRPC handle the error formatting
+  if (options.handlerType === "rpc-procedure") {
+    throw error;
+  }
+
+  // For server actions, transform to BaseError
   if (options.handlerType === "server-action") {
     throw transformError(error);
   }
 
+  // For API routes, return HTTP response
   const { response, statusCode } = createErrorResponse(
     error,
     correlationId,

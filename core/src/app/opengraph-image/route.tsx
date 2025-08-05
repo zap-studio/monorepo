@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
 import { ZAP_DEFAULT_METADATA } from "@/zap.config";
+import { withApiHandler } from "@/zap/lib/error-handling/handlers";
 
 const SIZE = {
   width: 1200,
@@ -17,7 +18,7 @@ const FONT_PATHS = {
 
 const SEPARATORS_REGEX = /[|•·—–-]/;
 
-export async function GET(request: Request) {
+export const GET = withApiHandler(async (request: Request) => {
   const url = new URL(request.url);
 
   const titleParam = url.searchParams.get("title");
@@ -68,4 +69,4 @@ export async function GET(request: Request) {
       ],
     },
   );
-}
+});

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { base } from "@/rpc/middlewares";
+import { withRpcHandler } from "@/zap/lib/error-handling/handlers";
 import {
   InputCanSendMailSchema,
   InputSendForgotPasswordMailSchema,
@@ -18,20 +19,27 @@ import { updateLastTimestampMailSentService } from "@/zap/services/mails/update-
 
 const canSendMail = base
   .input(InputCanSendMailSchema)
-  .handler(canSendMailService);
+  .handler(withRpcHandler(canSendMailService));
+
 const updateLastTimestampMailSent = base
   .input(InputUpdateLastTimestampMailSentSchema)
-  .handler(updateLastTimestampMailSentService);
+  .handler(withRpcHandler(updateLastTimestampMailSentService));
+
 const sendForgotPasswordMail = base
   .input(InputSendForgotPasswordMailSchema)
-  .handler(sendForgotPasswordMailService);
+  .handler(withRpcHandler(sendForgotPasswordMailService));
+
 const sendVerificationMail = base
   .input(InputSendVerificationMailSchema)
-  .handler(sendVerificationMailService);
+  .handler(withRpcHandler(sendVerificationMailService));
+
 const sendMagicLinkMail = base
   .input(InputSendMagicLinkMailSchema)
-  .handler(sendMagicLinkMailService);
-const sendMail = base.input(InputSendMailSchema).handler(sendMailService);
+  .handler(withRpcHandler(sendMagicLinkMailService));
+
+const sendMail = base
+  .input(InputSendMailSchema)
+  .handler(withRpcHandler(sendMailService));
 
 export const mails = {
   sendForgotPasswordMail,
