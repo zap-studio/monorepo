@@ -11,7 +11,7 @@ Zap.ts provides a structured approach to managing environment variables for both
 
 ## Server vs. Client
 
-There are two files: `env.server.ts` and `env.client.ts`.
+There are two files: `env.server.ts` and `env.public.ts`.
 
 The server file contains variables that are only accessible on the server side, while the client file contains environment variables that are available across all _runtimes_ (both browser/client and server environments).
 
@@ -41,7 +41,7 @@ Server-side environment variables are accessed via `process.env` and are validat
 Zap.ts provides two utility files to manage this:
 
 - **`src/lib/env.server.ts`**: Defines and validates server-only environment variables.
-- **`src/lib/env.client.ts`**: Defines and validates client and server environment variables (such as those prefixed with `NEXT_PUBLIC_`).
+- **`src/lib/env.public.ts`**: Defines and validates client and server environment variables (such as those prefixed with `NEXT_PUBLIC_`).
 
 Then, you can import `ENV` from `@/lib/env.server.ts` in server-side code (e.g., API routes, server actions, or database queries).
 
@@ -58,12 +58,12 @@ Since `env.server.ts` is only imported in server-side contexts, sensitive variab
 
 ### 3. Client-side Environment Variables
 
-Client-side environment variables must be prefixed with `NEXT_PUBLIC_` to be included in the client bundle by Next.js. These are validated in `src/lib/env.client.ts`.
+Client-side environment variables must be prefixed with `NEXT_PUBLIC_` to be included in the client bundle by Next.js. These are validated in `src/lib/env.public.ts`.
 
-And now, you can also import `ENV` from `src/lib/env.client.ts` in client-side components, hooks and even server-side code.
+And now, you can also import `ENV` from `src/lib/env.public.ts` in client-side components, hooks and even server-side code.
 
 ```ts
-import { ENV } from "@/lib/env.client";
+import { PUBLIC_ENV } from "@/lib/env.public";
 
 export function PushNotifications() {
   const vapidKey = ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
@@ -71,11 +71,11 @@ export function PushNotifications() {
 }
 ```
 
-Only include variables in `env.client.ts` that are safe to expose to the browser. Never include sensitive data like API keys or database credentials.
+Only include variables in `env.public.ts` that are safe to expose to the browser. Never include sensitive data like API keys or database credentials.
 
 ### 4. Type Safety and Validation
 
-Both `env.server.ts` and `env.client.ts` use Zod to validate environment variables at runtime, ensuring that:
+Both `env.server.ts` and `env.public.ts` use Zod to validate environment variables at runtime, ensuring that:
 
 - Required variables are present.
 - TypeScript types are inferred automatically for use throughout the application.
