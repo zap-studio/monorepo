@@ -4,30 +4,35 @@ import "./globals.css";
 
 import { ZapButton } from "@/components/zap-ui/button";
 import { geist } from "@/fonts";
+import { BaseError } from "@/zap/lib/api/errors";
 
 interface ErrorBoundaryProps {
   reset: () => void;
+  error: Error & { digest?: string };
 }
 
-export default function GlobalError({ reset }: ErrorBoundaryProps) {
+export default function GlobalError({ reset, error }: ErrorBoundaryProps) {
+  const isBaseError = error instanceof BaseError;
+
+  const title = isBaseError ? error.name : "Error";
+  const message = isBaseError ? error.message : "An unexpected error occurred.";
+
   return (
     <html lang="en">
       <body className={`${geist.variable} antialiased`}>
-        <div className="flex min-h-screen items-center px-4 py-12 sm:px-6 md:px-8 lg:px-12 xl:px-16">
-          <div className="w-full space-y-6 text-center">
-            <div className="space-y-3">
+        <main className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+          <section className="w-full max-w-md space-y-6 text-center">
+            <header className="space-y-3">
               <h1 className="text-primary animate-bounce text-4xl font-bold tracking-tighter sm:text-5xl">
-                500
+                {title}
               </h1>
-              <p className="text-muted-foreground">
-                An unexpected error occurred.
-              </p>
-            </div>
-            <ZapButton onClick={() => reset()} variant={"ghost"}>
+              <p className="text-muted-foreground">{message}</p>
+            </header>
+            <ZapButton onClick={reset} variant="ghost">
               Try again
             </ZapButton>
-          </div>
-        </div>
+          </section>
+        </main>
       </body>
     </html>
   );
