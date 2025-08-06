@@ -1,3 +1,5 @@
+import "server-only";
+
 import { DEV } from "@/lib/env.public";
 import {
   generateCorrelationId,
