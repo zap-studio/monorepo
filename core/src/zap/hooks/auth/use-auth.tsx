@@ -9,6 +9,7 @@ import type { z } from "zod";
 import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { handleClientError } from "@/zap/lib/api/client";
 import { authClient } from "@/zap/lib/auth/client";
 import { handleCompromisedPasswordError } from "@/zap/lib/auth/utils";
 import type {
@@ -31,8 +32,8 @@ export function useAuth(callbackURL?: string) {
         callbackURL: ZAP_DEFAULT_SETTINGS.AUTH.VERIFIED_EMAIL_PATH,
       });
       startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
-    } catch {
-      toast.error("Failed to send verification email");
+    } catch (error) {
+      handleClientError(error);
     }
   };
 
@@ -63,8 +64,8 @@ export function useAuth(callbackURL?: string) {
 
       toast.success("Login successful!");
       router.push(callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN);
-    } catch {
-      toast.error("Login failed. Please check your credentials.");
+    } catch (error) {
+      handleClientError(error);
     }
   };
 
@@ -92,8 +93,8 @@ export function useAuth(callbackURL?: string) {
 
       toast.success("Registration successful!");
       router.push(callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_UP);
-    } catch (e) {
-      handleCompromisedPasswordError(e);
+    } catch (error) {
+      handleCompromisedPasswordError(error);
     }
   };
 

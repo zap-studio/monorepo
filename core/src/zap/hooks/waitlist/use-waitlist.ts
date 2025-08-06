@@ -3,9 +3,9 @@ import "client-only";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import useSWRMutation from "swr/mutation";
 import type z from "zod";
 
+import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
 import { orpcClient } from "@/zap/lib/orpc/client";
 import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";
 import { useWaitlistStore } from "@/zap/stores/waitlist.store";
@@ -19,7 +19,7 @@ export function useWaitlist() {
     defaultValues: { email: "" },
   });
 
-  const { trigger, data, isMutating, error } = useSWRMutation(
+  const { trigger, data, isMutating, error } = useZapMutation(
     "submit-waitlist",
     async (_key, { arg }: { arg: z.infer<typeof WaitlistSchema> }) => {
       const result = await orpcClient.waitlist.submitWaitlistEmail({

@@ -1,33 +1,30 @@
 "use client";
 import "client-only";
 
-import { useCallback, useEffect, useState } from "react";
-
 import { FLAGS } from "@/lib/flags";
+import { useZapImmutable } from "@/zap/lib/api/hooks/use-zap-immutable";
 
 type FlagKey = keyof typeof FLAGS;
 
 export function useFlag(flagKey: FlagKey) {
-  const [enabled, setEnabled] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const result = useZapImmutable(
+    ["flag", flagKey],
+    async () => {
+      try {
+        const flag = FLAGS[flagKey];
+        return await flag();
+      } catch {
+        // Return fallback value on error
+        return !!FLAGS[flagKey]?.defaultValue;
+      }
+    },
+    {
+      skipErrorHandling: true, // We handle errors in the fetcher
+    },
+  );
 
-  const fetchFlag = useCallback(async () => {
-    try {
-      setLoading(true);
-      const flag = FLAGS[flagKey];
-      const value = await flag();
-      setEnabled(value);
-    } catch {
-      const fallback = !!FLAGS[flagKey]?.defaultValue;
-      setEnabled(fallback);
-    } finally {
-      setLoading(false);
-    }
-  }, [flagKey]);
-
-  useEffect(() => {
-    fetchFlag();
-  }, [fetchFlag]);
-
-  return { enabled, loading };
+  return {
+    enabled: result.data ?? false,
+    ...result,
+  };
 }

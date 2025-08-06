@@ -72,9 +72,8 @@ export function ResetPasswordForm() {
       toast.success("Password reset successfully!");
       form.reset();
       router.push("/login");
-    } catch (e) {
-      handleCompromisedPasswordError(e);
-      toast.error("An error occurred while resetting your password.");
+    } catch (error) {
+      handleCompromisedPasswordError(error);
     } finally {
       setSubmitting(false);
     }

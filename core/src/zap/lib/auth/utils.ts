@@ -1,6 +1,7 @@
 import { toast } from "sonner";
 
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { handleClientError } from "@/zap/lib/api/client";
 
 export function handleCompromisedPasswordError(error: unknown): void {
   if (
@@ -11,8 +12,6 @@ export function handleCompromisedPasswordError(error: unknown): void {
   ) {
     toast.error(ZAP_DEFAULT_SETTINGS.AUTH.PASSWORD_COMPROMISED_MESSAGE);
   } else {
-    toast.error("An error occurred during authentication. Please try again.");
+    handleClientError(error);
   }
-
-  throw error;
 }
