@@ -46,12 +46,15 @@ export async function generateHookFile(
     const hookContent = `
 "use client";
 
+import { useZapQuery } from "@/zap/lib/api/hooks/use-zap-query";
 import { useORPC } from "@/zap/stores/orpc.store";
-import useSWR from "swr";
 
 export const use${capitalizedProcedureName} = () => {
   const orpc = useORPC();
-  return useSWR(orpc.${procedureName}.key(), orpc.${procedureName}.queryOptions().queryFn);
+  return useZapQuery(
+    orpc.${procedureName}.key(),
+    orpc.${procedureName}.queryOptions().queryFn
+  );
 };
   `.trim();
 
