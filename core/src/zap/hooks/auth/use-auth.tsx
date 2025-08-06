@@ -10,6 +10,7 @@ import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { handleClientError } from "@/zap/lib/api/client";
+import { AuthenticationError } from "@/zap/lib/api/errors";
 import { authClient } from "@/zap/lib/auth/client";
 import { handleCompromisedPasswordError } from "@/zap/lib/auth/utils";
 import type {
@@ -47,8 +48,9 @@ export function useAuth(callbackURL?: string) {
       const response = await authClient.signIn.email({ email, password });
 
       if (response.error) {
-        toast.error("Login failed. Please check your credentials.");
-        return;
+        throw new AuthenticationError(
+          "Login failed. Please check your credentials.",
+        );
       }
 
       if (
@@ -56,10 +58,9 @@ export function useAuth(callbackURL?: string) {
         !response.data?.user?.emailVerified
       ) {
         await sendVerificationMail(email);
-        toast.error(
+        throw new AuthenticationError(
           "Please verify your email address. A verification email has been sent.",
         );
-        return;
       }
 
       toast.success("Login successful!");

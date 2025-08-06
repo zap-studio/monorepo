@@ -16,6 +16,7 @@ import type { ProductMetadata } from "@/zap.config";
 import { SALES_EMAIL } from "@/zap.config";
 import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
 import { PriceDisplay } from "@/zap/components/payments/price-display";
+import { handleClientError } from "@/zap/lib/api/client";
 import { authClient } from "@/zap/lib/auth/client";
 import { getBillingDetails, getSortedProducts } from "@/zap/lib/payments/utils";
 import { useActiveSubscriptionSlug } from "@/zap/lib/polar/client";
@@ -57,8 +58,8 @@ export function BillingCards({ products }: BillingCardsProps) {
         products: [productId],
         slug,
       });
-    } catch {
-      toast.error("Failed to initiate checkout. Please try again.");
+    } catch (error) {
+      handleClientError(error);
     }
   };
 

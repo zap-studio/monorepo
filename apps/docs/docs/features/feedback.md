@@ -82,18 +82,17 @@ export const useSubmitFeedback = (
 ) => {
   const orpc = useORPC();
 
-  return useSWRMutation(orpc.feedbacks.submit.key(), giveFeedback, {
+  return useZapMutation(orpc.feedbacks.submit.key(), giveFeedback, {
     optimisticData: (current) => ({ ...current, success: true }),
     rollbackOnError: true,
     revalidate: true,
     onSuccess: () => {
       setIsExistingFeedback(true);
-      toast.success("Thank you for your feedback!");
     },
     onError: () => {
       setIsExistingFeedback(false);
-      toast.error("Failed to submit feedback. Please try again.");
     },
+    successMessage: "Thank you for your feedback!",
   });
 };
 ```

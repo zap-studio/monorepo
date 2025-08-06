@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/components/zap-ui/button";
+import { AuthenticationError } from "@/zap/lib/api/errors";
 import { authClient } from "@/zap/lib/auth/client";
 import { handleCompromisedPasswordError } from "@/zap/lib/auth/utils";
 
@@ -58,9 +59,8 @@ export function ResetPasswordForm() {
     const { password } = values;
 
     if (!token) {
-      toast.error("Invalid token. Please try again.");
       setSubmitting(false);
-      return;
+      throw new AuthenticationError("Invalid token. Please try again.");
     }
 
     try {
