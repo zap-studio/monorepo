@@ -44,7 +44,7 @@ export default function RootLayout({
         >
           {children}
 
-          <Toaster />
+          <Toaster position="top-center" />
           <VercelAnalytics />
           <VercelSpeedInsights />
         </Providers>

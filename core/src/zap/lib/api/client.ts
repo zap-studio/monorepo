@@ -3,7 +3,7 @@ import "client-only";
 import { toast } from "sonner";
 
 import { DEV } from "@/lib/env.public";
-import { BaseError } from "@/zap/lib/api/errors";
+import { ApplicationError, BaseError } from "@/zap/lib/api/errors";
 
 export function handleClientError(
   error: unknown,
@@ -15,9 +15,13 @@ export function handleClientError(
   if (error instanceof BaseError) {
     title = error.name;
     description = error.message;
-  } else if (error instanceof Error) {
-    title = "Error";
+  } else if (error instanceof ApplicationError) {
+    title = error.name;
     description = error.message;
+  } else if (error instanceof Error) {
+    description = error.message;
+  } else if (typeof error === "string") {
+    description = error;
   }
 
   toast.error(description, {
