@@ -35,9 +35,7 @@ export function handleClientError(
     description = error;
   }
 
-  toast.error(description, {
-    description: title !== "Error" ? title : undefined,
-  });
+  toast.error(description);
 
   if (DEV) {
     console.error(`[Client Error] ${title}: ${description}`, error);
