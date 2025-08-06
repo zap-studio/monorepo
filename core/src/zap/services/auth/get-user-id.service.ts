@@ -1,6 +1,6 @@
 import "server-only";
 
-import { AuthenticationError } from "@/zap/lib/error-handling/errors";
+import { AuthenticationError } from "@/zap/lib/api/errors";
 import { getUserService } from "@/zap/services/auth/get-user.service";
 
 export async function getUserIdService() {

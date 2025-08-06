@@ -1,6 +1,6 @@
 import "server-only";
 
-import { UnauthorizedError } from "@/zap/lib/error-handling/errors";
+import { UnauthorizedError } from "@/zap/lib/api/errors";
 import { orpcServer } from "@/zap/lib/orpc/server";
 import { sendMailService } from "@/zap/services/mails/send-mail.service";
 

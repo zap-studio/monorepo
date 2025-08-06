@@ -3,9 +3,9 @@ import "server-only";
 import { db } from "@/db";
 import { userAISettings } from "@/db/schema";
 import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
+import { BadRequestError } from "@/zap/lib/api/errors";
 import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { encrypt } from "@/zap/lib/crypto/encrypt";
-import { BadRequestError } from "@/zap/lib/error-handling/errors";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
 interface SaveAISettingsContext {

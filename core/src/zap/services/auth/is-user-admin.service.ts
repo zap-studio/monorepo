@@ -1,6 +1,6 @@
 import "server-only";
 
-import { NotFoundError } from "@/zap/lib/error-handling/errors";
+import { NotFoundError } from "@/zap/lib/api/errors";
 
 import { getUserService } from "./get-user.service";
 

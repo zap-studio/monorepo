@@ -2,7 +2,7 @@ import "server-only";
 
 import { SETTINGS } from "@/data/settings";
 import { getLastMailSentAtQuery } from "@/zap/db/queries/emails.query";
-import { NotFoundError } from "@/zap/lib/error-handling/errors";
+import { NotFoundError } from "@/zap/lib/api/errors";
 
 interface CanSendMailServiceProps {
   input: {

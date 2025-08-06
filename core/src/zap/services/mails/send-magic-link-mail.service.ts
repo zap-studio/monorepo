@@ -2,7 +2,7 @@ import "server-only";
 
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { MagicLinkMail } from "@/zap/components/mails/magic-link.mail";
-import { MailError } from "@/zap/lib/error-handling/errors";
+import { MailError } from "@/zap/lib/api/errors";
 import { resend } from "@/zap/lib/resend/server";
 
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;

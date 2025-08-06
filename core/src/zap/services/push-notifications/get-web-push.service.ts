@@ -3,7 +3,7 @@ import "server-only";
 import { SETTINGS } from "@/data/settings";
 import { PUBLIC_ENV } from "@/lib/env.public";
 import { SERVER_ENV } from "@/lib/env.server";
-import { PushNotificationError } from "@/zap/lib/error-handling/errors";
+import { PushNotificationError } from "@/zap/lib/api/errors";
 
 let webpushInstance: typeof import("web-push") | null = null;
 

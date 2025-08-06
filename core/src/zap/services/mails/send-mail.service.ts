@@ -3,7 +3,7 @@ import "server-only";
 import type { JSX } from "react";
 
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { MailError } from "@/zap/lib/error-handling/errors";
+import { MailError } from "@/zap/lib/api/errors";
 import { resend } from "@/zap/lib/resend/server";
 
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;

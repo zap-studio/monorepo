@@ -1,7 +1,7 @@
 import "server-only";
 
 import { base } from "@/rpc/middlewares";
-import { withRpcHandler } from "@/zap/lib/error-handling/handlers";
+import { withRpcHandler } from "@/zap/lib/api/handlers";
 import {
   InputCanSendMailSchema,
   InputSendForgotPasswordMailSchema,

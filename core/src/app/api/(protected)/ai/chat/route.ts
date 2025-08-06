@@ -2,8 +2,8 @@ import "server-only";
 
 import { z } from "zod";
 
+import { withAuthenticatedApiHandler } from "@/zap/lib/api/handlers";
 import { parseRequestBody } from "@/zap/lib/api/utils";
-import { withAuthenticatedApiHandler } from "@/zap/lib/error-handling/handlers";
 import { AIProviderIdSchema } from "@/zap/schemas/ai.schema";
 import { streamChatService } from "@/zap/services/ai/stream-chat.service";
 

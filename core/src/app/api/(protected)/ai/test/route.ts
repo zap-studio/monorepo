@@ -2,8 +2,8 @@ import "server-only";
 
 import { z } from "zod";
 
+import { withAuthenticatedApiHandler } from "@/zap/lib/api/handlers";
 import { parseRequestBody } from "@/zap/lib/api/utils";
-import { withAuthenticatedApiHandler } from "@/zap/lib/error-handling/handlers";
 import { AIProviderIdSchema, ModelNameSchema } from "@/zap/schemas/ai.schema";
 import { testAPIKeyService } from "@/zap/services/ai/test-api-key.service";
 

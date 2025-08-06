@@ -1,7 +1,7 @@
 import "server-only";
 
 import { authMiddleware, base } from "@/rpc/middlewares";
-import { withRpcHandler } from "@/zap/lib/error-handling/handlers";
+import { withRpcHandler } from "@/zap/lib/api/handlers";
 import { getSessionService } from "@/zap/services/auth/get-session.service";
 import { getUserIdService } from "@/zap/services/auth/get-user-id.service";
 import { isAuthenticatedService } from "@/zap/services/auth/is-authenticated.service";

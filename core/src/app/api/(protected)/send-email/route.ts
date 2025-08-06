@@ -2,8 +2,8 @@ import "server-only";
 
 import { z } from "zod";
 
+import { withAuthenticatedApiHandler } from "@/zap/lib/api/handlers";
 import { parseRequestBody } from "@/zap/lib/api/utils";
-import { withAuthenticatedApiHandler } from "@/zap/lib/error-handling/handlers";
 import { sendAdminEmailService } from "@/zap/services/mails/send-admin-email.service";
 
 const SendMailSchema = z.object({

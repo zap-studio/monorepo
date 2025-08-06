@@ -1,9 +1,9 @@
 import "server-only";
 
 import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
+import { NotFoundError } from "@/zap/lib/api/errors";
 import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { decrypt } from "@/zap/lib/crypto/decrypt";
-import { NotFoundError } from "@/zap/lib/error-handling/errors";
 import type { AIProviderId } from "@/zap/types/ai.types";
 
 interface GetAISettingsContext {

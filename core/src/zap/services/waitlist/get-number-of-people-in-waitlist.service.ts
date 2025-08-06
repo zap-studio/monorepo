@@ -1,7 +1,7 @@
 import "server-only";
 
 import { getNumberOfPeopleInWaitlistQuery } from "@/zap/db/queries/waitlist.query";
-import { NotFoundError } from "@/zap/lib/error-handling/errors";
+import { NotFoundError } from "@/zap/lib/api/errors";
 
 export async function getNumberOfPeopleInWaitlistService() {
   const result = await getNumberOfPeopleInWaitlistQuery.execute();

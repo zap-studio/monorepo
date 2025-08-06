@@ -1,7 +1,7 @@
 import "server-only";
 
 import { getUserIdFromMailQuery } from "@/zap/db/queries/emails.query";
-import { NotFoundError } from "@/zap/lib/error-handling/errors";
+import { NotFoundError } from "@/zap/lib/api/errors";
 
 interface GetUserIdFromMailServiceProps {
   input: {

@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { waitlist } from "@/db/schema";
-import { BadRequestError } from "@/zap/lib/error-handling/errors";
+import { BadRequestError } from "@/zap/lib/api/errors";
 
 interface SubmitWaitlistEmailInput {
   input: {

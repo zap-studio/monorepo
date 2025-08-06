@@ -3,8 +3,8 @@ import "server-only";
 import type webpush from "web-push";
 import { z } from "zod";
 
+import { withAuthenticatedApiHandler } from "@/zap/lib/api/handlers";
 import { parseRequestBody } from "@/zap/lib/api/utils";
-import { withAuthenticatedApiHandler } from "@/zap/lib/error-handling/handlers";
 import { subscribeUserService } from "@/zap/services/push-notifications/subscribe-user.service";
 
 const subscribeSchema = z.object({

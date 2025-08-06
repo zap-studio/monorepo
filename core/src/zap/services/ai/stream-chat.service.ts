@@ -5,7 +5,7 @@ import { streamText } from "ai";
 
 import { SETTINGS } from "@/data/settings";
 import { getModel } from "@/zap/lib/ai/get-model";
-import { BadRequestError } from "@/zap/lib/error-handling/errors";
+import { BadRequestError } from "@/zap/lib/api/errors";
 import { orpcServer } from "@/zap/lib/orpc/server";
 import type { AIProviderId } from "@/zap/types/ai.types";
 
