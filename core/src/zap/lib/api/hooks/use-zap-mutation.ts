@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import "client-only";
 
@@ -37,10 +36,10 @@ type ZapMutationOptions<
 };
 
 export function useZapMutation<
-  Data = any,
-  Error = any,
+  Data = unknown,
+  Error = unknown,
   SWRMutationKey extends Key = Key,
-  ExtraArg = any,
+  ExtraArg = unknown,
 >(
   key: SWRMutationKey,
   fetcher: MutationFetcher<Data, SWRMutationKey, ExtraArg>,
@@ -57,17 +56,17 @@ export function useZapMutation<
 
   return useSWRMutation(key, fetcher, {
     ...swrOptions,
-    onSuccess: (data, key, config) => {
+    onSuccess: (data, responseKey, config) => {
       if (showSuccessToast && successMessage) {
         handleSuccess(successMessage);
       }
-      onSuccess?.(data, key, config);
+      onSuccess?.(data, responseKey, config);
     },
-    onError: (error, key, config) => {
+    onError: (error, responseKey, config) => {
       if (!skipErrorHandling) {
         handleClientError(error);
       }
-      onError?.(error, key, config);
+      onError?.(error, responseKey, config);
     },
   });
 }

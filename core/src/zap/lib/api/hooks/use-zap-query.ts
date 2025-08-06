@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import "client-only";
 
@@ -26,7 +25,11 @@ type ZapQueryOptions<Data, Error, Fn extends BareFetcher<Data>> = Omit<
   skipErrorHandling?: boolean;
 };
 
-export function useZapQuery<Data = any, Error = any, SWRKey extends Key = Key>(
+export function useZapQuery<
+  Data = unknown,
+  Error = unknown,
+  SWRKey extends Key = Key,
+>(
   key: SWRKey,
   fetcher: BareFetcher<Data> | null,
   options: ZapQueryOptions<Data, Error, BareFetcher<Data>> = {},

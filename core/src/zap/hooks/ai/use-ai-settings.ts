@@ -22,6 +22,17 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
     },
     {
       successMessage: "Settings updated successfully",
+      onError: (_error, _key, config) => {
+        const originalValues = config.optimisticData as {
+          apiKey: string | null;
+          isValidated: boolean;
+        };
+
+        if (originalValues) {
+          setInitialKey(originalValues.apiKey);
+          setIsValidated(originalValues.isValidated);
+        }
+      },
     },
   );
 
@@ -45,14 +56,24 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
     },
   );
 
-  const saveApiKey = (values: AIFormValues) => {
-    saveSettingsMutation.trigger(values).then(() => {
-      if (values.apiKey) {
-        setInitialKey(values.apiKey);
-      } else {
+  const saveApiKey = async (values: AIFormValues) => {
+    const currentState = {
+      apiKey: initialKey,
+      isValidated,
+    };
+
+    if (values.apiKey) {
+      setInitialKey(values.apiKey);
+      if (values.apiKey !== initialKey) {
         setIsValidated(false);
-        setInitialKey(null);
       }
+    } else {
+      setIsValidated(false);
+      setInitialKey(null);
+    }
+
+    await saveSettingsMutation.trigger(values, {
+      optimisticData: currentState,
     });
   };
 

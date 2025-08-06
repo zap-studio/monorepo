@@ -25,7 +25,10 @@ export function useSubmitFeedback(
   };
 
   return useZapMutation(orpc.feedbacks.submit.key(), giveFeedback, {
-    optimisticData: (current) => ({ ...current, success: true }),
+    optimisticData: (current: Record<string, unknown> | undefined) => ({
+      ...(current || {}),
+      success: true,
+    }),
     rollbackOnError: true,
     revalidate: true,
     onSuccess: () => {
