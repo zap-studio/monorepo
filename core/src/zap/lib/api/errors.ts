@@ -111,19 +111,19 @@ export class ApplicationError extends BaseApplicationError {
   }
 }
 
-export class ClientError extends ApplicationError {
+export class ClientError extends BaseApplicationError {
   constructor(message = "Client Error", cause?: unknown) {
     super(message, "CLIENT_ERROR", cause);
   }
 }
 
-export class EnvironmentError extends ApplicationError {
+export class EnvironmentError extends BaseApplicationError {
   constructor(message = "Environment Error", cause?: unknown) {
     super(message, "ENVIRONMENT_ERROR", cause);
   }
 }
 
-export class FileOperationError extends ApplicationError {
+export class FileOperationError extends BaseApplicationError {
   constructor(message = "File Operation Error", cause?: unknown) {
     super(message, "FILE_OPERATION_ERROR", cause);
   }
