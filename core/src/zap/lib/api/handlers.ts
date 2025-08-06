@@ -1,12 +1,12 @@
 import { DEV } from "@/lib/env.public";
-import { getAuthenticatedSession } from "@/zap/lib/api/utils";
 import {
   generateCorrelationId,
+  getAuthenticatedSession,
   handleError,
   type HandlerFunction,
   type HandlerOptions,
   logSuccess,
-} from "@/zap/lib/error-handling/utils";
+} from "@/zap/lib/api/utils";
 
 function createHandler<T extends unknown[], R>(
   handler: HandlerFunction<T, R>,
