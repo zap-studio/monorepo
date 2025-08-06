@@ -12,7 +12,6 @@ import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { handleClientError } from "@/zap/lib/api/client";
 import { AuthenticationError } from "@/zap/lib/api/errors";
 import { authClient } from "@/zap/lib/auth/client";
-import { handleCompromisedPasswordError } from "@/zap/lib/auth/utils";
 import type {
   LoginFormSchema,
   RegisterFormSchema,
@@ -80,7 +79,7 @@ export function useAuth(callbackURL?: string) {
       const response = await authClient.signUp.email({ email, password, name });
 
       if (response.error) {
-        handleCompromisedPasswordError(response.error);
+        handleClientError(response.error);
         return;
       }
 

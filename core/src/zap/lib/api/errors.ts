@@ -82,12 +82,16 @@ export class PushNotificationError extends BaseError {
   }
 }
 
-export class ApplicationError extends Error {
+export class BaseApplicationError extends Error {
   code: string;
-  constructor(message = "An unexpected error occurred", cause?: unknown) {
+  constructor(
+    message = "An unexpected error occurred",
+    code = "APPLICATION_ERROR",
+    cause?: unknown,
+  ) {
     super(message);
     this.name = this.constructor.name;
-    this.code = "APPLICATION_ERROR";
+    this.code = code;
     this.cause = cause;
     Error.captureStackTrace(this, this.constructor);
   }
@@ -98,6 +102,12 @@ export class ApplicationError extends Error {
       message: this.message,
       cause: this.cause,
     };
+  }
+}
+
+export class ApplicationError extends BaseApplicationError {
+  constructor(message = "Application Error", cause?: unknown) {
+    super(message, "APPLICATION_ERROR", cause);
   }
 }
 
