@@ -1,10 +1,13 @@
 import "dotenv/config";
+
 import { defineConfig } from "drizzle-kit";
+
+import { EnvironmentError } from "@/zap/lib/api/errors";
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
 if (!DATABASE_URL) {
-  throw new Error("DATABASE_URL environment variable is required");
+  throw new EnvironmentError("DATABASE_URL environment variable is required");
 }
 
 export default defineConfig({

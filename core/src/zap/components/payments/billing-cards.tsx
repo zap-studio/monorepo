@@ -17,6 +17,7 @@ import { SALES_EMAIL } from "@/zap.config";
 import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
 import { PriceDisplay } from "@/zap/components/payments/price-display";
 import { handleClientError } from "@/zap/lib/api/client";
+import { ClientError } from "@/zap/lib/api/errors";
 import { authClient } from "@/zap/lib/auth/client";
 import { getBillingDetails, getSortedProducts } from "@/zap/lib/payments/utils";
 import { useActiveSubscriptionSlug } from "@/zap/lib/polar/client";
@@ -49,7 +50,7 @@ export function BillingCards({ products }: BillingCardsProps) {
       }
 
       if (!productId) {
-        throw new Error("Product ID not found");
+        throw new ClientError("Product ID not found");
       }
 
       toast.loading("Redirecting to checkout...");
