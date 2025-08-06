@@ -32,9 +32,9 @@ export function useZapQuery<Data = any, Error = any, SWRKey extends Key = Key>(
   options: ZapQueryOptions<Data, Error, BareFetcher<Data>> = {},
 ) {
   const {
-    showSuccessToast = true,
+    showSuccessToast = false,
     successMessage,
-    skipErrorHandling = false,
+    skipErrorHandling = true,
     onSuccess,
     onError,
     ...swrOptions

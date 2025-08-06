@@ -81,3 +81,9 @@ export class PushNotificationError extends BaseError {
     super(message, 500, "PUSH_NOTIFICATION_ERROR", cause);
   }
 }
+
+export class ClientError extends BaseError {
+  constructor(message = "Client Error", cause?: unknown) {
+    super(message, 400, "CLIENT_ERROR", cause);
+  }
+}

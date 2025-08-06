@@ -3,76 +3,67 @@ import "client-only";
 
 import { useState } from "react";
 import type { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
+import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
 import { orpc } from "@/zap/lib/orpc/client";
 import type { AIFormValues } from "@/zap/types/ai.types";
 
 export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
-  const [isSaving, setIsSaving] = useState(false);
-  const [testing, setTesting] = useState(false);
   const [isValidated, setIsValidated] = useState(false);
   const [initialKey, setInitialKey] = useState<string | null>(null);
 
-  const saveApiKey = async (values: AIFormValues) => {
-    setIsSaving(true);
-
-    if (!values.model) {
-      toast.error("Please select a model");
-      return;
-    }
-
-    try {
-      if (values.apiKey) {
-        await orpc.ai.saveOrUpdateAISettings.call(values);
-
-        toast.success("API key saved successfully");
-        setInitialKey(values.apiKey);
-      } else {
-        await orpc.ai.deleteAPIKey.call({ provider: values.provider });
-
-        toast.success("API key deleted successfully");
-        setIsValidated(false);
-        setInitialKey(null);
+  const saveSettingsMutation = useZapMutation(
+    "ai-save-settings",
+    async (_, { arg }: { arg: AIFormValues }) => {
+      if (arg.apiKey) {
+        return await orpc.ai.saveOrUpdateAISettings.call(arg);
       }
-    } catch {
-      toast.error(
-        values.apiKey ? "Failed to save API key" : "Failed to delete API key",
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  };
+      return await orpc.ai.deleteAPIKey.call({ provider: arg.provider });
+    },
+    {
+      successMessage: "Settings updated successfully",
+    },
+  );
 
-  async function handleTestApiKey() {
-    setTesting(true);
-
-    try {
-      await orpc.ai.testAPIKey.call({
+  const testApiKeyMutation = useZapMutation(
+    "ai-test-api-key",
+    async () => {
+      return await orpc.ai.testAPIKey.call({
         provider: form.getValues("provider"),
         apiKey: form.getValues("apiKey"),
         model: form.getValues("model"),
       });
+    },
+    {
+      onSuccess: () => {
+        setIsValidated(true);
+      },
+      onError: () => {
+        setIsValidated(false);
+      },
+      successMessage: "API key is valid!",
+    },
+  );
 
-      toast.success("API key is valid!");
-      setIsValidated(true);
-    } catch {
-      toast.error("An error occurred while testing the API key");
-      setIsValidated(false);
-    } finally {
-      setTesting(false);
-    }
-  }
+  const saveApiKey = (values: AIFormValues) => {
+    saveSettingsMutation.trigger(values).then(() => {
+      if (values.apiKey) {
+        setInitialKey(values.apiKey);
+      } else {
+        setIsValidated(false);
+        setInitialKey(null);
+      }
+    });
+  };
 
   return {
-    isSaving,
+    isSaving: saveSettingsMutation.isMutating,
     isValidated,
     setIsValidated,
     initialKey,
     setInitialKey,
     saveApiKey,
-    testing,
-    setTesting,
-    handleTestApiKey,
+    testing: testApiKeyMutation.isMutating,
+    handleTestApiKey: testApiKeyMutation.trigger,
   };
 }
