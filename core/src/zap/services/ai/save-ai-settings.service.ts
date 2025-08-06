@@ -1,12 +1,8 @@
 import "server-only";
 
-import { db } from "@/db";
-import { userAISettings } from "@/db/schema";
-import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
-import { BadRequestError } from "@/zap/lib/api/errors";
-import { encryptionKeyHex } from "@/zap/lib/crypto";
-import { encrypt } from "@/zap/lib/crypto/encrypt";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
+
+import { saveOrUpdateAISettingsService } from "./save-or-update-ai-settings.service";
 
 interface SaveAISettingsContext {
   session: { user: { id: string } };
@@ -24,31 +20,9 @@ export async function saveAISettingsService({
   context: SaveAISettingsContext;
   input: SaveAISettingsInput;
 }) {
-  const userId = context.session.user.id;
-  const provider = input.provider;
-  const apiKey = input.apiKey;
-  const model = input.model;
-
-  const encryptedAPIKey = await encrypt(apiKey, encryptionKeyHex);
-
-  const existingSettings = await getApiSettingsForUserAndProviderQuery.execute({
-    userId,
-    provider,
+  return await saveOrUpdateAISettingsService({
+    context,
+    input,
+    mode: "create-only",
   });
-
-  if (existingSettings.length > 0) {
-    throw new BadRequestError("AI settings already exists");
-  }
-
-  await db
-    .insert(userAISettings)
-    .values({
-      userId,
-      provider,
-      model,
-      encryptedApiKey: encryptedAPIKey,
-    })
-    .execute();
-
-  return { success: true };
 }

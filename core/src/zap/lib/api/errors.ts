@@ -82,8 +82,43 @@ export class PushNotificationError extends BaseError {
   }
 }
 
-export class ClientError extends BaseError {
+export class ApplicationError extends Error {
+  code: string;
+  constructor(
+    message = "An unexpected error occurred",
+    code = "INTERNAL_ERROR",
+    cause?: unknown,
+  ) {
+    super(message);
+    this.name = this.constructor.name;
+    this.code = code;
+    this.cause = cause;
+    Error.captureStackTrace(this, this.constructor);
+  }
+
+  toJSON() {
+    return {
+      error: this.name,
+      message: this.message,
+      cause: this.cause,
+    };
+  }
+}
+
+export class ClientError extends ApplicationError {
   constructor(message = "Client Error", cause?: unknown) {
-    super(message, 400, "CLIENT_ERROR", cause);
+    super(message, "CLIENT_ERROR", cause);
+  }
+}
+
+export class EnvironmentError extends ApplicationError {
+  constructor(message = "Environment Error", cause?: unknown) {
+    super(message, "ENVIRONMENT_ERROR", cause);
+  }
+}
+
+export class FileOperationError extends ApplicationError {
+  constructor(message = "File Operation Error", cause?: unknown) {
+    super(message, "FILE_OPERATION_ERROR", cause);
   }
 }

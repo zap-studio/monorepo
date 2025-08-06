@@ -1,4 +1,11 @@
-import { jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import type { ModelName } from "@/zap/types/ai.types";
 
@@ -20,3 +27,7 @@ export const userAISettings = pgTable("user_ai_settings", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const userAISettingsUserProviderIndex = uniqueIndex(
+  "user_ai_settings_user_provider_idx",
+).on(userAISettings.userId, userAISettings.provider);

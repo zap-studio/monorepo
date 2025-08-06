@@ -1,10 +1,8 @@
 import "server-only";
 
-import { and, eq } from "drizzle-orm";
-
-import { db } from "@/db";
+import { db, type UpsertMode } from "@/db";
 import { userAISettings } from "@/db/schema";
-import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
+import { BadRequestError } from "@/zap/lib/api/errors";
 import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { encrypt } from "@/zap/lib/crypto/encrypt";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
@@ -12,6 +10,7 @@ import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 interface SaveOrUpdateAISettingsContext {
   session: { user: { id: string } };
 }
+
 interface SaveOrUpdateAISettingsInput {
   provider: AIProviderId;
   model: ModelName;
@@ -21,47 +20,67 @@ interface SaveOrUpdateAISettingsInput {
 export async function saveOrUpdateAISettingsService({
   context,
   input,
+  mode = "upsert",
 }: {
   context: SaveOrUpdateAISettingsContext;
   input: SaveOrUpdateAISettingsInput;
+  mode?: UpsertMode;
 }) {
   const userId = context.session.user.id;
-  const provider = input.provider;
-  const apiKey = input.apiKey;
-  const model = input.model;
+  const { provider, apiKey, model } = input;
 
   const encryptedAPIKey = await encrypt(apiKey, encryptionKeyHex);
 
-  const existingSettings = await getApiSettingsForUserAndProviderQuery.execute({
+  const values = {
     userId,
     provider,
-  });
+    model,
+    encryptedApiKey: encryptedAPIKey,
+  };
 
-  if (existingSettings.length > 0) {
-    await db
-      .update(userAISettings)
-      .set({
-        model,
-        encryptedApiKey: encryptedAPIKey,
+  if (mode === "create-only") {
+    const result = await db
+      .insert(userAISettings)
+      .values(values)
+      .onConflictDoNothing({
+        target: [userAISettings.userId, userAISettings.provider],
       })
-      .where(
-        and(
-          eq(userAISettings.userId, userId),
-          eq(userAISettings.provider, provider),
-        ),
-      )
-      .execute();
-  } else {
+      .returning({ id: userAISettings.id });
+
+    if (result.length === 0) {
+      throw new BadRequestError("AI settings already exist for this provider");
+    }
+
+    return { success: true };
+  }
+
+  if (mode === "update-only") {
     await db
       .insert(userAISettings)
-      .values({
-        userId,
-        provider,
+      .values(values)
+      .onConflictDoUpdate({
+        target: [userAISettings.userId, userAISettings.provider],
+        set: {
+          model,
+          encryptedApiKey: encryptedAPIKey,
+          updatedAt: new Date(),
+        },
+      });
+
+    return { success: true };
+  }
+
+  await db
+    .insert(userAISettings)
+    .values(values)
+    .onConflictDoUpdate({
+      target: [userAISettings.userId, userAISettings.provider],
+      set: {
         model,
         encryptedApiKey: encryptedAPIKey,
-      })
-      .execute();
-  }
+        updatedAt: new Date(),
+      },
+    });
 
   return { success: true };
 }

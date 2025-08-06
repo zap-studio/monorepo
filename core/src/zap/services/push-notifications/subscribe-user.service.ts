@@ -28,7 +28,12 @@ export async function subscribeUserService({
       subscription,
       userId,
     })
-    .execute();
+    .onConflictDoUpdate({
+      target: [pushNotifications.userId],
+      set: {
+        subscription,
+      },
+    });
 
   return { success: true, message: "User subscribed successfully" };
 }
