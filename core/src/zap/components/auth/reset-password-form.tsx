@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/components/zap-ui/button";
+import { handleClientError } from "@/zap/lib/api/client";
 import { AuthenticationError } from "@/zap/lib/api/errors";
 import { authClient } from "@/zap/lib/auth/client";
-import { handleCompromisedPasswordError } from "@/zap/lib/auth/utils";
 
 const formSchema = z
   .object({
@@ -73,7 +73,7 @@ export function ResetPasswordForm() {
       form.reset();
       router.push("/login");
     } catch (error) {
-      handleCompromisedPasswordError(error);
+      handleClientError(error);
     } finally {
       setSubmitting(false);
     }

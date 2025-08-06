@@ -95,7 +95,7 @@ export function useAuth(callbackURL?: string) {
       toast.success("Registration successful!");
       router.push(callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_UP);
     } catch (error) {
-      handleCompromisedPasswordError(error);
+      handleClientError(error);
     }
   };
 

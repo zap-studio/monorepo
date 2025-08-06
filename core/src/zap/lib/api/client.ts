@@ -3,12 +3,23 @@ import "client-only";
 import { toast } from "sonner";
 
 import { DEV } from "@/lib/env.public";
+import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { ApplicationError, BaseError } from "@/zap/lib/api/errors";
 
 export function handleClientError(
   error: unknown,
   fallbackMessage = "Something went wrong",
 ) {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: string }).code === "PASSWORD_COMPROMISED"
+  ) {
+    toast.error(ZAP_DEFAULT_SETTINGS.AUTH.PASSWORD_COMPROMISED_MESSAGE);
+    return;
+  }
+
   let title = "Error";
   let description = fallbackMessage;
 

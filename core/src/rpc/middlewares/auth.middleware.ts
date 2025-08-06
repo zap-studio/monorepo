@@ -3,6 +3,7 @@ import "server-only";
 import { headers } from "next/headers";
 
 import { base } from "@/rpc/middlewares/base.middleware";
+import { InternalServerError } from "@/zap/lib/api/errors";
 import type { Session } from "@/zap/lib/auth/client";
 import { auth } from "@/zap/lib/auth/server";
 
@@ -16,14 +17,14 @@ export const authMiddleware = base.middleware(async ({ next, errors }) => {
   try {
     _headers = await headers();
   } catch {
-    throw new Error("Failed to get headers");
+    throw new InternalServerError("Failed to get headers");
   }
 
   let session: Session | null;
   try {
     session = await auth.api.getSession({ headers: _headers });
   } catch {
-    throw new Error("Failed to get session");
+    throw new InternalServerError("Failed to get session");
   }
 
   if (!session) {
@@ -39,7 +40,7 @@ export const authMiddleware = base.middleware(async ({ next, errors }) => {
         headers: _headers,
       },
     });
-  } catch (err) {
-    throw new Error("Failed to execute next middleware", { cause: err });
+  } catch (error) {
+    throw new InternalServerError("Failed to execute next middleware", error);
   }
 });

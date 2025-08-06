@@ -5,26 +5,22 @@ import { createOpenAI } from "@ai-sdk/openai";
 
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
+import { BadRequestError } from "../api/errors";
+
 export function getModel(
   provider: AIProviderId,
   apiKey: string,
   modelName: ModelName,
 ) {
-  try {
-    const openAI = createOpenAI({ apiKey });
-    const mistral = createMistral({ apiKey });
+  const openAI = createOpenAI({ apiKey });
+  const mistral = createMistral({ apiKey });
 
-    switch (provider) {
-      case "openai":
-        return openAI(modelName);
-      case "mistral":
-        return mistral(modelName);
-      default:
-        throw new Error(`Invalid provider: ${provider}`);
-    }
-  } catch (error) {
-    throw new Error(
-      `Failed to create model ${modelName} for provider ${provider}: ${error}`,
-    );
+  switch (provider) {
+    case "openai":
+      return openAI(modelName);
+    case "mistral":
+      return mistral(modelName);
+    default:
+      throw new BadRequestError(`The provider "${provider}" is not supported.`);
   }
 }

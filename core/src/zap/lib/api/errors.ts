@@ -84,14 +84,10 @@ export class PushNotificationError extends BaseError {
 
 export class ApplicationError extends Error {
   code: string;
-  constructor(
-    message = "An unexpected error occurred",
-    code = "INTERNAL_ERROR",
-    cause?: unknown,
-  ) {
+  constructor(message = "An unexpected error occurred", cause?: unknown) {
     super(message);
     this.name = this.constructor.name;
-    this.code = code;
+    this.code = "APPLICATION_ERROR";
     this.cause = cause;
     Error.captureStackTrace(this, this.constructor);
   }

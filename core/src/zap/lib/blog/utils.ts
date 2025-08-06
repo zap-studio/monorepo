@@ -9,6 +9,8 @@ import matter from "gray-matter";
 import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
 import { postMetadataSchema } from "@/zap/schemas/blog.schema";
 
+import { ApplicationError, FileOperationError } from "../api/errors";
+
 const BLOG_DIR = path.join(process.cwd(), "src", "blog");
 
 function parseFrontmatter(fileContent: string) {
@@ -19,9 +21,7 @@ function parseFrontmatter(fileContent: string) {
       content,
     };
   } catch (error) {
-    throw new Error(
-      `Failed to parse frontmatter: ${error instanceof Error ? error.message : String(error)}`,
-    );
+    throw new ApplicationError(`Failed to parse frontmatter`, error);
   }
 }
 
@@ -30,7 +30,7 @@ async function getMDXFiles(dir: string) {
     const files = await fs.readdir(dir);
     return files.filter((file) => path.extname(file) === ".mdx");
   } catch (error) {
-    throw new Error(`Failed to read directory: ${error}`);
+    throw new FileOperationError(`Failed to read directory`, error);
   }
 }
 
@@ -39,7 +39,7 @@ async function readMDXFile(filePath: string) {
     const fileContent = await fs.readFile(filePath, "utf-8");
     return parseFrontmatter(fileContent);
   } catch (error) {
-    throw new Error(`Failed to read file ${filePath}: ${error}`);
+    throw new FileOperationError(`Failed to read file`, error);
   }
 }
 
@@ -56,13 +56,16 @@ async function getMDXData(dir: string) {
             content,
           };
         } catch (error) {
-          throw new Error(`Failed to read MDX file ${file}: ${error}`);
+          throw new FileOperationError(
+            `Failed to read MDX file ${file}`,
+            error,
+          );
         }
       }),
     );
     return posts;
   } catch (error) {
-    throw new Error(`Failed to get MDX data: ${error}`);
+    throw new ApplicationError(`Failed to get MDX data`, error);
   }
 }
 
@@ -89,7 +92,7 @@ export async function getBlogPost(slug: string) {
       content,
     };
   } catch (error) {
-    throw new Error(`Failed to read blog post ${slug}: ${error}`);
+    throw new ApplicationError(`Failed to read blog post ${slug}`, error);
   }
 }
 
