@@ -1,45 +1,58 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import "client-only";
 
-import useSWR, { type SWRConfiguration } from "swr";
+import type { BareFetcher, Key, SWRConfiguration } from "swr";
+import useSWR from "swr";
 
-import { handleClientError } from "@/zap/lib/api/client";
+import { handleClientError, handleSuccess } from "@/zap/lib/api/client";
 
-export interface UseZapQueryOptions<TData, TError = unknown>
-  extends Omit<SWRConfiguration<TData, TError>, "onSuccess" | "onError"> {
-  onSuccess?: (data: TData) => void;
-  onError?: (error: TError) => void;
+type ZapQueryOptions<Data, Error, Fn extends BareFetcher<Data>> = Omit<
+  SWRConfiguration<Data, Error, Fn>,
+  "onSuccess" | "onError"
+> & {
+  onSuccess?: (
+    data: Data,
+    key: string,
+    config: Readonly<SWRConfiguration<Data, Error, Fn>>,
+  ) => void;
+  onError?: (
+    error: Error,
+    key: string,
+    config: Readonly<SWRConfiguration<Data, Error, Fn>>,
+  ) => void;
+  showSuccessToast?: boolean;
+  successMessage?: string;
   skipErrorHandling?: boolean;
-}
+};
 
-export function useZapQuery<TData = unknown, TError = unknown>(
-  key: Parameters<typeof useSWR>[0],
-  fetcher: Parameters<typeof useSWR>[1],
-  options?: UseZapQueryOptions<TData, TError>,
+export function useZapQuery<Data = any, Error = any, SWRKey extends Key = Key>(
+  key: SWRKey,
+  fetcher: BareFetcher<Data> | null,
+  options: ZapQueryOptions<Data, Error, BareFetcher<Data>> = {},
 ) {
   const {
-    onSuccess: zapOnSuccess,
-    onError: zapOnError,
+    showSuccessToast = true,
+    successMessage,
     skipErrorHandling = false,
+    onSuccess,
+    onError,
     ...swrOptions
-  } = options || {};
+  } = options;
 
-  const finalOptions: SWRConfiguration<TData, TError> = {
+  return useSWR(key, fetcher, {
     ...swrOptions,
-    onSuccess: (result) => {
-      zapOnSuccess?.(result);
-    },
-    onError: (err) => {
-      if (!skipErrorHandling) {
-        handleClientError(err);
+    onSuccess: (data, key, config) => {
+      if (showSuccessToast && successMessage) {
+        handleSuccess(successMessage);
       }
-      zapOnError?.(err);
+      onSuccess?.(data, key, config);
     },
-  };
-
-  return useSWR(
-    key,
-    fetcher,
-    finalOptions as unknown as SWRConfiguration,
-  ) as ReturnType<typeof useSWR<TData, TError>>;
+    onError: (error, key, config) => {
+      if (!skipErrorHandling) {
+        handleClientError(error);
+      }
+      onError?.(error, key, config);
+    },
+  });
 }

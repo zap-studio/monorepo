@@ -1,55 +1,73 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import "client-only";
 
-import useSWRMutation, { type SWRMutationConfiguration } from "swr/mutation";
+import type { Key } from "swr";
+import type { MutationFetcher, SWRMutationConfiguration } from "swr/mutation";
+import useSWRMutation from "swr/mutation";
 
 import { handleClientError, handleSuccess } from "@/zap/lib/api/client";
 
-export interface UseZapMutationOptions<TData, TError = unknown>
-  extends Omit<
-    SWRMutationConfiguration<TData, TError>,
-    "onSuccess" | "onError"
-  > {
-  onSuccess?: (data: TData) => void;
-  onError?: (error: TError) => void;
-  successMessage?: string;
+type ZapMutationOptions<
+  Data,
+  Error,
+  SWRMutationKey extends Key,
+  ExtraArg,
+> = Omit<
+  SWRMutationConfiguration<Data, Error, SWRMutationKey, ExtraArg>,
+  "onSuccess" | "onError"
+> & {
+  onSuccess?: (
+    data: Data,
+    key: string,
+    config: Readonly<
+      SWRMutationConfiguration<Data, Error, SWRMutationKey, ExtraArg>
+    >,
+  ) => void;
+  onError?: (
+    error: Error,
+    key: string,
+    config: Readonly<
+      SWRMutationConfiguration<Data, Error, SWRMutationKey, ExtraArg>
+    >,
+  ) => void;
   showSuccessToast?: boolean;
+  successMessage?: string;
   skipErrorHandling?: boolean;
-}
+};
 
-export function useZapMutation<TData = unknown, TError = unknown>(
-  key: Parameters<typeof useSWRMutation>[0],
-  fetcher: Parameters<typeof useSWRMutation>[1],
-  options?: UseZapMutationOptions<TData, TError>,
+export function useZapMutation<
+  Data = any,
+  Error = any,
+  SWRMutationKey extends Key = Key,
+  ExtraArg = any,
+>(
+  key: SWRMutationKey,
+  fetcher: MutationFetcher<Data, SWRMutationKey, ExtraArg>,
+  options: ZapMutationOptions<Data, Error, SWRMutationKey, ExtraArg> = {},
 ) {
   const {
-    onSuccess: zapOnSuccess,
-    onError: zapOnError,
+    showSuccessToast = true,
     successMessage,
-    showSuccessToast = false,
     skipErrorHandling = false,
+    onSuccess,
+    onError,
     ...swrOptions
-  } = options || {};
+  } = options;
 
-  const finalOptions: SWRMutationConfiguration<TData, TError> = {
+  return useSWRMutation(key, fetcher, {
     ...swrOptions,
-    onSuccess: (result) => {
+    onSuccess: (data, key, config) => {
       if (showSuccessToast && successMessage) {
         handleSuccess(successMessage);
       }
-      zapOnSuccess?.(result);
+      onSuccess?.(data, key, config);
     },
-    onError: (err) => {
+    onError: (error, key, config) => {
       if (!skipErrorHandling) {
-        handleClientError(err);
+        handleClientError(error);
       }
-      zapOnError?.(err);
+      onError?.(error, key, config);
     },
-  };
-
-  return useSWRMutation(
-    key,
-    fetcher,
-    finalOptions as unknown as SWRMutationConfiguration<unknown, unknown>,
-  ) as unknown as ReturnType<typeof useSWRMutation<TData, TError>>;
+  });
 }
