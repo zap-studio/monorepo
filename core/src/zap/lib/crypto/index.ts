@@ -15,7 +15,7 @@ export function hexToBuffer(hex: string): ArrayBuffer {
   }
 
   const bytes = new Uint8Array(
-    hex.match(/.{1,2}/g)!.map((b) => Number.parseInt(b, 16)),
+    (hex.match(/.{1,2}/g) ?? []).map((b) => Number.parseInt(b, 16)),
   );
 
   return bytes.buffer;
