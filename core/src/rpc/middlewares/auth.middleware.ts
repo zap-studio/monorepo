@@ -4,7 +4,6 @@ import { ORPCError } from "@orpc/client";
 import { headers } from "next/headers";
 
 import { base } from "@/rpc/middlewares/base.middleware";
-import { InternalServerError } from "@/zap/lib/api/errors";
 import type { Session } from "@/zap/lib/auth/client";
 import { auth } from "@/zap/lib/auth/server";
 
