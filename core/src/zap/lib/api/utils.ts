@@ -158,9 +158,10 @@ export function handleError<R>(
     },
   );
 
-  // For RPC procedures, let oRPC handle the error formatting
+  // For RPC procedures, convert BaseError to ORPC error
   if (options.handlerType === "rpc-procedure") {
-    throw error;
+    const baseError = transformError(error);
+    throw baseError.toORPCError();
   }
 
   // For server actions, transform to BaseError

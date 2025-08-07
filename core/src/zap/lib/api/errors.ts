@@ -1,3 +1,5 @@
+import { ORPCError } from "@orpc/server";
+
 type HttpStatusCode =
   // 2xx Success
   | 200 // OK
@@ -34,10 +36,11 @@ export class BaseError extends Error {
   statusCode: HttpStatusCode;
   code: string;
   cause?: unknown;
+
   constructor(
     message: string,
     statusCode: HttpStatusCode = 500,
-    code = "INTERNAL_ERROR",
+    code = "INTERNAL_SERVER_ERROR",
     cause?: unknown,
   ) {
     super(message);
@@ -46,6 +49,10 @@ export class BaseError extends Error {
     this.code = code;
     this.cause = cause;
     Error.captureStackTrace(this, this.constructor);
+  }
+
+  toORPCError() {
+    return new ORPCError(this.code, { message: this.message });
   }
 
   toJSON() {
@@ -124,6 +131,10 @@ export class BaseApplicationError extends Error {
     this.code = code;
     this.cause = cause;
     Error.captureStackTrace(this, this.constructor);
+  }
+
+  toORPCError() {
+    return new ORPCError(this.code, { message: this.message });
   }
 
   toJSON() {

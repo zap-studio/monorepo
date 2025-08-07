@@ -1,5 +1,6 @@
 import "server-only";
 
+import { ORPCError } from "@orpc/client";
 import { headers } from "next/headers";
 
 import { base } from "@/rpc/middlewares/base.middleware";
@@ -12,7 +13,7 @@ export interface SessionContext {
   readonly headers: Headers;
 }
 
-export const authMiddleware = base.middleware(async ({ next, errors }) => {
+export const authMiddleware = base.middleware(async ({ next }) => {
   let _headers: Headers;
   try {
     _headers = await headers();
@@ -28,7 +29,7 @@ export const authMiddleware = base.middleware(async ({ next, errors }) => {
   }
 
   if (!session) {
-    throw errors.UNAUTHORIZED({
+    throw new ORPCError("UNAUTHORIZED", {
       message: "Unauthorized access",
     });
   }
@@ -41,6 +42,9 @@ export const authMiddleware = base.middleware(async ({ next, errors }) => {
       },
     });
   } catch (error) {
-    throw new InternalServerError("Failed to execute next middleware", error);
+    throw new InternalServerError(
+      "Failed to execute next middleware",
+      error,
+    ).toORPCError();
   }
 });
