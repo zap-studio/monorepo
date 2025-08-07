@@ -8,7 +8,7 @@ type FlagKey = keyof typeof FLAGS;
 
 export function useFlag(flagKey: FlagKey) {
   const result = useZapImmutable(
-    ["flag", flagKey],
+    ["flag", { flagKey }],
     async () => {
       try {
         const flag = FLAGS[flagKey];

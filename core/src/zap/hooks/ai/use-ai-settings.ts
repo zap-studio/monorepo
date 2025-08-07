@@ -13,7 +13,7 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
   const [initialKey, setInitialKey] = useState<string | null>(null);
 
   const saveSettingsMutation = useZapMutation(
-    "ai-save-settings",
+    orpc.ai.saveOrUpdateAISettings.key(),
     async (_, { arg }: { arg: AIFormValues }) => {
       if (arg.apiKey) {
         return await orpc.ai.saveOrUpdateAISettings.call(arg);
@@ -37,7 +37,7 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
   );
 
   const testApiKeyMutation = useZapMutation(
-    "ai-test-api-key",
+    orpc.ai.testAPIKey.key(),
     async () => {
       return await orpc.ai.testAPIKey.call({
         provider: form.getValues("provider"),

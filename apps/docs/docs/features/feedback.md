@@ -71,7 +71,7 @@ Custom hooks provide a clean API for feedback functionality:
 // src/zap/hooks/features/feedbacks/use-feedback.ts
 export const useUserFeedback = () => {
   const orpc = useORPC();
-  return useSWR(
+  return useZapQuery(
     orpc.feedbacks.getUserFeedback.key(),
     orpc.feedbacks.getUserFeedback.queryOptions().queryFn
   );

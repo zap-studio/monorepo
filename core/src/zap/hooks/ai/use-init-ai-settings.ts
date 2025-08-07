@@ -19,7 +19,7 @@ export function useInitAISettings(
   const provider = form.watch("provider");
 
   const { data, isLoading } = useZapQuery(
-    open && provider ? ["ai-settings", provider] : null,
+    open && provider ? orpc.ai.getAISettings.key() : null,
     async () => {
       return await orpc.ai.getAISettings.call({
         provider,
