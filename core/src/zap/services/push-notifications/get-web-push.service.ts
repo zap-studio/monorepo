@@ -1,8 +1,9 @@
 import "server-only";
 
 import { SETTINGS } from "@/data/settings";
-import { CLIENT_ENV } from "@/lib/env.client";
+import { PUBLIC_ENV } from "@/lib/env.public";
 import { SERVER_ENV } from "@/lib/env.server";
+import { PushNotificationError } from "@/zap/lib/api/errors";
 
 let webpushInstance: typeof import("web-push") | null = null;
 
@@ -13,13 +14,13 @@ export async function getWebPushService() {
 
   if (
     !(
-      CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY &&
+      PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY &&
       SERVER_ENV.VAPID_PRIVATE_KEY &&
       SETTINGS.NOTIFICATIONS.VAPID_MAIL
     )
   ) {
-    throw new Error(
-      "VAPID configuration is incomplete. Push notifications are not available.",
+    throw new PushNotificationError(
+      "Web Push service is not properly configured. Please check your VAPID keys and email settings.",
     );
   }
 
@@ -27,7 +28,7 @@ export async function getWebPushService() {
 
   webpush.default.setVapidDetails(
     `mailto:${SETTINGS.NOTIFICATIONS.VAPID_MAIL}`,
-    CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+    PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
     SERVER_ENV.VAPID_PRIVATE_KEY,
   );
 

@@ -3,14 +3,15 @@ import "client-only";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import useSWRMutation from "swr/mutation";
 import type z from "zod";
 
-import { orpcClient } from "@/zap/lib/orpc/client";
+import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
 import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";
+import { useORPC } from "@/zap/stores/orpc.store";
 import { useWaitlistStore } from "@/zap/stores/waitlist.store";
 
 export function useWaitlist() {
+  const orpc = useORPC();
   const hasJoined = useWaitlistStore((state) => state.hasJoined);
   const setHasJoined = useWaitlistStore((state) => state.setHasJoined);
 
@@ -19,18 +20,21 @@ export function useWaitlist() {
     defaultValues: { email: "" },
   });
 
-  const { trigger, data, isMutating, error } = useSWRMutation(
-    "submit-waitlist",
+  const { trigger, data, isMutating, error } = useZapMutation(
+    orpc.waitlist.submitWaitlistEmail.key(),
     async (_key, { arg }: { arg: z.infer<typeof WaitlistSchema> }) => {
-      const result = await orpcClient.waitlist.submitWaitlistEmail({
+      const result = await orpc.waitlist.submitWaitlistEmail.call({
         email: arg.email,
       });
 
-      if (result.success) {
+      if (result) {
         form.reset();
       }
 
       return result;
+    },
+    {
+      successMessage: "Thank you for joining the waitlist!",
     },
   );
 

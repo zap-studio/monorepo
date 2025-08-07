@@ -12,8 +12,9 @@ import {
 import { Pool } from "pg";
 
 import * as schema from "@/db/schema";
-import { PROD } from "@/lib/env.client";
+import { PROD } from "@/lib/env.public";
 import { SERVER_ENV } from "@/lib/env.server";
+import { EnvironmentError } from "@/zap/lib/api/errors";
 
 type Database = NodePgDatabase<typeof schema> | NeonHttpDatabase<typeof schema>;
 
@@ -24,7 +25,9 @@ function createDatabase(): Database {
   }
 
   if (!SERVER_ENV.DATABASE_URL_DEV) {
-    throw new Error("DATABASE_URL_DEV is required in development environment");
+    throw new EnvironmentError(
+      "DATABASE_URL_DEV is required in development environment",
+    );
   }
 
   const pool = new Pool({ connectionString: SERVER_ENV.DATABASE_URL_DEV });
@@ -33,3 +36,9 @@ function createDatabase(): Database {
 
 // FIXME: this is a workaround to make the db type compatible with the neon and node-postgres databases
 export const db = createDatabase() as NeonHttpDatabase<typeof schema>;
+
+export type {
+  DatabaseContext,
+  DatabaseOperationResult,
+  UpsertMode,
+} from "./types";

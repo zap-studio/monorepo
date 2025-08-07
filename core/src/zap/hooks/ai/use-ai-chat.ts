@@ -3,8 +3,8 @@ import "client-only";
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { toast } from "sonner";
 
+import { handleClientError } from "@/zap/lib/api/client";
 import type { AIProviderId } from "@/zap/types/ai.types";
 
 export function useAIChat(provider: AIProviderId) {
@@ -19,9 +19,7 @@ export function useAIChat(provider: AIProviderId) {
       },
     }),
     onError: (error: unknown) => {
-      toast.error(
-        `Chat error: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+      handleClientError(error);
     },
   });
 }

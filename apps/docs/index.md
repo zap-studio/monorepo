@@ -22,7 +22,7 @@ features:
     details: Vercel AI SDK + encrypted Zustand store for secure API key and provider config management.
     icon: 🤖
   - title: Typesafe Frontend & Backend
-    details: End-to-end type safety with oRPC, Drizzle ORM, and Effect — seamlessly handling business logic from frontend to backend.
+    details: End-to-end type safety with oRPC and Drizzle ORM — seamlessly handling business logic from frontend to backend.
     icon: 🛡️
   - title: Headless Blog & CMS
     details: Manage your content and blog with MDX and Frontmatter — a fully customizable, self-hosted CMS with a code-first approach.

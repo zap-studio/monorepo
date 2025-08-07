@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-const ClientEnvSchema = z.object({
+import { EnvironmentError } from "../zap/lib/api/errors";
+
+const PublicEnvSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
@@ -24,7 +26,7 @@ const ClientEnvSchema = z.object({
     .optional(),
 });
 
-const envParseResult = ClientEnvSchema.safeParse({
+const envParseResult = PublicEnvSchema.safeParse({
   NODE_ENV: process.env.NODE_ENV,
   VERCEL_ENV: process.env.VERCEL_ENV,
   NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
@@ -47,12 +49,12 @@ if (!envParseResult.success) {
   ].join("\n");
 
   console.error(errorMessage);
-  throw new Error(errorMessage);
+  throw new EnvironmentError(errorMessage);
 }
 
-export const CLIENT_ENV = envParseResult.data;
+export const PUBLIC_ENV = envParseResult.data;
 
 // Derived values
-export const VERCEL = !!CLIENT_ENV.VERCEL_ENV;
-export const DEV = CLIENT_ENV.NODE_ENV !== "production";
-export const PROD = CLIENT_ENV.NODE_ENV === "production";
+export const VERCEL = !!PUBLIC_ENV.VERCEL_ENV;
+export const DEV = PUBLIC_ENV.NODE_ENV !== "production";
+export const PROD = PUBLIC_ENV.NODE_ENV === "production";

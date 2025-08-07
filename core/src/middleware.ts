@@ -7,6 +7,8 @@ import { $fetch } from "@/lib/fetch";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import type { Session } from "@/zap/lib/auth/client";
 
+import { logError } from "./zap/lib/api/logger";
+
 const LOGIN_URL = ZAP_DEFAULT_SETTINGS.AUTH.LOGIN_URL;
 
 export async function middleware(request: NextRequest) {
@@ -64,8 +66,9 @@ export async function middleware(request: NextRequest) {
     });
 
     return response;
-  } catch {
+  } catch (error) {
     // Fallback: redirect to login on any unexpected error
+    logError(error);
     const loginUrl = new URL(LOGIN_URL, request.url);
     loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);

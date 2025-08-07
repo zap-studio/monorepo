@@ -1,19 +1,14 @@
 import "server-only";
 
-import { Effect } from "effect";
-
+import { AuthenticationError } from "@/zap/lib/api/errors";
 import { getUserService } from "@/zap/services/auth/get-user.service";
 
 export async function getUserIdService() {
-  const effect = Effect.gen(function* (_) {
-    const user = yield* _(Effect.promise(() => getUserService()));
+  const user = await getUserService();
 
-    if (!user) {
-      return yield* _(Effect.fail(new Error("User not authenticated")));
-    }
+  if (!user) {
+    throw new AuthenticationError("User not authenticated");
+  }
 
-    return user.id;
-  });
-
-  return await Effect.runPromise(effect);
+  return user.id;
 }

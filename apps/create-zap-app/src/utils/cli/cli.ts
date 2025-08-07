@@ -1,35 +1,25 @@
 import path, { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import chalk from 'chalk';
-import { Effect, pipe } from 'effect';
 import figlet from 'figlet';
 import fs from 'fs-extra';
+import { packageJsonSchema } from '@/schemas/package-json.schema';
 
-export function getPackageVersion() {
-  const program = Effect.gen(function* () {
+export async function getPackageVersion() {
+  try {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
 
-    const packageJsonPath = yield* Effect.try(() =>
-      path.join(__dirname, '..', 'package.json')
-    );
-    const content = yield* Effect.tryPromise(() =>
-      fs.readFile(packageJsonPath, 'utf8')
-    );
+    const packageJsonPath = path.join(__dirname, '..', 'package.json');
+    const content = await fs.readFile(packageJsonPath, 'utf8');
 
-    const pkg = JSON.parse(content);
+    const rawPkg = JSON.parse(content);
+    const pkg = packageJsonSchema.parse(rawPkg);
     return pkg.version;
-  });
-
-  const recovered = pipe(
-    program,
-    Effect.catchAll((error) => {
-      process.stderr.write(`Failed to read package version: ${error}`);
-      return Effect.succeed(undefined);
-    })
-  );
-
-  return recovered;
+  } catch (error) {
+    process.stderr.write(`Failed to read package version: ${error}`);
+    return;
+  }
 }
 
 export function displayWelcome() {
@@ -46,7 +36,7 @@ export function displayWelcome() {
   );
 }
 
-export const displayNextSteps = (filename: string) => {
+export function displayNextSteps(filename: string) {
   process.stdout.write(`\n${chalk.blue('📋 Next steps:')}`);
   process.stdout.write(
     `\n1. Review and customize the variables in ${chalk.cyan(filename)}`
@@ -69,4 +59,4 @@ export const displayNextSteps = (filename: string) => {
   process.stdout.write(
     '\n• Never commit files containing real secrets to version control\n'
   );
-};
+}

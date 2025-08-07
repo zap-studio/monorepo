@@ -1,40 +1,43 @@
 import path from 'node:path';
-import { Effect } from 'effect';
 import fs from 'fs-extra';
+import { FileSystemError } from '@/lib/errors';
 
-export function moveCoreFiles(outputDir: string) {
-  const program = Effect.gen(function* () {
-    const tempDir = yield* Effect.try(() => path.join(outputDir, 'temp'));
-    yield* Effect.try(() => fs.ensureDir(tempDir));
+export async function moveCoreFiles(outputDir: string) {
+  try {
+    const tempDir = path.join(outputDir, 'temp');
+    await fs.ensureDir(tempDir);
 
-    const coreDir = yield* Effect.try(() => path.join(outputDir, 'core'));
-    const files = yield* Effect.tryPromise(() => fs.readdir(coreDir));
+    const coreDir = path.join(outputDir, 'core');
+    const files = await fs.readdir(coreDir);
 
-    for (const file of files) {
-      const srcPath = yield* Effect.try(() => path.join(coreDir, file));
-      const destPath = yield* Effect.try(() => path.join(tempDir, file));
-      yield* Effect.tryPromise(() =>
-        fs.move(srcPath, destPath, { overwrite: true })
-      );
-    }
-  });
-
-  return program;
+    await Promise.all(
+      files.map((file) => {
+        const srcPath = path.join(coreDir, file);
+        const destPath = path.join(tempDir, file);
+        return fs.move(srcPath, destPath, { overwrite: true });
+      })
+    );
+  } catch (error) {
+    throw new FileSystemError(`Failed to move core files: ${error}`);
+  }
 }
 
-export function moveTempFilesToOutput(outputDir: string, tempDir: string) {
-  const program = Effect.gen(function* () {
-    yield* Effect.try(() => fs.ensureDir(tempDir));
+export async function moveTempFilesToOutput(
+  outputDir: string,
+  tempDir: string
+) {
+  try {
+    await fs.ensureDir(tempDir);
 
-    const tempFiles = yield* Effect.tryPromise(() => fs.readdir(tempDir));
-    for (const file of tempFiles) {
-      const srcPath = yield* Effect.try(() => path.join(tempDir, file));
-      const destPath = yield* Effect.try(() => path.join(outputDir, file));
-      yield* Effect.tryPromise(() =>
-        fs.move(srcPath, destPath, { overwrite: true })
-      );
-    }
-  });
-
-  return program;
+    const tempFiles = await fs.readdir(tempDir);
+    await Promise.all(
+      tempFiles.map((file) => {
+        const srcPath = path.join(tempDir, file);
+        const destPath = path.join(outputDir, file);
+        return fs.move(srcPath, destPath, { overwrite: true });
+      })
+    );
+  } catch (error) {
+    throw new FileSystemError(`Failed to move temp files: ${error}`);
+  }
 }

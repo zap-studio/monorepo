@@ -2,6 +2,4 @@ import "server-only";
 
 import { os } from "@orpc/server";
 
-export const base = os.errors({
-  UNAUTHORIZED: {},
-});
+export const base = os;

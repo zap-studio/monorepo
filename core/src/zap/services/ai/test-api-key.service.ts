@@ -1,54 +1,30 @@
 import "server-only";
 
-import { Effect } from "effect";
+import { generateText } from "ai";
 
-import { $fetch } from "@/lib/fetch";
+import { getModel } from "@/zap/lib/ai/get-model";
+import { BadRequestError } from "@/zap/lib/api/errors";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
-interface TestAPIKeyContext {
-  headers: Headers;
-}
 interface TestAPIKeyInput {
   provider: AIProviderId;
   apiKey: string;
   model: ModelName;
 }
 
-export async function testAPIKeyService({
-  input,
-  context,
-}: {
-  input: TestAPIKeyInput;
-  context: TestAPIKeyContext;
-}) {
-  const effect = Effect.gen(function* (_) {
-    const provider = input.provider;
-    const apiKey = input.apiKey;
-    const model = input.model;
-    let headers = new Headers(context.headers);
+export async function testAPIKeyService({ input }: { input: TestAPIKeyInput }) {
+  const { provider, apiKey, model } = input;
 
-    const filteredHeaders = new Headers();
-    for (const [key, value] of headers.entries()) {
-      if (key !== "content-length" && key !== "content-type") {
-        filteredHeaders.append(key, value);
-      }
-    }
-    headers = filteredHeaders;
-
-    yield* _(
-      Effect.tryPromise({
-        try: () =>
-          $fetch("/api/ai/test", {
-            method: "POST",
-            body: { provider, apiKey, model },
-            headers,
-          }),
-        catch: () => new Error("Failed to test API key"),
-      }),
+  await generateText({
+    model: getModel(provider, apiKey, model),
+    prompt: 'Just answer "hello world"',
+    maxOutputTokens: 16, // Minimum tokens to minimize cost and time
+  }).catch((error) => {
+    throw new BadRequestError(
+      "Invalid API key or provider configuration",
+      error,
     );
-
-    return { success: true };
   });
 
-  return await Effect.runPromise(effect);
+  return { message: "API key is valid" };
 }

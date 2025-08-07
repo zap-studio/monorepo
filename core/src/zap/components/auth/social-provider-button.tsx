@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { ZapButton } from "@/components/zap-ui/button";
 import { AUTH_ICONS } from "@/data/auth-icons";
 import { type Provider, ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { handleClientError } from "@/zap/lib/api/client";
+import { AuthenticationError } from "@/zap/lib/api/errors";
 import { authClient } from "@/zap/lib/auth/client";
 
 interface SocialProviderButtonProps {
@@ -25,16 +27,16 @@ export function SocialProviderButton({ provider }: SocialProviderButtonProps) {
       });
 
       if (error) {
-        toast.error("Login failed. Please try again.");
+        throw new AuthenticationError("Login failed. Please try again.");
       }
 
       if (data) {
         toast.success("Login successful!");
       } else {
-        toast.error("Login failed. Please try again.");
+        throw new AuthenticationError("Login failed. Please try again.");
       }
-    } catch {
-      toast.error("Login failed. Please try again.");
+    } catch (error) {
+      handleClientError(error);
     } finally {
       setLoading(false);
     }

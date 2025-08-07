@@ -4,12 +4,12 @@ Zap.ts includes a comprehensive feedback system that allows users to provide rat
 
 ## Overview
 
-- **User Ratings:** 0-10 rating scale with visual feedback
-- **Detailed Feedback:** Optional text descriptions for qualitative insights
-- **One-time Submission:** Users can only submit feedback once per account
-- **Type-safe:** Full TypeScript and Zod validation
-- **Real-time UI:** Optimistic updates with rollback on error
-- **Persistent Storage:** Feedback stored securely in PostgreSQL
+* **User Ratings:** 0-10 rating scale with visual feedback
+* **Detailed Feedback:** Optional text descriptions for qualitative insights
+* **One-time Submission:** Users can only submit feedback once per account
+* **Type-safe:** Full TypeScript and Zod validation
+* **Real-time UI:** Optimistic updates with rollback on error
+* **Persistent Storage:** Feedback stored securely in PostgreSQL
 
 ## How it Works
 
@@ -19,8 +19,8 @@ The feedback system consists of several components working together:
 
 Feedback is stored in a dedicated table with user associations:
 
-```sql
--- src/zap/db/schema/feedback.sql.ts
+```ts
+// src/zap/db/schema/feedback.sql.ts
 export const feedback = pgTable("feedback", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: text("user_id").notNull().unique().references(() => user.id),
@@ -43,29 +43,23 @@ export const submitFeedbackService = async ({
   context: SubmitFeedbackContext;
   input: SubmitFeedbackInput;
 }) => {
-  return await Effect.runPromise(
-    Effect.gen(function* (_) {
-      const userId = context.session.user.id;
+  const userId = context.session.user.id;
 
-      yield* _(
-        Effect.tryPromise({
-          try: () =>
-            db
-              .insert(feedbackTable)
-              .values({
-                userId,
-                rating: input.rating,
-                description: input.description || "",
-                submittedAt: new Date(),
-              })
-              .execute(),
-          catch: (e) => new Error("Field to insert feedback"),
-        })
-      );
+  try {
+    await db
+      .insert(feedbackTable)
+      .values({
+        userId,
+        rating: input.rating,
+        description: input.description || "",
+        submittedAt: new Date(),
+      })
+      .execute();
 
-      return { success: true, message: "The feedback has been submitted" };
-    })
-  );
+    return { message: "The feedback has been submitted" };
+  } catch (e) {
+    throw new Error("Failed to insert feedback");
+  }
 };
 ```
 
@@ -77,7 +71,7 @@ Custom hooks provide a clean API for feedback functionality:
 // src/zap/hooks/features/feedbacks/use-feedback.ts
 export const useUserFeedback = () => {
   const orpc = useORPC();
-  return useSWR(
+  return useZapQuery(
     orpc.feedbacks.getUserFeedback.key(),
     orpc.feedbacks.getUserFeedback.queryOptions().queryFn
   );
@@ -88,18 +82,17 @@ export const useSubmitFeedback = (
 ) => {
   const orpc = useORPC();
 
-  return useSWRMutation(orpc.feedbacks.submit.key(), giveFeedback, {
+  return useZapMutation(orpc.feedbacks.submit.key(), giveFeedback, {
     optimisticData: (current) => ({ ...current, success: true }),
     rollbackOnError: true,
     revalidate: true,
     onSuccess: () => {
       setIsExistingFeedback(true);
-      toast.success("Thank you for your feedback!");
     },
     onError: () => {
       setIsExistingFeedback(false);
-      toast.error("Failed to submit feedback. Please try again.");
     },
+    successMessage: "Thank you for your feedback!",
   });
 };
 ```

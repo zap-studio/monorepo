@@ -1,10 +1,10 @@
 import { PostHog } from "posthog-node";
 
-import { CLIENT_ENV } from "@/lib/env.client";
+import { PUBLIC_ENV } from "@/lib/env.public";
 
 export default function PostHogClient() {
-  const posthogClient = new PostHog(CLIENT_ENV.NEXT_PUBLIC_POSTHOG_KEY || "", {
-    host: CLIENT_ENV.NEXT_PUBLIC_POSTHOG_HOST,
+  const posthogClient = new PostHog(PUBLIC_ENV.NEXT_PUBLIC_POSTHOG_KEY || "", {
+    host: PUBLIC_ENV.NEXT_PUBLIC_POSTHOG_HOST,
     flushAt: 1,
     flushInterval: 0,
   });

@@ -1,6 +1,5 @@
 import "server-only";
 
-import { Effect } from "effect";
 import type webpush from "web-push";
 
 import { db } from "@/db";
@@ -17,39 +16,24 @@ interface SubscribeUserServiceProps {
 export async function subscribeUserService({
   input,
 }: SubscribeUserServiceProps) {
-  const effect = Effect.gen(function* (_) {
-    const subscription = input.subscription;
+  const subscription = input.subscription;
 
-    yield* _(
-      Effect.tryPromise({
-        try: () => getWebPushService(),
-        catch: () => new Error("Failed to get web push"),
-      }),
-    );
+  await getWebPushService();
 
-    const userId = yield* _(
-      Effect.tryPromise({
-        try: () => getUserIdService(),
-        catch: () => new Error("Failed to get user ID"),
-      }),
-    );
+  const userId = await getUserIdService();
 
-    yield* _(
-      Effect.tryPromise({
-        try: () =>
-          db
-            .insert(pushNotifications)
-            .values({
-              subscription,
-              userId,
-            })
-            .execute(),
-        catch: () => new Error("Failed to subscribe user"),
-      }),
-    );
+  await db
+    .insert(pushNotifications)
+    .values({
+      subscription,
+      userId,
+    })
+    .onConflictDoUpdate({
+      target: [pushNotifications.userId],
+      set: {
+        subscription,
+      },
+    });
 
-    return { success: true, message: "User subscribed successfully" };
-  });
-
-  return await Effect.runPromise(effect);
+  return { message: "User subscribed successfully" };
 }
