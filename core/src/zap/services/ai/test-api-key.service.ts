@@ -15,15 +15,16 @@ interface TestAPIKeyInput {
 export async function testAPIKeyService({ input }: { input: TestAPIKeyInput }) {
   const { provider, apiKey, model } = input;
 
-  const { text } = await generateText({
+  await generateText({
     model: getModel(provider, apiKey, model),
     prompt: 'Just answer "hello world"',
     maxOutputTokens: 16, // Minimum tokens to minimize cost and time
+  }).catch((error) => {
+    throw new BadRequestError(
+      "Invalid API key or provider configuration",
+      error,
+    );
   });
-
-  if (!text) {
-    throw new BadRequestError("Invalid API key or provider configuration");
-  }
 
   return { message: "API key is valid" };
 }

@@ -14,19 +14,9 @@ export interface SessionContext {
 }
 
 export const authMiddleware = base.middleware(async ({ next }) => {
-  let _headers: Headers;
-  try {
-    _headers = await headers();
-  } catch {
-    throw new InternalServerError("Failed to get headers");
-  }
+  const _headers = await headers();
 
-  let session: Session | null;
-  try {
-    session = await auth.api.getSession({ headers: _headers });
-  } catch {
-    throw new InternalServerError("Failed to get session");
-  }
+  const session = await auth.api.getSession({ headers: _headers });
 
   if (!session) {
     throw new ORPCError("UNAUTHORIZED", {
@@ -34,17 +24,10 @@ export const authMiddleware = base.middleware(async ({ next }) => {
     });
   }
 
-  try {
-    return await next({
-      context: {
-        session,
-        headers: _headers,
-      },
-    });
-  } catch (error) {
-    throw new InternalServerError(
-      "Failed to execute next middleware",
-      error,
-    ).toORPCError();
-  }
+  return await next({
+    context: {
+      session,
+      headers: _headers,
+    },
+  });
 });
