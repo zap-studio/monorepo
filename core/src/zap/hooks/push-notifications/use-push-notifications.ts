@@ -64,6 +64,7 @@ export function usePushNotifications() {
           }
         },
         successMessage: "Subscribed to push notifications successfully!",
+        skipErrorHandling: true, // Skip error handling to allow custom error handling in the component
       },
     );
 
@@ -79,6 +80,7 @@ export function usePushNotifications() {
         rollbackOnError: false,
         populateCache: (result) => result,
         successMessage: "We will miss you!",
+        skipErrorHandling: true, // Skip error handling to allow custom error handling in the component
       },
     );
 
@@ -108,28 +110,24 @@ export function usePushNotifications() {
       await subscribeTrigger({ subscription: serializedSub });
     } catch (error) {
       handleClientError(error);
-      setSubscriptionState({
-        subscription: null,
-        isSubscribed: false,
-      });
     }
   };
 
   const unsubscribeFromPush = async () => {
-    if (!subscription) {
-      return;
-    }
-
-    setSubscriptionState({
-      subscription: null,
-      isSubscribed: false,
-    });
-
     try {
+      if (!subscription) {
+        return;
+      }
+
+      setSubscriptionState({
+        subscription: null,
+        isSubscribed: false,
+      });
+
       await subscription.unsubscribe();
       await unsubscribeTrigger();
     } catch (error) {
-      handleClientError(error);
+      handleClientError(error, "Failed to unsubscribe from push notifications");
     }
   };
 

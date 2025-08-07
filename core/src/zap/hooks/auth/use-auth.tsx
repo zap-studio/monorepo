@@ -79,8 +79,10 @@ export function useAuth(callbackURL?: string) {
       const response = await authClient.signUp.email({ email, password, name });
 
       if (response.error) {
-        handleClientError(response.error);
-        return;
+        throw new AuthenticationError(
+          response.error?.message || "Registration failed. Please try again.",
+          response.error,
+        );
       }
 
       if (SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION) {

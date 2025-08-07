@@ -32,6 +32,9 @@ export function useWaitlist() {
 
       return result;
     },
+    {
+      successMessage: "Thank you for joining the waitlist!",
+    },
   );
 
   const onSubmit = async (_data: z.infer<typeof WaitlistSchema>) => {
