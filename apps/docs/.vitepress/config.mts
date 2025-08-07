@@ -136,10 +136,6 @@ export default defineConfig({
             link: '/docs/ai-powered-ide/overview',
           },
           {
-            text: 'Custom Rules',
-            link: '/docs/ai-powered-ide/custom-rules',
-          },
-          {
             text: 'Model Context Protocols (MCPs)',
             link: '/docs/ai-powered-ide/mcps',
           },
