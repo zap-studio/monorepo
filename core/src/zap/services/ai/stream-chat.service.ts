@@ -22,6 +22,13 @@ export async function streamChatService({ input }: StreamChatProps) {
   const { provider, messages } = input;
 
   const aiSettings = await orpcServer.ai.getAISettings({ provider });
+
+  if (!aiSettings) {
+    throw new BadRequestError(
+      "AI settings not configured for the selected provider",
+    );
+  }
+
   const { apiKey, model } = aiSettings;
 
   if (!apiKey) {

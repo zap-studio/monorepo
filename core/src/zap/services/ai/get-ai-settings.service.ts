@@ -1,7 +1,6 @@
 import "server-only";
 
 import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
-import { NotFoundError } from "@/zap/lib/api/errors";
 import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { decrypt } from "@/zap/lib/crypto/decrypt";
 import type { AIProviderId } from "@/zap/types/ai.types";
@@ -29,7 +28,7 @@ export async function getAISettingsService({
   });
 
   if (!result.length) {
-    throw new NotFoundError("AI settings not found");
+    return null;
   }
 
   const encryptedAPIKey = result[0]?.encryptedApiKey;
