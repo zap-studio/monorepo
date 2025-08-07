@@ -23,7 +23,7 @@ export async function submitWaitlistEmailService({
     })
     .returning({ id: waitlist.id });
 
-  if (result.length === 0) {
+  if (!result.length) {
     throw new BadRequestError(
       "This email is already on the waitlist. Please check your inbox for updates.",
     );

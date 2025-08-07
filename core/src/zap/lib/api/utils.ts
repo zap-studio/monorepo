@@ -11,6 +11,7 @@ import {
 } from "@/zap/lib/api/errors";
 import { logError } from "@/zap/lib/api/logger";
 import { auth } from "@/zap/lib/auth/server";
+import { generateUuid } from "@/zap/lib/crypto/utils";
 
 export type HandlerFunction<T extends unknown[], R> = (
   ...args: T
@@ -33,7 +34,7 @@ export interface HandlerOptions {
 }
 
 export function generateCorrelationId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+  return generateUuid();
 }
 
 export function createErrorResponse(

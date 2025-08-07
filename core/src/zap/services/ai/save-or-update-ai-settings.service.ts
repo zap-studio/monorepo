@@ -47,7 +47,7 @@ export async function saveOrUpdateAISettingsService({
       })
       .returning({ id: userAISettings.id });
 
-    if (result.length === 0) {
+    if (!result.length) {
       throw new BadRequestError("AI settings already exist for this provider");
     }
 

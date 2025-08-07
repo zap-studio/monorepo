@@ -3,9 +3,8 @@ import "server-only";
 import { createMistral } from "@ai-sdk/mistral";
 import { createOpenAI } from "@ai-sdk/openai";
 
+import { BadRequestError } from "@/zap/lib/api/errors";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
-
-import { BadRequestError } from "../api/errors";
 
 export function getModel(
   provider: AIProviderId,

@@ -1,4 +1,34 @@
-type HttpStatusCode = 400 | 401 | 403 | 404 | 409 | 500;
+type HttpStatusCode =
+  // 2xx Success
+  | 200 // OK
+  | 201 // Created
+  | 202 // Accepted
+  | 204 // No Content
+
+  // 3xx Redirection
+  | 301 // Moved Permanently
+  | 302 // Found
+  | 304 // Not Modified
+
+  // 4xx Client Errors
+  | 400 // Bad Request
+  | 401 // Unauthorized
+  | 403 // Forbidden
+  | 404 // Not Found
+  | 405 // Method Not Allowed
+  | 409 // Conflict
+  | 410 // Gone
+  | 415 // Unsupported Media Type
+  | 418 // I'm a teapot (fun, occasionally used)
+  | 422 // Unprocessable Entity
+  | 429 // Too Many Requests
+
+  // 5xx Server Errors
+  | 500 // Internal Server Error
+  | 501 // Not Implemented
+  | 502 // Bad Gateway
+  | 503 // Service Unavailable
+  | 504; // Gateway Timeout
 
 export class BaseError extends Error {
   statusCode: HttpStatusCode;
