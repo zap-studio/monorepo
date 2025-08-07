@@ -18,7 +18,7 @@ import { EnvironmentError } from "@/zap/lib/api/errors";
 
 type Database = NodePgDatabase<typeof schema> | NeonHttpDatabase<typeof schema>;
 
-function createDatabase(): Promise<Database> {
+function createDatabase(): Database {
   if (PROD) {
     const client = neon(SERVER_ENV.DATABASE_URL);
     return drizzleNeon({ client, schema });
