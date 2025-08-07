@@ -47,7 +47,7 @@ export function usePushNotifications() {
           body: arg,
         }),
       {
-        optimisticData: { success: true, subscriptionId: "temp-id" },
+        optimisticData: { subscriptionId: "temp-id" },
         rollbackOnError: true,
         populateCache: (result) => result,
         onError: async () => {
@@ -75,7 +75,6 @@ export function usePushNotifications() {
           method: "DELETE",
         }),
       {
-        optimisticData: { success: true },
         rollbackOnError: false,
         populateCache: (result) => result,
         successMessage: "We will miss you!",

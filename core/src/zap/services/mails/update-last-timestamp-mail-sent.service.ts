@@ -23,7 +23,6 @@ export async function updateLastTimestampMailSentService({
     .execute();
 
   return {
-    success: true,
     message: "Last email sent timestamp updated successfully.",
   };
 }

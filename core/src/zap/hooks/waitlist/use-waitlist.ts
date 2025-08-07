@@ -27,7 +27,7 @@ export function useWaitlist() {
         email: arg.email,
       });
 
-      if (result.success) {
+      if (result) {
         form.reset();
       }
 

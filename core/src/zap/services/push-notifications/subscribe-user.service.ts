@@ -35,5 +35,5 @@ export async function subscribeUserService({
       },
     });
 
-  return { success: true, message: "User subscribed successfully" };
+  return { message: "User subscribed successfully" };
 }

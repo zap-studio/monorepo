@@ -14,5 +14,5 @@ export async function unsubscribeUserService() {
     .where(eq(pushNotifications.userId, userId))
     .execute();
 
-  return { success: true, message: "User unsubscribed successfully" };
+  return { message: "User unsubscribed successfully" };
 }

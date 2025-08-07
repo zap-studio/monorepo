@@ -38,5 +38,5 @@ export async function testAPIKeyService({
     headers,
   });
 
-  return { success: true, message: "API key is valid" };
+  return { message: "API key is valid" };
 }

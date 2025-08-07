@@ -52,7 +52,6 @@ export async function saveOrUpdateAISettingsService({
     }
 
     return {
-      success: true,
       message: "AI settings created successfully.",
       data: {
         id: result[0].id,
@@ -73,7 +72,7 @@ export async function saveOrUpdateAISettingsService({
         },
       });
 
-    return { success: true, message: "AI settings updated successfully." };
+    return { message: "AI settings updated successfully." };
   }
 
   await db
@@ -88,5 +87,5 @@ export async function saveOrUpdateAISettingsService({
       },
     });
 
-  return { success: true, message: "AI settings saved successfully." };
+  return { message: "AI settings saved successfully." };
 }

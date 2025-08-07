@@ -56,7 +56,7 @@ export const submitFeedbackService = async ({
       })
       .execute();
 
-    return { success: true, message: "The feedback has been submitted" };
+    return { message: "The feedback has been submitted" };
   } catch (e) {
     throw new Error("Failed to insert feedback");
   }

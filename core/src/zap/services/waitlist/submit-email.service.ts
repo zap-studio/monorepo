@@ -30,7 +30,6 @@ export async function submitWaitlistEmailService({
   }
 
   return {
-    success: true,
     message: "Successfully joined the waitlist",
   };
 }

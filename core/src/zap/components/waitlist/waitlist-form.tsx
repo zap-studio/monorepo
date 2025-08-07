@@ -55,7 +55,7 @@ export function WaitlistForm() {
               animate={{ opacity: 1, y: 0 }}
               className={cn(
                 "text-sm",
-                result.success ? "text-green-600" : "text-destructive",
+                result ? "text-green-600" : "text-destructive",
               )}
               exit={{ opacity: 0, y: -5 }}
               initial={{ opacity: 0, y: -5 }}
