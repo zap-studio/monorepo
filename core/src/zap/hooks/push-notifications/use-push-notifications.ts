@@ -1,11 +1,11 @@
 "use client";
 import "client-only";
 
-import { toast } from "sonner";
-import useSWRMutation from "swr/mutation";
-
-import { CLIENT_ENV } from "@/lib/env.client";
+import { PUBLIC_ENV } from "@/lib/env.public";
 import { $fetch } from "@/lib/fetch";
+import { handleClientError } from "@/zap/lib/api/client";
+import { ClientError, EnvironmentError } from "@/zap/lib/api/errors";
+import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
 import { urlBase64ToUint8Array } from "@/zap/lib/pwa/utils";
 import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
 
@@ -35,7 +35,7 @@ export function usePushNotifications() {
   );
 
   const { trigger: subscribeTrigger, isMutating: isSubscribing } =
-    useSWRMutation<
+    useZapMutation<
       SubscriptionResponse,
       ApiError,
       string,
@@ -48,13 +48,10 @@ export function usePushNotifications() {
           body: arg,
         }),
       {
-        optimisticData: { success: true, subscriptionId: "temp-id" },
+        optimisticData: { subscriptionId: "temp-id" },
         rollbackOnError: true,
         populateCache: (result) => result,
-        onSuccess: () => {
-          toast.success("Subscribed to notifications!");
-        },
-        onError: async (error) => {
+        onError: async () => {
           if (subscription) {
             try {
               await subscription.unsubscribe();
@@ -65,29 +62,24 @@ export function usePushNotifications() {
               });
             }
           }
-
-          toast.error(`Failed to subscribe: ${error.message}`);
         },
+        successMessage: "Subscribed to push notifications successfully!",
+        skipErrorHandling: true, // Skip error handling to allow custom error handling in the component
       },
     );
 
   const { trigger: unsubscribeTrigger, isMutating: isUnsubscribing } =
-    useSWRMutation<UnsubscribeResponse, ApiError, string>(
+    useZapMutation<UnsubscribeResponse, ApiError, string>(
       "/api/user/notifications/unsubscribe",
       (url: string) =>
         $fetch<UnsubscribeResponse>(url, {
           method: "DELETE",
         }),
       {
-        optimisticData: { success: true },
         rollbackOnError: false,
         populateCache: (result) => result,
-        onSuccess: () => {
-          toast.success("We will miss you!");
-        },
-        onError: () => {
-          toast.error("Failed to unsubscribe from notifications.");
-        },
+        successMessage: "We will miss you!",
+        skipErrorHandling: true, // Skip error handling to allow custom error handling in the component
       },
     );
 
@@ -97,12 +89,12 @@ export function usePushNotifications() {
     try {
       const registration = await navigator.serviceWorker.ready;
 
-      if (!CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
-        throw new Error("VAPID public key is not set");
+      if (!PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
+        throw new EnvironmentError("VAPID public key is not set");
       }
 
       const applicationServerKey = urlBase64ToUint8Array(
-        CLIENT_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+        PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
       );
 
       const sub = await registration.pushManager.subscribe({
@@ -116,39 +108,25 @@ export function usePushNotifications() {
 
       await subscribeTrigger({ subscription: serializedSub });
     } catch (error) {
-      const message =
-        (error instanceof Error && error.message) || "An error occurred";
+      handleClientError(error);
+    }
+  };
 
-      if (message.includes("ServiceWorker")) {
-        toast.error("Service worker not ready");
-      } else if (message.includes("VAPID")) {
-        toast.error(message);
-      } else {
-        toast.error("Failed to subscribe to push notifications");
+  const unsubscribeFromPush = async () => {
+    try {
+      if (!subscription) {
+        throw new ClientError("No active subscription found");
       }
 
       setSubscriptionState({
         subscription: null,
         isSubscribed: false,
       });
-    }
-  };
 
-  const unsubscribeFromPush = async () => {
-    if (!subscription) {
-      return;
-    }
-
-    setSubscriptionState({
-      subscription: null,
-      isSubscribed: false,
-    });
-
-    try {
       await subscription.unsubscribe();
       await unsubscribeTrigger();
-    } catch {
-      toast.error("Failed to unsubscribe from push notifications");
+    } catch (error) {
+      handleClientError(error, "Failed to unsubscribe from push notifications");
     }
   };
 

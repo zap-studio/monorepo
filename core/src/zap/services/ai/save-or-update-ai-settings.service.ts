@@ -1,11 +1,8 @@
 import "server-only";
 
-import { and, eq } from "drizzle-orm";
-import { Effect } from "effect";
-
-import { db } from "@/db";
+import { db, type UpsertMode } from "@/db";
 import { userAISettings } from "@/db/schema";
-import { getApiSettingsForUserAndProviderQuery } from "@/zap/db/queries/ai.query";
+import { BadRequestError } from "@/zap/lib/api/errors";
 import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { encrypt } from "@/zap/lib/crypto/encrypt";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
@@ -13,6 +10,7 @@ import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 interface SaveOrUpdateAISettingsContext {
   session: { user: { id: string } };
 }
+
 interface SaveOrUpdateAISettingsInput {
   provider: AIProviderId;
   model: ModelName;
@@ -22,74 +20,72 @@ interface SaveOrUpdateAISettingsInput {
 export async function saveOrUpdateAISettingsService({
   context,
   input,
+  mode = "upsert",
 }: {
   context: SaveOrUpdateAISettingsContext;
   input: SaveOrUpdateAISettingsInput;
+  mode?: UpsertMode;
 }) {
-  const effect = Effect.gen(function* (_) {
-    const userId = context.session.user.id;
-    const provider = input.provider;
-    const apiKey = input.apiKey;
-    const model = input.model;
+  const userId = context.session.user.id;
+  const { provider, apiKey, model } = input;
 
-    const encryptedAPIKey = yield* _(
-      Effect.tryPromise({
-        try: () => encrypt(apiKey, encryptionKeyHex),
-        catch: () => new Error("Failed to encrypt API key"),
-      }),
-    );
+  const encryptedAPIKey = await encrypt(apiKey, encryptionKeyHex);
 
-    const existingSettings = yield* _(
-      Effect.tryPromise({
-        try: () =>
-          getApiSettingsForUserAndProviderQuery.execute({
-            userId,
-            provider,
-          }),
-        catch: () => new Error("Failed to get AI settings"),
-      }),
-    );
+  const values = {
+    userId,
+    provider,
+    model,
+    encryptedApiKey: encryptedAPIKey,
+  };
 
-    if (existingSettings.length > 0) {
-      yield* _(
-        Effect.tryPromise({
-          try: () =>
-            db
-              .update(userAISettings)
-              .set({
-                model,
-                encryptedApiKey: encryptedAPIKey,
-              })
-              .where(
-                and(
-                  eq(userAISettings.userId, userId),
-                  eq(userAISettings.provider, provider),
-                ),
-              )
-              .execute(),
-          catch: () => new Error("Failed to update AI settings"),
-        }),
-      );
-    } else {
-      yield* _(
-        Effect.tryPromise({
-          try: () =>
-            db
-              .insert(userAISettings)
-              .values({
-                userId,
-                provider,
-                model,
-                encryptedApiKey: encryptedAPIKey,
-              })
-              .execute(),
-          catch: () => new Error("Failed to save AI settings"),
-        }),
-      );
+  if (mode === "create-only") {
+    const result = await db
+      .insert(userAISettings)
+      .values(values)
+      .onConflictDoNothing({
+        target: [userAISettings.userId, userAISettings.provider],
+      })
+      .returning({ id: userAISettings.id });
+
+    if (!result.length) {
+      throw new BadRequestError("AI settings already exist for this provider");
     }
 
-    return { success: true };
-  });
+    return {
+      message: "AI settings created successfully.",
+      data: {
+        id: result[0].id,
+      },
+    };
+  }
 
-  return await Effect.runPromise(effect);
+  if (mode === "update-only") {
+    await db
+      .insert(userAISettings)
+      .values(values)
+      .onConflictDoUpdate({
+        target: [userAISettings.userId, userAISettings.provider],
+        set: {
+          model,
+          encryptedApiKey: encryptedAPIKey,
+          updatedAt: new Date(),
+        },
+      });
+
+    return { message: "AI settings updated successfully." };
+  }
+
+  await db
+    .insert(userAISettings)
+    .values(values)
+    .onConflictDoUpdate({
+      target: [userAISettings.userId, userAISettings.provider],
+      set: {
+        model,
+        encryptedApiKey: encryptedAPIKey,
+        updatedAt: new Date(),
+      },
+    });
+
+  return { message: "AI settings saved successfully." };
 }

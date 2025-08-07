@@ -9,8 +9,9 @@ import type { z } from "zod";
 import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { handleClientError } from "@/zap/lib/api/client";
+import { AuthenticationError } from "@/zap/lib/api/errors";
 import { authClient } from "@/zap/lib/auth/client";
-import { handleCompromisedPasswordError } from "@/zap/lib/auth/utils";
 import type {
   LoginFormSchema,
   RegisterFormSchema,
@@ -31,8 +32,8 @@ export function useAuth(callbackURL?: string) {
         callbackURL: ZAP_DEFAULT_SETTINGS.AUTH.VERIFIED_EMAIL_PATH,
       });
       startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
-    } catch {
-      toast.error("Failed to send verification email");
+    } catch (error) {
+      handleClientError(error);
     }
   };
 
@@ -46,8 +47,9 @@ export function useAuth(callbackURL?: string) {
       const response = await authClient.signIn.email({ email, password });
 
       if (response.error) {
-        toast.error("Login failed. Please check your credentials.");
-        return;
+        throw new AuthenticationError(
+          "Login failed. Please check your credentials.",
+        );
       }
 
       if (
@@ -55,16 +57,15 @@ export function useAuth(callbackURL?: string) {
         !response.data?.user?.emailVerified
       ) {
         await sendVerificationMail(email);
-        toast.error(
+        throw new AuthenticationError(
           "Please verify your email address. A verification email has been sent.",
         );
-        return;
       }
 
       toast.success("Login successful!");
       router.push(callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN);
-    } catch {
-      toast.error("Login failed. Please check your credentials.");
+    } catch (error) {
+      handleClientError(error);
     }
   };
 
@@ -78,8 +79,10 @@ export function useAuth(callbackURL?: string) {
       const response = await authClient.signUp.email({ email, password, name });
 
       if (response.error) {
-        handleCompromisedPasswordError(response.error);
-        return;
+        throw new AuthenticationError(
+          response.error?.message || "Registration failed. Please try again.",
+          response.error,
+        );
       }
 
       if (SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION) {
@@ -92,8 +95,8 @@ export function useAuth(callbackURL?: string) {
 
       toast.success("Registration successful!");
       router.push(callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_UP);
-    } catch (e) {
-      handleCompromisedPasswordError(e);
+    } catch (error) {
+      handleClientError(error);
     }
   };
 

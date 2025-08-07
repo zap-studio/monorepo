@@ -1,8 +1,7 @@
 import "client-only";
 
-import useSWR from "swr";
-
 import type { ProductMetadata } from "@/zap.config";
+import { useZapQuery } from "@/zap/lib/api/hooks/use-zap-query";
 import { authClient } from "@/zap/lib/auth/client";
 import { getProduct } from "@/zap/lib/polar/utils";
 
@@ -12,7 +11,7 @@ async function fetchCustomerState() {
 }
 
 export function useCustomerState() {
-  return useSWR("customer-state", fetchCustomerState);
+  return useZapQuery("customer-state", fetchCustomerState);
 }
 
 export function useActiveSubscriptions() {

@@ -1,23 +1,15 @@
 import "server-only";
 
-import { Effect } from "effect";
-
 import { getNumberOfPeopleInWaitlistQuery } from "@/zap/db/queries/waitlist.query";
+import { NotFoundError } from "@/zap/lib/api/errors";
 
 export async function getNumberOfPeopleInWaitlistService() {
-  const effect = Effect.gen(function* () {
-    const result = yield* Effect.tryPromise(() =>
-      getNumberOfPeopleInWaitlistQuery.execute(),
-    );
+  const result = await getNumberOfPeopleInWaitlistQuery.execute();
 
-    const record = result[0];
+  if (!result.length) {
+    throw new NotFoundError("No waitlist records found");
+  }
 
-    if (!record) {
-      return yield* Effect.fail(new Error("Error fetching waitlist count"));
-    }
-
-    return record.count;
-  });
-
-  return await Effect.runPromise(effect);
+  const record = result[0];
+  return record.count;
 }

@@ -181,20 +181,6 @@ Indeed, arrow functions assigned to variables often show up as "Anonymous" or wi
 
 Thus, named functions offer superior debugging capabilities and component identification in React DevTools compared to anonymous arrow functions.
 
-## Error Handling
-
-Managing errors gracefully is crucial for robust apps. Zap.ts encourages using [Effect](https://effect.website) — a modern, composable effect system for TypeScript and JavaScript.
-
-Effect helps you write **type-safe**, **declarative** error handling and async workflows that are:
-
-* Predictable and composable
-* Easy to test and maintain
-* Seamlessly integrated with TypeScript’s type system
-
-By modeling failures explicitly, you avoid unexpected crashes and make your app’s behavior more reliable.
-
-Learn more about [Effect](https://effect.website/docs) and how it can elevate your error handling strategy here.
-
 ## Performance & Optimization
 
 Performance directly impacts user experience and SEO. Here are the key Next.js _optimization strategies_ to understand:

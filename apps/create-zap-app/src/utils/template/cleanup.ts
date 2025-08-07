@@ -1,56 +1,51 @@
 import path from 'node:path';
-import { Effect } from 'effect';
 import fs from 'fs-extra';
 import { LOCKFILES } from '@/data/package-manager';
+import { FileSystemError } from '@/lib/errors';
 
-export function cleanupOutputDirectory(outputDir: string) {
-  const program = Effect.gen(function* () {
-    const ouputFiles = yield* Effect.tryPromise(() => fs.readdir(outputDir));
+export async function cleanupOutputDirectory(outputDir: string) {
+  try {
+    const outputFiles = await fs.readdir(outputDir);
 
-    for (const file of ouputFiles) {
-      const filePath = yield* Effect.try(() => path.join(outputDir, file));
-      if (file !== 'temp') {
-        yield* Effect.tryPromise(() => fs.remove(filePath));
-      }
-    }
-  });
+    const removePromises = outputFiles
+      .filter((file) => file !== 'temp')
+      .map((file) => {
+        const filePath = path.join(outputDir, file);
+        return fs.remove(filePath);
+      });
 
-  return program;
+    await Promise.all(removePromises);
+  } catch (error) {
+    throw new FileSystemError(`Failed to cleanup output directory: ${error}`);
+  }
 }
 
-export function removeLockFiles(outputDir: string) {
-  const program = Effect.gen(function* () {
-    for (const lockFile of LOCKFILES) {
-      const lockFilePath = yield* Effect.try(() =>
-        path.join(outputDir, lockFile)
-      );
-      if (yield* Effect.try(() => fs.existsSync(lockFilePath))) {
-        yield* Effect.tryPromise(() => fs.remove(lockFilePath));
-      }
-    }
-  });
+export async function removeLockFiles(outputDir: string) {
+  try {
+    const removePromises = LOCKFILES.map((lockFile) =>
+      path.join(outputDir, lockFile)
+    )
+      .filter((lockFilePath) => fs.existsSync(lockFilePath))
+      .map((lockFilePath) => fs.remove(lockFilePath));
 
-  return program;
+    await Promise.all(removePromises);
+  } catch (error) {
+    throw new FileSystemError(`Failed to remove lock files: ${error}`);
+  }
 }
 
-export function cleanupPackageJson(outputDir: string) {
-  const program = Effect.gen(function* () {
-    const packageJsonPath = yield* Effect.try(() =>
-      path.join(outputDir, 'package.json')
-    );
-    if (yield* Effect.try(() => fs.existsSync(packageJsonPath))) {
-      const packageJson = yield* Effect.tryPromise(() =>
-        fs.readJson(packageJsonPath)
-      );
+export async function cleanupPackageJson(outputDir: string) {
+  try {
+    const packageJsonPath = path.join(outputDir, 'package.json');
+    if (fs.existsSync(packageJsonPath)) {
+      const packageJson = await fs.readJson(packageJsonPath);
 
       if (packageJson.packageManager) {
         packageJson.packageManager = undefined;
-        yield* Effect.try(() =>
-          fs.writeJson(packageJsonPath, packageJson, { spaces: 2 })
-        );
+        await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
       }
     }
-  });
-
-  return program;
+  } catch (error) {
+    throw new FileSystemError(`Failed to cleanup package.json: ${error}`);
+  }
 }

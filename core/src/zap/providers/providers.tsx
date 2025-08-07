@@ -8,7 +8,7 @@ import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { useEffect } from "react";
 import { SWRConfig } from "swr";
 
-import { CLIENT_ENV } from "@/lib/env.client";
+import { PUBLIC_ENV } from "@/lib/env.public";
 import { ThemeProvider } from "@/providers/theme.provider";
 import SuspendedPostHogPageView from "@/zap/components/analytics/posthog-page-view";
 
@@ -26,8 +26,8 @@ export default function Providers({
       return;
     }
 
-    posthog.init(CLIENT_ENV.NEXT_PUBLIC_POSTHOG_KEY || "", {
-      api_host: CLIENT_ENV.NEXT_PUBLIC_POSTHOG_HOST || "",
+    posthog.init(PUBLIC_ENV.NEXT_PUBLIC_POSTHOG_KEY || "", {
+      api_host: PUBLIC_ENV.NEXT_PUBLIC_POSTHOG_HOST || "",
       capture_pageview: false, // Disable automatic pageview tracking
       capture_pageleave: true, // Enable automatic pageleave tracking
     });

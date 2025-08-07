@@ -1,6 +1,6 @@
 import "server-only";
 
-import { Effect } from "effect";
+import { ORPCError } from "@orpc/client";
 import { headers } from "next/headers";
 
 import { base } from "@/rpc/middlewares/base.middleware";
@@ -12,45 +12,21 @@ export interface SessionContext {
   readonly headers: Headers;
 }
 
-export const authMiddleware = base.middleware(async ({ next, errors }) => {
-  const effect = Effect.gen(function* (_) {
-    const _headers = yield* _(
-      Effect.tryPromise({
-        try: () => headers(),
-        catch: () => new Error("Failed to get headers"),
-      }),
-    );
+export const authMiddleware = base.middleware(async ({ next }) => {
+  const _headers = await headers();
 
-    const session = yield* _(
-      Effect.tryPromise({
-        try: async () => auth.api.getSession({ headers: _headers }),
-        catch: () => new Error("Failed to get session"),
-      }),
-    );
+  const session = await auth.api.getSession({ headers: _headers });
 
-    if (!session) {
-      return yield* _(
-        Effect.fail(
-          errors.UNAUTHORIZED({
-            message: "Unauthorized access",
-          }),
-        ),
-      );
-    }
+  if (!session) {
+    throw new ORPCError("UNAUTHORIZED", {
+      message: "Unauthorized access",
+    });
+  }
 
-    return yield* _(
-      Effect.tryPromise({
-        try: async () =>
-          next({
-            context: {
-              session,
-              headers: _headers,
-            },
-          }),
-        catch: () => new Error("Failed to execute next middleware"),
-      }),
-    );
+  return await next({
+    context: {
+      session,
+      headers: _headers,
+    },
   });
-
-  return await Effect.runPromise(effect);
 });

@@ -1,9 +1,9 @@
 import "server-only";
 
-import { Effect } from "effect";
 import type { JSX } from "react";
 
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { MailError } from "@/zap/lib/api/errors";
 import { resend } from "@/zap/lib/resend/server";
 
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
@@ -13,30 +13,20 @@ export interface SendMailProps {
 }
 
 export async function sendMailService({ input }: SendMailProps) {
-  const effect = Effect.gen(function* (_) {
-    const subject = input.subject;
-    const recipients = input.recipients;
-    const react = input.react;
+  const subject = input.subject;
+  const recipients = input.recipients;
+  const react = input.react;
 
-    const { data, error } = yield* _(
-      Effect.tryPromise({
-        try: () =>
-          resend.emails.send({
-            from,
-            to: recipients,
-            subject,
-            react,
-          }),
-        catch: () => new Error("Failed to send mail"),
-      }),
-    );
-
-    if (error) {
-      return yield* _(Effect.fail(error));
-    }
-
-    return data;
+  const { data, error } = await resend.emails.send({
+    from,
+    to: recipients,
+    subject,
+    react,
   });
 
-  return await Effect.runPromise(effect);
+  if (error) {
+    throw new MailError(`Failed to send mail: ${error.message}`, error);
+  }
+
+  return data;
 }

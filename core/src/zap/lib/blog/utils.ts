@@ -4,84 +4,68 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { format, formatDistanceToNow, parseISO } from "date-fns";
-import { Effect } from "effect";
 import matter from "gray-matter";
 
 import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
+import { ApplicationError, FileOperationError } from "@/zap/lib/api/errors";
 import { postMetadataSchema } from "@/zap/schemas/blog.schema";
 
 const BLOG_DIR = path.join(process.cwd(), "src", "blog");
 
 function parseFrontmatter(fileContent: string) {
-  return Effect.try({
-    try: () => matter(fileContent),
-    catch: (error) =>
-      new Error(
-        `Failed to parse frontmatter: ${error instanceof Error ? error.message : String(error)}`,
-      ),
-  }).pipe(
-    Effect.flatMap(({ data: metadata, content }) =>
-      Effect.try({
-        try: () => ({
-          metadata: postMetadataSchema.parse(metadata),
-          content,
-        }),
-        catch: (error) =>
-          new Error(
-            `Invalid frontmatter structure: ${error instanceof Error ? error.message : String(error)}`,
-          ),
-      }),
-    ),
-  );
+  try {
+    const { data: metadata, content } = matter(fileContent);
+    return {
+      metadata: postMetadataSchema.parse(metadata),
+      content,
+    };
+  } catch (error) {
+    throw new ApplicationError("Failed to parse frontmatter", error);
+  }
 }
 
 async function getMDXFiles(dir: string) {
-  const effect = Effect.tryPromise({
-    try: () => fs.readdir(dir),
-    catch: (error) => new Error(`Failed to read directory: ${error}`),
-  }).pipe(
-    Effect.map((files) =>
-      files.filter((file) => path.extname(file) === ".mdx"),
-    ),
-  );
-
-  return await Effect.runPromise(effect);
+  try {
+    const files = await fs.readdir(dir);
+    return files.filter((file) => path.extname(file) === ".mdx");
+  } catch (error) {
+    throw new FileOperationError("Failed to read directory", error);
+  }
 }
 
 async function readMDXFile(filePath: string) {
-  const effect = Effect.tryPromise({
-    try: () => fs.readFile(filePath, "utf-8"),
-    catch: (error) => new Error(`Failed to read file ${filePath}: ${error}`),
-  }).pipe(Effect.flatMap(parseFrontmatter));
-
-  return await Effect.runPromise(effect);
+  try {
+    const fileContent = await fs.readFile(filePath, "utf-8");
+    return parseFrontmatter(fileContent);
+  } catch (error) {
+    throw new FileOperationError("Failed to read file", error);
+  }
 }
 
 async function getMDXData(dir: string) {
-  const effect = Effect.tryPromise({
-    try: () => getMDXFiles(dir),
-    catch: (error) => new Error(`Failed to get MDX files: ${error}`),
-  }).pipe(
-    Effect.flatMap((mdxFiles) =>
-      Effect.all(
-        mdxFiles.map((file) =>
-          Effect.tryPromise({
-            try: () => readMDXFile(path.join(dir, file)),
-            catch: (error) =>
-              new Error(`Failed to read MDX file ${file}: ${error}`),
-          }).pipe(
-            Effect.map(({ metadata, content }) => ({
-              metadata,
-              slug: path.basename(file, path.extname(file)),
-              content,
-            })),
-          ),
-        ),
-      ),
-    ),
-  );
-
-  return await Effect.runPromise(effect);
+  try {
+    const mdxFiles = await getMDXFiles(dir);
+    const posts = await Promise.all(
+      mdxFiles.map(async (file) => {
+        try {
+          const { metadata, content } = await readMDXFile(path.join(dir, file));
+          return {
+            metadata,
+            slug: path.basename(file, path.extname(file)),
+            content,
+          };
+        } catch (error) {
+          throw new FileOperationError(
+            `Failed to read MDX file ${file}`,
+            error,
+          );
+        }
+      }),
+    );
+    return posts;
+  } catch (error) {
+    throw new ApplicationError("Failed to get MDX data", error);
+  }
 }
 
 export async function getBlogPosts() {
@@ -97,18 +81,18 @@ export async function getBlogPostsMetadata() {
 }
 
 export async function getBlogPost(slug: string) {
-  const effect = Effect.tryPromise({
-    try: () => readMDXFile(path.join(BLOG_DIR, `${slug}.mdx`)),
-    catch: (error) => new Error(`Failed to read blog post ${slug}: ${error}`),
-  }).pipe(
-    Effect.map(({ metadata, content }) => ({
+  try {
+    const { metadata, content } = await readMDXFile(
+      path.join(BLOG_DIR, `${slug}.mdx`),
+    );
+    return {
       metadata,
       slug,
       content,
-    })),
-  );
-
-  return await Effect.runPromise(effect);
+    };
+  } catch (error) {
+    throw new ApplicationError(`Failed to read blog post ${slug}`, error);
+  }
 }
 
 export function formatDate(date: string, includeRelative = false) {

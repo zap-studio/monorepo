@@ -1,5 +1,7 @@
 import type * as webpush from "web-push";
 
+import { ApplicationError } from "@/zap/lib/api/errors";
+
 export function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -29,8 +31,8 @@ export function subscriptionToWebPushSubscription(
   const p256dh = subscription.getKey("p256dh");
   const auth = subscription.getKey("auth");
 
-  if (!p256dh || !auth) {
-    throw new Error("Invalid PushSubscription object");
+  if (!(p256dh && auth)) {
+    throw new ApplicationError("Invalid PushSubscription object");
   }
 
   return {

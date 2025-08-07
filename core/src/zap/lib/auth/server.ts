@@ -17,6 +17,7 @@ import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { SERVER_ENV } from "@/lib/env.server";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { MailError } from "@/zap/lib/api/errors";
 import { polarClient } from "@/zap/lib/polar/server";
 import { canSendMailService } from "@/zap/services/mails/can-send-mail.service";
 import { sendForgotPasswordMailService } from "@/zap/services/mails/send-forgot-password-mail.service";
@@ -37,7 +38,7 @@ export const auth = betterAuth({
       });
 
       if (!canSend) {
-        throw new Error(
+        throw new MailError(
           `Please wait ${timeLeft} seconds before requesting another password reset email.`,
         );
       }
@@ -64,7 +65,7 @@ export const auth = betterAuth({
       });
 
       if (!canSend) {
-        throw new Error(
+        throw new MailError(
           `Please wait ${timeLeft} seconds before requesting another password reset email.`,
         );
       }

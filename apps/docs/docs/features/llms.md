@@ -30,18 +30,11 @@ The AI system in Zap.ts is split between the frontend and backend:
 const { isSaving, isValidated, saveApiKey } = useAISettings();
 
 const saveApiKey = async (values: AIFormValues) => {
-  await Effect.runPromise(
-    Effect.gen(function* (_) {
-      yield* _(
-        Effect.tryPromise({
-          try: () => orpc.ai.saveOrUpdateAISettings.call(values),
-          catch: () => {
-            throw new Error("Failed to save API key");
-          },
-        })
-      );
-    })
-  );
+  try {
+    await orpc.ai.saveOrUpdateAISettings.call(values);
+  } catch (error) {
+    throw new Error("Failed to save API key");
+  }
 };
 ```
 

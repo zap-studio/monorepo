@@ -2,8 +2,8 @@
 import "client-only";
 
 import { useCompletion } from "@ai-sdk/react";
-import { toast } from "sonner";
 
+import { handleClientError } from "@/zap/lib/api/client";
 import type { AIProviderId } from "@/zap/types/ai.types";
 
 export function useAICompletion(provider: AIProviderId) {
@@ -16,9 +16,7 @@ export function useAICompletion(provider: AIProviderId) {
       provider,
     },
     onError: (error: unknown) => {
-      toast.error(
-        `Completion error: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+      handleClientError(error);
     },
   });
 }

@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/sidebar";
 import type { ProductMetadata } from "@/zap.config";
 import { UserInfo } from "@/zap/components/sidebar/user-info";
+import { handleClientError } from "@/zap/lib/api/client";
 import { authClient } from "@/zap/lib/auth/client";
 import { useActiveSubscriptionProduct } from "@/zap/lib/polar/client";
 
@@ -68,8 +69,8 @@ export function SidebarUser({ user, products }: SidebarUserProps) {
     try {
       toast.loading("Redirecting to customer portal...");
       await authClient.customer.portal();
-    } catch {
-      toast.error("Failed to redirect to customer portal");
+    } catch (error) {
+      handleClientError(error);
     }
   };
 
@@ -78,8 +79,8 @@ export function SidebarUser({ user, products }: SidebarUserProps) {
       await authClient.signOut();
       toast.success("Successfully signed out");
       router.push("/login");
-    } catch {
-      toast.error("Failed to sign out");
+    } catch (error) {
+      handleClientError(error);
     }
   };
 

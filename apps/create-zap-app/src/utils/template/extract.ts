@@ -1,20 +1,18 @@
-import { Effect } from 'effect';
 import { execa } from 'execa';
 import fs from 'fs-extra';
+import { ProcessExitError } from '@/lib/errors';
 
-export function extractTemplate(outputDir: string, tarballPath: string) {
-  const program = Effect.gen(function* () {
-    yield* Effect.tryPromise(() =>
-      execa('tar', [
-        '-xzf',
-        tarballPath,
-        '-C',
-        outputDir,
-        '--strip-components=1',
-      ])
-    );
-    yield* Effect.tryPromise(() => fs.remove(tarballPath));
-  });
-
-  return program;
+export async function extractTemplate(outputDir: string, tarballPath: string) {
+  try {
+    await execa('tar', [
+      '-xzf',
+      tarballPath,
+      '-C',
+      outputDir,
+      '--strip-components=1',
+    ]);
+    await fs.remove(tarballPath);
+  } catch (error) {
+    throw new ProcessExitError(`Failed to extract template: ${error}`);
+  }
 }

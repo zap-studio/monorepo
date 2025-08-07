@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/components/zap-ui/button";
 import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
+import { handleClientError } from "@/zap/lib/api/client";
 import { authClient } from "@/zap/lib/auth/client";
 
 const formSchema = z.object({
@@ -48,8 +49,8 @@ export function ForgotPasswordForm() {
 
       toast.success("Check your email for the reset link!");
       startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
-    } catch {
-      toast.error("An error occurred while sending the reset link.");
+    } catch (error) {
+      handleClientError(error);
     } finally {
       setSubmitting(false);
     }

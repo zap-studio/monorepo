@@ -1,19 +1,15 @@
 import "server-only";
 
-import { Effect } from "effect";
+import { NotFoundError } from "@/zap/lib/api/errors";
 
 import { getUserService } from "./get-user.service";
 
 export async function isUserAdminService() {
-  const effect = Effect.gen(function* (_) {
-    const user = yield* _(Effect.promise(() => getUserService()));
+  const user = await getUserService();
 
-    if (!user) {
-      return false;
-    }
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
 
-    return false; // FIXME: Implement actual admin check logic
-  });
-
-  return await Effect.runPromise(effect);
+  return false; // FIXME: Implement actual admin check logic
 }
