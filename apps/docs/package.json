@@ -12,11 +12,11 @@
     "format": "ultracite format"
   },
   "dependencies": {
-    "vitepress": "^1.6.3"
+    "vitepress": "^1.6.4"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.3",
-    "@types/node": "^24.1.0",
+    "@types/node": "^24.2.0",
     "typescript": "^5.9.2",
     "ultracite": "5.1.2",
     "vitepress-plugin-llms": "^1.7.2"
