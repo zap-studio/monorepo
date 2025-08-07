@@ -4,6 +4,7 @@ import "client-only";
 import { PUBLIC_ENV } from "@/lib/env.public";
 import { $fetch } from "@/lib/fetch";
 import { handleClientError } from "@/zap/lib/api/client";
+import { ClientError, EnvironmentError } from "@/zap/lib/api/errors";
 import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
 import { urlBase64ToUint8Array } from "@/zap/lib/pwa/utils";
 import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
@@ -89,7 +90,6 @@ export function usePushNotifications() {
       const registration = await navigator.serviceWorker.ready;
 
       if (!PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
-        const { EnvironmentError } = await import("@/zap/lib/api/errors");
         throw new EnvironmentError("VAPID public key is not set");
       }
 
@@ -115,7 +115,7 @@ export function usePushNotifications() {
   const unsubscribeFromPush = async () => {
     try {
       if (!subscription) {
-        return;
+        throw new ClientError("No active subscription found");
       }
 
       setSubscriptionState({
