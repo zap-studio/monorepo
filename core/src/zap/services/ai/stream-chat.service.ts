@@ -31,10 +31,6 @@ export async function streamChatService({ input }: StreamChatProps) {
 
   const { apiKey, model } = aiSettings;
 
-  if (!apiKey) {
-    throw new BadRequestError("API key is required for the selected provider");
-  }
-
   return streamText({
     model: getModel(provider, apiKey, model),
     messages,

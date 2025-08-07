@@ -32,10 +32,6 @@ export async function streamCompletionService({
 
   const { apiKey, model } = aiSettings;
 
-  if (!apiKey) {
-    throw new BadRequestError("API key is required for the selected provider");
-  }
-
   return streamText({
     model: getModel(provider, apiKey, model),
     prompt,
