@@ -33,5 +33,5 @@ export async function deleteAPIKeyService({
     )
     .execute();
 
-  return { success: true };
+  return { success: true, message: "API key deleted successfully." };
 }

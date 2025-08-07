@@ -51,7 +51,13 @@ export async function saveOrUpdateAISettingsService({
       throw new BadRequestError("AI settings already exist for this provider");
     }
 
-    return { success: true };
+    return {
+      success: true,
+      message: "AI settings created successfully.",
+      data: {
+        id: result[0].id,
+      },
+    };
   }
 
   if (mode === "update-only") {
@@ -67,7 +73,7 @@ export async function saveOrUpdateAISettingsService({
         },
       });
 
-    return { success: true };
+    return { success: true, message: "AI settings updated successfully." };
   }
 
   await db
@@ -82,5 +88,5 @@ export async function saveOrUpdateAISettingsService({
       },
     });
 
-  return { success: true };
+  return { success: true, message: "AI settings saved successfully." };
 }

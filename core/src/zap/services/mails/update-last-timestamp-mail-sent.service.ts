@@ -21,4 +21,9 @@ export async function updateLastTimestampMailSentService({
     .set({ lastEmailSentAt: new Date() })
     .where(eq(user.id, userId))
     .execute();
+
+  return {
+    success: true,
+    message: "Last email sent timestamp updated successfully.",
+  };
 }

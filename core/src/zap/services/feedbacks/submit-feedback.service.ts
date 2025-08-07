@@ -30,5 +30,5 @@ export async function submitFeedbackService({
     })
     .execute();
 
-  return { success: true };
+  return { success: true, message: "Feedback submitted successfully." };
 }
