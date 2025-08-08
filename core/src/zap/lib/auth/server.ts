@@ -34,7 +34,7 @@ export const auth = betterAuth({
     requireEmailVerification: SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION,
     sendResetPassword: async ({ user, url }) => {
       const { canSend, timeLeft } = await canSendMailService({
-        input: { userId: user.id },
+        userId: user.id,
       });
 
       if (!canSend) {
@@ -44,15 +44,13 @@ export const auth = betterAuth({
       }
 
       await sendForgotPasswordMailService({
-        input: {
-          recipients: [user.email],
-          subject: `${SETTINGS.MAIL.PREFIX} - Reset your password`,
-          url,
-        },
+        recipients: [user.email],
+        subject: `${SETTINGS.MAIL.PREFIX} - Reset your password`,
+        url,
       });
 
       await updateLastTimestampMailSentService({
-        input: { userId: user.id },
+        userId: user.id,
       });
     },
   },
@@ -61,7 +59,7 @@ export const auth = betterAuth({
 
     sendVerificationEmail: async ({ user, url }) => {
       const { canSend, timeLeft } = await canSendMailService({
-        input: { userId: user.id },
+        userId: user.id,
       });
 
       if (!canSend) {
@@ -79,15 +77,13 @@ export const auth = betterAuth({
       const modifiedUrl = verificationUrl.toString();
 
       await sendVerificationMailService({
-        input: {
-          recipients: [user.email],
-          subject: `${SETTINGS.MAIL.PREFIX} - Verify your email`,
-          url: modifiedUrl,
-        },
+        recipients: [user.email],
+        subject: `${SETTINGS.MAIL.PREFIX} - Verify your email`,
+        url: modifiedUrl,
       });
 
       await updateLastTimestampMailSentService({
-        input: { userId: user.id },
+        userId: user.id,
       });
     },
   },
