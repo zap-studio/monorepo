@@ -7,17 +7,13 @@ import { pushNotifications } from "@/db/schema";
 import { getUserIdService } from "@/zap/services/auth/get-user-id.service";
 import { getWebPushService } from "@/zap/services/push-notifications/get-web-push.service";
 
-interface SubscribeUserServiceProps {
-  input: {
-    subscription: webpush.PushSubscription;
-  };
+interface SubscribeUserService {
+  subscription: webpush.PushSubscription;
 }
 
 export async function subscribeUserService({
-  input,
-}: SubscribeUserServiceProps) {
-  const subscription = input.subscription;
-
+  subscription,
+}: SubscribeUserService) {
   await getWebPushService();
 
   const userId = await getUserIdService();

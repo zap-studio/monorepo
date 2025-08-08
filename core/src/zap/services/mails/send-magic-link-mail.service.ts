@@ -7,17 +7,17 @@ import { resend } from "@/zap/lib/resend/server";
 
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
 
-export interface SendMagicLinkMailProps {
-  input: { subject: string; recipients: string[]; url: string };
+export interface SendMagicLinkMailService {
+  subject: string;
+  recipients: string[];
+  url: string;
 }
 
 export async function sendMagicLinkMailService({
-  input,
-}: SendMagicLinkMailProps) {
-  const subject = input.subject;
-  const recipients = input.recipients;
-  const url = input.url;
-
+  subject,
+  recipients,
+  url,
+}: SendMagicLinkMailService) {
   const { data, error } = await resend.emails.send({
     from,
     to: recipients,

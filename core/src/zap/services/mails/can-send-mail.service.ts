@@ -4,15 +4,13 @@ import { SETTINGS } from "@/data/settings";
 import { getLastMailSentAtQuery } from "@/zap/db/queries/emails.query";
 import { NotFoundError } from "@/zap/lib/api/errors";
 
-interface CanSendMailServiceProps {
-  input: {
-    userId: string;
-  };
+interface CanSendMailServiceService {
+  userId: string;
 }
 
-export async function canSendMailService({ input }: CanSendMailServiceProps) {
-  const userId = input.userId;
-
+export async function canSendMailService({
+  userId,
+}: CanSendMailServiceService) {
   const userRecords = await getLastMailSentAtQuery.execute({ userId });
 
   if (!userRecords.length) {
