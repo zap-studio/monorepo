@@ -30,7 +30,13 @@ export function useZapQuery<
   TData = TQueryFnData,
   TQueryKey extends QueryKey = readonly unknown[],
 >(options: ZapQueryOptions<TQueryFnData, TError, TData, TQueryKey>) {
-  const queryResult = useQuery(options);
+  const {
+    showSuccessToast = false,
+    skipErrorHandling = true,
+    ...restOptions
+  } = options;
+
+  const queryResult = useQuery(restOptions);
 
   const hasHandledSuccess = useRef(false);
   const hasHandledError = useRef(false);
@@ -39,25 +45,25 @@ export function useZapQuery<
     if (queryResult.isSuccess && !hasHandledSuccess.current) {
       hasHandledSuccess.current = true;
 
-      if (options?.showSuccessToast && options?.successMessage) {
+      if (showSuccessToast && options?.successMessage) {
         handleSuccess(options.successMessage);
       }
 
       options?.onSuccess?.(queryResult.data);
     }
-  }, [queryResult.isSuccess, queryResult.data, options]);
+  }, [queryResult.isSuccess, queryResult.data, options, showSuccessToast]);
 
   useEffect(() => {
     if (queryResult.isError && !hasHandledError.current) {
       hasHandledError.current = true;
 
-      if (!options?.skipErrorHandling) {
+      if (!skipErrorHandling) {
         handleClientError(queryResult.error);
       }
 
       options?.onError?.(queryResult.error);
     }
-  }, [queryResult.isError, queryResult.error, options]);
+  }, [queryResult.isError, queryResult.error, options, skipErrorHandling]);
 
   return queryResult;
 }

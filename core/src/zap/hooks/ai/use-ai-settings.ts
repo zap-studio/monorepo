@@ -1,6 +1,7 @@
 "use client";
 import "client-only";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import type { useForm } from "react-hook-form";
 
@@ -12,79 +13,62 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
   const [isValidated, setIsValidated] = useState(false);
   const [initialKey, setInitialKey] = useState<string | null>(null);
 
-  const saveSettingsMutation = useZapMutation(
-    orpc.ai.saveOrUpdateAISettings.key(),
-    async (_, { arg }: { arg: AIFormValues }) => {
-      if (arg.apiKey) {
-        return await orpc.ai.saveOrUpdateAISettings.call(arg);
-      }
-      return await orpc.ai.deleteAPIKey.call({ provider: arg.provider });
-    },
-    {
-      successMessage: "Settings updated successfully",
-      onError: (_error, _key, config) => {
-        const originalValues = config.optimisticData as {
-          apiKey: string | null;
-          isValidated: boolean;
-        };
+  const queryClient = useQueryClient();
+  const getAISettingsKey = orpc.ai.getAISettings.key();
 
-        if (originalValues) {
-          setInitialKey(originalValues.apiKey);
-          setIsValidated(originalValues.isValidated);
-        }
-      },
+  const testApiKeyMutation = useZapMutation({
+    ...orpc.ai.testAPIKey.mutationOptions(),
+    onSuccess: () => {
+      setIsValidated(true);
     },
-  );
-
-  const testApiKeyMutation = useZapMutation(
-    orpc.ai.testAPIKey.key(),
-    async () => {
-      return await orpc.ai.testAPIKey.call({
-        provider: form.getValues("provider"),
-        apiKey: form.getValues("apiKey"),
-        model: form.getValues("model"),
-      });
-    },
-    {
-      onSuccess: () => {
-        setIsValidated(true);
-      },
-      onError: () => {
-        setIsValidated(false);
-      },
-      successMessage: "API key is valid!",
-    },
-  );
-
-  const saveApiKey = async (values: AIFormValues) => {
-    const currentState = {
-      apiKey: initialKey,
-      isValidated,
-    };
-
-    if (values.apiKey) {
-      setInitialKey(values.apiKey);
-      if (values.apiKey !== initialKey) {
-        setIsValidated(false);
-      }
-    } else {
+    onError: () => {
       setIsValidated(false);
-      setInitialKey(null);
-    }
+    },
+    successMessage: "API key is valid!",
+  });
 
-    await saveSettingsMutation.trigger(values, {
-      optimisticData: currentState,
+  const saveSettingsMutation = useZapMutation({
+    ...orpc.ai.saveOrUpdateAISettings.mutationOptions(),
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: getAISettingsKey,
+      }),
+    successMessage: "Settings updated successfully",
+  });
+
+  const deleteSettingsMutation = useZapMutation({
+    ...orpc.ai.deleteAPIKey.mutationOptions(),
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: getAISettingsKey,
+      }),
+    successMessage: "Settings updated successfully",
+  });
+
+  const handleSaveApiKey = async (values: AIFormValues) => {
+    if (values.apiKey) {
+      await saveSettingsMutation.mutateAsync(values);
+    } else {
+      await deleteSettingsMutation.mutateAsync(values);
+    }
+  };
+
+  const handleTestApiKey = async () => {
+    return await testApiKeyMutation.mutateAsync({
+      provider: form.getValues("provider"),
+      apiKey: form.getValues("apiKey"),
+      model: form.getValues("model"),
     });
   };
 
   return {
-    isSaving: saveSettingsMutation.isMutating,
+    saving: saveSettingsMutation.isPending,
     isValidated,
     setIsValidated,
     initialKey,
     setInitialKey,
-    saveApiKey,
-    testing: testApiKeyMutation.isMutating,
-    handleTestApiKey: testApiKeyMutation.trigger,
+    handleSaveApiKey,
+    testing: testApiKeyMutation.isPending,
+    handleTestApiKey,
   };
 }

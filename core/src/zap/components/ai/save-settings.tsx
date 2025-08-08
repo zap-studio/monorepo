@@ -1,17 +1,17 @@
 import { ZapButton } from "@/components/zap-ui/button";
 
 interface SaveSettingsProps {
-  isSaving: boolean;
+  saving: boolean;
   isSaveDisabled: boolean;
 }
 
-export function SaveSettings({ isSaving, isSaveDisabled }: SaveSettingsProps) {
+export function SaveSettings({ saving, isSaveDisabled }: SaveSettingsProps) {
   return (
     <div className="flex justify-end">
       <ZapButton
         className="w-full sm:w-auto"
         disabled={isSaveDisabled}
-        loading={isSaving}
+        loading={saving}
         loadingText="Saving..."
         type="submit"
       >

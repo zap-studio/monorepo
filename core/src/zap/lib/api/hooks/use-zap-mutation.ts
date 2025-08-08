@@ -25,16 +25,22 @@ export function useZapMutation<
   TVariables = void,
   TContext = unknown,
 >(options: ZapMutationOptions<TData, TError, TVariables, TContext>) {
+  const {
+    showSuccessToast = true,
+    skipErrorHandling = false,
+    ...restOptions
+  } = options;
+
   return useMutation({
-    ...options,
+    ...restOptions,
     onSuccess: (data: TData, variables: TVariables, context: TContext) => {
-      if (options?.showSuccessToast && options?.successMessage) {
+      if (showSuccessToast && options?.successMessage) {
         handleSuccess(options.successMessage);
       }
       options?.onSuccess?.(data, variables, context);
     },
     onError: (error: TError, variables: TVariables, context?: TContext) => {
-      if (!options?.skipErrorHandling) {
+      if (!skipErrorHandling) {
         handleClientError(error);
       }
       options?.onError?.(error, variables, context);
