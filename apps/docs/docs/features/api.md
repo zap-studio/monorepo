@@ -4,13 +4,13 @@ Zap.ts leverages [oRPC](https://orpc.unnoq.com/) to provide type-safe API proced
 
 Built on top of **Next.js API routes**, **oRPC** ensures _seamless_ communication with **OpenAPI** spec support, making it a powerful alternative to [**tRPC**](https://trpc.io/).
 
-For **data fetching**, **mutations** and **caching** on the client, Zap.ts uses [SWR](https://swr.vercel.app/) for a _fast_ and _reactive_ developer experience.
+For **data fetching**, **mutations** and **caching** on the client, Zap.ts uses [Tanstack Query](https://tanstack.com/query/latest) for a _fast_ and _reactive_ developer experience.
 
 ## Overview
 
 - **Extensible:** Add new procedures, middleware, and custom logic with minimal boilerplate.
 - **OpenAPI-ready:** oRPC can generate OpenAPI specs for your endpoints.
-- **React-friendly:** Hooks are generated for easy data fetching with SWR or React Query.
+- **React-friendly:** Hooks are generated for easy data fetching with React Query.
 - **Type-safe:** All procedures and inputs are validated with Zod schemas and TypeScript types.
 
 ## Server vs. Client
@@ -127,60 +127,19 @@ export function handleClientError(error: unknown, fallbackMessage = "Something w
 }
 ```
 
-**2. Custom SWR Hooks**
+**2. Custom Hooks**
 
 Zap.ts provides custom hooks that integrate error handling automatically:
 
 ```ts
 // For data fetching
-export function useZapQuery<Data>(
-  key: string,
-  fetcher: () => Promise<Data>,
-  options = {}
-) {
-  const { skipErrorHandling = true, ...swrOptions } = options;
-  
-  return useSWR(key, fetcher, {
-    ...swrOptions,
-    onError: (error) => {
-      if (!skipErrorHandling) {
-        handleClientError(error);
-      }
-    },
-  });
-}
+const { data } = useZapQuery({...});
 
 // For mutations
-export function useZapMutation<Data>(
-  key: string,
-  fetcher: (arg: unknown) => Promise<Data>,
-  options = {}
-) {
-  const { skipErrorHandling = false, successMessage, ...swrOptions } = options;
-  
-  return useSWRMutation(key, fetcher, {
-    ...swrOptions,
-    onSuccess: (data) => {
-      if (successMessage) {
-        handleSuccess(successMessage);
-      }
-    },
-    onError: (error) => {
-      if (!skipErrorHandling) {
-        handleClientError(error);
-      }
-    },
-  });
-}
+const { mutateAsync } = useZapMutation({...});
 
 // For immutable data (cached permanently)
-export function useZapImmutable<Data>(
-  key: string,
-  fetcher: () => Promise<Data>,
-  options = {}
-) {
-  // Similar implementation with useSWRImmutable
-}
+const { data } = useZapImmutable({...});
 ```
 
 ### Complete Error Flow Example
@@ -277,7 +236,7 @@ export function ProfileForm() {
 ### Error Flow Summary
 
 1. **Server Error** → Handler catches → Transforms to consistent format → Returns HTTP response
-2. **Client Receives** → SWR hook catches → `handleClientError` processes → Toast notification shown
+2. **Client Receives** → hook catches → `handleClientError` processes → Toast notification shown
 3. **User Sees** → Friendly error message → Developer sees detailed logs in console (dev mode)
 
 ### Benefits
@@ -405,14 +364,13 @@ export default async function SomePage() {
 4. **Client-side usage, create a hook:**
 
 ```ts
-// src/hooks/use-hello.ts
-import { useORPC } from "@/zap/stores/orpc.store";
-import useSWR from "swr";
+// src/hooks/use-example.ts
+import { useZapQuery } from "@/zap/lib/api/hooks/use-zap-query";
+import { orpc } from "@/zap/lib/orpc/client";
 
-export const useHello = (input) => {
-  const orpc = useORPC();
-  return useSWR(orpc.hello.key(input), orpc.hello.queryOptions(input).queryFn);
-};
+export function useExample() {
+  return useZapQuery(orpc.example.key(), orpc.example.queryOptions().queryFn);
+}
 ```
 
 5. **Consume the hook:**
