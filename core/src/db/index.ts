@@ -36,9 +36,3 @@ function createDatabase(): Database {
 
 // FIXME: this is a workaround to make the db type compatible with the neon and node-postgres databases
 export const db = createDatabase() as NeonHttpDatabase<typeof schema>;
-
-export type {
-  DatabaseContext,
-  DatabaseOperationResult,
-  UpsertMode,
-} from "./types";

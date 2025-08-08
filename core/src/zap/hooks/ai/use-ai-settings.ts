@@ -48,7 +48,7 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
 
   const handleSaveApiKey = async (values: AIFormValues) => {
     if (values.apiKey) {
-      await saveSettingsMutation.mutateAsync(values);
+      await saveSettingsMutation.mutateAsync({ ...values, mode: "upsert" });
     } else {
       await deleteSettingsMutation.mutateAsync(values);
     }

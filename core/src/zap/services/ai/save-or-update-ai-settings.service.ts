@@ -1,7 +1,8 @@
 import "server-only";
 
-import { db, type UpsertMode } from "@/db";
+import { db } from "@/db";
 import { userAISettings } from "@/db/schema";
+import type { UpsertMode } from "@/db/types";
 import { BadRequestError } from "@/zap/lib/api/errors";
 import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { encrypt } from "@/zap/lib/crypto/encrypt";

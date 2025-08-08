@@ -1,10 +1,9 @@
-export type UpsertMode = "create-only" | "update-only" | "upsert";
+import z from "zod";
 
-export interface DatabaseOperationResult {
-  success: boolean;
-  message?: string;
-}
+export const UpsertModeSchema = z.enum([
+  "create-only",
+  "update-only",
+  "upsert",
+]);
 
-export interface DatabaseContext {
-  session: { user: { id: string } };
-}
+export type UpsertMode = z.infer<typeof UpsertModeSchema>;
