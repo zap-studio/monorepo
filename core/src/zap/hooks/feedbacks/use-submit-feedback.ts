@@ -4,14 +4,12 @@ import "client-only";
 import type React from "react";
 
 import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
-import { useORPC } from "@/zap/stores/orpc.store";
+import { orpc } from "@/zap/lib/orpc/client";
 import type { FeedbackFormValues } from "@/zap/types/feedback.types";
 
 export function useSubmitFeedback(
   setIsExistingFeedback: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
-  const orpc = useORPC();
-
   interface GiveFeedbackArgs {
     key: readonly unknown[];
     arg: { arg: FeedbackFormValues };

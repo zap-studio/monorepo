@@ -6,12 +6,11 @@ import { useForm } from "react-hook-form";
 import type z from "zod";
 
 import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
+import { orpc } from "@/zap/lib/orpc/client";
 import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";
-import { useORPC } from "@/zap/stores/orpc.store";
 import { useWaitlistStore } from "@/zap/stores/waitlist.store";
 
 export function useWaitlist() {
-  const orpc = useORPC();
   const hasJoined = useWaitlistStore((state) => state.hasJoined);
   const setHasJoined = useWaitlistStore((state) => state.setHasJoined);
 
