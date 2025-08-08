@@ -36,7 +36,7 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
 
   const { isExistingFeedback, setIsExistingFeedback } =
     useIsFeedbackSubmitted();
-  const { trigger: submitFeedback, isMutating: isSubmitting } =
+  const { mutateAsync: submitFeedback, isPending: isSubmitting } =
     useSubmitFeedback(setIsExistingFeedback);
 
   const form = useForm<FeedbackFormValues>({
