@@ -18,10 +18,6 @@ interface UnsubscribeResponse {
   success: boolean;
 }
 
-interface ApiError {
-  message: string;
-}
-
 export function usePushNotifications() {
   const subscription = usePushNotificationsStore((state) => state.subscription);
   const setSubscription = usePushNotificationsStore(
@@ -34,54 +30,41 @@ export function usePushNotifications() {
     (state) => state.setSubscriptionState,
   );
 
-  const { trigger: subscribeTrigger, isMutating: isSubscribing } =
-    useZapMutation<
-      SubscriptionResponse,
-      ApiError,
-      string,
-      { subscription: PushSubscriptionJSON }
-    >(
-      "/api/user/notifications/subscribe",
-      (url: string, { arg }: { arg: { subscription: PushSubscriptionJSON } }) =>
-        $fetch<SubscriptionResponse>(url, {
-          method: "POST",
-          body: arg,
-        }),
-      {
-        optimisticData: { subscriptionId: "temp-id" },
-        rollbackOnError: true,
-        populateCache: (result) => result,
-        onError: async () => {
-          if (subscription) {
-            try {
-              await subscription.unsubscribe();
-            } finally {
-              setSubscriptionState({
-                subscription: null,
-                isSubscribed: false,
-              });
-            }
-          }
-        },
-        successMessage: "Subscribed to push notifications successfully!",
-        skipErrorHandling: true, // Skip error handling to allow custom error handling in the component
-      },
-    );
+  const { mutateAsync: subscribe, isPending: isSubscribing } = useZapMutation({
+    mutationKey: ["/api/user/notifications/subscribe"],
+    mutationFn: ({ subscription }: { subscription: PushSubscriptionJSON }) => {
+      return $fetch<SubscriptionResponse>("/api/user/notifications/subscribe", {
+        method: "POST",
+        body: subscription,
+      });
+    },
+    onError: async () => {
+      if (subscription) {
+        await subscription.unsubscribe();
+      }
+    },
+    successMessage: "Subscribed to push notifications successfully!",
+  });
 
-  const { trigger: unsubscribeTrigger, isMutating: isUnsubscribing } =
-    useZapMutation<UnsubscribeResponse, ApiError, string>(
-      "/api/user/notifications/unsubscribe",
-      (url: string) =>
-        $fetch<UnsubscribeResponse>(url, {
-          method: "DELETE",
-        }),
-      {
-        rollbackOnError: false,
-        populateCache: (result) => result,
-        successMessage: "We will miss you!",
-        skipErrorHandling: true, // Skip error handling to allow custom error handling in the component
+  const { mutateAsync: unsubscribe, isPending: isUnsubscribing } =
+    useZapMutation({
+      mutationKey: ["/api/user/notifications/unsubscribe"],
+      mutationFn: () => {
+        return $fetch<UnsubscribeResponse>(
+          "/api/user/notifications/unsubscribe",
+          {
+            method: "DELETE",
+          },
+        );
       },
-    );
+      onSuccess: () => {
+        setSubscriptionState({
+          subscription: null,
+          isSubscribed: false,
+        });
+      },
+      successMessage: "We will miss you!",
+    });
 
   const subscribeToPush = async () => {
     setSubscribed(true);
@@ -102,11 +85,10 @@ export function usePushNotifications() {
         applicationServerKey,
       });
 
-      setSubscription(sub);
-
       const serializedSub = sub.toJSON();
 
-      await subscribeTrigger({ subscription: serializedSub });
+      await subscribe({ subscription: serializedSub });
+      setSubscription(sub);
     } catch (error) {
       handleClientError(error);
     }
@@ -118,13 +100,8 @@ export function usePushNotifications() {
         throw new ClientError("No active subscription found");
       }
 
-      setSubscriptionState({
-        subscription: null,
-        isSubscribed: false,
-      });
-
       await subscription.unsubscribe();
-      await unsubscribeTrigger();
+      await unsubscribe();
     } catch (error) {
       handleClientError(error, "Failed to unsubscribe from push notifications");
     }

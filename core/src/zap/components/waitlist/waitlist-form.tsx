@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { useWaitlist } from "@/zap/hooks/waitlist/use-waitlist";
 
 export function WaitlistForm() {
-  const { form, onSubmit, result, loading, hasJoined } = useWaitlist();
+  const { form, onSubmit, data, isMutating, hasJoined } = useWaitlist();
 
   return (
     <Form {...form}>
@@ -42,7 +42,7 @@ export function WaitlistForm() {
         <ZapButton
           className="w-full"
           disabled={hasJoined}
-          loading={loading}
+          loading={isMutating}
           loadingText="Joining..."
           type="submit"
         >
@@ -50,19 +50,19 @@ export function WaitlistForm() {
         </ZapButton>
 
         <AnimatePresence>
-          {result && (
+          {data && (
             <motion.p
               animate={{ opacity: 1, y: 0 }}
               className={cn(
                 "text-sm",
-                result ? "text-green-600" : "text-destructive",
+                data ? "text-green-600" : "text-destructive",
               )}
               exit={{ opacity: 0, y: -5 }}
               initial={{ opacity: 0, y: -5 }}
               key="form-message"
               transition={{ duration: 0.3 }}
             >
-              {result.message}
+              {data.message}
             </motion.p>
           )}
         </AnimatePresence>

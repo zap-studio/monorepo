@@ -16,36 +16,11 @@ export function useSubmitFeedback(
 
   return useZapMutation({
     ...orpc.feedbacks.submit.mutationOptions(),
-    onMutate: async (newFeedback) => {
-      await queryClient.cancelQueries({ queryKey: getUserFeedbackQueryKey });
-
-      const previousData = queryClient.getQueryData(getUserFeedbackQueryKey);
-
-      queryClient.setQueryData(getUserFeedbackQueryKey, (old: unknown) => {
-        if (!old) {
-          return { feedback: newFeedback };
-        }
-
-        return {
-          ...old,
-          feedback: newFeedback,
-        };
-      });
-
-      return { previousData };
-    },
-    onError: (_, __, context) => {
-      if (context?.previousData) {
-        queryClient.setQueryData(getUserFeedbackQueryKey, context.previousData);
-      }
-      setIsExistingFeedback(false);
-    },
     onSuccess: () => {
       setIsExistingFeedback(true);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: getUserFeedbackQueryKey });
-    },
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: getUserFeedbackQueryKey }),
     successMessage: "Feedback submitted successfully!",
   });
 }
