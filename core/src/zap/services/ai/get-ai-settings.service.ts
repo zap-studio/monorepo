@@ -5,23 +5,15 @@ import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { decrypt } from "@/zap/lib/crypto/decrypt";
 import type { AIProviderId } from "@/zap/types/ai.types";
 
-interface GetAISettingsContext {
-  session: { user: { id: string } };
-}
-interface GetAISettingsInput {
+interface GetAISettingsService {
+  userId: string;
   provider: AIProviderId;
 }
 
 export async function getAISettingsService({
-  context,
-  input,
-}: {
-  context: GetAISettingsContext;
-  input: GetAISettingsInput;
-}) {
-  const userId = context.session.user.id;
-  const provider = input.provider;
-
+  userId,
+  provider,
+}: GetAISettingsService) {
   const result = await getApiSettingsForUserAndProviderQuery.execute({
     userId,
     provider,

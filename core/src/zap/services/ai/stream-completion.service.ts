@@ -1,28 +1,29 @@
 import "server-only";
 
+import { streamToEventIterator } from "@orpc/server";
 import { streamText } from "ai";
 
 import { SETTINGS } from "@/data/settings";
 import { getModel } from "@/zap/lib/ai/get-model";
 import { BadRequestError } from "@/zap/lib/api/errors";
-import { orpcServer } from "@/zap/lib/orpc/server";
+import { getAISettingsService } from "@/zap/services/ai/get-ai-settings.service";
 import type { AIProviderId } from "@/zap/types/ai.types";
 
-interface StreamCompletionInput {
+export interface StreamCompletionService {
+  userId: string;
   provider: AIProviderId;
   prompt: string;
 }
 
-export interface StreamCompletionProps {
-  input: StreamCompletionInput;
-}
-
 export async function streamCompletionService({
-  input,
-}: StreamCompletionProps) {
-  const { provider, prompt } = input;
-
-  const aiSettings = await orpcServer.ai.getAISettings({ provider });
+  userId,
+  provider,
+  prompt,
+}: StreamCompletionService) {
+  const aiSettings = await getAISettingsService({
+    userId,
+    provider,
+  });
 
   if (!aiSettings) {
     throw new BadRequestError(
@@ -32,7 +33,7 @@ export async function streamCompletionService({
 
   const { apiKey, model } = aiSettings;
 
-  return streamText({
+  const result = streamText({
     model: getModel(provider, apiKey, model),
     prompt,
     system: SETTINGS.AI.SYSTEM_PROMPT,
@@ -43,4 +44,6 @@ export async function streamCompletionService({
     stopSequences: SETTINGS.AI.COMPLETION?.STOP_SEQUENCES,
     maxRetries: SETTINGS.AI.COMPLETION?.MAX_RETRIES,
   });
+
+  return streamToEventIterator(result.toUIMessageStream());
 }

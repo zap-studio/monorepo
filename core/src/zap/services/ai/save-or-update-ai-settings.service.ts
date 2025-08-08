@@ -7,28 +7,21 @@ import { encryptionKeyHex } from "@/zap/lib/crypto";
 import { encrypt } from "@/zap/lib/crypto/encrypt";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
-interface SaveOrUpdateAISettingsContext {
-  session: { user: { id: string } };
-}
-
-interface SaveOrUpdateAISettingsInput {
+interface SaveOrUpdateAISettingsService {
+  userId: string;
   provider: AIProviderId;
   model: ModelName;
   apiKey: string;
+  mode: UpsertMode;
 }
 
 export async function saveOrUpdateAISettingsService({
-  context,
-  input,
+  userId,
+  provider,
+  apiKey,
+  model,
   mode = "upsert",
-}: {
-  context: SaveOrUpdateAISettingsContext;
-  input: SaveOrUpdateAISettingsInput;
-  mode?: UpsertMode;
-}) {
-  const userId = context.session.user.id;
-  const { provider, apiKey, model } = input;
-
+}: SaveOrUpdateAISettingsService) {
   const encryptedAPIKey = await encrypt(apiKey, encryptionKeyHex);
 
   const values = {
