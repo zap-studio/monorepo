@@ -293,8 +293,7 @@ import { useZapImmutable } from "@/zap/lib/api/hooks/use-zap-immutable";
 export const useHello = (input) => {
   const orpc = useORPC();
   return useZapImmutable(
-    orpc.hello.key(input), 
-    orpc.hello.queryOptions(input).queryFn
+    orpc.hello.queryOptions({ input })
   );
 };
 ```
@@ -369,7 +368,7 @@ import { useZapQuery } from "@/zap/lib/api/hooks/use-zap-query";
 import { orpc } from "@/zap/lib/orpc/client";
 
 export function useExample() {
-  return useZapQuery(orpc.example.key(), orpc.example.queryOptions().queryFn);
+  return useZapQuery(orpc.example.queryOptions());
 }
 ```
 

@@ -7,9 +7,9 @@ import { useZapImmutable } from "@/zap/lib/api/hooks/use-zap-immutable";
 type FlagKey = keyof typeof FLAGS;
 
 export function useFlag(flagKey: FlagKey) {
-  const result = useZapImmutable(
-    ["flag", { flagKey }],
-    async () => {
+  const result = useZapImmutable({
+    queryKey: ["flag", { flagKey }],
+    queryFn: async () => {
       try {
         const flag = FLAGS[flagKey];
         return await flag();
@@ -18,10 +18,8 @@ export function useFlag(flagKey: FlagKey) {
         return !!FLAGS[flagKey]?.defaultValue;
       }
     },
-    {
-      skipErrorHandling: true, // We handle errors in the fetcher
-    },
-  );
+    skipErrorHandling: true, // We handle errors in the fetcher
+  });
 
   return {
     enabled: result.data ?? false,
