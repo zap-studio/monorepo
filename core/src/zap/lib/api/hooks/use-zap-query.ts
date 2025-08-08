@@ -6,7 +6,7 @@ import {
   useQuery,
   type UseQueryOptions,
 } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { handleClientError, handleSuccess } from "@/zap/lib/api/client";
 
@@ -41,12 +41,18 @@ export function useZapQuery<
   const hasHandledSuccess = useRef(false);
   const hasHandledError = useRef(false);
 
+  // Use useMemo to ensure that the queryKey is stable across renders (special case of object reference equality since queryKey is an array)
+  const stableQueryKey = useMemo(
+    () => restOptions.queryKey,
+    [restOptions.queryKey],
+  );
+
   useEffect(() => {
-    if (restOptions.queryKey) {
+    if (stableQueryKey) {
       hasHandledSuccess.current = false;
       hasHandledError.current = false;
     }
-  }, [restOptions.queryKey]);
+  }, [stableQueryKey]);
 
   useEffect(() => {
     if (queryResult.isSuccess && !hasHandledSuccess.current) {
