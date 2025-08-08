@@ -1,38 +1,50 @@
 "use client";
 import "client-only";
 
+import { useQueryClient } from "@tanstack/react-query";
 import type React from "react";
 
 import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
 import { orpc } from "@/zap/lib/orpc/client";
-import type { FeedbackFormValues } from "@/zap/types/feedback.types";
 
 export function useSubmitFeedback(
   setIsExistingFeedback: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
-  interface GiveFeedbackArgs {
-    key: readonly unknown[];
-    arg: { arg: FeedbackFormValues };
-  }
+  const queryClient = useQueryClient();
 
-  const giveFeedback = (
-    _key: GiveFeedbackArgs["key"],
-    { arg }: GiveFeedbackArgs["arg"],
-  ) => {
-    return orpc.feedbacks.submit.call(arg);
-  };
+  const getUserFeedbackQueryKey = orpc.feedbacks.getUserFeedback.key();
 
-  return useZapMutation(orpc.feedbacks.submit.key(), giveFeedback, {
-    optimisticData: (current: Record<string, unknown> | undefined) => ({
-      ...(current || {}),
-    }),
-    rollbackOnError: true,
-    revalidate: true,
+  return useZapMutation({
+    ...orpc.feedbacks.submit.mutationOptions(),
+    onMutate: async (newFeedback) => {
+      await queryClient.cancelQueries({ queryKey: getUserFeedbackQueryKey });
+
+      const previousData = queryClient.getQueryData(getUserFeedbackQueryKey);
+
+      queryClient.setQueryData(getUserFeedbackQueryKey, (old: unknown) => {
+        if (!old) {
+          return { feedback: newFeedback };
+        }
+
+        return {
+          ...old,
+          feedback: newFeedback,
+        };
+      });
+
+      return { previousData };
+    },
+    onError: (_, __, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(getUserFeedbackQueryKey, context.previousData);
+      }
+      setIsExistingFeedback(false);
+    },
     onSuccess: () => {
       setIsExistingFeedback(true);
     },
-    onError: () => {
-      setIsExistingFeedback(false);
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: getUserFeedbackQueryKey });
     },
     successMessage: "Feedback submitted successfully!",
   });
