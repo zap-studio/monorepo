@@ -42,6 +42,13 @@ export function useZapQuery<
   const hasHandledError = useRef(false);
 
   useEffect(() => {
+    if (restOptions.queryKey) {
+      hasHandledSuccess.current = false;
+      hasHandledError.current = false;
+    }
+  }, [restOptions.queryKey]);
+
+  useEffect(() => {
     if (queryResult.isSuccess && !hasHandledSuccess.current) {
       hasHandledSuccess.current = true;
 
@@ -51,7 +58,7 @@ export function useZapQuery<
 
       options?.onSuccess?.(queryResult.data);
     }
-  }, [queryResult.isSuccess, queryResult.data, options, showSuccessToast]);
+  }, [options, queryResult.data, queryResult.isSuccess, showSuccessToast]);
 
   useEffect(() => {
     if (queryResult.isError && !hasHandledError.current) {
@@ -63,7 +70,7 @@ export function useZapQuery<
 
       options?.onError?.(queryResult.error);
     }
-  }, [queryResult.isError, queryResult.error, options, skipErrorHandling]);
+  }, [options, queryResult.error, queryResult.isError, skipErrorHandling]);
 
   return queryResult;
 }

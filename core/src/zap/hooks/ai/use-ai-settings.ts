@@ -28,11 +28,12 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
   });
 
   const saveSettingsMutation = useZapMutation({
-    ...orpc.ai.saveOrUpdateAISettings.mutationOptions(),
-    onSettled: () =>
-      queryClient.invalidateQueries({
-        queryKey: getAISettingsKey,
-      }),
+    ...orpc.ai.saveOrUpdateAISettings.mutationOptions({
+      onSettled: () =>
+        queryClient.invalidateQueries({
+          queryKey: getAISettingsKey,
+        }),
+    }),
     successMessage: "Settings updated successfully",
   });
 

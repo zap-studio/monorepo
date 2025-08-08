@@ -2,21 +2,15 @@
 import "client-only";
 
 import { PUBLIC_ENV } from "@/lib/env.public";
-import { $fetch } from "@/lib/fetch";
 import { handleClientError } from "@/zap/lib/api/client";
 import { ClientError, EnvironmentError } from "@/zap/lib/api/errors";
 import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
-import { urlBase64ToUint8Array } from "@/zap/lib/pwa/utils";
+import { orpc } from "@/zap/lib/orpc/client";
+import {
+  arrayBufferToBase64,
+  urlBase64ToUint8Array,
+} from "@/zap/lib/pwa/utils";
 import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
-
-interface SubscriptionResponse {
-  success: boolean;
-  subscriptionId: string;
-}
-
-interface UnsubscribeResponse {
-  success: boolean;
-}
 
 export function usePushNotifications() {
   const subscription = usePushNotificationsStore((state) => state.subscription);
@@ -31,13 +25,7 @@ export function usePushNotifications() {
   );
 
   const { mutateAsync: subscribe, isPending: isSubscribing } = useZapMutation({
-    mutationKey: ["/api/user/notifications/subscribe"],
-    mutationFn: ({ subscription }: { subscription: PushSubscriptionJSON }) => {
-      return $fetch<SubscriptionResponse>("/api/user/notifications/subscribe", {
-        method: "POST",
-        body: subscription,
-      });
-    },
+    ...orpc.pushNotifications.subscribeUser.mutationOptions(),
     onError: async () => {
       if (subscription) {
         await subscription.unsubscribe();
@@ -48,15 +36,7 @@ export function usePushNotifications() {
 
   const { mutateAsync: unsubscribe, isPending: isUnsubscribing } =
     useZapMutation({
-      mutationKey: ["/api/user/notifications/unsubscribe"],
-      mutationFn: () => {
-        return $fetch<UnsubscribeResponse>(
-          "/api/user/notifications/unsubscribe",
-          {
-            method: "DELETE",
-          },
-        );
-      },
+      ...orpc.pushNotifications.unsubscribeUser.mutationOptions(),
       onSuccess: () => {
         setSubscriptionState({
           subscription: null,
@@ -85,9 +65,22 @@ export function usePushNotifications() {
         applicationServerKey,
       });
 
-      const serializedSub = sub.toJSON();
+      const authKey = sub.getKey("auth");
+      const p256dhKey = sub.getKey("p256dh");
 
-      await subscribe({ subscription: serializedSub });
+      if (!(authKey && p256dhKey)) {
+        throw new ClientError("Failed to retrieve push subscription keys");
+      }
+
+      const transformedSubscription = {
+        endpoint: sub.endpoint,
+        keys: {
+          auth: arrayBufferToBase64(authKey),
+          p256dh: arrayBufferToBase64(p256dhKey),
+        },
+      };
+
+      await subscribe({ subscription: transformedSubscription });
       setSubscription(sub);
     } catch (error) {
       handleClientError(error);
@@ -101,7 +94,7 @@ export function usePushNotifications() {
       }
 
       await subscription.unsubscribe();
-      await unsubscribe();
+      await unsubscribe({});
     } catch (error) {
       handleClientError(error, "Failed to unsubscribe from push notifications");
     }

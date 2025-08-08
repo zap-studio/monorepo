@@ -35,14 +35,15 @@ export function useWaitlist() {
     isPending: isMutating,
     error,
   } = useZapMutation({
-    ...orpc.waitlist.submitWaitlistEmail.mutationOptions(),
+    ...orpc.waitlist.submitWaitlistEmail.mutationOptions({
+      onSettled: () =>
+        queryClient.invalidateQueries({
+          queryKey: getNumberOfPeopleInWaitlistKey,
+        }),
+    }),
     onSuccess: () => {
       form.reset();
     },
-    onSettled: () =>
-      queryClient.invalidateQueries({
-        queryKey: getNumberOfPeopleInWaitlistKey,
-      }),
     successMessage: "Thank you for joining the waitlist!",
   });
 

@@ -15,12 +15,13 @@ export function useSubmitFeedback(
   const getUserFeedbackQueryKey = orpc.feedbacks.getUserFeedback.key();
 
   return useZapMutation({
-    ...orpc.feedbacks.submit.mutationOptions(),
+    ...orpc.feedbacks.submit.mutationOptions({
+      onSettled: () =>
+        queryClient.invalidateQueries({ queryKey: getUserFeedbackQueryKey }),
+    }),
     onSuccess: () => {
       setIsExistingFeedback(true);
     },
-    onSettled: () =>
-      queryClient.invalidateQueries({ queryKey: getUserFeedbackQueryKey }),
     successMessage: "Feedback submitted successfully!",
   });
 }

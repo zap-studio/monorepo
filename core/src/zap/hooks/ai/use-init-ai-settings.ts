@@ -1,7 +1,6 @@
 "use client";
 import "client-only";
 
-import { skipToken } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import type { useForm } from "react-hook-form";
 
@@ -21,7 +20,8 @@ export function useInitAISettings(
 
   const { data, isLoading } = useZapQuery(
     orpc.ai.getAISettings.queryOptions({
-      input: open ? { provider } : skipToken,
+      input: { provider },
+      enabled: open,
     }),
   );
 
