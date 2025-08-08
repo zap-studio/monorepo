@@ -6,9 +6,8 @@ import {
   useQuery,
   type UseQueryOptions,
 } from "@tanstack/react-query";
-import { toast } from "sonner";
 
-import { handleClientError } from "@/zap/lib/api/client";
+import { handleClientError, handleSuccess } from "@/zap/lib/api/client";
 
 interface ZapQueryOptions<
   TQueryFnData,
@@ -42,7 +41,7 @@ export function useZapQuery<
     queryFn,
     onSuccess: (data: TData) => {
       if (options?.showSuccessToast && options?.successMessage) {
-        toast.success(options.successMessage);
+        handleSuccess(options.successMessage);
       }
       options?.onSuccess?.(data);
     },

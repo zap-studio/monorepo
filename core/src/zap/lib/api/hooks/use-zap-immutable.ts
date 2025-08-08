@@ -1,61 +1,61 @@
 "use client";
 import "client-only";
 
-import type { BareFetcher, Key, SWRConfiguration } from "swr";
-import useSWRImmutable from "swr/immutable";
+import {
+  type QueryKey,
+  useQuery,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
 
 import { handleClientError, handleSuccess } from "@/zap/lib/api/client";
 
-type ZapImmutableOptions<Data, Error, Fn extends BareFetcher<Data>> = Omit<
-  SWRConfiguration<Data, Error, Fn>,
-  "onSuccess" | "onError"
-> & {
-  onSuccess?: (
-    data: Data,
-    key: string,
-    config: Readonly<SWRConfiguration<Data, Error, Fn>>,
-  ) => void;
-  onError?: (
-    error: Error,
-    key: string,
-    config: Readonly<SWRConfiguration<Data, Error, Fn>>,
-  ) => void;
+interface ZapImmutableOptions<
+  TQueryFnData,
+  TError,
+  TData,
+  TQueryKey extends QueryKey,
+> extends UseQueryOptions<TQueryFnData, TError, TData, TQueryKey> {
   showSuccessToast?: boolean;
   successMessage?: string;
   skipErrorHandling?: boolean;
-};
+
+  onSuccess?: (data: TData) => void;
+  onError?: (error: TError) => void;
+}
 
 export function useZapImmutable<
-  Data = unknown,
-  Error = unknown,
-  SWRKey extends Key = Key,
+  TQueryFnData = unknown,
+  TError = Error,
+  TData = TQueryFnData,
+  TQueryKey extends QueryKey = QueryKey,
 >(
-  key: SWRKey,
-  fetcher: BareFetcher<Data> | null,
-  options: ZapImmutableOptions<Data, Error, BareFetcher<Data>> = {},
+  queryKey: TQueryKey,
+  queryFn: UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>["queryFn"],
+  options?: Omit<
+    ZapImmutableOptions<TQueryFnData, TError, TData, TQueryKey>,
+    "queryKey" | "queryFn"
+  >,
 ) {
-  const {
-    showSuccessToast = false,
-    successMessage,
-    skipErrorHandling = true,
-    onSuccess,
-    onError,
-    ...swrOptions
-  } = options;
-
-  return useSWRImmutable(key, fetcher, {
-    ...swrOptions,
-    onSuccess: (responseData, responseKey, responseConfig) => {
-      if (showSuccessToast && successMessage) {
-        handleSuccess(successMessage);
+  return useQuery({
+    queryKey,
+    queryFn,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    onSuccess: (data: TData) => {
+      if (options?.showSuccessToast && options?.successMessage) {
+        handleSuccess(options.successMessage);
       }
-      onSuccess?.(responseData, responseKey, responseConfig);
+      options?.onSuccess?.(data);
     },
-    onError: (responseError, responseKey, responseConfig) => {
-      if (!skipErrorHandling) {
-        handleClientError(responseError);
+    onError: (error: TError) => {
+      if (!options?.skipErrorHandling) {
+        handleClientError(error);
       }
-      onError?.(responseError, responseKey, responseConfig);
+      options?.onError?.(error);
     },
+    ...options,
   });
 }
