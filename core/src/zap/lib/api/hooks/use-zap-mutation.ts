@@ -24,36 +24,20 @@ export function useZapMutation<
   TError = Error,
   TVariables = void,
   TContext = unknown,
->(
-  mutationFn: UseMutationOptions<
-    TData,
-    TError,
-    TVariables,
-    TContext
-  >["mutationFn"],
-  options?: Omit<
-    ZapMutationOptions<TData, TError, TVariables, TContext>,
-    "mutationFn"
-  >,
-) {
+>(options: ZapMutationOptions<TData, TError, TVariables, TContext>) {
   return useMutation({
-    mutationFn,
+    ...options,
     onSuccess: (data: TData, variables: TVariables, context: TContext) => {
       if (options?.showSuccessToast && options?.successMessage) {
         handleSuccess(options.successMessage);
       }
       options?.onSuccess?.(data, variables, context);
     },
-    onError: (
-      error: TError,
-      variables: TVariables,
-      context: TContext | undefined,
-    ) => {
+    onError: (error: TError, variables: TVariables, context?: TContext) => {
       if (!options?.skipErrorHandling) {
         handleClientError(error);
       }
       options?.onError?.(error, variables, context);
     },
-    ...options,
   });
 }

@@ -6,10 +6,11 @@ import {
   useQuery,
   type UseQueryOptions,
 } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 
 import { handleClientError, handleSuccess } from "@/zap/lib/api/client";
 
-interface ZapQueryOptions<
+export interface ZapQueryOptions<
   TQueryFnData,
   TError,
   TData,
@@ -27,30 +28,36 @@ export function useZapQuery<
   TQueryFnData = unknown,
   TError = Error,
   TData = TQueryFnData,
-  TQueryKey extends QueryKey = QueryKey,
->(
-  queryKey: TQueryKey,
-  queryFn: UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>["queryFn"],
-  options?: Omit<
-    ZapQueryOptions<TQueryFnData, TError, TData, TQueryKey>,
-    "queryKey" | "queryFn"
-  >,
-) {
-  return useQuery({
-    queryKey,
-    queryFn,
-    onSuccess: (data: TData) => {
+  TQueryKey extends QueryKey = readonly unknown[],
+>(options: ZapQueryOptions<TQueryFnData, TError, TData, TQueryKey>) {
+  const queryResult = useQuery(options);
+
+  const hasHandledSuccess = useRef(false);
+  const hasHandledError = useRef(false);
+
+  useEffect(() => {
+    if (queryResult.isSuccess && !hasHandledSuccess.current) {
+      hasHandledSuccess.current = true;
+
       if (options?.showSuccessToast && options?.successMessage) {
         handleSuccess(options.successMessage);
       }
-      options?.onSuccess?.(data);
-    },
-    onError: (error: TError) => {
+
+      options?.onSuccess?.(queryResult.data);
+    }
+  }, [queryResult.isSuccess, queryResult.data, options]);
+
+  useEffect(() => {
+    if (queryResult.isError && !hasHandledError.current) {
+      hasHandledError.current = true;
+
       if (!options?.skipErrorHandling) {
-        handleClientError(error);
+        handleClientError(queryResult.error);
       }
-      options?.onError?.(error);
-    },
-    ...options,
-  });
+
+      options?.onError?.(queryResult.error);
+    }
+  }, [queryResult.isError, queryResult.error, options]);
+
+  return queryResult;
 }
