@@ -1,61 +1,57 @@
 "use client";
 import "client-only";
 
-import type { BareFetcher, Key, SWRConfiguration } from "swr";
-import useSWR from "swr";
+import {
+  type QueryKey,
+  useQuery,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
+import { toast } from "sonner";
 
-import { handleClientError, handleSuccess } from "@/zap/lib/api/client";
+import { handleClientError } from "@/zap/lib/api/client";
 
-type ZapQueryOptions<Data, Error, Fn extends BareFetcher<Data>> = Omit<
-  SWRConfiguration<Data, Error, Fn>,
-  "onSuccess" | "onError"
-> & {
-  onSuccess?: (
-    data: Data,
-    key: string,
-    config: Readonly<SWRConfiguration<Data, Error, Fn>>,
-  ) => void;
-  onError?: (
-    error: Error,
-    key: string,
-    config: Readonly<SWRConfiguration<Data, Error, Fn>>,
-  ) => void;
+interface ZapQueryOptions<
+  TQueryFnData,
+  TError,
+  TData,
+  TQueryKey extends QueryKey,
+> extends UseQueryOptions<TQueryFnData, TError, TData, TQueryKey> {
   showSuccessToast?: boolean;
   successMessage?: string;
   skipErrorHandling?: boolean;
-};
+
+  onSuccess?: (data: TData) => void;
+  onError?: (error: TError) => void;
+}
 
 export function useZapQuery<
-  Data = unknown,
-  Error = unknown,
-  SWRKey extends Key = Key,
+  TQueryFnData = unknown,
+  TError = Error,
+  TData = TQueryFnData,
+  TQueryKey extends QueryKey = QueryKey,
 >(
-  key: SWRKey,
-  fetcher: BareFetcher<Data> | null,
-  options: ZapQueryOptions<Data, Error, BareFetcher<Data>> = {},
+  queryKey: TQueryKey,
+  queryFn: UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>["queryFn"],
+  options?: Omit<
+    ZapQueryOptions<TQueryFnData, TError, TData, TQueryKey>,
+    "queryKey" | "queryFn"
+  >,
 ) {
-  const {
-    showSuccessToast = false,
-    successMessage,
-    skipErrorHandling = true,
-    onSuccess,
-    onError,
-    ...swrOptions
-  } = options;
-
-  return useSWR(key, fetcher, {
-    ...swrOptions,
-    onSuccess: (data, key, config) => {
-      if (showSuccessToast && successMessage) {
-        handleSuccess(successMessage);
+  return useQuery({
+    queryKey,
+    queryFn,
+    onSuccess: (data: TData) => {
+      if (options?.showSuccessToast && options?.successMessage) {
+        toast.success(options.successMessage);
       }
-      onSuccess?.(data, key, config);
+      options?.onSuccess?.(data);
     },
-    onError: (error, key, config) => {
-      if (!skipErrorHandling) {
+    onError: (error: TError) => {
+      if (!options?.skipErrorHandling) {
         handleClientError(error);
       }
-      onError?.(error, key, config);
+      options?.onError?.(error);
     },
+    ...options,
   });
 }
