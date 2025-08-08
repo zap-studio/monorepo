@@ -1,7 +1,7 @@
 import "server-only";
 
 import { UnauthorizedError } from "@/zap/lib/api/errors";
-import { orpcServer } from "@/zap/lib/orpc/server";
+import { isUserAdminService } from "@/zap/services/auth/is-user-admin.service";
 import { sendMailService } from "@/zap/services/mails/send-mail.service";
 
 interface SendAdminEmailService {
@@ -13,7 +13,7 @@ export async function sendAdminEmailService({
   subject,
   recipients,
 }: SendAdminEmailService) {
-  const isAdmin = await orpcServer.auth.isUserAdmin();
+  const isAdmin = await isUserAdminService();
 
   if (!isAdmin) {
     throw new UnauthorizedError("Admin access required");
