@@ -1,8 +1,8 @@
 import "server-only";
 
 import { streamToEventIterator } from "@orpc/server";
-import type { ModelMessage } from "ai";
-import { streamText } from "ai";
+import type { UIMessage } from "ai";
+import { convertToModelMessages, streamText } from "ai";
 
 import { SETTINGS } from "@/data/settings";
 import { getModel } from "@/zap/lib/ai/get-model";
@@ -13,7 +13,7 @@ import type { AIProviderId } from "@/zap/types/ai.types";
 export interface StreamChatService {
   userId: string;
   provider: AIProviderId;
-  messages: ModelMessage[];
+  messages: UIMessage[];
 }
 
 export async function streamChatService({
@@ -33,7 +33,7 @@ export async function streamChatService({
 
   const result = streamText({
     model: getModel(provider, apiKey, model),
-    messages,
+    messages: convertToModelMessages(messages),
     system: SETTINGS.AI.SYSTEM_PROMPT,
     maxOutputTokens: SETTINGS.AI.CHAT?.MAX_OUTPUT_TOKENS,
     temperature: SETTINGS.AI.CHAT?.TEMPERATURE,

@@ -2,22 +2,31 @@
 import "client-only";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { eventIteratorToStream } from "@orpc/client";
 
 import { handleClientError } from "@/zap/lib/api/client";
+import { ApplicationError } from "@/zap/lib/api/errors";
+import { orpcClient } from "@/zap/lib/orpc/client";
 import type { AIProviderId } from "@/zap/types/ai.types";
 
 export function useAIChat(provider: AIProviderId) {
   return useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/ai/chat",
-      headers: {
-        "Content-Type": "application/json",
+    transport: {
+      async sendMessages(options) {
+        return eventIteratorToStream(
+          await orpcClient.ai.streamChat(
+            {
+              messages: options.messages,
+              provider,
+            },
+            { signal: options.abortSignal },
+          ),
+        );
       },
-      body: {
-        provider,
+      reconnectToStream() {
+        throw new ApplicationError("Unsupported");
       },
-    }),
+    },
     onError: (error: unknown) => {
       handleClientError(error);
     },

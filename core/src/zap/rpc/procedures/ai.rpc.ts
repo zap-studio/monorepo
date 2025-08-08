@@ -1,7 +1,7 @@
 import "server-only";
 
 import { type } from "@orpc/server";
-import type { ModelMessage } from "ai";
+import type { UIMessage } from "ai";
 
 import { authMiddleware, base } from "@/rpc/middlewares";
 import { withRpcHandler } from "@/zap/lib/api/handlers";
@@ -98,7 +98,7 @@ const streamChat = base
   .input(
     type<{
       provider: AIProviderId;
-      messages: ModelMessage[];
+      messages: UIMessage[];
     }>(),
   )
   .handler(
