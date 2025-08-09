@@ -41,7 +41,7 @@ export function useZapQuery<
   const hasHandledSuccess = useRef(false);
   const hasHandledError = useRef(false);
 
-  // Use useMemo to ensure that the queryKey is stable across renders (special case of object reference equality since queryKey is an array)
+  // Use useMemo to ensure that the queryKey is stable across renders (special case of array reference equality since queryKey is an array)
   const stableQueryKey = useMemo(
     () => restOptions.queryKey,
     [restOptions.queryKey],

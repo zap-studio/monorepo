@@ -3,13 +3,14 @@ import "client-only";
 
 import { useCompletion } from "@ai-sdk/react";
 import { eventIteratorToStream } from "@orpc/client";
+import type { CompletionRequestOptions } from "ai";
 
 import { handleClientError } from "@/zap/lib/api/client";
 import { orpcClient } from "@/zap/lib/orpc/client";
 import type { AIProviderId } from "@/zap/types/ai.types";
 
 export function useAICompletion(provider: AIProviderId, prompt: string) {
-  return useCompletion({
+  const result = useCompletion({
     fetch: async (_url, options) => {
       const stream = eventIteratorToStream(
         await orpcClient.ai.streamCompletion(
@@ -31,4 +32,10 @@ export function useAICompletion(provider: AIProviderId, prompt: string) {
       handleClientError(error);
     },
   });
+
+  const complete = async (options?: CompletionRequestOptions) => {
+    await result.complete(prompt, options);
+  };
+
+  return { ...result, complete };
 }
