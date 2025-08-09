@@ -1,5 +1,5 @@
+import type { Product } from "@/zap-old/lib/polar/utils";
 import type { Provider } from "@/zap.config";
-import type { Product } from "@/zap/lib/polar/utils";
 
 export interface ZapSettings {
   AI: {

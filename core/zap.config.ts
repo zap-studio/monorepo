@@ -12,7 +12,7 @@
 
 import type { Metadata } from "next";
 
-import type { ZapSettings } from "@/zap-old/types/zap.config.types";
+import type { ZapSettings } from "@/zap.config.types";
 import { PUBLIC_ENV } from "@/zap/env/public";
 import { DEV, VERCEL } from "@/zap/env/runtime";
 
