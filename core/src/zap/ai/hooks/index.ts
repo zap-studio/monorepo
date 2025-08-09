@@ -10,10 +10,10 @@ import { useForm } from "react-hook-form";
 
 import { DEFAULT_MODEL } from "@/zap/ai/data";
 import type { AIFormValues, AIProviderId, ModelName } from "@/zap/ai/types";
-import { handleClientError } from "@/zap/api/client";
-import { ApplicationError } from "@/zap/api/errors";
 import { useZapMutation } from "@/zap/api/hooks/use-zap-mutation";
 import { useZapQuery } from "@/zap/api/hooks/use-zap-query";
+import { ApplicationError } from "@/zap/errors";
+import { handleClientError } from "@/zap/errors/client";
 import { orpc, orpcClient } from "@/zap-old/lib/orpc/client";
 
 export function useAIChat(provider: AIProviderId) {

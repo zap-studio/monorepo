@@ -9,10 +9,10 @@ import type { z } from "zod";
 import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { handleClientError } from "@/zap/api/client";
-import { AuthenticationError } from "@/zap/api/errors";
-import { authClient } from "@/zap/auth/providers/better-auth/client";
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import type { LoginFormSchema, RegisterFormSchema } from "@/zap/auth/schemas";
+import { AuthenticationError } from "@/zap/errors";
+import { handleClientError } from "@/zap/errors/client";
 
 type LoginFormValues = z.infer<typeof LoginFormSchema>;
 type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
@@ -24,7 +24,7 @@ export function useAuth(callbackURL?: string) {
 
   const sendVerificationMail = async (email: string) => {
     try {
-      await authClient.sendVerificationEmail({
+      await betterAuthClient.sendVerificationEmail({
         email,
         callbackURL: ZAP_DEFAULT_SETTINGS.AUTH.VERIFIED_EMAIL_PATH,
       });
@@ -41,7 +41,7 @@ export function useAuth(callbackURL?: string) {
     const { email, password } = values;
 
     try {
-      const response = await authClient.signIn.email({ email, password });
+      const response = await betterAuthClient.signIn.email({ email, password });
 
       if (response.error) {
         throw new AuthenticationError(
@@ -73,7 +73,11 @@ export function useAuth(callbackURL?: string) {
     const { name, email, password } = values;
 
     try {
-      const response = await authClient.signUp.email({ email, password, name });
+      const response = await betterAuthClient.signUp.email({
+        email,
+        password,
+        name,
+      });
 
       if (response.error) {
         throw new AuthenticationError(

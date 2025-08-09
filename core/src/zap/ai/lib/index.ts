@@ -3,7 +3,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 
 import { AI_PROVIDERS_OBJECT } from "@/zap/ai/data";
 import { AIProviderId, ModelName } from "@/zap/ai/types";
-import { BadRequestError } from "@/zap/api/errors";
+import { BadRequestError } from "@/zap/errors";
 
 export function getModel(
   provider: AIProviderId,

@@ -7,8 +7,8 @@ import { format, formatDistanceToNow, parseISO } from "date-fns";
 import matter from "gray-matter";
 
 import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
-import { ApplicationError, FileOperationError } from "@/zap/lib/api/errors";
-import { postMetadataSchema } from "@/zap/schemas/blog.schema";
+import { postMetadataSchema } from "@/zap/blog/schemas";
+import { ApplicationError, FileOperationError } from "@/zap/errors";
 
 const BLOG_DIR = path.join(process.cwd(), "src", "blog");
 

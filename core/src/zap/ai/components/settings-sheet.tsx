@@ -37,7 +37,7 @@ import {
 import { useAISettings, useInitAISettings } from "@/zap/ai/hooks";
 import { AIFormSchema, AIProviderIdSchema } from "@/zap/ai/schemas";
 import { AIFormValues, AIProviderId } from "@/zap/ai/types";
-import { handleClientError } from "@/zap/api/client";
+import { handleClientError } from "@/zap/errors/client";
 
 interface SettingsSheetProps {
   open: boolean;
