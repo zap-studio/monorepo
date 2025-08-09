@@ -4,17 +4,13 @@ import { db } from "@/db";
 import { waitlist } from "@/db/schema";
 import { BadRequestError } from "@/zap/lib/api/errors";
 
-interface SubmitWaitlistEmailInput {
-  input: {
-    email: string;
-  };
+interface SubmitWaitlistEmailService {
+  email: string;
 }
 
 export async function submitWaitlistEmailService({
-  input,
-}: SubmitWaitlistEmailInput) {
-  const email = input.email;
-
+  email,
+}: SubmitWaitlistEmailService) {
   const result = await db
     .insert(waitlist)
     .values({ email })

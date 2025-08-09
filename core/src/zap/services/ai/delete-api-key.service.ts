@@ -6,23 +6,15 @@ import { db } from "@/db";
 import { userAISettings } from "@/db/schema";
 import type { AIProviderId } from "@/zap/types/ai.types";
 
-interface DeleteAPIKeyContext {
-  session: { user: { id: string } };
-}
-interface DeleteAPIKeyInput {
+interface DeleteAPIKeyService {
+  userId: string;
   provider: AIProviderId;
 }
 
 export async function deleteAPIKeyService({
-  context,
-  input,
-}: {
-  context: DeleteAPIKeyContext;
-  input: DeleteAPIKeyInput;
-}) {
-  const userId = context.session.user.id;
-  const provider = input.provider;
-
+  userId,
+  provider,
+}: DeleteAPIKeyService) {
   await db
     .delete(userAISettings)
     .where(

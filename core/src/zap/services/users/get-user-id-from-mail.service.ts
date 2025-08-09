@@ -3,17 +3,13 @@ import "server-only";
 import { getUserIdFromMailQuery } from "@/zap/db/queries/emails.query";
 import { NotFoundError } from "@/zap/lib/api/errors";
 
-interface GetUserIdFromMailServiceProps {
-  input: {
-    email: string;
-  };
+interface GetUserIdFromMailService {
+  email: string;
 }
 
 export async function getUserIdFromMailService({
-  input,
-}: GetUserIdFromMailServiceProps) {
-  const email = input.email;
-
+  email,
+}: GetUserIdFromMailService) {
   const records = await getUserIdFromMailQuery.execute({ email });
 
   const record = records[0];

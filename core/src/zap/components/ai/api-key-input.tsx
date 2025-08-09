@@ -21,7 +21,9 @@ export function ApiKeyInput({
 }: FormFieldProps & {
   loading: boolean;
   testing: boolean;
-  handleTestApiKey: () => void;
+  handleTestApiKey: () => Promise<{
+    message: string;
+  }>;
 }) {
   const [showKey, setShowKey] = useState(false);
 

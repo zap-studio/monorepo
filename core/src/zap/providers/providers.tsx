@@ -2,13 +2,15 @@
 import "client-only";
 
 import { ProgressProvider } from "@bprogress/next/app";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { useEffect } from "react";
-import { SWRConfig } from "swr";
 
 import { PUBLIC_ENV } from "@/lib/env.public";
+import { queryClient } from "@/lib/query";
 import { ThemeProvider } from "@/providers/theme.provider";
 import SuspendedPostHogPageView from "@/zap/components/analytics/posthog-page-view";
 
@@ -34,7 +36,7 @@ export default function Providers({
   }, [ENABLE_POSTHOG]);
 
   return (
-    <SWRConfig value={{ provider: () => new Map() }}>
+    <QueryClientProvider client={queryClient}>
       <NuqsAdapter>
         <ThemeProvider
           attribute="class"
@@ -58,6 +60,7 @@ export default function Providers({
           </ProgressProvider>
         </ThemeProvider>
       </NuqsAdapter>
-    </SWRConfig>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }

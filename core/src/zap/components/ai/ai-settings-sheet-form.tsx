@@ -12,6 +12,7 @@ import { SaveSettings } from "@/zap/components/ai/save-settings";
 import { DEFAULT_MODEL, ModelsByProvider } from "@/zap/data/ai";
 import { useAISettings } from "@/zap/hooks/ai/use-ai-settings";
 import { useInitAISettings } from "@/zap/hooks/ai/use-init-ai-settings";
+import { handleClientError } from "@/zap/lib/api/client";
 import { AIFormSchema, AIProviderIdSchema } from "@/zap/schemas/ai.schema";
 import type { AIFormValues } from "@/zap/types/ai.types";
 
@@ -35,7 +36,7 @@ export function AISettingsSheetForm({
     },
   });
 
-  const { isSaving, saveApiKey, testing, handleTestApiKey } =
+  const { saving, handleSaveApiKey, testing, handleTestApiKey } =
     useAISettings(form);
 
   const { loading, apiKey, model: savedModel } = useInitAISettings(form, open);
@@ -64,12 +65,17 @@ export function AISettingsSheetForm({
   }, [form, savedModel, selectedProvider]);
 
   const handleSubmit = async (values: AIFormValues) => {
-    await saveApiKey(values);
-    onOpenChange(false);
+    try {
+      await handleSaveApiKey(values);
+      form.reset();
+      onOpenChange(false);
+    } catch (error) {
+      handleClientError(error);
+    }
   };
 
   const isSaveDisabled =
-    isSaving || testing || form.getValues("apiKey") === initialApiKey; // Key unchanged
+    saving || testing || form.getValues("apiKey") === initialApiKey; // Key unchanged
 
   return (
     <Form {...form}>
@@ -77,20 +83,20 @@ export function AISettingsSheetForm({
         className="space-y-6 px-4"
         onSubmit={form.handleSubmit(handleSubmit)}
       >
-        <ProviderSelect control={form.control} disabled={isSaving} />
+        <ProviderSelect control={form.control} disabled={saving} />
         <ModelSelect
           control={form.control}
-          disabled={isSaving}
+          disabled={saving}
           provider={selectedProvider}
         />
         <ApiKeyInput
           control={form.control}
-          disabled={isSaving || loading}
+          disabled={saving || loading}
           handleTestApiKey={handleTestApiKey}
           loading={loading}
           testing={testing}
         />
-        <SaveSettings isSaveDisabled={isSaveDisabled} isSaving={isSaving} />
+        <SaveSettings isSaveDisabled={isSaveDisabled} saving={saving} />
       </form>
     </Form>
   );

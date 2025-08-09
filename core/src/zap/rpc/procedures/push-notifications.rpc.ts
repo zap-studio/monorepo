@@ -6,9 +6,11 @@ import { InputSubscribeUserSchema } from "@/zap/schemas/push-notifications.schem
 import { subscribeUserService } from "@/zap/services/push-notifications/subscribe-user.service";
 import { unsubscribeUserService } from "@/zap/services/push-notifications/unsubscribe-user.service";
 
-const subscribeUser = base
-  .input(InputSubscribeUserSchema)
-  .handler(withRpcHandler(subscribeUserService));
+const subscribeUser = base.input(InputSubscribeUserSchema).handler(
+  withRpcHandler(async ({ input }) => {
+    return await subscribeUserService({ ...input });
+  }),
+);
 
 const unsubscribeUser = base
   .use(authMiddleware)

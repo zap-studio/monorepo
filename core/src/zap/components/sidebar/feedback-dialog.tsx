@@ -23,7 +23,7 @@ import { ZapButton } from "@/components/zap-ui/button";
 import { RatingButtons } from "@/zap/components/sidebar/rating-buttons";
 import { useIsFeedbackSubmitted } from "@/zap/hooks/feedbacks/use-is-feedback-submitted";
 import { useSubmitFeedback } from "@/zap/hooks/feedbacks/use-submit-feedback";
-import { FeedbackSchema } from "@/zap/schemas/feedback.schema";
+import { InputFeedbackSchema } from "@/zap/schemas/feedback.schema";
 import type { FeedbackFormValues } from "@/zap/types/feedback.types";
 
 interface FeedbackDialogProps {
@@ -36,11 +36,11 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
 
   const { isExistingFeedback, setIsExistingFeedback } =
     useIsFeedbackSubmitted();
-  const { trigger: submitFeedback, isMutating: isSubmitting } =
+  const { mutateAsync: submitFeedback, isPending: isSubmitting } =
     useSubmitFeedback(setIsExistingFeedback);
 
   const form = useForm<FeedbackFormValues>({
-    resolver: zodResolver(FeedbackSchema),
+    resolver: zodResolver(InputFeedbackSchema),
     defaultValues: { rating: 0, description: "" },
   });
 

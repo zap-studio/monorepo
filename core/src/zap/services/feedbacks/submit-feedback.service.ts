@@ -3,29 +3,23 @@ import "server-only";
 import { db } from "@/db";
 import { feedback as feedbackTable } from "@/db/schema";
 
-interface SubmitFeedbackContext {
-  session: { user: { id: string } };
-}
-interface SubmitFeedbackInput {
+interface SubmitFeedbackService {
+  userId: string;
   rating: number;
   description?: string;
 }
 
 export async function submitFeedbackService({
-  context,
-  input,
-}: {
-  context: SubmitFeedbackContext;
-  input: SubmitFeedbackInput;
-}) {
-  const userId = context.session.user.id;
-
+  userId,
+  rating,
+  description,
+}: SubmitFeedbackService) {
   await db
     .insert(feedbackTable)
     .values({
       userId,
-      rating: input.rating,
-      description: input.description || "",
+      rating,
+      description: description || "",
       submittedAt: new Date(),
     })
     .execute();

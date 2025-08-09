@@ -9,9 +9,11 @@ import { submitWaitlistEmailService } from "@/zap/services/waitlist/submit-email
 const getNumberOfPeopleInWaitlist = base.handler(
   withRpcHandler(getNumberOfPeopleInWaitlistService),
 );
-const submitWaitlistEmail = base
-  .input(WaitlistSchema)
-  .handler(withRpcHandler(submitWaitlistEmailService));
+const submitWaitlistEmail = base.input(WaitlistSchema).handler(
+  withRpcHandler(async ({ input }) => {
+    return await submitWaitlistEmailService({ ...input });
+  }),
+);
 
 export const waitlist = {
   getNumberOfPeopleInWaitlist,

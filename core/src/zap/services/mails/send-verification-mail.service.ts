@@ -7,17 +7,17 @@ import { resend } from "@/zap/lib/resend/server";
 
 const from = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
 
-interface SendVerificationMailProps {
-  input: { subject: string; recipients: string[]; url: string };
+interface SendVerificationMailService {
+  subject: string;
+  recipients: string[];
+  url: string;
 }
 
 export async function sendVerificationMailService({
-  input,
-}: SendVerificationMailProps) {
-  const subject = input.subject;
-  const recipients = input.recipients;
-  const url = input.url;
-
+  subject,
+  recipients,
+  url,
+}: SendVerificationMailService) {
   const { data, error } = await resend.emails.send({
     from,
     to: recipients,

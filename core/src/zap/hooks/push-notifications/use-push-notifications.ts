@@ -2,25 +2,15 @@
 import "client-only";
 
 import { PUBLIC_ENV } from "@/lib/env.public";
-import { $fetch } from "@/lib/fetch";
 import { handleClientError } from "@/zap/lib/api/client";
 import { ClientError, EnvironmentError } from "@/zap/lib/api/errors";
 import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
-import { urlBase64ToUint8Array } from "@/zap/lib/pwa/utils";
+import { orpc } from "@/zap/lib/orpc/client";
+import {
+  arrayBufferToBase64,
+  urlBase64ToUint8Array,
+} from "@/zap/lib/pwa/utils";
 import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
-
-interface SubscriptionResponse {
-  success: boolean;
-  subscriptionId: string;
-}
-
-interface UnsubscribeResponse {
-  success: boolean;
-}
-
-interface ApiError {
-  message: string;
-}
 
 export function usePushNotifications() {
   const subscription = usePushNotificationsStore((state) => state.subscription);
@@ -34,54 +24,27 @@ export function usePushNotifications() {
     (state) => state.setSubscriptionState,
   );
 
-  const { trigger: subscribeTrigger, isMutating: isSubscribing } =
-    useZapMutation<
-      SubscriptionResponse,
-      ApiError,
-      string,
-      { subscription: PushSubscriptionJSON }
-    >(
-      "/api/user/notifications/subscribe",
-      (url: string, { arg }: { arg: { subscription: PushSubscriptionJSON } }) =>
-        $fetch<SubscriptionResponse>(url, {
-          method: "POST",
-          body: arg,
-        }),
-      {
-        optimisticData: { subscriptionId: "temp-id" },
-        rollbackOnError: true,
-        populateCache: (result) => result,
-        onError: async () => {
-          if (subscription) {
-            try {
-              await subscription.unsubscribe();
-            } finally {
-              setSubscriptionState({
-                subscription: null,
-                isSubscribed: false,
-              });
-            }
-          }
-        },
-        successMessage: "Subscribed to push notifications successfully!",
-        skipErrorHandling: true, // Skip error handling to allow custom error handling in the component
-      },
-    );
+  const { mutateAsync: subscribe, isPending: isSubscribing } = useZapMutation({
+    ...orpc.pushNotifications.subscribeUser.mutationOptions(),
+    onError: async () => {
+      if (subscription) {
+        await subscription.unsubscribe();
+      }
+    },
+    successMessage: "Subscribed to push notifications successfully!",
+  });
 
-  const { trigger: unsubscribeTrigger, isMutating: isUnsubscribing } =
-    useZapMutation<UnsubscribeResponse, ApiError, string>(
-      "/api/user/notifications/unsubscribe",
-      (url: string) =>
-        $fetch<UnsubscribeResponse>(url, {
-          method: "DELETE",
-        }),
-      {
-        rollbackOnError: false,
-        populateCache: (result) => result,
-        successMessage: "We will miss you!",
-        skipErrorHandling: true, // Skip error handling to allow custom error handling in the component
+  const { mutateAsync: unsubscribe, isPending: isUnsubscribing } =
+    useZapMutation({
+      ...orpc.pushNotifications.unsubscribeUser.mutationOptions(),
+      onSuccess: () => {
+        setSubscriptionState({
+          subscription: null,
+          isSubscribed: false,
+        });
       },
-    );
+      successMessage: "We will miss you!",
+    });
 
   const subscribeToPush = async () => {
     setSubscribed(true);
@@ -102,11 +65,23 @@ export function usePushNotifications() {
         applicationServerKey,
       });
 
+      const authKey = sub.getKey("auth");
+      const p256dhKey = sub.getKey("p256dh");
+
+      if (!(authKey && p256dhKey)) {
+        throw new ClientError("Failed to retrieve push subscription keys");
+      }
+
+      const transformedSubscription = {
+        endpoint: sub.endpoint,
+        keys: {
+          auth: arrayBufferToBase64(authKey),
+          p256dh: arrayBufferToBase64(p256dhKey),
+        },
+      };
+
+      await subscribe({ subscription: transformedSubscription });
       setSubscription(sub);
-
-      const serializedSub = sub.toJSON();
-
-      await subscribeTrigger({ subscription: serializedSub });
     } catch (error) {
       handleClientError(error);
     }
@@ -118,13 +93,8 @@ export function usePushNotifications() {
         throw new ClientError("No active subscription found");
       }
 
-      setSubscriptionState({
-        subscription: null,
-        isSubscribed: false,
-      });
-
       await subscription.unsubscribe();
-      await unsubscribeTrigger();
+      await unsubscribe({});
     } catch (error) {
       handleClientError(error, "Failed to unsubscribe from push notifications");
     }

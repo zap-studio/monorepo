@@ -72,8 +72,7 @@ Custom hooks provide a clean API for feedback functionality:
 export const useUserFeedback = () => {
   const orpc = useORPC();
   return useZapQuery(
-    orpc.feedbacks.getUserFeedback.key(),
-    orpc.feedbacks.getUserFeedback.queryOptions().queryFn
+    orpc.feedbacks.getUserFeedback.queryOptions()
   );
 };
 

@@ -5,17 +5,13 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { user } from "@/db/schema";
 
-interface UpdateLastTimestampMailSentServiceProps {
-  input: {
-    userId: string;
-  };
+interface UpdateLastTimestampMailSentService {
+  userId: string;
 }
 
 export async function updateLastTimestampMailSentService({
-  input,
-}: UpdateLastTimestampMailSentServiceProps) {
-  const userId = input.userId;
-
+  userId,
+}: UpdateLastTimestampMailSentService) {
   await db
     .update(user)
     .set({ lastEmailSentAt: new Date() })
