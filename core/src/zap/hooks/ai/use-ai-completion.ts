@@ -9,7 +9,7 @@ import { handleClientError } from "@/zap/lib/api/client";
 import { orpcClient } from "@/zap/lib/orpc/client";
 import type { AIProviderId } from "@/zap/types/ai.types";
 
-export function useAICompletion(provider: AIProviderId, prompt: string) {
+export function useAICompletion(prompt: string, provider: AIProviderId) {
   const result = useCompletion({
     fetch: async (_url, options) => {
       const stream = eventIteratorToStream(
