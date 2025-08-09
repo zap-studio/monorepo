@@ -2,26 +2,26 @@ import "server-only";
 
 import { headers } from "next/headers";
 
-import { auth } from "@/zap/auth/lib/better-auth/server";
+import { AuthenticationError, NotFoundError } from "@/zap/api/errors";
 import { redirectToLogin } from "@/zap/auth/lib/redirects";
-import { AuthenticationError, NotFoundError } from "@/zap-old/lib/api/errors";
+import { betterAuthServer } from "@/zap/auth/providers/better-auth/server";
 
 export async function getSessionService() {
   const _headers = await headers();
-  const result = await auth.api.getSession({ headers: _headers });
+  const result = await betterAuthServer.api.getSession({ headers: _headers });
 
   return result?.session;
 }
 
-export async function getAuthData() {
+export async function getAuthServerData() {
   const _headers = await headers();
-  const result = await auth.api.getSession({ headers: _headers });
+  const result = await betterAuthServer.api.getSession({ headers: _headers });
 
   return result;
 }
 
-export async function getAuthDataOrRedirectToLoginService() {
-  const result = await getAuthData();
+export async function getAuthServerDataOrRedirectToLoginService() {
+  const result = await getAuthServerData();
   if (!result?.session) {
     return redirectToLogin();
   }
@@ -40,7 +40,7 @@ export async function getUserIdService() {
 
 export async function getUserService() {
   const _headers = await headers();
-  const result = await auth.api.getSession({ headers: _headers });
+  const result = await betterAuthServer.api.getSession({ headers: _headers });
 
   return result?.user;
 }

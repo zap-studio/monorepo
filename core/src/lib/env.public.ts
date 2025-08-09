@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { EnvironmentError } from "../zap-old/lib/api/errors";
+import { EnvironmentError } from "../zap/api/errors";
 
 const PublicEnvSchema = z.object({
   NODE_ENV: z

@@ -9,10 +9,10 @@ import type { z } from "zod";
 import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { authClient } from "@/zap/auth/lib/better-auth/client";
+import { handleClientError } from "@/zap/api/client";
+import { AuthenticationError } from "@/zap/api/errors";
+import { authClient } from "@/zap/auth/providers/better-auth/client";
 import type { LoginFormSchema, RegisterFormSchema } from "@/zap/auth/schemas";
-import { handleClientError } from "@/zap-old/lib/api/client";
-import { AuthenticationError } from "@/zap-old/lib/api/errors";
 
 type LoginFormValues = z.infer<typeof LoginFormSchema>;
 type RegisterFormValues = z.infer<typeof RegisterFormSchema>;

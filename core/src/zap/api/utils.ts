@@ -4,14 +4,9 @@ import type { z } from "zod";
 import { ZodError } from "zod";
 
 import { DEV } from "@/lib/env.public";
-import {
-  BaseError,
-  InternalServerError,
-  UnauthorizedError,
-} from "@/zap/lib/api/errors";
-import { logError } from "@/zap/lib/api/logger";
-import { auth } from "@/zap/lib/auth/server";
-import { generateUuid } from "@/zap/lib/crypto/utils";
+import { BaseError, InternalServerError } from "@/zap/api/errors";
+import { logError } from "@/zap/api/logger";
+import { generateUuid } from "@/zap-old/lib/crypto/utils";
 
 export type HandlerFunction<T extends unknown[], R> = (
   ...args: T
@@ -185,25 +180,10 @@ export function handleError<R>(
   }) as R;
 }
 
-export async function getAuthenticatedSession(request: Request) {
-  const session = await auth.api.getSession({ headers: request.headers });
-
-  if (!session) {
-    throw new UnauthorizedError("Authentication required");
-  }
-
-  return session;
-}
-
 export async function parseRequestBody<T>(
   request: Request,
   schema: z.ZodSchema<T>,
 ): Promise<T> {
   const body = await request.json();
   return schema.parse(body);
-}
-
-export async function getAuthenticatedUserId(request: Request) {
-  const session = await getAuthenticatedSession(request);
-  return session.user.id;
 }

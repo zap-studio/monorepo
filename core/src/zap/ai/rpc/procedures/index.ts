@@ -22,7 +22,7 @@ import {
   updateAISettingsService,
 } from "@/zap/ai/services";
 import type { AIProviderId } from "@/zap/ai/types";
-import { withRpcHandler } from "@/zap-old/lib/api/handlers";
+import { withRpcHandler } from "@/zap/api/handlers";
 
 const getAISettings = base
   .use(authMiddleware)

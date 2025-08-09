@@ -16,7 +16,7 @@ import { getApiSettingsForUserAndProviderQuery } from "@/zap/ai/db/queries";
 import { userAISettings } from "@/zap/ai/db/schema";
 import { getModel } from "@/zap/ai/lib";
 import { AIProviderId, ModelName } from "@/zap/ai/types";
-import { BadRequestError } from "@/zap-old/lib/api/errors";
+import { BadRequestError } from "@/zap/api/errors";
 import { encryptionKeyHex } from "@/zap-old/lib/crypto";
 import { decrypt } from "@/zap-old/lib/crypto/decrypt";
 import { encrypt } from "@/zap-old/lib/crypto/encrypt";

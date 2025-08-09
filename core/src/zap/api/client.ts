@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 import { DEV } from "@/lib/env.public";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { ApplicationError, BaseError } from "@/zap-old/lib/api/errors";
+import { ApplicationError, BaseError } from "@/zap/api/errors";
 
 export function handleClientError(
   error: unknown,

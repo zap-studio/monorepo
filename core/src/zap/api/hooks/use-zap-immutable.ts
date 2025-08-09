@@ -6,7 +6,7 @@ import type { QueryKey } from "@tanstack/react-query";
 import {
   useZapQuery,
   type ZapQueryOptions,
-} from "@/zap-old/lib/api/hooks/use-zap-query";
+} from "@/zap/api/hooks/use-zap-query";
 
 export function useZapImmutable<
   TQueryFnData = unknown,

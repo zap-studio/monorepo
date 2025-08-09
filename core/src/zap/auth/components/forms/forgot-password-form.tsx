@@ -18,8 +18,8 @@ import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/components/zap-ui/button";
 import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
-import { betterAuthClient } from "@/zap/auth/lib/better-auth/client";
-import { handleClientError } from "@/zap-old/lib/api/client";
+import { handleClientError } from "@/zap/api/client";
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 
 const formSchema = z.object({
   email: z.email("Please enter a valid email address"),

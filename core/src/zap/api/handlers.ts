@@ -1,14 +1,15 @@
 import "server-only";
 
 import { DEV } from "@/lib/env.public";
+import { UnauthorizedError } from "@/zap/api/errors";
 import {
   generateCorrelationId,
-  getAuthenticatedSession,
   handleError,
   type HandlerFunction,
   type HandlerOptions,
   logSuccess,
-} from "@/zap/lib/api/utils";
+} from "@/zap/api/utils";
+import { isAuthenticatedService } from "@/zap/auth/services";
 
 function createHandler<T extends unknown[], R>(
   handler: HandlerFunction<T, R>,
@@ -48,8 +49,11 @@ export function withAuthenticatedApiHandler<T extends unknown[], R>(
 ) {
   return createHandler(
     async (...args: T): Promise<R> => {
-      const request = args[0] as Request;
-      await getAuthenticatedSession(request);
+      const isAuthenticated = await isAuthenticatedService();
+
+      if (!isAuthenticated) {
+        throw new UnauthorizedError("User not authenticated");
+      }
 
       return handler(...args);
     },

@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/components/zap-ui/button";
-import { betterAuthClient } from "@/zap/auth/lib/better-auth/client";
-import { handleClientError } from "@/zap-old/lib/api/client";
-import { AuthenticationError } from "@/zap-old/lib/api/errors";
+import { handleClientError } from "@/zap/api/client";
+import { AuthenticationError } from "@/zap/api/errors";
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 
 const formSchema = z
   .object({
