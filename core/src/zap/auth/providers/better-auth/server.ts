@@ -18,11 +18,13 @@ import { SETTINGS } from "@/lib/settings";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { MailError } from "@/zap/api/errors";
 import { SERVER_ENV } from "@/zap/env/server";
+import {
+  canSendMailService,
+  sendForgotPasswordMailService,
+  sendVerificationMailService,
+  updateLastTimestampMailSentService,
+} from "@/zap/mails/services";
 import { polarClient } from "@/zap-old/lib/polar/server";
-import { canSendMailService } from "@/zap-old/services/mails/can-send-mail.service";
-import { sendForgotPasswordMailService } from "@/zap-old/services/mails/send-forgot-password-mail.service";
-import { sendVerificationMailService } from "@/zap-old/services/mails/send-verification-mail.service";
-import { updateLastTimestampMailSentService } from "@/zap-old/services/mails/update-last-timestamp-mail-sent.service";
 
 export const betterAuthServer = betterAuth({
   appName: "Zap.ts",
