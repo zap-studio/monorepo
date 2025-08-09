@@ -2,7 +2,19 @@ import "server-only";
 
 import { db } from "@/db";
 import { waitlist } from "@/db/schema";
-import { BadRequestError } from "@/zap/lib/api/errors";
+import { BadRequestError, NotFoundError } from "@/zap/errors";
+import { getNumberOfPeopleInWaitlistQuery } from "@/zap/waitlist/db/queries";
+
+export async function getNumberOfPeopleInWaitlistService() {
+  const result = await getNumberOfPeopleInWaitlistQuery.execute();
+
+  if (!result.length) {
+    throw new NotFoundError("No waitlist records found");
+  }
+
+  const record = result[0];
+  return record.count;
+}
 
 interface SubmitWaitlistEmailService {
   email: string;

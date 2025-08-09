@@ -6,11 +6,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import type z from "zod";
 
-import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
-import { useZapQuery } from "@/zap/lib/api/hooks/use-zap-query";
-import { orpc } from "@/zap/lib/orpc/client";
-import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";
-import { useWaitlistStore } from "@/zap/stores/waitlist.store";
+import { useZapMutation } from "@/zap/api/hooks/use-zap-mutation";
+import { useZapQuery } from "@/zap/api/hooks/use-zap-query";
+import { orpc } from "@/zap/api/providers/orpc/client";
+import { WaitlistSchema } from "@/zap/waitlist/schemas";
+import { useWaitlistStore } from "@/zap/waitlist/stores";
 
 export function useWaitlist() {
   const hasJoined = useWaitlistStore((state) => state.hasJoined);

@@ -1,10 +1,12 @@
 import "server-only";
 
 import { base } from "@/rpc/middlewares";
-import { withRpcHandler } from "@/zap/lib/api/handlers";
-import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";
-import { getNumberOfPeopleInWaitlistService } from "@/zap/services/waitlist/get-number-of-people-in-waitlist.service";
-import { submitWaitlistEmailService } from "@/zap/services/waitlist/submit-email.service";
+import { withRpcHandler } from "@/zap/errors/handlers";
+import { WaitlistSchema } from "@/zap/waitlist/schemas";
+import {
+  getNumberOfPeopleInWaitlistService,
+  submitWaitlistEmailService,
+} from "@/zap/waitlist/services";
 
 const getNumberOfPeopleInWaitlist = base.handler(
   withRpcHandler(getNumberOfPeopleInWaitlistService),
