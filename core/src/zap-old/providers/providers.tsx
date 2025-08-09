@@ -9,10 +9,10 @@ import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { useEffect } from "react";
 
-import { PUBLIC_ENV } from "@/lib/env.public";
 import { queryClient } from "@/lib/query";
 import { ThemeProvider } from "@/providers/theme.provider";
 import { SuspendedPostHogPageView } from "@/zap/analytics/components";
+import { PUBLIC_ENV } from "@/zap/env/env.public";
 
 interface ProvidersProps {
   children: React.ReactNode;

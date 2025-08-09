@@ -2,8 +2,8 @@ import "client-only";
 
 import { toast } from "sonner";
 
-import { DEV } from "@/lib/env.public";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { DEV } from "@/zap/env/env.public";
 import { ApplicationError, BaseError } from "@/zap/errors";
 
 export function handleClientError(

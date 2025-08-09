@@ -2,7 +2,7 @@ import "server-only";
 
 import { z } from "zod";
 
-import { EnvironmentError } from "@/zap/lib/api/errors";
+import { EnvironmentError } from "@/zap/errors";
 
 const ServerEnvSchema = z.object({
   DATABASE_URL: z.url({ message: "DATABASE_URL must be a valid URL" }),

@@ -1,7 +1,7 @@
 "use client";
 import "client-only";
 
-import { PUBLIC_ENV } from "@/lib/env.public";
+import { PUBLIC_ENV } from "@/zap/env/env.public";
 import { handleClientError } from "@/zap/lib/api/client";
 import { ClientError, EnvironmentError } from "@/zap/lib/api/errors";
 import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";

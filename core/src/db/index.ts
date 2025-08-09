@@ -12,8 +12,8 @@ import {
 import { Pool } from "pg";
 
 import * as schema from "@/db/schema";
-import { PROD } from "@/lib/env.public";
-import { SERVER_ENV } from "@/lib/env.server";
+import { PROD } from "@/zap/env/env.public";
+import { SERVER_ENV } from "@/zap/env/env.server";
 import { EnvironmentError } from "@/zap/lib/api/errors";
 
 type Database = NodePgDatabase<typeof schema> | NeonHttpDatabase<typeof schema>;

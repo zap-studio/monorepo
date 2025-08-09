@@ -1,6 +1,5 @@
 import "server-only";
 
-import { DEV } from "@/lib/env.public";
 import { UnauthorizedError } from "@/zap/api/errors";
 import {
   generateCorrelationId,
@@ -10,6 +9,7 @@ import {
   logSuccess,
 } from "@/zap/api/utils";
 import { isAuthenticatedService } from "@/zap/auth/services";
+import { DEV } from "@/zap/env/env.public";
 
 function createHandler<T extends unknown[], R>(
   handler: HandlerFunction<T, R>,
