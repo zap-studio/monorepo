@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/components/zap-ui/button";
-import { useAuth } from "@/zap/hooks/auth/use-auth";
-import { RegisterFormSchema } from "@/zap/schemas/auth.schema";
+import { useAuth } from "@/zap/auth/hooks";
+import { RegisterFormSchema } from "@/zap/auth/schemas";
 
 type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
 

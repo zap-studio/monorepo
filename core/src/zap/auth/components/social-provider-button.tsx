@@ -5,10 +5,10 @@ import { toast } from "sonner";
 
 import { ZapButton } from "@/components/zap-ui/button";
 import { AUTH_ICONS } from "@/data/auth-icons";
-import { type Provider, ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { handleClientError } from "@/zap/lib/api/client";
-import { AuthenticationError } from "@/zap/lib/api/errors";
-import { authClient } from "@/zap/lib/auth/client";
+import { Provider, ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { betterAuthClient } from "@/zap/auth/lib/better-auth/client";
+import { handleClientError } from "@/zap-old/lib/api/client";
+import { AuthenticationError } from "@/zap-old/lib/api/errors";
 
 interface SocialProviderButtonProps {
   provider: Provider;
@@ -21,7 +21,7 @@ export function SocialProviderButton({ provider }: SocialProviderButtonProps) {
     setLoading(true);
 
     try {
-      const { data, error } = await authClient.signIn.social({
+      const { data, error } = await betterAuthClient.signIn.social({
         provider,
         callbackURL: ZAP_DEFAULT_SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN,
       });

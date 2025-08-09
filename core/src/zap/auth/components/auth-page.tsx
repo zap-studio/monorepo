@@ -8,9 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { SETTINGS } from "@/data/settings";
-
-import { PolicyLinks } from "./policy-links";
-import { SocialProviders } from "./social-providers";
+import { cn } from "@/lib/utils";
+import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { SocialProviderButton } from "@/zap/auth/components";
 
 interface AuthPageProps {
   title: string;
@@ -79,6 +79,32 @@ export function AuthPage({
           <PolicyLinks />
         </div>
       </div>
+    </div>
+  );
+}
+
+function SocialProviders() {
+  const providers = ZAP_DEFAULT_SETTINGS.AUTH.PROVIDERS;
+  return (
+    <div className="flex flex-col gap-4">
+      {providers.map((provider) => (
+        <SocialProviderButton key={provider} provider={provider} />
+      ))}
+    </div>
+  );
+}
+
+function PolicyLinks({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        "text-muted-foreground [&_a]:hover:text-primary [&_a]:active:text-primary text-center text-xs text-balance [&_a]:underline [&_a]:underline-offset-4",
+        className,
+      )}
+    >
+      By clicking continue, you agree to our{" "}
+      <Link href="/terms-of-service">Terms of Service</Link> and{" "}
+      <Link href="/privacy-policy">Privacy Policy</Link>.
     </div>
   );
 }

@@ -17,14 +17,14 @@ import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { SERVER_ENV } from "@/lib/env.server";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { MailError } from "@/zap/lib/api/errors";
-import { polarClient } from "@/zap/lib/polar/server";
-import { canSendMailService } from "@/zap/services/mails/can-send-mail.service";
-import { sendForgotPasswordMailService } from "@/zap/services/mails/send-forgot-password-mail.service";
-import { sendVerificationMailService } from "@/zap/services/mails/send-verification-mail.service";
-import { updateLastTimestampMailSentService } from "@/zap/services/mails/update-last-timestamp-mail-sent.service";
+import { MailError } from "@/zap-old/lib/api/errors";
+import { polarClient } from "@/zap-old/lib/polar/server";
+import { canSendMailService } from "@/zap-old/services/mails/can-send-mail.service";
+import { sendForgotPasswordMailService } from "@/zap-old/services/mails/send-forgot-password-mail.service";
+import { sendVerificationMailService } from "@/zap-old/services/mails/send-verification-mail.service";
+import { updateLastTimestampMailSentService } from "@/zap-old/services/mails/update-last-timestamp-mail-sent.service";
 
-export const auth = betterAuth({
+export const betterAuthServer = betterAuth({
   appName: "Zap.ts",
   database: drizzleAdapter(db, { provider: "pg" }),
   emailAndPassword: {

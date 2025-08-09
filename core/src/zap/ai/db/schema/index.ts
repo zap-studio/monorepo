@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import type { ModelName } from "@/zap/ai/types";
-import { user } from "@/zap-old/db/schema/auth.sql";
+import { user } from "@/zap/auth/db/schema";
 
 export const userAISettings = pgTable(
   "user_ai_settings",

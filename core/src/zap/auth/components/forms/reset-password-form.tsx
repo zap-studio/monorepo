@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/components/zap-ui/button";
-import { handleClientError } from "@/zap/lib/api/client";
-import { AuthenticationError } from "@/zap/lib/api/errors";
-import { authClient } from "@/zap/lib/auth/client";
+import { betterAuthClient } from "@/zap/auth/lib/better-auth/client";
+import { handleClientError } from "@/zap-old/lib/api/client";
+import { AuthenticationError } from "@/zap-old/lib/api/errors";
 
 const formSchema = z
   .object({
@@ -64,7 +64,7 @@ export function ResetPasswordForm() {
     }
 
     try {
-      await authClient.resetPassword({
+      await betterAuthClient.resetPassword({
         newPassword: password,
         token,
       });

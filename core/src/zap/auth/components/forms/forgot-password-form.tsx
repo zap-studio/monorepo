@@ -18,8 +18,8 @@ import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/components/zap-ui/button";
 import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
-import { handleClientError } from "@/zap/lib/api/client";
-import { authClient } from "@/zap/lib/auth/client";
+import { betterAuthClient } from "@/zap/auth/lib/better-auth/client";
+import { handleClientError } from "@/zap-old/lib/api/client";
 
 const formSchema = z.object({
   email: z.email("Please enter a valid email address"),
@@ -42,7 +42,7 @@ export function ForgotPasswordForm() {
     const { email } = values;
 
     try {
-      await authClient.forgetPassword({
+      await betterAuthClient.forgetPassword({
         email,
         redirectTo: "/reset-password",
       });

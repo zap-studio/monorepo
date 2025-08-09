@@ -13,7 +13,7 @@ import { createAuthClient } from "better-auth/react";
 
 import { BASE_URL } from "@/zap.config";
 
-export const authClient = createAuthClient({
+export const betterAuthClient = createAuthClient({
   baseURL: BASE_URL,
   plugins: [
     twoFactorClient(),
@@ -26,4 +26,4 @@ export const authClient = createAuthClient({
   ],
 });
 
-export type Session = typeof authClient.$Infer.Session;
+export type Session = typeof betterAuthClient.$Infer.Session;
