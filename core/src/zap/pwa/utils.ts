@@ -1,6 +1,6 @@
 import type * as webpush from "web-push";
 
-import { ApplicationError } from "@/zap/lib/api/errors";
+import { ApplicationError } from "@/zap/errors";
 
 export function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -12,16 +12,20 @@ export function urlBase64ToUint8Array(base64String: string) {
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
   }
+
   return outputArray;
 }
 
 export function arrayBufferToBase64(buffer: ArrayBuffer) {
   let binary = "";
+
   const bytes = new Uint8Array(buffer);
   const len = bytes.byteLength;
+
   for (let i = 0; i < len; i++) {
     binary += String.fromCharCode(bytes[i]);
   }
+
   return window.btoa(binary);
 }
 

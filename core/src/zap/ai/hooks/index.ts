@@ -12,9 +12,9 @@ import { DEFAULT_MODEL } from "@/zap/ai/data";
 import type { AIFormValues, AIProviderId, ModelName } from "@/zap/ai/types";
 import { useZapMutation } from "@/zap/api/hooks/use-zap-mutation";
 import { useZapQuery } from "@/zap/api/hooks/use-zap-query";
+import { orpc, orpcClient } from "@/zap/api/providers/orpc/client";
 import { ApplicationError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
-import { orpc, orpcClient } from "@/zap-old/lib/orpc/client";
 
 export function useAIChat(provider: AIProviderId) {
   return useChat({

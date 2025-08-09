@@ -1,16 +1,13 @@
 "use client";
 import "client-only";
 
+import { useZapMutation } from "@/zap/api/hooks";
+import { orpc } from "@/zap/api/providers/orpc/client";
 import { PUBLIC_ENV } from "@/zap/env/public";
-import { handleClientError } from "@/zap/lib/api/client";
-import { ClientError, EnvironmentError } from "@/zap/lib/api/errors";
-import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
-import { orpc } from "@/zap/lib/orpc/client";
-import {
-  arrayBufferToBase64,
-  urlBase64ToUint8Array,
-} from "@/zap/lib/pwa/utils";
-import { usePushNotificationsStore } from "@/zap/stores/push-notifications.store";
+import { ClientError, EnvironmentError } from "@/zap/errors";
+import { handleClientError } from "@/zap/errors/client";
+import { usePushNotificationsStore } from "@/zap/pwa/stores";
+import { arrayBufferToBase64, urlBase64ToUint8Array } from "@/zap/pwa/utils";
 
 export function usePushNotifications() {
   const subscription = usePushNotificationsStore((state) => state.subscription);
@@ -26,6 +23,9 @@ export function usePushNotifications() {
 
   const { mutateAsync: subscribe, isPending: isSubscribing } = useZapMutation({
     ...orpc.pushNotifications.subscribeUser.mutationOptions(),
+    onSuccess: () => {
+      setSubscribed(true);
+    },
     onError: async () => {
       if (subscription) {
         await subscription.unsubscribe();
@@ -46,9 +46,7 @@ export function usePushNotifications() {
       successMessage: "We will miss you!",
     });
 
-  const subscribeToPush = async () => {
-    setSubscribed(true);
-
+  const handleSubscribeToPush = async () => {
     try {
       const registration = await navigator.serviceWorker.ready;
 
@@ -87,7 +85,7 @@ export function usePushNotifications() {
     }
   };
 
-  const unsubscribeFromPush = async () => {
+  const handleUnsubscribeFromPush = async () => {
     try {
       if (!subscription) {
         throw new ClientError("No active subscription found");
@@ -101,8 +99,8 @@ export function usePushNotifications() {
   };
 
   return {
-    subscribeToPush,
-    unsubscribeFromPush,
+    handleSubscribeToPush,
+    handleUnsubscribeFromPush,
     isSubscribing,
     isUnsubscribing,
   };
