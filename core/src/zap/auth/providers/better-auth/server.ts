@@ -13,8 +13,8 @@ import {
 } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 
-import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
+import { SETTINGS } from "@/lib/settings";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { MailError } from "@/zap/api/errors";
 import { SERVER_ENV } from "@/zap/env/server";

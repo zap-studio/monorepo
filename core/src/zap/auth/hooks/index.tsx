@@ -6,8 +6,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import type { z } from "zod";
 
-import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
+import { SETTINGS } from "@/lib/settings";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import type { LoginFormSchema, RegisterFormSchema } from "@/zap/auth/schemas";

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { SETTINGS } from "@/data/settings";
+import { SETTINGS } from "@/lib/settings";
 import { PUBLIC_ENV } from "@/zap/env/public";
 import { SERVER_ENV } from "@/zap/env/server";
 import { PushNotificationError } from "@/zap/lib/api/errors";

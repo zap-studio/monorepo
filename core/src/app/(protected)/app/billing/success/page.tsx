@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 
-import { ZapButton } from "@/components/zap-ui/button";
+import { ZapButton } from "@/zap/components/button";
 import { getAuthDataOrRedirectToLogin } from "@/zap/lib/auth/redirects";
 
 interface BillingSuccessPageProps {

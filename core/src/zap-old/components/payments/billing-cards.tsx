@@ -11,9 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ZapButton } from "@/components/zap-ui/button";
 import type { ProductMetadata } from "@/zap.config";
 import { SALES_EMAIL } from "@/zap.config";
+import { ZapButton } from "@/zap/components/button";
 import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
 import { PriceDisplay } from "@/zap/components/payments/price-display";
 import { handleClientError } from "@/zap/lib/api/client";

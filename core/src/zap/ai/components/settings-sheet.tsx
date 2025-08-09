@@ -28,7 +28,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { ZapButton } from "@/components/zap-ui/button";
 import {
   AI_PROVIDERS_OBJECT,
   DEFAULT_MODEL,
@@ -37,6 +36,7 @@ import {
 import { useAISettings, useInitAISettings } from "@/zap/ai/hooks";
 import { AIFormSchema, AIProviderIdSchema } from "@/zap/ai/schemas";
 import { AIFormValues, AIProviderId } from "@/zap/ai/types";
+import { ZapButton } from "@/zap/components/button";
 import { handleClientError } from "@/zap/errors/client";
 
 interface SettingsSheetProps {

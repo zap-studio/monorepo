@@ -1,13 +1,13 @@
 "use client";
 import "client-only";
 
-import { FLAGS } from "@/lib/flags";
-import { useZapImmutable } from "@/zap/lib/api/hooks/use-zap-immutable";
+import { useZapQuery } from "@/zap/api/hooks";
+import { FLAGS } from "@/zap/flags";
 
 type FlagKey = keyof typeof FLAGS;
 
 export function useFlag(flagKey: FlagKey) {
-  const result = useZapImmutable({
+  const result = useZapQuery({
     queryKey: ["flag", { flagKey }],
     queryFn: async () => {
       try {

@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { ZapButton } from "@/components/zap-ui/button";
+import { ZapButton } from "@/zap/components/button";
 import { RatingButtons } from "@/zap/components/sidebar/rating-buttons";
 import { useIsFeedbackSubmitted } from "@/zap/hooks/feedbacks/use-is-feedback-submitted";
 import { useSubmitFeedback } from "@/zap/hooks/feedbacks/use-submit-feedback";

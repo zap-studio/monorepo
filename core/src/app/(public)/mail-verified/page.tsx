@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-import { ZapButton } from "@/components/zap-ui/button";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { ZapButton } from "@/zap/components/button";
 
 export default function MailVerifiedPage() {
   return (

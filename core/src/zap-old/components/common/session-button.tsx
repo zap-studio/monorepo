@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { ZapButton } from "@/components/zap-ui/button";
+import { ZapButton } from "@/zap/components/button";
 import { authClient } from "@/zap/lib/auth/client";
 
 export function SessionButton() {

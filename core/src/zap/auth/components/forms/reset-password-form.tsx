@@ -16,8 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ZapButton } from "@/components/zap-ui/button";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
+import { ZapButton } from "@/zap/components/button";
 import { AuthenticationError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
 

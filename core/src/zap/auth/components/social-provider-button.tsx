@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { ZapButton } from "@/components/zap-ui/button";
-import { AUTH_ICONS } from "@/data/auth-icons";
 import { Provider, ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { AUTH_ICONS } from "@/zap/auth/components";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
+import { ZapButton } from "@/zap/components/button";
 import { AuthenticationError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
 

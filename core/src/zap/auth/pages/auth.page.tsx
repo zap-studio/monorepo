@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SETTINGS } from "@/data/settings";
+import { SETTINGS } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { SocialProviderButton } from "@/zap/auth/components";

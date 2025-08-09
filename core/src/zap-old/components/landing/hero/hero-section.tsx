@@ -1,7 +1,7 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
-import { ZapButton } from "@/components/zap-ui/button";
+import { ZapButton } from "@/zap/components/button";
 import { AnimatedSection } from "@/zap/components/common/animated-section";
 import { AnimatedText } from "@/zap/components/landing/hero/animated-text";
 import { Stats } from "@/zap/components/landing/hero/stats";

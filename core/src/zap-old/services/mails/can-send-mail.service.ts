@@ -1,6 +1,6 @@
 import "server-only";
 
-import { SETTINGS } from "@/data/settings";
+import { SETTINGS } from "@/lib/settings";
 import { getLastMailSentAtQuery } from "@/zap/db/queries/emails.query";
 import { NotFoundError } from "@/zap/lib/api/errors";
 

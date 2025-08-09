@@ -1,7 +1,7 @@
 import type { UseFormReturn } from "react-hook-form";
 
-import { ZapButton } from "@/components/zap-ui/button";
 import { cn } from "@/lib/utils";
+import { ZapButton } from "@/zap/components/button";
 import type { FeedbackFormValues } from "@/zap/types/feedback.types";
 
 interface RatingButtonsProps {

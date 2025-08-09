@@ -1,6 +1,6 @@
 import z from "zod";
 
-import { SETTINGS } from "@/data/settings";
+import { SETTINGS } from "@/lib/settings";
 
 export const LoginFormSchema = z.object({
   email: z.email(),

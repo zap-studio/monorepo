@@ -2,8 +2,8 @@
 import "client-only";
 import "./globals.css";
 
-import { ZapButton } from "@/components/zap-ui/button";
 import { geist } from "@/fonts";
+import { ZapButton } from "@/zap/components/button";
 import { BaseError } from "@/zap/lib/api/errors";
 
 interface ErrorBoundaryProps {

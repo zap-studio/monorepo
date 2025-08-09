@@ -9,9 +9,9 @@ import {
 } from "ai";
 import { and, eq } from "drizzle-orm";
 
-import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { UpsertMode } from "@/db/types";
+import { SETTINGS } from "@/lib/settings";
 import { getApiSettingsForUserAndProviderQuery } from "@/zap/ai/db/queries";
 import { userAISettings } from "@/zap/ai/db/schema";
 import { getModel } from "@/zap/ai/lib";

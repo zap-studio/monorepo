@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import { SETTINGS } from "@/data/settings";
+import { SETTINGS } from "@/lib/settings";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {

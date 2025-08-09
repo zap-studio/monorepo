@@ -15,10 +15,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ZapButton } from "@/components/zap-ui/button";
-import { SETTINGS } from "@/data/settings";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
+import { SETTINGS } from "@/lib/settings";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
+import { ZapButton } from "@/zap/components/button";
 import { handleClientError } from "@/zap/errors/client";
 
 const formSchema = z.object({
