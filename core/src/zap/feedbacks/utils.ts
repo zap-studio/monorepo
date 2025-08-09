@@ -1,8 +1,4 @@
-import "server-only";
-
-import { getAverageRatingQuery } from "@/zap/db/queries/feedbacks.query";
-
-function computeAverage(feedbacks: { rating: number }[]) {
+export function computeAverage(feedbacks: { rating: number }[]) {
   const totalFeedbacks = feedbacks.length;
 
   if (totalFeedbacks === 0) {
@@ -13,9 +9,4 @@ function computeAverage(feedbacks: { rating: number }[]) {
   const averageRating = (totalRating / totalFeedbacks / 10) * 5;
 
   return { averageRating, totalFeedbacks };
-}
-
-export async function getAverageRatingService() {
-  const feedbacks = await getAverageRatingQuery.execute();
-  return computeAverage(feedbacks);
 }
