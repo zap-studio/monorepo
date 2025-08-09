@@ -1,72 +1,49 @@
 "use client";
 import "client-only";
 
-import type { Key } from "swr";
-import type { MutationFetcher, SWRMutationConfiguration } from "swr/mutation";
-import useSWRMutation from "swr/mutation";
+import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
 
 import { handleClientError, handleSuccess } from "@/zap/lib/api/client";
 
-type ZapMutationOptions<
-  Data,
-  Error,
-  SWRMutationKey extends Key,
-  ExtraArg,
-> = Omit<
-  SWRMutationConfiguration<Data, Error, SWRMutationKey, ExtraArg>,
-  "onSuccess" | "onError"
-> & {
-  onSuccess?: (
-    data: Data,
-    key: string,
-    config: Readonly<
-      SWRMutationConfiguration<Data, Error, SWRMutationKey, ExtraArg>
-    >,
-  ) => void;
-  onError?: (
-    error: Error,
-    key: string,
-    config: Readonly<
-      SWRMutationConfiguration<Data, Error, SWRMutationKey, ExtraArg>
-    >,
-  ) => void;
+interface ZapMutationOptions<TData, TError, TVariables, TContext>
+  extends UseMutationOptions<TData, TError, TVariables, TContext> {
   showSuccessToast?: boolean;
   successMessage?: string;
   skipErrorHandling?: boolean;
-};
+
+  onSuccess?: (data: TData, variables: TVariables, context: TContext) => void;
+  onError?: (
+    error: TError,
+    variables: TVariables,
+    context: TContext | undefined,
+  ) => void;
+}
 
 export function useZapMutation<
-  Data = unknown,
-  Error = unknown,
-  SWRMutationKey extends Key = Key,
-  ExtraArg = unknown,
->(
-  key: SWRMutationKey,
-  fetcher: MutationFetcher<Data, SWRMutationKey, ExtraArg>,
-  options: ZapMutationOptions<Data, Error, SWRMutationKey, ExtraArg> = {},
-) {
+  TData = unknown,
+  TError = Error,
+  TVariables = void,
+  TContext = unknown,
+>(options: ZapMutationOptions<TData, TError, TVariables, TContext>) {
   const {
     showSuccessToast = true,
-    successMessage,
     skipErrorHandling = false,
-    onSuccess,
-    onError,
-    ...swrOptions
+    ...restOptions
   } = options;
 
-  return useSWRMutation(key, fetcher, {
-    ...swrOptions,
-    onSuccess: (data, responseKey, config) => {
-      if (showSuccessToast && successMessage) {
-        handleSuccess(successMessage);
+  return useMutation({
+    ...restOptions,
+    onSuccess: (data: TData, variables: TVariables, context: TContext) => {
+      if (showSuccessToast && options?.successMessage) {
+        handleSuccess(options.successMessage);
       }
-      onSuccess?.(data, responseKey, config);
+      options?.onSuccess?.(data, variables, context);
     },
-    onError: (error, responseKey, config) => {
+    onError: (error: TError, variables: TVariables, context?: TContext) => {
       if (!skipErrorHandling) {
         handleClientError(error);
       }
-      onError?.(error, responseKey, config);
+      options?.onError?.(error, variables, context);
     },
   });
 }

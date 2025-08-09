@@ -6,15 +6,17 @@ import { getModel } from "@/zap/lib/ai/get-model";
 import { BadRequestError } from "@/zap/lib/api/errors";
 import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
 
-interface TestAPIKeyInput {
+interface TestAPIKeyService {
   provider: AIProviderId;
   apiKey: string;
   model: ModelName;
 }
 
-export async function testAPIKeyService({ input }: { input: TestAPIKeyInput }) {
-  const { provider, apiKey, model } = input;
-
+export async function testAPIKeyService({
+  provider,
+  apiKey,
+  model,
+}: TestAPIKeyService) {
   await generateText({
     model: getModel(provider, apiKey, model),
     prompt: 'Just answer "hello world"',

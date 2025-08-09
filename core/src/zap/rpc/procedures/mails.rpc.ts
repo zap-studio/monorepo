@@ -1,6 +1,6 @@
 import "server-only";
 
-import { base } from "@/rpc/middlewares";
+import { authMiddleware, base } from "@/rpc/middlewares";
 import { withRpcHandler } from "@/zap/lib/api/handlers";
 import {
   InputCanSendMailSchema,
@@ -18,28 +18,62 @@ import { sendVerificationMailService } from "@/zap/services/mails/send-verificat
 import { updateLastTimestampMailSentService } from "@/zap/services/mails/update-last-timestamp-mail-sent.service";
 
 const canSendMail = base
+  .use(authMiddleware)
   .input(InputCanSendMailSchema)
-  .handler(withRpcHandler(canSendMailService));
+  .handler(
+    withRpcHandler(async ({ context }) => {
+      return await canSendMailService({
+        userId: context.session.session.userId,
+      });
+    }),
+  );
 
 const updateLastTimestampMailSent = base
+  .use(authMiddleware)
   .input(InputUpdateLastTimestampMailSentSchema)
-  .handler(withRpcHandler(updateLastTimestampMailSentService));
+  .handler(
+    withRpcHandler(async ({ context }) => {
+      return await updateLastTimestampMailSentService({
+        userId: context.session.session.userId,
+      });
+    }),
+  );
 
 const sendForgotPasswordMail = base
   .input(InputSendForgotPasswordMailSchema)
-  .handler(withRpcHandler(sendForgotPasswordMailService));
+  .handler(
+    withRpcHandler(async ({ input }) => {
+      return await sendForgotPasswordMailService({
+        ...input,
+      });
+    }),
+  );
 
 const sendVerificationMail = base
   .input(InputSendVerificationMailSchema)
-  .handler(withRpcHandler(sendVerificationMailService));
+  .handler(
+    withRpcHandler(async ({ input }) => {
+      return await sendVerificationMailService({
+        ...input,
+      });
+    }),
+  );
 
-const sendMagicLinkMail = base
-  .input(InputSendMagicLinkMailSchema)
-  .handler(withRpcHandler(sendMagicLinkMailService));
+const sendMagicLinkMail = base.input(InputSendMagicLinkMailSchema).handler(
+  withRpcHandler(async ({ input }) => {
+    return await sendMagicLinkMailService({
+      ...input,
+    });
+  }),
+);
 
-const sendMail = base
-  .input(InputSendMailSchema)
-  .handler(withRpcHandler(sendMailService));
+const sendMail = base.input(InputSendMailSchema).handler(
+  withRpcHandler(async ({ input }) => {
+    return await sendMailService({
+      ...input,
+    });
+  }),
+);
 
 export const mails = {
   sendForgotPasswordMail,

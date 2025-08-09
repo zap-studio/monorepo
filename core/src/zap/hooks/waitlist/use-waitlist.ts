@@ -2,16 +2,17 @@
 import "client-only";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import type z from "zod";
 
 import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
+import { useZapQuery } from "@/zap/lib/api/hooks/use-zap-query";
+import { orpc } from "@/zap/lib/orpc/client";
 import { WaitlistSchema } from "@/zap/schemas/waitlist.schema";
-import { useORPC } from "@/zap/stores/orpc.store";
 import { useWaitlistStore } from "@/zap/stores/waitlist.store";
 
 export function useWaitlist() {
-  const orpc = useORPC();
   const hasJoined = useWaitlistStore((state) => state.hasJoined);
   const setHasJoined = useWaitlistStore((state) => state.setHasJoined);
 
@@ -20,35 +21,44 @@ export function useWaitlist() {
     defaultValues: { email: "" },
   });
 
-  const { trigger, data, isMutating, error } = useZapMutation(
-    orpc.waitlist.submitWaitlistEmail.key(),
-    async (_key, { arg }: { arg: z.infer<typeof WaitlistSchema> }) => {
-      const result = await orpc.waitlist.submitWaitlistEmail.call({
-        email: arg.email,
-      });
+  const queryClient = useQueryClient();
+  const getNumberOfPeopleInWaitlistKey =
+    orpc.waitlist.getNumberOfPeopleInWaitlist.key();
 
-      if (result) {
-        form.reset();
-      }
-
-      return result;
-    },
-    {
-      successMessage: "Thank you for joining the waitlist!",
-    },
+  const { data: waitlistCount } = useZapQuery(
+    orpc.waitlist.getNumberOfPeopleInWaitlist.queryOptions(),
   );
 
+  const {
+    mutateAsync,
+    data,
+    isPending: isMutating,
+    error,
+  } = useZapMutation({
+    ...orpc.waitlist.submitWaitlistEmail.mutationOptions({
+      onSettled: () =>
+        queryClient.invalidateQueries({
+          queryKey: getNumberOfPeopleInWaitlistKey,
+        }),
+    }),
+    onSuccess: () => {
+      form.reset();
+    },
+    successMessage: "Thank you for joining the waitlist!",
+  });
+
   const onSubmit = async (_data: z.infer<typeof WaitlistSchema>) => {
-    await trigger(_data);
+    await mutateAsync(_data);
     setHasJoined(true);
   };
 
   return {
     form,
     onSubmit,
-    result: data,
-    loading: isMutating,
+    waitlistCount,
+    data,
     error,
+    isMutating,
     hasJoined,
   };
 }

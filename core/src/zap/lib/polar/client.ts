@@ -11,7 +11,10 @@ async function fetchCustomerState() {
 }
 
 export function useCustomerState() {
-  return useZapQuery("customer-state", fetchCustomerState);
+  return useZapQuery({
+    queryKey: ["customer-state"],
+    queryFn: fetchCustomerState,
+  });
 }
 
 export function useActiveSubscriptions() {

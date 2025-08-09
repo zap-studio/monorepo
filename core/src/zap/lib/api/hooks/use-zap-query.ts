@@ -1,61 +1,82 @@
 "use client";
 import "client-only";
 
-import type { BareFetcher, Key, SWRConfiguration } from "swr";
-import useSWR from "swr";
+import {
+  type QueryKey,
+  useQuery,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
+import { useEffect, useMemo, useRef } from "react";
 
 import { handleClientError, handleSuccess } from "@/zap/lib/api/client";
 
-type ZapQueryOptions<Data, Error, Fn extends BareFetcher<Data>> = Omit<
-  SWRConfiguration<Data, Error, Fn>,
-  "onSuccess" | "onError"
-> & {
-  onSuccess?: (
-    data: Data,
-    key: string,
-    config: Readonly<SWRConfiguration<Data, Error, Fn>>,
-  ) => void;
-  onError?: (
-    error: Error,
-    key: string,
-    config: Readonly<SWRConfiguration<Data, Error, Fn>>,
-  ) => void;
+export interface ZapQueryOptions<
+  TQueryFnData,
+  TError,
+  TData,
+  TQueryKey extends QueryKey,
+> extends UseQueryOptions<TQueryFnData, TError, TData, TQueryKey> {
   showSuccessToast?: boolean;
   successMessage?: string;
   skipErrorHandling?: boolean;
-};
+
+  onSuccess?: (data: TData) => void;
+  onError?: (error: TError) => void;
+}
 
 export function useZapQuery<
-  Data = unknown,
-  Error = unknown,
-  SWRKey extends Key = Key,
->(
-  key: SWRKey,
-  fetcher: BareFetcher<Data> | null,
-  options: ZapQueryOptions<Data, Error, BareFetcher<Data>> = {},
-) {
+  TQueryFnData = unknown,
+  TError = Error,
+  TData = TQueryFnData,
+  TQueryKey extends QueryKey = readonly unknown[],
+>(options: ZapQueryOptions<TQueryFnData, TError, TData, TQueryKey>) {
   const {
     showSuccessToast = false,
-    successMessage,
     skipErrorHandling = true,
-    onSuccess,
-    onError,
-    ...swrOptions
+    ...restOptions
   } = options;
 
-  return useSWR(key, fetcher, {
-    ...swrOptions,
-    onSuccess: (data, key, config) => {
-      if (showSuccessToast && successMessage) {
-        handleSuccess(successMessage);
+  const queryResult = useQuery(restOptions);
+
+  const hasHandledSuccess = useRef(false);
+  const hasHandledError = useRef(false);
+
+  // Use useMemo to ensure that the queryKey is stable across renders (special case of array reference equality since queryKey is an array)
+  const stableQueryKey = useMemo(
+    () => restOptions.queryKey,
+    [restOptions.queryKey],
+  );
+
+  useEffect(() => {
+    if (stableQueryKey) {
+      hasHandledSuccess.current = false;
+      hasHandledError.current = false;
+    }
+  }, [stableQueryKey]);
+
+  useEffect(() => {
+    if (queryResult.isSuccess && !hasHandledSuccess.current) {
+      hasHandledSuccess.current = true;
+
+      if (showSuccessToast && options?.successMessage) {
+        handleSuccess(options.successMessage);
       }
-      onSuccess?.(data, key, config);
-    },
-    onError: (error, key, config) => {
+
+      options?.onSuccess?.(queryResult.data);
+    }
+  }, [options, queryResult.data, queryResult.isSuccess, showSuccessToast]);
+
+  useEffect(() => {
+    if (queryResult.isError && !hasHandledError.current) {
+      hasHandledError.current = true;
+
       if (!skipErrorHandling) {
-        handleClientError(error);
+        handleClientError(queryResult.error);
       }
-      onError?.(error, key, config);
-    },
-  });
+
+      options?.onError?.(queryResult.error);
+    }
+  }, [options, queryResult.error, queryResult.isError, skipErrorHandling]);
+
+  return queryResult;
 }

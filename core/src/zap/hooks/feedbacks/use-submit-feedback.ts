@@ -1,40 +1,26 @@
 "use client";
 import "client-only";
 
+import { useQueryClient } from "@tanstack/react-query";
 import type React from "react";
 
 import { useZapMutation } from "@/zap/lib/api/hooks/use-zap-mutation";
-import { useORPC } from "@/zap/stores/orpc.store";
-import type { FeedbackFormValues } from "@/zap/types/feedback.types";
+import { orpc } from "@/zap/lib/orpc/client";
 
 export function useSubmitFeedback(
   setIsExistingFeedback: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
-  const orpc = useORPC();
+  const queryClient = useQueryClient();
 
-  interface GiveFeedbackArgs {
-    key: readonly unknown[];
-    arg: { arg: FeedbackFormValues };
-  }
+  const getUserFeedbackQueryKey = orpc.feedbacks.getUserFeedback.key();
 
-  const giveFeedback = (
-    _key: GiveFeedbackArgs["key"],
-    { arg }: GiveFeedbackArgs["arg"],
-  ) => {
-    return orpc.feedbacks.submit.call(arg);
-  };
-
-  return useZapMutation(orpc.feedbacks.submit.key(), giveFeedback, {
-    optimisticData: (current: Record<string, unknown> | undefined) => ({
-      ...(current || {}),
+  return useZapMutation({
+    ...orpc.feedbacks.submit.mutationOptions({
+      onSettled: () =>
+        queryClient.invalidateQueries({ queryKey: getUserFeedbackQueryKey }),
     }),
-    rollbackOnError: true,
-    revalidate: true,
     onSuccess: () => {
       setIsExistingFeedback(true);
-    },
-    onError: () => {
-      setIsExistingFeedback(false);
     },
     successMessage: "Feedback submitted successfully!",
   });

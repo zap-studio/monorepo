@@ -7,9 +7,11 @@ import { getNumberOfUsersService } from "@/zap/services/users/get-number-of-user
 import { getUserIdFromMailService } from "@/zap/services/users/get-user-id-from-mail.service";
 
 const getNumberOfUsers = base.handler(getNumberOfUsersService);
-const getUserIdFromMail = base
-  .input(InputGetUserIdFromMailSchema)
-  .handler(withRpcHandler(getUserIdFromMailService));
+const getUserIdFromMail = base.input(InputGetUserIdFromMailSchema).handler(
+  withRpcHandler(async ({ input }) => {
+    return await getUserIdFromMailService({ ...input });
+  }),
+);
 
 export const users = {
   getNumberOfUsers,

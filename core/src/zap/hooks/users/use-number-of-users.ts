@@ -2,13 +2,8 @@
 import "client-only";
 
 import { useZapImmutable } from "@/zap/lib/api/hooks/use-zap-immutable";
-import { useORPC } from "@/zap/stores/orpc.store";
+import { orpc } from "@/zap/lib/orpc/client";
 
 export function useNumberOfUsers() {
-  const orpc = useORPC();
-
-  return useZapImmutable(
-    orpc.users.getNumberOfUsers.key(),
-    orpc.users.getNumberOfUsers.queryOptions().queryFn,
-  );
+  return useZapImmutable(orpc.users.getNumberOfUsers.queryOptions());
 }
