@@ -3,6 +3,7 @@ import "server-only";
 import { headers } from "next/headers";
 
 import { auth } from "@/zap/auth/lib/better-auth/server";
+import { redirectToLogin } from "@/zap/auth/lib/redirects";
 import { AuthenticationError, NotFoundError } from "@/zap-old/lib/api/errors";
 
 export async function getSessionService() {
@@ -17,6 +18,14 @@ export async function getAuthData() {
   const result = await auth.api.getSession({ headers: _headers });
 
   return result;
+}
+
+export async function getAuthDataOrRedirectToLoginService() {
+  const result = await getAuthData();
+  if (!result?.session) {
+    return redirectToLogin();
+  }
+  return { user: result.user, session: result.session };
 }
 
 export async function getUserIdService() {
