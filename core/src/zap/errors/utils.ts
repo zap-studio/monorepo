@@ -5,7 +5,7 @@ import { ZodError } from "zod";
 
 import { BaseError, InternalServerError } from "@/zap/api/errors";
 import { logError } from "@/zap/api/logger";
-import { DEV } from "@/zap/env/env.public";
+import { DEV } from "@/zap/env/public";
 import { generateUuid } from "@/zap-old/lib/crypto/utils";
 
 export type HandlerFunction<T extends unknown[], R> = (

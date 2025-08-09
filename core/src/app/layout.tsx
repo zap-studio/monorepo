@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/sonner";
 import { geist } from "@/fonts";
 import { ZAP_DEFAULT_METADATA, ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { VERCEL } from "@/zap/env/env.public";
+import { VERCEL } from "@/zap/env/public";
 import Providers from "@/zap/providers/providers";
 
 export const metadata: Metadata = ZAP_DEFAULT_METADATA;

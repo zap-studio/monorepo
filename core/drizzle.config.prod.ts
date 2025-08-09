@@ -1,7 +1,8 @@
 import "dotenv/config";
 
 import { defineConfig } from "drizzle-kit";
-import { EnvironmentError } from "@/zap/lib/api/errors";
+
+import { EnvironmentError } from "@/zap/errors";
 
 const DATABASE_URL = process.env.DATABASE_URL;
 

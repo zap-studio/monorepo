@@ -9,7 +9,7 @@ import {
   logSuccess,
 } from "@/zap/api/utils";
 import { isAuthenticatedService } from "@/zap/auth/services";
-import { DEV } from "@/zap/env/env.public";
+import { DEV } from "@/zap/env/public";
 
 function createHandler<T extends unknown[], R>(
   handler: HandlerFunction<T, R>,

@@ -6,7 +6,7 @@ const PublicEnvSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
-  VERCEL_ENV: z.string().optional(),
+  VERCEL_ENV: z.enum(["development", "preview", "production"]).optional(),
   NEXT_PUBLIC_VAPID_PUBLIC_KEY: z
     .string({ message: "NEXT_PUBLIC_VAPID_PUBLIC_KEY must be a valid string" })
     .optional(),
@@ -53,8 +53,3 @@ if (!envParseResult.success) {
 }
 
 export const PUBLIC_ENV = envParseResult.data;
-
-// Derived values
-export const VERCEL = !!PUBLIC_ENV.VERCEL_ENV;
-export const DEV = PUBLIC_ENV.NODE_ENV !== "production";
-export const PROD = PUBLIC_ENV.NODE_ENV === "production";

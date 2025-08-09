@@ -1,6 +1,7 @@
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
+
 import { BASE_URL, ZAP_DEFAULT_SETTINGS } from "./zap.config";
 
 function buildCSPHeader(): string {

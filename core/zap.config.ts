@@ -13,7 +13,8 @@
 import type { Metadata } from "next";
 
 import type { ZapSettings } from "@/zap-old/types/zap.config.types";
-import { DEV, PUBLIC_ENV, VERCEL } from "@/zap/env/env.public";
+import { PUBLIC_ENV } from "@/zap/env/public";
+import { DEV, VERCEL } from "@/zap/env/runtime";
 
 // ─────────────────────────────────────────────────────────────
 // Core App Info

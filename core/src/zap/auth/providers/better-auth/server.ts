@@ -17,7 +17,7 @@ import { SETTINGS } from "@/data/settings";
 import { db } from "@/db";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { MailError } from "@/zap/api/errors";
-import { SERVER_ENV } from "@/zap/env/env.server";
+import { SERVER_ENV } from "@/zap/env/server";
 import { polarClient } from "@/zap-old/lib/polar/server";
 import { canSendMailService } from "@/zap-old/services/mails/can-send-mail.service";
 import { sendForgotPasswordMailService } from "@/zap-old/services/mails/send-forgot-password-mail.service";

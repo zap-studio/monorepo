@@ -7,7 +7,7 @@ import {
 import { Pool } from "pg";
 
 import * as schema from "@/db/schema";
-import { SERVER_ENV } from "@/zap/env/env.server";
+import { SERVER_ENV } from "@/zap/env/server";
 
 const pool = new Pool({ connectionString: SERVER_ENV.DATABASE_URL_DEV });
 

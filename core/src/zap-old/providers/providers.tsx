@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import { queryClient } from "@/lib/query";
 import { ThemeProvider } from "@/providers/theme.provider";
 import { SuspendedPostHogPageView } from "@/zap/analytics/components";
-import { PUBLIC_ENV } from "@/zap/env/env.public";
+import { PUBLIC_ENV } from "@/zap/env/public";
 
 interface ProvidersProps {
   children: React.ReactNode;

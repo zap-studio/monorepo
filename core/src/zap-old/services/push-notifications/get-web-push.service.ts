@@ -1,8 +1,8 @@
 import "server-only";
 
 import { SETTINGS } from "@/data/settings";
-import { PUBLIC_ENV } from "@/zap/env/env.public";
-import { SERVER_ENV } from "@/zap/env/env.server";
+import { PUBLIC_ENV } from "@/zap/env/public";
+import { SERVER_ENV } from "@/zap/env/server";
 import { PushNotificationError } from "@/zap/lib/api/errors";
 
 let webpushInstance: typeof import("web-push") | null = null;
