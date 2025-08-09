@@ -13,9 +13,8 @@ import {
 } from "@/components/ui/card";
 import { PRODUCTS_METADATA } from "@/zap.config";
 import { ZapButton } from "@/zap/components";
-import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
-import { PriceDisplay } from "@/zap/components/payments/price-display";
-import { getBillingDetails, getSortedProducts } from "@/zap/lib/payments/utils";
+import { PriceDisplay, PricingToggle } from "@/zap/payments/components";
+import { getBillingDetails, getSortedProducts } from "@/zap/payments/utils";
 
 const yearlyDiscount = 20;
 

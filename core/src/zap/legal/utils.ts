@@ -5,7 +5,7 @@ import path from "node:path";
 
 import matter from "gray-matter";
 
-const LEGAL_DIR = path.join(process.cwd(), "src", "legal");
+const LEGAL_DIR = path.join(process.cwd(), "src", "zap", "legal", "data");
 
 export async function getLegalContent(slug: string) {
   const MDX_PATH = path.join(LEGAL_DIR, `${slug}.mdx`);

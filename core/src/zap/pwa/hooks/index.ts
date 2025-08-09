@@ -22,7 +22,7 @@ export function usePushNotifications() {
   );
 
   const { mutateAsync: subscribe, isPending: isSubscribing } = useZapMutation({
-    ...orpc.pushNotifications.subscribeUser.mutationOptions(),
+    ...orpc.pwa.subscribeUserToPushNotifications.mutationOptions(),
     onSuccess: () => {
       setSubscribed(true);
     },
@@ -36,7 +36,7 @@ export function usePushNotifications() {
 
   const { mutateAsync: unsubscribe, isPending: isUnsubscribing } =
     useZapMutation({
-      ...orpc.pushNotifications.unsubscribeUser.mutationOptions(),
+      ...orpc.pwa.unsubscribeUserFromPushNotifications.mutationOptions(),
       onSuccess: () => {
         setSubscriptionState({
           subscription: null,

@@ -1,5 +1,5 @@
-import { MarqueeRow } from "@/zap/components/landing/testimonials/marquee-row";
-import { TESTIMONIALS } from "@/zap/data/landing";
+import { MarqueeRow } from "@/zap-old/components/landing/testimonials/marquee-row";
+import { TESTIMONIALS } from "@/zap-old/data/landing";
 
 const firstRow = TESTIMONIALS.slice(0, TESTIMONIALS.length / 2);
 const secondRow = TESTIMONIALS.slice(TESTIMONIALS.length / 2);

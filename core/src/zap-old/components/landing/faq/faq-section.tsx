@@ -1,6 +1,6 @@
 import { Accordion } from "@/components/ui/accordion";
-import { FaqItem } from "@/zap/components/landing/faq/faq-item";
-import { FAQS } from "@/zap/data/landing";
+import { FaqItem } from "@/zap-old/components/landing/faq/faq-item";
+import { FAQS } from "@/zap-old/data/landing";
 
 export function FaqSection() {
   return (

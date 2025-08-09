@@ -4,11 +4,11 @@ import { AlignJustify, X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
+import { useBodyScrollLock } from "@/hooks/utils/use-body-scroll-lock";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/zap/components/common/logo";
-import { MenuLinks } from "@/zap/components/common/menu-links";
-import { SessionButton } from "@/zap/components/common/session-button";
+import { Logo } from "@/zap-old/components/common/logo";
+import { MenuLinks } from "@/zap-old/components/common/menu-links";
+import { SessionButton } from "@/zap-old/components/common/session-button";
 
 export const NAV_LINKS = [
   { id: "hero", label: "Home" },

@@ -2,9 +2,9 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
 import { ZapButton } from "@/zap/components";
-import { AnimatedSection } from "@/zap/components/common/animated-section";
-import { AnimatedText } from "@/zap/components/landing/hero/animated-text";
-import { Stats } from "@/zap/components/landing/hero/stats";
+import { AnimatedSection } from "@/zap-old/components/common/animated-section";
+import { AnimatedText } from "@/zap-old/components/landing/hero/animated-text";
+import { Stats } from "@/zap-old/components/landing/hero/stats";
 
 export function HeroSection() {
   return (

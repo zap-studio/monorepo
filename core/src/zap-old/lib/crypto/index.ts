@@ -1,7 +1,7 @@
 import "server-only";
 
 import { SERVER_ENV } from "@/zap/env/server";
-import { BadRequestError } from "@/zap/lib/api/errors";
+import { BadRequestError } from "@/zap/errors";
 
 export const algorithm = "AES-CBC";
 export const encryptionKeyHex = SERVER_ENV.ENCRYPTION_KEY;

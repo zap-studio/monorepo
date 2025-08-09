@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import { ZapButton } from "@/zap/components";
-import { authClient } from "@/zap/lib/auth/client";
 
 export function SessionButton() {
-  const { data: result } = authClient.useSession();
+  const { data: result } = betterAuthClient.useSession();
   const session = result?.session;
 
   if (session) {

@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 
-import { BENEFITS } from "@/zap/data/landing";
+import { BENEFITS } from "@/zap-old/data/landing";
 
 export function SolutionList() {
   return (

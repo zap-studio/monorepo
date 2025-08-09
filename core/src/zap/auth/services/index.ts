@@ -2,9 +2,9 @@ import "server-only";
 
 import { headers } from "next/headers";
 
-import { AuthenticationError, NotFoundError } from "@/zap/api/errors";
 import { redirectToLogin } from "@/zap/auth/lib/redirects";
 import { betterAuthServer } from "@/zap/auth/providers/better-auth/server";
+import { AuthenticationError, NotFoundError } from "@/zap/errors";
 
 export async function getSessionService() {
   const _headers = await headers();

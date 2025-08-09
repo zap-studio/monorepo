@@ -1,5 +1,5 @@
-import { FeatureCard } from "@/zap/components/landing/features/feature-card";
-import { FEATURES } from "@/zap/data/landing";
+import { FeatureCard } from "@/zap-old/components/landing/features/feature-card";
+import { FEATURES } from "@/zap-old/data/landing";
 
 export function FeaturesSection() {
   return (

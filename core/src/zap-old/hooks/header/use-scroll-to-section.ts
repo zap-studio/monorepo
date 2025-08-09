@@ -3,7 +3,7 @@
 import { useRouter } from "@bprogress/next/app";
 import { usePathname } from "next/navigation";
 
-import { HEADER_HEIGHT } from "@/zap/components/common/header";
+import { HEADER_HEIGHT } from "@/zap-old/components/common/header";
 
 export function useScrollToSection(offset = HEADER_HEIGHT) {
   const pathname = usePathname();

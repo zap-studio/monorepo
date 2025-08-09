@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 
-import { EXTERNAL_LINKS, NAV_LINKS } from "@/zap/components/common/header";
-import { useScrollToSection } from "@/zap/hooks/header/use-scroll-to-section";
+import { EXTERNAL_LINKS, NAV_LINKS } from "@/zap-old/components/common/header";
+import { useScrollToSection } from "@/zap-old/hooks/header/use-scroll-to-section";
 
 interface MenuLinksProps {
   onClick?: () => void;

@@ -1,13 +1,13 @@
 import "server-only";
 
 import { authMiddleware, base } from "@/rpc/middlewares";
-import { withRpcHandler } from "@/zap/api/handlers";
 import {
   getSessionService,
   getUserIdService,
   isAuthenticatedService,
   isUserAdminService,
 } from "@/zap/auth/services";
+import { withRpcHandler } from "@/zap/errors/handlers";
 
 const isAuthenticated = base.handler(withRpcHandler(isAuthenticatedService));
 const getUserId = base

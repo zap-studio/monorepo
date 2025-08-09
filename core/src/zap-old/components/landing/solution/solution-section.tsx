@@ -1,5 +1,5 @@
-import { CommandCard } from "@/zap/components/landing/solution/command-card";
-import { SolutionList } from "@/zap/components/landing/solution/solution-list";
+import { CommandCard } from "@/zap-old/components/landing/solution/command-card";
+import { SolutionList } from "@/zap-old/components/landing/solution/solution-list";
 
 export function SolutionSection() {
   return (

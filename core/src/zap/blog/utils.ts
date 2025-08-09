@@ -10,7 +10,7 @@ import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
 import { postMetadataSchema } from "@/zap/blog/schemas";
 import { ApplicationError, FileOperationError } from "@/zap/errors";
 
-const BLOG_DIR = path.join(process.cwd(), "src", "blog");
+const BLOG_DIR = path.join(process.cwd(), "src", "zap", "blog", "data");
 
 function parseFrontmatter(fileContent: string) {
   try {

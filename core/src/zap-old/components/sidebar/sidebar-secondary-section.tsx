@@ -12,8 +12,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { AISettingsSheet } from "@/zap/components/ai/ai-settings-sheet";
-import { FeedbackDialog } from "@/zap/components/sidebar/feedback-dialog";
+import { SettingsSheet } from "@/zap/ai/components";
+import { FeedbackDialog } from "@/zap/feedbacks/components/feedback-dialog";
 
 type SidebarSecondarySectionProps = ComponentPropsWithoutRef<
   typeof SidebarGroup
@@ -67,10 +67,7 @@ export function SidebarSecondarySection(props: SidebarSecondarySectionProps) {
         </SidebarGroupContent>
       </SidebarGroup>
 
-      <AISettingsSheet
-        onOpenChange={setAISettingsOpen}
-        open={isAISettingsOpen}
-      />
+      <SettingsSheet onOpenChange={setAISettingsOpen} open={isAISettingsOpen} />
       <FeedbackDialog onOpenChange={setFeedbackOpen} open={isFeedbackOpen} />
     </>
   );

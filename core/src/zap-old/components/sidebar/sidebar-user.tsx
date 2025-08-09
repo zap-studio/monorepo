@@ -29,10 +29,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import type { ProductMetadata } from "@/zap.config";
-import { UserInfo } from "@/zap/components/sidebar/user-info";
-import { handleClientError } from "@/zap/lib/api/client";
-import { authClient } from "@/zap/lib/auth/client";
-import { useActiveSubscriptionProduct } from "@/zap/lib/polar/client";
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
+import { handleClientError } from "@/zap/errors/client";
+import { useActiveSubscriptionProduct } from "@/zap/payments/providers/polar/client";
+import { UserInfo } from "@/zap-old/components/sidebar/user-info";
 
 type MenuItem = {
   label: string;
@@ -68,7 +68,7 @@ export function SidebarUser({ user, products }: SidebarUserProps) {
   const handleCustomerPortal = async () => {
     try {
       toast.loading("Redirecting to customer portal...");
-      await authClient.customer.portal();
+      await betterAuthClient.customer.portal();
     } catch (error) {
       handleClientError(error);
     }
@@ -76,7 +76,7 @@ export function SidebarUser({ user, products }: SidebarUserProps) {
 
   const handleSignOut = async () => {
     try {
-      await authClient.signOut();
+      await betterAuthClient.signOut();
       toast.success("Successfully signed out");
       router.push("/login");
     } catch (error) {

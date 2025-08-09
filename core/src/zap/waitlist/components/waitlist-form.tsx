@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { ZapButton } from "@/zap/components";
-import { useWaitlist } from "@/zap/hooks/waitlist/use-waitlist";
+import { useWaitlist } from "@/zap/waitlist/hooks";
 
 export function WaitlistForm() {
   const { form, onSubmit, data, isMutating, hasJoined } = useWaitlist();

@@ -16,8 +16,8 @@ import { passkey } from "better-auth/plugins/passkey";
 import { db } from "@/db";
 import { SETTINGS } from "@/lib/settings";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { MailError } from "@/zap/api/errors";
 import { SERVER_ENV } from "@/zap/env/server";
+import { MailError } from "@/zap/errors";
 import {
   canSendMailService,
   sendForgotPasswordMailService,

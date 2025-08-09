@@ -15,11 +15,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import type { ProductMetadata } from "@/zap.config";
-import { SidebarMainSection } from "@/zap/components/sidebar/sidebar-main-section";
-import { SidebarSecondarySection } from "@/zap/components/sidebar/sidebar-secondary-section";
-import { SidebarUser } from "@/zap/components/sidebar/sidebar-user";
-import { authClient } from "@/zap/lib/auth/client";
-import { useActiveSubscriptionProduct } from "@/zap/lib/polar/client";
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
+import { useActiveSubscriptionProduct } from "@/zap/payments/providers/polar/client";
+import { SidebarMainSection } from "@/zap-old/components/sidebar/sidebar-main-section";
+import { SidebarSecondarySection } from "@/zap-old/components/sidebar/sidebar-secondary-section";
+import { SidebarUser } from "@/zap-old/components/sidebar/sidebar-user";
 
 const MAIN_NAV_ITEMS = [
   {
@@ -35,7 +35,7 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ products, ...props }: AppSidebarProps) {
-  const { data } = authClient.useSession();
+  const { data } = betterAuthClient.useSession();
   const product = useActiveSubscriptionProduct(products);
 
   if (!data?.user) {

@@ -3,7 +3,7 @@ import "client-only";
 import { toast } from "sonner";
 
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { DEV } from "@/zap/env/public";
+import { DEV } from "@/zap/env/runtime";
 import { ApplicationError, BaseError } from "@/zap/errors";
 
 export function handleClientError(
