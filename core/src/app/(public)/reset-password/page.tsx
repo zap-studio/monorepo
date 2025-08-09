@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ResetPasswordForm } from "@/zap/components/auth/reset-password-form";
+import { ResetPasswordForm } from "@/zap/auth/components";
 
 export default function ResetPasswordPage() {
   return (

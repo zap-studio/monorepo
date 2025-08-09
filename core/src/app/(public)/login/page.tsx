@@ -1,5 +1,5 @@
-import { AuthPage } from "@/zap/components/auth/auth-page";
-import { LoginForm } from "@/zap/components/auth/login-form";
+import { LoginForm } from "@/zap/auth/components";
+import { AuthPage } from "@/zap/auth/pages";
 
 export default function LoginPage() {
   return (

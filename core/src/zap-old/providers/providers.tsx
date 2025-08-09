@@ -9,9 +9,9 @@ import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { useEffect } from "react";
 
-import { queryClient } from "@/lib/query";
 import { ThemeProvider } from "@/providers/theme.provider";
 import { SuspendedPostHogPageView } from "@/zap/analytics/components";
+import { queryClient } from "@/zap/api/lib/tanstack-query";
 import { PUBLIC_ENV } from "@/zap/env/public";
 
 interface ProvidersProps {

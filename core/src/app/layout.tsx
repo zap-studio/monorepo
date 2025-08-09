@@ -3,11 +3,11 @@ import "./globals.css";
 
 import type { Metadata } from "next";
 
+import { geist } from "@/app/fonts";
 import { Toaster } from "@/components/ui/sonner";
-import { geist } from "@/fonts";
 import { ZAP_DEFAULT_METADATA, ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { VERCEL } from "@/zap/env/public";
-import Providers from "@/zap/providers/providers";
+import { VERCEL } from "@/zap/env/runtime";
+import Providers from "@/zap-old/providers/providers";
 
 export const metadata: Metadata = ZAP_DEFAULT_METADATA;
 

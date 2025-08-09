@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 
 import { base } from "@/rpc/middlewares/base.middleware";
 import type { Session } from "@/zap/auth/providers/better-auth/client";
-import { auth } from "@/zap/auth/providers/better-auth/server";
+import { betterAuthServer } from "@/zap/auth/providers/better-auth/server";
 
 export interface SessionContext {
   readonly session: Session;
@@ -15,7 +15,7 @@ export interface SessionContext {
 export const authMiddleware = base.middleware(async ({ next }) => {
   const _headers = await headers();
 
-  const session = await auth.api.getSession({ headers: _headers });
+  const session = await betterAuthServer.api.getSession({ headers: _headers });
 
   if (!session) {
     throw new ORPCError("UNAUTHORIZED", {

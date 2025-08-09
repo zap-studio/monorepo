@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ForgotPasswordForm } from "@/zap/components/auth/forgot-password-form";
+import { ForgotPasswordForm } from "@/zap/auth/components";
 
 export default function ForgotPasswordPage() {
   return (

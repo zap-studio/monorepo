@@ -1,11 +1,11 @@
-import { Footer } from "@/zap/components/common/footer";
-import { Header } from "@/zap/components/common/header";
-import { FaqSection } from "@/zap/components/landing/faq/faq-section";
-import { FeaturesSection } from "@/zap/components/landing/features/features-section";
-import { HeroSection } from "@/zap/components/landing/hero/hero-section";
-import { PricingSection } from "@/zap/components/landing/pricing/pricing-section";
-import { SolutionSection } from "@/zap/components/landing/solution/solution-section";
-import { TestimonialSection } from "@/zap/components/landing/testimonials/testimonial-section";
+import { Footer } from "@/zap-old/components/common/footer";
+import { Header } from "@/zap-old/components/common/header";
+import { FaqSection } from "@/zap-old/components/landing/faq/faq-section";
+import { FeaturesSection } from "@/zap-old/components/landing/features/features-section";
+import { HeroSection } from "@/zap-old/components/landing/hero/hero-section";
+import { PricingSection } from "@/zap-old/components/landing/pricing/pricing-section";
+import { SolutionSection } from "@/zap-old/components/landing/solution/solution-section";
+import { TestimonialSection } from "@/zap-old/components/landing/testimonials/testimonial-section";
 
 const SECTION_CLASSNAME = "w-full py-12 md:py-24 lg:py-32";
 const SECTIONS = [

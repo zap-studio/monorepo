@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ZAP_DEFAULT_METADATA } from "@/zap.config";
-import { formatDate, getBlogPostsMetadata } from "@/zap/lib/blog/utils";
+import { formatDate, getBlogPostsMetadata } from "@/zap/blog/utils";
 
 export const metadata: Metadata = {
   title: `${ZAP_DEFAULT_METADATA.title} | Blog`,

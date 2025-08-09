@@ -4,13 +4,13 @@ import type { BlogPosting, WithContext } from "schema-dts";
 import serialize from "serialize-javascript";
 
 import { BASE_URL } from "@/zap.config";
-import { CustomMDX } from "@/zap/components/blog/mdx";
 import {
   formatDate,
   generateBlogPostMetadata,
   getBlogPost,
   getBlogPostsMetadata,
-} from "@/zap/lib/blog/utils";
+} from "@/zap/blog/utils";
+import { CustomMDX } from "@/zap/markdown/mdx";
 
 interface Props {
   params: Promise<{ slug: string }>;

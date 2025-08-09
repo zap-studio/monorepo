@@ -2,13 +2,13 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Badge } from "@/components/ui/badge";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { queryClient } from "@/lib/query";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import { AnimatedNumber } from "@/zap/components/misc/animated-number";
-import { AnimateWaitlist } from "@/zap/components/waitlist/animate-waitlist";
-import { WaitlistForm } from "@/zap/components/waitlist/waitlist-form";
-import { orpc } from "@/zap/lib/orpc/client";
-import { orpcServer } from "@/zap/lib/orpc/server";
+import { queryClient } from "@/zap/api/lib/tanstack-query";
+import { orpc } from "@/zap/api/providers/orpc/client";
+import { orpcServer } from "@/zap/api/providers/orpc/server";
+import { AnimateWaitlist } from "@/zap/waitlist/components/animate-waitlist";
+import { WaitlistForm } from "@/zap/waitlist/components/waitlist-form";
+import { AnimatedNumber } from "@/zap-old/components/misc/animated-number";
 
 export const revalidate = 60;
 

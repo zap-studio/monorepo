@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/zap/components/sidebar/sidebar";
-import { SidebarHeader } from "@/zap/components/sidebar/sidebar-header";
-import { getProducts } from "@/zap/lib/polar/utils";
+import { getProducts } from "@/zap/payments/utils";
+import { AppSidebar } from "@/zap-old/components/sidebar/sidebar";
+import { SidebarHeader } from "@/zap-old/components/sidebar/sidebar-header";
 
 export default async function AppLayout({
   children,
