@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PRODUCTS_METADATA } from "@/zap.config";
-import { ZapButton } from "@/zap/components/button";
+import { ZapButton } from "@/zap/components";
 import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
 import { PriceDisplay } from "@/zap/components/payments/price-display";
 import { getBillingDetails, getSortedProducts } from "@/zap/lib/payments/utils";

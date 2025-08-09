@@ -13,14 +13,13 @@ import {
 } from "@/components/ui/card";
 import type { ProductMetadata } from "@/zap.config";
 import { SALES_EMAIL } from "@/zap.config";
-import { ZapButton } from "@/zap/components/button";
-import { PricingToggle } from "@/zap/components/landing/pricing/pricing-toggle";
-import { PriceDisplay } from "@/zap/components/payments/price-display";
-import { handleClientError } from "@/zap/lib/api/client";
-import { ClientError } from "@/zap/lib/api/errors";
-import { authClient } from "@/zap/lib/auth/client";
-import { getBillingDetails, getSortedProducts } from "@/zap/lib/payments/utils";
-import { useActiveSubscriptionSlug } from "@/zap/lib/polar/client";
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
+import { ZapButton } from "@/zap/components";
+import { ClientError } from "@/zap/errors";
+import { handleClientError } from "@/zap/errors/client";
+import { PriceDisplay, PricingToggle } from "@/zap/payments/components";
+import { useActiveSubscriptionSlug } from "@/zap/payments/providers/polar/client";
+import { getBillingDetails, getSortedProducts } from "@/zap/payments/utils";
 
 interface BillingCardsProps {
   products: ProductMetadata[];
@@ -55,7 +54,7 @@ export function BillingCards({ products }: BillingCardsProps) {
 
       toast.loading("Redirecting to checkout...");
 
-      await authClient.checkout({
+      await betterAuthClient.checkout({
         products: [productId],
         slug,
       });

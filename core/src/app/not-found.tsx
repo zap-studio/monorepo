@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { ZapButton } from "@/zap/components/button";
+import { ZapButton } from "@/zap/components";
 
 export default function NotFoundPage() {
   return (

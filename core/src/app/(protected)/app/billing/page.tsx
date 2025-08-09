@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 
 import { SUPPORT_EMAIL } from "@/zap.config";
-import { ZapButton } from "@/zap/components/button";
+import { ZapButton } from "@/zap/components";
 import { BillingCards } from "@/zap/components/payments/billing-cards";
 import { FAQ } from "@/zap/components/payments/faq";
 import { getAuthDataOrRedirectToLogin } from "@/zap/lib/auth/redirects";

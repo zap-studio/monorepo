@@ -24,7 +24,7 @@ import {
   sendVerificationMailService,
   updateLastTimestampMailSentService,
 } from "@/zap/mails/services";
-import { polarClient } from "@/zap-old/lib/polar/server";
+import { polarClient } from "@/zap/payments/providers/polar/server";
 
 export const betterAuthServer = betterAuth({
   appName: "Zap.ts",
