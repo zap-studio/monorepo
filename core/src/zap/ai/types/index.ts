@@ -5,7 +5,7 @@ import type {
   AIProviderIdSchema,
   AIProviderSchema,
   ModelNameSchema,
-} from "@/zap/schemas/ai.schema";
+} from "@/zap/ai/schemas";
 
 export type AIProviderId = z.infer<typeof AIProviderIdSchema>;
 export type AIProvider = z.infer<typeof AIProviderSchema>;

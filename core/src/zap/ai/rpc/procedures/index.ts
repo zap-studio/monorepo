@@ -4,23 +4,25 @@ import { type } from "@orpc/server";
 import type { UIMessage } from "ai";
 
 import { authMiddleware, base } from "@/rpc/middlewares";
-import { withRpcHandler } from "@/zap/lib/api/handlers";
 import {
   InputDeleteAPIKeySchema,
   InputGetAPIKeySchema,
   InputSaveAPIKeySchema,
   InputTestAPIKeySchema,
   InputUpdateAPIKeySchema,
-} from "@/zap/schemas/ai.schema";
-import { deleteAPIKeyService } from "@/zap/services/ai/delete-api-key.service";
-import { getAISettingsService } from "@/zap/services/ai/get-ai-settings.service";
-import { saveAISettingsService } from "@/zap/services/ai/save-ai-settings.service";
-import { saveOrUpdateAISettingsService } from "@/zap/services/ai/save-or-update-ai-settings.service";
-import { streamChatService } from "@/zap/services/ai/stream-chat.service";
-import { streamCompletionService } from "@/zap/services/ai/stream-completion.service";
-import { testAPIKeyService } from "@/zap/services/ai/test-api-key.service";
-import { updateAISettingsService } from "@/zap/services/ai/update-ai-settings.service";
-import type { AIProviderId } from "@/zap/types/ai.types";
+} from "@/zap/ai/schemas";
+import {
+  deleteAPIKeyService,
+  getAISettingsService,
+  saveAISettingsService,
+  saveOrUpdateAISettingsService,
+  streamChatService,
+  streamCompletionService,
+  testAPIKeyService,
+  updateAISettingsService,
+} from "@/zap/ai/services";
+import type { AIProviderId } from "@/zap/ai/types";
+import { withRpcHandler } from "@/zap-old/lib/api/handlers";
 
 const getAISettings = base
   .use(authMiddleware)

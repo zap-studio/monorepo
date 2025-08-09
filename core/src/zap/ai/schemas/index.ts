@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { UpsertModeSchema } from "@/db/types";
-import { ModelsByProvider } from "@/zap/data/ai";
+import { ModelsByProvider } from "@/zap/ai/data";
 
 export const AIProviderIdSchema = z.enum(["openai", "mistral"]);
 

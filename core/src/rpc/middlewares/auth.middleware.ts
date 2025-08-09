@@ -4,8 +4,8 @@ import { ORPCError } from "@orpc/client";
 import { headers } from "next/headers";
 
 import { base } from "@/rpc/middlewares/base.middleware";
-import type { Session } from "@/zap/lib/auth/client";
-import { auth } from "@/zap/lib/auth/server";
+import type { Session } from "@/zap-old/lib/auth/client";
+import { auth } from "@/zap-old/lib/auth/server";
 
 export interface SessionContext {
   readonly session: Session;

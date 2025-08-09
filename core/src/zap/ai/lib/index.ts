@@ -1,10 +1,9 @@
-import "server-only";
-
 import { createMistral } from "@ai-sdk/mistral";
 import { createOpenAI } from "@ai-sdk/openai";
 
-import { BadRequestError } from "@/zap/lib/api/errors";
-import type { AIProviderId, ModelName } from "@/zap/types/ai.types";
+import { AI_PROVIDERS_OBJECT } from "@/zap/ai/data";
+import { AIProviderId, ModelName } from "@/zap/ai/types";
+import { BadRequestError } from "@/zap-old/lib/api/errors";
 
 export function getModel(
   provider: AIProviderId,
@@ -22,4 +21,11 @@ export function getModel(
     default:
       throw new BadRequestError(`The provider "${provider}" is not supported.`);
   }
+}
+
+export function getProviderName(provider: AIProviderId) {
+  return (
+    AI_PROVIDERS_OBJECT.find((p) => p.provider === provider)?.name ??
+    "Select AI Provider"
+  );
 }

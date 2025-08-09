@@ -3,7 +3,7 @@ import "server-only";
 import { and, eq, sql } from "drizzle-orm";
 
 import { db } from "@/db";
-import { userAISettings } from "@/db/schema";
+import { userAISettings } from "@/zap/ai/db/schema";
 
 export const getApiSettingsForUserAndProviderQuery = db
   .select()
