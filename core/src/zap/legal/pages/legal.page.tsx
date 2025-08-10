@@ -5,7 +5,7 @@ interface LegalPageProps {
   slug: string;
 }
 
-export async function LegalPage({ slug }: LegalPageProps) {
+export async function _LegalPage({ slug }: LegalPageProps) {
   const { content } = await getLegalContent(slug);
   return (
     <div className="container mx-auto max-w-3xl">

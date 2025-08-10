@@ -1,9 +1,9 @@
 import { RegisterForm } from "@/zap/auth/components";
-import { AuthPage } from "@/zap/auth/pages";
+import { _AuthPage } from "@/zap/auth/pages";
 
 export default function RegisterPage() {
   return (
-    <AuthPage
+    <_AuthPage
       bottomText={{
         label: "Already have an account?",
         linkText: "Log in",

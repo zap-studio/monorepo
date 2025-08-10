@@ -10,9 +10,6 @@ import { useBodyScrollLock } from "@/hooks/utils/use-body-scroll-lock";
 import { cn } from "@/lib/utils";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import { ZapButton } from "@/zap/components/core";
-import { Logo } from "@/zap-old/components/common/logo";
-import { MenuLinks } from "@/zap-old/components/common/menu-links";
-import { SessionButton } from "@/zap-old/components/common/session-button";
 
 export const NAV_LINKS = [
   { id: "hero", label: "Home" },

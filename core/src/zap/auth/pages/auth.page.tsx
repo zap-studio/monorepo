@@ -23,7 +23,7 @@ interface AuthPageProps {
   };
 }
 
-export function AuthPage({
+export function _AuthPage({
   title,
   description,
   form,

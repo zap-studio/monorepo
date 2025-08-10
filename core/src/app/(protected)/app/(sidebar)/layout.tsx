@@ -1,9 +1,12 @@
 import { cookies } from "next/headers";
 
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarHeader,
+  SidebarInset,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
 import { getProducts } from "@/zap/payments/utils";
-import { AppSidebar } from "@/zap-old/components/sidebar/sidebar";
-import { SidebarHeader } from "@/zap-old/components/sidebar/sidebar-header";
+import { AppSidebar } from "@/zap/sidebar/components";
 
 export default async function AppLayout({
   children,

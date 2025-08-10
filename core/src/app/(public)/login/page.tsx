@@ -1,9 +1,9 @@
 import { LoginForm } from "@/zap/auth/components";
-import { AuthPage } from "@/zap/auth/pages";
+import { _AuthPage } from "@/zap/auth/pages";
 
 export default function LoginPage() {
   return (
-    <AuthPage
+    <_AuthPage
       bottomText={{
         label: "Don't have an account?",
         linkText: "Sign up",
