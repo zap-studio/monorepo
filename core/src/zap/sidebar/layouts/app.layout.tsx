@@ -4,7 +4,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getProducts } from "@/zap/payments/utils";
 import { AppSidebar, SidebarHeader } from "@/zap/sidebar/components";
 
-interface _AppLayoutProps {
+export interface _AppLayoutProps {
   children: React.ReactNode;
 }
 

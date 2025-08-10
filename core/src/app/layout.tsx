@@ -1,4 +1,3 @@
-import "../zap/api/providers/orpc/server";
 import "./globals.css";
 
 import type { Metadata } from "next";
