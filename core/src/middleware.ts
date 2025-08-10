@@ -3,56 +3,43 @@ import "server-only";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { $fetch } from "@/lib/fetch";
-import type { Session } from "@/zap/auth/providers/better-auth/client";
-import { ZAP_AUTH_CONFIG } from "@/zap/auth/zap.plugin.config";
-import { ZAP_BLOG_CONFIG } from "@/zap/blog/zap.plugin.config";
+import {
+  checkPublicPathAccess,
+  createLoginRedirect,
+  getSessionInEdgeRuntime,
+} from "@/zap/auth/authorization";
+import { checkBlogPathAccess } from "@/zap/blog/authorization";
 import { logError } from "@/zap/errors/logger";
-import { ZAP_WAITLIST_CONFIG } from "@/zap/waitlist/zap.plugin.config";
-
-const LOGIN_URL = ZAP_AUTH_CONFIG.LOGIN_URL;
+import { checkWaitlistRedirect } from "@/zap/waitlist/authorization";
 
 export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl;
 
-    // Redirect to waitlist if feature is enabled and user is not on waitlist page
-    if (ZAP_WAITLIST_CONFIG.ENABLE_WAITLIST_PAGE && pathname !== "/waitlist") {
-      const waitlistUrl = new URL("/waitlist", request.url);
-      return NextResponse.redirect(waitlistUrl);
+    // Check for waitlist redirect
+    const waitlistRedirect = checkWaitlistRedirect(request);
+    if (waitlistRedirect) {
+      return waitlistRedirect;
     }
 
-    // Allow public paths
-    if (
-      ZAP_AUTH_CONFIG.PUBLIC_PATHS.includes(pathname) ||
-      pathname.startsWith(ZAP_BLOG_CONFIG.BASE_PATH)
-    ) {
-      const requestHeaders = new Headers(request.headers);
-
-      const response = NextResponse.next({
-        request: { headers: requestHeaders },
-      });
-      return response;
+    // Check if path is publicly accessible (auth public paths)
+    const publicPathAccess = checkPublicPathAccess(request);
+    if (publicPathAccess) {
+      return publicPathAccess;
     }
 
-    // Fetch session from API
-    let session: Session | null = null;
-    try {
-      session = await $fetch<Session>("/api/auth/get-session", {
-        headers: {
-          cookie: request.headers.get("cookie") || "",
-        },
-      });
-    } catch {
-      // Session fetch failed, treat as unauthenticated
-      session = null;
+    // Check if path is a blog path (also publicly accessible)
+    const blogPathAccess = checkBlogPathAccess(request);
+    if (blogPathAccess) {
+      return blogPathAccess;
     }
+
+    // Fetch session from API using edge runtime compatible method
+    const session = await getSessionInEdgeRuntime(request);
 
     if (!session) {
-      // Redirect unauthenticated users to /login with the original path as a query param
-      const loginUrl = new URL(LOGIN_URL, request.url);
-      loginUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(loginUrl);
+      // Redirect unauthenticated users to login with the original path as a query param
+      return createLoginRedirect(request, pathname);
     }
 
     // Add session and security headers for authenticated requests
@@ -67,9 +54,7 @@ export async function middleware(request: NextRequest) {
   } catch (error) {
     // Fallback: redirect to login on any unexpected error
     logError(error);
-    const loginUrl = new URL(LOGIN_URL, request.url);
-    loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
+    return createLoginRedirect(request, request.nextUrl.pathname);
   }
 }
 
