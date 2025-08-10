@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 import type { Provider } from "@/zap.config";
 
-export const AUTH_ICONS: Record<Provider, JSX.Element> = {
+export const PROVIDER_ICONS: Record<Provider, JSX.Element> = {
   github: (
     <svg
       aria-hidden="true"

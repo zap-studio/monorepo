@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Provider, ZAP_CONFIG } from "@/zap.config";
-import { AUTH_ICONS } from "@/zap/auth/components";
+import { PROVIDER_ICONS } from "@/zap/auth/components";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import { ZapButton } from "@/zap/components/core";
 import { AuthenticationError } from "@/zap/errors";
@@ -50,7 +50,7 @@ export function SocialProviderButton({ provider }: SocialProviderButtonProps) {
       onClick={() => handleSocialLogin(provider)}
       variant="outline"
     >
-      {AUTH_ICONS[provider]}
+      {PROVIDER_ICONS[provider]}
       {`Login with ${provider.charAt(0).toUpperCase() + provider.slice(1)}`}
     </ZapButton>
   );
