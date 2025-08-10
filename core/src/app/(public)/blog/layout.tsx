@@ -1,16 +1,5 @@
-import { Footer } from "@/zap/components/common/footer";
-import { Header } from "@/zap/components/common/header";
+import { _BlogLayout, _BlogLayoutProps } from "@/zap/blog/layouts";
 
-interface BlogLayoutProps {
-  children: React.ReactNode;
-}
-
-export default function BlogLayout({ children }: BlogLayoutProps) {
-  return (
-    <div className="relative flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1 px-4">{children}</main>
-      <Footer />
-    </div>
-  );
+export default function BlogLayout({ children }: _BlogLayoutProps) {
+  return <_BlogLayout>{children}</_BlogLayout>;
 }
