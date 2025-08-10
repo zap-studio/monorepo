@@ -14,7 +14,7 @@ import {
 import type { ProductMetadata } from "@/zap.config";
 import { SALES_EMAIL } from "@/zap.config";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
-import { ZapButton } from "@/zap/components";
+import { ZapButton } from "@/zap/components/core";
 import { ClientError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
 import { PriceDisplay, PricingToggle } from "@/zap/payments/components";

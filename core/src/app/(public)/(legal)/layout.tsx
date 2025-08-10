@@ -1,7 +1,7 @@
 import type React from "react";
 
-import { Footer } from "@/zap-old/components/common/footer";
-import { Header } from "@/zap-old/components/common/header";
+import { Footer } from "@/zap/components/common/footer";
+import { Header } from "@/zap/components/common/header";
 
 interface LegalLayoutProps {
   children: React.ReactNode;

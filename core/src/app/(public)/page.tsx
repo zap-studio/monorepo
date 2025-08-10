@@ -1,5 +1,5 @@
-import { Footer } from "@/zap-old/components/common/footer";
-import { Header } from "@/zap-old/components/common/header";
+import { Footer } from "@/zap/components/common/footer";
+import { Header } from "@/zap/components/common/header";
 import { FaqSection } from "@/zap-old/components/landing/faq/faq-section";
 import { FeaturesSection } from "@/zap-old/components/landing/features/features-section";
 import { HeroSection } from "@/zap-old/components/landing/hero/hero-section";

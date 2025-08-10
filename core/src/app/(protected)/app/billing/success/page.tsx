@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
-import { ZapButton } from "@/zap/components";
+import { ZapButton } from "@/zap/components/core";
 
 interface BillingSuccessPageProps {
   searchParams: Promise<{

@@ -36,7 +36,7 @@ import {
 import { useAISettings, useInitAISettings } from "@/zap/ai/hooks";
 import { AIFormSchema, AIProviderIdSchema } from "@/zap/ai/schemas";
 import { AIFormValues, AIProviderId } from "@/zap/ai/types";
-import { ZapButton } from "@/zap/components";
+import { ZapButton } from "@/zap/components/core";
 import { handleClientError } from "@/zap/errors/client";
 
 interface SettingsSheetProps {

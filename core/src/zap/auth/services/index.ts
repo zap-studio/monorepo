@@ -5,8 +5,8 @@ import { headers } from "next/headers";
 import { db } from "@/db";
 import { user } from "@/db/schema";
 import { getUserIdFromMailQuery } from "@/zap/auth/db/queries";
-import { redirectToLogin } from "@/zap/auth/lib/redirects";
 import { betterAuthServer } from "@/zap/auth/providers/better-auth/server";
+import { redirectToLogin } from "@/zap/auth/utils";
 import { AuthenticationError, NotFoundError } from "@/zap/errors";
 
 export async function getNumberOfUsersService() {
