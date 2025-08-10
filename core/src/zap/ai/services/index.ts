@@ -11,7 +11,7 @@ import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { UpsertMode } from "@/db/types";
-import { SETTINGS } from "@/lib/settings";
+import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
 import { getApiSettingsForUserAndProviderQuery } from "@/zap/ai/db/queries";
 import { userAISettings } from "@/zap/ai/db/schema";
 import { getModel } from "@/zap/ai/lib";
@@ -195,13 +195,13 @@ export async function streamChatService({
   const result = streamText({
     model: getModel(provider, apiKey, model),
     messages: convertToModelMessages(messages),
-    system: SETTINGS.AI.SYSTEM_PROMPT,
-    maxOutputTokens: SETTINGS.AI.CHAT?.MAX_OUTPUT_TOKENS,
-    temperature: SETTINGS.AI.CHAT?.TEMPERATURE,
-    presencePenalty: SETTINGS.AI.CHAT?.PRESENCE_PENALTY,
-    frequencyPenalty: SETTINGS.AI.CHAT?.FREQUENCY_PENALTY,
-    stopSequences: SETTINGS.AI.CHAT?.STOP_SEQUENCES,
-    maxRetries: SETTINGS.AI.CHAT?.MAX_RETRIES,
+    system: ZAP_DEFAULT_SETTINGS.AI.SYSTEM_PROMPT,
+    maxOutputTokens: ZAP_DEFAULT_SETTINGS.AI.CHAT?.MAX_OUTPUT_TOKENS,
+    temperature: ZAP_DEFAULT_SETTINGS.AI.CHAT?.TEMPERATURE,
+    presencePenalty: ZAP_DEFAULT_SETTINGS.AI.CHAT?.PRESENCE_PENALTY,
+    frequencyPenalty: ZAP_DEFAULT_SETTINGS.AI.CHAT?.FREQUENCY_PENALTY,
+    stopSequences: ZAP_DEFAULT_SETTINGS.AI.CHAT?.STOP_SEQUENCES,
+    maxRetries: ZAP_DEFAULT_SETTINGS.AI.CHAT?.MAX_RETRIES,
   });
 
   return streamToEventIterator(result.toUIMessageStream());
@@ -234,13 +234,13 @@ export async function streamCompletionService({
   const result = streamText({
     model: getModel(provider, apiKey, model),
     prompt,
-    system: SETTINGS.AI.SYSTEM_PROMPT,
-    maxOutputTokens: SETTINGS.AI.COMPLETION?.MAX_OUTPUT_TOKENS,
-    temperature: SETTINGS.AI.COMPLETION?.TEMPERATURE,
-    presencePenalty: SETTINGS.AI.COMPLETION?.PRESENCE_PENALTY,
-    frequencyPenalty: SETTINGS.AI.COMPLETION?.FREQUENCY_PENALTY,
-    stopSequences: SETTINGS.AI.COMPLETION?.STOP_SEQUENCES,
-    maxRetries: SETTINGS.AI.COMPLETION?.MAX_RETRIES,
+    system: ZAP_DEFAULT_SETTINGS.AI.SYSTEM_PROMPT,
+    maxOutputTokens: ZAP_DEFAULT_SETTINGS.AI.COMPLETION?.MAX_OUTPUT_TOKENS,
+    temperature: ZAP_DEFAULT_SETTINGS.AI.COMPLETION?.TEMPERATURE,
+    presencePenalty: ZAP_DEFAULT_SETTINGS.AI.COMPLETION?.PRESENCE_PENALTY,
+    frequencyPenalty: ZAP_DEFAULT_SETTINGS.AI.COMPLETION?.FREQUENCY_PENALTY,
+    stopSequences: ZAP_DEFAULT_SETTINGS.AI.COMPLETION?.STOP_SEQUENCES,
+    maxRetries: ZAP_DEFAULT_SETTINGS.AI.COMPLETION?.MAX_RETRIES,
   });
 
   return streamToEventIterator(result.toUIMessageStream());
