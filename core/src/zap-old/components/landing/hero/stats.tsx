@@ -1,8 +1,8 @@
 import { Star } from "lucide-react";
 import { cache } from "react";
 
+import { getNumberOfUsersService } from "@/zap/auth/services";
 import { getAverageRatingService } from "@/zap/feedbacks/services";
-import { getNumberOfUsersService } from "@/zap-old/services/users/get-number-of-users.service";
 
 const getStatsData = cache(async () => {
   const [{ averageRating, totalFeedbacks }, numberOfUsers] = await Promise.all([

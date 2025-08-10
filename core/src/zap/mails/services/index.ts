@@ -7,9 +7,9 @@ import { db } from "@/db";
 import { user } from "@/db/schema";
 import { SETTINGS } from "@/lib/settings";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { getLastMailSentAtQuery } from "@/zap/auth/db/queries";
 import { isUserAdminService } from "@/zap/auth/services";
 import { MailError, NotFoundError, UnauthorizedError } from "@/zap/errors";
-import { getLastMailSentAtQuery } from "@/zap/mails/db/queries";
 import { resend } from "@/zap/mails/providers/resend/server";
 import {
   ForgotPasswordMail,

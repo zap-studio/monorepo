@@ -1,8 +1,11 @@
 import "server-only";
 
 import { authMiddleware, base } from "@/rpc/middlewares";
+import { InputGetUserIdFromMailSchema } from "@/zap/auth/schemas";
 import {
+  getNumberOfUsersService,
   getSessionService,
+  getUserIdFromMailService,
   getUserIdService,
   isAuthenticatedService,
   isUserAdminService,
@@ -19,10 +22,18 @@ const getSession = base
 const isUserAdmin = base
   .use(authMiddleware)
   .handler(withRpcHandler(isUserAdminService));
+const getNumberOfUsers = base.handler(getNumberOfUsersService);
+const getUserIdFromMail = base.input(InputGetUserIdFromMailSchema).handler(
+  withRpcHandler(async ({ input }) => {
+    return await getUserIdFromMailService({ ...input });
+  }),
+);
 
 export const auth = {
   getUserId,
   getSession,
   isAuthenticated,
   isUserAdmin,
+  getNumberOfUsers,
+  getUserIdFromMail,
 };

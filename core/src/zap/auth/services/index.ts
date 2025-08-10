@@ -2,9 +2,17 @@ import "server-only";
 
 import { headers } from "next/headers";
 
+import { db } from "@/db";
+import { user } from "@/db/schema";
+import { getUserIdFromMailQuery } from "@/zap/auth/db/queries";
 import { redirectToLogin } from "@/zap/auth/lib/redirects";
 import { betterAuthServer } from "@/zap/auth/providers/better-auth/server";
 import { AuthenticationError, NotFoundError } from "@/zap/errors";
+
+export async function getNumberOfUsersService() {
+  const count = await db.$count(user);
+  return count;
+}
 
 export async function getSessionService() {
   const _headers = await headers();
@@ -63,4 +71,21 @@ export async function isUserAdminService() {
   }
 
   return false; // FIXME: Implement actual admin check logic
+}
+
+interface GetUserIdFromMailService {
+  email: string;
+}
+
+export async function getUserIdFromMailService({
+  email,
+}: GetUserIdFromMailService) {
+  const records = await getUserIdFromMailQuery.execute({ email });
+
+  const record = records[0];
+  if (!record) {
+    throw new NotFoundError(`User with email ${email} not found`);
+  }
+
+  return record.userId;
 }

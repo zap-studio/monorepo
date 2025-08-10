@@ -1,13 +1,12 @@
 import "server-only";
 
+import { example } from "@/rpc/procedures/example.rpc";
 import { ai } from "@/zap/ai/rpc/procedures";
 import { auth } from "@/zap/auth/rpc/procedures";
 import { feedbacks } from "@/zap/feedbacks/rpc/procedures";
 import { mails } from "@/zap/mails/rpc/procedures";
 import { pwa } from "@/zap/pwa/rpc/procedures";
 import { waitlist } from "@/zap/waitlist/rpc/procedures";
-import { example } from "@/zap-old/rpc/procedures/example.rpc";
-import { users } from "@/zap-old/rpc/procedures/users.rpc";
 
 export const router = {
   ai,
@@ -16,6 +15,5 @@ export const router = {
   feedbacks,
   mails,
   pwa,
-  users,
   waitlist,
 };

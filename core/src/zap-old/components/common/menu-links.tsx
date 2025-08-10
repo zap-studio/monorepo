@@ -1,9 +1,14 @@
 "use client";
 
+import { useRouter } from "@bprogress/next/app";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-import { EXTERNAL_LINKS, NAV_LINKS } from "@/zap-old/components/common/header";
-import { useScrollToSection } from "@/zap-old/hooks/header/use-scroll-to-section";
+import {
+  EXTERNAL_LINKS,
+  HEADER_HEIGHT,
+  NAV_LINKS,
+} from "@/zap-old/components/common/header";
 
 interface MenuLinksProps {
   onClick?: () => void;
@@ -41,4 +46,24 @@ export function MenuLinks({ onClick, variant = "desktop" }: MenuLinksProps) {
       ))}
     </>
   );
+}
+
+function useScrollToSection(offset = HEADER_HEIGHT) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const scrollToSection = (sectionId: string) => {
+    if (pathname !== "/") {
+      router.push("/");
+      return;
+    }
+
+    const section = document.getElementById(sectionId);
+    if (section) {
+      const position = section.offsetTop - offset;
+      window.scrollTo({ top: position, behavior: "smooth" });
+    }
+  };
+
+  return scrollToSection;
 }

@@ -9,10 +9,16 @@ import type { z } from "zod";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
 import { SETTINGS } from "@/lib/settings";
 import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { useZapQuery } from "@/zap/api/hooks";
+import { orpc } from "@/zap/api/providers/orpc/client";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import type { LoginFormSchema, RegisterFormSchema } from "@/zap/auth/schemas";
 import { AuthenticationError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
+
+export function useNumberOfUsers() {
+  return useZapQuery(orpc.auth.getNumberOfUsers.queryOptions());
+}
 
 type LoginFormValues = z.infer<typeof LoginFormSchema>;
 type RegisterFormValues = z.infer<typeof RegisterFormSchema>;

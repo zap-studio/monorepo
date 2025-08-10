@@ -2,6 +2,10 @@ import z from "zod";
 
 import { SETTINGS } from "@/lib/settings";
 
+export const InputGetUserIdFromMailSchema = z.object({
+  email: z.string(),
+});
+
 export const LoginFormSchema = z.object({
   email: z.email(),
   password: z.string().min(6, {
