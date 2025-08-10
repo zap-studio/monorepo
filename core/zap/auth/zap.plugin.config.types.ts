@@ -1,4 +1,4 @@
-import { Provider } from "@/zap/auth/zap.plugin.config";
+export type Provider = "github" | "google";
 
 export interface AuthPluginConfig {
   ENABLE_SOCIAL_PROVIDER: boolean;

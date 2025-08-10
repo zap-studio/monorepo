@@ -1,7 +1,5 @@
 import { AuthPluginConfig } from "./zap.plugin.config.types";
 
-export type Provider = "github" | "google";
-
 export const ZAP_AUTH_CONFIG: AuthPluginConfig = {
   REQUIRE_MAIL_VERIFICATION: true,
   ENABLE_SOCIAL_PROVIDER: true,

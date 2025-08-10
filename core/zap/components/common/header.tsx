@@ -11,17 +11,7 @@ import { cn } from "@/lib/utils";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 
 import { ZapButton } from "../core";
-
-export const NAV_LINKS = [
-  { id: "hero", label: "Home" },
-  { id: "testimonials", label: "Testimonials" },
-  { id: "features", label: "Features" },
-  { id: "pricing", label: "Pricing" },
-  { id: "faq", label: "FAQ" },
-];
-
-export const EXTERNAL_LINKS = [{ href: "/blog", label: "Blog" }];
-export const HEADER_HEIGHT = 64; // Tailwind's h-16
+import { EXTERNAL_LINKS, HEADER_HEIGHT, NAV_LINKS } from "../data";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);

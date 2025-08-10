@@ -9,7 +9,8 @@ import { handleClientError } from "@/zap/errors/client";
 
 import { PROVIDER_ICONS } from ".";
 import { betterAuthClient } from "../providers/better-auth/client";
-import { Provider, ZAP_AUTH_CONFIG } from "../zap.plugin.config";
+import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
+import { Provider } from "../zap.plugin.config.types";
 
 interface SocialProviderButtonProps {
   provider: Provider;
