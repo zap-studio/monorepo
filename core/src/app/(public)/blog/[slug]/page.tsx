@@ -1,4 +1,9 @@
-import { _generateMetadata, _generateStaticParams } from "@/zap/blog/pages";
+import {
+  _BlogSlugPage,
+  _BlogSlugPageProps,
+  _generateMetadata,
+  _generateStaticParams,
+} from "@/zap/blog/pages";
 
 export async function generateMetadata({
   params,
@@ -12,6 +17,6 @@ export async function generateStaticParams() {
   return await _generateStaticParams();
 }
 
-export default async function _BlogSlugPage() {
-  return <_BlogSlugPage />;
+export default async function BlogSlugPage({ params }: _BlogSlugPageProps) {
+  return <_BlogSlugPage params={params} />;
 }
