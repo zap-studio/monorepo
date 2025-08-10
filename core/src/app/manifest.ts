@@ -1,16 +1,16 @@
 import type { MetadataRoute } from "next";
 
-import { SETTINGS } from "@/lib/settings";
+import { ZAP_CONFIG } from "@/zap.config";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: SETTINGS.PWA.NAME,
-    short_name: SETTINGS.PWA.SHORT_NAME,
-    description: SETTINGS.PWA.DESCRIPTION,
-    start_url: SETTINGS.PWA.START_URL,
+    name: ZAP_CONFIG.PWA.NAME,
+    short_name: ZAP_CONFIG.PWA.SHORT_NAME,
+    description: ZAP_CONFIG.PWA.DESCRIPTION,
+    start_url: ZAP_CONFIG.PWA.START_URL,
     display: "standalone",
-    background_color: SETTINGS.PWA.BACKGROUND_COLOR,
-    theme_color: SETTINGS.PWA.THEME_COLOR,
-    icons: SETTINGS.PWA.ICONS,
+    background_color: ZAP_CONFIG.PWA.BACKGROUND_COLOR,
+    theme_color: ZAP_CONFIG.PWA.THEME_COLOR,
+    icons: ZAP_CONFIG.PWA.ICONS,
   };
 }

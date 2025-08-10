@@ -5,8 +5,7 @@ import React from "react";
 
 import { db } from "@/db";
 import { user } from "@/db/schema";
-import { SETTINGS } from "@/lib/settings";
-import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { ZAP_CONFIG } from "@/zap.config";
 import { getLastMailSentAtQuery } from "@/zap/auth/db/queries";
 import { isUserAdminService } from "@/zap/auth/services";
 import { MailError, NotFoundError, UnauthorizedError } from "@/zap/errors";
@@ -17,7 +16,7 @@ import {
   VerificationMail,
 } from "@/zap/mails/templates";
 
-const FROM_EMAIL = ZAP_DEFAULT_SETTINGS.MAIL.FROM;
+const FROM_EMAIL = ZAP_CONFIG.MAIL.FROM;
 
 interface MailServiceParams {
   subject: string;
@@ -58,7 +57,7 @@ export async function canSendMailService({ userId }: { userId: string }) {
 
   const lastSent = new Date(userRecord.lastEmailSentAt);
   const timeElapsed = (Date.now() - lastSent.getTime()) / 1000; // in seconds
-  const rateLimit = SETTINGS.MAIL.RATE_LIMIT_SECONDS;
+  const rateLimit = ZAP_CONFIG.MAIL.RATE_LIMIT_SECONDS;
 
   return {
     canSend: timeElapsed >= rateLimit,

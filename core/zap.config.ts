@@ -138,7 +138,7 @@ export const PRODUCTS_METADATA: Record<string, ProductMetadata> = {
 // ─────────────────────────────────────────────────────────────
 // Default Settings
 // ─────────────────────────────────────────────────────────────
-export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
+export const ZAP_CONFIG: ZapSettings = {
   AI: {
     SYSTEM_PROMPT: "You are a helpful assistant.",
   },

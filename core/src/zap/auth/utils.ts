@@ -1,7 +1,7 @@
 import "server-only";
 
-import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { ZAP_CONFIG } from "@/zap.config";
 
 export function redirectToLogin() {
-  return Response.redirect(ZAP_DEFAULT_SETTINGS.AUTH.LOGIN_URL, 307);
+  return Response.redirect(ZAP_CONFIG.AUTH.LOGIN_URL, 307);
 }

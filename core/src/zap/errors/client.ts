@@ -2,7 +2,7 @@ import "client-only";
 
 import { toast } from "sonner";
 
-import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { ZAP_CONFIG } from "@/zap.config";
 import { DEV } from "@/zap/env/runtime";
 import { ApplicationError, BaseError } from "@/zap/errors";
 
@@ -16,7 +16,7 @@ export function handleClientError(
     "code" in error &&
     (error as { code?: string }).code === "PASSWORD_COMPROMISED"
   ) {
-    toast.error(ZAP_DEFAULT_SETTINGS.AUTH.PASSWORD_COMPROMISED_MESSAGE);
+    toast.error(ZAP_CONFIG.AUTH.PASSWORD_COMPROMISED_MESSAGE);
     return;
   }
 

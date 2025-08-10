@@ -1,6 +1,10 @@
 import { _generateMetadata, _generateStaticParams } from "@/zap/blog/pages";
 
-export async function generateMetadata(params: Promise<{ slug: string }>) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   return await _generateMetadata({ params });
 }
 

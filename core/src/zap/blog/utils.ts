@@ -8,7 +8,11 @@ import matter from "gray-matter";
 
 import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
 import { postMetadataSchema } from "@/zap/blog/schemas";
-import { ApplicationError, FileOperationError } from "@/zap/errors";
+import {
+  ApplicationError,
+  FileOperationError,
+  NotFoundError,
+} from "@/zap/errors";
 
 const BLOG_DIR = path.join(process.cwd(), "src", "zap", "blog", "data");
 
@@ -111,7 +115,7 @@ export async function generateBlogPostMetadata(slug: string) {
   const post = await getBlogPost(slug);
 
   if (!post) {
-    return;
+    throw new NotFoundError(`Blog post with slug ${slug} not found`);
   }
 
   const openGraphImage =

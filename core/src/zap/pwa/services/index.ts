@@ -5,7 +5,7 @@ import type webpush from "web-push";
 
 import { db } from "@/db";
 import { pushNotifications } from "@/db/schema";
-import { SETTINGS } from "@/lib/settings";
+import { ZAP_CONFIG } from "@/zap.config";
 import { getUserIdService } from "@/zap/auth/services";
 import { PUBLIC_ENV } from "@/zap/env/public";
 import { SERVER_ENV } from "@/zap/env/server";
@@ -22,7 +22,7 @@ export async function getWebPushService() {
     !(
       PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY &&
       SERVER_ENV.VAPID_PRIVATE_KEY &&
-      SETTINGS.NOTIFICATIONS.VAPID_MAIL
+      ZAP_CONFIG.NOTIFICATIONS.VAPID_MAIL
     )
   ) {
     throw new PushNotificationError(
@@ -33,7 +33,7 @@ export async function getWebPushService() {
   const webpush = await import("web-push");
 
   webpush.default.setVapidDetails(
-    `mailto:${SETTINGS.NOTIFICATIONS.VAPID_MAIL}`,
+    `mailto:${ZAP_CONFIG.NOTIFICATIONS.VAPID_MAIL}`,
     PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
     SERVER_ENV.VAPID_PRIVATE_KEY,
   );

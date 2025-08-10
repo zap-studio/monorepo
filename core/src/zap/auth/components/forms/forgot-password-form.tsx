@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
-import { SETTINGS } from "@/lib/settings";
+import { ZAP_CONFIG } from "@/zap.config";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import { ZapButton } from "@/zap/components/core";
 import { handleClientError } from "@/zap/errors/client";
@@ -48,7 +48,7 @@ export function ForgotPasswordForm() {
       });
 
       toast.success("Check your email for the reset link!");
-      startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
+      startCooldown(ZAP_CONFIG.MAIL.RATE_LIMIT_SECONDS);
     } catch (error) {
       handleClientError(error);
     } finally {

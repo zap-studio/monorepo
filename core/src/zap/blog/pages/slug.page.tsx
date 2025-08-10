@@ -14,7 +14,7 @@ import { CustomMDX } from "@/zap/markdown/mdx";
 
 export async function _generateMetadata({
   params,
-}: _BlogSlugPageProps): Promise<Metadata | undefined> {
+}: _BlogSlugPageProps): Promise<Metadata> {
   const { slug } = await params;
   return await generateBlogPostMetadata(slug);
 }

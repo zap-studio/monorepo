@@ -2,7 +2,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Badge } from "@/components/ui/badge";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { ZAP_CONFIG } from "@/zap.config";
 import { queryClient } from "@/zap/api/lib/tanstack-query";
 import { orpc } from "@/zap/api/providers/orpc/client";
 import { orpcServer } from "@/zap/api/providers/orpc/server";
@@ -28,7 +28,7 @@ export async function _WaitlistPage() {
 
         <div className="mx-auto max-w-md">
           <AnimateWaitlist>
-            {ZAP_DEFAULT_SETTINGS.WAITLIST.SHOW_COUNT && (
+            {ZAP_CONFIG.WAITLIST.SHOW_COUNT && (
               <Badge className="mb-4" variant={"secondary"}>
                 <span className="font-semibold">
                   <AnimatedNumber value={waitlistCount} />
@@ -38,10 +38,10 @@ export async function _WaitlistPage() {
             )}
 
             <h1 className="text-2xl font-semibold">
-              {ZAP_DEFAULT_SETTINGS.WAITLIST.TITLE}
+              {ZAP_CONFIG.WAITLIST.TITLE}
             </h1>
             <p className="text-muted-foreground mb-6 text-base">
-              {ZAP_DEFAULT_SETTINGS.WAITLIST.DESCRIPTION}
+              {ZAP_CONFIG.WAITLIST.DESCRIPTION}
             </p>
           </AnimateWaitlist>
 

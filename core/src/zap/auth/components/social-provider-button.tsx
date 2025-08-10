@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { Provider, ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { Provider, ZAP_CONFIG } from "@/zap.config";
 import { AUTH_ICONS } from "@/zap/auth/components";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import { ZapButton } from "@/zap/components/core";
@@ -23,7 +23,7 @@ export function SocialProviderButton({ provider }: SocialProviderButtonProps) {
     try {
       const { data, error } = await betterAuthClient.signIn.social({
         provider,
-        callbackURL: ZAP_DEFAULT_SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN,
+        callbackURL: ZAP_CONFIG.AUTH.REDIRECT_URL_AFTER_SIGN_IN,
       });
 
       if (error) {

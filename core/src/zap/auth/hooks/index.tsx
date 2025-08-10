@@ -7,8 +7,7 @@ import { toast } from "sonner";
 import type { z } from "zod";
 
 import { useCooldown } from "@/hooks/utils/use-cooldown";
-import { SETTINGS } from "@/lib/settings";
-import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { ZAP_CONFIG } from "@/zap.config";
 import { useZapQuery } from "@/zap/api/hooks";
 import { orpc } from "@/zap/api/providers/orpc/client";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
@@ -32,9 +31,9 @@ export function useAuth(callbackURL?: string) {
     try {
       await betterAuthClient.sendVerificationEmail({
         email,
-        callbackURL: ZAP_DEFAULT_SETTINGS.AUTH.VERIFIED_EMAIL_PATH,
+        callbackURL: ZAP_CONFIG.AUTH.VERIFIED_EMAIL_PATH,
       });
-      startCooldown(SETTINGS.MAIL.RATE_LIMIT_SECONDS);
+      startCooldown(ZAP_CONFIG.MAIL.RATE_LIMIT_SECONDS);
     } catch (error) {
       handleClientError(error);
     }
@@ -56,7 +55,7 @@ export function useAuth(callbackURL?: string) {
       }
 
       if (
-        SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION &&
+        ZAP_CONFIG.AUTH.REQUIRE_MAIL_VERIFICATION &&
         !response.data?.user?.emailVerified
       ) {
         await sendVerificationMail(email);
@@ -66,7 +65,7 @@ export function useAuth(callbackURL?: string) {
       }
 
       toast.success("Login successful!");
-      router.push(callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_IN);
+      router.push(callbackURL || ZAP_CONFIG.AUTH.REDIRECT_URL_AFTER_SIGN_IN);
     } catch (error) {
       handleClientError(error);
     }
@@ -92,7 +91,7 @@ export function useAuth(callbackURL?: string) {
         );
       }
 
-      if (SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION) {
+      if (ZAP_CONFIG.AUTH.REQUIRE_MAIL_VERIFICATION) {
         await sendVerificationMail(email);
         toast.success(
           "Registration successful! Please check your email to verify your account.",
@@ -101,7 +100,7 @@ export function useAuth(callbackURL?: string) {
       }
 
       toast.success("Registration successful!");
-      router.push(callbackURL || SETTINGS.AUTH.REDIRECT_URL_AFTER_SIGN_UP);
+      router.push(callbackURL || ZAP_CONFIG.AUTH.REDIRECT_URL_AFTER_SIGN_UP);
     } catch (error) {
       handleClientError(error);
     }

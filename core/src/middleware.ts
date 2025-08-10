@@ -4,29 +4,26 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { $fetch } from "@/lib/fetch";
-import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { ZAP_CONFIG } from "@/zap.config";
 import type { Session } from "@/zap/auth/providers/better-auth/client";
 import { logError } from "@/zap/errors/logger";
 
-const LOGIN_URL = ZAP_DEFAULT_SETTINGS.AUTH.LOGIN_URL;
+const LOGIN_URL = ZAP_CONFIG.AUTH.LOGIN_URL;
 
 export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl;
 
     // Redirect to waitlist if feature is enabled and user is not on waitlist page
-    if (
-      ZAP_DEFAULT_SETTINGS.WAITLIST.ENABLE_WAITLIST_PAGE &&
-      pathname !== "/waitlist"
-    ) {
+    if (ZAP_CONFIG.WAITLIST.ENABLE_WAITLIST_PAGE && pathname !== "/waitlist") {
       const waitlistUrl = new URL("/waitlist", request.url);
       return NextResponse.redirect(waitlistUrl);
     }
 
     // Allow public paths
     if (
-      ZAP_DEFAULT_SETTINGS.AUTH.PUBLIC_PATHS.includes(pathname) ||
-      pathname.startsWith(ZAP_DEFAULT_SETTINGS.BLOG.BASE_PATH)
+      ZAP_CONFIG.AUTH.PUBLIC_PATHS.includes(pathname) ||
+      pathname.startsWith(ZAP_CONFIG.BLOG.BASE_PATH)
     ) {
       const requestHeaders = new Headers(request.headers);
 

@@ -5,13 +5,13 @@ import type { Metadata } from "next";
 import { geist } from "@/app/fonts";
 import { Toaster } from "@/components/ui/sonner";
 import Providers from "@/providers/providers";
-import { ZAP_DEFAULT_METADATA, ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { ZAP_CONFIG, ZAP_DEFAULT_METADATA } from "@/zap.config";
 import { VERCEL } from "@/zap/env/runtime";
 
 export const metadata: Metadata = ZAP_DEFAULT_METADATA;
 
 const VercelAnalytics = async () => {
-  if (!(VERCEL && ZAP_DEFAULT_SETTINGS.ANALYTICS.ENABLE_VERCEL_ANALYTICS)) {
+  if (!(VERCEL && ZAP_CONFIG.ANALYTICS.ENABLE_VERCEL_ANALYTICS)) {
     return null;
   }
 
@@ -20,9 +20,7 @@ const VercelAnalytics = async () => {
 };
 
 const VercelSpeedInsights = async () => {
-  if (
-    !(VERCEL && ZAP_DEFAULT_SETTINGS.ANALYTICS.ENABLE_VERCEL_SPEED_INSIGHTS)
-  ) {
+  if (!(VERCEL && ZAP_CONFIG.ANALYTICS.ENABLE_VERCEL_SPEED_INSIGHTS)) {
     return null;
   }
 
@@ -38,9 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geist.variable} antialiased`}>
-        <Providers
-          ENABLE_POSTHOG={ZAP_DEFAULT_SETTINGS.ANALYTICS.ENABLE_POSTHOG}
-        >
+        <Providers ENABLE_POSTHOG={ZAP_CONFIG.ANALYTICS.ENABLE_POSTHOG}>
           {children}
 
           <Toaster position="top-center" />

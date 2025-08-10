@@ -14,8 +14,7 @@ import {
 import { passkey } from "better-auth/plugins/passkey";
 
 import { db } from "@/db";
-import { SETTINGS } from "@/lib/settings";
-import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { ZAP_CONFIG } from "@/zap.config";
 import { SERVER_ENV } from "@/zap/env/server";
 import { MailError } from "@/zap/errors";
 import {
@@ -31,9 +30,9 @@ export const betterAuthServer = betterAuth({
   database: drizzleAdapter(db, { provider: "pg" }),
   emailAndPassword: {
     enabled: true,
-    minPasswordLength: SETTINGS.AUTH.MINIMUM_PASSWORD_LENGTH,
-    maxPasswordLength: SETTINGS.AUTH.MAXIMUM_PASSWORD_LENGTH,
-    requireEmailVerification: SETTINGS.AUTH.REQUIRE_MAIL_VERIFICATION,
+    minPasswordLength: ZAP_CONFIG.AUTH.MINIMUM_PASSWORD_LENGTH,
+    maxPasswordLength: ZAP_CONFIG.AUTH.MAXIMUM_PASSWORD_LENGTH,
+    requireEmailVerification: ZAP_CONFIG.AUTH.REQUIRE_MAIL_VERIFICATION,
     sendResetPassword: async ({ user, url }) => {
       const { canSend, timeLeft } = await canSendMailService({
         userId: user.id,
@@ -47,7 +46,7 @@ export const betterAuthServer = betterAuth({
 
       await sendForgotPasswordMailService({
         recipients: [user.email],
-        subject: `${SETTINGS.MAIL.PREFIX} - Reset your password`,
+        subject: `${ZAP_CONFIG.MAIL.PREFIX} - Reset your password`,
         url,
       });
 
@@ -73,14 +72,14 @@ export const betterAuthServer = betterAuth({
       const verificationUrl = new URL(url);
       verificationUrl.searchParams.set(
         "callbackURL",
-        ZAP_DEFAULT_SETTINGS.AUTH.VERIFIED_EMAIL_PATH,
+        ZAP_CONFIG.AUTH.VERIFIED_EMAIL_PATH,
       );
 
       const modifiedUrl = verificationUrl.toString();
 
       await sendVerificationMailService({
         recipients: [user.email],
-        subject: `${SETTINGS.MAIL.PREFIX} - Verify your email`,
+        subject: `${ZAP_CONFIG.MAIL.PREFIX} - Verify your email`,
         url: modifiedUrl,
       });
 
@@ -104,21 +103,21 @@ export const betterAuthServer = betterAuth({
     polar({
       client: polarClient,
       createCustomerOnSignUp:
-        ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.CREATE_CUSTOMER_ON_SIGNUP,
+        ZAP_CONFIG.PAYMENTS.POLAR?.CREATE_CUSTOMER_ON_SIGNUP,
       use: [
         checkout({
-          products: ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.PRODUCTS,
-          successUrl: `${ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.SUCCESS_URL}?checkout_id={CHECKOUT_ID}`,
+          products: ZAP_CONFIG.PAYMENTS.POLAR?.PRODUCTS,
+          successUrl: `${ZAP_CONFIG.PAYMENTS.POLAR?.SUCCESS_URL}?checkout_id={CHECKOUT_ID}`,
           authenticatedUsersOnly:
-            ZAP_DEFAULT_SETTINGS.PAYMENTS.POLAR?.AUTHENTICATED_USERS_ONLY,
+            ZAP_CONFIG.PAYMENTS.POLAR?.AUTHENTICATED_USERS_ONLY,
         }),
         portal(),
       ],
     }),
     twoFactor(),
     username({
-      minUsernameLength: SETTINGS.AUTH.MINIMUM_USERNAME_LENGTH,
-      maxUsernameLength: SETTINGS.AUTH.MAXIMUM_USERNAME_LENGTH,
+      minUsernameLength: ZAP_CONFIG.AUTH.MINIMUM_USERNAME_LENGTH,
+      maxUsernameLength: ZAP_CONFIG.AUTH.MAXIMUM_USERNAME_LENGTH,
       usernameValidator: (name) => name !== "admin",
     }),
     anonymous(),
@@ -127,7 +126,7 @@ export const betterAuthServer = betterAuth({
     organization(),
     haveIBeenPwned({
       customPasswordCompromisedMessage:
-        ZAP_DEFAULT_SETTINGS.AUTH.PASSWORD_COMPROMISED_MESSAGE,
+        ZAP_CONFIG.AUTH.PASSWORD_COMPROMISED_MESSAGE,
     }),
   ],
 });

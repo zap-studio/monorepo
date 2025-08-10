@@ -7,9 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SETTINGS } from "@/lib/settings";
 import { cn } from "@/lib/utils";
-import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
+import { ZAP_CONFIG } from "@/zap.config";
 import { SocialProviderButton } from "@/zap/auth/components";
 
 interface AuthPageProps {
@@ -43,14 +42,14 @@ export function _AuthPage({
           <Card className="border shadow-none">
             <CardHeader className="text-center">
               <CardTitle className="text-xl">{title}</CardTitle>
-              {SETTINGS.AUTH.ENABLE_SOCIAL_PROVIDER && description && (
+              {ZAP_CONFIG.AUTH.ENABLE_SOCIAL_PROVIDER && description && (
                 <CardDescription>{description}</CardDescription>
               )}
             </CardHeader>
 
             <CardContent>
               <div className="grid gap-6">
-                {SETTINGS.AUTH.ENABLE_SOCIAL_PROVIDER && (
+                {ZAP_CONFIG.AUTH.ENABLE_SOCIAL_PROVIDER && (
                   <>
                     <SocialProviders />
                     <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
@@ -84,7 +83,7 @@ export function _AuthPage({
 }
 
 function SocialProviders() {
-  const providers = ZAP_DEFAULT_SETTINGS.AUTH.PROVIDERS;
+  const providers = ZAP_CONFIG.AUTH.PROVIDERS;
   return (
     <div className="flex flex-col gap-4">
       {providers.map((provider) => (
