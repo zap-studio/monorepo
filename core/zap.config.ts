@@ -3,18 +3,17 @@
  * - Change the current config file to your own configuration
  * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL (e.g. `https://yourdomain.com`)
  * - Customize open graph image generation in `src/app/opengraph-image/route.tsx`
- * - Change `src/zap/auth/components/provider-icons.tsx` to customize icon for each auth provider
- * - Configure and customize flags in `src/zap/flags/index.ts`
+ * - Change `zap/auth/components/provider-icons.tsx` to customize icon for each auth provider
+ * - Configure and customize flags in `zap/flags/index.ts`
  * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
  */
-
-import path from "node:path";
 
 import type { Metadata } from "next";
 
 import type { ProductMetadata, ZapSettings } from "@/zap.config.types";
-import { PUBLIC_ENV } from "@/zap/env/public";
-import { DEV, VERCEL } from "@/zap/env/runtime";
+
+import { PUBLIC_ENV } from "./zap/env/public";
+import { DEV, VERCEL } from "./zap/env/runtime";
 
 // ─────────────────────────────────────────────────────────────
 // Core App Info
@@ -155,10 +154,10 @@ export const ZAP_CONFIG: ZapSettings = {
   },
   BLOG: {
     BASE_PATH: "/blog",
-    DATA_DIR: path.join(process.cwd(), "src", "zap", "blog", "data"),
+    DATA_DIR: "zap/blog/data",
   },
   LEGAL: {
-    DATA_DIR: path.join(process.cwd(), "src", "zap", "legal", "data"),
+    DATA_DIR: "zap/legal/data",
   },
   MAILS: {
     PREFIX: NAME,

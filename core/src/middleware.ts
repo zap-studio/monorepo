@@ -5,8 +5,9 @@ import { NextResponse } from "next/server";
 
 import { $fetch } from "@/lib/fetch";
 import { ZAP_CONFIG } from "@/zap.config";
-import type { Session } from "@/zap/auth/providers/better-auth/client";
-import { logError } from "@/zap/errors/logger";
+
+import type { Session } from "../zap/auth/providers/better-auth/client";
+import { logError } from "../zap/errors/logger";
 
 const LOGIN_URL = ZAP_CONFIG.AUTH.LOGIN_URL;
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { _BlogPage, _metadata } from "@/zap/blog/pages";
+import { _BlogPage, _metadata } from "../../../../zap/blog/pages";
 
 export const metadata: Metadata = _metadata;
 
