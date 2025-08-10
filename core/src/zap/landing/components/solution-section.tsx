@@ -1,5 +1,7 @@
-import { CommandCard } from "@/zap-old/components/landing/solution/command-card";
-import { SolutionList } from "@/zap-old/components/landing/solution/solution-list";
+import { Check } from "lucide-react";
+
+import { CommandCard } from "@/zap/landing/components/misc";
+import { BENEFITS } from "@/zap/landing/data";
 
 export function SolutionSection() {
   return (
@@ -28,5 +30,21 @@ export function SolutionSection() {
         />
       </div>
     </div>
+  );
+}
+
+function SolutionList() {
+  return (
+    <ul className="grid gap-2">
+      {BENEFITS.map((solution) => (
+        <li
+          className="flex items-center gap-2 text-sm md:text-base"
+          key={solution}
+        >
+          <Check className="text-primary h-4 w-4" />
+          <span className="text-foreground">{solution}</span>
+        </li>
+      ))}
+    </ul>
   );
 }

@@ -1,6 +1,10 @@
-import { Accordion } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { FAQS } from "@/zap/landing/data";
-import { FaqItem } from "@/zap-old/components/landing/faq/faq-item";
 
 export function FaqSection() {
   return (
@@ -27,5 +31,24 @@ export function FaqSection() {
         </Accordion>
       </div>
     </section>
+  );
+}
+
+interface FaqItemProps {
+  question: string;
+  answer: string;
+  index: number;
+}
+
+function FaqItem({ question, answer, index }: FaqItemProps) {
+  return (
+    <AccordionItem value={`item-${index}`}>
+      <AccordionTrigger className="text-left font-medium">
+        {question}
+      </AccordionTrigger>
+      <AccordionContent className="text-muted-foreground">
+        {answer}
+      </AccordionContent>
+    </AccordionItem>
   );
 }
