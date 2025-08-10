@@ -12,7 +12,7 @@ import path from "node:path";
 
 import type { Metadata } from "next";
 
-import type { ZapSettings } from "@/zap.config.types";
+import type { ProductMetadata, ZapSettings } from "@/zap.config.types";
 import { PUBLIC_ENV } from "@/zap/env/public";
 import { DEV, VERCEL } from "@/zap/env/runtime";
 
@@ -34,32 +34,6 @@ export type Provider = "github" | "google";
 // ─────────────────────────────────────────────────────────────
 // Product Metadata
 // ─────────────────────────────────────────────────────────────
-export type RecurringInterval = "month" | "year" | "one-time";
-export type Currency = "usd" | "eur";
-
-export interface ProductMetadata {
-  productId?: string;
-  slug: string;
-  name: string;
-  description: string;
-  price?: number | string;
-  currency: Currency;
-  recurringInterval?: "one-time" | "month" | "year";
-  features: string[];
-  popular?: boolean;
-  contactSales?: boolean;
-  billingOptions?: {
-    monthly?: BillingOption;
-    yearly?: BillingOption;
-  };
-}
-
-interface BillingOption {
-  productId: string;
-  price: number;
-  recurringInterval: "month" | "year";
-}
-
 const FEATURES = [
   "Unlimited projects",
   "Unlimited users",
@@ -78,6 +52,8 @@ const PRODUCT_IDS = {
     yearly: "ad7d7325-3d72-42e5-8164-d4706c513468",
   },
 };
+
+export const YEARLY_DISCOUNT = 20; // in percent
 
 export const PRODUCTS_METADATA: Record<string, ProductMetadata> = {
   free: {

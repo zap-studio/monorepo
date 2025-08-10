@@ -11,8 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { ProductMetadata } from "@/zap.config";
-import { SALES_EMAIL } from "@/zap.config";
+import { SALES_EMAIL, YEARLY_DISCOUNT } from "@/zap.config";
+import { ProductMetadata } from "@/zap.config.types";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import { ZapButton } from "@/zap/components/core";
 import { ClientError } from "@/zap/errors";
@@ -24,8 +24,6 @@ import { getBillingDetails, getSortedProducts } from "@/zap/payments/utils";
 interface BillingCardsProps {
   products: ProductMetadata[];
 }
-
-const yearlyDiscount = 20;
 
 export function BillingCards({ products }: BillingCardsProps) {
   const [isYearly, setIsYearly] = useState(false);
@@ -70,7 +68,7 @@ export function BillingCards({ products }: BillingCardsProps) {
       <PricingToggle
         isYearly={isYearly}
         onToggle={setIsYearly}
-        yearlyDiscount={yearlyDiscount}
+        yearlyDiscount={YEARLY_DISCOUNT}
       />
 
       <div className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

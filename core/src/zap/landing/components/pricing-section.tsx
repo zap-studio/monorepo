@@ -11,12 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PRODUCTS_METADATA } from "@/zap.config";
+import { PRODUCTS_METADATA, YEARLY_DISCOUNT } from "@/zap.config";
 import { ZapButton } from "@/zap/components/core";
 import { PriceDisplay, PricingToggle } from "@/zap/payments/components";
 import { getBillingDetails, getSortedProducts } from "@/zap/payments/utils";
-
-const yearlyDiscount = 20;
 
 export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
@@ -40,7 +38,7 @@ export function PricingSection() {
         <PricingToggle
           isYearly={isYearly}
           onToggle={setIsYearly}
-          yearlyDiscount={yearlyDiscount}
+          yearlyDiscount={YEARLY_DISCOUNT}
         />
       </div>
 

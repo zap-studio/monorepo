@@ -126,3 +126,29 @@ export interface ZapSettings {
     TITLE: string;
   };
 }
+
+export type RecurringInterval = "month" | "year" | "one-time";
+export type Currency = "usd" | "eur";
+
+export interface ProductMetadata {
+  productId?: string;
+  slug: string;
+  name: string;
+  description: string;
+  price?: number | string;
+  currency: Currency;
+  recurringInterval?: "one-time" | "month" | "year";
+  features: string[];
+  popular?: boolean;
+  contactSales?: boolean;
+  billingOptions?: {
+    monthly?: BillingOption;
+    yearly?: BillingOption;
+  };
+}
+
+export interface BillingOption {
+  productId: string;
+  price: number;
+  recurringInterval: "month" | "year";
+}

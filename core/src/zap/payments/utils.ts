@@ -1,8 +1,5 @@
-import {
-  type ProductMetadata,
-  PRODUCTS_METADATA,
-  type RecurringInterval,
-} from "@/zap.config";
+import { PRODUCTS_METADATA } from "@/zap.config";
+import { ProductMetadata, RecurringInterval } from "@/zap.config.types";
 
 export function getProducts() {
   const products = Object.values(PRODUCTS_METADATA);
