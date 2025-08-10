@@ -3,12 +3,12 @@
 import { Check, Clipboard } from "lucide-react";
 import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import {
   AnimatedSpan,
   Terminal,
   TypingAnimation,
-} from "@/components/magicui/terminal";
-import { Button } from "@/components/ui/button";
+} from "@/zap/landing/components/magicui/terminal";
 
 interface CommandCardProps {
   command: string;

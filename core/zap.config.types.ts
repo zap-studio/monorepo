@@ -3,23 +3,23 @@ import type { Product } from "@/zap/payments/providers/polar/utils";
 
 export interface ZapSettings {
   AI: {
-    SYSTEM_PROMPT: string;
-    CHAT?: {
-      MAX_OUTPUT_TOKENS?: number;
-      TEMPERATURE?: number;
-      PRESENCE_PENALTY?: number;
-      FREQUENCY_PENALTY?: number;
-      STOP_SEQUENCES?: string[];
-      MAX_RETRIES?: number;
-    };
     COMPLETION?: {
-      MAX_OUTPUT_TOKENS?: number;
-      TEMPERATURE?: number;
-      PRESENCE_PENALTY?: number;
       FREQUENCY_PENALTY?: number;
-      STOP_SEQUENCES?: string[];
+      MAX_OUTPUT_TOKENS?: number;
       MAX_RETRIES?: number;
+      PRESENCE_PENALTY?: number;
+      STOP_SEQUENCES?: string[];
+      TEMPERATURE?: number;
     };
+    CHAT?: {
+      FREQUENCY_PENALTY?: number;
+      MAX_OUTPUT_TOKENS?: number;
+      MAX_RETRIES?: number;
+      PRESENCE_PENALTY?: number;
+      STOP_SEQUENCES?: string[];
+      TEMPERATURE?: number;
+    };
+    SYSTEM_PROMPT: string;
   };
   ANALYTICS: {
     ENABLE_POSTHOG: boolean;
@@ -27,27 +27,27 @@ export interface ZapSettings {
     ENABLE_VERCEL_SPEED_INSIGHTS: boolean;
   };
   AUTH: {
-    REQUIRE_MAIL_VERIFICATION: boolean;
     ENABLE_SOCIAL_PROVIDER: boolean;
-    MINIMUM_USERNAME_LENGTH: number;
+    LOGIN_URL: string;
+    MAXIMUM_PASSWORD_LENGTH: number;
     MAXIMUM_USERNAME_LENGTH: number;
     MINIMUM_PASSWORD_LENGTH: number;
-    MAXIMUM_PASSWORD_LENGTH: number;
-    LOGIN_URL: string;
-    REDIRECT_URL_AFTER_SIGN_UP: string;
-    REDIRECT_URL_AFTER_SIGN_IN: string;
-    PROVIDERS: Provider[];
+    MINIMUM_USERNAME_LENGTH: number;
     PASSWORD_COMPROMISED_MESSAGE: string;
+    PROVIDERS: Provider[];
     PUBLIC_PATHS: string[];
+    REDIRECT_URL_AFTER_SIGN_IN: string;
+    REDIRECT_URL_AFTER_SIGN_UP: string;
+    REQUIRE_MAIL_VERIFICATION: boolean;
     VERIFIED_EMAIL_PATH: string;
   };
   BLOG: {
     BASE_PATH: string;
   };
   MAIL: {
+    FROM: string;
     PREFIX: string;
     RATE_LIMIT_SECONDS: number;
-    FROM: string;
   };
   NOTIFICATIONS: {
     VAPID_MAIL?: string;
@@ -62,32 +62,32 @@ export interface ZapSettings {
     };
   };
   PWA: {
-    NAME: string;
-    SHORT_NAME: string;
-    DESCRIPTION: string;
-    START_URL: string;
     BACKGROUND_COLOR: string;
-    THEME_COLOR: string;
+    DESCRIPTION: string;
     ICONS: Array<{
       src: string;
       sizes: string;
       type: string;
     }>;
+    NAME: string;
+    SHORT_NAME: string;
+    START_URL: string;
+    THEME_COLOR: string;
   };
   SECURITY: {
     CSP: {
-      DEFAULT_SRC: string[];
-      SCRIPT_SRC: string[];
-      STYLE_SRC: string[];
-      IMG_SRC: string[];
-      FONT_SRC: string[];
-      OBJECT_SRC: string[];
       BASE_URI: string[];
+      BLOCK_ALL_MIXED_CONTENT: boolean;
+      DEFAULT_SRC: string[];
+      FONT_SRC: string[];
       FORM_ACTION: string[];
       FRAME_ANCESTORS: string[];
-      UPGRADE_INSECURE_REQUESTS: boolean;
-      BLOCK_ALL_MIXED_CONTENT: boolean;
       FRAME_SRC: string[];
+      IMG_SRC: string[];
+      OBJECT_SRC: string[];
+      SCRIPT_SRC: string[];
+      STYLE_SRC: string[];
+      UPGRADE_INSECURE_REQUESTS: boolean;
     };
     PERMISSIONS_POLICY: {
       ACCELEROMETER: string[];
@@ -118,9 +118,9 @@ export interface ZapSettings {
     };
   };
   WAITLIST: {
-    ENABLE_WAITLIST_PAGE: boolean;
-    TITLE: string;
     DESCRIPTION: string;
+    ENABLE_WAITLIST_PAGE: boolean;
     SHOW_COUNT: boolean;
+    TITLE: string;
   };
 }

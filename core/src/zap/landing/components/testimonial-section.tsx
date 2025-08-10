@@ -1,7 +1,7 @@
 import Image from "next/image";
 
-import { Marquee } from "@/components/magicui/marquee";
 import { cn } from "@/lib/utils";
+import { Marquee } from "@/zap/landing/components/magicui/marquee";
 import { TESTIMONIALS } from "@/zap/landing/data";
 
 const firstRow = TESTIMONIALS.slice(0, TESTIMONIALS.length / 2);
