@@ -43,14 +43,15 @@ export interface ZapSettings {
   };
   BLOG: {
     BASE_PATH: string;
+    DATA_DIR: string;
   };
-  MAIL: {
+  LEGAL: {
+    DATA_DIR: string;
+  };
+  MAILS: {
     FROM: string;
     PREFIX: string;
     RATE_LIMIT_SECONDS: number;
-  };
-  NOTIFICATIONS: {
-    VAPID_MAIL?: string;
   };
   PAYMENTS: {
     POLAR?: {
@@ -73,6 +74,7 @@ export interface ZapSettings {
     SHORT_NAME: string;
     START_URL: string;
     THEME_COLOR: string;
+    VAPID_MAIL?: string;
   };
   SECURITY: {
     CSP: {

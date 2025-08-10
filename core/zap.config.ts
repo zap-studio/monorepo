@@ -8,6 +8,8 @@
  * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
  */
 
+import path from "node:path";
+
 import type { Metadata } from "next";
 
 import type { ZapSettings } from "@/zap.config.types";
@@ -177,14 +179,15 @@ export const ZAP_CONFIG: ZapSettings = {
   },
   BLOG: {
     BASE_PATH: "/blog",
+    DATA_DIR: path.join(process.cwd(), "src", "zap", "blog", "data"),
   },
-  MAIL: {
+  LEGAL: {
+    DATA_DIR: path.join(process.cwd(), "src", "zap", "legal", "data"),
+  },
+  MAILS: {
     PREFIX: NAME,
     RATE_LIMIT_SECONDS: 60,
     FROM: `${NAME} <${PUBLIC_ENV.ZAP_MAIL}>`,
-  },
-  NOTIFICATIONS: {
-    VAPID_MAIL: PUBLIC_ENV.ZAP_MAIL,
   },
   PAYMENTS: {
     POLAR: {
@@ -211,6 +214,7 @@ export const ZAP_CONFIG: ZapSettings = {
       { src: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
       { src: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
     ],
+    VAPID_MAIL: PUBLIC_ENV.ZAP_MAIL,
   },
   SECURITY: {
     CSP: {
