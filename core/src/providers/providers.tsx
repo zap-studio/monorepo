@@ -1,3 +1,6 @@
+"use client";
+import "client-only";
+
 import { ProgressProvider } from "@bprogress/next/app";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
