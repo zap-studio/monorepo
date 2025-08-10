@@ -1,11 +1,12 @@
 "use client";
 import "client-only";
 
-import { useZapMutation } from "../../api/hooks";
-import { orpc } from "../../api/providers/orpc/client";
-import { PUBLIC_ENV } from "../../env/public";
-import { ClientError, EnvironmentError } from "../../errors";
-import { handleClientError } from "../../errors/client";
+import { useZapMutation } from "@/zap/api/hooks";
+import { orpc } from "@/zap/api/providers/orpc/client";
+import { PUBLIC_ENV } from "@/zap/env/public";
+import { ClientError, EnvironmentError } from "@/zap/errors";
+import { handleClientError } from "@/zap/errors/client";
+
 import { usePushNotificationsStore } from "../stores";
 import { arrayBufferToBase64, urlBase64ToUint8Array } from "../utils";
 

@@ -3,7 +3,7 @@ import "client-only";
 
 import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
 
-import { handleClientError, handleSuccess } from "../../errors/client";
+import { handleClientError, handleSuccess } from "@/zap/errors/client";
 
 interface ZapMutationOptions<TData, TError, TVariables, TContext>
   extends UseMutationOptions<TData, TError, TVariables, TContext> {

@@ -2,7 +2,7 @@ import "server-only";
 
 import { Polar } from "@polar-sh/sdk";
 
-import { SERVER_ENV } from "../../../env/server";
+import { SERVER_ENV } from "@/zap/env/server";
 
 export const polarClient = new Polar({
   accessToken: SERVER_ENV.POLAR_ACCESS_TOKEN,

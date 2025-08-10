@@ -2,10 +2,10 @@ import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
 import Link from "next/link";
 import { cache } from "react";
 
-import { getNumberOfUsersService } from "../../auth/services";
-import { ZapButton } from "../../components/core";
-import { AnimatedSection, AnimatedText } from "../../components/misc";
-import { getAverageRatingService } from "../../feedbacks/services";
+import { getNumberOfUsersService } from "@/zap/auth/services";
+import { ZapButton } from "@/zap/components/core";
+import { AnimatedSection, AnimatedText } from "@/zap/components/misc";
+import { getAverageRatingService } from "@/zap/feedbacks/services";
 
 const getStatsData = cache(async () => {
   const [{ averageRating, totalFeedbacks }, numberOfUsers] = await Promise.all([

@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+
 import { BILLING_FAQ } from "../data";
 
 export function FAQ() {

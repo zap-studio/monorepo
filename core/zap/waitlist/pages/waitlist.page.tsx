@@ -2,12 +2,13 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Badge } from "@/components/ui/badge";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { ZAP_CONFIG } from "@/zap.config";
-import { queryClient } from "../../api/lib/tanstack-query";
-import { orpc } from "../../api/providers/orpc/client";
-import { orpcServer } from "../../api/providers/orpc/server";
-import { AnimatedNumber } from "../../components/misc";
+import { queryClient } from "@/zap/api/lib/tanstack-query";
+import { orpc } from "@/zap/api/providers/orpc/client";
+import { orpcServer } from "@/zap/api/providers/orpc/server";
+import { AnimatedNumber } from "@/zap/components/misc";
+
 import { AnimateWaitlist, WaitlistForm } from "../components";
+import { ZAP_WAITLIST_CONFIG } from "../zap.plugin.config";
 
 export async function _WaitlistPage() {
   const waitlistCountKey = orpc.waitlist.getNumberOfPeopleInWaitlist.key();
@@ -28,7 +29,7 @@ export async function _WaitlistPage() {
 
         <div className="mx-auto max-w-md">
           <AnimateWaitlist>
-            {ZAP_CONFIG.WAITLIST.SHOW_COUNT && (
+            {ZAP_WAITLIST_CONFIG.SHOW_COUNT && (
               <Badge className="mb-4" variant={"secondary"}>
                 <span className="font-semibold">
                   <AnimatedNumber value={waitlistCount} />
@@ -38,10 +39,10 @@ export async function _WaitlistPage() {
             )}
 
             <h1 className="text-2xl font-semibold">
-              {ZAP_CONFIG.WAITLIST.TITLE}
+              {ZAP_WAITLIST_CONFIG.TITLE}
             </h1>
             <p className="text-muted-foreground mb-6 text-base">
-              {ZAP_CONFIG.WAITLIST.DESCRIPTION}
+              {ZAP_WAITLIST_CONFIG.DESCRIPTION}
             </p>
           </AnimateWaitlist>
 

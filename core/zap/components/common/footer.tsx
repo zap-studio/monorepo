@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-import { LatestBlogPosts } from "../../blog/components";
+import { LatestBlogPosts } from "@/zap/blog/components";
+
 import { ThemeSwitcher } from "./theme-switcher";
 
 const LEGAL_LINKS = [

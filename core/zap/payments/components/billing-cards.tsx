@@ -11,15 +11,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SALES_EMAIL, YEARLY_DISCOUNT } from "@/zap.config";
-import { ProductMetadata } from "@/zap.config.types";
+import { SALES_EMAIL } from "@/zap.config";
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
+import { ZapButton } from "@/zap/components/core";
+import { ClientError } from "@/zap/errors";
+import { handleClientError } from "@/zap/errors/client";
+
 import { PriceDisplay, PricingToggle } from ".";
-import { betterAuthClient } from "../../auth/providers/better-auth/client";
-import { ZapButton } from "../../components/core";
-import { ClientError } from "../../errors";
-import { handleClientError } from "../../errors/client";
 import { useActiveSubscriptionSlug } from "../providers/polar/client";
 import { getBillingDetails, getSortedProducts } from "../utils";
+import { ZAP_PAYMENTS_CONFIG } from "../zap.plugin.config";
+import { ProductMetadata } from "../zap.plugin.config.types";
 
 interface BillingCardsProps {
   products: ProductMetadata[];
@@ -68,7 +70,7 @@ export function BillingCards({ products }: BillingCardsProps) {
       <PricingToggle
         isYearly={isYearly}
         onToggle={setIsYearly}
-        yearlyDiscount={YEARLY_DISCOUNT}
+        yearlyDiscount={ZAP_PAYMENTS_CONFIG.YEARLY_DISCOUNT}
       />
 
       <div className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

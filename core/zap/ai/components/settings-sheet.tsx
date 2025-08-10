@@ -28,8 +28,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { ZapButton } from "../../components/core";
-import { handleClientError } from "../../errors/client";
+import { ZapButton } from "@/zap/components/core";
+import { handleClientError } from "@/zap/errors/client";
+
 import { AI_PROVIDERS_OBJECT, DEFAULT_MODEL, ModelsByProvider } from "../data";
 import { useAISettings, useInitAISettings } from "../hooks";
 import { AIFormSchema, AIProviderIdSchema } from "../schemas";

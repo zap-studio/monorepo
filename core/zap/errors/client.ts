@@ -2,9 +2,10 @@ import "client-only";
 
 import { toast } from "sonner";
 
-import { ZAP_CONFIG } from "@/zap.config";
+import { ZAP_AUTH_CONFIG } from "@/zap/auth/zap.plugin.config";
+import { DEV } from "@/zap/env/runtime";
+
 import { ApplicationError, BaseError } from ".";
-import { DEV } from "../env/runtime";
 
 export function handleClientError(
   error: unknown,
@@ -16,7 +17,7 @@ export function handleClientError(
     "code" in error &&
     (error as { code?: string }).code === "PASSWORD_COMPROMISED"
   ) {
-    toast.error(ZAP_CONFIG.AUTH.PASSWORD_COMPROMISED_MESSAGE);
+    toast.error(ZAP_AUTH_CONFIG.PASSWORD_COMPROMISED_MESSAGE);
     return;
   }
 

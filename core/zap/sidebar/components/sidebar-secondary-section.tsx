@@ -12,8 +12,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { SettingsSheet } from "../../ai/components";
-import { FeedbackDialog } from "../../feedbacks/components";
+import { SettingsSheet } from "@/zap/ai/components";
+import { FeedbackDialog } from "@/zap/feedbacks/components";
 
 type SidebarSecondarySectionProps = ComponentPropsWithoutRef<
   typeof SidebarGroup

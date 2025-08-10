@@ -2,8 +2,9 @@ import "server-only";
 
 import { eq, sql } from "drizzle-orm";
 
-import { db } from "../../../db/providers/drizzle";
-import { pushNotifications } from "../../../db/providers/drizzle/schema";
+import { db } from "@/zap/db/providers/drizzle";
+
+import { pushNotifications } from "../schema";
 
 export const getPushNotificationsByUserIdQuery = db.query.pushNotifications
   .findFirst({

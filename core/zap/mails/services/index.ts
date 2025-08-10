@@ -3,20 +3,21 @@ import "server-only";
 import { eq } from "drizzle-orm";
 import React from "react";
 
-import { ZAP_CONFIG } from "@/zap.config";
-import { getLastMailSentAtQuery } from "../../auth/db/queries";
-import { isUserAdminService } from "../../auth/services";
-import { db } from "../../db/providers/drizzle";
-import { user } from "../../db/providers/drizzle/schema";
-import { MailError, NotFoundError, UnauthorizedError } from "../../errors";
+import { getLastMailSentAtQuery } from "@/zap/auth/db/queries";
+import { isUserAdminService } from "@/zap/auth/services";
+import { db } from "@/zap/db/providers/drizzle";
+import { user } from "@/zap/db/providers/drizzle/schema";
+import { MailError, NotFoundError, UnauthorizedError } from "@/zap/errors";
+
 import { resend } from "../providers/resend/server";
 import {
   ForgotPasswordMail,
   MagicLinkMail,
   VerificationMail,
 } from "../templates";
+import { ZAP_MAILS_CONFIG } from "../zap.plugin.config";
 
-const FROM_EMAIL = ZAP_CONFIG.MAILS.FROM;
+const FROM_EMAIL = ZAP_MAILS_CONFIG.FROM;
 
 interface MailServiceParams {
   subject: string;
@@ -57,7 +58,7 @@ export async function canSendMailService({ userId }: { userId: string }) {
 
   const lastSent = new Date(userRecord.lastEmailSentAt);
   const timeElapsed = (Date.now() - lastSent.getTime()) / 1000; // in seconds
-  const rateLimit = ZAP_CONFIG.MAILS.RATE_LIMIT_SECONDS;
+  const rateLimit = ZAP_MAILS_CONFIG.RATE_LIMIT_SECONDS;
 
   return {
     canSend: timeElapsed >= rateLimit,

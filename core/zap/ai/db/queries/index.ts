@@ -2,7 +2,8 @@ import "server-only";
 
 import { and, eq, sql } from "drizzle-orm";
 
-import { db } from "../../../db/providers/drizzle";
+import { db } from "@/zap/db/providers/drizzle";
+
 import { userAISettings } from "../schema";
 
 export const getApiSettingsForUserAndProviderQuery = db

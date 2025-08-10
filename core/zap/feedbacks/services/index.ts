@@ -1,8 +1,9 @@
 import "server-only";
 
-import { db } from "../../db/providers/drizzle";
-import { feedback } from "../../db/providers/drizzle/schema";
+import { db } from "@/zap/db/providers/drizzle";
+
 import { getAverageRatingQuery, getFeedbackForUserQuery } from "../db/queries";
+import { feedback } from "../db/schema";
 import { computeAverage } from "../utils";
 
 export async function getAverageRatingService() {

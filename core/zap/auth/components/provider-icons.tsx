@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import type { Provider } from "@/zap.config";
+import type { Provider } from "../zap.plugin.config";
 
 export const PROVIDER_ICONS: Record<Provider, JSX.Element> = {
   github: (

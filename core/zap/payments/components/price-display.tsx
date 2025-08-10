@@ -1,5 +1,5 @@
-import { RecurringInterval } from "@/zap.config.types";
 import { getPriceDisplay } from "../utils";
+import { RecurringInterval } from "../zap.plugin.config.types";
 
 interface PriceDisplayProps {
   price: number | string;

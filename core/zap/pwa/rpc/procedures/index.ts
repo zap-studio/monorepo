@@ -1,7 +1,8 @@
 import "server-only";
 
 import { authMiddleware, base } from "@/rpc/middlewares";
-import { withRpcHandler } from "../../../errors/handlers";
+import { withRpcHandler } from "@/zap/errors/handlers";
+
 import { InputSubscribeUserSchema } from "../../schemas";
 import {
   subscribeUserToPushNotificationsService,

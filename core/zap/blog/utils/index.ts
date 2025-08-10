@@ -6,11 +6,17 @@ import path from "node:path";
 import { format, formatDistanceToNow, parseISO } from "date-fns";
 import matter from "gray-matter";
 
-import { BASE_URL, ZAP_CONFIG, ZAP_DEFAULT_METADATA } from "@/zap.config";
-import { ApplicationError, FileOperationError, NotFoundError } from "../errors";
-import { postMetadataSchema } from "./schemas";
+import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
+import {
+  ApplicationError,
+  FileOperationError,
+  NotFoundError,
+} from "@/zap/errors";
 
-const BLOG_DIR = ZAP_CONFIG.BLOG.DATA_DIR;
+import { postMetadataSchema } from "../schemas";
+import { ZAP_BLOG_CONFIG } from "../zap.plugin.config";
+
+const BLOG_DIR = ZAP_BLOG_CONFIG.DATA_DIR;
 
 function parseFrontmatter(fileContent: string) {
   try {

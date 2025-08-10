@@ -4,11 +4,11 @@ import "client-only";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-import { useZapImmutable, useZapMutation, useZapQuery } from "../../api/hooks";
-import { orpc } from "../../api/providers/orpc/client";
+import { useZapMutation, useZapQuery } from "@/zap/api/hooks";
+import { orpc } from "@/zap/api/providers/orpc/client";
 
 export function useAverageRating() {
-  return useZapImmutable(orpc.feedbacks.getAverageRating.queryOptions());
+  return useZapQuery(orpc.feedbacks.getAverageRating.queryOptions());
 }
 
 export function useUserFeedback() {

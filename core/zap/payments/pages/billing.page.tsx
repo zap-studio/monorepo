@@ -1,8 +1,9 @@
 import Link from "next/link";
 
 import { SUPPORT_EMAIL } from "@/zap.config";
-import { getAuthServerDataOrRedirectToLoginService } from "../../auth/services";
-import { ZapButton } from "../../components/core";
+import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
+import { ZapButton } from "@/zap/components/core";
+
 import { BillingCards, FAQ } from "../components";
 import { getProducts } from "../utils";
 

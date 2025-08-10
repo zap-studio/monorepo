@@ -7,13 +7,15 @@ import { toast } from "sonner";
 import type { z } from "zod";
 
 import { useCooldown } from "@/hooks/utils/use-cooldown";
-import { ZAP_CONFIG } from "@/zap.config";
-import { useZapQuery } from "../../api/hooks";
-import { orpc } from "../../api/providers/orpc/client";
-import { AuthenticationError } from "../../errors";
-import { handleClientError } from "../../errors/client";
+import { useZapQuery } from "@/zap/api/hooks";
+import { orpc } from "@/zap/api/providers/orpc/client";
+import { AuthenticationError } from "@/zap/errors";
+import { handleClientError } from "@/zap/errors/client";
+import { ZAP_MAILS_CONFIG } from "@/zap/mails/zap.plugin.config";
+
 import { betterAuthClient } from "../providers/better-auth/client";
 import type { LoginFormSchema, RegisterFormSchema } from "../schemas";
+import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 
 export function useNumberOfUsers() {
   return useZapQuery(orpc.auth.getNumberOfUsers.queryOptions());
@@ -31,9 +33,9 @@ export function useAuth(callbackURL?: string) {
     try {
       await betterAuthClient.sendVerificationEmail({
         email,
-        callbackURL: ZAP_CONFIG.AUTH.VERIFIED_EMAIL_PATH,
+        callbackURL: ZAP_AUTH_CONFIG.VERIFIED_EMAIL_PATH,
       });
-      startCooldown(ZAP_CONFIG.MAILS.RATE_LIMIT_SECONDS);
+      startCooldown(ZAP_MAILS_CONFIG.RATE_LIMIT_SECONDS);
     } catch (error) {
       handleClientError(error);
     }
@@ -55,7 +57,7 @@ export function useAuth(callbackURL?: string) {
       }
 
       if (
-        ZAP_CONFIG.AUTH.REQUIRE_MAIL_VERIFICATION &&
+        ZAP_AUTH_CONFIG.REQUIRE_MAIL_VERIFICATION &&
         !response.data?.user?.emailVerified
       ) {
         await sendVerificationMail(email);
@@ -65,7 +67,7 @@ export function useAuth(callbackURL?: string) {
       }
 
       toast.success("Login successful!");
-      router.push(callbackURL || ZAP_CONFIG.AUTH.REDIRECT_URL_AFTER_SIGN_IN);
+      router.push(callbackURL || ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_IN);
     } catch (error) {
       handleClientError(error);
     }
@@ -91,7 +93,7 @@ export function useAuth(callbackURL?: string) {
         );
       }
 
-      if (ZAP_CONFIG.AUTH.REQUIRE_MAIL_VERIFICATION) {
+      if (ZAP_AUTH_CONFIG.REQUIRE_MAIL_VERIFICATION) {
         await sendVerificationMail(email);
         toast.success(
           "Registration successful! Please check your email to verify your account.",
@@ -100,7 +102,7 @@ export function useAuth(callbackURL?: string) {
       }
 
       toast.success("Registration successful!");
-      router.push(callbackURL || ZAP_CONFIG.AUTH.REDIRECT_URL_AFTER_SIGN_UP);
+      router.push(callbackURL || ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_UP);
     } catch (error) {
       handleClientError(error);
     }

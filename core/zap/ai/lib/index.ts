@@ -1,7 +1,8 @@
 import { createMistral } from "@ai-sdk/mistral";
 import { createOpenAI } from "@ai-sdk/openai";
 
-import { BadRequestError } from "../../errors";
+import { BadRequestError } from "@/zap/errors";
+
 import { AI_PROVIDERS_OBJECT } from "../data";
 import { AIProviderId, ModelName } from "../types";
 

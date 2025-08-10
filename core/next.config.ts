@@ -2,10 +2,10 @@ import createBundleAnalyzer from "@next/bundle-analyzer";
 import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
 
-import { BASE_URL, ZAP_CONFIG } from "./zap.config";
+import { BASE_URL, ZAP_CORE_CONFIG } from "./zap.config";
 
 function buildCSPHeader(): string {
-  const { CSP } = ZAP_CONFIG.SECURITY;
+  const { CSP } = ZAP_CORE_CONFIG.SECURITY;
 
   const directives = [
     `default-src ${CSP.DEFAULT_SRC.join(" ")}`,
@@ -32,7 +32,7 @@ function buildCSPHeader(): string {
 }
 
 function buildPermissionsPolicy(): string {
-  return Object.entries(ZAP_CONFIG.SECURITY.PERMISSIONS_POLICY)
+  return Object.entries(ZAP_CORE_CONFIG.SECURITY.PERMISSIONS_POLICY)
     .map(([feature, values]) => {
       const policyFeature = feature.toLowerCase().replace(/_/g, "-");
       if (values.length === 0) {

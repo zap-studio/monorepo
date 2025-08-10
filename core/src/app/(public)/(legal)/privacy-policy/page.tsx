@@ -1,5 +1,5 @@
-import { _LegalPage } from "../../../../../zap/legal/pages";
-import { generateLegalMetadata } from "../../../../../zap/legal/utils";
+import { _LegalPage } from "@/zap/legal/pages";
+import { generateLegalMetadata } from "@/zap/legal/utils";
 
 const SLUG = "privacy-policy";
 

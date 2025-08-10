@@ -11,9 +11,10 @@ import {
 } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-import { PROD } from "../../../env/runtime";
-import { SERVER_ENV } from "../../../env/server";
-import { EnvironmentError } from "../../../errors";
+import { PROD } from "@/zap/env/runtime";
+import { SERVER_ENV } from "@/zap/env/server";
+import { EnvironmentError } from "@/zap/errors";
+
 import * as schema from "./schema";
 
 type Database = NodePgDatabase<typeof schema> | NeonHttpDatabase<typeof schema>;

@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { getProducts } from "../../payments/utils";
+import { getProducts } from "@/zap/payments/utils";
+
 import { AppSidebar, SidebarHeader } from "../components";
 
 export interface _AppLayoutProps {

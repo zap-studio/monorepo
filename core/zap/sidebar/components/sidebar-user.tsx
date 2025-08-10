@@ -29,11 +29,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import type { ProductMetadata } from "@/zap.config.types";
-
-import { betterAuthClient } from "../../auth/providers/better-auth/client";
-import { handleClientError } from "../../errors/client";
-import { useActiveSubscriptionProduct } from "../../payments/providers/polar/client";
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
+import { handleClientError } from "@/zap/errors/client";
+import { useActiveSubscriptionProduct } from "@/zap/payments/providers/polar/client";
+import { ProductMetadata } from "@/zap/payments/zap.plugin.config.types";
 
 interface MenuItem {
   label: string;

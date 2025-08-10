@@ -1,7 +1,8 @@
 import Link from "next/link";
 
-import { ZAP_CONFIG } from "@/zap.config";
-import { ZapButton } from "../../components/core";
+import { ZapButton } from "@/zap/components/core";
+
+import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 
 export function _MailVerifiedPage() {
   return (
@@ -16,7 +17,7 @@ export function _MailVerifiedPage() {
           </p>
         </div>
         <ZapButton asChild variant={"ghost"}>
-          <Link href={ZAP_CONFIG.AUTH.LOGIN_URL}>Go to Login</Link>
+          <Link href={ZAP_AUTH_CONFIG.LOGIN_URL}>Go to Login</Link>
         </ZapButton>
       </div>
     </div>

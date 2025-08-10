@@ -3,7 +3,7 @@ import {
   _BlogSlugPageProps,
   _generateMetadata,
   _generateStaticParams,
-} from "../../../../../zap/blog/pages";
+} from "@/zap/blog/pages";
 
 export async function generateMetadata({
   params,

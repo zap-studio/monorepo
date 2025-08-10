@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import { ForgotPasswordForm } from "../components";
 
 export function _ForgotPasswordPage() {

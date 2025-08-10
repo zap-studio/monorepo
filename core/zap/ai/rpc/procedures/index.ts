@@ -4,7 +4,8 @@ import { type } from "@orpc/server";
 import type { UIMessage } from "ai";
 
 import { authMiddleware, base } from "@/rpc/middlewares";
-import { withRpcHandler } from "../../../errors/handlers";
+import { withRpcHandler } from "@/zap/errors/handlers";
+
 import {
   InputDeleteAPIKeySchema,
   InputGetAPIKeySchema,

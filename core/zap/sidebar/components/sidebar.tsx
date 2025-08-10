@@ -14,15 +14,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import type { ProductMetadata } from "@/zap.config.types";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import { useActiveSubscriptionProduct } from "@/zap/payments/providers/polar/client";
+import { ProductMetadata } from "@/zap/payments/zap.plugin.config.types";
+
 import {
   SidebarMainSection,
   SidebarSecondarySection,
   SidebarUser,
-} from "@/zap/sidebar/components";
-import { MAIN_NAV_ITEMS } from "@/zap/sidebar/data";
+} from "../components";
+import { MAIN_NAV_ITEMS } from "../data";
 
 interface AppSidebarProps {
   props?: React.ComponentProps<typeof Sidebar>;

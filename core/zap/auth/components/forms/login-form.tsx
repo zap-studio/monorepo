@@ -15,7 +15,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ZapButton } from "../../../components/core";
+import { ZapButton } from "@/zap/components/core";
+
 import { useAuth } from "../../hooks";
 import { LoginFormSchema } from "../../schemas";
 

@@ -16,9 +16,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ZapButton } from "../../../components/core";
-import { AuthenticationError } from "../../../errors";
-import { handleClientError } from "../../../errors/client";
+import { ZapButton } from "@/zap/components/core";
+import { AuthenticationError } from "@/zap/errors";
+import { handleClientError } from "@/zap/errors/client";
+
 import { betterAuthClient } from "../../providers/better-auth/client";
 
 const formSchema = z

@@ -11,16 +11,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PRODUCTS_METADATA, YEARLY_DISCOUNT } from "@/zap.config";
-import { ZapButton } from "../../components/core";
-import { PriceDisplay, PricingToggle } from "../../payments/components";
-import { getBillingDetails, getSortedProducts } from "../../payments/utils";
+import { ZapButton } from "@/zap/components/core";
+import { PriceDisplay, PricingToggle } from "@/zap/payments/components";
+import { getBillingDetails, getSortedProducts } from "@/zap/payments/utils";
+import { ZAP_PAYMENTS_CONFIG } from "@/zap/payments/zap.plugin.config";
 
 export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
 
   const sortedProducts = getSortedProducts(
-    Object.values(PRODUCTS_METADATA),
+    Object.values(ZAP_PAYMENTS_CONFIG.PRODUCTS_METADATA),
     isYearly,
   );
 
@@ -38,7 +38,7 @@ export function PricingSection() {
         <PricingToggle
           isYearly={isYearly}
           onToggle={setIsYearly}
-          yearlyDiscount={YEARLY_DISCOUNT}
+          yearlyDiscount={ZAP_PAYMENTS_CONFIG.YEARLY_DISCOUNT}
         />
       </div>
 

@@ -10,22 +10,18 @@ import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { useEffect } from "react";
 
 import { ThemeProvider } from "@/providers/theme.provider";
-
-import { SuspendedPostHogPageView } from "../../zap/analytics/components";
-import { queryClient } from "../../zap/api/lib/tanstack-query";
-import { PUBLIC_ENV } from "../../zap/env/public";
+import { SuspendedPostHogPageView } from "@/zap/analytics/components";
+import { ZAP_ANALYTICS_CONFIG } from "@/zap/analytics/zap.plugin.config";
+import { queryClient } from "@/zap/api/lib/tanstack-query";
+import { PUBLIC_ENV } from "@/zap/env/public";
 
 interface ProvidersProps {
   children: React.ReactNode;
-  ENABLE_POSTHOG: boolean;
 }
 
-export default function Providers({
-  children,
-  ENABLE_POSTHOG,
-}: ProvidersProps) {
+export function Providers({ children }: ProvidersProps) {
   useEffect(() => {
-    if (!ENABLE_POSTHOG) {
+    if (!ZAP_ANALYTICS_CONFIG.ENABLE_POSTHOG) {
       return;
     }
 
@@ -34,7 +30,7 @@ export default function Providers({
       capture_pageview: false, // Disable automatic pageview tracking
       capture_pageleave: true, // Enable automatic pageleave tracking
     });
-  }, [ENABLE_POSTHOG]);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -51,13 +47,13 @@ export default function Providers({
             options={{ showSpinner: false }}
             shallowRouting
           >
-            {ENABLE_POSTHOG && (
+            {ZAP_ANALYTICS_CONFIG.ENABLE_POSTHOG && (
               <PHProvider client={posthog}>
                 <SuspendedPostHogPageView />
                 {children}
               </PHProvider>
             )}
-            {!ENABLE_POSTHOG && children}
+            {!ZAP_ANALYTICS_CONFIG.ENABLE_POSTHOG && children}
           </ProgressProvider>
         </ThemeProvider>
       </NuqsAdapter>

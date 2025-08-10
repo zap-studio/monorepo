@@ -1,16 +1,21 @@
 import type { MetadataRoute } from "next";
 
-import { ZAP_CONFIG } from "@/zap.config";
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  try {
+    const { ZAP_PWA_CONFIG } = await import("@/zap/pwa/zap.plugin.config");
 
-export default function manifest(): MetadataRoute.Manifest {
-  return {
-    name: ZAP_CONFIG.PWA.NAME,
-    short_name: ZAP_CONFIG.PWA.SHORT_NAME,
-    description: ZAP_CONFIG.PWA.DESCRIPTION,
-    start_url: ZAP_CONFIG.PWA.START_URL,
-    display: "standalone",
-    background_color: ZAP_CONFIG.PWA.BACKGROUND_COLOR,
-    theme_color: ZAP_CONFIG.PWA.THEME_COLOR,
-    icons: ZAP_CONFIG.PWA.ICONS,
-  };
+    return {
+      name: ZAP_PWA_CONFIG.NAME,
+      short_name: ZAP_PWA_CONFIG.SHORT_NAME,
+      description: ZAP_PWA_CONFIG.DESCRIPTION,
+      start_url: ZAP_PWA_CONFIG.START_URL,
+      display: "standalone",
+      background_color: ZAP_PWA_CONFIG.BACKGROUND_COLOR,
+      theme_color: ZAP_PWA_CONFIG.THEME_COLOR,
+      icons: ZAP_PWA_CONFIG.ICONS,
+    };
+  } catch {
+    // Fail silently, it just means PWA plugin is not installed
+    return {};
+  }
 }

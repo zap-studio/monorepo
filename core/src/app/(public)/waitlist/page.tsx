@@ -1,4 +1,4 @@
-import { _WaitlistPage } from "../../../../zap/waitlist/pages";
+import { _WaitlistPage } from "@/zap/waitlist/pages";
 
 export const revalidate = 60;
 

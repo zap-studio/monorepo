@@ -1,6 +1,6 @@
 import type * as webpush from "web-push";
 
-import { ApplicationError } from "../errors";
+import { ApplicationError } from "@/zap/errors";
 
 export function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);

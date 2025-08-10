@@ -8,11 +8,11 @@ import { CompletionRequestOptions } from "ai";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { useZapMutation } from "../../api/hooks/use-zap-mutation";
-import { useZapQuery } from "../../api/hooks/use-zap-query";
-import { orpc, orpcClient } from "../../api/providers/orpc/client";
-import { ApplicationError } from "../../errors";
-import { handleClientError } from "../../errors/client";
+import { useZapMutation, useZapQuery } from "@/zap/api/hooks";
+import { orpc, orpcClient } from "@/zap/api/providers/orpc/client";
+import { ApplicationError } from "@/zap/errors";
+import { handleClientError } from "@/zap/errors/client";
+
 import { DEFAULT_MODEL } from "../data";
 import type { AIFormValues, AIProviderId, ModelName } from "../types";
 

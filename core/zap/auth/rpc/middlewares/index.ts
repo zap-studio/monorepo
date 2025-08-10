@@ -4,6 +4,7 @@ import { ORPCError } from "@orpc/client";
 import { headers } from "next/headers";
 
 import { base } from "@/rpc/middlewares/base.middleware";
+
 import type { Session } from "../../providers/better-auth/client";
 import { betterAuthServer } from "../../providers/better-auth/server";
 

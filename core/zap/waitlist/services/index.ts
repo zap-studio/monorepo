@@ -1,9 +1,10 @@
 import "server-only";
 
-import { db } from "../../db/providers/drizzle";
-import { waitlist } from "../../db/providers/drizzle/schema";
-import { BadRequestError, NotFoundError } from "../../errors";
+import { db } from "@/zap/db/providers/drizzle";
+import { BadRequestError, NotFoundError } from "@/zap/errors";
+
 import { getNumberOfPeopleInWaitlistQuery } from "../db/queries";
+import { waitlist } from "../db/schema";
 
 export async function getNumberOfPeopleInWaitlistService() {
   const result = await getNumberOfPeopleInWaitlistQuery.execute();

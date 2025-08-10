@@ -4,6 +4,7 @@ import { Check, Clipboard } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+
 import { AnimatedSpan, Terminal, TypingAnimation } from "../magicui/terminal";
 
 interface CommandCardProps {

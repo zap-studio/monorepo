@@ -1,9 +1,10 @@
 import "client-only";
 
-import { ProductMetadata } from "@/zap.config.types";
-import { useZapQuery } from "../../../api/hooks/use-zap-query";
-import { betterAuthClient } from "../../../auth/providers/better-auth/client";
+import { useZapQuery } from "@/zap/api/hooks/use-zap-query";
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
+
 import { getProduct } from "../../utils";
+import { ProductMetadata } from "../../zap.plugin.config.types";
 
 async function fetchCustomerState() {
   const state = await betterAuthClient.customer.state();

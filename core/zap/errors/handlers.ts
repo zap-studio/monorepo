@@ -1,8 +1,9 @@
 import "server-only";
 
+import { isAuthenticatedService } from "@/zap/auth/services";
+import { DEV } from "@/zap/env/runtime";
+
 import { UnauthorizedError } from ".";
-import { isAuthenticatedService } from "../auth/services";
-import { DEV } from "../env/runtime";
 import {
   generateCorrelationId,
   handleError,

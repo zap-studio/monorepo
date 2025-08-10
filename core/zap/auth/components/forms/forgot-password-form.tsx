@@ -16,9 +16,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useCooldown } from "@/hooks/utils/use-cooldown";
-import { ZAP_CONFIG } from "@/zap.config";
-import { ZapButton } from "../../../components/core";
-import { handleClientError } from "../../../errors/client";
+import { ZapButton } from "@/zap/components/core";
+import { handleClientError } from "@/zap/errors/client";
+import { ZAP_MAILS_CONFIG } from "@/zap/mails/zap.plugin.config";
+
 import { betterAuthClient } from "../../providers/better-auth/client";
 
 const formSchema = z.object({
@@ -48,7 +49,7 @@ export function ForgotPasswordForm() {
       });
 
       toast.success("Check your email for the reset link!");
-      startCooldown(ZAP_CONFIG.MAILS.RATE_LIMIT_SECONDS);
+      startCooldown(ZAP_MAILS_CONFIG.RATE_LIMIT_SECONDS);
     } catch (error) {
       handleClientError(error);
     } finally {

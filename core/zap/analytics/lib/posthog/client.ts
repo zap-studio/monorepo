@@ -1,6 +1,6 @@
 import { PostHog } from "posthog-node";
 
-import { PUBLIC_ENV } from "../../../env/public";
+import { PUBLIC_ENV } from "@/zap/env/public";
 
 export default function PostHogClient() {
   const posthogClient = new PostHog(PUBLIC_ENV.NEXT_PUBLIC_POSTHOG_KEY || "", {

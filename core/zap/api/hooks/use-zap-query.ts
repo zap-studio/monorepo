@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
 
-import { handleClientError, handleSuccess } from "../../errors/client";
+import { handleClientError, handleSuccess } from "@/zap/errors/client";
 
 export interface ZapQueryOptions<
   TQueryFnData,

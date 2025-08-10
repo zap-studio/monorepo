@@ -1,4 +1,5 @@
-import { Footer, Header } from "../../components/common";
+import { Footer, Header } from "@/zap/components/common";
+
 import {
   FaqSection,
   FeaturesSection,

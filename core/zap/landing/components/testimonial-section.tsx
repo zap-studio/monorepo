@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
+
 import { TESTIMONIALS } from "../data";
 import { Marquee } from "./magicui/marquee";
 

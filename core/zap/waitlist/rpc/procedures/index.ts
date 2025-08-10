@@ -1,7 +1,8 @@
 import "server-only";
 
 import { base } from "@/rpc/middlewares";
-import { withRpcHandler } from "../../../errors/handlers";
+import { withRpcHandler } from "@/zap/errors/handlers";
+
 import { WaitlistSchema } from "../../schemas";
 import {
   getNumberOfPeopleInWaitlistService,

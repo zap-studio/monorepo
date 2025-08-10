@@ -1,81 +1,14 @@
-import type { Provider } from "@/zap.config";
-import type { Product } from "@/zap/payments/providers/polar/utils";
-
-export interface ZapSettings {
-  AI: {
-    COMPLETION?: {
-      FREQUENCY_PENALTY?: number;
-      MAX_OUTPUT_TOKENS?: number;
-      MAX_RETRIES?: number;
-      PRESENCE_PENALTY?: number;
-      STOP_SEQUENCES?: string[];
-      TEMPERATURE?: number;
-    };
-    CHAT?: {
-      FREQUENCY_PENALTY?: number;
-      MAX_OUTPUT_TOKENS?: number;
-      MAX_RETRIES?: number;
-      PRESENCE_PENALTY?: number;
-      STOP_SEQUENCES?: string[];
-      TEMPERATURE?: number;
-    };
-    SYSTEM_PROMPT: string;
-  };
-  ANALYTICS: {
-    ENABLE_POSTHOG: boolean;
-    ENABLE_VERCEL_ANALYTICS: boolean;
-    ENABLE_VERCEL_SPEED_INSIGHTS: boolean;
-  };
-  AUTH: {
-    ENABLE_SOCIAL_PROVIDER: boolean;
-    LOGIN_URL: string;
-    MAXIMUM_PASSWORD_LENGTH: number;
-    MAXIMUM_USERNAME_LENGTH: number;
-    MINIMUM_PASSWORD_LENGTH: number;
-    MINIMUM_USERNAME_LENGTH: number;
-    PASSWORD_COMPROMISED_MESSAGE: string;
-    PROVIDERS: Provider[];
-    PUBLIC_PATHS: string[];
-    REDIRECT_URL_AFTER_SIGN_IN: string;
-    REDIRECT_URL_AFTER_SIGN_UP: string;
-    REQUIRE_MAIL_VERIFICATION: boolean;
-    VERIFIED_EMAIL_PATH: string;
-  };
-  BLOG: {
-    BASE_PATH: string;
-    DATA_DIR: string;
-  };
-  LEGAL: {
-    DATA_DIR: string;
-  };
-  MAILS: {
-    FROM: string;
-    PREFIX: string;
-    RATE_LIMIT_SECONDS: number;
-  };
-  PAYMENTS: {
-    POLAR?: {
-      AUTHENTICATED_USERS_ONLY: boolean;
-      CREATE_CUSTOMER_ON_SIGNUP: boolean;
-      ENVIRONMENT: "sandbox" | "production" | undefined;
-      PRODUCTS?: Product[];
-      SUCCESS_URL?: string;
-    };
-  };
-  PWA: {
-    BACKGROUND_COLOR: string;
-    DESCRIPTION: string;
-    ICONS: Array<{
-      src: string;
-      sizes: string;
-      type: string;
-    }>;
+export interface ZapCoreSettings {
+  // Core application information
+  APP: {
     NAME: string;
-    SHORT_NAME: string;
-    START_URL: string;
-    THEME_COLOR: string;
-    VAPID_MAIL?: string;
+    APP_NAME: string;
+    DESCRIPTION: string;
+    BASE_URL: string;
+    SALES_EMAIL: string;
+    SUPPORT_EMAIL: string;
   };
+  // Security settings that affect the whole app
   SECURITY: {
     CSP: {
       BASE_URI: string[];
@@ -119,36 +52,12 @@ export interface ZapSettings {
       XR_SPATIAL_TRACKING: string[];
     };
   };
-  WAITLIST: {
-    DESCRIPTION: string;
-    ENABLE_WAITLIST_PAGE: boolean;
-    SHOW_COUNT: boolean;
-    TITLE: string;
-  };
 }
 
-export type RecurringInterval = "month" | "year" | "one-time";
-export type Currency = "usd" | "eur";
-
-export interface ProductMetadata {
-  productId?: string;
-  slug: string;
-  name: string;
-  description: string;
-  price?: number | string;
-  currency: Currency;
-  recurringInterval?: "one-time" | "month" | "year";
-  features: string[];
-  popular?: boolean;
-  contactSales?: boolean;
-  billingOptions?: {
-    monthly?: BillingOption;
-    yearly?: BillingOption;
-  };
+export interface ZapPluginConfig {
+  [key: string]: unknown;
 }
 
-export interface BillingOption {
-  productId: string;
-  price: number;
-  recurringInterval: "month" | "year";
+export interface ZapConfig extends ZapCoreSettings {
+  plugins?: Record<string, ZapPluginConfig>;
 }

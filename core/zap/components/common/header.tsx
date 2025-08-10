@@ -8,7 +8,8 @@ import { useState } from "react";
 
 import { useBodyScrollLock } from "@/hooks/utils/use-body-scroll-lock";
 import { cn } from "@/lib/utils";
-import { betterAuthClient } from "../../auth/providers/better-auth/client";
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
+
 import { ZapButton } from "../core";
 
 export const NAV_LINKS = [

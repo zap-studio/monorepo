@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { ZapButton } from "../../components/core";
+import { ZapButton } from "@/zap/components/core";
+
 import { useWaitlist } from "../hooks";
 
 export function WaitlistForm() {

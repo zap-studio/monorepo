@@ -3,13 +3,14 @@ import "server-only";
 import { eq } from "drizzle-orm";
 import type webpush from "web-push";
 
-import { ZAP_CONFIG } from "@/zap.config";
-import { getUserIdService } from "../../auth/services";
-import { db } from "../../db/providers/drizzle";
-import { pushNotifications } from "../../db/providers/drizzle/schema";
-import { PUBLIC_ENV } from "../../env/public";
-import { SERVER_ENV } from "../../env/server";
-import { PushNotificationError } from "../../errors";
+import { getUserIdService } from "@/zap/auth/services";
+import { db } from "@/zap/db/providers/drizzle";
+import { PUBLIC_ENV } from "@/zap/env/public";
+import { SERVER_ENV } from "@/zap/env/server";
+import { PushNotificationError } from "@/zap/errors";
+
+import { pushNotifications } from "../db/schema";
+import { ZAP_PWA_CONFIG } from "../zap.plugin.config";
 
 let webpushInstance: typeof import("web-push") | null = null;
 
@@ -22,7 +23,7 @@ export async function getWebPushService() {
     !(
       PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY &&
       SERVER_ENV.VAPID_PRIVATE_KEY &&
-      ZAP_CONFIG.PWA.VAPID_MAIL
+      ZAP_PWA_CONFIG.VAPID_MAIL
     )
   ) {
     throw new PushNotificationError(
@@ -33,7 +34,7 @@ export async function getWebPushService() {
   const webpush = await import("web-push");
 
   webpush.default.setVapidDetails(
-    `mailto:${ZAP_CONFIG.PWA.VAPID_MAIL}`,
+    `mailto:${ZAP_PWA_CONFIG.VAPID_MAIL}`,
     PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
     SERVER_ENV.VAPID_PRIVATE_KEY,
   );

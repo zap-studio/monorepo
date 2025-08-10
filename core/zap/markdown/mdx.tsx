@@ -1,7 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
+import { MDXRemote } from "next-mdx-remote/rsc";
 import Image, { type ImageProps } from "next/image";
 import Link, { type LinkProps } from "next/link";
-import { MDXRemote } from "next-mdx-remote/rsc";
 import React from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";

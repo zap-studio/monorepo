@@ -2,10 +2,11 @@ import "server-only";
 
 import { headers } from "next/headers";
 
-import { db } from "../../db/providers/drizzle";
-import { user } from "../../db/providers/drizzle/schema";
-import { AuthenticationError, NotFoundError } from "../../errors";
+import { db } from "@/zap/db/providers/drizzle";
+import { AuthenticationError, NotFoundError } from "@/zap/errors";
+
 import { getUserIdFromMailQuery } from "../db/queries";
+import { user } from "../db/schema";
 import { betterAuthServer } from "../providers/better-auth/server";
 import { redirectToLogin } from "../utils";
 

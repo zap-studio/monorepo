@@ -13,26 +13,29 @@ import {
 } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 
-import { ZAP_CONFIG } from "@/zap.config";
-import { db } from "../../../db/providers/drizzle";
-import { SERVER_ENV } from "../../../env/server";
-import { MailError } from "../../../errors";
+import { db } from "@/zap/db/providers/drizzle";
+import { SERVER_ENV } from "@/zap/env/server";
+import { MailError } from "@/zap/errors";
 import {
   canSendMailService,
   sendForgotPasswordMailService,
   sendVerificationMailService,
   updateLastTimestampMailSentService,
-} from "../../../mails/services";
-import { polarClient } from "../../../payments/providers/polar/server";
+} from "@/zap/mails/services";
+import { ZAP_MAILS_CONFIG } from "@/zap/mails/zap.plugin.config";
+import { polarClient } from "@/zap/payments/providers/polar/server";
+import { ZAP_PAYMENTS_CONFIG } from "@/zap/payments/zap.plugin.config";
+
+import { ZAP_AUTH_CONFIG } from "../../zap.plugin.config";
 
 export const betterAuthServer = betterAuth({
   appName: "Zap.ts",
   database: drizzleAdapter(db, { provider: "pg" }),
   emailAndPassword: {
     enabled: true,
-    minPasswordLength: ZAP_CONFIG.AUTH.MINIMUM_PASSWORD_LENGTH,
-    maxPasswordLength: ZAP_CONFIG.AUTH.MAXIMUM_PASSWORD_LENGTH,
-    requireEmailVerification: ZAP_CONFIG.AUTH.REQUIRE_MAIL_VERIFICATION,
+    minPasswordLength: ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH,
+    maxPasswordLength: ZAP_AUTH_CONFIG.MAXIMUM_PASSWORD_LENGTH,
+    requireEmailVerification: ZAP_AUTH_CONFIG.REQUIRE_MAIL_VERIFICATION,
     sendResetPassword: async ({ user, url }) => {
       const { canSend, timeLeft } = await canSendMailService({
         userId: user.id,
@@ -46,7 +49,7 @@ export const betterAuthServer = betterAuth({
 
       await sendForgotPasswordMailService({
         recipients: [user.email],
-        subject: `${ZAP_CONFIG.MAILS.PREFIX} - Reset your password`,
+        subject: `${ZAP_MAILS_CONFIG.PREFIX} - Reset your password`,
         url,
       });
 
@@ -72,14 +75,14 @@ export const betterAuthServer = betterAuth({
       const verificationUrl = new URL(url);
       verificationUrl.searchParams.set(
         "callbackURL",
-        ZAP_CONFIG.AUTH.VERIFIED_EMAIL_PATH,
+        ZAP_AUTH_CONFIG.VERIFIED_EMAIL_PATH,
       );
 
       const modifiedUrl = verificationUrl.toString();
 
       await sendVerificationMailService({
         recipients: [user.email],
-        subject: `${ZAP_CONFIG.MAILS.PREFIX} - Verify your email`,
+        subject: `${ZAP_MAILS_CONFIG.PREFIX} - Verify your email`,
         url: modifiedUrl,
       });
 
@@ -103,21 +106,21 @@ export const betterAuthServer = betterAuth({
     polar({
       client: polarClient,
       createCustomerOnSignUp:
-        ZAP_CONFIG.PAYMENTS.POLAR?.CREATE_CUSTOMER_ON_SIGNUP,
+        ZAP_PAYMENTS_CONFIG.POLAR?.CREATE_CUSTOMER_ON_SIGNUP,
       use: [
         checkout({
-          products: ZAP_CONFIG.PAYMENTS.POLAR?.PRODUCTS,
-          successUrl: `${ZAP_CONFIG.PAYMENTS.POLAR?.SUCCESS_URL}?checkout_id={CHECKOUT_ID}`,
+          products: ZAP_PAYMENTS_CONFIG.POLAR?.PRODUCTS,
+          successUrl: `${ZAP_PAYMENTS_CONFIG.POLAR?.SUCCESS_URL}?checkout_id={CHECKOUT_ID}`,
           authenticatedUsersOnly:
-            ZAP_CONFIG.PAYMENTS.POLAR?.AUTHENTICATED_USERS_ONLY,
+            ZAP_PAYMENTS_CONFIG.POLAR?.AUTHENTICATED_USERS_ONLY,
         }),
         portal(),
       ],
     }),
     twoFactor(),
     username({
-      minUsernameLength: ZAP_CONFIG.AUTH.MINIMUM_USERNAME_LENGTH,
-      maxUsernameLength: ZAP_CONFIG.AUTH.MAXIMUM_USERNAME_LENGTH,
+      minUsernameLength: ZAP_AUTH_CONFIG.MINIMUM_USERNAME_LENGTH,
+      maxUsernameLength: ZAP_AUTH_CONFIG.MAXIMUM_USERNAME_LENGTH,
       usernameValidator: (name) => name !== "admin",
     }),
     anonymous(),
@@ -126,7 +129,7 @@ export const betterAuthServer = betterAuth({
     organization(),
     haveIBeenPwned({
       customPasswordCompromisedMessage:
-        ZAP_CONFIG.AUTH.PASSWORD_COMPROMISED_MESSAGE,
+        ZAP_AUTH_CONFIG.PASSWORD_COMPROMISED_MESSAGE,
     }),
   ],
 });

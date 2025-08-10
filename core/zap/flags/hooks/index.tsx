@@ -1,8 +1,9 @@
 "use client";
 import "client-only";
 
+import { useZapQuery } from "@/zap/api/hooks";
+
 import { FLAGS } from "..";
-import { useZapQuery } from "../../api/hooks";
 
 type FlagKey = keyof typeof FLAGS;
 

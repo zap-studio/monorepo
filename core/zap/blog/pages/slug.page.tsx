@@ -4,7 +4,8 @@ import type { BlogPosting, WithContext } from "schema-dts";
 import serialize from "serialize-javascript";
 
 import { BASE_URL } from "@/zap.config";
-import { CustomMDX } from "../../markdown/mdx";
+import { CustomMDX } from "@/zap/markdown/mdx";
+
 import {
   formatDate,
   generateBlogPostMetadata,

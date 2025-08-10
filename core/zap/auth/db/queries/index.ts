@@ -2,8 +2,9 @@ import "server-only";
 
 import { eq, sql } from "drizzle-orm";
 
-import { db } from "../../../db/providers/drizzle";
-import { user } from "../../../db/providers/drizzle/schema";
+import { db } from "@/zap/db/providers/drizzle";
+
+import { user } from "../../db/schema";
 
 export const getUserIdFromMailQuery = db
   .select({ userId: user.id })

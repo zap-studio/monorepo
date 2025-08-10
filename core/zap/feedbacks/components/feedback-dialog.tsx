@@ -20,7 +20,8 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { ZapButton } from "../../components/core";
+import { ZapButton } from "@/zap/components/core";
+
 import { useIsFeedbackSubmitted, useSubmitFeedback } from "../hooks";
 import { InputFeedbackSchema } from "../schemas";
 import type { FeedbackFormValues } from "../types";

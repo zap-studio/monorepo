@@ -5,9 +5,9 @@ import path from "node:path";
 
 import matter from "gray-matter";
 
-import { ZAP_CONFIG } from "@/zap.config";
+import { ZAP_LEGAL_CONFIG } from "../zap.plugin.config";
 
-const LEGAL_DIR = ZAP_CONFIG.LEGAL.DATA_DIR;
+const LEGAL_DIR = ZAP_LEGAL_CONFIG.DATA_DIR;
 
 export async function getLegalContent(slug: string) {
   const MDX_PATH = path.join(LEGAL_DIR, `${slug}.mdx`);
