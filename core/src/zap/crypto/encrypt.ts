@@ -1,6 +1,6 @@
 import "server-only";
 
-import { algorithm, bufferToHex, hexToBuffer, ivLength } from ".";
+import { algorithm, bufferToHex, hexToBuffer, ivLength } from "@/zap/crypto";
 
 export async function encrypt(text: string, keyHex: string) {
   const iv = crypto.getRandomValues(new Uint8Array(ivLength));

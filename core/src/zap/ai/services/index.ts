@@ -16,10 +16,10 @@ import { getApiSettingsForUserAndProviderQuery } from "@/zap/ai/db/queries";
 import { userAISettings } from "@/zap/ai/db/schema";
 import { getModel } from "@/zap/ai/lib";
 import { AIProviderId, ModelName } from "@/zap/ai/types";
+import { encryptionKeyHex } from "@/zap/crypto";
+import { decrypt } from "@/zap/crypto/decrypt";
+import { encrypt } from "@/zap/crypto/encrypt";
 import { BadRequestError } from "@/zap/errors";
-import { encryptionKeyHex } from "@/zap-old/lib/crypto";
-import { decrypt } from "@/zap-old/lib/crypto/decrypt";
-import { encrypt } from "@/zap-old/lib/crypto/encrypt";
 
 interface GetAISettingsService {
   userId: string;

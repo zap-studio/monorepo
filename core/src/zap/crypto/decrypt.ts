@@ -1,6 +1,6 @@
 import "server-only";
 
-import { algorithm, hexToBuffer } from ".";
+import { algorithm, hexToBuffer } from "@/zap/crypto";
 
 export async function decrypt(
   ivHex: string,
