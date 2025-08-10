@@ -4,7 +4,7 @@ import { eq, sql } from "drizzle-orm";
 
 import { db } from "@/zap/db/providers/drizzle";
 
-import { user } from "../../db/schema";
+import { user } from "../schema";
 
 export const getUserIdFromMailQuery = db
   .select({ userId: user.id })

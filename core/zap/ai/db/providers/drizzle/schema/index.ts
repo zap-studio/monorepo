@@ -7,9 +7,9 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { user } from "@/zap/auth/db/schema";
+import { user } from "@/zap/auth/db/providers/drizzle/schema";
 
-import type { ModelName } from "../../types";
+import type { ModelName } from "../../../../types";
 
 export const userAISettings = pgTable(
   "user_ai_settings",

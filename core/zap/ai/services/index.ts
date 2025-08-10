@@ -16,8 +16,8 @@ import { db } from "@/zap/db/providers/drizzle";
 import { UpsertMode } from "@/zap/db/types";
 import { BadRequestError } from "@/zap/errors";
 
-import { getApiSettingsForUserAndProviderQuery } from "../db/queries";
-import { userAISettings } from "../db/schema";
+import { getApiSettingsForUserAndProviderQuery } from "../db/providers/drizzle/queries";
+import { userAISettings } from "../db/providers/drizzle/schema";
 import { getModel } from "../lib";
 import { AIProviderId, ModelName } from "../types";
 import { ZAP_AI_CONFIG } from "../zap.plugin.config";

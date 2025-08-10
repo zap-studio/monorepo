@@ -3,7 +3,7 @@ import "server-only";
 import { eq } from "drizzle-orm";
 import React from "react";
 
-import { getLastMailSentAtQuery } from "@/zap/auth/db/queries";
+import { getLastMailSentAtQuery } from "@/zap/auth/db/providers/drizzle/queries";
 import { isUserAdminService } from "@/zap/auth/services";
 import { db } from "@/zap/db/providers/drizzle";
 import { user } from "@/zap/db/providers/drizzle/schema";

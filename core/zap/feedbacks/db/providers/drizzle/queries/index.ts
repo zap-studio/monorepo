@@ -4,7 +4,7 @@ import { eq, sql } from "drizzle-orm";
 
 import { db } from "@/zap/db/providers/drizzle";
 
-import { feedback } from "../../db/schema";
+import { feedback } from "../schema";
 
 export const getFeedbackForUserQuery = db
   .select()

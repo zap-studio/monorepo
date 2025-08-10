@@ -3,8 +3,8 @@ import "server-only";
 import { db } from "@/zap/db/providers/drizzle";
 import { BadRequestError, NotFoundError } from "@/zap/errors";
 
-import { getNumberOfPeopleInWaitlistQuery } from "../db/queries";
-import { waitlist } from "../db/schema";
+import { getNumberOfPeopleInWaitlistQuery } from "../db/providers/drizzle/queries";
+import { waitlist } from "../db/providers/drizzle/schema";
 
 export async function getNumberOfPeopleInWaitlistService() {
   const result = await getNumberOfPeopleInWaitlistQuery.execute();

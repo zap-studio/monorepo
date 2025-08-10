@@ -5,8 +5,8 @@ import { headers } from "next/headers";
 import { db } from "@/zap/db/providers/drizzle";
 import { AuthenticationError, NotFoundError } from "@/zap/errors";
 
-import { getUserIdFromMailQuery } from "../db/queries";
-import { user } from "../db/schema";
+import { getUserIdFromMailQuery } from "../db/providers/drizzle/queries";
+import { user } from "../db/providers/drizzle/schema";
 import { betterAuthServer } from "../providers/better-auth/server";
 import { redirectToLogin } from "../utils";
 

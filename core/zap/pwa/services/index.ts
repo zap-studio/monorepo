@@ -9,7 +9,7 @@ import { PUBLIC_ENV } from "@/zap/env/public";
 import { SERVER_ENV } from "@/zap/env/server";
 import { PushNotificationError } from "@/zap/errors";
 
-import { pushNotifications } from "../db/schema";
+import { pushNotifications } from "../db/providers/drizzle/schema";
 import { ZAP_PWA_CONFIG } from "../zap.plugin.config";
 
 let webpushInstance: typeof import("web-push") | null = null;
