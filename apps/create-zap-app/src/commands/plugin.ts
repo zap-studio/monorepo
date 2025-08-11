@@ -24,7 +24,13 @@ export async function pluginCommand(
           'Plugin name and script name are required for run command'
         );
       }
-      await runPluginScript(projectDir, pluginName, scriptName, args);
+      await runPluginScript(
+        projectDir,
+        pluginName,
+        scriptName,
+        undefined,
+        args
+      );
       break;
 
     case 'list':
