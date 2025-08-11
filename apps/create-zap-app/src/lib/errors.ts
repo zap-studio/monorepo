@@ -17,3 +17,7 @@ export class ValidationError extends Error {
 export class PluginError extends Error {
   readonly name = 'PluginError';
 }
+
+export class CommandExecutionError extends Error {
+  readonly name = 'CommandExecutionError';
+}

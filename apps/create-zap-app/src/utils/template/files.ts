@@ -41,3 +41,12 @@ export async function moveTempFilesToOutput(
     throw new FileSystemError(`Failed to move temp files: ${error}`);
   }
 }
+
+export async function exists(filePath: string) {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}

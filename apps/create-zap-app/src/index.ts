@@ -21,7 +21,6 @@ async function main() {
 
     program
       .command('create-zap-app')
-      .alias('new')
       .description('Create a new Next.js project with Zap.ts boilerplate')
       .action(async () => {
         try {
@@ -35,7 +34,6 @@ async function main() {
 
     program
       .command('create-procedure')
-      .alias('procedure')
       .description('Create a new oRPC procedure')
       .argument('<name>', 'Name of the procedure')
       .action(async (name: string) => {
@@ -70,7 +68,7 @@ async function main() {
       .description('Manage and run plugin scripts');
 
     pluginCmd
-      .command('run <plugin> <script>')
+      .command('run')
       .description('Run a plugin script')
       .argument('<plugin>', 'Name of the plugin')
       .argument('<script>', 'Name of the script to run')
@@ -85,7 +83,7 @@ async function main() {
       });
 
     pluginCmd
-      .command('list [plugin]')
+      .command('list')
       .description('List all plugins or scripts for a specific plugin')
       .argument('[plugin]', 'Name of the plugin to list scripts for')
       .action(async (plugin?: string) => {
