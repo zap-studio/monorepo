@@ -13,32 +13,30 @@ interface MailProps {
   url: string;
 }
 
-export function VerificationMail({ url }: MailProps) {
+export default function ForgotPasswordMail({ url }: MailProps) {
   return (
     <Html>
       <Head />
-      <Preview>Verify your email address</Preview>
+      <Preview>Reset your password</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={heading}>Verify your email address</Text>
+          <Text style={heading}>Reset your password</Text>
 
           <Text style={paragraph}>
-            Thanks for signing up! Click the button below to confirm your email
-            and activate your account.
+            We received a request to reset your password. Click the button below
+            to set a new one. If you didn&apos;t make this request, you can
+            safely ignore this email.
           </Text>
 
           <Section style={buttonWrapper}>
             <Button href={url} style={button}>
-              Verify Email
+              Reset Password
             </Button>
           </Section>
 
           <Text style={footer}>
-            If you didn’t sign up, you can safely ignore this email.
-          </Text>
-
-          <Text style={urlText}>
-            Or copy and paste this link into your browser:
+            If the button doesn&apos;t work, copy and paste this URL into your
+            browser:
             <br />
             {url}
           </Text>
@@ -50,44 +48,44 @@ export function VerificationMail({ url }: MailProps) {
 
 // Styles
 const main = {
-  backgroundColor: "#f9fafb",
+  backgroundColor: "#f9f9f9",
   padding: "40px 0",
-  fontFamily: "Arial, sans-serif",
+  fontFamily: "Helvetica, Arial, sans-serif",
 };
 
 const container = {
   backgroundColor: "#ffffff",
-  padding: "40px",
   borderRadius: "8px",
-  maxWidth: "520px",
+  padding: "40px",
+  maxWidth: "500px",
   margin: "0 auto",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
 };
 
 const heading = {
   fontSize: "24px",
   fontWeight: "bold" as const,
-  color: "#111827",
-  marginBottom: "16px",
+  marginBottom: "20px",
+  color: "#000",
 };
 
 const paragraph = {
   fontSize: "16px",
   lineHeight: "1.5",
-  color: "#374151",
-  marginBottom: "24px",
+  marginBottom: "30px",
+  color: "#333",
 };
 
 const buttonWrapper = {
   textAlign: "center" as const,
-  marginBottom: "24px",
+  marginBottom: "30px",
 };
 
 const button = {
   backgroundColor: "#000",
   color: "#fff",
   padding: "12px 24px",
-  borderRadius: "6px",
+  borderRadius: "4px",
   textDecoration: "none",
   fontWeight: "bold" as const,
   display: "inline-block",
@@ -95,12 +93,6 @@ const button = {
 
 const footer = {
   fontSize: "14px",
-  color: "#6B7280",
-  marginBottom: "16px",
-};
-
-const urlText = {
-  fontSize: "14px",
-  color: "#9CA3AF",
-  wordBreak: "break-word" as const,
+  color: "#888",
+  lineHeight: "1.5",
 };

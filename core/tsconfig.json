@@ -23,7 +23,8 @@
       "@/zap/*": ["./zap/*"],
       "@/zap.config": ["./zap.config"],
       "@/zap.config.types": ["./zap.config.types"],
-      "@/fonts": ["./src/styles/fonts"]
+      "@/fonts": ["./src/styles/fonts"],
+      "@/emails": ["./emails"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

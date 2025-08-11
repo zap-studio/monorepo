@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   Head,
+  Heading,
   Html,
   Preview,
   Section,
@@ -13,29 +14,32 @@ interface MailProps {
   url: string;
 }
 
-export function ForgotPasswordMail({ url }: MailProps) {
+export default function MagicLinkMail({ url }: MailProps) {
   return (
     <Html>
       <Head />
-      <Preview>Reset your password</Preview>
+      <Preview>Your sign-in link to Zap.ts</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={heading}>Reset your password</Text>
+          <Heading style={heading}>Your Magic Link to Zap.ts</Heading>
 
           <Text style={paragraph}>
-            We received a request to reset your password. Click the button below
-            to set a new one. If you didn&apos;t make this request, you can
-            safely ignore this email.
+            Tap the button below to sign in. This link will expire in 15
+            minutes.
           </Text>
 
           <Section style={buttonWrapper}>
             <Button href={url} style={button}>
-              Reset Password
+              Sign In Now
             </Button>
           </Section>
 
           <Text style={footer}>
-            If the button doesn&apos;t work, copy and paste this URL into your
+            Didn’t request this link? You can safely ignore this email.
+          </Text>
+
+          <Text style={urlText}>
+            If the button doesn’t work, copy and paste this link into your
             browser:
             <br />
             {url}
@@ -48,44 +52,44 @@ export function ForgotPasswordMail({ url }: MailProps) {
 
 // Styles
 const main = {
-  backgroundColor: "#f9f9f9",
+  backgroundColor: "#f9fafb",
   padding: "40px 0",
-  fontFamily: "Helvetica, Arial, sans-serif",
+  fontFamily: "Arial, sans-serif",
 };
 
 const container = {
   backgroundColor: "#ffffff",
-  borderRadius: "8px",
   padding: "40px",
-  maxWidth: "500px",
+  borderRadius: "8px",
+  maxWidth: "520px",
   margin: "0 auto",
-  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
 };
 
 const heading = {
   fontSize: "24px",
-  fontWeight: "bold" as const,
   marginBottom: "20px",
-  color: "#000",
+  color: "#111827",
 };
 
 const paragraph = {
   fontSize: "16px",
+  color: "#374151",
   lineHeight: "1.5",
-  marginBottom: "30px",
-  color: "#333",
+  marginBottom: "24px",
 };
 
 const buttonWrapper = {
   textAlign: "center" as const,
-  marginBottom: "30px",
+  marginBottom: "24px",
 };
 
 const button = {
-  backgroundColor: "#000",
-  color: "#fff",
+  backgroundColor: "#3B82F6",
+  color: "#ffffff",
+  fontSize: "16px",
   padding: "12px 24px",
-  borderRadius: "4px",
+  borderRadius: "6px",
   textDecoration: "none",
   fontWeight: "bold" as const,
   display: "inline-block",
@@ -93,6 +97,12 @@ const button = {
 
 const footer = {
   fontSize: "14px",
-  color: "#888",
-  lineHeight: "1.5",
+  color: "#6B7280",
+  marginBottom: "16px",
+};
+
+const urlText = {
+  fontSize: "14px",
+  color: "#9CA3AF",
+  wordBreak: "break-word" as const,
 };

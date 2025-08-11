@@ -1,20 +1,14 @@
 import "server-only";
 
 import { eq } from "drizzle-orm";
-import React from "react";
-
+import type React from "react";
+import { ForgotPasswordMail, MagicLinkMail, VerificationMail } from "@/emails";
 import { getLastMailSentAtQuery } from "@/zap/auth/db/providers/drizzle/queries";
 import { isUserAdminService } from "@/zap/auth/services";
 import { db } from "@/zap/db/providers/drizzle";
 import { user } from "@/zap/db/providers/drizzle/schema";
 import { MailError, NotFoundError, UnauthorizedError } from "@/zap/errors";
-
 import { resend } from "../providers/resend/server";
-import {
-  ForgotPasswordMail,
-  MagicLinkMail,
-  VerificationMail,
-} from "../templates";
 import { ZAP_MAILS_CONFIG } from "../zap.plugin.config";
 
 const FROM_EMAIL = ZAP_MAILS_CONFIG.FROM;
@@ -74,7 +68,7 @@ export async function sendAdminEmailService({
     throw new UnauthorizedError("Admin access required");
   }
 
-  return sendMailService({ subject, recipients });
+  return await sendMailService({ subject, recipients });
 }
 
 export async function sendForgotPasswordMailService({
@@ -82,7 +76,7 @@ export async function sendForgotPasswordMailService({
   recipients,
   url,
 }: MailServiceParams) {
-  return sendMailService({
+  return await sendMailService({
     subject,
     recipients,
     react: url ? ForgotPasswordMail({ url }) : undefined,
@@ -94,7 +88,7 @@ export async function sendMagicLinkMailService({
   recipients,
   url,
 }: MailServiceParams) {
-  return sendMailService({
+  return await sendMailService({
     subject,
     recipients,
     react: url ? MagicLinkMail({ url }) : undefined,
@@ -106,7 +100,7 @@ export async function sendVerificationMailService({
   recipients,
   url,
 }: MailServiceParams) {
-  return sendMailService({
+  return await sendMailService({
     subject,
     recipients,
     react: url ? VerificationMail({ url }) : undefined,

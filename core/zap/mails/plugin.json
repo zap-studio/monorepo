@@ -4,9 +4,9 @@
   "author": "Alexandre Trotel",
   "required": {
     "dependencies": ["@react-email/components", "react-email", "resend"],
-    "devDependencies": [],
+    "devDependencies": ["@react-email/preview-server"],
     "folders": [],
-    "files": [],
+    "files": ["emails/example.email.tsx"],
     "plugins": ["auth", "db", "env", "errors"]
   },
   "scripts": {
