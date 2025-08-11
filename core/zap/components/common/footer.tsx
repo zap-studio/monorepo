@@ -2,13 +2,8 @@ import Link from "next/link";
 
 import { LatestBlogPosts } from "@/zap/blog/components";
 
+import { LEGAL_LINKS } from "../data";
 import { ThemeSwitcher } from "./theme-switcher";
-
-const LEGAL_LINKS = [
-  { href: "/terms-of-service", label: "Terms of Service" },
-  { href: "/privacy-policy", label: "Privacy Policy" },
-  { href: "/cookie-policy", label: "Cookie Policy" },
-];
 
 export function Footer() {
   return (

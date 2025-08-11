@@ -1,0 +1,13 @@
+{
+  "name": "components",
+  "description": "A plugin for managing reusable UI components.",
+  "author": "Alexandre Trotel",
+  "required": {
+    "dependencies": ["@bprogress/next", "motion"],
+    "devDependencies": [],
+    "folders": [],
+    "files": [],
+    "plugins": ["auth", "blog"]
+  },
+  "scripts": {}
+}

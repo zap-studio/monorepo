@@ -1,0 +1,13 @@
+{
+  "name": "blog",
+  "description": "A plugin for managing blog posts and content.",
+  "author": "Alexandre Trotel",
+  "required": {
+    "dependencies": ["gray-matter", "schema-dts", "serialize-javascript"],
+    "devDependencies": [],
+    "folders": [],
+    "files": [],
+    "plugins": ["components", "errors", "markdown"]
+  },
+  "scripts": {}
+}

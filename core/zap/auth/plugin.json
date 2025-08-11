@@ -4,7 +4,7 @@
   "author": "Alexandre Trotel",
   "required": {
     "dependencies": ["better-auth", "@polar-sh/better-auth"],
-    "devDependencies": ["@tanstack/eslint-plugin-query"],
+    "devDependencies": [],
     "folders": [],
     "files": [],
     "plugins": ["api", "components", "db", "env", "errors", "mails", "payments"]
