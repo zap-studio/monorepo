@@ -3,6 +3,7 @@ import { Command } from 'commander';
 import { createProcedure } from './commands/create-procedure.js';
 import { createProject } from './commands/create-project.js';
 import { generateEnv } from './commands/generate-env.js';
+import { pluginCommand } from './commands/plugin.js';
 import { displayWelcome, getPackageVersion } from './utils/cli/cli.js';
 
 async function main() {
@@ -60,6 +61,86 @@ async function main() {
           process.stderr.write(
             `Failed to generate environment file: ${error}\n`
           );
+          process.exit(1);
+        }
+      });
+
+    const pluginCmd = program
+      .command('plugin')
+      .description('Manage and run plugin scripts');
+
+    pluginCmd
+      .command('run <plugin> <script>')
+      .description('Run a plugin script')
+      .argument('<plugin>', 'Name of the plugin')
+      .argument('<script>', 'Name of the script to run')
+      .argument('[args...]', 'Additional arguments to pass to the script')
+      .action(async (plugin: string, script: string, args: string[] = []) => {
+        try {
+          await pluginCommand('run', plugin, script, args);
+        } catch (error) {
+          process.stderr.write(`Failed to run plugin script: ${error}\n`);
+          process.exit(1);
+        }
+      });
+
+    pluginCmd
+      .command('list [plugin]')
+      .description('List all plugins or scripts for a specific plugin')
+      .argument('[plugin]', 'Name of the plugin to list scripts for')
+      .action(async (plugin?: string) => {
+        try {
+          await pluginCommand('list', plugin);
+        } catch (error) {
+          process.stderr.write(`Failed to list plugins: ${error}\n`);
+          process.exit(1);
+        }
+      });
+
+    pluginCmd
+      .command('scripts')
+      .description('List all scripts from all plugins')
+      .action(async () => {
+        try {
+          await pluginCommand('scripts');
+        } catch (error) {
+          process.stderr.write(`Failed to list scripts: ${error}\n`);
+          process.exit(1);
+        }
+      });
+
+    pluginCmd
+      .command('validate')
+      .description('Validate the plugin system')
+      .action(async () => {
+        try {
+          await pluginCommand('validate');
+        } catch (error) {
+          process.stderr.write(`Failed to validate plugin system: ${error}\n`);
+          process.exit(1);
+        }
+      });
+
+    pluginCmd
+      .command('deps')
+      .description('Check plugin dependencies')
+      .action(async () => {
+        try {
+          await pluginCommand('deps');
+        } catch (error) {
+          process.stderr.write(`Failed to check dependencies: ${error}\n`);
+          process.exit(1);
+        }
+      });
+
+    pluginCmd
+      .command('generate')
+      .description('Generate wrapper scripts for package.json')
+      .action(async () => {
+        try {
+          await pluginCommand('generate');
+        } catch (error) {
+          process.stderr.write(`Failed to generate scripts: ${error}\n`);
           process.exit(1);
         }
       });
