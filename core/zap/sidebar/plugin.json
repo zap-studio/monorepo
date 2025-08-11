@@ -1,0 +1,13 @@
+{
+  "name": "sidebar",
+  "description": "A plugin to manage sidebar features and interactions.",
+  "author": "Alexandre Trotel",
+  "required": {
+    "dependencies": ["@bprogress/next"],
+    "devDependencies": [],
+    "folders": [],
+    "files": [],
+    "plugins": ["ai", "auth", "errors", "feedbacks", "payments"]
+  },
+  "scripts": {}
+}

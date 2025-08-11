@@ -1,0 +1,13 @@
+{
+  "name": "pwa",
+  "description": "A plugin to manage progressive web app features and push notifications.",
+  "author": "Alexandre Trotel",
+  "required": {
+    "dependencies": ["web-push", "zustand"],
+    "devDependencies": ["@types/web-push"],
+    "folders": [],
+    "files": [],
+    "plugins": ["api", "auth", "db", "env", "errors"]
+  },
+  "scripts": {}
+}

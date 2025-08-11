@@ -1,0 +1,20 @@
+{
+  "name": "markdown",
+  "description": "A plugin to manage markdown content.",
+  "author": "Alexandre Trotel",
+  "required": {
+    "dependencies": [
+      "@mdx-js/loader",
+      "@mdx-js/react",
+      "@next/mdx",
+      "@types/mdx",
+      "next-mdx-remote",
+      "react-syntax-highlighter"
+    ],
+    "devDependencies": ["@types/react-syntax-highlighter"],
+    "folders": [],
+    "files": [],
+    "plugins": []
+  },
+  "scripts": {}
+}

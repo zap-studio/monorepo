@@ -1,0 +1,13 @@
+{
+  "name": "payments",
+  "description": "A plugin to manage payments with different providers.",
+  "author": "Alexandre Trotel",
+  "required": {
+    "dependencies": ["@polar-sh/better-auth", "@polar-sh/sdk"],
+    "devDependencies": [],
+    "folders": [],
+    "files": [],
+    "plugins": ["api", "auth", "components", "env", "errors"]
+  },
+  "scripts": {}
+}

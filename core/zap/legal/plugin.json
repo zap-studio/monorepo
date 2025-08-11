@@ -1,0 +1,13 @@
+{
+  "name": "legal",
+  "description": "A plugin to manage the legal pages in your application.",
+  "author": "Alexandre Trotel",
+  "required": {
+    "dependencies": ["gray-matter"],
+    "devDependencies": [],
+    "folders": [],
+    "files": [],
+    "plugins": ["components", "markdown"]
+  },
+  "scripts": {}
+}

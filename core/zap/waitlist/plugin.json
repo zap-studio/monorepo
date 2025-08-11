@@ -1,0 +1,13 @@
+{
+  "name": "waitlist",
+  "description": "A plugin to create and redirect users to a waitlist and getting their email addresses.",
+  "author": "Alexandre Trotel",
+  "required": {
+    "dependencies": ["motion", "zustand"],
+    "devDependencies": [],
+    "folders": [],
+    "files": [],
+    "plugins": ["api", "components", "db", "errors"]
+  },
+  "scripts": {}
+}
