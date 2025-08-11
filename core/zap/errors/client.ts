@@ -2,7 +2,6 @@ import "client-only";
 
 import { toast } from "sonner";
 
-import { ZAP_AUTH_CONFIG } from "@/zap/auth/zap.plugin.config";
 import { DEV } from "@/zap/env/runtime";
 
 import { ApplicationError, BaseError } from ".";
@@ -17,7 +16,13 @@ export function handleClientError(
     "code" in error &&
     (error as { code?: string }).code === "PASSWORD_COMPROMISED"
   ) {
-    toast.error(ZAP_AUTH_CONFIG.PASSWORD_COMPROMISED_MESSAGE);
+    import("@/zap/auth/zap.plugin.config")
+      .then(({ ZAP_AUTH_CONFIG }) => {
+        toast.error(ZAP_AUTH_CONFIG.PASSWORD_COMPROMISED_MESSAGE);
+      })
+      .catch(() => {
+        // If the auth plugin doesn't exist, do nothing (no toast)
+      });
     return;
   }
 

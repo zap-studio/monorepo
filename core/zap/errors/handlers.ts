@@ -1,9 +1,8 @@
 import "server-only";
 
-import { isAuthenticatedService } from "@/zap/auth/services";
 import { DEV } from "@/zap/env/runtime";
 
-import { UnauthorizedError } from ".";
+import { EnvironmentError, UnauthorizedError } from ".";
 import {
   generateCorrelationId,
   handleError,
@@ -11,6 +10,14 @@ import {
   type HandlerOptions,
   logSuccess,
 } from "./utils";
+
+let isAuthenticatedService: (() => Promise<boolean>) | undefined;
+try {
+  isAuthenticatedService = (await import("@/zap/auth/services"))
+    .isAuthenticatedService;
+} catch {
+  // Fail silently if auth plugin doesn't exist
+}
 
 function createHandler<T extends unknown[], R>(
   handler: HandlerFunction<T, R>,
@@ -50,6 +57,10 @@ export function withAuthenticatedApiHandler<T extends unknown[], R>(
 ) {
   return createHandler(
     async (...args: T): Promise<R> => {
+      if (!isAuthenticatedService) {
+        throw new EnvironmentError("Authentication service not available");
+      }
+
       const isAuthenticated = await isAuthenticatedService();
 
       if (!isAuthenticated) {

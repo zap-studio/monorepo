@@ -1,0 +1,13 @@
+{
+  "name": "env",
+  "description": "A plugin to manage environment variables and configurations.",
+  "author": "Alexandre Trotel",
+  "required": {
+    "dependencies": [],
+    "devDependencies": [],
+    "folders": [],
+    "files": [],
+    "plugins": ["errors"]
+  },
+  "scripts": {}
+}

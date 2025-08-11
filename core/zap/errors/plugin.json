@@ -1,0 +1,13 @@
+{
+  "name": "errors",
+  "description": "A plugin to manage error handling and logging.",
+  "author": "Alexandre Trotel",
+  "required": {
+    "dependencies": [],
+    "devDependencies": [],
+    "folders": [],
+    "files": [],
+    "plugins": ["crypto", "env"]
+  },
+  "scripts": {}
+}

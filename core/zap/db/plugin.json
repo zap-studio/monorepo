@@ -1,0 +1,13 @@
+{
+  "name": "db",
+  "description": "A plugin to provide database functionalities and different providers.",
+  "author": "Alexandre Trotel",
+  "required": {
+    "dependencies": ["drizzle-orm", "@neondatabase/serverless", "pg"],
+    "devDependencies": ["@types/pg", "drizzle-kit", "eslint-plugin-drizzle"],
+    "folders": [],
+    "files": [],
+    "plugins": ["env", "errors"]
+  },
+  "scripts": {}
+}
