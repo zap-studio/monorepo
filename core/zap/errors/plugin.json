@@ -4,8 +4,10 @@
   "author": "Alexandre Trotel",
   "dependencies": {
     "packages": ["sonner", "zod"],
-    "files": ["src/app/global-error.tsx"],
     "plugins": ["crypto", "env"]
+  },
+  "provides": {
+    "files": ["src/app/global-error.tsx"]
   },
   "usedBy": {
     "files": ["src/middleware.ts"]

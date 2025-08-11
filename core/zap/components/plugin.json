@@ -4,9 +4,9 @@
   "author": "Alexandre Trotel",
   "dependencies": {
     "packages": ["@bprogress/next", "motion"],
-    "devPackages": [],
-    "folders": [],
-    "files": ["src/app/global-error.tsx", "src/app/not-found.tsx"],
     "plugins": ["auth", "blog"]
+  },
+  "usedBy": {
+    "files": ["src/app/global-error.tsx", "src/app/not-found.tsx"]
   }
 }

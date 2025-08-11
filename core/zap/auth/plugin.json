@@ -4,8 +4,10 @@
   "author": "Alexandre Trotel",
   "dependencies": {
     "packages": ["better-auth", "@polar-sh/better-auth"],
-    "folders": ["src/app/(public)/(auth)/", "src/app/api/auth/"],
-    "files": ["src/middleware.ts"],
     "plugins": ["api", "components", "db", "env", "errors", "mails", "payments"]
+  },
+  "provides": {
+    "folders": ["src/app/(public)/(auth)/", "src/app/api/auth/"],
+    "files": ["src/middleware.ts"]
   }
 }

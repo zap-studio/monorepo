@@ -3,7 +3,9 @@
   "description": "A plugin to manage the landing page of your application.",
   "author": "Alexandre Trotel",
   "dependencies": {
-    "files": ["src/app/(public)/page.tsx"],
     "plugins": ["auth", "components", "feedbacks", "payments"]
+  },
+  "provides": {
+    "files": ["src/app/(public)/page.tsx"]
   }
 }

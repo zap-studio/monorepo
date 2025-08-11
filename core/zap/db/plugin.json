@@ -5,8 +5,10 @@
   "dependencies": {
     "packages": ["drizzle-orm", "@neondatabase/serverless", "pg"],
     "devPackages": ["@types/pg", "drizzle-kit", "eslint-plugin-drizzle"],
-    "files": ["drizzle.config.dev.ts", "drizzle.config.prod.ts"],
     "plugins": ["env", "errors"]
+  },
+  "provides": {
+    "files": ["drizzle.config.dev.ts", "drizzle.config.prod.ts"]
   },
   "scripts": {
     "check": "drizzle-kit check --config=drizzle.config.prod.ts",

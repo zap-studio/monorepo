@@ -4,7 +4,10 @@
   "author": "Alexandre Trotel",
   "dependencies": {
     "packages": ["zod"],
-    "files": ["src/app/layout.tsx"],
+
     "plugins": ["errors"]
+  },
+  "usedBy": {
+    "files": ["src/app/layout.tsx"]
   }
 }

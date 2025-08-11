@@ -5,7 +5,9 @@
   "dependencies": {
     "packages": ["web-push", "zustand"],
     "devPackages": ["@types/web-push"],
-    "files": ["public/sw.js", "src/app/manifest.ts"],
     "plugins": ["api", "auth", "db", "env", "errors"]
+  },
+  "provides": {
+    "files": ["public/sw.js", "src/app/manifest.ts"]
   }
 }
