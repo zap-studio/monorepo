@@ -10,6 +10,7 @@ import { VERCEL } from "@/zap/env/runtime";
 
 export const metadata: Metadata = ZAP_DEFAULT_METADATA;
 
+// Vercel Analytics (optional)
 const VercelAnalytics = async () => {
   const { ZAP_ANALYTICS_CONFIG } = await import(
     "@/zap/analytics/zap.plugin.config"
@@ -22,6 +23,7 @@ const VercelAnalytics = async () => {
   return <Analytics />;
 };
 
+// Vercel Speed Insights (optional)
 const VercelSpeedInsights = async () => {
   const { ZAP_ANALYTICS_CONFIG } = await import(
     "@/zap/analytics/zap.plugin.config"
