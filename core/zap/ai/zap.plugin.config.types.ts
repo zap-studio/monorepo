@@ -1,3 +1,10 @@
+export type AIProviderId = "openai" | "mistral";
+
+export enum AIProviderIdEnum {
+  OPENAI = "openai",
+  MISTRAL = "mistral",
+}
+
 export interface AIPluginConfig {
   COMPLETION?: {
     FREQUENCY_PENALTY?: number;

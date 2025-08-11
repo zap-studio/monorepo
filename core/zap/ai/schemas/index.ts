@@ -3,8 +3,11 @@ import { z } from "zod";
 import { UpsertModeSchema } from "@/zap/db/types";
 
 import { ModelsByProvider } from "../data";
+import { AIProviderIdEnum } from "../zap.plugin.config.types";
 
-export const AIProviderIdSchema = z.enum(["openai", "mistral"]);
+export const AIProviderIdSchema = z.enum(
+  Object.values(AIProviderIdEnum) as [string, ...string[]],
+);
 
 export const AIProviderSchema = z.object({
   provider: AIProviderIdSchema,
@@ -12,10 +15,9 @@ export const AIProviderSchema = z.object({
   needsApiKey: z.boolean(),
 });
 
-export const ModelNameSchema = z.enum([
-  ...ModelsByProvider[AIProviderIdSchema.options[0]],
-  ...ModelsByProvider[AIProviderIdSchema.options[1]],
-]);
+export const ModelNameSchema = z.enum(
+  Object.values(ModelsByProvider).flat() as [string, ...string[]],
+);
 
 export const AIFormSchema = z.object({
   provider: AIProviderIdSchema,
