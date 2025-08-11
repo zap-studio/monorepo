@@ -4,7 +4,9 @@
   "author": "Alexandre Trotel",
   "dependencies": {
     "packages": ["sonner", "zod"],
-    "plugins": ["crypto", "env"]
+    "optionalPackages": ["@orpc/server"],
+    "plugins": ["crypto", "env"],
+    "optionalPlugins": ["auth"]
   },
   "provides": {
     "files": ["src/app/global-error.tsx"]
