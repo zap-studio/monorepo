@@ -1,0 +1,13 @@
+{
+  "name": "auth",
+  "description": "A plugin for managing authentication and user sessions.",
+  "author": "Alexandre Trotel",
+  "required": {
+    "dependencies": ["better-auth", "@polar-sh/better-auth"],
+    "devDependencies": ["@tanstack/eslint-plugin-query"],
+    "folders": [],
+    "files": [],
+    "plugins": ["api", "components", "db", "env", "errors", "mails", "payments"]
+  },
+  "scripts": {}
+}

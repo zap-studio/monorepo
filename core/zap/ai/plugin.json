@@ -3,15 +3,16 @@
   "description": "A comprehensive AI integration plugin that provides multi-provider support (OpenAI, Mistral), secure API key management, streaming chat and completion services, and configurable AI settings for users.",
   "author": "Alexandre Trotel",
   "required": {
-    "dependencies": {
-      "@ai-sdk/mistral": "^2.0.1",
-      "@ai-sdk/openai": "^2.0.8",
-      "@ai-sdk/react": "^2.0.9",
-      "ai": "^5.0.9"
-    },
+    "dependencies": [
+      "@ai-sdk/mistral",
+      "@ai-sdk/openai",
+      "@ai-sdk/react",
+      "ai"
+    ],
+    "devDependencies": [],
     "folders": [],
     "files": [],
-    "plugins": ["api", "crypto", "db", "errors"]
+    "plugins": ["api", "components", "crypto", "db", "errors"]
   },
   "scripts": {}
 }
