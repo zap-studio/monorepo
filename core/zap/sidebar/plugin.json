@@ -5,7 +5,7 @@
   "required": {
     "dependencies": ["@bprogress/next"],
     "devDependencies": [],
-    "folders": [],
+    "folders": ["src/app/(protected)/app/(sidebar)/"],
     "files": [],
     "plugins": ["ai", "auth", "errors", "feedbacks", "payments"]
   },

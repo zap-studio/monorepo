@@ -5,7 +5,7 @@
   "required": {
     "dependencies": ["@polar-sh/better-auth", "@polar-sh/sdk"],
     "devDependencies": [],
-    "folders": [],
+    "folders": ["src/app/(protected)/app/billing/"],
     "files": [],
     "plugins": ["api", "auth", "components", "env", "errors"]
   },

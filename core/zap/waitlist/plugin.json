@@ -5,7 +5,7 @@
   "required": {
     "dependencies": ["motion", "zustand"],
     "devDependencies": [],
-    "folders": [],
+    "folders": ["src/app/(public)/waitlist/"],
     "files": [],
     "plugins": ["api", "components", "db", "errors"]
   },

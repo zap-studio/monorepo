@@ -6,7 +6,7 @@
     "dependencies": ["@bprogress/next", "motion"],
     "devDependencies": [],
     "folders": [],
-    "files": [],
+    "files": ["src/app/global-error.tsx", "src/app/not-found.tsx"],
     "plugins": ["auth", "blog"]
   },
   "scripts": {}

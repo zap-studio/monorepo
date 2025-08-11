@@ -6,7 +6,7 @@
     "dependencies": [],
     "devDependencies": [],
     "folders": [],
-    "files": [],
+    "files": ["src/app/global-error.tsx", "src/middleware.ts"],
     "plugins": ["crypto", "env"]
   },
   "scripts": {}

@@ -6,12 +6,19 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { lazy } from "react";
 
 import { ThemeProvider } from "@/providers/theme.provider";
-import { TanStackQueryProvider } from "@/zap/api/providers/tanstack-query.provider";
 
 // Lazy load optional providers
 const AnalyticsProvider = lazy(() =>
   import("@/zap/analytics/providers/analytics.provider")
     .then((module) => ({ default: module.AnalyticsProvider }))
+    .catch(() => ({
+      default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    })),
+);
+
+const TanStackQueryProvider = lazy(() =>
+  import("@/zap/api/providers/tanstack-query.provider")
+    .then((module) => ({ default: module.TanStackQueryProvider }))
     .catch(() => ({
       default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
     })),

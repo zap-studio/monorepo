@@ -5,7 +5,7 @@
   "required": {
     "dependencies": ["gray-matter", "schema-dts", "serialize-javascript"],
     "devDependencies": ["@types/serialize-javascript"],
-    "folders": [],
+    "folders": ["src/app/(public)/blog/"],
     "files": [],
     "plugins": ["components", "errors", "markdown"]
   },

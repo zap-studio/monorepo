@@ -5,7 +5,7 @@
   "required": {
     "dependencies": ["gray-matter"],
     "devDependencies": [],
-    "folders": [],
+    "folders": ["src/app/(public)/(legal)/"],
     "files": [],
     "plugins": ["components", "markdown"]
   },

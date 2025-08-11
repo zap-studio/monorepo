@@ -6,7 +6,7 @@
     "dependencies": [],
     "devDependencies": [],
     "folders": [],
-    "files": [],
+    "files": ["src/app/layout.tsx"],
     "plugins": ["errors"]
   },
   "scripts": {}

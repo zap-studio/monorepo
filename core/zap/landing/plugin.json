@@ -6,7 +6,7 @@
     "dependencies": [],
     "devDependencies": [],
     "folders": [],
-    "files": [],
+    "files": ["src/app/(public)/page.tsx"],
     "plugins": ["auth", "components", "feedbacks", "payments"]
   },
   "scripts": {}
