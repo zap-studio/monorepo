@@ -2,12 +2,11 @@
   "name": "errors",
   "description": "A plugin to manage error handling and logging.",
   "author": "Alexandre Trotel",
-  "required": {
-    "dependencies": [],
-    "devDependencies": [],
-    "folders": [],
+  "dependencies": {
     "files": ["src/app/global-error.tsx", "src/middleware.ts"],
     "plugins": ["crypto", "env"]
   },
-  "scripts": {}
+  "usedBy": {
+    "files": ["src/app/global-error.tsx", "src/middleware.ts"]
+  }
 }

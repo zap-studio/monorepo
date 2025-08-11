@@ -2,18 +2,16 @@
   "name": "api",
   "description": "A plugin for managing API interactions and integrations using oRPC, TanStack Query and custom hooks.",
   "author": "Alexandre Trotel",
-  "required": {
-    "dependencies": [
+  "dependencies": {
+    "packages": [
       "@orpc/client",
       "@orpc/react-query",
       "@orpc/server",
       "@tanstack/react-query",
       "@tanstack/react-query-devtools"
     ],
-    "devDependencies": ["@tanstack/eslint-plugin-query"],
+    "devPackages": ["@tanstack/eslint-plugin-query"],
     "folders": ["src/app/rpc/", "src/rpc/", "src/hooks/rpc/"],
-    "files": [],
     "plugins": ["errors"]
-  },
-  "scripts": {}
+  }
 }

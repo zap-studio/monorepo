@@ -2,12 +2,9 @@
   "name": "payments",
   "description": "A plugin to manage payments with different providers.",
   "author": "Alexandre Trotel",
-  "required": {
-    "dependencies": ["@polar-sh/better-auth", "@polar-sh/sdk"],
-    "devDependencies": [],
+  "dependencies": {
+    "packages": ["@polar-sh/better-auth", "@polar-sh/sdk"],
     "folders": ["src/app/(protected)/app/billing/"],
-    "files": [],
     "plugins": ["api", "auth", "components", "env", "errors"]
-  },
-  "scripts": {}
+  }
 }

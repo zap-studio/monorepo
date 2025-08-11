@@ -1,6 +1,6 @@
 {
   "name": "core",
-  "initial": {
+  "base": {
     "dependencies": [],
     "devDependencies": [],
     "plugins": ["api", "components", "env", "errors"]

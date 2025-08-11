@@ -2,17 +2,13 @@
   "name": "analytics",
   "description": "A plugin for managing analytics and tracking user interactions.",
   "author": "Alexandre Trotel",
-  "required": {
-    "dependencies": [
+  "dependencies": {
+    "packages": [
       "@vercel/analytics",
       "@vercel/speed-insights",
       "posthog-js",
       "posthog-node"
     ],
-    "devDependencies": [],
-    "folders": [],
-    "files": [],
     "plugins": ["api", "crypto", "db", "env", "errors"]
-  },
-  "scripts": {}
+  }
 }

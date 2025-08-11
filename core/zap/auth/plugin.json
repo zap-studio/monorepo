@@ -2,12 +2,10 @@
   "name": "auth",
   "description": "A plugin for managing authentication and user sessions.",
   "author": "Alexandre Trotel",
-  "required": {
-    "dependencies": ["better-auth", "@polar-sh/better-auth"],
-    "devDependencies": [],
+  "dependencies": {
+    "packages": ["better-auth", "@polar-sh/better-auth"],
     "folders": ["src/app/(public)/(auth)/", "src/app/api/auth/"],
     "files": ["src/middleware.ts"],
     "plugins": ["api", "components", "db", "env", "errors", "mails", "payments"]
-  },
-  "scripts": {}
+  }
 }

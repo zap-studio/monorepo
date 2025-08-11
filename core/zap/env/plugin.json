@@ -2,12 +2,8 @@
   "name": "env",
   "description": "A plugin to manage environment variables and configurations.",
   "author": "Alexandre Trotel",
-  "required": {
-    "dependencies": [],
-    "devDependencies": [],
-    "folders": [],
+  "dependencies": {
     "files": ["src/app/layout.tsx"],
     "plugins": ["errors"]
-  },
-  "scripts": {}
+  }
 }

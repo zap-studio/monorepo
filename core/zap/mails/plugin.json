@@ -2,10 +2,9 @@
   "name": "mails",
   "description": "A plugin to send mails and manage email templates.",
   "author": "Alexandre Trotel",
-  "required": {
-    "dependencies": ["@react-email/components", "react-email", "resend"],
-    "devDependencies": ["@react-email/preview-server"],
-    "folders": [],
+  "dependencies": {
+    "packages": ["@react-email/components", "react-email", "resend"],
+    "devPackages": ["@react-email/preview-server"],
     "files": ["emails/example.email.tsx"],
     "plugins": ["auth", "db", "env", "errors"]
   },

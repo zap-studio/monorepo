@@ -2,12 +2,9 @@
   "name": "legal",
   "description": "A plugin to manage the legal pages in your application.",
   "author": "Alexandre Trotel",
-  "required": {
-    "dependencies": ["gray-matter"],
-    "devDependencies": [],
+  "dependencies": {
+    "packages": ["gray-matter"],
     "folders": ["src/app/(public)/(legal)/"],
-    "files": [],
     "plugins": ["components", "markdown"]
-  },
-  "scripts": {}
+  }
 }

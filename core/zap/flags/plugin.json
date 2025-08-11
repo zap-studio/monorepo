@@ -2,12 +2,8 @@
   "name": "flags",
   "description": "A plugin to manage feature flags with different providers.",
   "author": "Alexandre Trotel",
-  "required": {
-    "dependencies": ["@flags-sdk/posthog", "flags"],
-    "devDependencies": [],
-    "folders": [],
-    "files": [],
+  "dependencies": {
+    "packages": ["@flags-sdk/posthog", "flags"],
     "plugins": ["api", "env"]
-  },
-  "scripts": {}
+  }
 }

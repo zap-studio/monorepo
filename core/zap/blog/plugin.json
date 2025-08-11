@@ -2,12 +2,10 @@
   "name": "blog",
   "description": "A plugin for managing blog posts and content.",
   "author": "Alexandre Trotel",
-  "required": {
-    "dependencies": ["gray-matter", "schema-dts", "serialize-javascript"],
-    "devDependencies": ["@types/serialize-javascript"],
+  "dependencies": {
+    "packages": ["gray-matter", "schema-dts", "serialize-javascript"],
+    "devPackages": ["@types/serialize-javascript"],
     "folders": ["src/app/(public)/blog/"],
-    "files": [],
     "plugins": ["components", "errors", "markdown"]
-  },
-  "scripts": {}
+  }
 }

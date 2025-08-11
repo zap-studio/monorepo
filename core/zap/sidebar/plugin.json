@@ -2,12 +2,9 @@
   "name": "sidebar",
   "description": "A plugin to manage sidebar features and interactions.",
   "author": "Alexandre Trotel",
-  "required": {
-    "dependencies": ["@bprogress/next"],
-    "devDependencies": [],
+  "dependencies": {
+    "packages": ["@bprogress/next"],
     "folders": ["src/app/(protected)/app/(sidebar)/"],
-    "files": [],
     "plugins": ["ai", "auth", "errors", "feedbacks", "payments"]
-  },
-  "scripts": {}
+  }
 }

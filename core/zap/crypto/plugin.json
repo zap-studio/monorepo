@@ -2,12 +2,11 @@
   "name": "crypto",
   "description": "A plugin for managing cryptographic operations.",
   "author": "Alexandre Trotel",
-  "required": {
-    "dependencies": [],
-    "devDependencies": [],
+  "dependencies": {
+    "packages": [],
+    "devPackages": [],
     "folders": [],
     "files": [],
     "plugins": ["env", "errors"]
-  },
-  "scripts": {}
+  }
 }
