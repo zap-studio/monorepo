@@ -1,8 +1,6 @@
 {
   "name": "core",
-  "description": "A plugin to manage core functionalities of Zap.ts.",
-  "author": "Alexandre Trotel",
-  "required": {
+  "initial": {
     "dependencies": [],
     "devDependencies": [],
     "plugins": ["api", "auth", "components", "env", "errors"]
