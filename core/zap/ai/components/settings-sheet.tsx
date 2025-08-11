@@ -70,7 +70,7 @@ function SettingsSheetForm({ open, onOpenChange }: SettingsSheetFormProps) {
     resolver: zodResolver(AIFormSchema),
     defaultValues: {
       provider: AIProviderIdSchema.options[0],
-      model: ModelsByProvider[AIProviderIdSchema.options[0]][0],
+      model: DEFAULT_MODEL[AIProviderIdSchema.options[0] as AIProviderId],
       apiKey: "",
     },
   });
@@ -189,7 +189,7 @@ interface ModelSelectProps {
 }
 
 function ModelSelect({ control, disabled, provider }: ModelSelectProps) {
-  const models = ModelsByProvider[provider];
+  const models = ModelsByProvider[provider as keyof typeof ModelsByProvider];
 
   return (
     <FormField
