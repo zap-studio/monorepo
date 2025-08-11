@@ -5,13 +5,12 @@ import path from "node:path";
 
 import { format, formatDistanceToNow, parseISO } from "date-fns";
 import matter from "gray-matter";
-
-import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
 import {
   ApplicationError,
   FileOperationError,
   NotFoundError,
 } from "@/zap/errors";
+import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
 
 import { postMetadataSchema } from "../schemas";
 import { ZAP_BLOG_CONFIG } from "../zap.plugin.config";
@@ -117,7 +116,7 @@ export async function generateBlogPostMetadata(slug: string) {
   const post = await getBlogPost(slug);
 
   if (!post) {
-    throw new NotFoundError(`Blog post with slug ${slug} not found`);
+    return ZAP_DEFAULT_METADATA;
   }
 
   const openGraphImage =
