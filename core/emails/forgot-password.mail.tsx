@@ -37,9 +37,9 @@ export default function ForgotPasswordMail({ url }: MailProps) {
           <Text style={footer}>
             If the button doesn&apos;t work, copy and paste this URL into your
             browser:
-            <br />
-            {url}
           </Text>
+
+          <Text style={urlText}>{url}</Text>
         </Container>
       </Body>
     </Html>
@@ -48,7 +48,7 @@ export default function ForgotPasswordMail({ url }: MailProps) {
 
 // Styles
 const main = {
-  backgroundColor: "#f9f9f9",
+  backgroundColor: "#f9fafb",
   padding: "40px 0",
   fontFamily: "Helvetica, Arial, sans-serif",
 };
@@ -57,7 +57,7 @@ const container = {
   backgroundColor: "#ffffff",
   borderRadius: "8px",
   padding: "40px",
-  maxWidth: "500px",
+  maxWidth: "520px",
   margin: "0 auto",
   boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
 };
@@ -66,33 +66,41 @@ const heading = {
   fontSize: "24px",
   fontWeight: "bold" as const,
   marginBottom: "20px",
-  color: "#000",
+  color: "#111827",
 };
 
 const paragraph = {
   fontSize: "16px",
   lineHeight: "1.5",
-  marginBottom: "30px",
-  color: "#333",
+  marginBottom: "24px",
+  color: "#374151",
 };
 
 const buttonWrapper = {
   textAlign: "center" as const,
-  marginBottom: "30px",
+  marginBottom: "24px",
 };
 
 const button = {
   backgroundColor: "#000",
   color: "#fff",
   padding: "12px 24px",
-  borderRadius: "4px",
+  borderRadius: "6px",
   textDecoration: "none",
   fontWeight: "bold" as const,
   display: "inline-block",
+  fontSize: "16px",
 };
 
 const footer = {
   fontSize: "14px",
-  color: "#888",
+  color: "#6B7280",
   lineHeight: "1.5",
+  marginBottom: "16px",
+};
+
+const urlText = {
+  fontSize: "14px",
+  color: "#9CA3AF",
+  wordBreak: "break-word" as const,
 };

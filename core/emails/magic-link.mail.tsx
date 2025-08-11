@@ -3,7 +3,6 @@ import {
   Button,
   Container,
   Head,
-  Heading,
   Html,
   Preview,
   Section,
@@ -21,7 +20,7 @@ export default function MagicLinkMail({ url }: MailProps) {
       <Preview>Your sign-in link to Zap.ts</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Heading style={heading}>Your Magic Link to Zap.ts</Heading>
+          <Text style={heading}>Your Magic Link to Zap.ts</Text>
 
           <Text style={paragraph}>
             Tap the button below to sign in. This link will expire in 15
@@ -35,15 +34,15 @@ export default function MagicLinkMail({ url }: MailProps) {
           </Section>
 
           <Text style={footer}>
-            Didn’t request this link? You can safely ignore this email.
+            Didn&apos;t request this link? You can safely ignore this email.
           </Text>
 
           <Text style={urlText}>
-            If the button doesn’t work, copy and paste this link into your
+            If the button doesn&apos;t work, copy and paste this link into your
             browser:
-            <br />
-            {url}
           </Text>
+
+          <Text style={urlText}>{url}</Text>
         </Container>
       </Body>
     </Html>
@@ -54,7 +53,7 @@ export default function MagicLinkMail({ url }: MailProps) {
 const main = {
   backgroundColor: "#f9fafb",
   padding: "40px 0",
-  fontFamily: "Arial, sans-serif",
+  fontFamily: "Helvetica, Arial, sans-serif",
 };
 
 const container = {
@@ -63,11 +62,12 @@ const container = {
   borderRadius: "8px",
   maxWidth: "520px",
   margin: "0 auto",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
 };
 
 const heading = {
   fontSize: "24px",
+  fontWeight: "bold" as const,
   marginBottom: "20px",
   color: "#111827",
 };
@@ -85,8 +85,8 @@ const buttonWrapper = {
 };
 
 const button = {
-  backgroundColor: "#3B82F6",
-  color: "#ffffff",
+  backgroundColor: "#000",
+  color: "#fff",
   fontSize: "16px",
   padding: "12px 24px",
   borderRadius: "6px",
@@ -99,6 +99,7 @@ const footer = {
   fontSize: "14px",
   color: "#6B7280",
   marginBottom: "16px",
+  lineHeight: "1.5",
 };
 
 const urlText = {

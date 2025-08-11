@@ -34,14 +34,14 @@ export default function VerificationMail({ url }: MailProps) {
           </Section>
 
           <Text style={footer}>
-            If you didn’t sign up, you can safely ignore this email.
+            If you didn&apos;t sign up, you can safely ignore this email.
           </Text>
 
           <Text style={urlText}>
             Or copy and paste this link into your browser:
-            <br />
-            {url}
           </Text>
+
+          <Text style={urlText}>{url}</Text>
         </Container>
       </Body>
     </Html>
@@ -52,7 +52,7 @@ export default function VerificationMail({ url }: MailProps) {
 const main = {
   backgroundColor: "#f9fafb",
   padding: "40px 0",
-  fontFamily: "Arial, sans-serif",
+  fontFamily: "Helvetica, Arial, sans-serif",
 };
 
 const container = {
@@ -61,14 +61,14 @@ const container = {
   borderRadius: "8px",
   maxWidth: "520px",
   margin: "0 auto",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
 };
 
 const heading = {
   fontSize: "24px",
   fontWeight: "bold" as const,
   color: "#111827",
-  marginBottom: "16px",
+  marginBottom: "20px",
 };
 
 const paragraph = {
@@ -91,12 +91,14 @@ const button = {
   textDecoration: "none",
   fontWeight: "bold" as const,
   display: "inline-block",
+  fontSize: "16px",
 };
 
 const footer = {
   fontSize: "14px",
   color: "#6B7280",
   marginBottom: "16px",
+  lineHeight: "1.5",
 };
 
 const urlText = {
