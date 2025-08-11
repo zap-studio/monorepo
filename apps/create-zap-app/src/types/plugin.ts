@@ -2,9 +2,9 @@ export interface PluginConfig {
   name: string;
   description: string;
   author: string;
-  required: {
-    dependencies: string[];
-    devDependencies: string[];
+  dependencies: {
+    packages: string[];
+    devPackages: string[];
     folders?: string[];
     files?: string[];
     plugins: string[];

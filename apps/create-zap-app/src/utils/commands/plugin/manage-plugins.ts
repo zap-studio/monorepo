@@ -36,8 +36,8 @@ export async function checkPluginDependencies(
 
   for (const { config } of pluginConfigs) {
     const allDeps = [
-      ...config.required.dependencies,
-      ...config.required.devDependencies,
+      ...config.dependencies.packages,
+      ...config.dependencies.devPackages,
     ];
     const missing = allDeps.filter((dep) => !installedDeps[dep]);
 
