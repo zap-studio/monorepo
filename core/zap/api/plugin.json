@@ -8,7 +8,8 @@
       "@orpc/react-query",
       "@orpc/server",
       "@tanstack/react-query",
-      "@tanstack/react-query-devtools"
+      "@tanstack/react-query-devtools",
+      "react"
     ],
     "devPackages": ["@tanstack/eslint-plugin-query"],
     "folders": ["src/app/rpc/", "src/rpc/", "src/hooks/rpc/"],

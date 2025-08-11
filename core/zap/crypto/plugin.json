@@ -3,10 +3,6 @@
   "description": "A plugin for managing cryptographic operations.",
   "author": "Alexandre Trotel",
   "dependencies": {
-    "packages": [],
-    "devPackages": [],
-    "folders": [],
-    "files": [],
     "plugins": ["env", "errors"]
   }
 }

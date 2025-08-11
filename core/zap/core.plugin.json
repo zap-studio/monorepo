@@ -6,11 +6,6 @@
       "@bprogress/next",
       "@hookform/resolvers",
       "@next/bundle-analyzer",
-      "@orpc/client",
-      "@orpc/react-query",
-      "@orpc/server",
-      "@tanstack/react-query",
-      "@tanstack/react-query-devtools",
       "client-only",
       "date-fns",
       "dotenv",
@@ -62,6 +57,6 @@
       "tsx",
       "typescript"
     ],
-    "plugins": ["api", "components", "env", "errors"]
+    "plugins": ["api", "components", "crypto", "env", "errors"]
   }
 }

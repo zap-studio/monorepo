@@ -5,9 +5,9 @@ import { DEV } from "@/zap/env/runtime";
 import { EnvironmentError, UnauthorizedError } from ".";
 import {
   generateCorrelationId,
-  handleError,
   type HandlerFunction,
   type HandlerOptions,
+  handleError,
   logSuccess,
 } from "./utils";
 
@@ -36,7 +36,7 @@ function createHandler<T extends unknown[], R>(
 
       return result;
     } catch (error) {
-      return handleError(error, correlationId, startTime, options);
+      return await handleError(error, correlationId, startTime, options);
     }
   };
 }

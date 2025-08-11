@@ -1,4 +1,13 @@
-import { ORPCError } from "@orpc/server";
+type ORPCErrorType = new (code: string, options: { message: string }) => Error;
+
+async function loadORPCError(): Promise<ORPCErrorType | null> {
+  try {
+    const { ORPCError } = await import("@orpc/server");
+    return ORPCError;
+  } catch {
+    return null;
+  }
+}
 
 type HttpStatusCode =
   // 2xx Success
@@ -51,7 +60,11 @@ export class BaseError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 
-  toORPCError() {
+  async toORPCError() {
+    const ORPCError = await loadORPCError();
+    if (!ORPCError) {
+      throw new Error("Internal Server Error");
+    }
     return new ORPCError(this.code, { message: this.message });
   }
 
@@ -133,7 +146,11 @@ export class BaseApplicationError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 
-  toORPCError() {
+  async toORPCError() {
+    const ORPCError = await loadORPCError();
+    if (!ORPCError) {
+      throw new Error("Internal Server Error");
+    }
     return new ORPCError(this.code, { message: this.message });
   }
 

@@ -3,10 +3,11 @@
   "description": "A plugin to manage error handling and logging.",
   "author": "Alexandre Trotel",
   "dependencies": {
-    "files": ["src/app/global-error.tsx", "src/middleware.ts"],
+    "packages": ["sonner", "zod"],
+    "files": ["src/app/global-error.tsx"],
     "plugins": ["crypto", "env"]
   },
   "usedBy": {
-    "files": ["src/app/global-error.tsx", "src/middleware.ts"]
+    "files": ["src/middleware.ts"]
   }
 }
