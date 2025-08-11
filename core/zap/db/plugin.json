@@ -6,8 +6,25 @@
     "dependencies": ["drizzle-orm", "@neondatabase/serverless", "pg"],
     "devDependencies": ["@types/pg", "drizzle-kit", "eslint-plugin-drizzle"],
     "folders": [],
-    "files": [],
+    "files": ["drizzle.config.dev.ts", "drizzle.config.prod.ts"],
     "plugins": ["env", "errors"]
   },
-  "scripts": {}
+  "scripts": {
+    "check": "drizzle-kit check --config=drizzle.config.prod.ts",
+    "export": "drizzle-kit export --config=drizzle.config.prod.ts",
+    "generate": "drizzle-kit generate --config=drizzle.config.prod.ts",
+    "migrate": "drizzle-kit migrate --config=drizzle.config.prod.ts",
+    "pull": "drizzle-kit pull --config=drizzle.config.prod.ts",
+    "push": "drizzle-kit push --config=drizzle.config.prod.ts",
+    "studio": "drizzle-kit studio --config=drizzle.config.prod.ts",
+    "up": "drizzle-kit up --config=drizzle.config.prod.ts",
+    "dev:check": "drizzle-kit check --config=drizzle.config.dev.ts",
+    "dev:export": "drizzle-kit export --config=drizzle.config.dev.ts",
+    "dev:generate": "drizzle-kit generate --config=drizzle.config.dev.ts",
+    "dev:migrate": "drizzle-kit migrate --config=drizzle.config.dev.ts",
+    "dev:pull": "drizzle-kit pull --config=drizzle.config.dev.ts",
+    "dev:push": "drizzle-kit push --config=drizzle.config.dev.ts",
+    "dev:studio": "drizzle-kit studio --config=drizzle.config.dev.ts",
+    "dev:up": "drizzle-kit up --config=drizzle.config.dev.ts"
+  }
 }
