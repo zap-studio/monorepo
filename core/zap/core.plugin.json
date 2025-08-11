@@ -3,6 +3,6 @@
   "initial": {
     "dependencies": [],
     "devDependencies": [],
-    "plugins": ["api", "auth", "components", "env", "errors"]
+    "plugins": ["api", "components", "env", "errors"]
   }
 }

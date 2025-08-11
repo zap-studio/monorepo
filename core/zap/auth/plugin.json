@@ -6,13 +6,7 @@
     "dependencies": ["better-auth", "@polar-sh/better-auth"],
     "devDependencies": [],
     "folders": ["src/app/(public)/(auth)/", "src/app/api/auth/"],
-    "files": [
-      "src/app/(protected)/app/(sidebar)/account/page.tsx",
-      "src/app/(protected)/app/(sidebar)/notifications/page.tsx",
-      "src/app/(protected)/app/(sidebar)/settings/page.tsx",
-      "src/app/(protected)/app/(sidebar)/page.tsx",
-      "src/middleware.ts"
-    ],
+    "files": ["src/middleware.ts"],
     "plugins": ["api", "components", "db", "env", "errors", "mails", "payments"]
   },
   "scripts": {}
