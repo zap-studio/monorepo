@@ -32,8 +32,12 @@ async function main() {
         }
       });
 
-    program
-      .command('create-procedure')
+    const createCmd = program
+      .command('create')
+      .description('Create various project components');
+
+    createCmd
+      .command('procedure')
       .description('Create a new oRPC procedure')
       .argument('<name>', 'Name of the procedure')
       .action(async (name: string) => {
@@ -45,8 +49,12 @@ async function main() {
         }
       });
 
-    program
-      .command('generate-env')
+    const generateCmd = program
+      .command('generate')
+      .description('Generate various project files');
+
+    generateCmd
+      .command('env')
       .description('Generate environment variables for the project')
       .argument(
         '[filename]',

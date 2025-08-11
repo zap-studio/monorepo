@@ -38,7 +38,7 @@ export async function generateHookFile(
   try {
     const hookPath = path.join(
       projectDir,
-      'src/hooks',
+      'src/hooks/rpc',
       `use-${kebabCaseName}.ts`
     );
 
@@ -46,8 +46,8 @@ export async function generateHookFile(
     const hookContent = `
 "use client";
 
-import { useZapQuery } from "@/zap/lib/api/hooks/use-zap-query";
-import { orpc } from '@/zap/lib/orpc/client';
+import { useZapQuery } from "@/zap/api/hooks/use-zap-query";
+import { orpc } from '@/zap/api/providers/orpc/client';
 
 export const use${capitalizedProcedureName} = () => {
   return useZapQuery(
