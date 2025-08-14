@@ -100,13 +100,13 @@ Moreover, we consider **TypeScript mandatory** because it catches errors early, 
 
 Contrary to common belief, focusing on type safety and strong typing actually helps you build _**faster**_ and with _**more confidence**_—by preventing subtle bugs and costly refactors down the line, not to mention enabling **powerful IntelliSense** that speeds up development.
 
-## Arrow Functions
+## Arrow Functions vs. Named Functions
 
 Understanding when to use arrow functions versus named functions is crucial for writing clean, maintainable code.
 
 Each has specific use cases where they excel:
 
-### Use Arrow Functions For:
+### Arrow Functions
 
 - **Event handlers and callbacks** — They automatically bind `this` and are more concise
   ```tsx
@@ -125,7 +125,7 @@ Each has specific use cases where they excel:
   const doubled = numbers.map(n => n * 2)
   ```
 
-### Use Named Functions For:
+### Named Functions
 
 - **Complex logic** — When the function has multiple responsibilities or is longer
   ```tsx
