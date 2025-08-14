@@ -1,5 +1,11 @@
 # create-zap-app
 
+## 1.4.7
+
+### Patch Changes
+
+- 9c2fe86: fix: review imports for generation of procedures file
+
 ## 1.4.6
 
 ### Patch Changes
