@@ -16,6 +16,10 @@ export default function Layout({ children }: { children: ReactNode }) {
           url: 'https://github.com/alexandretrotel/zap.ts/discussions',
         },
         {
+          text: 'Discord',
+          url: 'https://discord.gg/24hXMC3eAa',
+        },
+        {
           text: 'Demo',
           url: 'https://demo.zap-ts.alexandretrotel.org',
         },
