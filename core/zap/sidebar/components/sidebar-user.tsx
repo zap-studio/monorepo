@@ -39,7 +39,7 @@ interface MenuItem {
   icon: LucideIcon;
   href?: string;
   onClick?: () => void;
-  enabled?: boolean;
+  disabled?: boolean;
 }
 
 interface SidebarUserProps {
@@ -91,7 +91,7 @@ export function SidebarUser({ user }: SidebarUserProps) {
       label: "Upgrade to Pro",
       icon: Sparkles,
       href: "/app/billing",
-      enabled: isPaymentsEnabled,
+      disabled: !isPaymentsEnabled,
     },
   ];
 
@@ -101,7 +101,7 @@ export function SidebarUser({ user }: SidebarUserProps) {
       label: "Billing",
       icon: CreditCard,
       onClick: handleCustomerPortal,
-      enabled: isPaymentsEnabled,
+      disabled: !isPaymentsEnabled,
     },
     { label: "Notifications", icon: Bell, href: "/app/notifications" },
   ];
@@ -112,8 +112,8 @@ export function SidebarUser({ user }: SidebarUserProps) {
 
   const renderMenuItems = (items: MenuItem[]) => {
     return items
-      .map(({ label, icon: Icon, href, onClick, enabled }) => {
-        if (!enabled) {
+      .map(({ label, icon: Icon, href, onClick, disabled }) => {
+        if (disabled) {
           return null;
         }
 

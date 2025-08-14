@@ -38,7 +38,7 @@ export const SECTIONS = [
     id: "pricing",
     component: PricingSection,
     className: SECTION_CLASSNAME,
-    enabled: isPaymentsEnabled,
+    disabled: !isPaymentsEnabled,
   },
   {
     id: "faq",
@@ -54,8 +54,8 @@ export function _LandingPage() {
     <div className="relative flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        {SECTIONS.map(({ id, component: Component, className, enabled }) => {
-          if (!enabled) {
+        {SECTIONS.map(({ id, component: Component, className, disabled }) => {
+          if (disabled) {
             return null;
           }
 
