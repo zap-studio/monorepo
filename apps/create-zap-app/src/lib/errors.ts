@@ -13,3 +13,11 @@ export class FileSystemError extends Error {
 export class ValidationError extends Error {
   readonly name = 'ValidationError';
 }
+
+export class PluginError extends Error {
+  readonly name = 'PluginError';
+}
+
+export class CommandExecutionError extends Error {
+  readonly name = 'CommandExecutionError';
+}

@@ -44,3 +44,6 @@ next-env.d.ts
 # public seo files
 public/robots.txt
 public/sitemap*.xml
+
+# todo
+todo.json

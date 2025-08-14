@@ -2,6 +2,6 @@ import "server-only";
 
 import { toNextJsHandler } from "better-auth/next-js";
 
-import { auth } from "@/zap/lib/auth/server";
+import { betterAuthServer } from "@/zap/auth/providers/better-auth/server";
 
-export const { GET, POST } = toNextJsHandler(auth.handler);
+export const { GET, POST } = toNextJsHandler(betterAuthServer.handler);

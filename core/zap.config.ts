@@ -1,19 +1,20 @@
 /**
+ * ZAP Core Configuration
+ *
+ * This file contains only the core application configuration.
+ * Plugin-specific configurations are located in their respective
+ * zap/{plugin}/zap.plugin.config.ts files.
+ *
  * ZAP:TODO
- * - Change the current config file to your own configuration
- * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
- * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL (e.g. `https://yourdomain.com`)
- * - Change `social-provider-button.tsx` to customize icon for each auth provider
- * - Configure and customize flags in `src/zap/lib/flags/flags.ts` and `src/lib/flags.ts`
- * - Change the blog directory in `src/zap/lib/blog/utils.ts` (if you want to use a different directory)
- * - Change the legal directory in `src/zap/lib/legal/utils.ts` (if you want to use a different directory)
+ * - Change the core configuration to your own setup
+ * - Check `next-sitemap.config.js` and change the `siteUrl` to your own URL
  * - Customize open graph image generation in `src/app/opengraph-image/route.tsx`
+ * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
  */
 
 import type { Metadata } from "next";
-
-import { DEV, PUBLIC_ENV, VERCEL } from "@/lib/env.public";
-import type { ZapSettings } from "@/zap/types/zap.config.types";
+import { DEV } from "./zap/env/runtime";
+import type { ZapCoreSettings, ZapPlugins } from "./zap.config.types";
 
 // ─────────────────────────────────────────────────────────────
 // Core App Info
@@ -28,190 +29,45 @@ export const BASE_URL = DEV
 export const SALES_EMAIL = "sales@example.com";
 export const SUPPORT_EMAIL = "support@example.com";
 
-export type Provider = "github" | "google";
-
 // ─────────────────────────────────────────────────────────────
-// Product Metadata
+// Plugin Configuration
 // ─────────────────────────────────────────────────────────────
-export type RecurringInterval = "month" | "year" | "one-time";
-export type Currency = "usd" | "eur";
-
-export interface ProductMetadata {
-  productId?: string;
-  slug: string;
-  name: string;
-  description: string;
-  price?: number | string;
-  currency: Currency;
-  recurringInterval?: "one-time" | "month" | "year";
-  features: string[];
-  popular?: boolean;
-  contactSales?: boolean;
-  billingOptions?: {
-    monthly?: BillingOption;
-    yearly?: BillingOption;
-  };
-}
-
-interface BillingOption {
-  productId: string;
-  price: number;
-  recurringInterval: "month" | "year";
-}
-
-const FEATURES = [
-  "Unlimited projects",
-  "Unlimited users",
-  "Priority support",
-  "Access to all features",
-  "Early access to new features",
-];
-
-const PRODUCT_IDS = {
-  sandbox: {
-    monthly: "cd396dd5-b6ea-461c-a8de-e97539749480",
-    yearly: "d07e65a0-9798-42c8-8f32-eca20d1be230",
-  },
-  production: {
-    monthly: "6e21c61f-b711-4ce5-b925-e4a20871074c",
-    yearly: "ad7d7325-3d72-42e5-8164-d4706c513468",
-  },
-};
-
-export const PRODUCTS_METADATA: Record<string, ProductMetadata> = {
-  free: {
-    productId: "",
-    slug: "free",
-    name: "Free",
-    description: "Free plan with limited features",
-    price: 0,
-    currency: "usd",
-    recurringInterval: "one-time",
-    features: [
-      "Limited projects",
-      "Limited users",
-      "Community support",
-      "Access to basic features",
-    ],
-  },
-  pro: {
-    slug: "pro",
-    name: "Pro",
-    description: "Advanced features for professionals",
-    currency: "usd",
-    billingOptions: {
-      monthly: {
-        productId: PRODUCT_IDS[PUBLIC_ENV.POLAR_ENV].monthly,
-        price: 20,
-        recurringInterval: "month",
-      },
-      yearly: {
-        productId: PRODUCT_IDS[PUBLIC_ENV.POLAR_ENV].yearly,
-        price: 192, // 20% discount
-        recurringInterval: "year",
-      },
-    },
-    popular: true,
-    features: FEATURES,
-  },
-  enterprise: {
-    productId: "",
-    slug: "enterprise",
-    name: "Enterprise",
-    description: "Custom solutions for large organizations",
-    price: "Contact us",
-    currency: "usd",
-    recurringInterval: "one-time",
-    contactSales: true,
-    features: [
-      "Custom projects",
-      "Custom users",
-      "Dedicated support",
-      "Access to all features",
-      "Custom SLAs",
-      "Custom integrations",
-    ],
-  },
+export const PLUGIN_CONFIG: Record<ZapPlugins, boolean> = {
+  ai: true,
+  analytics: true,
+  api: true,
+  auth: true,
+  blog: true,
+  components: true,
+  crypto: true,
+  db: true,
+  env: true,
+  errors: true,
+  feedbacks: true,
+  flags: true,
+  landing: true,
+  legal: true,
+  mails: true,
+  markdown: true,
+  payments: true,
+  plugins: true,
+  pwa: true,
+  sidebar: true,
+  waitlist: true,
 };
 
 // ─────────────────────────────────────────────────────────────
-// Default Settings
+// Core Configuration
 // ─────────────────────────────────────────────────────────────
-export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
-  AI: {
-    SYSTEM_PROMPT: "You are a helpful assistant.",
-  },
-  ANALYTICS: {
-    ENABLE_POSTHOG: false,
-    ENABLE_VERCEL_ANALYTICS: VERCEL,
-    ENABLE_VERCEL_SPEED_INSIGHTS: VERCEL,
-  },
-  AUTH: {
-    REQUIRE_MAIL_VERIFICATION: true,
-    ENABLE_SOCIAL_PROVIDER: true,
-    MINIMUM_USERNAME_LENGTH: 3,
-    MAXIMUM_USERNAME_LENGTH: 20,
-    MINIMUM_PASSWORD_LENGTH: 8,
-    MAXIMUM_PASSWORD_LENGTH: 128,
-    LOGIN_URL: "/login",
-    REDIRECT_URL_AFTER_SIGN_UP: "/login",
-    REDIRECT_URL_AFTER_SIGN_IN: "/app",
-    PROVIDERS: ["github", "google"],
-    PASSWORD_COMPROMISED_MESSAGE:
-      "This password has been exposed in a data breach. Please choose a stronger, unique password.",
-    PUBLIC_PATHS: [
-      "/",
-      "/login",
-      "/register",
-      "/forgot-password",
-      "/mail-verified",
-      "/reset-password",
-      "/terms-of-service",
-      "/privacy-policy",
-      "/cookie-policy",
-      "/waitlist",
-      "/_vercel/speed-insights/vitals",
-      "/_vercel/insights/view",
-      "/opengraph-image",
-    ],
-    VERIFIED_EMAIL_PATH: "/mail-verified",
-  },
-  BLOG: {
-    BASE_PATH: "/blog",
-  },
-  MAIL: {
-    PREFIX: NAME,
-    RATE_LIMIT_SECONDS: 60,
-    FROM: `${NAME} <${PUBLIC_ENV.ZAP_MAIL}>`,
-  },
-  NOTIFICATIONS: {
-    VAPID_MAIL: PUBLIC_ENV.ZAP_MAIL,
-  },
-  PAYMENTS: {
-    POLAR: {
-      AUTHENTICATED_USERS_ONLY: true,
-      CREATE_CUSTOMER_ON_SIGNUP: true,
-      ENVIRONMENT: PUBLIC_ENV.POLAR_ENV,
-      PRODUCTS: Object.values(PRODUCT_IDS[PUBLIC_ENV.POLAR_ENV]).map(
-        (id, idx) => ({
-          productId: id,
-          slug: idx === 0 ? "pro-monthly" : "pro-yearly",
-        }),
-      ),
-      SUCCESS_URL: "/app/billing/success",
-    },
-  },
-  PWA: {
+export const ZAP_CORE_CONFIG: ZapCoreSettings = {
+  APP: {
     NAME,
-    SHORT_NAME: NAME,
+    APP_NAME,
     DESCRIPTION: APP_DESCRIPTION,
-    START_URL: "/",
-    BACKGROUND_COLOR: "#ffffff",
-    THEME_COLOR: "#000000",
-    ICONS: [
-      { src: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
-      { src: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
-    ],
+    BASE_URL,
+    SALES_EMAIL,
+    SUPPORT_EMAIL,
+    APP_URL: "/app",
   },
   SECURITY: {
     CSP: {
@@ -261,12 +117,6 @@ export const ZAP_DEFAULT_SETTINGS: ZapSettings = {
       PUBLICKEY_CREDENTIALS_GET: [],
       USB: [],
     },
-  },
-  WAITLIST: {
-    ENABLE_WAITLIST_PAGE: false,
-    TITLE: "try Zap.ts",
-    DESCRIPTION: "be the first to build applications as fast as a zap.",
-    SHOW_COUNT: true,
   },
 };
 

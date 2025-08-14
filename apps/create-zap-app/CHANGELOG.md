@@ -1,5 +1,17 @@
 # create-zap-app
 
+## 1.4.7
+
+### Patch Changes
+
+- 9c2fe86: fix: review imports for generation of procedures file
+
+## 1.4.6
+
+### Patch Changes
+
+- fab0557: fix: change command name for better DX
+
 ## 1.4.5
 
 ### Patch Changes

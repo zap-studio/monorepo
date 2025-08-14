@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import ora from 'ora';
+import { FileSystemError } from '@/lib/errors';
 import { displayNextSteps } from '@/utils/cli/cli';
 import { generateEnv as generateEnvironment } from '@/utils/generation/generate-env.js';
 
@@ -15,6 +16,6 @@ export async function generateEnv(filename = '.env.template') {
     displayNextSteps(filename);
   } catch (error) {
     spinner.fail('Failed to generate environment file');
-    throw new Error(`Failed to write environment file: ${error}`);
+    throw new FileSystemError(`Failed to write environment file: ${error}`);
   }
 }

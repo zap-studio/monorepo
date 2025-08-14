@@ -2,9 +2,9 @@
 import "client-only";
 import "./globals.css";
 
-import { ZapButton } from "@/components/zap-ui/button";
-import { geist } from "@/fonts";
-import { BaseError } from "@/zap/lib/api/errors";
+import { geist } from "@/app/fonts";
+import { ZapButton } from "@/zap/components/core";
+import { BaseError } from "@/zap/errors";
 
 interface ErrorBoundaryProps {
   reset: () => void;
