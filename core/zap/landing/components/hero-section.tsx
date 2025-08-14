@@ -1,6 +1,6 @@
 import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
 import Link from "next/link";
-import { cache } from "react";
+import { cache, useMemo } from "react";
 
 import { isPluginEnabled } from "@/lib/plugins";
 import { getNumberOfUsersService } from "@/zap/auth/services";
@@ -9,8 +9,8 @@ import { AnimatedSection, AnimatedText } from "@/zap/components/misc";
 import { getAverageRatingService } from "@/zap/feedbacks/services";
 
 const getStatsData = cache(async () => {
-  const isFeedbacksEnabled = isPluginEnabled("feedbacks");
-  const isAuthEnabled = isPluginEnabled("auth");
+  const isFeedbacksEnabled = useMemo(() => isPluginEnabled("feedbacks"), []);
+  const isAuthEnabled = useMemo(() => isPluginEnabled("auth"), []);
 
   const promises: Promise<unknown>[] = [];
 

@@ -3,7 +3,7 @@
 import { Bot, HelpCircle, Settings } from "lucide-react";
 import Link from "next/link";
 import type { ComponentPropsWithoutRef } from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import {
   SidebarGroup,
@@ -24,25 +24,31 @@ export function SidebarSecondarySection(props: SidebarSecondarySectionProps) {
   const [isFeedbackOpen, setFeedbackOpen] = useState(false);
   const [isAISettingsOpen, setAISettingsOpen] = useState(false);
 
-  const menuItems = [
-    {
-      label: "AI Providers",
-      icon: <Bot />,
-      onClick: () => setAISettingsOpen(true),
-      enabled: isPluginEnabled("ai"),
-    },
-    {
-      label: "Give Feedback",
-      icon: <HelpCircle />,
-      onClick: () => setFeedbackOpen(true),
-      enabled: isPluginEnabled("feedbacks"),
-    },
-    {
-      label: "Settings",
-      icon: <Settings />,
-      href: "/app/settings",
-    },
-  ];
+  const isAIEnabled = useMemo(() => isPluginEnabled("ai"), []);
+  const isFeedbackEnabled = useMemo(() => isPluginEnabled("feedbacks"), []);
+
+  const menuItems = useMemo(
+    () => [
+      {
+        label: "AI Providers",
+        icon: <Bot />,
+        onClick: () => setAISettingsOpen(true),
+        enabled: isAIEnabled,
+      },
+      {
+        label: "Give Feedback",
+        icon: <HelpCircle />,
+        onClick: () => setFeedbackOpen(true),
+        enabled: isFeedbackEnabled,
+      },
+      {
+        label: "Settings",
+        icon: <Settings />,
+        href: "/app/settings",
+      },
+    ],
+    [isAIEnabled, isFeedbackEnabled],
+  );
 
   return (
     <>

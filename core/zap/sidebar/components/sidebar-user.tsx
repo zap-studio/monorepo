@@ -11,8 +11,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+import { useMemo } from "react";
 import { toast } from "sonner";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -57,6 +57,8 @@ export function SidebarUser({ user, products }: SidebarUserProps) {
   const router = useRouter();
   const product = useActiveSubscriptionProduct(products);
 
+  const isPaymentsEnabled = useMemo(() => isPluginEnabled("payments"), []);
+
   const getInitials = (name: string) =>
     name
       .split(" ")
@@ -91,7 +93,7 @@ export function SidebarUser({ user, products }: SidebarUserProps) {
       label: "Upgrade to Pro",
       icon: Sparkles,
       href: "/app/billing",
-      enabled: isPluginEnabled("payments"),
+      enabled: isPaymentsEnabled,
     },
   ];
 
@@ -101,7 +103,7 @@ export function SidebarUser({ user, products }: SidebarUserProps) {
       label: "Billing",
       icon: CreditCard,
       onClick: handleCustomerPortal,
-      enabled: isPluginEnabled("payments"),
+      enabled: isPaymentsEnabled,
     },
     { label: "Notifications", icon: Bell, href: "/app/notifications" },
   ];

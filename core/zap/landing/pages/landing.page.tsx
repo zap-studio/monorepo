@@ -9,6 +9,8 @@ import {
   TestimonialSection,
 } from "../components";
 
+const isPaymentsEnabled = isPluginEnabled("payments");
+
 const SECTION_CLASSNAME = "w-full py-12 md:py-24 lg:py-32";
 export const SECTIONS = [
   {
@@ -36,12 +38,12 @@ export const SECTIONS = [
     id: "pricing",
     component: PricingSection,
     className: SECTION_CLASSNAME,
-    enabled: isPluginEnabled("payments"),
+    enabled: isPaymentsEnabled,
   },
   {
     id: "faq",
     component: FaqSection,
-    className: isPluginEnabled("payments")
+    className: isPaymentsEnabled
       ? `bg-muted/50 border-t ${SECTION_CLASSNAME}`
       : SECTION_CLASSNAME,
   },

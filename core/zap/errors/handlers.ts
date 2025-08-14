@@ -6,9 +6,9 @@ import { DEV } from "@/zap/env/runtime";
 import { EnvironmentError, UnauthorizedError } from ".";
 import {
   generateCorrelationId,
-  handleError,
   type HandlerFunction,
   type HandlerOptions,
+  handleError,
   logSuccess,
 } from "./utils";
 
@@ -50,10 +50,6 @@ export function withAuthenticatedApiHandler<T extends unknown[], R>(
 ) {
   return createHandler(
     async (...args: T): Promise<R> => {
-      if (!isAuthenticatedService) {
-        throw new EnvironmentError("Authentication service not available");
-      }
-
       const isAuthenticated = await isAuthenticatedService();
 
       if (!isAuthenticated) {

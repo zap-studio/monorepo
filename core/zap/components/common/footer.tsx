@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { useMemo } from "react";
 import { isPluginEnabled } from "@/lib/plugins";
 import { LatestBlogPosts } from "@/zap/blog/components";
 import { LEGAL_LINKS } from "../data";
 import { ThemeSwitcher } from "./theme-switcher";
 
 export function Footer() {
+  const isBlogEnabled = useMemo(() => isPluginEnabled("blog"), []);
+
   return (
     <footer className="bg-background w-full border-t px-4 md:px-8">
       <div className="mx-auto max-w-6xl py-12">
@@ -35,7 +38,7 @@ export function Footer() {
             <ThemeSwitcher />
           </div>
 
-          {isPluginEnabled("blog") && <LatestBlogPosts />}
+          {isBlogEnabled && <LatestBlogPosts />}
         </div>
       </div>
     </footer>

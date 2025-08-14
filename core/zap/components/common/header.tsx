@@ -4,7 +4,7 @@ import { useRouter } from "@bprogress/next/app";
 import { AlignJustify, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useBodyScrollLock } from "@/hooks/utils/use-body-scroll-lock";
 import { isPluginEnabled } from "@/lib/plugins";
@@ -16,6 +16,8 @@ import { EXTERNAL_LINKS, HEADER_HEIGHT, NAV_LINKS } from "../data";
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   useBodyScrollLock(isOpen);
+
+  const isAuthEnabled = useMemo(() => isPluginEnabled("auth"), []);
 
   return (
     <header
@@ -49,7 +51,7 @@ export function Header() {
         </div>
 
         <div className="hidden flex-1 items-center justify-end space-x-4 md:flex">
-          {isPluginEnabled("auth") && <SessionButton />}
+          {isAuthEnabled && <SessionButton />}
         </div>
       </div>
 

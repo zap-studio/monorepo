@@ -3,7 +3,7 @@
 import { Crown } from "lucide-react";
 import Link from "next/link";
 import type React from "react";
-
+import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   Sidebar,
@@ -33,6 +33,8 @@ interface AppSidebarProps {
 export function AppSidebar({ products, ...props }: AppSidebarProps) {
   const { data } = betterAuthClient.useSession();
   const product = useActiveSubscriptionProduct(products);
+
+  const isAuthEnabled = useMemo(() => isPluginEnabled("auth"), []);
 
   if (!data?.user) {
     return null;
@@ -73,9 +75,7 @@ export function AppSidebar({ products, ...props }: AppSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter>
-        {isPluginEnabled("auth") && (
-          <SidebarUser products={products} user={userData} />
-        )}
+        {isAuthEnabled && <SidebarUser products={products} user={userData} />}
       </SidebarFooter>
     </Sidebar>
   );
