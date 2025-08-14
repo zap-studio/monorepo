@@ -22,13 +22,9 @@ import { ZAP_PAYMENTS_CONFIG } from "../zap.plugin.config";
 import type { ProductMetadata } from "../zap.plugin.config.types";
 import { PriceDisplay, PricingToggle } from ".";
 
-interface BillingCardsProps {
-  products: ProductMetadata[];
-}
-
-export function BillingCards({ products }: BillingCardsProps) {
+export function BillingCards() {
   const [isYearly, setIsYearly] = useState(false);
-  const activeSubscriptionSlug = useActiveSubscriptionSlug(products, isYearly);
+  const activeSubscriptionSlug = useActiveSubscriptionSlug(isYearly);
 
   const handleCheckout = async (
     productId: string,
@@ -62,7 +58,7 @@ export function BillingCards({ products }: BillingCardsProps) {
     }
   };
 
-  const sortedProducts = getSortedProducts(products, isYearly);
+  const sortedProducts = getSortedProducts(isYearly);
 
   return (
     <div className="w-full">

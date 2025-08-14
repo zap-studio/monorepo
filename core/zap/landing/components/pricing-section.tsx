@@ -19,10 +19,7 @@ import { ZAP_PAYMENTS_CONFIG } from "@/zap/payments/zap.plugin.config";
 export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
 
-  const sortedProducts = getSortedProducts(
-    Object.values(ZAP_PAYMENTS_CONFIG.PRODUCTS_METADATA),
-    isYearly,
-  );
+  const sortedProducts = getSortedProducts(isYearly);
 
   return (
     <div className="w-full px-4 md:px-6">

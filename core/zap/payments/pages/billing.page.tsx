@@ -4,11 +4,9 @@ import { ZapButton } from "@/zap/components/core";
 import { SUPPORT_EMAIL } from "@/zap.config";
 
 import { BillingCards, FAQ } from "../components";
-import { getProducts } from "../utils";
 
 export async function _BillingPage() {
   await getAuthServerDataOrRedirectToLoginService();
-  const products = getProducts();
 
   return (
     <div className="flex min-h-screen flex-1 flex-col gap-4 px-4 py-12 md:py-24">
@@ -22,7 +20,7 @@ export async function _BillingPage() {
       </div>
 
       <div className="flex flex-col space-y-16">
-        <BillingCards products={products} />
+        <BillingCards />
         <FAQ />
       </div>
 
