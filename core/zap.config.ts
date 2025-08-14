@@ -67,6 +67,7 @@ export const ZAP_CORE_CONFIG: ZapCoreSettings = {
     BASE_URL,
     SALES_EMAIL,
     SUPPORT_EMAIL,
+    APP_URL: "/app",
   },
   SECURITY: {
     CSP: {

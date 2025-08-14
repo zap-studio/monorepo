@@ -4,6 +4,7 @@ import { cache, useMemo } from "react";
 
 import { isPluginEnabled } from "@/lib/plugins";
 import { getNumberOfUsersService } from "@/zap/auth/services";
+import { ZAP_AUTH_CONFIG } from "@/zap/auth/zap.plugin.config";
 import { ZapButton } from "@/zap/components/core";
 import { AnimatedSection, AnimatedText } from "@/zap/components/misc";
 import { getAverageRatingService } from "@/zap/feedbacks/services";
@@ -57,7 +58,7 @@ export function HeroSection() {
 
           <div className="flex flex-col justify-center gap-2 min-[400px]:flex-row">
             <ZapButton asChild size="lg">
-              <Link href="/register">
+              <Link href={ZAP_AUTH_CONFIG.SIGN_UP_URL}>
                 Get Started <ArrowRight className="h-4 w-4" />
               </Link>
             </ZapButton>

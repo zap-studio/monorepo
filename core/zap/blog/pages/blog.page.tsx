@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ZAP_DEFAULT_METADATA } from "@/zap.config";
 
 import { formatDate, getBlogPostsMetadata } from "../utils";
+import { ZAP_BLOG_CONFIG } from "../zap.plugin.config";
 
 export const _metadata: Metadata = {
   title: `${ZAP_DEFAULT_METADATA.title} | Blog`,
@@ -20,7 +21,7 @@ export async function _BlogPage() {
             className={`py-6 ${index < posts.length - 1 ? "border-b" : ""}`}
             key={post.slug}
           >
-            <Link href={`/blog/${post.slug}`}>
+            <Link href={`${ZAP_BLOG_CONFIG.BASE_PATH}/${post.slug}`}>
               <div className="hover:bg-muted md:active:bg-muted rounded-md p-4 px-0 md:px-4">
                 {post.date && (
                   <p className="text-muted-foreground mb-2 text-xs">

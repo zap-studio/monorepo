@@ -7,8 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { isPluginEnabled } from "@/lib/plugins";
 import { cn } from "@/lib/utils";
-
+import { ZAP_LEGAL_CONFIG } from "@/zap/legal/zap.plugin.config";
 import { SocialProviderButton } from "../components";
 import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 
@@ -22,6 +23,8 @@ interface AuthPageProps {
     linkHref: string;
   };
 }
+
+const isLegalEnabled = isPluginEnabled("legal");
 
 export function _AuthPage({
   title,
@@ -76,7 +79,7 @@ export function _AuthPage({
             </CardContent>
           </Card>
 
-          <PolicyLinks />
+          {isLegalEnabled && <PolicyLinks />}
         </div>
       </div>
     </div>
@@ -103,8 +106,9 @@ function PolicyLinks({ className }: { className?: string }) {
       )}
     >
       By clicking continue, you agree to our{" "}
-      <Link href="/terms-of-service">Terms of Service</Link> and{" "}
-      <Link href="/privacy-policy">Privacy Policy</Link>.
+      <Link href={ZAP_LEGAL_CONFIG.TERMS_OF_SERVICE_URL}>Terms of Service</Link>{" "}
+      and <Link href={ZAP_LEGAL_CONFIG.PRIVACY_POLICY_URL}>Privacy Policy</Link>
+      .
     </div>
   );
 }

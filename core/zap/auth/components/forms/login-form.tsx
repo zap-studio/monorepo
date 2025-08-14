@@ -19,6 +19,7 @@ import { ZapButton } from "@/zap/components/core";
 
 import { useAuth } from "../../hooks";
 import { LoginFormSchema } from "../../schemas";
+import { ZAP_AUTH_CONFIG } from "../../zap.plugin.config";
 
 type LoginFormValues = z.infer<typeof LoginFormSchema>;
 
@@ -78,7 +79,7 @@ export function LoginForm() {
                 <FormLabel>Password</FormLabel>
                 <Link
                   className="text-sm underline-offset-4 hover:underline active:underline"
-                  href="/forgot-password"
+                  href={ZAP_AUTH_CONFIG.FORGOT_PASSWORD_URL}
                 >
                   Forgot your password?
                 </Link>

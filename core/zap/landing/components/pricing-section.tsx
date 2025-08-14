@@ -15,6 +15,7 @@ import { ZapButton } from "@/zap/components/core";
 import { PriceDisplay, PricingToggle } from "@/zap/payments/components";
 import { getBillingDetails, getSortedProducts } from "@/zap/payments/utils";
 import { ZAP_PAYMENTS_CONFIG } from "@/zap/payments/zap.plugin.config";
+import { ZAP_CORE_CONFIG } from "@/zap.config";
 
 export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
@@ -79,7 +80,9 @@ export function PricingSection() {
 
                 <div className="mt-6">
                   <ZapButton asChild className="w-full">
-                    <Link href="/app/billing">Get Started</Link>
+                    <Link href={`${ZAP_CORE_CONFIG.APP.APP_URL}/billing`}>
+                      Get Started
+                    </Link>
                   </ZapButton>
                 </div>
               </CardContent>

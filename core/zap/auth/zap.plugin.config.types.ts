@@ -2,7 +2,9 @@ export type Provider = "github" | "google";
 
 export interface AuthPluginConfig {
   ENABLE_SOCIAL_PROVIDER: boolean;
+  SIGN_UP_URL: string;
   LOGIN_URL: string;
+  FORGOT_PASSWORD_URL: string;
   MAXIMUM_PASSWORD_LENGTH: number;
   MAXIMUM_USERNAME_LENGTH: number;
   MINIMUM_PASSWORD_LENGTH: number;

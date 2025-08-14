@@ -7,6 +7,7 @@ export interface ZapCoreSettings {
     BASE_URL: string;
     SALES_EMAIL: string;
     SUPPORT_EMAIL: string;
+    APP_URL: string;
   };
   // Security settings that affect the whole app
   SECURITY: {

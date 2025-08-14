@@ -1,4 +1,4 @@
-import { AuthPluginConfig } from "./zap.plugin.config.types";
+import type { AuthPluginConfig } from "./zap.plugin.config.types";
 
 export const ZAP_AUTH_CONFIG: AuthPluginConfig = {
   REQUIRE_MAIL_VERIFICATION: true,
@@ -7,7 +7,9 @@ export const ZAP_AUTH_CONFIG: AuthPluginConfig = {
   MAXIMUM_USERNAME_LENGTH: 20,
   MINIMUM_PASSWORD_LENGTH: 8,
   MAXIMUM_PASSWORD_LENGTH: 128,
+  SIGN_UP_URL: "/register",
   LOGIN_URL: "/login",
+  FORGOT_PASSWORD_URL: "/forgot-password",
   REDIRECT_URL_AFTER_SIGN_UP: "/login",
   REDIRECT_URL_AFTER_SIGN_IN: "/app",
   PROVIDERS: ["github", "google"],

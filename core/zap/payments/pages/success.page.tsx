@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
 import { ZapButton } from "@/zap/components/core";
+import { ZAP_CORE_CONFIG } from "@/zap.config";
 
 export interface _SuccessPageProps {
   searchParams: Promise<{
@@ -23,8 +24,10 @@ export async function _SuccessPage({ searchParams }: _SuccessPageProps) {
           Missing checkout ID. Please try again.
         </p>
 
-        <ZapButton variant={"ghost"} asChild>
-          <Link href="/app/billing">Go back to Billing</Link>
+        <ZapButton asChild variant={"ghost"}>
+          <Link href={`${ZAP_CORE_CONFIG.APP.APP_URL}/billing`}>
+            Go back to Billing
+          </Link>
         </ZapButton>
       </div>
     );
@@ -39,8 +42,8 @@ export async function _SuccessPage({ searchParams }: _SuccessPageProps) {
         you now have access to all Pro features.
       </p>
 
-      <ZapButton variant={"ghost"} asChild>
-        <Link href="/app">Go back to App</Link>
+      <ZapButton asChild variant={"ghost"}>
+        <Link href={ZAP_CORE_CONFIG.APP.APP_URL}>Go back to App</Link>
       </ZapButton>
     </div>
   );
