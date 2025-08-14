@@ -20,4 +20,5 @@ export default defineConfig({
   mdxOptions: {
     // MDX options
   },
+  lastModifiedTime: 'git',
 });
