@@ -33,7 +33,6 @@ import { isPluginEnabled } from "@/lib/plugins";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import { handleClientError } from "@/zap/errors/client";
 import { useActiveSubscriptionProduct } from "@/zap/payments/providers/polar/client";
-import type { ProductMetadata } from "@/zap/payments/zap.plugin.config.types";
 
 interface MenuItem {
   label: string;
@@ -49,13 +48,12 @@ interface SidebarUserProps {
     email: string;
     avatar: string | null;
   };
-  products?: ProductMetadata[];
 }
 
-export function SidebarUser({ user, products }: SidebarUserProps) {
+export function SidebarUser({ user }: SidebarUserProps) {
   const { isMobile } = useSidebar();
   const router = useRouter();
-  const product = useActiveSubscriptionProduct(products);
+  const product = useActiveSubscriptionProduct();
 
   const isPaymentsEnabled = useMemo(() => isPluginEnabled("payments"), []);
 

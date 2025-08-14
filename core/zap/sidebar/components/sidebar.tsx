@@ -17,7 +17,6 @@ import {
 import { isPluginEnabled } from "@/lib/plugins";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import { useActiveSubscriptionProduct } from "@/zap/payments/providers/polar/client";
-import type { ProductMetadata } from "@/zap/payments/zap.plugin.config.types";
 import {
   SidebarMainSection,
   SidebarSecondarySection,
@@ -27,12 +26,11 @@ import { MAIN_NAV_ITEMS } from "../data";
 
 interface AppSidebarProps {
   props?: React.ComponentProps<typeof Sidebar>;
-  products?: ProductMetadata[];
 }
 
-export function AppSidebar({ products, ...props }: AppSidebarProps) {
+export function AppSidebar({ ...props }: AppSidebarProps) {
   const { data } = betterAuthClient.useSession();
-  const product = useActiveSubscriptionProduct(products);
+  const product = useActiveSubscriptionProduct();
 
   const isAuthEnabled = useMemo(() => isPluginEnabled("auth"), []);
 
@@ -75,7 +73,7 @@ export function AppSidebar({ products, ...props }: AppSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter>
-        {isAuthEnabled && <SidebarUser products={products} user={userData} />}
+        {isAuthEnabled && <SidebarUser user={userData} />}
       </SidebarFooter>
     </Sidebar>
   );

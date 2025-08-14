@@ -4,7 +4,6 @@ import { useZapQuery } from "@/zap/api/hooks/use-zap-query";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 
 import { getProduct } from "../../utils";
-import type { ProductMetadata } from "../../zap.plugin.config.types";
 
 async function fetchCustomerState() {
   const state = await betterAuthClient.customer.state();
@@ -30,7 +29,6 @@ export function useActiveSubscriptions() {
 
 export function useActiveSubscriptionProductId() {
   const activeSubscriptions = useActiveSubscriptions();
-
   const activeSubscriptionProductId = activeSubscriptions?.[0]?.productId;
 
   if (!activeSubscriptionProductId) {
@@ -40,22 +38,19 @@ export function useActiveSubscriptionProductId() {
   return activeSubscriptionProductId;
 }
 
-export function useActiveSubscriptionProduct(products?: ProductMetadata[]) {
+export function useActiveSubscriptionProduct() {
   const productId = useActiveSubscriptionProductId();
 
-  if (!(productId && products)) {
+  if (!productId) {
     return null;
   }
 
-  const product = getProduct({ products, productId });
+  const product = getProduct(productId);
   return product;
 }
 
-export function useActiveSubscriptionSlug(
-  products?: ProductMetadata[],
-  isYearly?: boolean,
-) {
-  const activeProduct = useActiveSubscriptionProduct(products);
+export function useActiveSubscriptionSlug(isYearly?: boolean) {
+  const activeProduct = useActiveSubscriptionProduct();
 
   if (!activeProduct) {
     return null;

@@ -5,25 +5,17 @@ import type {
 } from "../zap.plugin.config.types";
 
 export function getProducts() {
-  const products = Object.values(ZAP_PAYMENTS_CONFIG.PRODUCTS_METADATA);
+  const products = Object.values(ZAP_PAYMENTS_CONFIG.PRODUCTS_METADATA) || [];
   return products;
 }
 
-export function getProduct({
-  products,
-  productId,
-  slug,
-}: {
-  products: ProductMetadata[];
-  productId?: string;
-  slug?: string;
-}) {
+export function getProduct(productId: string) {
+  const products = getProducts();
   return (
     products.find(
       (product) =>
-        (product.productId && productId && product.productId === productId) ||
-        (product.slug && slug && product.slug === slug),
-    ) || null
+        product.productId && productId && product.productId === productId,
+    ) ?? null
   );
 }
 
@@ -38,10 +30,8 @@ export function getBillingDetails(product: ProductMetadata, isYearly: boolean) {
   };
 }
 
-export function getProductsArray(
-  products: ProductMetadata[],
-  isYearly: boolean,
-) {
+export function getProductsArray(isYearly: boolean) {
+  const products = getProducts();
   return products.flatMap((product) => {
     if (product.billingOptions) {
       const key = isYearly ? "yearly" : "monthly";
@@ -69,11 +59,8 @@ export function getProductsArray(
   });
 }
 
-export function getSortedProducts(
-  products: ProductMetadata[],
-  isYearly: boolean,
-) {
-  const productsArray = getProductsArray(products, isYearly);
+export function getSortedProducts(isYearly: boolean) {
+  const productsArray = getProductsArray(isYearly);
 
   const productsWithPrices = productsArray.map((product) => ({
     product,
