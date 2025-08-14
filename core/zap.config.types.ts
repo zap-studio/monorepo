@@ -61,3 +61,24 @@ export interface ZapPluginConfig {
 export interface ZapConfig extends ZapCoreSettings {
   plugins?: Record<string, ZapPluginConfig>;
 }
+
+export type ZapPlugins =
+  | "ai"
+  | "analytics"
+  | "auth"
+  | "blog"
+  | "components"
+  | "crypto"
+  | "db"
+  | "env"
+  | "errors"
+  | "feedbacks"
+  | "flags"
+  | "landing"
+  | "legal"
+  | "mails"
+  | "markdown"
+  | "payments"
+  | "pwa"
+  | "sidebar"
+  | "waitlist";

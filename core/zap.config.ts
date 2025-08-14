@@ -14,7 +14,7 @@
 
 import type { Metadata } from "next";
 
-import type { ZapCoreSettings } from "./zap.config.types";
+import type { ZapCoreSettings, ZapPlugins } from "./zap.config.types";
 import { DEV } from "./zap/env/runtime";
 
 // ─────────────────────────────────────────────────────────────
@@ -29,6 +29,31 @@ export const BASE_URL = DEV
   : "https://demo.zap-ts.alexandretrotel.org";
 export const SALES_EMAIL = "sales@example.com";
 export const SUPPORT_EMAIL = "support@example.com";
+
+// ─────────────────────────────────────────────────────────────
+// Plugin Configuration
+// ─────────────────────────────────────────────────────────────
+export const PLUGIN_CONFIG: Record<ZapPlugins, boolean> = {
+  ai: true,
+  analytics: true,
+  auth: true,
+  blog: true,
+  components: true,
+  crypto: true,
+  db: true,
+  env: true,
+  errors: true,
+  feedbacks: true,
+  flags: true,
+  landing: true,
+  legal: true,
+  mails: true,
+  markdown: true,
+  payments: true,
+  pwa: true,
+  sidebar: true,
+  waitlist: true,
+};
 
 // ─────────────────────────────────────────────────────────────
 // Core Configuration
