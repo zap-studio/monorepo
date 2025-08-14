@@ -9,13 +9,25 @@
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
+    "@ai-sdk/openai-compatible": "^1.0.5",
+    "@ai-sdk/react": "^2.0.10",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "ai": "^5.0.10",
+    "class-variance-authority": "^0.7.1",
     "fumadocs-core": "15.6.10",
     "fumadocs-mdx": "11.7.5",
+    "fumadocs-typescript": "^4.0.6",
     "fumadocs-ui": "15.6.10",
+    "hast-util-to-jsx-runtime": "^2.3.6",
     "lucide-react": "^0.539.0",
     "next": "15.4.6",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-rehype": "^11.1.2",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@types/node": "24.2.1",
