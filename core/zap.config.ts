@@ -36,6 +36,7 @@ export const SUPPORT_EMAIL = "support@example.com";
 export const PLUGIN_CONFIG: Record<ZapPlugins, boolean> = {
   ai: true,
   analytics: true,
+  api: true,
   auth: true,
   blog: true,
   components: true,
