@@ -11,18 +11,29 @@ export const baseOptions: BaseLayoutProps = {
   nav: {
     title: (
       <>
-        <svg
-          width="24"
-          height="24"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-label="Logo"
-        >
-          <circle cx={12} cy={12} r={12} fill="currentColor" />
-        </svg>
-        My App
+        <span className="font-bold text-base">Zap.ts ⚡️</span>
       </>
     ),
   },
   // see https://fumadocs.dev/docs/ui/navigation/links
-  links: [],
+  links: [
+    {
+      text: 'Best Practices',
+      url: '/docs/misc/best-practices',
+    },
+    {
+      text: 'Contributors',
+      url: '/contributors',
+    },
+    {
+      text: 'Discussions',
+      url: 'https://github.com/alexandretrotel/zap.ts/discussions',
+      external: true,
+    },
+    {
+      text: 'Demo',
+      url: 'https://demo.zap-ts.alexandretrotel.org',
+      external: true,
+    },
+  ],
 };

@@ -1,0 +1,76 @@
+---
+title: Database
+description: Learn about Zap.ts's modern database stack with Drizzle ORM and PostgreSQL for type-safe, scalable data management.
+---
+
+# Database
+
+Zap.ts uses a _modern_, _type-safe_ database stack built on [Drizzle ORM](https://orm.drizzle.team/) and [PostgreSQL](https://www.postgresql.org/) by default.
+
+The setup is designed for _flexibility_, _developer productivity_, and _end-to-end type safety_.
+
+## Overview
+
+- **Drizzle ORM:** Type-safe, SQL-friendly ORM for schema definition and queries.
+- **Extensible:** Easily add new tables, relations, or swap out the database.
+- **Migrations:** Simple, reliable schema migrations with Drizzle CLI.
+- **PostgreSQL:** Production-ready, scalable relational database.
+- **Type Safety:** All schemas and queries are fully typed with TypeScript.
+
+## How it works?
+
+### 1. Schema Definition
+
+All database schemas are defined using Drizzle's SQL-like schema syntax in the `src/db/schema/` directory.
+
+Example:
+
+```ts
+// src/db/schema/auth.sql.ts
+import { pgTable, serial, varchar, timestamp } from "drizzle-orm/pg-core";
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+```
+
+### 2. Database Client
+
+The Drizzle client is set up in `src/db/index.ts` and used throughout your app for queries and mutations.
+
+### 3. Running Migrations
+
+Migrations are managed with the Drizzle CLI. Zap.ts supports two database configurations:
+
+- **Development**: Local PostgreSQL database (requires `DATABASE_URL_DEV` in your `.env`)
+- **Production**: Neon PostgreSQL database (uses `DATABASE_URL`)
+
+#### Development Commands
+
+```bash npm
+npm run db:generate:dev   # Create migration files for local database
+npm run db:migrate:dev    # Run pending migrations on local database
+npm run db:push:dev       # Apply schema changes to local database
+```
+
+```bash yarn
+yarn db:generate:dev   # Create migration files for local database
+yarn db:migrate:dev    # Run pending migrations on local database
+yarn db:push:dev       # Apply schema changes to local database
+```
+
+```bash pnpm
+pnpm db:generate:dev   # Create migration files for local database
+pnpm db:migrate:dev    # Run pending migrations on local database
+pnpm db:push:dev       # Apply schema changes to local database
+```
+
+```bash bun
+bun run db:generate:dev   # Create migration files for local database
+bun run db:migrate:dev    # Run pending migrations on local database
+bun run db:push:dev       # Apply schema changes to local database
+```
+
+For more detailed information about database management, see the complete database guide in your Zap.ts installation.

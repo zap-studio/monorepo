@@ -1,0 +1,61 @@
+---
+title: API
+description: Learn about Zap.ts's type-safe API layer built with oRPC for seamless frontend-backend communication.
+---
+
+# Type-Safe API
+
+Zap.ts provides a **type-safe API layer** using [oRPC](https://orpc.unnoq.com/) that ensures end-to-end type safety between your frontend and backend.
+
+## Overview
+
+- **Type Safety**: Full TypeScript support from client to server
+- **OpenAPI Compatible**: Generate OpenAPI specs automatically
+- **Validation**: Built-in request/response validation with Zod
+- **DevEx**: Excellent developer experience with auto-completion
+- **Performance**: Optimized for production use
+
+## How it works
+
+### 1. Define Procedures
+
+API procedures are defined in the `src/rpc/procedures/` directory:
+
+```ts
+// src/rpc/procedures/user.rpc.ts
+import { z } from 'zod'
+import { createProcedure } from '../utils'
+
+export const getUserProcedure = createProcedure
+  .input(z.object({ id: z.string() }))
+  .output(z.object({ 
+    id: z.string(),
+    email: z.string(),
+    name: z.string().optional()
+  }))
+  .handler(async ({ input }) => {
+    // Your logic here
+    return await db.getUser(input.id)
+  })
+```
+
+### 2. Use on the Frontend
+
+The generated client provides full type safety:
+
+```tsx
+import { api } from '@/lib/api'
+
+function UserProfile({ userId }: { userId: string }) {
+  const { data: user } = api.user.get.useQuery({ id: userId })
+  
+  return <div>{user?.name}</div> // Fully typed!
+}
+```
+
+## Benefits
+
+- **Catch errors early** - Type mismatches caught at compile time
+- **Better refactoring** - Changes propagate through the entire stack
+- **Improved productivity** - Auto-completion and IntelliSense
+- **Documentation** - Self-documenting APIs with OpenAPI specs
