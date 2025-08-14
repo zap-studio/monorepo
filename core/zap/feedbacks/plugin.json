@@ -1,8 +1,0 @@
-{
-  "name": "feedbacks",
-  "description": "A plugin to manage feedback submissions and ratings of your application.",
-  "author": "Alexandre Trotel",
-  "dependencies": {
-    "plugins": ["api", "components", "db", "errors"]
-  }
-}

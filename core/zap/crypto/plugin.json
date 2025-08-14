@@ -1,8 +1,0 @@
-{
-  "name": "crypto",
-  "description": "A plugin for managing cryptographic operations.",
-  "author": "Alexandre Trotel",
-  "dependencies": {
-    "plugins": ["env", "errors"]
-  }
-}
