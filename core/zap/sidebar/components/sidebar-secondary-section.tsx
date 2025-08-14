@@ -12,6 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { isPluginEnabled } from "@/lib/plugins";
 import { SettingsSheet } from "@/zap/ai/components";
 import { FeedbackDialog } from "@/zap/feedbacks/components";
 
@@ -28,11 +29,13 @@ export function SidebarSecondarySection(props: SidebarSecondarySectionProps) {
       label: "AI Providers",
       icon: <Bot />,
       onClick: () => setAISettingsOpen(true),
+      enabled: isPluginEnabled("ai"),
     },
     {
       label: "Give Feedback",
       icon: <HelpCircle />,
       onClick: () => setFeedbackOpen(true),
+      enabled: isPluginEnabled("feedbacks"),
     },
     {
       label: "Settings",
@@ -46,23 +49,29 @@ export function SidebarSecondarySection(props: SidebarSecondarySectionProps) {
       <SidebarGroup {...props}>
         <SidebarGroupContent>
           <SidebarMenu>
-            {menuItems.map(({ label, icon, onClick, href }) => (
-              <SidebarMenuItem key={label}>
-                <SidebarMenuButton asChild={!!href} onClick={onClick}>
-                  {href ? (
-                    <Link href={href}>
-                      {icon}
-                      <span>{label}</span>
-                    </Link>
-                  ) : (
-                    <>
-                      {icon}
-                      <span>{label}</span>
-                    </>
-                  )}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+            {menuItems.map(({ label, icon, onClick, href, enabled }) => {
+              if (!enabled) {
+                return null;
+              }
+
+              return (
+                <SidebarMenuItem key={label}>
+                  <SidebarMenuButton asChild={!!href} onClick={onClick}>
+                    {href ? (
+                      <Link href={href}>
+                        {icon}
+                        <span>{label}</span>
+                      </Link>
+                    ) : (
+                      <>
+                        {icon}
+                        <span>{label}</span>
+                      </>
+                    )}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              );
+            })}
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>

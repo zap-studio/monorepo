@@ -7,9 +7,9 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { useBodyScrollLock } from "@/hooks/utils/use-body-scroll-lock";
+import { isPluginEnabled } from "@/lib/plugins";
 import { cn } from "@/lib/utils";
-import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
-
+import { SessionButton } from "@/zap/auth/components";
 import { ZapButton } from "../core";
 import { EXTERNAL_LINKS, HEADER_HEIGHT, NAV_LINKS } from "../data";
 
@@ -49,7 +49,7 @@ export function Header() {
         </div>
 
         <div className="hidden flex-1 items-center justify-end space-x-4 md:flex">
-          <SessionButton />
+          {isPluginEnabled("auth") && <SessionButton />}
         </div>
       </div>
 
@@ -72,36 +72,6 @@ function Logo() {
     <Link className="flex items-center space-x-2" href="/">
       <span className="inline-block font-bold">Zap.ts ⚡️</span>
     </Link>
-  );
-}
-
-function SessionButton() {
-  const { data: result } = betterAuthClient.useSession();
-  const session = result?.session;
-
-  if (session) {
-    return (
-      <ZapButton asChild size="sm">
-        <Link href="/app">Open App</Link>
-      </ZapButton>
-    );
-  }
-
-  return (
-    <>
-      <ZapButton asChild variant="ghost">
-        <Link
-          className="text-muted-foreground hover:text-foreground active:text-foreground text-sm font-medium transition-colors"
-          href="/login"
-        >
-          Login
-        </Link>
-      </ZapButton>
-
-      <ZapButton asChild size="sm">
-        <Link href="/register">Get Started</Link>
-      </ZapButton>
-    </>
   );
 }
 

@@ -29,16 +29,18 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { isPluginEnabled } from "@/lib/plugins";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import { handleClientError } from "@/zap/errors/client";
 import { useActiveSubscriptionProduct } from "@/zap/payments/providers/polar/client";
-import { ProductMetadata } from "@/zap/payments/zap.plugin.config.types";
+import type { ProductMetadata } from "@/zap/payments/zap.plugin.config.types";
 
 interface MenuItem {
   label: string;
   icon: LucideIcon;
   href?: string;
   onClick?: () => void;
+  enabled?: boolean;
 }
 
 interface SidebarUserProps {
@@ -85,7 +87,12 @@ export function SidebarUser({ user, products }: SidebarUserProps) {
   };
 
   const UPGRADE_ITEM: MenuItem[] = [
-    { label: "Upgrade to Pro", icon: Sparkles, href: "/app/billing" },
+    {
+      label: "Upgrade to Pro",
+      icon: Sparkles,
+      href: "/app/billing",
+      enabled: isPluginEnabled("payments"),
+    },
   ];
 
   const ACCOUNT_ITEMS: MenuItem[] = [
@@ -94,6 +101,7 @@ export function SidebarUser({ user, products }: SidebarUserProps) {
       label: "Billing",
       icon: CreditCard,
       onClick: handleCustomerPortal,
+      enabled: isPluginEnabled("payments"),
     },
     { label: "Notifications", icon: Bell, href: "/app/notifications" },
   ];
@@ -104,7 +112,11 @@ export function SidebarUser({ user, products }: SidebarUserProps) {
 
   const renderMenuItems = (items: MenuItem[]) => {
     return items
-      .map(({ label, icon: Icon, href, onClick }) => {
+      .map(({ label, icon: Icon, href, onClick, enabled }) => {
+        if (!enabled) {
+          return null;
+        }
+
         if (label === "Billing" && !product) {
           return null;
         }

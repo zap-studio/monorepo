@@ -1,7 +1,6 @@
 import Link from "next/link";
-
+import { isPluginEnabled } from "@/lib/plugins";
 import { LatestBlogPosts } from "@/zap/blog/components";
-
 import { LEGAL_LINKS } from "../data";
 import { ThemeSwitcher } from "./theme-switcher";
 
@@ -36,7 +35,7 @@ export function Footer() {
             <ThemeSwitcher />
           </div>
 
-          <LatestBlogPosts />
+          {isPluginEnabled("blog") && <LatestBlogPosts />}
         </div>
       </div>
     </footer>

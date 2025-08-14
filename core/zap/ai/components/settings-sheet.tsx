@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Control, useForm } from "react-hook-form";
+import { type Control, useForm } from "react-hook-form";
 
 import {
   Form,
@@ -34,7 +34,7 @@ import { handleClientError } from "@/zap/errors/client";
 import { AI_PROVIDERS_OBJECT, DEFAULT_MODEL, ModelsByProvider } from "../data";
 import { useAISettings, useInitAISettings } from "../hooks";
 import { AIFormSchema, AIProviderIdSchema } from "../schemas";
-import { AIFormValues, AIProviderId } from "../types";
+import type { AIFormValues, AIProviderId } from "../types";
 
 interface SettingsSheetProps {
   open: boolean;

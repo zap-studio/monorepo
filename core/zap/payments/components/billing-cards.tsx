@@ -11,17 +11,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SALES_EMAIL } from "@/zap.config";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import { ZapButton } from "@/zap/components/core";
 import { ClientError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
-
-import { PriceDisplay, PricingToggle } from ".";
+import { SALES_EMAIL } from "@/zap.config";
 import { useActiveSubscriptionSlug } from "../providers/polar/client";
 import { getBillingDetails, getSortedProducts } from "../utils";
 import { ZAP_PAYMENTS_CONFIG } from "../zap.plugin.config";
-import { ProductMetadata } from "../zap.plugin.config.types";
+import type { ProductMetadata } from "../zap.plugin.config.types";
+import { PriceDisplay, PricingToggle } from ".";
 
 interface BillingCardsProps {
   products: ProductMetadata[];

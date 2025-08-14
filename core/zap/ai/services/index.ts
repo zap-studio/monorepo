@@ -5,7 +5,7 @@ import {
   convertToModelMessages,
   generateText,
   streamText,
-  UIMessage,
+  type UIMessage,
 } from "ai";
 import { and, eq } from "drizzle-orm";
 
@@ -13,13 +13,13 @@ import { encryptionKeyHex } from "@/zap/crypto";
 import { decrypt } from "@/zap/crypto/decrypt";
 import { encrypt } from "@/zap/crypto/encrypt";
 import { db } from "@/zap/db/providers/drizzle";
-import { UpsertMode } from "@/zap/db/types";
+import type { UpsertMode } from "@/zap/db/types";
 import { BadRequestError } from "@/zap/errors";
 
 import { getApiSettingsForUserAndProviderQuery } from "../db/providers/drizzle/queries";
 import { userAISettings } from "../db/providers/drizzle/schema";
 import { getModel } from "../lib";
-import { AIProviderId, ModelName } from "../types";
+import type { AIProviderId, ModelName } from "../types";
 import { ZAP_AI_CONFIG } from "../zap.plugin.config";
 
 interface GetAISettingsService {

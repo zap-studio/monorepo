@@ -1,6 +1,6 @@
 import { PUBLIC_ENV } from "@/zap/env/public";
 
-import { PaymentsPluginConfig } from "./zap.plugin.config.types";
+import type { PaymentsPluginConfig } from "./zap.plugin.config.types";
 
 // ─────────────────────────────────────────────────────────────
 // Product Metadata

@@ -2,21 +2,42 @@ import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
 import Link from "next/link";
 import { cache } from "react";
 
+import { isPluginEnabled } from "@/lib/plugins";
 import { getNumberOfUsersService } from "@/zap/auth/services";
 import { ZapButton } from "@/zap/components/core";
 import { AnimatedSection, AnimatedText } from "@/zap/components/misc";
 import { getAverageRatingService } from "@/zap/feedbacks/services";
 
 const getStatsData = cache(async () => {
-  const [{ averageRating, totalFeedbacks }, numberOfUsers] = await Promise.all([
-    getAverageRatingService(),
-    getNumberOfUsersService(),
-  ]);
+  const isFeedbacksEnabled = isPluginEnabled("feedbacks");
+  const isAuthEnabled = isPluginEnabled("auth");
+
+  const promises: Promise<unknown>[] = [];
+
+  if (isFeedbacksEnabled) {
+    promises.push(getAverageRatingService());
+  } else {
+    promises.push(Promise.resolve({ averageRating: 0, totalFeedbacks: 0 }));
+  }
+
+  if (isAuthEnabled) {
+    promises.push(getNumberOfUsersService());
+  } else {
+    promises.push(Promise.resolve(0));
+  }
+
+  const [ratingData, numberOfUsers] = await Promise.all(promises);
+
+  const { averageRating, totalFeedbacks } = isFeedbacksEnabled
+    ? (ratingData as { averageRating: number; totalFeedbacks: number })
+    : { averageRating: 0, totalFeedbacks: 0 };
 
   return {
     averageRating,
     totalFeedbacks,
-    numberOfUsers,
+    numberOfUsers: isAuthEnabled ? (numberOfUsers as number) : 0,
+    isFeedbacksEnabled,
+    isAuthEnabled,
   };
 });
 
@@ -60,7 +81,13 @@ export function HeroSection() {
 }
 
 export async function Stats() {
-  const { averageRating, totalFeedbacks, numberOfUsers } = await getStatsData();
+  const {
+    averageRating,
+    totalFeedbacks,
+    numberOfUsers,
+    isFeedbacksEnabled,
+    isAuthEnabled,
+  } = await getStatsData();
 
   const renderStars = () => {
     const fullStars = Math.floor(averageRating);
@@ -69,43 +96,41 @@ export async function Stats() {
         className={`h-4 w-4 ${
           i < fullStars ? "fill-primary text-primary" : "text-primary"
         }`}
-        key={`star-${i}`}
+        key={`star-${i}-${fullStars}`}
       />
     ));
   };
 
-  const shouldShowRatings = averageRating > 0 && totalFeedbacks > 0;
-  const shouldShowUsers = numberOfUsers > 0;
+  const shouldShowRatings =
+    isFeedbacksEnabled && averageRating > 0 && totalFeedbacks > 0;
+  const shouldShowUsers = isAuthEnabled && numberOfUsers > 0;
   const showDivider = shouldShowRatings && shouldShowUsers;
+
+  const hasAnyStats = shouldShowRatings || shouldShowUsers;
+  if (!hasAnyStats) {
+    return null;
+  }
 
   return (
     <div className="flex items-center justify-center space-x-4 text-sm">
-      <div
-        className={`hidden items-center transition-opacity duration-300 md:flex ${
-          shouldShowRatings ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        <div className="flex">{renderStars()}</div>
-        <span className="text-muted-foreground ml-2">
-          {averageRating.toFixed(1)} ({totalFeedbacks} rating
-          {totalFeedbacks !== 1 ? "s" : ""})
-        </span>
-      </div>
+      {shouldShowRatings && (
+        <div className="flex items-center">
+          <div className="flex">{renderStars()}</div>
+          <span className="text-muted-foreground ml-2">
+            {averageRating.toFixed(1)} ({totalFeedbacks} rating
+            {totalFeedbacks !== 1 ? "s" : ""})
+          </span>
+        </div>
+      )}
 
-      <div
-        className={`hidden h-4 w-px border-l transition-opacity duration-300 md:block ${
-          showDivider ? "opacity-100" : "opacity-0"
-        }`}
-      />
+      {showDivider && <div className="h-4 w-px border-l" />}
 
-      <div
-        className={`text-muted-foreground transition-opacity duration-300 ${
-          shouldShowUsers ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        Used by {numberOfUsers.toLocaleString()}+ developer
-        {numberOfUsers !== 1 ? "s" : ""}
-      </div>
+      {shouldShowUsers && (
+        <div className="text-muted-foreground">
+          Used by {numberOfUsers.toLocaleString()}+ developer
+          {numberOfUsers !== 1 ? "s" : ""}
+        </div>
+      )}
     </div>
   );
 }

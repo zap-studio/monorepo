@@ -14,10 +14,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { isPluginEnabled } from "@/lib/plugins";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import { useActiveSubscriptionProduct } from "@/zap/payments/providers/polar/client";
-import { ProductMetadata } from "@/zap/payments/zap.plugin.config.types";
-
+import type { ProductMetadata } from "@/zap/payments/zap.plugin.config.types";
 import {
   SidebarMainSection,
   SidebarSecondarySection,
@@ -73,7 +73,9 @@ export function AppSidebar({ products, ...props }: AppSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarUser products={products} user={userData} />
+        {isPluginEnabled("auth") && (
+          <SidebarUser products={products} user={userData} />
+        )}
       </SidebarFooter>
     </Sidebar>
   );

@@ -6,11 +6,10 @@ import { toast } from "sonner";
 import { ZapButton } from "@/zap/components/core";
 import { AuthenticationError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
-
-import { PROVIDER_ICONS } from ".";
 import { betterAuthClient } from "../providers/better-auth/client";
 import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
-import { Provider } from "../zap.plugin.config.types";
+import type { Provider } from "../zap.plugin.config.types";
+import { PROVIDER_ICONS } from ".";
 
 interface SocialProviderButtonProps {
   provider: Provider;

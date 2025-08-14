@@ -4,9 +4,9 @@ import "client-only";
 import { useChat, useCompletion } from "@ai-sdk/react";
 import { eventIteratorToStream } from "@orpc/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { CompletionRequestOptions } from "ai";
+import type { CompletionRequestOptions } from "ai";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import type { useForm } from "react-hook-form";
 
 import { useZapMutation, useZapQuery } from "@/zap/api/hooks";
 import { orpcQuery } from "@/zap/api/lib/orpc";
