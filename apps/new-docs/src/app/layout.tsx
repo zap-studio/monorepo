@@ -1,7 +1,7 @@
 import '@/app/global.css';
-import { RootProvider } from 'fumadocs-ui/provider';
 import { Geist as Font } from 'next/font/google';
 import type { ReactNode } from 'react';
+import { Provider } from './provider';
 
 const font = Font({
   subsets: ['latin'],
@@ -15,7 +15,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       suppressHydrationWarning
     >
       <body className="flex min-h-screen flex-col">
-        <RootProvider>{children}</RootProvider>
+        <Provider>{children}</Provider>
       </body>
     </html>
   );
