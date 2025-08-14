@@ -33,13 +33,13 @@ export function SidebarSecondarySection(props: SidebarSecondarySectionProps) {
         label: "AI Providers",
         icon: <Bot />,
         onClick: () => setAISettingsOpen(true),
-        enabled: isAIEnabled,
+        disabled: !isAIEnabled,
       },
       {
         label: "Give Feedback",
         icon: <HelpCircle />,
         onClick: () => setFeedbackOpen(true),
-        enabled: isFeedbackEnabled,
+        disabled: !isFeedbackEnabled,
       },
       {
         label: "Settings",
@@ -55,8 +55,8 @@ export function SidebarSecondarySection(props: SidebarSecondarySectionProps) {
       <SidebarGroup {...props}>
         <SidebarGroupContent>
           <SidebarMenu>
-            {menuItems.map(({ label, icon, onClick, href, enabled }) => {
-              if (!enabled) {
+            {menuItems.map(({ label, icon, onClick, href, disabled }) => {
+              if (disabled) {
                 return null;
               }
 
