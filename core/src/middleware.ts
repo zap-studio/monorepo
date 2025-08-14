@@ -3,75 +3,76 @@ import "server-only";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { $fetch } from "@/lib/fetch";
-import { ZAP_DEFAULT_SETTINGS } from "@/zap.config";
-import type { Session } from "@/zap/lib/auth/client";
+import {
+  checkPublicPathAccess,
+  createLoginRedirect,
+  getSessionInEdgeRuntime,
+} from "@/zap/auth/authorization";
+import { checkBlogPathAccess } from "@/zap/blog/authorization";
+import { logError } from "@/zap/errors/logger";
+import { checkWaitlistRedirect } from "@/zap/waitlist/authorization";
 
-import { logError } from "./zap/lib/api/logger";
-
-const LOGIN_URL = ZAP_DEFAULT_SETTINGS.AUTH.LOGIN_URL;
+import { isPluginEnabled } from "./lib/plugins";
 
 export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl;
 
-    // Redirect to waitlist if feature is enabled and user is not on waitlist page
-    if (
-      ZAP_DEFAULT_SETTINGS.WAITLIST.ENABLE_WAITLIST_PAGE &&
-      pathname !== "/waitlist"
-    ) {
-      const waitlistUrl = new URL("/waitlist", request.url);
-      return NextResponse.redirect(waitlistUrl);
+    // Check for waitlist redirect (optional plugin)
+    if (isPluginEnabled("waitlist")) {
+      const waitlistRedirect = checkWaitlistRedirect(request);
+      if (waitlistRedirect) {
+        return waitlistRedirect;
+      }
     }
 
-    // Allow public paths
-    if (
-      ZAP_DEFAULT_SETTINGS.AUTH.PUBLIC_PATHS.includes(pathname) ||
-      pathname.startsWith(ZAP_DEFAULT_SETTINGS.BLOG.BASE_PATH)
-    ) {
+    // Check if path is a blog path (optional plugin)
+    if (isPluginEnabled("blog")) {
+      const blogPathAccess = checkBlogPathAccess(request);
+      if (blogPathAccess) {
+        return blogPathAccess;
+      }
+    }
+
+    // Handle authentication if auth plugin is enabled
+    if (isPluginEnabled("auth")) {
+      // Check if path is publicly accessible (auth public paths)
+      const publicPathAccess = checkPublicPathAccess(request);
+      if (publicPathAccess) {
+        return publicPathAccess;
+      }
+
+      // Fetch session from API using edge runtime compatible method
+      const session = await getSessionInEdgeRuntime(request);
+
+      if (!session) {
+        // Redirect unauthenticated users to login with the original path as a query param
+        return createLoginRedirect(request, pathname);
+      }
+
+      // Add session headers for authenticated requests
       const requestHeaders = new Headers(request.headers);
+      requestHeaders.set("x-user-session", JSON.stringify(session));
 
       const response = NextResponse.next({
         request: { headers: requestHeaders },
       });
+
       return response;
     }
 
-    // Fetch session from API
-    let session: Session | null = null;
-    try {
-      session = await $fetch<Session>("/api/auth/get-session", {
-        headers: {
-          cookie: request.headers.get("cookie") || "",
-        },
-      });
-    } catch {
-      // Session fetch failed, treat as unauthenticated
-      session = null;
-    }
-
-    if (!session) {
-      // Redirect unauthenticated users to /login with the original path as a query param
-      const loginUrl = new URL(LOGIN_URL, request.url);
-      loginUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-
-    // Add session and security headers for authenticated requests
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set("x-user-session", JSON.stringify(session));
-
-    const response = NextResponse.next({
-      request: { headers: requestHeaders },
-    });
-
-    return response;
+    // If auth plugin is disabled, just continue with the request
+    return NextResponse.next();
   } catch (error) {
-    // Fallback: redirect to login on any unexpected error
+    // Fallback behavior depends on auth plugin
     logError(error);
-    const loginUrl = new URL(LOGIN_URL, request.url);
-    loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
+
+    if (isPluginEnabled("auth")) {
+      return createLoginRedirect(request, request.nextUrl.pathname);
+    }
+
+    // If auth is disabled, continue with the request even on error
+    return NextResponse.next();
   }
 }
 

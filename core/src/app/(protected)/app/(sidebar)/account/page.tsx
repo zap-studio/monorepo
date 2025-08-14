@@ -1,10 +1,7 @@
-import { headers } from "next/headers";
-
-import { getAuthDataOrRedirectToLogin } from "@/zap/lib/auth/redirects";
+import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
 
 export default async function AccountPage() {
-  const _headers = await headers();
-  await getAuthDataOrRedirectToLogin(_headers);
+  await getAuthServerDataOrRedirectToLoginService();
 
   return <></>;
 }

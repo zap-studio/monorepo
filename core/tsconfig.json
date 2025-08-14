@@ -20,8 +20,11 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
+      "@/zap/*": ["./zap/*"],
       "@/zap.config": ["./zap.config"],
-      "@/fonts": ["./src/styles/fonts"]
+      "@/zap.config.types": ["./zap.config.types"],
+      "@/fonts": ["./src/styles/fonts"],
+      "@/emails": ["./emails"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
