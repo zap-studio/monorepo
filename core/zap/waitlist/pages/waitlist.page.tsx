@@ -2,8 +2,8 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Badge } from "@/components/ui/badge";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import { orpcQuery } from "@/zap/api/lib/orpc";
 import { queryClient } from "@/zap/api/lib/tanstack-query";
-import { orpc } from "@/zap/api/providers/orpc/client";
 import { orpcServer } from "@/zap/api/providers/orpc/server";
 import { AnimatedNumber } from "@/zap/components/misc";
 
@@ -11,7 +11,7 @@ import { AnimateWaitlist, WaitlistForm } from "../components";
 import { ZAP_WAITLIST_CONFIG } from "../zap.plugin.config";
 
 export async function _WaitlistPage() {
-  const waitlistCountKey = orpc.waitlist.getNumberOfPeopleInWaitlist.key();
+  const waitlistCountKey = orpcQuery.waitlist.getNumberOfPeopleInWaitlist.key();
   await queryClient.prefetchQuery({
     queryKey: waitlistCountKey,
     queryFn: async () => orpcServer.waitlist.getNumberOfPeopleInWaitlist(),

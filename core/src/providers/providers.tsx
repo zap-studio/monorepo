@@ -3,30 +3,22 @@ import "client-only";
 
 import { ProgressProvider } from "@bprogress/next/app";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { lazy } from "react";
 
+import { isPluginEnabled } from "@/lib/plugins";
 import { ThemeProvider } from "@/providers/theme.provider";
-
-// Lazy load optional providers
-const AnalyticsProvider = lazy(() =>
-  import("@/zap/analytics/providers/analytics.provider")
-    .then((module) => ({ default: module.AnalyticsProvider }))
-    .catch(() => ({
-      default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    })),
-);
-
-const TanStackQueryProvider = lazy(() =>
-  import("@/zap/api/providers/tanstack-query.provider")
-    .then((module) => ({ default: module.TanStackQueryProvider }))
-    .catch(() => ({
-      default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    })),
-);
+import { AnalyticsProvider } from "@/zap/analytics/providers/analytics.provider";
+import { TanStackQueryProvider } from "@/zap/api/providers";
 
 interface ProvidersProps {
   children: React.ReactNode;
 }
+
+const withAnalytics = (children: React.ReactNode) =>
+  isPluginEnabled("analytics") ? (
+    <AnalyticsProvider>{children}</AnalyticsProvider>
+  ) : (
+    children
+  );
 
 export function Providers({ children }: ProvidersProps) {
   return (
@@ -44,7 +36,7 @@ export function Providers({ children }: ProvidersProps) {
       >
         <NuqsAdapter>
           <TanStackQueryProvider>
-            <AnalyticsProvider>{children}</AnalyticsProvider>
+            {withAnalytics(children)}
           </TanStackQueryProvider>
         </NuqsAdapter>
       </ProgressProvider>

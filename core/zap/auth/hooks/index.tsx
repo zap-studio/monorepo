@@ -8,7 +8,7 @@ import type { z } from "zod";
 
 import { useCooldown } from "@/hooks/utils/use-cooldown";
 import { useZapQuery } from "@/zap/api/hooks";
-import { orpc } from "@/zap/api/providers/orpc/client";
+import { orpcQuery } from "@/zap/api/lib/orpc";
 import { AuthenticationError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
 import { ZAP_MAILS_CONFIG } from "@/zap/mails/zap.plugin.config";
@@ -18,7 +18,7 @@ import type { LoginFormSchema, RegisterFormSchema } from "../schemas";
 import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 
 export function useNumberOfUsers() {
-  return useZapQuery(orpc.auth.getNumberOfUsers.queryOptions());
+  return useZapQuery(orpcQuery.auth.getNumberOfUsers.queryOptions());
 }
 
 type LoginFormValues = z.infer<typeof LoginFormSchema>;

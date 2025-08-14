@@ -2,7 +2,7 @@
 import "client-only";
 
 import { useZapMutation } from "@/zap/api/hooks";
-import { orpc } from "@/zap/api/providers/orpc/client";
+import { orpcQuery } from "@/zap/api/lib/orpc";
 import { PUBLIC_ENV } from "@/zap/env/public";
 import { ClientError, EnvironmentError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
@@ -23,7 +23,7 @@ export function usePushNotifications() {
   );
 
   const { mutateAsync: subscribe, isPending: isSubscribing } = useZapMutation({
-    ...orpc.pwa.subscribeUserToPushNotifications.mutationOptions(),
+    ...orpcQuery.pwa.subscribeUserToPushNotifications.mutationOptions(),
     onSuccess: () => {
       setSubscribed(true);
     },
@@ -37,7 +37,7 @@ export function usePushNotifications() {
 
   const { mutateAsync: unsubscribe, isPending: isUnsubscribing } =
     useZapMutation({
-      ...orpc.pwa.unsubscribeUserFromPushNotifications.mutationOptions(),
+      ...orpcQuery.pwa.unsubscribeUserFromPushNotifications.mutationOptions(),
       onSuccess: () => {
         setSubscriptionState({
           subscription: null,

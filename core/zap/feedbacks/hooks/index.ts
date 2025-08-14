@@ -5,14 +5,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import { useZapMutation, useZapQuery } from "@/zap/api/hooks";
-import { orpc } from "@/zap/api/providers/orpc/client";
+import { orpcQuery } from "@/zap/api/lib/orpc";
 
 export function useAverageRating() {
-  return useZapQuery(orpc.feedbacks.getAverageRating.queryOptions());
+  return useZapQuery(orpcQuery.feedbacks.getAverageRating.queryOptions());
 }
 
 export function useUserFeedback() {
-  return useZapQuery(orpc.feedbacks.getUserFeedback.queryOptions());
+  return useZapQuery(orpcQuery.feedbacks.getUserFeedback.queryOptions());
 }
 
 export function useSubmitFeedback(
@@ -20,10 +20,10 @@ export function useSubmitFeedback(
 ) {
   const queryClient = useQueryClient();
 
-  const getUserFeedbackQueryKey = orpc.feedbacks.getUserFeedback.key();
+  const getUserFeedbackQueryKey = orpcQuery.feedbacks.getUserFeedback.key();
 
   return useZapMutation({
-    ...orpc.feedbacks.submit.mutationOptions({
+    ...orpcQuery.feedbacks.submit.mutationOptions({
       onSettled: () =>
         queryClient.invalidateQueries({ queryKey: getUserFeedbackQueryKey }),
     }),

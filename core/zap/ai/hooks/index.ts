@@ -9,7 +9,8 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { useZapMutation, useZapQuery } from "@/zap/api/hooks";
-import { orpc, orpcClient } from "@/zap/api/providers/orpc/client";
+import { orpcQuery } from "@/zap/api/lib/orpc";
+import { orpcClient } from "@/zap/api/providers/orpc/client";
 import { ApplicationError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
 
@@ -76,10 +77,10 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
   const [initialKey, setInitialKey] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
-  const getAISettingsKey = orpc.ai.getAISettings.key();
+  const getAISettingsKey = orpcQuery.ai.getAISettings.key();
 
   const testApiKeyMutation = useZapMutation({
-    ...orpc.ai.testAPIKey.mutationOptions(),
+    ...orpcQuery.ai.testAPIKey.mutationOptions(),
     onSuccess: () => {
       setIsValidated(true);
     },
@@ -90,7 +91,7 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
   });
 
   const saveSettingsMutation = useZapMutation({
-    ...orpc.ai.saveOrUpdateAISettings.mutationOptions({
+    ...orpcQuery.ai.saveOrUpdateAISettings.mutationOptions({
       onSettled: () =>
         queryClient.invalidateQueries({
           queryKey: getAISettingsKey,
@@ -100,7 +101,7 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
   });
 
   const deleteSettingsMutation = useZapMutation({
-    ...orpc.ai.deleteAPIKey.mutationOptions(),
+    ...orpcQuery.ai.deleteAPIKey.mutationOptions(),
     onSettled: () =>
       queryClient.invalidateQueries({
         queryKey: getAISettingsKey,
@@ -146,7 +147,7 @@ export function useInitAISettings(
   const provider = form.watch("provider");
 
   const { data, isLoading } = useZapQuery(
-    orpc.ai.getAISettings.queryOptions({
+    orpcQuery.ai.getAISettings.queryOptions({
       input: { provider },
       enabled: open,
     }),

@@ -1,23 +1,16 @@
 import "server-only";
 
+import { isAuthenticatedService } from "@/zap/auth/services";
 import { DEV } from "@/zap/env/runtime";
 
 import { EnvironmentError, UnauthorizedError } from ".";
 import {
   generateCorrelationId,
+  handleError,
   type HandlerFunction,
   type HandlerOptions,
-  handleError,
   logSuccess,
 } from "./utils";
-
-let isAuthenticatedService: (() => Promise<boolean>) | undefined;
-try {
-  isAuthenticatedService = (await import("@/zap/auth/services"))
-    .isAuthenticatedService;
-} catch {
-  // Fail silently if auth plugin doesn't exist
-}
 
 function createHandler<T extends unknown[], R>(
   handler: HandlerFunction<T, R>,

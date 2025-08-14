@@ -8,23 +8,22 @@ import {
   createLoginRedirect,
   getSessionInEdgeRuntime,
 } from "@/zap/auth/authorization";
+import { checkBlogPathAccess } from "@/zap/blog/authorization";
 import { logError } from "@/zap/errors/logger";
+import { checkWaitlistRedirect } from "@/zap/waitlist/authorization";
+
+import { isPluginEnabled } from "./lib/plugins";
 
 export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl;
 
     // Check for waitlist redirect (optional plugin)
-    try {
-      const { checkWaitlistRedirect } = await import(
-        "@/zap/waitlist/authorization"
-      );
+    if (isPluginEnabled("waitlist")) {
       const waitlistRedirect = checkWaitlistRedirect(request);
       if (waitlistRedirect) {
         return waitlistRedirect;
       }
-    } catch {
-      // Waitlist plugin not installed, skip check
     }
 
     // Check if path is publicly accessible (auth public paths)
@@ -34,14 +33,11 @@ export async function middleware(request: NextRequest) {
     }
 
     // Check if path is a blog path (optional plugin)
-    try {
-      const { checkBlogPathAccess } = await import("@/zap/blog/authorization");
+    if (isPluginEnabled("blog")) {
       const blogPathAccess = checkBlogPathAccess(request);
       if (blogPathAccess) {
         return blogPathAccess;
       }
-    } catch {
-      // Blog plugin not installed, skip check
     }
 
     // Fetch session from API using edge runtime compatible method

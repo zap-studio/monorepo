@@ -10,4 +10,4 @@ export const link = new RPCLink({
 });
 
 export const orpcClient: RouterClient<typeof router> = createORPCClient(link);
-export const orpc = createORPCReactQueryUtils(orpcClient);
+export const orpcQuery = createORPCReactQueryUtils(orpcClient);

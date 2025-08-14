@@ -8,7 +8,7 @@ import type z from "zod";
 
 import { useZapMutation } from "@/zap/api/hooks/use-zap-mutation";
 import { useZapQuery } from "@/zap/api/hooks/use-zap-query";
-import { orpc } from "@/zap/api/providers/orpc/client";
+import { orpcQuery } from "@/zap/api/lib/orpc";
 
 import { WaitlistSchema } from "../schemas";
 import { useWaitlistStore } from "../stores";
@@ -24,10 +24,10 @@ export function useWaitlist() {
 
   const queryClient = useQueryClient();
   const getNumberOfPeopleInWaitlistKey =
-    orpc.waitlist.getNumberOfPeopleInWaitlist.key();
+    orpcQuery.waitlist.getNumberOfPeopleInWaitlist.key();
 
   const { data: waitlistCount } = useZapQuery(
-    orpc.waitlist.getNumberOfPeopleInWaitlist.queryOptions(),
+    orpcQuery.waitlist.getNumberOfPeopleInWaitlist.queryOptions(),
   );
 
   const {
@@ -36,7 +36,7 @@ export function useWaitlist() {
     isPending: isMutating,
     error,
   } = useZapMutation({
-    ...orpc.waitlist.submitWaitlistEmail.mutationOptions({
+    ...orpcQuery.waitlist.submitWaitlistEmail.mutationOptions({
       onSettled: () =>
         queryClient.invalidateQueries({
           queryKey: getNumberOfPeopleInWaitlistKey,
