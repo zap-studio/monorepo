@@ -11,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { isPluginEnabled } from "@/lib/plugins";
 import { ZapButton } from "@/zap/components/core";
 import { PriceDisplay, PricingToggle } from "@/zap/payments/components";
 import { getBillingDetails, getSortedProducts } from "@/zap/payments/utils";
@@ -24,10 +23,6 @@ export function PricingSection() {
     Object.values(ZAP_PAYMENTS_CONFIG.PRODUCTS_METADATA),
     isYearly,
   );
-
-  if (!isPluginEnabled("payments")) {
-    return null;
-  }
 
   return (
     <div className="w-full px-4 md:px-6">

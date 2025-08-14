@@ -1,5 +1,5 @@
+import { isPluginEnabled } from "@/lib/plugins";
 import { Footer, Header } from "@/zap/components/common";
-
 import {
   FaqSection,
   FeaturesSection,
@@ -32,11 +32,18 @@ export const SECTIONS = [
     component: FeaturesSection,
     className: `bg-muted/50 border-y ${SECTION_CLASSNAME}`,
   },
-  { id: "pricing", component: PricingSection, className: SECTION_CLASSNAME },
+  {
+    id: "pricing",
+    component: PricingSection,
+    className: SECTION_CLASSNAME,
+    enabled: isPluginEnabled("payments"),
+  },
   {
     id: "faq",
     component: FaqSection,
-    className: `bg-muted/50 border-t ${SECTION_CLASSNAME}`,
+    className: isPluginEnabled("payments")
+      ? `bg-muted/50 border-t ${SECTION_CLASSNAME}`
+      : SECTION_CLASSNAME,
   },
 ];
 
@@ -45,11 +52,17 @@ export function _LandingPage() {
     <div className="relative flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        {SECTIONS.map(({ id, component: Component, className }) => (
-          <section className={className} id={id} key={id}>
-            <Component />
-          </section>
-        ))}
+        {SECTIONS.map(({ id, component: Component, className, enabled }) => {
+          if (!enabled) {
+            return null;
+          }
+
+          return (
+            <section className={className} id={id} key={id}>
+              <Component />
+            </section>
+          );
+        })}
       </main>
       <Footer />
     </div>
