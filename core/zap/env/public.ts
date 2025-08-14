@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-import { EnvironmentError } from "../errors";
-
 const PublicEnvSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
@@ -49,7 +47,7 @@ if (!envParseResult.success) {
   ].join("\n");
 
   console.error(errorMessage);
-  throw new EnvironmentError(errorMessage);
+  throw new Error(errorMessage);
 }
 
 export const PUBLIC_ENV = envParseResult.data;

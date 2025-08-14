@@ -3,7 +3,7 @@ import "server-only";
 import { isAuthenticatedService } from "@/zap/auth/services";
 import { DEV } from "@/zap/env/runtime";
 
-import { EnvironmentError, UnauthorizedError } from ".";
+import { UnauthorizedError } from ".";
 import {
   generateCorrelationId,
   type HandlerFunction,

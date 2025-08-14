@@ -13,7 +13,6 @@ import { Pool } from "pg";
 
 import { PROD } from "@/zap/env/runtime";
 import { SERVER_ENV } from "@/zap/env/server";
-import { EnvironmentError } from "@/zap/errors";
 
 import * as schema from "./schema";
 
@@ -26,9 +25,7 @@ function createDatabase(): Database {
   }
 
   if (!SERVER_ENV.DATABASE_URL_DEV) {
-    throw new EnvironmentError(
-      "DATABASE_URL_DEV is required in development environment",
-    );
+    throw new Error("DATABASE_URL_DEV is required in development environment");
   }
 
   const pool = new Pool({ connectionString: SERVER_ENV.DATABASE_URL_DEV });

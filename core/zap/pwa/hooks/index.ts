@@ -4,7 +4,7 @@ import "client-only";
 import { useZapMutation } from "@/zap/api/hooks";
 import { orpcQuery } from "@/zap/api/lib/orpc";
 import { PUBLIC_ENV } from "@/zap/env/public";
-import { ClientError, EnvironmentError } from "@/zap/errors";
+import { ApplicationError, ClientError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
 
 import { usePushNotificationsStore } from "../stores";
@@ -52,7 +52,7 @@ export function usePushNotifications() {
       const registration = await navigator.serviceWorker.ready;
 
       if (!PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
-        throw new EnvironmentError("VAPID public key is not set");
+        throw new ApplicationError("VAPID public key is not set");
       }
 
       const applicationServerKey = urlBase64ToUint8Array(

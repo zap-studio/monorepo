@@ -158,12 +158,6 @@ export class ClientError extends BaseApplicationError {
   }
 }
 
-export class EnvironmentError extends BaseApplicationError {
-  constructor(message = "Environment Error", cause?: unknown) {
-    super(message, "ENVIRONMENT_ERROR", cause);
-  }
-}
-
 export class FileOperationError extends BaseApplicationError {
   constructor(message = "File Operation Error", cause?: unknown) {
     super(message, "FILE_OPERATION_ERROR", cause);

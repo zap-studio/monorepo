@@ -2,8 +2,6 @@ import "server-only";
 
 import { z } from "zod";
 
-import { EnvironmentError } from "@/zap/errors";
-
 const ServerEnvSchema = z.object({
   DATABASE_URL: z.url({ message: "DATABASE_URL must be a valid URL" }),
   DATABASE_URL_DEV: z
@@ -60,7 +58,7 @@ if (!envParseResult.success) {
   ].join("\n");
 
   console.error(errorMessage);
-  throw new EnvironmentError(errorMessage);
+  throw new Error(errorMessage);
 }
 
 export const SERVER_ENV = envParseResult.data;
