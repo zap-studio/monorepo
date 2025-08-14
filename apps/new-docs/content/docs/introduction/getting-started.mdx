@@ -19,7 +19,7 @@ Since Zap.ts is _simply_ a **Next.js starter kit**, you own your code; therefore
 
 The `.env` file connects your app to services like the database or email provider. You can remove the ones you don't need.
 
-Update it with your own settings. Example:
+Update it with your own settings. Below is an example.
 
 ```dotenv
 BETTER_AUTH_SECRET=your_better_auth_secret
@@ -47,70 +47,176 @@ To get started, make sure to complete all the required steps in the below file â
 zap.config.ts
 ```
 
-This file defines environment-aware defaults, feature flags, and app behavior like:
+This file defines the core configuration of Zap.ts, including:
 
-- Auth requirements and redirect paths
-- Email rate limiting and subject prefix
-- PWA settings (icons, theme, description)
-- Whether to enable analytics with PostHog
+- setup core informations about the app (name, description, etc.)
+- toggle plugins on or off (e.g. auth, payments)
+- define security-related settings (e.g. CSP and more)
+- provides default SEO metadata for your app
 
 It's fully customizable and acts as the core config hub for your app logic.
+
+<Callout>
+In our effort to make Zap.ts as modular as possible, each plugin also has its own configuration options often found in `zap.plugin.config.ts` files. More details can be found in the respective plugin documentation.
+</Callout>
 
 ## Quick scripts
 
 Use these commands to run Zap.ts. Pick your favorite package manager:
 
-```bash npm
-npm run dev          # Start the dev server fast
-npm run build        # Build your app for production quickly
-npm run start        # Run the production app
-npm run lint         # Check your code with ESLint
-npm run format       # Make your code pretty with Prettier
-npm run db:push      # Update the database schema instantly
-npm run db:migrate   # Apply database changes fast
-npm run db:generate  # Create migration files in a flash
-npm run db:studio    # Open Drizzle Studio to see your database
-npm run db:pull      # Get the database schema easily
+<Tabs items={['npm', 'yarn', 'pnpm', 'bun']}>
+<Tab value="npm">
+```bash
+npm run dev             # Start the dev server with Turbopack
+npm run build           # Build your app for production
+npm run start           # Run the production app
+npm run lint            # Check your code with ESLint
+npm run format          # Format your code with Prettier
+npm run db:push         # Push schema changes to database (prod)
+npm run dev:db:push     # Push schema changes to database (dev)
+npm run db:migrate      # Run database migrations (prod)
+npm run dev:db:migrate  # Run database migrations (dev)
+npm run db:generate     # Generate migration files (prod)
+npm run dev:db:generate # Generate migration files (dev)
+npm run db:studio       # Open Drizzle Studio (prod)
+npm run dev:db:studio   # Open Drizzle Studio (dev)
+npm run db:pull         # Pull schema from database (prod)
+npm run dev:db:pull     # Pull schema from database (dev)
+npm run dev:mail        # Start email development server
+npm run zap             # Run Zap CLI commands
 ```
-
-```bash yarn
-yarn dev             # Start the dev server fast
-yarn build           # Build your app for production quickly
+</Tab>
+<Tab value="yarn">
+```bash
+yarn dev             # Start the dev server with Turbopack
+yarn build           # Build your app for production
 yarn start           # Run the production app
 yarn lint            # Check your code with ESLint
-yarn format          # Make your code pretty with Prettier
-yarn db:push         # Update the database schema instantly
-yarn db:migrate      # Apply database changes fast
-yarn db:generate     # Create migration files in a flash
-yarn db:studio       # Open Drizzle Studio to see your database
-yarn db:pull         # Get the database schema easily
+yarn format          # Format your code with Prettier
+yarn db:push         # Push schema changes to database (prod)
+yarn dev:db:push     # Push schema changes to database (dev)
+yarn db:migrate      # Run database migrations (prod)
+yarn dev:db:migrate  # Run database migrations (dev)
+yarn db:generate     # Generate migration files (prod)
+yarn dev:db:generate # Generate migration files (dev)
+yarn db:studio       # Open Drizzle Studio (prod)
+yarn dev:db:studio   # Open Drizzle Studio (dev)
+yarn db:pull         # Pull schema from database (prod)
+yarn dev:db:pull     # Pull schema from database (dev)
+yarn dev:mail        # Start email development server
+yarn zap             # Run Zap CLI commands
 ```
-
-```bash pnpm
-pnpm dev             # Start the dev server fast
-pnpm build           # Build your app for production quickly
+</Tab>
+<Tab value="pnpm">
+```bash
+pnpm dev             # Start the dev server with Turbopack
+pnpm build           # Build your app for production
 pnpm start           # Run the production app
 pnpm lint            # Check your code with ESLint
-pnpm format          # Make your code pretty with Prettier
-pnpm db:push         # Update the database schema instantly
-pnpm db:migrate      # Apply database changes fast
-pnpm db:generate     # Create migration files in a flash
-pnpm db:studio       # Open Drizzle Studio to see your database
-pnpm db:pull         # Get the database schema easily
+pnpm format          # Format your code with Prettier
+pnpm db:push         # Push schema changes to database (prod)
+pnpm dev:db:push     # Push schema changes to database (dev)
+pnpm db:migrate      # Run database migrations (prod)
+pnpm dev:db:migrate  # Run database migrations (dev)
+pnpm db:generate     # Generate migration files (prod)
+pnpm dev:db:generate # Generate migration files (dev)
+pnpm db:studio       # Open Drizzle Studio (prod)
+pnpm dev:db:studio   # Open Drizzle Studio (dev)
+pnpm db:pull         # Pull schema from database (prod)
+pnpm dev:db:pull     # Pull schema from database (dev)
+pnpm dev:mail        # Start email development server
+pnpm zap             # Run Zap CLI commands
 ```
+</Tab>
+<Tab value="bun">
+```bash
+bun run dev             # Start the dev server with Turbopack
+bun run build           # Build your app for production
+bun run start           # Run the production app
+bun run lint            # Check your code with ESLint
+bun run format          # Format your code with Prettier
+bun run db:push         # Push schema changes to database (prod)
+bun run dev:db:push     # Push schema changes to database (dev)
+bun run db:migrate      # Run database migrations (prod)
+bun run dev:db:migrate  # Run database migrations (dev)
+bun run db:generate     # Generate migration files (prod)
+bun run dev:db:generate # Generate migration files (dev)
+bun run db:studio       # Open Drizzle Studio (prod)
+bun run dev:db:studio   # Open Drizzle Studio (dev)
+bun run db:pull         # Pull schema from database (prod)
+bun run dev:db:pull     # Pull schema from database (dev)
+bun run dev:mail        # Start email development server
+bun run zap             # Run Zap CLI commands
+```
+</Tab>
+</Tabs>
 
-```bash bun
-bun run dev          # Start the dev server fast
-bun run build        # Build your app for production quickly
-bun run start        # Run the production app
-bun run lint         # Check your code with ESLint
-bun run format       # Make your code pretty with Prettier
-bun run db:push      # Update the database schema instantly
-bun run db:migrate   # Apply database changes fast
-bun run db:generate  # Create migration files in a flash
-bun run db:studio    # Open Drizzle Studio to see your database
-bun run db:pull      # Get the database schema easily
+### Additional Development Commands
+
+For advanced development and debugging:
+
+<Tabs items={['npm', 'yarn', 'pnpm', 'bun']}>
+<Tab value="npm">
+```bash
+npm run dev:debug       # Start dev server with Node.js debugger
+npm run dev:scan        # Start dev server with React Scan for performance
+npm run dev:trace       # Start dev server with Turbopack tracing
+npm run build:analyze   # Build with bundle analyzer
+npm run postbuild       # Generate sitemap after build
+npm run db:check        # Check schema for issues (prod)
+npm run dev:db:check    # Check schema for issues (dev)
+npm run db:export       # Export schema (prod)
+npm run dev:db:export   # Export schema (dev)
+npm run db:up           # Apply pending migrations (prod)
+npm run dev:db:up       # Apply pending migrations (dev)
 ```
+</Tab>
+<Tab value="yarn">
+```bash
+yarn dev:debug       # Start dev server with Node.js debugger
+yarn dev:scan        # Start dev server with React Scan for performance
+yarn dev:trace       # Start dev server with Turbopack tracing
+yarn build:analyze   # Build with bundle analyzer
+yarn postbuild       # Generate sitemap after build
+yarn db:check        # Check schema for issues (prod)
+yarn dev:db:check    # Check schema for issues (dev)
+yarn db:export       # Export schema (prod)
+yarn dev:db:export   # Export schema (dev)
+yarn db:up           # Apply pending migrations (prod)
+yarn dev:db:up       # Apply pending migrations (dev)
+```
+</Tab>
+<Tab value="pnpm">
+```bash
+pnpm dev:debug       # Start dev server with Node.js debugger
+pnpm dev:scan        # Start dev server with React Scan for performance
+pnpm dev:trace       # Start dev server with Turbopack tracing
+pnpm build:analyze   # Build with bundle analyzer
+pnpm postbuild       # Generate sitemap after build
+pnpm db:check        # Check schema for issues (prod)
+pnpm dev:db:check    # Check schema for issues (dev)
+pnpm db:export       # Export schema (prod)
+pnpm dev:db:export   # Export schema (dev)
+pnpm db:up           # Apply pending migrations (prod)
+pnpm dev:db:up       # Apply pending migrations (dev)
+```
+</Tab>
+<Tab value="bun">
+```bash
+bun run dev:debug       # Start dev server with Node.js debugger
+bun run dev:scan        # Start dev server with React Scan for performance
+bun run dev:trace       # Start dev server with Turbopack tracing
+bun run build:analyze   # Build with bundle analyzer
+bun run postbuild       # Generate sitemap after build
+bun run db:check        # Check schema for issues (prod)
+bun run dev:db:check    # Check schema for issues (dev)
+bun run db:export       # Export schema (prod)
+bun run dev:db:export   # Export schema (dev)
+bun run db:up           # Apply pending migrations (prod)
+bun run dev:db:up       # Apply pending migrations (dev)
+```
+</Tab>
+</Tabs>
 
 <Callout type="warn">
 This list of commands may not be exhaustive and can change over time as Zap.ts evolves. Always check your local package.json for the most up-to-date command list.
