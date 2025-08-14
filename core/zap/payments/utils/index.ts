@@ -13,7 +13,19 @@ export function getProduct({
   products: ProductMetadata[];
   productId: string;
 }) {
-  return products.find((product) => product.productId === productId) || null;
+  slug,
+}: {
+  products: ProductMetadata[];
+  productId?: string;
+  slug?: string;
+}) {
+  return (
+    products.find(
+      (product) =>
+        (product.productId && productId && product.productId === productId) ||
+        (product.slug && slug && product.slug === slug)
+    ) || null
+  );
 }
 
 export function getBillingDetails(product: ProductMetadata, isYearly: boolean) {
