@@ -4,39 +4,7 @@ The official documentation for [Zap.ts](https://github.com/alexandretrotel/zap.t
 
 ## Overview
 
-This repository contains the documentation site for Zap.ts, built with [VitePress](https://vitepress.dev/). Zap.ts is a modern boilerplate that accelerates web application development with a turbocharged stack and built-in features.
-
-## Getting Started
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/alexandretrotel/zap-ts-docs.git
-```
-
-2. Install dependencies:
-
-```bash
-bun install
-```
-
-3. Run development server:
-
-```bash
-bun run docs:dev
-```
-
-4. Build for production:
-
-```bash
-bun run docs:build
-```
-
-5. Preview the built site:
-
-```bash
-bun run docs:preview
-```
+This repository contains the documentation site for Zap.ts, built with [Fumadocs](https://fumadocs.dev/). Zap.ts is a modern boilerplate that accelerates web application development with a turbocharged stack and built-in features.
 
 ## Contributing
 
