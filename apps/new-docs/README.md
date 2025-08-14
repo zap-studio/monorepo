@@ -1,45 +1,52 @@
-# new-docs
+# Zap.ts Docs ⚡️
 
-This is a Next.js application generated with
-[Create Fumadocs](https://github.com/fuma-nama/fumadocs).
+The official documentation for [Zap.ts](https://github.com/alexandretrotel/zap.ts) - build applications as fast as a zap.
 
-Run development server:
+## Overview
+
+This repository contains the documentation site for Zap.ts, built with [VitePress](https://vitepress.dev/). Zap.ts is a modern boilerplate that accelerates web application development with a turbocharged stack and built-in features.
+
+## Getting Started
+
+1. Clone the repository:
 
 ```bash
-npm run dev
-# or
-pnpm dev
-# or
-yarn dev
+git clone https://github.com/alexandretrotel/zap-ts-docs.git
 ```
 
-Open http://localhost:3000 with your browser to see the result.
+2. Install dependencies:
 
-## Explore
+```bash
+bun install
+```
 
-In the project, you can see:
+3. Run development server:
 
-- `lib/source.ts`: Code for content source adapter, [`loader()`](https://fumadocs.dev/docs/headless/source-api) provides the interface to access your content.
-- `app/layout.config.tsx`: Shared options for layouts, optional but preferred to keep.
+```bash
+bun run docs:dev
+```
 
-| Route                     | Description                                            |
-| ------------------------- | ------------------------------------------------------ |
-| `app/(home)`              | The route group for your landing page and other pages. |
-| `app/docs`                | The documentation layout and pages.                    |
-| `app/api/search/route.ts` | The Route Handler for search.                          |
+4. Build for production:
 
-### Fumadocs MDX
+```bash
+bun run docs:build
+```
 
-A `source.config.ts` config file has been included, you can customise different options like frontmatter schema.
+5. Preview the built site:
 
-Read the [Introduction](https://fumadocs.dev/docs/mdx) for further details.
+```bash
+bun run docs:preview
+```
 
-## Learn More
+## Contributing
 
-To learn more about Next.js and Fumadocs, take a look at the following
-resources:
+Contributions are welcome! Please:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Fumadocs](https://fumadocs.vercel.app) - learn about Fumadocs
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request
+4. Use the "Edit this page on GitHub" link on any page to suggest changes
+
+## License
+
+Released under the MIT License.
