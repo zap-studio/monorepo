@@ -80,6 +80,7 @@ export type ZapPlugins =
   | "mails"
   | "markdown"
   | "payments"
+  | "plugins"
   | "pwa"
   | "sidebar"
   | "waitlist";
