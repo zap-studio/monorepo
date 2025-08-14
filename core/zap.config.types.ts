@@ -65,6 +65,7 @@ export interface ZapConfig extends ZapCoreSettings {
 export type ZapPlugins =
   | "ai"
   | "analytics"
+  | "api"
   | "auth"
   | "blog"
   | "components"

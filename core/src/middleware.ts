@@ -26,12 +26,6 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Check if path is publicly accessible (auth public paths)
-    const publicPathAccess = checkPublicPathAccess(request);
-    if (publicPathAccess) {
-      return publicPathAccess;
-    }
-
     // Check if path is a blog path (optional plugin)
     if (isPluginEnabled("blog")) {
       const blogPathAccess = checkBlogPathAccess(request);
@@ -40,27 +34,45 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Fetch session from API using edge runtime compatible method
-    const session = await getSessionInEdgeRuntime(request);
+    // Handle authentication if auth plugin is enabled
+    if (isPluginEnabled("auth")) {
+      // Check if path is publicly accessible (auth public paths)
+      const publicPathAccess = checkPublicPathAccess(request);
+      if (publicPathAccess) {
+        return publicPathAccess;
+      }
 
-    if (!session) {
-      // Redirect unauthenticated users to login with the original path as a query param
-      return createLoginRedirect(request, pathname);
+      // Fetch session from API using edge runtime compatible method
+      const session = await getSessionInEdgeRuntime(request);
+
+      if (!session) {
+        // Redirect unauthenticated users to login with the original path as a query param
+        return createLoginRedirect(request, pathname);
+      }
+
+      // Add session headers for authenticated requests
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set("x-user-session", JSON.stringify(session));
+
+      const response = NextResponse.next({
+        request: { headers: requestHeaders },
+      });
+
+      return response;
     }
 
-    // Add session and security headers for authenticated requests
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set("x-user-session", JSON.stringify(session));
-
-    const response = NextResponse.next({
-      request: { headers: requestHeaders },
-    });
-
-    return response;
+    // If auth plugin is disabled, just continue with the request
+    return NextResponse.next();
   } catch (error) {
-    // Fallback: redirect to login on any unexpected error
+    // Fallback behavior depends on auth plugin
     logError(error);
-    return createLoginRedirect(request, request.nextUrl.pathname);
+
+    if (isPluginEnabled("auth")) {
+      return createLoginRedirect(request, request.nextUrl.pathname);
+    }
+
+    // If auth is disabled, continue with the request even on error
+    return NextResponse.next();
   }
 }
 

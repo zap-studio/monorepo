@@ -23,6 +23,7 @@ export const ZAP_AUTH_CONFIG: AuthPluginConfig = {
     "/terms-of-service",
     "/privacy-policy",
     "/cookie-policy",
+    "/blog",
     "/waitlist",
     "/_vercel/speed-insights/vitals",
     "/_vercel/insights/view",

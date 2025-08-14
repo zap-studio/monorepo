@@ -13,6 +13,13 @@ interface ProvidersProps {
   children: React.ReactNode;
 }
 
+const withTanStackQuery = (children: React.ReactNode) =>
+  isPluginEnabled("api") ? (
+    <TanStackQueryProvider>{children}</TanStackQueryProvider>
+  ) : (
+    children
+  );
+
 const withAnalytics = (children: React.ReactNode) =>
   isPluginEnabled("analytics") ? (
     <AnalyticsProvider>{children}</AnalyticsProvider>
@@ -34,11 +41,7 @@ export function Providers({ children }: ProvidersProps) {
         options={{ showSpinner: false }}
         shallowRouting
       >
-        <NuqsAdapter>
-          <TanStackQueryProvider>
-            {withAnalytics(children)}
-          </TanStackQueryProvider>
-        </NuqsAdapter>
+        <NuqsAdapter>{withTanStackQuery(withAnalytics(children))}</NuqsAdapter>
       </ProgressProvider>
     </ThemeProvider>
   );
