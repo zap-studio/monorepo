@@ -14,7 +14,7 @@
     },
     "apps/create-zap-app": {
       "name": "create-zap-app",
-      "version": "1.4.5",
+      "version": "1.4.7",
       "bin": {
         "create-zap-app": "./dist/index.js",
         "zap": "./dist/index.js",
@@ -142,6 +142,7 @@
         "@types/web-push": "^3.6.4",
         "@typescript-eslint/eslint-plugin": "^8.39.1",
         "@typescript-eslint/parser": "^8.39.1",
+        "create-zap-app": "^1.4.7",
         "cross-env": "^10.0.0",
         "drizzle-kit": "^0.31.4",
         "eslint": "^9.33.0",
@@ -3171,6 +3172,8 @@
     "@vue/compiler-sfc/@babel/parser": ["@babel/parser@7.28.0", "", { "dependencies": { "@babel/types": "^7.28.0" }, "bin": "./bin/babel-parser.js" }, "sha512-jVZGvOxOuNSsuQuLRTh13nU0AogFlw32w/MT+LV6D3sP5WdbW61E77RnkbaO2dUvmPAYrBDJXGn5gGS6tH4j8g=="],
 
     "@vue/compiler-sfc/estree-walker": ["estree-walker@2.0.2", "", {}, "sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w=="],
+
+    "@zap-ts/core/create-zap-app": ["create-zap-app@1.4.7", "", { "dependencies": { "chalk": "^5.5.0", "commander": "^14.0.0", "execa": "^9.6.0", "figlet": "^1.8.2", "fs-extra": "^11.3.1", "inquirer": "^12.9.1", "ora": "^8.2.0", "ts-morph": "^26.0.0", "zod": "^4.0.15" }, "peerDependencies": { "typescript": "^5.8.3" }, "bin": { "create-zap-app": "dist/index.js", "zap": "dist/index.js" } }, "sha512-fUYcp6KGeFqdxzwsMQrLnSkL/Lf4/kXUetdptsYiambhwzpszdlVq+GRe6ZPOKpEcqSfRFmX2pSUetXTK6fbXg=="],
 
     "accepts/mime-types": ["mime-types@2.1.35", "", { "dependencies": { "mime-db": "1.52.0" } }, "sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw=="],
 

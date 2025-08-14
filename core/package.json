@@ -32,7 +32,7 @@
     "lint": "next lint",
     "mail:dev": "email dev",
     "start": "next start",
-    "zap": "npx create-zap-app@latest"
+    "zap": "zap"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
@@ -121,6 +121,7 @@
     "@types/web-push": "^3.6.4",
     "@typescript-eslint/eslint-plugin": "^8.39.1",
     "@typescript-eslint/parser": "^8.39.1",
+    "create-zap-app": "^1.4.7",
     "cross-env": "^10.0.0",
     "drizzle-kit": "^0.31.4",
     "eslint": "^9.33.0",
