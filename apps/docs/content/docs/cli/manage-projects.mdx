@@ -68,4 +68,25 @@ export function useExample() {
 
 ## Generate `.env.local` File
 
-Coming soon...
+You can generate a starter environment file using the CLI:
+
+1. Run the following command in your project directory:
+
+   ```bash
+   zap generate env
+   ```
+
+   This will create a file named `.env.template` (or `.env.local` if specified).
+
+2. The generated file includes all required and optional environment variables, with example/default values for each. Secrets are auto-generated for fields like `BETTER_AUTH_SECRET` and `ENCRYPTION_KEY`.
+
+3. Next steps:
+
+   - **Review and customize** the variables in `.env.template`.
+   - **Copy** `.env.template` to `.env.local` (or `.env`) in your project.
+   - **Fill in** the actual values for your environment.
+   - **Add** your environment file to `.gitignore` if it contains sensitive data.
+
+<Callout type="warn">
+Required variables must be set and uncommented while optional ones can remain commented. Finally, real secrets must never be committed to version control.
+</Callout>

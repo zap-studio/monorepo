@@ -1,4 +1,4 @@
-# Zap.ts Docs ⚡️
+# Zap.ts Docs
 
 The official documentation for [Zap.ts](https://github.com/alexandretrotel/zap.ts) - build applications as fast as a zap.
 
