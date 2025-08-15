@@ -35,11 +35,27 @@ As a best practice, you should follow these conventions when organizing your cod
 
 Inside the `app` folder, you'll find some special folders that help you organize your code. These **do not affect your route structure** — they just make things easier to manage:
 
-- **public** – For public-facing pages and APIs (no auth required)
-  > Example: `/(public)/index.tsx`
-
-- **protected** – For protected routes (auth required)
-  > Example: `/api/(protected)/user/update-account/route.ts`
+<Table>
+  <TableHead>
+    <TableRow>
+      <TableHeader>Folder</TableHeader>
+      <TableHeader>Description</TableHeader>
+      <TableHeader>Example</TableHeader>
+    </TableRow>
+  </TableHead>
+  <TableBody>
+    <TableRow>
+      <TableCell><code>public</code></TableCell>
+      <TableCell>For public-facing pages and APIs (no auth required)</TableCell>
+      <TableCell><code>/(public)/index.tsx</code></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell><code>protected</code></TableCell>
+      <TableCell>For protected routes (auth required)</TableCell>
+      <TableCell><code>/api/(protected)/user/update-account/route.ts</code></TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
 
 These folders let you group your logic by access level without affecting the final URL structure.
 
@@ -404,43 +420,77 @@ It leverages the **Edge Runtime** that runs your code at the network edge, _clos
 
 ## Naming Files
 
-Follow these naming rules for clarity:
-
-- **Components:** Use `component-name.tsx`  
-  > Example: `user-card.tsx`
-
-- **Constants (in the `data` folder):** Use uppercase naming  
-  > Examples: `FLAGS`, `BASE_URL`
-
-- **Database Schema:** Use `your-schema.sql.ts`  
-  > Example: `auth.sql.ts`
-
-- **Hooks:** Use `use-hook.ts`  
-  > Example: `use-user-profile.ts`
-
-- **Mails:** Use `your-mail.mail.ts`
-  > Example: `template.mail.tsx`
-
-- **Queries:** Use `your-query.query.ts`  
-  > Example: `get-users.query.ts`
-
-- **RPC Procedures:** Use `your-procedure.rpc.ts`  
-  > Example: `user.rpc.ts`
-
-- **Server Actions:** Use `your-action.action.ts`  
-  > Example: `update-user.action.ts`
-
-- **Services:** Use `your-service.service.ts`  
-  > Example: `update-user.service.ts`
-
-- **Stores:** Use `your-store.store.ts`  
-  > Example: `user.store.ts`
-
-- **Zod Schemas:** Use `your-schema.schema.ts` and prefer PascalCase for schema names  
-  > Example file: `user.schema.ts`  
-  > Example schema name: `UserSchema` (not `userSchema`)
-
-- **Other files:** Follow React naming conventions, like PascalCase for components.
+<Table>
+  <TableHead>
+    <TableRow>
+      <TableHeader>Name Type</TableHeader>
+      <TableHeader>File Naming</TableHeader>
+      <TableHeader>Example</TableHeader>
+    </TableRow>
+  </TableHead>
+  <TableBody>
+    <TableRow>
+      <TableCell>Component</TableCell>
+      <TableCell><code>component-name.tsx</code></TableCell>
+      <TableCell><code>user-card.tsx</code></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>Constant (data folder)</TableCell>
+      <TableCell><code>UPPERCASE</code></TableCell>
+      <TableCell><code>FLAGS</code>, <code>BASE_URL</code></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>Database Schema</TableCell>
+      <TableCell><code>your-schema.sql.ts</code></TableCell>
+      <TableCell><code>auth.sql.ts</code></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>Hook</TableCell>
+      <TableCell><code>use-hook.ts</code></TableCell>
+      <TableCell><code>use-user-profile.ts</code></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>Mail</TableCell>
+      <TableCell><code>your-mail.mail.ts</code></TableCell>
+      <TableCell><code>template.mail.tsx</code></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>Query</TableCell>
+      <TableCell><code>your-query.query.ts</code></TableCell>
+      <TableCell><code>get-users.query.ts</code></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>RPC Procedure</TableCell>
+      <TableCell><code>your-procedure.rpc.ts</code></TableCell>
+      <TableCell><code>user.rpc.ts</code></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>Server Action</TableCell>
+      <TableCell><code>your-action.action.ts</code></TableCell>
+      <TableCell><code>update-user.action.ts</code></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>Service</TableCell>
+      <TableCell><code>your-service.service.ts</code></TableCell>
+      <TableCell><code>update-user.service.ts</code></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>Store</TableCell>
+      <TableCell><code>your-store.store.ts</code></TableCell>
+      <TableCell><code>user.store.ts</code></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>Zod Schema</TableCell>
+      <TableCell><code>your-schema.schema.ts</code> <br /> <em>Prefer PascalCase for schema names</em></TableCell>
+      <TableCell><code>user.schema.ts</code> <br /> <code>UserSchema</code> (not <code>userSchema</code>)</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>Other files</TableCell>
+      <TableCell><em>Follow React conventions (PascalCase for components)</em></TableCell>
+      <TableCell>-</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
 
 ## Maximize Your IDE Efficiency
 
