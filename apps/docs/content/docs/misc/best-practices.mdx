@@ -71,13 +71,60 @@ The `providers` folder is for React context providers, but we recommend using Zu
 
 **React Context** is great for static or infrequently changing values (like themes or locales), but it can lead to unnecessary re-renders when used for dynamic state.
 
+```tsx
+import React, { createContext, useState, useContext, ReactNode } from "react";
+
+type Theme = "light" | "dark";
+
+interface ThemeContextType {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useState<Theme>("light");
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("useTheme must be used within a ThemeProvider");
+  }
+  return context;
+}
+```
+
 **Zustand**, on the other hand, is a lightweight state manager that avoids this problem by isolating updates and keeping your components more performant.
+
+```ts
+import { create } from "zustand";
+
+export const useCartStore = create(set => ({
+  items: [],
+  addItem: item => set(state => ({ items: [...state.items, item] })),
+}));
+```
 
 We recommend you to check [Zustand documentation](https://zustand.docs.pmnd.rs/getting-started/introduction) to learn more.
 
 <Callout type="info">
 Use `providers` only when you have no other choice (e.g., for third-party libraries requiring context). For app state, use Zustand stores in the `stores` folder—they're lighter and easier to manage.
 </Callout>
+
+
 
 ## URL State Management
 
@@ -90,17 +137,78 @@ For state that should be **shareable via URL** (like filters, search terms, or p
 - **Deep linking** — Direct links to specific app states
 - **SEO-friendly URLs** — Search engines can index different states of your app
 
+**nuqs** makes it easy to implement these features with minimal boilerplate. See the below example.
+
+```tsx
+"use client";
+
+import { parseAsInteger, useQueryState } from "nuqs";
+
+export function Demo() {
+  const [hello, setHello] = useQueryState("hello", { defaultValue: "" });
+  const [count, setCount] = useQueryState(
+    "count",
+    parseAsInteger.withDefault(0),
+  );
+
+  return (
+    <>
+      <button onClick={() => setCount((c) => c + 1)}>Count: {count}</button>
+      <input
+        value={hello}
+        placeholder="Enter your name"
+        onChange={(e) => setHello(e.target.value || null)}
+      />
+      <p>Hello, {hello || "anonymous visitor"}!</p>
+    </>
+  );
+}
+```
+
 ## Type-Safe APIs
 
 The `schemas` folder uses **Zod** to define validation schemas for your database and API requests.
 
 These schemas ensure your data always matches the expected shape, reducing bugs and runtime errors.
 
+```ts
+// src/schemas/product.schema.ts
+import { z } from "zod";
+
+export const ProductSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  price: z.number(),
+});
+```
+
 With **oRPC**, you leverage these schemas to enforce **end-to-end type safety**—from frontend to backend—so your types are automatically inferred and consistent across your entire app.
+
+```ts
+// src/rpc/procedures/product.rpc.ts
+import { os } from "@orpc/server";
+import { z } from "zod";
+
+const ProductSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  price: z.number(),
+});
+
+export const getProduct = os
+  .input(ProductSchema.pick({ id: true }))
+  .output(ProductSchema)
+  .handler(async ({ input }) => {
+    // ...fetch product from database or service
+    return { id: input.id, name: "Sample", price: 10 };
+  })
+  .callable();
+```
 
 Moreover, we consider **TypeScript mandatory** because it catches errors early, improves developer productivity, and makes your codebase more maintainable and scalable as it grows.
 
 Contrary to common belief, focusing on type safety and strong typing actually helps you build _**faster**_ and with _**more confidence**_—by preventing subtle bugs and costly refactors down the line, not to mention enabling **powerful IntelliSense** that speeds up development.
+
 
 ## Arrow Functions vs. Named Functions
 
