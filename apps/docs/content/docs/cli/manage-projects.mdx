@@ -1,0 +1,67 @@
+---
+title: Manage Projects
+description: Learn how to manage existing projects using the Zap.ts CLI.
+---
+
+# Manage Existing Projects
+
+## Create Procedures
+
+The CLI can automatically generate procedure files, register them in your oRPC router, and create a React hook for easy data fetching. This ensures your codebase stays consistent and follows best practices.
+
+For example, running `zap create procedure example` will:
+
+1. **Create a procedure file** in `src/rpc/procedures/example.rpc.ts`:
+
+```ts
+import "server-only";
+import { authMiddleware, base } from "@/rpc/middlewares";
+import { withRpcHandler } from "@/zap/errors/handlers";
+
+export const example = base.use(authMiddleware).handler(
+  withRpcHandler(({ context }) => {
+    // Access session or other context here
+    return { message: "Hello, World!" };
+  }),
+);
+```
+
+2. **Register the procedure** in your router (`src/rpc/router.ts`):
+
+```ts
+import "server-only";
+import { example } from "@/rpc/procedures/example.rpc";
+
+export const router = {
+  example,
+  // ...other procedures
+};
+```
+
+3. **Create a React hook** in `src/hooks/rpc/use-example.ts`:
+
+```ts
+"use client";
+import "client-only";
+import { useZapQuery } from "@/zap/api/hooks";
+import { orpcQuery } from "@/zap/api/providers/orpc/client";
+
+export function useExample() {
+  return useZapQuery(orpcQuery.example.queryOptions({}));
+}
+```
+
+4. You can remove or customize the generated hook as needed.
+
+For example, if it's a mutation, you would change the `useZapQuery` to `useZapMutation` and use the appropriate mutation options.
+
+```ts
+"use client";
+import "client-only";
+import { useZapMutation } from "@/zap/api/hooks";
+import { orpcQuery } from "@/zap/api/providers/orpc/client";
+
+export function useExample() {
+  return useZapMutation(orpcQuery.example.mutationOptions({}));
+}
+```

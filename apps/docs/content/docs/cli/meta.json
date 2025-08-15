@@ -1,4 +1,4 @@
 {
   "title": "CLI",
-  "pages": ["overview"]
+  "pages": ["overview", "create-projects", "manage-projects"]
 }
