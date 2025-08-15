@@ -96,24 +96,18 @@ The above `.env` file serves as an example. You should only rely on the instance
 
 ## Configure the app
 
-To get started, make sure to complete all the required steps in the below file — this is your single source of configuration, designed to simplify setup and ensure you don't miss anything important.
+Your main configuration file is `zap.config.ts`, located in the root of your project. This file controls the core settings for your Zap.ts app and is designed to be clear, modular, and easy to maintain.
 
-```bash
-zap.config.ts
-```
+Here’s what you can configure:
 
-This file defines the core configuration of Zap.ts, including:
+- **App Information**: Set your app’s name, description, base URL, and contact emails. These values are used throughout your app and for SEO/meta tags.
+- **Plugin Management**: Enable or disable built-in plugins like auth, analytics, payments, blog, AI, and more. Each plugin can be toggled on or off to keep your app lean and focused.
+- **Security Settings**: Define [Content Security Policy (CSP)](https://developer.mozilla.org/docs/Web/HTTP/CSP) and [Permissions Policy](https://developer.mozilla.org/docs/Web/HTTP/Headers/Permissions-Policy) for your app. This helps you control what resources can be loaded and what browser features are allowed, improving security and privacy.
+- **Default Metadata**: Set up [SEO](https://developer.mozilla.org/docs/Glossary/SEO) and [Open Graph](https://ogp.me/) metadata, including title, description, keywords, author, publisher, and social sharing images. These settings help your app look great in search results and when shared on social media.
 
-- setup core informations about the app (name, description, etc.)
-- toggle plugins on or off (e.g. auth, payments)
-- define security-related settings (e.g. CSP and more)
-- provides default SEO metadata for your app
+You can customize any of these settings to fit your needs. The config file is fully typed and documented, so you’ll get autocompletion and validation in your editor.
 
-It's fully customizable and acts as the core config hub for your app logic.
-
-<Callout>
-In our effort to make Zap.ts as modular as possible, each plugin also has its own configuration options often found in `zap.plugin.config.ts` files. More details can be found in the respective plugin documentation.
-</Callout>
+Each plugin also has its own configuration file (usually `zap.plugin.config.ts`). For details, see the [Plugins Overview](/docs/plugins/overview).
 
 ## Quick scripts
 
