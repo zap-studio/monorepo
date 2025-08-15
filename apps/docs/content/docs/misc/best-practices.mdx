@@ -15,21 +15,68 @@ The `src` folder in Zap.ts is organized to keep your code _clean_, _easy to find
 
 As a best practice, you should follow these conventions when organizing your code:
 
-- **actions**: Holds server actions for handling backend tasks.
-- **app**: Contains Next.js app router files, such as pages and layouts.
-- **components**: Stores reusable UI components.
-  - **common**: General components used across the app.
-  - **ui**: Components styled with [shadcn/ui](https://ui.shadcn.com/), focusing on design consistency.
-- **data**: Keeps static data, like JSON files, and feature flags to turn features on or off at build time without a database.
-- **db**: Includes database-related code, such as schemas.
-- **hooks**: Holds custom React hooks that can be shared across features.
-- **lib**: Stores shared utilities, like helper functions or API clients.
-- **providers**: Contains React context providers for app-wide state.
-- **rpc**: Manages code for type-safe API communication.
-- **schemas**: Defines schemas and API validation schemas for type safety.
-- **services**: Encapsulates your business logic and domain operations
-- **stores**: Holds stores for lightweight state management.
-- **styles**: Includes global styles.
+<Table>
+  <TableHead>
+    <TableRow>
+      <TableHeader>Folder</TableHeader>
+      <TableHeader>Description</TableHeader>
+    </TableRow>
+  </TableHead>
+  <TableBody>
+    <TableRow>
+      <TableCell><code>actions</code></TableCell>
+      <TableCell>Holds server actions for handling backend tasks.</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell><code>app</code></TableCell>
+      <TableCell>Contains Next.js app router files, such as pages and layouts.</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell><code>components</code></TableCell>
+      <TableCell>Stores reusable UI components.<br /><strong>common</strong>: General components used across the app.<br /><strong>ui</strong>: Components styled with <a href="https://ui.shadcn.com/">shadcn/ui</a>, focusing on design consistency.</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell><code>data</code></TableCell>
+      <TableCell>Keeps static data, like JSON files, and feature flags to turn features on or off at build time without a database.</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell><code>db</code></TableCell>
+      <TableCell>Includes database-related code, such as schemas.</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell><code>hooks</code></TableCell>
+      <TableCell>Holds custom React hooks that can be shared across features.</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell><code>lib</code></TableCell>
+      <TableCell>Stores shared utilities, like helper functions or API clients.</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell><code>providers</code></TableCell>
+      <TableCell>Contains React context providers for app-wide state.</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell><code>rpc</code></TableCell>
+      <TableCell>Manages code for type-safe API communication.</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell><code>schemas</code></TableCell>
+      <TableCell>Defines schemas and API validation schemas for type safety.</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell><code>services</code></TableCell>
+      <TableCell>Encapsulates your business logic and domain operations.</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell><code>stores</code></TableCell>
+      <TableCell>Holds stores for lightweight state management.</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell><code>styles</code></TableCell>
+      <TableCell>Includes global styles.</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
 
 ## Pages vs. Routes
 
