@@ -286,9 +286,33 @@ Each has specific use cases where they excel:
 
 **Named function** declarations are _fully hoisted_, meaning you can call them before they're defined in your code.
 
+```ts
+// Named function (hoisted)
+console.log(square(5)); // 25
+function square(x) {
+  return x * x;
+}
+
+// Arrow function (not hoisted)
+// console.log(double(5)); // ReferenceError: Cannot access 'double' before initialization
+const double = (x) => x * 2;
+```
+
 However, arrow functions are not hoisted because they're assigned to variables using `const` or `let`, which follow the temporal dead zone rule.
 
 Additionally, **React DevTools** displays component names more clearly when using named functions.
+
+```tsx
+// Named function component (shows as 'UserCard' in DevTools)
+function UserCard({ user }) {
+  return <div>{user.name}</div>;
+}
+
+// Arrow function component (shows as 'Anonymous' or less descriptive)
+const UserCard = ({ user }) => {
+  return <div>{user.name}</div>;
+};
+```
 
 Indeed, arrow functions assigned to variables often show up as "Anonymous" or with less descriptive names in the component tree, making debugging more difficult.
 
@@ -304,13 +328,69 @@ Performance directly impacts user experience and SEO. Here are the key Next.js _
 - **Lazy Loading (Dynamic Import)**  
   Use [dynamic imports](https://nextjs.org/docs/app/guides/lazy-loading) (`dynamic()`) to load heavy or rarely used components on demand, reducing the initial bundle size and speeding up page loads. 
 
+    ```tsx
+    // Lazy load a heavy component
+    import dynamic from "next/dynamic";
+    const HeavyComponent = dynamic(() => import("@/components/HeavyComponent"), {
+      loading: () => <p>Loading...</p>,
+      ssr: false,
+    });
+
+    export default function Page() {
+      return <HeavyComponent />;
+    }
+    ```
+
 - **Route Prefetching**  
   Take advantage of Next.js's automatic [link prefetching](https://nextjs.org/docs/app/api-reference/components/link#prefetch) (`<Link prefetch>`) to preload pages users are likely to visit next, enabling faster navigation.
+
+    ```tsx
+    import Link from "next/link";
+
+    export default function Nav() {
+      return (
+        <nav>
+          <Link href="/about" prefetch={true}>About</Link>
+          <Link href="/blog" prefetch={true}>Blog</Link>
+        </nav>
+      );
+    }
+    ```
 
 - **SSR vs SSG vs ISR**  
   - *SSR ([Server-Side Rendering](https://nextjs.org/docs/app/guides/migrating/app-router-migration#server-side-rendering-getserversideprops))*: Best for dynamic pages that need fresh data on every request such as user dashboards.  
   - *SSG ([Static Site Generation](https://nextjs.org/docs/app/guides/migrating/app-router-migration#static-site-generation-getstaticprops))*: Ideal for mostly static pages that rarely change like marketing pages.  
   - *ISR ([_Incremental Static Generation_](https://nextjs.org/docs/app/guides/incremental-static-regeneration))*: A hybrid approach for mostly static pages with occasional updates, like blogs with frequent content changes. 
+
+    ```tsx
+    // SSR: app/dashboard/page.tsx
+    export default async function Page() {
+      const res = await fetch("https://api.example.com/user", { cache: "no-store" });
+      const user = await res.json();
+      return <div>{user.name}</div>;
+    }
+
+    // SSG: app/posts/[id]/page.tsx
+    export async function generateStaticParams() {
+      const res = await fetch("https://api.example.com/posts");
+      const posts = await res.json();
+      return posts.map((post) => ({ id: post.id }));
+    }
+
+    export default async function Page({ params }) {
+      const res = await fetch(`https://api.example.com/posts/${params.id}`);
+      const post = await res.json();
+      return <article><h1>{post.title}</h1><p>{post.body}</p></article>;
+    }
+
+    // ISR: app/blog/page.tsx
+    export const revalidate = 60; // seconds
+    export default async function Page() {
+      const res = await fetch("https://api.example.com/blog");
+      const blog = await res.json();
+      return <div>{blog.title}</div>;
+    }
+    ```
 
 ## Middleware
 
