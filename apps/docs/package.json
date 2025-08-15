@@ -42,7 +42,7 @@
     "eslint-config-next": "15.4.6"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
+    "*.{js,jsx,ts,tsx,json,jsonc,css,scss}": [
       "ultracite format"
     ]
   }
