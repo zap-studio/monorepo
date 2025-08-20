@@ -26,6 +26,7 @@
     "next": "15.4.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-tweet": "^3.2.2",
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.1",
     "remark-rehype": "^11.1.2",

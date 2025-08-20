@@ -7,12 +7,12 @@ import {
   Puzzle,
   Stars,
   TerminalSquare,
-  Twitter,
   Wrench,
   Zap as ZapIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import type React from 'react';
+import { Tweet } from 'react-tweet';
 import { Button } from '@/components/ui/button';
 import { testimonials } from '@/data/testimonials';
 import { CopyCommand } from './_components/copy-command';
@@ -123,43 +123,15 @@ export default function HomePage() {
           </h3>
 
           <div className="mt-8 columns-1 gap-4 [column-fill:_balance] sm:columns-2 lg:columns-3">
-            {testimonials.map((t, i) => (
-              <TwitterCard key={i} {...t} />
+            {testimonials.map((t) => (
+              <div key={t.id}>
+                <Tweet id={t.id} />
+              </div>
             ))}
           </div>
         </div>
       </section>
     </main>
-  );
-}
-
-function TwitterCard({
-  author,
-  handle,
-  quote,
-  link,
-}: {
-  author: string;
-  handle: string;
-  quote: string;
-  link: string;
-}) {
-  return (
-    <Link
-      className={`${cardBase} mb-4 block break-inside-avoid p-6 transition hover:border-primary hover:shadow-md`}
-      href={link}
-      rel="noreferrer"
-      target="_blank"
-    >
-      <div className="mb-2 flex items-start justify-between">
-        <div>
-          <p className="font-medium">{author}</p>
-          <p className={'$mutedText text-sm'}>{handle}</p>
-        </div>
-        <Twitter className="size-5 text-sky-500" />
-      </div>
-      <p className="text-pretty">{quote}</p>
-    </Link>
   );
 }
 

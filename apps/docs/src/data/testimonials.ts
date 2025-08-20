@@ -1,30 +1,11 @@
 export const testimonials = [
+  { id: '1952025657560723913' },
+  { id: '1954238145324556746' },
+  { id: '1946551690838392941' },
+  { id: '1912836665879806086' },
+  { id: '1937182259226058913' },
+  { id: '1927207788599533692' },
   {
-    author: 'Lena Park',
-    handle: '@orbitly',
-    quote:
-      'Zap.ts let us ship our MVP in days, not weeks. The plugin system meant we didn’t waste time wiring auth, analytics, or emails.',
-    link: 'https://x.com/.../status/123',
-  },
-  {
-    author: 'Marco Díaz',
-    handle: '@verdepay',
-    quote:
-      'The DX is fantastic — type-safe APIs, clean scaffolding, and docs that don’t get in the way.',
-    link: 'https://x.com/.../status/456',
-  },
-  {
-    author: 'Sofia Nguyen',
-    handle: '@nimbly',
-    quote:
-      'Composable plugins are a game-changer. We toggled features as we grew without rewrites.',
-    link: 'https://x.com/.../status/789',
-  },
-  {
-    author: 'Ethan Park',
-    handle: '@knotsdev',
-    quote:
-      'Type-safe oRPC and Drizzle made our API layer a breeze. Less boilerplate, more shipping.',
-    link: 'https://x.com/.../status/321',
+    id: '1902730482799849746',
   },
 ];
