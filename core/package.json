@@ -5,7 +5,7 @@
   "description": "Main package for Zap.ts, a Next.js modular boilerplate to build applications as fast as a zap.",
   "author": "Alexandre Trotel",
   "scripts": {
-    "build": "next build",
+    "build": "next build --turbopack",
     "postbuild": "next-sitemap",
     "build:analyze": "ANALYZE=true next build",
     "db:check": "drizzle-kit check",
@@ -32,6 +32,7 @@
     "lint": "next lint",
     "mail:dev": "email dev",
     "start": "next start",
+    "typegen": "next typegen",
     "zap": "zap"
   },
   "lint-staged": {

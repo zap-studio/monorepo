@@ -55,6 +55,7 @@ function buildPermissionsPolicy(): string {
 }
 
 const nextConfig: NextConfig = {
+  typedRoutes: true,
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
   images: {
     remotePatterns: [
