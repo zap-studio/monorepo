@@ -7,12 +7,14 @@ import {
   Puzzle,
   Stars,
   TerminalSquare,
+  Twitter,
   Wrench,
   Zap as ZapIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import type React from 'react';
 import { Button } from '@/components/ui/button';
+import { testimonials } from '@/data/testimonials';
 import { CopyCommand } from './_components/copy-command';
 
 const sectionClass = 'px-6 py-16';
@@ -21,8 +23,8 @@ const mutedText = 'text-fd-muted-foreground';
 
 export default function HomePage() {
   return (
-    <main className="relative flex-1">
-      <section className={`${sectionClass} md:py-24`}>
+    <main className="relative flex flex-1 flex-col gap-6">
+      <section className={`${sectionClass} md:pt-24`}>
         <div className="mx-auto max-w-6xl text-center">
           <div className="mb-6 flex flex-wrap items-center justify-center gap-2 text-sm">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/15 px-3 py-1">
@@ -114,23 +116,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="px-6 pb-24">
+      <section className={sectionClass}>
         <div className="mx-auto max-w-6xl">
-          <div className={`${cardBase} rounded-2xl p-8`}>
-            <h3 className="text-center font-semibold text-2xl">
-              Loved by builders
-            </h3>
-            <div className="relative mt-6 overflow-hidden">
-              <GradientOverlay side="left" />
-              <GradientOverlay side="right" />
-              <div
-                className="flex w-max animate-marquee gap-4 hover:[animation-play-state:paused]"
-                style={{ ['--marquee-duration' as any]: '35s' }}
-              >
-                <MarqueeRow />
-                <MarqueeRow aria-hidden />
-              </div>
-            </div>
+          <h3 className="text-center font-semibold text-2xl">
+            Loved by builders
+          </h3>
+
+          <div className="mt-8 columns-1 gap-4 [column-fill:_balance] sm:columns-2 lg:columns-3">
+            {testimonials.map((t, i) => (
+              <TwitterCard key={i} {...t} />
+            ))}
           </div>
         </div>
       </section>
@@ -138,16 +133,33 @@ export default function HomePage() {
   );
 }
 
-function GradientOverlay({ side }: { side: 'left' | 'right' }) {
+function TwitterCard({
+  author,
+  handle,
+  quote,
+  link,
+}: {
+  author: string;
+  handle: string;
+  quote: string;
+  link: string;
+}) {
   return (
-    <div
-      aria-hidden
-      className={`pointer-events-none absolute inset-y-0 w-12 ${
-        side === 'left'
-          ? 'left-0 bg-gradient-to-r from-card to-transparent'
-          : 'right-0 bg-gradient-to-l from-card to-transparent'
-      }`}
-    />
+    <Link
+      className={`${cardBase} mb-4 block break-inside-avoid p-6 transition hover:border-primary hover:shadow-md`}
+      href={link}
+      rel="noreferrer"
+      target="_blank"
+    >
+      <div className="mb-2 flex items-start justify-between">
+        <div>
+          <p className="font-medium">{author}</p>
+          <p className={'$mutedText text-sm'}>{handle}</p>
+        </div>
+        <Twitter className="size-5 text-sky-500" />
+      </div>
+      <p className="text-pretty">{quote}</p>
+    </Link>
   );
 }
 
@@ -173,53 +185,6 @@ function Feature({
           <p className={`mt-1 text-sm ${mutedText}`}>{desc}</p>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Testimonial({
-  quote,
-  author,
-  position,
-}: {
-  quote: string;
-  author: string;
-  position: string;
-}) {
-  return (
-    <figure className={`${cardBase} p-6`}>
-      <blockquote className="text-balance text-lg">“{quote}”</blockquote>
-      <figcaption className={`mt-4 text-sm ${mutedText}`}>
-        <span className="font-medium text-fd-foreground">{author}</span> —{' '}
-        {position}
-      </figcaption>
-    </figure>
-  );
-}
-
-function MarqueeRow(props: { 'aria-hidden'?: boolean }) {
-  return (
-    <div {...props} className="flex items-stretch gap-4 pr-4">
-      <Testimonial
-        author="Lena Park"
-        position="Founder, Orbitly"
-        quote="Zap.ts let us ship our MVP in days, not weeks. The plugin system meant we didn’t waste time wiring auth, analytics, or emails."
-      />
-      <Testimonial
-        author="Marco Díaz"
-        position="Tech Lead, VerdePay"
-        quote="The DX is fantastic — type-safe APIs, clean scaffolding, and docs that don’t get in the way."
-      />
-      <Testimonial
-        author="Sofia Nguyen"
-        position="CTO, Nimbly"
-        quote="Composable plugins are a game-changer. We toggled features as we grew without rewrites."
-      />
-      <Testimonial
-        author="Ethan Park"
-        position="Engineer, Knots"
-        quote="Type-safe oRPC and Drizzle made our API layer a breeze. Less boilerplate, more shipping."
-      />
     </div>
   );
 }
