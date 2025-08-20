@@ -5,6 +5,7 @@ import {
   Layers,
   Lock,
   Puzzle,
+  Stars,
   TerminalSquare,
   Wrench,
   Zap as ZapIcon,
@@ -12,6 +13,7 @@ import {
 import Link from 'next/link';
 import type React from 'react';
 import { Button } from '@/components/ui/button';
+import { CopyCommand } from './_components/copy-command';
 
 const sectionClass = 'px-6 py-16';
 const cardBase = 'rounded-xl border bg-card shadow-sm';
@@ -35,8 +37,8 @@ export default function HomePage() {
           <p
             className={`mx-auto mt-4 max-w-2xl text-pretty ${mutedText} md:text-lg`}
           >
-            Pick the plugins you need — Auth, AI, Analytics, Payments, Emails
-            and more — all wired with type safety, edge-ready APIs and great DX.
+            Choose the plugins you need — Auth, AI, Analytics, Payments, Emails
+            — all wired with type safety, edge-ready APIs, and a great DX.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -52,6 +54,7 @@ export default function HomePage() {
                 rel="noreferrer"
                 target="_blank"
               >
+                <Stars className="size-4" />
                 Star on GitHub
               </Link>
             </Button>
@@ -62,9 +65,7 @@ export default function HomePage() {
               <TerminalSquare className="size-3.5" />
               Quickstart
             </div>
-            <pre className="overflow-x-auto px-4 py-3 text-sm">
-              <code>npx create-zap-app@latest</code>
-            </pre>
+            <CopyCommand command="npx create-zap-app@latest" />
           </div>
         </div>
       </section>
@@ -72,41 +73,40 @@ export default function HomePage() {
       <section className={sectionClass}>
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center font-semibold text-2xl md:text-3xl">
-            Everything you need to launch
+            Everything you need to launch fast
           </h2>
           <p className={`mx-auto mt-2 max-w-2xl text-center ${mutedText}`}>
-            A curated set of plugins and utilities with sensible defaults and
-            strong typings.
+            Curated plugins and utilities to build apps at lightning speed.
           </p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Feature
-              desc="Email magic links, OAuth, tokens — production-ready flows."
+              desc="Email magic links, OAuth, tokens, and RBAC — all production-ready."
               icon={<Lock className="size-5" />}
               title="Auth & Sessions"
             />
             <Feature
-              desc="Stream responses, tools, RAG hooks — batteries included."
+              desc="Stream responses, run tools, and use RAG — no vendor lock-in."
               icon={<Cpu className="size-5" />}
               title="AI toolkit"
             />
             <Feature
-              desc="Type-safe APIs and queries across client and server."
+              desc="Type-safe APIs and queries across client and server — with your database."
               icon={<Database className="size-5" />}
               title="Drizzle + oRPC"
             />
             <Feature
-              desc="Enable Analytics, Payments, Emails, Blog, Flags and more."
+              desc="Add Analytics, Payments, Emails, Blogs, Feature Flags, and more."
               icon={<Puzzle className="size-5" />}
               title="Composable plugins"
             />
             <Feature
-              desc="Next.js 15 with edge-ready routes and instrumentation."
+              desc="Feature flags and PostHog integration for cohorts, A/B tests, and more."
               icon={<Layers className="size-5" />}
-              title="Edge-first"
+              title="Marketing tools"
             />
             <Feature
-              desc="CLI scaffolding, linting, docs, and example recipes."
+              desc="CLI scaffolding, linting, docs, and ready-to-use recipes."
               icon={<Wrench className="size-5" />}
               title="DX focused"
             />
@@ -161,7 +161,9 @@ function Feature({
   desc: string;
 }) {
   return (
-    <div className={`${cardBase} p-4 transition hover:shadow-md`}>
+    <div
+      className={`${cardBase} p-4 transition hover:border-primary hover:shadow-md`}
+    >
       <div className="flex items-start gap-3">
         <div className="mt-1 rounded-md border bg-secondary p-2 text-primary">
           {icon}
