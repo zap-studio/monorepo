@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import type React from 'react';
+import { Button } from '@/components/ui/button';
 
 const sectionClass = 'px-6 py-16';
 const cardBase = 'rounded-xl border bg-card shadow-sm';
@@ -41,24 +42,26 @@ export default function HomePage() {
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              className="inline-flex items-center justify-center gap-2 rounded-md border bg-primary px-4 py-2 font-medium text-primary-foreground transition hover:opacity-90"
-              href="/docs"
-            >
-              Get started
-              <ArrowRight className="size-4" />
-            </Link>
-            <a
-              className="inline-flex items-center justify-center gap-2 rounded-md border px-4 py-2 font-medium transition hover:bg-secondary/60"
-              href="https://github.com/alexandretrotel/zap.ts"
-              rel="noreferrer"
-              target="_blank"
-            >
-              Star on GitHub
-            </a>
+            <Button asChild>
+              <Link href="/docs">
+                Get started
+                <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+            <Button asChild variant={'outline'}>
+              <Link
+                href="https://github.com/alexandretrotel/zap.ts"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Star on GitHub
+              </Link>
+            </Button>
           </div>
 
-          <div className={`mx-auto mt-10 max-w-3xl ${cardBase} text-left`}>
+          <div
+            className={`mx-auto mt-10 max-w-3xl ${cardBase} text-left transition-all duration-300 hover:scale-105 hover:shadow-lg`}
+          >
             <div className="flex items-center gap-2 border-b px-4 py-2 text-fd-muted-foreground text-xs">
               <TerminalSquare className="size-3.5" />
               Quickstart
