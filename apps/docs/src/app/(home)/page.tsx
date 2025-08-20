@@ -20,12 +20,10 @@ const mutedText = 'text-fd-muted-foreground';
 export default function HomePage() {
   return (
     <main className="relative flex-1">
-      <BackgroundGlow />
-
       <section className={`${sectionClass} md:py-24`}>
         <div className="mx-auto max-w-6xl text-center">
           <div className="mb-6 flex flex-wrap items-center justify-center gap-2 text-sm">
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/15 px-3 py-1 text-primary">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/15 px-3 py-1">
               <ZapIcon aria-hidden className="size-4" />
               Zap.ts • Modern app starter with type-safe plugins
             </span>
@@ -59,9 +57,7 @@ export default function HomePage() {
             </Button>
           </div>
 
-          <div
-            className={`mx-auto mt-10 max-w-3xl ${cardBase} text-left transition-all duration-300 hover:scale-105 hover:shadow-lg`}
-          >
+          <div className={`mx-auto mt-10 max-w-3xl ${cardBase} text-left`}>
             <div className="flex items-center gap-2 border-b px-4 py-2 text-fd-muted-foreground text-xs">
               <TerminalSquare className="size-3.5" />
               Quickstart
@@ -139,18 +135,6 @@ export default function HomePage() {
         </div>
       </section>
     </main>
-  );
-}
-
-function BackgroundGlow() {
-  return (
-    <div
-      aria-hidden
-      className="-z-10 pointer-events-none absolute inset-0 [mask-image:radial-gradient(50%_50%_at_50%_10%,black,transparent_70%)]"
-    >
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-transparent to-transparent" />
-      <div className="-translate-x-1/2 absolute top-10 left-1/2 h-[720px] w-[960px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(245,197,24,0.4),transparent_60%)] opacity-70 blur-3xl" />
-    </div>
   );
 }
 
