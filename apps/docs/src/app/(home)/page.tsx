@@ -17,16 +17,16 @@ import { Button } from '@/components/ui/button';
 import { testimonials } from '@/data/testimonials';
 import { CopyCommand } from './_components/copy-command';
 
-const sectionClass = 'px-6 py-16';
+const sectionClass = 'px-6 md:py-16 py-8';
 const cardBase = 'rounded-xl border bg-card shadow-sm';
 const mutedText = 'text-fd-muted-foreground';
 
 export default function HomePage() {
   return (
     <main className="relative flex flex-1 flex-col gap-6">
-      <section className={`${sectionClass} md:pt-24`}>
+      <section className={`${sectionClass} pt-16 md:pt-24`}>
         <div className="mx-auto max-w-6xl text-center">
-          <div className="mb-6 flex flex-wrap items-center justify-center gap-2 text-sm">
+          <div className="mb-6 hidden flex-wrap items-center justify-center gap-2 text-sm md:flex">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/15 px-3 py-1">
               <ZapIcon aria-hidden className="size-4" />
               Zap.ts • Modern app starter with type-safe plugins
