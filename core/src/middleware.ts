@@ -12,11 +12,18 @@ import { checkBlogPathAccess } from "@/zap/blog/authorization";
 import { logError } from "@/zap/errors/logger";
 import { checkWaitlistRedirect } from "@/zap/waitlist/authorization";
 
+import { attachAPIHeaders } from "./app/api/api";
 import { isPluginEnabled } from "./lib/plugins";
 
 export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl;
+
+    // Apply API middleware for all API routes
+    if (pathname.startsWith("/api")) {
+      const response = attachAPIHeaders(request);
+      return response;
+    }
 
     // Check for waitlist redirect (optional plugin)
     if (isPluginEnabled("waitlist")) {
