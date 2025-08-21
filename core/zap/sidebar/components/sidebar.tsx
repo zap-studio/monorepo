@@ -4,6 +4,7 @@ import { Crown } from "lucide-react";
 import Link from "next/link";
 import type React from "react";
 import { useMemo } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Sidebar,
@@ -17,6 +18,7 @@ import {
 import { isPluginEnabled } from "@/lib/plugins";
 import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 import { useActiveSubscriptionProduct } from "@/zap/payments/providers/polar/client";
+
 import {
   SidebarMainSection,
   SidebarSecondarySection,

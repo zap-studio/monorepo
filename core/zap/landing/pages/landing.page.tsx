@@ -1,5 +1,6 @@
 import { isPluginEnabled } from "@/lib/plugins";
 import { Footer, Header } from "@/zap/components/common";
+
 import {
   FaqSection,
   FeaturesSection,

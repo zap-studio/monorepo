@@ -6,9 +6,9 @@ import { DEV } from "@/zap/env/runtime";
 import { UnauthorizedError } from ".";
 import {
   generateCorrelationId,
+  handleError,
   type HandlerFunction,
   type HandlerOptions,
-  handleError,
   logSuccess,
 } from "./utils";
 

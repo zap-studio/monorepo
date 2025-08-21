@@ -1,9 +1,11 @@
 import "client-only";
 
 import { toast } from "sonner";
+
 import { isPluginEnabled } from "@/lib/plugins";
 import { ZAP_AUTH_CONFIG } from "@/zap/auth/zap.plugin.config";
 import { DEV } from "@/zap/env/runtime";
+
 import { ApplicationError, BaseError } from ".";
 
 export function handleClientError(

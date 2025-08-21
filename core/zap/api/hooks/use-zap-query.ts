@@ -3,8 +3,8 @@ import "client-only";
 
 import {
   type QueryKey,
-  type UseQueryOptions,
   useQuery,
+  type UseQueryOptions,
 } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
 

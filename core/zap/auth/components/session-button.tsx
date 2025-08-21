@@ -2,8 +2,10 @@
 import "client-only";
 
 import Link from "next/link";
-import { ZapButton } from "@/zap/components/core";
+
 import { ZAP_CORE_CONFIG } from "@/zap.config";
+import { ZapButton } from "@/zap/components/core";
+
 import { betterAuthClient } from "../providers/better-auth/client";
 import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 

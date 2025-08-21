@@ -13,8 +13,9 @@
  */
 
 import type { Metadata } from "next";
-import { DEV } from "./zap/env/runtime";
+
 import type { ZapCoreSettings, ZapPlugins } from "./zap.config.types";
+import { DEV } from "./zap/env/runtime";
 
 // ─────────────────────────────────────────────────────────────
 // Core App Info

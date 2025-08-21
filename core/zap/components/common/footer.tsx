@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { useMemo } from "react";
+
 import { isPluginEnabled } from "@/lib/plugins";
 import { LatestBlogPosts } from "@/zap/blog/components";
+
 import { LEGAL_LINKS } from "../data";
 import { ThemeSwitcher } from "./theme-switcher";
 

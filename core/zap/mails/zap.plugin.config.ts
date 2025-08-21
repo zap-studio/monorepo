@@ -1,5 +1,5 @@
-import { PUBLIC_ENV } from "@/zap/env/public";
 import { NAME } from "@/zap.config";
+import { PUBLIC_ENV } from "@/zap/env/public";
 
 import type { MailsPluginConfig } from "./zap.plugin.config.types.js";
 

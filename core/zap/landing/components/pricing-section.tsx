@@ -11,11 +11,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ZAP_CORE_CONFIG } from "@/zap.config";
 import { ZapButton } from "@/zap/components/core";
 import { PriceDisplay, PricingToggle } from "@/zap/payments/components";
 import { getBillingDetails, getSortedProducts } from "@/zap/payments/utils";
 import { ZAP_PAYMENTS_CONFIG } from "@/zap/payments/zap.plugin.config";
-import { ZAP_CORE_CONFIG } from "@/zap.config";
 
 export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);

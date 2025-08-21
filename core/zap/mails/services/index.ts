@@ -2,12 +2,14 @@ import "server-only";
 
 import { eq } from "drizzle-orm";
 import type React from "react";
+
 import { ForgotPasswordMail, MagicLinkMail, VerificationMail } from "@/emails";
 import { getLastMailSentAtQuery } from "@/zap/auth/db/providers/drizzle/queries";
 import { isUserAdminService } from "@/zap/auth/services";
 import { db } from "@/zap/db/providers/drizzle";
 import { user } from "@/zap/db/providers/drizzle/schema";
 import { MailError, NotFoundError, UnauthorizedError } from "@/zap/errors";
+
 import { resend } from "../providers/resend/server";
 import { ZAP_MAILS_CONFIG } from "../zap.plugin.config";
 

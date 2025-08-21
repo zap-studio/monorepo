@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
+
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+
 import { AppSidebar, SidebarHeader } from "../components";
 
 export interface _AppLayoutProps {

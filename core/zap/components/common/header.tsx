@@ -10,6 +10,7 @@ import { useBodyScrollLock } from "@/hooks/utils/use-body-scroll-lock";
 import { isPluginEnabled } from "@/lib/plugins";
 import { cn } from "@/lib/utils";
 import { SessionButton } from "@/zap/auth/components";
+
 import { ZapButton } from "../core";
 import { EXTERNAL_LINKS, HEADER_HEIGHT, NAV_LINKS } from "../data";
 

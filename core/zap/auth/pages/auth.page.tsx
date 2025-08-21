@@ -10,6 +10,7 @@ import {
 import { isPluginEnabled } from "@/lib/plugins";
 import { cn } from "@/lib/utils";
 import { ZAP_LEGAL_CONFIG } from "@/zap/legal/zap.plugin.config";
+
 import { SocialProviderButton } from "../components";
 import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 

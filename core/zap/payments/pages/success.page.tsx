@@ -1,8 +1,8 @@
 import Link from "next/link";
 
+import { ZAP_CORE_CONFIG } from "@/zap.config";
 import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
 import { ZapButton } from "@/zap/components/core";
-import { ZAP_CORE_CONFIG } from "@/zap.config";
 
 export interface _SuccessPageProps {
   searchParams: Promise<{

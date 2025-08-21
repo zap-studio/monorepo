@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { BlogPosting, WithContext } from "schema-dts";
 import serialize from "serialize-javascript";
-import { CustomMDX } from "@/zap/markdown/mdx";
+
 import { BASE_URL } from "@/zap.config";
+import { CustomMDX } from "@/zap/markdown/mdx";
 
 import {
   formatDate,

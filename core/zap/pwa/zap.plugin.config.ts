@@ -1,5 +1,5 @@
-import { PUBLIC_ENV } from "@/zap/env/public";
 import { APP_DESCRIPTION, NAME } from "@/zap.config";
+import { PUBLIC_ENV } from "@/zap/env/public";
 
 import type { PWAPluginConfig } from "./zap.plugin.config.types.js";
 

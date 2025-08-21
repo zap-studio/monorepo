@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ZapButton } from "@/zap/components/core";
 import { AuthenticationError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
+
 import { betterAuthClient } from "../providers/better-auth/client";
 import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 import type { Provider } from "../zap.plugin.config.types";
