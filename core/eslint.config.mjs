@@ -12,20 +12,18 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-  ...pluginQuery.configs["flat/recommended"],
-  {
-    plugins: {
-      drizzle: drizzlePlugin,
-      "simple-import-sort": simpleImportSort,
-    },
-    rules: {
-      ...drizzlePlugin.configs.recommended.rules,
-      "simple-import-sort/imports": "error",
-      "simple-import-sort/exports": "error",
-    },
+const eslintConfig = [{
+  ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts"]
+}, ...compat.extends("next/core-web-vitals", "next/typescript"), ...pluginQuery.configs["flat/recommended"], {
+  plugins: {
+    drizzle: drizzlePlugin,
+    "simple-import-sort": simpleImportSort,
   },
-];
+  rules: {
+    ...drizzlePlugin.configs.recommended.rules,
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+  },
+}];
 
 export default eslintConfig;
