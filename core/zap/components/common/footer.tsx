@@ -29,7 +29,7 @@ export function Footer() {
               {LEGAL_LINKS.map((link) => (
                 <Link
                   className="text-muted-foreground text-sm underline-offset-4 hover:underline active:underline"
-                  href={link.href}
+                  href={{ pathname: link.href }}
                   key={link.href}
                 >
                   {link.label}

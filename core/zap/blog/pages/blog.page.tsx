@@ -21,7 +21,9 @@ export async function _BlogPage() {
             className={`py-6 ${index < posts.length - 1 ? "border-b" : ""}`}
             key={post.slug}
           >
-            <Link href={`${ZAP_BLOG_CONFIG.BASE_PATH}/${post.slug}`}>
+            <Link
+              href={{ pathname: `${ZAP_BLOG_CONFIG.BASE_PATH}/${post.slug}` }}
+            >
               <div className="hover:bg-muted md:active:bg-muted rounded-md p-4 px-0 md:px-4">
                 {post.date && (
                   <p className="text-muted-foreground mb-2 text-xs">

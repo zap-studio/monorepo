@@ -64,7 +64,7 @@ export function SidebarSecondarySection(props: SidebarSecondarySectionProps) {
                 <SidebarMenuItem key={label}>
                   <SidebarMenuButton asChild={!!href} onClick={onClick}>
                     {href ? (
-                      <Link href={href}>
+                      <Link href={{ pathname: href }}>
                         {icon}
                         <span>{label}</span>
                       </Link>

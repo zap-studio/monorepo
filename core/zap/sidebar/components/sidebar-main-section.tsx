@@ -42,7 +42,7 @@ export function SidebarMainSection({ items }: SidebarMainSectionProps) {
           <Collapsible asChild defaultOpen={item.isActive} key={item.title}>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title}>
-                <Link href={item.url}>
+                <Link href={{ pathname: item.url }}>
                   <item.icon />
                   <span>{item.title}</span>
                 </Link>
@@ -60,7 +60,7 @@ export function SidebarMainSection({ items }: SidebarMainSectionProps) {
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild>
-                            <Link href={subItem.url}>
+                            <Link href={{ pathname: subItem.url }}>
                               <span>{subItem.title}</span>
                             </Link>
                           </SidebarMenuSubButton>

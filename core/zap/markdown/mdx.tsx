@@ -1,6 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import Image, { type ImageProps } from "next/image";
-import Link, { type LinkProps } from "next/link";
+import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import React from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -34,9 +34,11 @@ function Table({ data }: { data: { headers: string[]; rows: string[][] } }) {
   );
 }
 
-interface CustomLinkProps extends LinkProps {
+interface CustomLinkProps {
   href: string;
   children: React.ReactNode;
+  className?: string;
+  [key: string]: unknown;
 }
 
 function CustomLink(props: CustomLinkProps) {
@@ -45,7 +47,7 @@ function CustomLink(props: CustomLinkProps) {
   if (href.startsWith("/")) {
     return (
       <Link
-        href={href}
+        href={{ pathname: href }}
         {...restProps}
         className="text-primary hover:underline active:underline"
       >

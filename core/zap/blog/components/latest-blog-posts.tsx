@@ -20,7 +20,7 @@ export async function LatestBlogPosts() {
         {latestPosts.map((post) => (
           <Link
             className="group flex flex-col space-y-1"
-            href={`${ZAP_BLOG_CONFIG.BASE_PATH}/${post.slug}`}
+            href={{ pathname: `${ZAP_BLOG_CONFIG.BASE_PATH}/${post.slug}` }}
             key={post.slug}
           >
             <h4 className="text-foreground group-hover:text-primary group-active:text-primary text-sm font-medium transition-colors">
@@ -38,7 +38,7 @@ export async function LatestBlogPosts() {
 
       <Link
         className="text-muted-foreground w-fit text-sm underline-offset-4 hover:underline active:underline"
-        href={ZAP_BLOG_CONFIG.BASE_PATH}
+        href={{ pathname: ZAP_BLOG_CONFIG.BASE_PATH }}
       >
         View all articles →
       </Link>

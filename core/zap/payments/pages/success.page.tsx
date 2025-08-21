@@ -25,7 +25,7 @@ export async function _SuccessPage({ searchParams }: _SuccessPageProps) {
         </p>
 
         <ZapButton asChild variant={"ghost"}>
-          <Link href={`${ZAP_CORE_CONFIG.APP.APP_URL}/billing`}>
+          <Link href={{ pathname: `${ZAP_CORE_CONFIG.APP.APP_URL}/billing` }}>
             Go back to Billing
           </Link>
         </ZapButton>
@@ -43,7 +43,9 @@ export async function _SuccessPage({ searchParams }: _SuccessPageProps) {
       </p>
 
       <ZapButton asChild variant={"ghost"}>
-        <Link href={ZAP_CORE_CONFIG.APP.APP_URL}>Go back to App</Link>
+        <Link href={{ pathname: ZAP_CORE_CONFIG.APP.APP_URL }}>
+          Go back to App
+        </Link>
       </ZapButton>
     </div>
   );

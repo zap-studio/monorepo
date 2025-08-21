@@ -58,7 +58,7 @@ export function HeroSection() {
 
           <div className="flex flex-col justify-center gap-2 min-[400px]:flex-row">
             <ZapButton asChild size="lg">
-              <Link href={ZAP_AUTH_CONFIG.SIGN_UP_URL}>
+              <Link href={{ pathname: ZAP_AUTH_CONFIG.SIGN_UP_URL }}>
                 Get Started <ArrowRight className="h-4 w-4" />
               </Link>
             </ZapButton>

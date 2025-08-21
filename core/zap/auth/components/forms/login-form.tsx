@@ -79,7 +79,7 @@ export function LoginForm() {
                 <FormLabel>Password</FormLabel>
                 <Link
                   className="text-sm underline-offset-4 hover:underline active:underline"
-                  href={ZAP_AUTH_CONFIG.FORGOT_PASSWORD_URL}
+                  href={{ pathname: ZAP_AUTH_CONFIG.FORGOT_PASSWORD_URL }}
                 >
                   Forgot your password?
                 </Link>

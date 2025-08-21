@@ -71,7 +71,7 @@ export function _AuthPage({
                   {bottomText.label}{" "}
                   <Link
                     className="underline underline-offset-4"
-                    href={bottomText.linkHref}
+                    href={{ pathname: bottomText.linkHref }}
                   >
                     {bottomText.linkText}
                   </Link>
@@ -107,8 +107,13 @@ function PolicyLinks({ className }: { className?: string }) {
       )}
     >
       By clicking continue, you agree to our{" "}
-      <Link href={ZAP_LEGAL_CONFIG.TERMS_OF_SERVICE_URL}>Terms of Service</Link>{" "}
-      and <Link href={ZAP_LEGAL_CONFIG.PRIVACY_POLICY_URL}>Privacy Policy</Link>
+      <Link href={{ pathname: ZAP_LEGAL_CONFIG.TERMS_OF_SERVICE_URL }}>
+        Terms of Service
+      </Link>{" "}
+      and{" "}
+      <Link href={{ pathname: ZAP_LEGAL_CONFIG.PRIVACY_POLICY_URL }}>
+        Privacy Policy
+      </Link>
       .
     </div>
   );

@@ -80,7 +80,11 @@ export function PricingSection() {
 
                 <div className="mt-6">
                   <ZapButton asChild className="w-full">
-                    <Link href={`${ZAP_CORE_CONFIG.APP.APP_URL}/billing`}>
+                    <Link
+                      href={{
+                        pathname: `${ZAP_CORE_CONFIG.APP.APP_URL}/billing`,
+                      }}
+                    >
                       Get Started
                     </Link>
                   </ZapButton>

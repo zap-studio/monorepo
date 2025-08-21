@@ -125,7 +125,7 @@ export function SidebarUser({ user }: SidebarUserProps) {
         if (href) {
           return (
             <DropdownMenuItem asChild key={label}>
-              <Link href={href}>
+              <Link href={{ pathname: href }}>
                 <Icon className="mr-2 size-4" />
                 {label}
               </Link>

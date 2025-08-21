@@ -108,7 +108,7 @@ function MenuLinks({ onClick, variant = "desktop" }: MenuLinksProps) {
       ))}
 
       {EXTERNAL_LINKS.map(({ href, label }) => (
-        <Link className={linkClassName} href={href} key={href}>
+        <Link className={linkClassName} href={{ pathname: href }} key={href}>
           {label}
         </Link>
       ))}
