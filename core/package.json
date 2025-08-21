@@ -29,7 +29,7 @@
     "dev:scan": "next dev --turbopack & npx react-scan@latest localhost:3000",
     "dev:trace": "NEXT_TURBOPACK_TRACING=1 next dev --turbopack",
     "format": "prettier --write .",
-    "lint": "next lint",
+    "lint": "eslint .",
     "mail:dev": "email dev",
     "start": "next start",
     "typegen": "next typegen",
@@ -37,7 +37,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
-      "next lint --fix .",
+      "eslint --fix .",
       "prettier --write ."
     ]
   },
