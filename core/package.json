@@ -28,7 +28,7 @@
     "dev:debug": "cross-env NODE_OPTIONS='--inspect' next dev --turbopack",
     "dev:scan": "next dev --turbopack & npx react-scan@latest localhost:3000",
     "dev:trace": "NEXT_TURBOPACK_TRACING=1 next dev --turbopack",
-    "format": "prettier --write .",
+    "format": "prettier --write",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "mail:dev": "email dev",
@@ -38,8 +38,8 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
-      "eslint --fix .",
-      "prettier --write ."
+      "eslint --fix",
+      "prettier --write"
     ]
   },
   "dependencies": {
