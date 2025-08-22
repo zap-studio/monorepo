@@ -1,1 +1,1 @@
-export * from "./blog.layout";
+export * from './blog.layout';

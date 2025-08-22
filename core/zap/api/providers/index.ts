@@ -1,1 +1,1 @@
-export * from "./tanstack-query.provider";
+export * from './tanstack-query.provider';

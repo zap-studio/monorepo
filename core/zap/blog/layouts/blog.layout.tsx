@@ -1,5 +1,5 @@
-import { Footer } from "@/zap/components/common/footer";
-import { Header } from "@/zap/components/common/header";
+import { Footer } from '@/zap/components/common/footer';
+import { Header } from '@/zap/components/common/header';
 
 export interface _BlogLayoutProps {
   children: React.ReactNode;

@@ -1,12 +1,12 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import * as React from "react";
+import * as React from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useDebouncedFunction<T extends (...args: any[]) => any>(
   fn: T,
-  delay = 0,
+  delay = 0
 ): (...args: Parameters<T>) => void {
   const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -20,7 +20,7 @@ export function useDebouncedFunction<T extends (...args: any[]) => any>(
         fn(...args);
       }, delay);
     },
-    [fn, delay],
+    [fn, delay]
   );
 
   React.useEffect(
@@ -29,7 +29,7 @@ export function useDebouncedFunction<T extends (...args: any[]) => any>(
         clearTimeout(timerRef.current);
       }
     },
-    [],
+    []
   );
 
   return debouncedFn;

@@ -1,14 +1,14 @@
-import "server-only";
+import 'server-only';
 
-import { authMiddleware, base } from "@/rpc/middlewares";
-import { withRpcHandler } from "@/zap/errors/handlers";
+import { authMiddleware, base } from '@/rpc/middlewares';
+import { withRpcHandler } from '@/zap/errors/handlers';
 
-import { InputFeedbackSchema } from "../../schemas";
+import { InputFeedbackSchema } from '../../schemas';
 import {
   getAverageRatingService,
   getUserFeedbackService,
   submitFeedbackService,
-} from "../../services";
+} from '../../services';
 
 const submit = base
   .use(authMiddleware)
@@ -19,7 +19,7 @@ const submit = base
         userId: context.session.session.userId,
         ...input,
       });
-    }),
+    })
   );
 
 const getUserFeedback = base.use(authMiddleware).handler(
@@ -27,7 +27,7 @@ const getUserFeedback = base.use(authMiddleware).handler(
     return await getUserFeedbackService({
       userId: context.session.session.userId,
     });
-  }),
+  })
 );
 
 const getAverageRating = base.handler(withRpcHandler(getAverageRatingService));

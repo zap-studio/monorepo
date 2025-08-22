@@ -1,9 +1,9 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
+import { type UseMutationOptions, useMutation } from '@tanstack/react-query';
 
-import { handleClientError, handleSuccess } from "@/zap/errors/client";
+import { handleClientError, handleSuccess } from '@/zap/errors/client';
 
 interface ZapMutationOptions<TData, TError, TVariables, TContext>
   extends UseMutationOptions<TData, TError, TVariables, TContext> {
@@ -15,7 +15,7 @@ interface ZapMutationOptions<TData, TError, TVariables, TContext>
   onError?: (
     error: TError,
     variables: TVariables,
-    context: TContext | undefined,
+    context: TContext | undefined
   ) => void;
 }
 

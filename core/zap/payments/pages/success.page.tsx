@@ -1,8 +1,7 @@
-import Link from "next/link";
-
-import { ZAP_CORE_CONFIG } from "@/zap.config";
-import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
-import { ZapButton } from "@/zap/components/core";
+import Link from 'next/link';
+import { getAuthServerDataOrRedirectToLoginService } from '@/zap/auth/services';
+import { ZapButton } from '@/zap/components/core';
+import { ZAP_CORE_CONFIG } from '@/zap.config';
 
 export interface _SuccessPageProps {
   searchParams: Promise<{
@@ -18,13 +17,13 @@ export async function _SuccessPage({ searchParams }: _SuccessPageProps) {
   if (!checkout_id) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center">
-        <h1 className="text-3xl font-bold">Unexpected Error</h1>
+        <h1 className="font-bold text-3xl">Unexpected Error</h1>
 
         <p className="text-muted-foreground">
           Missing checkout ID. Please try again.
         </p>
 
-        <ZapButton asChild variant={"ghost"}>
+        <ZapButton asChild variant={'ghost'}>
           <Link href={{ pathname: `${ZAP_CORE_CONFIG.APP.APP_URL}/billing` }}>
             Go back to Billing
           </Link>
@@ -35,14 +34,14 @@ export async function _SuccessPage({ searchParams }: _SuccessPageProps) {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center">
-      <h1 className="text-3xl font-bold">Payment Successful!</h1>
+      <h1 className="font-bold text-3xl">Payment Successful!</h1>
 
-      <p className="text-muted-foreground max-w-2xl">
+      <p className="max-w-2xl text-muted-foreground">
         Thank you for your purchase. Your subscription has been activated and
         you now have access to all Pro features.
       </p>
 
-      <ZapButton asChild variant={"ghost"}>
+      <ZapButton asChild variant={'ghost'}>
         <Link href={{ pathname: ZAP_CORE_CONFIG.APP.APP_URL }}>
           Go back to App
         </Link>

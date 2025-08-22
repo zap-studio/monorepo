@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { type VariantProps } from "class-variance-authority";
-import { ToggleGroup as ToggleGroupPrimitive } from "radix-ui";
-import * as React from "react";
+import type { VariantProps } from 'class-variance-authority';
+import { ToggleGroup as ToggleGroupPrimitive } from 'radix-ui';
+import * as React from 'react';
 
-import { toggleVariants } from "@/components/ui/toggle";
-import { cn } from "@/lib/utils";
+import { toggleVariants } from '@/components/ui/toggle';
+import { cn } from '@/lib/utils';
 
 const ToggleGroupContext = React.createContext<
   VariantProps<typeof toggleVariants>
 >({
-  size: "default",
-  variant: "default",
+  size: 'default',
+  variant: 'default',
 });
 
 function ToggleGroup({
@@ -24,13 +24,13 @@ function ToggleGroup({
   VariantProps<typeof toggleVariants>) {
   return (
     <ToggleGroupPrimitive.Root
+      className={cn(
+        'group/toggle-group flex w-fit items-center rounded-md data-[variant=outline]:shadow-xs',
+        className
+      )}
+      data-size={size}
       data-slot="toggle-group"
       data-variant={variant}
-      data-size={size}
-      className={cn(
-        "group/toggle-group flex w-fit items-center rounded-md data-[variant=outline]:shadow-xs",
-        className,
-      )}
       {...props}
     >
       <ToggleGroupContext.Provider value={{ variant, size }}>
@@ -52,17 +52,17 @@ function ToggleGroupItem({
 
   return (
     <ToggleGroupPrimitive.Item
-      data-slot="toggle-group-item"
-      data-variant={context.variant || variant}
-      data-size={context.size || size}
       className={cn(
         toggleVariants({
           variant: context.variant || variant,
           size: context.size || size,
         }),
-        "min-w-0 flex-1 shrink-0 rounded-none shadow-none first:rounded-l-md last:rounded-r-md focus:z-10 focus-visible:z-10 data-[variant=outline]:border-l-0 data-[variant=outline]:first:border-l",
-        className,
+        'min-w-0 flex-1 shrink-0 rounded-none shadow-none first:rounded-l-md last:rounded-r-md focus:z-10 focus-visible:z-10 data-[variant=outline]:border-l-0 data-[variant=outline]:first:border-l',
+        className
       )}
+      data-size={context.size || size}
+      data-slot="toggle-group-item"
+      data-variant={context.variant || variant}
       {...props}
     >
       {children}

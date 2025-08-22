@@ -1,14 +1,14 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
 import {
   type QueryKey,
-  useQuery,
   type UseQueryOptions,
-} from "@tanstack/react-query";
-import { useEffect, useMemo, useRef } from "react";
+  useQuery,
+} from '@tanstack/react-query';
+import { useEffect, useMemo, useRef } from 'react';
 
-import { handleClientError, handleSuccess } from "@/zap/errors/client";
+import { handleClientError, handleSuccess } from '@/zap/errors/client';
 
 export interface ZapQueryOptions<
   TQueryFnData,
@@ -44,7 +44,7 @@ export function useZapQuery<
   // Use useMemo to ensure that the queryKey is stable across renders (special case of array reference equality since queryKey is an array)
   const stableQueryKey = useMemo(
     () => restOptions.queryKey,
-    [restOptions.queryKey],
+    [restOptions.queryKey]
   );
 
   useEffect(() => {

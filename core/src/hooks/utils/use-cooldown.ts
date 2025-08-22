@@ -1,7 +1,7 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
 interface UseCooldownOptions {
   initialValue?: number;

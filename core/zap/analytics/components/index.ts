@@ -1,1 +1,1 @@
-export * from "./posthog-page-view";
+export * from './posthog-page-view';

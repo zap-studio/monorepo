@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-export type deviceType = "Mobile" | "Tablet" | "Desktop";
+export type deviceType = 'Mobile' | 'Tablet' | 'Desktop';
 
 export type DeviceState = {
   isSupported: boolean;
@@ -18,7 +18,7 @@ export type DeviceState = {
 export const useDetectDevice = (): DeviceState => {
   const [deviceState, setDeviceState] = useState<DeviceState>({
     isSupported: true,
-    deviceType: "Desktop",
+    deviceType: 'Desktop',
     isMobile: false,
     isTablet: false,
     isDesktop: true,
@@ -26,7 +26,7 @@ export const useDetectDevice = (): DeviceState => {
 
   useEffect(() => {
     const handleDeviceDetection = () => {
-      if (typeof navigator === "undefined") {
+      if (typeof navigator === 'undefined') {
         setDeviceState((prevState) => ({
           ...prevState,
           isSupported: false,
@@ -43,7 +43,7 @@ export const useDetectDevice = (): DeviceState => {
       if (isMobile) {
         setDeviceState({
           isSupported: true,
-          deviceType: "Mobile",
+          deviceType: 'Mobile',
           isMobile: true,
           isTablet: false,
           isDesktop: false,
@@ -51,7 +51,7 @@ export const useDetectDevice = (): DeviceState => {
       } else if (isTablet) {
         setDeviceState({
           isSupported: true,
-          deviceType: "Tablet",
+          deviceType: 'Tablet',
           isMobile: false,
           isTablet: true,
           isDesktop: false,
@@ -59,7 +59,7 @@ export const useDetectDevice = (): DeviceState => {
       } else {
         setDeviceState({
           isSupported: true,
-          deviceType: "Desktop",
+          deviceType: 'Desktop',
           isMobile: false,
           isTablet: false,
           isDesktop: true,
@@ -68,9 +68,9 @@ export const useDetectDevice = (): DeviceState => {
     };
 
     handleDeviceDetection();
-    window.addEventListener("resize", handleDeviceDetection);
+    window.addEventListener('resize', handleDeviceDetection);
     return () => {
-      window.removeEventListener("resize", handleDeviceDetection);
+      window.removeEventListener('resize', handleDeviceDetection);
     };
   }, []);
 

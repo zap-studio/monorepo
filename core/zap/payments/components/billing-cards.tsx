@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Check } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
+import { Check } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 import {
   Card,
@@ -10,17 +10,17 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { SALES_EMAIL } from "@/zap.config";
-import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
-import { ZapButton } from "@/zap/components/core";
-import { ClientError } from "@/zap/errors";
-import { handleClientError } from "@/zap/errors/client";
+} from '@/components/ui/card';
+import { betterAuthClient } from '@/zap/auth/providers/better-auth/client';
+import { ZapButton } from '@/zap/components/core';
+import { ClientError } from '@/zap/errors';
+import { handleClientError } from '@/zap/errors/client';
+import { SALES_EMAIL } from '@/zap.config';
 
-import { useActiveSubscriptionSlug } from "../providers/polar/client";
-import { getBillingDetails, getSortedProducts } from "../utils";
-import { ZAP_PAYMENTS_CONFIG } from "../zap.plugin.config";
-import { PriceDisplay, PricingToggle } from ".";
+import { useActiveSubscriptionSlug } from '../providers/polar/client';
+import { getBillingDetails, getSortedProducts } from '../utils';
+import { ZAP_PAYMENTS_CONFIG } from '../zap.plugin.config';
+import { PriceDisplay, PricingToggle } from '.';
 
 export function BillingCards() {
   const [isYearly, setIsYearly] = useState(false);
@@ -30,7 +30,7 @@ export function BillingCards() {
     productId: string,
     slug: string,
     price: number | string,
-    contactSales?: boolean,
+    contactSales?: boolean
   ) => {
     try {
       if (contactSales) {
@@ -39,15 +39,15 @@ export function BillingCards() {
       }
 
       if (price === 0) {
-        toast.info("This is a free plan. No checkout required.");
+        toast.info('This is a free plan. No checkout required.');
         return;
       }
 
       if (!productId) {
-        throw new ClientError("Product ID not found");
+        throw new ClientError('Product ID not found');
       }
 
-      toast.loading("Redirecting to checkout...");
+      toast.loading('Redirecting to checkout...');
 
       await betterAuthClient.checkout({
         products: [productId],
@@ -72,7 +72,7 @@ export function BillingCards() {
         {sortedProducts.map((product) => {
           const { price, recurringInterval } = getBillingDetails(
             product,
-            isYearly,
+            isYearly
           );
 
           const isCurrentPlan = activeSubscriptionSlug === product.slug;
@@ -82,15 +82,15 @@ export function BillingCards() {
 
           const getButtonText = () => {
             if (isCurrentPlan) {
-              return "Current Plan";
+              return 'Current Plan';
             }
 
             if (isContactSales) {
-              return "Contact Sales";
+              return 'Contact Sales';
             }
 
             if (isFree) {
-              return "Free Plan";
+              return 'Free Plan';
             }
 
             return `Subscribe to ${product.name}`;
@@ -98,23 +98,23 @@ export function BillingCards() {
 
           const getButtonVariant = () => {
             if (isCurrentPlan) {
-              return "secondary" as const;
+              return 'secondary' as const;
             }
 
             if (product.popular && !isDisabled) {
-              return "default" as const;
+              return 'default' as const;
             }
 
-            return "outline" as const;
+            return 'outline' as const;
           };
 
           return (
             <Card
-              className="bg-muted/50 relative flex flex-col justify-between border shadow-none transition-all duration-300"
+              className="relative flex flex-col justify-between border bg-muted/50 shadow-none transition-all duration-300"
               key={product.slug}
             >
               {product.popular && (
-                <div className="bg-primary text-primary-foreground absolute -top-4 right-0 left-0 mx-auto w-fit rounded-full px-3 py-1 text-xs font-medium">
+                <div className="-top-4 absolute right-0 left-0 mx-auto w-fit rounded-full bg-primary px-3 py-1 font-medium text-primary-foreground text-xs">
                   Most Popular
                 </div>
               )}
@@ -138,7 +138,7 @@ export function BillingCards() {
                     <ul className="grid gap-2">
                       {product.features?.map((feature) => (
                         <li className="flex items-center gap-2" key={feature}>
-                          <Check className="text-primary h-4 w-4" />
+                          <Check className="h-4 w-4 text-primary" />
                           <span className="text-sm">{feature}</span>
                         </li>
                       ))}
@@ -152,10 +152,10 @@ export function BillingCards() {
                     disabled={isDisabled}
                     onClick={() =>
                       handleCheckout(
-                        product.productId || "",
+                        product.productId || '',
                         product.slug,
                         price,
-                        product?.contactSales,
+                        product?.contactSales
                       )
                     }
                     size="lg"

@@ -1,7 +1,7 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import * as React from "react";
+import * as React from 'react';
 
 interface WindowSize {
   width: number;
@@ -10,8 +10,8 @@ interface WindowSize {
 
 export function useWindowSize(): WindowSize {
   const [windowSize, setWindowSize] = React.useState<WindowSize>({
-    width: typeof window !== "undefined" ? window.innerWidth : 0,
-    height: typeof window !== "undefined" ? window.innerHeight : 0,
+    width: typeof window !== 'undefined' ? window.innerWidth : 0,
+    height: typeof window !== 'undefined' ? window.innerHeight : 0,
   });
 
   React.useEffect(() => {
@@ -24,10 +24,10 @@ export function useWindowSize(): WindowSize {
 
     handleResize();
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 

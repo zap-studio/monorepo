@@ -1,2 +1,2 @@
-export * from "./billing.page";
-export * from "./success.page";
+export * from './billing.page';
+export * from './success.page';

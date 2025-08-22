@@ -1,7 +1,7 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import * as React from "react";
+import * as React from 'react';
 
 export function useMousePosition<T extends Element>(element?: T) {
   const [position, setPosition] = React.useState({ x: 0, y: 0 });
@@ -11,7 +11,7 @@ export function useMousePosition<T extends Element>(element?: T) {
     const abortController = new AbortController();
 
     targetElement.addEventListener(
-      "mousemove",
+      'mousemove',
       (event) => {
         const mouseEvent = event as MouseEvent;
         const rect = (
@@ -19,16 +19,16 @@ export function useMousePosition<T extends Element>(element?: T) {
         )?.getBoundingClientRect();
         const x = Math.max(
           0,
-          Math.round(mouseEvent.pageX - rect.left - window.scrollX),
+          Math.round(mouseEvent.pageX - rect.left - window.scrollX)
         );
         const y = Math.max(
           0,
-          Math.round(mouseEvent.pageY - rect.top - window.scrollY),
+          Math.round(mouseEvent.pageY - rect.top - window.scrollY)
         );
 
         setPosition({ x, y });
       },
-      { signal: abortController.signal },
+      { signal: abortController.signal }
     );
 
     return () => {

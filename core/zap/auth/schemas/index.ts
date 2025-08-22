@@ -1,6 +1,6 @@
-import z from "zod";
+import z from 'zod';
 
-import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
+import { ZAP_AUTH_CONFIG } from '../zap.plugin.config';
 
 export const InputGetUserIdFromMailSchema = z.object({
   email: z.string(),
@@ -9,7 +9,7 @@ export const InputGetUserIdFromMailSchema = z.object({
 export const LoginFormSchema = z.object({
   email: z.email(),
   password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
+    message: 'Password must be at least 6 characters.',
   }),
 });
 
@@ -35,6 +35,6 @@ export const RegisterFormSchema = z
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match.",
-    path: ["confirmPassword"],
+    message: 'Passwords do not match.',
+    path: ['confirmPassword'],
   });

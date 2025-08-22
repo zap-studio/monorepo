@@ -64,24 +64,24 @@ export interface ZapConfig extends ZapCoreSettings {
 }
 
 export type ZapPlugins =
-  | "ai"
-  | "analytics"
-  | "api"
-  | "auth"
-  | "blog"
-  | "components"
-  | "crypto"
-  | "db"
-  | "env"
-  | "errors"
-  | "feedbacks"
-  | "flags"
-  | "landing"
-  | "legal"
-  | "mails"
-  | "markdown"
-  | "payments"
-  | "plugins"
-  | "pwa"
-  | "sidebar"
-  | "waitlist";
+  | 'ai'
+  | 'analytics'
+  | 'api'
+  | 'auth'
+  | 'blog'
+  | 'components'
+  | 'crypto'
+  | 'db'
+  | 'env'
+  | 'errors'
+  | 'feedbacks'
+  | 'flags'
+  | 'landing'
+  | 'legal'
+  | 'mails'
+  | 'markdown'
+  | 'payments'
+  | 'plugins'
+  | 'pwa'
+  | 'sidebar'
+  | 'waitlist';

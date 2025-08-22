@@ -1,7 +1,7 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import * as React from "react";
+import * as React from 'react';
 
 export function useToggle(initialValue = false) {
   const [value, setValue] = React.useState(initialValue);

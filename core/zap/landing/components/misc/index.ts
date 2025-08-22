@@ -1,1 +1,1 @@
-export * from "./command-card";
+export * from './command-card';

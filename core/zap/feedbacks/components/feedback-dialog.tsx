@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm, UseFormReturn } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { type UseFormReturn, useForm } from 'react-hook-form';
 
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -17,14 +17,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-import { ZapButton } from "@/zap/components/core";
+} from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import { ZapButton } from '@/zap/components/core';
 
-import { useIsFeedbackSubmitted, useSubmitFeedback } from "../hooks";
-import { InputFeedbackSchema } from "../schemas";
-import type { FeedbackFormValues } from "../types";
+import { useIsFeedbackSubmitted, useSubmitFeedback } from '../hooks';
+import { InputFeedbackSchema } from '../schemas';
+import type { FeedbackFormValues } from '../types';
 
 interface FeedbackDialogProps {
   open: boolean;
@@ -41,7 +41,7 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
 
   const form = useForm<FeedbackFormValues>({
     resolver: zodResolver(InputFeedbackSchema),
-    defaultValues: { rating: 0, description: "" },
+    defaultValues: { rating: 0, description: '' },
   });
 
   const onSubmit = async (data: FeedbackFormValues) => {
@@ -55,7 +55,7 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
       <DialogContent>
         {submitted || isExistingFeedback ? (
           <div className="space-y-2 text-center">
-            <h2 className="text-xl font-semibold">Thank you!</h2>
+            <h2 className="font-semibold text-xl">Thank you!</h2>
             <p className="text-muted-foreground text-sm">
               We appreciate your input and will use it to improve your
               experience.
@@ -137,7 +137,7 @@ export function RatingButtons({
   isSubmitting,
   isExistingFeedback,
 }: RatingButtonsProps) {
-  const rating = form.watch("rating");
+  const rating = form.watch('rating');
 
   return (
     <div className="flex flex-wrap gap-2 pt-1">
@@ -148,17 +148,17 @@ export function RatingButtons({
           <ZapButton
             aria-label={`Rate ${i}`}
             className={cn(
-              "h-10 w-10 rounded-md p-0 text-sm",
-              "transform transition-all duration-200 ease-in-out",
-              "hover:scale-110 active:scale-110",
-              isActive && "bg-primary text-white",
+              'h-10 w-10 rounded-md p-0 text-sm',
+              'transform transition-all duration-200 ease-in-out',
+              'hover:scale-110 active:scale-110',
+              isActive && 'bg-primary text-white'
             )}
             disabled={isSubmitting || !!isExistingFeedback}
             key={`rating-${i}`}
-            onClick={() => form.setValue("rating", i)}
+            onClick={() => form.setValue('rating', i)}
             size="sm"
             type="button"
-            variant={isActive ? "default" : "outline"}
+            variant={isActive ? 'default' : 'outline'}
           >
             {i}
           </ZapButton>

@@ -1,1 +1,1 @@
-export * from "./legal.page";
+export * from './legal.page';

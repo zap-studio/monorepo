@@ -1,2 +1,2 @@
-export * from "./blog.page";
-export * from "./slug.page";
+export * from './blog.page';
+export * from './slug.page';

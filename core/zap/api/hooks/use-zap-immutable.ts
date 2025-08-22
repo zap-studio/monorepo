@@ -1,9 +1,9 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import type { QueryKey } from "@tanstack/react-query";
+import type { QueryKey } from '@tanstack/react-query';
 
-import { useZapQuery, type ZapQueryOptions } from "./use-zap-query";
+import { useZapQuery, type ZapQueryOptions } from './use-zap-query';
 
 export function useZapImmutable<
   TQueryFnData = unknown,

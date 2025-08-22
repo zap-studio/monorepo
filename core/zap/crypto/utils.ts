@@ -4,7 +4,7 @@
  */
 export function generateUuid(): string {
   // Try to use crypto.getRandomValues if available (browser, Node.js 15+, edge runtime)
-  if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
+  if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
     const bytes = new Uint8Array(16);
     globalThis.crypto.getRandomValues(bytes);
 
@@ -16,15 +16,15 @@ export function generateUuid(): string {
 
     // Convert to hex string with hyphens
     const hex = Array.from(bytes, (byte) =>
-      byte.toString(16).padStart(2, "0"),
-    ).join("");
+      byte.toString(16).padStart(2, '0')
+    ).join('');
     return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
   }
 
   // Fallback for environments without crypto.getRandomValues
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = Math.floor(Math.random() * 16);
-    const v = c === "x" ? r : (r % 4) + 8; // For 'y', ensure it's 8, 9, A, or B
+    const v = c === 'x' ? r : (r % 4) + 8; // For 'y', ensure it's 8, 9, A, or B
     return v.toString(16);
   });
 }

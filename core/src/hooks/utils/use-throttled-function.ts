@@ -1,12 +1,12 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import * as React from "react";
+import * as React from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useThrottledFunction<T extends (...args: any[]) => any>(
   fn: T,
-  delay = 0,
+  delay = 0
 ): (...args: Parameters<T>) => void {
   const lastExecutedRef = React.useRef(0);
   const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -36,7 +36,7 @@ export function useThrottledFunction<T extends (...args: any[]) => any>(
         }, remaining);
       }
     },
-    [fn, delay],
+    [fn, delay]
   );
 
   React.useEffect(
@@ -45,7 +45,7 @@ export function useThrottledFunction<T extends (...args: any[]) => any>(
         clearTimeout(timerRef.current);
       }
     },
-    [],
+    []
   );
 
   return throttledFn;

@@ -1,17 +1,17 @@
-import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
-import Link from "next/link";
-import { cache, useMemo } from "react";
+import { ArrowRight, ArrowUpRight, Star } from 'lucide-react';
+import Link from 'next/link';
+import { cache, useMemo } from 'react';
 
-import { isPluginEnabled } from "@/lib/plugins";
-import { getNumberOfUsersService } from "@/zap/auth/services";
-import { ZAP_AUTH_CONFIG } from "@/zap/auth/zap.plugin.config";
-import { ZapButton } from "@/zap/components/core";
-import { AnimatedSection, AnimatedText } from "@/zap/components/misc";
-import { getAverageRatingService } from "@/zap/feedbacks/services";
+import { isPluginEnabled } from '@/lib/plugins';
+import { getNumberOfUsersService } from '@/zap/auth/services';
+import { ZAP_AUTH_CONFIG } from '@/zap/auth/zap.plugin.config';
+import { ZapButton } from '@/zap/components/core';
+import { AnimatedSection, AnimatedText } from '@/zap/components/misc';
+import { getAverageRatingService } from '@/zap/feedbacks/services';
 
 const getStatsData = cache(async () => {
-  const isFeedbacksEnabled = useMemo(() => isPluginEnabled("feedbacks"), []);
-  const isAuthEnabled = useMemo(() => isPluginEnabled("auth"), []);
+  const isFeedbacksEnabled = useMemo(() => isPluginEnabled('feedbacks'), []);
+  const isAuthEnabled = useMemo(() => isPluginEnabled('auth'), []);
 
   const promises: Promise<unknown>[] = [];
 
@@ -47,11 +47,11 @@ export function HeroSection() {
     <AnimatedSection isNotSection>
       <div className="flex w-full items-center justify-center px-4 pb-32 md:px-6 md:pb-48">
         <div className="mx-auto max-w-4xl space-y-4 text-center">
-          <h1 className="text-foreground text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+          <h1 className="font-bold text-3xl text-foreground tracking-tighter sm:text-5xl xl:text-6xl/none">
             Ship <AnimatedText /> with Zap.ts ⚡️
           </h1>
 
-          <p className="text-muted-foreground mx-auto max-w-[700px] md:text-xl">
+          <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
             The ultimate Next.js boilerplate with everything you need to build
             production-ready applications in minutes, not months.
           </p>
@@ -95,7 +95,7 @@ export async function Stats() {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
         className={`h-4 w-4 ${
-          i < fullStars ? "fill-primary text-primary" : "text-primary"
+          i < fullStars ? 'fill-primary text-primary' : 'text-primary'
         }`}
         key={`star-${i}-${fullStars}`}
       />
@@ -117,9 +117,9 @@ export async function Stats() {
       {shouldShowRatings && (
         <div className="flex items-center">
           <div className="flex">{renderStars()}</div>
-          <span className="text-muted-foreground ml-2">
+          <span className="ml-2 text-muted-foreground">
             {averageRating.toFixed(1)} ({totalFeedbacks} rating
-            {totalFeedbacks !== 1 ? "s" : ""})
+            {totalFeedbacks !== 1 ? 's' : ''})
           </span>
         </div>
       )}
@@ -129,7 +129,7 @@ export async function Stats() {
       {shouldShowUsers && (
         <div className="text-muted-foreground">
           Used by {numberOfUsers.toLocaleString()}+ developer
-          {numberOfUsers !== 1 ? "s" : ""}
+          {numberOfUsers !== 1 ? 's' : ''}
         </div>
       )}
     </div>

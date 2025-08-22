@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { motion } from "motion/react";
-import type { ReactNode } from "react";
+import { motion } from 'motion/react';
+import type { ReactNode } from 'react';
 
 interface AnimatedSectionProps {
   children: ReactNode;
@@ -14,7 +14,7 @@ interface AnimatedSectionProps {
 export function AnimatedSection({
   children,
   id,
-  className = "",
+  className = '',
   delay = 0,
   isNotSection = false,
 }: AnimatedSectionProps) {

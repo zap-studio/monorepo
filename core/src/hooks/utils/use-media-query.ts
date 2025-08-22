@@ -1,7 +1,7 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import * as React from "react";
+import * as React from 'react';
 
 export function useMediaQuery(query: string, initialValue?: boolean) {
   const [matches, setMatches] = React.useState(initialValue ?? false);
@@ -16,10 +16,10 @@ export function useMediaQuery(query: string, initialValue?: boolean) {
       setMatches(event.matches);
     };
 
-    queryRef.current.addEventListener("change", handleChange);
+    queryRef.current.addEventListener('change', handleChange);
 
     return () => {
-      queryRef.current?.removeEventListener("change", handleChange);
+      queryRef.current?.removeEventListener('change', handleChange);
     };
   }, [query]);
 

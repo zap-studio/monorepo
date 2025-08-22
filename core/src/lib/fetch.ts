@@ -1,10 +1,10 @@
-import { createFetch } from "@better-fetch/fetch";
+import { createFetch } from '@better-fetch/fetch';
 
-import { BASE_URL } from "@/zap.config";
+import { BASE_URL } from '@/zap.config';
 
 function getBaseURL() {
   // Client-side: use window.location.origin if available
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     return window.location.origin;
   }
 

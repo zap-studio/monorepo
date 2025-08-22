@@ -1,5 +1,5 @@
-import { isPluginEnabled } from "@/lib/plugins";
-import { Footer, Header } from "@/zap/components/common";
+import { isPluginEnabled } from '@/lib/plugins';
+import { Footer, Header } from '@/zap/components/common';
 
 import {
   FaqSection,
@@ -8,41 +8,41 @@ import {
   PricingSection,
   SolutionSection,
   TestimonialSection,
-} from "../components";
+} from '../components';
 
-const isPaymentsEnabled = isPluginEnabled("payments");
+const isPaymentsEnabled = isPluginEnabled('payments');
 
-const SECTION_CLASSNAME = "w-full py-12 md:py-24 lg:py-32";
+const SECTION_CLASSNAME = 'w-full py-12 md:py-24 lg:py-32';
 export const SECTIONS = [
   {
-    id: "hero",
+    id: 'hero',
     component: HeroSection,
     className:
-      "h-[calc(100vh-4rem)] border-b flex items-center justify-center md:py-0 overflow-hidden min-h-[500px]",
+      'h-[calc(100vh-4rem)] border-b flex items-center justify-center md:py-0 overflow-hidden min-h-[500px]',
   },
   {
-    id: "solution",
+    id: 'solution',
     component: SolutionSection,
     className: `bg-muted/50 border-y ${SECTION_CLASSNAME}`,
   },
   {
-    id: "testimonials",
+    id: 'testimonials',
     component: TestimonialSection,
     className: SECTION_CLASSNAME,
   },
   {
-    id: "features",
+    id: 'features',
     component: FeaturesSection,
     className: `bg-muted/50 border-y ${SECTION_CLASSNAME}`,
   },
   {
-    id: "pricing",
+    id: 'pricing',
     component: PricingSection,
     className: SECTION_CLASSNAME,
     disabled: !isPaymentsEnabled,
   },
   {
-    id: "faq",
+    id: 'faq',
     component: FaqSection,
     className: isPaymentsEnabled
       ? `bg-muted/50 border-t ${SECTION_CLASSNAME}`

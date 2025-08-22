@@ -1,8 +1,8 @@
-export type AIProviderId = "openai" | "mistral";
+export type AIProviderId = 'openai' | 'mistral';
 
 export enum AIProviderIdEnum {
-  OPENAI = "openai",
-  MISTRAL = "mistral",
+  OPENAI = 'openai',
+  MISTRAL = 'mistral',
 }
 
 export interface AIPluginConfig {

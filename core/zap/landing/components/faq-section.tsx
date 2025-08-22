@@ -3,18 +3,18 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from '@/components/ui/accordion';
 
-import { FAQS } from "../data";
+import { FAQS } from '../data';
 
 export function FaqSection() {
   return (
     <section className="w-full px-4 md:px-6">
       <header className="mx-auto flex max-w-[58rem] flex-col items-center justify-center space-y-4 text-center">
-        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+        <h2 className="font-bold text-3xl tracking-tighter sm:text-4xl md:text-5xl">
           Frequently Asked Questions
         </h2>
-        <p className="text-muted-foreground max-w-[85%] md:text-xl">
+        <p className="max-w-[85%] text-muted-foreground md:text-xl">
           Everything you need to know about Zap.ts
         </p>
       </header>

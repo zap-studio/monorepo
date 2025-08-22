@@ -1,10 +1,10 @@
-import "server-only";
+import 'server-only';
 
-import { type } from "@orpc/server";
-import type { UIMessage } from "ai";
+import { type } from '@orpc/server';
+import type { UIMessage } from 'ai';
 
-import { authMiddleware, base } from "@/rpc/middlewares";
-import { withRpcHandler } from "@/zap/errors/handlers";
+import { authMiddleware, base } from '@/rpc/middlewares';
+import { withRpcHandler } from '@/zap/errors/handlers';
 
 import {
   InputDeleteAPIKeySchema,
@@ -12,7 +12,7 @@ import {
   InputSaveAPIKeySchema,
   InputTestAPIKeySchema,
   InputUpdateAPIKeySchema,
-} from "../../schemas";
+} from '../../schemas';
 import {
   deleteAPIKeyService,
   getAISettingsService,
@@ -22,8 +22,8 @@ import {
   streamCompletionService,
   testAPIKeyService,
   updateAISettingsService,
-} from "../../services";
-import type { AIProviderId } from "../../types";
+} from '../../services';
+import type { AIProviderId } from '../../types';
 
 const getAISettings = base
   .use(authMiddleware)
@@ -34,7 +34,7 @@ const getAISettings = base
         userId: context.session.session.userId,
         provider: input.provider,
       });
-    }),
+    })
   );
 
 const saveAISettings = base
@@ -46,7 +46,7 @@ const saveAISettings = base
         userId: context.session.session.userId,
         ...input,
       });
-    }),
+    })
   );
 
 const updateAISettings = base
@@ -58,7 +58,7 @@ const updateAISettings = base
         userId: context.session.session.userId,
         ...input,
       });
-    }),
+    })
   );
 
 const deleteAPIKey = base
@@ -70,7 +70,7 @@ const deleteAPIKey = base
         userId: context.session.session.userId,
         ...input,
       });
-    }),
+    })
   );
 
 const saveOrUpdateAISettings = base
@@ -82,7 +82,7 @@ const saveOrUpdateAISettings = base
         userId: context.session.session.userId,
         ...input,
       });
-    }),
+    })
   );
 
 const testAPIKey = base
@@ -93,7 +93,7 @@ const testAPIKey = base
       return await testAPIKeyService({
         ...input,
       });
-    }),
+    })
   );
 
 const streamChat = base
@@ -102,7 +102,7 @@ const streamChat = base
     type<{
       provider: AIProviderId;
       messages: UIMessage[];
-    }>(),
+    }>()
   )
   .handler(
     withRpcHandler(async ({ input, context }) => {
@@ -110,7 +110,7 @@ const streamChat = base
         userId: context.session.session.userId,
         ...input,
       });
-    }),
+    })
   );
 
 const streamCompletion = base
@@ -119,7 +119,7 @@ const streamCompletion = base
     type<{
       provider: AIProviderId;
       prompt: string;
-    }>(),
+    }>()
   )
   .handler(
     withRpcHandler(async ({ input, context }) => {
@@ -127,7 +127,7 @@ const streamCompletion = base
         userId: context.session.session.userId,
         ...input,
       });
-    }),
+    })
   );
 
 export const ai = {

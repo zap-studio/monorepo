@@ -1,17 +1,17 @@
-import "server-only";
+import 'server-only';
 
-import { eq } from "drizzle-orm";
-import type React from "react";
+import { eq } from 'drizzle-orm';
+import type React from 'react';
 
-import { ForgotPasswordMail, MagicLinkMail, VerificationMail } from "@/emails";
-import { getLastMailSentAtQuery } from "@/zap/auth/db/providers/drizzle/queries";
-import { isUserAdminService } from "@/zap/auth/services";
-import { db } from "@/zap/db/providers/drizzle";
-import { user } from "@/zap/db/providers/drizzle/schema";
-import { MailError, NotFoundError, UnauthorizedError } from "@/zap/errors";
+import { ForgotPasswordMail, MagicLinkMail, VerificationMail } from '@/emails';
+import { getLastMailSentAtQuery } from '@/zap/auth/db/providers/drizzle/queries';
+import { isUserAdminService } from '@/zap/auth/services';
+import { db } from '@/zap/db/providers/drizzle';
+import { user } from '@/zap/db/providers/drizzle/schema';
+import { MailError, NotFoundError, UnauthorizedError } from '@/zap/errors';
 
-import { resend } from "../providers/resend/server";
-import { ZAP_MAILS_CONFIG } from "../zap.plugin.config";
+import { resend } from '../providers/resend/server';
+import { ZAP_MAILS_CONFIG } from '../zap.plugin.config';
 
 const FROM_EMAIL = ZAP_MAILS_CONFIG.FROM;
 
@@ -67,7 +67,7 @@ export async function sendAdminEmailService({
   recipients,
 }: MailServiceParams) {
   if (!(await isUserAdminService())) {
-    throw new UnauthorizedError("Admin access required");
+    throw new UnauthorizedError('Admin access required');
   }
 
   return await sendMailService({ subject, recipients });
@@ -119,5 +119,5 @@ export async function updateLastTimestampMailSentService({
     .set({ lastEmailSentAt: new Date() })
     .where(eq(user.id, userId));
 
-  return { message: "Last email sent timestamp updated successfully" };
+  return { message: 'Last email sent timestamp updated successfully' };
 }

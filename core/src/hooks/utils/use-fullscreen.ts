@@ -1,7 +1,7 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
 interface ExtendedHTMLElement extends HTMLElement {
   mozRequestFullScreen?: () => Promise<void>;
@@ -89,18 +89,18 @@ export function useFullscreen({
 
     const abortController = new AbortController();
 
-    document.addEventListener("fullscreenchange", handleFullscreenChange, {
+    document.addEventListener('fullscreenchange', handleFullscreenChange, {
       signal: abortController.signal,
     });
-    document.addEventListener("mozfullscreenchange", handleFullscreenChange, {
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange, {
       signal: abortController.signal,
     });
     document.addEventListener(
-      "webkitfullscreenchange",
+      'webkitfullscreenchange',
       handleFullscreenChange,
-      { signal: abortController.signal },
+      { signal: abortController.signal }
     );
-    document.addEventListener("MSFullscreenChange", handleFullscreenChange, {
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange, {
       signal: abortController.signal,
     });
 

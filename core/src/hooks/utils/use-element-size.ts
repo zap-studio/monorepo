@@ -1,17 +1,17 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import * as React from "react";
+import * as React from 'react';
 
 export function useElementSize<T extends Element>(
-  ref: React.RefObject<T | null>,
+  ref: React.RefObject<T | null>
 ): { width: number | null; height: number | null };
 export function useElementSize<T extends Element>(
   ref: React.RefObject<T | null>,
   initial: {
     width: number;
     height: number;
-  },
+  }
 ): {
   width: number;
   height: number;
@@ -21,7 +21,7 @@ export function useElementSize<T extends Element = Element>(
   initial?: {
     width: number;
     height: number;
-  },
+  }
 ) {
   const [size, setSize] = React.useState({
     width: initial?.width ?? null,

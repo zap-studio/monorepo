@@ -4,16 +4,16 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
-import { ResetPasswordForm } from "../components";
+import { ResetPasswordForm } from '../components';
 
 export function _ResetPasswordPage() {
   return (
-    <div className="bg-muted/50 flex min-h-screen items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center bg-muted/50 px-4">
       <Card className="w-full max-w-md border shadow-none">
         <CardHeader>
-          <CardTitle className="text-center text-3xl font-bold tracking-tight">
+          <CardTitle className="text-center font-bold text-3xl tracking-tight">
             Reset your password
           </CardTitle>
           <CardDescription className="mt-2 text-center">

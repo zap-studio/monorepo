@@ -1,12 +1,12 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import type { DependencyList } from "react";
-import * as React from "react";
+import type { DependencyList } from 'react';
+import * as React from 'react';
 
 export function useAsyncEffect(
   effect: () => Promise<void | (() => Promise<void> | void)>,
-  deps?: DependencyList,
+  deps?: DependencyList
 ) {
   const [destroy, setDestroy] = React.useState<
     void | (() => Promise<void> | void) | undefined
@@ -22,7 +22,7 @@ export function useAsyncEffect(
     execute();
 
     return () => {
-      if (typeof destroy === "function") destroy();
+      if (typeof destroy === 'function') destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destroy, effect, ...(deps || [])]);

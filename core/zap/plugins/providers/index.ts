@@ -1,1 +1,1 @@
-export * from "./providers.plugin";
+export * from './providers.plugin';

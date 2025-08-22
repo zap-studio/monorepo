@@ -1,2 +1,2 @@
-export * from "./animate-waitlist";
-export * from "./waitlist-form";
+export * from './animate-waitlist';
+export * from './waitlist-form';

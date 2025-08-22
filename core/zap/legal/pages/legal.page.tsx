@@ -1,6 +1,6 @@
-import { CustomMDX } from "@/zap/markdown/mdx";
+import { CustomMDX } from '@/zap/markdown/mdx';
 
-import { getLegalContent } from "../utils";
+import { getLegalContent } from '../utils';
 
 interface LegalPageProps {
   slug: string;
