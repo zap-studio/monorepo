@@ -28,9 +28,9 @@
     "dev:debug": "cross-env NODE_OPTIONS='--inspect' next dev --turbopack",
     "dev:scan": "next dev --turbopack & npx react-scan@latest localhost:3000",
     "dev:trace": "NEXT_TURBOPACK_TRACING=1 next dev --turbopack",
-    "format": "prettier --write",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix",
+    "format": "ultracite format",
+    "lint": "ultracite lint",
+    "lint:fix": "ultracite format",
     "mail:dev": "email dev",
     "start": "next start",
     "typegen": "next typegen",
@@ -38,8 +38,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
-      "eslint --fix",
-      "prettier --write"
+      "ultracite format"
     ]
   },
   "dependencies": {
@@ -111,10 +110,8 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.1",
     "@react-email/preview-server": "^4.2.8",
     "@tailwindcss/postcss": "^4.1.12",
-    "@tanstack/eslint-plugin-query": "^5.83.1",
     "@types/node": "^24.3.0",
     "@types/pg": "^8.15.5",
     "@types/react": "^19.1.10",
@@ -122,20 +119,9 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/serialize-javascript": "^5.0.4",
     "@types/web-push": "^3.6.4",
-    "@typescript-eslint/eslint-plugin": "^8.40.0",
-    "@typescript-eslint/parser": "^8.40.0",
     "create-zap-app": "^1.4.7",
     "cross-env": "^10.0.0",
     "drizzle-kit": "^0.31.4",
-    "eslint": "^9.33.0",
-    "eslint-config-next": "^15.5.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-drizzle": "^0.2.3",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
-    "prettier": "^3.6.2",
-    "prettier-plugin-organize-imports": "^4.2.0",
-    "prettier-plugin-packagejson": "^2.5.19",
-    "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^4.1.12",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2"
