@@ -1,11 +1,11 @@
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 
-interface PricingToggleProps {
+type PricingToggleProps = {
   onToggle: (isYearly: boolean) => void;
   isYearly: boolean;
   yearlyDiscount: number;
-}
+};
 
 export function PricingToggle({
   onToggle,

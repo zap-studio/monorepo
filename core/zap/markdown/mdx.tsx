@@ -34,12 +34,12 @@ function Table({ data }: { data: { headers: string[]; rows: string[][] } }) {
   );
 }
 
-interface CustomLinkProps {
+type CustomLinkProps = {
   href: string;
   children: React.ReactNode;
   className?: string;
   [key: string]: unknown;
-}
+};
 
 function CustomLink(props: CustomLinkProps) {
   const { href, children, ...restProps } = props;

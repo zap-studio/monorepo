@@ -5,7 +5,7 @@ export enum AIProviderIdEnum {
   MISTRAL = 'mistral',
 }
 
-export interface AIPluginConfig {
+export type AIPluginConfig = {
   COMPLETION?: {
     FREQUENCY_PENALTY?: number;
     MAX_OUTPUT_TOKENS?: number;
@@ -23,4 +23,4 @@ export interface AIPluginConfig {
     TEMPERATURE?: number;
   };
   SYSTEM_PROMPT: string;
-}
+};

@@ -3,10 +3,10 @@ import 'client-only';
 
 import { useCallback, useEffect, useState } from 'react';
 
-interface UseCooldownOptions {
+type UseCooldownOptions = {
   initialValue?: number;
   onComplete?: () => void;
-}
+};
 
 export function useCooldown({
   initialValue = 0,
@@ -16,7 +16,9 @@ export function useCooldown({
 
   useEffect(() => {
     if (cooldown <= 0) {
-      if (onComplete) onComplete();
+      if (onComplete) {
+        onComplete();
+      }
       return;
     }
 

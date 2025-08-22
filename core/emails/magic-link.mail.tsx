@@ -9,9 +9,9 @@ import {
   Text,
 } from '@react-email/components';
 
-interface MailProps {
+type MailProps = {
   url: string;
-}
+};
 
 export default function MagicLinkMail({ url }: MailProps) {
   return (

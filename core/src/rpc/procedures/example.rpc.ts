@@ -5,8 +5,7 @@ import { withRpcHandler } from '@/zap/errors/handlers';
 
 export const example = base.use(authMiddleware).handler(
   withRpcHandler(({ context }) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const session = context.session;
+    const _session = context.session;
     return { message: 'Hello, World!' };
   })
 );

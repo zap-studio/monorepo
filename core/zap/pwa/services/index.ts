@@ -43,9 +43,9 @@ export async function getWebPushService() {
   return webpushInstance;
 }
 
-interface SubscribeUserService {
+type SubscribeUserService = {
   subscription: webpush.PushSubscription;
-}
+};
 
 export async function subscribeUserToPushNotificationsService({
   subscription,

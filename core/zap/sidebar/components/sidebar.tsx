@@ -26,9 +26,9 @@ import {
 } from '../components';
 import { MAIN_NAV_ITEMS } from '../data';
 
-interface AppSidebarProps {
+type AppSidebarProps = {
   props?: React.ComponentProps<typeof Sidebar>;
-}
+};
 
 export function AppSidebar({ ...props }: AppSidebarProps) {
   const { data } = betterAuthClient.useSession();

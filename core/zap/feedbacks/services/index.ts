@@ -14,9 +14,9 @@ export async function getAverageRatingService() {
   return computeAverage(feedbacks);
 }
 
-interface GetUserFeedbackService {
+type GetUserFeedbackService = {
   userId: string;
-}
+};
 
 export async function getUserFeedbackService({
   userId,
@@ -30,11 +30,11 @@ export async function getUserFeedbackService({
   return existingFeedback[0];
 }
 
-interface SubmitFeedbackService {
+type SubmitFeedbackService = {
   userId: string;
   rating: number;
   description?: string;
-}
+};
 
 export async function submitFeedbackService({
   userId,

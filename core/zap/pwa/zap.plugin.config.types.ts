@@ -1,4 +1,4 @@
-export interface PWAPluginConfig {
+export type PWAPluginConfig = {
   BACKGROUND_COLOR: string;
   DESCRIPTION: string;
   ICONS: Array<{
@@ -11,4 +11,4 @@ export interface PWAPluginConfig {
   START_URL: string;
   THEME_COLOR: string;
   VAPID_MAIL?: string;
-}
+};

@@ -9,9 +9,9 @@ import {
   Text,
 } from '@react-email/components';
 
-interface MailProps {
+type MailProps = {
   url: string;
-}
+};
 
 export default function ForgotPasswordMail({ url }: MailProps) {
   return (

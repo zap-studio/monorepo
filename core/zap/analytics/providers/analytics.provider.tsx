@@ -10,9 +10,9 @@ import { PUBLIC_ENV } from '@/zap/env/public';
 import { SuspendedPostHogPageView } from '../components';
 import { ZAP_ANALYTICS_CONFIG } from '../zap.plugin.config';
 
-interface AnalyticsProviderProps {
+type AnalyticsProviderProps = {
   children: React.ReactNode;
-}
+};
 
 export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
   useEffect(() => {

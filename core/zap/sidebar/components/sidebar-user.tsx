@@ -35,21 +35,21 @@ import { betterAuthClient } from '@/zap/auth/providers/better-auth/client';
 import { handleClientError } from '@/zap/errors/client';
 import { useActiveSubscriptionProduct } from '@/zap/payments/providers/polar/client';
 
-interface MenuItem {
+type MenuItem = {
   label: string;
   icon: LucideIcon;
   href?: string;
   onClick?: () => void;
   disabled?: boolean;
-}
+};
 
-interface SidebarUserProps {
+type SidebarUserProps = {
   user: {
     name: string;
     email: string;
     avatar: string | null;
   };
-}
+};
 
 export function SidebarUser({ user }: SidebarUserProps) {
   const { isMobile } = useSidebar();
@@ -195,16 +195,16 @@ export function SidebarUser({ user }: SidebarUserProps) {
   );
 }
 
-interface User {
+type User = {
   name: string;
   email: string;
   avatar: string | null;
-}
+};
 
-interface UserInfoProps {
+type UserInfoProps = {
   user: User;
   fallback: string;
-}
+};
 
 function UserInfo({ user, fallback }: UserInfoProps) {
   return (

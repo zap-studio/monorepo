@@ -24,10 +24,10 @@ export function FeaturesSection() {
   );
 }
 
-interface FeatureCardProps {
+type FeatureCardProps = {
   title: string;
   description: string;
-}
+};
 
 function FeatureCard({ title, description }: FeatureCardProps) {
   return (

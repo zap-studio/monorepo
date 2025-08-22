@@ -1,9 +1,9 @@
 import { Footer } from '@/zap/components/common/footer';
 import { Header } from '@/zap/components/common/header';
 
-export interface _BlogLayoutProps {
+export type _BlogLayoutProps = {
   children: React.ReactNode;
-}
+};
 
 export function _BlogLayout({ children }: _BlogLayoutProps) {
   return (

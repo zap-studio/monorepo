@@ -12,9 +12,9 @@ import { ZAP_AUTH_CONFIG } from '../zap.plugin.config';
 import type { Provider } from '../zap.plugin.config.types';
 import { PROVIDER_ICONS } from '.';
 
-interface SocialProviderButtonProps {
+type SocialProviderButtonProps = {
   provider: Provider;
-}
+};
 
 export function SocialProviderButton({ provider }: SocialProviderButtonProps) {
   const [loading, setLoading] = useState(false);

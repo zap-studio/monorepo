@@ -6,9 +6,9 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { queryClient } from '../lib/tanstack-query';
 
-interface TanStackQueryProviderProps {
+type TanStackQueryProviderProps = {
   children: React.ReactNode;
-}
+};
 
 export function TanStackQueryProvider({
   children,

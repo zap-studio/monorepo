@@ -78,10 +78,10 @@ function Logo() {
   );
 }
 
-interface MenuLinksProps {
+type MenuLinksProps = {
   onClick?: () => void;
   variant?: 'desktop' | 'mobile';
-}
+};
 
 function MenuLinks({ onClick, variant = 'desktop' }: MenuLinksProps) {
   const scrollToSection = useScrollToSection();

@@ -26,9 +26,9 @@ export async function _generateStaticParams() {
   }));
 }
 
-export interface _BlogSlugPageProps {
+export type _BlogSlugPageProps = {
   params: Promise<{ slug: string }>;
-}
+};
 
 export async function _BlogSlugPage({ params }: _BlogSlugPageProps) {
   const { slug } = await params;

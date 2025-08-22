@@ -7,9 +7,9 @@ import { isPluginEnabled } from '@/lib/plugins';
 import { AnalyticsProvider } from '@/zap/analytics/providers/analytics.provider';
 import { TanStackQueryProvider } from '@/zap/api/providers';
 
-interface PluginProvidersProps {
+type PluginProvidersProps = {
   children: React.ReactNode;
-}
+};
 
 export function PluginProviders({ children }: PluginProvidersProps) {
   const isApiEnabled = useMemo(() => isPluginEnabled('api'), []);

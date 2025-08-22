@@ -3,9 +3,9 @@
 import { motion } from 'motion/react';
 import type React from 'react';
 
-interface AnimateWaitlistProps {
+type AnimateWaitlistProps = {
   children: React.ReactNode;
-}
+};
 
 export function AnimateWaitlist({ children }: AnimateWaitlistProps) {
   return (

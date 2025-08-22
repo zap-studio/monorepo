@@ -5,16 +5,16 @@ import { useEffect } from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface PushNotificationsStoreState {
+type PushNotificationsStoreState = {
   isSupported: boolean;
   subscription: PushSubscription | null;
   message: string;
   isIOS: boolean;
   isStandalone: boolean;
   isSubscribed: boolean;
-}
+};
 
-interface PushNotificationsStoreActions {
+type PushNotificationsStoreActions = {
   setMessage: (message: string) => void;
   setSubscribed: (isSubscribed: boolean) => void;
   setSubscription: (subscription: PushSubscription | null) => void;
@@ -26,7 +26,7 @@ interface PushNotificationsStoreActions {
     isSubscribed: boolean;
   }) => void;
   initialize: () => void;
-}
+};
 
 export const usePushNotificationsStore = create<
   PushNotificationsStoreState & PushNotificationsStoreActions
@@ -50,14 +50,14 @@ export const usePushNotificationsStore = create<
         set({ subscription, isSubscribed }),
 
       initialize: () => {
-        if (typeof window === 'undefined' || typeof navigator === 'undefined')
+        if (typeof window === 'undefined' || typeof navigator === 'undefined') {
           return;
+        }
 
         const isSupported =
           'serviceWorker' in navigator && 'PushManager' in window;
         const isIOS =
           /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           !(window as any).MSStream;
         const isStandalone = window.matchMedia(
           '(display-mode: standalone)'

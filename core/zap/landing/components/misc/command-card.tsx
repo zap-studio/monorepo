@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 
 import { AnimatedSpan, Terminal, TypingAnimation } from '../magicui/terminal';
 
-interface CommandCardProps {
+type CommandCardProps = {
   command: string;
   description: string;
-}
+};
 
 export function CommandCard({ command, description }: CommandCardProps) {
   const [copied, setCopied] = useState(false);

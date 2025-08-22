@@ -13,7 +13,7 @@ export type HandlerFunction<T extends unknown[], R> = (
   ...args: T
 ) => Promise<R> | R;
 
-interface ErrorResponse {
+type ErrorResponse = {
   error: string;
   message: string;
   code: string;
@@ -21,13 +21,13 @@ interface ErrorResponse {
   timestamp: string;
   correlationId: string;
   details?: unknown;
-}
+};
 
-export interface HandlerOptions {
+export type HandlerOptions = {
   includeStack?: boolean;
   correlationId?: string;
   context?: Record<string, unknown>;
-}
+};
 
 export function generateCorrelationId(): string {
   return generateUuid();

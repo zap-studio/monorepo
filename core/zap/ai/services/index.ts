@@ -22,10 +22,10 @@ import { getModel } from '../lib';
 import type { AIProviderId, ModelName } from '../types';
 import { ZAP_AI_CONFIG } from '../zap.plugin.config';
 
-interface GetAISettingsService {
+type GetAISettingsService = {
   userId: string;
   provider: AIProviderId;
-}
+};
 
 export async function getAISettingsService({
   userId,
@@ -52,10 +52,10 @@ export async function getAISettingsService({
   return { apiKey: decryptedAPIKey, model };
 }
 
-interface DeleteAPIKeyService {
+type DeleteAPIKeyService = {
   userId: string;
   provider: AIProviderId;
-}
+};
 
 export async function deleteAPIKeyService({
   userId,
@@ -74,12 +74,12 @@ export async function deleteAPIKeyService({
   return { message: 'API key deleted successfully.' };
 }
 
-interface SaveAISettingsService {
+type SaveAISettingsService = {
   userId: string;
   provider: AIProviderId;
   model: ModelName;
   apiKey: string;
-}
+};
 
 export async function saveAISettingsService({
   userId,
@@ -96,13 +96,13 @@ export async function saveAISettingsService({
   });
 }
 
-interface SaveOrUpdateAISettingsService {
+type SaveOrUpdateAISettingsService = {
   userId: string;
   provider: AIProviderId;
   model: ModelName;
   apiKey: string;
   mode: UpsertMode;
-}
+};
 
 export async function saveOrUpdateAISettingsService({
   userId,
@@ -172,11 +172,11 @@ export async function saveOrUpdateAISettingsService({
   return { message: 'AI settings saved successfully.' };
 }
 
-export interface StreamChatService {
+export type StreamChatService = {
   userId: string;
   provider: AIProviderId;
   messages: UIMessage[];
-}
+};
 
 export async function streamChatService({
   userId,
@@ -208,11 +208,11 @@ export async function streamChatService({
   return streamToEventIterator(result.toUIMessageStream());
 }
 
-export interface StreamCompletionService {
+export type StreamCompletionService = {
   userId: string;
   provider: AIProviderId;
   prompt: string;
-}
+};
 
 export async function streamCompletionService({
   userId,
@@ -247,11 +247,11 @@ export async function streamCompletionService({
   return streamToEventIterator(result.toUIMessageStream());
 }
 
-interface TestAPIKeyService {
+type TestAPIKeyService = {
   provider: AIProviderId;
   apiKey: string;
   model: ModelName;
-}
+};
 
 export async function testAPIKeyService({
   provider,
@@ -272,12 +272,12 @@ export async function testAPIKeyService({
   return { message: 'API key is valid' };
 }
 
-interface UpdateAISettingsService {
+type UpdateAISettingsService = {
   userId: string;
   provider: AIProviderId;
   model: ModelName;
   apiKey: string;
-}
+};
 
 export async function updateAISettingsService({
   userId,

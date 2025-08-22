@@ -8,10 +8,10 @@ import { base } from '@/rpc/middlewares/base.middleware';
 import type { Session } from '../../providers/better-auth/client';
 import { betterAuthServer } from '../../providers/better-auth/server';
 
-export interface SessionContext {
+export type SessionContext = {
   readonly session: Session;
   readonly headers: Headers;
-}
+};
 
 export const authMiddleware = base.middleware(async ({ next }) => {
   const _headers = await headers();

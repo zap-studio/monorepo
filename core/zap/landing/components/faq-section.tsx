@@ -35,11 +35,11 @@ export function FaqSection() {
   );
 }
 
-interface FaqItemProps {
+type FaqItemProps = {
   question: string;
   answer: string;
   index: number;
-}
+};
 
 function FaqItem({ question, answer, index }: FaqItemProps) {
   return (

@@ -26,10 +26,10 @@ import { useIsFeedbackSubmitted, useSubmitFeedback } from '../hooks';
 import { InputFeedbackSchema } from '../schemas';
 import type { FeedbackFormValues } from '../types';
 
-interface FeedbackDialogProps {
+type FeedbackDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
+};
 
 export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
   const [submitted, setSubmitted] = useState(false);
@@ -126,11 +126,11 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
   );
 }
 
-interface RatingButtonsProps {
+type RatingButtonsProps = {
   form: UseFormReturn<FeedbackFormValues>;
   isSubmitting: boolean;
   isExistingFeedback: boolean;
-}
+};
 
 export function RatingButtons({
   form,

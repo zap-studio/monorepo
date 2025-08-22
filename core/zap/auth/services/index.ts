@@ -74,9 +74,9 @@ export async function isUserAdminService() {
   return false; // FIXME: Implement actual admin check logic
 }
 
-interface GetUserIdFromMailService {
+type GetUserIdFromMailService = {
   email: string;
-}
+};
 
 export async function getUserIdFromMailService({
   email,

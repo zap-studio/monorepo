@@ -1,13 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface WaitlistStoreState {
+type WaitlistStoreState = {
   hasJoined: boolean;
-}
+};
 
-interface WaitlistStoreActions {
+type WaitlistStoreActions = {
   setHasJoined: (hasJoined: boolean) => void;
-}
+};
 
 export const useWaitlistStore = create<
   WaitlistStoreState & WaitlistStoreActions

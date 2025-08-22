@@ -17,9 +17,9 @@ export async function getNumberOfPeopleInWaitlistService() {
   return record.count;
 }
 
-interface SubmitWaitlistEmailService {
+type SubmitWaitlistEmailService = {
   email: string;
-}
+};
 
 export async function submitWaitlistEmailService({
   email,

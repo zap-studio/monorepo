@@ -31,10 +31,10 @@ export function TestimonialSection() {
   );
 }
 
-interface MarqueeRowProps {
+type MarqueeRowProps = {
   reviews: typeof TESTIMONIALS;
   reverse?: boolean;
-}
+};
 
 function MarqueeRow({ reviews, reverse = false }: MarqueeRowProps) {
   return (

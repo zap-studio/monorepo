@@ -20,7 +20,7 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 
-interface SidebarMainSectionProps {
+type SidebarMainSectionProps = {
   items: {
     title: string;
     url: string;
@@ -31,7 +31,7 @@ interface SidebarMainSectionProps {
       url: string;
     }[];
   }[];
-}
+};
 
 export function SidebarMainSection({ items }: SidebarMainSectionProps) {
   return (

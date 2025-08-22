@@ -1,11 +1,11 @@
 import { getPriceDisplay } from '../utils';
 import type { RecurringInterval } from '../zap.plugin.config.types';
 
-interface PriceDisplayProps {
+type PriceDisplayProps = {
   price: number | string;
   interval: RecurringInterval;
   alignment?: 'center' | 'left';
-}
+};
 
 export function PriceDisplay({
   price,

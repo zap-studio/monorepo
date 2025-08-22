@@ -4,9 +4,9 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
 import { AppSidebar, SidebarHeader } from '../components';
 
-export interface _AppLayoutProps {
+export type _AppLayoutProps = {
   children: React.ReactNode;
-}
+};
 
 export async function _AppLayout({ children }: _AppLayoutProps) {
   const cookieStore = await cookies();

@@ -6,10 +6,10 @@ import { geist } from '@/app/fonts';
 import { ZapButton } from '@/zap/components/core';
 import { BaseError } from '@/zap/errors';
 
-interface ErrorBoundaryProps {
+type ErrorBoundaryProps = {
   reset: () => void;
   error: Error & { digest?: string };
-}
+};
 
 export default function GlobalError({ reset, error }: ErrorBoundaryProps) {
   const isBaseError = error instanceof BaseError;

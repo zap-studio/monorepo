@@ -15,12 +15,12 @@ import { ZAP_MAILS_CONFIG } from '../zap.plugin.config';
 
 const FROM_EMAIL = ZAP_MAILS_CONFIG.FROM;
 
-interface MailServiceParams {
+type MailServiceParams = {
   subject: string;
   recipients: string[];
   url?: string;
   react?: React.JSX.Element;
-}
+};
 
 export async function sendMailService({
   subject,

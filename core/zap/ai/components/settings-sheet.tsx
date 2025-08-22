@@ -36,10 +36,10 @@ import { useAISettings, useInitAISettings } from '../hooks';
 import { AIFormSchema, AIProviderIdSchema } from '../schemas';
 import type { AIFormValues, AIProviderId } from '../types';
 
-interface SettingsSheetProps {
+type SettingsSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
+};
 
 export function SettingsSheet({ open, onOpenChange }: SettingsSheetProps) {
   return (
@@ -58,10 +58,10 @@ export function SettingsSheet({ open, onOpenChange }: SettingsSheetProps) {
   );
 }
 
-interface SettingsSheetFormProps {
+type SettingsSheetFormProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
+};
 
 function SettingsSheetForm({ open, onOpenChange }: SettingsSheetFormProps) {
   const [initialApiKey, setInitialApiKey] = useState<string | null>(null);
@@ -140,10 +140,10 @@ function SettingsSheetForm({ open, onOpenChange }: SettingsSheetFormProps) {
   );
 }
 
-interface FormFieldProps {
+type FormFieldProps = {
   control: Control<AIFormValues>;
   disabled: boolean;
-}
+};
 
 function ProviderSelect({ control, disabled }: FormFieldProps) {
   return (
@@ -182,11 +182,11 @@ function ProviderSelect({ control, disabled }: FormFieldProps) {
   );
 }
 
-interface ModelSelectProps {
+type ModelSelectProps = {
   control: Control<AIFormValues>;
   disabled: boolean;
   provider: AIProviderId;
-}
+};
 
 function ModelSelect({ control, disabled, provider }: ModelSelectProps) {
   const models = ModelsByProvider[provider as keyof typeof ModelsByProvider];
@@ -286,10 +286,10 @@ function ApiKeyInput({
   );
 }
 
-interface SaveSettingsProps {
+type SaveSettingsProps = {
   saving: boolean;
   isSaveDisabled: boolean;
-}
+};
 
 function SaveSettings({ saving, isSaveDisabled }: SaveSettingsProps) {
   return (

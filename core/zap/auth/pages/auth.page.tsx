@@ -14,7 +14,7 @@ import { ZAP_LEGAL_CONFIG } from '@/zap/legal/zap.plugin.config';
 import { SocialProviderButton } from '../components';
 import { ZAP_AUTH_CONFIG } from '../zap.plugin.config';
 
-interface AuthPageProps {
+type AuthPageProps = {
   title: string;
   description?: string;
   form: React.ReactNode;
@@ -23,7 +23,7 @@ interface AuthPageProps {
     linkText: string;
     linkHref: string;
   };
-}
+};
 
 const isLegalEnabled = isPluginEnabled('legal');
 
