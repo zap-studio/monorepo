@@ -21,8 +21,7 @@
   },
   "workspaces": [
     "packages/*",
-    "apps/*",
-    "core/"
+    "apps/*"
   ],
   "trustedDependencies": [
     "@tailwindcss/oxide",
