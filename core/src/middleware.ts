@@ -9,7 +9,7 @@ import {
   getSessionInEdgeRuntime,
 } from '@/zap/auth/authorization';
 import { checkBlogPathAccess } from '@/zap/blog/authorization';
-import { logError } from '@/zap/errors/logger.edge';
+import { logError } from '@/zap/errors/logger';
 import { checkWaitlistRedirect } from '@/zap/waitlist/authorization';
 import { isPluginEnabled } from './lib/plugins';
 

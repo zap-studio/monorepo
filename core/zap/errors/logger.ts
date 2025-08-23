@@ -1,5 +1,8 @@
 import 'server-only';
 
+/**
+ * Logs an error and is compatible with edge runtime.
+ */
 export function logError(error: unknown) {
   if (error instanceof Error) {
     process.stderr.write(`[${error.name}] ${error.message}\n${error.stack}`);
