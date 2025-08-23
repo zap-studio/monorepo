@@ -73,7 +73,7 @@
         "zod": "^4.1.0",
       },
       "devDependencies": {
-        "@biomejs/biome": "^2.2.2",
+        "@biomejs/biome": "2.2.2",
         "@tailwindcss/postcss": "^4.1.12",
         "@types/mdx": "^2.0.13",
         "@types/node": "24.3.0",
@@ -83,7 +83,7 @@
         "tailwindcss": "^4.1.12",
         "tw-animate-css": "^1.3.7",
         "typescript": "^5.9.2",
-        "ultracite": "^5.2.5",
+        "ultracite": "5.2.5",
       },
     },
     "core": {
