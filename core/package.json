@@ -45,7 +45,6 @@
     "@ai-sdk/mistral": "^2.0.9",
     "@ai-sdk/openai": "^2.0.19",
     "@ai-sdk/react": "^2.0.22",
-    "@biomejs/biome": "^2.2.2",
     "@bprogress/next": "^3.2.12",
     "@flags-sdk/posthog": "^0.2.0",
     "@hookform/resolvers": "^5.2.1",
@@ -110,6 +109,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.2.2",
     "@react-email/preview-server": "^4.2.8",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/node": "^24.3.0",
@@ -127,7 +127,7 @@
     "tailwindcss": "^4.1.12",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2",
-    "ultracite": "^5.2.5"
+    "ultracite": "5.2.5"
   },
   "publishConfig": {
     "access": "public"

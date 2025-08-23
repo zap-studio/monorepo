@@ -60,14 +60,14 @@
     "zod": "^4.0.17"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.2",
+    "@biomejs/biome": "2.2.2",
     "@types/figlet": "^1.7.0",
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.9",
     "@types/node": "^24.3.0",
     "tsdown": "^0.14.1",
     "typescript": "^5.9.2",
-    "ultracite": "^5.2.5"
+    "ultracite": "5.2.5"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"
