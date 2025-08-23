@@ -2,7 +2,7 @@ import 'server-only';
 
 import { RPCHandler } from '@orpc/server/fetch';
 
-import { router } from '@/rpc/router';
+import { router } from '@/zap/api/rpc/router';
 
 const handler = new RPCHandler(router);
 

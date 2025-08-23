@@ -1,8 +1,7 @@
 import 'server-only';
 
-import { authMiddleware, base } from '@/rpc/middlewares';
+import { base } from '@/zap/api/rpc/middlewares';
 import { withRpcHandler } from '@/zap/errors/handlers';
-
 import { InputGetUserIdFromMailSchema } from '../../schemas';
 import {
   getNumberOfUsersService,
@@ -12,6 +11,7 @@ import {
   isAuthenticatedService,
   isUserAdminService,
 } from '../../services';
+import { authMiddleware } from '../middlewares';
 
 const isAuthenticated = base.handler(withRpcHandler(isAuthenticatedService));
 const getUserId = base

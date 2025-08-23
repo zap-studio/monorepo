@@ -1,8 +1,8 @@
 import 'server-only';
 
-import { authMiddleware, base } from '@/rpc/middlewares';
+import { base } from '@/zap/api/rpc/middlewares';
+import { authMiddleware } from '@/zap/auth/rpc/middlewares';
 import { withRpcHandler } from '@/zap/errors/handlers';
-
 import {
   InputCanSendMailSchema,
   InputSendForgotPasswordMailSchema,
