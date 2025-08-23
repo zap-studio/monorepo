@@ -1,7 +1,4 @@
 {
   "title": "AI-powered IDE",
-  "pages": [
-    "overview",
-    "mcps"
-  ]
+  "pages": ["overview", "mcps"]
 }

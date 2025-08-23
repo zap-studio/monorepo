@@ -22,9 +22,9 @@ export default function DefaultSearchDialog(props: SharedProps) {
 
   return (
     <SearchDialog
-      search={search}
-      onSearchChange={setSearch}
       isLoading={query.isLoading}
+      onSearchChange={setSearch}
+      search={search}
       {...props}
     >
       <SearchDialogOverlay />
