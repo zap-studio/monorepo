@@ -1,24 +1,4 @@
 {
-  // Disable Biome
-  "biome.enabled": false,
-
-  // Enable MCP (Model Context Protocol) integration for chat
   "chat.mcp.enabled": true,
-  // Allow automatic discovery of MCP servers
-  "chat.mcp.discovery.enabled": true,
-
-  // Use Prettier as the default formatter
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  // Format files automatically on save
-  "editor.formatOnSave": true,
-  // Run code actions automatically on save
-  "editor.codeActionsOnSave": {
-    // Apply all available fixes
-    "source.fixAll": "explicit",
-    // Organize imports automatically
-    "source.organizeImports": "explicit"
-  },
-
-  // Allow GitHub Copilot Chat to use external instruction files for code generation
-  "github.copilot.chat.codeGeneration.useInstructionFiles": true
+  "chat.mcp.discovery.enabled": true
 }

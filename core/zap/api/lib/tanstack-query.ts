@@ -1,5 +1,5 @@
-import { StandardRPCJsonSerializer } from "@orpc/client/standard";
-import { QueryClient } from "@tanstack/react-query";
+import { StandardRPCJsonSerializer } from '@orpc/client/standard';
+import { QueryClient } from '@tanstack/react-query';
 
 const serializer = new StandardRPCJsonSerializer({
   customJsonSerializers: [
@@ -7,10 +7,12 @@ const serializer = new StandardRPCJsonSerializer({
   ],
 });
 
+const DEFAULT_QUERY_STALE_TIME_MS = 60_000; // 1 minute
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000, // > 0 to prevent immediate refetching on mount
+      staleTime: DEFAULT_QUERY_STALE_TIME_MS, // > 0 to prevent immediate refetching on mount
     },
     dehydrate: {
       serializeData(data) {

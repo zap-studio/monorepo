@@ -1,10 +1,10 @@
-import { CustomMDX } from "@/zap/markdown/mdx";
+import { CustomMDX } from '@/zap/markdown/mdx';
 
-import { getLegalContent } from "../utils";
+import { getLegalContent } from '../utils';
 
-interface LegalPageProps {
+type LegalPageProps = {
   slug: string;
-}
+};
 
 export async function _LegalPage({ slug }: LegalPageProps) {
   const { content } = await getLegalContent(slug);

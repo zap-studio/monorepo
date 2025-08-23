@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useRouter } from "@bprogress/next/app";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod";
+import { useRouter } from '@bprogress/next/app';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import z from 'zod';
 
 import {
   Form,
@@ -14,24 +14,33 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { ZapButton } from "@/zap/components/core";
-import { AuthenticationError } from "@/zap/errors";
-import { handleClientError } from "@/zap/errors/client";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { ZapButton } from '@/zap/components/core/button';
+import { AuthenticationError } from '@/zap/errors';
+import { handleClientError } from '@/zap/errors/client';
 
-import { betterAuthClient } from "../../providers/better-auth/client";
+import { betterAuthClient } from '../../providers/better-auth/client';
+import { ZAP_AUTH_CONFIG } from '../../zap.plugin.config';
 
 const formSchema = z
   .object({
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: z
+      .string()
+      .min(
+        ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH,
+        `Password must be at least ${ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH} characters`
+      ),
     confirmPassword: z
       .string()
-      .min(8, "Password must be at least 8 characters"),
+      .min(
+        ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH,
+        `Password must be at least ${ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH} characters`
+      ),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
-    path: ["confirmPassword"],
+    path: ['confirmPassword'],
   });
 
 type FormSchema = z.infer<typeof formSchema>;
@@ -45,13 +54,13 @@ export function ResetPasswordForm() {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      password: "",
-      confirmPassword: "",
+      password: '',
+      confirmPassword: '',
     },
   });
 
   useEffect(() => {
-    const _token = new URLSearchParams(window.location.search).get("token");
+    const _token = new URLSearchParams(window.location.search).get('token');
     setToken(_token);
   }, []);
 
@@ -61,7 +70,7 @@ export function ResetPasswordForm() {
 
     if (!token) {
       setSubmitting(false);
-      throw new AuthenticationError("Invalid token. Please try again.");
+      throw new AuthenticationError('Invalid token. Please try again.');
     }
 
     try {
@@ -70,9 +79,9 @@ export function ResetPasswordForm() {
         token,
       });
 
-      toast.success("Password reset successfully!");
+      toast.success('Password reset successfully!');
       form.reset();
-      router.push("/login");
+      router.push('/login');
     } catch (error) {
       handleClientError(error);
     } finally {

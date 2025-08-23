@@ -1,7 +1,7 @@
-import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
+import { getAuthServerDataOrRedirectToLoginService } from '@/zap/auth/services';
 
 export default async function SettingsPage() {
   await getAuthServerDataOrRedirectToLoginService();
 
-  return <></>;
+  return null;
 }

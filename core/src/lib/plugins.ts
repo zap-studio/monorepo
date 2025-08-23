@@ -1,5 +1,5 @@
-import { PLUGIN_CONFIG } from "../../zap.config";
-import type { ZapPlugins } from "../../zap.config.types";
+import { PLUGIN_CONFIG } from '../../zap.config';
+import type { ZapPlugins } from '../../zap.config.types';
 
 /**
  * Check if a specific plugin is enabled
@@ -16,7 +16,7 @@ export function isPluginEnabled(plugin: ZapPlugins): boolean {
  */
 export function getEnabledPlugins(): ZapPlugins[] {
   return (Object.keys(PLUGIN_CONFIG) as ZapPlugins[]).filter(
-    (plugin) => PLUGIN_CONFIG[plugin],
+    (plugin) => PLUGIN_CONFIG[plugin]
   );
 }
 
@@ -26,7 +26,7 @@ export function getEnabledPlugins(): ZapPlugins[] {
  */
 export function getDisabledPlugins(): ZapPlugins[] {
   return (Object.keys(PLUGIN_CONFIG) as ZapPlugins[]).filter(
-    (plugin) => !PLUGIN_CONFIG[plugin],
+    (plugin) => !PLUGIN_CONFIG[plugin]
   );
 }
 

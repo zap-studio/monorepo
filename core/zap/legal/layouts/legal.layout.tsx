@@ -1,11 +1,11 @@
-import type React from "react";
+import type React from 'react';
 
-import { Footer } from "@/zap/components/common/footer";
-import { Header } from "@/zap/components/common/header";
+import { Footer } from '@/zap/components/common/footer';
+import { Header } from '@/zap/components/common/header';
 
-export interface _LegalLayoutProps {
+export type _LegalLayoutProps = {
   children: React.ReactNode;
-}
+};
 
 export default function _LegalLayout({ children }: _LegalLayoutProps) {
   return (

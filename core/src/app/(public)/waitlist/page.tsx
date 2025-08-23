@@ -1,7 +1,7 @@
-import { _WaitlistPage } from "@/zap/waitlist/pages";
+import { _WaitlistPage } from '@/zap/waitlist/pages/waitlist.page';
 
 export const revalidate = 60;
 
-export default async function WaitlistPage() {
+export default function WaitlistPage() {
   return <_WaitlistPage />;
 }

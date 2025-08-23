@@ -12,22 +12,22 @@
  * - Check `public/sw.js` file and change the URL in the `clients.openWindow` function
  */
 
-import type { Metadata } from "next";
-import { DEV } from "./zap/env/runtime";
-import type { ZapCoreSettings, ZapPlugins } from "./zap.config.types";
+import type { Metadata } from 'next';
+import { DEV } from './zap/env/runtime';
+import type { ZapCoreSettings, ZapPlugins } from './zap.config.types';
 
 // ─────────────────────────────────────────────────────────────
 // Core App Info
 // ─────────────────────────────────────────────────────────────
-export const NAME = "Zap.ts";
+export const NAME = 'Zap.ts';
 export const APP_NAME = `${NAME} | Build applications as fast as a zap`;
 export const APP_DESCRIPTION =
-  "Zap.ts is a Next.js boilerplate designed to help you build applications faster using a modern set of tools.";
+  'Zap.ts is a Next.js boilerplate designed to help you build applications faster using a modern set of tools.';
 export const BASE_URL = DEV
-  ? "http://localhost:3000"
-  : "https://demo.zap-ts.alexandretrotel.org";
-export const SALES_EMAIL = "sales@example.com";
-export const SUPPORT_EMAIL = "support@example.com";
+  ? 'http://localhost:3000'
+  : 'https://demo.zap-ts.alexandretrotel.org';
+export const SALES_EMAIL = 'sales@example.com';
+export const SUPPORT_EMAIL = 'support@example.com';
 
 // ─────────────────────────────────────────────────────────────
 // Plugin Configuration
@@ -67,7 +67,7 @@ export const ZAP_CORE_CONFIG: ZapCoreSettings = {
     BASE_URL,
     SALES_EMAIL,
     SUPPORT_EMAIL,
-    APP_URL: "/app",
+    APP_URL: '/app',
   },
   SECURITY: {
     CSP: {
@@ -76,35 +76,35 @@ export const ZAP_CORE_CONFIG: ZapCoreSettings = {
       STYLE_SRC: ["'self'", "'unsafe-inline'"],
       IMG_SRC: [
         "'self'",
-        "blob:",
-        "data:",
-        "https://www.gravatar.com",
-        "https://*.googleusercontent.com",
+        'blob:',
+        'data:',
+        'https://www.gravatar.com',
+        'https://*.googleusercontent.com',
       ],
       FONT_SRC: ["'self'"],
       OBJECT_SRC: ["'none'"],
       BASE_URI: ["'self'"],
       FORM_ACTION: ["'self'"],
       FRAME_ANCESTORS: ["'none'"],
-      FRAME_SRC: ["'self'", "https://www.youtube.com"],
+      FRAME_SRC: ["'self'", 'https://www.youtube.com'],
       BLOCK_ALL_MIXED_CONTENT: false,
       UPGRADE_INSECURE_REQUESTS: true,
     },
     PERMISSIONS_POLICY: {
-      CAMERA: ["self"],
-      GEOLOCATION: ["self"],
-      MICROPHONE: ["self"],
-      PAYMENT: ["self"],
-      DISPLAY_CAPTURE: ["self"],
-      FULLSCREEN: ["self"],
-      PICTURE_IN_PICTURE: ["self"],
-      AUTOPLAY: ["self"],
-      ENCRYPTED_MEDIA: ["self"],
-      WEB_SHARE: ["self"],
-      ACCELEROMETER: ["self"],
-      GYROSCOPE: ["self"],
-      MAGNETOMETER: ["self"],
-      SCREEN_WAKE_LOCK: ["self"],
+      CAMERA: ['self'],
+      GEOLOCATION: ['self'],
+      MICROPHONE: ['self'],
+      PAYMENT: ['self'],
+      DISPLAY_CAPTURE: ['self'],
+      FULLSCREEN: ['self'],
+      PICTURE_IN_PICTURE: ['self'],
+      AUTOPLAY: ['self'],
+      ENCRYPTED_MEDIA: ['self'],
+      WEB_SHARE: ['self'],
+      ACCELEROMETER: ['self'],
+      GYROSCOPE: ['self'],
+      MAGNETOMETER: ['self'],
+      SCREEN_WAKE_LOCK: ['self'],
       GAMEPAD: [],
       HID: [],
       IDLE_DETECTION: [],
@@ -126,25 +126,25 @@ export const ZAP_CORE_CONFIG: ZapCoreSettings = {
 export const ZAP_DEFAULT_METADATA: Metadata = {
   title: APP_NAME,
   description: APP_DESCRIPTION,
-  category: "technology",
-  generator: "Next.js",
+  category: 'technology',
+  generator: 'Next.js',
   applicationName: APP_NAME,
-  referrer: "origin-when-cross-origin",
+  referrer: 'origin-when-cross-origin',
   keywords: [
-    "Zap.ts",
-    "typescript",
-    "nextjs",
-    "react",
-    "boilerplate",
-    "template",
-    "web",
-    "application",
+    'Zap.ts',
+    'typescript',
+    'nextjs',
+    'react',
+    'boilerplate',
+    'template',
+    'web',
+    'application',
   ],
   authors: [
-    { name: "Alexandre Trotel", url: "https://www.alexandretrotel.org" },
+    { name: 'Alexandre Trotel', url: 'https://www.alexandretrotel.org' },
   ],
-  creator: "Alexandre Trotel",
-  publisher: "Alexandre Trotel",
+  creator: 'Alexandre Trotel',
+  publisher: 'Alexandre Trotel',
   metadataBase: new URL(BASE_URL),
   openGraph: {
     title: APP_NAME,
@@ -159,8 +159,8 @@ export const ZAP_DEFAULT_METADATA: Metadata = {
         alt: `${APP_NAME} Open Graph Image`,
       },
     ],
-    locale: "en_US",
-    type: "website",
+    locale: 'en_US',
+    type: 'website',
   },
   robots: {
     index: true,
@@ -170,26 +170,26 @@ export const ZAP_DEFAULT_METADATA: Metadata = {
       index: true,
       follow: true,
       noimageindex: false,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
   },
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-    shortcut: "/favicon.ico",
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+    shortcut: '/favicon.ico',
   },
   twitter: {
-    card: "summary_large_image",
+    card: 'summary_large_image',
     title: APP_NAME,
     description: APP_DESCRIPTION,
-    creator: "@alexandretrotel",
+    creator: '@alexandretrotel',
     images: [`${BASE_URL}/opengraph-image`],
   },
   appleWebApp: {
     title: APP_NAME,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: 'black-translucent',
     capable: true,
   },
   appLinks: {

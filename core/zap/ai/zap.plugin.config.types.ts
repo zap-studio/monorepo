@@ -1,11 +1,11 @@
-export type AIProviderId = "openai" | "mistral";
+export type AIProviderId = 'openai' | 'mistral';
 
-export enum AIProviderIdEnum {
-  OPENAI = "openai",
-  MISTRAL = "mistral",
-}
+export const AIProviderIdEnum = {
+  OPENAI: 'openai',
+  MISTRAL: 'mistral',
+} as const;
 
-export interface AIPluginConfig {
+export type AIPluginConfig = {
   COMPLETION?: {
     FREQUENCY_PENALTY?: number;
     MAX_OUTPUT_TOKENS?: number;
@@ -23,4 +23,4 @@ export interface AIPluginConfig {
     TEMPERATURE?: number;
   };
   SYSTEM_PROMPT: string;
-}
+};
