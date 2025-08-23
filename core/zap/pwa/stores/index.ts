@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+const IOS_REGEX = /iPad|iPhone|iPod/;
+
 type PushNotificationsStoreState = {
   isSupported: boolean;
   subscription: PushSubscription | null;
@@ -57,8 +59,8 @@ export const usePushNotificationsStore = create<
         const isSupported =
           'serviceWorker' in navigator && 'PushManager' in window;
         const isIOS =
-          /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-          !(window as any).MSStream;
+          IOS_REGEX.test(navigator.userAgent) &&
+          !(window as Window & { MSStream?: unknown }).MSStream;
         const isStandalone = window.matchMedia(
           '(display-mode: standalone)'
         ).matches;
