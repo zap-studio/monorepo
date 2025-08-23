@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
   "extends": ["ultracite"],
   "files": {
     "includes": ["**", "!src/components/ui", "!src/hooks/use-mobile.ts"]
