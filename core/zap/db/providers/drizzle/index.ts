@@ -14,9 +14,11 @@ import { Pool } from 'pg';
 import { PROD } from '@/zap/env/runtime';
 import { SERVER_ENV } from '@/zap/env/server';
 
-import * as schema from './schema';
+import { type DatabaseSchema, schema } from './schema';
 
-type Database = NodePgDatabase<typeof schema> | NeonHttpDatabase<typeof schema>;
+type Database =
+  | NodePgDatabase<DatabaseSchema>
+  | NeonHttpDatabase<DatabaseSchema>;
 
 function createDatabase(): Database {
   if (PROD) {
@@ -33,4 +35,4 @@ function createDatabase(): Database {
 }
 
 // FIXME: this is a workaround to make the db type compatible with the neon and node-postgres databases
-export const db = createDatabase() as NeonHttpDatabase<typeof schema>;
+export const db = createDatabase() as NeonHttpDatabase<DatabaseSchema>;

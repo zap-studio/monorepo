@@ -21,8 +21,11 @@ export function hexToBuffer(hex: string): ArrayBuffer {
   return bytes.buffer;
 }
 
+export const HEX_BYTE_LENGTH = 2;
+export const HEX_RADIX = 16;
+
 export function bufferToHex(buffer: ArrayBuffer): string {
   return [...new Uint8Array(buffer)]
-    .map((b) => b.toString(16).padStart(2, '0'))
+    .map((b) => b.toString(HEX_RADIX).padStart(HEX_BYTE_LENGTH, '0'))
     .join('');
 }

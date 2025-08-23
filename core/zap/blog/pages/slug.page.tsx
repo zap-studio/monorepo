@@ -57,13 +57,13 @@ export async function _BlogSlugPage({ params }: _BlogSlugPageProps) {
     }),
   };
 
+  const jsonLdString = serialize(jsonLd).replace(/<\/script>/gi, '<\\/script>');
+
   return (
     <div className="container mx-auto max-w-4xl py-12">
-      <script
-        dangerouslySetInnerHTML={{ __html: serialize(jsonLd) }}
-        suppressHydrationWarning
-        type="application/ld+json"
-      />
+      <script suppressHydrationWarning type="application/ld+json">
+        {jsonLdString}
+      </script>
       <article className="prose prose-gray dark:prose-invert max-w-none">
         <div className="mb-8">
           {post.metadata.date && (
