@@ -15,7 +15,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/Table';
+} from '@/components/table';
 
 const FileComponents = {
   File,

@@ -3,6 +3,7 @@
 @import "fumadocs-ui/css/preset.css";
 @import "tw-animate-css";
 
+/* biome-ignore lint/suspicious/noUnknownAtRules: This is a valid Tailwind v4 at-rule */
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -74,6 +75,7 @@
   --sidebar-ring: oklch(0.554 0.135 66.442);
 }
 
+/* biome-ignore lint/suspicious/noUnknownAtRules: This is a valid Tailwind v4 at-rule */
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -114,9 +116,11 @@
 
 @layer base {
   * {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: This is a valid Tailwind v4 at-rule */
     @apply border-border outline-ring/50;
   }
   body {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: This is a valid Tailwind v4 at-rule */
     @apply bg-background text-foreground;
   }
 }
