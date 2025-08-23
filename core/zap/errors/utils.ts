@@ -7,7 +7,7 @@ import { generateUuid } from '@/zap/crypto/utils';
 import { DEV } from '@/zap/env/runtime';
 
 import { BaseError, InternalServerError } from '.';
-import { logError } from './logger';
+import { logError } from './logger/server';
 
 export type HandlerFunction<T extends unknown[], R> = (
   ...args: T
