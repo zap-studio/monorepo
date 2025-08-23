@@ -1,4 +1,4 @@
-import { VERCEL } from '@/zap/env/runtime';
+import { VERCEL } from '@/zap/env/runtime/public';
 
 import type { AnalyticsPluginConfig } from './zap.plugin.config.types';
 

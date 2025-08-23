@@ -13,7 +13,7 @@
  */
 
 import type { Metadata } from 'next';
-import { DEV } from './zap/env/runtime';
+import { DEV } from './zap/env/runtime/public';
 import type { ZapCoreSettings, ZapPlugins } from './zap.config.types';
 
 // ─────────────────────────────────────────────────────────────

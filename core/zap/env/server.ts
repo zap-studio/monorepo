@@ -12,6 +12,7 @@ const ServerEnvSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   GITHUB_CLIENT_ID: z.string().optional(),
   GITHUB_CLIENT_SECRET: z.string().optional(),
+  NEXT_RUNTIME: z.enum(['nodejs', 'edge']).default('nodejs'),
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),
@@ -35,6 +36,7 @@ const envParseResult = ServerEnvSchema.safeParse({
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  NEXT_RUNTIME: process.env.NEXT_RUNTIME,
   NODE_ENV: process.env.NODE_ENV,
   POLAR_ACCESS_TOKEN: process.env.POLAR_ACCESS_TOKEN,
   POLAR_ENV: process.env.POLAR_ENV,

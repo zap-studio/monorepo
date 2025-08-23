@@ -11,7 +11,7 @@ import {
 } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 
-import { PROD } from '@/zap/env/runtime';
+import { PROD } from '@/zap/env/runtime/public';
 import { SERVER_ENV } from '@/zap/env/server';
 
 import { type DatabaseSchema, schema } from './schema';

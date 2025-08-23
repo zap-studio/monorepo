@@ -4,7 +4,7 @@ import type { z } from 'zod';
 import { ZodError } from 'zod';
 
 import { generateUuid } from '@/zap/crypto/utils';
-import { DEV } from '@/zap/env/runtime';
+import { DEV } from '@/zap/env/runtime/public';
 
 import { BaseError, InternalServerError } from '.';
 import { logError } from './logger/server';
