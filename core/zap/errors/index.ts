@@ -1,36 +1,36 @@
 import { ORPCError } from '@orpc/server';
 
-type HttpStatusCode =
+export const HttpStatus = {
   // 2xx Success
-  | 200 // OK
-  | 201 // Created
-  | 202 // Accepted
-  | 204 // No Content
-
+  OK: 200,
+  CREATED: 201,
+  ACCEPTED: 202,
+  NO_CONTENT: 204,
   // 3xx Redirection
-  | 301 // Moved Permanently
-  | 302 // Found
-  | 304 // Not Modified
-
+  MOVED_PERMANENTLY: 301,
+  FOUND: 302,
+  NOT_MODIFIED: 304,
   // 4xx Client Errors
-  | 400 // Bad Request
-  | 401 // Unauthorized
-  | 403 // Forbidden
-  | 404 // Not Found
-  | 405 // Method Not Allowed
-  | 409 // Conflict
-  | 410 // Gone
-  | 415 // Unsupported Media Type
-  | 418 // I'm a teapot (fun, occasionally used)
-  | 422 // Unprocessable Entity
-  | 429 // Too Many Requests
-
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  METHOD_NOT_ALLOWED: 405,
+  CONFLICT: 409,
+  GONE: 410,
+  UNSUPPORTED_MEDIA_TYPE: 415,
+  IM_A_TEAPOT: 418,
+  UNPROCESSABLE_ENTITY: 422,
+  TOO_MANY_REQUESTS: 429,
   // 5xx Server Errors
-  | 500 // Internal Server Error
-  | 501 // Not Implemented
-  | 502 // Bad Gateway
-  | 503 // Service Unavailable
-  | 504; // Gateway Timeout
+  INTERNAL_SERVER_ERROR: 500,
+  NOT_IMPLEMENTED: 501,
+  BAD_GATEWAY: 502,
+  SERVICE_UNAVAILABLE: 503,
+  GATEWAY_TIMEOUT: 504,
+} as const;
+
+type HttpStatusCode = (typeof HttpStatus)[keyof typeof HttpStatus];
 
 export class BaseError extends Error {
   statusCode: HttpStatusCode;
@@ -39,7 +39,7 @@ export class BaseError extends Error {
 
   constructor(
     message: string,
-    statusCode: HttpStatusCode = 500,
+    statusCode: HttpStatusCode = HttpStatus.INTERNAL_SERVER_ERROR,
     code = 'INTERNAL_SERVER_ERROR',
     cause?: unknown
   ) {
@@ -51,7 +51,7 @@ export class BaseError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 
-  async toORPCError() {
+  toORPCError() {
     return new ORPCError(this.code, { message: this.message });
   }
 
@@ -67,55 +67,65 @@ export class BaseError extends Error {
 
 export class InternalServerError extends BaseError {
   constructor(message = 'Internal Server Error', cause?: unknown) {
-    super(message, 500, 'INTERNAL_SERVER_ERROR', cause);
+    super(
+      message,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      'INTERNAL_SERVER_ERROR',
+      cause
+    );
   }
 }
 
 export class NotFoundError extends BaseError {
   constructor(message = 'Not Found', cause?: unknown) {
-    super(message, 404, 'NOT_FOUND', cause);
+    super(message, HttpStatus.NOT_FOUND, 'NOT_FOUND', cause);
   }
 }
 
 export class BadRequestError extends BaseError {
   constructor(message = 'Bad Request', cause?: unknown) {
-    super(message, 400, 'BAD_REQUEST', cause);
+    super(message, HttpStatus.BAD_REQUEST, 'BAD_REQUEST', cause);
   }
 }
 
 export class UnauthorizedError extends BaseError {
   constructor(message = 'Unauthorized', cause?: unknown) {
-    super(message, 401, 'UNAUTHORIZED', cause);
+    super(message, HttpStatus.UNAUTHORIZED, 'UNAUTHORIZED', cause);
   }
 }
 
 export class ForbiddenError extends BaseError {
   constructor(message = 'Forbidden', cause?: unknown) {
-    super(message, 403, 'FORBIDDEN', cause);
+    super(message, HttpStatus.FORBIDDEN, 'FORBIDDEN', cause);
   }
 }
 
 export class ConflictError extends BaseError {
   constructor(message = 'Conflict', cause?: unknown) {
-    super(message, 409, 'CONFLICT', cause);
+    super(message, HttpStatus.CONFLICT, 'CONFLICT', cause);
   }
 }
 
 export class AuthenticationError extends BaseError {
   constructor(message = 'Authentication Error', cause?: unknown) {
-    super(message, 401, 'AUTHENTICATION_ERROR', cause);
+    super(message, HttpStatus.UNAUTHORIZED, 'AUTHENTICATION_ERROR', cause);
   }
 }
 
 export class MailError extends BaseError {
   constructor(message = 'Mail Error', cause?: unknown) {
-    super(message, 500, 'MAIL_ERROR', cause);
+    super(message, HttpStatus.INTERNAL_SERVER_ERROR, 'MAIL_ERROR', cause);
   }
 }
 
 export class PushNotificationError extends BaseError {
   constructor(message = 'Push Notification Error', cause?: unknown) {
-    super(message, 500, 'PUSH_NOTIFICATION_ERROR', cause);
+    super(
+      message,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      'PUSH_NOTIFICATION_ERROR',
+      cause
+    );
   }
 }
 
@@ -133,7 +143,7 @@ export class BaseApplicationError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 
-  async toORPCError() {
+  toORPCError() {
     return new ORPCError(this.code, { message: this.message });
   }
 

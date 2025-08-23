@@ -1,6 +1,5 @@
 import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-
-import { user } from '@/zap/db/providers/drizzle/schema';
+import { user } from '@/zap/auth/db/providers/drizzle/schema';
 
 export const feedback = pgTable('feedback', {
   id: uuid('id').primaryKey().defaultRandom(),

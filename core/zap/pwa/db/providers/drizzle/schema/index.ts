@@ -1,7 +1,6 @@
 import { pgTable, text, unique, uuid } from 'drizzle-orm/pg-core';
 import type webpush from 'web-push';
-
-import { user } from '@/zap/db/providers/drizzle/schema';
+import { user } from '@/zap/auth/db/providers/drizzle/schema';
 
 export const pushNotifications = pgTable(
   'push_notifications',
