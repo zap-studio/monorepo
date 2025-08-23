@@ -232,13 +232,18 @@ const Code = ({
   return <InlineCode {...props}>{children}</InlineCode>;
 };
 
+const MAX_HEADING_LEVEL = 6;
+
+const headingComponentMap = Array.from(
+  { length: MAX_HEADING_LEVEL },
+  (_, i) => i + 1
+).reduce<Record<string, ReturnType<typeof createHeading>>>((acc, level) => {
+  acc[`h${level}`] = createHeading(level);
+  return acc;
+}, {});
+
 const components = {
-  h1: createHeading(1),
-  h2: createHeading(2),
-  h3: createHeading(3),
-  h4: createHeading(4),
-  h5: createHeading(5),
-  h6: createHeading(6),
+  ...headingComponentMap,
   p: Paragraph,
   blockquote: Blockquote,
   ul: UnorderedList,

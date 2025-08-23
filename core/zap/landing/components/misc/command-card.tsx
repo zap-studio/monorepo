@@ -12,13 +12,15 @@ type CommandCardProps = {
   description: string;
 };
 
+const COPY_TIMEOUT = 2000;
+
 export function CommandCard({ command, description }: CommandCardProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(command);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), COPY_TIMEOUT);
   };
 
   return (

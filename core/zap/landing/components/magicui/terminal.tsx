@@ -11,6 +11,8 @@ interface AnimatedSpanProps extends MotionProps {
   className?: string;
 }
 
+const MILLISECONDS_IN_SECOND = 1000;
+
 export const AnimatedSpan = ({
   children,
   delay = 0,
@@ -21,7 +23,7 @@ export const AnimatedSpan = ({
     animate={{ opacity: 1, y: 0 }}
     className={cn('grid font-normal text-sm tracking-tight', className)}
     initial={{ opacity: 0, y: -5 }}
-    transition={{ duration: 0.3, delay: delay / 1000 }}
+    transition={{ duration: 0.3, delay: delay / MILLISECONDS_IN_SECOND }}
     {...props}
   >
     {children}

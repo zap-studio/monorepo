@@ -2,8 +2,13 @@ import type * as webpush from 'web-push';
 
 import { ApplicationError } from '@/zap/errors';
 
+const BASE64_PAD_LENGTH = 4;
+
 export function urlBase64ToUint8Array(base64String: string) {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const padding = '='.repeat(
+    (BASE64_PAD_LENGTH - (base64String.length % BASE64_PAD_LENGTH)) %
+      BASE64_PAD_LENGTH
+  );
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 
   const rawData = window.atob(base64);
