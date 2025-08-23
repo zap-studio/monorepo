@@ -1,3 +1,11 @@
+const VIBRATION_DURATION = 100;
+const VIBRATION_PAUSE = 50;
+const NOTIFICATION_VIBRATION_PATTERN = [
+  VIBRATION_DURATION,
+  VIBRATION_PAUSE,
+  VIBRATION_DURATION,
+];
+
 self.addEventListener('push', (event) => {
   if (event.data) {
     const data = event.data.json();
@@ -5,7 +13,7 @@ self.addEventListener('push', (event) => {
       body: data.body,
       icon: data.icon || '/icon.png',
       badge: '/badge.png',
-      vibrate: [100, 50, 100],
+      vibrate: NOTIFICATION_VIBRATION_PATTERN,
       data: {
         dateOfArrival: Date.now(),
         primaryKey: '2',
