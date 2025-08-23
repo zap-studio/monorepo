@@ -2,6 +2,6 @@
   "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
   "extends": ["ultracite"],
   "files": {
-    "includes": ["**/*", ".github/workflows/*"]
+    "includes": ["**/*", ".github/workflows/*", "!core"]
   }
 }
