@@ -62,10 +62,8 @@ export async function middleware(request: NextRequest) {
 
     // If auth plugin is disabled, just continue with the request
     return NextResponse.next();
-  } catch (error) {
-    // biome-ignore lint/suspicious/noConsole: The Edge runtime doesn't support process.stderr, use console.error instead
-    console.error(`[Middleware Error] ${error}`);
-
+  } catch (_error) {
+    // On error, if auth is enabled, redirect to login
     if (isPluginEnabled('auth')) {
       return createLoginRedirect(request, request.nextUrl.pathname);
     }

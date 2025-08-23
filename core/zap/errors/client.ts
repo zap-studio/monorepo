@@ -38,12 +38,18 @@ export function handleClientError(
     description = error;
   }
 
-  toast.error(description);
-
+  // Show error details in toast in DEV mode
   if (DEV) {
-    // biome-ignore lint/suspicious/noConsole: This is a development-only error log
-    console.error(`[Client Error] ${title}: ${description}\n`, error);
+    toast.error(`${title}: ${description}`, {
+      description:
+        typeof error === 'object'
+          ? JSON.stringify(error, null, 2)
+          : String(error),
+    });
+    return;
   }
+
+  toast.error(description);
 }
 
 export function handleSuccess(message: string, title?: string) {
