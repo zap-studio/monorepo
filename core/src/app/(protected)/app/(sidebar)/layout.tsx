@@ -1,5 +1,8 @@
-import { _AppLayout, type _AppLayoutProps } from "@/zap/sidebar/layouts";
+import {
+  _AppLayout,
+  type _AppLayoutProps,
+} from '@/zap/sidebar/layouts/app.layout';
 
-export default async function AppLayout({ children }: _AppLayoutProps) {
+export default function AppLayout({ children }: _AppLayoutProps) {
   return <_AppLayout>{children}</_AppLayout>;
 }

@@ -1,14 +1,14 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-import { queryClient } from "../lib/tanstack-query";
+import { queryClient } from '../../lib/tanstack-query';
 
-interface TanStackQueryProviderProps {
+type TanStackQueryProviderProps = {
   children: React.ReactNode;
-}
+};
 
 export function TanStackQueryProvider({
   children,

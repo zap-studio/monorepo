@@ -1,4 +1,4 @@
-export interface ZapCoreSettings {
+export type ZapCoreSettings = {
   // Core application information
   APP: {
     NAME: string;
@@ -53,35 +53,35 @@ export interface ZapCoreSettings {
       XR_SPATIAL_TRACKING: string[];
     };
   };
-}
+};
 
-export interface ZapPluginConfig {
+export type ZapPluginConfig = {
   [key: string]: unknown;
-}
+};
 
 export interface ZapConfig extends ZapCoreSettings {
   plugins?: Record<string, ZapPluginConfig>;
 }
 
 export type ZapPlugins =
-  | "ai"
-  | "analytics"
-  | "api"
-  | "auth"
-  | "blog"
-  | "components"
-  | "crypto"
-  | "db"
-  | "env"
-  | "errors"
-  | "feedbacks"
-  | "flags"
-  | "landing"
-  | "legal"
-  | "mails"
-  | "markdown"
-  | "payments"
-  | "plugins"
-  | "pwa"
-  | "sidebar"
-  | "waitlist";
+  | 'ai'
+  | 'analytics'
+  | 'api'
+  | 'auth'
+  | 'blog'
+  | 'components'
+  | 'crypto'
+  | 'db'
+  | 'env'
+  | 'errors'
+  | 'feedbacks'
+  | 'flags'
+  | 'landing'
+  | 'legal'
+  | 'mails'
+  | 'markdown'
+  | 'payments'
+  | 'plugins'
+  | 'pwa'
+  | 'sidebar'
+  | 'waitlist';

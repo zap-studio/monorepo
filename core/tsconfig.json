@@ -24,8 +24,9 @@
       "@/zap.config": ["./zap.config"],
       "@/zap.config.types": ["./zap.config.types"],
       "@/fonts": ["./src/styles/fonts"],
-      "@/emails": ["./emails"]
-    }
+      "@/emails/*": ["./emails/*"]
+    },
+    "strictNullChecks": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

@@ -1,22 +1,22 @@
-import "server-only";
+import 'server-only';
 
-import { db } from "@/zap/db/providers/drizzle";
+import { db } from '@/zap/db/providers/drizzle';
 
 import {
   getAverageRatingQuery,
   getFeedbackForUserQuery,
-} from "../db/providers/drizzle/queries";
-import { feedback } from "../db/providers/drizzle/schema";
-import { computeAverage } from "../utils";
+} from '../db/providers/drizzle/queries';
+import { feedback } from '../db/providers/drizzle/schema';
+import { computeAverage } from '../utils';
 
 export async function getAverageRatingService() {
   const feedbacks = await getAverageRatingQuery.execute();
   return computeAverage(feedbacks);
 }
 
-interface GetUserFeedbackService {
+type GetUserFeedbackService = {
   userId: string;
-}
+};
 
 export async function getUserFeedbackService({
   userId,
@@ -30,11 +30,11 @@ export async function getUserFeedbackService({
   return existingFeedback[0];
 }
 
-interface SubmitFeedbackService {
+type SubmitFeedbackService = {
   userId: string;
   rating: number;
   description?: string;
-}
+};
 
 export async function submitFeedbackService({
   userId,
@@ -46,10 +46,10 @@ export async function submitFeedbackService({
     .values({
       userId,
       rating,
-      description: description || "",
+      description: description || '',
       submittedAt: new Date(),
     })
     .execute();
 
-  return { message: "Feedback submitted successfully." };
+  return { message: 'Feedback submitted successfully.' };
 }

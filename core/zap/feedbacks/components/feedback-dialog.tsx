@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm, UseFormReturn } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { type UseFormReturn, useForm } from 'react-hook-form';
 
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -17,19 +17,33 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-import { ZapButton } from "@/zap/components/core";
+} from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import { ZapButton } from '@/zap/components/core/button';
 
-import { useIsFeedbackSubmitted, useSubmitFeedback } from "../hooks";
-import { InputFeedbackSchema } from "../schemas";
-import type { FeedbackFormValues } from "../types";
+import { useIsFeedbackSubmitted, useSubmitFeedback } from '../hooks';
+import { InputFeedbackSchema } from '../schemas';
+import type { FeedbackFormValues } from '../types';
 
-interface FeedbackDialogProps {
+type FeedbackDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
+};
+
+const MIN_RATING = 0 as const;
+const MAX_RATING = 10 as const;
+const DEFAULT_RATING = MIN_RATING;
+
+const RATING_VALUES = (() => {
+  const values: number[] = [];
+  let current = MIN_RATING;
+  while (current <= MAX_RATING) {
+    values.push(current);
+    current += 1;
+  }
+  return values;
+})();
 
 export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
   const [submitted, setSubmitted] = useState(false);
@@ -41,7 +55,7 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
 
   const form = useForm<FeedbackFormValues>({
     resolver: zodResolver(InputFeedbackSchema),
-    defaultValues: { rating: 0, description: "" },
+    defaultValues: { rating: DEFAULT_RATING, description: '' },
   });
 
   const onSubmit = async (data: FeedbackFormValues) => {
@@ -55,7 +69,7 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
       <DialogContent>
         {submitted || isExistingFeedback ? (
           <div className="space-y-2 text-center">
-            <h2 className="text-xl font-semibold">Thank you!</h2>
+            <h2 className="font-semibold text-xl">Thank you!</h2>
             <p className="text-muted-foreground text-sm">
               We appreciate your input and will use it to improve your
               experience.
@@ -77,7 +91,9 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
                   name="rating"
                   render={() => (
                     <FormItem>
-                      <FormLabel>Rate us (0–10)</FormLabel>
+                      <FormLabel>
+                        Rate us ({MIN_RATING}–{MAX_RATING})
+                      </FormLabel>
                       <FormControl>
                         <RatingButtons
                           form={form}
@@ -126,41 +142,41 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
   );
 }
 
-interface RatingButtonsProps {
+type RatingButtonsProps = {
   form: UseFormReturn<FeedbackFormValues>;
   isSubmitting: boolean;
   isExistingFeedback: boolean;
-}
+};
 
 export function RatingButtons({
   form,
   isSubmitting,
   isExistingFeedback,
 }: RatingButtonsProps) {
-  const rating = form.watch("rating");
+  const rating = form.watch('rating');
 
   return (
     <div className="flex flex-wrap gap-2 pt-1">
-      {Array.from({ length: 11 }, (_, i) => {
-        const isActive = i <= rating;
+      {RATING_VALUES.map((value) => {
+        const isActive = value <= rating;
 
         return (
           <ZapButton
-            aria-label={`Rate ${i}`}
+            aria-label={`Rate ${value}`}
             className={cn(
-              "h-10 w-10 rounded-md p-0 text-sm",
-              "transform transition-all duration-200 ease-in-out",
-              "hover:scale-110 active:scale-110",
-              isActive && "bg-primary text-white",
+              'h-10 w-10 rounded-md p-0 text-sm',
+              'transform transition-all duration-200 ease-in-out',
+              'hover:scale-110 active:scale-110',
+              isActive && 'bg-primary text-white'
             )}
-            disabled={isSubmitting || !!isExistingFeedback}
-            key={`rating-${i}`}
-            onClick={() => form.setValue("rating", i)}
+            disabled={isSubmitting || isExistingFeedback}
+            key={value}
+            onClick={() => form.setValue('rating', value)}
             size="sm"
             type="button"
-            variant={isActive ? "default" : "outline"}
+            variant={isActive ? 'default' : 'outline'}
           >
-            {i}
+            {value}
           </ZapButton>
         );
       })}

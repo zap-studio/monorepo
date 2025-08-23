@@ -1,17 +1,17 @@
-import Link from "next/link";
-import { useMemo } from "react";
+import Link from 'next/link';
+import { useMemo } from 'react';
 
-import { isPluginEnabled } from "@/lib/plugins";
-import { LatestBlogPosts } from "@/zap/blog/components";
+import { isPluginEnabled } from '@/lib/plugins';
+import { LatestBlogPosts } from '@/zap/blog/components/latest-blog-posts';
 
-import { LEGAL_LINKS } from "../data";
-import { ThemeSwitcher } from "./theme-switcher";
+import { LEGAL_LINKS } from '../data';
+import { ThemeSwitcher } from './theme-switcher';
 
 export function Footer() {
-  const isBlogEnabled = useMemo(() => isPluginEnabled("blog"), []);
+  const isBlogEnabled = useMemo(() => isPluginEnabled('blog'), []);
 
   return (
-    <footer className="bg-background w-full border-t px-4 md:px-8">
+    <footer className="w-full border-t bg-background px-4 md:px-8">
       <div className="mx-auto max-w-6xl py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           <div className="flex flex-col space-y-4">

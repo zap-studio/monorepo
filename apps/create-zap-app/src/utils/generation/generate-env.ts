@@ -44,11 +44,11 @@ function getOptionalEnvVarContent(envVar: string): string {
   return `${envVar}="your_${envVar.toLowerCase()}_here"`;
 }
 
-interface GenerateEnvOptions {
+type GenerateEnvOptions = {
   outputDir: string;
   filename?: string;
   spinner?: Ora | null;
-}
+};
 
 export async function generateEnv({
   outputDir,

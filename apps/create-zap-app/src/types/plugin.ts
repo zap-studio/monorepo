@@ -1,4 +1,4 @@
-export interface PluginConfig {
+export type PluginConfig = {
   name: string;
   description: string;
   author: string;
@@ -10,17 +10,17 @@ export interface PluginConfig {
     plugins: string[];
   };
   scripts: Record<string, string>;
-}
+};
 
-export interface PluginScriptOptions {
+export type PluginScriptOptions = {
   projectDir: string;
   pluginName: string;
   scriptName: string;
   args?: string[];
-}
+};
 
-export interface PluginListOptions {
+export type PluginListOptions = {
   projectDir: string;
   showScripts?: boolean;
   filterPluginName?: string;
-}
+};

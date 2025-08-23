@@ -1,7 +1,7 @@
-import Link from "next/link";
+import Link from 'next/link';
 
-import { formatDate, getBlogPostsMetadata } from "../utils";
-import { ZAP_BLOG_CONFIG } from "../zap.plugin.config";
+import { formatDate, getBlogPostsMetadata } from '../utils';
+import { ZAP_BLOG_CONFIG } from '../zap.plugin.config';
 
 export async function LatestBlogPosts() {
   const posts = await getBlogPostsMetadata();
@@ -10,7 +10,7 @@ export async function LatestBlogPosts() {
     return null;
   }
 
-  const latestPosts = posts.slice(0, 3);
+  const latestPosts = posts.slice(0, ZAP_BLOG_CONFIG.MAX_BLOG_POSTS_IN_FOOTER);
 
   return (
     <div className="flex flex-col space-y-4">
@@ -23,7 +23,7 @@ export async function LatestBlogPosts() {
             href={{ pathname: `${ZAP_BLOG_CONFIG.BASE_PATH}/${post.slug}` }}
             key={post.slug}
           >
-            <h4 className="text-foreground group-hover:text-primary group-active:text-primary text-sm font-medium transition-colors">
+            <h4 className="font-medium text-foreground text-sm transition-colors group-hover:text-primary group-active:text-primary">
               {post.title}
             </h4>
 
@@ -37,7 +37,7 @@ export async function LatestBlogPosts() {
       </div>
 
       <Link
-        className="text-muted-foreground w-fit text-sm underline-offset-4 hover:underline active:underline"
+        className="w-fit text-muted-foreground text-sm underline-offset-4 hover:underline active:underline"
         href={{ pathname: ZAP_BLOG_CONFIG.BASE_PATH }}
       >
         View all articles →

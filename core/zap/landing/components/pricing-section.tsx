@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Check } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
+import { Check } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
 
 import {
   Card,
@@ -10,12 +10,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { ZAP_CORE_CONFIG } from "@/zap.config";
-import { ZapButton } from "@/zap/components/core";
-import { PriceDisplay, PricingToggle } from "@/zap/payments/components";
-import { getBillingDetails, getSortedProducts } from "@/zap/payments/utils";
-import { ZAP_PAYMENTS_CONFIG } from "@/zap/payments/zap.plugin.config";
+} from '@/components/ui/card';
+import { ZapButton } from '@/zap/components/core/button';
+import { PriceDisplay } from '@/zap/payments/components/price-display';
+import { PricingToggle } from '@/zap/payments/components/pricing-toggle';
+import { getBillingDetails, getSortedProducts } from '@/zap/payments/utils';
+import { ZAP_PAYMENTS_CONFIG } from '@/zap/payments/zap.plugin.config';
+import { ZAP_CORE_CONFIG } from '@/zap.config';
 
 export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
@@ -25,11 +26,11 @@ export function PricingSection() {
   return (
     <div className="w-full px-4 md:px-6">
       <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center space-y-4 text-center">
-        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+        <h2 className="font-bold text-3xl tracking-tighter sm:text-4xl md:text-5xl">
           Simple, transparent pricing
         </h2>
 
-        <p className="text-muted-foreground max-w-[85%] md:text-xl">
+        <p className="max-w-[85%] text-muted-foreground md:text-xl">
           Choose the plan that&apos;s right for you and start building today.
         </p>
 
@@ -44,16 +45,16 @@ export function PricingSection() {
         {sortedProducts.map((product) => {
           const { price, recurringInterval } = getBillingDetails(
             product,
-            isYearly,
+            isYearly
           );
 
           return (
             <Card
-              className="bg-muted/50 relative flex flex-col justify-between border shadow-none transition-all duration-300"
+              className="relative flex flex-col justify-between border bg-muted/50 shadow-none transition-all duration-300"
               key={product.slug}
             >
               {product.popular && (
-                <div className="bg-primary text-primary-foreground absolute -top-4 right-0 left-0 mx-auto w-fit rounded-full px-3 py-1 text-xs font-medium">
+                <div className="-top-4 absolute right-0 left-0 mx-auto w-fit rounded-full bg-primary px-3 py-1 font-medium text-primary-foreground text-xs">
                   Most Popular
                 </div>
               )}
@@ -72,7 +73,7 @@ export function PricingSection() {
                 <ul className="grid gap-2">
                   {product.features?.map((feature) => (
                     <li className="flex items-center gap-2" key={feature}>
-                      <Check className="text-primary h-4 w-4" />
+                      <Check className="h-4 w-4 text-primary" />
                       <span>{feature}</span>
                     </li>
                   ))}

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
-import { useEffect, useState } from "react";
-import { type Control, useForm } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Eye, EyeOff } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { type Control, useForm } from 'react-hook-form';
 
 import {
   Form,
@@ -12,34 +12,34 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
-import { ZapButton } from "@/zap/components/core";
-import { handleClientError } from "@/zap/errors/client";
+} from '@/components/ui/sheet';
+import { ZapButton } from '@/zap/components/core/button';
+import { handleClientError } from '@/zap/errors/client';
 
-import { AI_PROVIDERS_OBJECT, DEFAULT_MODEL, ModelsByProvider } from "../data";
-import { useAISettings, useInitAISettings } from "../hooks";
-import { AIFormSchema, AIProviderIdSchema } from "../schemas";
-import type { AIFormValues, AIProviderId } from "../types";
+import { AI_PROVIDERS_OBJECT, DEFAULT_MODEL, ModelsByProvider } from '../data';
+import { useAISettings, useInitAISettings } from '../hooks';
+import { AIFormSchema, AIProviderIdSchema } from '../schemas';
+import type { AIFormValues, AIProviderId } from '../types';
 
-interface SettingsSheetProps {
+type SettingsSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
+};
 
 export function SettingsSheet({ open, onOpenChange }: SettingsSheetProps) {
   return (
@@ -58,10 +58,10 @@ export function SettingsSheet({ open, onOpenChange }: SettingsSheetProps) {
   );
 }
 
-interface SettingsSheetFormProps {
+type SettingsSheetFormProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
+};
 
 function SettingsSheetForm({ open, onOpenChange }: SettingsSheetFormProps) {
   const [initialApiKey, setInitialApiKey] = useState<string | null>(null);
@@ -71,7 +71,7 @@ function SettingsSheetForm({ open, onOpenChange }: SettingsSheetFormProps) {
     defaultValues: {
       provider: AIProviderIdSchema.options[0],
       model: DEFAULT_MODEL[AIProviderIdSchema.options[0] as AIProviderId],
-      apiKey: "",
+      apiKey: '',
     },
   });
 
@@ -79,24 +79,24 @@ function SettingsSheetForm({ open, onOpenChange }: SettingsSheetFormProps) {
   const { saving, handleSaveApiKey, testing, handleTestApiKey } =
     useAISettings(form);
 
-  const selectedProvider = form.watch("provider");
+  const selectedProvider = form.watch('provider');
 
   useEffect(() => {
     if (apiKey) {
       setInitialApiKey(apiKey);
-      form.setValue("apiKey", apiKey, { shouldValidate: true });
+      form.setValue('apiKey', apiKey, { shouldValidate: true });
     } else {
-      form.resetField("apiKey");
+      form.resetField('apiKey');
     }
   }, [apiKey, form]);
 
   useEffect(() => {
     if (selectedProvider && savedModel) {
-      form.setValue("model", savedModel, {
+      form.setValue('model', savedModel, {
         shouldValidate: true,
       });
     } else {
-      form.setValue("model", DEFAULT_MODEL[selectedProvider], {
+      form.setValue('model', DEFAULT_MODEL[selectedProvider], {
         shouldValidate: true,
       });
     }
@@ -113,7 +113,7 @@ function SettingsSheetForm({ open, onOpenChange }: SettingsSheetFormProps) {
   };
 
   const isSaveDisabled =
-    saving || testing || form.getValues("apiKey") === initialApiKey; // Key unchanged
+    saving || testing || form.getValues('apiKey') === initialApiKey; // Key unchanged
 
   return (
     <Form {...form}>
@@ -140,10 +140,10 @@ function SettingsSheetForm({ open, onOpenChange }: SettingsSheetFormProps) {
   );
 }
 
-interface FormFieldProps {
+type FormFieldProps = {
   control: Control<AIFormValues>;
   disabled: boolean;
-}
+};
 
 function ProviderSelect({ control, disabled }: FormFieldProps) {
   return (
@@ -182,11 +182,11 @@ function ProviderSelect({ control, disabled }: FormFieldProps) {
   );
 }
 
-interface ModelSelectProps {
+type ModelSelectProps = {
   control: Control<AIFormValues>;
   disabled: boolean;
   provider: AIProviderId;
-}
+};
 
 function ModelSelect({ control, disabled, provider }: ModelSelectProps) {
   const models = ModelsByProvider[provider as keyof typeof ModelsByProvider];
@@ -250,15 +250,15 @@ function ApiKeyInput({
             <FormControl className="relative flex-1">
               <div className="relative">
                 <Input
-                  placeholder={loading ? "Loading..." : "Enter your API key"}
-                  type={showKey ? "text" : "password"}
+                  placeholder={loading ? 'Loading...' : 'Enter your API key'}
+                  type={showKey ? 'text' : 'password'}
                   {...field}
                   className="pr-10 font-mono"
                   disabled={disabled}
                 />
 
                 <button
-                  className="text-muted-foreground hover:text-foreground active:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
+                  className="-translate-y-1/2 absolute top-1/2 right-2 text-muted-foreground hover:text-foreground active:text-foreground"
                   onClick={() => setShowKey((prev) => !prev)}
                   tabIndex={-1}
                   type="button"
@@ -286,10 +286,10 @@ function ApiKeyInput({
   );
 }
 
-interface SaveSettingsProps {
+type SaveSettingsProps = {
   saving: boolean;
   isSaveDisabled: boolean;
-}
+};
 
 function SaveSettings({ saving, isSaveDisabled }: SaveSettingsProps) {
   return (

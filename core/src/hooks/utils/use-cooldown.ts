@@ -1,12 +1,14 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
-interface UseCooldownOptions {
+const COOLDOWN_TICK_INTERVAL_MS = 1000;
+
+type UseCooldownOptions = {
   initialValue?: number;
   onComplete?: () => void;
-}
+};
 
 export function useCooldown({
   initialValue = 0,
@@ -16,13 +18,15 @@ export function useCooldown({
 
   useEffect(() => {
     if (cooldown <= 0) {
-      if (onComplete) onComplete();
+      if (onComplete) {
+        onComplete();
+      }
       return;
     }
 
     const timer = setInterval(() => {
       setCooldown((prev) => prev - 1);
-    }, 1000);
+    }, COOLDOWN_TICK_INTERVAL_MS);
 
     return () => clearInterval(timer);
   }, [cooldown, onComplete]);

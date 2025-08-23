@@ -1,24 +1,31 @@
-self.addEventListener("push", function (event) {
+const VIBRATION_DURATION = 100;
+const VIBRATION_PAUSE = 50;
+const NOTIFICATION_VIBRATION_PATTERN = [
+  VIBRATION_DURATION,
+  VIBRATION_PAUSE,
+  VIBRATION_DURATION,
+];
+
+self.addEventListener('push', (event) => {
   if (event.data) {
     const data = event.data.json();
     const options = {
       body: data.body,
-      icon: data.icon || "/icon.png",
-      badge: "/badge.png",
-      vibrate: [100, 50, 100],
+      icon: data.icon || '/icon.png',
+      badge: '/badge.png',
+      vibrate: NOTIFICATION_VIBRATION_PATTERN,
       data: {
         dateOfArrival: Date.now(),
-        primaryKey: "2",
+        primaryKey: '2',
       },
     };
     event.waitUntil(self.registration.showNotification(data.title, options));
   }
 });
 
-self.addEventListener("notificationclick", function (event) {
-  console.log("Notification click received.");
+self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   event.waitUntil(
-    clients.openWindow("https://demo.zap-ts.alexandretrotel.org"),
+    clients.openWindow('https://demo.zap-ts.alexandretrotel.org')
   ); // Make sure the URL matches your app's URL
 });

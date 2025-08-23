@@ -1,21 +1,21 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import { useRouter } from "@bprogress/next/app";
-import { useState } from "react";
-import { toast } from "sonner";
-import type { z } from "zod";
+import { useRouter } from '@bprogress/next/app';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import type { z } from 'zod';
 
-import { useCooldown } from "@/hooks/utils/use-cooldown";
-import { useZapQuery } from "@/zap/api/hooks";
-import { orpcQuery } from "@/zap/api/lib/orpc";
-import { AuthenticationError } from "@/zap/errors";
-import { handleClientError } from "@/zap/errors/client";
-import { ZAP_MAILS_CONFIG } from "@/zap/mails/zap.plugin.config";
+import { useCooldown } from '@/hooks/utils/use-cooldown';
+import { useZapQuery } from '@/zap/api/hooks';
+import { orpcQuery } from '@/zap/api/lib/orpc';
+import { AuthenticationError } from '@/zap/errors';
+import { handleClientError } from '@/zap/errors/client';
+import { ZAP_MAILS_CONFIG } from '@/zap/mails/zap.plugin.config';
 
-import { betterAuthClient } from "../providers/better-auth/client";
-import type { LoginFormSchema, RegisterFormSchema } from "../schemas";
-import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
+import { betterAuthClient } from '../providers/better-auth/client';
+import type { LoginFormSchema, RegisterFormSchema } from '../schemas';
+import { ZAP_AUTH_CONFIG } from '../zap.plugin.config';
 
 export function useNumberOfUsers() {
   return useZapQuery(orpcQuery.auth.getNumberOfUsers.queryOptions());
@@ -43,7 +43,7 @@ export function useAuth(callbackURL?: string) {
 
   const loginWithMail = async (
     values: LoginFormValues,
-    callbackURL?: string,
+    loginCallbackURL?: string
   ) => {
     const { email, password } = values;
 
@@ -52,7 +52,7 @@ export function useAuth(callbackURL?: string) {
 
       if (response.error) {
         throw new AuthenticationError(
-          "Login failed. Please check your credentials.",
+          'Login failed. Please check your credentials.'
         );
       }
 
@@ -62,12 +62,14 @@ export function useAuth(callbackURL?: string) {
       ) {
         await sendVerificationMail(email);
         throw new AuthenticationError(
-          "Please verify your email address. A verification email has been sent.",
+          'Please verify your email address. A verification email has been sent.'
         );
       }
 
-      toast.success("Login successful!");
-      router.push(callbackURL || ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_IN);
+      toast.success('Login successful!');
+      router.push(
+        loginCallbackURL || ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_IN
+      );
     } catch (error) {
       handleClientError(error);
     }
@@ -75,7 +77,7 @@ export function useAuth(callbackURL?: string) {
 
   const registerWithMail = async (
     values: RegisterFormValues,
-    callbackURL?: string,
+    registerCallbackURL?: string
   ) => {
     const { name, email, password } = values;
 
@@ -88,21 +90,23 @@ export function useAuth(callbackURL?: string) {
 
       if (response.error) {
         throw new AuthenticationError(
-          response.error?.message || "Registration failed. Please try again.",
-          response.error,
+          response.error?.message || 'Registration failed. Please try again.',
+          response.error
         );
       }
 
       if (ZAP_AUTH_CONFIG.REQUIRE_MAIL_VERIFICATION) {
         await sendVerificationMail(email);
         toast.success(
-          "Registration successful! Please check your email to verify your account.",
+          'Registration successful! Please check your email to verify your account.'
         );
         return;
       }
 
-      toast.success("Registration successful!");
-      router.push(callbackURL || ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_UP);
+      toast.success('Registration successful!');
+      router.push(
+        registerCallbackURL || ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_UP
+      );
     } catch (error) {
       handleClientError(error);
     }
