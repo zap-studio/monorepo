@@ -33,5 +33,10 @@ jobs:
       - name: Run linter on the monorepo
         run: bun run lint
 
-      - name: Run linter on the core/ directory
-        run: cd core && bun run lint
+      - name: Install core deps
+        working-directory: core
+        run: bun install --frozen-lockfile
+
+      - name: Run linter in core
+        working-directory: core
+        run: bun run lint
