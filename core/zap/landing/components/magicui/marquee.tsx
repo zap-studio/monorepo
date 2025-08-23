@@ -54,19 +54,32 @@ export function Marquee({
         className
       )}
     >
-      {new Array(repeat).fill(0).map((_, i) => (
-        <div
-          className={cn('flex shrink-0 justify-around [gap:var(--gap)]', {
-            'animate-marquee flex-row': !vertical,
-            'animate-marquee-vertical flex-col': vertical,
-            'group-hover:[animation-play-state:paused]': pauseOnHover,
-            '[animation-direction:reverse]': reverse,
-          })}
-          key={i}
-        >
-          {children}
-        </div>
-      ))}
+      {Array.from({ length: repeat }, (_, i) => {
+        const RANDOM_STRING_START = 2;
+        const RANDOM_STRING_END = 10;
+        const RANDOM_STRING_BASE = 36;
+
+        const uniqueKey =
+          typeof children === 'string'
+            ? `${children}-${i}`
+            : `marquee-${i}-${Math.random()
+                .toString(RANDOM_STRING_BASE)
+                .slice(RANDOM_STRING_START, RANDOM_STRING_END)}`;
+
+        return (
+          <div
+            className={cn('flex shrink-0 justify-around [gap:var(--gap)]', {
+              'animate-marquee flex-row': !vertical,
+              'animate-marquee-vertical flex-col': vertical,
+              'group-hover:[animation-play-state:paused]': pauseOnHover,
+              '[animation-direction:reverse]': reverse,
+            })}
+            key={uniqueKey}
+          >
+            {children}
+          </div>
+        );
+      })}
     </div>
   );
 }
