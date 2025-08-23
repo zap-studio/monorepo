@@ -57,7 +57,7 @@ export async function _BlogSlugPage({ params }: _BlogSlugPageProps) {
     }),
   };
 
-  const jsonLdString = serialize(jsonLd).replace(/<\/script>/gi, '<\\/script>');
+  const jsonLdString = serialize(jsonLd);
 
   return (
     <div className="container mx-auto max-w-4xl py-12">
