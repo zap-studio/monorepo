@@ -26,7 +26,7 @@
     "dev:db:up": "drizzle-kit up --config=drizzle.config.dev.ts",
     "dev": "next dev --turbopack",
     "dev:debug": "cross-env NODE_OPTIONS='--inspect' next dev --turbopack",
-    "dev:scan": "next dev --turbopack & npx react-scan@latest localhost:3000",
+    "dev:scan": "next dev --turbopack & react-scan localhost:3000",
     "dev:trace": "NEXT_TURBOPACK_TRACING=1 next dev --turbopack",
     "format": "ultracite format",
     "lint": "ultracite lint",
@@ -123,9 +123,11 @@
     "cross-env": "^10.0.0",
     "drizzle-kit": "^0.31.4",
     "prettier": "^3.6.2",
+    "react-scan": "^0.4.3",
     "tailwindcss": "^4.1.12",
     "tsx": "^4.20.4",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "ultracite": "^5.2.5"
   },
   "publishConfig": {
     "access": "public"
