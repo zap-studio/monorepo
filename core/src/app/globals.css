@@ -1,8 +1,11 @@
 @import "tailwindcss";
+/* biome-ignore lint/suspicious/noUnknownAtRules: This is a Tailwind v4 valid at-rule */
 @plugin "tailwindcss-animate";
 
+/* biome-ignore lint/suspicious/noUnknownAtRules: This is a Tailwind v4 valid at-rule */
 @custom-variant dark (&:is(.dark *));
 
+/* biome-ignore lint/suspicious/noUnknownAtRules: This is a Tailwind v4 valid at-rule */
 @theme inline {
   --font-sans: var(--font-geist);
   --font-mono: var(--font-geist-mono);
@@ -156,9 +159,11 @@
 
 @layer base {
   * {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: This is a Tailwind v4 valid at-rule */
     @apply border-border outline-ring/50;
   }
   body {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: This is a Tailwind v4 valid at-rule */
     @apply bg-background text-foreground;
   }
 }
