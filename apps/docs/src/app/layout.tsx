@@ -1,6 +1,7 @@
 import '@/app/global.css';
 import { Geist as Font } from 'next/font/google';
 import type { ReactNode } from 'react';
+import { Toaster } from '@/components/ui/sonner';
 import { Provider } from './provider';
 
 const font = Font({
@@ -15,7 +16,9 @@ export default function Layout({ children }: { children: ReactNode }) {
       suppressHydrationWarning
     >
       <body className="flex min-h-screen flex-col">
-        <Provider>{children}</Provider>
+        <Provider>
+          {children} <Toaster />
+        </Provider>
       </body>
     </html>
   );

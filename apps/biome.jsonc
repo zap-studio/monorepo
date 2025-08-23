@@ -1,4 +1,16 @@
 {
   "root": false,
-  "extends": "//"
+  "extends": "//",
+  "files": {
+    "includes": ["**/*", "!docs/src/components/ui"]
+  },
+  "assist": {
+    "includes": ["**/*", "!docs/src/components/ui"]
+  },
+  "linter": {
+    "includes": ["**/*", "!docs/src/components/ui"]
+  },
+  "formatter": {
+    "includes": ["**/*", "!docs/src/components/ui"]
+  }
 }

@@ -2,6 +2,9 @@
 
 import { Check, Clipboard } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
+
+const COPY_RESET_TIMEOUT_MS = 2000;
 
 export function CopyCommand({ command }: { command: string }) {
   const [copied, setCopied] = useState(false);
@@ -10,9 +13,9 @@ export function CopyCommand({ command }: { command: string }) {
     try {
       await navigator.clipboard.writeText(command);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // reset after 2s
-    } catch (err) {
-      console.error('Failed to copy:', err);
+      setTimeout(() => setCopied(false), COPY_RESET_TIMEOUT_MS); // reset after 2s
+    } catch (_err) {
+      toast.error('Failed to copy command');
     }
   }
 
