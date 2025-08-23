@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { isAuthenticatedService } from '@/zap/auth/services';
-import { DEV } from '@/zap/env/runtime';
+import { DEV } from '@/zap/env/runtime/public';
 
 import { UnauthorizedError } from '.';
 import {

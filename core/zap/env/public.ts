@@ -14,7 +14,6 @@ const PublicEnvSchema = z.object({
   NEXT_PUBLIC_POSTHOG_HOST: z
     .string({ message: 'NEXT_PUBLIC_POSTHOG_HOST must be a valid string' })
     .optional(),
-  NEXT_RUNTIME: z.enum(['nodejs', 'edge']).default('nodejs'),
   POLAR_ENV: z
     .enum(['sandbox', 'production'], {
       message: "POLAR_ENV must be either 'sandbox' or 'production'",
@@ -31,7 +30,6 @@ const envParseResult = PublicEnvSchema.safeParse({
   NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
   NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
   NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-  NEXT_RUNTIME: process.env.NEXT_RUNTIME,
   POLAR_ENV: process.env.POLAR_ENV,
   ZAP_MAIL: process.env.ZAP_MAIL,
 });
