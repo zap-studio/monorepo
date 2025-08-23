@@ -8,8 +8,8 @@ export const InputGetUserIdFromMailSchema = z.object({
 
 export const LoginFormSchema = z.object({
   email: z.email(),
-  password: z.string().min(6, {
-    message: 'Password must be at least 6 characters.',
+  password: z.string().min(ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH, {
+    message: `Password must be at least ${ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH} characters.`,
   }),
 });
 

@@ -10,6 +10,7 @@ export const HttpStatus = {
   MOVED_PERMANENTLY: 301,
   FOUND: 302,
   NOT_MODIFIED: 304,
+  TEMPORARY_REDIRECT: 307,
   // 4xx Client Errors
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,

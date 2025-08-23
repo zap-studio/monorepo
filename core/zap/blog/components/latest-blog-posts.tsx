@@ -10,7 +10,7 @@ export async function LatestBlogPosts() {
     return null;
   }
 
-  const latestPosts = posts.slice(0, 3);
+  const latestPosts = posts.slice(0, ZAP_BLOG_CONFIG.MAX_BLOG_POSTS_IN_FOOTER);
 
   return (
     <div className="flex flex-col space-y-4">

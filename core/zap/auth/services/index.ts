@@ -38,13 +38,13 @@ export async function getAuthServerDataOrRedirectToLoginService() {
 }
 
 export async function getUserIdService() {
-  const user = await getUserService();
+  const currentUser = await getUserService();
 
-  if (!user) {
+  if (!currentUser) {
     throw new AuthenticationError('User not authenticated');
   }
 
-  return user.id;
+  return currentUser.id;
 }
 
 export async function getUserService() {
@@ -65,9 +65,9 @@ export async function isAuthenticatedService() {
 }
 
 export async function isUserAdminService() {
-  const user = await getUserService();
+  const currentUser = await getUserService();
 
-  if (!user) {
+  if (!currentUser) {
     throw new NotFoundError('User not found');
   }
 

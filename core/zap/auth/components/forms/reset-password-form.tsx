@@ -29,13 +29,13 @@ const formSchema = z
       .string()
       .min(
         ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH,
-        'Password must be at least 8 characters'
+        `Password must be at least ${ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH} characters`
       ),
     confirmPassword: z
       .string()
       .min(
         ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH,
-        'Password must be at least 8 characters'
+        `Password must be at least ${ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH} characters`
       ),
   })
   .refine((data) => data.password === data.confirmPassword, {
