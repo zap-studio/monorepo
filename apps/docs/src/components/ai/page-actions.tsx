@@ -13,10 +13,9 @@ import {
   Copy,
   ExternalLinkIcon,
   MessageCircleIcon,
-  SearchIcon,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { cn } from '@/lib/cn';
+import { cn } from '@/lib/utils';
 
 const cache = new Map<string, string>();
 
@@ -31,7 +30,9 @@ export function LLMCopyButton({
   const [isLoading, setLoading] = useState(false);
   const [checked, onClick] = useCopyButton(async () => {
     const cached = cache.get(markdownUrl);
-    if (cached) return navigator.clipboard.writeText(cached);
+    if (cached) {
+      return navigator.clipboard.writeText(cached);
+    }
 
     setLoading(true);
 
@@ -62,6 +63,7 @@ export function LLMCopyButton({
       )}
       disabled={isLoading}
       onClick={onClick}
+      type="button"
     >
       {checked ? <Check /> : <Copy />}
       Copy Markdown
@@ -114,10 +116,12 @@ export function ViewOptions({
           <svg
             fill="none"
             height="934"
+            role="img"
             viewBox="0 0 910 934"
             width="910"
             xmlns="http://www.w3.org/2000/svg"
           >
+            <title>Scira AI</title>
             <path
               d="M647.664 197.775C569.13 189.049 525.5 145.419 516.774 66.8849C508.048 145.419 464.418 189.049 385.884 197.775C464.418 206.501 508.048 250.131 516.774 328.665C525.5 250.131 569.13 206.501 647.664 197.775Z"
               fill="currentColor"
