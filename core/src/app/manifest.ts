@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 
 import { ZAP_PWA_CONFIG } from '@/zap/pwa/zap.plugin.config';
 
-export default async function manifest(): Promise<MetadataRoute.Manifest> {
+export default function manifest(): MetadataRoute.Manifest {
   return {
     name: ZAP_PWA_CONFIG.NAME,
     short_name: ZAP_PWA_CONFIG.SHORT_NAME,
