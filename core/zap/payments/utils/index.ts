@@ -78,6 +78,8 @@ export function getSortedProducts(isYearly: boolean) {
     .map(({ product }) => product);
 }
 
+const MONTHS_IN_YEAR = 12;
+
 export function getPriceDisplay(
   price: number | string,
   interval: RecurringInterval
@@ -89,7 +91,7 @@ export function getPriceDisplay(
     displayPrice = price;
     intervalText = '';
   } else if (interval === 'year') {
-    displayPrice = `$${(price / 12).toFixed(2)}`;
+    displayPrice = `$${(price / MONTHS_IN_YEAR).toFixed(2)}`;
     intervalText = '/month';
   } else if (interval === 'month') {
     displayPrice = `$${price.toFixed(2)}`;

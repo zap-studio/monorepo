@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-import { ResetPasswordForm } from '../components';
+import { ResetPasswordForm } from '../components/forms/reset-password-form';
 
 export function _ResetPasswordPage() {
   return (

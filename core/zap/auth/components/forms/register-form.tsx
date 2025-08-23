@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { ZapButton } from '@/zap/components/core';
+import { ZapButton } from '@/zap/components/core/button';
 
 import { useAuth } from '../../hooks';
 import { RegisterFormSchema } from '../../schemas';

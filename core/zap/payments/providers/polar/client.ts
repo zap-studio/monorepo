@@ -1,6 +1,6 @@
 import 'client-only';
 
-import { useZapQuery } from '@/zap/api/hooks/use-zap-query';
+import { useZapQuery } from '@/zap/api/hooks';
 import { betterAuthClient } from '@/zap/auth/providers/better-auth/client';
 
 import { getProduct } from '../../utils';

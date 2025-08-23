@@ -9,9 +9,9 @@ import { useMemo, useState } from 'react';
 import { useBodyScrollLock } from '@/hooks/utils/use-body-scroll-lock';
 import { isPluginEnabled } from '@/lib/plugins';
 import { cn } from '@/lib/utils';
-import { SessionButton } from '@/zap/auth/components';
+import { SessionButton } from '@/zap/auth/components/session-button';
 
-import { ZapButton } from '../core';
+import { ZapButton } from '../core/button';
 import { EXTERNAL_LINKS, HEADER_HEIGHT, NAV_LINKS } from '../data';
 
 export function Header() {

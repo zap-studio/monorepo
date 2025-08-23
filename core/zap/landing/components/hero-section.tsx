@@ -5,8 +5,9 @@ import { cache, useMemo } from 'react';
 import { isPluginEnabled } from '@/lib/plugins';
 import { getNumberOfUsersService } from '@/zap/auth/services';
 import { ZAP_AUTH_CONFIG } from '@/zap/auth/zap.plugin.config';
-import { ZapButton } from '@/zap/components/core';
-import { AnimatedSection, AnimatedText } from '@/zap/components/misc';
+import { ZapButton } from '@/zap/components/core/button';
+import { AnimatedSection } from '@/zap/components/misc/animated-section';
+import { AnimatedText } from '@/zap/components/misc/animated-text';
 import { getAverageRatingService } from '@/zap/feedbacks/services';
 
 const getStatsData = cache(async () => {

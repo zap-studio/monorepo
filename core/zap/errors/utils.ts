@@ -113,13 +113,14 @@ export function logSuccess(
   options: HandlerOptions & { handlerType: string }
 ) {
   const duration = Date.now() - startTime;
-  console.log(
-    `[${correlationId}] ${options.handlerType} completed in ${duration}ms`,
-    {
-      context: options.context,
-      duration,
-      type: options.handlerType,
-    }
+
+  const meta = {
+    context: options.context,
+    duration,
+    type: options.handlerType,
+  };
+  process.stdout.write(
+    `[${correlationId}] ${options.handlerType} completed in ${duration}ms ${JSON.stringify(meta)}\n`
   );
 }
 
@@ -144,14 +145,14 @@ export async function handleError<R>(
   const duration = Date.now() - startTime;
 
   logError(error);
-  console.error(
-    `[${correlationId}] ${options.handlerType} failed after ${duration}ms`,
-    {
-      context: options.context,
-      duration,
-      type: options.handlerType,
-      errorType: error instanceof Error ? error.constructor.name : typeof error,
-    }
+  const meta = {
+    context: options.context,
+    duration,
+    type: options.handlerType,
+    errorType: error instanceof Error ? error.constructor.name : typeof error,
+  };
+  process.stderr.write(
+    `[${correlationId}] ${options.handlerType} failed after ${duration}ms ${JSON.stringify(meta)}\n`
   );
 
   // For RPC procedures, convert BaseError to ORPC error

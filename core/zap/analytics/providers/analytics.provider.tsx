@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 
 import { PUBLIC_ENV } from '@/zap/env/public';
 
-import { SuspendedPostHogPageView } from '../components';
+import { SuspendedPostHogPageView } from '../components/posthog-page-view';
 import { ZAP_ANALYTICS_CONFIG } from '../zap.plugin.config';
 
 type AnalyticsProviderProps = {

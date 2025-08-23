@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getAuthServerDataOrRedirectToLoginService } from '@/zap/auth/services';
-import { ZapButton } from '@/zap/components/core';
+import { ZapButton } from '@/zap/components/core/button';
 import { ZAP_CORE_CONFIG } from '@/zap.config';
 
 export type _SuccessPageProps = {

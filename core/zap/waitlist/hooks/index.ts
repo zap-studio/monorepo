@@ -6,8 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import type z from 'zod';
 
-import { useZapMutation } from '@/zap/api/hooks/use-zap-mutation';
-import { useZapQuery } from '@/zap/api/hooks/use-zap-query';
+import { useZapMutation, useZapQuery } from '@/zap/api/hooks';
 import { orpcQuery } from '@/zap/api/lib/orpc';
 
 import { WaitlistSchema } from '../schemas';

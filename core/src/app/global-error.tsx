@@ -3,7 +3,7 @@ import 'client-only';
 import './globals.css';
 
 import { geist } from '@/app/fonts';
-import { ZapButton } from '@/zap/components/core';
+import { ZapButton } from '@/zap/components/core/button';
 import { BaseError } from '@/zap/errors';
 
 type ErrorBoundaryProps = {

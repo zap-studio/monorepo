@@ -16,18 +16,27 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { ZapButton } from '@/zap/components/core';
+import { ZapButton } from '@/zap/components/core/button';
 import { AuthenticationError } from '@/zap/errors';
 import { handleClientError } from '@/zap/errors/client';
 
 import { betterAuthClient } from '../../providers/better-auth/client';
+import { ZAP_AUTH_CONFIG } from '../../zap.plugin.config';
 
 const formSchema = z
   .object({
-    password: z.string().min(8, 'Password must be at least 8 characters'),
+    password: z
+      .string()
+      .min(
+        ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH,
+        'Password must be at least 8 characters'
+      ),
     confirmPassword: z
       .string()
-      .min(8, 'Password must be at least 8 characters'),
+      .min(
+        ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH,
+        'Password must be at least 8 characters'
+      ),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",

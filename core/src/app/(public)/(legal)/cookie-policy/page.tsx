@@ -1,4 +1,4 @@
-import { _LegalPage } from '@/zap/legal/pages';
+import { _LegalPage } from '@/zap/legal/pages/legal.page';
 import { generateLegalMetadata } from '@/zap/legal/utils';
 
 const SLUG = 'cookie-policy';

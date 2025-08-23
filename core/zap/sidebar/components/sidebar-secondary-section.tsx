@@ -13,8 +13,8 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { isPluginEnabled } from '@/lib/plugins';
-import { SettingsSheet } from '@/zap/ai/components';
-import { FeedbackDialog } from '@/zap/feedbacks/components';
+import { SettingsSheet } from '@/zap/ai/components/settings-sheet';
+import { FeedbackDialog } from '@/zap/feedbacks/components/feedback-dialog';
 
 type SidebarSecondarySectionProps = ComponentPropsWithoutRef<
   typeof SidebarGroup

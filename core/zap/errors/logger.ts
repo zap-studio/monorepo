@@ -1,7 +1,9 @@
+import 'server-only';
+
 export function logError(error: unknown) {
   if (error instanceof Error) {
-    console.error(`[${error.name}] ${error.message}`, error.stack);
+    process.stderr.write(`[${error.name}] ${error.message}\n${error.stack}`);
   } else {
-    console.error('Unknown error', error);
+    process.stderr.write(`Unknown error: ${error}\n`);
   }
 }

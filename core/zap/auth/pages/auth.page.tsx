@@ -11,7 +11,7 @@ import { isPluginEnabled } from '@/lib/plugins';
 import { cn } from '@/lib/utils';
 import { ZAP_LEGAL_CONFIG } from '@/zap/legal/zap.plugin.config';
 
-import { SocialProviderButton } from '../components';
+import { SocialProviderButton } from '../components/social-provider-button';
 import { ZAP_AUTH_CONFIG } from '../zap.plugin.config';
 
 type AuthPageProps = {

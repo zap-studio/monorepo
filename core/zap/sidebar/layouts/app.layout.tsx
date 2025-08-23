@@ -1,8 +1,8 @@
 import { cookies } from 'next/headers';
 
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-
-import { AppSidebar, SidebarHeader } from '../components';
+import { AppSidebar } from '../components/sidebar';
+import { SidebarHeader } from '../components/sidebar-header';
 
 export type _AppLayoutProps = {
   children: React.ReactNode;

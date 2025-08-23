@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useCooldown } from '@/hooks/utils/use-cooldown';
-import { ZapButton } from '@/zap/components/core';
+import { ZapButton } from '@/zap/components/core/button';
 import { handleClientError } from '@/zap/errors/client';
 import { ZAP_MAILS_CONFIG } from '@/zap/mails/zap.plugin.config';
 

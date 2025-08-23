@@ -1,5 +1,5 @@
-import { _BillingPage } from '@/zap/payments/pages';
+import { _BillingPage } from '@/zap/payments/pages/billing.page';
 
-export default async function BillingPage() {
+export default function BillingPage() {
   return <_BillingPage />;
 }

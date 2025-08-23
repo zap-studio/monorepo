@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { ZapButton } from '@/zap/components/core';
+import { ZapButton } from '@/zap/components/core/button';
 
 import { useIsFeedbackSubmitted, useSubmitFeedback } from '../hooks';
 import { InputFeedbackSchema } from '../schemas';
@@ -30,6 +30,20 @@ type FeedbackDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
+
+const MIN_RATING = 0 as const;
+const MAX_RATING = 10 as const;
+const DEFAULT_RATING = MIN_RATING;
+
+const RATING_VALUES = (() => {
+  const values: number[] = [];
+  let current = MIN_RATING;
+  while (current <= MAX_RATING) {
+    values.push(current);
+    current += 1;
+  }
+  return values;
+})();
 
 export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
   const [submitted, setSubmitted] = useState(false);
@@ -41,7 +55,7 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
 
   const form = useForm<FeedbackFormValues>({
     resolver: zodResolver(InputFeedbackSchema),
-    defaultValues: { rating: 0, description: '' },
+    defaultValues: { rating: DEFAULT_RATING, description: '' },
   });
 
   const onSubmit = async (data: FeedbackFormValues) => {
@@ -77,7 +91,9 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
                   name="rating"
                   render={() => (
                     <FormItem>
-                      <FormLabel>Rate us (0–10)</FormLabel>
+                      <FormLabel>
+                        Rate us ({MIN_RATING}–{MAX_RATING})
+                      </FormLabel>
                       <FormControl>
                         <RatingButtons
                           form={form}
@@ -141,26 +157,26 @@ export function RatingButtons({
 
   return (
     <div className="flex flex-wrap gap-2 pt-1">
-      {Array.from({ length: 11 }, (_, i) => {
-        const isActive = i <= rating;
+      {RATING_VALUES.map((value) => {
+        const isActive = value <= rating;
 
         return (
           <ZapButton
-            aria-label={`Rate ${i}`}
+            aria-label={`Rate ${value}`}
             className={cn(
               'h-10 w-10 rounded-md p-0 text-sm',
               'transform transition-all duration-200 ease-in-out',
               'hover:scale-110 active:scale-110',
               isActive && 'bg-primary text-white'
             )}
-            disabled={isSubmitting || !!isExistingFeedback}
-            key={`rating-${i}`}
-            onClick={() => form.setValue('rating', i)}
+            disabled={isSubmitting || isExistingFeedback}
+            key={value}
+            onClick={() => form.setValue('rating', value)}
             size="sm"
             type="button"
             variant={isActive ? 'default' : 'outline'}
           >
-            {i}
+            {value}
           </ZapButton>
         );
       })}

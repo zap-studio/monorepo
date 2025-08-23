@@ -41,7 +41,8 @@ export function handleClientError(
   toast.error(description);
 
   if (DEV) {
-    console.error(`[Client Error] ${title}: ${description}`, error);
+    // biome-ignore lint/suspicious/noConsole: This is a development-only error log
+    console.error(`[Client Error] ${title}: ${description}\n`, error);
   }
 }
 

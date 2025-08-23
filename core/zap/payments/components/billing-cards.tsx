@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { betterAuthClient } from '@/zap/auth/providers/better-auth/client';
-import { ZapButton } from '@/zap/components/core';
+import { ZapButton } from '@/zap/components/core/button';
 import { ClientError } from '@/zap/errors';
 import { handleClientError } from '@/zap/errors/client';
 import { SALES_EMAIL } from '@/zap.config';
@@ -20,7 +20,8 @@ import { SALES_EMAIL } from '@/zap.config';
 import { useActiveSubscriptionSlug } from '../providers/polar/client';
 import { getBillingDetails, getSortedProducts } from '../utils';
 import { ZAP_PAYMENTS_CONFIG } from '../zap.plugin.config';
-import { PriceDisplay, PricingToggle } from '.';
+import { PriceDisplay } from './price-display';
+import { PricingToggle } from './pricing-toggle';
 
 export function BillingCards() {
   const [isYearly, setIsYearly] = useState(false);

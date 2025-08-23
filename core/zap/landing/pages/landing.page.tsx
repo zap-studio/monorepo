@@ -1,14 +1,12 @@
 import { isPluginEnabled } from '@/lib/plugins';
-import { Footer, Header } from '@/zap/components/common';
-
-import {
-  FaqSection,
-  FeaturesSection,
-  HeroSection,
-  PricingSection,
-  SolutionSection,
-  TestimonialSection,
-} from '../components';
+import { Footer } from '@/zap/components/common/footer';
+import { Header } from '@/zap/components/common/header';
+import { FaqSection } from '../components/faq-section';
+import { FeaturesSection } from '../components/features-section';
+import { HeroSection } from '../components/hero-section';
+import { PricingSection } from '../components/pricing-section';
+import { SolutionSection } from '../components/solution-section';
+import { TestimonialSection } from '../components/testimonial-section';
 
 const isPaymentsEnabled = isPluginEnabled('payments');
 

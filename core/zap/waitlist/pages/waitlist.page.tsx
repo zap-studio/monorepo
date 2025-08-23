@@ -5,9 +5,10 @@ import { ModeToggle } from '@/components/ui/mode-toggle';
 import { orpcQuery } from '@/zap/api/lib/orpc';
 import { queryClient } from '@/zap/api/lib/tanstack-query';
 import { orpcServer } from '@/zap/api/providers/orpc/server';
-import { AnimatedNumber } from '@/zap/components/misc';
+import { AnimatedNumber } from '@/zap/components/misc/animated-number';
 
-import { AnimateWaitlist, WaitlistForm } from '../components';
+import { AnimateWaitlist } from '../components/animate-waitlist';
+import { WaitlistForm } from '../components/waitlist-form';
 import { ZAP_WAITLIST_CONFIG } from '../zap.plugin.config';
 
 export async function _WaitlistPage() {

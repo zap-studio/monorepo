@@ -9,7 +9,6 @@ import {
   getSessionInEdgeRuntime,
 } from '@/zap/auth/authorization';
 import { checkBlogPathAccess } from '@/zap/blog/authorization';
-import { logError } from '@/zap/errors/logger';
 import { checkWaitlistRedirect } from '@/zap/waitlist/authorization';
 
 import { isPluginEnabled } from './lib/plugins';
@@ -64,8 +63,8 @@ export async function middleware(request: NextRequest) {
     // If auth plugin is disabled, just continue with the request
     return NextResponse.next();
   } catch (error) {
-    // Fallback behavior depends on auth plugin
-    logError(error);
+    // biome-ignore lint/suspicious/noConsole: The Edge runtime doesn't support process.stderr, use console.error instead
+    console.error(`[Middleware Error] ${error}`);
 
     if (isPluginEnabled('auth')) {
       return createLoginRedirect(request, request.nextUrl.pathname);

@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { getAuthServerDataOrRedirectToLoginService } from '@/zap/auth/services';
-import { ZapButton } from '@/zap/components/core';
+import { ZapButton } from '@/zap/components/core/button';
 import { SUPPORT_EMAIL } from '@/zap.config';
-
-import { BillingCards, FAQ } from '../components';
+import { BillingCards } from '../components/billing-cards';
+import { FAQ } from '../components/faq';
 
 export async function _BillingPage() {
   await getAuthServerDataOrRedirectToLoginService();

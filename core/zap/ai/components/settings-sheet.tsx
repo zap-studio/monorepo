@@ -28,7 +28,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { ZapButton } from '@/zap/components/core';
+import { ZapButton } from '@/zap/components/core/button';
 import { handleClientError } from '@/zap/errors/client';
 
 import { AI_PROVIDERS_OBJECT, DEFAULT_MODEL, ModelsByProvider } from '../data';

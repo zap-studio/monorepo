@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 
 import { isPluginEnabled } from '@/lib/plugins';
-import { LatestBlogPosts } from '@/zap/blog/components';
+import { LatestBlogPosts } from '@/zap/blog/components/latest-blog-posts';
 
 import { LEGAL_LINKS } from '../data';
 import { ThemeSwitcher } from './theme-switcher';

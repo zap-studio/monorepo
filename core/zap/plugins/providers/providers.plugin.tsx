@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 
 import { isPluginEnabled } from '@/lib/plugins';
 import { AnalyticsProvider } from '@/zap/analytics/providers/analytics.provider';
-import { TanStackQueryProvider } from '@/zap/api/providers';
+import { TanStackQueryProvider } from '@/zap/api/providers/tanstack-query/provider';
 
 type PluginProvidersProps = {
   children: React.ReactNode;

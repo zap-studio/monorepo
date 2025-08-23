@@ -19,12 +19,10 @@ import { isPluginEnabled } from '@/lib/plugins';
 import { betterAuthClient } from '@/zap/auth/providers/better-auth/client';
 import { useActiveSubscriptionProduct } from '@/zap/payments/providers/polar/client';
 
-import {
-  SidebarMainSection,
-  SidebarSecondarySection,
-  SidebarUser,
-} from '../components';
 import { MAIN_NAV_ITEMS } from '../data';
+import { SidebarMainSection } from './sidebar-main-section';
+import { SidebarSecondarySection } from './sidebar-secondary-section';
+import { SidebarUser } from './sidebar-user';
 
 type AppSidebarProps = {
   props?: React.ComponentProps<typeof Sidebar>;

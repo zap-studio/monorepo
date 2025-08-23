@@ -3,14 +3,14 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { ZapButton } from '@/zap/components/core';
+import { ZapButton } from '@/zap/components/core/button';
 import { AuthenticationError } from '@/zap/errors';
 import { handleClientError } from '@/zap/errors/client';
 
 import { betterAuthClient } from '../providers/better-auth/client';
 import { ZAP_AUTH_CONFIG } from '../zap.plugin.config';
 import type { Provider } from '../zap.plugin.config.types';
-import { PROVIDER_ICONS } from '.';
+import { PROVIDER_ICONS } from './provider-icons';
 
 type SocialProviderButtonProps = {
   provider: Provider;
@@ -19,12 +19,12 @@ type SocialProviderButtonProps = {
 export function SocialProviderButton({ provider }: SocialProviderButtonProps) {
   const [loading, setLoading] = useState(false);
 
-  const handleSocialLogin = async (provider: Provider) => {
+  const handleSocialLogin = async (_provider: Provider) => {
     setLoading(true);
 
     try {
       const { data, error } = await betterAuthClient.signIn.social({
-        provider,
+        provider: _provider,
         callbackURL: ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_IN,
       });
 
