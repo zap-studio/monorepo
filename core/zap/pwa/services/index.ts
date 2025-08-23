@@ -31,15 +31,15 @@ export async function getWebPushService() {
     );
   }
 
-  const webpush = await import('web-push');
+  const webpushModule = await import('web-push');
 
-  webpush.default.setVapidDetails(
+  webpushModule.default.setVapidDetails(
     `mailto:${ZAP_PWA_CONFIG.VAPID_MAIL}`,
     PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
     SERVER_ENV.VAPID_PRIVATE_KEY
   );
 
-  webpushInstance = webpush.default;
+  webpushInstance = webpushModule.default;
   return webpushInstance;
 }
 

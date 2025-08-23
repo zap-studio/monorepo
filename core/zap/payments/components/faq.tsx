@@ -15,8 +15,8 @@ export function FAQ() {
       </h2>
 
       <Accordion className="w-full" collapsible type="single">
-        {BILLING_FAQ.map((faq, index) => (
-          <AccordionItem key={index} value={`item-${index}`}>
+        {BILLING_FAQ.map((faq) => (
+          <AccordionItem key={faq.question} value={faq.question}>
             <AccordionTrigger className="text-left font-medium text-base">
               {faq.question}
             </AccordionTrigger>
