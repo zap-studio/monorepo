@@ -31,7 +31,7 @@
     "format": "ultracite format",
     "lint": "ultracite lint",
     "lint:fix": "ultracite format",
-    "mail:dev": "email dev",
+    "dev:mail": "email dev",
     "start": "next start",
     "typegen": "next typegen",
     "zap": "zap"

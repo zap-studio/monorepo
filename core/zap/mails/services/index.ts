@@ -2,8 +2,9 @@ import 'server-only';
 
 import { eq } from 'drizzle-orm';
 import type React from 'react';
-
-import { ForgotPasswordMail, MagicLinkMail, VerificationMail } from '@/emails';
+import ForgotPasswordMail from '@/emails/forgot-password.mail';
+import MagicLinkMail from '@/emails/magic-link.mail';
+import VerificationMail from '@/emails/verification.mail';
 import { getLastMailSentAtQuery } from '@/zap/auth/db/providers/drizzle/queries';
 import { user } from '@/zap/auth/db/providers/drizzle/schema';
 import { isUserAdminService } from '@/zap/auth/services';
