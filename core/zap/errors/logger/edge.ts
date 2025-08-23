@@ -1,7 +1,6 @@
 import 'server-only';
-import { $fetch } from '@/lib/fetch';
 
-export async function logEdgeError(error: unknown) {
+export function logMiddlewareError(error: unknown) {
   let message: string;
   if (error instanceof Error) {
     message = `[${error.name}] ${error.message}\n${error.stack}`;
@@ -9,9 +8,6 @@ export async function logEdgeError(error: unknown) {
     message = `Unknown error: ${error}`;
   }
 
-  await $fetch('/api/errors/log', {
-    method: 'POST',
-    body: JSON.stringify({ message }),
-    headers: { 'Content-Type': 'application/json' },
-  });
+  // biome-ignore lint/suspicious/noConsole: Edge runtime doesn't support process.stderr so we use console.error instead
+  console.error(message);
 }
