@@ -3,6 +3,8 @@ import 'client-only';
 
 import { useCallback, useEffect, useState } from 'react';
 
+const COOLDOWN_TICK_INTERVAL_MS = 1000;
+
 type UseCooldownOptions = {
   initialValue?: number;
   onComplete?: () => void;
@@ -24,7 +26,7 @@ export function useCooldown({
 
     const timer = setInterval(() => {
       setCooldown((prev) => prev - 1);
-    }, 1000);
+    }, COOLDOWN_TICK_INTERVAL_MS);
 
     return () => clearInterval(timer);
   }, [cooldown, onComplete]);

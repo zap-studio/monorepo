@@ -43,7 +43,7 @@ export function useAuth(callbackURL?: string) {
 
   const loginWithMail = async (
     values: LoginFormValues,
-    callbackURL?: string
+    loginCallbackURL?: string
   ) => {
     const { email, password } = values;
 
@@ -67,7 +67,9 @@ export function useAuth(callbackURL?: string) {
       }
 
       toast.success('Login successful!');
-      router.push(callbackURL || ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_IN);
+      router.push(
+        loginCallbackURL || ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_IN
+      );
     } catch (error) {
       handleClientError(error);
     }
@@ -75,7 +77,7 @@ export function useAuth(callbackURL?: string) {
 
   const registerWithMail = async (
     values: RegisterFormValues,
-    callbackURL?: string
+    registerCallbackURL?: string
   ) => {
     const { name, email, password } = values;
 
@@ -102,7 +104,9 @@ export function useAuth(callbackURL?: string) {
       }
 
       toast.success('Registration successful!');
-      router.push(callbackURL || ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_UP);
+      router.push(
+        registerCallbackURL || ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_UP
+      );
     } catch (error) {
       handleClientError(error);
     }

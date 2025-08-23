@@ -1,9 +1,9 @@
 export type AIProviderId = 'openai' | 'mistral';
 
-export enum AIProviderIdEnum {
-  OPENAI = 'openai',
-  MISTRAL = 'mistral',
-}
+export const AIProviderIdEnum = {
+  OPENAI: 'openai',
+  MISTRAL: 'mistral',
+} as const;
 
 export type AIPluginConfig = {
   COMPLETION?: {
