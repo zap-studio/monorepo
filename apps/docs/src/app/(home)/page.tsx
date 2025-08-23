@@ -45,7 +45,7 @@ export default function HomePage() {
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Button asChild>
-              <Link href="/docs">
+              <Link href={{ pathname: '/docs' }}>
                 Get started
                 <ArrowRight className="size-4" />
               </Link>
