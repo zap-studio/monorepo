@@ -9,8 +9,8 @@ import {
   getSessionInEdgeRuntime,
 } from '@/zap/auth/authorization';
 import { checkBlogPathAccess } from '@/zap/blog/authorization';
+import { logError } from '@/zap/errors/logger.edge';
 import { checkWaitlistRedirect } from '@/zap/waitlist/authorization';
-
 import { isPluginEnabled } from './lib/plugins';
 
 export async function middleware(request: NextRequest) {
@@ -62,7 +62,9 @@ export async function middleware(request: NextRequest) {
 
     // If auth plugin is disabled, just continue with the request
     return NextResponse.next();
-  } catch (_error) {
+  } catch (error) {
+    logError(error);
+
     // On error, if auth is enabled, redirect to login
     if (isPluginEnabled('auth')) {
       return createLoginRedirect(request, request.nextUrl.pathname);

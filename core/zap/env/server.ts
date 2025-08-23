@@ -57,7 +57,6 @@ if (!envParseResult.success) {
     '\nPlease check your environment configuration (e.g., .env file) and ensure all required variables are set correctly.',
   ].join('\n');
 
-  process.stderr.write(errorMessage);
   throw new Error(errorMessage);
 }
 
