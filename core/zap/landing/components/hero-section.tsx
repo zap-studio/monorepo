@@ -113,7 +113,7 @@ export async function Stats() {
   }
 
   return (
-    <div className="flex items-center justify-center space-x-4 text-sm">
+    <div className="hidden items-center justify-center space-x-4 text-sm md:flex">
       {shouldShowRatings && (
         <div className="flex items-center">
           <div className="flex">{renderStars()}</div>
