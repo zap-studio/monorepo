@@ -1,6 +1,6 @@
 import { RiDiscordFill } from '@remixicon/react';
 import { HomeLayout } from 'fumadocs-ui/layouts/home';
-import { ArrowBigRight, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { baseOptions } from '@/app/layout.config';
 

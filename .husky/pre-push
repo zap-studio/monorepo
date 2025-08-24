@@ -1,2 +1,1 @@
-(bun run build) & (cd core && bun run build)
-wait
+bun run build && (cd core && bun run build)
