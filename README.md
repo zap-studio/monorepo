@@ -1,3 +1,25 @@
+<p align="center">
+  <a href="https://github.com/alexandretrotel/zap.ts/actions">
+    <img src="https://github.com/alexandretrotel/zap.ts/actions/workflows/ci.yml/badge.svg" alt="Build Status">
+  </a>
+
+  <a href="https://codecov.io/gh/alexandretrotel/zap.ts">
+    <img src="https://codecov.io/gh/alexandretrotel/zap.ts/branch/main/graph/badge.svg" alt="Coverage">
+  </a>
+
+  <a href="https://www.npmjs.com/package/create-zap-app">
+    <img src="https://img.shields.io/npm/v/create-zap-app.svg" alt="npm version">
+  </a>
+
+  <a href="https://github.com/alexandretrotel/zap.ts/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/alexandretrotel/zap.ts.svg" alt="License">
+  </a>
+
+  <a href="https://zap-ts.alexandretrotel.org">
+    <img src="https://img.shields.io/badge/docs-online-blue.svg" alt="Docs">
+  </a>
+</p>
+
 # What's Zap.ts?
 
 **Zap.ts** – with the ⚡️ symbol – is a **Next.js** boilerplate designed to help you build applications _faster_ using a modern set of tools. It also comes with best practices to build _excellent_ modern web applications.
