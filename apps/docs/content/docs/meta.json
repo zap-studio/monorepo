@@ -1,4 +1,4 @@
 {
   "title": "Documentation",
-  "pages": ["introduction", "cli", "plugins", "ai-powered-ide", "misc"]
+  "pages": ["introduction", "cli", "plugins", "migration", "ai-powered-ide", "misc"]
 }

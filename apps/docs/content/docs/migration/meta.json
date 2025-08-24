@@ -1,4 +1,4 @@
 {
   "title": "Migration",
-  "pages": ["migrate-from-vite", "migrate-from-nextjs"]
+  "pages": ["why-migrate", "migrate-from-react", "migrate-from-vite", "migrate-from-nextjs"]
 }
