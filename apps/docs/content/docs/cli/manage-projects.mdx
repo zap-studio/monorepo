@@ -1,0 +1,92 @@
+---
+title: Manage Projects
+description: Learn how to manage existing projects using the Zap.ts CLI.
+---
+
+# Manage Existing Projects
+
+## Create Procedures
+
+The CLI can automatically generate procedure files, register them in your oRPC router, and create a React hook for easy data fetching. This ensures your codebase stays consistent and follows best practices.
+
+For example, running `zap create procedure example` will:
+
+1. **Create a procedure file** in `src/rpc/procedures/example.rpc.ts`:
+
+```ts
+import "server-only";
+import { authMiddleware, base } from "@/rpc/middlewares";
+import { withRpcHandler } from "@/zap/errors/handlers";
+
+export const example = base.use(authMiddleware).handler(
+  withRpcHandler(({ context }) => {
+    // Access session or other context here
+    return { message: "Hello, World!" };
+  }),
+);
+```
+
+2. **Register the procedure** in your router (`src/rpc/router.ts`):
+
+```ts
+import "server-only";
+import { example } from "@/rpc/procedures/example.rpc";
+
+export const router = {
+  example,
+  // ...other procedures
+};
+```
+
+3. **Create a React hook** in `src/hooks/rpc/use-example.ts`:
+
+```ts
+"use client";
+import "client-only";
+import { useZapQuery } from "@/zap/api/hooks";
+import { orpcQuery } from "@/zap/api/providers/orpc/client";
+
+export function useExample() {
+  return useZapQuery(orpcQuery.example.queryOptions({}));
+}
+```
+
+4. You can remove or customize the generated hook as needed.
+
+For example, if it's a mutation, you would change the `useZapQuery` to `useZapMutation` and use the appropriate mutation options.
+
+```ts
+"use client";
+import "client-only";
+import { useZapMutation } from "@/zap/api/hooks";
+import { orpcQuery } from "@/zap/api/providers/orpc/client";
+
+export function useExample() {
+  return useZapMutation(orpcQuery.example.mutationOptions({}));
+}
+```
+
+## Generate `.env.local` File
+
+You can generate a starter environment file using the CLI:
+
+1. Run the following command in your project directory:
+
+   ```bash
+   zap generate env
+   ```
+
+   This will create a file named `.env.template` (or `.env.local` if specified).
+
+2. The generated file includes all required and optional environment variables, with example/default values for each. Secrets are auto-generated for fields like `BETTER_AUTH_SECRET` and `ENCRYPTION_KEY`.
+
+3. Next steps:
+
+   - **Review and customize** the variables in `.env.template`.
+   - **Copy** `.env.template` to `.env.local` (or `.env`) in your project.
+   - **Fill in** the actual values for your environment.
+   - **Add** your environment file to `.gitignore` if it contains sensitive data.
+
+<Callout type="warn">
+Required variables must be set and uncommented while optional ones can remain commented. Finally, real secrets must never be committed to version control.
+</Callout>

@@ -1,0 +1,19 @@
+---
+title: Migrate from React
+description: How to migrate your React project to Zap.ts.
+---
+# Migrating from React to Zap.ts
+
+Zap.ts is built on top of [Next.js](https://nextjs.org/), which itself is a [React](https://www.react.dev/) framework. This means that migrating from a React project to Zap.ts involves adapting your code to fit within the Next.js ecosystem.
+
+## Migration Steps
+
+1. **Convert to Next.js:**
+	- Move your routes and pages into Next.js's file-based routing system under `src/app/`. Whether you used [TanStack Router](https://tanstack.com/router), [React Router](https://reactrouter.com/), or another routing library, the migration should be straightforward.
+	- Update your imports and code to use Next.js conventions (e.g., `next/link`, `next/image`).
+	- Follow the [React to Next.js migration guide](https://nextjs.org/docs/app/guides/migrating/from-create-react-app).
+
+2. **Test and Refine:**
+	- Run `bun install` to install dependencies.
+	- Test your app and ensure all routes, and features work as expected.
+	- Refactor and take advantage of Zap.ts' plugin system.

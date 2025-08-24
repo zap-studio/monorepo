@@ -1,28 +1,57 @@
 {
   "name": "@zap-ts/docs",
-  "author": "Alexandre Trotel",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "vitepress dev",
-    "build": "vitepress build",
-    "preview": "vitepress preview",
-    "clean": "rm -rf .vitepress/dist",
+    "build": "next build --turbopack",
+    "dev": "next dev --turbopack",
+    "start": "next start",
+    "postinstall": "fumadocs-mdx",
+    "typegen": "next typegen",
     "lint": "ultracite lint",
     "format": "ultracite format"
   },
   "dependencies": {
-    "vitepress": "^1.6.4"
+    "@ai-sdk/openai-compatible": "^1.0.11",
+    "@ai-sdk/react": "^2.0.22",
+    "@bprogress/next": "^3.2.12",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@remixicon/react": "^4.6.0",
+    "ai": "^5.0.22",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "fumadocs-core": "^15.7.1",
+    "fumadocs-mdx": "^11.8.0",
+    "fumadocs-typescript": "^4.0.6",
+    "fumadocs-ui": "^15.7.1",
+    "hast-util-to-jsx-runtime": "^2.3.6",
+    "lucide-react": "^0.541.0",
+    "next": "^15.5.0",
+    "next-themes": "^0.4.6",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-tweet": "^3.2.2",
+    "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-rehype": "^11.1.2",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.1.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.2",
-    "@types/node": "^24.2.0",
-    "typescript": "^5.9.2",
-    "ultracite": "5.2.5",
-    "vitepress-plugin-llms": "^1.7.2"
+    "@tailwindcss/postcss": "^4.1.12",
+    "@types/mdx": "^2.0.13",
+    "@types/node": "24.3.0",
+    "@types/react": "19.1.11",
+    "@types/react-dom": "19.1.7",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.12",
+    "tw-animate-css": "^1.3.7",
+    "typescript": "^5.9.2"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
+    "*.{js,jsx,ts,tsx,json,jsonc,css,scss}": [
       "ultracite format"
     ]
   }

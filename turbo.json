@@ -6,20 +6,11 @@
     "build": {
       "cache": false,
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**", ".vitepress/**"]
-    },
-    "lint": {
-      "cache": false
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "dev": {
       "cache": false,
       "persistent": true
-    },
-    "clean": {
-      "cache": false
-    },
-    "format": {
-      "cache": false
     }
   }
 }

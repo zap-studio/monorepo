@@ -1,1 +1,2 @@
-bun run build
+npm run build
+cd core && npm run build
