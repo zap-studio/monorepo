@@ -3,31 +3,7 @@
   "extends": ["ultracite"],
   "files": {
     "includes": [
-      "**/*",
-      ".github/workflows/*",
-      "!core",
-      "!apps/docs/src/components/ui"
-    ]
-  },
-  "assist": {
-    "includes": [
-      "**/*",
-      ".github/workflows/*",
-      "!core",
-      "!apps/docs/src/components/ui"
-    ]
-  },
-  "linter": {
-    "includes": [
-      "**/*",
-      ".github/workflows/*",
-      "!core",
-      "!apps/docs/src/components/ui"
-    ]
-  },
-  "formatter": {
-    "includes": [
-      "**/*",
+      "**",
       ".github/workflows/*",
       "!core",
       "!apps/docs/src/components/ui"
