@@ -1,20 +1,2 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-set -eu
-
-# Ensure Bun is available
-if ! command -v bun >/dev/null 2>&1; then
-  echo "Pre-push: Bun is not installed or not on PATH." >&2
-  exit 1
-fi
-
-echo "Pre-push: building root..."
-bun run build
-
-if [ -d core ]; then
-  echo "Pre-push: building core..."
-  (cd core && bun run build)
-else
-  echo "Pre-push: 'core' directory not found; skipping." >&2
-fi
+npm run build
+cd core && npm run build
