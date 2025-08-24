@@ -2,6 +2,15 @@
   "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
   "extends": ["ultracite"],
   "files": {
-    "includes": ["**/*", ".github/workflows/*", "!core"]
+    "includes": ["**/*", ".github/workflows/*", "!core", "!apps/docs/src/components/ui"]
+  },
+  "assist": {
+    "includes": ["**/*", ".github/workflows/*", "!core", "!apps/docs/src/components/ui"]
+  },
+  "linter": {
+    "includes": ["**/*", ".github/workflows/*", "!core", "!apps/docs/src/components/ui"]
+  },
+  "formatter": {
+    "includes": ["**/*", ".github/workflows/*", "!core", "!apps/docs/src/components/ui"]
   }
 }

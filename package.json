@@ -2,13 +2,12 @@
   "name": "@zap-ts/monorepo",
   "author": "Alexandre Trotel",
   "private": true,
-  "packageManager": "bun@1.2.19",
+  "packageManager": "bun@1.2.20",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "turbo run format",
-    "clean": "turbo run clean",
+    "lint": "ultracite lint",
+    "format": "ultracite format",
     "prepare": "husky"
   },
   "devDependencies": {
