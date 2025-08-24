@@ -12,10 +12,12 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import type React from 'react';
-import { Tweet } from 'react-tweet';
+import { EmbeddedTweet, TweetNotFound, TweetSkeleton } from 'react-tweet';
 import { Button } from '@/components/ui/button';
 import { testimonials } from '@/data/testimonials';
 import { CopyCommand } from './_components/copy-command';
+import { cache, Suspense } from 'react';
+import { getTweet as _getTweet } from 'react-tweet/api';
 
 const sectionClass = 'px-6 md:py-16 py-8';
 const cardBase = 'rounded-xl border bg-card shadow-sm';
@@ -124,9 +126,9 @@ export default function HomePage() {
 
           <div className="mt-8 columns-1 gap-4 [column-fill:_balance] sm:columns-2 lg:columns-3">
             {testimonials.map((t) => (
-              <div key={t.id}>
-                <Tweet id={t.id} />
-              </div>
+              <Suspense fallback={<TweetSkeleton />} key={t.id}>
+                <TweetComponent id={t.id} />
+              </Suspense>
             ))}
           </div>
         </div>
@@ -134,6 +136,17 @@ export default function HomePage() {
     </main>
   );
 }
+
+const getTweet = cache(async (id: string) => _getTweet(id));
+
+const TweetComponent = async ({ id }: { id: string }) => {
+  try {
+    const tweet = await getTweet(id);
+    return tweet ? <EmbeddedTweet tweet={tweet} /> : <TweetNotFound />;
+  } catch (error) {
+    return <TweetNotFound error={error} />;
+  }
+};
 
 function Feature({
   icon,
