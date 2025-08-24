@@ -3,14 +3,5 @@
   "extends": ["ultracite"],
   "files": {
     "includes": ["**", "!src/components/ui"]
-  },
-  "linter": {
-    "includes": ["**", "!src/components/ui/**"]
-  },
-  "assist": {
-    "includes": ["**", "!src/components/ui/**"]
-  },
-  "formatter": {
-    "includes": ["**", "!src/components/ui/**"]
   }
 }
