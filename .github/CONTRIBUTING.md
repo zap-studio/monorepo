@@ -21,7 +21,7 @@ Thank you for your interest in contributing to Zap.ts! We welcome all contributi
    - Rename the generated file to `.env` inside `core/`.
    - Run `bun install` again in `core/`.
 
-   > The `.env` file may be required for the `core` package to compile and for Husky pre-commit hooks to pass. If Husky blocks your commit, you may use `git commit --no-verify` and/or `git push --no-verify`, but this is discouraged and may reduce the chance of your PR being merged.
+> The `.env` file may be required for the `core` package to compile and for Husky pre-commit hooks to pass. If Husky blocks your commit, you may use `git commit --no-verify` and/or `git push --no-verify`, but this is discouraged and may reduce the chance of your PR being merged.
 
 ## Making Changes
 
