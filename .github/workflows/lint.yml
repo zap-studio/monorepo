@@ -8,9 +8,8 @@ permissions:
   contents: read
 
 jobs:
-  lint:
+  lint-monorepo:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v5
 
@@ -32,6 +31,24 @@ jobs:
 
       - name: Run linter on the monorepo
         run: bun run lint
+
+  lint-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2.6.0
+        with:
+          version: latest
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 24.2.0
 
       - name: Install core deps
         working-directory: core
