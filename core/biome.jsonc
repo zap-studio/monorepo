@@ -2,15 +2,15 @@
   "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
   "extends": ["ultracite"],
   "files": {
-    "includes": ["**", "!src/components/ui", "!src/hooks/use-mobile.ts"]
+    "includes": ["**", "!src/components/ui"]
   },
   "linter": {
-    "includes": ["**", "!src/components/ui/**", "!src/hooks/use-mobile.ts"]
+    "includes": ["**", "!src/components/ui/**"]
   },
   "assist": {
-    "includes": ["**", "!src/components/ui/**", "!src/hooks/use-mobile.ts"]
+    "includes": ["**", "!src/components/ui/**"]
   },
   "formatter": {
-    "includes": ["**", "!src/components/ui/**", "!src/hooks/use-mobile.ts"]
+    "includes": ["**", "!src/components/ui/**"]
   }
 }
