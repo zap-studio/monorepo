@@ -60,7 +60,7 @@ export function CommandCard({ command, description }: CommandCardProps) {
         </AnimatedSpan>
 
         <AnimatedSpan className="text-blue-500" delay={3000}>
-          <span>✔ Running prettier on the project.</span>
+          <span>✔ Running `biome format` on the project.</span>
         </AnimatedSpan>
 
         <TypingAnimation className="text-muted-foreground" delay={4000}>
