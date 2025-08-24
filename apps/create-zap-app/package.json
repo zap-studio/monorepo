@@ -18,7 +18,7 @@
     "boilerplate",
     "starter-kit"
   ],
-  "version": "1.4.7",
+  "version": "1.4.8",
   "module": "index.ts",
   "type": "module",
   "private": false,

@@ -1,5 +1,11 @@
 # create-zap-app
 
+## 1.4.8
+
+### Patch Changes
+
+- 21eb9fb: remove prettier wording to make it agnostic since we use biome as the formatter now
+
 ## 1.4.7
 
 ### Patch Changes
@@ -19,6 +25,7 @@
 - 90d3467: Update hook generation to use useZapQuery instead of useSWR for better error handling
 
   Generated hooks now use the centralized `useZapQuery` hook which provides:
+
   - Automatic error handling with toast notifications
   - Consistent error reporting across all generated procedures
   - Better developer experience with centralized error management
