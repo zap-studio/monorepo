@@ -1,6 +1,6 @@
-export type Provider = "github" | "google";
+export type Provider = 'github' | 'google';
 
-export interface AuthPluginConfig {
+export type AuthPluginConfig = {
   ENABLE_SOCIAL_PROVIDER: boolean;
   SIGN_UP_URL: string;
   LOGIN_URL: string;
@@ -16,4 +16,4 @@ export interface AuthPluginConfig {
   REDIRECT_URL_AFTER_SIGN_UP: string;
   REQUIRE_MAIL_VERIFICATION: boolean;
   VERIFIED_EMAIL_PATH: string;
-}
+};

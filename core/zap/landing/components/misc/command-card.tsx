@@ -1,16 +1,18 @@
-"use client";
+'use client';
 
-import { Check, Clipboard } from "lucide-react";
-import { useState } from "react";
+import { Check, Clipboard } from 'lucide-react';
+import { useState } from 'react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
-import { AnimatedSpan, Terminal, TypingAnimation } from "../magicui/terminal";
+import { AnimatedSpan, Terminal, TypingAnimation } from '../magicui/terminal';
 
-interface CommandCardProps {
+type CommandCardProps = {
   command: string;
   description: string;
-}
+};
+
+const COPY_TIMEOUT = 2000;
 
 export function CommandCard({ command, description }: CommandCardProps) {
   const [copied, setCopied] = useState(false);
@@ -18,14 +20,14 @@ export function CommandCard({ command, description }: CommandCardProps) {
   const handleCopy = async () => {
     await navigator.clipboard.writeText(command);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), COPY_TIMEOUT);
   };
 
   return (
-    <div className="bg-background hidden h-fit space-y-4 rounded-xl border p-6 md:block">
+    <div className="hidden h-fit space-y-4 rounded-xl border bg-background p-6 md:block">
       <Terminal className="rounded-md border shadow-sm">
         <div className="flex items-center justify-between">
-          <code className="text-muted-foreground text-sm whitespace-nowrap">
+          <code className="whitespace-nowrap text-muted-foreground text-sm">
             {command}
           </code>
 

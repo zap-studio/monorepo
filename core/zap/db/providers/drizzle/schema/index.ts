@@ -1,27 +1,56 @@
 /**
- * This file uses static re-exports to avoid webpack dynamic import warnings.
- * If a plugin doesn't exist, the export will simply fail at build time,
- * but won't cause runtime issues due to tree-shaking.
+ * This file aggregates the Drizzle schemas from various plugins.
  *
- * To add a new plugin schema:
- * Add a new export line: export * from "@/zap/newPlugin/db/providers/drizzle/schema";
+ * How to add a plugin schema:
+ *  1. Import the plugin table exports explicitly (no namespace imports).
+ *  2. Add each table to the `schema` object below.
  *
- * To remove a plugin schema:
- * 1. Remove the export line for the plugin
- * 2. Remove any related code or references
+ * How to remove a plugin schema:
+ *  1. Delete its table imports.
+ *  2. Remove its entries from the `schema` object.
+ *
+ * Keep only what you need to reduce type surface & build time.
  */
 
-// AI plugin schema
-export * from "@/zap/ai/db/providers/drizzle/schema";
+import { userAISettings } from '@/zap/ai/db/providers/drizzle/schema';
+import {
+  account,
+  invitation,
+  member,
+  organization,
+  passkey,
+  session,
+  twoFactor,
+  user,
+  verification,
+} from '@/zap/auth/db/providers/drizzle/schema';
+import { feedback } from '@/zap/feedbacks/db/providers/drizzle/schema';
+import { pushNotifications } from '@/zap/pwa/db/providers/drizzle/schema';
+import { waitlist } from '@/zap/waitlist/db/providers/drizzle/schema';
 
-// Auth plugin schema
-export * from "@/zap/auth/db/providers/drizzle/schema";
+export const schema = {
+  // AI
+  userAISettings,
 
-// Feedbacks plugin schema
-export * from "@/zap/feedbacks/db/providers/drizzle/schema";
+  // Auth
+  user,
+  session,
+  account,
+  verification,
+  twoFactor,
+  passkey,
+  organization,
+  member,
+  invitation,
 
-// PWA plugin schema
-export * from "@/zap/pwa/db/providers/drizzle/schema";
+  // Feedbacks
+  feedback,
 
-// Waitlist plugin schema
-export * from "@/zap/waitlist/db/providers/drizzle/schema";
+  // PWA
+  pushNotifications,
+
+  // Waitlist
+  waitlist,
+} as const;
+
+export type DatabaseSchema = typeof schema;

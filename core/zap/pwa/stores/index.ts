@@ -1,20 +1,22 @@
-"use client";
-import "client-only";
+'use client';
+import 'client-only';
 
-import { useEffect } from "react";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { useEffect } from 'react';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-interface PushNotificationsStoreState {
+const IOS_REGEX = /iPad|iPhone|iPod/;
+
+type PushNotificationsStoreState = {
   isSupported: boolean;
   subscription: PushSubscription | null;
   message: string;
   isIOS: boolean;
   isStandalone: boolean;
   isSubscribed: boolean;
-}
+};
 
-interface PushNotificationsStoreActions {
+type PushNotificationsStoreActions = {
   setMessage: (message: string) => void;
   setSubscribed: (isSubscribed: boolean) => void;
   setSubscription: (subscription: PushSubscription | null) => void;
@@ -26,7 +28,7 @@ interface PushNotificationsStoreActions {
     isSubscribed: boolean;
   }) => void;
   initialize: () => void;
-}
+};
 
 export const usePushNotificationsStore = create<
   PushNotificationsStoreState & PushNotificationsStoreActions
@@ -35,7 +37,7 @@ export const usePushNotificationsStore = create<
     (set) => ({
       isSupported: false,
       subscription: null,
-      message: "",
+      message: '',
       isIOS: false,
       isStandalone: false,
       isSubscribed: false,
@@ -50,24 +52,24 @@ export const usePushNotificationsStore = create<
         set({ subscription, isSubscribed }),
 
       initialize: () => {
-        if (typeof window === "undefined" || typeof navigator === "undefined")
+        if (typeof window === 'undefined' || typeof navigator === 'undefined') {
           return;
+        }
 
         const isSupported =
-          "serviceWorker" in navigator && "PushManager" in window;
+          'serviceWorker' in navigator && 'PushManager' in window;
         const isIOS =
-          /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          !(window as any).MSStream;
+          IOS_REGEX.test(navigator.userAgent) &&
+          !(window as Window & { MSStream?: unknown }).MSStream;
         const isStandalone = window.matchMedia(
-          "(display-mode: standalone)",
+          '(display-mode: standalone)'
         ).matches;
 
         set({ isSupported, isIOS, isStandalone });
 
         if (isSupported) {
           navigator.serviceWorker
-            .register("/sw.js", { scope: "/", updateViaCache: "none" })
+            .register('/sw.js', { scope: '/', updateViaCache: 'none' })
             .then(async (registration) => {
               const sub = await registration.pushManager.getSubscription();
               set({ subscription: sub, isSubscribed: !!sub });
@@ -75,8 +77,8 @@ export const usePushNotificationsStore = create<
         }
       },
     }),
-    { name: "push-notifications" },
-  ),
+    { name: 'push-notifications' }
+  )
 );
 
 export function usePushNotificationsInitializer() {

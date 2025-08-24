@@ -1,3 +1,5 @@
+import { ZAP_FEEDBACKS_CONFIG } from '../zap.plugin.config';
+
 export function computeAverage(feedbacks: { rating: number }[]) {
   const totalFeedbacks = feedbacks.length;
 
@@ -6,7 +8,9 @@ export function computeAverage(feedbacks: { rating: number }[]) {
   }
 
   const totalRating = feedbacks.reduce((sum, { rating }) => sum + rating, 0);
-  const averageRating = (totalRating / totalFeedbacks / 10) * 5;
+  const averageRating =
+    (totalRating / totalFeedbacks / ZAP_FEEDBACKS_CONFIG.MAX_RATING) *
+    ZAP_FEEDBACKS_CONFIG.TARGET_SCALE;
 
   return { averageRating, totalFeedbacks };
 }

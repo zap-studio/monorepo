@@ -1,8 +1,8 @@
-import "server-only";
+import 'server-only';
 
-import { authMiddleware, base } from "@/rpc/middlewares";
-import { withRpcHandler } from "@/zap/errors/handlers";
-
+import { base } from '@/zap/api/rpc/middlewares';
+import { authMiddleware } from '@/zap/auth/rpc/middlewares';
+import { withRpcHandler } from '@/zap/errors/handlers';
 import {
   InputCanSendMailSchema,
   InputSendForgotPasswordMailSchema,
@@ -10,7 +10,7 @@ import {
   InputSendMailSchema,
   InputSendVerificationMailSchema,
   InputUpdateLastTimestampMailSentSchema,
-} from "../../schemas";
+} from '../../schemas';
 import {
   canSendMailService,
   sendForgotPasswordMailService,
@@ -18,7 +18,7 @@ import {
   sendMailService,
   sendVerificationMailService,
   updateLastTimestampMailSentService,
-} from "../../services";
+} from '../../services';
 
 const canSendMail = base
   .use(authMiddleware)
@@ -28,7 +28,7 @@ const canSendMail = base
       return await canSendMailService({
         userId: context.session.session.userId,
       });
-    }),
+    })
   );
 
 const updateLastTimestampMailSent = base
@@ -39,7 +39,7 @@ const updateLastTimestampMailSent = base
       return await updateLastTimestampMailSentService({
         userId: context.session.session.userId,
       });
-    }),
+    })
   );
 
 const sendForgotPasswordMail = base
@@ -49,7 +49,7 @@ const sendForgotPasswordMail = base
       return await sendForgotPasswordMailService({
         ...input,
       });
-    }),
+    })
   );
 
 const sendVerificationMail = base
@@ -59,7 +59,7 @@ const sendVerificationMail = base
       return await sendVerificationMailService({
         ...input,
       });
-    }),
+    })
   );
 
 const sendMagicLinkMail = base.input(InputSendMagicLinkMailSchema).handler(
@@ -67,7 +67,7 @@ const sendMagicLinkMail = base.input(InputSendMagicLinkMailSchema).handler(
     return await sendMagicLinkMailService({
       ...input,
     });
-  }),
+  })
 );
 
 const sendMail = base.input(InputSendMailSchema).handler(
@@ -75,7 +75,7 @@ const sendMail = base.input(InputSendMailSchema).handler(
     return await sendMailService({
       ...input,
     });
-  }),
+  })
 );
 
 export const mails = {

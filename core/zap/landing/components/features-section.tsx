@@ -1,15 +1,15 @@
-import { Check } from "lucide-react";
+import { Check } from 'lucide-react';
 
-import { FEATURES } from "../data";
+import { FEATURES } from '../data';
 
 export function FeaturesSection() {
   return (
     <div className="w-full px-4 md:px-6">
       <div className="mx-auto max-w-4xl space-y-4 text-center">
-        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+        <h2 className="font-bold text-3xl tracking-tight sm:text-4xl md:text-5xl">
           Features that accelerate your development
         </h2>
-        <p className="text-muted-foreground text-lg md:text-xl">
+        <p className="text-lg text-muted-foreground md:text-xl">
           Everything you need to build modern web applications, all in one
           place.
         </p>
@@ -24,19 +24,19 @@ export function FeaturesSection() {
   );
 }
 
-interface FeatureCardProps {
+type FeatureCardProps = {
   title: string;
   description: string;
-}
+};
 
 function FeatureCard({ title, description }: FeatureCardProps) {
   return (
-    <div className="group bg-background hover:border-foreground active:border-foreground relative overflow-hidden rounded-xl border p-6 transition-all">
-      <div className="bg-primary/10 mb-4 flex h-10 w-10 items-center justify-center rounded-full">
-        <Check className="text-primary h-5 w-5" />
+    <div className="group relative overflow-hidden rounded-xl border bg-background p-6 transition-all hover:border-foreground active:border-foreground">
+      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+        <Check className="h-5 w-5 text-primary" />
       </div>
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <p className="text-muted-foreground mt-1 text-sm">{description}</p>
+      <h3 className="font-semibold text-lg">{title}</h3>
+      <p className="mt-1 text-muted-foreground text-sm">{description}</p>
     </div>
   );
 }

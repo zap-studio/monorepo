@@ -1,5 +1,5 @@
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Separator } from '@/components/ui/separator';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
 export function SidebarHeader() {
   return (
@@ -10,7 +10,7 @@ export function SidebarHeader() {
           className="mx-2 data-[orientation=vertical]:h-4"
           orientation="vertical"
         />
-        <h1 className="text-base font-medium">Application</h1>
+        <h1 className="font-medium text-base">Application</h1>
       </div>
     </header>
   );
