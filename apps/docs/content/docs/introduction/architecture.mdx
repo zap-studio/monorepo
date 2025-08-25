@@ -55,7 +55,51 @@ These files/folders are not typically present in a standard Next.js project, but
 - `src/app/manifest.ts`: Configuration file for the [Web App Manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) to provide metadata for the application when installed on a device or added to the home screen as a [PWA (Progressive Web App)](https://web.dev/progressive-web-apps/).
 - `src/app/not-found.tsx`: Beautiful custom 404 page for handling "Not Found" errors in the application.
 - `src/app/opengraph-image/route.tsx`: Dynamic Open Graph image generation route using [OG Image](https://og-image.vercel.app/) to create social media preview images on the fly.
+- `src/instrumentation.edge.ts`: Instrumentation for the Edge runtime environment.
+- `src/instrumentation.node.ts`: Instrumentation for the Node.js runtime environment.
+- `src/instrumentation.ts`: Shared instrumentation code for both Edge and Node.js environments, following [Next.js instrumentation guidelines](https://nextjs.org/docs/app/guides/instrumentation#importing-runtime-specific-code).
+
+### Pages
+
+- `src/app/(protected)/app/(sidebar)/account/page.tsx`: Account page for user account management. (WIP)
+- `src/app/(protected)/app/(sidebar)/layout.tsx`: Layout component for the sidebar.
+- `src/app/(protected)/app/(sidebar)/notifications/page.tsx`: Notifications page for user notifications. (WIP)
+- `src/app/(protected)/app/(sidebar)/page.tsx`: Main application page with a dashboard skeleton. (WIP)
+- `src/app/(protected)/app/(sidebar)/settings/page.tsx`: Settings page for user preferences. (WIP)
+- `src/app/(protected)/app/billing/page.tsx`: Billing page for user billing information.
+- `src/app/(protected)/app/billing/success/page.tsx`: Billing success page for user billing information.
+- `src/app/(public)/(auth)/forgot-password/page.tsx`: Forgot password page for users to reset their password.
+- `src/app/(public)/(auth)/login/page.tsx`: Login page for user authentication
+- `src/app/(public)/(auth)/mail-verified/page.tsx`: Mail verified page for users to confirm their email address.
+- `src/app/(public)/(auth)/register/page.tsx`: Register page for user registration.
+- `src/app/(public)/(auth)/reset-password/page.tsx`: Reset password page for users to reset their password.
+- `src/app/(public)/(legal)/cookie-policy/page.tsx`: Cookie policy page for legal information.
+- `src/app/(public)/(legal)/layout.tsx`: Layout component for legal pages.
+- `src/app/(public)/(legal)/privacy-policy/page.tsx`: Privacy policy page for legal information.
+- `src/app/(public)/(legal)/terms-of-service/page.tsx`: Terms of service page for legal information.
+- `src/app/(public)/blog/[slug]/page.tsx`: Blog post page for individual blog posts.
+- `src/app/(public)/blog/layout.tsx`: Layout component for blog pages.
+- `src/app/(public)/blog/page.tsx`: Blog landing page for all blog posts.
+- `src/app/(public)/page.tsx`: Public landing page for the application.
+- `src/app/(public)/waitlist/page.tsx`: Waitlist page for users to join the waitlist.
+
+### Routes
+
+- `src/app/api/auth/[...all]/route.ts`: Authentication API route for handling all auth-related requests with [Better Auth](https://better-auth.com).
+- `src/app/rpc/[[...rest]]/route.ts`: RPC API route for handling all RPC-related requests with [oRPC](https://orpc.unnoq.com).
+
+### Components
+
+- `src/components/ui/*`: Various UI components from [shadcn/ui](https://ui.shadcn.com/) such as `Alert`, `Avatar`, `Badge`, `Button`, `Card`, `Checkbox`, `Collapsible`, `Command`, `Dialog`, `Dropdown Menu`, `Form`, `Hover Card`, `Input`, `Label`, `Link`, `List Box`, `Menubar`, `Navigation Menu`, `Popover`, `Progress`, `Radio Group`, `Scroll Area`, `Select`, `Separator`, `Sheet`, `Skeleton`, `Slider`, `Switch`, `Tabs`, `Textarea`, and more. Note that [Ultracite](https://ultracite.ai/) ignores this directory to keep original code.
+
+### Hooks
+
+- `src/hooks/use-mobile.ts`: Custom hook for detecting mobile devices and handling mobile-specific logic. This is needed by [shadcn/ui](https://ui.shadcn.com/).
+- `src/hooks/utils/use-body-scroll-lock.ts`: Custom hook for managing body scroll locking in modals and other components.
+- `src/hooks/utils/use-cooldown.ts`: Custom hook for implementing cooldowns on actions (e.g., mail ratelimits).
 
 ## Deletions
+
+### Pages
 
 - `src/app/page.tsx`: Default [Next.js](https://nextjs.org/) homepage, replaced by a custom homepage in Zap.ts.
