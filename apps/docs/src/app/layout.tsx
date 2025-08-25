@@ -1,9 +1,10 @@
 import '@/app/global.css';
+import { Analytics } from '@vercel/analytics/next';
+import type { Metadata } from 'next';
 import { Geist as Font } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { Provider } from './provider';
-import { Metadata } from 'next';
 
 const font = Font({
   subsets: ['latin'],
@@ -99,7 +100,9 @@ export default function Layout({ children }: { children: ReactNode }) {
     >
       <body className="flex min-h-screen flex-col">
         <Provider>
-          {children} <Toaster />
+          {children}
+          <Analytics />
+          <Toaster />
         </Provider>
       </body>
     </html>
