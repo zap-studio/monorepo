@@ -2,7 +2,7 @@
 title: Architecture
 description: Here is the complete architecture of a Zap.ts application compared to a traditional Next.js application.
 ---
-# Architecture Overview
+# Overview
 
 Zap.ts architecture is designed to be modular, scalable, and easy to maintain. It leverages the power of TypeScript and modern web development practices to provide a robust foundation for building applications.
 
@@ -39,7 +39,8 @@ These files/folders are not typically present in a standard Next.js project, but
 - `.npmrc`: Configuration file for [npm](https://www.npmjs.com/).
 - `.vscode/`: Contains [Visual Studio Code](https://code.visualstudio.com/) specific settings and configurations such as [MCP (Model Context Protocol)](https://modelcontextprotocol.io/), debugging configurations, and more.
 - `.windsurf/`: Contains [Windsurf](https://windsurf.com/) specific settings and configurations such as [MCP (Model Context Protocol)](https://modelcontextprotocol.io/).
-- `Dockerfile`: Contains the instructions for building a Docker image for the application following [Next.js Docker best practices](https://github.com/vercel/next.js/tree/canary/examples/with-docker).
+- `Dockerfile.*`: Contains the instructions for building a Docker image for the application following [Next.js Docker best practices](https://github.com/vercel/next.js/tree/canary/examples/with-docker) in production or provisioning a [PostgreSQL](https://www.postgresql.org/) database in development.
+- `docker-compose.yml`: Configuration file for [Docker Compose](https://docs.docker.com/compose/) to define and run multi-container Docker applications (such as Zap.ts and PostgreSQL).
 - `components.json`: Configuration file for [shadcn/ui](https://ui.shadcn.com/), a set of accessible and customizable React components.
 - `drizzle.config.*.ts`: Configuration files for [Drizzle ORM](https://orm.drizzle.team/), an ORM for TypeScript and JavaScript with separate config for development and production environments.
 - `emails/`: Contains email templates and allows for easy customization and management of email content through a mail server using [React Email](https://react.email/).
