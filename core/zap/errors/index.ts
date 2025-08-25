@@ -174,3 +174,17 @@ export class FileOperationError extends BaseApplicationError {
     super(message, 'FILE_OPERATION_ERROR', cause);
   }
 }
+
+export class FetchError extends Error {
+  status: number;
+  statusText: string;
+  body?: unknown;
+
+  constructor(message: string, response: Response, body?: unknown) {
+    super(message);
+    this.name = 'FetchError';
+    this.status = response.status;
+    this.statusText = response.statusText;
+    this.body = body;
+  }
+}

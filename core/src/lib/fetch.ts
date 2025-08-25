@@ -1,5 +1,5 @@
 import type { ZodType } from 'zod';
-
+import { FetchError } from '@/zap/errors';
 import { BASE_URL } from '@/zap.config';
 
 /**
@@ -24,21 +24,6 @@ export interface FetchOptions<TData = unknown> extends RequestInit {
   throwOnError?: boolean;
   /** If true returns raw Response instead of parsed JSON (schema ignored). */
   raw?: boolean;
-}
-
-/** Error object thrown by $fetch on non-ok responses. */
-export class FetchError extends Error {
-  status: number;
-  statusText: string;
-  body?: unknown;
-
-  constructor(message: string, response: Response, body?: unknown) {
-    super(message);
-    this.name = 'FetchError';
-    this.status = response.status;
-    this.statusText = response.statusText;
-    this.body = body;
-  }
 }
 
 /**
