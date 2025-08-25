@@ -22,13 +22,19 @@ WIP
 
 These files/folders depending on your Next.js configuration (choice of linter, etc) can already be present in your project, but we modified them to fit the Zap.ts architecture and philosophy.
 
-- `biome.json`: Configuration file for [Biome](https://biomejs.dev/), a linter and code formatter. We're using [Ultracite](https://ultracite.ai/) preset for better collaborations between AI and developers.
-- `next.config.ts`: Configuration file for [Next.js](https://nextjs.org/) with additional settings for [CSP (Content Security Policy)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), [Permissions Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy), defining [Typed Routes](https://nextjs.org/docs/app/api-reference/config/next-config-js/typedRoutes) by default, additional [security headers](https://nextjs.org/docs/app/api-reference/config/next-config-js/headers), configuration for [sw.js](https://nextjs.org/docs/app/guides/progressive-web-apps#5-creating-a-service-worker), [MDX](https://nextjs.org/docs/app/guides/mdx) and [Bundle Analyzer](https://nextjs.org/docs/app/getting-started/linking-and-navigating#hydration-not-completed).
-- `package.json`: Configuration file for [npm](https://www.npmjs.com/) with additional scripts for [Biome](https://biomejs.dev/), [Drizzle ORM](https://orm.drizzle.team/), [Next.js](https://nextjs.org/), [React Email](https://react.email/) and more. Also includes `lint-staged` configuration with [Ultracite](https://ultracite.ai/) preset. Finally, it adds dependencies to support Zap.ts architecture.
+### Root & Public
+
 - `public/`: Removed [Vercel](https://vercel.com/) default files and added `sw.js` for [PWA (Progressive Web App)](https://nextjs.org/docs/app/guides/progressive-web-apps) support with [push notification](https://developer.mozilla.org/en-US/docs/Web/API/Push_API) events and [Geist](https://vercel.com/font) font for [Open Graph](https://og-image.vercel.app/) images. Also added standard files for a better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide).
 - `src/app/favicon.ico`: Replaced default [Next.js](https://nextjs.org/) favicon with Zap.ts favicon.
 - `src/app/globals.css`: Replaced default [Next.js](https://nextjs.org/) global styles by integrating [shadcn/ui](https://ui.shadcn.com/) styles by default and adding custom global styles.
 - `src/app/layout.tsx`: Replaced default [Next.js](https://nextjs.org/) layout with a custom layout in Zap.ts with [shadcn/ui](https://ui.shadcn.com/) integration, [Geist](https://vercel.com/font) font, additional metadata for better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide), custom providers injection and [Vercel](https://vercel.com/) analytics support depending on the environment.
+
+### Configurations
+
+- `biome.json`: Configuration file for [Biome](https://biomejs.dev/), a linter and code formatter. We're using [Ultracite](https://ultracite.ai/) preset for better collaborations between AI and developers.
+- `next.config.ts`: Configuration file for [Next.js](https://nextjs.org/) with additional settings for [CSP (Content Security Policy)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), [Permissions Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy), defining [Typed Routes](https://nextjs.org/docs/app/api-reference/config/next-config-js/typedRoutes) by default, additional [security headers](https://nextjs.org/docs/app/api-reference/config/next-config-js/headers), configuration for [sw.js](https://nextjs.org/docs/app/guides/progressive-web-apps#5-creating-a-service-worker), [MDX](https://nextjs.org/docs/app/guides/mdx) and [Bundle Analyzer](https://nextjs.org/docs/app/getting-started/linking-and-navigating#hydration-not-completed).
+- `package.json`: Configuration file for [npm](https://www.npmjs.com/) with additional scripts for [Biome](https://biomejs.dev/), [Drizzle ORM](https://orm.drizzle.team/), [Next.js](https://nextjs.org/), [React Email](https://react.email/) and more. Also includes `lint-staged` configuration with [Ultracite](https://ultracite.ai/) preset. Finally, it adds dependencies to support Zap.ts architecture.
+- `tsconfig.json`: TypeScript configuration file with paths and settings optimized for Zap.ts such as `strictNullChecks`.
 
 ## Additions
 
@@ -101,6 +107,23 @@ These files/folders are not typically present in a standard Next.js project, but
 ### Libraries
 
 - `src/lib/fetch.ts`: Custom fetch wrapper for making API requests with [Zod](https://zod.dev/) validation and error handling.
+- `src/lib/plugins.ts`: Plugin management library for handling Zap.ts plugins.
+- `src/lib/utils.ts`: Utility functions such as `cn` (class names) that is needed by [shadcn/ui](https://ui.shadcn.com/).
+
+### Middleware
+
+- `src/middleware.ts`: Custom middleware for handling requests and responses in Zap.ts. It integrates `auth`, `waitlist` and `blog` plugins in its logic to provide a seamless experience across the application.
+
+### Providers
+
+- `src/providers/providers.tsx`: Context providers for managing global state and dependencies in Zap.ts such as `ThemeProvider` for theming, `ProgressProvider` for progress bar with [BProgress](https://bprogress.vercel.app/), `NuqsAdapter` to integrate [nuqs](https://nuqs.47ng.com/) to manage search params with type safety and `PluginProviders` to inject providers from Zap.ts plugins.
+- `src/providers/theme.provider.tsx`: Theme provider for managing light and dark themes in the application with [next-themes](https://github.com/pacocoursey/next-themes).
+
+### Zap.ts Specific
+
+- `zap.config.ts`: Configuration file for Zap.ts.
+- `zap.config.types.ts`: Type definitions for Zap.ts configuration.
+- `zap/*`: Zap.ts plugin directories such as `auth`, `blog`, and `waitlist`. Each plugin contains its own routes, components, hooks, and other necessary files to provide specific functionality to the application.
 
 ## Deletions
 
