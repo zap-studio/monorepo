@@ -8,6 +8,7 @@ import {
 } from 'fumadocs-ui/components/tabs';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import type { MDXComponents } from 'mdx/types';
+import { FileEntry } from '@/components/file-entry';
 import {
   Table,
   TableBody,
@@ -47,6 +48,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     ...TabsComponents,
     ...FileComponents,
     ...TableComponents,
+    FileEntry,
     ...components,
   };
 }

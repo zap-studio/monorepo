@@ -102,7 +102,14 @@ These files/folders depending on your Next.js configuration (choice of linter, e
 
 ### Root & Public
 
-- `public/`: Removed [Vercel](https://vercel.com/) default files and added `sw.js` for [PWA (Progressive Web App)](https://nextjs.org/docs/app/guides/progressive-web-apps) support with [push notification](https://developer.mozilla.org/en-US/docs/Web/API/Push_API) events and [Geist](https://vercel.com/font) font for [Open Graph](https://og-image.vercel.app/) images. Also added standard files for a better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide).
+<FileEntry name="public/" 
+  status="modified" 
+  requirement="required"
+  plugins={['pwa']}
+  folder>
+Removed [Vercel](https://vercel.com/) default files and added `sw.js` for [PWA (Progressive Web App)](https://nextjs.org/docs/app/guides/progressive-web-apps) support with [push notification](https://developer.mozilla.org/en-US/docs/Web/API/Push_API) and [Geist](https://vercel.com/font) font for [Open Graph](https://og-image.vercel.app/) images. Also added standard files for a better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide).
+</FileEntry>
+
 - `src/app/favicon.ico`: Replaced default [Next.js](https://nextjs.org/) favicon with Zap.ts favicon.
 - `src/app/globals.css`: Replaced default [Next.js](https://nextjs.org/) global styles by integrating [shadcn/ui](https://ui.shadcn.com/) styles by default and adding custom global styles.
 - `src/app/layout.tsx`: Replaced default [Next.js](https://nextjs.org/) layout with a custom layout in Zap.ts with [shadcn/ui](https://ui.shadcn.com/) integration, [Geist](https://vercel.com/font) font, additional metadata for better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide), custom providers injection and [Vercel](https://vercel.com/) analytics support depending on the environment.
