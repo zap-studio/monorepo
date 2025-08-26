@@ -62,12 +62,14 @@ export function FileEntry({
   const Icon = folder ? Folder : FileText;
 
   return (
-    <div className="flex flex-col border-muted/40 border-b py-2">
+    <div className="flex flex-col py-2">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2">
-          <Icon className="h-4 w-4 text-foreground" />
-          <span className="font-mono text-sm">{name}</span>
-          <span className="text-sm">{statusDotConfig[status]}</span>
+        <div className="flex flex-col gap-2 xs:flex-row xs:items-center xs:gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Icon className="h-4 w-4 text-foreground" />
+            <span className="font-medium text-sm md:text-base">{name}</span>
+            <span className="text-sm">{statusDotConfig[status]}</span>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-1 sm:justify-end">
@@ -106,7 +108,7 @@ export function FileEntry({
       </div>
 
       {children && (
-        <div className="mt-1 pl-6 text-muted-foreground text-sm">
+        <div className="mt-1 pl-2 sm:pl-6 text-muted-foreground text-sm">
           {children}
         </div>
       )}
@@ -120,9 +122,5 @@ type FileListProps = {
 };
 
 export function FileList({ children, className }: FileListProps) {
-  return (
-    <div className={cn('flex flex-col divide-y divide-muted/40', className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn('flex flex-col', className)}>{children}</div>;
 }
