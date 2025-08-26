@@ -12,36 +12,6 @@
         "ultracite": "5.2.5",
       },
     },
-    "apps/create-zap-app": {
-      "name": "create-zap-app",
-      "version": "1.4.8",
-      "bin": {
-        "create-zap-app": "./dist/index.js",
-        "zap": "./dist/index.js",
-      },
-      "dependencies": {
-        "chalk": "^5.6.0",
-        "commander": "^14.0.0",
-        "execa": "^9.6.0",
-        "figlet": "^1.8.2",
-        "fs-extra": "^11.3.1",
-        "inquirer": "^12.9.3",
-        "ora": "^8.2.0",
-        "ts-morph": "^26.0.0",
-        "zod": "^4.0.17",
-      },
-      "devDependencies": {
-        "@types/figlet": "^1.7.0",
-        "@types/fs-extra": "^11.0.4",
-        "@types/inquirer": "^9.0.9",
-        "@types/node": "^24.3.0",
-        "tsdown": "^0.14.1",
-        "typescript": "^5.9.2",
-      },
-      "peerDependencies": {
-        "typescript": "^5.8.3",
-      },
-    },
     "apps/docs": {
       "name": "@zap-ts/docs",
       "version": "1.0.0",
@@ -84,6 +54,36 @@
         "tailwindcss": "^4.1.12",
         "tw-animate-css": "^1.3.7",
         "typescript": "^5.9.2",
+      },
+    },
+    "packages/create-zap-app": {
+      "name": "create-zap-app",
+      "version": "1.4.8",
+      "bin": {
+        "create-zap-app": "./dist/index.js",
+        "zap": "./dist/index.js",
+      },
+      "dependencies": {
+        "chalk": "^5.6.0",
+        "commander": "^14.0.0",
+        "execa": "^9.6.0",
+        "figlet": "^1.8.2",
+        "fs-extra": "^11.3.1",
+        "inquirer": "^12.9.3",
+        "ora": "^8.2.0",
+        "ts-morph": "^26.0.0",
+        "zod": "^4.0.17",
+      },
+      "devDependencies": {
+        "@types/figlet": "^1.7.0",
+        "@types/fs-extra": "^11.0.4",
+        "@types/inquirer": "^9.0.9",
+        "@types/node": "^24.3.0",
+        "tsdown": "^0.14.1",
+        "typescript": "^5.9.2",
+      },
+      "peerDependencies": {
+        "typescript": "^5.8.3",
       },
     },
   },
@@ -741,7 +741,7 @@
 
     "consola": ["consola@3.4.2", "", {}, "sha512-5IKcdX0nnYavi6G7TtOhwkYzyjfJlatbjMjuLSfE2kYT5pMDOilZ4OvMhi637CcDICTmz3wARPoyhqyX1Y+XvA=="],
 
-    "create-zap-app": ["create-zap-app@workspace:apps/create-zap-app"],
+    "create-zap-app": ["create-zap-app@workspace:packages/create-zap-app"],
 
     "cross-spawn": ["cross-spawn@7.0.6", "", { "dependencies": { "path-key": "^3.1.0", "shebang-command": "^2.0.0", "which": "^2.0.1" } }, "sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA=="],
 
