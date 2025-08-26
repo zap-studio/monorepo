@@ -31,8 +31,8 @@ type FileEntryProps = {
   name: string;
   status: Status;
   required: boolean;
-  ide?: IDE[];
   plugins?: Plugin[];
+  ide?: IDE[];
   folder?: boolean;
   children?: React.ReactNode;
 };
@@ -54,8 +54,8 @@ export function FileEntry({
   name,
   status,
   required,
-  ide = [],
   plugins = [],
+  ide = [],
   folder,
   children,
 }: FileEntryProps) {

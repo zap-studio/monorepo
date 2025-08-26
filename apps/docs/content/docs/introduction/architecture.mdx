@@ -110,7 +110,6 @@ In the below section, we explain all files and folders present in a typical Zap.
 <FileEntry name="public/" 
   status="modified" 
   required
-  plugins={['pwa']}
   folder>
 Removed [Vercel](https://vercel.com/) default files and added standard files for a better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide).
 </FileEntry>
@@ -144,11 +143,11 @@ Replaced default [Next.js](https://nextjs.org/) layout with a custom layout in Z
   </FileEntry>
 
   <FileEntry name="next.config.ts" status="modified" required>
-    Configuration file for [Next.js](https://nextjs.org/) with additional settings for [CSP (Content Security Policy)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), [Permissions Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy), defining [Typed Routes](https://nextjs.org/docs/app/api-reference/config/next-config-js/typedRoutes) by default, additional [security headers](https://nextjs.org/docs/app/api-reference/config/next-config-js/headers), configuration for [sw.js](https://nextjs.org/docs/app/guides/progressive-web-apps#5-creating-a-service-worker), [MDX](https://nextjs.org/docs/app/guides/mdx) and [Bundle Analyzer](https://nextjs.org/docs/app/getting-started/linking-and-navigating#hydration-not-completed).
+    Configuration file for [Next.js](https://nextjs.org/) that includes additional settings for [CSP (Content Security Policy)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) and [Permissions Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy), sets up [Typed Routes](https://nextjs.org/docs/app/api-reference/config/next-config-js/typedRoutes) by default, adds extra [security headers](https://nextjs.org/docs/app/api-reference/config/next-config-js/headers), configures [sw.js](https://nextjs.org/docs/app/guides/progressive-web-apps#5-creating-a-service-worker), and supports [MDX](https://nextjs.org/docs/app/guides/mdx) along with [Bundle Analyzer](https://nextjs.org/docs/app/getting-started/linking-and-navigating#hydration-not-completed).
   </FileEntry>
 
   <FileEntry name="package.json" status="modified" required>
-    Configuration file for [npm](https://www.npmjs.com/) with additional scripts for [Biome](https://biomejs.dev/), [Drizzle ORM](https://orm.drizzle.team/), [Next.js](https://nextjs.org/), [React Email](https://react.email/) and more. Also includes `lint-staged` configuration with [Ultracite](https://ultracite.ai/) preset. Finally, it adds dependencies to support Zap.ts architecture.
+    Configuration file for [npm](https://www.npmjs.com/) with additional scripts for [Biome](https://biomejs.dev/), [Drizzle ORM](https://orm.drizzle.team/), [Next.js](https://nextjs.org/), [React Email](https://react.email/) and more. Also includes [lint-staged](https://github.com/okonet/lint-staged) configuration with [Ultracite](https://ultracite.ai/) preset.
   </FileEntry>
 
   <FileEntry name="tsconfig.json" status="modified" required>
@@ -158,29 +157,41 @@ Replaced default [Next.js](https://nextjs.org/) layout with a custom layout in Z
 
 ### Pages
 
-- `src/app/(protected)/app/(sidebar)/account/page.tsx`: Account page for user account management. (WIP)
-- `src/app/(protected)/app/(sidebar)/layout.tsx`: Layout component for the sidebar.
-- `src/app/(protected)/app/(sidebar)/notifications/page.tsx`: Notifications page for user notifications. (WIP)
-- `src/app/(protected)/app/(sidebar)/page.tsx`: Main application page with a dashboard skeleton. (WIP)
-- `src/app/(protected)/app/(sidebar)/settings/page.tsx`: Settings page for user preferences. (WIP)
-- `src/app/(protected)/app/billing/page.tsx`: Billing page for user billing information.
-- `src/app/(protected)/app/billing/success/page.tsx`: Billing success page for user billing information.
-- `src/app/(public)/(auth)/forgot-password/page.tsx`: Forgot password page for users to reset their password.
-- `src/app/(public)/(auth)/login/page.tsx`: Login page for user authentication
-- `src/app/(public)/(auth)/mail-verified/page.tsx`: Mail verified page for users to confirm their email address.
-- `src/app/(public)/(auth)/register/page.tsx`: Register page for user registration.
-- `src/app/(public)/(auth)/reset-password/page.tsx`: Reset password page for users to reset their password.
-- `src/app/(public)/(legal)/cookie-policy/page.tsx`: Cookie policy page for legal information.
-- `src/app/(public)/(legal)/layout.tsx`: Layout component for legal pages.
-- `src/app/(public)/(legal)/privacy-policy/page.tsx`: Privacy policy page for legal information.
-- `src/app/(public)/(legal)/terms-of-service/page.tsx`: Terms of service page for legal information.
-- `src/app/(public)/blog/[slug]/page.tsx`: Blog post page for individual blog posts.
-- `src/app/(public)/blog/layout.tsx`: Layout component for blog pages.
-- `src/app/(public)/blog/page.tsx`: Blog landing page for all blog posts.
-- `src/app/(public)/page.tsx`: Public landing page for the application.
-- `src/app/(public)/waitlist/page.tsx`: Waitlist page for users to join the waitlist.
-
 <FileList>
+<FileEntry name="src/app/(protected)/app/(sidebar)/" 
+  status="added"
+  plugins={["sidebar"]}
+  folder>
+Added protected routes for authenticated users with a sidebar layout. This includes pages for account management, notifications, settings, and billing. Included pages are: `/app`, `/app/account` (WIP), `/app/notifications` (WIP), `/app/settings` (WIP).
+</FileEntry>
+
+<FileEntry name="src/app/(protected)/app/billing/" status="added" plugins={["payments"]} folder>
+  Added billing routes for user billing information and a billing success page. Included pages are: `/app/billing`, `/app/billing/success`.
+</FileEntry>
+
+<FileEntry name="src/app/(public)/(auth)/" status="added" plugins={["auth"]} folder>
+  Added public authentication routes for user login, registration, password recovery, and mail verification. Included pages are: `/forgot-password`, `/login`, `/mail-verified`, `/register`, and `/reset-password`.
+</FileEntry>
+
+<FileEntry name="src/app/(public)/(legal)/" status="added" plugins={["legal"]} folder>
+  Added public legal routes for cookie policy, privacy policy, and terms of service. Included pages are: `/cookie-policy`, `/privacy-policy`, and `/terms-of-service`.
+</FileEntry>
+
+<FileEntry name="src/app/(public)/blog/" 
+  status="added"
+  plugins={['blog']}
+  folder>
+Added public blog routes for displaying blog posts and a blog landing page. This includes dynamic routing for individual blog posts based on their slug. Included pages are: `/blog`, `/blog/[slug]`.
+</FileEntry>
+
+<FileEntry name="src/app/(public)/page.tsx" status="added" required>
+  Public landing page for the application.
+</FileEntry>
+
+<FileEntry name="src/app/(public)/waitlist/" status="added" plugins={["waitlist"]}>
+  Waitlist page for users to join the waitlist. Included pages are: `/waitlist`.
+</FileEntry>
+
 <FileEntry
   name="src/app/page.tsx"
   status="deleted">
