@@ -96,23 +96,45 @@ Zap.ts builds on top of Next.js, extending its classic dependencies and adding m
 
 Zap.ts also includes many dev tools and scripts for database management, email previews, code analysis, and more, making it a full-featured boilerplate for modern web apps.
 
-## Modified
+## Files & Folders
 
-These files/folders depending on your Next.js configuration (choice of linter, etc) can already be present in your project, but we modified them to fit the Zap.ts architecture and philosophy.
+In the below section, we explain all files and folders present in a typical Zap.ts project structure compared to a standard Next.js project. Next to each file, you'll find a color code (green, yellow, and red) indicating its status.
+
+- 🟢 Added
+- 🟡 Modified
+- 🔴 Removed
 
 ### Root & Public
 
+<FileList>
 <FileEntry name="public/" 
   status="modified" 
-  requirement="required"
+  required
   plugins={['pwa']}
   folder>
-Removed [Vercel](https://vercel.com/) default files and added `sw.js` for [PWA (Progressive Web App)](https://nextjs.org/docs/app/guides/progressive-web-apps) support with [push notification](https://developer.mozilla.org/en-US/docs/Web/API/Push_API) and [Geist](https://vercel.com/font) font for [Open Graph](https://og-image.vercel.app/) images. Also added standard files for a better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide).
+Removed [Vercel](https://vercel.com/) default files and added standard files for a better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide).
 </FileEntry>
 
-- `src/app/favicon.ico`: Replaced default [Next.js](https://nextjs.org/) favicon with Zap.ts favicon.
-- `src/app/globals.css`: Replaced default [Next.js](https://nextjs.org/) global styles by integrating [shadcn/ui](https://ui.shadcn.com/) styles by default and adding custom global styles.
-- `src/app/layout.tsx`: Replaced default [Next.js](https://nextjs.org/) layout with a custom layout in Zap.ts with [shadcn/ui](https://ui.shadcn.com/) integration, [Geist](https://vercel.com/font) font, additional metadata for better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide), custom providers injection and [Vercel](https://vercel.com/) analytics support depending on the environment.
+<FileEntry name="public/sw.js" status="added" plugins={['pwa']}>
+Added a service worker for [PWA (Progressive Web App)](https://nextjs.org/docs/app/guides/progressive-web-apps) support with [push notification](https://developer.mozilla.org/en-US/docs/Web/API/Push_API) capabilities.
+</FileEntry>
+
+<FileEntry name="public/fonts/" status="added" required folder>
+Added custom fonts for the project such as [Geist](https://vercel.com/font).
+</FileEntry>
+
+<FileEntry name="src/app/favicon.ico" status="modified" required>
+Replaced default [Next.js](https://nextjs.org/) favicon with Zap.ts favicon.
+</FileEntry>
+
+<FileEntry name="src/app/globals.css" status="modified" required>
+Replaced default [Next.js](https://nextjs.org/) global styles by integrating [shadcn/ui](https://ui.shadcn.com/) styles by default and adding custom global styles.
+</FileEntry>
+
+<FileEntry name="src/app/layout.tsx" status="modified" required>
+Replaced default [Next.js](https://nextjs.org/) layout with a custom layout in Zap.ts with [shadcn/ui](https://ui.shadcn.com/) integration, [Geist](https://vercel.com/font) font, additional metadata for better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide), custom providers injection and [Vercel](https://vercel.com/) analytics support depending on the environment.
+</FileEntry>
+</FileList>
 
 ### Configurations
 
