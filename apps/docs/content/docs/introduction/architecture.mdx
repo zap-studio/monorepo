@@ -138,39 +138,23 @@ Replaced default [Next.js](https://nextjs.org/) layout with a custom layout in Z
 
 ### Configurations
 
-- `biome.json`: Configuration file for [Biome](https://biomejs.dev/), a linter and code formatter. We're using [Ultracite](https://ultracite.ai/) preset for better collaborations between AI and developers.
-- `next.config.ts`: Configuration file for [Next.js](https://nextjs.org/) with additional settings for [CSP (Content Security Policy)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), [Permissions Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy), defining [Typed Routes](https://nextjs.org/docs/app/api-reference/config/next-config-js/typedRoutes) by default, additional [security headers](https://nextjs.org/docs/app/api-reference/config/next-config-js/headers), configuration for [sw.js](https://nextjs.org/docs/app/guides/progressive-web-apps#5-creating-a-service-worker), [MDX](https://nextjs.org/docs/app/guides/mdx) and [Bundle Analyzer](https://nextjs.org/docs/app/getting-started/linking-and-navigating#hydration-not-completed).
-- `package.json`: Configuration file for [npm](https://www.npmjs.com/) with additional scripts for [Biome](https://biomejs.dev/), [Drizzle ORM](https://orm.drizzle.team/), [Next.js](https://nextjs.org/), [React Email](https://react.email/) and more. Also includes `lint-staged` configuration with [Ultracite](https://ultracite.ai/) preset. Finally, it adds dependencies to support Zap.ts architecture.
-- `tsconfig.json`: TypeScript configuration file with paths and settings optimized for Zap.ts such as `strictNullChecks`.
+<FileList>
+  <FileEntry name="biome.json" status="added" required>
+    Configuration file for [Biome](https://biomejs.dev/), a linter and code formatter. We're using [Ultracite](https://ultracite.ai/) preset for better collaborations between AI and developers.
+  </FileEntry>
 
-## Additions
+  <FileEntry name="next.config.ts" status="modified" required>
+    Configuration file for [Next.js](https://nextjs.org/) with additional settings for [CSP (Content Security Policy)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), [Permissions Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy), defining [Typed Routes](https://nextjs.org/docs/app/api-reference/config/next-config-js/typedRoutes) by default, additional [security headers](https://nextjs.org/docs/app/api-reference/config/next-config-js/headers), configuration for [sw.js](https://nextjs.org/docs/app/guides/progressive-web-apps#5-creating-a-service-worker), [MDX](https://nextjs.org/docs/app/guides/mdx) and [Bundle Analyzer](https://nextjs.org/docs/app/getting-started/linking-and-navigating#hydration-not-completed).
+  </FileEntry>
 
-These files/folders are not typically present in a standard Next.js project, but we added them to enhance the Zap.ts architecture and philosophy.
+  <FileEntry name="package.json" status="modified" required>
+    Configuration file for [npm](https://www.npmjs.com/) with additional scripts for [Biome](https://biomejs.dev/), [Drizzle ORM](https://orm.drizzle.team/), [Next.js](https://nextjs.org/), [React Email](https://react.email/) and more. Also includes `lint-staged` configuration with [Ultracite](https://ultracite.ai/) preset. Finally, it adds dependencies to support Zap.ts architecture.
+  </FileEntry>
 
-- `.cursor/`: Contains [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) that allows LLMs in [Cursor](https://cursor.com/) to get more context with external services such as [Supabase](https://supabase.com/), [PostHog](https://posthog.com/), and more.
-- `.cursorignore`: Similar to `.gitignore`, this file specifies which files and directories should be ignored by [Cursor](https://cursor.com/).
-- `.dockerignore`: Similar to `.gitignore`, this file specifies which files and directories should be ignored by [Docker](https://www.docker.com/).
-- `.github/`: Contains [GitHub](https://github.com/) specific files such as workflows for CI/CD, instructions for [Copilot](https://github.com/features/copilot).
-- `.gitignore`: Specifies which files and directories should be ignored by [Git](https://git-scm.com/).
-- `.npmrc`: Configuration file for [npm](https://www.npmjs.com/).
-- `.vscode/`: Contains [Visual Studio Code](https://code.visualstudio.com/) specific settings and configurations such as [MCP (Model Context Protocol)](https://modelcontextprotocol.io/), debugging configurations, and more.
-- `.windsurf/`: Contains [Windsurf](https://windsurf.com/) specific settings and configurations such as [MCP (Model Context Protocol)](https://modelcontextprotocol.io/).
-- `Dockerfile.*`: Contains the instructions for building a Docker image for the application following [Next.js Docker best practices](https://github.com/vercel/next.js/tree/canary/examples/with-docker) in production or provisioning a [PostgreSQL](https://www.postgresql.org/) database in development.
-- `docker-compose.yml`: Configuration file for [Docker Compose](https://docs.docker.com/compose/) to define and run multi-container Docker applications (such as Zap.ts and PostgreSQL).
-- `components.json`: Configuration file for [shadcn/ui](https://ui.shadcn.com/), a set of accessible and customizable React components.
-- `drizzle.config.*.ts`: Configuration files for [Drizzle ORM](https://orm.drizzle.team/), an ORM for TypeScript and JavaScript with separate config for development and production environments.
-- `emails/`: Contains email templates and allows for easy customization and management of email content through a mail server using [React Email](https://react.email/).
-- `next-sitemap.config.js`: Configuration file for [next-sitemap](https://github.com/iamvishnusankar/next-sitemap), a sitemap generation tool for Next.js applications.
-- `src/app/apple-icon.png`: Added Apple Touch Icon for better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide).
-- `src/app/fonts.ts`: Configuration file for [Geist](https://vercel.com/font) font to be used in the application.
-- `src/app/global-error.tsx`: Global error handling component for the application with a sophisticated error messages management.
-- `src/app/icon.png`: Added standard icon for better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide).
-- `src/app/manifest.ts`: Configuration file for the [Web App Manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) to provide metadata for the application when installed on a device or added to the home screen as a [PWA (Progressive Web App)](https://web.dev/progressive-web-apps/).
-- `src/app/not-found.tsx`: Beautiful custom 404 page for handling "Not Found" errors in the application.
-- `src/app/opengraph-image/route.tsx`: Dynamic Open Graph image generation route using [OG Image](https://og-image.vercel.app/) to create social media preview images on the fly.
-- `src/instrumentation.edge.ts`: Instrumentation for the Edge runtime environment.
-- `src/instrumentation.node.ts`: Instrumentation for the Node.js runtime environment.
-- `src/instrumentation.ts`: Shared instrumentation code for both Edge and Node.js environments, following [Next.js instrumentation guidelines](https://nextjs.org/docs/app/guides/instrumentation#importing-runtime-specific-code).
+  <FileEntry name="tsconfig.json" status="modified" required>
+    TypeScript configuration file with paths and settings optimized for Zap.ts such as `strictNullChecks`.
+  </FileEntry>
+</FileList>
 
 ### Pages
 
@@ -195,6 +179,14 @@ These files/folders are not typically present in a standard Next.js project, but
 - `src/app/(public)/blog/page.tsx`: Blog landing page for all blog posts.
 - `src/app/(public)/page.tsx`: Public landing page for the application.
 - `src/app/(public)/waitlist/page.tsx`: Waitlist page for users to join the waitlist.
+
+<FileList>
+<FileEntry
+  name="src/app/page.tsx"
+  status="deleted">
+Default [Next.js](https://nextjs.org/) homepage, replaced by a custom homepage in Zap.ts.
+</FileEntry>
+</FileList>
 
 ### Routes
 
@@ -232,8 +224,29 @@ These files/folders are not typically present in a standard Next.js project, but
 - `zap.config.types.ts`: Type definitions for Zap.ts configuration.
 - `zap/*`: Zap.ts plugin directories such as `auth`, `blog`, and `waitlist`. Each plugin contains its own routes, components, hooks, and other necessary files to provide specific functionality to the application.
 
-## Deletions
+## To sort (added folders/files)
 
-### Pages
-
-- `src/app/page.tsx`: Default [Next.js](https://nextjs.org/) homepage, replaced by a custom homepage in Zap.ts.
+- `.cursor/`: Contains [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) that allows LLMs in [Cursor](https://cursor.com/) to get more context with external services such as [Supabase](https://supabase.com/), [PostHog](https://posthog.com/), and more.
+- `.cursorignore`: Similar to `.gitignore`, this file specifies which files and directories should be ignored by [Cursor](https://cursor.com/).
+- `.dockerignore`: Similar to `.gitignore`, this file specifies which files and directories should be ignored by [Docker](https://www.docker.com/).
+- `.github/`: Contains [GitHub](https://github.com/) specific files such as workflows for CI/CD, instructions for [Copilot](https://github.com/features/copilot).
+- `.gitignore`: Specifies which files and directories should be ignored by [Git](https://git-scm.com/).
+- `.npmrc`: Configuration file for [npm](https://www.npmjs.com/).
+- `.vscode/`: Contains [Visual Studio Code](https://code.visualstudio.com/) specific settings and configurations such as [MCP (Model Context Protocol)](https://modelcontextprotocol.io/), debugging configurations, and more.
+- `.windsurf/`: Contains [Windsurf](https://windsurf.com/) specific settings and configurations such as [MCP (Model Context Protocol)](https://modelcontextprotocol.io/).
+- `Dockerfile.*`: Contains the instructions for building a Docker image for the application following [Next.js Docker best practices](https://github.com/vercel/next.js/tree/canary/examples/with-docker) in production or provisioning a [PostgreSQL](https://www.postgresql.org/) database in development.
+- `docker-compose.yml`: Configuration file for [Docker Compose](https://docs.docker.com/compose/) to define and run multi-container Docker applications (such as Zap.ts and PostgreSQL).
+- `components.json`: Configuration file for [shadcn/ui](https://ui.shadcn.com/), a set of accessible and customizable React components.
+- `drizzle.config.*.ts`: Configuration files for [Drizzle ORM](https://orm.drizzle.team/), an ORM for TypeScript and JavaScript with separate config for development and production environments.
+- `emails/`: Contains email templates and allows for easy customization and management of email content through a mail server using [React Email](https://react.email/).
+- `next-sitemap.config.js`: Configuration file for [next-sitemap](https://github.com/iamvishnusankar/next-sitemap), a sitemap generation tool for Next.js applications.
+- `src/app/apple-icon.png`: Added Apple Touch Icon for better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide).
+- `src/app/fonts.ts`: Configuration file for [Geist](https://vercel.com/font) font to be used in the application.
+- `src/app/global-error.tsx`: Global error handling component for the application with a sophisticated error messages management.
+- `src/app/icon.png`: Added standard icon for better [SEO (Search Engine Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide).
+- `src/app/manifest.ts`: Configuration file for the [Web App Manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) to provide metadata for the application when installed on a device or added to the home screen as a [PWA (Progressive Web App)](https://web.dev/progressive-web-apps/).
+- `src/app/not-found.tsx`: Beautiful custom 404 page for handling "Not Found" errors in the application.
+- `src/app/opengraph-image/route.tsx`: Dynamic Open Graph image generation route using [OG Image](https://og-image.vercel.app/) to create social media preview images on the fly.
+- `src/instrumentation.edge.ts`: Instrumentation for the Edge runtime environment.
+- `src/instrumentation.node.ts`: Instrumentation for the Node.js runtime environment.
+- `src/instrumentation.ts`: Shared instrumentation code for both Edge and Node.js environments, following [Next.js instrumentation guidelines](https://nextjs.org/docs/app/guides/instrumentation#importing-runtime-specific-code).
