@@ -11,6 +11,7 @@ export const ClassicDeps: DependencyGroup = {
 export const ZapDeps: DependencyGroup = {
   label: 'Zap.ts Additional Dependencies',
   dependencies: [
+    "@zap-ts/architecture",
     '@ai-sdk/openai',
     '@ai-sdk/mistral',
     '@ai-sdk/react',
