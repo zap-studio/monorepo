@@ -8,7 +8,8 @@
     "dev": "turbo run dev",
     "lint": "ultracite lint",
     "format": "ultracite format",
-    "prepare": "husky"
+    "prepare": "husky",
+    "clean": "rm -rf node_modules .turbo apps/*/.next apps/*/.source apps/*/node_modules core/node_modules core/.next packages/*/node_modules"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.2",
