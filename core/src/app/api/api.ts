@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://your-production-domain.com',
+  'https://your-actual-production-domain.com',
 ];
 
 const allowedMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
@@ -67,7 +67,7 @@ export function attachAPIHeaders(request: NextRequest) {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https:;",
     "font-src 'self'",
-    "connect-src 'self' https://api.yourapi.com",
+    "connect-src 'self' https://your-actual-api-domain.com",
     "frame-ancestors 'none'",
   ].join('; ');
 
