@@ -108,7 +108,7 @@ export function FileEntry({
       </div>
 
       {children && (
-        <div className="mt-1 pl-2 sm:pl-6 text-muted-foreground text-sm">
+        <div className="pl-2 sm:pl-6 text-muted-foreground text-sm">
           {children}
         </div>
       )}

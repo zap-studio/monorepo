@@ -201,39 +201,91 @@ Default [Next.js](https://nextjs.org/) homepage, replaced by a custom homepage i
 
 ### Routes
 
-- `src/app/api/auth/[...all]/route.ts`: Authentication API route for handling all auth-related requests with [Better Auth](https://better-auth.com).
-- `src/app/rpc/[[...rest]]/route.ts`: RPC API route for handling all RPC-related requests with [oRPC](https://orpc.unnoq.com).
+<FileList>
+<FileEntry name="src/app/api/auth/[...all]/route.ts" plugins={['auth']} status="added">
+Authentication API route for handling all auth-related requests with [Better Auth](https://better-auth.com).
+</FileEntry>
+
+<FileEntry name="src/app/rpc/[[...rest]]/route.ts" plugins={['api']} status="added">
+RPC API route for handling all RPC-related requests with [oRPC](https://orpc.unnoq.com).
+</FileEntry>
+</FileList>
 
 ### Components
 
-- `src/components/ui/*`: Various UI components from [shadcn/ui](https://ui.shadcn.com/) such as `Alert`, `Avatar`, `Badge`, `Button`, `Card`, `Checkbox`, `Collapsible`, `Command`, `Dialog`, `Dropdown Menu`, `Form`, `Hover Card`, `Input`, `Label`, `Link`, `List Box`, `Menubar`, `Navigation Menu`, `Popover`, `Progress`, `Radio Group`, `Scroll Area`, `Select`, `Separator`, `Sheet`, `Skeleton`, `Slider`, `Switch`, `Tabs`, `Textarea`, and more. Note that [Ultracite](https://ultracite.ai/) ignores this directory to keep original code.
+<FileList>
+<FileEntry name="src/components/ui/" status="added" folder required>
+Various UI components from [shadcn/ui](https://ui.shadcn.com/). Note that [Ultracite](https://ultracite.ai/) ignores this directory to keep original code as is.
+</FileEntry>
+</FileList>
 
 ### Hooks
 
-- `src/hooks/use-mobile.ts`: Custom hook for detecting mobile devices and handling mobile-specific logic. This is needed by [shadcn/ui](https://ui.shadcn.com/).
-- `src/hooks/utils/use-body-scroll-lock.ts`: Custom hook for managing body scroll locking in modals and other components.
-- `src/hooks/utils/use-cooldown.ts`: Custom hook for implementing cooldowns on actions (e.g., mail ratelimits).
+<FileList>
+<FileEntry name="src/hooks/use-mobile.ts" status="added" required>
+Custom hook for detecting mobile devices and handling mobile-specific logic. This is needed by [shadcn/ui](https://ui.shadcn.com/).
+</FileEntry>
+
+<FileEntry name="src/hooks/utils/use-body-scroll-lock.ts" status="added" plugins={['components']}>
+Custom hook for managing body scroll locking in modals and other components.
+</FileEntry>
+
+<FileEntry name="src/hooks/utils/use-cooldown.ts" status="added" plugins={['auth']}>
+Custom hook for implementing cooldowns on actions (e.g., mail ratelimits).
+</FileEntry>
+</FileList>
 
 ### Libraries
 
-- `src/lib/fetch.ts`: Custom fetch wrapper for making API requests with [Zod](https://zod.dev/) validation and error handling.
-- `src/lib/plugins.ts`: Plugin management library for handling Zap.ts plugins.
-- `src/lib/utils.ts`: Utility functions such as `cn` (class names) that is needed by [shadcn/ui](https://ui.shadcn.com/).
+<FileList>
+<FileEntry name="src/lib/fetch.ts" status="added" plugins={['auth']}>
+Custom fetch wrapper for making API requests with [Zod](https://zod.dev/) validation and error handling, it works in Edge and Node.js environments.
+</FileEntry>
+
+<FileEntry name="src/lib/plugins.ts" status="added" required>
+Plugin management library for handling Zap.ts plugins.
+</FileEntry>
+
+<FileEntry name="src/lib/utils.ts" status="added" required>
+Utility functions such as `cn` (class names) that is needed by [shadcn/ui](https://ui.shadcn.com/).
+</FileEntry>
+</FileList>
 
 ### Middleware
 
-- `src/middleware.ts`: Custom middleware for handling requests and responses in Zap.ts. It integrates `auth`, `waitlist` and `blog` plugins in its logic to provide a seamless experience across the application.
+<FileList>
+<FileEntry name="src/middleware.ts" status="added" plugins={['auth', 'blog', 'waitlist']}>
+Custom middleware for handling requests and responses in Zap.ts. It integrates plugins in its logic to provide a seamless experience across the application.
+</FileEntry>
+</FileList>
 
 ### Providers
 
-- `src/providers/providers.tsx`: Context providers for managing global state and dependencies in Zap.ts such as `ThemeProvider` for theming, `ProgressProvider` for progress bar with [BProgress](https://bprogress.vercel.app/), `NuqsAdapter` to integrate [nuqs](https://nuqs.47ng.com/) to manage search params with type safety and `PluginProviders` to inject providers from Zap.ts plugins.
-- `src/providers/theme.provider.tsx`: Theme provider for managing light and dark themes in the application with [next-themes](https://github.com/pacocoursey/next-themes).
+<FileList>
+<FileEntry name="src/providers/providers.tsx" status="added" required>
+Context providers for managing global state and dependencies in Zap.ts such as `ThemeProvider` for theming, `ProgressProvider` for progress bar with [BProgress](https://bprogress.vercel.app/), `NuqsAdapter` to integrate [nuqs](https://nuqs.47ng.com/) to manage search params with type safety and `PluginProviders` to inject providers from Zap.ts plugins.
+</FileEntry>
+
+<FileEntry name="src/providers/theme.provider.tsx" status="added" required>
+Theme provider for managing light and dark themes in the application with [next-themes](https://github.com/pacocoursey/next-themes).
+</FileEntry>
+</FileList>
 
 ### Zap.ts Specific
 
-- `zap.config.ts`: Configuration file for Zap.ts.
-- `zap.config.types.ts`: Type definitions for Zap.ts configuration.
-- `zap/*`: Zap.ts plugin directories such as `auth`, `blog`, and `waitlist`. Each plugin contains its own routes, components, hooks, and other necessary files to provide specific functionality to the application.
+<FileList>
+<FileEntry name="zap.config.ts" status="added" required>
+Configuration files for Zap.ts.
+</FileEntry>
+
+<FileEntry name="zap.config.types.ts" status="added" required>
+Type definitions for Zap.ts configuration.
+</FileEntry>
+
+<FileEntry name="zap/" status="added" required folder>
+Zap.ts plugin directories such as `auth`, `blog`, and `waitlist`. Each plugin contains its own routes, components, hooks, and other necessary files to provide specific functionality to the application.
+</FileEntry>
+</FileList>
 
 ## To sort (added folders/files)
 
