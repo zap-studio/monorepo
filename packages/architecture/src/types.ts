@@ -1,9 +1,9 @@
-import type { ReactNode } from "react";
-import type { Category } from "./categories";
-import type { PluginId } from "./plugins";
-import type { IDE } from "./ide";
+import type { ReactNode } from 'react';
+import type { Category } from './categories';
+import type { IDE } from './ide';
+import type { PluginId } from './plugins';
 
-export type FileStatus = "added" | "deleted" | "modified";
+export type FileStatus = 'added' | 'deleted' | 'modified';
 
 export interface FileEntry {
   path: string;

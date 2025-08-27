@@ -1,19 +1,19 @@
 export const IDEs = {
   vscode: {
-    id: "vscode",
-    label: "VS Code",
+    id: 'vscode',
+    label: 'VS Code',
   },
   cursor: {
-    id: "cursor",
-    label: "Cursor",
+    id: 'cursor',
+    label: 'Cursor',
   },
   zed: {
-    id: "zed",
-    label: "Zed",
+    id: 'zed',
+    label: 'Zed',
   },
   windsurf: {
-    id: "windsurf",
-    label: "Windsurf",
+    id: 'windsurf',
+    label: 'Windsurf',
   },
 } as const;
 
