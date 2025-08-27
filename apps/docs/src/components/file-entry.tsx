@@ -32,7 +32,7 @@ type FileEntryProps = {
   status: Status;
   required: boolean;
   plugins?: Plugin[];
-  ide?: IDE[];
+  ide?: IDE;
   folder?: boolean;
   children?: React.ReactNode;
 };
@@ -43,19 +43,20 @@ const statusDotConfig: Record<Status, string> = {
   deleted: '🔴',
 };
 
-const ideConfig: Record<IDE, string> = {
-  windsurf: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-  cursor: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-  vscode: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-  zed: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+const ideConfig: Record<IDE, { color: string; label: string }> = {
+  windsurf: { color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200', label: 'Windsurf' },
+  cursor: { color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200', label: 'Cursor' },
+  vscode: { color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200', label: 'VS Code' },
+  zed: { color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200', label: 'Zed' },
 };
+
 
 export function FileEntry({
   name,
   status,
   required,
   plugins = [],
-  ide = [],
+  ide,
   folder,
   children,
 }: FileEntryProps) {
@@ -85,15 +86,15 @@ export function FileEntry({
             </Badge>
           )}
 
-          {ide.map((i) => (
+          {ide && (
             <Badge
-              className={cn('text-xs', ideConfig[i])}
-              key={i}
+              className={cn('text-xs', ideConfig[ide].color)}
+              key={ide}
               variant="secondary"
             >
-              <Code2 className="mr-1 h-3 w-3" /> {i}
+              <Code2 className="mr-1 h-3 w-3" /> {ideConfig[ide].label}
             </Badge>
-          ))}
+          )}
 
           {plugins.map((p) => (
             <Badge
