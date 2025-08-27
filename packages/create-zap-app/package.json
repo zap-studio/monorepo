@@ -49,6 +49,7 @@
     "format": "ultracite format"
   },
   "dependencies": {
+    "@zap-ts/architecture": "workspace:*",
     "chalk": "^5.6.0",
     "commander": "^14.0.0",
     "execa": "^9.6.0",

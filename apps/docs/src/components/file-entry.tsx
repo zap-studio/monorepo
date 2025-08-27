@@ -1,55 +1,42 @@
+import type { FileStatus, IDE, PluginId } from '@zap-ts/architecture';
 import { Code2, FileText, Folder, Package } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-type Status = 'added' | 'modified' | 'deleted';
-type IDE = 'windsurf' | 'cursor' | 'vscode' | 'zed';
-type Plugin =
-  | 'ai'
-  | 'analytics'
-  | 'api'
-  | 'auth'
-  | 'blog'
-  | 'components'
-  | 'crypto'
-  | 'db'
-  | 'env'
-  | 'errors'
-  | 'feedbacks'
-  | 'flags'
-  | 'landing'
-  | 'legal'
-  | 'mails'
-  | 'markdown'
-  | 'payments'
-  | 'plugins'
-  | 'pwa'
-  | 'sidebar'
-  | 'waitlist';
-
 type FileEntryProps = {
   name: string;
-  status: Status;
+  status: FileStatus;
   required: boolean;
-  plugins?: Plugin[];
+  plugins?: PluginId[];
   ide?: IDE;
   folder?: boolean;
   children?: React.ReactNode;
 };
 
-const statusDotConfig: Record<Status, string> = {
+const statusDotConfig: Record<FileStatus, string> = {
   added: '🟢',
   modified: '🟡',
   deleted: '🔴',
 };
 
 const ideConfig: Record<IDE, { color: string; label: string }> = {
-  windsurf: { color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200', label: 'Windsurf' },
-  cursor: { color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200', label: 'Cursor' },
-  vscode: { color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200', label: 'VS Code' },
-  zed: { color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200', label: 'Zed' },
+  windsurf: {
+    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+    label: 'Windsurf',
+  },
+  cursor: {
+    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+    label: 'Cursor',
+  },
+  vscode: {
+    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+    label: 'VS Code',
+  },
+  zed: {
+    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+    label: 'Zed',
+  },
 };
-
 
 export function FileEntry({
   name,
@@ -65,8 +52,8 @@ export function FileEntry({
   return (
     <div className="flex flex-col py-2">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-2 xs:flex-row xs:items-center xs:gap-2">
-          <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex xs:flex-row flex-col xs:items-center gap-2 xs:gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Icon className="h-4 w-4 text-foreground" />
             <span className="font-medium text-sm md:text-base">{name}</span>
             <span className="text-sm">{statusDotConfig[status]}</span>
@@ -109,7 +96,7 @@ export function FileEntry({
       </div>
 
       {children && (
-        <div className="pl-2 sm:pl-6 text-muted-foreground text-sm">
+        <div className="pl-2 text-muted-foreground text-sm sm:pl-6">
           {children}
         </div>
       )}
