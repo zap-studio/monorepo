@@ -5,7 +5,7 @@ import type { PluginId } from './plugins';
 
 export type FileStatus = 'added' | 'deleted' | 'modified';
 
-export interface FileEntry {
+export type FileEntry = {
   path: string;
   children?: ReactNode;
   status: FileStatus;
@@ -13,9 +13,9 @@ export interface FileEntry {
   folder?: boolean;
   ide?: IDE;
   plugins?: PluginId[];
-}
+};
 
-export interface FileList {
+export type FileList = {
   category: Category;
   entries: FileEntry[];
-}
+};

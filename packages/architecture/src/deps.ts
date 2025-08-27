@@ -1,7 +1,7 @@
-export interface DependencyGroup {
+export type DependencyGroup = {
   label: string;
   dependencies: string[];
-}
+};
 
 export const ClassicDeps: DependencyGroup = {
   label: 'Classic Dependencies',
