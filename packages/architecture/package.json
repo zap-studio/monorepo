@@ -1,0 +1,16 @@
+{
+  "name": "@zap-ts/architecture",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19.1.12"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "react": "^19.1.1"
+  }
+}
