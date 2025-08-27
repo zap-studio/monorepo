@@ -1,9 +1,9 @@
 // demo api endpoint
 
-import { NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
-import { logError } from "@/zap/errors/logger";
+import { logError } from '@/zap/errors/logger/server';
 
 interface User {
   id: string;
@@ -37,15 +37,15 @@ export async function POST(request: Request) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { error: "Validation failed", details: validation.error.format() },
-        { status: 400 },
+        { error: 'Validation failed', details: validation.error.format() },
+        { status: 400 }
       );
     }
 
     const newUser: User = {
       id: crypto.randomUUID(),
-      name: body.name,
-      email: body.email,
+      name: validation.data.name,
+      email: validation.data.email,
       createdAt: new Date().toISOString(),
     };
 
@@ -56,16 +56,16 @@ export async function POST(request: Request) {
     logError(error);
 
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
+      { error: 'Internal server error' },
+      { status: 500 }
     );
   }
 }
 
 export function PATCH() {
   return NextResponse.json(
-    { error: "Method not allowed" },
-    { status: 405, headers: { Allow: "GET, POST" } },
+    { error: 'Method not allowed' },
+    { status: 405, headers: { Allow: 'GET, POST' } }
   );
 }
 
