@@ -1,8 +1,7 @@
-import { Categories } from '../categories';
 import type { FileList } from '../types';
 
 export const MiddlewareFiles: FileList = {
-  category: Categories.MIDDLEWARE,
+  category: 'MIDDLEWARE',
   entries: [
     {
       path: 'src/middleware.ts',

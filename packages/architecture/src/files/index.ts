@@ -1,5 +1,4 @@
-/** biome-ignore-all lint/performance/noBarrelFile: This file serves as the main entry point for categories, this is intentional and necessary. */
-
+import type { CategoryId, FileList } from '../types';
 import { ComponentsFiles } from './components';
 import { ConfigFiles } from './config';
 import { DockerFiles } from './docker';
@@ -17,7 +16,26 @@ import { RootFiles } from './root';
 import { RoutesFiles } from './routes';
 import { ZapFiles } from './zap';
 
-export const categoryFileLists = {
+export const CategoryIds = [
+  'ROOT',
+  'METADATA',
+  'ERRORS',
+  'IDE',
+  'DOCKER',
+  'CONFIG',
+  'PAGES',
+  'ROUTES',
+  'COMPONENTS',
+  'HOOKS',
+  'LIBRARIES',
+  'EMAILS',
+  'MIDDLEWARE',
+  'PROVIDERS',
+  'INSTRUMENTATION',
+  'ZAP',
+] as const;
+
+export const Categories: Record<CategoryId, FileList> = {
   ROOT: RootFiles,
   METADATA: MetadataFiles,
   ERRORS: ErrorFiles,
@@ -34,4 +52,4 @@ export const categoryFileLists = {
   PROVIDERS: ProvidersFiles,
   INSTRUMENTATION: InstrumentationFiles,
   ZAP: ZapFiles,
-} as const;
+};

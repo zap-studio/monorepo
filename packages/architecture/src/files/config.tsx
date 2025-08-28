@@ -1,9 +1,8 @@
-import { Categories } from '../categories';
 import type { FileList } from '../types';
 import { L } from '../helpers/link';
 
 export const ConfigFiles: FileList = {
-  category: Categories.CONFIG,
+  category: 'CONFIG',
   entries: [
     {
       path: 'biome.json',

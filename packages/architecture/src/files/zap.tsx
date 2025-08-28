@@ -1,8 +1,7 @@
-import { Categories } from '../categories';
 import type { FileList } from '../types';
 
 export const ZapFiles: FileList = {
-  category: Categories.ZAP,
+  category: 'ZAP',
   entries: [
     {
       path: 'zap.config.ts',

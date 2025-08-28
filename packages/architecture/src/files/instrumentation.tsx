@@ -1,9 +1,8 @@
-import { Categories } from '../categories';
 import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const InstrumentationFiles: FileList = {
-  category: Categories.INSTRUMENTATION,
+  category: 'INSTRUMENTATION',
   entries: [
     {
       path: 'src/instrumentation.edge.ts',

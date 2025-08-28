@@ -21,17 +21,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/table';
-import {
-  AllCategoryFileLists,
-  CategoryFileList,
-} from './components/category-file';
+import { DependencyList } from './components/dependency-list';
 
 const FileEntryComponents = {
   FileEntry,
   FileListContainer,
   FileListRenderer,
-  CategoryFileList,
-  AllCategoryFileLists,
+  DependencyList,
 };
 
 const FileComponents = {

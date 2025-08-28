@@ -1,9 +1,8 @@
-import { Categories } from '../categories';
 import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const MetadataFiles: FileList = {
-  category: Categories.METADATA,
+  category: 'METADATA',
   entries: [
     {
       path: 'src/app/apple-icon.png',

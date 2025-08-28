@@ -1,9 +1,8 @@
-import { Categories } from '../categories';
 import type { FileList } from '../types';
 import { L } from '../helpers/link';
 
 export const ComponentsFiles: FileList = {
-  category: Categories.COMPONENTS,
+  category: 'COMPONENTS',
   entries: [
     {
       path: 'src/components/ui/',

@@ -1,9 +1,8 @@
-import { Categories } from '../categories';
 import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const RoutesFiles: FileList = {
-  category: Categories.ROUTES,
+  category: 'ROUTES',
   entries: [
     {
       path: 'src/app/api/auth/[...all]/route.ts',

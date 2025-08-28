@@ -1,9 +1,8 @@
-import { Categories } from '../categories';
 import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const PagesFiles: FileList = {
-  category: Categories.PAGES,
+  category: 'PAGES',
   entries: [
     {
       path: 'src/app/(protected)/app/(sidebar)/',

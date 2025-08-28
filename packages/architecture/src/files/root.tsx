@@ -1,9 +1,8 @@
-import { Categories } from '../categories';
 import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const RootFiles: FileList = {
-  category: Categories.ROOT,
+  category: 'ROOT',
   entries: [
     {
       path: 'public/',

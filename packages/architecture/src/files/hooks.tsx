@@ -1,9 +1,8 @@
-import { Categories } from '../categories';
 import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const HooksFiles: FileList = {
-  category: Categories.HOOKS,
+  category: 'HOOKS',
   entries: [
     {
       path: 'src/hooks/use-mobile.ts',

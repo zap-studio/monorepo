@@ -1,9 +1,8 @@
-import { Categories } from '../categories';
 import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const ProvidersFiles: FileList = {
-  category: Categories.PROVIDERS,
+  category: 'PROVIDERS',
   entries: [
     {
       path: 'src/providers/providers.tsx',

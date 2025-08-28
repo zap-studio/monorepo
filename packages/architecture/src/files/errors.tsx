@@ -1,8 +1,7 @@
-import { Categories } from '../categories';
 import type { FileList } from '../types';
 
 export const ErrorFiles: FileList = {
-  category: Categories.ERRORS,
+  category: 'ERRORS',
   entries: [
     {
       path: 'src/app/global-error.tsx',

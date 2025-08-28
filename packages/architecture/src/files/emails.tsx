@@ -1,9 +1,8 @@
-import { Categories } from '../categories';
 import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const EmailsFiles: FileList = {
-  category: Categories.EMAILS,
+  category: 'EMAILS',
   entries: [
     {
       path: 'emails/',
