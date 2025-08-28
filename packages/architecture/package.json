@@ -1,9 +1,15 @@
 {
   "name": "@zap-ts/architecture",
-  "module": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "private": false,
   "version": "1.0.0",
+  "scripts": {
+    "build": "tsdown --config tsdown.config.ts",
+    "clean": "rm -rf ./dist"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/react": "^19.1.12"
@@ -14,7 +20,15 @@
   "dependencies": {
     "react": "^19.1.1"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "exports": {
-    ".": "./src/index.ts"
+    "./files": "./src/files/index.ts",
+    "./deps": "./src/deps.ts",
+    "./ide": "./src/ide.ts",
+    "./plugins": "./src/plugins.ts",
+    "./types": "./src/types.ts"
   }
 }
