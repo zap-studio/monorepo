@@ -1,7 +1,13 @@
-import { defineConfig } from 'tsdown'
+import { defineConfig } from 'tsdown';
 
 export default defineConfig({
-  entry: 'src/index.ts',
+  entry: [
+    'src/files/index.ts',
+    'src/hooks/index.ts',
+    'src/ide.ts',
+    'src/plugins.ts',
+    'src/types.ts',
+  ],
   dts: true,
   format: ['cjs', 'esm'],
-})
+});
