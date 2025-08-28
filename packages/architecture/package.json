@@ -8,7 +8,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
-    "clean": "rm -rf ./dist"
+    "clean": "rm -rf ./dist",
+    "postbuild": "typedoc --entryPointStrategy expand src"
   },
   "devDependencies": {
     "@types/bun": "latest",

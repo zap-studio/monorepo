@@ -47,7 +47,8 @@
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
     "lint": "ultracite lint",
-    "format": "ultracite format"
+    "format": "ultracite format",
+    "postbuild": "typedoc --entryPointStrategy expand src"
   },
   "dependencies": {
     "@zap-ts/architecture": "workspace:*",
@@ -67,6 +68,7 @@
     "@types/inquirer": "^9.0.9",
     "@types/node": "^24.3.0",
     "tsdown": "^0.14.2",
+    "typedoc": "^0.28.11",
     "typescript": "^5.9.2"
   },
   "peerDependencies": {
