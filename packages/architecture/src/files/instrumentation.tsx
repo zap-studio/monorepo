@@ -1,4 +1,5 @@
 import { Categories } from '../categories';
+import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const InstrumentationFiles: FileList = {
@@ -23,8 +24,11 @@ export const InstrumentationFiles: FileList = {
       children: (
         <>
           Shared instrumentation code for both Edge and Node.js environments,
-          following [Next.js instrumentation
-          guidelines](https://nextjs.org/docs/app/guides/instrumentation#importing-runtime-specific-code).
+          following{' '}
+          <L href="https://nextjs.org/docs/app/guides/instrumentation#importing-runtime-specific-code">
+            Next.js instrumentation guidelines
+          </L>
+          .
         </>
       ),
     },

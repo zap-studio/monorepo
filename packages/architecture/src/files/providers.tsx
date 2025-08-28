@@ -1,4 +1,5 @@
 import { Categories } from '../categories';
+import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const ProvidersFiles: FileList = {
@@ -12,10 +13,10 @@ export const ProvidersFiles: FileList = {
         <>
           Context providers for managing global state and dependencies in Zap.ts
           such as `ThemeProvider` for theming, `ProgressProvider` for progress
-          bar with [BProgress](https://bprogress.vercel.app/), `NuqsAdapter` to
-          integrate [nuqs](https://nuqs.47ng.com/) to manage search params with
-          type safety and `PluginProviders` to inject providers from Zap.ts
-          plugins.
+          bar with <L href="https://bprogress.vercel.app/">BProgress</L>,
+          `NuqsAdapter` to integrate <L href="https://nuqs.47ng.com/">nuqs</L>{' '}
+          to manage search params with type safety and `PluginProviders` to
+          inject providers from Zap.ts plugins.
         </>
       ),
     },
@@ -26,7 +27,8 @@ export const ProvidersFiles: FileList = {
       children: (
         <>
           Theme provider for managing light and dark themes in the application
-          with [next-themes](https://github.com/pacocoursey/next-themes).
+          with{' '}
+          <L href="https://github.com/pacocoursey/next-themes">next-themes</L>.
         </>
       ),
     },

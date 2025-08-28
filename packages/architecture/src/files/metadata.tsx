@@ -1,4 +1,5 @@
 import { Categories } from '../categories';
+import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const MetadataFiles: FileList = {
@@ -10,8 +11,11 @@ export const MetadataFiles: FileList = {
       required: false,
       children: (
         <>
-          Apple Touch Icon for better [SEO (Search Engine
-          Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide).
+          Apple Touch Icon for better{' '}
+          <L href="https://developers.google.com/search/docs/fundamentals/seo-starter-guide">
+            SEO (Search Engine Optimization)
+          </L>
+          .
         </>
       ),
     },
@@ -21,8 +25,8 @@ export const MetadataFiles: FileList = {
       required: true,
       children: (
         <>
-          Configuration file for [Geist](https://vercel.com/font) font to be
-          used in the application.
+          Configuration file for <L href="https://vercel.com/font">Geist</L>{' '}
+          font to be used in the application.
         </>
       ),
     },
@@ -32,8 +36,11 @@ export const MetadataFiles: FileList = {
       required: false,
       children: (
         <>
-          Standard icon for better [SEO (Search Engine
-          Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide).
+          Standard icon for better{' '}
+          <L href="https://developers.google.com/search/docs/fundamentals/seo-starter-guide">
+            SEO (Search Engine Optimization)
+          </L>
+          .
         </>
       ),
     },
@@ -43,9 +50,9 @@ export const MetadataFiles: FileList = {
       required: false,
       children: (
         <>
-          Dynamic Open Graph image generation route using [OG
-          Image](https://og-image.vercel.app/) to create social media preview
-          images on the fly.
+          Dynamic Open Graph image generation route using{' '}
+          <L href="https://og-image.vercel.app/">OG Image</L> to create social
+          media preview images on the fly.
         </>
       ),
     },
@@ -56,11 +63,16 @@ export const MetadataFiles: FileList = {
       plugins: ['pwa'],
       children: (
         <>
-          Configuration file for the [Web App
-          Manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) to
-          provide metadata for the application when installed on a device or
-          added to the home screen as a [PWA (Progressive Web
-          App)](https://web.dev/progressive-web-apps/).
+          Configuration file for the{' '}
+          <L href="https://developer.mozilla.org/en-US/docs/Web/Manifest">
+            Web App Manifest
+          </L>{' '}
+          to provide metadata for the application when installed on a device or
+          added to the home screen as a{' '}
+          <L href="https://web.dev/progressive-web-apps/">
+            PWA (Progressive Web App)
+          </L>
+          .
         </>
       ),
     },

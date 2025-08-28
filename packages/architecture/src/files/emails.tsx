@@ -1,4 +1,5 @@
 import { Categories } from '../categories';
+import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const EmailsFiles: FileList = {
@@ -13,8 +14,8 @@ export const EmailsFiles: FileList = {
       children: (
         <>
           Contains email templates and allows for easy customization and
-          management of email content through a mail server using [React
-          Email](https://react.email/).
+          management of email content through a mail server using{' '}
+          <L href="https://react.email/">React Email</L>.
         </>
       ),
     },

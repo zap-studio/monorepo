@@ -1,5 +1,6 @@
 import { Categories } from '../categories';
 import type { FileList } from '../types';
+import { L } from '../helpers/link';
 
 export const DockerFiles: FileList = {
   category: Categories.DOCKER,
@@ -11,7 +12,8 @@ export const DockerFiles: FileList = {
       children: (
         <>
           Similar to `.gitignore`, this file specifies which files and
-          directories should be ignored by [Docker](https://www.docker.com/).
+          directories should be ignored by{' '}
+          <L href="https://www.docker.com/">Docker</L>.
         </>
       ),
     },
@@ -22,8 +24,8 @@ export const DockerFiles: FileList = {
       children: (
         <>
           Contains the instructions for building a Docker image provisioning a
-          [PostgreSQL](https://www.postgresql.org/) database along with the
-          application.
+          <L href="https://www.postgresql.org/">PostgreSQL</L> database along
+          with the application.
         </>
       ),
     },
@@ -34,8 +36,11 @@ export const DockerFiles: FileList = {
       children: (
         <>
           Contains the instructions for building a Docker image for the
-          application following [Next.js Docker best
-          practices](https://github.com/vercel/next.js/tree/canary/examples/with-docker).
+          application following{' '}
+          <L href="https://github.com/vercel/next.js/tree/canary/examples/with-docker">
+            Next.js Docker best practices
+          </L>
+          .
         </>
       ),
     },
@@ -45,9 +50,10 @@ export const DockerFiles: FileList = {
       required: false,
       children: (
         <>
-          Contains the configuration for [Docker
-          Compose](https://docs.docker.com/compose/) to define and run
-          multi-container Docker applications (such as Zap.ts and PostgreSQL).
+          Contains the configuration for{' '}
+          <L href="https://docs.docker.com/compose/">Docker Compose</L> to
+          define and run multi-container Docker applications (such as Zap.ts and
+          PostgreSQL).
         </>
       ),
     },

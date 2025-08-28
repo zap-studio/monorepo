@@ -1,5 +1,6 @@
 import { Categories } from '../categories';
 import type { FileList } from '../types';
+import { L } from '../helpers/link';
 
 export const IdeFiles: FileList = {
   category: Categories.IDE,
@@ -12,11 +13,14 @@ export const IdeFiles: FileList = {
       ide: 'cursor',
       children: (
         <>
-          Contains [MCP (Model Context
-          Protocol)](https://modelcontextprotocol.io/) that allows LLMs in
-          [Cursor](https://cursor.com/) to get more context with external
-          services such as [Supabase](https://supabase.com/),
-          [PostHog](https://posthog.com/), and more.
+          Contains{' '}
+          <L href="https://modelcontextprotocol.io/">
+            MCP (Model Context Protocol)
+          </L>{' '}
+          that allows LLMs in <L href="https://cursor.com/">Cursor</L> to get
+          more context with external services such as{' '}
+          <L href="https://supabase.com/">Supabase</L>,
+          <L href="https://posthog.com/">PostHog</L>, and more.
         </>
       ),
     },
@@ -28,7 +32,8 @@ export const IdeFiles: FileList = {
       children: (
         <>
           Similar to `.gitignore`, this file specifies which files and
-          directories should be ignored by [Cursor](https://cursor.com/).
+          directories should be ignored by{' '}
+          <L href="https://cursor.com/">Cursor</L>.
         </>
       ),
     },
@@ -39,9 +44,9 @@ export const IdeFiles: FileList = {
       ide: 'vscode',
       children: (
         <>
-          Contains [GitHub](https://github.com/) specific files such as
-          workflows for CI/CD, instructions for
-          [Copilot](https://github.com/features/copilot).
+          Contains <L href="https://github.com/">GitHub</L> specific files such
+          as workflows for CI/CD, instructions for
+          <L href="https://github.com/features/copilot">Copilot</L>.
         </>
       ),
     },
@@ -53,10 +58,13 @@ export const IdeFiles: FileList = {
       ide: 'vscode',
       children: (
         <>
-          Contains [Visual Studio Code](https://code.visualstudio.com/) specific
-          settings and configurations such as [MCP (Model Context
-          Protocol)](https://modelcontextprotocol.io/), debugging
-          configurations, and more.
+          Contains{' '}
+          <L href="https://code.visualstudio.com/">Visual Studio Code</L>{' '}
+          specific settings and configurations such as{' '}
+          <L href="https://modelcontextprotocol.io/">
+            MCP (Model Context Protocol)
+          </L>
+          , debugging configurations, and more.
         </>
       ),
     },
@@ -68,9 +76,12 @@ export const IdeFiles: FileList = {
       ide: 'windsurf',
       children: (
         <>
-          Contains [Windsurf](https://windsurf.com/) specific settings and
-          configurations such as [MCP (Model Context
-          Protocol)](https://modelcontextprotocol.io/).
+          Contains <L href="https://windsurf.com/">Windsurf</L> specific
+          settings and configurations such as{' '}
+          <L href="https://modelcontextprotocol.io/">
+            MCP (Model Context Protocol)
+          </L>
+          .
         </>
       ),
     },

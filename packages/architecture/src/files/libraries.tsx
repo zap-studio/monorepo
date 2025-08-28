@@ -1,4 +1,5 @@
 import { Categories } from '../categories';
+import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const LibrariesFiles: FileList = {
@@ -12,8 +13,8 @@ export const LibrariesFiles: FileList = {
       children: (
         <>
           Custom fetch wrapper for making API requests with
-          [Zod](https://zod.dev/) validation and error handling, it works in
-          Edge and Node.js environments.
+          <L href="https://zod.dev/">Zod</L> validation and error handling, it
+          works in Edge and Node.js environments.
         </>
       ),
     },
@@ -29,8 +30,8 @@ export const LibrariesFiles: FileList = {
       required: true,
       children: (
         <>
-          Utility functions such as `cn` (class names) that is needed by
-          [shadcn/ui](https://ui.shadcn.com/).
+          Utility functions such as `cn` (class names) that is needed by{' '}
+          <L href="https://ui.shadcn.com/">shadcn/ui</L>.
         </>
       ),
     },

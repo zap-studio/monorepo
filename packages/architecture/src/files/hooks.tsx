@@ -1,4 +1,5 @@
 import { Categories } from '../categories';
+import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const HooksFiles: FileList = {
@@ -11,7 +12,8 @@ export const HooksFiles: FileList = {
       children: (
         <>
           Custom hook for detecting mobile devices and handling mobile-specific
-          logic. This is needed by [shadcn/ui](https://ui.shadcn.com/).
+          logic. This is needed by{' '}
+          <L href="https://ui.shadcn.com/">shadcn/ui</L>.
         </>
       ),
     },

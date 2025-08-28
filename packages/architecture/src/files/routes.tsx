@@ -1,4 +1,5 @@
 import { Categories } from '../categories';
+import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const RoutesFiles: FileList = {
@@ -12,7 +13,7 @@ export const RoutesFiles: FileList = {
       children: (
         <>
           Authentication API route for handling all auth-related requests with
-          [Better Auth](https://better-auth.com).
+          <L href="https://better-auth.com">Better Auth</L>.
         </>
       ),
     },
@@ -24,7 +25,7 @@ export const RoutesFiles: FileList = {
       children: (
         <>
           RPC API route for handling all RPC-related requests with
-          [oRPC](https://orpc.unnoq.com).
+          <L href="https://orpc.unnoq.com">oRPC</L>.
         </>
       ),
     },

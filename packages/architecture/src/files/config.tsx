@@ -1,5 +1,6 @@
 import { Categories } from '../categories';
 import type { FileList } from '../types';
+import { L } from '../helpers/link';
 
 export const ConfigFiles: FileList = {
   category: Categories.CONFIG,
@@ -10,8 +11,9 @@ export const ConfigFiles: FileList = {
       required: false,
       children: (
         <>
-          Configuration file for [Biome](https://biomejs.dev/), a linter and
-          code formatter. We're using [Ultracite](https://www.ultracite.ai/)
+          Configuration file for <L href="https://biomejs.dev/">Biome</L>, a
+          linter and code formatter. We're using{' '}
+          <L href="https://ultracite.ai/">Ultracite</L>
           preset for better collaborations between AI and developers.
         </>
       ),
@@ -22,20 +24,33 @@ export const ConfigFiles: FileList = {
       required: true,
       children: (
         <>
-          Configuration file for [Next.js](https://nextjs.org/) that includes
-          additional settings for [CSP (Content Security
-          Policy)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) and
-          [Permissions
-          Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy),
-          sets up [Typed
-          Routes](https://nextjs.org/docs/app/api-reference/config/next-config-js/typedRoutes)
-          by default, adds extra [security
-          headers](https://nextjs.org/docs/app/api-reference/config/next-config-js/headers),
-          configures
-          [sw.js](https://nextjs.org/docs/app/guides/progressive-web-apps#5-creating-a-service-worker),
-          and supports [MDX](https://nextjs.org/docs/app/guides/mdx) along with
-          [Bundle
-          Analyzer](https://nextjs.org/docs/app/getting-started/linking-and-navigating#hydration-not-completed).
+          Configuration file for <L href="https://nextjs.org/">Next.js</L> that
+          includes additional settings for{' '}
+          <L href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP">
+            CSP (Content Security Policy)
+          </L>{' '}
+          and{' '}
+          <L href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy">
+            Permissions Policy
+          </L>
+          , sets up{' '}
+          <L href="https://nextjs.org/docs/app/api-reference/config/next-config-js/typedRoutes">
+            Typed Routes
+          </L>{' '}
+          by default, adds extra{' '}
+          <L href="https://nextjs.org/docs/app/api-reference/config/next-config-js/headers">
+            security headers
+          </L>
+          , configures{' '}
+          <L href="https://nextjs.org/docs/app/guides/progressive-web-apps#5-creating-a-service-worker">
+            sw.js
+          </L>
+          , and supports{' '}
+          <L href="https://nextjs.org/docs/app/guides/mdx">MDX</L> along with
+          <L href="https://nextjs.org/docs/app/getting-started/linking-and-navigating#hydration-not-completed">
+            Bundle Analyzer
+          </L>
+          .
         </>
       ),
     },
@@ -45,12 +60,14 @@ export const ConfigFiles: FileList = {
       required: true,
       children: (
         <>
-          Configuration file for [npm](https://www.npmjs.com/) with additional
-          scripts for [Biome](https://biomejs.dev/), [Drizzle
-          ORM](https://orm.drizzle.team/), [Next.js](https://nextjs.org/),
-          [React Email](https://react.email/) and more. Also includes
-          [lint-staged](https://github.com/okonet/lint-staged) configuration
-          with [Ultracite](https://ultracite.ai/) preset.
+          Configuration file for <L href="https://www.npmjs.com/">npm</L> with
+          additional scripts for <L href="https://biomejs.dev/">Biome</L>,{' '}
+          <L href="https://orm.drizzle.team/">Drizzle ORM</L>,{' '}
+          <L href="https://nextjs.org/">Next.js</L>,
+          <L href="https://react.email/">React Email</L> and more. Also includes
+          <L href="https://github.com/okonet/lint-staged">lint-staged</L>{' '}
+          configuration with <L href="https://ultracite.ai/">Ultracite</L>{' '}
+          preset.
         </>
       ),
     },
@@ -71,8 +88,8 @@ export const ConfigFiles: FileList = {
       required: true,
       children: (
         <>
-          Configuration file for [shadcn/ui](https://ui.shadcn.com/), a set of
-          accessible and customizable React components.
+          Configuration file for <L href="https://ui.shadcn.com/">shadcn/ui</L>,
+          a set of accessible and customizable React components.
         </>
       ),
     },
@@ -82,7 +99,8 @@ export const ConfigFiles: FileList = {
       required: false,
       children: (
         <>
-          Development configuration for [Drizzle ORM](https://orm.drizzle.team/)
+          Development configuration for{' '}
+          <L href="https://orm.drizzle.team/">Drizzle ORM</L>
           database migrations and schema.
         </>
       ),
@@ -93,7 +111,8 @@ export const ConfigFiles: FileList = {
       required: false,
       children: (
         <>
-          Production configuration for [Drizzle ORM](https://orm.drizzle.team/)
+          Production configuration for{' '}
+          <L href="https://orm.drizzle.team/">Drizzle ORM</L>
           database migrations and schema.
         </>
       ),
@@ -105,8 +124,10 @@ export const ConfigFiles: FileList = {
       children: (
         <>
           Configuration file for
-          [next-sitemap](https://github.com/iamvishnusankar/next-sitemap), a
-          sitemap generation tool for Next.js applications.
+          <L href="https://github.com/iamvishnusankar/next-sitemap">
+            next-sitemap
+          </L>
+          , a sitemap generation tool for Next.js applications.
         </>
       ),
     },

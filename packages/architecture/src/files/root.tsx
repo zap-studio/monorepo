@@ -1,4 +1,5 @@
 import { Categories } from '../categories';
+import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const RootFiles: FileList = {
@@ -11,9 +12,12 @@ export const RootFiles: FileList = {
       folder: true,
       children: (
         <>
-          Removed [Vercel](https://vercel.com/) default files and added standard
-          files for a better [SEO (Search Engine
-          Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide).
+          Removed <L href="https://vercel.com/">Vercel</L> default files and
+          added standard files for a better{' '}
+          <L href="https://developers.google.com/search/docs/fundamentals/seo-starter-guide">
+            SEO (Search Engine Optimization)
+          </L>
+          .
         </>
       ),
     },
@@ -24,10 +28,14 @@ export const RootFiles: FileList = {
       plugins: ['pwa'],
       children: (
         <>
-          A service worker for [PWA (Progressive Web
-          App)](https://nextjs.org/docs/app/guides/progressive-web-apps) support
-          with [push
-          notification](https://developer.mozilla.org/en-US/docs/Web/API/Push_API)
+          A service worker for{' '}
+          <L href="https://nextjs.org/docs/app/guides/progressive-web-apps">
+            PWA (Progressive Web App)
+          </L>{' '}
+          support with{' '}
+          <L href="https://developer.mozilla.org/en-US/docs/Web/API/Push_API">
+            push notification
+          </L>{' '}
           capabilities.
         </>
       ),
@@ -39,7 +47,8 @@ export const RootFiles: FileList = {
       folder: true,
       children: (
         <>
-          Custom fonts for the project such as [Geist](https://vercel.com/font).
+          Custom fonts for the project such as{' '}
+          <L href="https://vercel.com/font">Geist</L>.
         </>
       ),
     },
@@ -49,8 +58,8 @@ export const RootFiles: FileList = {
       required: false,
       children: (
         <>
-          Default [Next.js](https://nextjs.org/) favicon replaced by a custom
-          favicon in Zap.ts.
+          Default <L href="https://nextjs.org/">Next.js</L> favicon replaced by
+          a custom favicon in Zap.ts.
         </>
       ),
     },
@@ -60,9 +69,9 @@ export const RootFiles: FileList = {
       required: true,
       children: (
         <>
-          Default [Next.js](https://nextjs.org/) global styles replaced by
-          integrating [shadcn/ui](https://ui.shadcn.com/) styles and adding
-          custom global styles.
+          Default <L href="https://nextjs.org/">Next.js</L> global styles
+          replaced by integrating <L href="https://ui.shadcn.com/">shadcn/ui</L>{' '}
+          styles and adding custom global styles.
         </>
       ),
     },
@@ -72,13 +81,17 @@ export const RootFiles: FileList = {
       required: true,
       children: (
         <>
-          Default [Next.js](https://nextjs.org/) layout replaced by a custom
-          layout in Zap.ts with [shadcn/ui](https://ui.shadcn.com/) integration,
-          [Geist](https://vercel.com/font) font, additional metadata for better
-          [SEO (Search Engine
-          Optimization)](https://developers.google.com/search/docs/fundamentals/seo-starter-guide),
-          custom providers injection and [Vercel](https://vercel.com/) analytics
-          support depending on the environment.
+          Default <L href="https://nextjs.org/">Next.js</L> layout replaced by a
+          custom layout in Zap.ts with{' '}
+          <L href="https://ui.shadcn.com/">shadcn/ui</L> integration,
+          <L href="https://vercel.com/font">Geist</L> font, additional metadata
+          for better
+          <L href="https://developers.google.com/search/docs/fundamentals/seo-starter-guide">
+            SEO (Search Engine Optimization)
+          </L>
+          , custom providers injection and{' '}
+          <L href="https://vercel.com/">Vercel</L> analytics support depending
+          on the environment.
         </>
       ),
     },

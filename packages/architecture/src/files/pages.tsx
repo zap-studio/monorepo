@@ -1,4 +1,5 @@
 import { Categories } from '../categories';
+import { L } from '../helpers/link';
 import type { FileList } from '../types';
 
 export const PagesFiles: FileList = {
@@ -98,8 +99,8 @@ export const PagesFiles: FileList = {
       required: false,
       children: (
         <>
-          Default [Next.js](https://nextjs.org/) homepage, replaced by a custom
-          homepage in Zap.ts.
+          Default <L href="https://nextjs.org/">Next.js</L> homepage, replaced
+          by a custom homepage in Zap.ts.
         </>
       ),
     },

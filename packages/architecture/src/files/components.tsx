@@ -1,5 +1,6 @@
 import { Categories } from '../categories';
 import type { FileList } from '../types';
+import { L } from '../helpers/link';
 
 export const ComponentsFiles: FileList = {
   category: Categories.COMPONENTS,
@@ -11,9 +12,10 @@ export const ComponentsFiles: FileList = {
       folder: true,
       children: (
         <>
-          Various UI components from [shadcn/ui](https://ui.shadcn.com/). Note
-          that [Ultracite](https://ultracite.ai/) ignores this directory to keep
-          original code as is.
+          Various UI components from{' '}
+          <L href="https://ui.shadcn.com/">shadcn/ui</L>. Note that{' '}
+          <L href="https://ultracite.ai/">Ultracite</L> ignores this directory
+          to keep original code as is.
         </>
       ),
     },
