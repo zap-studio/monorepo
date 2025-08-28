@@ -8,8 +8,11 @@ import {
 } from 'fumadocs-ui/components/tabs';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import type { MDXComponents } from 'mdx/types';
-import { FileEntry, FileList } from '@/components/file-entry';
-import { FileListRenderer } from './components/file-list-renderer';
+import {
+  FileEntry,
+  FileListContainer,
+  FileListRenderer,
+} from '@/components/file-entry';
 import {
   Table,
   TableBody,
@@ -18,11 +21,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/table';
+import {
+  AllCategoryFileLists,
+  CategoryFileList,
+} from './components/category-file';
 
 const FileEntryComponents = {
   FileEntry,
-  FileList,
+  FileListContainer,
   FileListRenderer,
+  CategoryFileList,
+  AllCategoryFileLists,
 };
 
 const FileComponents = {
