@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { Categories } from './categories';
 import type { IDEs } from './ide';
 import type { Plugins } from './plugins';
+import type { Dependencies, Packages } from './deps';
 
 export type FileStatus = 'added' | 'deleted' | 'modified';
 
@@ -27,3 +28,6 @@ export type IDE = keyof typeof IDEs;
 
 export type CategoryId = keyof typeof Categories;
 export type Category = (typeof Categories)[CategoryId];
+
+export type PackageId = (typeof Packages)[number];
+export type Dependency = (typeof Dependencies)[number];

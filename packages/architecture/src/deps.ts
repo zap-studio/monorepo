@@ -435,16 +435,16 @@ export const ZapDevDeps = {
   ],
 } as const;
 
-export const allDependencies = [
+export const Dependencies = [
   ...ClassicDeps.dependencies,
   ...ZapDeps.dependencies,
   ...ClassicDevDeps.dependencies,
   ...ZapDevDeps.dependencies,
-];
+] as const;
 
-export const allPackages = [
+export const Packages = [
   ...Object.values(ClassicDeps.dependencies).map((dep) => dep.package),
   ...Object.values(ZapDeps.dependencies).map((dep) => dep.package),
   ...Object.values(ClassicDevDeps.dependencies).map((dep) => dep.package),
   ...Object.values(ZapDevDeps.dependencies).map((dep) => dep.package),
-];
+] as const;
