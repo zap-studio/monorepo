@@ -9,6 +9,7 @@ export const IdeFiles: FileList = {
       status: 'added',
       required: false,
       folder: true,
+      ide: 'cursor',
       children: (
         <>
           Contains [MCP (Model Context
@@ -23,6 +24,7 @@ export const IdeFiles: FileList = {
       path: '.cursorignore',
       status: 'added',
       required: false,
+      ide: 'cursor',
       children: (
         <>
           Similar to `.gitignore`, this file specifies which files and
@@ -34,6 +36,7 @@ export const IdeFiles: FileList = {
       path: '.github/copilot-instructions.md',
       status: 'added',
       required: false,
+      ide: 'vscode',
       children: (
         <>
           Contains [GitHub](https://github.com/) specific files such as
@@ -47,6 +50,7 @@ export const IdeFiles: FileList = {
       status: 'added',
       required: false,
       folder: true,
+      ide: 'vscode',
       children: (
         <>
           Contains [Visual Studio Code](https://code.visualstudio.com/) specific
@@ -61,6 +65,7 @@ export const IdeFiles: FileList = {
       status: 'added',
       required: false,
       folder: true,
+      ide: 'windsurf',
       children: (
         <>
           Contains [Windsurf](https://windsurf.com/) specific settings and

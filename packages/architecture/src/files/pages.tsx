@@ -9,12 +9,13 @@ export const PagesFiles: FileList = {
       status: 'added',
       required: false,
       folder: true,
+      plugins: ['sidebar'],
       children: (
         <>
-          Added protected routes for authenticated users with a sidebar layout.
-          This includes pages for account management, notifications, settings,
-          and billing. Included pages are: `/app`, `/app/account` (WIP),
-          `/app/notifications` (WIP), `/app/settings` (WIP).
+          Protected routes for authenticated users with a sidebar layout. This
+          includes pages for account management, notifications, settings, and
+          billing. Included pages are: `/app`, `/app/account`,
+          `/app/notifications`, `/app/settings`.
         </>
       ),
     },
@@ -26,9 +27,8 @@ export const PagesFiles: FileList = {
       plugins: ['payments'],
       children: (
         <>
-          Added billing routes for user billing information and a billing
-          success page. Included pages are: `/app/billing`,
-          `/app/billing/success`.
+          Billing routes for user billing information and a billing success
+          page. Included pages are: `/app/billing`, `/app/billing/success`.
         </>
       ),
     },
@@ -40,8 +40,8 @@ export const PagesFiles: FileList = {
       plugins: ['auth'],
       children: (
         <>
-          Added public authentication routes for user login, registration,
-          password recovery, and mail verification. Included pages are:
+          Public authentication routes for user login, registration, password
+          recovery, and mail verification. Included pages are:
           `/forgot-password`, `/login`, `/mail-verified`, `/register`, and
           `/reset-password`.
         </>
@@ -55,9 +55,9 @@ export const PagesFiles: FileList = {
       plugins: ['legal'],
       children: (
         <>
-          Added public legal routes for cookie policy, privacy policy, and terms
-          of service. Included pages are: `/cookie-policy`, `/privacy-policy`,
-          and `/terms-of-service`.
+          Public legal routes for cookie policy, privacy policy, and terms of
+          service. Included pages are: `/cookie-policy`, `/privacy-policy`, and
+          `/terms-of-service`.
         </>
       ),
     },
@@ -69,8 +69,8 @@ export const PagesFiles: FileList = {
       plugins: ['blog'],
       children: (
         <>
-          Added blog routes for listing and viewing blog posts. Included pages
-          are: `/blog`, `/blog/[slug]`.
+          Blog routes for listing and viewing blog posts. Included pages are:
+          `/blog`, `/blog/[slug]`.
         </>
       ),
     },

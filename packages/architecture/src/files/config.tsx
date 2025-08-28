@@ -6,77 +6,73 @@ export const ConfigFiles: FileList = {
   entries: [
     {
       path: 'biome.json',
-      status: 'added',
+      status: 'modified',
       required: false,
       children: (
         <>
-          Configuration for [Biome](https://biomejs.dev/) linter and formatter
-          to ensure code quality and consistency.
-        </>
-      ),
-    },
-    {
-      path: 'tsconfig.json',
-      status: 'added',
-      required: true,
-      children: (
-        <>
-          TypeScript configuration file for type safety and project structure.
-        </>
-      ),
-    },
-    {
-      path: 'package.json',
-      status: 'added',
-      required: true,
-      children: (
-        <>
-          Project manifest file specifying dependencies, scripts, and metadata
-          for the application.
-        </>
-      ),
-    },
-    {
-      path: 'bun.lock',
-      status: 'added',
-      required: false,
-      children: (
-        <>
-          Lockfile for [Bun](https://bun.sh/) to ensure consistent dependency
-          versions.
-        </>
-      ),
-    },
-    {
-      path: 'turbo.json',
-      status: 'added',
-      required: false,
-      children: (
-        <>
-          Configuration for [Turborepo](https://turbo.build/) to manage monorepo
-          tasks and caching.
+          Configuration file for [Biome](https://biomejs.dev/), a linter and
+          code formatter. We're using [Ultracite](https://www.ultracite.ai/)
+          preset for better collaborations between AI and developers.
         </>
       ),
     },
     {
       path: 'next.config.ts',
-      status: 'added',
+      status: 'modified',
       required: true,
       children: (
         <>
-          Configuration file for [Next.js](https://nextjs.org/) to customize
-          build and runtime behavior.
+          Configuration file for [Next.js](https://nextjs.org/) that includes
+          additional settings for [CSP (Content Security
+          Policy)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) and
+          [Permissions
+          Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy),
+          sets up [Typed
+          Routes](https://nextjs.org/docs/app/api-reference/config/next-config-js/typedRoutes)
+          by default, adds extra [security
+          headers](https://nextjs.org/docs/app/api-reference/config/next-config-js/headers),
+          configures
+          [sw.js](https://nextjs.org/docs/app/guides/progressive-web-apps#5-creating-a-service-worker),
+          and supports [MDX](https://nextjs.org/docs/app/guides/mdx) along with
+          [Bundle
+          Analyzer](https://nextjs.org/docs/app/getting-started/linking-and-navigating#hydration-not-completed).
         </>
       ),
     },
     {
-      path: 'postcss.config.mjs',
-      status: 'added',
-      required: false,
+      path: 'package.json',
+      status: 'modified',
+      required: true,
       children: (
         <>
-          Configuration for [PostCSS](https://postcss.org/) used with [Tailwind
-          CSS](https://tailwindcss.com/).
+          Configuration file for [npm](https://www.npmjs.com/) with additional
+          scripts for [Biome](https://biomejs.dev/), [Drizzle
+          ORM](https://orm.drizzle.team/), [Next.js](https://nextjs.org/),
+          [React Email](https://react.email/) and more. Also includes
+          [lint-staged](https://github.com/okonet/lint-staged) configuration
+          with [Ultracite](https://ultracite.ai/) preset.
+        </>
+      ),
+    },
+    {
+      path: 'tsconfig.json',
+      status: 'modified',
+      required: true,
+      children: (
+        <>
+          TypeScript configuration file with paths and settings optimized for
+          Zap.ts such as `strictNullChecks`.
+        </>
+      ),
+    },
+    {
+      path: 'components.json',
+      status: 'added',
+      required: true,
+      children: (
+        <>
+          Configuration file for [shadcn/ui](https://ui.shadcn.com/), a set of
+          accessible and customizable React components.
         </>
       ),
     },
@@ -108,23 +104,11 @@ export const ConfigFiles: FileList = {
       required: false,
       children: (
         <>
-          Configuration for
-          [next-sitemap](https://github.com/iamvishnusankar/next-sitemap) to
-          generate sitemaps for SEO.
+          Configuration file for
+          [next-sitemap](https://github.com/iamvishnusankar/next-sitemap), a
+          sitemap generation tool for Next.js applications.
         </>
       ),
-    },
-    {
-      path: 'zap.config.ts',
-      status: 'added',
-      required: false,
-      children: <>Custom configuration file for Zap.ts project settings.</>,
-    },
-    {
-      path: 'zap.config.types.ts',
-      status: 'added',
-      required: false,
-      children: <>Type definitions for Zap.ts configuration.</>,
     },
   ],
 };

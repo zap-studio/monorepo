@@ -24,7 +24,7 @@ export const RootFiles: FileList = {
       plugins: ['pwa'],
       children: (
         <>
-          Added a service worker for [PWA (Progressive Web
+          A service worker for [PWA (Progressive Web
           App)](https://nextjs.org/docs/app/guides/progressive-web-apps) support
           with [push
           notification](https://developer.mozilla.org/en-US/docs/Web/API/Push_API)
@@ -39,19 +39,18 @@ export const RootFiles: FileList = {
       folder: true,
       children: (
         <>
-          Added custom fonts for the project such as
-          [Geist](https://vercel.com/font).
+          Custom fonts for the project such as [Geist](https://vercel.com/font).
         </>
       ),
     },
     {
       path: 'src/app/favicon.ico',
       status: 'modified',
-      required: true,
+      required: false,
       children: (
         <>
-          Replaced default [Next.js](https://nextjs.org/) favicon with Zap.ts
-          favicon.
+          Default [Next.js](https://nextjs.org/) favicon replaced by a custom
+          favicon in Zap.ts.
         </>
       ),
     },
@@ -61,9 +60,9 @@ export const RootFiles: FileList = {
       required: true,
       children: (
         <>
-          Replaced default [Next.js](https://nextjs.org/) global styles by
-          integrating [shadcn/ui](https://ui.shadcn.com/) styles by default and
-          adding custom global styles.
+          Default [Next.js](https://nextjs.org/) global styles replaced by
+          integrating [shadcn/ui](https://ui.shadcn.com/) styles and adding
+          custom global styles.
         </>
       ),
     },
@@ -73,7 +72,7 @@ export const RootFiles: FileList = {
       required: true,
       children: (
         <>
-          Replaced default [Next.js](https://nextjs.org/) layout with a custom
+          Default [Next.js](https://nextjs.org/) layout replaced by a custom
           layout in Zap.ts with [shadcn/ui](https://ui.shadcn.com/) integration,
           [Geist](https://vercel.com/font) font, additional metadata for better
           [SEO (Search Engine
