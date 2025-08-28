@@ -9,7 +9,7 @@ export const Categories = {
   ROUTES: { id: 'routes', label: 'Routes' },
   COMPONENTS: { id: 'components', label: 'Components' },
   HOOKS: { id: 'hooks', label: 'Hooks' },
-  LIBS: { id: 'libs', label: 'Libraries' },
+  LIBRARIES: { id: 'libs', label: 'Libraries' },
   EMAILS: { id: 'emails', label: 'Emails' },
   MIDDLEWARE: { id: 'middleware', label: 'Middleware' },
   PROVIDERS: { id: 'providers', label: 'Providers' },
