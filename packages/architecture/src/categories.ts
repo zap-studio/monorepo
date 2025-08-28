@@ -14,7 +14,7 @@ export const Categories = {
   MIDDLEWARE: { id: 'middleware', label: 'Middleware' },
   PROVIDERS: { id: 'providers', label: 'Providers' },
   INSTRUMENTATION: { id: 'instrumentation', label: 'Instrumentation' },
-  ZAPTS: { id: 'zapts', label: 'Zap.ts Specific' },
+  ZAP: { id: 'zap', label: 'Zap.ts Specific' },
 } as const;
 
 export type CategoryId = keyof typeof Categories;
