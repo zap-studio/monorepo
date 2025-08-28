@@ -151,6 +151,3 @@ export const Plugins = {
     requiredPlugins: [],
   },
 } as const;
-
-export type PluginId = keyof typeof Plugins;
-export type Plugin = (typeof Plugins)[PluginId];

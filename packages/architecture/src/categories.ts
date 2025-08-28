@@ -16,6 +16,3 @@ export const Categories = {
   INSTRUMENTATION: { id: 'instrumentation', label: 'Instrumentation' },
   ZAP: { id: 'zap', label: 'Zap.ts Specific' },
 } as const;
-
-export type CategoryId = keyof typeof Categories;
-export type Category = (typeof Categories)[CategoryId];

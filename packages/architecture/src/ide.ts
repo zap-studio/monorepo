@@ -16,5 +16,3 @@ export const IDEs = {
     label: 'Windsurf',
   },
 } as const;
-
-export type IDE = keyof typeof IDEs;
