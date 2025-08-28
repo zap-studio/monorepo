@@ -9,6 +9,7 @@ import {
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import type { MDXComponents } from 'mdx/types';
 import { FileEntry, FileList } from '@/components/file-entry';
+import { FileListRenderer } from './components/file-list-renderer';
 import {
   Table,
   TableBody,
@@ -21,6 +22,7 @@ import {
 const FileEntryComponents = {
   FileEntry,
   FileList,
+  FileListRenderer,
 };
 
 const FileComponents = {

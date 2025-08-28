@@ -1,4 +1,9 @@
-import type { FileStatus, IDE, PluginId } from '@zap-ts/architecture';
+import {
+  IDEs,
+  type FileStatus,
+  type IDE,
+  type PluginId,
+} from '@zap-ts/architecture';
 import { Code2, FileText, Folder, Package } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -19,23 +24,11 @@ const statusDotConfig: Record<FileStatus, string> = {
   deleted: '🔴',
 };
 
-const ideConfig: Record<IDE, { color: string; label: string }> = {
-  windsurf: {
-    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-    label: 'Windsurf',
-  },
-  cursor: {
-    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-    label: 'Cursor',
-  },
-  vscode: {
-    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-    label: 'VS Code',
-  },
-  zed: {
-    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-    label: 'Zed',
-  },
+const ideColorConfig: Record<IDE, string> = {
+  vscode: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+  cursor: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+  zed: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+  windsurf: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
 };
 
 export function FileEntry({
@@ -50,7 +43,7 @@ export function FileEntry({
   const Icon = folder ? Folder : FileText;
 
   return (
-    <div className="flex flex-col py-2">
+    <div className="flex flex-col py-2 gap-2">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex xs:flex-row flex-col xs:items-center gap-2 xs:gap-2">
           <div className="flex flex-wrap items-center gap-2">
@@ -75,11 +68,11 @@ export function FileEntry({
 
           {ide && (
             <Badge
-              className={cn('text-xs', ideConfig[ide].color)}
+              className={cn('text-xs', ideColorConfig[ide])}
               key={ide}
               variant="secondary"
             >
-              <Code2 className="mr-1 h-3 w-3" /> {ideConfig[ide].label}
+              <Code2 className="mr-1 h-3 w-3" /> {IDEs[ide].label}
             </Badge>
           )}
 
