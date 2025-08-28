@@ -1,5 +1,13 @@
 # create-zap-app
 
+## 1.4.9
+
+### Patch Changes
+
+- 0d476a3: Rework README.md for a better description of `create-zap-app` package
+- Updated dependencies [0d476a3]
+  - @zap-ts/architecture@1.0.1
+
 ## 1.4.8
 
 ### Patch Changes
