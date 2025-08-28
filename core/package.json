@@ -34,7 +34,8 @@
     "dev:mail": "email dev",
     "start": "next start",
     "typegen": "next typegen",
-    "zap": "zap"
+    "zap": "zap",
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
@@ -123,6 +124,7 @@
     "create-zap-app": "^1.4.8",
     "cross-env": "^10.0.0",
     "drizzle-kit": "^0.31.4",
+    "husky": "^9.1.7",
     "react-scan": "^0.4.3",
     "tailwindcss": "^4.1.12",
     "typescript": "^5.9.2",
