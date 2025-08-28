@@ -1,13 +1,13 @@
-import {
-  IDEs,
-  type FileStatus,
-  type FileList,
-  type IDE,
-  type PluginId,
-} from '@zap-ts/architecture';
 import { Code2, FileText, Folder, Package } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import type {
+  FileStatus,
+  IDE,
+  PluginId,
+  FileList,
+} from '@zap-ts/architecture/types';
+import { IDEs } from '@zap-ts/architecture/ide';
 
 type FileEntryProps = {
   name: string;
