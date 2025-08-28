@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
+import type { Dependencies, Packages } from './deps';
 import type { CategoryIds } from './files';
 import type { IDEs } from './ide';
 import type { Plugins } from './plugins';
-import type { Dependencies, Packages } from './deps';
 
 export type FileStatus = 'added' | 'deleted' | 'modified';
 

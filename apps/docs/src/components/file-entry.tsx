@@ -1,13 +1,13 @@
-import { Code2, FileText, Folder, Package } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { IDEs } from '@zap-ts/architecture/ide';
 import type {
+  FileList,
   FileStatus,
   IDE,
   PluginId,
-  FileList,
 } from '@zap-ts/architecture/types';
-import { IDEs } from '@zap-ts/architecture/ide';
+import { Code2, FileText, Folder, Package } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 type FileEntryProps = {
   name: string;
@@ -44,7 +44,7 @@ export function FileEntry({
   const Icon = folder ? Folder : FileText;
 
   return (
-    <div className="flex flex-col py-2 gap-2">
+    <div className="flex flex-col gap-2 py-2">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex xs:flex-row flex-col xs:items-center gap-2 xs:gap-2">
           <div className="flex flex-wrap items-center gap-2">
@@ -131,13 +131,13 @@ export function FileListRenderer({ list, className }: FileListRendererProps) {
     <FileListContainer className={cn('flex flex-col gap-4', className)}>
       {sortedEntries.map((entry) => (
         <FileEntry
+          folder={entry.folder}
+          ide={entry.ide}
           key={entry.path}
           name={entry.path}
-          status={entry.status}
-          required={entry.required}
           plugins={entry.plugins}
-          ide={entry.ide}
-          folder={entry.folder}
+          required={entry.required}
+          status={entry.status}
         >
           {entry.children}
         </FileEntry>

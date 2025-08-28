@@ -1,5 +1,5 @@
-import type { FileList } from '../types';
 import { L } from '../helpers/link';
+import type { FileList } from '../types';
 
 export const ComponentsFiles: FileList = {
   category: 'COMPONENTS',
