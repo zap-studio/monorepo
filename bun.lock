@@ -59,7 +59,7 @@
     },
     "packages/architecture": {
       "name": "@zap-ts/architecture",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "dependencies": {
         "react": "^19.1.1",
       },
@@ -73,7 +73,7 @@
     },
     "packages/create-zap-app": {
       "name": "create-zap-app",
-      "version": "1.4.8",
+      "version": "1.4.9",
       "bin": {
         "create-zap-app": "./dist/index.js",
         "zap": "./dist/index.js",
