@@ -5,6 +5,7 @@ export const Plugins = {
     label: 'AI',
     description: 'Integrates AI SDKs such as OpenAI and Mistral.',
     dependencies: ['ai', '@ai-sdk/openai', '@ai-sdk/mistral', '@ai-sdk/react'],
+    requiredPlugins: [],
   },
   analytics: {
     id: 'analytics',
@@ -16,18 +17,21 @@ export const Plugins = {
       'posthog-js',
       'posthog-node',
     ],
+    requiredPlugins: [],
   },
   api: {
     id: 'api',
     label: 'API',
     description: 'Typed RPC API using oRPC.',
     dependencies: ['@orpc/client', '@orpc/server', '@orpc/react-query'],
+    requiredPlugins: [],
   },
   auth: {
     id: 'auth',
     label: 'Authentication',
     description: 'Authentication with Better Auth.',
     dependencies: ['better-auth', '@polar-sh/better-auth', '@polar-sh/sdk'],
+    requiredPlugins: [],
   },
   blog: {
     id: 'blog',
@@ -39,6 +43,7 @@ export const Plugins = {
       '@mdx-js/react',
       '@mdx-js/loader',
     ],
+    requiredPlugins: [],
   },
   components: {
     id: 'components',
@@ -76,6 +81,7 @@ export const Plugins = {
     label: 'Feedback',
     description: 'Collect feedback from users.',
     dependencies: [],
+    requiredPlugins: [],
   },
   flags: {
     id: 'flags',
@@ -88,12 +94,14 @@ export const Plugins = {
     label: 'Landing',
     description: 'Public landing page template.',
     dependencies: [],
+    requiredPlugins: [],
   },
   legal: {
     id: 'legal',
     label: 'Legal',
     description: 'Cookie, privacy, terms of service pages.',
     dependencies: [],
+    requiredPlugins: [],
   },
   mails: {
     id: 'mails',
@@ -101,6 +109,7 @@ export const Plugins = {
     description: 'Email templates with React Email & Resend.',
     dependencies: ['@react-email/components', 'react-email', 'resend'],
     devDependencies: ['@react-email/preview-server'],
+    requiredPlugins: [],
   },
   markdown: {
     id: 'markdown',
@@ -113,30 +122,33 @@ export const Plugins = {
     label: 'Payments',
     description: 'Billing & payments with Polar SDK.',
     dependencies: ['@polar-sh/sdk', '@polar-sh/better-auth'],
+    requiredPlugins: [],
   },
   plugins: {
     id: 'plugins',
     label: 'Plugins',
     description: 'Zap.ts plugin system bootstrap.',
-    dependencies: [],
   },
   pwa: {
     id: 'pwa',
     label: 'Progressive Web App',
     description: 'Service worker, manifest, push notifications.',
     dependencies: ['web-push'],
+    requiredPlugins: [],
   },
   sidebar: {
     id: 'sidebar',
     label: 'Sidebar Layout',
     description: 'Authenticated app layout with sidebar.',
     dependencies: [],
+    requiredPlugins: [],
   },
   waitlist: {
     id: 'waitlist',
     label: 'Waitlist',
     description: 'Waitlist page + middleware integration.',
     dependencies: [],
+    requiredPlugins: [],
   },
 } as const;
 
