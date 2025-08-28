@@ -1,3 +1,5 @@
+import type { PluginId } from '@zap-ts/architecture/types';
+
 export type ZapCoreSettings = {
   // Core application information
   APP: {
@@ -63,25 +65,4 @@ export interface ZapConfig extends ZapCoreSettings {
   plugins?: Record<string, ZapPluginConfig>;
 }
 
-export type ZapPlugins =
-  | 'ai'
-  | 'analytics'
-  | 'api'
-  | 'auth'
-  | 'blog'
-  | 'components'
-  | 'crypto'
-  | 'db'
-  | 'env'
-  | 'errors'
-  | 'feedbacks'
-  | 'flags'
-  | 'landing'
-  | 'legal'
-  | 'mails'
-  | 'markdown'
-  | 'payments'
-  | 'plugins'
-  | 'pwa'
-  | 'sidebar'
-  | 'waitlist';
+export type ZapPlugins = PluginId;
