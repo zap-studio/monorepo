@@ -25,6 +25,7 @@
         "@tanstack/react-query-devtools": "^5.85.5",
         "@vercel/analytics": "^1.5.0",
         "@vercel/speed-insights": "^1.2.0",
+        "@zap-ts/architecture": "^1.0.1",
         "ai": "^5.0.26",
         "better-auth": "^1.3.7",
         "class-variance-authority": "^0.7.1",
@@ -847,6 +848,8 @@
     "@xtuc/ieee754": ["@xtuc/ieee754@1.2.0", "", {}, "sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA=="],
 
     "@xtuc/long": ["@xtuc/long@4.2.2", "", {}, "sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ=="],
+
+    "@zap-ts/architecture": ["@zap-ts/architecture@1.0.1", "", { "dependencies": { "react": "^19.1.1" }, "peerDependencies": { "typescript": "^5" } }, "sha512-XPykV9/A/WA/TFKZa0z+O5hP5WytaKL+gYDdYRUCSiU830Sop0UCiDkhbTk1AF8JG+9vr9HaU7AsfJivtyz6Dw=="],
 
     "accepts": ["accepts@1.3.8", "", { "dependencies": { "mime-types": "~2.1.34", "negotiator": "0.6.3" } }, "sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw=="],
 
