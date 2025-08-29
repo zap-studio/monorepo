@@ -54,6 +54,6 @@ export function displaySuccessMessage(
     )
   );
   process.stdout.write(
-    chalk.white('👉 https://github.com/alexandretrotel/zap.ts\n')
+    chalk.white('👉 https://github.com/zap-studio/zap.ts\n')
   );
 }

@@ -5,7 +5,7 @@ import { FileSystemError } from '@/lib/errors';
 export async function downloadTemplate(outputDir: string) {
   try {
     const tarballUrl =
-      'https://api.github.com/repos/alexandretrotel/zap.ts/tarball/main';
+      'https://api.github.com/repos/zap-studio/zap.ts/tarball/main';
 
     await fs.ensureDir(outputDir);
 
