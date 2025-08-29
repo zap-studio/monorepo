@@ -27,10 +27,22 @@
     "README.md"
   ],
   "exports": {
-    "./files": "./src/files/index.ts",
-    "./deps": "./src/deps.ts",
-    "./ide": "./src/ide.ts",
-    "./plugins": "./src/plugins.ts",
-    "./types": "./src/types.ts"
+    "./files": {
+      "import": "./dist/files/index.js",
+      "require": "./dist/files/index.cjs"
+    },
+    "./ide": {
+      "import": "./dist/ide.js",
+      "require": "./dist/ide.cjs"
+    },
+    "./plugins": {
+      "import": "./dist/plugins.js",
+      "require": "./dist/plugins.cjs"
+    },
+    "./types": {
+      "import": "./dist/types.js",
+      "require": "./dist/types.cjs"
+    },
+    "./package.json": "./package.json"
   }
 }
