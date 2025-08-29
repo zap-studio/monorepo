@@ -35,6 +35,10 @@
       "import": "./dist/files/index.js",
       "require": "./dist/files/index.cjs"
     },
+    "./helpers/link": {
+      "import": "./dist/helpers/link.js",
+      "require": "./dist/helpers/link.cjs"
+    },
     "./ide": {
       "import": "./dist/ide.js",
       "require": "./dist/ide.cjs"
