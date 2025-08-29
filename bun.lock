@@ -80,7 +80,7 @@
         "zap": "./dist/index.js",
       },
       "dependencies": {
-        "@zap-ts/architecture": "workspace:*",
+        "@zap-ts/architecture": "^1.0.3",
         "chalk": "^5.6.0",
         "commander": "^14.0.0",
         "execa": "^9.6.0",
@@ -1538,6 +1538,8 @@
     "@tailwindcss/oxide-wasm32-wasi/tslib": ["tslib@2.8.1", "", { "bundled": true }, "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="],
 
     "@ts-morph/common/minimatch": ["minimatch@10.0.3", "", { "dependencies": { "@isaacs/brace-expansion": "^5.0.0" } }, "sha512-IPZ167aShDZZUMdRk66cyQAW3qr0WzbHkPdMYa8bzZhlHhO3jALbKdxcaak7W9FfT2rZNpQuUu4Od7ILEpXSaw=="],
+
+    "create-zap-app/@zap-ts/architecture": ["@zap-ts/architecture@1.0.3", "", { "dependencies": { "react": "^19.1.1" }, "peerDependencies": { "typescript": "^5.9.2" } }, "sha512-zDhtGyLMtvq1ijKet84vYUaB+Dxy0aq3jX9D6NPJuPUS5Bm/Dgaf0MqEYKwVWfN87XdYg1ccpcYbkv5Kyq+YGQ=="],
 
     "enquirer/strip-ansi": ["strip-ansi@6.0.1", "", { "dependencies": { "ansi-regex": "^5.0.1" } }, "sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A=="],
 
