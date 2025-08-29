@@ -1,5 +1,11 @@
 # create-zap-app
 
+## 1.4.12
+
+### Patch Changes
+
+- b9cec5a: Update @zap-ts/architecture dependency to version ^1.0.3 in package.json and bun.lock
+
 ## 1.4.11
 
 ### Patch Changes
