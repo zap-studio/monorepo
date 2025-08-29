@@ -9,12 +9,12 @@ updates:
     directories:
       - "/"
       - "/core"
-      - "/apps/create-zap-app"
       - "/apps/docs"
-    open-pull-requests-limit: 5
+      - "/packages/architecture"
+      - "/packages/create-zap-app"
     schedule:
-      interval: "weekly"
+      interval: "daily"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
