@@ -27,6 +27,10 @@
     "README.md"
   ],
   "exports": {
+    "./deps": {
+      "import": "./dist/deps.js",
+      "require": "./dist/deps.cjs"
+    },
     "./files": {
       "import": "./dist/files/index.js",
       "require": "./dist/files/index.cjs"

@@ -7,6 +7,7 @@ export default defineConfig({
     'src/ide.ts',
     'src/plugins.ts',
     'src/types.ts',
+    'src/deps.ts'
   ],
   dts: true,
   format: ['cjs', 'esm'],
