@@ -1,1 +1,2 @@
 lint-staged
+cd core && npm run format
