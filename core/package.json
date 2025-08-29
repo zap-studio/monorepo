@@ -121,7 +121,6 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/serialize-javascript": "^5.0.4",
     "@types/web-push": "^3.6.4",
-    "create-zap-app": "^1.4.8",
     "cross-env": "^10.0.0",
     "drizzle-kit": "^0.31.4",
     "husky": "^9.1.7",

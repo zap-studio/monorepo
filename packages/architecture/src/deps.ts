@@ -408,11 +408,6 @@ export const ZapDevDeps = {
       link: 'https://www.npmjs.com/package/@types/web-push',
     },
     {
-      package: 'create-zap-app',
-      description: 'CLI tool for creating and managing Zap.ts projects.',
-      link: 'https://github.com/alexandretrotel/zap.ts',
-    },
-    {
       package: 'cross-env',
       description: 'Run environment variables across platforms in scripts.',
       link: 'https://github.com/kentcdodds/cross-env',
