@@ -35,6 +35,70 @@
       "import": "./dist/files/index.js",
       "require": "./dist/files/index.cjs"
     },
+    "./files/components": {
+      "import": "./dist/files/components.js",
+      "require": "./dist/files/components.cjs"
+    },
+    "./files/config": {
+      "import": "./dist/files/config.js",
+      "require": "./dist/files/config.cjs"
+    },
+    "./files/docker": {
+      "import": "./dist/files/docker.js",
+      "require": "./dist/files/docker.cjs"
+    },
+    "./files/emails": {
+      "import": "./dist/files/emails.js",
+      "require": "./dist/files/emails.cjs"
+    },
+    "./files/errors": {
+      "import": "./dist/files/errors.js",
+      "require": "./dist/files/errors.cjs"
+    },
+    "./files/hooks": {
+      "import": "./dist/files/hooks.js",
+      "require": "./dist/files/hooks.cjs"
+    },
+    "./files/ide": {
+      "import": "./dist/files/ide.js",
+      "require": "./dist/files/ide.cjs"
+    },
+    "./files/instrumentation": {
+      "import": "./dist/files/instrumentation.js",
+      "require": "./dist/files/instrumentation.cjs"
+    },
+    "./files/libraries": {
+      "import": "./dist/files/libraries.js",
+      "require": "./dist/files/libraries.cjs"
+    },
+    "./files/metadata": {
+      "import": "./dist/files/metadata.js",
+      "require": "./dist/files/metadata.cjs"
+    },
+    "./files/middleware": {
+      "import": "./dist/files/middleware.js",
+      "require": "./dist/files/middleware.cjs"
+    },
+    "./files/pages": {
+      "import": "./dist/files/pages.js",
+      "require": "./dist/files/pages.cjs"
+    },
+    "./files/providers": {
+      "import": "./dist/files/providers.js",
+      "require": "./dist/files/providers.cjs"
+    },
+    "./files/root": {
+      "import": "./dist/files/root.js",
+      "require": "./dist/files/root.cjs"
+    },
+    "./files/routes": {
+      "import": "./dist/files/routes.js",
+      "require": "./dist/files/routes.cjs"
+    },
+    "./files/zap": {
+      "import": "./dist/files/zap.js",
+      "require": "./dist/files/zap.cjs"
+    },
     "./helpers/link": {
       "import": "./dist/helpers/link.js",
       "require": "./dist/helpers/link.cjs"
