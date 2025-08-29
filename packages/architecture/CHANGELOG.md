@@ -1,5 +1,11 @@
 # @zap-ts/architecture
 
+## 1.0.3
+
+### Patch Changes
+
+- 456d667: Update package versions and add exports for better module resolution
+
 ## 1.0.2
 
 ### Patch Changes

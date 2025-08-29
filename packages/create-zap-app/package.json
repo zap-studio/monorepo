@@ -18,7 +18,7 @@
     "boilerplate",
     "starter-kit"
   ],
-  "version": "1.4.10",
+  "version": "1.4.11",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.cts",

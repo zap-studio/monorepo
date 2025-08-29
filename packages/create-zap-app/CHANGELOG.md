@@ -1,5 +1,13 @@
 # create-zap-app
 
+## 1.4.11
+
+### Patch Changes
+
+- 456d667: Update package versions and add exports for better module resolution
+- Updated dependencies [456d667]
+  - @zap-ts/architecture@1.0.3
+
 ## 1.4.10
 
 ### Patch Changes
