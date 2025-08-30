@@ -67,7 +67,7 @@ export function HeroSection() {
             <ZapButton asChild size="lg" variant="outline">
               <Link
                 className="text-foreground"
-                href="https://zap-ts.alexandretrotel.org"
+                href="https://zap-ts.zapstudio.dev"
                 target="_blank"
               >
                 View Documentation <ArrowUpRight className="h-4 w-4" />

@@ -9,7 +9,7 @@ Thank you for your interest in contributing to Zap.ts! We welcome all contributi
 2. **Clone your fork**
    - `git clone https://github.com/<your-username>/zap.ts.git`
    - `cd zap.ts`
-   - `git remote add upstream https://github.com/alexandretrotel/zap.ts.git`
+   - `git remote add upstream https://github.com/zap-studio/zap.ts.git`
 3. **Create a new branch**
    - `git checkout -b my-feature-branch`
 
@@ -54,6 +54,6 @@ Thank you for your interest in contributing to Zap.ts! We welcome all contributi
 
 ## Additional Resources
 
-If needed, open an issue. You can also join the [GitHub discussions](https://github.com/alexandretrotel/zap.ts/discussions) or the [Discord](https://discord.gg/24hXMC3eAa).
+If needed, open an issue. You can also join the [GitHub discussions](https://github.com/zap-studio/zap.ts/discussions) or the [Discord](https://discord.gg/24hXMC3eAa).
 
 Thanks for helping make Zap.ts better!

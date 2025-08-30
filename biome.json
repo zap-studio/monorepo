@@ -6,7 +6,8 @@
       "**",
       ".github/workflows/*",
       "!core",
-      "!apps/docs/src/components/ui"
+      "!apps/docs/src/components/ui",
+      "!apps/zap-studio/components/ui"
     ]
   }
 }

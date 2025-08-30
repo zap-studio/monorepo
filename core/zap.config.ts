@@ -25,7 +25,7 @@ export const APP_DESCRIPTION =
   'Zap.ts is a Next.js boilerplate designed to help you build applications faster using a modern set of tools.';
 export const BASE_URL = DEV
   ? 'http://localhost:3000'
-  : 'https://demo.zap-ts.alexandretrotel.org';
+  : 'https://demo.zap-ts.zapstudio.dev';
 export const SALES_EMAIL = 'sales@example.com';
 export const SUPPORT_EMAIL = 'support@example.com';
 

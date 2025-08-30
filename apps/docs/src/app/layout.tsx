@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Geist as Font } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { Toaster } from '@/components/ui/sonner';
+import { ALEXANDRE_TROTEL_WEBSITE_URL, BASE_URL } from '@/data/website';
 import { Provider } from './provider';
 
 const font = Font({
@@ -12,7 +13,6 @@ const font = Font({
 
 const APP_NAME = 'Zap.ts';
 const APP_DESCRIPTION = 'Build applications as fast as a zap.';
-const BASE_URL = 'https://zap.ts-alexandretrotel.org';
 
 export const metadata: Metadata = {
   title: APP_NAME,
@@ -31,9 +31,7 @@ export const metadata: Metadata = {
     'web',
     'application',
   ],
-  authors: [
-    { name: 'Alexandre Trotel', url: 'https://www.alexandretrotel.org' },
-  ],
+  authors: [{ name: 'Alexandre Trotel', url: ALEXANDRE_TROTEL_WEBSITE_URL }],
   creator: 'Alexandre Trotel',
   publisher: 'Alexandre Trotel',
   metadataBase: new URL(BASE_URL),

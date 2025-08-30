@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import type { Ora } from 'ora';
+import { GITHUB_REPO_URL } from '@/data/website';
 import type { PackageManager } from '@/schemas/package-manager.schema';
 import { execAsync } from '@/utils';
 import { generateEnv } from '@/utils/generation/generate-env';
@@ -53,7 +54,5 @@ export function displaySuccessMessage(
       '🌟 If you like this project, consider giving it a star on GitHub!\n'
     )
   );
-  process.stdout.write(
-    chalk.white('👉 https://github.com/alexandretrotel/zap.ts\n')
-  );
+  process.stdout.write(chalk.white(`👉 ${GITHUB_REPO_URL}\n`));
 }

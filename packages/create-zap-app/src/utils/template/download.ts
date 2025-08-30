@@ -1,14 +1,13 @@
 import path from 'node:path';
 import fs from 'fs-extra';
+import { GITHUB_DOWNLOAD_URL } from '@/data/website';
 import { FileSystemError } from '@/lib/errors';
 
 export async function downloadTemplate(outputDir: string) {
   try {
-    const tarballUrl =
-      'https://api.github.com/repos/alexandretrotel/zap.ts/tarball/main';
+    const tarballUrl = GITHUB_DOWNLOAD_URL;
 
     await fs.ensureDir(outputDir);
-
     const response = await fetch(tarballUrl);
 
     if (!response.ok) {
