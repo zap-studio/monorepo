@@ -1,3 +1,4 @@
+import { DEMO_URL, GITHUB_REPO_URL } from '@/data/website';
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 
 /**
@@ -19,9 +20,9 @@ export const baseOptions: BaseLayoutProps = {
   links: [
     {
       text: 'Demo',
-      url: 'https://demo.zap-ts.zapstudio.dev',
+      url: DEMO_URL,
       external: true,
     },
   ],
-  githubUrl: 'https://github.com/zap-studio/zap.ts',
+  githubUrl: GITHUB_REPO_URL,
 };

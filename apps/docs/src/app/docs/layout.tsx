@@ -3,6 +3,7 @@ import { ArrowUpRight } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { baseOptions } from '@/app/layout.config';
 import { source } from '@/lib/source';
+import { DEMO_URL } from '@/data/website';
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -10,7 +11,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       links={[
         {
           text: 'Demo',
-          url: 'https://demo.zap-ts.zapstudio.dev',
+          url: DEMO_URL,
           icon: <ArrowUpRight />,
         },
       ]}

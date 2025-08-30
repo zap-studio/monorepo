@@ -18,6 +18,7 @@ import { getTweet as _getTweet } from 'react-tweet/api';
 import { Button } from '@/components/ui/button';
 import { testimonials } from '@/data/testimonials';
 import { CopyCommand } from './_components/copy-command';
+import { GITHUB_REPO_URL } from '@/data/website';
 
 const sectionClass = 'px-6 md:py-16 py-8';
 const cardBase = 'rounded-xl border bg-card shadow-sm';
@@ -54,7 +55,7 @@ export default function HomePage() {
             </Button>
             <Button asChild variant={'outline'}>
               <Link
-                href="https://github.com/zap-studio/zap.ts"
+                href={GITHUB_REPO_URL}
                 rel="noreferrer"
                 target="_blank"
               >

@@ -13,6 +13,7 @@
  */
 
 import type { Metadata } from 'next';
+import { DEMO_URL } from '../apps/docs/src/data/website';
 import { DEV } from './zap/env/runtime/public';
 import type { ZapCoreSettings, ZapPlugins } from './zap.config.types';
 
@@ -23,9 +24,7 @@ export const NAME = 'Zap.ts';
 export const APP_NAME = `${NAME} | Build applications as fast as a zap`;
 export const APP_DESCRIPTION =
   'Zap.ts is a Next.js boilerplate designed to help you build applications faster using a modern set of tools.';
-export const BASE_URL = DEV
-  ? 'http://localhost:3000'
-  : 'https://demo.zap-ts.zapstudio.dev';
+export const BASE_URL = DEV ? 'http://localhost:3000' : DEMO_URL;
 export const SALES_EMAIL = 'sales@example.com';
 export const SUPPORT_EMAIL = 'support@example.com';
 
