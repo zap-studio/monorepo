@@ -4,7 +4,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@zap-ts/config/*": ["packages/config/*"]
+      "@zap-ts/*": ["packages/*"]
     }
   }
 }
