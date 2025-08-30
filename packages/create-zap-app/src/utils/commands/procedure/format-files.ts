@@ -5,7 +5,10 @@ import { ProcessExitError } from '@/lib/errors.js';
 
 const execAsync = promisify(exec);
 
-export async function formatFiles(projectDir: string, spinner: Ora): Promise<void> {
+export async function formatFiles(
+  projectDir: string,
+  spinner: Ora
+): Promise<void> {
   spinner.text = 'Formatting files...';
   spinner.start();
 

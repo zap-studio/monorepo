@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import type { Ora } from 'ora';
 import type { PackageManager } from '@/schemas/package-manager.schema.js';
-import { execAsync } from '@/utils/index.js';
 import { generateEnv } from '@/utils/generation/generate-env.js';
+import { execAsync } from '@/utils/index.js';
 
 export async function runFormatting(
   packageManager: PackageManager,
@@ -23,7 +23,10 @@ export async function runFormatting(
   }
 }
 
-export async function generateEnvFile(outputDir: string, spinner: Ora): Promise<void> {
+export async function generateEnvFile(
+  outputDir: string,
+  spinner: Ora
+): Promise<void> {
   spinner.text = 'Generating .env file...';
   spinner.start();
 

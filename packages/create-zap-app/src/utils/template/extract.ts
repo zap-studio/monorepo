@@ -2,7 +2,10 @@ import { execa } from 'execa';
 import fs from 'fs-extra';
 import { ProcessExitError } from '@/lib/errors.js';
 
-export async function extractTemplate(outputDir: string, tarballPath: string): Promise<void> {
+export async function extractTemplate(
+  outputDir: string,
+  tarballPath: string
+): Promise<void> {
   try {
     await execa('tar', [
       '-xzf',

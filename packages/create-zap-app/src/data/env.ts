@@ -27,4 +27,4 @@ export const CORE_ENV = [
   'MCP_SENTRY_ACCESS_TOKEN',
   'MCP_SENTRY_HOST',
   'ZAP_MAIL',
-] as const
+] as const;

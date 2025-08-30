@@ -40,7 +40,7 @@ export async function promptProjectName(): Promise<string> {
 export async function promptPackageManagerSelection(
   message: string,
   pm?: PackageManager
-): Promise<"npm" | "yarn" | "pnpm" | "bun"> {
+): Promise<'npm' | 'yarn' | 'pnpm' | 'bun'> {
   try {
     const response = await inquirer.prompt([
       {

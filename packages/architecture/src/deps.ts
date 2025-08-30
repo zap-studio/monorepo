@@ -434,15 +434,97 @@ export const Dependencies: [
   ...typeof ClassicDeps.dependencies,
   ...typeof ZapDeps.dependencies,
   ...typeof ClassicDevDeps.dependencies,
-  ...typeof ZapDevDeps.dependencies
+  ...typeof ZapDevDeps.dependencies,
 ] = [
   ...ClassicDeps.dependencies,
   ...ZapDeps.dependencies,
   ...ClassicDevDeps.dependencies,
-  ...ZapDevDeps.dependencies
+  ...ZapDevDeps.dependencies,
 ] as const;
 
-export const Packages: readonly ("@types/serialize-javascript" | "@types/web-push" | "cross-env" | "drizzle-kit" | "react-scan" | "ultracite" | "next" | "react" | "react-dom" | "tailwindcss" | "@zap-ts/architecture" | "@ai-sdk/openai" | "@ai-sdk/mistral" | "@ai-sdk/react" | "@bprogress/next" | "@flags-sdk/posthog" | "@hookform/resolvers" | "@mdx-js/loader" | "@mdx-js/react" | "@neondatabase/serverless" | "@next/bundle-analyzer" | "@orpc/client" | "@orpc/react-query" | "@orpc/server" | "@polar-sh/better-auth" | "@polar-sh/sdk" | "@react-email/components" | "@tanstack/react-query" | "@tanstack/react-query-devtools" | "@vercel/analytics" | "@vercel/speed-insights" | "ai" | "better-auth" | "class-variance-authority" | "client-only" | "clsx" | "cmdk" | "date-fns" | "dotenv" | "drizzle-orm" | "embla-carousel-react" | "flags" | "gray-matter" | "input-otp" | "lucide-react" | "motion" | "next-mdx-remote" | "next-sitemap" | "next-themes" | "nuqs" | "pg" | "posthog-js" | "posthog-node" | "radix-ui" | "react-day-picker" | "react-email" | "react-hook-form" | "react-resizable-panels" | "react-syntax-highlighter" | "recharts" | "resend" | "schema-dts" | "serialize-javascript" | "server-only" | "sonner" | "tailwind-merge" | "tailwindcss-animate" | "vaul" | "web-push" | "zod" | "zustand" | "@biomejs/biome" | "@tailwindcss/postcss" | "@types/node" | "@types/react" | "@types/react-dom" | "typescript" | "@react-email/preview-server" | "@types/mdx" | "@types/pg" | "@types/react-syntax-highlighter")[] = [
+export const Packages: readonly (
+  | '@types/serialize-javascript'
+  | '@types/web-push'
+  | 'cross-env'
+  | 'drizzle-kit'
+  | 'react-scan'
+  | 'ultracite'
+  | 'next'
+  | 'react'
+  | 'react-dom'
+  | 'tailwindcss'
+  | '@zap-ts/architecture'
+  | '@ai-sdk/openai'
+  | '@ai-sdk/mistral'
+  | '@ai-sdk/react'
+  | '@bprogress/next'
+  | '@flags-sdk/posthog'
+  | '@hookform/resolvers'
+  | '@mdx-js/loader'
+  | '@mdx-js/react'
+  | '@neondatabase/serverless'
+  | '@next/bundle-analyzer'
+  | '@orpc/client'
+  | '@orpc/react-query'
+  | '@orpc/server'
+  | '@polar-sh/better-auth'
+  | '@polar-sh/sdk'
+  | '@react-email/components'
+  | '@tanstack/react-query'
+  | '@tanstack/react-query-devtools'
+  | '@vercel/analytics'
+  | '@vercel/speed-insights'
+  | 'ai'
+  | 'better-auth'
+  | 'class-variance-authority'
+  | 'client-only'
+  | 'clsx'
+  | 'cmdk'
+  | 'date-fns'
+  | 'dotenv'
+  | 'drizzle-orm'
+  | 'embla-carousel-react'
+  | 'flags'
+  | 'gray-matter'
+  | 'input-otp'
+  | 'lucide-react'
+  | 'motion'
+  | 'next-mdx-remote'
+  | 'next-sitemap'
+  | 'next-themes'
+  | 'nuqs'
+  | 'pg'
+  | 'posthog-js'
+  | 'posthog-node'
+  | 'radix-ui'
+  | 'react-day-picker'
+  | 'react-email'
+  | 'react-hook-form'
+  | 'react-resizable-panels'
+  | 'react-syntax-highlighter'
+  | 'recharts'
+  | 'resend'
+  | 'schema-dts'
+  | 'serialize-javascript'
+  | 'server-only'
+  | 'sonner'
+  | 'tailwind-merge'
+  | 'tailwindcss-animate'
+  | 'vaul'
+  | 'web-push'
+  | 'zod'
+  | 'zustand'
+  | '@biomejs/biome'
+  | '@tailwindcss/postcss'
+  | '@types/node'
+  | '@types/react'
+  | '@types/react-dom'
+  | 'typescript'
+  | '@react-email/preview-server'
+  | '@types/mdx'
+  | '@types/pg'
+  | '@types/react-syntax-highlighter'
+)[] = [
   ...Object.values(ClassicDeps.dependencies).map((dep) => dep.package),
   ...Object.values(ZapDeps.dependencies).map((dep) => dep.package),
   ...Object.values(ClassicDevDeps.dependencies).map((dep) => dep.package),

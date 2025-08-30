@@ -1,6 +1,9 @@
 import chalk from 'chalk';
 
-export function printSuccessLogs(validatedName: string, kebabCaseName: string): void {
+export function printSuccessLogs(
+  validatedName: string,
+  kebabCaseName: string
+): void {
   process.stdout.write(
     chalk.green(`Successfully created ${validatedName} procedure!\n`)
   );

@@ -4,7 +4,9 @@ import type { PackageManager } from '@/schemas/package-manager.schema.js';
 import { execAsync } from '@/utils/index.js';
 import { promptPackageManagerSelection } from './prompts.js';
 
-export function getInstallCommand(pm: PackageManager): "yarn" | "npm install --legacy-peer-deps" | "pnpm install" | "bun install" {
+export function getInstallCommand(
+  pm: PackageManager
+): 'yarn' | 'npm install --legacy-peer-deps' | 'pnpm install' | 'bun install' {
   switch (pm) {
     case 'npm':
       return 'npm install --legacy-peer-deps';
@@ -23,7 +25,7 @@ export function installDependenciesWithRetry(
   initialPM: PackageManager,
   outputDir: string,
   spinner: Ora
-): Promise<"npm" | "yarn" | "pnpm" | "bun"> {
+): Promise<'npm' | 'yarn' | 'pnpm' | 'bun'> {
   const maxRetries = 3;
   let currentPM: PackageManager = initialPM;
 

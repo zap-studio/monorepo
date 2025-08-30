@@ -14,7 +14,10 @@ import {
   moveTempFilesToOutput,
 } from '@/utils/template/files.js';
 
-export async function setupTemplate(outputDir: string, spinner: Ora): Promise<void> {
+export async function setupTemplate(
+  outputDir: string,
+  spinner: Ora
+): Promise<void> {
   try {
     const tarballPath = await downloadTemplate(outputDir);
 
