@@ -15,7 +15,7 @@ This project is designed to be **static**, **fast**, and **easily deployable**.
 
 ```bash
 git clone https://github.com/zap-studio/zap.ts.git
-cd zap-studio
+cd zap.ts/apps/zap-studio
 ````
 
 2. Install dependencies:

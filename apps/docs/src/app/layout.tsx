@@ -5,6 +5,7 @@ import { Geist as Font } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { Provider } from './provider';
+import { ALEXANDRE_TROTEL_WEBSITE_URL, BASE_URL } from '@/data/website';
 
 const font = Font({
   subsets: ['latin'],
@@ -12,7 +13,6 @@ const font = Font({
 
 const APP_NAME = 'Zap.ts';
 const APP_DESCRIPTION = 'Build applications as fast as a zap.';
-const BASE_URL = 'https://zap.ts-alexandretrotel.org';
 
 export const metadata: Metadata = {
   title: APP_NAME,
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     'application',
   ],
   authors: [
-    { name: 'Alexandre Trotel', url: 'https://www.alexandretrotel.org' },
+    { name: 'Alexandre Trotel', url: ALEXANDRE_TROTEL_WEBSITE_URL },
   ],
   creator: 'Alexandre Trotel',
   publisher: 'Alexandre Trotel',
