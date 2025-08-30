@@ -3,9 +3,9 @@ import { fileURLToPath } from 'node:url';
 import chalk from 'chalk';
 import figlet from 'figlet';
 import fs from 'fs-extra';
-import { packageJsonSchema } from '@/schemas/package-json.schema';
+import { packageJsonSchema } from '@/schemas/package-json.schema.js';
 
-export async function getPackageVersion() {
+export async function getPackageVersion(): Promise<string | undefined> {
   try {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
@@ -22,7 +22,7 @@ export async function getPackageVersion() {
   }
 }
 
-export function displayWelcome() {
+export function displayWelcome(): void {
   const banner = figlet.textSync('Zap.ts', {
     font: 'ANSI Shadow',
   });
@@ -36,7 +36,7 @@ export function displayWelcome() {
   );
 }
 
-export function displayNextSteps(filename: string) {
+export function displayNextSteps(filename: string): void {
   process.stdout.write(`\n${chalk.blue('📋 Next steps:')}`);
   process.stdout.write(
     `\n1. Review and customize the variables in ${chalk.cyan(filename)}`

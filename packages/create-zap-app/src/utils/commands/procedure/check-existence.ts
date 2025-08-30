@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import { Project } from 'ts-morph';
-import { ValidationError } from '@/lib/errors';
+import { ValidationError } from '@/lib/errors.js';
 
 export type ExistenceCheckResult = {
   procedureFileExists: boolean;

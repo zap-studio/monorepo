@@ -1,8 +1,8 @@
 import path from 'node:path';
 import fs from 'fs-extra';
-import { FileSystemError } from '@/lib/errors';
+import { FileSystemError } from '@/lib/errors.js';
 
-export async function downloadTemplate(outputDir: string) {
+export async function downloadTemplate(outputDir: string): Promise<string> {
   try {
     const tarballUrl =
       'https://api.github.com/repos/zap-studio/zap.ts/tarball/main';

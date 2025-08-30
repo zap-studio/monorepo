@@ -1,9 +1,9 @@
 import path from 'node:path';
 import fs from 'fs-extra';
-import { LOCKFILES } from '@/data/package-manager';
-import { FileSystemError } from '@/lib/errors';
+import { LOCKFILES } from '@/data/package-manager.js';
+import { FileSystemError } from '@/lib/errors.js';
 
-export async function cleanupOutputDirectory(outputDir: string) {
+export async function cleanupOutputDirectory(outputDir: string): Promise<void> {
   try {
     const outputFiles = await fs.readdir(outputDir);
 
@@ -20,7 +20,7 @@ export async function cleanupOutputDirectory(outputDir: string) {
   }
 }
 
-export async function removeLockFiles(outputDir: string) {
+export async function removeLockFiles(outputDir: string): Promise<void> {
   try {
     const removePromises = LOCKFILES.map((lockFile) =>
       path.join(outputDir, lockFile)
@@ -34,7 +34,7 @@ export async function removeLockFiles(outputDir: string) {
   }
 }
 
-export async function cleanupPackageJson(outputDir: string) {
+export async function cleanupPackageJson(outputDir: string): Promise<void> {
   try {
     const packageJsonPath = path.join(outputDir, 'package.json');
     if (fs.existsSync(packageJsonPath)) {

@@ -1,5 +1,5 @@
-import { L } from '../helpers/link';
-import type { FileList } from '../types';
+import { L } from '../helpers/link.js';
+import type { FileList } from '../types.js';
 
 export const InstrumentationFiles: FileList = {
   category: 'INSTRUMENTATION',

@@ -1,20 +1,20 @@
-import type { CategoryId, FileList } from '../types';
-import { ComponentsFiles } from './components';
-import { ConfigFiles } from './config';
-import { DockerFiles } from './docker';
-import { EmailsFiles } from './emails';
-import { ErrorFiles } from './errors';
-import { HooksFiles } from './hooks';
-import { IdeFiles } from './ide';
-import { InstrumentationFiles } from './instrumentation';
-import { LibrariesFiles } from './libraries';
-import { MetadataFiles } from './metadata';
-import { MiddlewareFiles } from './middleware';
-import { PagesFiles } from './pages';
-import { ProvidersFiles } from './providers';
-import { RootFiles } from './root';
-import { RoutesFiles } from './routes';
-import { ZapFiles } from './zap';
+import type { CategoryId, FileList } from '../types.js';
+import { ComponentsFiles } from './components.js';
+import { ConfigFiles } from './config.js';
+import { DockerFiles } from './docker.js';
+import { EmailsFiles } from './emails.js';
+import { ErrorFiles } from './errors.js';
+import { HooksFiles } from './hooks.js';
+import { IdeFiles } from './ide.js';
+import { InstrumentationFiles } from './instrumentation.js';
+import { LibrariesFiles } from './libraries.js';
+import { MetadataFiles } from './metadata.js';
+import { MiddlewareFiles } from './middleware.js';
+import { PagesFiles } from './pages.js';
+import { ProvidersFiles } from './providers.js';
+import { RootFiles } from './root.js';
+import { RoutesFiles } from './routes.js';
+import { ZapFiles } from './zap.js';
 
 export const CategoryIds = [
   'ROOT',

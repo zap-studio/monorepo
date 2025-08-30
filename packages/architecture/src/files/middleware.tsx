@@ -1,4 +1,4 @@
-import type { FileList } from '../types';
+import type { FileList } from '../types.js';
 
 export const MiddlewareFiles: FileList = {
   category: 'MIDDLEWARE',

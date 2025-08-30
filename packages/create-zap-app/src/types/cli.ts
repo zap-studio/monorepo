@@ -2,7 +2,7 @@
  * Regular expression for validating project names.
  * Allows letters, numbers, hyphens, and underscores only.
  */
-export const PROJECT_NAME_REGEX = /^[a-zA-Z0-9-_]+$/;
+export const PROJECT_NAME_REGEX: RegExp = /^[a-zA-Z0-9-_]+$/;
 
 /**
  * Represents an error that can occur during CLI operations.

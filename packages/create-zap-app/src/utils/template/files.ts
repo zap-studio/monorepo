@@ -1,8 +1,8 @@
 import path from 'node:path';
 import fs from 'fs-extra';
-import { FileSystemError } from '@/lib/errors';
+import { FileSystemError } from '@/lib/errors.js';
 
-export async function moveCoreFiles(outputDir: string) {
+export async function moveCoreFiles(outputDir: string): Promise<void> {
   try {
     const tempDir = path.join(outputDir, 'temp');
     await fs.ensureDir(tempDir);
@@ -25,7 +25,7 @@ export async function moveCoreFiles(outputDir: string) {
 export async function moveTempFilesToOutput(
   outputDir: string,
   tempDir: string
-) {
+): Promise<void> {
   try {
     await fs.ensureDir(tempDir);
 
@@ -42,7 +42,7 @@ export async function moveTempFilesToOutput(
   }
 }
 
-export async function exists(filePath: string) {
+export async function exists(filePath: string): Promise<boolean> {
   try {
     await fs.access(filePath);
     return true;

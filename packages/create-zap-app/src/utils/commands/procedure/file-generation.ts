@@ -1,13 +1,13 @@
 import path from 'node:path';
 import fs from 'fs-extra';
-import { FileSystemError } from '@/lib/errors';
+import { FileSystemError } from '@/lib/errors.js';
 import { toPascalCase } from './validation.js';
 
 export async function generateProcedureFile(
   projectDir: string,
   procedureName: string,
   kebabCaseName: string
-) {
+): Promise<void> {
   try {
     const procedurePath = path.join(
       projectDir,
@@ -34,7 +34,7 @@ export async function generateHookFile(
   projectDir: string,
   procedureName: string,
   kebabCaseName: string
-) {
+): Promise<void> {
   try {
     const hookPath = path.join(
       projectDir,

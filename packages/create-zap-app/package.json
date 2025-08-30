@@ -1,6 +1,23 @@
 {
   "name": "create-zap-app",
   "description": "A CLI to bootstrap a Next.js boilerplate with plugins customization.",
+  "version": "1.4.12",
+  "type": "module",
+  "private": false,
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
   "author": "Alexandre Trotel",
   "keywords": [
     "next.js",
@@ -18,12 +35,6 @@
     "boilerplate",
     "starter-kit"
   ],
-  "version": "1.4.12",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.cts",
-  "type": "module",
-  "private": false,
   "publishConfig": {
     "access": "public"
   },
@@ -74,20 +85,10 @@
   "peerDependencies": {
     "typescript": "^5.8.3"
   },
-  "files": [
-    "dist/**/*",
-    "README.md"
-  ],
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss}": [
       "ultracite format"
     ]
   },
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./package.json": "./package.json"
-  }
+  "types": "./dist/index.d.cts"
 }

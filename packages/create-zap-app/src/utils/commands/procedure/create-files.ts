@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import type { Ora } from 'ora';
-import { ProcessExitError } from '@/lib/errors';
-import { generateHookFile, generateProcedureFile } from './file-generation';
-import { updateRouterFile } from './router-update';
+import { ProcessExitError } from '@/lib/errors.js';
+import { generateHookFile, generateProcedureFile } from './file-generation.js';
+import { updateRouterFile } from './router-update.js';
 
 async function createProcedure(
   projectDir: string,
@@ -54,7 +54,7 @@ export async function createFiles(
   validatedName: string,
   kebabCaseName: string,
   spinner: Ora
-) {
+): Promise<void> {
   await createProcedure(projectDir, validatedName, kebabCaseName, spinner);
   await updateRouter(projectDir, validatedName, kebabCaseName, spinner);
   await createHook(projectDir, validatedName, kebabCaseName, spinner);

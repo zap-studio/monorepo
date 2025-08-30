@@ -4,4 +4,4 @@ export const LOCKFILES = [
   'pnpm-lock.yaml',
   'bun.lockb',
   'bun.lock',
-];
+] as const

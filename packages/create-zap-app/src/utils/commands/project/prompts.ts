@@ -2,8 +2,8 @@ import path from 'node:path';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
-import { PromptError } from '@/lib/errors';
-import type { PackageManager } from '@/schemas/package-manager.schema';
+import { PromptError } from '@/lib/errors.js';
+import type { PackageManager } from '@/schemas/package-manager.schema.js';
 import { PROJECT_NAME_REGEX } from '@/types/cli.js';
 
 function validateProjectName(input: string) {
@@ -19,7 +19,7 @@ function validateProjectName(input: string) {
   return true;
 }
 
-export async function promptProjectName() {
+export async function promptProjectName(): Promise<string> {
   try {
     const response = (await inquirer.prompt([
       {
@@ -40,7 +40,7 @@ export async function promptProjectName() {
 export async function promptPackageManagerSelection(
   message: string,
   pm?: PackageManager
-) {
+): Promise<"npm" | "yarn" | "pnpm" | "bun"> {
   try {
     const response = await inquirer.prompt([
       {

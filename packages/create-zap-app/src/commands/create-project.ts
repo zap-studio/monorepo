@@ -1,23 +1,23 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import ora from 'ora';
-import { FileSystemError } from '@/lib/errors';
+import { FileSystemError } from '@/lib/errors.js';
 import {
   installDependenciesWithRetry,
   updateDependencies,
-} from '@/utils/commands/project/dependencies';
+} from '@/utils/commands/project/dependencies.js';
 import {
   displaySuccessMessage,
   generateEnvFile,
   runFormatting,
-} from '@/utils/commands/project/post-install';
+} from '@/utils/commands/project/post-install.js';
 import {
   promptPackageManagerSelection,
   promptProjectName,
-} from '@/utils/commands/project/prompts';
-import { setupProjectTemplate } from '@/utils/commands/project/setup';
+} from '@/utils/commands/project/prompts.js';
+import { setupProjectTemplate } from '@/utils/commands/project/setup.js';
 
-export async function createProject() {
+export async function createProject(): Promise<void> {
   const projectName = await promptProjectName();
   let packageManager = await promptPackageManagerSelection(
     'Which package manager do you want to use?'

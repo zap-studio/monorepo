@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import type { Ora } from 'ora';
-import { FileSystemError } from '@/lib/errors';
+import { FileSystemError } from '@/lib/errors.js';
 import {
   cleanupOutputDirectory,
   cleanupPackageJson,
@@ -14,7 +14,7 @@ import {
   moveTempFilesToOutput,
 } from '@/utils/template/files.js';
 
-export async function setupTemplate(outputDir: string, spinner: Ora) {
+export async function setupTemplate(outputDir: string, spinner: Ora): Promise<void> {
   try {
     const tarballPath = await downloadTemplate(outputDir);
 

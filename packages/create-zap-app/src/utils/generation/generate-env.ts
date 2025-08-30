@@ -1,8 +1,8 @@
 import { resolve } from 'node:path';
 import fs from 'fs-extra';
 import type { Ora } from 'ora';
-import { CORE_ENV } from '@/data/env';
-import { FileSystemError } from '@/lib/errors';
+import { CORE_ENV } from '@/data/env.js';
+import { FileSystemError } from '@/lib/errors.js';
 import { generateSecret } from '@/utils/generation/generate-secret.js';
 
 function getEnvVarContent(envVar: string) {
@@ -54,7 +54,7 @@ export async function generateEnv({
   outputDir,
   filename = '.env',
   spinner,
-}: GenerateEnvOptions) {
+}: GenerateEnvOptions): Promise<void> {
   try {
     const envContent = CORE_ENV.map((envVar) => getEnvVarContent(envVar)).join(
       '\n'

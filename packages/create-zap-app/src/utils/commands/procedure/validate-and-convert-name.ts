@@ -1,4 +1,4 @@
-import { toKebabCase, validateProcedureName } from './validation';
+import { toKebabCase, validateProcedureName } from './validation.js';
 
 export function validateAndConvertName(procedureName: string): {
   validatedName: string;

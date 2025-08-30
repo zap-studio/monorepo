@@ -4,7 +4,7 @@ import {
   Project,
   type SourceFile,
 } from 'ts-morph';
-import { FileSystemError } from '@/lib/errors';
+import { FileSystemError } from '@/lib/errors.js';
 
 async function saveRouterFile(sourceFile: SourceFile): Promise<void> {
   try {
@@ -73,7 +73,7 @@ export async function updateRouterFile(
   projectDir: string,
   procedureName: string,
   kebabCaseName: string
-) {
+): Promise<void> {
   try {
     const routerPath = path.join(projectDir, 'src/rpc/router.ts');
     const sourceFile = loadSourceFile(routerPath);
