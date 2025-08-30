@@ -19,9 +19,9 @@ export const baseOptions: BaseLayoutProps = {
   links: [
     {
       text: 'Demo',
-      url: 'https://demo.zap-ts.alexandretrotel.org',
+      url: 'https://demo.zap-ts.zapstudio.dev',
       external: true,
     },
   ],
-  githubUrl: 'https://github.com/alexandretrotel/zap.ts',
+  githubUrl: 'https://github.com/zap-studio/zap.ts',
 };

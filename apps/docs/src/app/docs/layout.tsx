@@ -10,7 +10,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       links={[
         {
           text: 'Demo',
-          url: 'https://demo.zap-ts.alexandretrotel.org',
+          url: 'https://demo.zap-ts.zapstudio.dev',
           icon: <ArrowUpRight />,
         },
       ]}

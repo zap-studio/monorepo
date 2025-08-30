@@ -31,7 +31,7 @@ export const ZapDeps = {
     {
       package: '@zap-ts/architecture',
       description: 'Zap.ts modular architecture utilities and core tooling.',
-      link: 'https://zap-ts.alexandretrotel.org/',
+      link: 'https://zap-ts.zapstudio.dev/',
     },
     {
       package: '@ai-sdk/openai',

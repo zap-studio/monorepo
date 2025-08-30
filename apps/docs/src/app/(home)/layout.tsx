@@ -16,12 +16,12 @@ export default function Layout({ children }: { children: ReactNode }) {
         {
           icon: <ArrowUpRight />,
           text: 'Discussions',
-          url: 'https://github.com/alexandretrotel/zap.ts/discussions',
+          url: 'https://github.com/zap-studio/zap.ts/discussions',
         },
         {
           icon: <ArrowUpRight />,
           text: 'Demo',
-          url: 'https://demo.zap-ts.alexandretrotel.org',
+          url: 'https://demo.zap-ts.zapstudio.dev',
         },
         {
           type: 'icon',

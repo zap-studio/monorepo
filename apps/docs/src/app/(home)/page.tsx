@@ -54,7 +54,7 @@ export default function HomePage() {
             </Button>
             <Button asChild variant={'outline'}>
               <Link
-                href="https://github.com/alexandretrotel/zap.ts"
+                href="https://github.com/zap-studio/zap.ts"
                 rel="noreferrer"
                 target="_blank"
               >
