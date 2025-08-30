@@ -9,23 +9,44 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef } from 'react';
-
 import { handleClientError, handleSuccess } from '@/zap/errors/client';
 
+/**
+ * Options for a Zap query, extending `UseQueryOptions` with additional flags for UI handling.
+ *
+ * @template TQueryFnData - The type returned by the query function.
+ * @template TError - The type of error thrown by the query.
+ * @template TData - The type of data returned by the query after optional select transformation.
+ * @template TQueryKey - The query key type.
+ */
 export interface ZapQueryOptions<
   TQueryFnData,
   TError,
   TData,
   TQueryKey extends QueryKey,
 > extends UseQueryOptions<TQueryFnData, TError, TData, TQueryKey> {
+  /** Whether to show a success toast when the query succeeds */
   showSuccessToast?: boolean;
+  /** Optional success message to display */
   successMessage?: string;
+  /** Skip the built-in client error handling if true */
   skipErrorHandling?: boolean;
-
+  /** Callback invoked on query success */
   onSuccess?: (data: TData) => void;
+  /** Callback invoked on query error */
   onError?: (error: TError) => void;
 }
 
+/**
+ * A wrapper around `useQuery` that provides optional success/error handling and toast support.
+ *
+ * @template TQueryFnData - The type returned by the query function.
+ * @template TError - The type of error thrown by the query.
+ * @template TData - The type of data returned by the query after optional select transformation.
+ * @template TQueryKey - The query key type.
+ * @param options - Zap query options
+ * @returns The result of `useQuery`, including status, data, and error.
+ */
 export function useZapQuery<
   TQueryFnData = unknown,
   TError = Error,
@@ -43,7 +64,6 @@ export function useZapQuery<
   const hasHandledSuccess = useRef(false);
   const hasHandledError = useRef(false);
 
-  // Use useMemo to ensure that the queryKey is stable across renders (special case of array reference equality since queryKey is an array)
   const stableQueryKey = useMemo(
     () => restOptions.queryKey,
     [restOptions.queryKey]
@@ -83,6 +103,16 @@ export function useZapQuery<
   return queryResult;
 }
 
+/**
+ * A variant of `useZapQuery` that never refetches, suitable for immutable data.
+ *
+ * @template TQueryFnData - The type returned by the query function.
+ * @template TError - The type of error thrown by the query.
+ * @template TData - The type of data returned by the query after optional select transformation.
+ * @template TQueryKey - The query key type.
+ * @param options - Zap query options
+ * @returns The result of `useZapQuery` with infinite stale and GC times.
+ */
 export function useZapImmutable<
   TQueryFnData = unknown,
   TError = Error,
@@ -101,6 +131,14 @@ export function useZapImmutable<
 
 import { type UseMutationOptions, useMutation } from '@tanstack/react-query';
 
+/**
+ * Options for a Zap mutation, extending `UseMutationOptions` with additional flags for UI handling.
+ *
+ * @template TData - The type of data returned by the mutation.
+ * @template TError - The type of error thrown by the mutation.
+ * @template TVariables - The type of variables passed to the mutation function.
+ * @template TContext - Optional context returned by `onMutate`.
+ */
 interface ZapMutationOptions<TData, TError, TVariables, TContext>
   extends UseMutationOptions<TData, TError, TVariables, TContext> {
   showSuccessToast?: boolean;
@@ -120,6 +158,16 @@ interface ZapMutationOptions<TData, TError, TVariables, TContext>
   ) => void;
 }
 
+/**
+ * A wrapper around `useMutation` that provides optional success/error handling and toast support.
+ *
+ * @template TData - The type of data returned by the mutation.
+ * @template TError - The type of error thrown by the mutation.
+ * @template TVariables - The type of variables passed to the mutation function.
+ * @template TContext - Optional context returned by `onMutate`.
+ * @param options - Zap mutation options
+ * @returns The result of `useMutation`.
+ */
 export function useZapMutation<
   TData = unknown,
   TError = Error,
@@ -154,19 +202,43 @@ export function useZapMutation<
   });
 }
 
+/** Function type for rolling back optimistic updates */
 export type RollbackFn = () => void;
 
+/**
+ * Options for an optimistic mutation, extending ZapMutationOptions with a cache updater.
+ *
+ * @template TData - The type of data returned by the mutation.
+ * @template TError - The type of error thrown by the mutation.
+ * @template TVariables - The type of variables passed to the mutation function.
+ * @template TQueryKey - The query key type for the cache.
+ */
 export interface UseZapOptimisticMutationOptions<
   TData,
   TError,
   TVariables,
   TQueryKey extends QueryKey = readonly unknown[],
 > extends ZapMutationOptions<TData, TError, TVariables, RollbackFn> {
+  /** The query key identifying the cached query to update */
   queryKey: TQueryKey;
+  /** Function that computes the optimistic update */
   updater: (currentData: TData | undefined, variables: TVariables) => TData;
+  /** Queries to invalidate after mutation succeeds */
   invalidates?: TQueryKey | TQueryKey[];
 }
 
+/**
+ * A hook for performing optimistic mutations.
+ *
+ * Applies an optimistic update to the cache, rolls back on error, and optionally invalidates queries.
+ *
+ * @template TData - The type of data returned by the mutation.
+ * @template TError - The type of error thrown by the mutation.
+ * @template TVariables - The type of variables passed to the mutation function.
+ * @template TQueryKey - The query key type for the cache.
+ * @param options - Options for the optimistic mutation.
+ * @returns The result of `useZapMutation`.
+ */
 export function useZapOptimisticMutation<
   TData extends NoInfer<InferDataFromTag<unknown, TQueryKey>> | undefined,
   TError,
