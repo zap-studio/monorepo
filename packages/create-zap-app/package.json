@@ -38,14 +38,14 @@
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://zap-ts.alexandretrotel.org",
+  "homepage": "https://zap-ts.zapstudio.dev",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/zap-studio/zap.ts/issues"
   },
   "funding": {
     "type": "individual",
-    "url": "https://github.com/sponsors/alexandretrotel"
+    "url": "https://github.com/sponsors/zap-studio"
   },
   "repository": {
     "type": "git",

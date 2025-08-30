@@ -25,7 +25,5 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  event.waitUntil(
-    clients.openWindow('https://demo.zap-ts.alexandretrotel.org')
-  ); // Make sure the URL matches your app's URL
+  event.waitUntil(clients.openWindow('https://demo.zap-ts.zapstudio.dev')); // Make sure the URL matches your app's URL
 });

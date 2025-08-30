@@ -3,6 +3,7 @@ import { HomeLayout } from 'fumadocs-ui/layouts/home';
 import { ArrowUpRight } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { baseOptions } from '@/app/layout.config';
+import { DEMO_URL, DISCORD_URL, GITHUB_DISCUSSIONS_URL } from '@/data/website';
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -16,18 +17,18 @@ export default function Layout({ children }: { children: ReactNode }) {
         {
           icon: <ArrowUpRight />,
           text: 'Discussions',
-          url: 'https://github.com/zap-studio/zap.ts/discussions',
+          url: GITHUB_DISCUSSIONS_URL,
         },
         {
           icon: <ArrowUpRight />,
           text: 'Demo',
-          url: 'https://demo.zap-ts.alexandretrotel.org',
+          url: DEMO_URL,
         },
         {
           type: 'icon',
           icon: <RiDiscordFill />,
           text: 'Discord',
-          url: 'https://discord.gg/24hXMC3eAa',
+          url: DISCORD_URL,
         },
       ]}
     >

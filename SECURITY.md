@@ -26,7 +26,7 @@ This policy applies to:
 
 - The `zap` CLI tool
 - The core Next.js boilerplate template provided by the CLI
-- The content and logic of the documentation hosted at [zap-ts.alexandretrotel.org](https://zap-ts.alexandretrotel.org)
+- The content and logic of the documentation hosted at [zap-ts.zapstudio.dev](https://zap-ts.zapstudio.dev/)
 
 This policy does **not** apply to:
 - Projects generated from Zap.ts (these become user projects)
