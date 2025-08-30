@@ -17,8 +17,8 @@ import { EmbeddedTweet, TweetNotFound, TweetSkeleton } from 'react-tweet';
 import { getTweet as _getTweet } from 'react-tweet/api';
 import { Button } from '@/components/ui/button';
 import { testimonials } from '@/data/testimonials';
-import { CopyCommand } from './_components/copy-command';
 import { GITHUB_REPO_URL } from '@/data/website';
+import { CopyCommand } from './_components/copy-command';
 
 const sectionClass = 'px-6 md:py-16 py-8';
 const cardBase = 'rounded-xl border bg-card shadow-sm';
@@ -54,11 +54,7 @@ export default function HomePage() {
               </Link>
             </Button>
             <Button asChild variant={'outline'}>
-              <Link
-                href={GITHUB_REPO_URL}
-                rel="noreferrer"
-                target="_blank"
-              >
+              <Link href={GITHUB_REPO_URL} rel="noreferrer" target="_blank">
                 <Stars className="size-4" />
                 Star on GitHub
               </Link>

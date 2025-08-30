@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 import { Geist as Font } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { Toaster } from '@/components/ui/sonner';
-import { Provider } from './provider';
 import { ALEXANDRE_TROTEL_WEBSITE_URL, BASE_URL } from '@/data/website';
+import { Provider } from './provider';
 
 const font = Font({
   subsets: ['latin'],
@@ -31,9 +31,7 @@ export const metadata: Metadata = {
     'web',
     'application',
   ],
-  authors: [
-    { name: 'Alexandre Trotel', url: ALEXANDRE_TROTEL_WEBSITE_URL },
-  ],
+  authors: [{ name: 'Alexandre Trotel', url: ALEXANDRE_TROTEL_WEBSITE_URL }],
   creator: 'Alexandre Trotel',
   publisher: 'Alexandre Trotel',
   metadataBase: new URL(BASE_URL),

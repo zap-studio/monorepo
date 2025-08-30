@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'fs-extra';
-import { FileSystemError } from '@/lib/errors';
 import { GITHUB_DOWNLOAD_URL } from '@/data/website';
+import { FileSystemError } from '@/lib/errors';
 
 export async function downloadTemplate(outputDir: string) {
   try {

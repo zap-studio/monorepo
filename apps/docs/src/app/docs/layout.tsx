@@ -2,8 +2,8 @@ import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { ArrowUpRight } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { baseOptions } from '@/app/layout.config';
-import { source } from '@/lib/source';
 import { DEMO_URL } from '@/data/website';
+import { source } from '@/lib/source';
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (

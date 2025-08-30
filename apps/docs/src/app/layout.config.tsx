@@ -1,5 +1,5 @@
-import { DEMO_URL, GITHUB_REPO_URL } from '@/data/website';
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
+import { DEMO_URL, GITHUB_REPO_URL } from '@/data/website';
 
 /**
  * Shared layout configurations
