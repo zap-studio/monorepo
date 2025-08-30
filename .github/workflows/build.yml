@@ -45,7 +45,7 @@ jobs:
         env:
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          DATABASE_URL_DEV: ${{ vars.DATABASE_URL_DEV }}
+          DATABASE_URL_DEV: ${{ secrets.DATABASE_URL_DEV }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: |
