@@ -464,7 +464,7 @@ export const Dependencies = [
   {
     readonly package: '@zap-ts/architecture';
     readonly description: 'Zap.ts modular architecture utilities and core tooling.';
-    readonly link: 'https://zap-ts.alexandretrotel.org/';
+    readonly link: 'https://zap-ts.zapstudio.dev/';
   },
   {
     readonly package: '@ai-sdk/openai';
@@ -870,7 +870,7 @@ export const Dependencies = [
   {
     readonly package: '@zap-ts/architecture';
     readonly description: 'Zap.ts modular architecture utilities and core tooling.';
-    readonly link: 'https://zap-ts.alexandretrotel.org/';
+    readonly link: 'https://zap-ts.zapstudio.dev/';
   },
   {
     readonly package: '@ai-sdk/openai';
