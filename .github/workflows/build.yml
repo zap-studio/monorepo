@@ -40,6 +40,12 @@ jobs:
         with:
           node-version: 24.2.0
 
+      - name: Create .env for core
+        working-directory: core
+        run: |
+          echo 'DATABASE_URL="postgresql://postgres:password@localhost:5432/zap_dev"' > .env
+          echo 'ENCRYPTION_KEY="thKRsbbZRmwn8kBfCaoQP9a+ul97PjIBO7Mxgc3cX6k"' >> .env
+
       - name: Install core deps
         working-directory: core
         run: bun install --frozen-lockfile
