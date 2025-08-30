@@ -5,6 +5,7 @@ import {
   type QueryKey,
   type UseQueryOptions,
   useQuery,
+  useQueryClient,
 } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef } from 'react';
 
@@ -105,7 +106,12 @@ interface ZapMutationOptions<TData, TError, TVariables, TContext>
   successMessage?: string;
   skipErrorHandling?: boolean;
 
-  onSuccess?: (data: TData, variables: TVariables, context: TContext) => void;
+  onSettled?: (
+    data: TData | undefined,
+    error: TError | null,
+    variables: TVariables,
+    context: TContext | undefined
+  ) => void;
   onError?: (
     error: TError,
     variables: TVariables,
@@ -127,11 +133,16 @@ export function useZapMutation<
 
   return useMutation({
     ...restOptions,
-    onSuccess: (data: TData, variables: TVariables, context: TContext) => {
+    onSettled: (
+      data: TData | undefined,
+      error: TError | null,
+      variables: TVariables,
+      context: TContext | undefined
+    ) => {
       if (showSuccessToast && options?.successMessage) {
         handleSuccess(options.successMessage);
       }
-      options?.onSuccess?.(data, variables, context);
+      options?.onSettled?.(data, error, variables, context);
     },
     onError: (error: TError, variables: TVariables, context?: TContext) => {
       if (!skipErrorHandling) {
@@ -139,5 +150,62 @@ export function useZapMutation<
       }
       options?.onError?.(error, variables, context);
     },
+  });
+}
+
+export type RollbackFn = () => void;
+
+export interface UseZapOptimisticMutationOptions<
+  TData,
+  TError,
+  TVariables,
+  TQueryKey extends QueryKey = readonly unknown[],
+> extends ZapMutationOptions<TData, TError, TVariables, RollbackFn> {
+  queryKey: TQueryKey;
+  updater: RollbackFn;
+  invalidates?: TQueryKey | TQueryKey[];
+}
+
+export function useZapOptimisticMutation<
+  TData,
+  TError,
+  TVariables,
+  TQueryKey extends QueryKey = readonly unknown[],
+>({
+  mutationFn,
+  queryKey,
+  updater,
+  invalidates,
+  ...restOptions
+}: UseZapOptimisticMutationOptions<TData, TError, TVariables, TQueryKey>) {
+  const queryClient = useQueryClient();
+
+  return useZapMutation<TData, TError, TVariables, RollbackFn>({
+    mutationFn,
+    onMutate: async (variables: TVariables) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const snapshot = queryClient.getQueryData(queryKey);
+
+      queryClient.setQueryData(queryKey, (currentData) =>
+        updater(currentData, variables)
+      );
+
+      return () => {
+        queryClient.setQueryData(queryKey, snapshot);
+      };
+    },
+    onSettled: (data, error, variables, rollback) => {
+      restOptions.onSettled?.(data, error, variables, rollback);
+
+      if (invalidates) {
+        queryClient.invalidateQueries({ queryKey: invalidates });
+      }
+    },
+    onError: (error, variables, rollback) => {
+      rollback?.();
+      restOptions.onError?.(error, variables, rollback);
+    },
+    ...restOptions,
   });
 }
