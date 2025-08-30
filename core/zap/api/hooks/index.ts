@@ -254,6 +254,7 @@ export function useZapOptimisticMutation<
   const queryClient = useQueryClient();
 
   return useZapMutation<TData, TError, TVariables, RollbackFn>({
+    ...restOptions,
     mutationFn,
     onMutate: async (variables: TVariables) => {
       await queryClient.cancelQueries({ queryKey });
@@ -279,6 +280,5 @@ export function useZapOptimisticMutation<
       rollback?.();
       restOptions.onError?.(error, variables, rollback);
     },
-    ...restOptions,
   });
 }
