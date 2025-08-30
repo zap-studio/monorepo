@@ -430,17 +430,18 @@ export const ZapDevDeps = {
   ],
 } as const;
 
-export const Dependencies: [
-  ...typeof ClassicDeps.dependencies,
-  ...typeof ZapDeps.dependencies,
-  ...typeof ClassicDevDeps.dependencies,
-  ...typeof ZapDevDeps.dependencies,
-] = [
-  ...ClassicDeps.dependencies,
-  ...ZapDeps.dependencies,
-  ...ClassicDevDeps.dependencies,
-  ...ZapDevDeps.dependencies,
-] as const;
+export const Dependencies =
+  [
+    ...ClassicDeps.dependencies,
+    ...ZapDeps.dependencies,
+    ...ClassicDevDeps.dependencies,
+    ...ZapDevDeps.dependencies,
+  ] as const satisfies readonly [
+    ...typeof ClassicDeps.dependencies,
+    ...typeof ZapDeps.dependencies,
+    ...typeof ClassicDevDeps.dependencies,
+    ...typeof ZapDevDeps.dependencies,
+  ];
 
 export const Packages: readonly (
   | '@types/serialize-javascript'
