@@ -2,6 +2,7 @@
 import 'client-only';
 
 import {
+  type InferDataFromTag,
   type QueryKey,
   type UseQueryOptions,
   useQuery,
@@ -162,12 +163,12 @@ export interface UseZapOptimisticMutationOptions<
   TQueryKey extends QueryKey = readonly unknown[],
 > extends ZapMutationOptions<TData, TError, TVariables, RollbackFn> {
   queryKey: TQueryKey;
-  updater: RollbackFn;
+  updater: (currentData: TData | undefined, variables: TVariables) => TData;
   invalidates?: TQueryKey | TQueryKey[];
 }
 
 export function useZapOptimisticMutation<
-  TData,
+  TData extends NoInfer<InferDataFromTag<unknown, TQueryKey>> | undefined,
   TError,
   TVariables,
   TQueryKey extends QueryKey = readonly unknown[],
@@ -187,7 +188,7 @@ export function useZapOptimisticMutation<
 
       const snapshot = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData(queryKey, (currentData) =>
+      queryClient.setQueryData<TData>(queryKey, (currentData) =>
         updater(currentData, variables)
       );
 
