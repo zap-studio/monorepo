@@ -12,6 +12,7 @@
     "postbuild": "typedoc --entryPointStrategy expand src"
   },
   "devDependencies": {
+    "@zap-ts/config": "workspace:*",
     "@types/bun": "latest",
     "@types/react": "^19.1.12",
     "tsdown": "^0.14.2",

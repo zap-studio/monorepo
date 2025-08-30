@@ -1,33 +1,10 @@
 {
+  "extends": "@zap-ts/config/ts/node.json",
   "compilerOptions": {
-    "lib": ["ESNext"],
-    "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-
-    "outDir": "./dist",
+    "baseUrl": ".",
     "rootDir": "./src",
-
-    "strict": true,
-    "strictNullChecks": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-
-    "declaration": true,
-    "declarationMap": true,
-    "isolatedDeclarations": true,
-
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-
-    "skipLibCheck": true,
-    "types": ["node"],
-
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "outDir": "./dist"
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

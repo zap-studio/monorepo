@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
-    "strictNullChecks": true
+    "strictNullChecks": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@zap-ts/config/*": ["packages/config/*"]
+    }
   }
 }

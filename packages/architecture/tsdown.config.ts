@@ -1,12 +1,6 @@
+import { bundlerConfig } from '@zap-ts/config/bundler/config';
 import { defineConfig } from 'tsdown';
 
 export default defineConfig({
-  entry: ['src/**'],
-  dts: {
-    sourcemap: true,
-  },
-  format: ['cjs', 'esm'],
-  exports: true,
-  shims: true,
-  sourcemap: true,
+  ...bundlerConfig,
 });

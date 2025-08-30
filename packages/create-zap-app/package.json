@@ -74,6 +74,7 @@
     "zod": "^4.1.5"
   },
   "devDependencies": {
+    "@zap-ts/config": "workspace:*",
     "@types/figlet": "^1.7.0",
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.9",

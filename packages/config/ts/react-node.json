@@ -1,0 +1,6 @@
+{
+  "extends": "./react.json",
+  "compilerOptions": {
+    "types": ["react", "react-dom", "node"]
+  }
+}

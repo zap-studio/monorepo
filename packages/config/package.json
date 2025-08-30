@@ -1,0 +1,9 @@
+{
+  "name": "@zap-ts/config",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "tsdown": "^0.14.2"
+  }
+}
