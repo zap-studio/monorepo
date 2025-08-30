@@ -440,6 +440,818 @@ export const Dependencies = [
   ...typeof ZapDeps.dependencies,
   ...typeof ClassicDevDeps.dependencies,
   ...typeof ZapDevDeps.dependencies,
+] satisfies readonly [
+  {
+    readonly package: 'next';
+    readonly description: 'The core React framework for server-side rendering, routing, and static site generation.';
+    readonly link: 'https://nextjs.org/docs';
+  },
+  {
+    readonly package: 'react';
+    readonly description: 'The foundational library for building user interfaces.';
+    readonly link: 'https://react.dev';
+  },
+  {
+    readonly package: 'react-dom';
+    readonly description: 'Provides DOM-specific methods for rendering React apps.';
+    readonly link: 'https://react.dev/reference/react-dom';
+  },
+  {
+    readonly package: 'tailwindcss';
+    readonly description: 'Utility-first CSS framework for rapid UI development.';
+    readonly link: 'https://tailwindcss.com/docs';
+  },
+  {
+    readonly package: '@zap-ts/architecture';
+    readonly description: 'Zap.ts modular architecture utilities and core tooling.';
+    readonly link: 'https://zap-ts.alexandretrotel.org/';
+  },
+  {
+    readonly package: '@ai-sdk/openai';
+    readonly description: 'Integrates OpenAI models for AI-powered features.';
+    readonly link: 'https://sdk.vercel.ai/docs';
+  },
+  {
+    readonly package: '@ai-sdk/mistral';
+    readonly description: 'Integrates Mistral models for generative AI features.';
+    readonly link: 'https://sdk.vercel.ai/docs';
+  },
+  {
+    readonly package: '@ai-sdk/react';
+    readonly description: 'React bindings for the Vercel AI SDK.';
+    readonly link: 'https://sdk.vercel.ai/docs';
+  },
+  {
+    readonly package: '@bprogress/next';
+    readonly description: 'Progress bar integration for Next.js applications.';
+    readonly link: 'https://bprogress.vercel.app/';
+  },
+  {
+    readonly package: '@flags-sdk/posthog';
+    readonly description: 'Feature flags and analytics integration with PostHog.';
+    readonly link: 'https://posthog.com/docs';
+  },
+  {
+    readonly package: '@hookform/resolvers';
+    readonly description: 'Validation resolvers for integrating schemas with React Hook Form.';
+    readonly link: 'https://react-hook-form.com/docs/useform/#resolver';
+  },
+  {
+    readonly package: '@mdx-js/loader';
+    readonly description: 'Webpack loader for compiling MDX files.';
+    readonly link: 'https://mdxjs.com/';
+  },
+  {
+    readonly package: '@mdx-js/react';
+    readonly description: 'React bindings for MDX, enabling JSX inside Markdown.';
+    readonly link: 'https://mdxjs.com/packages/react/';
+  },
+  {
+    readonly package: '@neondatabase/serverless';
+    readonly description: 'Serverless PostgreSQL driver for scalable database access.';
+    readonly link: 'https://neon.com/docs/introduction';
+  },
+  {
+    readonly package: '@next/bundle-analyzer';
+    readonly description: 'Bundle analysis tool for Next.js apps.';
+    readonly link: 'https://github.com/vercel/next.js/tree/canary/packages/next-bundle-analyzer';
+  },
+  {
+    readonly package: '@orpc/client';
+    readonly description: 'oRPC client for typed remote procedure calls.';
+    readonly link: 'https://orpc.unnoq.com/docs/getting-started';
+  },
+  {
+    readonly package: '@orpc/react-query';
+    readonly description: 'oRPC integration with TanStack React Query.';
+    readonly link: 'https://orpc.unnoq.com/docs/integrations/tanstack-query';
+  },
+  {
+    readonly package: '@orpc/server';
+    readonly description: 'oRPC server utilities for type-safe APIs.';
+    readonly link: 'https://orpc.unnoq.com/docs/getting-started';
+  },
+  {
+    readonly package: '@polar-sh/better-auth';
+    readonly description: 'Authentication solution integrated with Polar.';
+    readonly link: 'https://www.better-auth.com/docs/plugins/polar';
+  },
+  {
+    readonly package: '@polar-sh/sdk';
+    readonly description: 'Polar SDK for payments and subscriptions.';
+    readonly link: 'https://docs.polar.sh/introduction';
+  },
+  {
+    readonly package: '@react-email/components';
+    readonly description: 'Prebuilt React components for building rich emails.';
+    readonly link: 'https://react.email/docs/components/html';
+  },
+  {
+    readonly package: '@tanstack/react-query';
+    readonly description: 'Powerful data fetching and caching for React.';
+    readonly link: 'https://tanstack.com/query/latest';
+  },
+  {
+    readonly package: '@tanstack/react-query-devtools';
+    readonly description: 'Developer tools for debugging React Query.';
+    readonly link: 'https://tanstack.com/query/latest/docs/framework/react/devtools';
+  },
+  {
+    readonly package: '@vercel/analytics';
+    readonly description: 'Analytics for Vercel-hosted applications.';
+    readonly link: 'https://vercel.com/docs/analytics';
+  },
+  {
+    readonly package: '@vercel/speed-insights';
+    readonly description: 'Performance monitoring for Vercel deployments.';
+    readonly link: 'https://vercel.com/docs/speed-insights';
+  },
+  {
+    readonly package: 'ai';
+    readonly description: 'Vercel AI SDK for LLMs and generative AI features.';
+    readonly link: 'https://sdk.vercel.ai/docs';
+  },
+  {
+    readonly package: 'better-auth';
+    readonly description: 'Authentication solution for modern applications.';
+    readonly link: 'https://www.better-auth.com/docs/introduction';
+  },
+  {
+    readonly package: 'class-variance-authority';
+    readonly description: 'Utility for managing class names and variants in React.';
+    readonly link: 'https://cva.style/docs';
+  },
+  {
+    readonly package: 'client-only';
+    readonly description: 'Next.js component ensuring client-only rendering.';
+    readonly link: 'https://www.npmjs.com/package/client-only';
+  },
+  {
+    readonly package: 'clsx';
+    readonly description: 'Utility for conditional className construction.';
+    readonly link: 'https://github.com/lukeed/clsx';
+  },
+  {
+    readonly package: 'cmdk';
+    readonly description: 'Accessible command menu component for React.';
+    readonly link: 'https://cmdk.paco.me/';
+  },
+  {
+    readonly package: 'date-fns';
+    readonly description: 'Modern date utility library for JavaScript.';
+    readonly link: 'https://date-fns.org';
+  },
+  {
+    readonly package: 'dotenv';
+    readonly description: 'Loads environment variables from .env files.';
+    readonly link: 'https://www.dotenv.org/';
+  },
+  {
+    readonly package: 'drizzle-orm';
+    readonly description: 'TypeScript ORM for SQL databases with migrations and schema tools.';
+    readonly link: 'https://orm.drizzle.team/docs/overview';
+  },
+  {
+    readonly package: 'embla-carousel-react';
+    readonly description: 'Lightweight carousel component for React.';
+    readonly link: 'https://www.embla-carousel.com/';
+  },
+  {
+    readonly package: 'flags';
+    readonly description: 'Feature flagging and remote configuration library.';
+    readonly link: 'https://flags-sdk.dev/';
+  },
+  {
+    readonly package: 'gray-matter';
+    readonly description: 'Parses front matter from Markdown files.';
+    readonly link: 'https://github.com/jonschlinkert/gray-matter';
+  },
+  {
+    readonly package: 'input-otp';
+    readonly description: 'One-time password input component for React.';
+    readonly link: 'https://input-otp.rodz.dev/';
+  },
+  {
+    readonly package: 'lucide-react';
+    readonly description: 'Beautifully simple React icon library.';
+    readonly link: 'https://lucide.dev';
+  },
+  {
+    readonly package: 'motion';
+    readonly description: 'Animation library for React with simple APIs.';
+    readonly link: 'https://motion.dev';
+  },
+  {
+    readonly package: 'next-mdx-remote';
+    readonly description: 'Remote MDX loader for Next.js pages.';
+    readonly link: 'https://github.com/hashicorp/next-mdx-remote';
+  },
+  {
+    readonly package: 'next-sitemap';
+    readonly description: 'Automatic sitemap generation for Next.js apps.';
+    readonly link: 'https://github.com/iamvishnusankar/next-sitemap';
+  },
+  {
+    readonly package: 'next-themes';
+    readonly description: 'Theme switching and dark mode for Next.js.';
+    readonly link: 'https://github.com/pacocoursey/next-themes';
+  },
+  {
+    readonly package: 'nuqs';
+    readonly description: 'Type-safe state management with URL search params.';
+    readonly link: 'https://nuqs.47ng.com/';
+  },
+  {
+    readonly package: 'pg';
+    readonly description: 'PostgreSQL client for Node.js.';
+    readonly link: 'https://node-postgres.com';
+  },
+  {
+    readonly package: 'posthog-js';
+    readonly description: 'PostHog analytics SDK for web apps.';
+    readonly link: 'https://posthog.com/docs/libraries/js';
+  },
+  {
+    readonly package: 'posthog-node';
+    readonly description: 'PostHog analytics SDK for Node.js.';
+    readonly link: 'https://posthog.com/docs/libraries/node';
+  },
+  {
+    readonly package: 'radix-ui';
+    readonly description: 'Primitives for building accessible UI components.';
+    readonly link: 'https://www.radix-ui.com/';
+  },
+  {
+    readonly package: 'react-day-picker';
+    readonly description: 'Flexible and accessible date picker for React.';
+    readonly link: 'https://react-day-picker.js.org/';
+  },
+  {
+    readonly package: 'react-email';
+    readonly description: 'Framework for building and sending emails with React.';
+    readonly link: 'https://react.email';
+  },
+  {
+    readonly package: 'react-hook-form';
+    readonly description: 'Performant form management library for React.';
+    readonly link: 'https://react-hook-form.com';
+  },
+  {
+    readonly package: 'react-resizable-panels';
+    readonly description: 'Resizable panel components for React apps.';
+    readonly link: 'https://react-resizable-panels.vercel.app/';
+  },
+  {
+    readonly package: 'react-syntax-highlighter';
+    readonly description: 'Syntax highlighting component for React code blocks.';
+    readonly link: 'https://react-syntax-highlighter.github.io/react-syntax-highlighter/demo/';
+  },
+  {
+    readonly package: 'recharts';
+    readonly description: 'Declarative charting library for React.';
+    readonly link: 'https://recharts.org/';
+  },
+  {
+    readonly package: 'resend';
+    readonly description: 'Transactional email sending service.';
+    readonly link: 'https://resend.com';
+  },
+  {
+    readonly package: 'schema-dts';
+    readonly description: 'TypeScript definitions for schema.org JSON-LD.';
+    readonly link: 'https://github.com/google/schema-dts';
+  },
+  {
+    readonly package: 'serialize-javascript';
+    readonly description: 'Securely serialize JavaScript for transfer.';
+    readonly link: 'https://github.com/yahoo/serialize-javascript';
+  },
+  {
+    readonly package: 'server-only';
+    readonly description: 'Next.js component enforcing server-only rendering.';
+    readonly link: 'https://www.npmjs.com/package/server-only';
+  },
+  {
+    readonly package: 'sonner';
+    readonly description: 'Minimal toast notification library for React.';
+    readonly link: 'https://sonner.emilkowal.ski/';
+  },
+  {
+    readonly package: 'tailwind-merge';
+    readonly description: 'Utility for merging Tailwind CSS classes intelligently.';
+    readonly link: 'https://github.com/dcastil/tailwind-merge';
+  },
+  {
+    readonly package: 'tailwindcss-animate';
+    readonly description: 'Animation utilities for Tailwind CSS projects.';
+    readonly link: 'https://github.com/jamiebuilds/tailwindcss-animate';
+  },
+  {
+    readonly package: 'vaul';
+    readonly description: 'Accessible drawer component for React.';
+    readonly link: 'https://vaul.emilkowal.ski/';
+  },
+  {
+    readonly package: 'web-push';
+    readonly description: 'Library for sending Web Push notifications.';
+    readonly link: 'https://github.com/web-push-libs/web-push';
+  },
+  {
+    readonly package: 'zod';
+    readonly description: 'TypeScript-first schema validation library.';
+    readonly link: 'https://zod.dev';
+  },
+  {
+    readonly package: 'zustand';
+    readonly description: 'Small, fast state management solution for React.';
+    readonly link: 'https://zustand-demo.pmnd.rs/';
+  },
+  {
+    readonly package: '@biomejs/biome';
+    readonly description: 'Fast linter and formatter for TypeScript and JavaScript.';
+    readonly link: 'https://biomejs.dev';
+  },
+  {
+    readonly package: '@tailwindcss/postcss';
+    readonly description: 'PostCSS plugin for integrating TailwindCSS.';
+    readonly link: 'https://tailwindcss.com/docs/installation/using-postcss';
+  },
+  {
+    readonly package: '@types/node';
+    readonly description: 'TypeScript type definitions for Node.js.';
+    readonly link: 'https://www.npmjs.com/package/@types/node';
+  },
+  {
+    readonly package: '@types/react';
+    readonly description: 'TypeScript type definitions for React.';
+    readonly link: 'https://www.npmjs.com/package/@types/react';
+  },
+  {
+    readonly package: '@types/react-dom';
+    readonly description: 'TypeScript type definitions for ReactDOM.';
+    readonly link: 'https://www.npmjs.com/package/@types/react-dom';
+  },
+  {
+    readonly package: 'typescript';
+    readonly description: 'Type-safe JavaScript development language.';
+    readonly link: 'https://www.typescriptlang.org/';
+  },
+  {
+    readonly package: '@react-email/preview-server';
+    readonly description: 'Development server for previewing React Email templates.';
+    readonly link: 'https://react.email/docs/introduction';
+  },
+  {
+    readonly package: '@types/mdx';
+    readonly description: 'TypeScript type definitions for MDX.';
+    readonly link: 'https://www.npmjs.com/package/@types/mdx';
+  },
+  {
+    readonly package: '@types/pg';
+    readonly description: 'TypeScript type definitions for pg (PostgreSQL).';
+    readonly link: 'https://www.npmjs.com/package/@types/pg';
+  },
+  {
+    readonly package: '@types/react-syntax-highlighter';
+    readonly description: 'TypeScript type definitions for react-syntax-highlighter.';
+    readonly link: 'https://www.npmjs.com/package/@types/react-syntax-highlighter';
+  },
+  {
+    readonly package: '@types/serialize-javascript';
+    readonly description: 'TypeScript type definitions for serialize-javascript.';
+    readonly link: 'https://www.npmjs.com/package/@types/serialize-javascript';
+  },
+  {
+    readonly package: '@types/web-push';
+    readonly description: 'TypeScript type definitions for web-push.';
+    readonly link: 'https://www.npmjs.com/package/@types/web-push';
+  },
+  {
+    readonly package: 'cross-env';
+    readonly description: 'Run environment variables across platforms in scripts.';
+    readonly link: 'https://github.com/kentcdodds/cross-env';
+  },
+  {
+    readonly package: 'drizzle-kit';
+    readonly description: 'CLI for Drizzle ORM migrations and schema generation.';
+    readonly link: 'https://orm.drizzle.team/kit-docs';
+  },
+  {
+    readonly package: 'react-scan';
+    readonly description: 'Detects performance issues in React apps automatically.';
+    readonly link: 'https://react-scan.com/';
+  },
+  {
+    readonly package: 'ultracite';
+    readonly description: 'AI-powered linter/formatter for collaborative coding.';
+    readonly link: 'https://www.ultracite.ai/';
+  },
+] as readonly [
+  {
+    readonly package: 'next';
+    readonly description: 'The core React framework for server-side rendering, routing, and static site generation.';
+    readonly link: 'https://nextjs.org/docs';
+  },
+  {
+    readonly package: 'react';
+    readonly description: 'The foundational library for building user interfaces.';
+    readonly link: 'https://react.dev';
+  },
+  {
+    readonly package: 'react-dom';
+    readonly description: 'Provides DOM-specific methods for rendering React apps.';
+    readonly link: 'https://react.dev/reference/react-dom';
+  },
+  {
+    readonly package: 'tailwindcss';
+    readonly description: 'Utility-first CSS framework for rapid UI development.';
+    readonly link: 'https://tailwindcss.com/docs';
+  },
+  {
+    readonly package: '@zap-ts/architecture';
+    readonly description: 'Zap.ts modular architecture utilities and core tooling.';
+    readonly link: 'https://zap-ts.alexandretrotel.org/';
+  },
+  {
+    readonly package: '@ai-sdk/openai';
+    readonly description: 'Integrates OpenAI models for AI-powered features.';
+    readonly link: 'https://sdk.vercel.ai/docs';
+  },
+  {
+    readonly package: '@ai-sdk/mistral';
+    readonly description: 'Integrates Mistral models for generative AI features.';
+    readonly link: 'https://sdk.vercel.ai/docs';
+  },
+  {
+    readonly package: '@ai-sdk/react';
+    readonly description: 'React bindings for the Vercel AI SDK.';
+    readonly link: 'https://sdk.vercel.ai/docs';
+  },
+  {
+    readonly package: '@bprogress/next';
+    readonly description: 'Progress bar integration for Next.js applications.';
+    readonly link: 'https://bprogress.vercel.app/';
+  },
+  {
+    readonly package: '@flags-sdk/posthog';
+    readonly description: 'Feature flags and analytics integration with PostHog.';
+    readonly link: 'https://posthog.com/docs';
+  },
+  {
+    readonly package: '@hookform/resolvers';
+    readonly description: 'Validation resolvers for integrating schemas with React Hook Form.';
+    readonly link: 'https://react-hook-form.com/docs/useform/#resolver';
+  },
+  {
+    readonly package: '@mdx-js/loader';
+    readonly description: 'Webpack loader for compiling MDX files.';
+    readonly link: 'https://mdxjs.com/';
+  },
+  {
+    readonly package: '@mdx-js/react';
+    readonly description: 'React bindings for MDX, enabling JSX inside Markdown.';
+    readonly link: 'https://mdxjs.com/packages/react/';
+  },
+  {
+    readonly package: '@neondatabase/serverless';
+    readonly description: 'Serverless PostgreSQL driver for scalable database access.';
+    readonly link: 'https://neon.com/docs/introduction';
+  },
+  {
+    readonly package: '@next/bundle-analyzer';
+    readonly description: 'Bundle analysis tool for Next.js apps.';
+    readonly link: 'https://github.com/vercel/next.js/tree/canary/packages/next-bundle-analyzer';
+  },
+  {
+    readonly package: '@orpc/client';
+    readonly description: 'oRPC client for typed remote procedure calls.';
+    readonly link: 'https://orpc.unnoq.com/docs/getting-started';
+  },
+  {
+    readonly package: '@orpc/react-query';
+    readonly description: 'oRPC integration with TanStack React Query.';
+    readonly link: 'https://orpc.unnoq.com/docs/integrations/tanstack-query';
+  },
+  {
+    readonly package: '@orpc/server';
+    readonly description: 'oRPC server utilities for type-safe APIs.';
+    readonly link: 'https://orpc.unnoq.com/docs/getting-started';
+  },
+  {
+    readonly package: '@polar-sh/better-auth';
+    readonly description: 'Authentication solution integrated with Polar.';
+    readonly link: 'https://www.better-auth.com/docs/plugins/polar';
+  },
+  {
+    readonly package: '@polar-sh/sdk';
+    readonly description: 'Polar SDK for payments and subscriptions.';
+    readonly link: 'https://docs.polar.sh/introduction';
+  },
+  {
+    readonly package: '@react-email/components';
+    readonly description: 'Prebuilt React components for building rich emails.';
+    readonly link: 'https://react.email/docs/components/html';
+  },
+  {
+    readonly package: '@tanstack/react-query';
+    readonly description: 'Powerful data fetching and caching for React.';
+    readonly link: 'https://tanstack.com/query/latest';
+  },
+  {
+    readonly package: '@tanstack/react-query-devtools';
+    readonly description: 'Developer tools for debugging React Query.';
+    readonly link: 'https://tanstack.com/query/latest/docs/framework/react/devtools';
+  },
+  {
+    readonly package: '@vercel/analytics';
+    readonly description: 'Analytics for Vercel-hosted applications.';
+    readonly link: 'https://vercel.com/docs/analytics';
+  },
+  {
+    readonly package: '@vercel/speed-insights';
+    readonly description: 'Performance monitoring for Vercel deployments.';
+    readonly link: 'https://vercel.com/docs/speed-insights';
+  },
+  {
+    readonly package: 'ai';
+    readonly description: 'Vercel AI SDK for LLMs and generative AI features.';
+    readonly link: 'https://sdk.vercel.ai/docs';
+  },
+  {
+    readonly package: 'better-auth';
+    readonly description: 'Authentication solution for modern applications.';
+    readonly link: 'https://www.better-auth.com/docs/introduction';
+  },
+  {
+    readonly package: 'class-variance-authority';
+    readonly description: 'Utility for managing class names and variants in React.';
+    readonly link: 'https://cva.style/docs';
+  },
+  {
+    readonly package: 'client-only';
+    readonly description: 'Next.js component ensuring client-only rendering.';
+    readonly link: 'https://www.npmjs.com/package/client-only';
+  },
+  {
+    readonly package: 'clsx';
+    readonly description: 'Utility for conditional className construction.';
+    readonly link: 'https://github.com/lukeed/clsx';
+  },
+  {
+    readonly package: 'cmdk';
+    readonly description: 'Accessible command menu component for React.';
+    readonly link: 'https://cmdk.paco.me/';
+  },
+  {
+    readonly package: 'date-fns';
+    readonly description: 'Modern date utility library for JavaScript.';
+    readonly link: 'https://date-fns.org';
+  },
+  {
+    readonly package: 'dotenv';
+    readonly description: 'Loads environment variables from .env files.';
+    readonly link: 'https://www.dotenv.org/';
+  },
+  {
+    readonly package: 'drizzle-orm';
+    readonly description: 'TypeScript ORM for SQL databases with migrations and schema tools.';
+    readonly link: 'https://orm.drizzle.team/docs/overview';
+  },
+  {
+    readonly package: 'embla-carousel-react';
+    readonly description: 'Lightweight carousel component for React.';
+    readonly link: 'https://www.embla-carousel.com/';
+  },
+  {
+    readonly package: 'flags';
+    readonly description: 'Feature flagging and remote configuration library.';
+    readonly link: 'https://flags-sdk.dev/';
+  },
+  {
+    readonly package: 'gray-matter';
+    readonly description: 'Parses front matter from Markdown files.';
+    readonly link: 'https://github.com/jonschlinkert/gray-matter';
+  },
+  {
+    readonly package: 'input-otp';
+    readonly description: 'One-time password input component for React.';
+    readonly link: 'https://input-otp.rodz.dev/';
+  },
+  {
+    readonly package: 'lucide-react';
+    readonly description: 'Beautifully simple React icon library.';
+    readonly link: 'https://lucide.dev';
+  },
+  {
+    readonly package: 'motion';
+    readonly description: 'Animation library for React with simple APIs.';
+    readonly link: 'https://motion.dev';
+  },
+  {
+    readonly package: 'next-mdx-remote';
+    readonly description: 'Remote MDX loader for Next.js pages.';
+    readonly link: 'https://github.com/hashicorp/next-mdx-remote';
+  },
+  {
+    readonly package: 'next-sitemap';
+    readonly description: 'Automatic sitemap generation for Next.js apps.';
+    readonly link: 'https://github.com/iamvishnusankar/next-sitemap';
+  },
+  {
+    readonly package: 'next-themes';
+    readonly description: 'Theme switching and dark mode for Next.js.';
+    readonly link: 'https://github.com/pacocoursey/next-themes';
+  },
+  {
+    readonly package: 'nuqs';
+    readonly description: 'Type-safe state management with URL search params.';
+    readonly link: 'https://nuqs.47ng.com/';
+  },
+  {
+    readonly package: 'pg';
+    readonly description: 'PostgreSQL client for Node.js.';
+    readonly link: 'https://node-postgres.com';
+  },
+  {
+    readonly package: 'posthog-js';
+    readonly description: 'PostHog analytics SDK for web apps.';
+    readonly link: 'https://posthog.com/docs/libraries/js';
+  },
+  {
+    readonly package: 'posthog-node';
+    readonly description: 'PostHog analytics SDK for Node.js.';
+    readonly link: 'https://posthog.com/docs/libraries/node';
+  },
+  {
+    readonly package: 'radix-ui';
+    readonly description: 'Primitives for building accessible UI components.';
+    readonly link: 'https://www.radix-ui.com/';
+  },
+  {
+    readonly package: 'react-day-picker';
+    readonly description: 'Flexible and accessible date picker for React.';
+    readonly link: 'https://react-day-picker.js.org/';
+  },
+  {
+    readonly package: 'react-email';
+    readonly description: 'Framework for building and sending emails with React.';
+    readonly link: 'https://react.email';
+  },
+  {
+    readonly package: 'react-hook-form';
+    readonly description: 'Performant form management library for React.';
+    readonly link: 'https://react-hook-form.com';
+  },
+  {
+    readonly package: 'react-resizable-panels';
+    readonly description: 'Resizable panel components for React apps.';
+    readonly link: 'https://react-resizable-panels.vercel.app/';
+  },
+  {
+    readonly package: 'react-syntax-highlighter';
+    readonly description: 'Syntax highlighting component for React code blocks.';
+    readonly link: 'https://react-syntax-highlighter.github.io/react-syntax-highlighter/demo/';
+  },
+  {
+    readonly package: 'recharts';
+    readonly description: 'Declarative charting library for React.';
+    readonly link: 'https://recharts.org/';
+  },
+  {
+    readonly package: 'resend';
+    readonly description: 'Transactional email sending service.';
+    readonly link: 'https://resend.com';
+  },
+  {
+    readonly package: 'schema-dts';
+    readonly description: 'TypeScript definitions for schema.org JSON-LD.';
+    readonly link: 'https://github.com/google/schema-dts';
+  },
+  {
+    readonly package: 'serialize-javascript';
+    readonly description: 'Securely serialize JavaScript for transfer.';
+    readonly link: 'https://github.com/yahoo/serialize-javascript';
+  },
+  {
+    readonly package: 'server-only';
+    readonly description: 'Next.js component enforcing server-only rendering.';
+    readonly link: 'https://www.npmjs.com/package/server-only';
+  },
+  {
+    readonly package: 'sonner';
+    readonly description: 'Minimal toast notification library for React.';
+    readonly link: 'https://sonner.emilkowal.ski/';
+  },
+  {
+    readonly package: 'tailwind-merge';
+    readonly description: 'Utility for merging Tailwind CSS classes intelligently.';
+    readonly link: 'https://github.com/dcastil/tailwind-merge';
+  },
+  {
+    readonly package: 'tailwindcss-animate';
+    readonly description: 'Animation utilities for Tailwind CSS projects.';
+    readonly link: 'https://github.com/jamiebuilds/tailwindcss-animate';
+  },
+  {
+    readonly package: 'vaul';
+    readonly description: 'Accessible drawer component for React.';
+    readonly link: 'https://vaul.emilkowal.ski/';
+  },
+  {
+    readonly package: 'web-push';
+    readonly description: 'Library for sending Web Push notifications.';
+    readonly link: 'https://github.com/web-push-libs/web-push';
+  },
+  {
+    readonly package: 'zod';
+    readonly description: 'TypeScript-first schema validation library.';
+    readonly link: 'https://zod.dev';
+  },
+  {
+    readonly package: 'zustand';
+    readonly description: 'Small, fast state management solution for React.';
+    readonly link: 'https://zustand-demo.pmnd.rs/';
+  },
+  {
+    readonly package: '@biomejs/biome';
+    readonly description: 'Fast linter and formatter for TypeScript and JavaScript.';
+    readonly link: 'https://biomejs.dev';
+  },
+  {
+    readonly package: '@tailwindcss/postcss';
+    readonly description: 'PostCSS plugin for integrating TailwindCSS.';
+    readonly link: 'https://tailwindcss.com/docs/installation/using-postcss';
+  },
+  {
+    readonly package: '@types/node';
+    readonly description: 'TypeScript type definitions for Node.js.';
+    readonly link: 'https://www.npmjs.com/package/@types/node';
+  },
+  {
+    readonly package: '@types/react';
+    readonly description: 'TypeScript type definitions for React.';
+    readonly link: 'https://www.npmjs.com/package/@types/react';
+  },
+  {
+    readonly package: '@types/react-dom';
+    readonly description: 'TypeScript type definitions for ReactDOM.';
+    readonly link: 'https://www.npmjs.com/package/@types/react-dom';
+  },
+  {
+    readonly package: 'typescript';
+    readonly description: 'Type-safe JavaScript development language.';
+    readonly link: 'https://www.typescriptlang.org/';
+  },
+  {
+    readonly package: '@react-email/preview-server';
+    readonly description: 'Development server for previewing React Email templates.';
+    readonly link: 'https://react.email/docs/introduction';
+  },
+  {
+    readonly package: '@types/mdx';
+    readonly description: 'TypeScript type definitions for MDX.';
+    readonly link: 'https://www.npmjs.com/package/@types/mdx';
+  },
+  {
+    readonly package: '@types/pg';
+    readonly description: 'TypeScript type definitions for pg (PostgreSQL).';
+    readonly link: 'https://www.npmjs.com/package/@types/pg';
+  },
+  {
+    readonly package: '@types/react-syntax-highlighter';
+    readonly description: 'TypeScript type definitions for react-syntax-highlighter.';
+    readonly link: 'https://www.npmjs.com/package/@types/react-syntax-highlighter';
+  },
+  {
+    readonly package: '@types/serialize-javascript';
+    readonly description: 'TypeScript type definitions for serialize-javascript.';
+    readonly link: 'https://www.npmjs.com/package/@types/serialize-javascript';
+  },
+  {
+    readonly package: '@types/web-push';
+    readonly description: 'TypeScript type definitions for web-push.';
+    readonly link: 'https://www.npmjs.com/package/@types/web-push';
+  },
+  {
+    readonly package: 'cross-env';
+    readonly description: 'Run environment variables across platforms in scripts.';
+    readonly link: 'https://github.com/kentcdodds/cross-env';
+  },
+  {
+    readonly package: 'drizzle-kit';
+    readonly description: 'CLI for Drizzle ORM migrations and schema generation.';
+    readonly link: 'https://orm.drizzle.team/kit-docs';
+  },
+  {
+    readonly package: 'react-scan';
+    readonly description: 'Detects performance issues in React apps automatically.';
+    readonly link: 'https://react-scan.com/';
+  },
+  {
+    readonly package: 'ultracite';
+    readonly description: 'AI-powered linter/formatter for collaborative coding.';
+    readonly link: 'https://www.ultracite.ai/';
+  },
 ];
 
 export const Packages: readonly (
