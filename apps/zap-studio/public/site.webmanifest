@@ -1,6 +1,9 @@
 {
-  "name": "",
-  "short_name": "",
+  "id": "/",
+  "name": "Zap Studio",
+  "short_name": "Zap",
+  "start_url": "/",
+  "scope": "/",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
