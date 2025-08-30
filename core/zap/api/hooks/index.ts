@@ -188,7 +188,7 @@ export function useZapMutation<
       variables: TVariables,
       context: TContext | undefined
     ) => {
-      if (showSuccessToast && options?.successMessage) {
+      if (!error && showSuccessToast && options?.successMessage) {
         handleSuccess(options.successMessage);
       }
       options?.onSettled?.(data, error, variables, context);
@@ -271,7 +271,7 @@ export function useZapOptimisticMutation<
     onSettled: (data, error, variables, rollback) => {
       restOptions.onSettled?.(data, error, variables, rollback);
 
-      if (invalidates) {
+      if (!error && invalidates) {
         queryClient.invalidateQueries({ queryKey: invalidates });
       }
     },
