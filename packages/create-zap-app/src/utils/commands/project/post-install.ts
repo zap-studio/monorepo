@@ -3,6 +3,7 @@ import type { Ora } from 'ora';
 import type { PackageManager } from '@/schemas/package-manager.schema';
 import { execAsync } from '@/utils';
 import { generateEnv } from '@/utils/generation/generate-env';
+import { GITHUB_REPO_URL } from '@/data/website';
 
 export async function runFormatting(
   packageManager: PackageManager,
@@ -54,6 +55,6 @@ export function displaySuccessMessage(
     )
   );
   process.stdout.write(
-    chalk.white('👉 https://github.com/zap-studio/zap.ts\n')
+    chalk.white(`👉 ${GITHUB_REPO_URL}\n`)
   );
 }
