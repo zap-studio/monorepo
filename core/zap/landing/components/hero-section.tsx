@@ -28,19 +28,29 @@ const getStatsData = cache(async () => {
     promises.push(Promise.resolve(0));
   }
 
-  const [ratingData, numberOfUsers] = await Promise.all(promises);
+  try {
+    const [ratingData, numberOfUsers] = await Promise.all(promises);
 
-  const { averageRating, totalFeedbacks } = isFeedbacksEnabled
-    ? (ratingData as { averageRating: number; totalFeedbacks: number })
-    : { averageRating: 0, totalFeedbacks: 0 };
+    const { averageRating, totalFeedbacks } = isFeedbacksEnabled
+      ? (ratingData as { averageRating: number; totalFeedbacks: number })
+      : { averageRating: 0, totalFeedbacks: 0 };
 
-  return {
-    averageRating,
-    totalFeedbacks,
-    numberOfUsers: isAuthEnabled ? (numberOfUsers as number) : 0,
-    isFeedbacksEnabled,
-    isAuthEnabled,
-  };
+    return {
+      averageRating,
+      totalFeedbacks,
+      numberOfUsers: isAuthEnabled ? (numberOfUsers as number) : 0,
+      isFeedbacksEnabled,
+      isAuthEnabled,
+    };
+  } catch {
+    return {
+      averageRating: 0,
+      totalFeedbacks: 0,
+      numberOfUsers: 0,
+      isFeedbacksEnabled,
+      isAuthEnabled,
+    };
+  }
 });
 
 export function HeroSection() {
