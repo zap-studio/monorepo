@@ -42,12 +42,20 @@ jobs:
 
       - name: Create .env for core
         working-directory: core
+        env:
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL_DEV: ${{ vars.DATABASE_URL_DEV }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: |
-          echo 'BETTER_AUTH_SECRET="jOOWEbeTQnNzdxeISC/2lo51Zo76tdi3mbLw+4R9G0s"' >> .env
-          echo 'DATABASE_URL="postgresql://your_username:your_password@your_database_host/your_database_name?sslmode=require"' >> .env
-          echo 'DATABASE_URL_DEV="postgresql://postgres:password@localhost:5432/zap_dev"' >> .env
-          echo 'ENCRYPTION_KEY="thKRsbbZRmwn8kBfCaoQP9a+ul97PjIBO7Mxgc3cX6k"' >> .env
-          echo 'RESEND_API_KEY="your_resend_api_key_here"' >> .env
+          {
+            echo "BETTER_AUTH_SECRET=\"${BETTER_AUTH_SECRET}\""
+            echo "DATABASE_URL=\"${DATABASE_URL}\""
+            echo "DATABASE_URL_DEV=\"${DATABASE_URL_DEV}\""
+            echo "ENCRYPTION_KEY=\"${ENCRYPTION_KEY}\""
+            echo "RESEND_API_KEY=\"${RESEND_API_KEY}\""
+          } >> .env
 
       - name: Install core deps
         working-directory: core
