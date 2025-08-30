@@ -45,6 +45,7 @@ jobs:
         run: |
           echo 'DATABASE_URL="postgresql://postgres:password@localhost:5432/zap_dev"' > .env
           echo 'ENCRYPTION_KEY="thKRsbbZRmwn8kBfCaoQP9a+ul97PjIBO7Mxgc3cX6k"' >> .env
+          echo 'RESEND_API_KEY="your_resend_api_key_here"' >> .env
 
       - name: Install core deps
         working-directory: core
