@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "private": true,
+  "scripts": {
+    "lint": "ultracite lint",
+    "format": "ultracite format"
+  },
   "devDependencies": {
     "@types/node": "^24.3.0",
     "@types/react": "^19.1.12",

@@ -9,7 +9,9 @@
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
     "clean": "rm -rf ./dist",
-    "postbuild": "typedoc --entryPointStrategy expand src"
+    "postbuild": "typedoc --entryPointStrategy expand src",
+    "lint": "ultracite lint",
+    "format": "ultracite format"
   },
   "devDependencies": {
     "@zap-ts/config": "workspace:*",
