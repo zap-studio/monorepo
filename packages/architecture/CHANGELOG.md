@@ -1,5 +1,11 @@
 # @zap-ts/architecture
 
+## 1.0.8
+
+### Patch Changes
+
+- c38665d: Add getFilesForPlugins function
+
 ## 1.0.7
 
 ### Patch Changes
