@@ -16,16 +16,34 @@ import {
   promptProjectName,
 } from '@/utils/commands/project/prompts.js';
 import { setupProjectTemplate } from '@/utils/commands/project/setup.js';
+import { PACKAGE_MANAGERS } from '@/data/package-manager';
+import { PackageManager } from '@/types/package-manager';
 
-export async function createProject(): Promise<void> {
-  const projectName = await promptProjectName();
-  let packageManager = await promptPackageManagerSelection(
-    'Which package manager do you want to use?'
-  );
+export async function createProject({ projectName, directory, packageManager }: { projectName?: string; directory?: string; packageManager?: string } = {}): Promise<void> {
+  let finalProjectName = projectName;
+  if (!finalProjectName) {
+    finalProjectName = await promptProjectName();
+  }
 
-  const outputDir = path.join(process.cwd(), projectName);
-  const spinner = ora(`Creating project '${projectName}'...`).start();
+  let finalPackageManager: PackageManager;
+  if (packageManager && PACKAGE_MANAGERS.includes(packageManager as any)) {
+    finalPackageManager = packageManager as PackageManager;
+  } else {
+    process.stderr.write(`Invalid package manager: ${packageManager}\n`);
+    finalPackageManager = await promptPackageManagerSelection(
+      'Which package manager do you want to use?'
+    );
+  }
 
+  let outputDir: string;
+  try {
+    outputDir = directory ? path.resolve(directory) : path.join(process.cwd(), finalProjectName);
+  } catch (err) {
+    process.stderr.write(`Unable to resolve output directory path.\n`);
+    process.exit(1);
+  }
+
+  const spinner = ora(`Creating project '${finalProjectName}'...`).start();
   try {
     await fs.ensureDir(outputDir);
   } catch (error) {
@@ -34,16 +52,16 @@ export async function createProject(): Promise<void> {
 
   await setupProjectTemplate(outputDir, spinner);
 
-  const finalPackageManager = await installDependenciesWithRetry(
-    packageManager,
+  const resolvedPackageManager = await installDependenciesWithRetry(
+    finalPackageManager,
     outputDir,
     spinner
   );
-  packageManager = finalPackageManager;
+  finalPackageManager = resolvedPackageManager;
 
-  await updateDependencies(packageManager, outputDir, spinner);
-  await runFormatting(packageManager, outputDir, spinner);
+  await updateDependencies(finalPackageManager, outputDir, spinner);
+  await runFormatting(finalPackageManager, outputDir, spinner);
   await generateEnvFile(outputDir, spinner);
 
-  displaySuccessMessage(projectName, packageManager);
+  displaySuccessMessage(finalProjectName, finalPackageManager);
 }

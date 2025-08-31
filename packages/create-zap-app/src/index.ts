@@ -15,14 +15,20 @@ async function main() {
       )
       .version(version || '1.0.0');
 
-    // TODO: add args for project name and directory
     program
       .command('create-zap-app')
       .description('Create a new Next.js project with Zap.ts boilerplate')
-      .action(async () => {
+      .option('-n, --name <projectName>', 'Name of the project')
+      .option('-d, --directory <directory>', 'Directory to create the project in')
+      .option('-p, --package-manager <packageManager>', 'Package manager to use (npm, yarn, pnpm, bun)')
+      .action(async (opts) => {
         try {
           displayWelcome();
-          await createProject();
+          await createProject({
+            projectName: opts.name,
+            directory: opts.directory,
+            packageManager: opts.packageManager,
+          });
         } catch (error) {
           process.stderr.write(`Failed to create project: ${error}\n`);
           process.exit(1);
@@ -32,7 +38,7 @@ async function main() {
     program.action(async () => {
       try {
         displayWelcome();
-        await createProject();
+        await createProject({});
       } catch (error) {
         process.stderr.write(`Failed to create project: ${error}\n`);
         process.exit(1);

@@ -5,3 +5,10 @@ export const LOCKFILES = [
   'bun.lockb',
   'bun.lock',
 ] as const;
+
+export const PACKAGE_MANAGERS = [
+  'npm',
+  'yarn',
+  'pnpm',
+  'bun',
+] as const;
