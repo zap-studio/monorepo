@@ -4,6 +4,7 @@ import type { IDE } from '@zap-ts/architecture/types';
 import fs from 'fs-extra';
 import { LOCKFILES } from '@/data/package-manager.js';
 import { FileSystemError } from '@/lib/errors.js';
+import { getErrorMessage } from '../misc/error';
 
 export async function cleanupOutputDirectory(outputDir: string): Promise<void> {
   try {
@@ -18,7 +19,9 @@ export async function cleanupOutputDirectory(outputDir: string): Promise<void> {
 
     await Promise.all(removePromises);
   } catch (error) {
-    throw new FileSystemError(`Failed to cleanup output directory: ${error}`);
+    throw new FileSystemError(
+      `Failed to cleanup output directory: ${getErrorMessage(error)}`
+    );
   }
 }
 
@@ -32,7 +35,9 @@ export async function removeLockFiles(outputDir: string): Promise<void> {
 
     await Promise.all(removePromises);
   } catch (error) {
-    throw new FileSystemError(`Failed to remove lock files: ${error}`);
+    throw new FileSystemError(
+      `Failed to remove lock files: ${getErrorMessage(error)}`
+    );
   }
 }
 
@@ -54,7 +59,9 @@ export async function removeIDEConfigFiles(
       }
     }
   } catch (error) {
-    throw new FileSystemError(`Failed to remove IDE config files: ${error}`);
+    throw new FileSystemError(
+      `Failed to remove IDE config files: ${getErrorMessage(error)}`
+    );
   }
 }
 
@@ -70,6 +77,8 @@ export async function cleanupPackageJson(outputDir: string): Promise<void> {
       }
     }
   } catch (error) {
-    throw new FileSystemError(`Failed to cleanup package.json: ${error}`);
+    throw new FileSystemError(
+      `Failed to cleanup package.json: ${getErrorMessage(error)}`
+    );
   }
 }

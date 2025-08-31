@@ -4,39 +4,52 @@ import { GITHUB_REPO_URL } from '@/data/website.js';
 import type { PackageManager } from '@/schemas/package-manager.schema.js';
 import { generateEnv } from '@/utils/generation/generate-env.js';
 import { execAsync } from '@/utils/index.js';
+import { getErrorMessage } from '@/utils/misc/error';
 
 export async function runFormatting(
-  outputDir: string,
-  packageManager: PackageManager,
-  spinner: Ora
+  params: {
+    outputDir: string;
+    packageManager: PackageManager;
+  },
+  spinner: Ora,
+  verbose: boolean
 ): Promise<void> {
   try {
     spinner.text = 'Formatting the project...';
     spinner.start();
 
-    await execAsync(`${packageManager} run format`, {
-      cwd: outputDir,
+    await execAsync(`${params.packageManager} run format`, {
+      cwd: params.outputDir,
     });
 
     spinner.succeed('Formatting complete.');
-  } catch {
+  } catch (error) {
     spinner.warn('Failed to run formatting, continuing anyway...');
+    if (verbose) {
+      process.stderr.write(`${getErrorMessage(error)}\n`);
+    }
   }
 }
 
 export async function generateEnvFile(
-  outputDir: string,
-  spinner: Ora
+  params: {
+    outputDir: string;
+  },
+  spinner: Ora,
+  verbose: boolean
 ): Promise<void> {
   try {
     spinner.text = 'Generating .env file...';
     spinner.start();
 
-    await generateEnv({ outputDir, spinner });
-  } catch {
+    await generateEnv({ outputDir: params.outputDir, spinner });
+  } catch (error) {
     spinner.warn(
       'Unable to generate .env file. You can run `zap generate env` with @zap-ts/cli to create it. Proceeding with setup...'
     );
+    if (verbose) {
+      process.stderr.write(`${getErrorMessage(error)}\n`);
+    }
   }
 }
 

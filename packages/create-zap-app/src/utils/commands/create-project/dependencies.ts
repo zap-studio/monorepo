@@ -1,7 +1,8 @@
 import type { Ora } from 'ora';
-import { ProcessExitError, PromptError } from '@/lib/errors.js';
+import { ProcessExitError } from '@/lib/errors.js';
 import type { PackageManager } from '@/schemas/package-manager.schema.js';
 import { execAsync } from '@/utils/index.js';
+import { getErrorMessage } from '@/utils/misc/error.js';
 import { promptPackageManagerSelection } from './prompts.js';
 
 export function getInstallCommand(
@@ -22,12 +23,14 @@ export function getInstallCommand(
 }
 
 export function installDependenciesWithRetry(
-  outputDir: string,
-  initialPM: PackageManager,
+  params: {
+    outputDir: string;
+    initialPM: PackageManager;
+  },
   spinner: Ora
 ): Promise<'npm' | 'yarn' | 'pnpm' | 'bun'> {
   const maxRetries = 3;
-  let currentPM: PackageManager = initialPM;
+  let currentPM: PackageManager = params.initialPM;
 
   const attemptInstall = async (retryCount: number) => {
     spinner.text = `Installing dependencies with ${currentPM}...`;
@@ -36,7 +39,7 @@ export function installDependenciesWithRetry(
     const installCmd = getInstallCommand(currentPM);
 
     try {
-      await execAsync(installCmd, { cwd: outputDir });
+      await execAsync(installCmd, { cwd: params.outputDir });
       spinner.succeed(`Dependencies installed with ${currentPM}.`);
       return currentPM;
     } catch {
@@ -48,16 +51,11 @@ export function installDependenciesWithRetry(
         );
       }
 
-      try {
-        currentPM = await promptPackageManagerSelection(
-          `${currentPM} failed. Which package manager would you like to try?`
-        );
-        return attemptInstall(retryCount + 1);
-      } catch (error) {
-        throw new PromptError(
-          `Failed to get package manager selection: ${error}`
-        );
-      }
+      spinner.text = `Switching to ${currentPM}...`;
+      currentPM = await promptPackageManagerSelection(
+        `${currentPM} failed. Which package manager would you like to try?`
+      );
+      return attemptInstall(retryCount + 1);
     }
   };
 
@@ -65,17 +63,25 @@ export function installDependenciesWithRetry(
 }
 
 export async function updateDependencies(
-  outputDir: string,
-  packageManager: PackageManager,
-  spinner: Ora
+  params: {
+    outputDir: string;
+    packageManager: PackageManager;
+  },
+  spinner: Ora,
+  verbose: boolean
 ): Promise<void> {
   try {
     spinner.text = 'Updating dependencies...';
     spinner.start();
 
-    await execAsync(`${packageManager} update`, { cwd: outputDir });
+    await execAsync(`${params.packageManager} update`, {
+      cwd: params.outputDir,
+    });
     spinner.succeed('Dependencies updated successfully.');
-  } catch {
+  } catch (error) {
     spinner.warn('Failed to update dependencies, continuing anyway...');
+    if (verbose) {
+      process.stderr.write(`${getErrorMessage(error)}\n`);
+    }
   }
 }

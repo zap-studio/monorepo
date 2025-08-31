@@ -22,6 +22,7 @@ import {
   resolvePlugins,
   resolveProjectName,
 } from '@/utils/commands/create-project/resolve-options';
+import { getErrorMessage } from '@/utils/misc/error';
 import { setupTemplate } from '@/utils/template/setup-template';
 
 type CreateProjectOptions = {
@@ -30,6 +31,7 @@ type CreateProjectOptions = {
   packageManager?: PackageManager;
   ide?: IDE;
   plugins?: OptionalPluginId[];
+  verbose?: boolean;
 };
 
 export async function createProject(
@@ -39,27 +41,34 @@ export async function createProject(
   let packageManager = await resolvePackageManager(options.packageManager);
   const outputDir = resolveOutputDir(projectName, options.directory);
   const ide = await resolveIDE(options.ide);
-  const plugins = await resolvePlugins(options.plugins);
+  const selectedPlugins = await resolvePlugins(options.plugins);
+  const verbose = !!options.verbose;
 
   const spinner = ora(`Creating project '${projectName}'...`).start();
 
-  try {
-    await fs.ensureDir(outputDir);
-  } catch (error) {
-    throw new FileSystemError(`Failed to create project directory: ${error}`);
-  }
+  await fs.ensureDir(outputDir).catch((error) => {
+    throw new FileSystemError(
+      `Failed to create project directory: ${getErrorMessage(error)}`
+    );
+  });
 
   spinner.text = 'Downloading Zap.ts template from GitHub...';
-  await setupTemplate(outputDir, ide, spinner);
-  await pruneUnusedPluginsAndDependencies(outputDir, plugins, spinner);
+  await setupTemplate({ outputDir, ide }, spinner, verbose);
+  await pruneUnusedPluginsAndDependencies(
+    { outputDir, selectedPlugins },
+    spinner,
+    verbose
+  );
   packageManager = await installDependenciesWithRetry(
-    outputDir,
-    packageManager,
+    {
+      outputDir,
+      initialPM: packageManager,
+    },
     spinner
   );
-  await updateDependencies(outputDir, packageManager, spinner);
-  await runFormatting(outputDir, packageManager, spinner);
-  await generateEnvFile(outputDir, spinner);
+  await updateDependencies({ outputDir, packageManager }, spinner, verbose);
+  await runFormatting({ outputDir, packageManager }, spinner, verbose);
+  await generateEnvFile({ outputDir }, spinner, verbose);
 
   displaySuccessMessage(projectName, packageManager);
 }

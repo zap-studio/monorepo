@@ -8,6 +8,7 @@ import inquirer from 'inquirer';
 import { PromptError } from '@/lib/errors.js';
 import type { PackageManager } from '@/schemas/package-manager.schema.js';
 import { PROJECT_NAME_REGEX } from '@/types/cli.js';
+import { getErrorMessage } from '@/utils/misc/error';
 
 function validateProjectName(input: string) {
   if (!PROJECT_NAME_REGEX.test(input)) {
@@ -58,7 +59,9 @@ export async function promptPackageManagerSelection(
 
     return response.packageManager as PackageManager;
   } catch (error) {
-    throw new PromptError(`Failed to get package manager selection: ${error}`);
+    throw new PromptError(
+      `Failed to get package manager selection: ${getErrorMessage(error)}`
+    );
   }
 }
 

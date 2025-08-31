@@ -32,31 +32,54 @@ function getAllRequiredPlugins(selected: PluginId[]): Set<PluginId> {
 }
 
 export async function pruneUnusedPluginsAndDependencies(
-  outputDir: string,
-  selectedPlugins: PluginId[],
-  spinner: Ora
+  params: {
+    outputDir: string;
+    selectedPlugins: PluginId[];
+  },
+  spinner: Ora,
+  verbose: boolean
 ): Promise<void> {
-  const requiredPlugins = getAllRequiredPlugins(selectedPlugins);
+  const requiredPlugins = getAllRequiredPlugins(params.selectedPlugins);
   const unusedPlugins: PluginId[] = Object.values(optionalPlugins)
     .filter(
       (plugin) =>
-        !(selectedPlugins.includes(plugin.id) || requiredPlugins.has(plugin.id))
+        !(
+          params.selectedPlugins.includes(plugin.id) ||
+          requiredPlugins.has(plugin.id)
+        )
     )
     .map((plugin) => plugin.id);
 
-  await pruneDependenciesForSelectedPlugins(outputDir, unusedPlugins, spinner);
-  await removeUnusedPluginFiles(outputDir, unusedPlugins, spinner);
+  await pruneDependenciesForSelectedPlugins(
+    {
+      outputDir: params.outputDir,
+      unusedPlugins,
+    },
+    spinner,
+    verbose
+  );
+  await removeUnusedPluginFiles(
+    {
+      outputDir: params.outputDir,
+      unusedPlugins,
+    },
+    spinner,
+    verbose
+  );
 }
 
 export async function pruneDependenciesForSelectedPlugins(
-  outputDir: string,
-  unusedPlugins: PluginId[],
-  spinner: Ora
+  params: {
+    outputDir: string;
+    unusedPlugins: PluginId[];
+  },
+  spinner: Ora,
+  verbose: boolean
 ): Promise<void> {
   const depsToRemove = new Set<string>();
   const devDepsToRemove = new Set<string>();
 
-  for (const plugin of unusedPlugins) {
+  for (const plugin of params.unusedPlugins) {
     const pluginConfig = Object.values(optionalPlugins).find(
       (p) => p.id === plugin
     );
@@ -75,22 +98,28 @@ export async function pruneDependenciesForSelectedPlugins(
   }
 
   await removeDependenciesFromPackageJson(
-    outputDir,
-    depsToRemove,
-    devDepsToRemove,
-    spinner
+    {
+      outputDir: params.outputDir,
+      depsToRemove,
+      devDepsToRemove,
+    },
+    spinner,
+    verbose
   );
 }
 
 export async function removeDependenciesFromPackageJson(
-  outputDir: string,
-  depsToRemove: Set<string>,
-  devDepsToRemove: Set<string>,
-  spinner: Ora
+  params: {
+    outputDir: string;
+    depsToRemove: Set<string>;
+    devDepsToRemove: Set<string>;
+  },
+  spinner: Ora,
+  verbose: boolean
 ): Promise<void> {
   const allDeps = [
-    ...[...depsToRemove].map((dep) => [dep, false] as const),
-    ...[...devDepsToRemove].map((dep) => [dep, true] as const),
+    ...[...params.depsToRemove].map((dep) => [dep, false] as const),
+    ...[...params.devDepsToRemove].map((dep) => [dep, true] as const),
   ];
 
   if (allDeps.length === 0) {
@@ -102,37 +131,45 @@ export async function removeDependenciesFromPackageJson(
   );
 
   try {
-    const packageJsonPath = path.join(outputDir, 'package.json');
+    const packageJsonPath = path.join(params.outputDir, 'package.json');
     const packageJson = await readPackageJson(packageJsonPath);
     await removeDependencies({
       pkg: packageJson,
       path: packageJsonPath,
-      deps: Object.fromEntries([...depsToRemove].map((dep) => [dep, ''])),
+      deps: Object.fromEntries(
+        [...params.depsToRemove].map((dep) => [dep, ''])
+      ),
       dev: false,
     });
   } catch (error) {
-    spinner.fail(
-      `Failed to delete unused dependencies: ${getErrorMessage(error)}`
-    );
-    return;
+    spinner.fail('Failed to delete unused dependencies.');
+    if (verbose) {
+      process.stderr.write(`${getErrorMessage(error)}\n`);
+    }
   }
 }
 
 export async function removeUnusedPluginFiles(
-  outputDir: string,
-  unusedPlugins: PluginId[],
-  spinner: Ora
+  params: {
+    outputDir: string;
+    unusedPlugins: PluginId[];
+  },
+  spinner: Ora,
+  verbose: boolean
 ): Promise<void> {
   try {
-    const pluginFiles = getFilesForPlugins(unusedPlugins);
-    spinner.info(
-      `Removing unused plugin files: ${pluginFiles.map((f) => f.path).join(', ')}`
-    );
+    const pluginFiles = getFilesForPlugins(params.unusedPlugins);
+
+    if (verbose) {
+      spinner.info(
+        `Removing unused plugin files: ${pluginFiles.map((f) => f.path).join(', ')}`
+      );
+    }
 
     // remove plugin files
     await Promise.allSettled(
       pluginFiles.map(async (file) => {
-        const absolutePath = path.join(outputDir, file.path);
+        const absolutePath = path.join(params.outputDir, file.path);
         if (await fs.pathExists(absolutePath)) {
           await fs.remove(absolutePath);
         }
@@ -140,16 +177,17 @@ export async function removeUnusedPluginFiles(
     );
 
     // handle zap/ directory
-    const zapDir = path.join(outputDir, 'zap');
-    for (const pluginId of unusedPlugins) {
+    const zapDir = path.join(params.outputDir, 'zap');
+    for (const pluginId of params.unusedPlugins) {
       const pluginFolder = path.join(zapDir, pluginId);
       if (await fs.pathExists(pluginFolder)) {
         await fs.remove(pluginFolder);
       }
     }
   } catch (error) {
-    spinner.fail(
-      `Failed to remove unused plugin files: ${getErrorMessage(error)}`
-    );
+    spinner.fail('Failed to remove unused plugin files.');
+    if (verbose) {
+      process.stderr.write(`${getErrorMessage(error)}\n`);
+    }
   }
 }

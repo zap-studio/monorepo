@@ -1,6 +1,7 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import { FileSystemError } from '@/lib/errors.js';
+import { getErrorMessage } from '../misc/error.js';
 import { cleanupOutputDirectory } from './cleanup.js';
 
 export async function moveCoreFiles(outputDir: string): Promise<void> {
@@ -19,7 +20,9 @@ export async function moveCoreFiles(outputDir: string): Promise<void> {
       })
     );
   } catch (error) {
-    throw new FileSystemError(`Failed to move core files: ${error}`);
+    throw new FileSystemError(
+      `Failed to move core files: ${getErrorMessage(error)}`
+    );
   }
 }
 
@@ -38,7 +41,9 @@ export async function moveTempFilesToOutput(outputDir: string): Promise<void> {
     );
     await fs.remove(tempDir);
   } catch (error) {
-    throw new FileSystemError(`Failed to move temp files: ${error}`);
+    throw new FileSystemError(
+      `Failed to move temp files: ${getErrorMessage(error)}`
+    );
   }
 }
 

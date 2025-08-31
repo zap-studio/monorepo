@@ -2,6 +2,7 @@
 import { Command } from 'commander';
 import { createProject } from './commands/create-project.js';
 import { displayWelcome, getPackageVersion } from './utils/cli/cli.js';
+import { getErrorMessage } from './utils/misc/error.js';
 
 async function main() {
   try {
@@ -31,6 +32,7 @@ async function main() {
         '-l, --plugins <plugins>',
         'Comma-separated list of plugins to install (e.g. waitlist, feedbacks)'
       )
+      .option('--verbose', 'Enable verbose output')
       .action(async (opts) => {
         try {
           displayWelcome();
@@ -40,9 +42,13 @@ async function main() {
             packageManager: opts.packageManager,
             ide: opts.ide,
             plugins: opts.plugins,
+            verbose: opts.verbose,
           });
         } catch (error) {
-          process.stderr.write(`Failed to create project: ${error}\n`);
+          process.stderr.write('Failed to create project.\n');
+          if (opts.verbose) {
+            process.stderr.write(`${getErrorMessage(error)}\n`);
+          }
           process.exit(1);
         }
       });

@@ -1,7 +1,8 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import { GITHUB_DOWNLOAD_URL } from '@/data/website.js';
-import { FileSystemError } from '@/lib/errors.js';
+import { FetchError, FileSystemError } from '@/lib/errors.js';
+import { getErrorMessage } from '../misc/error';
 
 export async function downloadTemplate(outputDir: string): Promise<string> {
   try {
@@ -11,8 +12,8 @@ export async function downloadTemplate(outputDir: string): Promise<string> {
     const response = await fetch(tarballUrl);
 
     if (!response.ok) {
-      throw new Error(
-        `Failed to fetch template: ${response.status} ${response.statusText}`
+      throw new FetchError(
+        `Failed to fetch template: ${response.status} ${response.statusText} from ${tarballUrl}`
       );
     }
 
@@ -21,6 +22,8 @@ export async function downloadTemplate(outputDir: string): Promise<string> {
     await fs.writeFile(tarballPath, Buffer.from(buffer));
     return tarballPath;
   } catch (error) {
-    throw new FileSystemError(`Failed to download template: ${error}`);
+    throw new FileSystemError(
+      `Failed to download template: ${getErrorMessage(error)}`
+    );
   }
 }

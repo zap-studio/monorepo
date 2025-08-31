@@ -39,6 +39,7 @@ export const corePlugins: Record<CorePluginId, Plugin> = {
     dependencies: ['@orpc/client', '@orpc/server', '@orpc/react-query'],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   components: {
     id: 'components',
@@ -47,6 +48,7 @@ export const corePlugins: Record<CorePluginId, Plugin> = {
     dependencies: ['clsx', 'tailwind-merge', 'class-variance-authority'],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   crypto: {
     id: 'crypto',
@@ -55,6 +57,7 @@ export const corePlugins: Record<CorePluginId, Plugin> = {
     dependencies: [],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   env: {
     id: 'env',
@@ -63,6 +66,7 @@ export const corePlugins: Record<CorePluginId, Plugin> = {
     dependencies: ['dotenv'],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   errors: {
     id: 'errors',
@@ -71,6 +75,7 @@ export const corePlugins: Record<CorePluginId, Plugin> = {
     dependencies: ['sonner', 'zod'],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   plugins: {
     id: 'plugins',
@@ -79,6 +84,7 @@ export const corePlugins: Record<CorePluginId, Plugin> = {
     dependencies: [],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
 };
 
@@ -90,6 +96,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ['ai', '@ai-sdk/openai', '@ai-sdk/mistral', '@ai-sdk/react'],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   analytics: {
     id: 'analytics',
@@ -103,6 +110,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     ],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   auth: {
     id: 'auth',
@@ -111,6 +119,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ['better-auth', '@polar-sh/better-auth', '@polar-sh/sdk'],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   blog: {
     id: 'blog',
@@ -124,6 +133,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     ],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   db: {
     id: 'db',
@@ -132,6 +142,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ['drizzle-orm', 'pg', '@neondatabase/serverless'],
     devDependencies: ['drizzle-kit'],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   docker: {
     id: 'docker',
@@ -140,6 +151,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: [],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   feedbacks: {
     id: 'feedbacks',
@@ -148,6 +160,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: [],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   flags: {
     id: 'flags',
@@ -156,6 +169,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ['flags', '@flags-sdk/posthog'],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   landing: {
     id: 'landing',
@@ -164,6 +178,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: [],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   legal: {
     id: 'legal',
@@ -172,6 +187,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: [],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   mails: {
     id: 'mails',
@@ -180,6 +196,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ['@react-email/components', 'react-email', 'resend'],
     devDependencies: ['@react-email/preview-server'],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   markdown: {
     id: 'markdown',
@@ -188,6 +205,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ['react-syntax-highlighter', 'gray-matter'],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   payments: {
     id: 'payments',
@@ -196,6 +214,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ['@polar-sh/sdk', '@polar-sh/better-auth'],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   pwa: {
     id: 'pwa',
@@ -204,6 +223,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ['web-push'],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   seo: {
     id: 'seo',
@@ -212,6 +232,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ['next-sitemap'],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   sidebar: {
     id: 'sidebar',
@@ -220,6 +241,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: [],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
   waitlist: {
     id: 'waitlist',
@@ -228,6 +250,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: [],
     devDependencies: [],
     requiredPlugins: [],
+    packageJsonScripts: [],
   },
 };
 

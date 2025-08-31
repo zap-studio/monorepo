@@ -13,3 +13,7 @@ export class FileSystemError extends Error {
 export class ValidationError extends Error {
   readonly name = 'ValidationError';
 }
+
+export class FetchError extends Error {
+  readonly name = 'FetchError';
+}

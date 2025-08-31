@@ -1,6 +1,7 @@
 import { execa } from 'execa';
 import fs from 'fs-extra';
 import { ProcessExitError } from '@/lib/errors.js';
+import { getErrorMessage } from '../misc/error';
 
 export async function extractTemplate(
   outputDir: string,
@@ -16,6 +17,8 @@ export async function extractTemplate(
     ]);
     await fs.remove(tarballPath);
   } catch (error) {
-    throw new ProcessExitError(`Failed to extract template: ${error}`);
+    throw new ProcessExitError(
+      `Failed to extract template: ${getErrorMessage(error)}`
+    );
   }
 }
