@@ -1,23 +1,13 @@
 import path from 'node:path';
 import { optionalPlugins } from '@zap-ts/architecture/plugins';
 import type { PluginId } from '@zap-ts/architecture/types';
+import { getFilesForPlugins } from '@zap-ts/architecture/utils/plugins';
+import fs from 'fs-extra';
 import type { Ora } from 'ora';
-import { readPackageJson, removeDependency } from '@/utils/misc/package-json';
+import { getErrorMessage } from '@/utils/misc/error';
+import { readPackageJson, removeDependencies } from '@/utils/misc/package-json';
 
 export async function pruneUnusedPluginsAndDependencies(
-  outputDir: string,
-  selectedPlugins: PluginId[],
-  spinner: Ora
-): Promise<void> {
-  await pruneDependenciesForSelectedPlugins(
-    outputDir,
-    selectedPlugins,
-    spinner
-  );
-  await removeUnusedPluginFiles(outputDir, selectedPlugins, spinner);
-}
-
-export async function pruneDependenciesForSelectedPlugins(
   outputDir: string,
   selectedPlugins: PluginId[],
   spinner: Ora
@@ -26,6 +16,15 @@ export async function pruneDependenciesForSelectedPlugins(
     .filter((plugin) => !selectedPlugins.includes(plugin.id))
     .map((plugin) => plugin.id);
 
+  await pruneDependenciesForSelectedPlugins(outputDir, unusedPlugins, spinner);
+  await removeUnusedPluginFiles(outputDir, unusedPlugins, spinner);
+}
+
+export async function pruneDependenciesForSelectedPlugins(
+  outputDir: string,
+  unusedPlugins: PluginId[],
+  spinner: Ora
+): Promise<void> {
   const depsToRemove = new Set<string>();
   const devDepsToRemove = new Set<string>();
 
@@ -74,18 +73,40 @@ export async function removeDependenciesFromPackageJson(
     `Removing dependencies: ${allDeps.map(([dep]) => dep).join(', ')}`
   );
 
-  const packageJson = await readPackageJson(
-    path.join(outputDir, 'package.json')
-  );
-  await Promise.allSettled(
-    allDeps.map(([dep, isDev]) => removeDependency(packageJson, dep, isDev))
-  );
+  try {
+    const packageJsonPath = path.join(outputDir, 'package.json');
+    const packageJson = await readPackageJson(packageJsonPath);
+    await removeDependencies({
+      pkg: packageJson,
+      path: packageJsonPath,
+      deps: Object.fromEntries([...depsToRemove].map((dep) => [dep, ''])),
+      dev: false,
+    });
+  } catch (error) {
+    spinner.fail(
+      `Failed to delete unused dependencies: ${getErrorMessage(error)}`
+    );
+    return;
+  }
 }
 
 export async function removeUnusedPluginFiles(
   _outputDir: string,
-  _selectedPlugins: PluginId[],
-  _spinner: Ora
+  unusedPlugins: PluginId[],
+  spinner: Ora
 ): Promise<void> {
-  // Implementation for removing unused plugin files
+  try {
+    const pluginFiles = getFilesForPlugins(unusedPlugins);
+    await Promise.allSettled(
+      pluginFiles.map(async (file) => {
+        if (await fs.pathExists(file.path)) {
+          await fs.remove(file.path);
+        }
+      })
+    );
+  } catch (error) {
+    spinner.fail(
+      `Failed to remove unused plugin files: ${getErrorMessage(error)}`
+    );
+  }
 }
