@@ -97,14 +97,16 @@ export async function promptPluginSelection(
         type: 'checkbox',
         name: 'plugins',
         message: chalk.yellow(message),
-        choices: Object.values(Plugins).map((plugin) => ({
-          name: plugin.label,
-          value: plugin.id,
-        })),
+        choices: Object.values(Plugins)
+          .filter((plugin) => !plugin.core)
+          .map((plugin) => ({
+            name: plugin.label,
+            value: plugin.id,
+          })),
       },
     ]);
 
-    return response.plugins as PluginId[];
+    return response.plugins as OptionalPluginId[];
   } catch (error) {
     throw new PromptError(`Failed to get plugin selection: ${error}`);
   }

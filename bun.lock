@@ -89,7 +89,7 @@
     },
     "packages/architecture": {
       "name": "@zap-ts/architecture",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "dependencies": {
         "react": "^19.1.1",
       },

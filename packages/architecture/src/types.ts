@@ -22,6 +22,17 @@ export type FileList = {
 };
 
 export type PluginId = keyof typeof Plugins;
+export type PluginType = (typeof Plugins)[PluginId];
+export type CorePluginId = {
+  [K in keyof typeof Plugins]: (typeof Plugins)[K]['core'] extends true
+    ? K
+    : never;
+}[keyof typeof Plugins];
+export type OptionalPluginId = {
+  [K in keyof typeof Plugins]: (typeof Plugins)[K] extends { core: false }
+    ? K
+    : never;
+}[keyof typeof Plugins];
 export type Plugin = (typeof Plugins)[PluginId];
 
 export type IDE = keyof typeof IDEs;

@@ -1,27 +1,26 @@
-import path from 'node:path';
-import { IDEs } from '@zap-ts/architecture/ide';
-import { Plugins } from '@zap-ts/architecture/plugins';
 import type { IDE, PluginId } from '@zap-ts/architecture/types';
 import fs from 'fs-extra';
 import ora from 'ora';
-import { PACKAGE_MANAGERS } from '@/data/package-manager';
+
 import { FileSystemError } from '@/lib/errors.js';
 import type { PackageManager } from '@/types/package-manager';
+
 import {
   installDependenciesWithRetry,
   updateDependencies,
-} from '@/utils/commands/project/dependencies.js';
+} from '@/utils/commands/create-project/dependencies.js';
 import {
   displaySuccessMessage,
   generateEnvFile,
   runFormatting,
-} from '@/utils/commands/project/post-install.js';
+} from '@/utils/commands/create-project/post-install.js';
 import {
-  promptIDESelection,
-  promptPackageManagerSelection,
-  promptPluginSelection,
-  promptProjectName,
-} from '@/utils/commands/project/prompts.js';
+  resolveIDE,
+  resolveOutputDir,
+  resolvePackageManager,
+  resolvePlugins,
+  resolveProjectName,
+} from '@/utils/commands/create-project/resolve-options';
 import { setupTemplate } from '@/utils/template/setup-template';
 
 type CreateProjectOptions = {
@@ -32,61 +31,17 @@ type CreateProjectOptions = {
   plugins?: PluginId[];
 };
 
-export async function createProject({
-  projectName,
-  directory,
-  packageManager,
-  ide,
-  plugins,
-}: CreateProjectOptions = {}): Promise<void> {
-  let finalProjectName = projectName;
-  if (!finalProjectName) {
-    finalProjectName = await promptProjectName();
-  }
+export async function createProject(
+  options: CreateProjectOptions = {}
+): Promise<void> {
+  const projectName = await resolveProjectName(options.projectName);
+  let packageManager = await resolvePackageManager(options.packageManager);
+  const outputDir = resolveOutputDir(projectName, options.directory);
+  const ide = await resolveIDE(options.ide);
+  const _plugins = await resolvePlugins(options.plugins);
 
-  let finalPackageManager: PackageManager;
-  if (packageManager && PACKAGE_MANAGERS.includes(packageManager)) {
-    finalPackageManager = packageManager as PackageManager;
-  } else {
-    finalPackageManager = await promptPackageManagerSelection(
-      'Which package manager do you want to use?'
-    );
-  }
+  const spinner = ora(`Creating project '${projectName}'...`).start();
 
-  let outputDir: string;
-  try {
-    outputDir = directory
-      ? path.resolve(directory, finalProjectName)
-      : path.join(process.cwd(), finalProjectName);
-  } catch {
-    process.stderr.write('Unable to resolve output directory path.\n');
-    process.exit(1);
-  }
-
-  let finalIDE: IDE | 'all' | null;
-  if (
-    ide &&
-    Object.values(IDEs)
-      .map((i) => i.id)
-      .includes(ide)
-  ) {
-    finalIDE = ide as IDE;
-  } else {
-    finalIDE = await promptIDESelection('Which IDE do you want to use?');
-  }
-
-  if (!plugins || plugins.length === 0) {
-    await promptPluginSelection('Which plugins do you want to use?');
-  }
-
-  const finalPlugins: PluginId[] = [];
-  for (const plugin of Object.values(Plugins)) {
-    if (plugins?.includes(plugin.id)) {
-      finalPlugins.push(plugin.id);
-    }
-  }
-
-  const spinner = ora(`Creating project '${finalProjectName}'...`).start();
   try {
     await fs.ensureDir(outputDir);
   } catch (error) {
@@ -94,18 +49,16 @@ export async function createProject({
   }
 
   spinner.text = 'Downloading Zap.ts template from GitHub...';
-  await setupTemplate(outputDir, finalIDE, spinner);
+  await setupTemplate(outputDir, ide, spinner);
 
-  const resolvedPackageManager = await installDependenciesWithRetry(
-    finalPackageManager,
+  packageManager = await installDependenciesWithRetry(
+    packageManager,
     outputDir,
     spinner
   );
-  finalPackageManager = resolvedPackageManager;
-
-  await updateDependencies(finalPackageManager, outputDir, spinner);
-  await runFormatting(finalPackageManager, outputDir, spinner);
+  await updateDependencies(packageManager, outputDir, spinner);
+  await runFormatting(packageManager, outputDir, spinner);
   await generateEnvFile(outputDir, spinner);
 
-  displaySuccessMessage(finalProjectName, finalPackageManager);
+  displaySuccessMessage(projectName, packageManager);
 }
