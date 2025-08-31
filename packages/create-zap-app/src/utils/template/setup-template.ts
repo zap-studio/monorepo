@@ -1,19 +1,13 @@
-import path from 'node:path';
 import type { IDE } from '@zap-ts/architecture/types';
-import fs from 'fs-extra';
 import type { Ora } from 'ora';
 import {
-  cleanupOutputDirectory,
   cleanupPackageJson,
   removeIDEConfigFiles,
   removeLockFiles,
 } from '@/utils/template/cleanup.js';
 import { downloadTemplate } from '@/utils/template/download.js';
 import { extractTemplate } from '@/utils/template/extract.js';
-import {
-  moveCoreFiles,
-  moveTempFilesToOutput,
-} from '@/utils/template/files.js';
+import { finalizeTemplateFiles } from '@/utils/template/files.js';
 
 export async function setupTemplate(
   outputDir: string,
@@ -25,14 +19,7 @@ export async function setupTemplate(
 
     spinner.text = 'Extracting Zap.ts template...';
     await extractTemplate(outputDir, tarballPath);
-
-    await moveCoreFiles(outputDir);
-    await cleanupOutputDirectory(outputDir);
-
-    const tempDir = path.join(outputDir, 'temp');
-    await moveTempFilesToOutput(outputDir, tempDir);
-    await fs.remove(tempDir);
-
+    await finalizeTemplateFiles(outputDir);
     await removeLockFiles(outputDir);
     await removeIDEConfigFiles(outputDir, ide);
     await cleanupPackageJson(outputDir);
