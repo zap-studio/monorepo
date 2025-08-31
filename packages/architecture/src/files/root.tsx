@@ -55,6 +55,7 @@ export const RootFiles: FileList = {
       path: 'src/app/favicon.ico',
       status: 'modified',
       required: false,
+      plugins: ['seo'],
       children: (
         <>
           Default <L href="https://nextjs.org/">Next.js</L> favicon replaced by

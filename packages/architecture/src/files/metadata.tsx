@@ -8,6 +8,7 @@ export const MetadataFiles: FileList = {
       path: 'src/app/apple-icon.png',
       status: 'added',
       required: false,
+      plugins: ['seo'],
       children: (
         <>
           Apple Touch Icon for better{' '}
@@ -33,6 +34,7 @@ export const MetadataFiles: FileList = {
       path: 'src/app/icon.png',
       status: 'added',
       required: false,
+      plugins: ['seo'],
       children: (
         <>
           Standard icon for better{' '}
@@ -47,6 +49,7 @@ export const MetadataFiles: FileList = {
       path: 'src/app/opengraph-image/route.tsx',
       status: 'added',
       required: false,
+      plugins: ['seo'],
       children: (
         <>
           Dynamic Open Graph image generation route using{' '}

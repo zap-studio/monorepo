@@ -8,6 +8,7 @@ export const DockerFiles: FileList = {
       path: '.dockerignore',
       status: 'added',
       required: false,
+      plugins: ['docker'],
       children: (
         <>
           Similar to `.gitignore`, this file specifies which files and
@@ -20,6 +21,7 @@ export const DockerFiles: FileList = {
       path: 'Dockerfile.dev',
       status: 'added',
       required: false,
+      plugins: ['docker'],
       children: (
         <>
           Contains the instructions for building a Docker image provisioning a
@@ -32,6 +34,7 @@ export const DockerFiles: FileList = {
       path: 'Dockerfile.prod',
       status: 'added',
       required: false,
+      plugins: ['docker'],
       children: (
         <>
           Contains the instructions for building a Docker image for the
@@ -47,6 +50,7 @@ export const DockerFiles: FileList = {
       path: 'compose.yml',
       status: 'added',
       required: false,
+      plugins: ['docker'],
       children: (
         <>
           Contains the configuration for{' '}

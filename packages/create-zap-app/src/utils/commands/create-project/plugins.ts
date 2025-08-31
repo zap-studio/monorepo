@@ -97,6 +97,10 @@ export async function removeUnusedPluginFiles(
 ): Promise<void> {
   try {
     const pluginFiles = getFilesForPlugins(unusedPlugins);
+
+    spinner.info(
+      `Removing unused plugin files: ${pluginFiles.map((f) => f.path).join(', ')}`
+    );
     await Promise.allSettled(
       pluginFiles.map(async (file) => {
         if (await fs.pathExists(file.path)) {
@@ -104,6 +108,12 @@ export async function removeUnusedPluginFiles(
         }
       })
     );
+
+    // handle zap/ directory
+    const zapDir = path.join(_outputDir, 'zap');
+    if (await fs.pathExists(zapDir)) {
+      await fs.remove(zapDir);
+    }
   } catch (error) {
     spinner.fail(
       `Failed to remove unused plugin files: ${getErrorMessage(error)}`

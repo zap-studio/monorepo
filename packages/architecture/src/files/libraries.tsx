@@ -29,7 +29,7 @@ export const LibrariesFiles: FileList = {
       required: true,
       children: (
         <>
-          Utility functions such as `cn` (class names) that is needed by{' '}
+          Utility functions such as `cn` that is needed by{' '}
           <L href="https://ui.shadcn.com/">shadcn/ui</L>.
         </>
       ),

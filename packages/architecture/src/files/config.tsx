@@ -96,6 +96,7 @@ export const ConfigFiles: FileList = {
       path: 'drizzle.config.dev.ts',
       status: 'added',
       required: false,
+      plugins: ['db'],
       children: (
         <>
           Development configuration for{' '}
@@ -108,6 +109,7 @@ export const ConfigFiles: FileList = {
       path: 'drizzle.config.prod.ts',
       status: 'added',
       required: false,
+      plugins: ['db'],
       children: (
         <>
           Production configuration for{' '}
@@ -120,6 +122,7 @@ export const ConfigFiles: FileList = {
       path: 'next-sitemap.config.js',
       status: 'added',
       required: false,
+      plugins: ['seo'],
       children: (
         <>
           Configuration file for
