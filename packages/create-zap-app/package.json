@@ -61,7 +61,7 @@
     "postbuild": "typedoc --entryPointStrategy expand src"
   },
   "dependencies": {
-    "@zap-ts/architecture": "^1.0.5",
+    "@zap-ts/architecture": "^1.0.6",
     "chalk": "^5.6.0",
     "commander": "^14.0.0",
     "execa": "^9.6.0",
