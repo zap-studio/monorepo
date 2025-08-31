@@ -1,6 +1,7 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import type { Ora } from 'ora';
+import { FileSystemError } from '@/lib/errors.js';
 import {
   cleanupOutputDirectory,
   cleanupPackageJson,
@@ -34,5 +35,6 @@ export async function setupTemplate(
     await cleanupPackageJson(outputDir);
   } catch (error) {
     spinner.fail(`Failed to setup template: ${String(error)}`);
+    throw new FileSystemError(`Template setup failed: ${error}`);
   }
 }

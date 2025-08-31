@@ -28,16 +28,10 @@ export async function generateEnvFile(
   outputDir: string,
   spinner: Ora
 ): Promise<void> {
-  try {
-    spinner.text = 'Generating .env file...';
-    spinner.start();
+  spinner.text = 'Generating .env file...';
+  spinner.start();
 
-    await generateEnv({ outputDir, spinner });
-  } catch {
-    spinner.warn(
-      'Unable to generate .env file. You can run `zap generate env` with @zap-ts/cli to create it. Proceeding with setup...'
-    );
-  }
+  await generateEnv({ outputDir, spinner });
 }
 
 export function displaySuccessMessage(

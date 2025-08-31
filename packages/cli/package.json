@@ -1,7 +1,7 @@
 {
-  "name": "create-zap-app",
-  "description": "The CLI to create a new Zap.ts application.",
-  "version": "1.4.12",
+  "name": "@zap-ts/cli",
+  "description": "The CLI that makes Zap.ts development easier.",
+  "version": "1.0.0",
   "type": "module",
   "private": false,
   "files": [
@@ -18,23 +18,6 @@
     },
     "./package.json": "./package.json"
   },
-  "author": "Alexandre Trotel",
-  "keywords": [
-    "next.js",
-    "cli",
-    "typescript",
-    "plugins",
-    "oRPC",
-    "react",
-    "tailwindcss",
-    "drizzle",
-    "pnpm",
-    "npm",
-    "yarn",
-    "bun",
-    "boilerplate",
-    "starter-kit"
-  ],
   "publishConfig": {
     "access": "public"
   },
@@ -52,7 +35,7 @@
     "url": "git+https://github.com/zap-studio/zap.ts"
   },
   "bin": {
-    "create-zap-app": "./dist/index.js"
+    "zap": "./dist/index.js"
   },
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
