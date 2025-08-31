@@ -1,7 +1,9 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import ora from 'ora';
+import { PACKAGE_MANAGERS } from '@/data/package-manager';
 import { FileSystemError } from '@/lib/errors.js';
+import type { PackageManager } from '@/types/package-manager';
 import {
   installDependenciesWithRetry,
   updateDependencies,
@@ -16,17 +18,23 @@ import {
   promptProjectName,
 } from '@/utils/commands/project/prompts.js';
 import { setupProjectTemplate } from '@/utils/commands/project/setup.js';
-import { PACKAGE_MANAGERS } from '@/data/package-manager';
-import { PackageManager } from '@/types/package-manager';
 
-export async function createProject({ projectName, directory, packageManager }: { projectName?: string; directory?: string; packageManager?: string } = {}): Promise<void> {
+export async function createProject({
+  projectName,
+  directory,
+  packageManager,
+}: {
+  projectName?: string;
+  directory?: string;
+  packageManager?: PackageManager;
+} = {}): Promise<void> {
   let finalProjectName = projectName;
   if (!finalProjectName) {
     finalProjectName = await promptProjectName();
   }
 
   let finalPackageManager: PackageManager;
-  if (packageManager && PACKAGE_MANAGERS.includes(packageManager as any)) {
+  if (packageManager && PACKAGE_MANAGERS.includes(packageManager)) {
     finalPackageManager = packageManager as PackageManager;
   } else {
     finalPackageManager = await promptPackageManagerSelection(
@@ -36,9 +44,11 @@ export async function createProject({ projectName, directory, packageManager }: 
 
   let outputDir: string;
   try {
-    outputDir = directory ? path.resolve(directory, finalProjectName) : path.join(process.cwd(), finalProjectName);
-  } catch (err) {
-    process.stderr.write(`Unable to resolve output directory path.\n`);
+    outputDir = directory
+      ? path.resolve(directory, finalProjectName)
+      : path.join(process.cwd(), finalProjectName);
+  } catch {
+    process.stderr.write('Unable to resolve output directory path.\n');
     process.exit(1);
   }
 

@@ -18,8 +18,14 @@ async function main() {
     program
       .description('Create a new Next.js project with Zap.ts boilerplate')
       .option('-n, --name <projectName>', 'Name of the project')
-      .option('-d, --directory <directory>', 'Directory to create the project in')
-      .option('-p, --package-manager <packageManager>', 'Package manager to use (npm, yarn, pnpm, bun)')
+      .option(
+        '-d, --directory <directory>',
+        'Directory to create the project in'
+      )
+      .option(
+        '-p, --package-manager <packageManager>',
+        'Package manager to use (npm, yarn, pnpm, bun)'
+      )
       .action(async (opts) => {
         try {
           displayWelcome();
@@ -34,7 +40,7 @@ async function main() {
         }
       });
 
-  program.parse(process.argv);
+    program.parse(process.argv);
 
     process.on('SIGINT', () => {
       process.exit();
