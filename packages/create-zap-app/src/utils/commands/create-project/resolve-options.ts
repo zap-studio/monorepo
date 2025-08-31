@@ -1,7 +1,12 @@
 import path from 'node:path';
 import { IDEs } from '@zap-ts/architecture/ide';
 import { Plugins } from '@zap-ts/architecture/plugins';
-import type { IDE, PluginId } from '@zap-ts/architecture/types';
+import type {
+  CorePluginId,
+  IDE,
+  OptionalPluginId,
+  PluginId,
+} from '@zap-ts/architecture/types';
 import { PACKAGE_MANAGERS } from '@/data/package-manager';
 import type { PackageManager } from '@/types/package-manager';
 import {
@@ -51,15 +56,19 @@ export async function resolveIDE(ide?: IDE): Promise<IDE | 'all' | null> {
 }
 
 export async function resolvePlugins(
-  plugins?: PluginId[]
+  plugins?: OptionalPluginId[]
 ): Promise<PluginId[]> {
-  const selected = plugins?.length
-    ? plugins
-    : await promptPluginSelection('Which plugins do you want to use?');
-
   const corePlugins: CorePluginId[] = Object.values(Plugins)
     .filter((p) => p.core)
     .map((p) => p.id);
+
+  const optionalPlugins: OptionalPluginId[] = Object.values(Plugins)
+    .filter((p) => !p.core)
+    .map((p) => p.id);
+
+  const selected: OptionalPluginId[] = plugins?.length
+    ? plugins.filter((p) => optionalPlugins.includes(p))
+    : await promptPluginSelection('Which plugins do you want to use?');
 
   return Array.from(new Set([...corePlugins, ...selected]));
 }

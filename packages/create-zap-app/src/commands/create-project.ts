@@ -1,4 +1,4 @@
-import type { IDE, PluginId } from '@zap-ts/architecture/types';
+import type { IDE, OptionalPluginId } from '@zap-ts/architecture/types';
 import fs from 'fs-extra';
 import ora from 'ora';
 
@@ -28,7 +28,7 @@ type CreateProjectOptions = {
   directory?: string;
   packageManager?: PackageManager;
   ide?: IDE;
-  plugins?: PluginId[];
+  plugins?: OptionalPluginId[];
 };
 
 export async function createProject(

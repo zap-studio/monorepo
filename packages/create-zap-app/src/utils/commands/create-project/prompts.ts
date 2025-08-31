@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { IDEs } from '@zap-ts/architecture/ide';
 import { Plugins } from '@zap-ts/architecture/plugins';
-import type { IDE, PluginId } from '@zap-ts/architecture/types';
+import type { IDE, OptionalPluginId } from '@zap-ts/architecture/types';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
@@ -90,7 +90,7 @@ export async function promptIDESelection(
 
 export async function promptPluginSelection(
   message: string
-): Promise<PluginId[]> {
+): Promise<OptionalPluginId[]> {
   try {
     const response = await inquirer.prompt([
       {
