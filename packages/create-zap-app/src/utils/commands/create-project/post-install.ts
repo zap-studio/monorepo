@@ -53,10 +53,10 @@ export async function generateEnvFile(
   }
 }
 
-export function displaySuccessMessage(
-  projectName: string,
-  packageManager: PackageManager
-): void {
+export function displaySuccessMessage(params: {
+  projectName: string;
+  packageManager: PackageManager;
+}): void {
   process.stdout.write(chalk.green('Project setup complete!'));
   process.stdout.write('\n\n');
   process.stdout.write(chalk.bold.green('🎉 Project created successfully!'));
@@ -68,8 +68,8 @@ export function displaySuccessMessage(
   );
   process.stdout.write('\n\n');
   process.stdout.write(chalk.cyan('Get started:\n'));
-  process.stdout.write(chalk.white(`  cd ${projectName}\n`));
-  process.stdout.write(chalk.white(`  ${packageManager} dev\n\n`));
+  process.stdout.write(chalk.white(`  cd ${params.projectName}\n`));
+  process.stdout.write(chalk.white(`  ${params.packageManager} dev\n\n`));
 
   process.stdout.write(
     chalk.magentaBright(
