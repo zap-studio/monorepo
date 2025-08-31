@@ -16,20 +16,30 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
 
-      - name: Create PR to main
+      - name: Create PR to main (if not exists)
         run: |
-          SOURCE_BRANCH=$(echo "${GITHUB_REF#refs/heads/}")
-          gh pr list --state open --head "$SOURCE_BRANCH" --base main --json number | jq length > open_pr_count.txt
-          COUNT=$(cat open_pr_count.txt)
+          SOURCE_BRANCH="${GITHUB_REF#refs/heads/}"
           
-          if [ "$COUNT" -eq "0" ]; then
-            gh pr create \
+          COUNT=$(gh pr list \
+            --state open \
+            --head "$SOURCE_BRANCH" \
+            --json number \
+            --jq 'length')
+
+          if [ "$COUNT" -eq 0 ]; then
+            PR_URL=$(gh pr create \
               --title "$SOURCE_BRANCH → main" \
               --body "Automated PR from $SOURCE_BRANCH to main" \
               --base main \
-              --head "$SOURCE_BRANCH"
+              --head "$SOURCE_BRANCH" \
+              --json url \
+              --jq '.url')
+
+            echo "Created PR: $PR_URL"
+            
+            gh pr edit "$PR_URL" --add-label "automated-pr"
           else
-            echo "PR already exists."
+            echo "PR already exists for $SOURCE_BRANCH (any destination)."
           fi
         env:
           GH_TOKEN: ${{ secrets.ZAP_STUDIO_GH_TOKEN }}
