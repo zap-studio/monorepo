@@ -9,7 +9,9 @@ Zap.ts builds on top of [Next.js](https://nextjs.org/), providing a starter kit 
 
 ## Migration Steps
 
-If you already have a Next.js project, you don&apos;t need to create a new app from scratch. Instead, the CLI will follow these steps to migrate your project to Zap.ts:
+If you already have a Next.js project, you don&apos;t need to create a new app from scratch. You can run `create-zap-app migrate` in your existing Next.js project to migrate it to Zap.ts.
+
+The `create-zap-app` CLI will follow these steps to migrate your project to Zap.ts:
 
 1. Fetches Zap.ts template from GitHub and extracts it.
 2. Add additional Zap.ts specific configurations and files. If conflicts arise, you will be prompted to resolve them.
@@ -25,6 +27,7 @@ You can use the CLI with arguments to help automate parts of the migration. Avai
 
 - `--plugins <plugins>`: Specify the plugins to install (e.g. waitlist, feedbacks).
 - `--ide <ide>`: Specify the IDE to use (vscode, windsurf, zed, cursor).
+- `--verbose`: Enable verbose logging for detailed output during the migration process.
 
 Example usage:
 
