@@ -1,17 +1,17 @@
-import { readFile, writeFile } from 'fs-extra';
+import fs from 'fs-extra';
 import type { PackageJson } from 'type-fest';
 
 export async function readPackageJson(
   path = 'package.json'
 ): Promise<PackageJson> {
-  return JSON.parse(await readFile(path, 'utf-8'));
+  return JSON.parse(await fs.readFile(path, 'utf-8'));
 }
 
 export async function writePackageJson(
   pkg: PackageJson,
   path = 'package.json'
 ): Promise<void> {
-  await writeFile(path, `${JSON.stringify(pkg, null, 2)}\n`, 'utf-8');
+  await fs.writeFile(path, `${JSON.stringify(pkg, null, 2)}\n`, 'utf-8');
 }
 
 type DependencyAction = 'add' | 'remove';
