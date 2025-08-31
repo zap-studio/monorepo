@@ -36,7 +36,7 @@ export async function createProject({ projectName, directory, packageManager }: 
 
   let outputDir: string;
   try {
-    outputDir = directory ? path.resolve(directory) : path.join(process.cwd(), finalProjectName);
+    outputDir = directory ? path.resolve(directory, finalProjectName) : path.join(process.cwd(), finalProjectName);
   } catch (err) {
     process.stderr.write(`Unable to resolve output directory path.\n`);
     process.exit(1);

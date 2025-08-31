@@ -16,7 +16,6 @@ async function main() {
       .version(version || '1.0.0');
 
     program
-      .command('create-zap-app')
       .description('Create a new Next.js project with Zap.ts boilerplate')
       .option('-n, --name <projectName>', 'Name of the project')
       .option('-d, --directory <directory>', 'Directory to create the project in')
@@ -35,17 +34,7 @@ async function main() {
         }
       });
 
-    program.action(async () => {
-      try {
-        displayWelcome();
-        await createProject({});
-      } catch (error) {
-        process.stderr.write(`Failed to create project: ${error}\n`);
-        process.exit(1);
-      }
-    });
-
-    program.parse(process.argv);
+  program.parse(process.argv);
 
     process.on('SIGINT', () => {
       process.exit();
