@@ -91,28 +91,33 @@ export async function removeDependenciesFromPackageJson(
 }
 
 export async function removeUnusedPluginFiles(
-  _outputDir: string,
+  outputDir: string,
   unusedPlugins: PluginId[],
   spinner: Ora
 ): Promise<void> {
   try {
     const pluginFiles = getFilesForPlugins(unusedPlugins);
-
     spinner.info(
       `Removing unused plugin files: ${pluginFiles.map((f) => f.path).join(', ')}`
     );
+
+    // remove plugin files
     await Promise.allSettled(
       pluginFiles.map(async (file) => {
-        if (await fs.pathExists(file.path)) {
-          await fs.remove(file.path);
+        const absolutePath = path.join(outputDir, file.path);
+        if (await fs.pathExists(absolutePath)) {
+          await fs.remove(absolutePath);
         }
       })
     );
 
     // handle zap/ directory
-    const zapDir = path.join(_outputDir, 'zap');
-    if (await fs.pathExists(zapDir)) {
-      await fs.remove(zapDir);
+    const zapDir = path.join(outputDir, 'zap');
+    for (const pluginId of unusedPlugins) {
+      const pluginFolder = path.join(zapDir, pluginId);
+      if (await fs.pathExists(pluginFolder)) {
+        await fs.remove(pluginFolder);
+      }
     }
   } catch (error) {
     spinner.fail(
