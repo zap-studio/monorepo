@@ -5,7 +5,7 @@ import { getFilesForPlugins } from '@zap-ts/architecture/utils/plugins';
 import fs from 'fs-extra';
 import type { Ora } from 'ora';
 import { getErrorMessage } from '@/utils/misc/error';
-import { readPackageJson, removeDependencies } from '@/utils/misc/package-json';
+import { removeDependencies, removeScripts } from '@/utils/misc/package-json';
 
 function getAllRequiredPlugins(selected: PluginId[]): Set<PluginId> {
   const visited = new Set<PluginId>();
@@ -106,6 +106,14 @@ export async function pruneDependenciesForSelectedPlugins(
     spinner,
     verbose
   );
+  await removeUnusedScriptsFromPackageJson(
+    {
+      outputDir: params.outputDir,
+      unusedPlugins: params.unusedPlugins,
+    },
+    spinner,
+    verbose
+  );
 }
 
 export async function removeDependenciesFromPackageJson(
@@ -134,9 +142,7 @@ export async function removeDependenciesFromPackageJson(
 
   try {
     const packageJsonPath = path.join(params.outputDir, 'package.json');
-    const packageJson = await readPackageJson(packageJsonPath);
     await removeDependencies({
-      pkg: packageJson,
       path: packageJsonPath,
       deps: Object.fromEntries(
         [...params.depsToRemove].map((dep) => [dep, ''])
@@ -145,6 +151,45 @@ export async function removeDependenciesFromPackageJson(
     });
   } catch (error) {
     spinner.fail('Failed to delete unused dependencies.');
+    if (verbose) {
+      process.stderr.write(`${getErrorMessage(error)}\n`);
+    }
+  }
+}
+
+export async function removeUnusedScriptsFromPackageJson(
+  params: {
+    outputDir: string;
+    unusedPlugins: PluginId[];
+  },
+  spinner: Ora,
+  verbose: boolean
+): Promise<void> {
+  try {
+    const packageJsonPath = path.join(params.outputDir, 'package.json');
+
+    const scriptsToRemove = new Set<string>();
+
+    for (const plugin of params.unusedPlugins) {
+      const pluginConfig = Object.values(optionalPlugins).find(
+        (p) => p.id === plugin
+      );
+
+      if (!pluginConfig) {
+        continue;
+      }
+
+      for (const dep of pluginConfig.packageJsonScripts || []) {
+        scriptsToRemove.add(dep);
+      }
+    }
+
+    await removeScripts({
+      path: packageJsonPath,
+      keys: [...scriptsToRemove],
+    });
+  } catch (error) {
+    spinner.fail('Failed to delete unused scripts.');
     if (verbose) {
       process.stderr.write(`${getErrorMessage(error)}\n`);
     }
