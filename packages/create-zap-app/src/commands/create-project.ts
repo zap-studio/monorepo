@@ -29,7 +29,6 @@ export async function createProject({ projectName, directory, packageManager }: 
   if (packageManager && PACKAGE_MANAGERS.includes(packageManager as any)) {
     finalPackageManager = packageManager as PackageManager;
   } else {
-    process.stderr.write(`Invalid package manager: ${packageManager}\n`);
     finalPackageManager = await promptPackageManagerSelection(
       'Which package manager do you want to use?'
     );
