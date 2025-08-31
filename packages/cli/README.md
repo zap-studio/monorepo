@@ -1,25 +1,50 @@
-# create-zap-app
+# @zap-ts/cli
 
-A CLI tool to quickly scaffold new Zap.ts projects.
-
-## Overview
-
-`create-zap-app` helps you bootstrap a Zap.ts project with best practices, recommended dependencies, and ready-to-use templates. It streamlines project setup so you can start building right away.
+The official CLI for Zap.ts – the ultimate Next.js boilerplate.
 
 ## Features
-
-- Interactive CLI for project creation
-- Generates environment files and secrets
-- Supports multiple package managers
-- Adds essential dependencies and scripts
-- Customizable templates
+- Generate environment files
+- Create new procedures and hooks
+- Interactive setup and guidance
+- Fast, type-safe, and easy to use
 
 ## Installation
 
-```sh
-bun add -g create-zap-app
-# or
-npm install -g create-zap-app
-# or
-npx create-zap-app@latest # for Zap.ts scaffolding
+```bash
+npm install -g @zap-ts/cli
+# or with bun
+bun add -g @zap-ts/cli
 ```
+
+## Usage
+
+Run the CLI in your Zap.ts project directory:
+
+```bash
+zap --help
+```
+
+### Common Commands
+
+- `zap generate env` – Generate a .env file with required variables
+- `zap create procedure <name>` – Create a new procedure
+
+## Example
+
+```bash
+zap generate env
+zap create procedure getUser
+```
+
+## Documentation
+
+- [Docs](https://zap-ts.zapstudio.dev/docs/cli/overview)
+- [GitHub](https://github.com/zap-studio/zap.ts)
+
+## Contributing
+
+Contributions are welcome! Please open issues or pull requests on GitHub.
+
+## License
+
+MIT
