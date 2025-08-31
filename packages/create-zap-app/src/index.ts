@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import { createProject } from './commands/create-project.js';
-import { displayWelcome, getPackageVersion } from './utils/cli/cli.js';
+import { displayWelcome, getPackageVersion } from './utils/cli/messages.js';
 import { getErrorMessage } from './utils/misc/error.js';
 
 async function main() {

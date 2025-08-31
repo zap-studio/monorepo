@@ -31,7 +31,7 @@ export function displayWelcome(): void {
   process.stdout.write(
     chalk.bold.cyan(banner) +
       chalk.bold.cyan(
-        "\n🚀 Welcome to Zap.ts! Let's build something awesome.\n"
+        "\nWelcome to Zap.ts! Let's build something awesome at the speed of a zap.\n"
       )
   );
 }
