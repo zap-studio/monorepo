@@ -1,5 +1,11 @@
 # @zap-ts/architecture
 
+## 1.0.7
+
+### Patch Changes
+
+- 9bf4852: Reorganize plugin structure and update type definitions for better clarity and maintainability
+
 ## 1.0.6
 
 ### Patch Changes
