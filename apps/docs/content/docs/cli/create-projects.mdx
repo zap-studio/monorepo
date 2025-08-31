@@ -17,7 +17,26 @@ The following steps are done to install the project:
 
 1. Asks for a name (default: `my-zap-app`) and ensuring everything is okay.
 2. Lets you choose your _favorite_ package manager (e.g. `npm`, `yarn`, `pnpm`, or `bun`).
-3. Fetches the Zap.ts template from GitHub and extracts it.
-4. Installs dependencies using the selected package manager.
-5. Creates an `.env.local` file with placeholders.
+3. Fetches Zap.ts template from GitHub and extracts it.
+4. Reworks `package.json` to include only necessary dependencies from your selected plugins.
+5. Remove unused plugins specific folder and files.
+6. Installs dependencies using the selected package manager.
+7. Remove IDE-specific folder according to the selected IDE.
+8. Creates an `.env.local` file with placeholders (e.g. `DATABASE_URL`, `API_KEY`).
+9. Launch `<pm> run format` to format the codebase.
 
+<Callout type="info" title="Usage with arguments">
+You can also provide arguments to the CLI to customize the project setup. Here are the available options:
+
+- `--name <projectName>`: Specify the name of the project.
+- `--directory <directory>`: Specify the directory to create the project in.
+- `--package-manager <packageManager>`: Specify the package manager to use (npm, yarn, pnpm, bun).
+- `--ide <ide>`: Specify the IDE to use (vscode, windsurf, zed, cursor).
+- `--plugins <plugins>`: Specify the plugins to install (e.g. waitlist, feedbacks).
+
+Example usage:
+
+```
+create-zap-app --name my-custom-app --directory ./apps --package-manager bun --ide vscode --plugins waitlist,feedbacks
+```
+</Callout>
