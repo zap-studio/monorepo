@@ -1,5 +1,11 @@
 # @zap-ts/architecture
 
+## 1.0.5
+
+### Patch Changes
+
+- 8fd5aea: Add more types to filter between core and optional plugins
+
 ## 1.0.4
 
 ### Patch Changes
