@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import { createProcedure } from './commands/create-procedure.js';
-import { createProject } from './commands/create-project.js';
 import { generateEnv } from './commands/generate-env.js';
-import { displayWelcome, getPackageVersion } from './utils/cli/cli.js';
+import { getPackageVersion } from './utils/cli/cli.js';
 
 async function main() {
   try {
@@ -11,25 +10,9 @@ async function main() {
     const program = new Command();
 
     program
-      .name('create-zap-app')
-      .alias('zap')
-      .description(
-        'A CLI to bootstrap a Zap.ts project with plugins customization.'
-      )
+      .name('zap')
+      .description('The CLI for managing Zap.ts projects.')
       .version(version || '1.0.0');
-
-    program
-      .command('create-zap-app')
-      .description('Create a new Next.js project with Zap.ts boilerplate')
-      .action(async () => {
-        try {
-          displayWelcome();
-          await createProject();
-        } catch (error) {
-          process.stderr.write(`Failed to create project: ${error}\n`);
-          process.exit(1);
-        }
-      });
 
     const createCmd = program
       .command('create')
@@ -69,16 +52,6 @@ async function main() {
           process.exit(1);
         }
       });
-
-    program.action(async () => {
-      try {
-        displayWelcome();
-        await createProject();
-      } catch (error) {
-        process.stderr.write(`Failed to create project: ${error}\n`);
-        process.exit(1);
-      }
-    });
 
     program.parse(process.argv);
 

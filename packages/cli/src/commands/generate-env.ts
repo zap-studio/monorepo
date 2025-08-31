@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { FileSystemError } from '@/lib/errors.js';
 import { displayNextSteps } from '@/utils/cli/cli.js';
-import { generateEnv as generateEnvironment } from '@/utils/generation/generate-env.js';
+import { generateEnv as generateEnvironment } from '@/utils/commands/generate/env/generate-env.js';
 
 export async function generateEnv(filename = '.env.template'): Promise<void> {
   const spinner = ora('Generating environment file...').start();

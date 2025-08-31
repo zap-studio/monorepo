@@ -3,11 +3,11 @@ import ora from 'ora';
 import {
   checkProcedureExists,
   createExistenceMessage,
-} from '@/utils/commands/procedure/check-existence.js';
-import { createFiles } from '@/utils/commands/procedure/create-files.js';
-import { formatFiles } from '@/utils/commands/procedure/format-files.js';
-import { printSuccessLogs } from '@/utils/commands/procedure/print-success-log.js';
-import { validateAndConvertName } from '@/utils/commands/procedure/validate-and-convert-name.js';
+} from '@/utils/commands/create/procedure/check-existence.js';
+import { createFiles } from '@/utils/commands/create/procedure/create-files.js';
+import { formatFiles } from '@/utils/commands/create/procedure/format-files.js';
+import { printSuccessLogs } from '@/utils/commands/create/procedure/print-success-log.js';
+import { validateAndConvertName } from '@/utils/commands/create/procedure/validate-and-convert-name.js';
 
 export async function createProcedure(procedureName: string): Promise<void> {
   const projectDir = process.cwd();

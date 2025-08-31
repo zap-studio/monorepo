@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import type { Ora } from 'ora';
 import { CORE_ENV } from '@/data/env.js';
 import { FileSystemError } from '@/lib/errors.js';
-import { generateSecret } from '@/utils/generation/generate-secret.js';
+import { generateSecret } from '@/utils/commands/generate/env/generate-secret.js';
 
 function getEnvVarContent(envVar: string) {
   let content: string;
