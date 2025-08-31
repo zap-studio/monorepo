@@ -1,4 +1,7 @@
 import path from 'node:path';
+import { IDEs } from '@zap-ts/architecture/ide';
+import { Plugins } from '@zap-ts/architecture/plugins';
+import type { IDE, PluginId } from '@zap-ts/architecture/types';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
@@ -56,5 +59,53 @@ export async function promptPackageManagerSelection(
     return response.packageManager as PackageManager;
   } catch (error) {
     throw new PromptError(`Failed to get package manager selection: ${error}`);
+  }
+}
+
+export async function promptIDESelection(
+  message: string
+): Promise<IDE | 'all' | null> {
+  try {
+    const response = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'ide',
+        message: chalk.yellow(message),
+        choices: [
+          { name: 'All', value: 'all' },
+          ...Object.values(IDEs).map((ide) => ({
+            name: ide.label,
+            value: ide.id,
+          })),
+          { name: 'None', value: null },
+        ],
+      },
+    ]);
+
+    return response.ide as IDE | 'all' | null;
+  } catch (error) {
+    throw new PromptError(`Failed to get IDE selection: ${error}`);
+  }
+}
+
+export async function promptPluginSelection(
+  message: string
+): Promise<PluginId[]> {
+  try {
+    const response = await inquirer.prompt([
+      {
+        type: 'checkbox',
+        name: 'plugins',
+        message: chalk.yellow(message),
+        choices: Object.values(Plugins).map((plugin) => ({
+          name: plugin.label,
+          value: plugin.id,
+        })),
+      },
+    ]);
+
+    return response.plugins as PluginId[];
+  } catch (error) {
+    throw new PromptError(`Failed to get plugin selection: ${error}`);
   }
 }

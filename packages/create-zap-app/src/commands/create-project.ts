@@ -1,4 +1,7 @@
 import path from 'node:path';
+import { IDEs } from '@zap-ts/architecture/ide';
+import { Plugins } from '@zap-ts/architecture/plugins';
+import type { IDE, PluginId } from '@zap-ts/architecture/types';
 import fs from 'fs-extra';
 import ora from 'ora';
 import { PACKAGE_MANAGERS } from '@/data/package-manager';
@@ -14,20 +17,28 @@ import {
   runFormatting,
 } from '@/utils/commands/project/post-install.js';
 import {
+  promptIDESelection,
   promptPackageManagerSelection,
+  promptPluginSelection,
   promptProjectName,
 } from '@/utils/commands/project/prompts.js';
-import { setupProjectTemplate } from '@/utils/commands/project/setup.js';
+import { setupTemplate } from '@/utils/template/setup-template';
+
+type CreateProjectOptions = {
+  projectName?: string;
+  directory?: string;
+  packageManager?: PackageManager;
+  ide?: IDE;
+  plugins?: PluginId[];
+};
 
 export async function createProject({
   projectName,
   directory,
   packageManager,
-}: {
-  projectName?: string;
-  directory?: string;
-  packageManager?: PackageManager;
-} = {}): Promise<void> {
+  ide,
+  plugins,
+}: CreateProjectOptions = {}): Promise<void> {
   let finalProjectName = projectName;
   if (!finalProjectName) {
     finalProjectName = await promptProjectName();
@@ -52,6 +63,29 @@ export async function createProject({
     process.exit(1);
   }
 
+  let finalIDE: IDE | 'all' | null;
+  if (
+    ide &&
+    Object.values(IDEs)
+      .map((i) => i.id)
+      .includes(ide)
+  ) {
+    finalIDE = ide as IDE;
+  } else {
+    finalIDE = await promptIDESelection('Which IDE do you want to use?');
+  }
+
+  if (!plugins || plugins.length === 0) {
+    await promptPluginSelection('Which plugins do you want to use?');
+  }
+
+  const finalPlugins: PluginId[] = [];
+  for (const plugin of Object.values(Plugins)) {
+    if (plugins?.includes(plugin.id)) {
+      finalPlugins.push(plugin.id);
+    }
+  }
+
   const spinner = ora(`Creating project '${finalProjectName}'...`).start();
   try {
     await fs.ensureDir(outputDir);
@@ -59,7 +93,8 @@ export async function createProject({
     throw new FileSystemError(`Failed to create project directory: ${error}`);
   }
 
-  await setupProjectTemplate(outputDir, spinner);
+  spinner.text = 'Downloading Zap.ts template from GitHub...';
+  await setupTemplate(outputDir, finalIDE, spinner);
 
   const resolvedPackageManager = await installDependenciesWithRetry(
     finalPackageManager,

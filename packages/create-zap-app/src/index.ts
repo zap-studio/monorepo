@@ -26,6 +26,11 @@ async function main() {
         '-p, --package-manager <packageManager>',
         'Package manager to use (npm, yarn, pnpm, bun)'
       )
+      .option('-i, --ide <ide>', 'IDE to use (vscode, windsurf, zed, cursor)')
+      .option(
+        '-l, --plugins <plugins>',
+        'Comma-separated list of plugins to install (e.g. waitlist, feedbacks)'
+      )
       .action(async (opts) => {
         try {
           displayWelcome();
@@ -33,6 +38,8 @@ async function main() {
             projectName: opts.name,
             directory: opts.directory,
             packageManager: opts.packageManager,
+            ide: opts.ide,
+            plugins: opts.plugins,
           });
         } catch (error) {
           process.stderr.write(`Failed to create project: ${error}\n`);
