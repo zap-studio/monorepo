@@ -6,8 +6,8 @@ import { generateEnv } from '@/utils/generation/generate-env.js';
 import { execAsync } from '@/utils/index.js';
 
 export async function runFormatting(
-  packageManager: PackageManager,
   outputDir: string,
+  packageManager: PackageManager,
   spinner: Ora
 ): Promise<void> {
   try {

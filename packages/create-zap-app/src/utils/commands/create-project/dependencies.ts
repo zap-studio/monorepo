@@ -22,8 +22,8 @@ export function getInstallCommand(
 }
 
 export function installDependenciesWithRetry(
-  initialPM: PackageManager,
   outputDir: string,
+  initialPM: PackageManager,
   spinner: Ora
 ): Promise<'npm' | 'yarn' | 'pnpm' | 'bun'> {
   const maxRetries = 3;
@@ -65,8 +65,8 @@ export function installDependenciesWithRetry(
 }
 
 export async function updateDependencies(
-  packageManager: PackageManager,
   outputDir: string,
+  packageManager: PackageManager,
   spinner: Ora
 ): Promise<void> {
   try {

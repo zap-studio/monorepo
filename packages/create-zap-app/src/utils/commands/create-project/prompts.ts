@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { IDEs } from '@zap-ts/architecture/ide';
-import { Plugins } from '@zap-ts/architecture/plugins';
+import { optionalPlugins } from '@zap-ts/architecture/plugins';
 import type { IDE, OptionalPluginId } from '@zap-ts/architecture/types';
 import chalk from 'chalk';
 import fs from 'fs-extra';
@@ -97,12 +97,10 @@ export async function promptPluginSelection(
         type: 'checkbox',
         name: 'plugins',
         message: chalk.yellow(message),
-        choices: Object.values(Plugins)
-          .filter((plugin) => !plugin.core)
-          .map((plugin) => ({
-            name: plugin.label,
-            value: plugin.id,
-          })),
+        choices: Object.values(optionalPlugins).map((plugin) => ({
+          name: plugin.label,
+          value: plugin.id,
+        })),
       },
     ]);
 

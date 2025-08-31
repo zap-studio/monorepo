@@ -1,12 +1,14 @@
 import path from 'node:path';
 import { IDEs } from '@zap-ts/architecture/ide';
-import { Plugins } from '@zap-ts/architecture/plugins';
 import type {
-  CorePluginId,
   IDE,
   OptionalPluginId,
   PluginId,
 } from '@zap-ts/architecture/types';
+import {
+  getCorePlugins,
+  getOptionalPlugins,
+} from '@zap-ts/architecture/utils/plugins';
 import { PACKAGE_MANAGERS } from '@/data/package-manager';
 import type { PackageManager } from '@/types/package-manager';
 import {
@@ -58,13 +60,8 @@ export async function resolveIDE(ide?: IDE): Promise<IDE | 'all' | null> {
 export async function resolvePlugins(
   plugins?: OptionalPluginId[]
 ): Promise<PluginId[]> {
-  const corePlugins: CorePluginId[] = Object.values(Plugins)
-    .filter((p) => p.core)
-    .map((p) => p.id);
-
-  const optionalPlugins: OptionalPluginId[] = Object.values(Plugins)
-    .filter((p) => !p.core)
-    .map((p) => p.id);
+  const corePlugins = getCorePlugins();
+  const optionalPlugins = getOptionalPlugins();
 
   const selected: OptionalPluginId[] = plugins?.length
     ? plugins.filter((p) => optionalPlugins.includes(p))

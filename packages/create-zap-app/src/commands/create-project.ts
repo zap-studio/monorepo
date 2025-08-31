@@ -9,6 +9,7 @@ import {
   installDependenciesWithRetry,
   updateDependencies,
 } from '@/utils/commands/create-project/dependencies.js';
+import { pruneUnusedPluginsAndDependencies } from '@/utils/commands/create-project/plugins';
 import {
   displaySuccessMessage,
   generateEnvFile,
@@ -38,7 +39,7 @@ export async function createProject(
   let packageManager = await resolvePackageManager(options.packageManager);
   const outputDir = resolveOutputDir(projectName, options.directory);
   const ide = await resolveIDE(options.ide);
-  const _plugins = await resolvePlugins(options.plugins);
+  const plugins = await resolvePlugins(options.plugins);
 
   const spinner = ora(`Creating project '${projectName}'...`).start();
 
@@ -50,14 +51,14 @@ export async function createProject(
 
   spinner.text = 'Downloading Zap.ts template from GitHub...';
   await setupTemplate(outputDir, ide, spinner);
-
+  await pruneUnusedPluginsAndDependencies(outputDir, plugins, spinner);
   packageManager = await installDependenciesWithRetry(
-    packageManager,
     outputDir,
+    packageManager,
     spinner
   );
-  await updateDependencies(packageManager, outputDir, spinner);
-  await runFormatting(packageManager, outputDir, spinner);
+  await updateDependencies(outputDir, packageManager, spinner);
+  await runFormatting(outputDir, packageManager, spinner);
   await generateEnvFile(outputDir, spinner);
 
   displaySuccessMessage(projectName, packageManager);
