@@ -53,3 +53,5 @@ export const Categories: Record<CategoryId, FileList> = {
   INSTRUMENTATION: InstrumentationFiles,
   ZAP: ZapFiles,
 };
+
+export const allFileLists: FileList[] = Object.values(Categories);

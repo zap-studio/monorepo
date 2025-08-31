@@ -3,6 +3,7 @@ export const Plugins = {
   ai: {
     id: 'ai',
     label: 'AI',
+    core: false,
     description: 'Integrates AI SDKs such as OpenAI and Mistral.',
     dependencies: ['ai', '@ai-sdk/openai', '@ai-sdk/mistral', '@ai-sdk/react'],
     requiredPlugins: [],
@@ -10,6 +11,7 @@ export const Plugins = {
   analytics: {
     id: 'analytics',
     label: 'Analytics',
+    core: false,
     description: 'Adds analytics providers like Vercel, PostHog, etc.',
     dependencies: [
       '@vercel/analytics',
@@ -22,6 +24,7 @@ export const Plugins = {
   api: {
     id: 'api',
     label: 'API',
+    core: true,
     description: 'Typed RPC API using oRPC.',
     dependencies: ['@orpc/client', '@orpc/server', '@orpc/react-query'],
     requiredPlugins: [],
@@ -29,6 +32,7 @@ export const Plugins = {
   auth: {
     id: 'auth',
     label: 'Authentication',
+    core: true,
     description: 'Authentication with Better Auth.',
     dependencies: ['better-auth', '@polar-sh/better-auth', '@polar-sh/sdk'],
     requiredPlugins: [],
@@ -36,6 +40,7 @@ export const Plugins = {
   blog: {
     id: 'blog',
     label: 'Blog',
+    core: false,
     description: 'Static/dynamic blog with MDX support.',
     dependencies: [
       'next-mdx-remote',
@@ -48,18 +53,21 @@ export const Plugins = {
   components: {
     id: 'components',
     label: 'Components',
+    core: true,
     description: 'Extra UI hooks and utilities for shadcn/ui.',
     dependencies: ['clsx', 'tailwind-merge', 'class-variance-authority'],
   },
   crypto: {
     id: 'crypto',
     label: 'Crypto',
+    core: true,
     description: 'Cryptographic helpers and utilities.',
     dependencies: [],
   },
   db: {
     id: 'db',
     label: 'Database',
+    core: true,
     description: 'Database integration via Drizzle ORM & PostgreSQL.',
     dependencies: ['drizzle-orm', 'pg', '@neondatabase/serverless'],
     devDependencies: ['drizzle-kit'],
@@ -67,18 +75,21 @@ export const Plugins = {
   env: {
     id: 'env',
     label: 'Environment',
+    core: true,
     description: 'Environment management via dotenv.',
     dependencies: ['dotenv'],
   },
   errors: {
     id: 'errors',
     label: 'Error Handling',
+    core: true,
     description: 'Error boundary & toast system.',
     dependencies: ['sonner', 'zod'],
   },
   feedbacks: {
     id: 'feedbacks',
     label: 'Feedback',
+    core: false,
     description: 'Collect feedback from users.',
     dependencies: [],
     requiredPlugins: [],
@@ -86,12 +97,14 @@ export const Plugins = {
   flags: {
     id: 'flags',
     label: 'Feature Flags',
+    core: false,
     description: 'Feature flagging with Flags SDK + PostHog.',
     dependencies: ['flags', '@flags-sdk/posthog'],
   },
   landing: {
     id: 'landing',
     label: 'Landing',
+    core: false,
     description: 'Public landing page template.',
     dependencies: [],
     requiredPlugins: [],
@@ -99,6 +112,7 @@ export const Plugins = {
   legal: {
     id: 'legal',
     label: 'Legal',
+    core: false,
     description: 'Cookie, privacy, terms of service pages.',
     dependencies: [],
     requiredPlugins: [],
@@ -106,6 +120,7 @@ export const Plugins = {
   mails: {
     id: 'mails',
     label: 'Emails',
+    core: true,
     description: 'Email templates with React Email & Resend.',
     dependencies: ['@react-email/components', 'react-email', 'resend'],
     devDependencies: ['@react-email/preview-server'],
@@ -114,12 +129,14 @@ export const Plugins = {
   markdown: {
     id: 'markdown',
     label: 'Markdown',
+    core: false,
     description: 'Markdown rendering with syntax highlighting.',
     dependencies: ['react-syntax-highlighter', 'gray-matter'],
   },
   payments: {
     id: 'payments',
     label: 'Payments',
+    core: true,
     description: 'Billing & payments with Polar SDK.',
     dependencies: ['@polar-sh/sdk', '@polar-sh/better-auth'],
     requiredPlugins: [],
@@ -127,11 +144,13 @@ export const Plugins = {
   plugins: {
     id: 'plugins',
     label: 'Plugins',
+    core: true,
     description: 'Zap.ts plugin system bootstrap.',
   },
   pwa: {
     id: 'pwa',
     label: 'Progressive Web App',
+    core: false,
     description: 'Service worker, manifest, push notifications.',
     dependencies: ['web-push'],
     requiredPlugins: [],
@@ -139,6 +158,7 @@ export const Plugins = {
   sidebar: {
     id: 'sidebar',
     label: 'Sidebar Layout',
+    core: false,
     description: 'Authenticated app layout with sidebar.',
     dependencies: [],
     requiredPlugins: [],
@@ -146,6 +166,7 @@ export const Plugins = {
   waitlist: {
     id: 'waitlist',
     label: 'Waitlist',
+    core: false,
     description: 'Waitlist page + middleware integration.',
     dependencies: [],
     requiredPlugins: [],
