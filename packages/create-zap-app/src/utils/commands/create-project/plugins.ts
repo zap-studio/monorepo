@@ -126,9 +126,11 @@ export async function removeDependenciesFromPackageJson(
     return;
   }
 
-  spinner.info(
-    `Removing dependencies: ${allDeps.map(([dep]) => dep).join(', ')}`
-  );
+  if (verbose) {
+    spinner.info(
+      `Removing dependencies: ${allDeps.map(([dep]) => dep).join(', ')}`
+    );
+  }
 
   try {
     const packageJsonPath = path.join(params.outputDir, 'package.json');
