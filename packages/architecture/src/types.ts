@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import type { Dependencies, Packages } from './deps.js';
 import type { CategoryIds } from './files/index.js';
 import type { IDEs } from './ide.js';
-import type { Plugins } from './plugins.js';
+import type { CorePluginIds, OptionalPluginIds } from './plugins.js';
 
 export type FileStatus = 'added' | 'deleted' | 'modified';
 
@@ -21,19 +21,19 @@ export type FileList = {
   entries: FileEntry[];
 };
 
-export type PluginId = keyof typeof Plugins;
-export type PluginType = (typeof Plugins)[PluginId];
-export type CorePluginId = {
-  [K in keyof typeof Plugins]: (typeof Plugins)[K]['core'] extends true
-    ? K
-    : never;
-}[keyof typeof Plugins];
-export type OptionalPluginId = {
-  [K in keyof typeof Plugins]: (typeof Plugins)[K] extends { core: false }
-    ? K
-    : never;
-}[keyof typeof Plugins];
-export type Plugin = (typeof Plugins)[PluginId];
+export type Plugin = {
+  id: PluginId;
+  label: string;
+  description: string;
+  dependencies: string[];
+  devDependencies: string[];
+  requiredPlugins: PluginId[];
+};
+
+export type PluginId = CorePluginId | OptionalPluginId;
+
+export type CorePluginId = keyof typeof CorePluginIds;
+export type OptionalPluginId = keyof typeof OptionalPluginIds;
 
 export type IDE = keyof typeof IDEs;
 

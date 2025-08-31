@@ -1,5 +1,11 @@
 import { allFileLists } from '@/files';
-import type { FileEntry, PluginId } from '@/types';
+import { corePlugins, optionalPlugins } from '@/plugins';
+import type {
+  CorePluginId,
+  FileEntry,
+  OptionalPluginId,
+  PluginId,
+} from '@/types';
 
 /**
  * Returns all file entries from all FileLists that use the specified plugin.
@@ -15,4 +21,20 @@ export const getFilesForPlugin = (pluginId: PluginId): FileEntry[] => {
     }
   }
   return result;
+};
+
+/**
+ * Returns all core plugins.
+ */
+export const getCorePlugins = (): CorePluginId[] => {
+  return Object.values(corePlugins).map((plugin) => plugin.id as CorePluginId);
+};
+
+/**
+ * Returns all optional plugins.
+ */
+export const getOptionalPlugins = (): OptionalPluginId[] => {
+  return Object.values(optionalPlugins).map(
+    (plugin) => plugin.id as OptionalPluginId
+  );
 };
