@@ -1,5 +1,11 @@
 # @zap-ts/architecture
 
+## 1.0.4
+
+### Patch Changes
+
+- 3fff5ff: Add core property to plugins and implement getFilesForPlugin utility function
+
 ## 1.0.3
 
 ### Patch Changes
