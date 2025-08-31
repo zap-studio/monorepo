@@ -1,5 +1,11 @@
 # @zap-ts/architecture
 
+## 1.0.6
+
+### Patch Changes
+
+- a5f31f5: Update dist/ folder to include new utils and types
+
 ## 1.0.5
 
 ### Patch Changes
