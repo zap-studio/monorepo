@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { optionalPlugins } from '@zap-ts/architecture/plugins';
+import { optionalPlugins, plugins } from '@zap-ts/architecture/plugins';
 import type { PluginId } from '@zap-ts/architecture/types';
 import { getFilesForPlugins } from '@zap-ts/architecture/utils/plugins';
 import fs from 'fs-extra';
@@ -7,13 +7,41 @@ import type { Ora } from 'ora';
 import { getErrorMessage } from '@/utils/misc/error';
 import { readPackageJson, removeDependencies } from '@/utils/misc/package-json';
 
+function getAllRequiredPlugins(selected: PluginId[]): Set<PluginId> {
+  const visited = new Set<PluginId>();
+
+  function visit(pluginId: PluginId) {
+    if (visited.has(pluginId)) {
+      return;
+    }
+    visited.add(pluginId);
+
+    const plugin = plugins[pluginId];
+    if (plugin?.requiredPlugins) {
+      for (const req of plugin.requiredPlugins) {
+        visit(req);
+      }
+    }
+  }
+
+  for (const id of selected) {
+    visit(id);
+  }
+
+  return visited;
+}
+
 export async function pruneUnusedPluginsAndDependencies(
   outputDir: string,
   selectedPlugins: PluginId[],
   spinner: Ora
 ): Promise<void> {
+  const requiredPlugins = getAllRequiredPlugins(selectedPlugins);
   const unusedPlugins: PluginId[] = Object.values(optionalPlugins)
-    .filter((plugin) => !selectedPlugins.includes(plugin.id))
+    .filter(
+      (plugin) =>
+        !(selectedPlugins.includes(plugin.id) || requiredPlugins.has(plugin.id))
+    )
     .map((plugin) => plugin.id);
 
   await pruneDependenciesForSelectedPlugins(outputDir, unusedPlugins, spinner);
