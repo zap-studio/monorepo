@@ -15,7 +15,7 @@
     "@biomejs/biome": "2.2.2",
     "@changesets/cli": "^2.29.6",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.5",
+    "lint-staged": "^16.1.6",
     "turbo": "^2.5.6",
     "ultracite": "^5.2.10"
   },
