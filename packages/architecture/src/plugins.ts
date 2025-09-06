@@ -2,6 +2,11 @@ import type { CorePluginId, OptionalPluginId, Plugin, PluginId } from "./types";
 
 /* TODO: review data and add which plugins depend on each other */
 
+/**
+ * 'analytics' plugin in 'layout.tsx' should be wrapped in a provider is not core but in base file
+ * 'auth', 'blog' and 'waitlist' in 'middleware.ts' are not core but in base file
+ */
+
 export const CorePluginIds = {
   api: "api",
   components: "components",

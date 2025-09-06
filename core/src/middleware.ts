@@ -2,7 +2,7 @@ import "server-only";
 
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-
+import { isPluginEnabled } from "@/lib/plugins";
 import {
   checkPublicPathAccess,
   createLoginRedirect,
@@ -11,7 +11,6 @@ import {
 import { checkBlogPathAccess } from "@/zap/blog/authorization";
 import { logMiddlewareError } from "@/zap/errors/logger/edge";
 import { checkWaitlistRedirect } from "@/zap/waitlist/authorization";
-import { isPluginEnabled } from "./lib/plugins";
 
 export async function middleware(request: NextRequest) {
   try {
