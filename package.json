@@ -6,18 +6,18 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "ultracite lint",
-    "format": "ultracite format",
+    "lint": "ultracite check",
+    "format": "ultracite fix",
     "prepare": "husky",
     "clean": "rm -rf node_modules .turbo apps/*/.next apps/*/.source apps/*/node_modules core/node_modules core/.next packages/*/node_modules"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.2",
+    "@biomejs/biome": "2.2.3",
     "@changesets/cli": "^2.29.6",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.5",
+    "lint-staged": "^16.1.6",
     "turbo": "^2.5.6",
-    "ultracite": "^5.2.17"
+    "ultracite": "^5.3.4"
   },
   "workspaces": [
     "packages/*",
