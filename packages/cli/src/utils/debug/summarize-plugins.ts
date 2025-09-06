@@ -31,11 +31,26 @@ export async function summarizePlugins(options: {
   }
 }
 
+function dedupePluginEntries<T extends { plugin: PluginId; path: string }>(
+  arr: T[]
+): T[] {
+  const seen = new Set<string>();
+  const result: T[] = [];
+  for (const entry of arr) {
+    const key = `${entry.plugin}:${entry.path}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push(entry);
+    }
+  }
+  return result;
+}
+
 async function analyzeSrcPlugins(srcDir: string) {
   const srcFiles = await getAllFiles(srcDir);
   const zapImports = (await Promise.all(srcFiles.map(findZapImports))).flat();
 
-  const imports = zapImports.map(addTypeToEntry);
+  const imports = dedupePluginEntries(zapImports.map(addTypeToEntry));
 
   return sortByTypeAndPlugin(imports);
 }
@@ -48,9 +63,9 @@ async function analyzeZapPlugins() {
   }
 
   const zapFiles = await getAllFiles(zapDir);
-  const zapEntries = (await Promise.all(zapFiles.map(findZapImports)))
-    .flat()
-    .map(addTypeToEntry);
+  const zapEntries = dedupePluginEntries(
+    (await Promise.all(zapFiles.map(findZapImports))).flat().map(addTypeToEntry)
+  );
 
   const corePlugins = sortByPluginAndPath(
     zapEntries.filter((x) => x.type === "core")
