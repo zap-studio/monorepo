@@ -20,9 +20,10 @@ async function main() {
       .description("Debug utilities for Zap.ts projects")
       .command("plugins")
       .description("Get a summary of plugins architecture in core/")
-      .action(async () => {
+      .option("-o, --output <file>", "Output the summary to a file")
+      .action(async (options) => {
         try {
-          await summarizePlugins();
+          await summarizePlugins(options);
         } catch (error) {
           process.stderr.write(`Failed to summarize plugins: ${error}\n`);
           process.exit(1);

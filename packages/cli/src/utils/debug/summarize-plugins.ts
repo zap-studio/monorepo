@@ -69,7 +69,9 @@ function classifyPlugin(plugin: PluginId): "core" | "optional" | "unknown" {
   return "unknown";
 }
 
-export async function summarizePlugins(): Promise<void> {
+export async function summarizePlugins(options: {
+  output?: string;
+}): Promise<void> {
   const srcDir = await getSrcDir();
   if (!srcDir) {
     process.stderr.write("No zap.config.ts found in current directory.\n");
@@ -104,24 +106,26 @@ export async function summarizePlugins(): Promise<void> {
   }));
 
   // Output
-  process.stdout.write("\nStep 1 - Determine core plugins:");
+  let output = "";
+  output += "\nStep 1 - Determine core plugins:\n";
   for (const { plugin, path: _path, type } of step1) {
-    process.stdout.write(
-      `- '${plugin}' (${type}) / ${_path.replace(`${process.cwd()}/`, "")}`
-    );
+    output += `- '${plugin}' (${type}) / ${_path.replace(`${process.cwd()}/`, "")}\n`;
   }
 
-  process.stdout.write("\nStep 2 - Core plugin imports:");
+  output += "\nStep 2 - Core plugin imports:\n";
   for (const { plugin, path: _path } of step2) {
-    process.stdout.write(
-      `core - '${plugin}' / ${_path.replace(`${process.cwd()}/`, "")}`
-    );
+    output += `core - '${plugin}' / ${_path.replace(`${process.cwd()}/`, "")}\n`;
   }
 
-  process.stdout.write("\nStep 3 - Optional plugin imports:");
+  output += "\nStep 3 - Optional plugin imports:\n";
   for (const { plugin, path: _path } of step3) {
-    process.stdout.write(
-      `optional - '${plugin}' / ${_path.replace(`${process.cwd()}/`, "")}`
-    );
+    output += `optional - '${plugin}' / ${_path.replace(`${process.cwd()}/`, "")}\n`;
+  }
+
+  if (options.output) {
+    await fs.writeFile(options.output, output, "utf8");
+    process.stdout.write(`Summary written to ${options.output}\n`);
+  } else {
+    process.stdout.write(output);
   }
 }
