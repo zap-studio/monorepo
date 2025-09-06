@@ -1,7 +1,10 @@
 import path from "node:path";
 import { optionalPlugins, plugins } from "@zap-ts/architecture/plugins";
 import type { PluginId } from "@zap-ts/architecture/types";
-import { getFilesForPlugins, getRequiredPlugins } from "@zap-ts/architecture/utils/plugins";
+import {
+  getFilesForPlugins,
+  getRequiredPlugins,
+} from "@zap-ts/architecture/utils/plugins";
 import fs from "fs-extra";
 import type { Ora } from "ora";
 import { getErrorMessage } from "@/utils/misc/error";
