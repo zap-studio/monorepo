@@ -9,11 +9,6 @@ import {
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
 import {
-  FileEntry,
-  FileListContainer,
-  FileListRenderer,
-} from "@/components/file-entry";
-import {
   Table,
   TableBody,
   TableCell,
@@ -21,14 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/table";
-import { DependencyList } from "./components/dependency-list";
-
-const FileEntryComponents = {
-  FileEntry,
-  FileListContainer,
-  FileListRenderer,
-  DependencyList,
-};
 
 const FileComponents = {
   File,
@@ -60,7 +47,6 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     ...TabsComponents,
     ...FileComponents,
     ...TableComponents,
-    ...FileEntryComponents,
     ...components,
   };
 }
