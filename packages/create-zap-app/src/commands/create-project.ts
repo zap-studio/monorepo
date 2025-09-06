@@ -1,5 +1,4 @@
 import type { IDE, OptionalPluginId } from "@zap-ts/architecture/types";
-import chalk from "chalk";
 import fs from "fs-extra";
 import ora from "ora";
 import { FileSystemError } from "@/lib/errors.js";
@@ -8,7 +7,7 @@ import {
   installDependenciesWithRetry,
   updateDependencies,
 } from "@/utils/commands/create-project/dependencies.js";
-import { isAlreadyZapApp } from "@/utils/commands/create-project/guard";
+import { ensureDirectoryIsReady } from "@/utils/commands/create-project/guard";
 import { pruneUnusedPluginsAndDependencies } from "@/utils/commands/create-project/plugins";
 import {
   displaySuccessMessage,
@@ -44,13 +43,7 @@ export async function createProject(
   const selectedPlugins = await resolvePlugins(options.plugins);
   const verbose = !!options.verbose;
 
-  const isZapApp = await isAlreadyZapApp(outputDir).catch(() => false);
-  if (isZapApp) {
-    process.stdout.write(
-      chalk.red(`Project '${projectName}' is already a Zap.ts app.`)
-    );
-    return;
-  }
+  await ensureDirectoryIsReady({ outputDir, projectName });
 
   const spinner = ora(`Creating project '${projectName}'...`).start();
 
