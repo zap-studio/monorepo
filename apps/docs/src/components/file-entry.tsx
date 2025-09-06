@@ -1,13 +1,13 @@
-import { IDEs } from '@zap-ts/architecture/ide';
+import { IDEs } from "@zap-ts/architecture/ide";
 import type {
   FileList,
   FileStatus,
   IDE,
   PluginId,
-} from '@zap-ts/architecture/types';
-import { Code2, FileText, Folder, Package } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+} from "@zap-ts/architecture/types";
+import { Code2, FileText, Folder, Package } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 type FileEntryProps = {
   name: string;
@@ -20,16 +20,16 @@ type FileEntryProps = {
 };
 
 const statusDotConfig: Record<FileStatus, string> = {
-  added: '🟢',
-  modified: '🟡',
-  deleted: '🔴',
+  added: "🟢",
+  modified: "🟡",
+  deleted: "🔴",
 };
 
 const ideColorConfig: Record<IDE, string> = {
-  vscode: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-  cursor: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-  zed: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-  windsurf: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+  vscode: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+  cursor: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+  zed: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+  windsurf: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
 };
 
 export function FileEntry({
@@ -58,8 +58,8 @@ export function FileEntry({
           {required && (
             <Badge
               className={cn(
-                'text-xs',
-                'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                "text-xs",
+                "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
               )}
               variant="outline"
             >
@@ -69,7 +69,7 @@ export function FileEntry({
 
           {ide && (
             <Badge
-              className={cn('text-xs', ideColorConfig[ide])}
+              className={cn("text-xs", ideColorConfig[ide])}
               key={ide}
               variant="secondary"
             >
@@ -104,7 +104,7 @@ type FileListProps = {
 };
 
 export function FileListContainer({ children, className }: FileListProps) {
-  return <div className={cn('flex flex-col', className)}>{children}</div>;
+  return <div className={cn("flex flex-col", className)}>{children}</div>;
 }
 
 const statusOrder: Record<FileStatus, number> = {
@@ -128,7 +128,7 @@ export function FileListRenderer({ list, className }: FileListRendererProps) {
   });
 
   return (
-    <FileListContainer className={cn('flex flex-col gap-4', className)}>
+    <FileListContainer className={cn("flex flex-col gap-4", className)}>
       {sortedEntries.map((entry) => (
         <FileEntry
           folder={entry.folder}

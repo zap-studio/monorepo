@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Check } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { Check } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 import {
   Card,
@@ -10,18 +10,18 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { betterAuthClient } from '@/zap/auth/providers/better-auth/client';
-import { ZapButton } from '@/zap/components/core/button';
-import { ClientError } from '@/zap/errors';
-import { handleClientError } from '@/zap/errors/client';
-import { SALES_EMAIL } from '@/zap.config';
+} from "@/components/ui/card";
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
+import { ZapButton } from "@/zap/components/core/button";
+import { ClientError } from "@/zap/errors";
+import { handleClientError } from "@/zap/errors/client";
+import { SALES_EMAIL } from "@/zap.config";
 
-import { useActiveSubscriptionSlug } from '../providers/polar/client';
-import { getBillingDetails, getSortedProducts } from '../utils';
-import { ZAP_PAYMENTS_CONFIG } from '../zap.plugin.config';
-import { PriceDisplay } from './price-display';
-import { PricingToggle } from './pricing-toggle';
+import { useActiveSubscriptionSlug } from "../providers/polar/client";
+import { getBillingDetails, getSortedProducts } from "../utils";
+import { ZAP_PAYMENTS_CONFIG } from "../zap.plugin.config";
+import { PriceDisplay } from "./price-display";
+import { PricingToggle } from "./pricing-toggle";
 
 export function BillingCards() {
   const [isYearly, setIsYearly] = useState(false);
@@ -40,15 +40,15 @@ export function BillingCards() {
       }
 
       if (price === 0) {
-        toast.info('This is a free plan. No checkout required.');
+        toast.info("This is a free plan. No checkout required.");
         return;
       }
 
       if (!productId) {
-        throw new ClientError('Product ID not found');
+        throw new ClientError("Product ID not found");
       }
 
-      toast.loading('Redirecting to checkout...');
+      toast.loading("Redirecting to checkout...");
 
       await betterAuthClient.checkout({
         products: [productId],
@@ -83,15 +83,15 @@ export function BillingCards() {
 
           const getButtonText = () => {
             if (isCurrentPlan) {
-              return 'Current Plan';
+              return "Current Plan";
             }
 
             if (isContactSales) {
-              return 'Contact Sales';
+              return "Contact Sales";
             }
 
             if (isFree) {
-              return 'Free Plan';
+              return "Free Plan";
             }
 
             return `Subscribe to ${product.name}`;
@@ -99,14 +99,14 @@ export function BillingCards() {
 
           const getButtonVariant = () => {
             if (isCurrentPlan) {
-              return 'secondary' as const;
+              return "secondary" as const;
             }
 
             if (product.popular && !isDisabled) {
-              return 'default' as const;
+              return "default" as const;
             }
 
-            return 'outline' as const;
+            return "outline" as const;
           };
 
           return (
@@ -153,7 +153,7 @@ export function BillingCards() {
                     disabled={isDisabled}
                     onClick={() =>
                       handleCheckout(
-                        product.productId || '',
+                        product.productId || "",
                         product.slug,
                         price,
                         product?.contactSales

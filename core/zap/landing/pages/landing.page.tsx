@@ -1,46 +1,46 @@
-import { isPluginEnabled } from '@/lib/plugins';
-import { Footer } from '@/zap/components/common/footer';
-import { Header } from '@/zap/components/common/header';
-import { FaqSection } from '../components/faq-section';
-import { FeaturesSection } from '../components/features-section';
-import { HeroSection } from '../components/hero-section';
-import { PricingSection } from '../components/pricing-section';
-import { SolutionSection } from '../components/solution-section';
-import { TestimonialSection } from '../components/testimonial-section';
+import { isPluginEnabled } from "@/lib/plugins";
+import { Footer } from "@/zap/components/common/footer";
+import { Header } from "@/zap/components/common/header";
+import { FaqSection } from "../components/faq-section";
+import { FeaturesSection } from "../components/features-section";
+import { HeroSection } from "../components/hero-section";
+import { PricingSection } from "../components/pricing-section";
+import { SolutionSection } from "../components/solution-section";
+import { TestimonialSection } from "../components/testimonial-section";
 
-const isPaymentsEnabled = isPluginEnabled('payments');
+const isPaymentsEnabled = isPluginEnabled("payments");
 
-const SECTION_CLASSNAME = 'w-full py-12 md:py-24 lg:py-32';
+const SECTION_CLASSNAME = "w-full py-12 md:py-24 lg:py-32";
 export const SECTIONS = [
   {
-    id: 'hero',
+    id: "hero",
     component: HeroSection,
     className:
-      'h-[calc(100vh-4rem)] border-b flex items-center justify-center md:py-0 overflow-hidden min-h-[500px]',
+      "h-[calc(100vh-4rem)] border-b flex items-center justify-center md:py-0 overflow-hidden min-h-[500px]",
   },
   {
-    id: 'solution',
+    id: "solution",
     component: SolutionSection,
     className: `bg-muted/50 border-y ${SECTION_CLASSNAME}`,
   },
   {
-    id: 'testimonials',
+    id: "testimonials",
     component: TestimonialSection,
     className: SECTION_CLASSNAME,
   },
   {
-    id: 'features',
+    id: "features",
     component: FeaturesSection,
     className: `bg-muted/50 border-y ${SECTION_CLASSNAME}`,
   },
   {
-    id: 'pricing',
+    id: "pricing",
     component: PricingSection,
     className: SECTION_CLASSNAME,
     disabled: !isPaymentsEnabled,
   },
   {
-    id: 'faq',
+    id: "faq",
     component: FaqSection,
     className: isPaymentsEnabled
       ? `bg-muted/50 border-t ${SECTION_CLASSNAME}`

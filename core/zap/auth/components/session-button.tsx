@@ -1,12 +1,12 @@
-'use client';
-import 'client-only';
+"use client";
+import "client-only";
 
-import Link from 'next/link';
-import { ZapButton } from '@/zap/components/core/button';
-import { ZAP_CORE_CONFIG } from '@/zap.config';
+import Link from "next/link";
+import { ZapButton } from "@/zap/components/core/button";
+import { ZAP_CORE_CONFIG } from "@/zap.config";
 
-import { betterAuthClient } from '../providers/better-auth/client';
-import { ZAP_AUTH_CONFIG } from '../zap.plugin.config';
+import { betterAuthClient } from "../providers/better-auth/client";
+import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 
 export function SessionButton() {
   const { data: result } = betterAuthClient.useSession();

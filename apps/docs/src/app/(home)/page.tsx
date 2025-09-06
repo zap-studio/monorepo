@@ -9,20 +9,20 @@ import {
   TerminalSquare,
   Wrench,
   Zap as ZapIcon,
-} from 'lucide-react';
-import Link from 'next/link';
-import type React from 'react';
-import { cache, Suspense } from 'react';
-import { EmbeddedTweet, TweetNotFound, TweetSkeleton } from 'react-tweet';
-import { getTweet as _getTweet } from 'react-tweet/api';
-import { Button } from '@/components/ui/button';
-import { testimonials } from '@/data/testimonials';
-import { GITHUB_REPO_URL } from '@/data/website';
-import { CopyCommand } from './_components/copy-command';
+} from "lucide-react";
+import Link from "next/link";
+import type React from "react";
+import { cache, Suspense } from "react";
+import { EmbeddedTweet, TweetNotFound, TweetSkeleton } from "react-tweet";
+import { getTweet as _getTweet } from "react-tweet/api";
+import { Button } from "@/components/ui/button";
+import { testimonials } from "@/data/testimonials";
+import { GITHUB_REPO_URL } from "@/data/website";
+import { CopyCommand } from "./_components/copy-command";
 
-const sectionClass = 'px-6 md:py-16 py-8';
-const cardBase = 'rounded-xl border bg-card shadow-sm';
-const mutedText = 'text-fd-muted-foreground';
+const sectionClass = "px-6 md:py-16 py-8";
+const cardBase = "rounded-xl border bg-card shadow-sm";
+const mutedText = "text-fd-muted-foreground";
 
 export default function HomePage() {
   return (
@@ -48,12 +48,12 @@ export default function HomePage() {
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Button asChild>
-              <Link href={{ pathname: '/docs' }}>
+              <Link href={{ pathname: "/docs" }}>
                 Get started
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
-            <Button asChild variant={'outline'}>
+            <Button asChild variant={"outline"}>
               <Link href={GITHUB_REPO_URL} rel="noreferrer" target="_blank">
                 <Stars className="size-4" />
                 Star on GitHub

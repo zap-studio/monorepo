@@ -1,9 +1,9 @@
-import { RiDiscordFill } from '@remixicon/react';
-import { HomeLayout } from 'fumadocs-ui/layouts/home';
-import { ArrowUpRight } from 'lucide-react';
-import type { ReactNode } from 'react';
-import { baseOptions } from '@/app/layout.config';
-import { DEMO_URL, DISCORD_URL, GITHUB_DISCUSSIONS_URL } from '@/data/website';
+import { RiDiscordFill } from "@remixicon/react";
+import { HomeLayout } from "fumadocs-ui/layouts/home";
+import { ArrowUpRight } from "lucide-react";
+import type { ReactNode } from "react";
+import { baseOptions } from "@/app/layout.config";
+import { DEMO_URL, DISCORD_URL, GITHUB_DISCUSSIONS_URL } from "@/data/website";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -11,23 +11,23 @@ export default function Layout({ children }: { children: ReactNode }) {
       {...baseOptions}
       links={[
         {
-          text: 'Documentation',
-          url: '/docs',
+          text: "Documentation",
+          url: "/docs",
         },
         {
           icon: <ArrowUpRight />,
-          text: 'Discussions',
+          text: "Discussions",
           url: GITHUB_DISCUSSIONS_URL,
         },
         {
           icon: <ArrowUpRight />,
-          text: 'Demo',
+          text: "Demo",
           url: DEMO_URL,
         },
         {
-          type: 'icon',
+          type: "icon",
           icon: <RiDiscordFill />,
-          text: 'Discord',
+          text: "Discord",
           url: DISCORD_URL,
         },
       ]}

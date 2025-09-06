@@ -1,19 +1,19 @@
-import { ArrowRight, ArrowUpRight, Star } from 'lucide-react';
-import Link from 'next/link';
-import { cache } from 'react';
+import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
+import Link from "next/link";
+import { cache } from "react";
 
-import { isPluginEnabled } from '@/lib/plugins';
-import { getNumberOfUsersService } from '@/zap/auth/services';
-import { ZAP_AUTH_CONFIG } from '@/zap/auth/zap.plugin.config';
-import { ZapButton } from '@/zap/components/core/button';
-import { AnimatedSection } from '@/zap/components/misc/animated-section';
-import { AnimatedText } from '@/zap/components/misc/animated-text';
-import { getAverageRatingService } from '@/zap/feedbacks/services';
+import { isPluginEnabled } from "@/lib/plugins";
+import { getNumberOfUsersService } from "@/zap/auth/services";
+import { ZAP_AUTH_CONFIG } from "@/zap/auth/zap.plugin.config";
+import { ZapButton } from "@/zap/components/core/button";
+import { AnimatedSection } from "@/zap/components/misc/animated-section";
+import { AnimatedText } from "@/zap/components/misc/animated-text";
+import { getAverageRatingService } from "@/zap/feedbacks/services";
 
 const getStatsData = cache(async () => {
   try {
-    const isFeedbacksEnabled = isPluginEnabled('feedbacks');
-    const isAuthEnabled = isPluginEnabled('auth');
+    const isFeedbacksEnabled = isPluginEnabled("feedbacks");
+    const isAuthEnabled = isPluginEnabled("auth");
 
     const promises: Promise<unknown>[] = [];
 
@@ -106,7 +106,7 @@ export async function Stats() {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
         className={`h-4 w-4 ${
-          i < fullStars ? 'fill-primary text-primary' : 'text-primary'
+          i < fullStars ? "fill-primary text-primary" : "text-primary"
         }`}
         key={`star-${i}-${fullStars}`}
       />
@@ -130,7 +130,7 @@ export async function Stats() {
           <div className="flex">{renderStars()}</div>
           <span className="ml-2 text-muted-foreground">
             {averageRating.toFixed(1)} ({totalFeedbacks} rating
-            {totalFeedbacks !== 1 ? 's' : ''})
+            {totalFeedbacks !== 1 ? "s" : ""})
           </span>
         </div>
       )}
@@ -140,7 +140,7 @@ export async function Stats() {
       {shouldShowUsers && (
         <div className="text-muted-foreground">
           Used by {numberOfUsers.toLocaleString()}+ developer
-          {numberOfUsers !== 1 ? 's' : ''}
+          {numberOfUsers !== 1 ? "s" : ""}
         </div>
       )}
     </div>

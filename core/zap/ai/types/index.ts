@@ -1,11 +1,11 @@
-import type { z } from 'zod';
+import type { z } from "zod";
 
 import type {
   AIFormSchema,
   AIProviderIdSchema,
   AIProviderSchema,
   ModelNameSchema,
-} from '../schemas';
+} from "../schemas";
 
 export type AIProviderId = z.infer<typeof AIProviderIdSchema>;
 export type AIProvider = z.infer<typeof AIProviderSchema>;

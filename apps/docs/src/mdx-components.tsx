@@ -1,18 +1,18 @@
-import { File, Files, Folder } from 'fumadocs-ui/components/files';
+import { File, Files, Folder } from "fumadocs-ui/components/files";
 import {
   Tab,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from 'fumadocs-ui/components/tabs';
-import defaultMdxComponents from 'fumadocs-ui/mdx';
-import type { MDXComponents } from 'mdx/types';
+} from "fumadocs-ui/components/tabs";
+import defaultMdxComponents from "fumadocs-ui/mdx";
+import type { MDXComponents } from "mdx/types";
 import {
   FileEntry,
   FileListContainer,
   FileListRenderer,
-} from '@/components/file-entry';
+} from "@/components/file-entry";
 import {
   Table,
   TableBody,
@@ -20,8 +20,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/table';
-import { DependencyList } from './components/dependency-list';
+} from "@/components/table";
+import { DependencyList } from "./components/dependency-list";
 
 const FileEntryComponents = {
   FileEntry,

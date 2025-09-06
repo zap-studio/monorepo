@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { type MotionProps, motion } from 'motion/react';
-import { useEffect, useRef, useState } from 'react';
+import { type MotionProps, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface AnimatedSpanProps extends MotionProps {
   children: React.ReactNode;
@@ -21,7 +21,7 @@ export const AnimatedSpan = ({
 }: AnimatedSpanProps) => (
   <motion.div
     animate={{ opacity: 1, y: 0 }}
-    className={cn('grid font-normal text-sm tracking-tight', className)}
+    className={cn("grid font-normal text-sm tracking-tight", className)}
     initial={{ opacity: 0, y: -5 }}
     transition={{ duration: 0.3, delay: delay / MILLISECONDS_IN_SECOND }}
     {...props}
@@ -43,18 +43,18 @@ export const TypingAnimation = ({
   className,
   duration = 60,
   delay = 0,
-  as: Component = 'span',
+  as: Component = "span",
   ...props
 }: TypingAnimationProps) => {
-  if (typeof children !== 'string') {
-    throw new Error('TypingAnimation: children must be a string. Received:');
+  if (typeof children !== "string") {
+    throw new Error("TypingAnimation: children must be a string. Received:");
   }
 
   const MotionComponent = motion.create(Component, {
     forwardMotionProps: true,
   });
 
-  const [displayedText, setDisplayedText] = useState<string>('');
+  const [displayedText, setDisplayedText] = useState<string>("");
   const [started, setStarted] = useState(false);
   const elementRef = useRef<HTMLElement | null>(null);
 
@@ -87,7 +87,7 @@ export const TypingAnimation = ({
 
   return (
     <MotionComponent
-      className={cn('font-normal text-sm tracking-tight', className)}
+      className={cn("font-normal text-sm tracking-tight", className)}
       ref={elementRef}
       {...props}
     >
@@ -105,7 +105,7 @@ export const Terminal = ({ children, className }: TerminalProps) => {
   return (
     <div
       className={cn(
-        'z-0 h-full max-h-[400px] w-full max-w-lg rounded-xl border border-border bg-background',
+        "z-0 h-full max-h-[400px] w-full max-w-lg rounded-xl border border-border bg-background",
         className
       )}
     >

@@ -1,11 +1,11 @@
-'use client';
-import 'client-only';
+"use client";
+import "client-only";
 
-import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
-import { useZapMutation, useZapQuery } from '@/zap/api/hooks';
-import { orpcQuery } from '@/zap/api/lib/orpc';
+import { useZapMutation, useZapQuery } from "@/zap/api/hooks";
+import { orpcQuery } from "@/zap/api/lib/orpc";
 
 export function useAverageRating() {
   return useZapQuery(orpcQuery.feedbacks.getAverageRating.queryOptions());
@@ -30,7 +30,7 @@ export function useSubmitFeedback(
     onSuccess: () => {
       setIsExistingFeedback(true);
     },
-    successMessage: 'Feedback submitted successfully!',
+    successMessage: "Feedback submitted successfully!",
   });
 }
 

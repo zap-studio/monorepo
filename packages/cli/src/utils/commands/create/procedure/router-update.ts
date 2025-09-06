@@ -1,10 +1,10 @@
-import path from 'node:path';
+import path from "node:path";
 import {
   type ObjectLiteralExpression,
   Project,
   type SourceFile,
-} from 'ts-morph';
-import { FileSystemError } from '@/lib/errors.js';
+} from "ts-morph";
+import { FileSystemError } from "@/lib/errors.js";
 
 async function saveRouterFile(sourceFile: SourceFile): Promise<void> {
   try {
@@ -40,7 +40,7 @@ function addImportDeclaration(
 }
 
 function findRouterVariable(sourceFile: SourceFile) {
-  const routerVar = sourceFile.getVariableDeclaration('router');
+  const routerVar = sourceFile.getVariableDeclaration("router");
   if (!routerVar) {
     throw new Error("Could not find 'router' variable in router.ts");
   }
@@ -48,7 +48,7 @@ function findRouterVariable(sourceFile: SourceFile) {
 }
 
 function getRouterInitializer(
-  routerVar: ReturnType<SourceFile['getVariableDeclaration']>
+  routerVar: ReturnType<SourceFile["getVariableDeclaration"]>
 ) {
   const initializer = routerVar?.getInitializer();
   if (!initializer) {
@@ -75,7 +75,7 @@ export async function updateRouterFile(
   kebabCaseName: string
 ): Promise<void> {
   try {
-    const routerPath = path.join(projectDir, 'src/rpc/router.ts');
+    const routerPath = path.join(projectDir, "src/rpc/router.ts");
     const sourceFile = loadSourceFile(routerPath);
 
     addImportDeclaration(sourceFile, kebabCaseName, procedureName);

@@ -1,13 +1,13 @@
-import chalk from 'chalk';
-import ora from 'ora';
+import chalk from "chalk";
+import ora from "ora";
 import {
   checkProcedureExists,
   createExistenceMessage,
-} from '@/utils/commands/create/procedure/check-existence.js';
-import { createFiles } from '@/utils/commands/create/procedure/create-files.js';
-import { formatFiles } from '@/utils/commands/create/procedure/format-files.js';
-import { printSuccessLogs } from '@/utils/commands/create/procedure/print-success-log.js';
-import { validateAndConvertName } from '@/utils/commands/create/procedure/validate-and-convert-name.js';
+} from "@/utils/commands/create/procedure/check-existence.js";
+import { createFiles } from "@/utils/commands/create/procedure/create-files.js";
+import { formatFiles } from "@/utils/commands/create/procedure/format-files.js";
+import { printSuccessLogs } from "@/utils/commands/create/procedure/print-success-log.js";
+import { validateAndConvertName } from "@/utils/commands/create/procedure/validate-and-convert-name.js";
 
 export async function createProcedure(procedureName: string): Promise<void> {
   const projectDir = process.cwd();
@@ -16,7 +16,7 @@ export async function createProcedure(procedureName: string): Promise<void> {
   const { validatedName, kebabCaseName } =
     validateAndConvertName(procedureName);
 
-  spinner.text = 'Checking if procedure already exists...';
+  spinner.text = "Checking if procedure already exists...";
   const existenceResult = await checkProcedureExists(
     projectDir,
     validatedName,
@@ -29,7 +29,7 @@ export async function createProcedure(procedureName: string): Promise<void> {
     existenceResult
   );
   if (existenceMessage) {
-    spinner.fail('Procedure already exists');
+    spinner.fail("Procedure already exists");
     process.stdout.write(
       chalk.yellow(`
 ${existenceMessage}

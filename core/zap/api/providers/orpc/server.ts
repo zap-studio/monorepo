@@ -1,7 +1,7 @@
-import 'server-only';
+import "server-only";
 
-import { createRouterClient } from '@orpc/server';
-import { router } from '../../rpc/router';
+import { createRouterClient } from "@orpc/server";
+import { router } from "../../rpc/router";
 
 export const orpcServer = createRouterClient(router, {
   /**

@@ -1,7 +1,7 @@
-import path from 'node:path';
-import fs from 'fs-extra';
-import { FileSystemError } from '@/lib/errors.js';
-import { toPascalCase } from './validation.js';
+import path from "node:path";
+import fs from "fs-extra";
+import { FileSystemError } from "@/lib/errors.js";
+import { toPascalCase } from "./validation.js";
 
 export async function generateProcedureFile(
   projectDir: string,
@@ -11,7 +11,7 @@ export async function generateProcedureFile(
   try {
     const procedurePath = path.join(
       projectDir,
-      'src/rpc/procedures',
+      "src/rpc/procedures",
       `${kebabCaseName}.rpc.ts`
     );
 
@@ -38,7 +38,7 @@ export async function generateHookFile(
   try {
     const hookPath = path.join(
       projectDir,
-      'src/hooks/rpc',
+      "src/hooks/rpc",
       `use-${kebabCaseName}.ts`
     );
 

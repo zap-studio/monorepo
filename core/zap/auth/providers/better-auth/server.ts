@@ -1,8 +1,8 @@
-import 'server-only';
+import "server-only";
 
-import { checkout, polar, portal } from '@polar-sh/better-auth';
-import { betterAuth } from 'better-auth';
-import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { checkout, polar, portal } from "@polar-sh/better-auth";
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import {
   admin,
   anonymous,
@@ -10,27 +10,27 @@ import {
   organization,
   twoFactor,
   username,
-} from 'better-auth/plugins';
-import { passkey } from 'better-auth/plugins/passkey';
+} from "better-auth/plugins";
+import { passkey } from "better-auth/plugins/passkey";
 
-import { db } from '@/zap/db/providers/drizzle';
-import { SERVER_ENV } from '@/zap/env/server';
-import { MailError } from '@/zap/errors';
+import { db } from "@/zap/db/providers/drizzle";
+import { SERVER_ENV } from "@/zap/env/server";
+import { MailError } from "@/zap/errors";
 import {
   canSendMailService,
   sendForgotPasswordMailService,
   sendVerificationMailService,
   updateLastTimestampMailSentService,
-} from '@/zap/mails/services';
-import { ZAP_MAILS_CONFIG } from '@/zap/mails/zap.plugin.config';
-import { polarClient } from '@/zap/payments/providers/polar/server';
-import { ZAP_PAYMENTS_CONFIG } from '@/zap/payments/zap.plugin.config';
+} from "@/zap/mails/services";
+import { ZAP_MAILS_CONFIG } from "@/zap/mails/zap.plugin.config";
+import { polarClient } from "@/zap/payments/providers/polar/server";
+import { ZAP_PAYMENTS_CONFIG } from "@/zap/payments/zap.plugin.config";
 
-import { ZAP_AUTH_CONFIG } from '../../zap.plugin.config';
+import { ZAP_AUTH_CONFIG } from "../../zap.plugin.config";
 
 export const betterAuthServer = betterAuth({
-  appName: 'Zap.ts',
-  database: drizzleAdapter(db, { provider: 'pg' }),
+  appName: "Zap.ts",
+  database: drizzleAdapter(db, { provider: "pg" }),
   emailAndPassword: {
     enabled: true,
     minPasswordLength: ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH,
@@ -74,7 +74,7 @@ export const betterAuthServer = betterAuth({
 
       const verificationUrl = new URL(url);
       verificationUrl.searchParams.set(
-        'callbackURL',
+        "callbackURL",
         ZAP_AUTH_CONFIG.VERIFIED_EMAIL_PATH
       );
 
@@ -93,13 +93,13 @@ export const betterAuthServer = betterAuth({
   },
   socialProviders: {
     github: {
-      clientId: SERVER_ENV.GITHUB_CLIENT_ID || '',
-      clientSecret: SERVER_ENV.GITHUB_CLIENT_SECRET || '',
+      clientId: SERVER_ENV.GITHUB_CLIENT_ID || "",
+      clientSecret: SERVER_ENV.GITHUB_CLIENT_SECRET || "",
     },
     google: {
       enabled: true,
-      clientId: SERVER_ENV.GOOGLE_CLIENT_ID || '',
-      clientSecret: SERVER_ENV.GOOGLE_CLIENT_SECRET || '',
+      clientId: SERVER_ENV.GOOGLE_CLIENT_ID || "",
+      clientSecret: SERVER_ENV.GOOGLE_CLIENT_SECRET || "",
     },
   },
   plugins: [
@@ -121,7 +121,7 @@ export const betterAuthServer = betterAuth({
     username({
       minUsernameLength: ZAP_AUTH_CONFIG.MINIMUM_USERNAME_LENGTH,
       maxUsernameLength: ZAP_AUTH_CONFIG.MAXIMUM_USERNAME_LENGTH,
-      usernameValidator: (name) => name !== 'admin',
+      usernameValidator: (name) => name !== "admin",
     }),
     anonymous(),
     passkey(),

@@ -1,10 +1,10 @@
-'use client';
-import 'client-only';
-import './globals.css';
+"use client";
+import "client-only";
+import "./globals.css";
 
-import { geist } from '@/app/fonts';
-import { ZapButton } from '@/zap/components/core/button';
-import { BaseError } from '@/zap/errors';
+import { geist } from "@/app/fonts";
+import { ZapButton } from "@/zap/components/core/button";
+import { BaseError } from "@/zap/errors";
 
 type ErrorBoundaryProps = {
   reset: () => void;
@@ -14,8 +14,8 @@ type ErrorBoundaryProps = {
 export default function GlobalError({ reset, error }: ErrorBoundaryProps) {
   const isBaseError = error instanceof BaseError;
 
-  const title = isBaseError ? error.name : 'Error';
-  const message = isBaseError ? error.message : 'An unexpected error occurred.';
+  const title = isBaseError ? error.name : "Error";
+  const message = isBaseError ? error.message : "An unexpected error occurred.";
 
   return (
     <html lang="en">

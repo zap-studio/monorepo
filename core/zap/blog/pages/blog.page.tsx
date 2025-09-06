@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
+import type { Metadata } from "next";
+import Link from "next/link";
 
-import { ZAP_DEFAULT_METADATA } from '@/zap.config';
+import { ZAP_DEFAULT_METADATA } from "@/zap.config";
 
-import { formatDate, getBlogPostsMetadata } from '../utils';
-import { ZAP_BLOG_CONFIG } from '../zap.plugin.config';
+import { formatDate, getBlogPostsMetadata } from "../utils";
+import { ZAP_BLOG_CONFIG } from "../zap.plugin.config";
 
 export const _metadata: Metadata = {
   title: `${ZAP_DEFAULT_METADATA.title} | Blog`,
@@ -18,7 +18,7 @@ export async function _BlogPage() {
       <div className="flex flex-col">
         {posts.map((post, index) => (
           <div
-            className={`py-6 ${index < posts.length - 1 ? 'border-b' : ''}`}
+            className={`py-6 ${index < posts.length - 1 ? "border-b" : ""}`}
             key={post.slug}
           >
             <Link

@@ -1,6 +1,6 @@
-import type { ZodType } from 'zod';
-import { FetchError } from '@/zap/errors';
-import { BASE_URL } from '@/zap.config';
+import type { ZodType } from "zod";
+import { FetchError } from "@/zap/errors";
+import { BASE_URL } from "@/zap.config";
 
 /**
  * Resolve the base URL depending on runtime.
@@ -8,7 +8,7 @@ import { BASE_URL } from '@/zap.config';
  * - Server/Edge: BASE_URL from zap.config.ts
  */
 function getBaseURL(): string {
-  if (typeof window !== 'undefined' && window.location?.origin) {
+  if (typeof window !== "undefined" && window.location?.origin) {
     return window.location.origin;
   }
   return BASE_URL;
@@ -59,8 +59,8 @@ export async function $fetch<TData = unknown>(
   }
 
   let data: unknown = null;
-  const contentType = response.headers.get('content-type') || '';
-  if (contentType.includes('application/json')) {
+  const contentType = response.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) {
     try {
       data = await response.json();
     } catch {

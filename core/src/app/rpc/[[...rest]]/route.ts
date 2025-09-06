@@ -1,20 +1,20 @@
-import 'server-only';
+import "server-only";
 
-import { RPCHandler } from '@orpc/server/fetch';
+import { RPCHandler } from "@orpc/server/fetch";
 
-import { router } from '@/zap/api/rpc/router';
+import { router } from "@/zap/api/rpc/router";
 
 const handler = new RPCHandler(router);
 
 async function handleRequest(request: Request) {
   const { response } = await handler.handle(request, {
-    prefix: '/rpc',
+    prefix: "/rpc",
     context: {
       headers: request.headers,
     },
   });
 
-  return response ?? new Response('Not found', { status: 404 });
+  return response ?? new Response("Not found", { status: 404 });
 }
 
 export const HEAD = handleRequest;

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 import {
   Card,
@@ -6,13 +6,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { isPluginEnabled } from '@/lib/plugins';
-import { cn } from '@/lib/utils';
-import { ZAP_LEGAL_CONFIG } from '@/zap/legal/zap.plugin.config';
+} from "@/components/ui/card";
+import { isPluginEnabled } from "@/lib/plugins";
+import { cn } from "@/lib/utils";
+import { ZAP_LEGAL_CONFIG } from "@/zap/legal/zap.plugin.config";
 
-import { SocialProviderButton } from '../components/social-provider-button';
-import { ZAP_AUTH_CONFIG } from '../zap.plugin.config';
+import { SocialProviderButton } from "../components/social-provider-button";
+import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 
 type AuthPageProps = {
   title: string;
@@ -25,7 +25,7 @@ type AuthPageProps = {
   };
 };
 
-const isLegalEnabled = isPluginEnabled('legal');
+const isLegalEnabled = isPluginEnabled("legal");
 
 export function _AuthPage({
   title,
@@ -68,7 +68,7 @@ export function _AuthPage({
                 {form}
 
                 <div className="text-center text-sm">
-                  {bottomText.label}{' '}
+                  {bottomText.label}{" "}
                   <Link
                     className="underline underline-offset-4"
                     href={{ pathname: bottomText.linkHref }}
@@ -102,15 +102,15 @@ function PolicyLinks({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'text-balance text-center text-muted-foreground text-xs [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary [&_a]:active:text-primary',
+        "text-balance text-center text-muted-foreground text-xs [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary [&_a]:active:text-primary",
         className
       )}
     >
-      By clicking continue, you agree to our{' '}
+      By clicking continue, you agree to our{" "}
       <Link href={{ pathname: ZAP_LEGAL_CONFIG.TERMS_OF_SERVICE_URL }}>
         Terms of Service
-      </Link>{' '}
-      and{' '}
+      </Link>{" "}
+      and{" "}
       <Link href={{ pathname: ZAP_LEGAL_CONFIG.PRIVACY_POLICY_URL }}>
         Privacy Policy
       </Link>

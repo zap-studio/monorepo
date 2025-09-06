@@ -1,7 +1,7 @@
-import 'server-only';
+import "server-only";
 
-import { HttpStatus } from '@/zap/errors';
-import { ZAP_AUTH_CONFIG } from '../zap.plugin.config';
+import { HttpStatus } from "@/zap/errors";
+import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 
 export function redirectToLogin() {
   return Response.redirect(

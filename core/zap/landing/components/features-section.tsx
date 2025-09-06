@@ -1,6 +1,6 @@
-import { Check } from 'lucide-react';
+import { Check } from "lucide-react";
 
-import { FEATURES } from '../data';
+import { FEATURES } from "../data";
 
 export function FeaturesSection() {
   return (

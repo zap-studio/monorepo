@@ -1,27 +1,27 @@
-import { L } from '../helpers/link.js';
-import type { FileList } from '../types.js';
+import { L } from "../helpers/link.js";
+import type { FileList } from "../types.js";
 
 export const DockerFiles: FileList = {
-  category: 'DOCKER',
+  category: "DOCKER",
   entries: [
     {
-      path: '.dockerignore',
-      status: 'added',
+      path: ".dockerignore",
+      status: "added",
       required: false,
-      plugins: ['docker'],
+      plugins: ["docker"],
       children: (
         <>
           Similar to `.gitignore`, this file specifies which files and
-          directories should be ignored by{' '}
+          directories should be ignored by{" "}
           <L href="https://www.docker.com/">Docker</L>.
         </>
       ),
     },
     {
-      path: 'Dockerfile.dev',
-      status: 'added',
+      path: "Dockerfile.dev",
+      status: "added",
       required: false,
-      plugins: ['docker'],
+      plugins: ["docker"],
       children: (
         <>
           Contains the instructions for building a Docker image provisioning a
@@ -31,14 +31,14 @@ export const DockerFiles: FileList = {
       ),
     },
     {
-      path: 'Dockerfile.prod',
-      status: 'added',
+      path: "Dockerfile.prod",
+      status: "added",
       required: false,
-      plugins: ['docker'],
+      plugins: ["docker"],
       children: (
         <>
           Contains the instructions for building a Docker image for the
-          application following{' '}
+          application following{" "}
           <L href="https://github.com/vercel/next.js/tree/canary/examples/with-docker">
             Next.js Docker best practices
           </L>
@@ -47,13 +47,13 @@ export const DockerFiles: FileList = {
       ),
     },
     {
-      path: 'compose.yml',
-      status: 'added',
+      path: "compose.yml",
+      status: "added",
       required: false,
-      plugins: ['docker'],
+      plugins: ["docker"],
       children: (
         <>
-          Contains the configuration for{' '}
+          Contains the configuration for{" "}
           <L href="https://docs.docker.com/compose/">Docker Compose</L> to
           define and run multi-container Docker applications (such as Zap.ts and
           PostgreSQL).

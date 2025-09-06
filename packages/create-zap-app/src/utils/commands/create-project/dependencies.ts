@@ -1,24 +1,24 @@
-import type { Ora } from 'ora';
-import { ProcessExitError } from '@/lib/errors.js';
-import type { PackageManager } from '@/schemas/package-manager.schema.js';
-import { execAsync } from '@/utils/index.js';
-import { getErrorMessage } from '@/utils/misc/error.js';
-import { promptPackageManagerSelection } from './prompts.js';
+import type { Ora } from "ora";
+import { ProcessExitError } from "@/lib/errors.js";
+import type { PackageManager } from "@/schemas/package-manager.schema.js";
+import { execAsync } from "@/utils/index.js";
+import { getErrorMessage } from "@/utils/misc/error.js";
+import { promptPackageManagerSelection } from "./prompts.js";
 
 export function getInstallCommand(
   pm: PackageManager
-): 'yarn' | 'npm install --legacy-peer-deps' | 'pnpm install' | 'bun install' {
+): "yarn" | "npm install --legacy-peer-deps" | "pnpm install" | "bun install" {
   switch (pm) {
-    case 'npm':
-      return 'npm install --legacy-peer-deps';
-    case 'yarn':
-      return 'yarn';
-    case 'pnpm':
-      return 'pnpm install';
-    case 'bun':
-      return 'bun install';
+    case "npm":
+      return "npm install --legacy-peer-deps";
+    case "yarn":
+      return "yarn";
+    case "pnpm":
+      return "pnpm install";
+    case "bun":
+      return "bun install";
     default:
-      return 'npm install --legacy-peer-deps';
+      return "npm install --legacy-peer-deps";
   }
 }
 
@@ -28,7 +28,7 @@ export function installDependenciesWithRetry(
     initialPM: PackageManager;
   },
   spinner: Ora
-): Promise<'npm' | 'yarn' | 'pnpm' | 'bun'> {
+): Promise<"npm" | "yarn" | "pnpm" | "bun"> {
   const maxRetries = 3;
   let currentPM: PackageManager = params.initialPM;
 
@@ -71,15 +71,15 @@ export async function updateDependencies(
   verbose: boolean
 ): Promise<void> {
   try {
-    spinner.text = 'Updating dependencies...';
+    spinner.text = "Updating dependencies...";
     spinner.start();
 
     await execAsync(`${params.packageManager} update`, {
       cwd: params.outputDir,
     });
-    spinner.succeed('Dependencies updated successfully.');
+    spinner.succeed("Dependencies updated successfully.");
   } catch (error) {
-    spinner.warn('Failed to update dependencies, continuing anyway...');
+    spinner.warn("Failed to update dependencies, continuing anyway...");
     if (verbose) {
       process.stderr.write(`${getErrorMessage(error)}\n`);
     }

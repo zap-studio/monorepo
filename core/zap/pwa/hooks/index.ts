@@ -1,14 +1,14 @@
-'use client';
-import 'client-only';
+"use client";
+import "client-only";
 
-import { useZapMutation } from '@/zap/api/hooks';
-import { orpcQuery } from '@/zap/api/lib/orpc';
-import { PUBLIC_ENV } from '@/zap/env/public';
-import { ApplicationError, ClientError } from '@/zap/errors';
-import { handleClientError } from '@/zap/errors/client';
+import { useZapMutation } from "@/zap/api/hooks";
+import { orpcQuery } from "@/zap/api/lib/orpc";
+import { PUBLIC_ENV } from "@/zap/env/public";
+import { ApplicationError, ClientError } from "@/zap/errors";
+import { handleClientError } from "@/zap/errors/client";
 
-import { usePushNotificationsStore } from '../stores';
-import { arrayBufferToBase64, urlBase64ToUint8Array } from '../utils';
+import { usePushNotificationsStore } from "../stores";
+import { arrayBufferToBase64, urlBase64ToUint8Array } from "../utils";
 
 export function usePushNotifications() {
   const subscription = usePushNotificationsStore((state) => state.subscription);
@@ -32,7 +32,7 @@ export function usePushNotifications() {
         await subscription.unsubscribe();
       }
     },
-    successMessage: 'Subscribed to push notifications successfully!',
+    successMessage: "Subscribed to push notifications successfully!",
   });
 
   const { mutateAsync: unsubscribe, isPending: isUnsubscribing } =
@@ -44,7 +44,7 @@ export function usePushNotifications() {
           isSubscribed: false,
         });
       },
-      successMessage: 'We will miss you!',
+      successMessage: "We will miss you!",
     });
 
   const handleSubscribeToPush = async () => {
@@ -52,7 +52,7 @@ export function usePushNotifications() {
       const registration = await navigator.serviceWorker.ready;
 
       if (!PUBLIC_ENV.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
-        throw new ApplicationError('VAPID public key is not set');
+        throw new ApplicationError("VAPID public key is not set");
       }
 
       const applicationServerKey = urlBase64ToUint8Array(
@@ -64,11 +64,11 @@ export function usePushNotifications() {
         applicationServerKey,
       });
 
-      const authKey = sub.getKey('auth');
-      const p256dhKey = sub.getKey('p256dh');
+      const authKey = sub.getKey("auth");
+      const p256dhKey = sub.getKey("p256dh");
 
       if (!(authKey && p256dhKey)) {
-        throw new ClientError('Failed to retrieve push subscription keys');
+        throw new ClientError("Failed to retrieve push subscription keys");
       }
 
       const transformedSubscription = {
@@ -89,13 +89,13 @@ export function usePushNotifications() {
   const handleUnsubscribeFromPush = async () => {
     try {
       if (!subscription) {
-        throw new ClientError('No active subscription found');
+        throw new ClientError("No active subscription found");
       }
 
       await subscription.unsubscribe();
       await unsubscribe({});
     } catch (error) {
-      handleClientError(error, 'Failed to unsubscribe from push notifications');
+      handleClientError(error, "Failed to unsubscribe from push notifications");
     }
   };
 

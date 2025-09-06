@@ -1,23 +1,23 @@
-import type { FileList } from '../types.js';
+import type { FileList } from "../types.js";
 
 export const ZapFiles: FileList = {
-  category: 'ZAP',
+  category: "ZAP",
   entries: [
     {
-      path: 'zap.config.ts',
-      status: 'added',
+      path: "zap.config.ts",
+      status: "added",
       required: true,
       children: <>Configuration files for Zap.ts.</>,
     },
     {
-      path: 'zap.config.types.ts',
-      status: 'added',
+      path: "zap.config.types.ts",
+      status: "added",
       required: true,
       children: <>Type definitions for Zap.ts configuration.</>,
     },
     {
-      path: 'zap/',
-      status: 'added',
+      path: "zap/",
+      status: "added",
       required: true,
       children: (
         <>

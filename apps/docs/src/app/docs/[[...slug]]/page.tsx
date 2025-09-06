@@ -1,17 +1,17 @@
-import { createRelativeLink } from 'fumadocs-ui/mdx';
+import { createRelativeLink } from "fumadocs-ui/mdx";
 import {
   DocsBody,
   DocsDescription,
   DocsPage,
   DocsTitle,
-} from 'fumadocs-ui/page';
-import { notFound } from 'next/navigation';
-import { LLMCopyButton, ViewOptions } from '@/components/ai/page-actions';
-import { source } from '@/lib/source';
-import { getMDXComponents } from '@/mdx-components';
+} from "fumadocs-ui/page";
+import { notFound } from "next/navigation";
+import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
+import { source } from "@/lib/source";
+import { getMDXComponents } from "@/mdx-components";
 
-const owner = 'alexandretrotel';
-const repo = 'zap.ts';
+const owner = "alexandretrotel";
+const repo = "zap.ts";
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -29,7 +29,7 @@ export default async function Page(props: {
       full={page.data.full}
       lastUpdate={new Date(page.data.lastModified ?? Date.now())}
       tableOfContent={{
-        style: 'clerk',
+        style: "clerk",
       }}
       toc={page.data.toc}
     >

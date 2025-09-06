@@ -1,10 +1,10 @@
-import { ArrowUpRight } from 'lucide-react';
-import Image, { type ImageProps } from 'next/image';
-import Link from 'next/link';
-import { MDXRemote } from 'next-mdx-remote/rsc';
-import React from 'react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { tomorrow } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { ArrowUpRight } from "lucide-react";
+import Image, { type ImageProps } from "next/image";
+import Link from "next/link";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import React from "react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
 function Table({ data }: { data: { headers: string[]; rows: string[][] } }) {
   const headers = data.headers.map((header) => (
@@ -13,7 +13,7 @@ function Table({ data }: { data: { headers: string[]; rows: string[][] } }) {
     </th>
   ));
   const rows = data.rows.map((row, i) => (
-    <tr className="even:bg-muted/40" key={`row-${i}-${row.join('-')}`}>
+    <tr className="even:bg-muted/40" key={`row-${i}-${row.join("-")}`}>
       {row.map((cell, j) => (
         <td className="border px-4 py-2" key={`cell-${i}-${j}-${cell}`}>
           {cell}
@@ -44,7 +44,7 @@ type CustomLinkProps = {
 function CustomLink(props: CustomLinkProps) {
   const { href, children, ...restProps } = props;
 
-  if (href.startsWith('/')) {
+  if (href.startsWith("/")) {
     return (
       <Link
         href={{ pathname: href }}
@@ -56,7 +56,7 @@ function CustomLink(props: CustomLinkProps) {
     );
   }
 
-  if (href.startsWith('#')) {
+  if (href.startsWith("#")) {
     return (
       <a
         href={href}
@@ -105,10 +105,10 @@ function slugify(str: string) {
     .toString()
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, '-')
-    .replace(/&/g, '-and-')
-    .replace(/[^\w-]+/g, '')
-    .replace(/--+/g, '-');
+    .replace(/\s+/g, "-")
+    .replace(/&/g, "-and-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-");
 }
 
 function createHeading(level: number) {
@@ -116,19 +116,19 @@ function createHeading(level: number) {
     const slug = slugify(children);
 
     const headingClassMap: Record<number, string> = {
-      1: 'scroll-mt-20 text-4xl font-bold tracking-tight leading-tight',
-      2: 'scroll-mt-20 mt-10 pb-2 border-b border-border text-3xl font-semibold tracking-tight',
-      3: 'scroll-mt-20 mt-8 text-2xl font-semibold tracking-tight',
-      4: 'scroll-mt-20 mt-6 text-xl font-semibold',
-      5: 'scroll-mt-20 mt-4 text-lg font-semibold',
-      6: 'scroll-mt-20 mt-4 text-base font-semibold',
+      1: "scroll-mt-20 text-4xl font-bold tracking-tight leading-tight",
+      2: "scroll-mt-20 mt-10 pb-2 border-b border-border text-3xl font-semibold tracking-tight",
+      3: "scroll-mt-20 mt-8 text-2xl font-semibold tracking-tight",
+      4: "scroll-mt-20 mt-6 text-xl font-semibold",
+      5: "scroll-mt-20 mt-4 text-lg font-semibold",
+      6: "scroll-mt-20 mt-4 text-base font-semibold",
     };
 
     return React.createElement(
       `h${level}`,
       {
         id: slug,
-        className: `${headingClassMap[level] || ''} group`,
+        className: `${headingClassMap[level] || ""} group`,
       },
       <>
         {children}
@@ -159,18 +159,18 @@ const YouTube = ({ id }: { id: string }) => (
 );
 
 const Callout = ({
-  type = 'info',
+  type = "info",
   text,
 }: {
-  type?: 'info' | 'warning' | 'error';
+  type?: "info" | "warning" | "error";
   text: string;
 }) => {
   const typeMap = {
-    info: 'border-blue-500 bg-blue-50 text-blue-800 dark:border-blue-700 dark:bg-blue-200',
+    info: "border-blue-500 bg-blue-50 text-blue-800 dark:border-blue-700 dark:bg-blue-200",
     warning:
-      'border-yellow-500 bg-yellow-50 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-200',
+      "border-yellow-500 bg-yellow-50 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-200",
     error:
-      'border-red-500 bg-red-50 text-red-800 dark:border-red-700 dark:bg-red-200',
+      "border-red-500 bg-red-50 text-red-800 dark:border-red-700 dark:bg-red-200",
   };
 
   return <div className={`my-4 border-l-4 p-4 ${typeMap[type]}`}>{text}</div>;
@@ -218,13 +218,13 @@ const Code = ({
   children: string | string[];
   className?: string;
 }) => {
-  const language = className?.replace('language-', '') || '';
+  const language = className?.replace("language-", "") || "";
   const isBlock = !!className;
 
   if (isBlock) {
     return (
       <SyntaxHighlighter language={language} PreTag="div" style={tomorrow}>
-        {typeof children === 'string' ? children.trim() : children.join('')}
+        {typeof children === "string" ? children.trim() : children.join("")}
       </SyntaxHighlighter>
     );
   }
@@ -261,7 +261,7 @@ const components = {
 };
 
 interface CustomMDXProps
-  extends Omit<React.ComponentProps<typeof MDXRemote>, 'components'> {
+  extends Omit<React.ComponentProps<typeof MDXRemote>, "components"> {
   components?: Record<string, React.ComponentType>;
 }
 

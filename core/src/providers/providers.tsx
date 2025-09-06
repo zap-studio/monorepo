@@ -1,11 +1,11 @@
-'use client';
-import 'client-only';
+"use client";
+import "client-only";
 
-import { ProgressProvider } from '@bprogress/next/app';
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { ProgressProvider } from "@bprogress/next/app";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
-import { ThemeProvider } from '@/providers/theme.provider';
-import { PluginProviders } from '@/zap/plugins/providers/providers.plugin';
+import { ThemeProvider } from "@/providers/theme.provider";
+import { PluginProviders } from "@/zap/plugins/providers/providers.plugin";
 
 type ProvidersProps = {
   children: React.ReactNode;

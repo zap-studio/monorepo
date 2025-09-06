@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { UpsertModeSchema } from '@/zap/db/types';
+import { UpsertModeSchema } from "@/zap/db/types";
 
-import { ModelsByProvider } from '../data';
-import { AIProviderIdEnum } from '../zap.plugin.config.types';
+import { ModelsByProvider } from "../data";
+import { AIProviderIdEnum } from "../zap.plugin.config.types";
 
 export const AIProviderIdSchema = z.enum(
   Object.values(AIProviderIdEnum) as [string, ...string[]]
@@ -22,7 +22,7 @@ export const ModelNameSchema = z.enum(
 export const AIFormSchema = z.object({
   provider: AIProviderIdSchema,
   model: ModelNameSchema,
-  apiKey: z.string().min(1, 'API key is required'),
+  apiKey: z.string().min(1, "API key is required"),
 });
 
 export const InputGetAPIKeySchema = z.object({

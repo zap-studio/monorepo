@@ -1,6 +1,6 @@
-import { VERCEL } from '@/zap/env/runtime/public';
+import { VERCEL } from "@/zap/env/runtime/public";
 
-import type { AnalyticsPluginConfig } from './zap.plugin.config.types';
+import type { AnalyticsPluginConfig } from "./zap.plugin.config.types";
 
 export const ZAP_ANALYTICS_CONFIG: AnalyticsPluginConfig = {
   ENABLE_POSTHOG: false,

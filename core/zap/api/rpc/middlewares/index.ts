@@ -1,5 +1,5 @@
-import 'server-only';
+import "server-only";
 
-import { os } from '@orpc/server';
+import { os } from "@orpc/server";
 
 export const base = os;

@@ -1,16 +1,16 @@
-import 'server-only';
+import "server-only";
 
-import { db } from '@/zap/db/providers/drizzle';
-import { BadRequestError, NotFoundError } from '@/zap/errors';
+import { db } from "@/zap/db/providers/drizzle";
+import { BadRequestError, NotFoundError } from "@/zap/errors";
 
-import { getNumberOfPeopleInWaitlistQuery } from '../db/providers/drizzle/queries';
-import { waitlist } from '../db/providers/drizzle/schema';
+import { getNumberOfPeopleInWaitlistQuery } from "../db/providers/drizzle/queries";
+import { waitlist } from "../db/providers/drizzle/schema";
 
 export async function getNumberOfPeopleInWaitlistService() {
   const result = await getNumberOfPeopleInWaitlistQuery.execute();
 
   if (!result.length) {
-    throw new NotFoundError('No waitlist records found');
+    throw new NotFoundError("No waitlist records found");
   }
 
   const record = result[0];
@@ -34,11 +34,11 @@ export async function submitWaitlistEmailService({
 
   if (!result.length) {
     throw new BadRequestError(
-      'This email is already on the waitlist. Please check your inbox for updates.'
+      "This email is already on the waitlist. Please check your inbox for updates."
     );
   }
 
   return {
-    message: 'Successfully joined the waitlist',
+    message: "Successfully joined the waitlist",
   };
 }

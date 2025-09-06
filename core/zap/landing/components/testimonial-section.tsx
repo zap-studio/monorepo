@@ -1,9 +1,9 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import { TESTIMONIALS } from '../data';
-import { Marquee } from './magicui/marquee';
+import { TESTIMONIALS } from "../data";
+import { Marquee } from "./magicui/marquee";
 
 const firstRow = TESTIMONIALS.slice(0, TESTIMONIALS.length / 2);
 const secondRow = TESTIMONIALS.slice(TESTIMONIALS.length / 2);
@@ -52,12 +52,12 @@ export function ReviewCard({ img, name, username, body }: ReviewCardProps) {
   return (
     <figure
       className={cn(
-        'relative h-full w-64 shrink-0 cursor-pointer overflow-hidden rounded-xl border p-4',
+        "relative h-full w-64 shrink-0 cursor-pointer overflow-hidden rounded-xl border p-4",
         // light
-        'border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05] active:bg-gray-950/[.05]',
+        "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05] active:bg-gray-950/[.05]",
         // dark
-        'dark:border-gray-50/[.1] dark:bg-gray-50/[.08] dark:active:bg-gray-50/[.12] dark:hover:bg-gray-50/[.12]',
-        'transition-colors'
+        "dark:border-gray-50/[.1] dark:bg-gray-50/[.08] dark:active:bg-gray-50/[.12] dark:hover:bg-gray-50/[.12]",
+        "transition-colors"
       )}
     >
       <div className="flex items-center gap-3">

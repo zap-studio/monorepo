@@ -1,9 +1,9 @@
-import Link from 'next/link';
-import { getAuthServerDataOrRedirectToLoginService } from '@/zap/auth/services';
-import { ZapButton } from '@/zap/components/core/button';
-import { SUPPORT_EMAIL } from '@/zap.config';
-import { BillingCards } from '../components/billing-cards';
-import { FAQ } from '../components/faq';
+import Link from "next/link";
+import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
+import { ZapButton } from "@/zap/components/core/button";
+import { SUPPORT_EMAIL } from "@/zap.config";
+import { BillingCards } from "../components/billing-cards";
+import { FAQ } from "../components/faq";
 
 export async function _BillingPage() {
   await getAuthServerDataOrRedirectToLoginService();
@@ -26,12 +26,12 @@ export async function _BillingPage() {
 
       <div className="mx-auto max-w-2xl text-center text-muted-foreground text-sm">
         <p>
-          Need help? Contact our{' '}
+          Need help? Contact our{" "}
           <ZapButton asChild className="h-auto p-0 text-sm" variant="link">
             <Link href={`mailto:${SUPPORT_EMAIL}`} target="_blank">
               support team
             </Link>
-          </ZapButton>{' '}
+          </ZapButton>{" "}
           for assistance with your subscription.
         </p>
       </div>

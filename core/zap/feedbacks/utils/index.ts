@@ -1,4 +1,4 @@
-import { ZAP_FEEDBACKS_CONFIG } from '../zap.plugin.config';
+import { ZAP_FEEDBACKS_CONFIG } from "../zap.plugin.config";
 
 export function computeAverage(feedbacks: { rating: number }[]) {
   const totalFeedbacks = feedbacks.length;

@@ -1,7 +1,7 @@
-import path from 'node:path';
-import fs from 'fs-extra';
-import { Project } from 'ts-morph';
-import { ValidationError } from '@/lib/errors.js';
+import path from "node:path";
+import fs from "fs-extra";
+import { Project } from "ts-morph";
+import { ValidationError } from "@/lib/errors.js";
 
 export type ExistenceCheckResult = {
   procedureFileExists: boolean;
@@ -41,7 +41,7 @@ async function checkProcedureFileExists(
 ): Promise<boolean> {
   const procedurePath = path.join(
     projectDir,
-    'src/rpc/procedures',
+    "src/rpc/procedures",
     `${kebabCaseName}.rpc.ts`
   );
   return await fs.pathExists(procedurePath);
@@ -53,7 +53,7 @@ async function checkHookFileExists(
 ): Promise<boolean> {
   const hookPath = path.join(
     projectDir,
-    'src/hooks/rpc',
+    "src/hooks/rpc",
     `use-${kebabCaseName}.ts`
   );
   return await fs.pathExists(hookPath);
@@ -64,7 +64,7 @@ async function checkRouterContainsProcedure(
   procedureName: string
 ): Promise<boolean> {
   try {
-    const routerPath = path.join(projectDir, 'src/rpc/router.ts');
+    const routerPath = path.join(projectDir, "src/rpc/router.ts");
 
     if (!(await fs.pathExists(routerPath))) {
       return false;
@@ -85,7 +85,7 @@ async function checkRouterContainsProcedure(
       return true;
     }
 
-    const routerVar = sourceFile.getVariableDeclaration('router');
+    const routerVar = sourceFile.getVariableDeclaration("router");
     if (!routerVar) {
       return false;
     }
@@ -133,5 +133,5 @@ export function createExistenceMessage(
     );
   }
 
-  return `Procedure '${validatedName}' already exists:\n${conflicts.join('\n')}`;
+  return `Procedure '${validatedName}' already exists:\n${conflicts.join("\n")}`;
 }

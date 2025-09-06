@@ -1,4 +1,4 @@
-import { _LandingPage } from '@/zap/landing/pages/landing.page';
+import { _LandingPage } from "@/zap/landing/pages/landing.page";
 
 export const revalidate = 3600; // revalidate every hour
 

@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { Check, Clipboard } from 'lucide-react';
-import { useState } from 'react';
+import { Check, Clipboard } from "lucide-react";
+import { useState } from "react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { AnimatedSpan, Terminal, TypingAnimation } from '../magicui/terminal';
+import { AnimatedSpan, Terminal, TypingAnimation } from "../magicui/terminal";
 
 type CommandCardProps = {
   command: string;

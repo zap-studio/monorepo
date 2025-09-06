@@ -1,16 +1,16 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import type { BlogPosting, WithContext } from 'schema-dts';
-import serialize from 'serialize-javascript';
-import { CustomMDX } from '@/zap/markdown/mdx';
-import { BASE_URL } from '@/zap.config';
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import type { BlogPosting, WithContext } from "schema-dts";
+import serialize from "serialize-javascript";
+import { CustomMDX } from "@/zap/markdown/mdx";
+import { BASE_URL } from "@/zap.config";
 
 import {
   formatDate,
   generateBlogPostMetadata,
   getBlogPost,
   getBlogPostsMetadata,
-} from '../utils';
+} from "../utils";
 
 export async function _generateMetadata({
   params,
@@ -39,8 +39,8 @@ export async function _BlogSlugPage({ params }: _BlogSlugPageProps) {
   }
 
   const jsonLd: WithContext<BlogPosting> = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
     headline: post.metadata.title,
     datePublished: new Date(post.metadata.date).toISOString(),
     dateModified: new Date(post.metadata.date).toISOString(),
@@ -51,7 +51,7 @@ export async function _BlogSlugPage({ params }: _BlogSlugPageProps) {
     url: `${BASE_URL}/blog/${post.slug}`,
     ...(post.metadata.author && {
       author: {
-        '@type': 'Person',
+        "@type": "Person",
         name: post.metadata.author,
       },
     }),

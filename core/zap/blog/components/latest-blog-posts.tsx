@@ -1,7 +1,7 @@
-import Link from 'next/link';
+import Link from "next/link";
 
-import { formatDate, getBlogPostsMetadata } from '../utils';
-import { ZAP_BLOG_CONFIG } from '../zap.plugin.config';
+import { formatDate, getBlogPostsMetadata } from "../utils";
+import { ZAP_BLOG_CONFIG } from "../zap.plugin.config";
 
 export async function LatestBlogPosts() {
   const posts = await getBlogPostsMetadata();

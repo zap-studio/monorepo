@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useRouter } from '@bprogress/next/app';
+import { useRouter } from "@bprogress/next/app";
 import {
   BadgeCheck,
   Bell,
@@ -9,12 +9,12 @@ import {
   LogOut,
   type LucideIcon,
   Sparkles,
-} from 'lucide-react';
-import Link from 'next/link';
-import { useMemo } from 'react';
-import { toast } from 'sonner';
+} from "lucide-react";
+import Link from "next/link";
+import { useMemo } from "react";
+import { toast } from "sonner";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,17 +23,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@/components/ui/sidebar';
-import { isPluginEnabled } from '@/lib/plugins';
-import { betterAuthClient } from '@/zap/auth/providers/better-auth/client';
-import { handleClientError } from '@/zap/errors/client';
-import { useActiveSubscriptionProduct } from '@/zap/payments/providers/polar/client';
+} from "@/components/ui/sidebar";
+import { isPluginEnabled } from "@/lib/plugins";
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
+import { handleClientError } from "@/zap/errors/client";
+import { useActiveSubscriptionProduct } from "@/zap/payments/providers/polar/client";
 
 type MenuItem = {
   label: string;
@@ -56,13 +56,13 @@ export function SidebarUser({ user }: SidebarUserProps) {
   const router = useRouter();
   const product = useActiveSubscriptionProduct();
 
-  const isPaymentsEnabled = useMemo(() => isPluginEnabled('payments'), []);
+  const isPaymentsEnabled = useMemo(() => isPluginEnabled("payments"), []);
 
   const getInitials = (name: string) =>
     name
-      .split(' ')
+      .split(" ")
       .map((n) => n[0])
-      .join('')
+      .join("")
       .toUpperCase()
       .slice(0, 2);
 
@@ -70,7 +70,7 @@ export function SidebarUser({ user }: SidebarUserProps) {
 
   const handleCustomerPortal = async () => {
     try {
-      toast.loading('Redirecting to customer portal...');
+      toast.loading("Redirecting to customer portal...");
       await betterAuthClient.customer.portal();
     } catch (error) {
       handleClientError(error);
@@ -80,8 +80,8 @@ export function SidebarUser({ user }: SidebarUserProps) {
   const handleSignOut = async () => {
     try {
       await betterAuthClient.signOut();
-      toast.success('Successfully signed out');
-      router.push('/login');
+      toast.success("Successfully signed out");
+      router.push("/login");
     } catch (error) {
       handleClientError(error);
     }
@@ -89,26 +89,26 @@ export function SidebarUser({ user }: SidebarUserProps) {
 
   const UPGRADE_ITEM: MenuItem[] = [
     {
-      label: 'Upgrade to Pro',
+      label: "Upgrade to Pro",
       icon: Sparkles,
-      href: '/app/billing',
+      href: "/app/billing",
       disabled: !isPaymentsEnabled,
     },
   ];
 
   const ACCOUNT_ITEMS: MenuItem[] = [
-    { label: 'Account', icon: BadgeCheck, href: '/app/account' },
+    { label: "Account", icon: BadgeCheck, href: "/app/account" },
     {
-      label: 'Billing',
+      label: "Billing",
       icon: CreditCard,
       onClick: handleCustomerPortal,
       disabled: !isPaymentsEnabled,
     },
-    { label: 'Notifications', icon: Bell, href: '/app/notifications' },
+    { label: "Notifications", icon: Bell, href: "/app/notifications" },
   ];
 
   const ACTION_ITEMS: MenuItem[] = [
-    { label: 'Log out', icon: LogOut, onClick: handleSignOut },
+    { label: "Log out", icon: LogOut, onClick: handleSignOut },
   ];
 
   const renderMenuItems = (items: MenuItem[]) => {
@@ -118,7 +118,7 @@ export function SidebarUser({ user }: SidebarUserProps) {
           return null;
         }
 
-        if (label === 'Billing' && !product) {
+        if (label === "Billing" && !product) {
           return null;
         }
 
@@ -160,7 +160,7 @@ export function SidebarUser({ user }: SidebarUserProps) {
           <DropdownMenuContent
             align="end"
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? 'bottom' : 'right'}
+            side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
@@ -210,7 +210,7 @@ function UserInfo({ user, fallback }: UserInfoProps) {
   return (
     <>
       <Avatar className="h-8 w-8 rounded-lg">
-        <AvatarImage alt={user.name} src={user.avatar ?? ''} />
+        <AvatarImage alt={user.name} src={user.avatar ?? ""} />
         <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
       </Avatar>
 

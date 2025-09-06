@@ -1,11 +1,11 @@
-import { allFileLists } from '@/files';
-import { corePlugins, optionalPlugins } from '@/plugins';
+import { allFileLists } from "@/files";
+import { corePlugins, optionalPlugins } from "@/plugins";
 import type {
   CorePluginId,
   FileEntry,
   OptionalPluginId,
   PluginId,
-} from '@/types';
+} from "@/types";
 
 /**
  * Returns all file entries from all FileLists that use the specified plugin.

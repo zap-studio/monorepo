@@ -1,14 +1,14 @@
-import { L } from '../helpers/link.js';
-import type { FileList } from '../types.js';
+import { L } from "../helpers/link.js";
+import type { FileList } from "../types.js";
 
 export const RoutesFiles: FileList = {
-  category: 'ROUTES',
+  category: "ROUTES",
   entries: [
     {
-      path: 'src/app/api/auth/[...all]/route.ts',
-      status: 'added',
+      path: "src/app/api/auth/[...all]/route.ts",
+      status: "added",
       required: false,
-      plugins: ['auth'],
+      plugins: ["auth"],
       children: (
         <>
           Authentication API route for handling all auth-related requests with
@@ -17,10 +17,10 @@ export const RoutesFiles: FileList = {
       ),
     },
     {
-      path: 'src/app/rpc/[[...rest]]/route.ts',
-      status: 'added',
+      path: "src/app/rpc/[[...rest]]/route.ts",
+      status: "added",
       required: false,
-      plugins: ['api'],
+      plugins: ["api"],
       children: (
         <>
           RPC API route for handling all RPC-related requests with

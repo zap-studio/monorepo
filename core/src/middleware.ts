@@ -1,24 +1,24 @@
-import 'server-only';
+import "server-only";
 
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 import {
   checkPublicPathAccess,
   createLoginRedirect,
   getSessionInEdgeRuntime,
-} from '@/zap/auth/authorization';
-import { checkBlogPathAccess } from '@/zap/blog/authorization';
-import { logMiddlewareError } from '@/zap/errors/logger/edge';
-import { checkWaitlistRedirect } from '@/zap/waitlist/authorization';
-import { isPluginEnabled } from './lib/plugins';
+} from "@/zap/auth/authorization";
+import { checkBlogPathAccess } from "@/zap/blog/authorization";
+import { logMiddlewareError } from "@/zap/errors/logger/edge";
+import { checkWaitlistRedirect } from "@/zap/waitlist/authorization";
+import { isPluginEnabled } from "./lib/plugins";
 
 export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl;
 
     // Check for waitlist redirect (optional plugin)
-    if (isPluginEnabled('waitlist')) {
+    if (isPluginEnabled("waitlist")) {
       const waitlistRedirect = checkWaitlistRedirect(request);
       if (waitlistRedirect) {
         return waitlistRedirect;
@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Check if path is a blog path (optional plugin)
-    if (isPluginEnabled('blog')) {
+    if (isPluginEnabled("blog")) {
       const blogPathAccess = checkBlogPathAccess(request);
       if (blogPathAccess) {
         return blogPathAccess;
@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Handle authentication if auth plugin is enabled
-    if (isPluginEnabled('auth')) {
+    if (isPluginEnabled("auth")) {
       // Check if path is publicly accessible (auth public paths)
       const publicPathAccess = checkPublicPathAccess(request);
       if (publicPathAccess) {
@@ -51,7 +51,7 @@ export async function middleware(request: NextRequest) {
 
       // Add session headers for authenticated requests
       const requestHeaders = new Headers(request.headers);
-      requestHeaders.set('x-user-session', JSON.stringify(session));
+      requestHeaders.set("x-user-session", JSON.stringify(session));
 
       const response = NextResponse.next({
         request: { headers: requestHeaders },
@@ -66,7 +66,7 @@ export async function middleware(request: NextRequest) {
     logMiddlewareError(error);
 
     // On error, if auth is enabled, redirect to login
-    if (isPluginEnabled('auth')) {
+    if (isPluginEnabled("auth")) {
       return createLoginRedirect(request, request.nextUrl.pathname);
     }
 
@@ -93,10 +93,10 @@ export const config = {
        * - opengraph-image (OpenGraph image route)
        */
       source:
-        '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|sitemap-0.xml|robots.txt|sw.js|manifest.json|manifest.webmanifest|icon-192x192.png|icon-512x512.png|apple-touch-icon.png|badge.png|favicon-16x16.png|favicon-32x32.png|og.png|opengraph-image.*|_vercel/.*).*)',
+        "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|sitemap-0.xml|robots.txt|sw.js|manifest.json|manifest.webmanifest|icon-192x192.png|icon-512x512.png|apple-touch-icon.png|badge.png|favicon-16x16.png|favicon-32x32.png|og.png|opengraph-image.*|_vercel/.*).*)",
       missing: [
-        { type: 'header', key: 'next-router-prefetch' },
-        { type: 'header', key: 'purpose', value: 'prefetch' },
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
       ],
     },
   ],

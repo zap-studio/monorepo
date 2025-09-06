@@ -1,17 +1,17 @@
-import path from 'node:path';
-import { IdeFiles } from '@zap-ts/architecture/files/ide';
-import type { IDE } from '@zap-ts/architecture/types';
-import fs from 'fs-extra';
-import { LOCKFILES } from '@/data/package-manager.js';
-import { FileSystemError } from '@/lib/errors.js';
-import { getErrorMessage } from '../misc/error';
+import path from "node:path";
+import { IdeFiles } from "@zap-ts/architecture/files/ide";
+import type { IDE } from "@zap-ts/architecture/types";
+import fs from "fs-extra";
+import { LOCKFILES } from "@/data/package-manager.js";
+import { FileSystemError } from "@/lib/errors.js";
+import { getErrorMessage } from "../misc/error";
 
 export async function cleanupOutputDirectory(outputDir: string): Promise<void> {
   try {
     const outputFiles = await fs.readdir(outputDir);
 
     const removePromises = outputFiles
-      .filter((file) => file !== 'temp')
+      .filter((file) => file !== "temp")
       .map((file) => {
         const filePath = path.join(outputDir, file);
         return fs.remove(filePath);
@@ -43,10 +43,10 @@ export async function removeLockFiles(outputDir: string): Promise<void> {
 
 export async function removeIDEConfigFiles(
   outputDir: string,
-  ide: IDE | 'all' | null
+  ide: IDE | "all" | null
 ): Promise<void> {
   try {
-    if (ide === 'all') {
+    if (ide === "all") {
       return; // keep all IDE config files
     }
 
@@ -67,7 +67,7 @@ export async function removeIDEConfigFiles(
 
 export async function cleanupPackageJson(outputDir: string): Promise<void> {
   try {
-    const packageJsonPath = path.join(outputDir, 'package.json');
+    const packageJsonPath = path.join(outputDir, "package.json");
     if (fs.existsSync(packageJsonPath)) {
       const packageJson = await fs.readJson(packageJsonPath);
 

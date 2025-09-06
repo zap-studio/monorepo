@@ -1,7 +1,7 @@
-import { _LegalPage } from '@/zap/legal/pages/legal.page';
-import { generateLegalMetadata } from '@/zap/legal/utils';
+import { _LegalPage } from "@/zap/legal/pages/legal.page";
+import { generateLegalMetadata } from "@/zap/legal/utils";
 
-const SLUG = 'terms-of-service';
+const SLUG = "terms-of-service";
 
 export const generateMetadata = () => generateLegalMetadata(SLUG);
 

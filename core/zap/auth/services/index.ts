@@ -1,14 +1,14 @@
-import 'server-only';
+import "server-only";
 
-import { headers } from 'next/headers';
+import { headers } from "next/headers";
 
-import { db } from '@/zap/db/providers/drizzle';
-import { AuthenticationError, NotFoundError } from '@/zap/errors';
+import { db } from "@/zap/db/providers/drizzle";
+import { AuthenticationError, NotFoundError } from "@/zap/errors";
 
-import { getUserIdFromMailQuery } from '../db/providers/drizzle/queries';
-import { user } from '../db/providers/drizzle/schema';
-import { betterAuthServer } from '../providers/better-auth/server';
-import { redirectToLogin } from '../utils';
+import { getUserIdFromMailQuery } from "../db/providers/drizzle/queries";
+import { user } from "../db/providers/drizzle/schema";
+import { betterAuthServer } from "../providers/better-auth/server";
+import { redirectToLogin } from "../utils";
 
 export async function getNumberOfUsersService() {
   const count = await db.$count(user);
@@ -41,7 +41,7 @@ export async function getUserIdService() {
   const currentUser = await getUserService();
 
   if (!currentUser) {
-    throw new AuthenticationError('User not authenticated');
+    throw new AuthenticationError("User not authenticated");
   }
 
   return currentUser.id;
@@ -68,7 +68,7 @@ export async function isUserAdminService() {
   const currentUser = await getUserService();
 
   if (!currentUser) {
-    throw new NotFoundError('User not found');
+    throw new NotFoundError("User not found");
   }
 
   return false; // FIXME: Implement actual admin check logic

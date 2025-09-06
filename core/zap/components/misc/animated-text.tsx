@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
-const WORDS = ['faster', 'efficiently', 'smoothly', 'securely', 'easily'];
+const WORDS = ["faster", "efficiently", "smoothly", "securely", "easily"];
 const TYPING_SPEED = 100;
 const ERASING_SPEED = 50;
 const DELAY_BETWEEN_WORDS = 1500;
@@ -12,7 +12,7 @@ export function AnimatedText() {
 
   const wordIndex = useRef(0);
   const isErasing = useRef(false);
-  const current = useRef('');
+  const current = useRef("");
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;

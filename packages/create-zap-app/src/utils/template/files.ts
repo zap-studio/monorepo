@@ -1,15 +1,15 @@
-import path from 'node:path';
-import fs from 'fs-extra';
-import { FileSystemError } from '@/lib/errors.js';
-import { getErrorMessage } from '../misc/error.js';
-import { cleanupOutputDirectory } from './cleanup.js';
+import path from "node:path";
+import fs from "fs-extra";
+import { FileSystemError } from "@/lib/errors.js";
+import { getErrorMessage } from "../misc/error.js";
+import { cleanupOutputDirectory } from "./cleanup.js";
 
 export async function moveCoreFiles(outputDir: string): Promise<void> {
   try {
-    const tempDir = path.join(outputDir, 'temp');
+    const tempDir = path.join(outputDir, "temp");
     await fs.ensureDir(tempDir);
 
-    const coreDir = path.join(outputDir, 'core');
+    const coreDir = path.join(outputDir, "core");
     const files = await fs.readdir(coreDir);
 
     await Promise.all(
@@ -28,7 +28,7 @@ export async function moveCoreFiles(outputDir: string): Promise<void> {
 
 export async function moveTempFilesToOutput(outputDir: string): Promise<void> {
   try {
-    const tempDir = path.join(outputDir, 'temp');
+    const tempDir = path.join(outputDir, "temp");
     await fs.ensureDir(tempDir);
 
     const tempFiles = await fs.readdir(tempDir);

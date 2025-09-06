@@ -1,21 +1,21 @@
-'use client';
-import 'client-only';
+"use client";
+import "client-only";
 
-import { useChat, useCompletion } from '@ai-sdk/react';
-import { eventIteratorToStream } from '@orpc/client';
-import { useQueryClient } from '@tanstack/react-query';
-import type { CompletionRequestOptions } from 'ai';
-import { useEffect, useState } from 'react';
-import type { useForm } from 'react-hook-form';
+import { useChat, useCompletion } from "@ai-sdk/react";
+import { eventIteratorToStream } from "@orpc/client";
+import { useQueryClient } from "@tanstack/react-query";
+import type { CompletionRequestOptions } from "ai";
+import { useEffect, useState } from "react";
+import type { useForm } from "react-hook-form";
 
-import { useZapMutation, useZapQuery } from '@/zap/api/hooks';
-import { orpcQuery } from '@/zap/api/lib/orpc';
-import { orpcClient } from '@/zap/api/providers/orpc/client';
-import { ApplicationError } from '@/zap/errors';
-import { handleClientError } from '@/zap/errors/client';
+import { useZapMutation, useZapQuery } from "@/zap/api/hooks";
+import { orpcQuery } from "@/zap/api/lib/orpc";
+import { orpcClient } from "@/zap/api/providers/orpc/client";
+import { ApplicationError } from "@/zap/errors";
+import { handleClientError } from "@/zap/errors/client";
 
-import { DEFAULT_MODEL } from '../data';
-import type { AIFormValues, AIProviderId, ModelName } from '../types';
+import { DEFAULT_MODEL } from "../data";
+import type { AIFormValues, AIProviderId, ModelName } from "../types";
 
 export function useAIChat(provider: AIProviderId) {
   return useChat({
@@ -32,7 +32,7 @@ export function useAIChat(provider: AIProviderId) {
         );
       },
       reconnectToStream() {
-        throw new ApplicationError('Unsupported');
+        throw new ApplicationError("Unsupported");
       },
     },
     onError: (error: unknown) => {
@@ -56,7 +56,7 @@ export function useAICompletion(prompt: string, provider: AIProviderId) {
 
       return new Response(stream, {
         headers: {
-          'Content-Type': 'text/plain; charset=utf-8',
+          "Content-Type": "text/plain; charset=utf-8",
         },
       });
     },
@@ -87,7 +87,7 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
     onError: () => {
       setIsValidated(false);
     },
-    successMessage: 'API key is valid!',
+    successMessage: "API key is valid!",
   });
 
   const saveSettingsMutation = useZapMutation({
@@ -97,7 +97,7 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
           queryKey: getAISettingsKey,
         }),
     }),
-    successMessage: 'Settings updated successfully',
+    successMessage: "Settings updated successfully",
   });
 
   const deleteSettingsMutation = useZapMutation({
@@ -106,12 +106,12 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
       queryClient.invalidateQueries({
         queryKey: getAISettingsKey,
       }),
-    successMessage: 'Settings updated successfully',
+    successMessage: "Settings updated successfully",
   });
 
   const handleSaveApiKey = async (values: AIFormValues) => {
     if (values.apiKey) {
-      await saveSettingsMutation.mutateAsync({ ...values, mode: 'upsert' });
+      await saveSettingsMutation.mutateAsync({ ...values, mode: "upsert" });
     } else {
       await deleteSettingsMutation.mutateAsync(values);
     }
@@ -119,9 +119,9 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
 
   const handleTestApiKey = async () => {
     return await testApiKeyMutation.mutateAsync({
-      provider: form.getValues('provider'),
-      apiKey: form.getValues('apiKey'),
-      model: form.getValues('model'),
+      provider: form.getValues("provider"),
+      apiKey: form.getValues("apiKey"),
+      model: form.getValues("model"),
     });
   };
 
@@ -144,7 +144,7 @@ export function useInitAISettings(
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [model, setModel] = useState<ModelName | null>(null);
 
-  const provider = form.watch('provider');
+  const provider = form.watch("provider");
 
   const { data, isLoading } = useZapQuery(
     orpcQuery.ai.getAISettings.queryOptions({

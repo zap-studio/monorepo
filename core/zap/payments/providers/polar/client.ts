@@ -1,9 +1,9 @@
-import 'client-only';
+import "client-only";
 
-import { useZapQuery } from '@/zap/api/hooks';
-import { betterAuthClient } from '@/zap/auth/providers/better-auth/client';
+import { useZapQuery } from "@/zap/api/hooks";
+import { betterAuthClient } from "@/zap/auth/providers/better-auth/client";
 
-import { getProduct } from '../../utils';
+import { getProduct } from "../../utils";
 
 async function fetchCustomerState() {
   const state = await betterAuthClient.customer.state();
@@ -12,7 +12,7 @@ async function fetchCustomerState() {
 
 export function useCustomerState() {
   return useZapQuery({
-    queryKey: ['customer-state'],
+    queryKey: ["customer-state"],
     queryFn: fetchCustomerState,
   });
 }
@@ -57,7 +57,7 @@ export function useActiveSubscriptionSlug(isYearly?: boolean) {
   }
 
   if (activeProduct.billingOptions && isYearly !== undefined) {
-    const interval = isYearly ? 'yearly' : 'monthly';
+    const interval = isYearly ? "yearly" : "monthly";
     return `${activeProduct.slug}-${interval}`;
   }
 

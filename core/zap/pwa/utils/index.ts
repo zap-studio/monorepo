@@ -1,15 +1,15 @@
-import type * as webpush from 'web-push';
+import type * as webpush from "web-push";
 
-import { ApplicationError } from '@/zap/errors';
+import { ApplicationError } from "@/zap/errors";
 
 const BASE64_PAD_LENGTH = 4;
 
 export function urlBase64ToUint8Array(base64String: string) {
-  const padding = '='.repeat(
+  const padding = "=".repeat(
     (BASE64_PAD_LENGTH - (base64String.length % BASE64_PAD_LENGTH)) %
       BASE64_PAD_LENGTH
   );
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
@@ -22,7 +22,7 @@ export function urlBase64ToUint8Array(base64String: string) {
 }
 
 export function arrayBufferToBase64(buffer: ArrayBuffer) {
-  let binary = '';
+  let binary = "";
 
   const bytes = new Uint8Array(buffer);
   const len = bytes.byteLength;
@@ -37,11 +37,11 @@ export function arrayBufferToBase64(buffer: ArrayBuffer) {
 export function subscriptionToWebPushSubscription(
   subscription: PushSubscription
 ): webpush.PushSubscription {
-  const p256dh = subscription.getKey('p256dh');
-  const auth = subscription.getKey('auth');
+  const p256dh = subscription.getKey("p256dh");
+  const auth = subscription.getKey("auth");
 
   if (!(p256dh && auth)) {
-    throw new ApplicationError('Invalid PushSubscription object');
+    throw new ApplicationError("Invalid PushSubscription object");
   }
 
   return {

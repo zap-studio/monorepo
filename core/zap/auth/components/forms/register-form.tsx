@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import type { z } from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import type { z } from "zod";
 
 import {
   Form,
@@ -11,12 +11,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { ZapButton } from '@/zap/components/core/button';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { ZapButton } from "@/zap/components/core/button";
 
-import { useAuth } from '../../hooks';
-import { RegisterFormSchema } from '../../schemas';
+import { useAuth } from "../../hooks";
+import { RegisterFormSchema } from "../../schemas";
 
 type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
 
@@ -27,10 +27,10 @@ export function RegisterForm() {
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
@@ -118,7 +118,7 @@ export function RegisterForm() {
           loadingText="Creating account..."
           type="submit"
         >
-          {isInCooldown ? `Please wait ${cooldown}s` : 'Create account'}
+          {isInCooldown ? `Please wait ${cooldown}s` : "Create account"}
         </ZapButton>
       </form>
     </Form>

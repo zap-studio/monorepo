@@ -1,6 +1,6 @@
-import Link from 'next/link';
+import Link from "next/link";
 
-import { ZapButton } from '@/zap/components/core/button';
+import { ZapButton } from "@/zap/components/core/button";
 
 export default function NotFoundPage() {
   return (
@@ -11,10 +11,10 @@ export default function NotFoundPage() {
             404
           </h1>
           <p className="text-muted-foreground">
-            Looks like you&apos;ve found the edge case...{' '}
+            Looks like you&apos;ve found the edge case...{" "}
           </p>
         </div>
-        <ZapButton asChild variant={'ghost'}>
+        <ZapButton asChild variant={"ghost"}>
           <Link href="/">Return to website</Link>
         </ZapButton>
       </div>

@@ -1,15 +1,15 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 export function Table({ children }: { children: ReactNode }) {
   return (
     <div
       style={{
-        width: '100%',
-        overflowX: 'auto',
-        maxWidth: '100%',
+        width: "100%",
+        overflowX: "auto",
+        maxWidth: "100%",
       }}
     >
-      <table style={{ width: '100%', padding: '0px', margin: '0px' }}>
+      <table style={{ width: "100%", padding: "0px", margin: "0px" }}>
         {children}
       </table>
     </div>

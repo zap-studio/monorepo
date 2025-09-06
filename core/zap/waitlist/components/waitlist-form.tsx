@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion } from "motion/react";
 
 import {
   Form,
@@ -8,12 +8,12 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import { ZapButton } from '@/zap/components/core/button';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { ZapButton } from "@/zap/components/core/button";
 
-import { useWaitlist } from '../hooks';
+import { useWaitlist } from "../hooks";
 
 export function WaitlistForm() {
   const { form, onSubmit, data, isMutating, hasJoined } = useWaitlist();
@@ -55,8 +55,8 @@ export function WaitlistForm() {
             <motion.p
               animate={{ opacity: 1, y: 0 }}
               className={cn(
-                'text-sm',
-                data ? 'text-green-600' : 'text-destructive'
+                "text-sm",
+                data ? "text-green-600" : "text-destructive"
               )}
               exit={{ opacity: 0, y: -5 }}
               initial={{ opacity: 0, y: -5 }}

@@ -1,5 +1,5 @@
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 type PricingToggleProps = {
   onToggle: (isYearly: boolean) => void;
@@ -19,7 +19,7 @@ export function PricingToggle({
   return (
     <div className="flex items-center justify-center space-x-2">
       <Label
-        className={isYearly ? 'text-muted-foreground' : 'font-medium'}
+        className={isYearly ? "text-muted-foreground" : "font-medium"}
         htmlFor="pricing-toggle"
       >
         Monthly
@@ -33,7 +33,7 @@ export function PricingToggle({
 
       <div className="flex items-center space-x-1">
         <Label
-          className={isYearly ? 'font-medium' : 'text-muted-foreground'}
+          className={isYearly ? "font-medium" : "text-muted-foreground"}
           htmlFor="pricing-toggle"
         >
           Yearly

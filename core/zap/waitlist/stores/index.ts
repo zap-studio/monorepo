@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 type WaitlistStoreState = {
   hasJoined: boolean;
@@ -18,7 +18,7 @@ export const useWaitlistStore = create<
       setHasJoined: (hasJoined) => set({ hasJoined }),
     }),
     {
-      name: 'waitlist-store',
+      name: "waitlist-store",
     }
   )
 );

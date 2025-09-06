@@ -1,17 +1,17 @@
-import 'server-only';
+import "server-only";
 
-import { type } from '@orpc/server';
-import type { UIMessage } from 'ai';
-import { base } from '@/zap/api/rpc/middlewares';
-import { authMiddleware } from '@/zap/auth/rpc/middlewares';
-import { withRpcHandler } from '@/zap/errors/handlers';
+import { type } from "@orpc/server";
+import type { UIMessage } from "ai";
+import { base } from "@/zap/api/rpc/middlewares";
+import { authMiddleware } from "@/zap/auth/rpc/middlewares";
+import { withRpcHandler } from "@/zap/errors/handlers";
 import {
   InputDeleteAPIKeySchema,
   InputGetAPIKeySchema,
   InputSaveAPIKeySchema,
   InputTestAPIKeySchema,
   InputUpdateAPIKeySchema,
-} from '../../schemas';
+} from "../../schemas";
 import {
   deleteAPIKeyService,
   getAISettingsService,
@@ -21,8 +21,8 @@ import {
   streamCompletionService,
   testAPIKeyService,
   updateAISettingsService,
-} from '../../services';
-import type { AIProviderId } from '../../types';
+} from "../../services";
+import type { AIProviderId } from "../../types";
 
 const getAISettings = base
   .use(authMiddleware)

@@ -1,29 +1,29 @@
-import type { IDE, OptionalPluginId } from '@zap-ts/architecture/types';
-import chalk from 'chalk';
-import fs from 'fs-extra';
-import ora from 'ora';
-import { FileSystemError } from '@/lib/errors.js';
-import type { PackageManager } from '@/types/package-manager';
+import type { IDE, OptionalPluginId } from "@zap-ts/architecture/types";
+import chalk from "chalk";
+import fs from "fs-extra";
+import ora from "ora";
+import { FileSystemError } from "@/lib/errors.js";
+import type { PackageManager } from "@/types/package-manager";
 import {
   installDependenciesWithRetry,
   updateDependencies,
-} from '@/utils/commands/create-project/dependencies.js';
-import { isAlreadyZapApp } from '@/utils/commands/create-project/guard';
-import { pruneUnusedPluginsAndDependencies } from '@/utils/commands/create-project/plugins';
+} from "@/utils/commands/create-project/dependencies.js";
+import { isAlreadyZapApp } from "@/utils/commands/create-project/guard";
+import { pruneUnusedPluginsAndDependencies } from "@/utils/commands/create-project/plugins";
 import {
   displaySuccessMessage,
   generateEnvFile,
   runFormatting,
-} from '@/utils/commands/create-project/post-install.js';
+} from "@/utils/commands/create-project/post-install.js";
 import {
   resolveIDE,
   resolveOutputDir,
   resolvePackageManager,
   resolvePlugins,
   resolveProjectName,
-} from '@/utils/commands/create-project/resolve-options';
-import { getErrorMessage } from '@/utils/misc/error';
-import { setupTemplate } from '@/utils/template/setup-template';
+} from "@/utils/commands/create-project/resolve-options";
+import { getErrorMessage } from "@/utils/misc/error";
+import { setupTemplate } from "@/utils/template/setup-template";
 
 type CreateProjectOptions = {
   projectName?: string;
@@ -60,7 +60,7 @@ export async function createProject(
     );
   });
 
-  spinner.text = 'Downloading Zap.ts template from GitHub...';
+  spinner.text = "Downloading Zap.ts template from GitHub...";
   await setupTemplate({ outputDir, ide }, spinner, verbose);
   await pruneUnusedPluginsAndDependencies(
     { outputDir, selectedPlugins },

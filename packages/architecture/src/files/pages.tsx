@@ -1,15 +1,15 @@
-import { L } from '../helpers/link.js';
-import type { FileList } from '../types.js';
+import { L } from "../helpers/link.js";
+import type { FileList } from "../types.js";
 
 export const PagesFiles: FileList = {
-  category: 'PAGES',
+  category: "PAGES",
   entries: [
     {
-      path: 'src/app/(protected)/app/(sidebar)/',
-      status: 'added',
+      path: "src/app/(protected)/app/(sidebar)/",
+      status: "added",
       required: false,
       folder: true,
-      plugins: ['sidebar'],
+      plugins: ["sidebar"],
       children: (
         <>
           Protected routes for authenticated users with a sidebar layout. This
@@ -20,11 +20,11 @@ export const PagesFiles: FileList = {
       ),
     },
     {
-      path: 'src/app/(protected)/app/billing/',
-      status: 'added',
+      path: "src/app/(protected)/app/billing/",
+      status: "added",
       required: false,
       folder: true,
-      plugins: ['payments'],
+      plugins: ["payments"],
       children: (
         <>
           Billing routes for user billing information and a billing success
@@ -33,11 +33,11 @@ export const PagesFiles: FileList = {
       ),
     },
     {
-      path: 'src/app/(public)/(auth)/',
-      status: 'added',
+      path: "src/app/(public)/(auth)/",
+      status: "added",
       required: false,
       folder: true,
-      plugins: ['auth'],
+      plugins: ["auth"],
       children: (
         <>
           Public authentication routes for user login, registration, password
@@ -48,11 +48,11 @@ export const PagesFiles: FileList = {
       ),
     },
     {
-      path: 'src/app/(public)/(legal)/',
-      status: 'added',
+      path: "src/app/(public)/(legal)/",
+      status: "added",
       required: false,
       folder: true,
-      plugins: ['legal'],
+      plugins: ["legal"],
       children: (
         <>
           Public legal routes for cookie policy, privacy policy, and terms of
@@ -62,11 +62,11 @@ export const PagesFiles: FileList = {
       ),
     },
     {
-      path: 'src/app/(public)/blog/',
-      status: 'added',
+      path: "src/app/(public)/blog/",
+      status: "added",
       required: false,
       folder: true,
-      plugins: ['blog'],
+      plugins: ["blog"],
       children: (
         <>
           Blog routes for listing and viewing blog posts. Included pages are:
@@ -75,16 +75,16 @@ export const PagesFiles: FileList = {
       ),
     },
     {
-      path: 'src/app/(public)/page.tsx',
-      status: 'added',
+      path: "src/app/(public)/page.tsx",
+      status: "added",
       required: true,
       children: <>Public landing page for the application.</>,
     },
     {
-      path: 'src/app/(public)/waitlist/page.tsx',
-      status: 'added',
+      path: "src/app/(public)/waitlist/page.tsx",
+      status: "added",
       required: false,
-      plugins: ['waitlist'],
+      plugins: ["waitlist"],
       children: (
         <>
           Waitlist page for users to join the waitlist. Included pages are:
@@ -93,8 +93,8 @@ export const PagesFiles: FileList = {
       ),
     },
     {
-      path: 'src/app/page.tsx',
-      status: 'deleted',
+      path: "src/app/page.tsx",
+      status: "deleted",
       required: false,
       children: (
         <>

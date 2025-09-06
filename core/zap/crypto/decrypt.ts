@@ -1,6 +1,6 @@
-import 'server-only';
+import "server-only";
 
-import { algorithm, hexToBuffer } from '.';
+import { algorithm, hexToBuffer } from ".";
 
 export async function decrypt(
   ivHex: string,
@@ -12,11 +12,11 @@ export async function decrypt(
   const keyBuffer = hexToBuffer(keyHex);
 
   const cryptoKey = await crypto.subtle.importKey(
-    'raw',
+    "raw",
     keyBuffer,
     { name: algorithm },
     false,
-    ['decrypt']
+    ["decrypt"]
   );
 
   const decrypted = await crypto.subtle.decrypt(

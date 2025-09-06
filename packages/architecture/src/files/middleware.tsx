@@ -1,13 +1,13 @@
-import type { FileList } from '../types.js';
+import type { FileList } from "../types.js";
 
 export const MiddlewareFiles: FileList = {
-  category: 'MIDDLEWARE',
+  category: "MIDDLEWARE",
   entries: [
     {
-      path: 'src/middleware.ts',
-      status: 'added',
+      path: "src/middleware.ts",
+      status: "added",
       required: false,
-      plugins: ['auth', 'blog', 'waitlist'],
+      plugins: ["auth", "blog", "waitlist"],
       children: (
         <>
           Custom middleware for handling requests and responses in Zap.ts. It

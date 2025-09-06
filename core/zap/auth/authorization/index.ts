@@ -1,12 +1,12 @@
-import 'server-only';
+import "server-only";
 
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-import { $fetch } from '@/lib/fetch';
+import { $fetch } from "@/lib/fetch";
 
-import type { Session } from '../providers/better-auth/client';
-import { ZAP_AUTH_CONFIG } from '../zap.plugin.config';
+import type { Session } from "../providers/better-auth/client";
+import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 
 /**
  * Checks if the current path is a public path that doesn't require authentication.
@@ -54,7 +54,7 @@ export function createLoginRedirect(
   pathname: string
 ): NextResponse {
   const loginUrl = new URL(ZAP_AUTH_CONFIG.LOGIN_URL, request.url);
-  loginUrl.searchParams.set('redirect', pathname);
+  loginUrl.searchParams.set("redirect", pathname);
   return NextResponse.redirect(loginUrl);
 }
 
@@ -79,9 +79,9 @@ export async function getSessionInEdgeRuntime(
   request: NextRequest
 ): Promise<Session | null> {
   try {
-    const session = await $fetch<Session>('/api/auth/get-session', {
+    const session = await $fetch<Session>("/api/auth/get-session", {
       headers: {
-        cookie: request.headers.get('cookie') || '',
+        cookie: request.headers.get("cookie") || "",
       },
     });
     return session;

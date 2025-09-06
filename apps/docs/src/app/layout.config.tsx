@@ -1,5 +1,5 @@
-import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
-import { DEMO_URL, GITHUB_REPO_URL } from '@/data/website';
+import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
+import { DEMO_URL, GITHUB_REPO_URL } from "@/data/website";
 
 /**
  * Shared layout configurations
@@ -19,7 +19,7 @@ export const baseOptions: BaseLayoutProps = {
   // see https://fumadocs.dev/docs/ui/navigation/links
   links: [
     {
-      text: 'Demo',
+      text: "Demo",
       url: DEMO_URL,
       external: true,
     },

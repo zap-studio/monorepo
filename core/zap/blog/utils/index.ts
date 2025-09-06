@@ -1,15 +1,15 @@
-import 'server-only';
+import "server-only";
 
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import fs from "node:fs/promises";
+import path from "node:path";
 
-import { format, formatDistanceToNow, parseISO } from 'date-fns';
-import matter from 'gray-matter';
-import { ApplicationError, FileOperationError } from '@/zap/errors';
-import { BASE_URL, ZAP_DEFAULT_METADATA } from '@/zap.config';
+import { format, formatDistanceToNow, parseISO } from "date-fns";
+import matter from "gray-matter";
+import { ApplicationError, FileOperationError } from "@/zap/errors";
+import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
 
-import { postMetadataSchema } from '../schemas';
-import { ZAP_BLOG_CONFIG } from '../zap.plugin.config';
+import { postMetadataSchema } from "../schemas";
+import { ZAP_BLOG_CONFIG } from "../zap.plugin.config";
 
 const BLOG_DIR = ZAP_BLOG_CONFIG.DATA_DIR;
 
@@ -21,25 +21,25 @@ function parseFrontmatter(fileContent: string) {
       content,
     };
   } catch (error) {
-    throw new ApplicationError('Failed to parse frontmatter', error);
+    throw new ApplicationError("Failed to parse frontmatter", error);
   }
 }
 
 async function getMDXFiles(dir: string) {
   try {
     const files = await fs.readdir(dir);
-    return files.filter((file) => path.extname(file) === '.mdx');
+    return files.filter((file) => path.extname(file) === ".mdx");
   } catch (error) {
-    throw new FileOperationError('Failed to read directory', error);
+    throw new FileOperationError("Failed to read directory", error);
   }
 }
 
 async function readMDXFile(filePath: string) {
   try {
-    const fileContent = await fs.readFile(filePath, 'utf-8');
+    const fileContent = await fs.readFile(filePath, "utf-8");
     return parseFrontmatter(fileContent);
   } catch (error) {
-    throw new FileOperationError('Failed to read file', error);
+    throw new FileOperationError("Failed to read file", error);
   }
 }
 
@@ -65,7 +65,7 @@ async function getMDXData(dir: string) {
     );
     return posts;
   } catch (error) {
-    throw new ApplicationError('Failed to get MDX data', error);
+    throw new ApplicationError("Failed to get MDX data", error);
   }
 }
 
@@ -98,7 +98,7 @@ export async function getBlogPost(slug: string) {
 
 export function formatDate(date: string, includeRelative = false) {
   const targetDate = parseISO(date);
-  const fullDate = format(targetDate, 'MMMM d, yyyy');
+  const fullDate = format(targetDate, "MMMM d, yyyy");
 
   if (includeRelative) {
     const relativeDate = formatDistanceToNow(targetDate, { addSuffix: true });
@@ -131,7 +131,7 @@ export async function generateBlogPostMetadata(slug: string) {
     twitter: {
       title: post.metadata.title,
       description: post.metadata.description,
-      card: 'summary_large_image',
+      card: "summary_large_image",
       images: [openGraphImage],
     },
   };

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Check } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
+import { Check } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 import {
   Card,
@@ -10,13 +10,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { ZapButton } from '@/zap/components/core/button';
-import { PriceDisplay } from '@/zap/payments/components/price-display';
-import { PricingToggle } from '@/zap/payments/components/pricing-toggle';
-import { getBillingDetails, getSortedProducts } from '@/zap/payments/utils';
-import { ZAP_PAYMENTS_CONFIG } from '@/zap/payments/zap.plugin.config';
-import { ZAP_CORE_CONFIG } from '@/zap.config';
+} from "@/components/ui/card";
+import { ZapButton } from "@/zap/components/core/button";
+import { PriceDisplay } from "@/zap/payments/components/price-display";
+import { PricingToggle } from "@/zap/payments/components/pricing-toggle";
+import { getBillingDetails, getSortedProducts } from "@/zap/payments/utils";
+import { ZAP_PAYMENTS_CONFIG } from "@/zap/payments/zap.plugin.config";
+import { ZAP_CORE_CONFIG } from "@/zap.config";
 
 export function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);

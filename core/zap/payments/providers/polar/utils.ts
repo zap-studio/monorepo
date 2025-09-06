@@ -1,4 +1,4 @@
-import type { CheckoutOptions } from '@polar-sh/better-auth';
+import type { CheckoutOptions } from "@polar-sh/better-auth";
 
 type ExtractProductType<T> = T extends {
   products?: infer P | (() => Promise<infer Q>);

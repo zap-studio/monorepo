@@ -4,11 +4,11 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "lint": "ultracite lint",
-    "format": "ultracite format"
+    "lint": "ultracite check",
+    "format": "ultracite fix"
   },
   "devDependencies": {
-    "@types/node": "^24.3.0",
+    "@types/node": "^24.3.1",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
     "tsdown": "^0.14.2"

@@ -1,14 +1,14 @@
-import 'server-only';
+import "server-only";
 
-import { base } from '@/zap/api/rpc/middlewares';
-import { authMiddleware } from '@/zap/auth/rpc/middlewares';
-import { withRpcHandler } from '@/zap/errors/handlers';
-import { InputFeedbackSchema } from '../../schemas';
+import { base } from "@/zap/api/rpc/middlewares";
+import { authMiddleware } from "@/zap/auth/rpc/middlewares";
+import { withRpcHandler } from "@/zap/errors/handlers";
+import { InputFeedbackSchema } from "../../schemas";
 import {
   getAverageRatingService,
   getUserFeedbackService,
   submitFeedbackService,
-} from '../../services';
+} from "../../services";
 
 const submit = base
   .use(authMiddleware)

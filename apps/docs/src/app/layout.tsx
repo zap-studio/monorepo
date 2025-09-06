@@ -1,39 +1,39 @@
-import '@/app/global.css';
-import { Analytics } from '@vercel/analytics/next';
-import type { Metadata } from 'next';
-import { Geist as Font } from 'next/font/google';
-import type { ReactNode } from 'react';
-import { Toaster } from '@/components/ui/sonner';
-import { ALEXANDRE_TROTEL_WEBSITE_URL, BASE_URL } from '@/data/website';
-import { Provider } from './provider';
+import "@/app/global.css";
+import { Analytics } from "@vercel/analytics/next";
+import type { Metadata } from "next";
+import { Geist as Font } from "next/font/google";
+import type { ReactNode } from "react";
+import { Toaster } from "@/components/ui/sonner";
+import { ALEXANDRE_TROTEL_WEBSITE_URL, BASE_URL } from "@/data/website";
+import { Provider } from "./provider";
 
 const font = Font({
-  subsets: ['latin'],
+  subsets: ["latin"],
 });
 
-const APP_NAME = 'Zap.ts';
-const APP_DESCRIPTION = 'Build applications as fast as a zap.';
+const APP_NAME = "Zap.ts";
+const APP_DESCRIPTION = "Build applications as fast as a zap.";
 
 export const metadata: Metadata = {
   title: APP_NAME,
   description: APP_DESCRIPTION,
-  category: 'technology',
-  generator: 'Next.js',
+  category: "technology",
+  generator: "Next.js",
   applicationName: APP_NAME,
-  referrer: 'origin-when-cross-origin',
+  referrer: "origin-when-cross-origin",
   keywords: [
-    'Zap.ts',
-    'typescript',
-    'nextjs',
-    'react',
-    'boilerplate',
-    'template',
-    'web',
-    'application',
+    "Zap.ts",
+    "typescript",
+    "nextjs",
+    "react",
+    "boilerplate",
+    "template",
+    "web",
+    "application",
   ],
-  authors: [{ name: 'Alexandre Trotel', url: ALEXANDRE_TROTEL_WEBSITE_URL }],
-  creator: 'Alexandre Trotel',
-  publisher: 'Alexandre Trotel',
+  authors: [{ name: "Alexandre Trotel", url: ALEXANDRE_TROTEL_WEBSITE_URL }],
+  creator: "Alexandre Trotel",
+  publisher: "Alexandre Trotel",
   metadataBase: new URL(BASE_URL),
   openGraph: {
     title: APP_NAME,
@@ -48,8 +48,8 @@ export const metadata: Metadata = {
         alt: `${APP_NAME} Open Graph Image`,
       },
     ],
-    locale: 'en_US',
-    type: 'website',
+    locale: "en_US",
+    type: "website",
   },
   robots: {
     index: true,
@@ -59,26 +59,26 @@ export const metadata: Metadata = {
       index: true,
       follow: true,
       noimageindex: false,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
-    shortcut: '/favicon.ico',
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+    shortcut: "/favicon.ico",
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: APP_NAME,
     description: APP_DESCRIPTION,
-    creator: '@alexandretrotel',
+    creator: "@alexandretrotel",
     images: [`${BASE_URL}/opengraph-image`],
   },
   appleWebApp: {
     title: APP_NAME,
-    statusBarStyle: 'black-translucent',
+    statusBarStyle: "black-translucent",
     capable: true,
   },
   appLinks: {

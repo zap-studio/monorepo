@@ -1,6 +1,6 @@
-import { generateOGImage } from 'fumadocs-ui/og';
-import { notFound } from 'next/navigation';
-import { source } from '@/lib/source';
+import { generateOGImage } from "fumadocs-ui/og";
+import { notFound } from "next/navigation";
+import { source } from "@/lib/source";
 
 export async function GET(
   _req: Request,
@@ -15,13 +15,13 @@ export async function GET(
   return generateOGImage({
     title: page.data.title,
     description: page.data.description,
-    site: 'My App',
+    site: "My App",
   });
 }
 
 export function generateStaticParams() {
   return source.generateParams().map((page) => ({
     ...page,
-    slug: [...page.slug, 'image.png'],
+    slug: [...page.slug, "image.png"],
   }));
 }

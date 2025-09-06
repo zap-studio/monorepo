@@ -1,4 +1,4 @@
-import type { PluginId } from '@zap-ts/architecture/types';
+import type { PluginId } from "@zap-ts/architecture/types";
 
 export type ZapCoreSettings = {
   // Core application information

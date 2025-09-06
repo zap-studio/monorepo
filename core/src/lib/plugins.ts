@@ -1,5 +1,5 @@
-import { PLUGIN_CONFIG } from '../../zap.config';
-import type { ZapPlugins } from '../../zap.config.types';
+import { PLUGIN_CONFIG } from "../../zap.config";
+import type { ZapPlugins } from "../../zap.config.types";
 
 /**
  * Check if a specific plugin is enabled

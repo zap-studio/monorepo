@@ -1,16 +1,16 @@
-import 'server-only';
+import "server-only";
 
-import { isAuthenticatedService } from '@/zap/auth/services';
-import { DEV } from '@/zap/env/runtime/public';
+import { isAuthenticatedService } from "@/zap/auth/services";
+import { DEV } from "@/zap/env/runtime/public";
 
-import { UnauthorizedError } from '.';
+import { UnauthorizedError } from ".";
 import {
   generateCorrelationId,
   type HandlerFunction,
   type HandlerOptions,
   handleError,
   logSuccess,
-} from './utils';
+} from "./utils";
 
 function createHandler<T extends unknown[], R>(
   handler: HandlerFunction<T, R>,
@@ -40,7 +40,7 @@ export function withApiHandler<T extends unknown[], R>(
 ) {
   return createHandler(handler, {
     ...options,
-    handlerType: 'api-route',
+    handlerType: "api-route",
   });
 }
 
@@ -53,14 +53,14 @@ export function withAuthenticatedApiHandler<T extends unknown[], R>(
       const isAuthenticated = await isAuthenticatedService();
 
       if (!isAuthenticated) {
-        throw new UnauthorizedError('User not authenticated');
+        throw new UnauthorizedError("User not authenticated");
       }
 
       return handler(...args);
     },
     {
       ...options,
-      handlerType: 'authenticated-api-route',
+      handlerType: "authenticated-api-route",
     }
   );
 }
@@ -71,8 +71,8 @@ export function withRpcHandler<T extends unknown[], R>(
 ) {
   return createHandler(handler, {
     ...options,
-    handlerType: 'rpc-procedure',
-    context: { type: 'rpc', ...options.context },
+    handlerType: "rpc-procedure",
+    context: { type: "rpc", ...options.context },
   });
 }
 
@@ -82,7 +82,7 @@ export function withServerActionHandler<T extends unknown[], R>(
 ) {
   return createHandler(handler, {
     ...options,
-    handlerType: 'server-action',
-    context: { type: 'server-action', ...options.context },
+    handlerType: "server-action",
+    context: { type: "server-action", ...options.context },
   });
 }

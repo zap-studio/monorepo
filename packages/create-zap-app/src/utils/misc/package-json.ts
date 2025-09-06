@@ -1,20 +1,20 @@
-import fs from 'fs-extra';
-import type { PackageJson } from 'type-fest';
+import fs from "fs-extra";
+import type { PackageJson } from "type-fest";
 
 export async function readPackageJson(
-  path = 'package.json'
+  path = "package.json"
 ): Promise<PackageJson> {
-  return JSON.parse(await fs.readFile(path, 'utf-8'));
+  return JSON.parse(await fs.readFile(path, "utf-8"));
 }
 
 export async function writePackageJson(
   pkg: PackageJson,
-  path = 'package.json'
+  path = "package.json"
 ): Promise<void> {
-  await fs.writeFile(path, `${JSON.stringify(pkg, null, 2)}\n`, 'utf-8');
+  await fs.writeFile(path, `${JSON.stringify(pkg, null, 2)}\n`, "utf-8");
 }
 
-type DependencyAction = 'add' | 'remove';
+type DependencyAction = "add" | "remove";
 
 async function updateDependencies(opts: {
   path: string;
@@ -23,13 +23,13 @@ async function updateDependencies(opts: {
   action: DependencyAction;
 }): Promise<void> {
   const pkg = await readPackageJson(opts.path);
-  const key = opts.dev ? 'devDependencies' : 'dependencies';
+  const key = opts.dev ? "devDependencies" : "dependencies";
   pkg[key] ||= {};
 
   const target = pkg[key] as Record<string, string>;
 
   for (const [name, version] of Object.entries(opts.deps)) {
-    if (opts.action === 'add') {
+    if (opts.action === "add") {
       target[name] = version;
     } else {
       delete target[name];
@@ -49,7 +49,7 @@ export async function addDependency(opts: {
     path: opts.path,
     deps: { [opts.name]: opts.version },
     dev: opts.dev,
-    action: 'add',
+    action: "add",
   });
 }
 
@@ -60,9 +60,9 @@ export async function removeDependency(opts: {
 }): Promise<void> {
   await updateDependencies({
     path: opts.path,
-    deps: { [opts.name]: '' },
+    deps: { [opts.name]: "" },
     dev: opts.dev,
-    action: 'remove',
+    action: "remove",
   });
 }
 
@@ -75,7 +75,7 @@ export async function addDependencies(opts: {
     path: opts.path,
     deps: opts.deps,
     dev: opts.dev,
-    action: 'add',
+    action: "add",
   });
 }
 
@@ -88,11 +88,11 @@ export async function removeDependencies(opts: {
     path: opts.path,
     deps: opts.deps,
     dev: opts.dev,
-    action: 'remove',
+    action: "remove",
   });
 }
 
-type ScriptAction = 'add' | 'remove';
+type ScriptAction = "add" | "remove";
 
 async function updateScripts(opts: {
   path: string;
@@ -103,7 +103,7 @@ async function updateScripts(opts: {
   pkg.scripts ||= {};
 
   for (const [name, command] of Object.entries(opts.scripts)) {
-    if (opts.action === 'add') {
+    if (opts.action === "add") {
       pkg.scripts[name] = command;
     } else {
       delete pkg.scripts[name];
@@ -121,7 +121,7 @@ export async function addScript(opts: {
   await updateScripts({
     path: opts.path,
     scripts: { [opts.key]: opts.script },
-    action: 'add',
+    action: "add",
   });
 }
 
@@ -131,8 +131,8 @@ export async function removeScript(opts: {
 }): Promise<void> {
   await updateScripts({
     path: opts.path,
-    scripts: { [opts.key]: '' },
-    action: 'remove',
+    scripts: { [opts.key]: "" },
+    action: "remove",
   });
 }
 
@@ -143,7 +143,7 @@ export async function addScripts(opts: {
   await updateScripts({
     path: opts.path,
     scripts: opts.scripts,
-    action: 'add',
+    action: "add",
   });
 }
 
@@ -151,10 +151,10 @@ export async function removeScripts(opts: {
   path: string;
   keys: string[];
 }): Promise<void> {
-  const scripts = Object.fromEntries(opts.keys.map((key) => [key, '']));
+  const scripts = Object.fromEntries(opts.keys.map((key) => [key, ""]));
   await updateScripts({
     path: opts.path,
     scripts,
-    action: 'remove',
+    action: "remove",
   });
 }

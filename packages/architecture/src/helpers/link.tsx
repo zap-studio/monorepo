@@ -1,4 +1,4 @@
-import type { JSX } from 'react/jsx-runtime';
+import type { JSX } from "react/jsx-runtime";
 
 export const L = ({
   href,

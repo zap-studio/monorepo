@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import z from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import z from "zod";
 
 import {
   Form,
@@ -13,17 +13,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useCooldown } from '@/hooks/utils/use-cooldown';
-import { ZapButton } from '@/zap/components/core/button';
-import { handleClientError } from '@/zap/errors/client';
-import { ZAP_MAILS_CONFIG } from '@/zap/mails/zap.plugin.config';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useCooldown } from "@/hooks/utils/use-cooldown";
+import { ZapButton } from "@/zap/components/core/button";
+import { handleClientError } from "@/zap/errors/client";
+import { ZAP_MAILS_CONFIG } from "@/zap/mails/zap.plugin.config";
 
-import { betterAuthClient } from '../../providers/better-auth/client';
+import { betterAuthClient } from "../../providers/better-auth/client";
 
 const formSchema = z.object({
-  email: z.email('Please enter a valid email address'),
+  email: z.email("Please enter a valid email address"),
 });
 type FormSchema = z.infer<typeof formSchema>;
 
@@ -34,7 +34,7 @@ export function ForgotPasswordForm() {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
+      email: "",
     },
   });
 
@@ -45,10 +45,10 @@ export function ForgotPasswordForm() {
     try {
       await betterAuthClient.forgetPassword({
         email,
-        redirectTo: '/reset-password',
+        redirectTo: "/reset-password",
       });
 
-      toast.success('Check your email for the reset link!');
+      toast.success("Check your email for the reset link!");
       startCooldown(ZAP_MAILS_CONFIG.RATE_LIMIT_SECONDS);
     } catch (error) {
       handleClientError(error);
@@ -86,7 +86,7 @@ export function ForgotPasswordForm() {
           loadingText="Sending..."
           type="submit"
         >
-          {isInCooldown ? `Please wait ${cooldown}s` : 'Send reset link'}
+          {isInCooldown ? `Please wait ${cooldown}s` : "Send reset link"}
         </ZapButton>
       </form>
     </Form>

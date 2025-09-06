@@ -1,18 +1,18 @@
-import 'server-only';
+import "server-only";
 
-import { eq } from 'drizzle-orm';
-import type webpush from 'web-push';
+import { eq } from "drizzle-orm";
+import type webpush from "web-push";
 
-import { getUserIdService } from '@/zap/auth/services';
-import { db } from '@/zap/db/providers/drizzle';
-import { PUBLIC_ENV } from '@/zap/env/public';
-import { SERVER_ENV } from '@/zap/env/server';
-import { PushNotificationError } from '@/zap/errors';
+import { getUserIdService } from "@/zap/auth/services";
+import { db } from "@/zap/db/providers/drizzle";
+import { PUBLIC_ENV } from "@/zap/env/public";
+import { SERVER_ENV } from "@/zap/env/server";
+import { PushNotificationError } from "@/zap/errors";
 
-import { pushNotifications } from '../db/providers/drizzle/schema';
-import { ZAP_PWA_CONFIG } from '../zap.plugin.config';
+import { pushNotifications } from "../db/providers/drizzle/schema";
+import { ZAP_PWA_CONFIG } from "../zap.plugin.config";
 
-let webpushInstance: typeof import('web-push') | null = null;
+let webpushInstance: typeof import("web-push") | null = null;
 
 export async function getWebPushService() {
   if (webpushInstance) {
@@ -27,11 +27,11 @@ export async function getWebPushService() {
     )
   ) {
     throw new PushNotificationError(
-      'Web Push service is not properly configured. Please check your VAPID keys and email settings.'
+      "Web Push service is not properly configured. Please check your VAPID keys and email settings."
     );
   }
 
-  const webpushModule = await import('web-push');
+  const webpushModule = await import("web-push");
 
   webpushModule.default.setVapidDetails(
     `mailto:${ZAP_PWA_CONFIG.VAPID_MAIL}`,
@@ -67,7 +67,7 @@ export async function subscribeUserToPushNotificationsService({
       },
     });
 
-  return { message: 'User subscribed successfully' };
+  return { message: "User subscribed successfully" };
 }
 
 export async function unsubscribeUserFromPushNotificationsService() {
@@ -78,5 +78,5 @@ export async function unsubscribeUserFromPushNotificationsService() {
     .where(eq(pushNotifications.userId, userId))
     .execute();
 
-  return { message: 'User unsubscribed successfully' };
+  return { message: "User unsubscribed successfully" };
 }

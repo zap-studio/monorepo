@@ -1,6 +1,6 @@
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
 type ButtonProps = React.ComponentProps<typeof Button>;
 

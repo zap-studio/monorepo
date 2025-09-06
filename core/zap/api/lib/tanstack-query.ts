@@ -1,5 +1,5 @@
-import { StandardRPCJsonSerializer } from '@orpc/client/standard';
-import { QueryClient } from '@tanstack/react-query';
+import { StandardRPCJsonSerializer } from "@orpc/client/standard";
+import { QueryClient } from "@tanstack/react-query";
 
 const serializer = new StandardRPCJsonSerializer({
   customJsonSerializers: [

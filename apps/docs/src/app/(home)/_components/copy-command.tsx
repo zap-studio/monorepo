@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Check, Clipboard } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { Check, Clipboard } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const COPY_RESET_TIMEOUT_MS = 2000;
 
@@ -15,7 +15,7 @@ export function CopyCommand({ command }: { command: string }) {
       setCopied(true);
       setTimeout(() => setCopied(false), COPY_RESET_TIMEOUT_MS); // reset after 2s
     } catch (_err) {
-      toast.error('Failed to copy command');
+      toast.error("Failed to copy command");
     }
   }
 

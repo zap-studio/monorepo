@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { ZAP_FEEDBACKS_CONFIG } from '../zap.plugin.config';
+import { z } from "zod";
+import { ZAP_FEEDBACKS_CONFIG } from "../zap.plugin.config";
 
 export const InputFeedbackSchema = z.object({
   rating: z.number().min(0).max(ZAP_FEEDBACKS_CONFIG.MAX_RATING),

@@ -4,9 +4,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 
-import { ForgotPasswordForm } from '../components/forms/forgot-password-form';
+import { ForgotPasswordForm } from "../components/forms/forgot-password-form";
 
 export function _ForgotPasswordPage() {
   return (

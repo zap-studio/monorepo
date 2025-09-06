@@ -1,15 +1,15 @@
-import './globals.css';
+import "./globals.css";
 
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
-import type { Metadata } from 'next';
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
+import type { Metadata } from "next";
 
-import { geist } from '@/app/fonts';
-import { Toaster } from '@/components/ui/sonner';
-import { Providers } from '@/providers/providers';
-import { ZAP_ANALYTICS_CONFIG } from '@/zap/analytics/zap.plugin.config';
-import { VERCEL } from '@/zap/env/runtime/public';
-import { ZAP_DEFAULT_METADATA } from '@/zap.config';
+import { geist } from "@/app/fonts";
+import { Toaster } from "@/components/ui/sonner";
+import { Providers } from "@/providers/providers";
+import { ZAP_ANALYTICS_CONFIG } from "@/zap/analytics/zap.plugin.config";
+import { VERCEL } from "@/zap/env/runtime/public";
+import { ZAP_DEFAULT_METADATA } from "@/zap.config";
 
 export const metadata: Metadata = ZAP_DEFAULT_METADATA;
 

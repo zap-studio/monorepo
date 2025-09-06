@@ -1,7 +1,7 @@
-import { Check } from 'lucide-react';
+import { Check } from "lucide-react";
 
-import { BENEFITS } from '../data';
-import { CommandCard } from './misc/command-card';
+import { BENEFITS } from "../data";
+import { CommandCard } from "./misc/command-card";
 
 export function SolutionSection() {
   return (

@@ -1,8 +1,8 @@
-import { ZAP_PAYMENTS_CONFIG } from '../zap.plugin.config';
+import { ZAP_PAYMENTS_CONFIG } from "../zap.plugin.config";
 import type {
   ProductMetadata,
   RecurringInterval,
-} from '../zap.plugin.config.types';
+} from "../zap.plugin.config.types";
 
 export function getProducts() {
   const products = Object.values(ZAP_PAYMENTS_CONFIG.PRODUCTS_METADATA) || [];
@@ -20,13 +20,13 @@ export function getProduct(productId: string) {
 }
 
 export function getBillingDetails(product: ProductMetadata, isYearly: boolean) {
-  const billingKey = isYearly ? 'yearly' : 'monthly';
+  const billingKey = isYearly ? "yearly" : "monthly";
   const billingOption = product.billingOptions?.[billingKey];
 
   return {
     price: product.price ?? billingOption?.price ?? 0,
     recurringInterval:
-      product.recurringInterval ?? billingOption?.recurringInterval ?? 'month',
+      product.recurringInterval ?? billingOption?.recurringInterval ?? "month",
   };
 }
 
@@ -34,7 +34,7 @@ export function getProductsArray(isYearly: boolean) {
   const products = getProducts();
   return products.flatMap((product) => {
     if (product.billingOptions) {
-      const key = isYearly ? 'yearly' : 'monthly';
+      const key = isYearly ? "yearly" : "monthly";
       const billing = product.billingOptions[key];
 
       if (!billing) {
@@ -49,7 +49,7 @@ export function getProductsArray(isYearly: boolean) {
     }
 
     if (
-      product.recurringInterval === 'one-time' ||
+      product.recurringInterval === "one-time" ||
       !(product.billingOptions || product.recurringInterval)
     ) {
       return product;
@@ -69,7 +69,7 @@ export function getSortedProducts(isYearly: boolean) {
 
   return productsWithPrices
     .sort((a, b) => {
-      if (typeof a.price === 'string' || typeof b.price === 'string') {
+      if (typeof a.price === "string" || typeof b.price === "string") {
         return 0;
       }
 
@@ -87,21 +87,21 @@ export function getPriceDisplay(
   let displayPrice: string;
   let intervalText: string;
 
-  if (typeof price === 'string') {
+  if (typeof price === "string") {
     displayPrice = price;
-    intervalText = '';
-  } else if (interval === 'year') {
+    intervalText = "";
+  } else if (interval === "year") {
     displayPrice = `$${(price / MONTHS_IN_YEAR).toFixed(2)}`;
-    intervalText = '/month';
-  } else if (interval === 'month') {
+    intervalText = "/month";
+  } else if (interval === "month") {
     displayPrice = `$${price.toFixed(2)}`;
-    intervalText = '/month';
-  } else if (interval === 'one-time') {
+    intervalText = "/month";
+  } else if (interval === "one-time") {
     displayPrice = `$${price.toFixed(2)}`;
-    intervalText = 'one-time';
+    intervalText = "one-time";
   } else {
     displayPrice = `$${price.toFixed(2)}`;
-    intervalText = '';
+    intervalText = "";
   }
 
   return { displayPrice, intervalText };

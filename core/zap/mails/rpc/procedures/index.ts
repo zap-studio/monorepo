@@ -1,8 +1,8 @@
-import 'server-only';
+import "server-only";
 
-import { base } from '@/zap/api/rpc/middlewares';
-import { authMiddleware } from '@/zap/auth/rpc/middlewares';
-import { withRpcHandler } from '@/zap/errors/handlers';
+import { base } from "@/zap/api/rpc/middlewares";
+import { authMiddleware } from "@/zap/auth/rpc/middlewares";
+import { withRpcHandler } from "@/zap/errors/handlers";
 import {
   InputCanSendMailSchema,
   InputSendForgotPasswordMailSchema,
@@ -10,7 +10,7 @@ import {
   InputSendMailSchema,
   InputSendVerificationMailSchema,
   InputUpdateLastTimestampMailSentSchema,
-} from '../../schemas';
+} from "../../schemas";
 import {
   canSendMailService,
   sendForgotPasswordMailService,
@@ -18,7 +18,7 @@ import {
   sendMailService,
   sendVerificationMailService,
   updateLastTimestampMailSentService,
-} from '../../services';
+} from "../../services";
 
 const canSendMail = base
   .use(authMiddleware)

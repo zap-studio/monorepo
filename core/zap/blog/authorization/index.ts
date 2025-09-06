@@ -1,9 +1,9 @@
-import 'server-only';
+import "server-only";
 
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-import { ZAP_BLOG_CONFIG } from '../zap.plugin.config';
+import { ZAP_BLOG_CONFIG } from "../zap.plugin.config";
 
 /**
  * Checks if the current path is a blog path that should be publicly accessible.

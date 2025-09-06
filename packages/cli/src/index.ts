@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { Command } from 'commander';
-import { createProcedure } from './commands/create-procedure.js';
-import { generateEnv } from './commands/generate-env.js';
-import { getPackageVersion } from './utils/cli/cli.js';
+import { Command } from "commander";
+import { createProcedure } from "./commands/create-procedure.js";
+import { generateEnv } from "./commands/generate-env.js";
+import { getPackageVersion } from "./utils/cli/cli.js";
 
 async function main() {
   try {
@@ -10,18 +10,18 @@ async function main() {
     const program = new Command();
 
     program
-      .name('zap')
-      .description('The CLI for managing Zap.ts projects.')
-      .version(version || '1.0.0');
+      .name("zap")
+      .description("The CLI for managing Zap.ts projects.")
+      .version(version || "1.0.0");
 
     const createCmd = program
-      .command('create')
-      .description('Create various project components');
+      .command("create")
+      .description("Create various project components");
 
     createCmd
-      .command('procedure')
-      .description('Create a new oRPC procedure')
-      .argument('<name>', 'Name of the procedure')
+      .command("procedure")
+      .description("Create a new oRPC procedure")
+      .argument("<name>", "Name of the procedure")
       .action(async (name: string) => {
         try {
           await createProcedure(name);
@@ -32,17 +32,17 @@ async function main() {
       });
 
     const generateCmd = program
-      .command('generate')
-      .description('Generate various project files');
+      .command("generate")
+      .description("Generate various project files");
 
     generateCmd
-      .command('env')
-      .description('Generate environment variables for the project')
+      .command("env")
+      .description("Generate environment variables for the project")
       .argument(
-        '[filename]',
-        'Name of the environment file (default: .env.template)'
+        "[filename]",
+        "Name of the environment file (default: .env.template)"
       )
-      .action(async (filename = '.env.template') => {
+      .action(async (filename = ".env.template") => {
         try {
           await generateEnv(filename);
         } catch (error) {
@@ -55,7 +55,7 @@ async function main() {
 
     program.parse(process.argv);
 
-    process.on('SIGINT', () => {
+    process.on("SIGINT", () => {
       process.exit();
     });
   } catch (error) {

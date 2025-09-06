@@ -1,5 +1,5 @@
-'use client';
-import 'client-only';
+"use client";
+import "client-only";
 
 import {
   type InferDataFromTag,
@@ -7,9 +7,9 @@ import {
   type UseQueryOptions,
   useQuery,
   useQueryClient,
-} from '@tanstack/react-query';
-import { useEffect, useMemo, useRef } from 'react';
-import { handleClientError, handleSuccess } from '@/zap/errors/client';
+} from "@tanstack/react-query";
+import { useEffect, useMemo, useRef } from "react";
+import { handleClientError, handleSuccess } from "@/zap/errors/client";
 
 /**
  * Options for a Zap query, extending `UseQueryOptions` with additional flags for UI handling.
@@ -129,7 +129,7 @@ export function useZapImmutable<
   });
 }
 
-import { type UseMutationOptions, useMutation } from '@tanstack/react-query';
+import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
 
 /**
  * Options for a Zap mutation, extending `UseMutationOptions` with additional flags for UI handling.

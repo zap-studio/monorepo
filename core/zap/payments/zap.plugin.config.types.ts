@@ -1,5 +1,5 @@
-export type RecurringInterval = 'month' | 'year' | 'one-time';
-export type Currency = 'usd' | 'eur';
+export type RecurringInterval = "month" | "year" | "one-time";
+export type Currency = "usd" | "eur";
 
 export type ProductMetadata = {
   productId?: string;
@@ -8,7 +8,7 @@ export type ProductMetadata = {
   description: string;
   price?: number | string;
   currency: Currency;
-  recurringInterval?: 'one-time' | 'month' | 'year';
+  recurringInterval?: "one-time" | "month" | "year";
   features: string[];
   popular?: boolean;
   contactSales?: boolean;
@@ -21,14 +21,14 @@ export type ProductMetadata = {
 export type BillingOption = {
   productId: string;
   price: number;
-  recurringInterval: 'month' | 'year';
+  recurringInterval: "month" | "year";
 };
 
 export type PaymentsPluginConfig = {
   POLAR?: {
     AUTHENTICATED_USERS_ONLY: boolean;
     CREATE_CUSTOMER_ON_SIGNUP: boolean;
-    ENVIRONMENT: 'sandbox' | 'production' | undefined;
+    ENVIRONMENT: "sandbox" | "production" | undefined;
     PRODUCTS?: Array<{
       productId: string;
       slug: string;

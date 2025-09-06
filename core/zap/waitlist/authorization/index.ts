@@ -1,9 +1,9 @@
-import 'server-only';
+import "server-only";
 
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-import { ZAP_WAITLIST_CONFIG } from '../zap.plugin.config';
+import { ZAP_WAITLIST_CONFIG } from "../zap.plugin.config";
 
 /**
  * Checks if the waitlist feature is enabled and if the current path should be redirected to the waitlist page.
@@ -17,8 +17,8 @@ export function checkWaitlistRedirect(
   const { pathname } = request.nextUrl;
 
   // Redirect to waitlist if feature is enabled and user is not on waitlist page
-  if (ZAP_WAITLIST_CONFIG.ENABLE_WAITLIST_PAGE && pathname !== '/waitlist') {
-    const waitlistUrl = new URL('/waitlist', request.url);
+  if (ZAP_WAITLIST_CONFIG.ENABLE_WAITLIST_PAGE && pathname !== "/waitlist") {
+    const waitlistUrl = new URL("/waitlist", request.url);
     return NextResponse.redirect(waitlistUrl);
   }
 
@@ -41,5 +41,5 @@ export function isWaitlistEnabled(): boolean {
  * @returns boolean indicating if the path is the waitlist page
  */
 export function isWaitlistPage(pathname: string): boolean {
-  return pathname === '/waitlist';
+  return pathname === "/waitlist";
 }

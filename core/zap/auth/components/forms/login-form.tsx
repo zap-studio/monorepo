@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import type z from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import type z from "zod";
 
 import {
   Form,
@@ -13,13 +13,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { ZapButton } from '@/zap/components/core/button';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { ZapButton } from "@/zap/components/core/button";
 
-import { useAuth } from '../../hooks';
-import { LoginFormSchema } from '../../schemas';
-import { ZAP_AUTH_CONFIG } from '../../zap.plugin.config';
+import { useAuth } from "../../hooks";
+import { LoginFormSchema } from "../../schemas";
+import { ZAP_AUTH_CONFIG } from "../../zap.plugin.config";
 
 type LoginFormValues = z.infer<typeof LoginFormSchema>;
 
@@ -30,7 +30,7 @@ export function LoginForm() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const redirect = urlParams.get('redirect');
+    const redirect = urlParams.get("redirect");
 
     if (redirect) {
       setCallbackURL(redirect);
@@ -40,8 +40,8 @@ export function LoginForm() {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -104,7 +104,7 @@ export function LoginForm() {
           loadingText="Logging in..."
           type="submit"
         >
-          {isInCooldown ? `Please wait ${cooldown}s` : 'Login'}
+          {isInCooldown ? `Please wait ${cooldown}s` : "Login"}
         </ZapButton>
       </form>
     </Form>

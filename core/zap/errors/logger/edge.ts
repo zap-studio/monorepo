@@ -1,4 +1,4 @@
-import 'server-only';
+import "server-only";
 
 export function logMiddlewareError(error: unknown) {
   let message: string;

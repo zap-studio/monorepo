@@ -1,23 +1,23 @@
-import { getPriceDisplay } from '../utils';
-import type { RecurringInterval } from '../zap.plugin.config.types';
+import { getPriceDisplay } from "../utils";
+import type { RecurringInterval } from "../zap.plugin.config.types";
 
 type PriceDisplayProps = {
   price: number | string;
   interval: RecurringInterval;
-  alignment?: 'center' | 'left';
+  alignment?: "center" | "left";
 };
 
 export function PriceDisplay({
   price,
   interval,
-  alignment = 'center',
+  alignment = "center",
 }: PriceDisplayProps) {
   const { displayPrice, intervalText } = getPriceDisplay(price, interval);
 
   const alignmentClasses =
-    alignment === 'center'
-      ? 'items-center text-center'
-      : 'items-start text-left';
+    alignment === "center"
+      ? "items-center text-center"
+      : "items-start text-left";
 
   return (
     <div

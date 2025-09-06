@@ -1,10 +1,10 @@
-import type { ReactNode } from 'react';
-import type { Dependencies, Packages } from './deps.js';
-import type { CategoryIds } from './files/index.js';
-import type { IDEs } from './ide.js';
-import type { CorePluginIds, OptionalPluginIds } from './plugins.js';
+import type { ReactNode } from "react";
+import type { Dependencies, Packages } from "./deps.js";
+import type { CategoryIds } from "./files/index.js";
+import type { IDEs } from "./ide.js";
+import type { CorePluginIds, OptionalPluginIds } from "./plugins.js";
 
-export type FileStatus = 'added' | 'deleted' | 'modified';
+export type FileStatus = "added" | "deleted" | "modified";
 
 export type FileEntry = {
   path: string;

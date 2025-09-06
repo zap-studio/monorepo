@@ -1,4 +1,4 @@
-import type { FeedbacksPluginConfig } from './zap.plugin.config.types';
+import type { FeedbacksPluginConfig } from "./zap.plugin.config.types";
 
 export const ZAP_FEEDBACKS_CONFIG: FeedbacksPluginConfig = {
   MAX_RATING: 10,

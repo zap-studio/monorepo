@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { Bot, HelpCircle, Settings } from 'lucide-react';
-import Link from 'next/link';
-import type { ComponentPropsWithoutRef } from 'react';
-import { useMemo, useState } from 'react';
+import { Bot, HelpCircle, Settings } from "lucide-react";
+import Link from "next/link";
+import type { ComponentPropsWithoutRef } from "react";
+import { useMemo, useState } from "react";
 
 import {
   SidebarGroup,
@@ -11,10 +11,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { isPluginEnabled } from '@/lib/plugins';
-import { SettingsSheet } from '@/zap/ai/components/settings-sheet';
-import { FeedbackDialog } from '@/zap/feedbacks/components/feedback-dialog';
+} from "@/components/ui/sidebar";
+import { isPluginEnabled } from "@/lib/plugins";
+import { SettingsSheet } from "@/zap/ai/components/settings-sheet";
+import { FeedbackDialog } from "@/zap/feedbacks/components/feedback-dialog";
 
 type SidebarSecondarySectionProps = ComponentPropsWithoutRef<
   typeof SidebarGroup
@@ -24,27 +24,27 @@ export function SidebarSecondarySection(props: SidebarSecondarySectionProps) {
   const [isFeedbackOpen, setFeedbackOpen] = useState(false);
   const [isAISettingsOpen, setAISettingsOpen] = useState(false);
 
-  const isAIEnabled = useMemo(() => isPluginEnabled('ai'), []);
-  const isFeedbackEnabled = useMemo(() => isPluginEnabled('feedbacks'), []);
+  const isAIEnabled = useMemo(() => isPluginEnabled("ai"), []);
+  const isFeedbackEnabled = useMemo(() => isPluginEnabled("feedbacks"), []);
 
   const menuItems = useMemo(
     () => [
       {
-        label: 'AI Providers',
+        label: "AI Providers",
         icon: <Bot />,
         onClick: () => setAISettingsOpen(true),
         disabled: !isAIEnabled,
       },
       {
-        label: 'Give Feedback',
+        label: "Give Feedback",
         icon: <HelpCircle />,
         onClick: () => setFeedbackOpen(true),
         disabled: !isFeedbackEnabled,
       },
       {
-        label: 'Settings',
+        label: "Settings",
         icon: <Settings />,
-        href: '/app/settings',
+        href: "/app/settings",
       },
     ],
     [isAIEnabled, isFeedbackEnabled]

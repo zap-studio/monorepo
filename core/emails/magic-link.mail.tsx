@@ -7,7 +7,7 @@ import {
   Preview,
   Section,
   Text,
-} from '@react-email/components';
+} from "@react-email/components";
 
 type MailProps = {
   url: string;
@@ -51,59 +51,59 @@ export default function MagicLinkMail({ url }: MailProps) {
 
 // Styles
 const main = {
-  backgroundColor: '#f9fafb',
-  padding: '40px 0',
-  fontFamily: 'Helvetica, Arial, sans-serif',
+  backgroundColor: "#f9fafb",
+  padding: "40px 0",
+  fontFamily: "Helvetica, Arial, sans-serif",
 };
 
 const container = {
-  backgroundColor: '#ffffff',
-  padding: '40px',
-  borderRadius: '8px',
-  maxWidth: '520px',
-  margin: '0 auto',
-  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+  backgroundColor: "#ffffff",
+  padding: "40px",
+  borderRadius: "8px",
+  maxWidth: "520px",
+  margin: "0 auto",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
 };
 
 const heading = {
-  fontSize: '24px',
-  fontWeight: 'bold' as const,
-  marginBottom: '20px',
-  color: '#111827',
+  fontSize: "24px",
+  fontWeight: "bold" as const,
+  marginBottom: "20px",
+  color: "#111827",
 };
 
 const paragraph = {
-  fontSize: '16px',
-  color: '#374151',
-  lineHeight: '1.5',
-  marginBottom: '24px',
+  fontSize: "16px",
+  color: "#374151",
+  lineHeight: "1.5",
+  marginBottom: "24px",
 };
 
 const buttonWrapper = {
-  textAlign: 'center' as const,
-  marginBottom: '24px',
+  textAlign: "center" as const,
+  marginBottom: "24px",
 };
 
 const button = {
-  backgroundColor: '#000',
-  color: '#fff',
-  fontSize: '16px',
-  padding: '12px 24px',
-  borderRadius: '6px',
-  textDecoration: 'none',
-  fontWeight: 'bold' as const,
-  display: 'inline-block',
+  backgroundColor: "#000",
+  color: "#fff",
+  fontSize: "16px",
+  padding: "12px 24px",
+  borderRadius: "6px",
+  textDecoration: "none",
+  fontWeight: "bold" as const,
+  display: "inline-block",
 };
 
 const footer = {
-  fontSize: '14px',
-  color: '#6B7280',
-  marginBottom: '16px',
-  lineHeight: '1.5',
+  fontSize: "14px",
+  color: "#6B7280",
+  marginBottom: "16px",
+  lineHeight: "1.5",
 };
 
 const urlText = {
-  fontSize: '14px',
-  color: '#9CA3AF',
-  wordBreak: 'break-word' as const,
+  fontSize: "14px",
+  color: "#9CA3AF",
+  wordBreak: "break-word" as const,
 };

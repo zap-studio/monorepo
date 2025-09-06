@@ -1,8 +1,8 @@
-import path from 'node:path';
-import fs from 'fs-extra';
-import { GITHUB_DOWNLOAD_URL } from '@/data/website.js';
-import { FetchError, FileSystemError } from '@/lib/errors.js';
-import { getErrorMessage } from '../misc/error';
+import path from "node:path";
+import fs from "fs-extra";
+import { GITHUB_DOWNLOAD_URL } from "@/data/website.js";
+import { FetchError, FileSystemError } from "@/lib/errors.js";
+import { getErrorMessage } from "../misc/error";
 
 export async function downloadTemplate(outputDir: string): Promise<string> {
   try {
@@ -18,7 +18,7 @@ export async function downloadTemplate(outputDir: string): Promise<string> {
     }
 
     const buffer = await response.arrayBuffer();
-    const tarballPath = path.join(outputDir, 'zap.ts.tar.gz');
+    const tarballPath = path.join(outputDir, "zap.ts.tar.gz");
     await fs.writeFile(tarballPath, Buffer.from(buffer));
     return tarballPath;
   } catch (error) {

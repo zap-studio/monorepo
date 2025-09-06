@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { motion, useSpring, useTransform } from 'motion/react';
-import { useEffect } from 'react';
+import { motion, useSpring, useTransform } from "motion/react";
+import { useEffect } from "react";
 
 export function AnimatedNumber({ value }: { value: number }) {
   const spring = useSpring(value, { mass: 0.8, stiffness: 75, damping: 15 });

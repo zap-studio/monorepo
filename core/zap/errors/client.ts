@@ -1,29 +1,29 @@
-import 'client-only';
+import "client-only";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { isPluginEnabled } from '@/lib/plugins';
-import { ZAP_AUTH_CONFIG } from '@/zap/auth/zap.plugin.config';
-import { DEV } from '@/zap/env/runtime/public';
+import { isPluginEnabled } from "@/lib/plugins";
+import { ZAP_AUTH_CONFIG } from "@/zap/auth/zap.plugin.config";
+import { DEV } from "@/zap/env/runtime/public";
 
-import { ApplicationError, BaseError } from '.';
+import { ApplicationError, BaseError } from ".";
 
 export function handleClientError(
   error: unknown,
-  fallbackMessage = 'Something went wrong'
+  fallbackMessage = "Something went wrong"
 ) {
   if (
-    isPluginEnabled('auth') &&
-    typeof error === 'object' &&
+    isPluginEnabled("auth") &&
+    typeof error === "object" &&
     error !== null &&
-    'code' in error &&
-    (error as { code?: string }).code === 'PASSWORD_COMPROMISED'
+    "code" in error &&
+    (error as { code?: string }).code === "PASSWORD_COMPROMISED"
   ) {
     toast.error(ZAP_AUTH_CONFIG.PASSWORD_COMPROMISED_MESSAGE);
     return;
   }
 
-  let title = 'Error';
+  let title = "Error";
   let description = fallbackMessage;
 
   if (error instanceof BaseError) {
@@ -34,7 +34,7 @@ export function handleClientError(
     description = error.message;
   } else if (error instanceof Error) {
     description = error.message;
-  } else if (typeof error === 'string') {
+  } else if (typeof error === "string") {
     description = error;
   }
 
@@ -42,7 +42,7 @@ export function handleClientError(
   if (DEV) {
     toast.error(`${title}: ${description}`, {
       description:
-        typeof error === 'object'
+        typeof error === "object"
           ? JSON.stringify(error, null, 2)
           : String(error),
     });

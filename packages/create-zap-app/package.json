@@ -56,8 +56,8 @@
   },
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
-    "lint": "ultracite lint",
-    "format": "ultracite format",
+    "lint": "ultracite check",
+    "format": "ultracite fix",
     "postbuild": "typedoc --entryPointStrategy expand src"
   },
   "dependencies": {
@@ -78,9 +78,9 @@
     "@types/figlet": "^1.7.0",
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.9",
-    "@types/node": "^24.3.0",
+    "@types/node": "^24.3.1",
     "tsdown": "^0.14.2",
-    "typedoc": "^0.28.11",
+    "typedoc": "^0.28.12",
     "typescript": "^5.9.2"
   },
   "peerDependencies": {
@@ -88,7 +88,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss}": [
-      "ultracite format"
+      "ultracite fix"
     ]
   },
   "types": "./dist/index.d.cts"

@@ -27,7 +27,7 @@ const UUID_SECTION_LENGTHS = [
  */
 export function generateUuid(): string {
   // Try to use crypto.getRandomValues if available (browser, Node.js 15+, edge runtime)
-  if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
+  if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
     const bytes = new Uint8Array(UUID_BYTE_LENGTH);
     globalThis.crypto.getRandomValues(bytes);
 
@@ -39,22 +39,22 @@ export function generateUuid(): string {
 
     // Convert to hex and insert hyphens according to section lengths
     const hex = Array.from(bytes, (b) =>
-      b.toString(HEX_RADIX).padStart(2, '0')
-    ).join('');
+      b.toString(HEX_RADIX).padStart(2, "0")
+    ).join("");
     let offset = 0;
     const sections: string[] = [];
     for (const len of UUID_SECTION_LENGTHS) {
       sections.push(hex.slice(offset, offset + len));
       offset += len;
     }
-    return sections.join('-');
+    return sections.join("-");
   }
 
   // Fallback for environments without crypto.getRandomValues
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     const r = Math.floor(Math.random() * HEX_RADIX);
     const v =
-      c === 'x' ? r : (r % VARIANT_FALLBACK_MOD) + VARIANT_FALLBACK_OFFSET; // 8..B
+      c === "x" ? r : (r % VARIANT_FALLBACK_MOD) + VARIANT_FALLBACK_OFFSET; // 8..B
     return v.toString(HEX_RADIX);
   });
 }

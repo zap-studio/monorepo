@@ -1,26 +1,26 @@
-import 'server-only';
+import "server-only";
 
-import { streamToEventIterator } from '@orpc/server';
+import { streamToEventIterator } from "@orpc/server";
 import {
   convertToModelMessages,
   generateText,
   streamText,
   type UIMessage,
-} from 'ai';
-import { and, eq } from 'drizzle-orm';
+} from "ai";
+import { and, eq } from "drizzle-orm";
 
-import { encryptionKeyHex } from '@/zap/crypto';
-import { decrypt } from '@/zap/crypto/decrypt';
-import { encrypt } from '@/zap/crypto/encrypt';
-import { db } from '@/zap/db/providers/drizzle';
-import type { UpsertMode } from '@/zap/db/types';
-import { BadRequestError } from '@/zap/errors';
+import { encryptionKeyHex } from "@/zap/crypto";
+import { decrypt } from "@/zap/crypto/decrypt";
+import { encrypt } from "@/zap/crypto/encrypt";
+import { db } from "@/zap/db/providers/drizzle";
+import type { UpsertMode } from "@/zap/db/types";
+import { BadRequestError } from "@/zap/errors";
 
-import { getApiSettingsForUserAndProviderQuery } from '../db/providers/drizzle/queries';
-import { userAISettings } from '../db/providers/drizzle/schema';
-import { getModel } from '../lib';
-import type { AIProviderId, ModelName } from '../types';
-import { ZAP_AI_CONFIG } from '../zap.plugin.config';
+import { getApiSettingsForUserAndProviderQuery } from "../db/providers/drizzle/queries";
+import { userAISettings } from "../db/providers/drizzle/schema";
+import { getModel } from "../lib";
+import type { AIProviderId, ModelName } from "../types";
+import { ZAP_AI_CONFIG } from "../zap.plugin.config";
 
 type GetAISettingsService = {
   userId: string;
@@ -71,7 +71,7 @@ export async function deleteAPIKeyService({
     )
     .execute();
 
-  return { message: 'API key deleted successfully.' };
+  return { message: "API key deleted successfully." };
 }
 
 type SaveAISettingsService = {
@@ -92,7 +92,7 @@ export async function saveAISettingsService({
     provider,
     model,
     apiKey,
-    mode: 'create-only',
+    mode: "create-only",
   });
 }
 
@@ -109,7 +109,7 @@ export async function saveOrUpdateAISettingsService({
   provider,
   apiKey,
   model,
-  mode = 'upsert',
+  mode = "upsert",
 }: SaveOrUpdateAISettingsService) {
   const encryptedAPIKey = await encrypt(apiKey, encryptionKeyHex);
 
@@ -120,7 +120,7 @@ export async function saveOrUpdateAISettingsService({
     encryptedApiKey: encryptedAPIKey,
   };
 
-  if (mode === 'create-only') {
+  if (mode === "create-only") {
     const result = await db
       .insert(userAISettings)
       .values(values)
@@ -130,18 +130,18 @@ export async function saveOrUpdateAISettingsService({
       .returning({ id: userAISettings.id });
 
     if (!result.length) {
-      throw new BadRequestError('AI settings already exist for this provider');
+      throw new BadRequestError("AI settings already exist for this provider");
     }
 
     return {
-      message: 'AI settings created successfully.',
+      message: "AI settings created successfully.",
       data: {
         id: result[0].id,
       },
     };
   }
 
-  if (mode === 'update-only') {
+  if (mode === "update-only") {
     await db
       .insert(userAISettings)
       .values(values)
@@ -154,7 +154,7 @@ export async function saveOrUpdateAISettingsService({
         },
       });
 
-    return { message: 'AI settings updated successfully.' };
+    return { message: "AI settings updated successfully." };
   }
 
   await db
@@ -169,7 +169,7 @@ export async function saveOrUpdateAISettingsService({
       },
     });
 
-  return { message: 'AI settings saved successfully.' };
+  return { message: "AI settings saved successfully." };
 }
 
 export type StreamChatService = {
@@ -187,7 +187,7 @@ export async function streamChatService({
 
   if (!aiSettings) {
     throw new BadRequestError(
-      'AI settings not configured for the selected provider'
+      "AI settings not configured for the selected provider"
     );
   }
 
@@ -226,7 +226,7 @@ export async function streamCompletionService({
 
   if (!aiSettings) {
     throw new BadRequestError(
-      'AI settings not configured for the selected provider'
+      "AI settings not configured for the selected provider"
     );
   }
 
@@ -264,12 +264,12 @@ export async function testAPIKeyService({
     maxOutputTokens: 16, // Minimum tokens to minimize cost and time
   }).catch((error) => {
     throw new BadRequestError(
-      'Invalid API key or provider configuration',
+      "Invalid API key or provider configuration",
       error
     );
   });
 
-  return { message: 'API key is valid' };
+  return { message: "API key is valid" };
 }
 
 type UpdateAISettingsService = {
@@ -290,6 +290,6 @@ export async function updateAISettingsService({
     provider,
     apiKey,
     model,
-    mode: 'update-only',
+    mode: "update-only",
   });
 }

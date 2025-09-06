@@ -1,4 +1,4 @@
-export type Provider = 'github' | 'google';
+export type Provider = "github" | "google";
 
 export type AuthPluginConfig = {
   ENABLE_SOCIAL_PROVIDER: boolean;

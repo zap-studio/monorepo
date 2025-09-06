@@ -1,15 +1,15 @@
-'use client';
-import 'client-only';
+"use client";
+import "client-only";
 
-import { useZapQuery } from '@/zap/api/hooks';
+import { useZapQuery } from "@/zap/api/hooks";
 
-import { FLAGS } from '..';
+import { FLAGS } from "..";
 
 type FlagKey = keyof typeof FLAGS;
 
 export function useFlag(flagKey: FlagKey) {
   const result = useZapQuery({
-    queryKey: ['flag', { flagKey }],
+    queryKey: ["flag", { flagKey }],
     queryFn: async () => {
       try {
         const flag = FLAGS[flagKey];

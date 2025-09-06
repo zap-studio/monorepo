@@ -1,6 +1,6 @@
-import 'client-only';
+import "client-only";
 
-import { polarClient } from '@polar-sh/better-auth';
+import { polarClient } from "@polar-sh/better-auth";
 import {
   adminClient,
   anonymousClient,
@@ -8,10 +8,10 @@ import {
   passkeyClient,
   twoFactorClient,
   usernameClient,
-} from 'better-auth/client/plugins';
-import { createAuthClient } from 'better-auth/react';
+} from "better-auth/client/plugins";
+import { createAuthClient } from "better-auth/react";
 
-import { BASE_URL } from '@/zap.config';
+import { BASE_URL } from "@/zap.config";
 
 export const betterAuthClient = createAuthClient({
   baseURL: BASE_URL,

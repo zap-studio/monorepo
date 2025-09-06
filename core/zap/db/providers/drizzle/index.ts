@@ -1,20 +1,20 @@
-import 'server-only';
+import "server-only";
 
-import { neon } from '@neondatabase/serverless';
+import { neon } from "@neondatabase/serverless";
 import {
   drizzle as drizzleNeon,
   type NeonHttpDatabase,
-} from 'drizzle-orm/neon-http';
+} from "drizzle-orm/neon-http";
 import {
   drizzle as drizzlePg,
   type NodePgDatabase,
-} from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
+} from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
-import { PROD } from '@/zap/env/runtime/public';
-import { SERVER_ENV } from '@/zap/env/server';
+import { PROD } from "@/zap/env/runtime/public";
+import { SERVER_ENV } from "@/zap/env/server";
 
-import { type DatabaseSchema, schema } from './schema';
+import { type DatabaseSchema, schema } from "./schema";
 
 type Database =
   | NodePgDatabase<DatabaseSchema>
@@ -27,7 +27,7 @@ function createDatabase(): Database {
   }
 
   if (!SERVER_ENV.DATABASE_URL_DEV) {
-    throw new Error('DATABASE_URL_DEV is required in development environment');
+    throw new Error("DATABASE_URL_DEV is required in development environment");
   }
 
   const pool = new Pool({ connectionString: SERVER_ENV.DATABASE_URL_DEV });

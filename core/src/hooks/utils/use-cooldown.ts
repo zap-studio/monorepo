@@ -1,7 +1,7 @@
-'use client';
-import 'client-only';
+"use client";
+import "client-only";
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from "react";
 
 const COOLDOWN_TICK_INTERVAL_MS = 1000;
 

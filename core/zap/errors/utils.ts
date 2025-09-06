@@ -1,13 +1,13 @@
-import 'server-only';
+import "server-only";
 
-import type { z } from 'zod';
-import { ZodError } from 'zod';
+import type { z } from "zod";
+import { ZodError } from "zod";
 
-import { generateUuid } from '@/zap/crypto/utils';
-import { DEV } from '@/zap/env/runtime/public';
+import { generateUuid } from "@/zap/crypto/utils";
+import { DEV } from "@/zap/env/runtime/public";
 
-import { BaseError, InternalServerError } from '.';
-import { logError } from './logger/server';
+import { BaseError, InternalServerError } from ".";
+import { logError } from "./logger/server";
 
 export type HandlerFunction<T extends unknown[], R> = (
   ...args: T
@@ -61,9 +61,9 @@ export function createErrorResponse(
   if (error instanceof ZodError) {
     return {
       response: {
-        error: 'ValidationError',
-        message: 'Invalid input data',
-        code: 'VALIDATION_ERROR',
+        error: "ValidationError",
+        message: "Invalid input data",
+        code: "VALIDATION_ERROR",
         statusCode: 400,
         timestamp,
         correlationId,
@@ -76,9 +76,9 @@ export function createErrorResponse(
   if (error instanceof Error) {
     return {
       response: {
-        error: 'InternalServerError',
-        message: DEV ? error.message : 'An unexpected error occurred',
-        code: 'INTERNAL_SERVER_ERROR',
+        error: "InternalServerError",
+        message: DEV ? error.message : "An unexpected error occurred",
+        code: "INTERNAL_SERVER_ERROR",
         statusCode: 500,
         timestamp,
         correlationId,
@@ -93,9 +93,9 @@ export function createErrorResponse(
 
   return {
     response: {
-      error: 'UnknownError',
-      message: 'An unexpected error occurred',
-      code: 'UNKNOWN_ERROR',
+      error: "UnknownError",
+      message: "An unexpected error occurred",
+      code: "UNKNOWN_ERROR",
       statusCode: 500,
       timestamp,
       correlationId,
@@ -130,10 +130,10 @@ export function transformError(error: unknown): BaseError {
   }
 
   if (error instanceof ZodError) {
-    return new InternalServerError('Validation failed', error);
+    return new InternalServerError("Validation failed", error);
   }
 
-  return new InternalServerError('Operation failed', error);
+  return new InternalServerError("Operation failed", error);
 }
 
 export async function handleError<R>(
@@ -156,13 +156,13 @@ export async function handleError<R>(
   );
 
   // For RPC procedures, convert BaseError to ORPC error
-  if (options.handlerType === 'rpc-procedure') {
+  if (options.handlerType === "rpc-procedure") {
     const baseError = transformError(error);
     throw await baseError.toORPCError();
   }
 
   // For server actions, transform to BaseError
-  if (options.handlerType === 'server-action') {
+  if (options.handlerType === "server-action") {
     throw transformError(error);
   }
 
@@ -176,8 +176,8 @@ export async function handleError<R>(
   return Response.json(response, {
     status: statusCode,
     headers: {
-      'x-correlation-id': correlationId,
-      'x-error-type': response.error,
+      "x-correlation-id": correlationId,
+      "x-error-type": response.error,
     },
   }) as R;
 }

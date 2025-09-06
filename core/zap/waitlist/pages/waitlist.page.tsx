@@ -1,15 +1,15 @@
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { Badge } from '@/components/ui/badge';
-import { ModeToggle } from '@/components/ui/mode-toggle';
-import { orpcQuery } from '@/zap/api/lib/orpc';
-import { queryClient } from '@/zap/api/lib/tanstack-query';
-import { orpcServer } from '@/zap/api/providers/orpc/server';
-import { AnimatedNumber } from '@/zap/components/misc/animated-number';
+import { Badge } from "@/components/ui/badge";
+import { ModeToggle } from "@/components/ui/mode-toggle";
+import { orpcQuery } from "@/zap/api/lib/orpc";
+import { queryClient } from "@/zap/api/lib/tanstack-query";
+import { orpcServer } from "@/zap/api/providers/orpc/server";
+import { AnimatedNumber } from "@/zap/components/misc/animated-number";
 
-import { AnimateWaitlist } from '../components/animate-waitlist';
-import { WaitlistForm } from '../components/waitlist-form';
-import { ZAP_WAITLIST_CONFIG } from '../zap.plugin.config';
+import { AnimateWaitlist } from "../components/animate-waitlist";
+import { WaitlistForm } from "../components/waitlist-form";
+import { ZAP_WAITLIST_CONFIG } from "../zap.plugin.config";
 
 export async function _WaitlistPage() {
   const waitlistCountKey = orpcQuery.waitlist.getNumberOfPeopleInWaitlist.key();
@@ -31,10 +31,10 @@ export async function _WaitlistPage() {
         <div className="mx-auto max-w-md">
           <AnimateWaitlist>
             {ZAP_WAITLIST_CONFIG.SHOW_COUNT && (
-              <Badge className="mb-4" variant={'secondary'}>
+              <Badge className="mb-4" variant={"secondary"}>
                 <span className="font-semibold">
                   <AnimatedNumber value={waitlistCount} />
-                </span>{' '}
+                </span>{" "}
                 people already joined the waitlist
               </Badge>
             )}

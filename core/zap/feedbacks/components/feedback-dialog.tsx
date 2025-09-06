@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { type UseFormReturn, useForm } from 'react-hook-form';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { type UseFormReturn, useForm } from "react-hook-form";
 
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -17,14 +17,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
-import { ZapButton } from '@/zap/components/core/button';
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { ZapButton } from "@/zap/components/core/button";
 
-import { useIsFeedbackSubmitted, useSubmitFeedback } from '../hooks';
-import { InputFeedbackSchema } from '../schemas';
-import type { FeedbackFormValues } from '../types';
+import { useIsFeedbackSubmitted, useSubmitFeedback } from "../hooks";
+import { InputFeedbackSchema } from "../schemas";
+import type { FeedbackFormValues } from "../types";
 
 type FeedbackDialogProps = {
   open: boolean;
@@ -55,7 +55,7 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
 
   const form = useForm<FeedbackFormValues>({
     resolver: zodResolver(InputFeedbackSchema),
-    defaultValues: { rating: DEFAULT_RATING, description: '' },
+    defaultValues: { rating: DEFAULT_RATING, description: "" },
   });
 
   const onSubmit = async (data: FeedbackFormValues) => {
@@ -153,7 +153,7 @@ export function RatingButtons({
   isSubmitting,
   isExistingFeedback,
 }: RatingButtonsProps) {
-  const rating = form.watch('rating');
+  const rating = form.watch("rating");
 
   return (
     <div className="flex flex-wrap gap-2 pt-1">
@@ -164,17 +164,17 @@ export function RatingButtons({
           <ZapButton
             aria-label={`Rate ${value}`}
             className={cn(
-              'h-10 w-10 rounded-md p-0 text-sm',
-              'transform transition-all duration-200 ease-in-out',
-              'hover:scale-110 active:scale-110',
-              isActive && 'bg-primary text-white'
+              "h-10 w-10 rounded-md p-0 text-sm",
+              "transform transition-all duration-200 ease-in-out",
+              "hover:scale-110 active:scale-110",
+              isActive && "bg-primary text-white"
             )}
             disabled={isSubmitting || isExistingFeedback}
             key={value}
-            onClick={() => form.setValue('rating', value)}
+            onClick={() => form.setValue("rating", value)}
             size="sm"
             type="button"
-            variant={isActive ? 'default' : 'outline'}
+            variant={isActive ? "default" : "outline"}
           >
             {value}
           </ZapButton>

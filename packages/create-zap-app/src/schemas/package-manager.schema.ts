@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Zod schema for validating package manager selection.
@@ -6,16 +6,16 @@ import { z } from 'zod';
  */
 export const PackageManagerSchema: z.ZodUnion<
   readonly [
-    z.ZodLiteral<'npm'>,
-    z.ZodLiteral<'yarn'>,
-    z.ZodLiteral<'pnpm'>,
-    z.ZodLiteral<'bun'>,
+    z.ZodLiteral<"npm">,
+    z.ZodLiteral<"yarn">,
+    z.ZodLiteral<"pnpm">,
+    z.ZodLiteral<"bun">,
   ]
 > = z.union([
-  z.literal('npm'),
-  z.literal('yarn'),
-  z.literal('pnpm'),
-  z.literal('bun'),
+  z.literal("npm"),
+  z.literal("yarn"),
+  z.literal("pnpm"),
+  z.literal("bun"),
 ]);
 
 /**

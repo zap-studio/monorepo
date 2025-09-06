@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { ChevronRight, type LucideIcon } from 'lucide-react';
-import Link from 'next/link';
+import { ChevronRight, type LucideIcon } from "lucide-react";
+import Link from "next/link";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -18,7 +18,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from '@/components/ui/sidebar';
+} from "@/components/ui/sidebar";
 
 type SidebarMainSectionProps = {
   items: {

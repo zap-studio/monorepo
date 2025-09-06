@@ -1,11 +1,11 @@
-import path from 'node:path';
-import { optionalPlugins, plugins } from '@zap-ts/architecture/plugins';
-import type { PluginId } from '@zap-ts/architecture/types';
-import { getFilesForPlugins } from '@zap-ts/architecture/utils/plugins';
-import fs from 'fs-extra';
-import type { Ora } from 'ora';
-import { getErrorMessage } from '@/utils/misc/error';
-import { removeDependencies, removeScripts } from '@/utils/misc/package-json';
+import path from "node:path";
+import { optionalPlugins, plugins } from "@zap-ts/architecture/plugins";
+import type { PluginId } from "@zap-ts/architecture/types";
+import { getFilesForPlugins } from "@zap-ts/architecture/utils/plugins";
+import fs from "fs-extra";
+import type { Ora } from "ora";
+import { getErrorMessage } from "@/utils/misc/error";
+import { removeDependencies, removeScripts } from "@/utils/misc/package-json";
 
 function getAllRequiredPlugins(selected: PluginId[]): Set<PluginId> {
   const visited = new Set<PluginId>();
@@ -136,21 +136,21 @@ export async function removeDependenciesFromPackageJson(
 
   if (verbose) {
     spinner.info(
-      `Removing dependencies: ${allDeps.map(([dep]) => dep).join(', ')}`
+      `Removing dependencies: ${allDeps.map(([dep]) => dep).join(", ")}`
     );
   }
 
   try {
-    const packageJsonPath = path.join(params.outputDir, 'package.json');
+    const packageJsonPath = path.join(params.outputDir, "package.json");
     await removeDependencies({
       path: packageJsonPath,
       deps: Object.fromEntries(
-        [...params.depsToRemove].map((dep) => [dep, ''])
+        [...params.depsToRemove].map((dep) => [dep, ""])
       ),
       dev: false,
     });
   } catch (error) {
-    spinner.fail('Failed to delete unused dependencies.');
+    spinner.fail("Failed to delete unused dependencies.");
     if (verbose) {
       process.stderr.write(`${getErrorMessage(error)}\n`);
     }
@@ -166,7 +166,7 @@ export async function removeUnusedScriptsFromPackageJson(
   verbose: boolean
 ): Promise<void> {
   try {
-    const packageJsonPath = path.join(params.outputDir, 'package.json');
+    const packageJsonPath = path.join(params.outputDir, "package.json");
 
     const scriptsToRemove = new Set<string>();
 
@@ -189,7 +189,7 @@ export async function removeUnusedScriptsFromPackageJson(
       keys: [...scriptsToRemove],
     });
   } catch (error) {
-    spinner.fail('Failed to delete unused scripts.');
+    spinner.fail("Failed to delete unused scripts.");
     if (verbose) {
       process.stderr.write(`${getErrorMessage(error)}\n`);
     }
@@ -209,7 +209,7 @@ export async function removeUnusedPluginFiles(
 
     if (verbose) {
       spinner.info(
-        `Removing unused plugin files: ${pluginFiles.map((f) => f.path).join(', ')}`
+        `Removing unused plugin files: ${pluginFiles.map((f) => f.path).join(", ")}`
       );
     }
 
@@ -224,7 +224,7 @@ export async function removeUnusedPluginFiles(
     );
 
     // handle zap/ directory
-    const zapDir = path.join(params.outputDir, 'zap');
+    const zapDir = path.join(params.outputDir, "zap");
     for (const pluginId of params.unusedPlugins) {
       const pluginFolder = path.join(zapDir, pluginId);
       if (await fs.pathExists(pluginFolder)) {
@@ -232,7 +232,7 @@ export async function removeUnusedPluginFiles(
       }
     }
   } catch (error) {
-    spinner.fail('Failed to remove unused plugin files.');
+    spinner.fail("Failed to remove unused plugin files.");
     if (verbose) {
       process.stderr.write(`${getErrorMessage(error)}\n`);
     }
