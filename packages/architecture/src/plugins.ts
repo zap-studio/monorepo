@@ -8,6 +8,9 @@ import type { CorePluginId, OptionalPluginId, Plugin, PluginId } from "./types";
  * 'blog' in 'footer.tsx' and 'auth' in 'header.tsx' which is 'components' but should be optional
  * 'auth' in 'client.ts' and 'handlers.ts' in 'errors' that should be optional
  * 'analytics' and 'api' in 'providers.plugin.ts' in 'plugins', they should be optional
+ * 'ai' in 'sidebar-secondary-section.tsx' in 'sidebar' should be optional
+ * some optional plugins need to be registered in the 'router.ts' of 'api' plugin to make procedures available
+ * some optional plugins need to be registred in the 'schema/index.ts' of 'db' plugin to make schemas available
  */
 
 export const CorePluginIds = {
