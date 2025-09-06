@@ -16,17 +16,17 @@ export async function summarizePlugins(options: {
     process.exit(1);
   }
 
-  // Step 1: Check all @/zap/ imports in src/
+  // Step 1: Check all @/zap/ imports in src/ and classify them
   const srcFiles = await getAllFiles(srcDir);
-  const zapImports = await Promise.all(srcFiles.map(findZapImports));
-  const step1 = zapImports.flatMap((item) => {
-    return item.map((entry) => {
-      return {
-        plugin: entry.plugin,
-        path: entry.path,
-        type: classifyPlugin(entry.plugin),
-      };
-    });
+  const zapImports = (
+    await Promise.all(srcFiles.map((file) => findZapImports(file)))
+  ).flat();
+  const step1 = zapImports.map((entry) => {
+    return {
+      plugin: entry.plugin,
+      path: entry.path,
+      type: classifyPlugin(entry.plugin),
+    };
   });
 
   // Step 2: Check where core plugins are imported from
@@ -112,7 +112,7 @@ async function getZapDir(): Promise<string | null> {
 
 async function getAllFiles(
   dir: string,
-  extList = [".ts", ".tsx", ".js", ".jsx"]
+  extList = [".ts", ".tsx", ".js", ".jsx", ".mdx"]
 ): Promise<string[]> {
   const results: string[] = [];
   const list = await fs.readdir(dir);
