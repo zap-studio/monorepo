@@ -17,7 +17,8 @@ export async function summarizePlugins(options: {
   }
 
   const step1 = await analyzeSrcPlugins(srcDir);
-  const { step2, step3 } = await analyzeZapPlugins();
+  const { corePlugins: step2, optionalPlugins: step3 } =
+    await analyzeZapPlugins();
   const step4 = await findCorePluginOptionalImports(step2);
 
   const output = formatSummary(step1, step2, step3, step4);
@@ -32,23 +33,11 @@ export async function summarizePlugins(options: {
 
 async function analyzeSrcPlugins(srcDir: string) {
   const srcFiles = await getAllFiles(srcDir);
-  const zapImports = (
-    await Promise.all(srcFiles.map((file) => findZapImports(file)))
-  ).flat();
+  const zapImports = (await Promise.all(srcFiles.map(findZapImports))).flat();
 
-  const imports = zapImports.map((entry) => ({
-    plugin: entry.plugin,
-    path: entry.path,
-    type: classifyPlugin(entry.plugin),
-  }));
+  const imports = zapImports.map(addTypeToEntry);
 
-  return imports.sort((a, b) => {
-    const typeOrder = { core: 0, optional: 1, unknown: 2 };
-    if (typeOrder[a.type] === typeOrder[b.type]) {
-      return a.plugin.localeCompare(b.plugin);
-    }
-    return typeOrder[a.type] - typeOrder[b.type];
-  });
+  return sortByTypeAndPlugin(imports);
 }
 
 async function analyzeZapPlugins() {
@@ -59,48 +48,30 @@ async function analyzeZapPlugins() {
   }
 
   const zapFiles = await getAllFiles(zapDir);
-  const zapImportsZap = await Promise.all(zapFiles.map(findZapImports));
-  const zapEntries = zapImportsZap.flatMap((item) =>
-    item.map((entry) => ({
-      plugin: entry.plugin,
-      path: entry.path,
-      type: classifyPlugin(entry.plugin),
-    }))
+  const zapEntries = (await Promise.all(zapFiles.map(findZapImports)))
+    .flat()
+    .map(addTypeToEntry);
+
+  const corePlugins = sortByPluginAndPath(
+    zapEntries.filter((x) => x.type === "core")
+  );
+  const optionalPlugins = sortByPluginAndPath(
+    zapEntries.filter((x) => x.type === "optional")
   );
 
-  const step2 = zapEntries
-    .filter((x) => x.type === "core")
-    .map(({ plugin, path: _path }) => ({ plugin, path: _path }))
-    .sort((a, b) => {
-      if (a.plugin === b.plugin) {
-        return a.path.localeCompare(b.path);
-      }
-      return a.plugin.localeCompare(b.plugin);
-    });
-
-  const step3 = zapEntries
-    .filter((x) => x.type === "optional")
-    .map(({ plugin, path: _path }) => ({ plugin, path: _path }))
-    .sort((a, b) => {
-      if (a.plugin === b.plugin) {
-        return a.path.localeCompare(b.path);
-      }
-      return a.plugin.localeCompare(b.plugin);
-    });
-
-  return { step2, step3 };
+  return { corePlugins, optionalPlugins };
 }
 
 async function findCorePluginOptionalImports(
-  step2: Array<{ plugin: PluginId; path: string }>
+  corePlugins: Array<{ plugin: PluginId; path: string }>
 ) {
-  const corePluginOptionalImports: Array<{
+  const results: Array<{
     corePlugin: PluginId;
     optionalPlugin: PluginId;
     path: string;
   }> = [];
 
-  for (const { plugin: corePlugin, path: coreFile } of step2) {
+  for (const { plugin: corePlugin, path: coreFile } of corePlugins) {
     const pluginDir = path.join(process.cwd(), "zap", corePlugin);
     if (!coreFile.startsWith(pluginDir)) {
       continue;
@@ -109,7 +80,7 @@ async function findCorePluginOptionalImports(
     const imports = await findZapImports(coreFile);
     for (const { plugin: importedPlugin } of imports) {
       if (classifyPlugin(importedPlugin) === "optional") {
-        corePluginOptionalImports.push({
+        results.push({
           corePlugin,
           optionalPlugin: importedPlugin,
           path: coreFile.replace(`${process.cwd()}/`, ""),
@@ -118,7 +89,7 @@ async function findCorePluginOptionalImports(
     }
   }
 
-  return corePluginOptionalImports.sort((a, b) => {
+  return results.sort((a, b) => {
     if (a.corePlugin === b.corePlugin) {
       if (a.optionalPlugin === b.optionalPlugin) {
         return a.path.localeCompare(b.path);
@@ -135,50 +106,50 @@ function formatSummary(
   step3: Array<{ plugin: PluginId; path: string }>,
   step4: Array<{ corePlugin: PluginId; optionalPlugin: PluginId; path: string }>
 ): string {
-  let output = "";
+  const cwd = process.cwd();
 
-  output += "\nStep 1 - Determine core plugins:\n";
+  const lines: string[] = [];
+
+  lines.push("\nStep 1 - Determine core plugins:");
   for (const { plugin, path: _path, type } of step1) {
-    output += `- '${plugin}' (${type}): ${_path.replace(`${process.cwd()}/`, "")}\n`;
+    lines.push(`- '${plugin}' (${type}): ${_path.replace(`${cwd}/`, "")}`);
   }
 
-  output += "\nStep 2 - Core plugin imports:\n";
+  lines.push("\nStep 2 - Core plugin imports:");
   for (const { plugin, path: _path } of step2) {
-    output += `- '${plugin}' (core): ${_path.replace(`${process.cwd()}/`, "")}\n`;
+    lines.push(`- '${plugin}' (core): ${_path.replace(`${cwd}/`, "")}`);
   }
 
-  output += "\nStep 3 - Optional plugin imports:\n";
+  lines.push("\nStep 3 - Optional plugin imports:");
   for (const { plugin, path: _path } of step3) {
-    output += `- '${plugin}' (optional): ${_path.replace(`${process.cwd()}/`, "")}\n`;
+    lines.push(`- '${plugin}' (optional): ${_path.replace(`${cwd}/`, "")}`);
   }
 
-  output += "\nStep 4 - Warnings: Optional plugins imported by core plugins:\n";
+  lines.push("\nStep 4 - Warnings: Optional plugins imported by core plugins:");
   if (step4.length === 0) {
-    output += "- None found.\n";
+    lines.push("- None found.");
   } else {
     for (const { corePlugin, optionalPlugin, path: _path } of step4) {
-      output += `- Core plugin '${corePlugin}' imports optional plugin '${optionalPlugin}' in ${_path}\n`;
+      lines.push(
+        `- Core plugin '${corePlugin}' imports optional plugin '${optionalPlugin}' in ${_path}`
+      );
     }
   }
 
-  return output;
+  return `${lines.join("\n")}\n`;
 }
 
 async function getSrcDir(): Promise<string | null> {
   const cwd = process.cwd();
   const configPath = path.join(cwd, "zap.config.ts");
-  if (await fs.pathExists(configPath)) {
-    const srcDir = path.join(cwd, "src");
-    if (await fs.pathExists(srcDir)) {
-      return srcDir;
-    }
-  }
-  return null;
+  const srcDir = path.join(cwd, "src");
+  return (await fs.pathExists(configPath)) && (await fs.pathExists(srcDir))
+    ? srcDir
+    : null;
 }
 
 async function getZapDir(): Promise<string | null> {
-  const cwd = process.cwd();
-  const zapDir = path.join(cwd, "zap");
+  const zapDir = path.join(process.cwd(), "zap");
   return (await fs.pathExists(zapDir)) ? zapDir : null;
 }
 
@@ -188,15 +159,18 @@ async function getAllFiles(
 ): Promise<string[]> {
   const results: string[] = [];
   const list = await fs.readdir(dir);
+
   for (const file of list) {
     const filePath = path.join(dir, file);
     const stat = await fs.stat(filePath);
+
     if (stat.isDirectory()) {
       results.push(...(await getAllFiles(filePath, extList)));
     } else if (extList.some((ext) => filePath.endsWith(ext))) {
       results.push(filePath);
     }
   }
+
   return results;
 }
 
@@ -205,9 +179,10 @@ async function findZapImports(
 ): Promise<Array<{ plugin: PluginId; path: string }>> {
   const content = await fs.readFile(file, "utf8");
   const regex = /(?:import|require)[^'"]+['"]@\/zap\/([^/'"]+)/g;
-  const matches: Array<{ plugin: PluginId; path: string }> = [];
 
+  const matches: Array<{ plugin: PluginId; path: string }> = [];
   let match: RegExpExecArray | null = regex.exec(content);
+
   while (match !== null) {
     matches.push({ plugin: match[1] as PluginId, path: file });
     match = regex.exec(content);
@@ -224,4 +199,34 @@ function classifyPlugin(plugin: PluginId): "core" | "optional" | "unknown" {
     return "optional";
   }
   return "unknown";
+}
+
+function addTypeToEntry(entry: { plugin: PluginId; path: string }) {
+  return {
+    ...entry,
+    type: classifyPlugin(entry.plugin),
+  };
+}
+
+function sortByTypeAndPlugin(
+  arr: Array<{
+    plugin: PluginId;
+    path: string;
+    type: "core" | "optional" | "unknown";
+  }>
+) {
+  const typeOrder = { core: 0, optional: 1, unknown: 2 };
+  return arr.sort((a, b) =>
+    typeOrder[a.type] === typeOrder[b.type]
+      ? a.plugin.localeCompare(b.plugin)
+      : typeOrder[a.type] - typeOrder[b.type]
+  );
+}
+
+function sortByPluginAndPath(arr: Array<{ plugin: PluginId; path: string }>) {
+  return arr.sort((a, b) =>
+    a.plugin === b.plugin
+      ? a.path.localeCompare(b.path)
+      : a.plugin.localeCompare(b.plugin)
+  );
 }
