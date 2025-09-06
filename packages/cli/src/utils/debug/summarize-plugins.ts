@@ -44,13 +44,13 @@ async function getAllFiles(
 
 async function findZapImports(
   file: string
-): Promise<Array<{ plugin: string; path: string }>> {
+): Promise<Array<{ plugin: PluginId; path: string }>> {
   const content = await fs.readFile(file, "utf8");
   const regex = /(?:import|require)\s*.*?['"]@\/zap\/(\w+)['"]/g;
-  const matches: Array<{ plugin: string; path: string }> = [];
+  const matches: Array<{ plugin: PluginId; path: string }> = [];
   let match: RegExpExecArray | null;
   while ((match = regex.exec(content)) !== null) {
-    matches.push({ plugin: match[1], path: file });
+    matches.push({ plugin: match[1] as PluginId, path: file });
   }
   return matches;
 }
@@ -78,11 +78,15 @@ export async function summarizePlugins(): Promise<void> {
   // Step 1: Check all @/zap/ imports in src/
   const srcFiles = await getAllFiles(srcDir);
   const zapImports = await Promise.all(srcFiles.map(findZapImports));
-  const step1 = zapImports.flatMap(({ plugin, path }) => ({
-    plugin,
-    path,
-    type: classifyPlugin(plugin),
-  }));
+  const step1 = zapImports.flatMap((item) => {
+    return item.map((entry) => {
+      return {
+        plugin: entry.plugin,
+        path: entry.path,
+        type: classifyPlugin(entry.plugin),
+      };
+    });
+  });
 
   // Step 2: Check where core plugins are imported from
   const coreImports = step1.filter((x) => x.type === "core");
