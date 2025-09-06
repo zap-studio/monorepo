@@ -118,15 +118,15 @@ export async function summarizePlugins(options: {
     });
     step2 = zapEntries
       .filter((x) => x.type === "core")
-      .map(({ plugin, path }) => ({
+      .map(({ plugin, path: _path }) => ({
         plugin,
-        path,
+        path: _path,
       }));
     step3 = zapEntries
       .filter((x) => x.type === "optional")
-      .map(({ plugin, path }) => ({
+      .map(({ plugin, path: _path }) => ({
         plugin,
-        path,
+        path: _path,
       }));
   } else {
     process.stdout.write("No zap/ directory found in current directory.\n");
