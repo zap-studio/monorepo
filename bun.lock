@@ -1600,8 +1600,6 @@
 
     "bun-types/@types/node": ["@types/node@24.3.0", "", { "dependencies": { "undici-types": "~7.10.0" } }, "sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow=="],
 
-    "create-zap-app/@zap-ts/architecture": ["@zap-ts/architecture@1.0.10", "", { "dependencies": { "react": "^19.1.1" }, "peerDependencies": { "typescript": "^5.9.2" } }, "sha512-k4715jB+R/gOPodT/KKMsHsPF8b1VjJGoV4jjCuXNm7FxLj7LeB8riyvKY6bclMPZNgSKryUbMIJ1Fz6waqdRg=="],
-
     "enquirer/strip-ansi": ["strip-ansi@6.0.1", "", { "dependencies": { "ansi-regex": "^5.0.1" } }, "sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A=="],
 
     "fdir/picomatch": ["picomatch@4.0.3", "", {}, "sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q=="],
