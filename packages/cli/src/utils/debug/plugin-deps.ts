@@ -1,6 +1,6 @@
 import { plugins } from "@zap-ts/architecture/plugins";
 import type { PluginId } from "@zap-ts/architecture/types";
-import { classifyPlugin } from "./plugin-utils";
+import { classifyPlugin } from "./plugin-utils.js";
 
 export type PluginImportMap = Record<PluginId, Set<PluginId>>;
 

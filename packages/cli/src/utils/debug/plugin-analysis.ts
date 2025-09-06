@@ -8,7 +8,7 @@ import {
   getZapDir,
   sortByPluginAndPath,
   sortByTypeAndPlugin,
-} from "./plugin-utils";
+} from "./plugin-utils.js";
 
 export async function analyzeSrcPlugins(srcDir: string): Promise<
   {

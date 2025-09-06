@@ -3,13 +3,13 @@ import {
   analyzeSrcPlugins,
   analyzeZapPlugins,
   findCorePluginOptionalImports,
-} from "./plugin-analysis";
+} from "./plugin-analysis.js";
 import {
   buildPluginImportMap,
   summarizeCorePluginDependencies,
   summarizeOptionalPluginDependencies,
-} from "./plugin-deps";
-import { formatSummary } from "./plugin-summary";
+} from "./plugin-deps.js";
+import { formatSummary } from "./plugin-summary.js";
 import {
   addTypeToEntry,
   dedupePluginEntries,
