@@ -9,6 +9,12 @@ import type { CorePluginId, OptionalPluginId, Plugin, PluginId } from "./types";
  * 'analytics' and 'api' in 'providers.plugin.ts' in 'plugins', they should be optional
  * 'ai' in 'sidebar-secondary-section.tsx' in 'sidebar' should be optional
  * 'auth' in 'hero-section.tsx' in 'landing' should be optional
+ * 'feedbacks' in 'hero-section.tsx' in 'landing' should be optional
+ * 'feedbacks' in 'sidebar-secondary-section.tsx' in 'sidebar' should be optional
+ * 'legal' in 'auth.page.tsx' in 'auth' should be optional
+ * 'payments' in 'better-auth/server.ts' in 'auth' should be optional
+ * 'payments' in 'pricing-section.tsx' in 'landing' should be optional
+ * 'payments' in 'sidebar-user.tsx' and 'sidebar.tsx' in 'sidebar' should be optional
  * some optional plugins need to be registered in the 'router.ts' of 'api' plugin to make procedures available
  * some optional plugins need to be registred in the 'schema/index.ts' of 'db' plugin to make schemas available
  */
@@ -178,7 +184,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ["better-auth"],
     devDependencies: [],
     coreRequiredPlugins: ["api", "components", "env", "errors"],
-    requiredPlugins: ["db"],
+    requiredPlugins: ["db", "mails"],
     packageJsonScripts: [],
   },
   blog: {
@@ -188,7 +194,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ["schema-dts", "serialize-javascript"],
     devDependencies: [],
     coreRequiredPlugins: ["components", "errors"],
-    requiredPlugins: [],
+    requiredPlugins: ["markdown"],
     packageJsonScripts: [],
   },
   db: {
@@ -265,7 +271,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: [],
     devDependencies: [],
     coreRequiredPlugins: ["components"],
-    requiredPlugins: [],
+    requiredPlugins: ["markdown"],
     packageJsonScripts: [],
   },
   mails: {
