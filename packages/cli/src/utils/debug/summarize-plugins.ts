@@ -21,6 +21,16 @@ async function getSrcDir(): Promise<string | null> {
   return null;
 }
 
+async function getZapDir(): Promise<string | null> {
+  const cwd = process.cwd();
+  const zapDir = path.join(cwd, "zap");
+  const zapExists = await fs.pathExists(zapDir);
+  if (zapExists) {
+    return zapDir;
+  }
+  return null;
+}
+
 async function getAllFiles(
   dir: string,
   extList = [".ts", ".tsx", ".js", ".jsx"]
@@ -92,18 +102,36 @@ export async function summarizePlugins(options: {
   });
 
   // Step 2: Check where core plugins are imported from
-  const coreImports = step1.filter((x) => x.type === "core");
-  const step2 = coreImports.map(({ plugin, path: _path }) => ({
-    plugin,
-    path: _path,
-  }));
-
   // Step 3: Check where optional plugins are imported from
-  const optionalImports = step1.filter((x) => x.type === "optional");
-  const step3 = optionalImports.map(({ plugin, path: _path }) => ({
-    plugin,
-    path: _path,
-  }));
+  let step2: Array<{ plugin: PluginId; path: string }> = [];
+  let step3: Array<{ plugin: PluginId; path: string }> = [];
+  const zapDir = await getZapDir();
+  if (zapDir) {
+    const zapFiles = await getAllFiles(zapDir);
+    const zapImportsZap = await Promise.all(zapFiles.map(findZapImports));
+    const zapEntries = zapImportsZap.flatMap((item) => {
+      return item.map((entry) => ({
+        plugin: entry.plugin,
+        path: entry.path,
+        type: classifyPlugin(entry.plugin),
+      }));
+    });
+    step2 = zapEntries
+      .filter((x) => x.type === "core")
+      .map(({ plugin, path }) => ({
+        plugin,
+        path,
+      }));
+    step3 = zapEntries
+      .filter((x) => x.type === "optional")
+      .map(({ plugin, path }) => ({
+        plugin,
+        path,
+      }));
+  } else {
+    process.stdout.write("No zap/ directory found in current directory.\n");
+    process.exit(1);
+  }
 
   // Output
   let output = "";
