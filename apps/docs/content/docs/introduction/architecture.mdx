@@ -3,14 +3,6 @@ title: Architecture
 description: Here is the complete architecture of a Zap.ts application compared to a traditional Next.js application.
 ---
 
-import {
-  ClassicDeps,
-  ZapDeps,
-  ClassicDevDeps,
-  ZapDevDeps
-} from '@zap-ts/architecture/deps';
-import { Categories } from '@zap-ts/architecture/files';
-
 # Overview
 
 Zap.ts architecture is designed to be modular, scalable, and easy to maintain. It leverages the power of TypeScript and modern web development practices to provide a robust foundation for building applications.
@@ -21,68 +13,14 @@ Below, we will compare the architecture of a Zap.ts application with that of a t
 
 ## Dependency Overview
 
-Zap.ts builds on top of Next.js, extending its classic dependencies and adding many more for enhanced features, developer experience, and scalability. Dependencies are grouped below for clarity.
-
-### Classic Dependencies
-<DependencyList deps={ClassicDeps} />
-
-### Zap Dependencies
-<DependencyList deps={ZapDeps} />
-
-### Classic Dev Dependencies
-<DependencyList deps={ClassicDevDeps} />
-
-### Zap.ts Additional Dev Dependencies
-<DependencyList deps={ZapDevDeps} />
+Zap.ts builds on top of Next.js, extending its classic dependencies and adding many more for enhanced features, developer experience, and scalability.
 
 Zap.ts also includes many dev tools and scripts for database management, email previews, code analysis, and more, making it a full-featured boilerplate for modern web apps.
 
+For more details, check the [source code](https://github.com/zap-studio/zap.ts/blob/main/packages/architecture/src/deps.ts).
+
 ## Files & Folders
 
-In the below section, we explain all files and folders present in a typical Zap.ts project structure compared to a standard Next.js project. Next to each file, you'll find a color code (green, yellow, and red) indicating its status.
+Also, we keep track of files and folders that are specific to Zap.ts, compared to a traditional Next.js app.
 
-- 🟢 Added
-- 🟡 Modified
-- 🔴 Removed
-
-### Root & Public
-<FileListRenderer list={Categories.ROOT} />
-
-### Metadata
-<FileListRenderer list={Categories.METADATA} />
-
-### Error Handling
-<FileListRenderer list={Categories.ERRORS} />
-
-### IDE
-<FileListRenderer list={Categories.IDE} />
-
-### Configurations
-<FileListRenderer list={Categories.CONFIG} />
-
-### Pages
-<FileListRenderer list={Categories.PAGES} />
-
-### Components
-<FileListRenderer list={Categories.COMPONENTS} />
-
-### Hooks
-<FileListRenderer list={Categories.HOOKS} />
-
-### Libraries
-<FileListRenderer list={Categories.LIBRARIES} />
-
-### Emails
-<FileListRenderer list={Categories.EMAILS} />
-
-### Middleware
-<FileListRenderer list={Categories.MIDDLEWARE} />
-
-### Providers
-<FileListRenderer list={Categories.PROVIDERS} />
-
-### Instrumentation
-<FileListRenderer list={Categories.INSTRUMENTATION} />
-
-### Zap
-<FileListRenderer list={Categories.ZAP} />
+For more details, check the [source code](https://github.com/zap-studio/zap.ts/blob/main/packages/architecture/src/files/index.ts).
