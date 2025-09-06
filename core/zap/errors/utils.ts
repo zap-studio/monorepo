@@ -2,12 +2,10 @@ import "server-only";
 
 import type { z } from "zod";
 import { ZodError } from "zod";
-
-import { generateUuid } from "@/zap/crypto/utils";
 import { DEV } from "@/zap/env/runtime/public";
-
 import { BaseError, InternalServerError } from ".";
 import { logError } from "./logger/server";
+import { generateUuid } from "./uuid";
 
 export type HandlerFunction<T extends unknown[], R> = (
   ...args: T

@@ -3,8 +3,11 @@ import type { CorePluginId, OptionalPluginId, Plugin, PluginId } from "./types";
 /* TODO: review data and add which plugins depend on each other */
 
 /**
- * 'analytics' plugin in 'layout.tsx' should be wrapped in a provider is not core but in base file
- * 'auth', 'blog' and 'waitlist' in 'middleware.ts' are not core but in base file
+ * 'analytics' plugin in 'layout.tsx' should be wrapped in a provider and optional
+ * 'auth', 'blog' and 'waitlist' in 'middleware.ts', they should be optional
+ * 'blog' in 'footer.tsx' and 'auth' in 'header.tsx' which is 'components' but should be optional
+ * 'auth' in 'client.ts' and 'handlers.ts' in 'errors' that should be optional
+ * 'analytics' and 'api' in 'providers.plugin.ts' in 'plugins', they should be optional
  */
 
 export const CorePluginIds = {
@@ -94,7 +97,7 @@ export const corePlugins: Record<CorePluginId, Plugin> = {
     description: "Cryptographic helpers and utilities.",
     dependencies: [],
     devDependencies: [],
-    requiredPlugins: [],
+    requiredPlugins: ["env", "errors"],
     packageJsonScripts: [],
   },
   env: {
@@ -112,7 +115,7 @@ export const corePlugins: Record<CorePluginId, Plugin> = {
     description: "Error boundary & toast system.",
     dependencies: [],
     devDependencies: [],
-    requiredPlugins: [],
+    requiredPlugins: ["env"],
     packageJsonScripts: [],
   },
   plugins: {
