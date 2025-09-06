@@ -1,5 +1,11 @@
 # @zap-ts/architecture
 
+## 1.0.10
+
+### Patch Changes
+
+- Add new plugin utils
+
 ## 1.0.9
 
 ### Patch Changes
