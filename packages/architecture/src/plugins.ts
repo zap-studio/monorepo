@@ -1,7 +1,6 @@
 import type { CorePluginId, OptionalPluginId, Plugin, PluginId } from "./types";
 
-/* TODO: review data and add which plugins depend on each other */
-
+/* FIXME: Some optional plugins are currently required in core files, they should be optional to ensure modularity. */
 /**
  * 'analytics' plugin in 'layout.tsx' should be wrapped in a provider and optional
  * 'auth', 'blog' and 'waitlist' in 'middleware.ts', they should be optional
@@ -9,8 +8,16 @@ import type { CorePluginId, OptionalPluginId, Plugin, PluginId } from "./types";
  * 'auth' in 'client.ts' and 'handlers.ts' in 'errors' that should be optional
  * 'analytics' and 'api' in 'providers.plugin.ts' in 'plugins', they should be optional
  * 'ai' in 'sidebar-secondary-section.tsx' in 'sidebar' should be optional
+ * 'auth' in 'hero-section.tsx' in 'landing' should be optional
  * some optional plugins need to be registered in the 'router.ts' of 'api' plugin to make procedures available
  * some optional plugins need to be registred in the 'schema/index.ts' of 'db' plugin to make schemas available
+ */
+
+/* TODO: Some optional plugins depend on 'auth' or other plugins but could work without it if some features are disabled. */
+/**
+ * Make 'ai' and 'pwa' works without 'auth'.
+ * For instance some 'ai' features can be public, we should keep that if auth is not installed and remove the rest.
+ * Same logic for 'pwa' or other optional plugins. I'll continue to list them below to track them if any.
  */
 
 export const CorePluginIds = {
@@ -228,7 +235,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: [],
     devDependencies: [],
     coreRequiredPlugins: ["api", "components", "errors"],
-    requiredPlugins: [],
+    requiredPlugins: ["auth"],
     packageJsonScripts: [],
   },
   flags: {
@@ -268,7 +275,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ["@react-email/components", "react-email", "resend"],
     devDependencies: ["@react-email/preview-server"],
     coreRequiredPlugins: ["api", "env", "errors"],
-    requiredPlugins: [],
+    requiredPlugins: ["auth"],
     packageJsonScripts: ["dev:mail"],
   },
   markdown: {
@@ -304,7 +311,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ["@polar-sh/better-auth", "@polar-sh/sdk"],
     devDependencies: [],
     coreRequiredPlugins: ["api", "components", "env", "errors"],
-    requiredPlugins: [],
+    requiredPlugins: ["auth"],
     packageJsonScripts: [],
   },
   pwa: {
@@ -314,7 +321,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ["web-push"],
     devDependencies: [],
     coreRequiredPlugins: ["api", "env", "errors"],
-    requiredPlugins: [],
+    requiredPlugins: ["auth"],
     packageJsonScripts: [],
   },
   seo: {
@@ -334,7 +341,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: [],
     devDependencies: [],
     coreRequiredPlugins: ["errors"],
-    requiredPlugins: [],
+    requiredPlugins: ["auth"],
     packageJsonScripts: [],
   },
   waitlist: {
