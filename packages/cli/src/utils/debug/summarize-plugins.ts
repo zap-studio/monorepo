@@ -109,17 +109,17 @@ export async function summarizePlugins(options: {
   let output = "";
   output += "\nStep 1 - Determine core plugins:\n";
   for (const { plugin, path: _path, type } of step1) {
-    output += `- '${plugin}' (${type}) / ${_path.replace(`${process.cwd()}/`, "")}\n`;
+    output += `- '${plugin}' (${type}): ${_path.replace(`${process.cwd()}/`, "")}\n`;
   }
 
   output += "\nStep 2 - Core plugin imports:\n";
   for (const { plugin, path: _path } of step2) {
-    output += `core - '${plugin}' / ${_path.replace(`${process.cwd()}/`, "")}\n`;
+    output += `- '${plugin}' (core): ${_path.replace(`${process.cwd()}/`, "")}\n`;
   }
 
   output += "\nStep 3 - Optional plugin imports:\n";
   for (const { plugin, path: _path } of step3) {
-    output += `optional - '${plugin}' / ${_path.replace(`${process.cwd()}/`, "")}\n`;
+    output += `- '${plugin}' (optional): ${_path.replace(`${process.cwd()}/`, "")}\n`;
   }
 
   if (options.output) {
