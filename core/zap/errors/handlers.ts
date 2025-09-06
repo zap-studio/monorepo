@@ -1,9 +1,7 @@
 import "server-only";
 
-import { isAuthenticatedService } from "@/zap/auth/services";
 import { DEV } from "@/zap/env/runtime/public";
 
-import { UnauthorizedError } from ".";
 import {
   generateCorrelationId,
   type HandlerFunction,
@@ -12,7 +10,7 @@ import {
   logSuccess,
 } from "./utils";
 
-function createHandler<T extends unknown[], R>(
+export function createHandler<T extends unknown[], R>(
   handler: HandlerFunction<T, R>,
   options: HandlerOptions & { handlerType: string }
 ) {
@@ -42,27 +40,6 @@ export function withApiHandler<T extends unknown[], R>(
     ...options,
     handlerType: "api-route",
   });
-}
-
-export function withAuthenticatedApiHandler<T extends unknown[], R>(
-  handler: HandlerFunction<T, R>,
-  options: HandlerOptions = {}
-) {
-  return createHandler(
-    async (...args: T): Promise<R> => {
-      const isAuthenticated = await isAuthenticatedService();
-
-      if (!isAuthenticated) {
-        throw new UnauthorizedError("User not authenticated");
-      }
-
-      return handler(...args);
-    },
-    {
-      ...options,
-      handlerType: "authenticated-api-route",
-    }
-  );
 }
 
 export function withRpcHandler<T extends unknown[], R>(
