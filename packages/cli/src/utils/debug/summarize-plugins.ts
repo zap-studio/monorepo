@@ -36,11 +36,19 @@ async function analyzeSrcPlugins(srcDir: string) {
     await Promise.all(srcFiles.map((file) => findZapImports(file)))
   ).flat();
 
-  return zapImports.map((entry) => ({
+  const imports = zapImports.map((entry) => ({
     plugin: entry.plugin,
     path: entry.path,
     type: classifyPlugin(entry.plugin),
   }));
+
+  return imports.sort((a, b) => {
+    const typeOrder = { core: 0, optional: 1, unknown: 2 };
+    if (typeOrder[a.type] === typeOrder[b.type]) {
+      return a.plugin.localeCompare(b.plugin);
+    }
+    return typeOrder[a.type] - typeOrder[b.type];
+  });
 }
 
 async function analyzeZapPlugins() {
@@ -62,11 +70,23 @@ async function analyzeZapPlugins() {
 
   const step2 = zapEntries
     .filter((x) => x.type === "core")
-    .map(({ plugin, path: _path }) => ({ plugin, path: _path }));
+    .map(({ plugin, path: _path }) => ({ plugin, path: _path }))
+    .sort((a, b) => {
+      if (a.plugin === b.plugin) {
+        return a.path.localeCompare(b.path);
+      }
+      return a.plugin.localeCompare(b.plugin);
+    });
 
   const step3 = zapEntries
     .filter((x) => x.type === "optional")
-    .map(({ plugin, path: _path }) => ({ plugin, path: _path }));
+    .map(({ plugin, path: _path }) => ({ plugin, path: _path }))
+    .sort((a, b) => {
+      if (a.plugin === b.plugin) {
+        return a.path.localeCompare(b.path);
+      }
+      return a.plugin.localeCompare(b.plugin);
+    });
 
   return { step2, step3 };
 }
@@ -98,7 +118,15 @@ async function findCorePluginOptionalImports(
     }
   }
 
-  return corePluginOptionalImports;
+  return corePluginOptionalImports.sort((a, b) => {
+    if (a.corePlugin === b.corePlugin) {
+      if (a.optionalPlugin === b.optionalPlugin) {
+        return a.path.localeCompare(b.path);
+      }
+      return a.optionalPlugin.localeCompare(b.optionalPlugin);
+    }
+    return a.corePlugin.localeCompare(b.corePlugin);
+  });
 }
 
 function formatSummary(
