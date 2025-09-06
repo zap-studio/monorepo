@@ -7,78 +7,6 @@ import type {
   PluginId,
 } from "@zap-ts/architecture/types";
 
-async function getSrcDir(): Promise<string | null> {
-  const cwd = process.cwd();
-  const configPath = path.join(cwd, "zap.config.ts");
-  const configExists = await fs.pathExists(configPath);
-  if (configExists) {
-    const srcDir = path.join(cwd, "src");
-    const srcExists = await fs.pathExists(srcDir);
-    if (srcExists) {
-      return srcDir;
-    }
-  }
-  return null;
-}
-
-async function getZapDir(): Promise<string | null> {
-  const cwd = process.cwd();
-  const zapDir = path.join(cwd, "zap");
-  const zapExists = await fs.pathExists(zapDir);
-  if (zapExists) {
-    return zapDir;
-  }
-  return null;
-}
-
-async function getAllFiles(
-  dir: string,
-  extList = [".ts", ".tsx", ".js", ".jsx"]
-): Promise<string[]> {
-  const results: string[] = [];
-  const list = await fs.readdir(dir);
-  for (const file of list) {
-    const filePath = path.join(dir, file);
-    const stat = await fs.stat(filePath);
-    if (stat.isDirectory()) {
-      const nested = await getAllFiles(filePath, extList);
-      for (const nestedFile of nested) {
-        results.push(nestedFile);
-      }
-    } else if (extList.some((ext) => filePath.endsWith(ext))) {
-      results.push(filePath);
-    }
-  }
-  return results;
-}
-
-async function findZapImports(
-  file: string
-): Promise<Array<{ plugin: PluginId; path: string }>> {
-  const content = await fs.readFile(file, "utf8");
-  const regex = /(?:import|require)\s*.*?['"]@\/zap\/(\w+)['"]/g;
-  const matches: Array<{ plugin: PluginId; path: string }> = [];
-  let match: RegExpExecArray | null = regex.exec(content);
-  while (match !== null) {
-    matches.push({ plugin: match[1] as PluginId, path: file });
-    match = regex.exec(content);
-  }
-  return matches;
-}
-
-function classifyPlugin(plugin: PluginId): "core" | "optional" | "unknown" {
-  const corePluginIds: CorePluginId[] = Object.values(CorePluginIds);
-  const optionalPluginIds: OptionalPluginId[] =
-    Object.values(OptionalPluginIds);
-  if (corePluginIds.includes(plugin as CorePluginId)) {
-    return "core";
-  }
-  if (optionalPluginIds.includes(plugin as OptionalPluginId)) {
-    return "optional";
-  }
-  return "unknown";
-}
-
 export async function summarizePlugins(options: {
   output?: string;
 }): Promise<void> {
@@ -156,4 +84,76 @@ export async function summarizePlugins(options: {
   } else {
     process.stdout.write(output);
   }
+}
+
+async function getSrcDir(): Promise<string | null> {
+  const cwd = process.cwd();
+  const configPath = path.join(cwd, "zap.config.ts");
+  const configExists = await fs.pathExists(configPath);
+  if (configExists) {
+    const srcDir = path.join(cwd, "src");
+    const srcExists = await fs.pathExists(srcDir);
+    if (srcExists) {
+      return srcDir;
+    }
+  }
+  return null;
+}
+
+async function getZapDir(): Promise<string | null> {
+  const cwd = process.cwd();
+  const zapDir = path.join(cwd, "zap");
+  const zapExists = await fs.pathExists(zapDir);
+  if (zapExists) {
+    return zapDir;
+  }
+  return null;
+}
+
+async function getAllFiles(
+  dir: string,
+  extList = [".ts", ".tsx", ".js", ".jsx"]
+): Promise<string[]> {
+  const results: string[] = [];
+  const list = await fs.readdir(dir);
+  for (const file of list) {
+    const filePath = path.join(dir, file);
+    const stat = await fs.stat(filePath);
+    if (stat.isDirectory()) {
+      const nested = await getAllFiles(filePath, extList);
+      for (const nestedFile of nested) {
+        results.push(nestedFile);
+      }
+    } else if (extList.some((ext) => filePath.endsWith(ext))) {
+      results.push(filePath);
+    }
+  }
+  return results;
+}
+
+async function findZapImports(
+  file: string
+): Promise<Array<{ plugin: PluginId; path: string }>> {
+  const content = await fs.readFile(file, "utf8");
+  const regex = /(?:import|require)\s*.*?['"]@\/zap\/(\w+)['"]/g;
+  const matches: Array<{ plugin: PluginId; path: string }> = [];
+  let match: RegExpExecArray | null = regex.exec(content);
+  while (match !== null) {
+    matches.push({ plugin: match[1] as PluginId, path: file });
+    match = regex.exec(content);
+  }
+  return matches;
+}
+
+function classifyPlugin(plugin: PluginId): "core" | "optional" | "unknown" {
+  const corePluginIds: CorePluginId[] = Object.values(CorePluginIds);
+  const optionalPluginIds: OptionalPluginId[] =
+    Object.values(OptionalPluginIds);
+  if (corePluginIds.includes(plugin as CorePluginId)) {
+    return "core";
+  }
+  if (optionalPluginIds.includes(plugin as OptionalPluginId)) {
+    return "optional";
+  }
+  return "unknown";
 }
