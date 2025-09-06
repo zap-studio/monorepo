@@ -108,6 +108,16 @@ export function useAuth(callbackURL?: string) {
         registerCallbackURL || ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_UP
       );
     } catch (error) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        (error as { code?: string }).code === "PASSWORD_COMPROMISED"
+      ) {
+        toast.error(ZAP_AUTH_CONFIG.PASSWORD_COMPROMISED_MESSAGE);
+        return;
+      }
+
       handleClientError(error);
     }
   };

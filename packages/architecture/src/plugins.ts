@@ -146,7 +146,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ["@ai-sdk/openai", "@ai-sdk/mistral", "@ai-sdk/react", "ai"],
     devDependencies: [],
     coreRequiredPlugins: ["api", "components", "crypto", "errors"],
-    requiredPlugins: [],
+    requiredPlugins: ["auth"],
     packageJsonScripts: [],
   },
   analytics: {

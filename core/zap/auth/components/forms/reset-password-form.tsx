@@ -83,6 +83,16 @@ export function ResetPasswordForm() {
       form.reset();
       router.push("/login");
     } catch (error) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        (error as { code?: string }).code === "PASSWORD_COMPROMISED"
+      ) {
+        toast.error(ZAP_AUTH_CONFIG.PASSWORD_COMPROMISED_MESSAGE);
+        return;
+      }
+
       handleClientError(error);
     } finally {
       setSubmitting(false);
