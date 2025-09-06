@@ -3,6 +3,7 @@ import { Command } from "commander";
 import { createProcedure } from "./commands/create-procedure.js";
 import { generateEnv } from "./commands/generate-env.js";
 import { getPackageVersion } from "./utils/cli/cli.js";
+import { summarizePlugins } from "./utils/debug/summarize-plugins.js";
 
 async function main() {
   try {
@@ -13,6 +14,20 @@ async function main() {
       .name("zap")
       .description("The CLI for managing Zap.ts projects.")
       .version(version || "1.0.0");
+
+    program
+      .command("debug")
+      .description("Debug utilities for Zap.ts projects")
+      .command("plugins")
+      .description("Get a summary of plugins architecture in core/")
+      .action(async () => {
+        try {
+          await summarizePlugins();
+        } catch (error) {
+          process.stderr.write(`Failed to summarize plugins: ${error}\n`);
+          process.exit(1);
+        }
+      });
 
     const createCmd = program
       .command("create")
