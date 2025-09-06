@@ -153,7 +153,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ["@ai-sdk/openai", "@ai-sdk/mistral", "@ai-sdk/react", "ai"],
     devDependencies: [],
     coreRequiredPlugins: ["api", "components", "crypto", "errors"],
-    requiredPlugins: ["auth"],
+    requiredPlugins: ["auth", "db"],
     packageJsonScripts: [],
   },
   analytics: {
@@ -178,7 +178,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ["better-auth"],
     devDependencies: [],
     coreRequiredPlugins: ["api", "components", "env", "errors"],
-    requiredPlugins: [],
+    requiredPlugins: ["db"],
     packageJsonScripts: [],
   },
   blog: {
@@ -235,7 +235,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: [],
     devDependencies: [],
     coreRequiredPlugins: ["api", "components", "errors"],
-    requiredPlugins: ["auth"],
+    requiredPlugins: ["auth", "db"],
     packageJsonScripts: [],
   },
   flags: {
@@ -275,7 +275,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ["@react-email/components", "react-email", "resend"],
     devDependencies: ["@react-email/preview-server"],
     coreRequiredPlugins: ["api", "env", "errors"],
-    requiredPlugins: ["auth"],
+    requiredPlugins: ["auth", "db"],
     packageJsonScripts: ["dev:mail"],
   },
   markdown: {
@@ -321,7 +321,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: ["web-push"],
     devDependencies: [],
     coreRequiredPlugins: ["api", "env", "errors"],
-    requiredPlugins: ["auth"],
+    requiredPlugins: ["auth", "db"],
     packageJsonScripts: [],
   },
   seo: {
@@ -351,7 +351,7 @@ export const optionalPlugins: Record<OptionalPluginId, Plugin> = {
     dependencies: [],
     devDependencies: [],
     coreRequiredPlugins: ["api", "components", "errors"],
-    requiredPlugins: [],
+    requiredPlugins: ["db"],
     packageJsonScripts: [],
   },
 };
