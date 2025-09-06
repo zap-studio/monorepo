@@ -55,7 +55,7 @@ export const corePlugins: Record<CorePluginId, Plugin> = {
       "zod",
     ],
     devDependencies: [],
-    requiredPlugins: [],
+    requiredPlugins: ["errors"],
     packageJsonScripts: [],
   },
   components: {
