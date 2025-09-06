@@ -19,7 +19,7 @@ import type { CorePluginId, OptionalPluginId, Plugin, PluginId } from "./types";
  * some optional plugins need to be registred in the 'schema/index.ts' of 'db' plugin to make schemas available
  */
 
-/* TODO: Some optional plugins depend on 'auth' or other plugins but could work without it if some features are disabled. */
+/* TODO: Some optional plugins depend on 'auth' or other plugins but could work without it if some features are disabled (this is less a priority than the above FIXME). */
 /**
  * Make 'ai' and 'pwa' works without 'auth'.
  * For instance some 'ai' features can be public, we should keep that if auth is not installed and remove the rest.
