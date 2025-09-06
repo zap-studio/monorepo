@@ -1,7 +1,6 @@
 import "server-only";
 
 import { SERVER_ENV } from "@/zap/env/server";
-import { BadRequestError } from "@/zap/errors";
 
 export const algorithm = "AES-CBC";
 export const encryptionKeyHex = SERVER_ENV.ENCRYPTION_KEY;
@@ -9,7 +8,7 @@ export const ivLength = 16; // bytes
 
 export function hexToBuffer(hex: string): ArrayBuffer {
   if (!hex || hex.length % 2 !== 0) {
-    throw new BadRequestError(
+    throw new TypeError(
       "Invalid hex string: must be non-empty and have an even length."
     );
   }

@@ -97,7 +97,7 @@ export const corePlugins: Record<CorePluginId, Plugin> = {
     description: "Cryptographic helpers and utilities.",
     dependencies: [],
     devDependencies: [],
-    requiredPlugins: ["env", "errors"],
+    requiredPlugins: ["env"],
     packageJsonScripts: [],
   },
   env: {
