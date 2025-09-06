@@ -29,7 +29,7 @@ function createHandler<T extends unknown[], R>(
 
       return result;
     } catch (error) {
-      return await handleError(error, correlationId, startTime, options);
+      return handleError(error, correlationId, startTime, options);
     }
   };
 }

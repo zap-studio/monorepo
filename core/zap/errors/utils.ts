@@ -134,12 +134,12 @@ export function transformError(error: unknown): BaseError {
   return new InternalServerError("Operation failed", error);
 }
 
-export async function handleError<R>(
+export function handleError<R>(
   error: unknown,
   correlationId: string,
   startTime: number,
   options: HandlerOptions & { handlerType: string }
-): Promise<R> {
+): R {
   const duration = Date.now() - startTime;
 
   logError(error);
@@ -156,7 +156,7 @@ export async function handleError<R>(
   // For RPC procedures, convert BaseError to ORPC error
   if (options.handlerType === "rpc-procedure") {
     const baseError = transformError(error);
-    throw await baseError.toORPCError();
+    throw baseError.toORPCError();
   }
 
   // For server actions, transform to BaseError
