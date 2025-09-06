@@ -61,6 +61,32 @@ export async function summarizePlugins(options: {
     process.exit(1);
   }
 
+  // Step 4: Warn if any core plugin imports an optional plugin
+  const corePluginFiles = step2.map(({ path: _path }) => _path);
+  const corePluginOptionalImports: Array<{
+    corePlugin: PluginId;
+    optionalPlugin: PluginId;
+    path: string;
+  }> = [];
+  for (const coreFile of corePluginFiles) {
+    const imports = await findZapImports(coreFile);
+    for (const { plugin: importedPlugin } of imports) {
+      if (classifyPlugin(importedPlugin) === "optional") {
+        const corePlugin = step2.find(
+          ({ path: _path }) => _path === coreFile
+        )?.plugin;
+
+        if (corePlugin) {
+          corePluginOptionalImports.push({
+            corePlugin,
+            optionalPlugin: importedPlugin,
+            path: coreFile.replace(`${process.cwd()}/`, ""),
+          });
+        }
+      }
+    }
+  }
+
   // Output
   let output = "";
   output += "\nStep 1 - Determine core plugins:\n";
@@ -76,6 +102,19 @@ export async function summarizePlugins(options: {
   output += "\nStep 3 - Optional plugin imports:\n";
   for (const { plugin, path: _path } of step3) {
     output += `- '${plugin}' (optional): ${_path.replace(`${process.cwd()}/`, "")}\n`;
+  }
+
+  output += "\nStep 4 - Warnings: Optional plugins imported by core plugins:\n";
+  if (corePluginOptionalImports.length === 0) {
+    output += "- None found.\n";
+  } else {
+    for (const {
+      corePlugin,
+      optionalPlugin,
+      path: _path,
+    } of corePluginOptionalImports) {
+      output += `- Core plugin '${corePlugin}' imports optional plugin '${optionalPlugin}' in ${_path}\n`;
+    }
   }
 
   if (options.output) {
