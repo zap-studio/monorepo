@@ -17,10 +17,13 @@ function getAllRequiredPlugins(selected: PluginId[]): Set<PluginId> {
     visited.add(pluginId);
 
     const plugin = plugins[pluginId];
-    if (plugin?.requiredPlugins) {
-      for (const req of plugin.requiredPlugins) {
-        visit(req);
-      }
+    const required = [
+      ...(plugin?.coreRequiredPlugins ?? []),
+      ...(plugin?.requiredPlugins ?? []),
+    ];
+
+    for (const req of required) {
+      visit(req);
     }
   }
 

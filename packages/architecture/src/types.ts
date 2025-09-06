@@ -27,6 +27,7 @@ export type Plugin = {
   description: string;
   dependencies: string[];
   devDependencies: string[];
+  coreRequiredPlugins: PluginId[];
   requiredPlugins: PluginId[];
   packageJsonScripts: string[];
 };
