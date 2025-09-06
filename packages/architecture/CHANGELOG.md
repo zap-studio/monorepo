@@ -1,5 +1,11 @@
 # @zap-ts/architecture
 
+## 1.0.9
+
+### Patch Changes
+
+- 1b1e57f: Finishing architecture by adding relations between plugins
+
 ## 1.0.8
 
 ### Patch Changes
