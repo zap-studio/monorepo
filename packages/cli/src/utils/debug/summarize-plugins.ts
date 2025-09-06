@@ -21,7 +21,22 @@ export async function summarizePlugins(options: {
     await analyzeZapPlugins();
   const step4 = await findCorePluginOptionalImports(step2);
 
-  const output = formatSummary(step1, step2, step3, step4);
+  const zapDir = await getZapDir();
+  const zapFiles = zapDir ? await getAllFiles(zapDir) : [];
+  const allPluginEntries = dedupePluginEntries(
+    (await Promise.all(zapFiles.map(findZapImports))).flat().map(addTypeToEntry)
+  );
+
+  const importMap = await buildPluginImportMap(allPluginEntries);
+
+  const corePluginSummary = summarizeCorePluginDependencies(step2, importMap);
+  const optionalPluginSummary = summarizeOptionalPluginDependencies(
+    step3,
+    importMap
+  );
+
+  const steps = { step1, step2, step3, step4 };
+  const output = formatSummary(steps, corePluginSummary, optionalPluginSummary);
 
   if (options.output) {
     await fs.writeFile(options.output, output, "utf8");
@@ -116,11 +131,20 @@ async function findCorePluginOptionalImports(
 }
 
 function formatSummary(
-  step1: Array<{ plugin: PluginId; path: string; type: string }>,
-  step2: Array<{ plugin: PluginId; path: string }>,
-  step3: Array<{ plugin: PluginId; path: string }>,
-  step4: Array<{ corePlugin: PluginId; optionalPlugin: PluginId; path: string }>
+  steps: {
+    step1: Array<{ plugin: PluginId; path: string; type: string }>;
+    step2: Array<{ plugin: PluginId; path: string }>;
+    step3: Array<{ plugin: PluginId; path: string }>;
+    step4: Array<{
+      corePlugin: PluginId;
+      optionalPlugin: PluginId;
+      path: string;
+    }>;
+  },
+  corePluginSummary: Record<PluginId, PluginId[]>,
+  optionalPluginSummary: Record<PluginId, PluginId[]>
 ): string {
+  const { step1, step2, step3, step4 } = steps;
   const cwd = process.cwd();
 
   const lines: string[] = [];
@@ -135,9 +159,25 @@ function formatSummary(
     lines.push(`- '${plugin}' (core): ${_path.replace(`${cwd}/`, "")}`);
   }
 
+  lines.push("\nStep 2 - Core plugin dependency summary:");
+  for (const [core, deps] of Object.entries(corePluginSummary)) {
+    if (Object.hasOwn(corePluginSummary, core)) {
+      lines.push(`- '${core}' is depended on by: [${deps.join(", ")}]`);
+    }
+  }
+
   lines.push("\nStep 3 - Optional plugin imports:");
   for (const { plugin, path: _path } of step3) {
     lines.push(`- '${plugin}' (optional): ${_path.replace(`${cwd}/`, "")}`);
+  }
+
+  lines.push("\nStep 3 - Optional plugin dependency summary:");
+  for (const opt in optionalPluginSummary) {
+    if (Object.hasOwn(optionalPluginSummary, opt)) {
+      lines.push(
+        `- '${opt}' is depended on by: [${optionalPluginSummary[opt as PluginId].join(", ")}]`
+      );
+    }
   }
 
   lines.push("\nStep 4 - Warnings: Optional plugins imported by core plugins:");
@@ -244,4 +284,50 @@ function sortByPluginAndPath(arr: Array<{ plugin: PluginId; path: string }>) {
       ? a.path.localeCompare(b.path)
       : a.plugin.localeCompare(b.plugin)
   );
+}
+
+type PluginImportMap = Record<PluginId, Set<PluginId>>;
+
+async function buildPluginImportMap(
+  pluginEntries: Array<{ plugin: PluginId; path: string }>
+): Promise<PluginImportMap> {
+  const map: PluginImportMap = {};
+
+  for (const { plugin, path: _path } of pluginEntries) {
+    map[plugin] ??= new Set();
+    const imports = await findZapImports(_path);
+    for (const { plugin: importedPlugin } of imports) {
+      if (importedPlugin !== plugin) {
+        map[plugin].add(importedPlugin);
+      }
+    }
+  }
+
+  return map;
+}
+
+function summarizeCorePluginDependencies(
+  corePlugins: Array<{ plugin: PluginId; path: string }>,
+  importMap: PluginImportMap
+): Record<PluginId, PluginId[]> {
+  const summary: Record<PluginId, PluginId[]> = {};
+  for (const { plugin } of corePlugins) {
+    summary[plugin] = Array.from(importMap[plugin] ?? []).filter(
+      (p) => classifyPlugin(p) === "optional"
+    );
+  }
+  return summary;
+}
+
+function summarizeOptionalPluginDependencies(
+  optionalPlugins: Array<{ plugin: PluginId; path: string }>,
+  importMap: PluginImportMap
+): Record<PluginId, PluginId[]> {
+  const summary: Record<PluginId, PluginId[]> = {};
+  for (const { plugin } of optionalPlugins) {
+    summary[plugin] = Array.from(importMap[plugin] ?? []).filter(
+      (p) => classifyPlugin(p) === "optional" && p !== plugin
+    );
+  }
+  return summary;
 }
