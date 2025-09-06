@@ -48,9 +48,10 @@ async function findZapImports(
   const content = await fs.readFile(file, "utf8");
   const regex = /(?:import|require)\s*.*?['"]@\/zap\/(\w+)['"]/g;
   const matches: Array<{ plugin: PluginId; path: string }> = [];
-  let match: RegExpExecArray | null;
-  while ((match = regex.exec(content)) !== null) {
+  let match: RegExpExecArray | null = regex.exec(content);
+  while (match !== null) {
     matches.push({ plugin: match[1] as PluginId, path: file });
+    match = regex.exec(content);
   }
   return matches;
 }
