@@ -10,9 +10,11 @@ export interface ZapServerPlugin<
   TMiddleware extends Array<(...args: unknown[]) => unknown> = Array<
     (...args: unknown[]) => unknown
   >,
+  TProviders = Record<string, ComponentType<unknown>>,
   TComponents = Record<string, ComponentType<unknown>>,
 > extends BaseZapPlugin<TConfig> {
   middleware?: TMiddleware;
+  providers?: TProviders;
   components?: TComponents;
 }
 

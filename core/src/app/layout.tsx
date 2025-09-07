@@ -1,14 +1,11 @@
 import "./globals.css";
 
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
 import type { Metadata } from "next";
-
+import type { JSX } from "react";
 import { geist } from "@/app/fonts";
 import { Toaster } from "@/components/ui/sonner";
 import { getServerPlugin } from "@/lib/zap.server";
 import { Providers } from "@/providers/providers";
-import { VERCEL } from "@/zap/env/runtime/public";
 import type { ZapServerPlugin } from "@/zap/plugins/types";
 import type { AnalyticsServerPluginConfig } from "@/zap/plugins/types/analytics.plugin";
 import { ZAP_DEFAULT_METADATA } from "@/zap.config";
@@ -20,13 +17,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const analytics: ZapServerPlugin<AnalyticsServerPluginConfig> =
-    getServerPlugin("analytics");
-
-  const enableVercelAnalytics =
-    VERCEL && !!analytics?.config?.ENABLE_VERCEL_ANALYTICS;
-  const enableVercelSpeedInsights =
-    VERCEL && !!analytics?.config?.ENABLE_VERCEL_SPEED_INSIGHTS;
+  const analytics: ZapServerPlugin<
+    AnalyticsServerPluginConfig,
+    ((...args: unknown[]) => unknown)[],
+    { VercelProvider: () => JSX.Element }
+  > = getServerPlugin("analytics");
+  const VercelProvider = analytics?.providers?.VercelProvider;
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -35,8 +31,7 @@ export default function RootLayout({
           {children}
 
           <Toaster position="top-center" />
-          {enableVercelAnalytics && <Analytics />}
-          {enableVercelSpeedInsights && <SpeedInsights />}
+          {VercelProvider && <VercelProvider />}
         </Providers>
       </body>
     </html>
