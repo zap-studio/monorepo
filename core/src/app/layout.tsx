@@ -20,12 +20,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const analytics: ZapServerPlugin<
-    unknown,
-    ((...args: unknown[]) => unknown)[],
-    unknown,
-    AnalyticsPluginConfig
-  > = getServerPlugin("analytics");
+  const analytics: ZapServerPlugin<AnalyticsPluginConfig> =
+    getServerPlugin("analytics");
 
   const enableVercelAnalytics =
     VERCEL && !!analytics?.config?.ENABLE_VERCEL_ANALYTICS;

@@ -6,25 +6,23 @@ export type BaseZapPlugin<TConfig = Record<string, unknown>> = {
 };
 
 export interface ZapServerPlugin<
-  TComponents = Record<string, ComponentType<unknown>>,
+  TConfig = Record<string, unknown>,
   TMiddleware extends Array<(...args: unknown[]) => unknown> = Array<
     (...args: unknown[]) => unknown
   >,
-  THandlers = Record<string, (...args: unknown[]) => unknown>,
-  TConfig = Record<string, unknown>,
+  TComponents = Record<string, ComponentType<unknown>>,
 > extends BaseZapPlugin<TConfig> {
-  components?: TComponents;
   middleware?: TMiddleware;
-  handlers?: THandlers;
+  components?: TComponents;
 }
 
 export interface ZapClientPlugin<
-  TComponents = Record<string, ComponentType<unknown>>,
-  THooks = Record<string, (...args: unknown[]) => unknown>,
   TConfig = Record<string, unknown>,
+  THooks = Record<string, (...args: unknown[]) => unknown>,
+  TComponents = Record<string, ComponentType<unknown>>,
 > extends BaseZapPlugin<TConfig> {
-  components?: TComponents;
   hooks?: THooks;
+  components?: TComponents;
 }
 
 export type ZapServerPlugins = Record<string, ZapServerPlugin>;
