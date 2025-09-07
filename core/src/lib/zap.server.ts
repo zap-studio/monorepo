@@ -1,8 +1,14 @@
-import { analyticsPlugin } from "@/zap/analytics/zap.server";
+import { analyticsPlugin } from "@/zap/analytics/plugin.server";
+import { VERCEL } from "@/zap/env/runtime/public";
 import { toClient } from "@/zap/plugins/utils";
 
 // Add/remove plugins here
-export const zapServerClient = toClient([analyticsPlugin()]);
+export const zapServerClient = toClient([
+  analyticsPlugin({
+    ENABLE_VERCEL_ANALYTICS: VERCEL,
+    ENABLE_VERCEL_SPEED_INSIGHTS: VERCEL,
+  }),
+]);
 
 export type ZapServerClient = typeof zapServerClient;
 

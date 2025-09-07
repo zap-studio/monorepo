@@ -4,19 +4,19 @@ import "client-only";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 import { useEffect } from "react";
-
+import { getClientPlugin } from "@/lib/zap.client";
 import { PUBLIC_ENV } from "@/zap/env/public";
-
 import { SuspendedPostHogPageView } from "../components/posthog-page-view";
-import { ZAP_ANALYTICS_CONFIG } from "../zap.plugin.config";
 
 type AnalyticsProviderProps = {
   children: React.ReactNode;
 };
 
 export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
+  const analytics = getClientPlugin("analytics");
+
   useEffect(() => {
-    if (!ZAP_ANALYTICS_CONFIG.ENABLE_POSTHOG) {
+    if (!analytics.config?.ENABLE_POSTHOG) {
       return;
     }
 
@@ -25,17 +25,17 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
       capture_pageview: false, // Disable automatic pageview tracking
       capture_pageleave: true, // Enable automatic pageleave tracking
     });
-  }, []);
+  }, [analytics.config?.ENABLE_POSTHOG]);
 
   return (
     <>
-      {ZAP_ANALYTICS_CONFIG.ENABLE_POSTHOG && (
+      {!!analytics.config?.ENABLE_POSTHOG && (
         <PostHogProvider client={posthog}>
           <SuspendedPostHogPageView />
           {children}
         </PostHogProvider>
       )}
-      {!ZAP_ANALYTICS_CONFIG.ENABLE_POSTHOG && children}
+      {!analytics.config?.ENABLE_POSTHOG && children}
     </>
   );
 }
