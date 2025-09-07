@@ -223,7 +223,9 @@ export async function removeUnusedPluginFiles(
       spinner.info("Removing unused plugin files:");
 
       const seen = new Set<string>();
-      for (const file of pluginFiles) {
+      for (const file of [...pluginFiles].sort((a, b) =>
+        a.path.localeCompare(b.path)
+      )) {
         if (!seen.has(file.path)) {
           seen.add(file.path);
           const msg = `- ${file.path}`;
