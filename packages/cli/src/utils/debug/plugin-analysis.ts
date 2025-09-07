@@ -73,14 +73,17 @@ export async function findCorePluginOptionalImports(): Promise<
     if (!(await fs.pathExists(pluginPath))) {
       continue;
     }
-    const imports = await findZapImports(pluginPath);
-    for (const { plugin: importedPlugin } of imports) {
-      if (classifyPlugin(importedPlugin) === "optional") {
-        results.push({
-          corePlugin: corePluginId,
-          optionalPlugin: importedPlugin,
-          path: pluginPath.replace(`${process.cwd()}/`, ""),
-        });
+    const pluginFiles = await getAllFiles(pluginPath);
+    for (const file of pluginFiles) {
+      const imports = await findZapImports(file);
+      for (const { plugin: importedPlugin } of imports) {
+        if (classifyPlugin(importedPlugin) === "optional") {
+          results.push({
+            corePlugin: corePluginId,
+            optionalPlugin: importedPlugin,
+            path: file.replace(`${process.cwd()}/`, ""),
+          });
+        }
       }
     }
   }
