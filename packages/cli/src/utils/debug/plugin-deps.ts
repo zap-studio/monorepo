@@ -1,6 +1,5 @@
 import { plugins } from "@zap-ts/architecture/plugins";
 import type { PluginId } from "@zap-ts/architecture/types";
-import { findZapImports } from "./plugin-utils";
 
 export type PluginImportMap = Record<PluginId, Set<PluginId>>;
 
@@ -21,12 +20,15 @@ function initializeResultMap(): Record<PluginId, PluginId[]> {
   );
 }
 
-export async function summarizePluginDependencies(
+const BACKSLASH_REGEX = /\\/g;
+const LEADING_SLASH_REGEX = /^\/+/;
+
+export function summarizePluginDependencies(
   step: {
     plugin: PluginId;
     path: string;
   }[]
-): Promise<Record<PluginId, PluginId[]>> {
+): Record<PluginId, PluginId[]> {
   const summary = initializeImportMap();
   const pluginIds = new Set<PluginId>(step.map((p) => p.plugin));
 
@@ -36,12 +38,20 @@ export async function summarizePluginDependencies(
       .map((p) => p.path);
 
     for (const path of pluginPaths) {
-      const matches = await findZapImports(path);
+      const normalizedPath = path
+        .replace(BACKSLASH_REGEX, "/")
+        .replace(LEADING_SLASH_REGEX, "");
+      const segments = normalizedPath.split("/");
+      const zapIndex = segments.indexOf("zap");
+      const importedPluginId =
+        zapIndex !== -1 ? segments.at(zapIndex + 1) : undefined;
 
-      for (const match of matches) {
-        if (match.plugin !== pluginId && match.plugin in summary) {
-          summary[pluginId].add(match.plugin);
-        }
+      if (
+        importedPluginId &&
+        importedPluginId !== pluginId &&
+        importedPluginId in summary
+      ) {
+        summary[pluginId].add(importedPluginId as PluginId);
       }
     }
   }

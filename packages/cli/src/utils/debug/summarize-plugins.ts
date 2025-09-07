@@ -22,10 +22,8 @@ export async function summarizePlugins(options: {
     await analyzeZapPlugins();
   const step4 = await findCorePluginOptionalImports();
 
-  const [corePluginSummary, optionalPluginSummary] = await Promise.all([
-    summarizePluginDependencies(step2),
-    summarizePluginDependencies(step3),
-  ]);
+  const corePluginSummary = summarizePluginDependencies(step2);
+  const optionalPluginSummary = summarizePluginDependencies(step3);
 
   const steps = { step1, step2, step3, step4 };
   const output = formatSummary(steps, corePluginSummary, optionalPluginSummary);
