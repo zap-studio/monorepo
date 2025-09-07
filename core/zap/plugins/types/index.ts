@@ -1,19 +1,30 @@
 import type { ComponentType } from "react";
 
-export type BaseZapPlugin = {
+export type BaseZapPlugin<TConfig = Record<string, unknown>> = {
   id: string;
-  config?: Record<string, unknown>;
+  config?: TConfig;
 };
 
-export interface ZapServerPlugin extends BaseZapPlugin {
-  components?: Record<string, ComponentType<unknown>>;
-  middleware?: Array<(...args: unknown[]) => unknown>;
-  handlers?: Record<string, (...args: unknown[]) => unknown>;
+export interface ZapServerPlugin<
+  TComponents = Record<string, ComponentType<unknown>>,
+  TMiddleware extends Array<(...args: unknown[]) => unknown> = Array<
+    (...args: unknown[]) => unknown
+  >,
+  THandlers = Record<string, (...args: unknown[]) => unknown>,
+  TConfig = Record<string, unknown>,
+> extends BaseZapPlugin<TConfig> {
+  components?: TComponents;
+  middleware?: TMiddleware;
+  handlers?: THandlers;
 }
 
-export interface ZapClientPlugin extends BaseZapPlugin {
-  components?: Record<string, ComponentType<unknown>>;
-  hooks?: Record<string, (...args: unknown[]) => unknown>;
+export interface ZapClientPlugin<
+  TComponents = Record<string, ComponentType<unknown>>,
+  THooks = Record<string, (...args: unknown[]) => unknown>,
+  TConfig = Record<string, unknown>,
+> extends BaseZapPlugin<TConfig> {
+  components?: TComponents;
+  hooks?: THooks;
 }
 
 export type ZapServerPlugins = Record<string, ZapServerPlugin>;
