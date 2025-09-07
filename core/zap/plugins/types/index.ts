@@ -2,7 +2,7 @@ import type { ComponentType } from "react";
 
 export type BaseZapPlugin<TConfig = Record<string, unknown>> = {
   id: string;
-  config?: TConfig;
+  config?: Partial<TConfig>;
 };
 
 export interface ZapServerPlugin<

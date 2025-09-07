@@ -10,7 +10,7 @@ import { getServerPlugin } from "@/lib/zap.server";
 import { Providers } from "@/providers/providers";
 import { VERCEL } from "@/zap/env/runtime/public";
 import type { ZapServerPlugin } from "@/zap/plugins/types";
-import type { AnalyticsPluginConfig } from "@/zap/plugins/types/analytics.plugin";
+import type { AnalyticsServerPluginConfig } from "@/zap/plugins/types/analytics.plugin";
 import { ZAP_DEFAULT_METADATA } from "@/zap.config";
 
 export const metadata: Metadata = ZAP_DEFAULT_METADATA;
@@ -20,7 +20,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const analytics: ZapServerPlugin<AnalyticsPluginConfig> =
+  const analytics: ZapServerPlugin<AnalyticsServerPluginConfig> =
     getServerPlugin("analytics");
 
   const enableVercelAnalytics =
