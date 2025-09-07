@@ -8,9 +8,10 @@ import {
   createLoginRedirect,
   getSessionInEdgeRuntime,
 } from "@/zap/auth/authorization";
-import { checkBlogPathAccess } from "@/zap/blog/authorization";
+
 import { logMiddlewareError } from "@/zap/errors/logger/edge";
 import { checkWaitlistRedirect } from "@/zap/waitlist/authorization";
+import { getServerPlugin } from "./lib/zap.server";
 
 export async function middleware(request: NextRequest) {
   try {
@@ -25,8 +26,9 @@ export async function middleware(request: NextRequest) {
     }
 
     // Check if path is a blog path (optional plugin)
-    if (isPluginEnabled("blog")) {
-      const blogPathAccess = checkBlogPathAccess(request);
+    const blog = getServerPlugin("blog");
+    if (blog?.middleware?.checkBlogPathAccess) {
+      const blogPathAccess = blog.middleware.checkBlogPathAccess(request);
       if (blogPathAccess) {
         return blogPathAccess;
       }
@@ -75,6 +77,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
+  runtime: "nodejs", // Node.js is necessary for some plugins' middleware in the way they are currently implemented and loaded
   matcher: [
     {
       /*
