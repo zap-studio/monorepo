@@ -1,8 +1,6 @@
 import type { BaseZapPlugin } from "../types";
 
-export function toClient<T extends BaseZapPlugin>(
-  plugins: T[]
-): Record<string, T> {
+export function zap<T extends BaseZapPlugin>(plugins: T[]): Record<string, T> {
   return Object.fromEntries(plugins.map((plugin) => [plugin.id, plugin]));
 }
 

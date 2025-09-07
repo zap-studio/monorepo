@@ -1,10 +1,10 @@
 import "client-only";
 
 import { analyticsClientPlugin } from "@/zap/analytics/plugin.client";
-import { toClient } from "@/zap/plugins/utils";
+import { zap } from "@/zap/plugins/utils";
 
 // Add/remove plugins here
-export const zapClient = toClient([
+export const zapClient = zap([
   analyticsClientPlugin({
     ENABLE_POSTHOG: false,
   }),
