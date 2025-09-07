@@ -1,3 +1,5 @@
+import "client-only";
+
 import { analyticsClientPlugin } from "@/zap/analytics/plugin.client";
 import { toClient } from "@/zap/plugins/utils";
 

@@ -1,3 +1,5 @@
+import "server-only";
+
 import { analyticsPlugin } from "@/zap/analytics/plugin.server";
 import { VERCEL } from "@/zap/env/runtime/public";
 import { toClient } from "@/zap/plugins/utils";

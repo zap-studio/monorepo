@@ -10,7 +10,7 @@ import { SuspendedPostHogPageView } from "../components/posthog-page-view";
 
 type AnalyticsProviderProps = {
   children: React.ReactNode;
-  config: AnalyticsClientPluginConfig;
+  config?: Partial<AnalyticsClientPluginConfig>;
 };
 
 export function AnalyticsProvider({

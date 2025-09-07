@@ -16,6 +16,7 @@ import type { ComponentType } from "react";
 
 export type BaseZapPlugin<
   TConfig = Record<string, unknown>,
+  TIntegrations = Record<string, unknown>,
   TProviders extends Record<string, ComponentType<any>> = Record<
     string,
     ComponentType<any>
@@ -23,11 +24,13 @@ export type BaseZapPlugin<
 > = {
   id: string;
   config?: Partial<TConfig>;
+  integrations?: TIntegrations;
   providers?: TProviders;
 };
 
 export interface ZapServerPlugin<
   TConfig = Record<string, unknown>,
+  TIntegrations = Record<string, unknown>,
   TProviders extends Record<string, ComponentType<any>> = Record<
     string,
     ComponentType<any>
@@ -36,20 +39,21 @@ export interface ZapServerPlugin<
     (...args: unknown[]) => unknown
   >,
   TComponents = Record<string, ComponentType<any>>,
-> extends BaseZapPlugin<TConfig, TProviders> {
+> extends BaseZapPlugin<TConfig, TIntegrations, TProviders> {
   middleware?: TMiddleware;
   components?: TComponents;
 }
 
 export interface ZapClientPlugin<
   TConfig = Record<string, unknown>,
+  TIntegrations = Record<string, unknown>,
   TProviders extends Record<string, ComponentType<any>> = Record<
     string,
     ComponentType<any>
   >,
   THooks = Record<string, (...args: unknown[]) => unknown>,
   TComponents = Record<string, ComponentType<any>>,
-> extends BaseZapPlugin<TConfig, TProviders> {
+> extends BaseZapPlugin<TConfig, TIntegrations, TProviders> {
   hooks?: THooks;
   components?: TComponents;
 }

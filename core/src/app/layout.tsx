@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   const analytics: ZapServerPlugin<
     AnalyticsServerPluginConfig,
-    ((...args: unknown[]) => unknown)[],
+    Record<string, unknown>,
     { VercelProvider: () => JSX.Element }
   > = getServerPlugin("analytics");
   const VercelProvider = analytics?.providers?.VercelProvider;
