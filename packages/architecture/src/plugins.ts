@@ -15,6 +15,7 @@ import type { CorePluginId, OptionalPluginId, Plugin, PluginId } from "./types";
  * 'payments' in 'better-auth/server.ts' in 'auth' should be optional
  * 'payments' in 'pricing-section.tsx' in 'landing' should be optional
  * 'payments' in 'sidebar-user.tsx' and 'sidebar.tsx' in 'sidebar' should be optional
+ * 'withBundleAnalyzer' in 'next.config.ts' in root should be optional
  * some optional plugins need to be registered in the 'router.ts' of 'api' plugin to make procedures available
  * some optional plugins need to be registred in the 'schema/index.ts' of 'db' plugin to make schemas available
  */
