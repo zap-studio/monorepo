@@ -8,6 +8,6 @@ export type ZapClient = typeof zapClient;
 
 export function getClientPlugin<TPlugin extends keyof ZapClient>(
   pluginId: TPlugin
-): ZapClient[TPlugin] | undefined {
-  return zapClient[pluginId] ?? undefined;
+): ZapClient[TPlugin] {
+  return zapClient[pluginId];
 }
