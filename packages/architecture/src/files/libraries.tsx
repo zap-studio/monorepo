@@ -34,5 +34,17 @@ export const LibrariesFiles: FileList = {
         </>
       ),
     },
+    {
+      path: "src/lib/zap.client.ts",
+      status: "added",
+      required: true,
+      children: <>Client-side utilities for handling client-side plugins.</>,
+    },
+    {
+      path: "src/lib/zap.server.ts",
+      status: "added",
+      required: true,
+      children: <>Server-side utilities for handling server-side plugins.</>,
+    },
   ],
 };
