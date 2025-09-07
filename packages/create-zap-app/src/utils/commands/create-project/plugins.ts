@@ -138,9 +138,18 @@ export async function removeDependenciesFromPackageJson(
   }
 
   if (verbose) {
-    spinner.info(
-      `Removing dependencies: ${allDeps.map(([dep]) => dep).join(", ")}`
-    );
+    const sortedDeps = [...params.depsToRemove].sort();
+    const sortedDevDeps = [...params.devDepsToRemove].sort();
+
+    spinner.info("Removing dependencies:");
+    for (const dep of sortedDeps) {
+      const msg = `- ${dep}`;
+      process.stdout.write(`${msg}\n`);
+    }
+    for (const devDep of sortedDevDeps) {
+      const msg = `- ${devDep} (devDependency)`;
+      process.stdout.write(`${msg}\n`);
+    }
   }
 
   try {
@@ -211,9 +220,16 @@ export async function removeUnusedPluginFiles(
     const pluginFiles = getFilesForPlugins(params.unusedPlugins);
 
     if (verbose) {
-      spinner.info(
-        `Removing unused plugin files: ${pluginFiles.map((f) => f.path).join(", ")}`
-      );
+      spinner.info("Removing unused plugin files:");
+
+      const seen = new Set<string>();
+      for (const file of pluginFiles) {
+        if (!seen.has(file.path)) {
+          seen.add(file.path);
+          const msg = `- ${file.path}`;
+          process.stdout.write(`${msg}\n`);
+        }
+      }
     }
 
     // remove plugin files
