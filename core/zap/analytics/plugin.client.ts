@@ -7,6 +7,7 @@ export function analyticsClientPlugin(
 ): ZapClientPlugin<
   "analytics",
   AnalyticsClientPluginConfig,
+  Record<string, unknown>,
   { AnalyticsProvider: typeof AnalyticsProvider }
 > {
   return {
@@ -18,6 +19,7 @@ export function analyticsClientPlugin(
   } satisfies ZapClientPlugin<
     "analytics",
     AnalyticsClientPluginConfig,
+    Record<string, unknown>,
     { AnalyticsProvider: typeof AnalyticsProvider }
   >;
 }
