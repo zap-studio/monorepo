@@ -1,7 +1,9 @@
+import path from "node:path";
 import type { PluginId } from "@zap-ts/architecture/types";
 import {
   addTypeToEntry,
   classifyPlugin,
+  compareCoreOptionalPlugin,
   dedupePluginEntries,
   findZapImports,
   getAllFiles,
@@ -65,33 +67,21 @@ export async function findCorePluginOptionalImports(
     optionalPlugin: PluginId;
     path: string;
   }> = [];
-  for (const { plugin: corePlugin, path: coreFile } of corePlugins) {
-    const pluginDir = require("node:path").join(
-      process.cwd(),
-      "zap",
-      corePlugin
-    );
-    if (!coreFile.startsWith(pluginDir)) {
+  for (const { plugin: corePluginId, path: corePluginPath } of corePlugins) {
+    const pluginDir = path.join(process.cwd(), "zap", corePluginId);
+    if (!corePluginPath.startsWith(pluginDir)) {
       continue;
     }
-    const imports = await findZapImports(coreFile);
+    const imports = await findZapImports(corePluginPath);
     for (const { plugin: importedPlugin } of imports) {
       if (classifyPlugin(importedPlugin) === "optional") {
         results.push({
-          corePlugin,
+          corePlugin: corePluginId,
           optionalPlugin: importedPlugin,
-          path: coreFile.replace(`${process.cwd()}/`, ""),
+          path: corePluginPath.replace(`${process.cwd()}/`, ""),
         });
       }
     }
   }
-  return results.sort((a, b) => {
-    if (a.corePlugin === b.corePlugin) {
-      if (a.optionalPlugin === b.optionalPlugin) {
-        return a.path.localeCompare(b.path);
-      }
-      return a.optionalPlugin.localeCompare(b.optionalPlugin);
-    }
-    return a.corePlugin.localeCompare(b.corePlugin);
-  });
+  return results.sort(compareCoreOptionalPlugin);
 }

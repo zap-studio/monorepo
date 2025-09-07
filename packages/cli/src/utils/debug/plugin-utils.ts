@@ -64,6 +64,27 @@ export function sortByTypeAndPlugin(
   );
 }
 
+export function compareCoreOptionalPlugin(
+  a: {
+    corePlugin: PluginId;
+    optionalPlugin: PluginId;
+    path: string;
+  },
+  b: {
+    corePlugin: PluginId;
+    optionalPlugin: PluginId;
+    path: string;
+  }
+): number {
+  if (a.corePlugin === b.corePlugin) {
+    if (a.optionalPlugin === b.optionalPlugin) {
+      return a.path.localeCompare(b.path);
+    }
+    return a.optionalPlugin.localeCompare(b.optionalPlugin);
+  }
+  return a.corePlugin.localeCompare(b.corePlugin);
+}
+
 export function sortByPluginAndPath(
   arr: Array<{ plugin: PluginId; path: string }>
 ): {
@@ -116,7 +137,7 @@ export async function findZapImports(
   file: string
 ): Promise<Array<{ plugin: PluginId; path: string }>> {
   const content = await fs.readFile(file, "utf8");
-  const regex = /(?:import|require)[^'"]+['"]@\/zap\/([^/'"]+)/g;
+  const regex = /(?:import|require)[^'"]+['"]@\/zap\/([^/'"]+)/g; // matches @/zap/<plugin-id>
 
   const matches: Array<{ plugin: PluginId; path: string }> = [];
   let match: RegExpExecArray | null = regex.exec(content);
