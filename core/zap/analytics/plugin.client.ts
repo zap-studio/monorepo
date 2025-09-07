@@ -4,12 +4,20 @@ import { AnalyticsProvider } from "./providers/analytics.provider";
 
 export function analyticsClientPlugin(
   config?: Partial<AnalyticsClientPluginConfig>
-): ZapClientPlugin<"analytics", AnalyticsClientPluginConfig> {
+): ZapClientPlugin<
+  "analytics",
+  AnalyticsClientPluginConfig,
+  { AnalyticsProvider: typeof AnalyticsProvider }
+> {
   return {
     id: "analytics",
     config,
     providers: {
       AnalyticsProvider,
     },
-  } satisfies ZapClientPlugin<"analytics", AnalyticsClientPluginConfig>;
+  } satisfies ZapClientPlugin<
+    "analytics",
+    AnalyticsClientPluginConfig,
+    { AnalyticsProvider: typeof AnalyticsProvider }
+  >;
 }

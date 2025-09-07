@@ -3,7 +3,9 @@ import "server-only";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { ZAP_BLOG_CONFIG } from "../zap.plugin.config";
+import { getServerPlugin } from "@/lib/zap.server";
+
+const blog = getServerPlugin("blog");
 
 /**
  * Checks if the current path is a blog path that should be publicly accessible.
@@ -12,7 +14,7 @@ import { ZAP_BLOG_CONFIG } from "../zap.plugin.config";
  * @returns boolean indicating if the path is a blog path
  */
 export function isBlogPath(pathname: string): boolean {
-  return pathname.startsWith(ZAP_BLOG_CONFIG.BASE_PATH);
+  return pathname.startsWith(blog.config?.BASE_PATH ?? "/blog");
 }
 
 /**
@@ -35,22 +37,4 @@ export function checkBlogPathAccess(request: NextRequest): NextResponse | null {
   }
 
   return null;
-}
-
-/**
- * Gets the blog base path from the blog configuration.
- *
- * @returns string representing the blog base path
- */
-export function getBlogBasePath(): string {
-  return ZAP_BLOG_CONFIG.BASE_PATH;
-}
-
-/**
- * Gets the blog data directory from the blog configuration.
- *
- * @returns string representing the blog data directory
- */
-export function getBlogDataDir(): string {
-  return ZAP_BLOG_CONFIG.DATA_DIR;
 }

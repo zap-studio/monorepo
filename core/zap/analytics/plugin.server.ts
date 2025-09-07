@@ -5,7 +5,12 @@ import { VercelProvider } from "./providers/vercel.provider";
 
 export function analyticsPlugin(
   config?: Partial<AnalyticsServerPluginConfig>
-): ZapServerPlugin<"analytics", AnalyticsServerPluginConfig> {
+): ZapServerPlugin<
+  "analytics",
+  AnalyticsServerPluginConfig,
+  { PostHogClient: typeof PostHogClient },
+  { VercelProvider: typeof VercelProvider }
+> {
   return {
     id: "analytics",
     config,
@@ -15,5 +20,10 @@ export function analyticsPlugin(
     integrations: {
       PostHogClient,
     },
-  } satisfies ZapServerPlugin<"analytics", AnalyticsServerPluginConfig>;
+  } satisfies ZapServerPlugin<
+    "analytics",
+    AnalyticsServerPluginConfig,
+    { PostHogClient: typeof PostHogClient },
+    { VercelProvider: typeof VercelProvider }
+  >;
 }
