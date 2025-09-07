@@ -7,5 +7,5 @@ export function blogClientPlugin(
   return {
     id: "blog",
     config,
-  } satisfies ZapClientPlugin<"blog", BlogClientPluginConfig>;
+  } satisfies ZapClientPlugin<"blog">;
 }

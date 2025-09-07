@@ -12,6 +12,7 @@
 
 /* biome-ignore-all lint/suspicious/noExplicitAny: see comment above */
 
+import type { NextRequest, NextResponse } from "next/server";
 import type { ComponentType } from "react";
 
 export type BaseZapPlugin<
@@ -37,9 +38,10 @@ export interface ZapServerPlugin<
     string,
     ComponentType<any>
   >,
-  TMiddleware extends Array<(...args: unknown[]) => unknown> = Array<
-    (...args: unknown[]) => unknown
-  >,
+  TMiddleware extends Record<
+    string,
+    (request: NextRequest) => NextResponse<unknown> | null
+  > = Record<string, (request: NextRequest) => NextResponse<unknown> | null>,
   TComponents = Record<string, ComponentType<any>>,
 > extends BaseZapPlugin<TId, TConfig, TIntegrations, TProviders> {
   middleware?: TMiddleware;

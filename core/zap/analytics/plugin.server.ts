@@ -20,10 +20,5 @@ export function analyticsPlugin(
     integrations: {
       PostHogClient,
     },
-  } satisfies ZapServerPlugin<
-    "analytics",
-    AnalyticsServerPluginConfig,
-    { PostHogClient: typeof PostHogClient },
-    { VercelProvider: typeof VercelProvider }
-  >;
+  } satisfies ZapServerPlugin<"analytics">;
 }

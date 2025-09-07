@@ -1,14 +1,11 @@
 import Link from "next/link";
-import { useMemo } from "react";
-
-import { isPluginEnabled } from "@/lib/plugins";
-import { LatestBlogPosts } from "@/zap/blog/components/latest-blog-posts";
-
+import { getServerPlugin } from "@/lib/zap.server";
 import { LEGAL_LINKS } from "../data";
 import { ThemeSwitcher } from "./theme-switcher";
 
 export function Footer() {
-  const isBlogEnabled = useMemo(() => isPluginEnabled("blog"), []);
+  const blog = getServerPlugin("blog");
+  const LatestBlogPosts = blog?.components?.LatestBlogPosts;
 
   return (
     <footer className="w-full border-t bg-background px-4 md:px-8">
@@ -40,7 +37,7 @@ export function Footer() {
             <ThemeSwitcher />
           </div>
 
-          {isBlogEnabled && <LatestBlogPosts />}
+          {LatestBlogPosts && <LatestBlogPosts />}
         </div>
       </div>
     </footer>

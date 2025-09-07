@@ -16,10 +16,5 @@ export function analyticsClientPlugin(
     providers: {
       AnalyticsProvider,
     },
-  } satisfies ZapClientPlugin<
-    "analytics",
-    AnalyticsClientPluginConfig,
-    Record<string, unknown>,
-    { AnalyticsProvider: typeof AnalyticsProvider }
-  >;
+  } satisfies ZapClientPlugin<"analytics">;
 }
