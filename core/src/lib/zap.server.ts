@@ -1,6 +1,7 @@
 import "server-only";
 
 import { analyticsPlugin } from "@/zap/analytics/plugin.server";
+import { blogPlugin } from "@/zap/blog/plugin.server";
 import { VERCEL } from "@/zap/env/runtime/public";
 import { zap } from "@/zap/plugins/utils";
 
@@ -10,7 +11,12 @@ export const zapServerClient = zap([
     ENABLE_VERCEL_ANALYTICS: VERCEL,
     ENABLE_VERCEL_SPEED_INSIGHTS: VERCEL,
   }),
-]);
+  blogPlugin({
+    BASE_PATH: "/blog",
+    DATA_DIR: "zap/blog/data",
+    MAX_BLOG_POSTS_IN_FOOTER: 3,
+  }),
+] as const);
 
 export type ZapServerClient = typeof zapServerClient;
 

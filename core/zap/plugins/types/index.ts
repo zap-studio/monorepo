@@ -15,6 +15,7 @@
 import type { ComponentType } from "react";
 
 export type BaseZapPlugin<
+  TId extends string = string,
   TConfig = Record<string, unknown>,
   TIntegrations = Record<string, unknown>,
   TProviders extends Record<string, ComponentType<any>> = Record<
@@ -22,13 +23,14 @@ export type BaseZapPlugin<
     ComponentType<any>
   >,
 > = {
-  id: string;
+  id: TId;
   config?: Partial<TConfig>;
   integrations?: TIntegrations;
   providers?: TProviders;
 };
 
 export interface ZapServerPlugin<
+  TId extends string = string,
   TConfig = Record<string, unknown>,
   TIntegrations = Record<string, unknown>,
   TProviders extends Record<string, ComponentType<any>> = Record<
@@ -39,12 +41,13 @@ export interface ZapServerPlugin<
     (...args: unknown[]) => unknown
   >,
   TComponents = Record<string, ComponentType<any>>,
-> extends BaseZapPlugin<TConfig, TIntegrations, TProviders> {
+> extends BaseZapPlugin<TId, TConfig, TIntegrations, TProviders> {
   middleware?: TMiddleware;
   components?: TComponents;
 }
 
 export interface ZapClientPlugin<
+  TId extends string = string,
   TConfig = Record<string, unknown>,
   TIntegrations = Record<string, unknown>,
   TProviders extends Record<string, ComponentType<any>> = Record<
@@ -53,7 +56,7 @@ export interface ZapClientPlugin<
   >,
   THooks = Record<string, (...args: unknown[]) => unknown>,
   TComponents = Record<string, ComponentType<any>>,
-> extends BaseZapPlugin<TConfig, TIntegrations, TProviders> {
+> extends BaseZapPlugin<TId, TConfig, TIntegrations, TProviders> {
   hooks?: THooks;
   components?: TComponents;
 }

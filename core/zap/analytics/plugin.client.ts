@@ -4,12 +4,12 @@ import { AnalyticsProvider } from "./providers/analytics.provider";
 
 export function analyticsClientPlugin(
   config?: Partial<AnalyticsClientPluginConfig>
-) {
+): ZapClientPlugin<"analytics", AnalyticsClientPluginConfig> {
   return {
     id: "analytics",
     config,
     providers: {
       AnalyticsProvider,
     },
-  } satisfies ZapClientPlugin;
+  } satisfies ZapClientPlugin<"analytics", AnalyticsClientPluginConfig>;
 }

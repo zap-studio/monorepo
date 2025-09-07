@@ -3,7 +3,9 @@ import type { AnalyticsServerPluginConfig } from "../plugins/types/analytics.plu
 import { PostHogClient } from "./lib/posthog/client";
 import { VercelProvider } from "./providers/vercel.provider";
 
-export function analyticsPlugin(config?: Partial<AnalyticsServerPluginConfig>) {
+export function analyticsPlugin(
+  config?: Partial<AnalyticsServerPluginConfig>
+): ZapServerPlugin<"analytics", AnalyticsServerPluginConfig> {
   return {
     id: "analytics",
     config,
@@ -13,5 +15,5 @@ export function analyticsPlugin(config?: Partial<AnalyticsServerPluginConfig>) {
     integrations: {
       PostHogClient,
     },
-  } satisfies ZapServerPlugin;
+  } satisfies ZapServerPlugin<"analytics", AnalyticsServerPluginConfig>;
 }

@@ -5,13 +5,13 @@ import path from "node:path";
 
 import { format, formatDistanceToNow, parseISO } from "date-fns";
 import matter from "gray-matter";
+import { getServerPlugin } from "@/lib/zap.server";
 import { ApplicationError, FileOperationError } from "@/zap/errors";
 import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
-
 import { postMetadataSchema } from "../schemas";
-import { ZAP_BLOG_CONFIG } from "../zap.plugin.config";
 
-const BLOG_DIR = ZAP_BLOG_CONFIG.DATA_DIR;
+const blog = getServerPlugin("blog");
+const BLOG_DIR = blog.config?.DATA_DIR ?? "zap/blog/data";
 
 function parseFrontmatter(fileContent: string) {
   try {
