@@ -4,20 +4,9 @@ import {
   analyzeZapPlugins,
   findCorePluginOptionalImports,
 } from "./plugin-analysis.js";
-import {
-  buildPluginImportMap,
-  summarizeCorePluginDependencies,
-  summarizeOptionalPluginDependencies,
-} from "./plugin-deps.js";
+import { summarizePluginDependencies } from "./plugin-deps.js";
 import { formatSummary } from "./plugin-summary.js";
-import {
-  addTypeToEntry,
-  dedupePluginEntries,
-  findZapImports,
-  getAllFiles,
-  getSrcDir,
-  getZapDir,
-} from "./plugin-utils";
+import { getSrcDir } from "./plugin-utils";
 
 export async function summarizePlugins(options: {
   output?: string;
@@ -33,18 +22,10 @@ export async function summarizePlugins(options: {
     await analyzeZapPlugins();
   const step4 = await findCorePluginOptionalImports();
 
-  const zapDir = await getZapDir();
-  const zapFiles = zapDir ? await getAllFiles(zapDir) : [];
-  const allPluginEntries = dedupePluginEntries(
-    (await Promise.all(zapFiles.map(findZapImports))).flat().map(addTypeToEntry)
-  );
-
-  const importMap = await buildPluginImportMap(allPluginEntries);
-  const corePluginSummary = summarizeCorePluginDependencies(step2, importMap);
-  const optionalPluginSummary = summarizeOptionalPluginDependencies(
-    step3,
-    importMap
-  );
+  const [corePluginSummary, optionalPluginSummary] = await Promise.all([
+    summarizePluginDependencies(step2),
+    summarizePluginDependencies(step3),
+  ]);
 
   const steps = { step1, step2, step3, step4 };
   const output = formatSummary(steps, corePluginSummary, optionalPluginSummary);
