@@ -1,15 +1,16 @@
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import { getServerPlugin } from "@/lib/zap.server";
 import { VERCEL } from "@/zap/env/runtime/public";
+import type { AnalyticsServerPluginConfig } from "@/zap/plugins/types/analytics.plugin";
 
-export function VercelProvider() {
-  const analytics = getServerPlugin("analytics");
-
-  const enableVercelAnalytics =
-    VERCEL && !!analytics?.config?.ENABLE_VERCEL_ANALYTICS;
+export function VercelProvider({
+  config,
+}: {
+  config?: Partial<AnalyticsServerPluginConfig>;
+}) {
+  const enableVercelAnalytics = VERCEL && !!config?.ENABLE_VERCEL_ANALYTICS;
   const enableVercelSpeedInsights =
-    VERCEL && !!analytics?.config?.ENABLE_VERCEL_SPEED_INSIGHTS;
+    VERCEL && !!config?.ENABLE_VERCEL_SPEED_INSIGHTS;
 
   return (
     <>
