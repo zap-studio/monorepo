@@ -41,6 +41,7 @@ export const PLUGIN_CONFIG: Record<ZapPlugins, boolean> = {
   components: true,
   crypto: true,
   db: true,
+  docker: true,
   env: true,
   errors: true,
   feedbacks: true,
@@ -50,8 +51,10 @@ export const PLUGIN_CONFIG: Record<ZapPlugins, boolean> = {
   mails: true,
   markdown: true,
   payments: true,
+  "package-json-scripts": true,
   plugins: true,
   pwa: true,
+  seo: true,
   sidebar: true,
   waitlist: true,
 };
