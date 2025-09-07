@@ -1,2 +1,2 @@
 lint-staged
-cd core && npm run format
+cd template && npm run format

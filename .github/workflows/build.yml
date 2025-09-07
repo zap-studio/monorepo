@@ -27,7 +27,7 @@ jobs:
       - name: Build monorepo
         run: bun run build
 
-  build-core:
+  build-template:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -40,8 +40,8 @@ jobs:
         with:
           node-version: 24.2.0
 
-      - name: Create .env for core
-        working-directory: core
+      - name: Create .env for template
+        working-directory: template
         env:
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -57,10 +57,10 @@ jobs:
             echo "RESEND_API_KEY=\"${RESEND_API_KEY}\""
           } >> .env
 
-      - name: Install core deps
-        working-directory: core
+      - name: Install template deps
+        working-directory: template
         run: bun install --frozen-lockfile
 
-      - name: Build core
-        working-directory: core
+      - name: Build template
+        working-directory: template
         run: bun run build

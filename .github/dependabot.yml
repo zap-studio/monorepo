@@ -8,7 +8,7 @@ updates:
   - package-ecosystem: "bun" # See documentation for possible values
     directories:
       - "/"
-      - "/core"
+      - "/template"
       - "/apps/docs"
       - "/packages/architecture"
       - "/packages/create-zap-app"

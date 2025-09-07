@@ -5,7 +5,7 @@
     "includes": [
       "**",
       ".github/workflows/*",
-      "!core",
+      "!template",
       "!apps/docs/src/components/ui",
       "!apps/zap-studio/components/ui"
     ]

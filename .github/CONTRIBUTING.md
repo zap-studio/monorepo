@@ -19,11 +19,11 @@ Thank you for your interest in contributing to Zap.ts! We welcome all contributi
    - Run `bun install` from the root directory to install all packages.
 
 2. **Set up environment variables**
-   - In the `core/` directory, run: `zap generate env`
-   - Rename the generated file to `.env` inside `core/`.
-   - Run `bun install` again in `core/`.
+   - In the `template/` directory, run: `zap generate env`
+   - Rename the generated file to `.env` inside `template/`.
+   - Run `bun install` again in `template/`.
 
-> The `.env` file may be required for the `core` package to compile and for Husky pre-commit hooks to pass. If Husky blocks your commit, you may use `git commit --no-verify` and/or `git push --no-verify`, but this is discouraged and may reduce the chance of your PR being merged.
+> The `.env` file may be required for the `template` package to compile and for Husky pre-commit hooks to pass. If Husky blocks your commit, you may use `git commit --no-verify` and/or `git push --no-verify`, but this is discouraged and may reduce the chance of your PR being merged.
 
 ## Making Changes
 

@@ -32,7 +32,7 @@ jobs:
       - name: Run linter on the monorepo
         run: bun run lint
 
-  lint-core:
+  lint-template:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -50,10 +50,10 @@ jobs:
         with:
           node-version: 24.2.0
 
-      - name: Install core deps
-        working-directory: core
+      - name: Install template deps
+        working-directory: template
         run: bun install --frozen-lockfile
 
-      - name: Run linter in core
-        working-directory: core
+      - name: Run linter in template
+        working-directory: template
         run: bun run lint

@@ -1,5 +1,5 @@
 {
-  "name": "@zap-ts/core",
+  "name": "@zap-ts/template",
   "version": "1.0.0",
   "private": false,
   "description": "Main package for Zap.ts, a Next.js modular boilerplate to build applications as fast as a zap.",

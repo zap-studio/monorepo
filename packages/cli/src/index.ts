@@ -19,7 +19,7 @@ async function main() {
       .command("debug")
       .description("Debug utilities for Zap.ts projects")
       .command("plugins")
-      .description("Get a summary of plugins architecture in core/")
+      .description("Get a summary of plugins architecture in template/")
       .option("-o, --output <file>", "Output the summary to a file")
       .action(async (options) => {
         try {

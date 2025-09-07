@@ -9,7 +9,7 @@ export async function moveCoreFiles(outputDir: string): Promise<void> {
     const tempDir = path.join(outputDir, "temp");
     await fs.ensureDir(tempDir);
 
-    const coreDir = path.join(outputDir, "core");
+    const coreDir = path.join(outputDir, "template");
     const files = await fs.readdir(coreDir);
 
     await Promise.all(
@@ -21,7 +21,7 @@ export async function moveCoreFiles(outputDir: string): Promise<void> {
     );
   } catch (error) {
     throw new FileSystemError(
-      `Failed to move core files: ${getErrorMessage(error)}`
+      `Failed to move template files: ${getErrorMessage(error)}`
     );
   }
 }
