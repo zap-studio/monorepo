@@ -5,3 +5,9 @@ import { toClient } from "@/zap/plugins/utils";
 export const zapClient = toClient([analyticsClientPlugin()]);
 
 export type ZapClient = typeof zapClient;
+
+export function getClientPlugin<TPlugin extends keyof ZapClient>(
+  pluginId: TPlugin
+): ZapClient[TPlugin] | undefined {
+  return zapClient[pluginId] ?? undefined;
+}

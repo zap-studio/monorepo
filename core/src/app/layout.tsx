@@ -6,9 +6,11 @@ import type { Metadata } from "next";
 
 import { geist } from "@/app/fonts";
 import { Toaster } from "@/components/ui/sonner";
-import { zapServerClient } from "@/lib/zap.server";
+import { getServerPlugin } from "@/lib/zap.server";
 import { Providers } from "@/providers/providers";
 import { VERCEL } from "@/zap/env/runtime/public";
+import type { ZapServerPlugin } from "@/zap/plugins/types";
+import type { AnalyticsPluginConfig } from "@/zap/plugins/types/analytics.plugin";
 import { ZAP_DEFAULT_METADATA } from "@/zap.config";
 
 export const metadata: Metadata = ZAP_DEFAULT_METADATA;
@@ -18,10 +20,17 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const analytics: ZapServerPlugin<
+    unknown,
+    ((...args: unknown[]) => unknown)[],
+    unknown,
+    AnalyticsPluginConfig
+  > = getServerPlugin("analytics");
+
   const enableVercelAnalytics =
-    VERCEL && zapServerClient.analytics?.config?.ENABLE_VERCEL_ANALYTICS;
+    VERCEL && !!analytics?.config?.ENABLE_VERCEL_ANALYTICS;
   const enableVercelSpeedInsights =
-    VERCEL && zapServerClient.analytics?.config?.ENABLE_VERCEL_SPEED_INSIGHTS;
+    VERCEL && !!analytics?.config?.ENABLE_VERCEL_SPEED_INSIGHTS;
 
   return (
     <html lang="en" suppressHydrationWarning>
