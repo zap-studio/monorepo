@@ -1,5 +1,7 @@
 import path from "node:path";
-import type { PluginId } from "@zap-ts/architecture/types";
+import type { CorePluginId, PluginId } from "@zap-ts/architecture/types";
+import { getCorePlugins } from "@zap-ts/architecture/utils/plugins";
+import fs from "fs-extra";
 import {
   addTypeToEntry,
   classifyPlugin,
@@ -53,9 +55,7 @@ export async function analyzeZapPlugins(): Promise<{
   return { corePlugins, optionalPlugins };
 }
 
-export async function findCorePluginOptionalImports(
-  corePlugins: Array<{ plugin: PluginId; path: string }>
-): Promise<
+export async function findCorePluginOptionalImports(): Promise<
   {
     corePlugin: PluginId;
     optionalPlugin: PluginId;
@@ -67,18 +67,19 @@ export async function findCorePluginOptionalImports(
     optionalPlugin: PluginId;
     path: string;
   }> = [];
-  for (const { plugin: corePluginId, path: corePluginPath } of corePlugins) {
-    const pluginDir = path.join(process.cwd(), "zap", corePluginId);
-    if (!corePluginPath.startsWith(pluginDir)) {
+  const corePluginIds: CorePluginId[] = getCorePlugins();
+  for (const corePluginId of corePluginIds) {
+    const pluginPath = path.join(process.cwd(), "zap", corePluginId);
+    if (!(await fs.pathExists(pluginPath))) {
       continue;
     }
-    const imports = await findZapImports(corePluginPath);
+    const imports = await findZapImports(pluginPath);
     for (const { plugin: importedPlugin } of imports) {
       if (classifyPlugin(importedPlugin) === "optional") {
         results.push({
           corePlugin: corePluginId,
           optionalPlugin: importedPlugin,
-          path: corePluginPath.replace(`${process.cwd()}/`, ""),
+          path: pluginPath.replace(`${process.cwd()}/`, ""),
         });
       }
     }

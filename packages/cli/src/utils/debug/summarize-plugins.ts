@@ -31,7 +31,7 @@ export async function summarizePlugins(options: {
   const step1 = await analyzeSrcPlugins(srcDir);
   const { corePlugins: step2, optionalPlugins: step3 } =
     await analyzeZapPlugins();
-  const step4 = await findCorePluginOptionalImports(step2);
+  const step4 = await findCorePluginOptionalImports();
 
   const zapDir = await getZapDir();
   const zapFiles = zapDir ? await getAllFiles(zapDir) : [];
