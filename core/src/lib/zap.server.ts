@@ -18,10 +18,6 @@ export const zapServerClient = zap([
   }),
 ] as const);
 
-export type ZapServerClient = typeof zapServerClient;
-
-export function getServerPlugin<TPlugin extends keyof ZapServerClient>(
-  pluginId: TPlugin
-): ZapServerClient[TPlugin] {
+export function getServerPlugin(pluginId: keyof typeof zapServerClient) {
   return zapServerClient[pluginId];
 }
