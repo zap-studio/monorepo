@@ -110,7 +110,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.2",
+    "@biomejs/biome": "2.2.3",
     "@react-email/preview-server": "^4.2.8",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/mdx": "^2.0.13",
