@@ -8,13 +8,13 @@ import matter from "gray-matter";
 import { ApplicationError, FileOperationError } from "@/zap/errors";
 import type { BlogServerPluginConfig } from "@/zap/plugins/types/blog.plugin";
 import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
-import { postMetadataSchema } from "../schemas";
+import { PostMetadataSchema } from "../schemas";
 
-function parseFrontmatter(fileContent: string) {
+export function parseFrontmatter(fileContent: string) {
   try {
     const { data: metadata, content } = matter(fileContent);
     return {
-      metadata: postMetadataSchema.parse(metadata),
+      metadata: PostMetadataSchema.parse(metadata),
       content,
     };
   } catch (error) {
@@ -22,7 +22,7 @@ function parseFrontmatter(fileContent: string) {
   }
 }
 
-async function getMDXFiles(dir: string) {
+export async function getMDXFiles(dir: string) {
   try {
     const files = await fs.readdir(dir);
     return files.filter((file) => path.extname(file) === ".mdx");
@@ -31,7 +31,7 @@ async function getMDXFiles(dir: string) {
   }
 }
 
-async function readMDXFile(filePath: string) {
+export async function readMDXFile(filePath: string) {
   try {
     const fileContent = await fs.readFile(filePath, "utf-8");
     return parseFrontmatter(fileContent);
@@ -40,7 +40,7 @@ async function readMDXFile(filePath: string) {
   }
 }
 
-async function getMDXData(dir: string) {
+export async function getMDXData(dir: string) {
   try {
     const mdxFiles = await getMDXFiles(dir);
     const posts = await Promise.all(

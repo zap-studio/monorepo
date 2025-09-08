@@ -14,11 +14,11 @@ export function analyticsPlugin(
   return {
     id: "analytics",
     config,
-    providers: {
-      VercelProvider,
-    },
     integrations: {
       PostHogClient,
+    },
+    providers: {
+      VercelProvider,
     },
   } satisfies ZapServerPlugin<"analytics">;
 }

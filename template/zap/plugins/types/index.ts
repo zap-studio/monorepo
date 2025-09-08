@@ -14,6 +14,7 @@
 
 import type { NextRequest, NextResponse } from "next/server";
 import type { ComponentType } from "react";
+import type z from "zod";
 
 export type BaseZapPlugin<
   TId extends string = string,
@@ -23,11 +24,15 @@ export type BaseZapPlugin<
     string,
     ComponentType<any>
   >,
+  TSchemas = Record<string, z.ZodTypeAny>,
+  TUtils = Record<string, (...args: any[]) => unknown>,
 > = {
   id: TId;
   config?: Partial<TConfig>;
   integrations?: TIntegrations;
   providers?: TProviders;
+  schemas?: TSchemas;
+  utils?: TUtils;
 };
 
 export interface ZapServerPlugin<
@@ -38,12 +43,21 @@ export interface ZapServerPlugin<
     string,
     ComponentType<any>
   >,
+  TSchemas = Record<string, z.ZodTypeAny>,
+  TUtils = Record<string, (...args: any[]) => unknown>,
   TMiddleware extends Record<
     string,
     (request: NextRequest) => NextResponse<unknown> | null
   > = Record<string, (request: NextRequest) => NextResponse<unknown> | null>,
   TComponents = Record<string, ComponentType<any>>,
-> extends BaseZapPlugin<TId, TConfig, TIntegrations, TProviders> {
+> extends BaseZapPlugin<
+    TId,
+    TConfig,
+    TIntegrations,
+    TProviders,
+    TSchemas,
+    TUtils
+  > {
   middleware?: TMiddleware;
   components?: TComponents;
 }
@@ -56,9 +70,18 @@ export interface ZapClientPlugin<
     string,
     ComponentType<any>
   >,
+  TSchemas = Record<string, z.ZodTypeAny>,
+  TUtils = Record<string, (...args: any[]) => unknown>,
   THooks = Record<string, (...args: unknown[]) => unknown>,
   TComponents = Record<string, ComponentType<any>>,
-> extends BaseZapPlugin<TId, TConfig, TIntegrations, TProviders> {
+> extends BaseZapPlugin<
+    TId,
+    TConfig,
+    TIntegrations,
+    TProviders,
+    TSchemas,
+    TUtils
+  > {
   hooks?: THooks;
   components?: TComponents;
 }
