@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { BlogPosting, WithContext } from "schema-dts";
 import serialize from "serialize-javascript";
+import { getServerPlugin } from "@/lib/zap.server";
 import { CustomMDX } from "@/zap/markdown/mdx";
 import { BASE_URL } from "@/zap.config";
-
 import {
   formatDate,
   generateBlogPostMetadata,
@@ -20,7 +20,8 @@ export async function _generateMetadata({
 }
 
 export async function _generateStaticParams() {
-  const posts = await getBlogPostsMetadata();
+  const blog = getServerPlugin("blog");
+  const posts = await getBlogPostsMetadata(blog?.config);
   return posts.map((post) => ({
     slug: post.slug,
   }));
@@ -32,7 +33,8 @@ export type _BlogSlugPageProps = {
 
 export async function _BlogSlugPage({ params }: _BlogSlugPageProps) {
   const { slug } = await params;
-  const post = await getBlogPost(slug);
+  const blog = getServerPlugin("blog");
+  const post = await getBlogPost(slug, blog?.config);
 
   if (!post) {
     notFound();

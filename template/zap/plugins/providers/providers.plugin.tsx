@@ -19,7 +19,7 @@ export function PluginProviders({ children }: PluginProvidersProps) {
 
     if (AnalyticsProvider) {
       content = (
-        <AnalyticsProvider config={analytics.config}>
+        <AnalyticsProvider config={analytics?.config}>
           {content}
         </AnalyticsProvider>
       );
@@ -28,7 +28,7 @@ export function PluginProviders({ children }: PluginProvidersProps) {
     content = <TanStackQueryProvider>{content}</TanStackQueryProvider>;
 
     return content;
-  }, [children, analytics.config, AnalyticsProvider]);
+  }, [children, analytics?.config, AnalyticsProvider]);
 
   return <>{wrappedChildren}</>;
 }

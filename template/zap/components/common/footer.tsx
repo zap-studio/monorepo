@@ -37,7 +37,7 @@ export function Footer() {
             <ThemeSwitcher />
           </div>
 
-          {LatestBlogPosts && <LatestBlogPosts />}
+          {LatestBlogPosts && <LatestBlogPosts config={blog?.config} />}
         </div>
       </div>
     </footer>

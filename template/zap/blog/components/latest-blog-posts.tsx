@@ -1,20 +1,23 @@
 import Link from "next/link";
-import { getServerPlugin } from "@/lib/zap.server";
+import type { BlogServerPluginConfig } from "@/zap/plugins/types/blog.plugin";
 import { formatDate, getBlogPostsMetadata } from "../utils";
 
 const DEFAULT_MAX_POSTS = 3;
 
-export async function LatestBlogPosts() {
-  const posts = await getBlogPostsMetadata();
+export async function LatestBlogPosts({
+  config,
+}: {
+  config?: Partial<BlogServerPluginConfig>;
+}) {
+  const posts = await getBlogPostsMetadata(config);
 
   if (posts.length === 0) {
     return null;
   }
 
-  const blog = getServerPlugin("blog");
   const latestPosts = posts.slice(
     0,
-    blog.config?.MAX_BLOG_POSTS_IN_FOOTER ?? DEFAULT_MAX_POSTS
+    config?.MAX_BLOG_POSTS_IN_FOOTER ?? DEFAULT_MAX_POSTS
   );
 
   return (
@@ -26,7 +29,7 @@ export async function LatestBlogPosts() {
           <Link
             className="group flex flex-col space-y-1"
             href={{
-              pathname: `${blog.config?.BASE_PATH ?? "/blog"}/${post.slug}`,
+              pathname: `${config?.BASE_PATH ?? "/blog"}/${post.slug}`,
             }}
             key={post.slug}
           >
@@ -45,7 +48,7 @@ export async function LatestBlogPosts() {
 
       <Link
         className="w-fit text-muted-foreground text-sm underline-offset-4 hover:underline active:underline"
-        href={{ pathname: blog.config?.BASE_PATH ?? "/blog" }}
+        href={{ pathname: config?.BASE_PATH ?? "/blog" }}
       >
         View all articles →
       </Link>

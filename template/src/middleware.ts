@@ -28,7 +28,10 @@ export async function middleware(request: NextRequest) {
     // Check if path is a blog path (optional plugin)
     const blog = getServerPlugin("blog");
     if (blog?.middleware?.checkBlogPathAccess) {
-      const blogPathAccess = blog.middleware.checkBlogPathAccess(request);
+      const blogPathAccess = blog.middleware.checkBlogPathAccess(
+        request,
+        blog?.config
+      );
       if (blogPathAccess) {
         return blogPathAccess;
       }

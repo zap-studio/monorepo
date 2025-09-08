@@ -24,7 +24,7 @@ export default function RootLayout({
           {children}
 
           <Toaster position="top-center" />
-          {VercelProvider && <VercelProvider config={analytics.config} />}
+          {VercelProvider && <VercelProvider config={analytics?.config} />}
         </Providers>
       </body>
     </html>

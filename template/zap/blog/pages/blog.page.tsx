@@ -9,9 +9,8 @@ export const _metadata: Metadata = {
 };
 
 export async function _BlogPage() {
-  const posts = await getBlogPostsMetadata();
-
   const blog = getServerPlugin("blog");
+  const posts = await getBlogPostsMetadata(blog?.config);
 
   return (
     <div className="container mx-auto max-w-4xl py-6">
@@ -23,7 +22,7 @@ export async function _BlogPage() {
           >
             <Link
               href={{
-                pathname: `${blog.config?.BASE_PATH ?? "/blog"}/${post.slug}`,
+                pathname: `${blog?.config?.BASE_PATH ?? "/blog"}/${post.slug}`,
               }}
             >
               <div className="rounded-md p-4 px-0 hover:bg-muted md:px-4 md:active:bg-muted">

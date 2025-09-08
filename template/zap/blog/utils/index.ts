@@ -5,13 +5,10 @@ import path from "node:path";
 
 import { format, formatDistanceToNow, parseISO } from "date-fns";
 import matter from "gray-matter";
-import { getServerPlugin } from "@/lib/zap.server";
 import { ApplicationError, FileOperationError } from "@/zap/errors";
+import type { BlogServerPluginConfig } from "@/zap/plugins/types/blog.plugin";
 import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
 import { postMetadataSchema } from "../schemas";
-
-const blog = getServerPlugin("blog");
-const BLOG_DIR = blog.config?.DATA_DIR ?? "zap/blog/data";
 
 function parseFrontmatter(fileContent: string) {
   try {
@@ -69,20 +66,27 @@ async function getMDXData(dir: string) {
   }
 }
 
-export async function getBlogPosts() {
+export async function getBlogPosts(config?: Partial<BlogServerPluginConfig>) {
+  const BLOG_DIR = config?.DATA_DIR ?? "zap/blog/data";
   return await getMDXData(BLOG_DIR);
 }
 
-export async function getBlogPostsMetadata() {
-  const posts = await getBlogPosts();
+export async function getBlogPostsMetadata(
+  config?: Partial<BlogServerPluginConfig>
+) {
+  const posts = await getBlogPosts(config);
   return posts.map((post) => ({
     ...post.metadata,
     slug: post.slug,
   }));
 }
 
-export async function getBlogPost(slug: string) {
+export async function getBlogPost(
+  slug: string,
+  config?: Partial<BlogServerPluginConfig>
+) {
   try {
+    const BLOG_DIR = config?.DATA_DIR ?? "zap/blog/data";
     const { metadata, content } = await readMDXFile(
       path.join(BLOG_DIR, `${slug}.mdx`)
     );

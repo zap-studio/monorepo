@@ -3,9 +3,7 @@ import "server-only";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { getServerPlugin } from "@/lib/zap.server";
-
-const blog = getServerPlugin("blog");
+import type { BlogServerPluginConfig } from "@/zap/plugins/types/blog.plugin";
 
 /**
  * Checks if the current path is a blog path that should be publicly accessible.
@@ -13,8 +11,11 @@ const blog = getServerPlugin("blog");
  * @param pathname - The current pathname
  * @returns boolean indicating if the path is a blog path
  */
-export function isBlogPath(pathname: string): boolean {
-  return pathname.startsWith(blog.config?.BASE_PATH ?? "/blog");
+export function isBlogPath(
+  pathname: string,
+  config?: Partial<BlogServerPluginConfig>
+): boolean {
+  return pathname.startsWith(config?.BASE_PATH ?? "/blog");
 }
 
 /**
@@ -24,10 +25,13 @@ export function isBlogPath(pathname: string): boolean {
  * @param request - The Next.js request object
  * @returns NextResponse to continue with the request if it's a blog path, otherwise null
  */
-export function checkBlogPathAccess(request: NextRequest): NextResponse | null {
+export function checkBlogPathAccess(
+  request: NextRequest,
+  config?: Partial<BlogServerPluginConfig>
+): NextResponse | null {
   const { pathname } = request.nextUrl;
 
-  if (isBlogPath(pathname)) {
+  if (isBlogPath(pathname, config)) {
     const requestHeaders = new Headers(request.headers);
 
     const response = NextResponse.next({
