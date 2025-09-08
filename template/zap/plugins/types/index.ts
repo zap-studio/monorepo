@@ -1,31 +1,35 @@
 /*
- * NOTE: We intentionally use `any` for the generic `ComponentType<any>` in plugin type definitions.
- * This is necessary to support arbitrary React component props, as plugin providers/components
- * may accept any shape of props depending on user/plugin implementation. Restricting the type here
- * would break compatibility and flexibility for plugin authors.
- *
- * The use of `any` is justified in this context to enable a generic plugin system that can handle
- * diverse component signatures, which is a core requirement for extensibility.
- *
- * Biome lint errors for explicit `any` are ignored for this file.
+ * NOTE: `any` is intentionally used in `ComponentType<any>` and other places
+ * to preserve flexibility for plugin authors. Restricting types here would
+ * break the generic nature of the plugin system. Biome lint for explicit `any`
+ * is ignored for this file.
  */
 
-/* biome-ignore-all lint/suspicious/noExplicitAny: see comment above */
+/* biome-ignore-all lint/suspicious/noExplicitAny: see above */
 
 import type { NextRequest, NextResponse } from "next/server";
 import type { ComponentType } from "react";
 import type z from "zod";
 
+// Shared aliases
+type AnyComponent = ComponentType<any>;
+type AnyFn = (...args: any[]) => unknown;
+type MiddlewareFn = (request: NextRequest) => NextResponse<unknown> | null;
+type MiddlewareMap = Record<string, MiddlewareFn>;
+type HookFn = (...args: unknown[]) => unknown;
+type HookMap = Record<string, HookFn>;
+
+// Plugin interfaces
 export type BaseZapPlugin<
   TId extends string = string,
   TConfig = Record<string, unknown>,
   TIntegrations = Record<string, unknown>,
-  TProviders extends Record<string, ComponentType<any>> = Record<
+  TProviders extends Record<string, AnyComponent> = Record<
     string,
-    ComponentType<any>
+    AnyComponent
   >,
   TSchemas = Record<string, z.ZodTypeAny>,
-  TUtils = Record<string, (...args: any[]) => unknown>,
+  TUtils = Record<string, AnyFn>,
 > = {
   id: TId;
   config?: Partial<TConfig>;
@@ -39,17 +43,14 @@ export interface ZapServerPlugin<
   TId extends string = string,
   TConfig = Record<string, unknown>,
   TIntegrations = Record<string, unknown>,
-  TProviders extends Record<string, ComponentType<any>> = Record<
+  TProviders extends Record<string, AnyComponent> = Record<
     string,
-    ComponentType<any>
+    AnyComponent
   >,
   TSchemas = Record<string, z.ZodTypeAny>,
-  TUtils = Record<string, (...args: any[]) => unknown>,
-  TMiddleware extends Record<
-    string,
-    (request: NextRequest) => NextResponse<unknown> | null
-  > = Record<string, (request: NextRequest) => NextResponse<unknown> | null>,
-  TComponents = Record<string, ComponentType<any>>,
+  TUtils = Record<string, AnyFn>,
+  TMiddleware extends MiddlewareMap = MiddlewareMap,
+  TComponents = Record<string, AnyComponent>,
 > extends BaseZapPlugin<
     TId,
     TConfig,
@@ -66,14 +67,14 @@ export interface ZapClientPlugin<
   TId extends string = string,
   TConfig = Record<string, unknown>,
   TIntegrations = Record<string, unknown>,
-  TProviders extends Record<string, ComponentType<any>> = Record<
+  TProviders extends Record<string, AnyComponent> = Record<
     string,
-    ComponentType<any>
+    AnyComponent
   >,
   TSchemas = Record<string, z.ZodTypeAny>,
-  TUtils = Record<string, (...args: any[]) => unknown>,
-  THooks = Record<string, (...args: unknown[]) => unknown>,
-  TComponents = Record<string, ComponentType<any>>,
+  TUtils = Record<string, AnyFn>,
+  THooks extends HookMap = HookMap,
+  TComponents = Record<string, AnyComponent>,
 > extends BaseZapPlugin<
     TId,
     TConfig,
@@ -86,5 +87,6 @@ export interface ZapClientPlugin<
   components?: TComponents;
 }
 
+// Plugin collections
 export type ZapServerPlugins = Record<string, ZapServerPlugin>;
 export type ZapClientPlugins = Record<string, ZapClientPlugin>;
