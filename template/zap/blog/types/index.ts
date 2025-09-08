@@ -1,4 +1,4 @@
 import type z from "zod";
-import type { postMetadataSchema } from "../schemas";
+import type { PostMetadataSchema } from "../schemas";
 
-export type PostMetadata = z.infer<typeof postMetadataSchema>;
+export type PostMetadata = z.infer<typeof PostMetadataSchema>;
