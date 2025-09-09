@@ -42,29 +42,31 @@ export type AnyDbSchema<T = any> = PgTableWithColumns<
   T extends TableConfig ? T : any
 >;
 export type AnyRpcProcedure<
-  TContext extends Context = Context,
+  TInitialContext extends Context = Context,
+  TCurrentContext extends Context = Context,
   TInputSchema extends AnyZodSchema = AnyZodSchema,
   TOutputSchema extends AnyZodSchema = AnyZodSchema,
   TErrorMap extends ErrorMap = ErrorMap,
   TMeta extends Meta = Meta,
 > = DecoratedProcedure<
-  TContext,
-  TContext,
+  TInitialContext,
+  TCurrentContext,
   TInputSchema,
   TOutputSchema,
   TErrorMap,
   TMeta
 >;
 export type AnyRpcMiddleware<
-  TContext extends Context = Context,
+  TInitialContext extends Context = Context,
+  TCurrentContext extends Context = Context,
   TInput = unknown,
   TOutput = unknown,
   TErrorConstructorMap extends
     ORPCErrorConstructorMap<any> = ORPCErrorConstructorMap<any>,
   TMeta extends Meta = Meta,
 > = DecoratedMiddleware<
-  TContext,
-  TContext,
+  TInitialContext,
+  TCurrentContext,
   TInput,
   TOutput,
   TErrorConstructorMap,
