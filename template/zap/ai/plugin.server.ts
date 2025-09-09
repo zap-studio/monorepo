@@ -69,9 +69,7 @@ export function aiPlugin(
   {
     userAISettings: typeof userAISettings;
   },
-  {
-    procedures: typeof ai;
-  },
+  typeof ai,
   Record<string, AnyRpcMiddleware>,
   {
     getAISettingsService: typeof getAISettingsService;

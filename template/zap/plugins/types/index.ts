@@ -19,6 +19,7 @@ import type {
   AnyPgSelect,
   PgSelectPrepare,
   PgTableWithColumns,
+  TableConfig,
 } from "drizzle-orm/pg-core";
 import type { NextRequest, NextResponse } from "next/server";
 import type { ComponentType } from "react";
@@ -34,23 +35,40 @@ export type MiddlewareMap = Record<string, MiddlewareFn>;
 export type HookFn = (...args: any[]) => unknown;
 export type HookMap = Record<string, HookFn>;
 export type AnyZodSchema = z.ZodTypeAny;
-export type AnyDbQuery = PgSelectPrepare<AnyPgSelect>;
-export type AnyDbSchema = PgTableWithColumns<any>;
-export type AnyRpcProcedure = DecoratedProcedure<
-  Context,
-  Context,
-  AnyZodSchema,
-  AnyZodSchema,
-  ErrorMap,
-  Meta
+export type AnyDbQuery<T = AnyPgSelect> = PgSelectPrepare<
+  T extends AnyPgSelect ? T : any
 >;
-export type AnyRpcMiddleware = DecoratedMiddleware<
-  Context,
-  Context,
-  any,
-  any,
-  ORPCErrorConstructorMap<any>,
-  Meta
+export type AnyDbSchema<T = any> = PgTableWithColumns<
+  T extends TableConfig ? T : any
+>;
+export type AnyRpcProcedure<
+  TContext extends Context = Context,
+  TInputSchema extends AnyZodSchema = AnyZodSchema,
+  TOutputSchema extends AnyZodSchema = AnyZodSchema,
+  TErrorMap extends ErrorMap = ErrorMap,
+  TMeta extends Meta = Meta,
+> = DecoratedProcedure<
+  TContext,
+  TContext,
+  TInputSchema,
+  TOutputSchema,
+  TErrorMap,
+  TMeta
+>;
+export type AnyRpcMiddleware<
+  TContext extends Context = Context,
+  TInput = unknown,
+  TOutput = unknown,
+  TErrorConstructorMap extends
+    ORPCErrorConstructorMap<any> = ORPCErrorConstructorMap<any>,
+  TMeta extends Meta = Meta,
+> = DecoratedMiddleware<
+  TContext,
+  TContext,
+  TInput,
+  TOutput,
+  TErrorConstructorMap,
+  TMeta
 >;
 
 // Plugin interfaces
