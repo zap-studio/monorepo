@@ -15,12 +15,11 @@ import { encrypt } from "@/zap/crypto/encrypt";
 import { db } from "@/zap/db/providers/drizzle";
 import type { UpsertMode } from "@/zap/db/types";
 import { BadRequestError } from "@/zap/errors";
-
+import type { AIServerPluginConfig } from "@/zap/plugins/types/ai.plugin";
 import { getApiSettingsForUserAndProviderQuery } from "../db/providers/drizzle/queries";
 import { userAISettings } from "../db/providers/drizzle/schema";
-import { getModel } from "../lib";
 import type { AIProviderId, ModelName } from "../types";
-import { ZAP_AI_CONFIG } from "../zap.plugin.config";
+import { getModel } from "../utils";
 
 type GetAISettingsService = {
   userId: string;
@@ -176,12 +175,14 @@ export type StreamChatService = {
   userId: string;
   provider: AIProviderId;
   messages: UIMessage[];
+  config?: AIServerPluginConfig;
 };
 
 export async function streamChatService({
   userId,
   provider,
   messages,
+  config,
 }: StreamChatService) {
   const aiSettings = await getAISettingsService({ userId, provider });
 
@@ -196,13 +197,13 @@ export async function streamChatService({
   const result = streamText({
     model: getModel(provider, apiKey, model),
     messages: convertToModelMessages(messages),
-    system: ZAP_AI_CONFIG.SYSTEM_PROMPT,
-    maxOutputTokens: ZAP_AI_CONFIG.CHAT?.MAX_OUTPUT_TOKENS,
-    temperature: ZAP_AI_CONFIG.CHAT?.TEMPERATURE,
-    presencePenalty: ZAP_AI_CONFIG.CHAT?.PRESENCE_PENALTY,
-    frequencyPenalty: ZAP_AI_CONFIG.CHAT?.FREQUENCY_PENALTY,
-    stopSequences: ZAP_AI_CONFIG.CHAT?.STOP_SEQUENCES,
-    maxRetries: ZAP_AI_CONFIG.CHAT?.MAX_RETRIES,
+    system: config?.SYSTEM_PROMPT,
+    maxOutputTokens: config?.CHAT?.MAX_OUTPUT_TOKENS,
+    temperature: config?.CHAT?.TEMPERATURE,
+    presencePenalty: config?.CHAT?.PRESENCE_PENALTY,
+    frequencyPenalty: config?.CHAT?.FREQUENCY_PENALTY,
+    stopSequences: config?.CHAT?.STOP_SEQUENCES,
+    maxRetries: config?.CHAT?.MAX_RETRIES,
   });
 
   return streamToEventIterator(result.toUIMessageStream());
@@ -212,12 +213,14 @@ export type StreamCompletionService = {
   userId: string;
   provider: AIProviderId;
   prompt: string;
+  config?: AIServerPluginConfig;
 };
 
 export async function streamCompletionService({
   userId,
   provider,
   prompt,
+  config,
 }: StreamCompletionService) {
   const aiSettings = await getAISettingsService({
     userId,
@@ -235,13 +238,13 @@ export async function streamCompletionService({
   const result = streamText({
     model: getModel(provider, apiKey, model),
     prompt,
-    system: ZAP_AI_CONFIG.SYSTEM_PROMPT,
-    maxOutputTokens: ZAP_AI_CONFIG.COMPLETION?.MAX_OUTPUT_TOKENS,
-    temperature: ZAP_AI_CONFIG.COMPLETION?.TEMPERATURE,
-    presencePenalty: ZAP_AI_CONFIG.COMPLETION?.PRESENCE_PENALTY,
-    frequencyPenalty: ZAP_AI_CONFIG.COMPLETION?.FREQUENCY_PENALTY,
-    stopSequences: ZAP_AI_CONFIG.COMPLETION?.STOP_SEQUENCES,
-    maxRetries: ZAP_AI_CONFIG.COMPLETION?.MAX_RETRIES,
+    system: config?.SYSTEM_PROMPT,
+    maxOutputTokens: config?.COMPLETION?.MAX_OUTPUT_TOKENS,
+    temperature: config?.COMPLETION?.TEMPERATURE,
+    presencePenalty: config?.COMPLETION?.PRESENCE_PENALTY,
+    frequencyPenalty: config?.COMPLETION?.FREQUENCY_PENALTY,
+    stopSequences: config?.COMPLETION?.STOP_SEQUENCES,
+    maxRetries: config?.COMPLETION?.MAX_RETRIES,
   });
 
   return streamToEventIterator(result.toUIMessageStream());

@@ -1,5 +1,4 @@
-import type { ComponentType } from "react";
-import type { ZapServerPlugin } from "@/zap/plugins/types";
+import type { AnyComponent, ZapServerPlugin } from "@/zap/plugins/types";
 import type { BlogServerPluginConfig } from "@/zap/plugins/types/blog.plugin";
 import { checkBlogPathAccess } from "./authorization";
 import { LatestBlogPosts } from "./components/latest-blog-posts";
@@ -22,7 +21,7 @@ export function blogPlugin(
   "blog",
   BlogServerPluginConfig,
   Record<string, unknown>,
-  Record<string, ComponentType<unknown>>,
+  Record<string, AnyComponent>,
   { PostMetadataSchema: typeof PostMetadataSchema },
   {
     parseFrontmatter: typeof parseFrontmatter;
@@ -35,6 +34,8 @@ export function blogPlugin(
     formatDate: typeof formatDate;
     generateBlogPostMetadata: typeof generateBlogPostMetadata;
   },
+  Record<string, unknown>,
+  Record<string, unknown>,
   { checkBlogPathAccess: typeof checkBlogPathAccess },
   {
     LatestBlogPosts: typeof LatestBlogPosts;

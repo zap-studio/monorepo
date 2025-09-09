@@ -4,7 +4,4 @@ export type BlogServerPluginConfig = {
   MAX_BLOG_POSTS_IN_FOOTER: number;
 };
 
-// TODO: change that
-export type BlogClientPluginConfig = {
-  nothingForNow: null;
-};
+export type BlogClientPluginConfig = undefined;

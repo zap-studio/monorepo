@@ -1,11 +1,4 @@
-export type AIProviderId = "openai" | "mistral";
-
-export const AIProviderIdEnum = {
-  OPENAI: "openai",
-  MISTRAL: "mistral",
-} as const;
-
-export type AIPluginConfig = {
+export type AIServerPluginConfig = {
   COMPLETION?: {
     FREQUENCY_PENALTY?: number;
     MAX_OUTPUT_TOKENS?: number;
@@ -24,3 +17,5 @@ export type AIPluginConfig = {
   };
   SYSTEM_PROMPT: string;
 };
+
+export type AIClientPluginConfig = undefined;

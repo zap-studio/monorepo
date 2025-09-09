@@ -7,17 +7,51 @@
 
 /* biome-ignore-all lint/suspicious/noExplicitAny: see above */
 
+import type {
+  Context,
+  DecoratedMiddleware,
+  DecoratedProcedure,
+  ErrorMap,
+  Meta,
+  ORPCErrorConstructorMap,
+} from "@orpc/server";
+import type {
+  AnyPgSelect,
+  PgSelectPrepare,
+  PgTableWithColumns,
+} from "drizzle-orm/pg-core";
 import type { NextRequest, NextResponse } from "next/server";
 import type { ComponentType } from "react";
 import type z from "zod";
 
 // Shared aliases
-type AnyComponent = ComponentType<any>;
-type AnyFn = (...args: any[]) => unknown;
-type MiddlewareFn = (request: NextRequest) => NextResponse<unknown> | null;
-type MiddlewareMap = Record<string, MiddlewareFn>;
-type HookFn = (...args: unknown[]) => unknown;
-type HookMap = Record<string, HookFn>;
+export type AnyComponent = ComponentType<any>;
+export type AnyFn = (...args: any[]) => unknown;
+export type MiddlewareFn = (
+  request: NextRequest
+) => NextResponse<unknown> | null;
+export type MiddlewareMap = Record<string, MiddlewareFn>;
+export type HookFn = (...args: any[]) => unknown;
+export type HookMap = Record<string, HookFn>;
+export type AnyZodSchema = z.ZodTypeAny;
+export type AnyDbQuery = PgSelectPrepare<AnyPgSelect>;
+export type AnyDbSchema = PgTableWithColumns<any>;
+export type AnyRpcProcedure = DecoratedProcedure<
+  Context,
+  Context,
+  AnyZodSchema,
+  AnyZodSchema,
+  ErrorMap,
+  Meta
+>;
+export type AnyRpcMiddleware = DecoratedMiddleware<
+  Context,
+  Context,
+  any,
+  any,
+  ORPCErrorConstructorMap<any>,
+  Meta
+>;
 
 // Plugin interfaces
 export type BaseZapPlugin<
@@ -28,8 +62,10 @@ export type BaseZapPlugin<
     string,
     AnyComponent
   >,
-  TSchemas = Record<string, z.ZodTypeAny>,
+  TSchemas = Record<string, AnyZodSchema>,
   TUtils = Record<string, AnyFn>,
+  TTypes = Record<string, unknown>,
+  TData = Record<string, unknown>,
 > = {
   id: TId;
   config?: Partial<TConfig>;
@@ -37,6 +73,8 @@ export type BaseZapPlugin<
   providers?: TProviders;
   schemas?: TSchemas;
   utils?: TUtils;
+  types?: TTypes;
+  data?: TData;
 };
 
 export interface ZapServerPlugin<
@@ -47,20 +85,42 @@ export interface ZapServerPlugin<
     string,
     AnyComponent
   >,
-  TSchemas = Record<string, z.ZodTypeAny>,
+  TSchemas = Record<string, AnyZodSchema>,
   TUtils = Record<string, AnyFn>,
+  TTypes = Record<string, unknown>,
+  TData = Record<string, unknown>,
   TMiddleware extends MiddlewareMap = MiddlewareMap,
   TComponents = Record<string, AnyComponent>,
+  TDbQueries = Record<string, AnyDbQuery>,
+  TDbSchemas = Record<string, AnyDbSchema>,
+  TRpcProcedures = Record<string, AnyRpcProcedure>,
+  TRpcMiddlewares = Record<string, AnyRpcMiddleware>,
+  TServices = Record<string, AnyFn>,
 > extends BaseZapPlugin<
     TId,
     TConfig,
     TIntegrations,
     TProviders,
     TSchemas,
-    TUtils
+    TUtils,
+    TTypes,
+    TData
   > {
   middleware?: TMiddleware;
   components?: TComponents;
+  db?: {
+    providers?: {
+      drizzle?: {
+        queries?: TDbQueries;
+        schemas?: TDbSchemas;
+      };
+    };
+  };
+  rpc?: {
+    procedures?: TRpcProcedures;
+    middlewares?: TRpcMiddlewares;
+  };
+  services?: TServices;
 }
 
 export interface ZapClientPlugin<
@@ -71,8 +131,10 @@ export interface ZapClientPlugin<
     string,
     AnyComponent
   >,
-  TSchemas = Record<string, z.ZodTypeAny>,
+  TSchemas = Record<string, AnyZodSchema>,
   TUtils = Record<string, AnyFn>,
+  TTypes = Record<string, unknown>,
+  TData = Record<string, unknown>,
   THooks extends HookMap = HookMap,
   TComponents = Record<string, AnyComponent>,
 > extends BaseZapPlugin<
@@ -81,7 +143,9 @@ export interface ZapClientPlugin<
     TIntegrations,
     TProviders,
     TSchemas,
-    TUtils
+    TUtils,
+    TTypes,
+    TData
   > {
   hooks?: THooks;
   components?: TComponents;
