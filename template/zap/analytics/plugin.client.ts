@@ -1,4 +1,4 @@
-import type { ZapClientPlugin } from "@/zap/plugins/types";
+import type { IntegrationsMap, ZapClientPlugin } from "@/zap/plugins/types";
 import type { AnalyticsClientPluginConfig } from "@/zap/plugins/types/analytics.plugin";
 import { AnalyticsProvider } from "./providers/analytics.provider";
 
@@ -7,7 +7,7 @@ export function analyticsClientPlugin(
 ): ZapClientPlugin<
   "analytics",
   AnalyticsClientPluginConfig,
-  Record<string, unknown>,
+  IntegrationsMap,
   { AnalyticsProvider: typeof AnalyticsProvider }
 > {
   return {

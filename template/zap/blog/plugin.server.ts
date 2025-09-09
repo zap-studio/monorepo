@@ -1,4 +1,10 @@
-import type { AnyComponent, ZapServerPlugin } from "@/zap/plugins/types";
+import type {
+  AnyComponentMap,
+  AnyZodSchemaMap,
+  IntegrationsMap,
+  TypesMap,
+  ZapServerPlugin,
+} from "@/zap/plugins/types";
 import type { BlogServerPluginConfig } from "@/zap/plugins/types/blog.plugin";
 import { checkBlogPathAccess } from "./authorization";
 import { LatestBlogPosts } from "./components/latest-blog-posts";
@@ -20,8 +26,8 @@ export function blogPlugin(
 ): ZapServerPlugin<
   "blog",
   BlogServerPluginConfig,
-  Record<string, unknown>,
-  Record<string, AnyComponent>,
+  IntegrationsMap,
+  AnyComponentMap,
   { PostMetadataSchema: typeof PostMetadataSchema },
   {
     parseFrontmatter: typeof parseFrontmatter;
@@ -34,8 +40,8 @@ export function blogPlugin(
     formatDate: typeof formatDate;
     generateBlogPostMetadata: typeof generateBlogPostMetadata;
   },
-  Record<string, unknown>,
-  Record<string, unknown>,
+  TypesMap,
+  AnyZodSchemaMap,
   { checkBlogPathAccess: typeof checkBlogPathAccess },
   {
     LatestBlogPosts: typeof LatestBlogPosts;

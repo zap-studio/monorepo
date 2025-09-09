@@ -1,4 +1,8 @@
-import type { AnyComponent, ZapClientPlugin } from "@/zap/plugins/types";
+import type {
+  AnyComponentMap,
+  IntegrationsMap,
+  ZapClientPlugin,
+} from "@/zap/plugins/types";
 import type { AIClientPluginConfig } from "@/zap/plugins/types/ai.plugin";
 import { SettingsSheet } from "./components/settings-sheet";
 import { AI_PROVIDERS_OBJECT, DEFAULT_MODEL, ModelsByProvider } from "./data";
@@ -24,8 +28,8 @@ import { getModel, getProviderName } from "./utils";
 export function aiClientPlugin(): ZapClientPlugin<
   "ai",
   AIClientPluginConfig,
-  Record<string, unknown>,
-  Record<string, AnyComponent>,
+  IntegrationsMap,
+  AnyComponentMap,
   {
     AIProviderIdSchema: typeof AIProviderIdSchema;
     ModelNameSchema: typeof ModelNameSchema;

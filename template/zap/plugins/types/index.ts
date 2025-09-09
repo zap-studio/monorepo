@@ -8,12 +8,8 @@
 /* biome-ignore-all lint/suspicious/noExplicitAny: see above */
 
 import type {
-  Context,
-  DecoratedMiddleware,
-  DecoratedProcedure,
-  ErrorMap,
-  Meta,
-  ORPCErrorConstructorMap,
+  AnyMiddleware as AnyRpcMiddleware,
+  AnyProcedure as AnyRpcProcedure,
 } from "@orpc/server";
 import type {
   AnyPgSelect,
@@ -26,52 +22,35 @@ import type { ComponentType } from "react";
 import type z from "zod";
 
 // Shared aliases
+export type IntegrationsMap = Record<string, unknown>;
+
 export type AnyComponent = ComponentType<any>;
+export type AnyComponentMap = Record<string, AnyComponent>;
+
 export type AnyFn = (...args: any[]) => unknown;
+export type AnyFnMap = Record<string, AnyFn>;
+
 export type MiddlewareFn = (
   request: NextRequest
 ) => NextResponse<unknown> | null;
 export type MiddlewareMap = Record<string, MiddlewareFn>;
+
 export type HookFn = (...args: any[]) => unknown;
 export type HookMap = Record<string, HookFn>;
+
+export type TypesMap = Record<string, unknown>;
+
 export type AnyZodSchema = z.ZodTypeAny;
+export type AnyZodSchemaMap = Record<string, AnyZodSchema>;
+
 export type AnyDbQuery<T = AnyPgSelect> = PgSelectPrepare<
   T extends AnyPgSelect ? T : any
 >;
 export type AnyDbSchema<T = any> = PgTableWithColumns<
   T extends TableConfig ? T : any
 >;
-export type AnyRpcProcedure<
-  TInitialContext extends Context = Context,
-  TCurrentContext extends Context = Context,
-  TInputSchema extends AnyZodSchema = AnyZodSchema,
-  TOutputSchema extends AnyZodSchema = AnyZodSchema,
-  TErrorMap extends ErrorMap = ErrorMap,
-  TMeta extends Meta = Meta,
-> = DecoratedProcedure<
-  TInitialContext,
-  TCurrentContext,
-  TInputSchema,
-  TOutputSchema,
-  TErrorMap,
-  TMeta
->;
-export type AnyRpcMiddleware<
-  TInitialContext extends Context = Context,
-  TCurrentContext extends Context = Context,
-  TInput = unknown,
-  TOutput = unknown,
-  TErrorConstructorMap extends
-    ORPCErrorConstructorMap<any> = ORPCErrorConstructorMap<any>,
-  TMeta extends Meta = Meta,
-> = DecoratedMiddleware<
-  TInitialContext,
-  TCurrentContext,
-  TInput,
-  TOutput,
-  TErrorConstructorMap,
-  TMeta
->;
+export type AnyRpcMiddlewareMap = Record<string, AnyRpcMiddleware>;
+export type AnyRpcProcedureMap = Record<string, AnyRpcProcedure>;
 
 // Plugin interfaces
 export type BaseZapPlugin<
