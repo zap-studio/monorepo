@@ -1,5 +1,5 @@
 import type {
-  AnyComponentMap,
+  ComponentMap,
   IntegrationsMap,
   ZapClientPlugin,
 } from "@/zap/plugins/types";
@@ -29,7 +29,7 @@ export function aiClientPlugin(): ZapClientPlugin<
   "ai",
   AIClientPluginConfig,
   IntegrationsMap,
-  AnyComponentMap,
+  ComponentMap,
   {
     AIProviderIdSchema: typeof AIProviderIdSchema;
     ModelNameSchema: typeof ModelNameSchema;

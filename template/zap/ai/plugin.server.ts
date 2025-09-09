@@ -1,8 +1,8 @@
 import type {
-  AnyComponentMap,
-  AnyRpcMiddlewareMap,
+  ComponentMap,
   IntegrationsMap,
   MiddlewareMap,
+  RpcMiddlewareMap,
   ZapServerPlugin,
 } from "@/zap/plugins/types";
 import type { AIServerPluginConfig } from "@/zap/plugins/types/ai.plugin";
@@ -39,7 +39,7 @@ export function aiPlugin(
   "ai",
   AIServerPluginConfig,
   IntegrationsMap,
-  AnyComponentMap,
+  ComponentMap,
   {
     AIProviderIdSchema: typeof AIProviderIdSchema;
     ModelNameSchema: typeof ModelNameSchema;
@@ -63,7 +63,7 @@ export function aiPlugin(
     ModelsByProvider: typeof ModelsByProvider;
   },
   MiddlewareMap,
-  AnyComponentMap,
+  ComponentMap,
   {
     getApiSettingsForUserAndProviderQuery: typeof getApiSettingsForUserAndProviderQuery;
   },
@@ -71,7 +71,7 @@ export function aiPlugin(
     userAISettings: typeof userAISettings;
   },
   typeof ai,
-  AnyRpcMiddlewareMap,
+  RpcMiddlewareMap,
   {
     getAISettingsService: typeof getAISettingsService;
     deleteAPIKeyService: typeof deleteAPIKeyService;

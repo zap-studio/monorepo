@@ -1,38 +1,36 @@
 /*
- * NOTE: `any` is intentionally used in `ComponentType<any>` and other places
- * to preserve flexibility for plugin authors. Restricting types here would
- * break the generic nature of the plugin system. Biome lint for explicit `any`
+ * NOTE: `any` is intentionally used to preserve flexibility for plugin authors. Restricting types here would
+ * break the generic nature of the plugin system. Thus, Biome lint for explicit `any`
  * is ignored for this file.
  */
 
 /* biome-ignore-all lint/suspicious/noExplicitAny: see above */
 
 import type {
-  AnyMiddleware as AnyRpcMiddleware,
-  AnyProcedure as AnyRpcProcedure,
+  AnyMiddleware as RpcMiddleware,
+  AnyProcedure as RpcProcedure,
 } from "@orpc/server";
 import type {
   AnyPgSelect,
+  AnyPgTable,
   PgSelectPrepare,
-  PgTableWithColumns,
   TableConfig,
 } from "drizzle-orm/pg-core";
 import type { NextRequest, NextResponse } from "next/server";
 import type { ComponentType } from "react";
 import type z from "zod";
 
-// Shared aliases
+/* ------------------------------ Shared Aliases ----------------------------- */
+
 export type IntegrationsMap = Record<string, unknown>;
 
 export type AnyComponent = ComponentType<any>;
-export type AnyComponentMap = Record<string, AnyComponent>;
+export type ComponentMap = Record<string, AnyComponent>;
 
 export type AnyFn = (...args: any[]) => unknown;
-export type AnyFnMap = Record<string, AnyFn>;
+export type FnMap = Record<string, AnyFn>;
 
-export type MiddlewareFn = (
-  request: NextRequest
-) => NextResponse<unknown> | null;
+export type MiddlewareFn = (req: NextRequest) => NextResponse<unknown> | null;
 export type MiddlewareMap = Record<string, MiddlewareFn>;
 
 export type HookFn = (...args: any[]) => unknown;
@@ -40,30 +38,26 @@ export type HookMap = Record<string, HookFn>;
 
 export type TypesMap = Record<string, unknown>;
 
-export type AnyZodSchema = z.ZodTypeAny;
-export type AnyZodSchemaMap = Record<string, AnyZodSchema>;
+export type ZodSchema = z.ZodTypeAny;
+export type ZodSchemaMap = Record<string, ZodSchema>;
 
-export type AnyDbQuery<T = AnyPgSelect> = PgSelectPrepare<
-  T extends AnyPgSelect ? T : any
->;
-export type AnyDbSchema<T = any> = PgTableWithColumns<
-  T extends TableConfig ? T : any
->;
-export type AnyRpcMiddlewareMap = Record<string, AnyRpcMiddleware>;
-export type AnyRpcProcedureMap = Record<string, AnyRpcProcedure>;
+export type DbQuery<T extends AnyPgSelect = AnyPgSelect> = PgSelectPrepare<T>;
+// biome-ignore lint/complexity/noBannedTypes: `{}` is used intentionally as the default type parameter to provide a permissive, backward-compatible fallback when no Drizzle table config is supplied by plugin authors. Alternatives like `object`, `unknown`, or `Record<string, never>` change assignability/variance and break existing usages; safety is maintained by `T extends Partial<TableConfig>`.
+export type DbSchema<T extends Partial<TableConfig> = {}> = AnyPgTable<T>;
 
-// Plugin interfaces
+export type RpcMiddlewareMap = Record<string, RpcMiddleware>;
+export type RpcProcedureMap = Record<string, RpcProcedure>;
+
+/* ---------------------------- Base Plugin Type ---------------------------- */
+
 export type BaseZapPlugin<
   TId extends string = string,
   TConfig = Record<string, unknown>,
   TIntegrations = Record<string, unknown>,
-  TProviders extends Record<string, AnyComponent> = Record<
-    string,
-    AnyComponent
-  >,
-  TSchemas = Record<string, AnyZodSchema>,
-  TUtils = Record<string, AnyFn>,
-  TTypes = Record<string, unknown>,
+  TProviders extends ComponentMap = ComponentMap,
+  TSchemas extends ZodSchemaMap = ZodSchemaMap,
+  TUtils extends FnMap = FnMap,
+  TTypes extends TypesMap = TypesMap,
   TData = Record<string, unknown>,
 > = {
   id: TId;
@@ -76,25 +70,24 @@ export type BaseZapPlugin<
   data?: TData;
 };
 
+/* --------------------------- Server Plugin Type --------------------------- */
+
 export interface ZapServerPlugin<
   TId extends string = string,
   TConfig = Record<string, unknown>,
   TIntegrations = Record<string, unknown>,
-  TProviders extends Record<string, AnyComponent> = Record<
-    string,
-    AnyComponent
-  >,
-  TSchemas = Record<string, AnyZodSchema>,
-  TUtils = Record<string, AnyFn>,
-  TTypes = Record<string, unknown>,
+  TProviders extends ComponentMap = ComponentMap,
+  TSchemas extends ZodSchemaMap = ZodSchemaMap,
+  TUtils extends FnMap = FnMap,
+  TTypes extends TypesMap = TypesMap,
   TData = Record<string, unknown>,
   TMiddleware extends MiddlewareMap = MiddlewareMap,
-  TComponents = Record<string, AnyComponent>,
-  TDbQueries = Record<string, AnyDbQuery>,
-  TDbSchemas = Record<string, AnyDbSchema>,
-  TRpcProcedures = Record<string, AnyRpcProcedure>,
-  TRpcMiddlewares = Record<string, AnyRpcMiddleware>,
-  TServices = Record<string, AnyFn>,
+  TComponents extends ComponentMap = ComponentMap,
+  TDbQueries extends Record<string, DbQuery> = Record<string, DbQuery>,
+  TDbSchemas extends Record<string, DbSchema> = Record<string, DbSchema>,
+  TRpcProcedures extends RpcProcedureMap = RpcProcedureMap,
+  TRpcMiddlewares extends RpcMiddlewareMap = RpcMiddlewareMap,
+  TServices extends FnMap = FnMap,
 > extends BaseZapPlugin<
     TId,
     TConfig,
@@ -122,20 +115,19 @@ export interface ZapServerPlugin<
   services?: TServices;
 }
 
+/* --------------------------- Client Plugin Type --------------------------- */
+
 export interface ZapClientPlugin<
   TId extends string = string,
   TConfig = Record<string, unknown>,
   TIntegrations = Record<string, unknown>,
-  TProviders extends Record<string, AnyComponent> = Record<
-    string,
-    AnyComponent
-  >,
-  TSchemas = Record<string, AnyZodSchema>,
-  TUtils = Record<string, AnyFn>,
-  TTypes = Record<string, unknown>,
+  TProviders extends ComponentMap = ComponentMap,
+  TSchemas extends ZodSchemaMap = ZodSchemaMap,
+  TUtils extends FnMap = FnMap,
+  TTypes extends TypesMap = TypesMap,
   TData = Record<string, unknown>,
   THooks extends HookMap = HookMap,
-  TComponents = Record<string, AnyComponent>,
+  TComponents extends ComponentMap = ComponentMap,
 > extends BaseZapPlugin<
     TId,
     TConfig,
@@ -150,6 +142,7 @@ export interface ZapClientPlugin<
   components?: TComponents;
 }
 
-// Plugin collections
+/* ------------------------- Plugin Collections ---------------------------- */
+
 export type ZapServerPlugins = Record<string, ZapServerPlugin>;
 export type ZapClientPlugins = Record<string, ZapClientPlugin>;
