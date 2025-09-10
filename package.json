@@ -12,7 +12,7 @@
     "clean": "rm -rf node_modules .turbo apps/*/.next apps/*/.source apps/*/node_modules core/node_modules core/.next packages/*/node_modules"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.2",
+    "@biomejs/biome": "2.2.4",
     "@changesets/cli": "^2.29.6",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.5",
