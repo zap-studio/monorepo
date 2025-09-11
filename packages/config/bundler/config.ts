@@ -5,7 +5,6 @@ export const bundlerConfig: UserConfig = {
   dts: {
     sourcemap: true,
   },
-  format: ["cjs", "esm"],
   exports: true,
   shims: true,
   sourcemap: true,

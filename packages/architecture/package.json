@@ -31,98 +31,29 @@
     "README.md"
   ],
   "exports": {
-    "./deps": {
-      "import": "./dist/deps.js",
-      "require": "./dist/deps.cjs"
-    },
-    "./files": {
-      "import": "./dist/files/index.js",
-      "require": "./dist/files/index.cjs"
-    },
-    "./files/components": {
-      "import": "./dist/files/components.js",
-      "require": "./dist/files/components.cjs"
-    },
-    "./files/config": {
-      "import": "./dist/files/config.js",
-      "require": "./dist/files/config.cjs"
-    },
-    "./files/docker": {
-      "import": "./dist/files/docker.js",
-      "require": "./dist/files/docker.cjs"
-    },
-    "./files/emails": {
-      "import": "./dist/files/emails.js",
-      "require": "./dist/files/emails.cjs"
-    },
-    "./files/errors": {
-      "import": "./dist/files/errors.js",
-      "require": "./dist/files/errors.cjs"
-    },
-    "./files/hooks": {
-      "import": "./dist/files/hooks.js",
-      "require": "./dist/files/hooks.cjs"
-    },
-    "./files/ide": {
-      "import": "./dist/files/ide.js",
-      "require": "./dist/files/ide.cjs"
-    },
-    "./files/instrumentation": {
-      "import": "./dist/files/instrumentation.js",
-      "require": "./dist/files/instrumentation.cjs"
-    },
-    "./files/libraries": {
-      "import": "./dist/files/libraries.js",
-      "require": "./dist/files/libraries.cjs"
-    },
-    "./files/metadata": {
-      "import": "./dist/files/metadata.js",
-      "require": "./dist/files/metadata.cjs"
-    },
-    "./files/middleware": {
-      "import": "./dist/files/middleware.js",
-      "require": "./dist/files/middleware.cjs"
-    },
-    "./files/pages": {
-      "import": "./dist/files/pages.js",
-      "require": "./dist/files/pages.cjs"
-    },
-    "./files/providers": {
-      "import": "./dist/files/providers.js",
-      "require": "./dist/files/providers.cjs"
-    },
-    "./files/root": {
-      "import": "./dist/files/root.js",
-      "require": "./dist/files/root.cjs"
-    },
-    "./files/routes": {
-      "import": "./dist/files/routes.js",
-      "require": "./dist/files/routes.cjs"
-    },
-    "./files/zap": {
-      "import": "./dist/files/zap.js",
-      "require": "./dist/files/zap.cjs"
-    },
-    "./helpers/link": {
-      "import": "./dist/helpers/link.js",
-      "require": "./dist/helpers/link.cjs"
-    },
-    "./ide": {
-      "import": "./dist/ide.js",
-      "require": "./dist/ide.cjs"
-    },
-    "./plugins": {
-      "import": "./dist/plugins.js",
-      "require": "./dist/plugins.cjs"
-    },
-    "./types": {
-      "import": "./dist/types.js",
-      "require": "./dist/types.cjs"
-    },
-    "./utils/plugins": {
-      "import": "./dist/utils/plugins.js",
-      "require": "./dist/utils/plugins.cjs"
-    },
+    "./deps": "./dist/deps.js",
+    "./files": "./dist/files/index.js",
+    "./files/components": "./dist/files/components.js",
+    "./files/config": "./dist/files/config.js",
+    "./files/docker": "./dist/files/docker.js",
+    "./files/emails": "./dist/files/emails.js",
+    "./files/errors": "./dist/files/errors.js",
+    "./files/hooks": "./dist/files/hooks.js",
+    "./files/ide": "./dist/files/ide.js",
+    "./files/instrumentation": "./dist/files/instrumentation.js",
+    "./files/libraries": "./dist/files/libraries.js",
+    "./files/metadata": "./dist/files/metadata.js",
+    "./files/middleware": "./dist/files/middleware.js",
+    "./files/pages": "./dist/files/pages.js",
+    "./files/providers": "./dist/files/providers.js",
+    "./files/root": "./dist/files/root.js",
+    "./files/routes": "./dist/files/routes.js",
+    "./files/zap": "./dist/files/zap.js",
+    "./helpers/link": "./dist/helpers/link.js",
+    "./ide": "./dist/ide.js",
+    "./plugins": "./dist/plugins.js",
+    "./types": "./dist/types.js",
+    "./utils/plugins": "./dist/utils/plugins.js",
     "./package.json": "./package.json"
   }
 }

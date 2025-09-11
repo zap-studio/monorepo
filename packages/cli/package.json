@@ -9,13 +9,10 @@
     "README.md",
     "dist"
   ],
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
   "module": "./dist/index.js",
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
+    ".": "./dist/index.js",
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -73,5 +70,5 @@
       "ultracite fix"
     ]
   },
-  "types": "./dist/index.d.cts"
+  "types": "./dist/index.d.ts"
 }
