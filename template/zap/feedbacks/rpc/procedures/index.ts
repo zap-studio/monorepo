@@ -1,9 +1,9 @@
 import "server-only";
 
-import { getServerPlugin } from "@/lib/zap.server";
 import { base } from "@/zap/api/rpc/middlewares";
 import { $authMiddleware } from "@/zap/auth/rpc/middlewares";
 import { withRpcHandler } from "@/zap/errors/handlers";
+import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { InputFeedbackSchema } from "../../schemas";
 import {
   getAverageRatingService,
@@ -11,32 +11,32 @@ import {
   submitFeedbackService,
 } from "../../services";
 
-const config = getServerPlugin("auth").config ?? {};
+const $submit = (authConfig: Partial<AuthServerPluginConfig>) =>
+  base
+    .use($authMiddleware(authConfig))
+    .input(InputFeedbackSchema)
+    .handler(
+      withRpcHandler(async ({ input, context }) => {
+        return await submitFeedbackService({
+          userId: context.session.session.userId,
+          ...input,
+        });
+      })
+    );
 
-const submit = base
-  .use($authMiddleware(config))
-  .input(InputFeedbackSchema)
-  .handler(
-    withRpcHandler(async ({ input, context }) => {
-      return await submitFeedbackService({
+const $getUserFeedback = (authConfig: Partial<AuthServerPluginConfig>) =>
+  base.use($authMiddleware(authConfig)).handler(
+    withRpcHandler(async ({ context }) => {
+      return await getUserFeedbackService({
         userId: context.session.session.userId,
-        ...input,
       });
     })
   );
 
-const getUserFeedback = base.use($authMiddleware(config)).handler(
-  withRpcHandler(async ({ context }) => {
-    return await getUserFeedbackService({
-      userId: context.session.session.userId,
-    });
-  })
-);
-
 const getAverageRating = base.handler(withRpcHandler(getAverageRatingService));
 
-export const feedbacks = {
-  submit,
-  getUserFeedback,
+export const feedbacks = (authConfig: Partial<AuthServerPluginConfig>) => ({
+  submit: $submit(authConfig),
+  getUserFeedback: $getUserFeedback(authConfig),
   getAverageRating,
-};
+});

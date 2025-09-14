@@ -3,7 +3,7 @@ import Link from "next/link";
 import { cache } from "react";
 
 import { isPluginEnabled } from "@/lib/plugins";
-import { getServerPlugin } from "@/lib/zap.server";
+import type { getServerPlugin } from "@/lib/zap.server";
 import { getNumberOfUsersService } from "@/zap/auth/services";
 import { ZapButton } from "@/zap/components/core/button";
 import { AnimatedSection } from "@/zap/components/misc/animated-section";
@@ -11,10 +11,13 @@ import { AnimatedText } from "@/zap/components/misc/animated-text";
 import { getAverageRatingService } from "@/zap/feedbacks/services";
 import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 
-const getStatsData = cache(async () => {
+type getStatsDataParams = {
+  auth: ReturnType<typeof getServerPlugin<"auth">>;
+};
+
+const getStatsData = cache(async ({ auth }: getStatsDataParams) => {
   try {
     const isFeedbacksEnabled = isPluginEnabled("feedbacks");
-    const auth = getServerPlugin("auth");
 
     const promises: Promise<unknown>[] = [];
 
@@ -54,9 +57,11 @@ const getStatsData = cache(async () => {
   }
 });
 
-export function HeroSection() {
-  const auth = getServerPlugin("auth");
+type HeroSectionProps = {
+  auth: ReturnType<typeof getServerPlugin<"auth">>;
+};
 
+export function HeroSection({ auth }: HeroSectionProps) {
   return (
     <AnimatedSection isNotSection>
       <div className="flex w-full items-center justify-center px-4 pb-32 md:px-6 md:pb-48">
@@ -75,7 +80,7 @@ export function HeroSection() {
               <Link
                 href={{
                   pathname:
-                    auth.config.SIGN_UP_URL ?? DEFAULT_CONFIG.auth.SIGN_UP_URL,
+                    auth.config?.SIGN_UP_URL ?? DEFAULT_CONFIG.auth.SIGN_UP_URL,
                 }}
               >
                 Get Started <ArrowRight className="h-4 w-4" />
@@ -93,21 +98,25 @@ export function HeroSection() {
             </ZapButton>
           </div>
 
-          <Stats />
+          <Stats auth={auth} />
         </div>
       </div>
     </AnimatedSection>
   );
 }
 
-export async function Stats() {
+type StatsProps = {
+  auth: ReturnType<typeof getServerPlugin<"auth">>;
+};
+
+export async function Stats({ auth }: StatsProps) {
   const {
     averageRating,
     totalFeedbacks,
     numberOfUsers,
     isFeedbacksEnabled,
     isAuthEnabled,
-  } = await getStatsData();
+  } = await getStatsData({ auth });
 
   const renderStars = () => {
     const fullStars = Math.floor(averageRating);

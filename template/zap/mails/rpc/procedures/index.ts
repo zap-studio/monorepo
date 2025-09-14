@@ -1,9 +1,9 @@
 import "server-only";
 
-import { getServerPlugin } from "@/lib/zap.server";
 import { base } from "@/zap/api/rpc/middlewares";
 import { $authMiddleware } from "@/zap/auth/rpc/middlewares";
 import { withRpcHandler } from "@/zap/errors/handlers";
+import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import {
   InputCanSendMailSchema,
   InputSendForgotPasswordMailSchema,
@@ -21,29 +21,31 @@ import {
   updateLastTimestampMailSentService,
 } from "../../services";
 
-const authConfig = getServerPlugin("auth").config ?? {};
+const $canSendMail = (authConfig: Partial<AuthServerPluginConfig>) =>
+  base
+    .use($authMiddleware(authConfig))
+    .input(InputCanSendMailSchema)
+    .handler(
+      withRpcHandler(async ({ context }) => {
+        return await canSendMailService({
+          userId: context.session.session.userId,
+        });
+      })
+    );
 
-const canSendMail = base
-  .use($authMiddleware(authConfig))
-  .input(InputCanSendMailSchema)
-  .handler(
-    withRpcHandler(async ({ context }) => {
-      return await canSendMailService({
-        userId: context.session.session.userId,
-      });
-    })
-  );
-
-const updateLastTimestampMailSent = base
-  .use($authMiddleware(authConfig))
-  .input(InputUpdateLastTimestampMailSentSchema)
-  .handler(
-    withRpcHandler(async ({ context }) => {
-      return await updateLastTimestampMailSentService({
-        userId: context.session.session.userId,
-      });
-    })
-  );
+const $updateLastTimestampMailSent = (
+  authConfig: Partial<AuthServerPluginConfig>
+) =>
+  base
+    .use($authMiddleware(authConfig))
+    .input(InputUpdateLastTimestampMailSentSchema)
+    .handler(
+      withRpcHandler(async ({ context }) => {
+        return await updateLastTimestampMailSentService({
+          userId: context.session.session.userId,
+        });
+      })
+    );
 
 const sendForgotPasswordMail = base
   .input(InputSendForgotPasswordMailSchema)
@@ -81,11 +83,11 @@ const sendMail = base.input(InputSendMailSchema).handler(
   })
 );
 
-export const mails = {
+export const mails = (authConfig: Partial<AuthServerPluginConfig>) => ({
   sendForgotPasswordMail,
   sendVerificationMail,
   sendMagicLinkMail,
   sendMail,
-  canSendMail,
-  updateLastTimestampMailSent,
-};
+  canSendMail: $canSendMail(authConfig),
+  updateLastTimestampMailSent: $updateLastTimestampMailSent(authConfig),
+});
