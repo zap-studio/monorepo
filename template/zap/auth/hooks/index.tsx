@@ -12,19 +12,21 @@ import { orpcQuery } from "@/zap/api/lib/orpc";
 import { AuthenticationError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
 import { ZAP_MAILS_CONFIG } from "@/zap/mails/zap.plugin.config";
-
+import type { AuthClientPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { betterAuthClient } from "../providers/better-auth/client";
-import type { LoginFormSchema, RegisterFormSchema } from "../schemas";
-import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
+import type { $LoginFormSchema, $RegisterFormSchema } from "../schemas";
 
 export function useNumberOfUsers() {
   return useZapQuery(orpcQuery.auth.getNumberOfUsers.queryOptions());
 }
 
-type LoginFormValues = z.infer<typeof LoginFormSchema>;
-type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
+type LoginFormValues = z.infer<ReturnType<typeof $LoginFormSchema>>;
+type RegisterFormValues = z.infer<ReturnType<typeof $RegisterFormSchema>>;
 
-export function useAuth(callbackURL?: string) {
+export function useAuth(
+  config: Partial<AuthClientPluginConfig>,
+  callbackURL?: string
+) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { cooldown, startCooldown, isInCooldown } = useCooldown();
@@ -33,7 +35,7 @@ export function useAuth(callbackURL?: string) {
     try {
       await betterAuthClient.sendVerificationEmail({
         email,
-        callbackURL: ZAP_AUTH_CONFIG.VERIFIED_EMAIL_PATH,
+        callbackURL: config.VERIFIED_EMAIL_PATH ?? "/mail-verified",
       });
       startCooldown(ZAP_MAILS_CONFIG.RATE_LIMIT_SECONDS);
     } catch (error) {
@@ -57,7 +59,7 @@ export function useAuth(callbackURL?: string) {
       }
 
       if (
-        ZAP_AUTH_CONFIG.REQUIRE_MAIL_VERIFICATION &&
+        !!config.REQUIRE_MAIL_VERIFICATION &&
         !response.data?.user?.emailVerified
       ) {
         await sendVerificationMail(email);
@@ -68,7 +70,7 @@ export function useAuth(callbackURL?: string) {
 
       toast.success("Login successful!");
       router.push(
-        loginCallbackURL || ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_IN
+        loginCallbackURL ?? config.REDIRECT_URL_AFTER_SIGN_IN ?? "/app"
       );
     } catch (error) {
       handleClientError(error);
@@ -95,7 +97,7 @@ export function useAuth(callbackURL?: string) {
         );
       }
 
-      if (ZAP_AUTH_CONFIG.REQUIRE_MAIL_VERIFICATION) {
+      if (config.REQUIRE_MAIL_VERIFICATION) {
         await sendVerificationMail(email);
         toast.success(
           "Registration successful! Please check your email to verify your account."
@@ -105,7 +107,7 @@ export function useAuth(callbackURL?: string) {
 
       toast.success("Registration successful!");
       router.push(
-        registerCallbackURL || ZAP_AUTH_CONFIG.REDIRECT_URL_AFTER_SIGN_UP
+        registerCallbackURL ?? config.REDIRECT_URL_AFTER_SIGN_UP ?? "/login"
       );
     } catch (error) {
       if (
@@ -114,7 +116,10 @@ export function useAuth(callbackURL?: string) {
         "code" in error &&
         (error as { code?: string }).code === "PASSWORD_COMPROMISED"
       ) {
-        toast.error(ZAP_AUTH_CONFIG.PASSWORD_COMPROMISED_MESSAGE);
+        toast.error(
+          config.PASSWORD_COMPROMISED_MESSAGE ??
+            "This password has been compromised. Please choose a different one."
+        );
         return;
       }
 

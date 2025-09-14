@@ -7,7 +7,7 @@ const DEFAULT_MAX_POSTS = 3;
 export async function LatestBlogPosts({
   config,
 }: {
-  config?: Partial<BlogServerPluginConfig>;
+  config: Partial<BlogServerPluginConfig>;
 }) {
   const posts = await getBlogPostsMetadata(config);
 

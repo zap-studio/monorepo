@@ -14,18 +14,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/zap/components/core/button";
-
+import type { AuthClientPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { useAuth } from "../../hooks";
-import { RegisterFormSchema } from "../../schemas";
+import { $RegisterFormSchema } from "../../schemas";
 
-type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
+type RegisterFormValues = z.infer<ReturnType<typeof $RegisterFormSchema>>;
 
-export function RegisterForm() {
+export function RegisterForm(config: Partial<AuthClientPluginConfig>) {
   const { isInCooldown, cooldown, isSubmitting, handleRegisterSubmit } =
     useAuth();
 
   const form = useForm<RegisterFormValues>({
-    resolver: zodResolver(RegisterFormSchema),
+    resolver: zodResolver($RegisterFormSchema(config)),
     defaultValues: {
       name: "",
       email: "",

@@ -1,6 +1,7 @@
 import "client-only";
 
 import { analyticsClientPlugin } from "@/zap/analytics/plugin.client";
+import { authClientPlugin } from "@/zap/auth/plugin.client";
 import { blogClientPlugin } from "@/zap/blog/plugin.client";
 import { zap } from "@/zap/plugins/utils";
 
@@ -9,6 +10,7 @@ export const zapClient = zap([
   analyticsClientPlugin({
     ENABLE_POSTHOG: false,
   }),
+  authClientPlugin({}),
   blogClientPlugin(),
 ] as const);
 

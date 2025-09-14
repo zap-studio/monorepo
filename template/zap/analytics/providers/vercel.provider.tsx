@@ -6,11 +6,11 @@ import type { AnalyticsServerPluginConfig } from "@/zap/plugins/types/analytics.
 export function VercelProvider({
   config,
 }: {
-  config?: Partial<AnalyticsServerPluginConfig>;
+  config: Partial<AnalyticsServerPluginConfig>;
 }) {
-  const enableVercelAnalytics = VERCEL && !!config?.ENABLE_VERCEL_ANALYTICS;
+  const enableVercelAnalytics = VERCEL && !!config.ENABLE_VERCEL_ANALYTICS;
   const enableVercelSpeedInsights =
-    VERCEL && !!config?.ENABLE_VERCEL_SPEED_INSIGHTS;
+    VERCEL && !!config.ENABLE_VERCEL_SPEED_INSIGHTS;
 
   return (
     <>

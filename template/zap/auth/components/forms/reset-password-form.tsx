@@ -19,40 +19,41 @@ import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/zap/components/core/button";
 import { AuthenticationError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
-
+import type { AuthClientPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { betterAuthClient } from "../../providers/better-auth/client";
-import { ZAP_AUTH_CONFIG } from "../../zap.plugin.config";
 
-const formSchema = z
-  .object({
-    password: z
-      .string()
-      .min(
-        ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH,
-        `Password must be at least ${ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH} characters`
-      ),
-    confirmPassword: z
-      .string()
-      .min(
-        ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH,
-        `Password must be at least ${ZAP_AUTH_CONFIG.MINIMUM_PASSWORD_LENGTH} characters`
-      ),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+const $formSchema = (config: Partial<AuthClientPluginConfig>) => {
+  return z
+    .object({
+      password: z
+        .string()
+        .min(
+          config.MINIMUM_PASSWORD_LENGTH ?? 8,
+          `Password must be at least ${config.MINIMUM_PASSWORD_LENGTH ?? 8} characters`
+        ),
+      confirmPassword: z
+        .string()
+        .min(
+          config.MINIMUM_PASSWORD_LENGTH ?? 8,
+          `Password must be at least ${config.MINIMUM_PASSWORD_LENGTH ?? 8} characters`
+        ),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: "Passwords don't match",
+      path: ["confirmPassword"],
+    });
+};
 
-type FormSchema = z.infer<typeof formSchema>;
+type FormSchema = z.infer<ReturnType<typeof $formSchema>>;
 
-export function ResetPasswordForm() {
+export function ResetPasswordForm(config: Partial<AuthClientPluginConfig>) {
   const [submitting, setSubmitting] = useState(false);
   const [token, setToken] = useState<string | null>(null);
 
   const router = useRouter();
 
   const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver($formSchema(config)),
     defaultValues: {
       password: "",
       confirmPassword: "",
@@ -89,7 +90,10 @@ export function ResetPasswordForm() {
         "code" in error &&
         (error as { code?: string }).code === "PASSWORD_COMPROMISED"
       ) {
-        toast.error(ZAP_AUTH_CONFIG.PASSWORD_COMPROMISED_MESSAGE);
+        toast.error(
+          config.PASSWORD_COMPROMISED_MESSAGE ??
+            "This password has been exposed in a data breach. Please choose a stronger, unique password."
+        );
         return;
       }
 

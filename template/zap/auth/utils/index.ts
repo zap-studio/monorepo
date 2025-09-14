@@ -1,11 +1,11 @@
 import "server-only";
 
 import { HttpStatus } from "@/zap/errors";
-import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
+import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 
-export function redirectToLogin() {
+export function redirectToLogin(config: Partial<AuthServerPluginConfig>) {
   return Response.redirect(
-    ZAP_AUTH_CONFIG.LOGIN_URL,
+    config?.LOGIN_URL ?? "/login",
     HttpStatus.TEMPORARY_REDIRECT
   );
 }

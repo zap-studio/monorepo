@@ -4,9 +4,8 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { $fetch } from "@/lib/fetch";
-
+import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import type { Session } from "../providers/better-auth/client";
-import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 
 /**
  * Checks if the current path is a public path that doesn't require authentication.
@@ -14,8 +13,14 @@ import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
  * @param pathname - The current pathname
  * @returns boolean indicating if the path is public
  */
-export function isPublicPath(pathname: string): boolean {
-  return ZAP_AUTH_CONFIG.PUBLIC_PATHS.includes(pathname);
+export function isPublicPath(
+  pathname: string,
+  config: Partial<AuthServerPluginConfig>
+): boolean {
+  if (!config.PUBLIC_PATHS) {
+    return false;
+  }
+  return config.PUBLIC_PATHS.includes(pathname);
 }
 
 /**
@@ -26,11 +31,12 @@ export function isPublicPath(pathname: string): boolean {
  * @returns NextResponse to continue with the request if allowed, otherwise null
  */
 export function checkPublicPathAccess(
-  request: NextRequest
+  request: NextRequest,
+  config: Partial<AuthServerPluginConfig>
 ): NextResponse | null {
   const { pathname } = request.nextUrl;
 
-  if (isPublicPath(pathname)) {
+  if (isPublicPath(pathname, config)) {
     const requestHeaders = new Headers(request.headers);
 
     const response = NextResponse.next({
@@ -51,9 +57,10 @@ export function checkPublicPathAccess(
  */
 export function createLoginRedirect(
   request: NextRequest,
-  pathname: string
+  pathname: string,
+  config: Partial<AuthServerPluginConfig>
 ): NextResponse {
-  const loginUrl = new URL(ZAP_AUTH_CONFIG.LOGIN_URL, request.url);
+  const loginUrl = new URL(config.LOGIN_URL ?? "/login", request.url);
   loginUrl.searchParams.set("redirect", pathname);
   return NextResponse.redirect(loginUrl);
 }
@@ -63,8 +70,8 @@ export function createLoginRedirect(
  *
  * @returns string representing the login URL
  */
-export function getLoginUrl(): string {
-  return ZAP_AUTH_CONFIG.LOGIN_URL;
+export function getLoginUrl(config: Partial<AuthServerPluginConfig>): string {
+  return config.LOGIN_URL ?? "/login";
 }
 
 /**

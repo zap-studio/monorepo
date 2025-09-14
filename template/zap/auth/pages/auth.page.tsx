@@ -10,9 +10,8 @@ import {
 import { isPluginEnabled } from "@/lib/plugins";
 import { cn } from "@/lib/utils";
 import { ZAP_LEGAL_CONFIG } from "@/zap/legal/zap.plugin.config";
-
+import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { SocialProviderButton } from "../components/social-provider-button";
-import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 
 type AuthPageProps = {
   title: string;
@@ -23,6 +22,7 @@ type AuthPageProps = {
     linkText: string;
     linkHref: string;
   };
+  config: Partial<AuthServerPluginConfig>;
 };
 
 const isLegalEnabled = isPluginEnabled("legal");
@@ -32,6 +32,7 @@ export function _AuthPage({
   description,
   form,
   bottomText,
+  config,
 }: AuthPageProps) {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted/50 p-6 md:p-10">
@@ -47,14 +48,14 @@ export function _AuthPage({
           <Card className="border shadow-none">
             <CardHeader className="text-center">
               <CardTitle className="text-xl">{title}</CardTitle>
-              {ZAP_AUTH_CONFIG.ENABLE_SOCIAL_PROVIDER && description && (
+              {config.ENABLE_SOCIAL_PROVIDER && description && (
                 <CardDescription>{description}</CardDescription>
               )}
             </CardHeader>
 
             <CardContent>
               <div className="grid gap-6">
-                {ZAP_AUTH_CONFIG.ENABLE_SOCIAL_PROVIDER && (
+                {config.ENABLE_SOCIAL_PROVIDER && (
                   <>
                     <SocialProviders />
                     <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-border after:border-t">
@@ -87,8 +88,13 @@ export function _AuthPage({
   );
 }
 
-function SocialProviders() {
-  const providers = ZAP_AUTH_CONFIG.PROVIDERS;
+function SocialProviders(config: Partial<AuthServerPluginConfig>) {
+  const providers = config.PROVIDERS;
+
+  if (!providers || providers.length === 0) {
+    return null;
+  }
+
   return (
     <div className="flex flex-col gap-4">
       {providers.map((provider) => (

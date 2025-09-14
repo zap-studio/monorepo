@@ -3,12 +3,11 @@ import "client-only";
 
 import Link from "next/link";
 import { ZapButton } from "@/zap/components/core/button";
+import type { AuthClientPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { ZAP_CORE_CONFIG } from "@/zap.config";
-
 import { betterAuthClient } from "../providers/better-auth/client";
-import { ZAP_AUTH_CONFIG } from "../zap.plugin.config";
 
-export function SessionButton() {
+export function SessionButton(config: Partial<AuthClientPluginConfig>) {
   const { data: result } = betterAuthClient.useSession();
   const session = result?.session;
 
@@ -25,14 +24,14 @@ export function SessionButton() {
       <ZapButton asChild variant="ghost">
         <Link
           className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground active:text-foreground"
-          href={{ pathname: ZAP_AUTH_CONFIG.LOGIN_URL }}
+          href={{ pathname: config.LOGIN_URL ?? "/login" }}
         >
           Login
         </Link>
       </ZapButton>
 
       <ZapButton asChild size="sm">
-        <Link href={{ pathname: ZAP_AUTH_CONFIG.SIGN_UP_URL }}>
+        <Link href={{ pathname: config.SIGN_UP_URL ?? "/register" }}>
           Get Started
         </Link>
       </ZapButton>

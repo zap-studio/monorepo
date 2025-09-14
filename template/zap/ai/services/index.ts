@@ -175,7 +175,7 @@ export type StreamChatService = {
   userId: string;
   provider: AIProviderId;
   messages: UIMessage[];
-  config?: AIServerPluginConfig;
+  config: AIServerPluginConfig;
 };
 
 export async function streamChatService({
@@ -197,13 +197,13 @@ export async function streamChatService({
   const result = streamText({
     model: getModel(provider, apiKey, model),
     messages: convertToModelMessages(messages),
-    system: config?.SYSTEM_PROMPT,
-    maxOutputTokens: config?.CHAT?.MAX_OUTPUT_TOKENS,
-    temperature: config?.CHAT?.TEMPERATURE,
-    presencePenalty: config?.CHAT?.PRESENCE_PENALTY,
-    frequencyPenalty: config?.CHAT?.FREQUENCY_PENALTY,
-    stopSequences: config?.CHAT?.STOP_SEQUENCES,
-    maxRetries: config?.CHAT?.MAX_RETRIES,
+    system: config.SYSTEM_PROMPT,
+    maxOutputTokens: config.CHAT?.MAX_OUTPUT_TOKENS,
+    temperature: config.CHAT?.TEMPERATURE,
+    presencePenalty: config.CHAT?.PRESENCE_PENALTY,
+    frequencyPenalty: config.CHAT?.FREQUENCY_PENALTY,
+    stopSequences: config.CHAT?.STOP_SEQUENCES,
+    maxRetries: config.CHAT?.MAX_RETRIES,
   });
 
   return streamToEventIterator(result.toUIMessageStream());
@@ -213,7 +213,7 @@ export type StreamCompletionService = {
   userId: string;
   provider: AIProviderId;
   prompt: string;
-  config?: AIServerPluginConfig;
+  config: AIServerPluginConfig;
 };
 
 export async function streamCompletionService({
@@ -238,13 +238,13 @@ export async function streamCompletionService({
   const result = streamText({
     model: getModel(provider, apiKey, model),
     prompt,
-    system: config?.SYSTEM_PROMPT,
-    maxOutputTokens: config?.COMPLETION?.MAX_OUTPUT_TOKENS,
-    temperature: config?.COMPLETION?.TEMPERATURE,
-    presencePenalty: config?.COMPLETION?.PRESENCE_PENALTY,
-    frequencyPenalty: config?.COMPLETION?.FREQUENCY_PENALTY,
-    stopSequences: config?.COMPLETION?.STOP_SEQUENCES,
-    maxRetries: config?.COMPLETION?.MAX_RETRIES,
+    system: config.SYSTEM_PROMPT,
+    maxOutputTokens: config.COMPLETION?.MAX_OUTPUT_TOKENS,
+    temperature: config.COMPLETION?.TEMPERATURE,
+    presencePenalty: config.COMPLETION?.PRESENCE_PENALTY,
+    frequencyPenalty: config.COMPLETION?.FREQUENCY_PENALTY,
+    stopSequences: config.COMPLETION?.STOP_SEQUENCES,
+    maxRetries: config.COMPLETION?.MAX_RETRIES,
   });
 
   return streamToEventIterator(result.toUIMessageStream());

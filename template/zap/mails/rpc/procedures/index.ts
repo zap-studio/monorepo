@@ -1,7 +1,8 @@
 import "server-only";
 
+import { getServerPlugin } from "@/lib/zap.server";
 import { base } from "@/zap/api/rpc/middlewares";
-import { authMiddleware } from "@/zap/auth/rpc/middlewares";
+import { $authMiddleware } from "@/zap/auth/rpc/middlewares";
 import { withRpcHandler } from "@/zap/errors/handlers";
 import {
   InputCanSendMailSchema,
@@ -20,8 +21,10 @@ import {
   updateLastTimestampMailSentService,
 } from "../../services";
 
+const authConfig = getServerPlugin("auth").config ?? {};
+
 const canSendMail = base
-  .use(authMiddleware)
+  .use($authMiddleware(authConfig))
   .input(InputCanSendMailSchema)
   .handler(
     withRpcHandler(async ({ context }) => {
@@ -32,7 +35,7 @@ const canSendMail = base
   );
 
 const updateLastTimestampMailSent = base
-  .use(authMiddleware)
+  .use($authMiddleware(authConfig))
   .input(InputUpdateLastTimestampMailSentSchema)
   .handler(
     withRpcHandler(async ({ context }) => {

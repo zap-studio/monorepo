@@ -72,7 +72,7 @@ export async function getBlogPosts(config?: Partial<BlogServerPluginConfig>) {
 }
 
 export async function getBlogPostsMetadata(
-  config?: Partial<BlogServerPluginConfig>
+  config: Partial<BlogServerPluginConfig>
 ) {
   const posts = await getBlogPosts(config);
   return posts.map((post) => ({
@@ -83,10 +83,10 @@ export async function getBlogPostsMetadata(
 
 export async function getBlogPost(
   slug: string,
-  config?: Partial<BlogServerPluginConfig>
+  config: Partial<BlogServerPluginConfig>
 ) {
   try {
-    const BLOG_DIR = config?.DATA_DIR ?? "zap/blog/data";
+    const BLOG_DIR = config.DATA_DIR ?? "zap/blog/data";
     const { metadata, content } = await readMDXFile(
       path.join(BLOG_DIR, `${slug}.mdx`)
     );

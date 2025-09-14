@@ -3,8 +3,8 @@ import Link from "next/link";
 import { cache } from "react";
 
 import { isPluginEnabled } from "@/lib/plugins";
+import { getServerPlugin } from "@/lib/zap.server";
 import { getNumberOfUsersService } from "@/zap/auth/services";
-import { ZAP_AUTH_CONFIG } from "@/zap/auth/zap.plugin.config";
 import { ZapButton } from "@/zap/components/core/button";
 import { AnimatedSection } from "@/zap/components/misc/animated-section";
 import { AnimatedText } from "@/zap/components/misc/animated-text";
@@ -13,7 +13,7 @@ import { getAverageRatingService } from "@/zap/feedbacks/services";
 const getStatsData = cache(async () => {
   try {
     const isFeedbacksEnabled = isPluginEnabled("feedbacks");
-    const isAuthEnabled = isPluginEnabled("auth");
+    const auth = getServerPlugin("auth");
 
     const promises: Promise<unknown>[] = [];
 
@@ -23,7 +23,7 @@ const getStatsData = cache(async () => {
       promises.push(Promise.resolve({ averageRating: 0, totalFeedbacks: 0 }));
     }
 
-    if (isAuthEnabled) {
+    if (auth) {
       promises.push(getNumberOfUsersService());
     } else {
       promises.push(Promise.resolve(0));
@@ -38,9 +38,9 @@ const getStatsData = cache(async () => {
     return {
       averageRating,
       totalFeedbacks,
-      numberOfUsers: isAuthEnabled ? (numberOfUsers as number) : 0,
+      numberOfUsers: auth.config ? (numberOfUsers as number) : 0,
       isFeedbacksEnabled,
-      isAuthEnabled,
+      isAuthEnabled: !!auth.config,
     };
   } catch {
     return {
@@ -54,6 +54,8 @@ const getStatsData = cache(async () => {
 });
 
 export function HeroSection() {
+  const auth = getServerPlugin("auth");
+
   return (
     <AnimatedSection isNotSection>
       <div className="flex w-full items-center justify-center px-4 pb-32 md:px-6 md:pb-48">
@@ -68,11 +70,13 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col justify-center gap-2 min-[400px]:flex-row">
-            <ZapButton asChild size="lg">
-              <Link href={{ pathname: ZAP_AUTH_CONFIG.SIGN_UP_URL }}>
-                Get Started <ArrowRight className="h-4 w-4" />
-              </Link>
-            </ZapButton>
+            {auth?.config?.SIGN_UP_URL && (
+              <ZapButton asChild size="lg">
+                <Link href={{ pathname: auth.config.SIGN_UP_URL }}>
+                  Get Started <ArrowRight className="h-4 w-4" />
+                </Link>
+              </ZapButton>
+            )}
 
             <ZapButton asChild size="lg" variant="outline">
               <Link

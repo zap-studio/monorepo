@@ -2,8 +2,9 @@ import "server-only";
 
 import { type } from "@orpc/server";
 import type { UIMessage } from "ai";
+import { getServerPlugin } from "@/lib/zap.server";
 import { base } from "@/zap/api/rpc/middlewares";
-import { authMiddleware } from "@/zap/auth/rpc/middlewares";
+import { $authMiddleware } from "@/zap/auth/rpc/middlewares";
 import { withRpcHandler } from "@/zap/errors/handlers";
 import {
   InputDeleteAPIKeySchema,
@@ -24,8 +25,10 @@ import {
 } from "../../services";
 import type { AIProviderId } from "../../types";
 
+const authConfig = getServerPlugin("auth")?.config ?? {};
+
 const getAISettings = base
-  .use(authMiddleware)
+  .use($authMiddleware(authConfig))
   .input(InputGetAPIKeySchema)
   .handler(
     withRpcHandler(async ({ input, context }) => {
@@ -37,7 +40,7 @@ const getAISettings = base
   );
 
 const saveAISettings = base
-  .use(authMiddleware)
+  .use($authMiddleware(authConfig))
   .input(InputSaveAPIKeySchema)
   .handler(
     withRpcHandler(async ({ input, context }) => {
@@ -49,7 +52,7 @@ const saveAISettings = base
   );
 
 const updateAISettings = base
-  .use(authMiddleware)
+  .use($authMiddleware(authConfig))
   .input(InputUpdateAPIKeySchema)
   .handler(
     withRpcHandler(async ({ input, context }) => {
@@ -61,7 +64,7 @@ const updateAISettings = base
   );
 
 const deleteAPIKey = base
-  .use(authMiddleware)
+  .use($authMiddleware(authConfig))
   .input(InputDeleteAPIKeySchema)
   .handler(
     withRpcHandler(async ({ input, context }) => {
@@ -73,7 +76,7 @@ const deleteAPIKey = base
   );
 
 const saveOrUpdateAISettings = base
-  .use(authMiddleware)
+  .use($authMiddleware(authConfig))
   .input(InputSaveAPIKeySchema)
   .handler(
     withRpcHandler(async ({ input, context }) => {
@@ -85,7 +88,7 @@ const saveOrUpdateAISettings = base
   );
 
 const testAPIKey = base
-  .use(authMiddleware)
+  .use($authMiddleware(authConfig))
   .input(InputTestAPIKeySchema)
   .handler(
     withRpcHandler(async ({ input }) => {
@@ -96,7 +99,7 @@ const testAPIKey = base
   );
 
 const streamChat = base
-  .use(authMiddleware)
+  .use($authMiddleware(authConfig))
   .input(
     type<{
       provider: AIProviderId;
@@ -113,7 +116,7 @@ const streamChat = base
   );
 
 const streamCompletion = base
-  .use(authMiddleware)
+  .use($authMiddleware(authConfig))
   .input(
     type<{
       provider: AIProviderId;

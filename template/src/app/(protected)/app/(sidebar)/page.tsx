@@ -1,7 +1,10 @@
+import { getServerPlugin } from "@/lib/zap.server";
 import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
 
+const authConfig = getServerPlugin("auth").config ?? {};
+
 export default async function AppPage() {
-  await getAuthServerDataOrRedirectToLoginService();
+  await getAuthServerDataOrRedirectToLoginService(authConfig);
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

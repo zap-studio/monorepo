@@ -1,7 +1,8 @@
 import "server-only";
 
+import { getServerPlugin } from "@/lib/zap.server";
 import { base } from "@/zap/api/rpc/middlewares";
-import { authMiddleware } from "@/zap/auth/rpc/middlewares";
+import { $authMiddleware } from "@/zap/auth/rpc/middlewares";
 import { withRpcHandler } from "@/zap/errors/handlers";
 import { InputFeedbackSchema } from "../../schemas";
 import {
@@ -10,8 +11,10 @@ import {
   submitFeedbackService,
 } from "../../services";
 
+const config = getServerPlugin("auth").config ?? {};
+
 const submit = base
-  .use(authMiddleware)
+  .use($authMiddleware(config))
   .input(InputFeedbackSchema)
   .handler(
     withRpcHandler(async ({ input, context }) => {
@@ -22,7 +25,7 @@ const submit = base
     })
   );
 
-const getUserFeedback = base.use(authMiddleware).handler(
+const getUserFeedback = base.use($authMiddleware(config)).handler(
   withRpcHandler(async ({ context }) => {
     return await getUserFeedbackService({
       userId: context.session.session.userId,

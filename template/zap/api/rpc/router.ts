@@ -1,11 +1,14 @@
 import "server-only";
 
+import { getServerPlugin } from "@/lib/zap.server";
 import { ai } from "@/zap/ai/rpc/procedures";
-import { auth } from "@/zap/auth/rpc/procedures";
+import { $auth } from "@/zap/auth/rpc/procedures";
 import { feedbacks } from "@/zap/feedbacks/rpc/procedures";
 import { mails } from "@/zap/mails/rpc/procedures";
 import { pwa } from "@/zap/pwa/rpc/procedures";
 import { waitlist } from "@/zap/waitlist/rpc/procedures";
+
+const authConfig = getServerPlugin("auth").config ?? {};
 
 /**
  * This file aggregates the routers from various plugins.
@@ -22,7 +25,7 @@ import { waitlist } from "@/zap/waitlist/rpc/procedures";
  */
 export const router = {
   ai,
-  auth,
+  auth: $auth(authConfig),
   feedbacks,
   mails,
   pwa,

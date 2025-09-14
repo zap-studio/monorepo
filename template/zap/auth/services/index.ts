@@ -4,10 +4,10 @@ import { headers } from "next/headers";
 
 import { db } from "@/zap/db/providers/drizzle";
 import { AuthenticationError, NotFoundError } from "@/zap/errors";
-
+import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { getUserIdFromMailQuery } from "../db/providers/drizzle/queries";
 import { user } from "../db/providers/drizzle/schema";
-import { betterAuthServer } from "../providers/better-auth/server";
+import { $betterAuthServer } from "../providers/better-auth/server";
 import { redirectToLogin } from "../utils";
 
 export async function getNumberOfUsersService() {
@@ -15,30 +15,42 @@ export async function getNumberOfUsersService() {
   return count;
 }
 
-export async function getSessionService() {
+export async function getSessionService(
+  config: Partial<AuthServerPluginConfig>
+) {
   const _headers = await headers();
-  const result = await betterAuthServer.api.getSession({ headers: _headers });
+  const result = await $betterAuthServer(config).api.getSession({
+    headers: _headers,
+  });
 
   return result?.session;
 }
 
-export async function getAuthServerData() {
+export async function getAuthServerData(
+  config: Partial<AuthServerPluginConfig>
+) {
   const _headers = await headers();
-  const result = await betterAuthServer.api.getSession({ headers: _headers });
+  const result = await $betterAuthServer(config).api.getSession({
+    headers: _headers,
+  });
 
   return result;
 }
 
-export async function getAuthServerDataOrRedirectToLoginService() {
-  const result = await getAuthServerData();
+export async function getAuthServerDataOrRedirectToLoginService(
+  config: Partial<AuthServerPluginConfig>
+) {
+  const result = await getAuthServerData(config);
   if (!result?.session) {
-    return redirectToLogin();
+    return redirectToLogin(config);
   }
   return { user: result.user, session: result.session };
 }
 
-export async function getUserIdService() {
-  const currentUser = await getUserService();
+export async function getUserIdService(
+  config: Partial<AuthServerPluginConfig>
+) {
+  const currentUser = await getUserService(config);
 
   if (!currentUser) {
     throw new AuthenticationError("User not authenticated");
@@ -47,15 +59,19 @@ export async function getUserIdService() {
   return currentUser.id;
 }
 
-export async function getUserService() {
+export async function getUserService(config: Partial<AuthServerPluginConfig>) {
   const _headers = await headers();
-  const result = await betterAuthServer.api.getSession({ headers: _headers });
+  const result = await $betterAuthServer(config).api.getSession({
+    headers: _headers,
+  });
 
   return result?.user;
 }
 
-export async function isAuthenticatedService() {
-  const session = await getSessionService();
+export async function isAuthenticatedService(
+  config: Partial<AuthServerPluginConfig>
+) {
+  const session = await getSessionService(config);
 
   if (!session) {
     return false;
@@ -64,8 +80,10 @@ export async function isAuthenticatedService() {
   return true;
 }
 
-export async function isUserAdminService() {
-  const currentUser = await getUserService();
+export async function isUserAdminService(
+  config: Partial<AuthServerPluginConfig>
+) {
+  const currentUser = await getUserService(config);
 
   if (!currentUser) {
     throw new NotFoundError("User not found");
