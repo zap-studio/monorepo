@@ -26,11 +26,11 @@ export async function middleware(request: NextRequest) {
     }
 
     // Check if path is a blog path (optional plugin)
-    const blog = getServerPlugin("blog");
-    if (blog?.middleware?.checkBlogPathAccess) {
-      const blogPathAccess = blog.middleware.checkBlogPathAccess(
+    const blogPlugin = getServerPlugin("blog");
+    if (blogPlugin?.middleware?.checkBlogPathAccess) {
+      const blogPathAccess = blogPlugin.middleware.checkBlogPathAccess(
         request,
-        blog?.config
+        blogPlugin?.config
       );
       if (blogPathAccess) {
         return blogPathAccess;
@@ -38,9 +38,13 @@ export async function middleware(request: NextRequest) {
     }
 
     // Handle authentication if auth plugin is enabled
-    if (isPluginEnabled("auth")) {
+    const authPlugin = getServerPlugin("auth");
+    if (authPlugin?.config) {
       // Check if path is publicly accessible (auth public paths)
-      const publicPathAccess = checkPublicPathAccess(request);
+      const publicPathAccess = checkPublicPathAccess(
+        request,
+        authPlugin?.config
+      );
       if (publicPathAccess) {
         return publicPathAccess;
       }
@@ -50,7 +54,7 @@ export async function middleware(request: NextRequest) {
 
       if (!session) {
         // Redirect unauthenticated users to login with the original path as a query param
-        return createLoginRedirect(request, pathname);
+        return createLoginRedirect(request, pathname, authPlugin?.config);
       }
 
       // Add session headers for authenticated requests
@@ -70,8 +74,13 @@ export async function middleware(request: NextRequest) {
     logMiddlewareError(error);
 
     // On error, if auth is enabled, redirect to login
-    if (isPluginEnabled("auth")) {
-      return createLoginRedirect(request, request.nextUrl.pathname);
+    const authPlugin = getServerPlugin("auth");
+    if (authPlugin?.config) {
+      return createLoginRedirect(
+        request,
+        request.nextUrl.pathname,
+        authPlugin?.config
+      );
     }
 
     // If auth is disabled, continue with the request even on error
