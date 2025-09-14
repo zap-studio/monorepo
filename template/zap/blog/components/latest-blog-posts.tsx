@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 import type { BlogServerPluginConfig } from "@/zap/plugins/types/blog.plugin";
 import { formatDate, getBlogPostsMetadata } from "../utils";
 
@@ -17,7 +18,7 @@ export async function LatestBlogPosts({
 
   const latestPosts = posts.slice(
     0,
-    config?.MAX_BLOG_POSTS_IN_FOOTER ?? DEFAULT_MAX_POSTS
+    config.MAX_BLOG_POSTS_IN_FOOTER ?? DEFAULT_MAX_POSTS
   );
 
   return (
@@ -29,7 +30,7 @@ export async function LatestBlogPosts({
           <Link
             className="group flex flex-col space-y-1"
             href={{
-              pathname: `${config?.BASE_PATH ?? "/blog"}/${post.slug}`,
+              pathname: `${config.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH}/${post.slug}`,
             }}
             key={post.slug}
           >

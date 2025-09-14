@@ -12,6 +12,7 @@ import { orpcQuery } from "@/zap/api/lib/orpc";
 import { AuthenticationError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
 import { ZAP_MAILS_CONFIG } from "@/zap/mails/zap.plugin.config";
+import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 import type { AuthClientPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { betterAuthClient } from "../providers/better-auth/client";
 import type { $LoginFormSchema, $RegisterFormSchema } from "../schemas";
@@ -35,7 +36,8 @@ export function useAuth(
     try {
       await betterAuthClient.sendVerificationEmail({
         email,
-        callbackURL: config.VERIFIED_EMAIL_PATH ?? "/mail-verified",
+        callbackURL:
+          config.VERIFIED_EMAIL_PATH ?? DEFAULT_CONFIG.auth.VERIFIED_EMAIL_PATH,
       });
       startCooldown(ZAP_MAILS_CONFIG.RATE_LIMIT_SECONDS);
     } catch (error) {
@@ -70,7 +72,9 @@ export function useAuth(
 
       toast.success("Login successful!");
       router.push(
-        loginCallbackURL ?? config.REDIRECT_URL_AFTER_SIGN_IN ?? "/app"
+        loginCallbackURL ??
+          config.REDIRECT_URL_AFTER_SIGN_IN ??
+          DEFAULT_CONFIG.auth.REDIRECT_URL_AFTER_SIGN_IN
       );
     } catch (error) {
       handleClientError(error);
@@ -107,7 +111,9 @@ export function useAuth(
 
       toast.success("Registration successful!");
       router.push(
-        registerCallbackURL ?? config.REDIRECT_URL_AFTER_SIGN_UP ?? "/login"
+        registerCallbackURL ??
+          config.REDIRECT_URL_AFTER_SIGN_UP ??
+          DEFAULT_CONFIG.auth.REDIRECT_URL_AFTER_SIGN_UP
       );
     } catch (error) {
       if (
@@ -118,7 +124,7 @@ export function useAuth(
       ) {
         toast.error(
           config.PASSWORD_COMPROMISED_MESSAGE ??
-            "This password has been compromised. Please choose a different one."
+            DEFAULT_CONFIG.auth.PASSWORD_COMPROMISED_MESSAGE
         );
         return;
       }

@@ -4,6 +4,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { $fetch } from "@/lib/fetch";
+import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import type { Session } from "../providers/better-auth/client";
 
@@ -18,7 +19,7 @@ export function isPublicPath(
   config: Partial<AuthServerPluginConfig>
 ): boolean {
   if (!config.PUBLIC_PATHS) {
-    return false;
+    return (DEFAULT_CONFIG.auth.PUBLIC_PATHS as string[]).includes(pathname);
   }
   return config.PUBLIC_PATHS.includes(pathname);
 }
@@ -60,7 +61,10 @@ export function createLoginRedirect(
   pathname: string,
   config: Partial<AuthServerPluginConfig>
 ): NextResponse {
-  const loginUrl = new URL(config.LOGIN_URL ?? "/login", request.url);
+  const loginUrl = new URL(
+    config.LOGIN_URL ?? DEFAULT_CONFIG.auth.LOGIN_URL,
+    request.url
+  );
   loginUrl.searchParams.set("redirect", pathname);
   return NextResponse.redirect(loginUrl);
 }
@@ -71,7 +75,7 @@ export function createLoginRedirect(
  * @returns string representing the login URL
  */
 export function getLoginUrl(config: Partial<AuthServerPluginConfig>): string {
-  return config.LOGIN_URL ?? "/login";
+  return config.LOGIN_URL ?? DEFAULT_CONFIG.auth.LOGIN_URL;
 }
 
 /**

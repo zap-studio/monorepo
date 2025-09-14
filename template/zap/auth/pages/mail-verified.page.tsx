@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ZapButton } from "@/zap/components/core/button";
+import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 
 export function _MailVerifiedPage(config: Partial<AuthServerPluginConfig>) {
@@ -16,7 +17,11 @@ export function _MailVerifiedPage(config: Partial<AuthServerPluginConfig>) {
           </p>
         </div>
         <ZapButton asChild variant={"ghost"}>
-          <Link href={{ pathname: config.LOGIN_URL ?? "/login" }}>
+          <Link
+            href={{
+              pathname: config.LOGIN_URL ?? DEFAULT_CONFIG.auth.LOGIN_URL,
+            }}
+          >
             Go to Login
           </Link>
         </ZapButton>

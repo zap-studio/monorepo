@@ -1,5 +1,5 @@
 import z from "zod";
-
+import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 import type { AuthClientPluginConfig } from "@/zap/plugins/types/auth.plugin";
 
 export const InputGetUserIdFromMailSchema = z.object({
@@ -9,9 +9,15 @@ export const InputGetUserIdFromMailSchema = z.object({
 export const $LoginFormSchema = (config: Partial<AuthClientPluginConfig>) => {
   return z.object({
     email: z.email(),
-    password: z.string().min(config?.MINIMUM_PASSWORD_LENGTH ?? 8, {
-      message: `Password must be at least ${config?.MINIMUM_PASSWORD_LENGTH ?? 8} characters.`,
-    }),
+    password: z
+      .string()
+      .min(
+        config?.MINIMUM_PASSWORD_LENGTH ??
+          DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH,
+        {
+          message: `Password must be at least ${config?.MINIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH} characters.`,
+        }
+      ),
   });
 };
 
@@ -22,21 +28,37 @@ export const $RegisterFormSchema = (
     .object({
       name: z
         .string()
-        .min(config.MINIMUM_USERNAME_LENGTH ?? 4, {
-          message: `Name must be at least ${config.MINIMUM_USERNAME_LENGTH ?? 4} characters.`,
-        })
-        .max(config.MAXIMUM_USERNAME_LENGTH ?? 50, {
-          message: `Name must be at most ${config.MAXIMUM_USERNAME_LENGTH ?? 50} characters.`,
-        }),
+        .min(
+          config.MINIMUM_USERNAME_LENGTH ??
+            DEFAULT_CONFIG.auth.MINIMUM_USERNAME_LENGTH,
+          {
+            message: `Name must be at least ${config.MINIMUM_USERNAME_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_USERNAME_LENGTH} characters.`,
+          }
+        )
+        .max(
+          config.MAXIMUM_USERNAME_LENGTH ??
+            DEFAULT_CONFIG.auth.MAXIMUM_USERNAME_LENGTH,
+          {
+            message: `Name must be at most ${config.MAXIMUM_USERNAME_LENGTH ?? DEFAULT_CONFIG.auth.MAXIMUM_USERNAME_LENGTH} characters.`,
+          }
+        ),
       email: z.email(),
       password: z
         .string()
-        .min(config.MINIMUM_PASSWORD_LENGTH ?? 8, {
-          message: `Password must be at least ${config.MINIMUM_PASSWORD_LENGTH ?? 8} characters.`,
-        })
-        .max(config.MAXIMUM_PASSWORD_LENGTH ?? 100, {
-          message: `Password must be at most ${config.MAXIMUM_PASSWORD_LENGTH ?? 100} characters.`,
-        }),
+        .min(
+          config.MINIMUM_PASSWORD_LENGTH ??
+            DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH,
+          {
+            message: `Password must be at least ${config.MINIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH} characters.`,
+          }
+        )
+        .max(
+          config.MAXIMUM_PASSWORD_LENGTH ??
+            DEFAULT_CONFIG.auth.MAXIMUM_PASSWORD_LENGTH,
+          {
+            message: `Password must be at most ${config.MAXIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MAXIMUM_PASSWORD_LENGTH} characters.`,
+          }
+        ),
       confirmPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {

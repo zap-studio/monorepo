@@ -25,6 +25,7 @@ import {
 import { ZAP_MAILS_CONFIG } from "@/zap/mails/zap.plugin.config";
 import { polarClient } from "@/zap/payments/providers/polar/server";
 import { ZAP_PAYMENTS_CONFIG } from "@/zap/payments/zap.plugin.config";
+import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 
 export const $betterAuthServer = (config: Partial<AuthServerPluginConfig>) => {
@@ -33,9 +34,15 @@ export const $betterAuthServer = (config: Partial<AuthServerPluginConfig>) => {
     database: drizzleAdapter(db, { provider: "pg" }),
     emailAndPassword: {
       enabled: true,
-      minPasswordLength: config.MINIMUM_PASSWORD_LENGTH,
-      maxPasswordLength: config.MAXIMUM_PASSWORD_LENGTH,
-      requireEmailVerification: config.REQUIRE_MAIL_VERIFICATION,
+      minPasswordLength:
+        config.MINIMUM_PASSWORD_LENGTH ??
+        DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH,
+      maxPasswordLength:
+        config.MAXIMUM_PASSWORD_LENGTH ??
+        DEFAULT_CONFIG.auth.MAXIMUM_PASSWORD_LENGTH,
+      requireEmailVerification:
+        config.REQUIRE_MAIL_VERIFICATION ??
+        DEFAULT_CONFIG.auth.REQUIRE_MAIL_VERIFICATION,
       sendResetPassword: async ({ user, url }) => {
         const { canSend, timeLeft } = await canSendMailService({
           userId: user.id,
@@ -75,7 +82,7 @@ export const $betterAuthServer = (config: Partial<AuthServerPluginConfig>) => {
         const verificationUrl = new URL(url);
         verificationUrl.searchParams.set(
           "callbackURL",
-          config.VERIFIED_EMAIL_PATH ?? "/mail-verified"
+          config.VERIFIED_EMAIL_PATH ?? DEFAULT_CONFIG.auth.VERIFIED_EMAIL_PATH
         );
 
         const modifiedUrl = verificationUrl.toString();
@@ -119,8 +126,12 @@ export const $betterAuthServer = (config: Partial<AuthServerPluginConfig>) => {
       }),
       twoFactor(),
       username({
-        minUsernameLength: config.MINIMUM_USERNAME_LENGTH,
-        maxUsernameLength: config.MAXIMUM_USERNAME_LENGTH,
+        minUsernameLength:
+          config.MINIMUM_USERNAME_LENGTH ??
+          DEFAULT_CONFIG.auth.MINIMUM_USERNAME_LENGTH,
+        maxUsernameLength:
+          config.MAXIMUM_USERNAME_LENGTH ??
+          DEFAULT_CONFIG.auth.MAXIMUM_USERNAME_LENGTH,
         usernameValidator: (name) => name !== "admin",
       }),
       anonymous(),
@@ -128,7 +139,9 @@ export const $betterAuthServer = (config: Partial<AuthServerPluginConfig>) => {
       admin(),
       organization(),
       haveIBeenPwned({
-        customPasswordCompromisedMessage: config.PASSWORD_COMPROMISED_MESSAGE,
+        customPasswordCompromisedMessage:
+          config.PASSWORD_COMPROMISED_MESSAGE ??
+          DEFAULT_CONFIG.auth.PASSWORD_COMPROMISED_MESSAGE,
       }),
     ],
   });

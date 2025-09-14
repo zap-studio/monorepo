@@ -48,14 +48,14 @@ export function _AuthPage({
           <Card className="border shadow-none">
             <CardHeader className="text-center">
               <CardTitle className="text-xl">{title}</CardTitle>
-              {config.ENABLE_SOCIAL_PROVIDER && description && (
+              {!!config.ENABLE_SOCIAL_PROVIDER && description && (
                 <CardDescription>{description}</CardDescription>
               )}
             </CardHeader>
 
             <CardContent>
               <div className="grid gap-6">
-                {config.ENABLE_SOCIAL_PROVIDER && (
+                {!!config.ENABLE_SOCIAL_PROVIDER && (
                   <>
                     <SocialProviders />
                     <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-border after:border-t">
@@ -98,7 +98,11 @@ function SocialProviders(config: Partial<AuthServerPluginConfig>) {
   return (
     <div className="flex flex-col gap-4">
       {providers.map((provider) => (
-        <SocialProviderButton key={provider} provider={provider} />
+        <SocialProviderButton
+          config={config}
+          key={provider}
+          provider={provider}
+        />
       ))}
     </div>
   );

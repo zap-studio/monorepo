@@ -7,9 +7,7 @@ import { zap } from "@/zap/plugins/utils";
 
 // Add/remove plugins here
 export const zapClient = zap([
-  analyticsClientPlugin({
-    ENABLE_POSTHOG: false,
-  }),
+  analyticsClientPlugin(),
   authClientPlugin({}),
   blogClientPlugin(),
 ] as const);

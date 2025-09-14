@@ -2,7 +2,7 @@ import "server-only";
 
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-
+import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 import type { BlogServerPluginConfig } from "@/zap/plugins/types/blog.plugin";
 
 /**
@@ -15,7 +15,7 @@ export function isBlogPath(
   pathname: string,
   config: Partial<BlogServerPluginConfig>
 ): boolean {
-  return pathname.startsWith(config.BASE_PATH ?? "/blog");
+  return pathname.startsWith(config.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH);
 }
 
 /**

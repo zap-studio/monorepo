@@ -9,6 +9,7 @@ import { ZapButton } from "@/zap/components/core/button";
 import { AnimatedSection } from "@/zap/components/misc/animated-section";
 import { AnimatedText } from "@/zap/components/misc/animated-text";
 import { getAverageRatingService } from "@/zap/feedbacks/services";
+import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 
 const getStatsData = cache(async () => {
   try {
@@ -70,13 +71,16 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col justify-center gap-2 min-[400px]:flex-row">
-            {auth?.config?.SIGN_UP_URL && (
-              <ZapButton asChild size="lg">
-                <Link href={{ pathname: auth.config.SIGN_UP_URL }}>
-                  Get Started <ArrowRight className="h-4 w-4" />
-                </Link>
-              </ZapButton>
-            )}
+            <ZapButton asChild size="lg">
+              <Link
+                href={{
+                  pathname:
+                    auth.config.SIGN_UP_URL ?? DEFAULT_CONFIG.auth.SIGN_UP_URL,
+                }}
+              >
+                Get Started <ArrowRight className="h-4 w-4" />
+              </Link>
+            </ZapButton>
 
             <ZapButton asChild size="lg" variant="outline">
               <Link

@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/zap/components/core/button";
 import { AuthenticationError } from "@/zap/errors";
 import { handleClientError } from "@/zap/errors/client";
+import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 import type { AuthClientPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { betterAuthClient } from "../../providers/better-auth/client";
 
@@ -28,14 +29,16 @@ const $formSchema = (config: Partial<AuthClientPluginConfig>) => {
       password: z
         .string()
         .min(
-          config.MINIMUM_PASSWORD_LENGTH ?? 8,
-          `Password must be at least ${config.MINIMUM_PASSWORD_LENGTH ?? 8} characters`
+          config.MINIMUM_PASSWORD_LENGTH ??
+            DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH,
+          `Password must be at least ${config.MINIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH} characters`
         ),
       confirmPassword: z
         .string()
         .min(
-          config.MINIMUM_PASSWORD_LENGTH ?? 8,
-          `Password must be at least ${config.MINIMUM_PASSWORD_LENGTH ?? 8} characters`
+          config.MINIMUM_PASSWORD_LENGTH ??
+            DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH,
+          `Password must be at least ${config.MINIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH} characters`
         ),
     })
     .refine((data) => data.password === data.confirmPassword, {
@@ -92,7 +95,7 @@ export function ResetPasswordForm(config: Partial<AuthClientPluginConfig>) {
       ) {
         toast.error(
           config.PASSWORD_COMPROMISED_MESSAGE ??
-            "This password has been exposed in a data breach. Please choose a stronger, unique password."
+            DEFAULT_CONFIG.auth.PASSWORD_COMPROMISED_MESSAGE
         );
         return;
       }

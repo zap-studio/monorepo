@@ -16,25 +16,25 @@ import { $authMiddleware } from "../middlewares";
 
 const $isAuthenticated = (config: Partial<AuthServerPluginConfig>) =>
   base.use($authMiddleware(config)).handler(
-    withRpcHandler(async (_opt) => {
+    withRpcHandler((_opt) => {
       return isAuthenticatedService(config);
     })
   );
 const $getUserId = (config: Partial<AuthServerPluginConfig>) =>
   base.use($authMiddleware(config)).handler(
-    withRpcHandler(async (_opt) => {
+    withRpcHandler((_opt) => {
       return getUserIdService(config);
     })
   );
 const $getSession = (config: Partial<AuthServerPluginConfig>) =>
   base.use($authMiddleware(config)).handler(
-    withRpcHandler(async (_opt) => {
+    withRpcHandler((_opt) => {
       return getSessionService(config);
     })
   );
 const $isUserAdmin = (config: Partial<AuthServerPluginConfig>) =>
   base.use($authMiddleware(config)).handler(
-    withRpcHandler(async (_opt) => {
+    withRpcHandler((_opt) => {
       return isUserAdminService(config);
     })
   );

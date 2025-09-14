@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ZapButton } from "@/zap/components/core/button";
+import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 import type { AuthClientPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { useAuth } from "../../hooks";
 import { $LoginFormSchema } from "../../schemas";
@@ -24,8 +25,10 @@ type LoginFormValues = z.infer<ReturnType<typeof $LoginFormSchema>>;
 
 export function LoginForm(config: Partial<AuthClientPluginConfig>) {
   const [callbackURL, setCallbackURL] = useState<string | undefined>(undefined);
-  const { isInCooldown, cooldown, isSubmitting, handleLoginSubmit } =
-    useAuth(callbackURL);
+  const { isInCooldown, cooldown, isSubmitting, handleLoginSubmit } = useAuth(
+    config,
+    callbackURL
+  );
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -78,7 +81,11 @@ export function LoginForm(config: Partial<AuthClientPluginConfig>) {
                 <FormLabel>Password</FormLabel>
                 <Link
                   className="text-sm underline-offset-4 hover:underline active:underline"
-                  href={{ pathname: config.FORGOT_PASSWORD_URL }}
+                  href={{
+                    pathname:
+                      config.FORGOT_PASSWORD_URL ??
+                      DEFAULT_CONFIG.auth.FORGOT_PASSWORD_URL,
+                  }}
                 >
                   Forgot your password?
                 </Link>

@@ -6,6 +6,7 @@ import path from "node:path";
 import { format, formatDistanceToNow, parseISO } from "date-fns";
 import matter from "gray-matter";
 import { ApplicationError, FileOperationError } from "@/zap/errors";
+import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 import type { BlogServerPluginConfig } from "@/zap/plugins/types/blog.plugin";
 import { BASE_URL, ZAP_DEFAULT_METADATA } from "@/zap.config";
 import { PostMetadataSchema } from "../schemas";
@@ -67,7 +68,7 @@ export async function getMDXData(dir: string) {
 }
 
 export async function getBlogPosts(config?: Partial<BlogServerPluginConfig>) {
-  const BLOG_DIR = config?.DATA_DIR ?? "zap/blog/data";
+  const BLOG_DIR = config?.DATA_DIR ?? DEFAULT_CONFIG.blog.DATA_DIR;
   return await getMDXData(BLOG_DIR);
 }
 
@@ -86,7 +87,7 @@ export async function getBlogPost(
   config: Partial<BlogServerPluginConfig>
 ) {
   try {
-    const BLOG_DIR = config.DATA_DIR ?? "zap/blog/data";
+    const BLOG_DIR = config.DATA_DIR ?? DEFAULT_CONFIG.blog.DATA_DIR;
     const { metadata, content } = await readMDXFile(
       path.join(BLOG_DIR, `${slug}.mdx`)
     );
