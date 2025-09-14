@@ -1,7 +1,7 @@
 import "server-only";
 
 import { getServerPlugin } from "@/lib/zap.server";
-import { ai } from "@/zap/ai/rpc/procedures";
+import { $ai } from "@/zap/ai/rpc/procedures";
 import { $auth } from "@/zap/auth/rpc/procedures";
 import { feedbacks } from "@/zap/feedbacks/rpc/procedures";
 import { mails } from "@/zap/mails/rpc/procedures";
@@ -24,7 +24,7 @@ const authConfig = getServerPlugin("auth").config ?? {};
  * Keep only what you need to reduce type surface & build time.
  */
 export const router = {
-  ai,
+  ai: $ai(authConfig),
   auth: $auth(authConfig),
   feedbacks,
   mails,

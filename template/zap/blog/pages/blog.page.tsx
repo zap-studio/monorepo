@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getServerPlugin } from "@/lib/zap.server";
 import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
+import type { BlogServerPluginConfig } from "@/zap/plugins/types/blog.plugin";
 import { ZAP_DEFAULT_METADATA } from "@/zap.config";
 import { formatDate, getBlogPostsMetadata } from "../utils";
 
@@ -9,9 +9,8 @@ export const _metadata: Metadata = {
   title: `${ZAP_DEFAULT_METADATA.title} | Blog`,
 };
 
-export async function _BlogPage() {
-  const blog = getServerPlugin("blog");
-  const posts = await getBlogPostsMetadata(blog?.config);
+export async function _BlogPage(config: Partial<BlogServerPluginConfig>) {
+  const posts = await getBlogPostsMetadata(config);
 
   return (
     <div className="container mx-auto max-w-4xl py-6">
@@ -23,7 +22,7 @@ export async function _BlogPage() {
           >
             <Link
               href={{
-                pathname: `${blog.config?.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH}/${post.slug}`,
+                pathname: `${config.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH}/${post.slug}`,
               }}
             >
               <div className="rounded-md p-4 px-0 hover:bg-muted md:px-4 md:active:bg-muted">
