@@ -3,7 +3,7 @@ import Link from "next/link";
 import { cache } from "react";
 
 import { isPluginEnabled } from "@/lib/plugins";
-import type { ZapServerPlugin } from "@/lib/zap.server";
+import type { ZapServerPluginInstance } from "@/lib/zap.server";
 import { getNumberOfUsersService } from "@/zap/auth/services";
 import { ZapButton } from "@/zap/components/core/button";
 import { AnimatedSection } from "@/zap/components/misc/animated-section";
@@ -60,7 +60,7 @@ const getStatsData = cache(
 );
 
 type HeroSectionProps = {
-  authPlugin: ZapServerPlugin<"auth">;
+  authPlugin: ZapServerPluginInstance<"auth">;
   isAuthPluginEnabled: boolean;
 };
 

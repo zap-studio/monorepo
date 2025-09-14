@@ -28,7 +28,7 @@ export function getClientPluginConfig<TPlugin extends keyof ZapClient>(
   return plugin?.config ?? DEFAULT_CONFIG[pluginId];
 }
 
-export type ZapClientPlugin<TPlugin extends keyof ZapClient> =
+export type ZapClientPluginInstance<TPlugin extends keyof ZapClient> =
   ZapClient[TPlugin];
 
 export function isClientPluginEnabled<TPlugin extends keyof ZapClient>(
