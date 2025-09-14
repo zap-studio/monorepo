@@ -2,10 +2,7 @@ import type { UserConfig } from "tsdown";
 
 export const bundlerConfig: UserConfig = {
   entry: ["src/**"],
-  dts: {
-    sourcemap: true,
-  },
+  dts: true,
   exports: true,
-  shims: true,
   sourcemap: true,
 };
