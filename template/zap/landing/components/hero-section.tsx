@@ -3,7 +3,7 @@ import Link from "next/link";
 import { cache } from "react";
 
 import { isPluginEnabled } from "@/lib/plugins";
-import type { getServerPlugin } from "@/lib/zap.server";
+import type { ZapServerPlugin } from "@/lib/zap.server";
 import { getNumberOfUsersService } from "@/zap/auth/services";
 import { ZapButton } from "@/zap/components/core/button";
 import { AnimatedSection } from "@/zap/components/misc/animated-section";
@@ -12,57 +12,62 @@ import { getAverageRatingService } from "@/zap/feedbacks/services";
 import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 
 type getStatsDataParams = {
-  authPlugin: ReturnType<typeof getServerPlugin<"auth">>;
+  isAuthPluginEnabled: boolean;
 };
 
-const getStatsData = cache(async ({ authPlugin }: getStatsDataParams) => {
-  try {
-    const isFeedbacksEnabled = isPluginEnabled("feedbacks");
-    const isAuthEnabled = !!authPlugin.config;
+const getStatsData = cache(
+  async ({ isAuthPluginEnabled }: getStatsDataParams) => {
+    try {
+      const isFeedbacksEnabled = isPluginEnabled("feedbacks");
 
-    const promises: Promise<unknown>[] = [];
+      const promises: Promise<unknown>[] = [];
 
-    if (isFeedbacksEnabled) {
-      promises.push(getAverageRatingService());
-    } else {
-      promises.push(Promise.resolve({ averageRating: 0, totalFeedbacks: 0 }));
+      if (isFeedbacksEnabled) {
+        promises.push(getAverageRatingService());
+      } else {
+        promises.push(Promise.resolve({ averageRating: 0, totalFeedbacks: 0 }));
+      }
+
+      if (isAuthPluginEnabled) {
+        promises.push(getNumberOfUsersService());
+      } else {
+        promises.push(Promise.resolve(0));
+      }
+
+      const [ratingData, numberOfUsers] = await Promise.all(promises);
+
+      const { averageRating, totalFeedbacks } = isFeedbacksEnabled
+        ? (ratingData as { averageRating: number; totalFeedbacks: number })
+        : { averageRating: 0, totalFeedbacks: 0 };
+
+      return {
+        averageRating,
+        totalFeedbacks,
+        numberOfUsers: isAuthPluginEnabled ? (numberOfUsers as number) : 0,
+        isFeedbacksEnabled,
+        isAuthEnabled: isAuthPluginEnabled,
+      };
+    } catch {
+      return {
+        averageRating: 0,
+        totalFeedbacks: 0,
+        numberOfUsers: 0,
+        isFeedbacksEnabled: false,
+        isAuthEnabled: false,
+      };
     }
-
-    if (isAuthEnabled) {
-      promises.push(getNumberOfUsersService());
-    } else {
-      promises.push(Promise.resolve(0));
-    }
-
-    const [ratingData, numberOfUsers] = await Promise.all(promises);
-
-    const { averageRating, totalFeedbacks } = isFeedbacksEnabled
-      ? (ratingData as { averageRating: number; totalFeedbacks: number })
-      : { averageRating: 0, totalFeedbacks: 0 };
-
-    return {
-      averageRating,
-      totalFeedbacks,
-      numberOfUsers: isAuthEnabled ? (numberOfUsers as number) : 0,
-      isFeedbacksEnabled,
-      isAuthEnabled,
-    };
-  } catch {
-    return {
-      averageRating: 0,
-      totalFeedbacks: 0,
-      numberOfUsers: 0,
-      isFeedbacksEnabled: false,
-      isAuthEnabled: false,
-    };
   }
-});
+);
 
 type HeroSectionProps = {
-  authPlugin: ReturnType<typeof getServerPlugin<"auth">>;
+  authPlugin: ZapServerPlugin<"auth">;
+  isAuthPluginEnabled: boolean;
 };
 
-export function HeroSection({ authPlugin }: HeroSectionProps) {
+export function HeroSection({
+  authPlugin,
+  isAuthPluginEnabled,
+}: HeroSectionProps) {
   return (
     <AnimatedSection isNotSection>
       <div className="flex w-full items-center justify-center px-4 pb-32 md:px-6 md:pb-48">
@@ -100,7 +105,7 @@ export function HeroSection({ authPlugin }: HeroSectionProps) {
             </ZapButton>
           </div>
 
-          <Stats authPlugin={authPlugin} />
+          <Stats isAuthPluginEnabled={isAuthPluginEnabled} />
         </div>
       </div>
     </AnimatedSection>
@@ -108,17 +113,17 @@ export function HeroSection({ authPlugin }: HeroSectionProps) {
 }
 
 type StatsProps = {
-  authPlugin: ReturnType<typeof getServerPlugin<"auth">>;
+  isAuthPluginEnabled: boolean;
 };
 
-export async function Stats({ authPlugin }: StatsProps) {
+export async function Stats({ isAuthPluginEnabled }: StatsProps) {
   const {
     averageRating,
     totalFeedbacks,
     numberOfUsers,
     isFeedbacksEnabled,
     isAuthEnabled,
-  } = await getStatsData({ authPlugin });
+  } = await getStatsData({ isAuthPluginEnabled });
 
   const renderStars = () => {
     const fullStars = Math.floor(averageRating);
