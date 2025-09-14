@@ -12,12 +12,13 @@ import { getAverageRatingService } from "@/zap/feedbacks/services";
 import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 
 type getStatsDataParams = {
-  auth: ReturnType<typeof getServerPlugin<"auth">>;
+  authPlugin: ReturnType<typeof getServerPlugin<"auth">>;
 };
 
-const getStatsData = cache(async ({ auth }: getStatsDataParams) => {
+const getStatsData = cache(async ({ authPlugin }: getStatsDataParams) => {
   try {
     const isFeedbacksEnabled = isPluginEnabled("feedbacks");
+    const isAuthEnabled = !!authPlugin.config;
 
     const promises: Promise<unknown>[] = [];
 
@@ -27,7 +28,7 @@ const getStatsData = cache(async ({ auth }: getStatsDataParams) => {
       promises.push(Promise.resolve({ averageRating: 0, totalFeedbacks: 0 }));
     }
 
-    if (auth) {
+    if (isAuthEnabled) {
       promises.push(getNumberOfUsersService());
     } else {
       promises.push(Promise.resolve(0));
@@ -42,9 +43,9 @@ const getStatsData = cache(async ({ auth }: getStatsDataParams) => {
     return {
       averageRating,
       totalFeedbacks,
-      numberOfUsers: auth.config ? (numberOfUsers as number) : 0,
+      numberOfUsers: isAuthEnabled ? (numberOfUsers as number) : 0,
       isFeedbacksEnabled,
-      isAuthEnabled: !!auth.config,
+      isAuthEnabled,
     };
   } catch {
     return {
@@ -58,10 +59,10 @@ const getStatsData = cache(async ({ auth }: getStatsDataParams) => {
 });
 
 type HeroSectionProps = {
-  auth: ReturnType<typeof getServerPlugin<"auth">>;
+  authPlugin: ReturnType<typeof getServerPlugin<"auth">>;
 };
 
-export function HeroSection({ auth }: HeroSectionProps) {
+export function HeroSection({ authPlugin }: HeroSectionProps) {
   return (
     <AnimatedSection isNotSection>
       <div className="flex w-full items-center justify-center px-4 pb-32 md:px-6 md:pb-48">
@@ -80,7 +81,8 @@ export function HeroSection({ auth }: HeroSectionProps) {
               <Link
                 href={{
                   pathname:
-                    auth.config?.SIGN_UP_URL ?? DEFAULT_CONFIG.auth.SIGN_UP_URL,
+                    authPlugin.config?.SIGN_UP_URL ??
+                    DEFAULT_CONFIG.auth.SIGN_UP_URL,
                 }}
               >
                 Get Started <ArrowRight className="h-4 w-4" />
@@ -98,7 +100,7 @@ export function HeroSection({ auth }: HeroSectionProps) {
             </ZapButton>
           </div>
 
-          <Stats auth={auth} />
+          <Stats authPlugin={authPlugin} />
         </div>
       </div>
     </AnimatedSection>
@@ -106,17 +108,17 @@ export function HeroSection({ auth }: HeroSectionProps) {
 }
 
 type StatsProps = {
-  auth: ReturnType<typeof getServerPlugin<"auth">>;
+  authPlugin: ReturnType<typeof getServerPlugin<"auth">>;
 };
 
-export async function Stats({ auth }: StatsProps) {
+export async function Stats({ authPlugin }: StatsProps) {
   const {
     averageRating,
     totalFeedbacks,
     numberOfUsers,
     isFeedbacksEnabled,
     isAuthEnabled,
-  } = await getStatsData({ auth });
+  } = await getStatsData({ authPlugin });
 
   const renderStars = () => {
     const fullStars = Math.floor(averageRating);
