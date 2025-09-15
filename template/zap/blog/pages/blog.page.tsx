@@ -10,15 +10,15 @@ export const _metadata: Metadata = {
 };
 
 type BlogPageProps = {
-  pluginConfig?: Partial<BlogServerPluginConfig>;
+  pluginConfigs?: { blog: Partial<BlogServerPluginConfig> };
 };
 
-export async function _BlogPage({ pluginConfig }: BlogPageProps) {
-  if (!pluginConfig) {
+export async function _BlogPage({ pluginConfigs }: BlogPageProps) {
+  if (!pluginConfigs?.blog) {
     return null;
   }
 
-  const posts = await getBlogPostsMetadata(pluginConfig);
+  const posts = await getBlogPostsMetadata(pluginConfigs);
 
   return (
     <div className="container mx-auto max-w-4xl py-6">
@@ -30,7 +30,7 @@ export async function _BlogPage({ pluginConfig }: BlogPageProps) {
           >
             <Link
               href={{
-                pathname: `${pluginConfig.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH}/${post.slug}`,
+                pathname: `${pluginConfigs.blog.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH}/${post.slug}`,
               }}
             >
               <div className="rounded-md p-4 px-0 hover:bg-muted md:px-4 md:active:bg-muted">

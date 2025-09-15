@@ -13,10 +13,10 @@ import type { BlogServerPluginConfig } from "@/zap/plugins/types/blog.plugin";
  */
 export function isBlogPath(
   pathname: string,
-  pluginConfig?: Partial<BlogServerPluginConfig>
+  pluginConfigs?: { blog: Partial<BlogServerPluginConfig> }
 ): boolean {
   return pathname.startsWith(
-    pluginConfig?.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH
+    pluginConfigs?.blog?.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH
   );
 }
 
@@ -29,11 +29,11 @@ export function isBlogPath(
  */
 export function checkBlogPathAccess(
   request: NextRequest,
-  pluginConfig?: Partial<BlogServerPluginConfig>
+  pluginConfigs?: { blog: Partial<BlogServerPluginConfig> }
 ): NextResponse | null {
   const { pathname } = request.nextUrl;
 
-  if (isBlogPath(pathname, pluginConfig)) {
+  if (isBlogPath(pathname, pluginConfigs)) {
     const requestHeaders = new Headers(request.headers);
 
     const response = NextResponse.next({

@@ -6,11 +6,11 @@ import { formatDate, getBlogPostsMetadata } from "../utils";
 const DEFAULT_MAX_POSTS = 3;
 
 type LatestBlogPostsProps = {
-  pluginConfig: Partial<BlogServerPluginConfig>;
+  pluginConfigs: { blog: Partial<BlogServerPluginConfig> };
 };
 
-export async function LatestBlogPosts({ pluginConfig }: LatestBlogPostsProps) {
-  const posts = await getBlogPostsMetadata(pluginConfig);
+export async function LatestBlogPosts({ pluginConfigs }: LatestBlogPostsProps) {
+  const posts = await getBlogPostsMetadata(pluginConfigs);
 
   if (posts.length === 0) {
     return null;
@@ -18,7 +18,7 @@ export async function LatestBlogPosts({ pluginConfig }: LatestBlogPostsProps) {
 
   const latestPosts = posts.slice(
     0,
-    pluginConfig.MAX_BLOG_POSTS_IN_FOOTER ?? DEFAULT_MAX_POSTS
+    pluginConfigs.blog.MAX_BLOG_POSTS_IN_FOOTER ?? DEFAULT_MAX_POSTS
   );
 
   return (
@@ -30,7 +30,7 @@ export async function LatestBlogPosts({ pluginConfig }: LatestBlogPostsProps) {
           <Link
             className="group flex flex-col space-y-1"
             href={{
-              pathname: `${pluginConfig.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH}/${post.slug}`,
+              pathname: `${pluginConfigs.blog.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH}/${post.slug}`,
             }}
             key={post.slug}
           >
@@ -49,7 +49,7 @@ export async function LatestBlogPosts({ pluginConfig }: LatestBlogPostsProps) {
 
       <Link
         className="w-fit text-muted-foreground text-sm underline-offset-4 hover:underline active:underline"
-        href={{ pathname: pluginConfig.BASE_PATH ?? "/blog" }}
+        href={{ pathname: pluginConfigs.blog.BASE_PATH ?? "/blog" }}
       >
         View all articles →
       </Link>

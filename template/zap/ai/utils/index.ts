@@ -6,21 +6,23 @@ import { BadRequestError } from "@/zap/errors";
 import { AI_PROVIDERS_OBJECT } from "../data";
 import type { AIProviderId, ModelName } from "../types";
 
-export function getModel(
-  provider: AIProviderId,
-  apiKey: string,
-  modelName: ModelName
-) {
-  const openAI = createOpenAI({ apiKey });
-  const mistral = createMistral({ apiKey });
+export function getModel(params: {
+  provider: AIProviderId;
+  apiKey: string;
+  modelName: ModelName;
+}) {
+  const openAI = createOpenAI({ apiKey: params.apiKey });
+  const mistral = createMistral({ apiKey: params.apiKey });
 
-  switch (provider) {
+  switch (params.provider) {
     case "openai":
-      return openAI(modelName);
+      return openAI(params.modelName);
     case "mistral":
-      return mistral(modelName);
+      return mistral(params.modelName);
     default:
-      throw new BadRequestError(`The provider "${provider}" is not supported.`);
+      throw new BadRequestError(
+        `The provider "${params.provider}" is not supported.`
+      );
   }
 }
 

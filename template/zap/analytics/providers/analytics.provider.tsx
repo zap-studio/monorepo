@@ -10,15 +10,15 @@ import { SuspendedPostHogPageView } from "../components/posthog-page-view";
 
 type AnalyticsProviderProps = {
   children: React.ReactNode;
-  config: Partial<AnalyticsClientPluginConfig>;
+  pluginConfigs: { analytics: Partial<AnalyticsClientPluginConfig> };
 };
 
 export function AnalyticsProvider({
   children,
-  config,
+  pluginConfigs,
 }: AnalyticsProviderProps) {
   useEffect(() => {
-    if (!config.ENABLE_POSTHOG) {
+    if (!pluginConfigs.analytics.ENABLE_POSTHOG) {
       return;
     }
 
@@ -27,17 +27,17 @@ export function AnalyticsProvider({
       capture_pageview: false, // Disable automatic pageview tracking
       capture_pageleave: true, // Enable automatic pageleave tracking
     });
-  }, [config.ENABLE_POSTHOG]);
+  }, [pluginConfigs.analytics.ENABLE_POSTHOG]);
 
   return (
     <>
-      {!!config.ENABLE_POSTHOG && (
+      {!!pluginConfigs.analytics.ENABLE_POSTHOG && (
         <PostHogProvider client={posthog}>
           <SuspendedPostHogPageView />
           {children}
         </PostHogProvider>
       )}
-      {!config.ENABLE_POSTHOG && children}
+      {!pluginConfigs.analytics.ENABLE_POSTHOG && children}
     </>
   );
 }

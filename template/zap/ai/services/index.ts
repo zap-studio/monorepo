@@ -195,7 +195,7 @@ export async function streamChatService({
   const { apiKey, model } = aiSettings;
 
   const result = streamText({
-    model: getModel(provider, apiKey, model),
+    model: getModel({ provider, apiKey, modelName: model }),
     messages: convertToModelMessages(messages),
     system: pluginConfigs.ai.SYSTEM_PROMPT,
     maxOutputTokens: pluginConfigs.ai.CHAT?.MAX_OUTPUT_TOKENS,
@@ -236,7 +236,7 @@ export async function streamCompletionService({
   const { apiKey, model } = aiSettings;
 
   const result = streamText({
-    model: getModel(provider, apiKey, model),
+    model: getModel({ provider, apiKey, modelName: model }),
     prompt,
     system: pluginConfigs.ai.SYSTEM_PROMPT,
     maxOutputTokens: pluginConfigs.ai.COMPLETION?.MAX_OUTPUT_TOKENS,
@@ -262,7 +262,7 @@ export async function testAPIKeyService({
   model,
 }: TestAPIKeyService) {
   await generateText({
-    model: getModel(provider, apiKey, model),
+    model: getModel({ provider, apiKey, modelName: model }),
     prompt: 'Just answer "hello world"',
     maxOutputTokens: 16, // Minimum tokens to minimize cost and time
   }).catch((error) => {

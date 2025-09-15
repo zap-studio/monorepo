@@ -14,22 +14,24 @@ import {
 
 type GenerateMetadataParams = {
   params: Promise<{ slug: string }>;
+  pluginConfigs: { blog: Partial<BlogServerPluginConfig> };
 };
 
 export async function _generateMetadata({
   params,
+  pluginConfigs,
 }: GenerateMetadataParams): Promise<Metadata> {
   const { slug } = await params;
-  return await generateBlogPostMetadata(slug);
+  return await generateBlogPostMetadata(slug, pluginConfigs);
 }
 
-export async function _generateStaticParams(
-  pluginConfig?: Partial<BlogServerPluginConfig>
-) {
-  if (!pluginConfig) {
+export async function _generateStaticParams(pluginConfigs?: {
+  blog: Partial<BlogServerPluginConfig>;
+}) {
+  if (!pluginConfigs?.blog) {
     return [];
   }
-  const posts = await getBlogPostsMetadata(pluginConfig);
+  const posts = await getBlogPostsMetadata(pluginConfigs);
   return posts.map((post) => ({
     slug: post.slug,
   }));
@@ -37,18 +39,18 @@ export async function _generateStaticParams(
 
 export type _BlogSlugPageProps = {
   params: Promise<{ slug: string }>;
-  pluginConfig?: Partial<BlogServerPluginConfig>;
+  pluginConfigs?: { blog: Partial<BlogServerPluginConfig> };
 };
 
 export async function _BlogSlugPage({
   params,
-  pluginConfig,
+  pluginConfigs,
 }: _BlogSlugPageProps) {
   const { slug } = await params;
-  if (!pluginConfig) {
+  if (!pluginConfigs?.blog) {
     notFound();
   }
-  const post = await getBlogPost(slug, pluginConfig);
+  const post = await getBlogPost(slug, pluginConfigs);
 
   if (!post) {
     notFound();
