@@ -23,22 +23,22 @@ import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 import type { AuthClientPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { betterAuthClient } from "../../providers/better-auth/client";
 
-const $formSchema = (config: Partial<AuthClientPluginConfig>) => {
+const $formSchema = (pluginConfig: Partial<AuthClientPluginConfig>) => {
   return z
     .object({
       password: z
         .string()
         .min(
-          config.MINIMUM_PASSWORD_LENGTH ??
+          pluginConfig.MINIMUM_PASSWORD_LENGTH ??
             DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH,
-          `Password must be at least ${config.MINIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH} characters`
+          `Password must be at least ${pluginConfig.MINIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH} characters`
         ),
       confirmPassword: z
         .string()
         .min(
-          config.MINIMUM_PASSWORD_LENGTH ??
+          pluginConfig.MINIMUM_PASSWORD_LENGTH ??
             DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH,
-          `Password must be at least ${config.MINIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH} characters`
+          `Password must be at least ${pluginConfig.MINIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH} characters`
         ),
     })
     .refine((data) => data.password === data.confirmPassword, {
@@ -49,14 +49,16 @@ const $formSchema = (config: Partial<AuthClientPluginConfig>) => {
 
 type FormSchema = z.infer<ReturnType<typeof $formSchema>>;
 
-export function ResetPasswordForm(config: Partial<AuthClientPluginConfig>) {
+export function ResetPasswordForm(
+  pluginConfig: Partial<AuthClientPluginConfig>
+) {
   const [submitting, setSubmitting] = useState(false);
   const [token, setToken] = useState<string | null>(null);
 
   const router = useRouter();
 
   const form = useForm<FormSchema>({
-    resolver: zodResolver($formSchema(config)),
+    resolver: zodResolver($formSchema(pluginConfig)),
     defaultValues: {
       password: "",
       confirmPassword: "",
@@ -94,7 +96,7 @@ export function ResetPasswordForm(config: Partial<AuthClientPluginConfig>) {
         (error as { code?: string }).code === "PASSWORD_COMPROMISED"
       ) {
         toast.error(
-          config.PASSWORD_COMPROMISED_MESSAGE ??
+          pluginConfig.PASSWORD_COMPROMISED_MESSAGE ??
             DEFAULT_CONFIG.auth.PASSWORD_COMPROMISED_MESSAGE
         );
         return;

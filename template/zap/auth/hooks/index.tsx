@@ -25,7 +25,7 @@ type LoginFormValues = z.infer<ReturnType<typeof $LoginFormSchema>>;
 type RegisterFormValues = z.infer<ReturnType<typeof $RegisterFormSchema>>;
 
 export function useAuth(
-  config: Partial<AuthClientPluginConfig>,
+  pluginConfig: Partial<AuthClientPluginConfig>,
   callbackURL?: string
 ) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,7 +37,8 @@ export function useAuth(
       await betterAuthClient.sendVerificationEmail({
         email,
         callbackURL:
-          config.VERIFIED_EMAIL_PATH ?? DEFAULT_CONFIG.auth.VERIFIED_EMAIL_PATH,
+          pluginConfig.VERIFIED_EMAIL_PATH ??
+          DEFAULT_CONFIG.auth.VERIFIED_EMAIL_PATH,
       });
       startCooldown(ZAP_MAILS_CONFIG.RATE_LIMIT_SECONDS);
     } catch (error) {
@@ -61,7 +62,7 @@ export function useAuth(
       }
 
       if (
-        !!config.REQUIRE_MAIL_VERIFICATION &&
+        !!pluginConfig.REQUIRE_MAIL_VERIFICATION &&
         !response.data?.user?.emailVerified
       ) {
         await sendVerificationMail(email);
@@ -73,7 +74,7 @@ export function useAuth(
       toast.success("Login successful!");
       router.push(
         loginCallbackURL ??
-          config.REDIRECT_URL_AFTER_SIGN_IN ??
+          pluginConfig.REDIRECT_URL_AFTER_SIGN_IN ??
           DEFAULT_CONFIG.auth.REDIRECT_URL_AFTER_SIGN_IN
       );
     } catch (error) {
@@ -101,7 +102,7 @@ export function useAuth(
         );
       }
 
-      if (config.REQUIRE_MAIL_VERIFICATION) {
+      if (pluginConfig.REQUIRE_MAIL_VERIFICATION) {
         await sendVerificationMail(email);
         toast.success(
           "Registration successful! Please check your email to verify your account."
@@ -112,7 +113,7 @@ export function useAuth(
       toast.success("Registration successful!");
       router.push(
         registerCallbackURL ??
-          config.REDIRECT_URL_AFTER_SIGN_UP ??
+          pluginConfig.REDIRECT_URL_AFTER_SIGN_UP ??
           DEFAULT_CONFIG.auth.REDIRECT_URL_AFTER_SIGN_UP
       );
     } catch (error) {
@@ -123,7 +124,7 @@ export function useAuth(
         (error as { code?: string }).code === "PASSWORD_COMPROMISED"
       ) {
         toast.error(
-          config.PASSWORD_COMPROMISED_MESSAGE ??
+          pluginConfig.PASSWORD_COMPROMISED_MESSAGE ??
             DEFAULT_CONFIG.auth.PASSWORD_COMPROMISED_MESSAGE
         );
         return;

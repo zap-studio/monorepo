@@ -67,15 +67,17 @@ export async function getMDXData(dir: string) {
   }
 }
 
-export async function getBlogPosts(config?: Partial<BlogServerPluginConfig>) {
-  const BLOG_DIR = config?.DATA_DIR ?? DEFAULT_CONFIG.blog.DATA_DIR;
+export async function getBlogPosts(
+  pluginConfig?: Partial<BlogServerPluginConfig>
+) {
+  const BLOG_DIR = pluginConfig?.DATA_DIR ?? DEFAULT_CONFIG.blog.DATA_DIR;
   return await getMDXData(BLOG_DIR);
 }
 
 export async function getBlogPostsMetadata(
-  config: Partial<BlogServerPluginConfig>
+  pluginConfig: Partial<BlogServerPluginConfig>
 ) {
-  const posts = await getBlogPosts(config);
+  const posts = await getBlogPosts(pluginConfig);
   return posts.map((post) => ({
     ...post.metadata,
     slug: post.slug,
@@ -84,10 +86,10 @@ export async function getBlogPostsMetadata(
 
 export async function getBlogPost(
   slug: string,
-  config: Partial<BlogServerPluginConfig>
+  pluginConfig: Partial<BlogServerPluginConfig>
 ) {
   try {
-    const BLOG_DIR = config.DATA_DIR ?? DEFAULT_CONFIG.blog.DATA_DIR;
+    const BLOG_DIR = pluginConfig.DATA_DIR ?? DEFAULT_CONFIG.blog.DATA_DIR;
     const { metadata, content } = await readMDXFile(
       path.join(BLOG_DIR, `${slug}.mdx`)
     );
@@ -113,8 +115,11 @@ export function formatDate(date: string, includeRelative = false) {
   return fullDate;
 }
 
-export async function generateBlogPostMetadata(slug: string) {
-  const post = await getBlogPost(slug);
+export async function generateBlogPostMetadata(
+  slug: string,
+  pluginConfig: Partial<BlogServerPluginConfig>
+) {
+  const post = await getBlogPost(slug, pluginConfig).catch(() => null);
 
   if (!post) {
     return ZAP_DEFAULT_METADATA;

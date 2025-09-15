@@ -14,28 +14,28 @@ import {
 } from "../../services";
 import { $authMiddleware } from "../middlewares";
 
-const $isAuthenticated = (config: Partial<AuthServerPluginConfig>) =>
-  base.use($authMiddleware(config)).handler(
+const $isAuthenticated = (pluginConfig: Partial<AuthServerPluginConfig>) =>
+  base.use($authMiddleware(pluginConfig)).handler(
     withRpcHandler((_opt) => {
-      return isAuthenticatedService(config);
+      return isAuthenticatedService(pluginConfig);
     })
   );
-const $getUserId = (config: Partial<AuthServerPluginConfig>) =>
-  base.use($authMiddleware(config)).handler(
+const $getUserId = (pluginConfig: Partial<AuthServerPluginConfig>) =>
+  base.use($authMiddleware(pluginConfig)).handler(
     withRpcHandler((_opt) => {
-      return getUserIdService(config);
+      return getUserIdService(pluginConfig);
     })
   );
-const $getSession = (config: Partial<AuthServerPluginConfig>) =>
-  base.use($authMiddleware(config)).handler(
+const $getSession = (pluginConfig: Partial<AuthServerPluginConfig>) =>
+  base.use($authMiddleware(pluginConfig)).handler(
     withRpcHandler((_opt) => {
-      return getSessionService(config);
+      return getSessionService(pluginConfig);
     })
   );
-const $isUserAdmin = (config: Partial<AuthServerPluginConfig>) =>
-  base.use($authMiddleware(config)).handler(
+const $isUserAdmin = (pluginConfig: Partial<AuthServerPluginConfig>) =>
+  base.use($authMiddleware(pluginConfig)).handler(
     withRpcHandler((_opt) => {
-      return isUserAdminService(config);
+      return isUserAdminService(pluginConfig);
     })
   );
 const getNumberOfUsers = base.handler(withRpcHandler(getNumberOfUsersService));

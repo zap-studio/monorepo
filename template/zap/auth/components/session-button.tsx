@@ -8,7 +8,7 @@ import type { AuthClientPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { ZAP_CORE_CONFIG } from "@/zap.config";
 import { betterAuthClient } from "../providers/better-auth/client";
 
-export function SessionButton(config: Partial<AuthClientPluginConfig>) {
+export function SessionButton(pluginConfig: Partial<AuthClientPluginConfig>) {
   const { data: result } = betterAuthClient.useSession();
   const session = result?.session;
 
@@ -25,7 +25,9 @@ export function SessionButton(config: Partial<AuthClientPluginConfig>) {
       <ZapButton asChild variant="ghost">
         <Link
           className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground active:text-foreground"
-          href={{ pathname: config.LOGIN_URL ?? DEFAULT_CONFIG.auth.LOGIN_URL }}
+          href={{
+            pathname: pluginConfig.LOGIN_URL ?? DEFAULT_CONFIG.auth.LOGIN_URL,
+          }}
         >
           Login
         </Link>
@@ -34,7 +36,8 @@ export function SessionButton(config: Partial<AuthClientPluginConfig>) {
       <ZapButton asChild size="sm">
         <Link
           href={{
-            pathname: config.SIGN_UP_URL ?? DEFAULT_CONFIG.auth.SIGN_UP_URL,
+            pathname:
+              pluginConfig.SIGN_UP_URL ?? DEFAULT_CONFIG.auth.SIGN_UP_URL,
           }}
         >
           Get Started

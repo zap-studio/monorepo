@@ -5,12 +5,12 @@ import { formatDate, getBlogPostsMetadata } from "../utils";
 
 const DEFAULT_MAX_POSTS = 3;
 
-export async function LatestBlogPosts({
-  config,
-}: {
-  config: Partial<BlogServerPluginConfig>;
-}) {
-  const posts = await getBlogPostsMetadata(config);
+type LatestBlogPostsProps = {
+  pluginConfig: Partial<BlogServerPluginConfig>;
+};
+
+export async function LatestBlogPosts({ pluginConfig }: LatestBlogPostsProps) {
+  const posts = await getBlogPostsMetadata(pluginConfig);
 
   if (posts.length === 0) {
     return null;
@@ -18,7 +18,7 @@ export async function LatestBlogPosts({
 
   const latestPosts = posts.slice(
     0,
-    config.MAX_BLOG_POSTS_IN_FOOTER ?? DEFAULT_MAX_POSTS
+    pluginConfig.MAX_BLOG_POSTS_IN_FOOTER ?? DEFAULT_MAX_POSTS
   );
 
   return (
@@ -30,7 +30,7 @@ export async function LatestBlogPosts({
           <Link
             className="group flex flex-col space-y-1"
             href={{
-              pathname: `${config.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH}/${post.slug}`,
+              pathname: `${pluginConfig.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH}/${post.slug}`,
             }}
             key={post.slug}
           >
@@ -49,7 +49,7 @@ export async function LatestBlogPosts({
 
       <Link
         className="w-fit text-muted-foreground text-sm underline-offset-4 hover:underline active:underline"
-        href={{ pathname: config?.BASE_PATH ?? "/blog" }}
+        href={{ pathname: pluginConfig.BASE_PATH ?? "/blog" }}
       >
         View all articles →
       </Link>

@@ -22,7 +22,7 @@ type AuthPageProps = {
     linkText: string;
     linkHref: string;
   };
-  config: Partial<AuthServerPluginConfig>;
+  pluginConfig: Partial<AuthServerPluginConfig>;
 };
 
 const isLegalEnabled = isPluginEnabled("legal");
@@ -32,7 +32,7 @@ export function _AuthPage({
   description,
   form,
   bottomText,
-  config,
+  pluginConfig,
 }: AuthPageProps) {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted/50 p-6 md:p-10">
@@ -48,14 +48,14 @@ export function _AuthPage({
           <Card className="border shadow-none">
             <CardHeader className="text-center">
               <CardTitle className="text-xl">{title}</CardTitle>
-              {!!config.ENABLE_SOCIAL_PROVIDER && description && (
+              {!!pluginConfig.ENABLE_SOCIAL_PROVIDER && description && (
                 <CardDescription>{description}</CardDescription>
               )}
             </CardHeader>
 
             <CardContent>
               <div className="grid gap-6">
-                {!!config.ENABLE_SOCIAL_PROVIDER && (
+                {!!pluginConfig.ENABLE_SOCIAL_PROVIDER && (
                   <>
                     <SocialProviders />
                     <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-border after:border-t">
