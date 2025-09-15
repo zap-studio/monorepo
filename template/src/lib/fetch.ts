@@ -8,7 +8,7 @@ import { BASE_URL } from "@/zap.config";
  * - Server/Edge: BASE_URL from zap.config.ts
  */
 function getBaseURL(): string {
-  if (typeof window !== "undefined" && window.location?.origin) {
+  if (window?.location?.origin) {
     return window.location.origin;
   }
   return BASE_URL;

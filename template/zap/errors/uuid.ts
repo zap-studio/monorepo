@@ -27,7 +27,7 @@ const UUID_SECTION_LENGTHS = [
  */
 export function generateUuid(): string {
   // Try to use crypto.getRandomValues if available (browser, Node.js 15+, edge runtime)
-  if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
+  if (globalThis?.crypto?.getRandomValues) {
     const bytes = new Uint8Array(UUID_BYTE_LENGTH);
     globalThis.crypto.getRandomValues(bytes);
 
