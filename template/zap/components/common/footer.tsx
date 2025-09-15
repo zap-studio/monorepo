@@ -1,10 +1,10 @@
 import Link from "next/link";
-import type { getServerPlugin } from "@/lib/zap.server";
+import type { ZapServerPluginInstance } from "@/lib/zap.server";
 import { LEGAL_LINKS } from "../data";
 import { ThemeSwitcher } from "./theme-switcher";
 
 type FooterProps = {
-  blogPlugin?: ReturnType<typeof getServerPlugin<"blog">>;
+  blogPlugin?: ZapServerPluginInstance<"blog">;
 };
 
 export function Footer({ blogPlugin }: FooterProps) {
@@ -40,7 +40,7 @@ export function Footer({ blogPlugin }: FooterProps) {
             <ThemeSwitcher />
           </div>
 
-          {blogPlugin?.config && LatestBlogPosts && (
+          {LatestBlogPosts && blogPlugin?.config && (
             <LatestBlogPosts config={blogPlugin?.config} />
           )}
         </div>
