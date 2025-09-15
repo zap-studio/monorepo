@@ -25,9 +25,11 @@ import {
 } from "../../services";
 import type { AIProviderId } from "../../types";
 
-const $getAISettings = (authConfig: Partial<AuthServerPluginConfig>) =>
+const $getAISettings = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
   base
-    .use($authMiddleware(authConfig))
+    .use($authMiddleware(pluginConfigs.auth))
     .input(InputGetAPIKeySchema)
     .handler(
       withRpcHandler(async ({ input, context }) => {
@@ -38,9 +40,11 @@ const $getAISettings = (authConfig: Partial<AuthServerPluginConfig>) =>
       })
     );
 
-const $saveAISettings = (authConfig: Partial<AuthServerPluginConfig>) =>
+const $saveAISettings = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
   base
-    .use($authMiddleware(authConfig))
+    .use($authMiddleware(pluginConfigs.auth))
     .input(InputSaveAPIKeySchema)
     .handler(
       withRpcHandler(({ input, context }) => {
@@ -51,9 +55,11 @@ const $saveAISettings = (authConfig: Partial<AuthServerPluginConfig>) =>
       })
     );
 
-const $updateAISettings = (authConfig: Partial<AuthServerPluginConfig>) =>
+const $updateAISettings = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
   base
-    .use($authMiddleware(authConfig))
+    .use($authMiddleware(pluginConfigs.auth))
     .input(InputUpdateAPIKeySchema)
     .handler(
       withRpcHandler(({ input, context }) => {
@@ -64,9 +70,11 @@ const $updateAISettings = (authConfig: Partial<AuthServerPluginConfig>) =>
       })
     );
 
-const $deleteAPIKey = (authConfig: Partial<AuthServerPluginConfig>) =>
+const $deleteAPIKey = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
   base
-    .use($authMiddleware(authConfig))
+    .use($authMiddleware(pluginConfigs.auth))
     .input(InputDeleteAPIKeySchema)
     .handler(
       withRpcHandler(({ input, context }) => {
@@ -77,9 +85,11 @@ const $deleteAPIKey = (authConfig: Partial<AuthServerPluginConfig>) =>
       })
     );
 
-const $saveOrUpdateAISettings = (authConfig: Partial<AuthServerPluginConfig>) =>
+const $saveOrUpdateAISettings = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
   base
-    .use($authMiddleware(authConfig))
+    .use($authMiddleware(pluginConfigs.auth))
     .input(InputSaveAPIKeySchema)
     .handler(
       withRpcHandler(({ input, context }) => {
@@ -90,9 +100,11 @@ const $saveOrUpdateAISettings = (authConfig: Partial<AuthServerPluginConfig>) =>
       })
     );
 
-const $testAPIKey = (authConfig: Partial<AuthServerPluginConfig>) =>
+const $testAPIKey = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
   base
-    .use($authMiddleware(authConfig))
+    .use($authMiddleware(pluginConfigs.auth))
     .input(InputTestAPIKeySchema)
     .handler(
       withRpcHandler(({ input }) => {
@@ -102,9 +114,11 @@ const $testAPIKey = (authConfig: Partial<AuthServerPluginConfig>) =>
       })
     );
 
-const $streamChat = (authConfig: Partial<AuthServerPluginConfig>) =>
+const $streamChat = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
   base
-    .use($authMiddleware(authConfig))
+    .use($authMiddleware(pluginConfigs.auth))
     .input(
       type<{
         provider: AIProviderId;
@@ -120,9 +134,11 @@ const $streamChat = (authConfig: Partial<AuthServerPluginConfig>) =>
       })
     );
 
-const $streamCompletion = (authConfig: Partial<AuthServerPluginConfig>) =>
+const $streamCompletion = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
   base
-    .use($authMiddleware(authConfig))
+    .use($authMiddleware(pluginConfigs.auth))
     .input(
       type<{
         provider: AIProviderId;
@@ -138,13 +154,15 @@ const $streamCompletion = (authConfig: Partial<AuthServerPluginConfig>) =>
       })
     );
 
-export const $ai = (authConfig: Partial<AuthServerPluginConfig>) => ({
-  getAISettings: $getAISettings(authConfig),
-  saveAISettings: $saveAISettings(authConfig),
-  updateAISettings: $updateAISettings(authConfig),
-  deleteAPIKey: $deleteAPIKey(authConfig),
-  saveOrUpdateAISettings: $saveOrUpdateAISettings(authConfig),
-  testAPIKey: $testAPIKey(authConfig),
-  streamChat: $streamChat(authConfig),
-  streamCompletion: $streamCompletion(authConfig),
+export const $ai = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) => ({
+  getAISettings: $getAISettings(pluginConfigs),
+  saveAISettings: $saveAISettings(pluginConfigs),
+  updateAISettings: $updateAISettings(pluginConfigs),
+  deleteAPIKey: $deleteAPIKey(pluginConfigs),
+  saveOrUpdateAISettings: $saveOrUpdateAISettings(pluginConfigs),
+  testAPIKey: $testAPIKey(pluginConfigs),
+  streamChat: $streamChat(pluginConfigs),
+  streamCompletion: $streamCompletion(pluginConfigs),
 });

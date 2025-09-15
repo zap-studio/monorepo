@@ -175,14 +175,14 @@ export type StreamChatService = {
   userId: string;
   provider: AIProviderId;
   messages: UIMessage[];
-  config: AIServerPluginConfig;
+  pluginConfigs: { ai: Partial<AIServerPluginConfig> };
 };
 
 export async function streamChatService({
   userId,
   provider,
   messages,
-  config,
+  pluginConfigs,
 }: StreamChatService) {
   const aiSettings = await getAISettingsService({ userId, provider });
 
@@ -197,13 +197,13 @@ export async function streamChatService({
   const result = streamText({
     model: getModel(provider, apiKey, model),
     messages: convertToModelMessages(messages),
-    system: config.SYSTEM_PROMPT,
-    maxOutputTokens: config.CHAT?.MAX_OUTPUT_TOKENS,
-    temperature: config.CHAT?.TEMPERATURE,
-    presencePenalty: config.CHAT?.PRESENCE_PENALTY,
-    frequencyPenalty: config.CHAT?.FREQUENCY_PENALTY,
-    stopSequences: config.CHAT?.STOP_SEQUENCES,
-    maxRetries: config.CHAT?.MAX_RETRIES,
+    system: pluginConfigs.ai.SYSTEM_PROMPT,
+    maxOutputTokens: pluginConfigs.ai.CHAT?.MAX_OUTPUT_TOKENS,
+    temperature: pluginConfigs.ai.CHAT?.TEMPERATURE,
+    presencePenalty: pluginConfigs.ai.CHAT?.PRESENCE_PENALTY,
+    frequencyPenalty: pluginConfigs.ai.CHAT?.FREQUENCY_PENALTY,
+    stopSequences: pluginConfigs.ai.CHAT?.STOP_SEQUENCES,
+    maxRetries: pluginConfigs.ai.CHAT?.MAX_RETRIES,
   });
 
   return streamToEventIterator(result.toUIMessageStream());
@@ -213,14 +213,14 @@ export type StreamCompletionService = {
   userId: string;
   provider: AIProviderId;
   prompt: string;
-  config: AIServerPluginConfig;
+  pluginConfigs: { ai: Partial<AIServerPluginConfig> };
 };
 
 export async function streamCompletionService({
   userId,
   provider,
   prompt,
-  config,
+  pluginConfigs,
 }: StreamCompletionService) {
   const aiSettings = await getAISettingsService({
     userId,
@@ -238,13 +238,13 @@ export async function streamCompletionService({
   const result = streamText({
     model: getModel(provider, apiKey, model),
     prompt,
-    system: config.SYSTEM_PROMPT,
-    maxOutputTokens: config.COMPLETION?.MAX_OUTPUT_TOKENS,
-    temperature: config.COMPLETION?.TEMPERATURE,
-    presencePenalty: config.COMPLETION?.PRESENCE_PENALTY,
-    frequencyPenalty: config.COMPLETION?.FREQUENCY_PENALTY,
-    stopSequences: config.COMPLETION?.STOP_SEQUENCES,
-    maxRetries: config.COMPLETION?.MAX_RETRIES,
+    system: pluginConfigs.ai.SYSTEM_PROMPT,
+    maxOutputTokens: pluginConfigs.ai.COMPLETION?.MAX_OUTPUT_TOKENS,
+    temperature: pluginConfigs.ai.COMPLETION?.TEMPERATURE,
+    presencePenalty: pluginConfigs.ai.COMPLETION?.PRESENCE_PENALTY,
+    frequencyPenalty: pluginConfigs.ai.COMPLETION?.FREQUENCY_PENALTY,
+    stopSequences: pluginConfigs.ai.COMPLETION?.STOP_SEQUENCES,
+    maxRetries: pluginConfigs.ai.COMPLETION?.MAX_RETRIES,
   });
 
   return streamToEventIterator(result.toUIMessageStream());

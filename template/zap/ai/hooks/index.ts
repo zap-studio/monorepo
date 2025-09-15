@@ -17,7 +17,7 @@ import { handleClientError } from "@/zap/errors/client";
 import { DEFAULT_MODEL } from "../data";
 import type { AIFormValues, AIProviderId, ModelName } from "../types";
 
-export function useAIChat(provider: AIProviderId) {
+export function useAIChat(params: { provider: AIProviderId }) {
   return useChat({
     transport: {
       async sendMessages(options) {
@@ -25,7 +25,7 @@ export function useAIChat(provider: AIProviderId) {
           await orpcClient.ai.streamChat(
             {
               messages: options.messages,
-              provider,
+              provider: params.provider,
             },
             { signal: options.abortSignal }
           )
@@ -41,14 +41,17 @@ export function useAIChat(provider: AIProviderId) {
   });
 }
 
-export function useAICompletion(prompt: string, provider: AIProviderId) {
+export function useAICompletion(
+  prompt: string,
+  params: { provider: AIProviderId }
+) {
   const result = useCompletion({
     fetch: async (_url, options) => {
       const stream = eventIteratorToStream(
         await orpcClient.ai.streamCompletion(
           {
             prompt,
-            provider,
+            provider: params.provider,
           },
           { signal: options?.signal || undefined }
         )
