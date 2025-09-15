@@ -9,8 +9,16 @@ export const _metadata: Metadata = {
   title: `${ZAP_DEFAULT_METADATA.title} | Blog`,
 };
 
-export async function _BlogPage(config: Partial<BlogServerPluginConfig>) {
-  const posts = await getBlogPostsMetadata(config);
+type BlogPageProps = {
+  pluginConfig?: Partial<BlogServerPluginConfig>;
+};
+
+export async function _BlogPage({ pluginConfig }: BlogPageProps) {
+  if (!pluginConfig) {
+    return null;
+  }
+
+  const posts = await getBlogPostsMetadata(pluginConfig);
 
   return (
     <div className="container mx-auto max-w-4xl py-6">
@@ -22,7 +30,7 @@ export async function _BlogPage(config: Partial<BlogServerPluginConfig>) {
           >
             <Link
               href={{
-                pathname: `${config.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH}/${post.slug}`,
+                pathname: `${pluginConfig.BASE_PATH ?? DEFAULT_CONFIG.blog.BASE_PATH}/${post.slug}`,
               }}
             >
               <div className="rounded-md p-4 px-0 hover:bg-muted md:px-4 md:active:bg-muted">
