@@ -16,12 +16,12 @@ import type { Session } from "../providers/better-auth/client";
  */
 export function isPublicPath(
   pathname: string,
-  config: Partial<AuthServerPluginConfig>
+  pluginConfig: Partial<AuthServerPluginConfig>
 ): boolean {
-  if (!config.PUBLIC_PATHS) {
+  if (!pluginConfig.PUBLIC_PATHS) {
     return (DEFAULT_CONFIG.auth.PUBLIC_PATHS as string[]).includes(pathname);
   }
-  return config.PUBLIC_PATHS.includes(pathname);
+  return pluginConfig.PUBLIC_PATHS.includes(pathname);
 }
 
 /**
@@ -33,11 +33,11 @@ export function isPublicPath(
  */
 export function checkPublicPathAccess(
   request: NextRequest,
-  config: Partial<AuthServerPluginConfig>
+  pluginConfig: Partial<AuthServerPluginConfig>
 ): NextResponse | null {
   const { pathname } = request.nextUrl;
 
-  if (isPublicPath(pathname, config)) {
+  if (isPublicPath(pathname, pluginConfig)) {
     const requestHeaders = new Headers(request.headers);
 
     const response = NextResponse.next({
@@ -59,10 +59,10 @@ export function checkPublicPathAccess(
 export function createLoginRedirect(
   request: NextRequest,
   pathname: string,
-  config: Partial<AuthServerPluginConfig>
+  pluginConfig: Partial<AuthServerPluginConfig>
 ): NextResponse {
   const loginUrl = new URL(
-    config.LOGIN_URL ?? DEFAULT_CONFIG.auth.LOGIN_URL,
+    pluginConfig.LOGIN_URL ?? DEFAULT_CONFIG.auth.LOGIN_URL,
     request.url
   );
   loginUrl.searchParams.set("redirect", pathname);
@@ -74,8 +74,10 @@ export function createLoginRedirect(
  *
  * @returns string representing the login URL
  */
-export function getLoginUrl(config: Partial<AuthServerPluginConfig>): string {
-  return config.LOGIN_URL ?? DEFAULT_CONFIG.auth.LOGIN_URL;
+export function getLoginUrl(
+  pluginConfig: Partial<AuthServerPluginConfig>
+): string {
+  return pluginConfig.LOGIN_URL ?? DEFAULT_CONFIG.auth.LOGIN_URL;
 }
 
 /**
