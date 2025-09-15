@@ -13,79 +13,80 @@ import { logMiddlewareError } from "@/zap/errors/logger/edge";
 import { checkWaitlistRedirect } from "@/zap/waitlist/authorization";
 import { getServerPlugin } from "./lib/zap.server";
 
+const handleWaitlist = (request: NextRequest) => {
+  if (!isPluginEnabled("waitlist")) {
+    return;
+  }
+  return checkWaitlistRedirect(request);
+};
+
+const handleBlogAccess = (request: NextRequest) => {
+  const blogPlugin = getServerPlugin("blog");
+  const blogConfig = blogPlugin?.config ?? {};
+  const check = blogPlugin?.middleware?.checkBlogPathAccess;
+  if (!check) {
+    return;
+  }
+  return check(request, { blog: blogConfig });
+};
+
+const handleAuth = async (request: NextRequest) => {
+  const authPlugin = getServerPlugin("auth");
+  const authConfig = authPlugin?.config ?? {};
+  if (!authPlugin?.config) {
+    return;
+  }
+
+  const publicPathAccess = checkPublicPathAccess(request, { auth: authConfig });
+  if (publicPathAccess) {
+    return publicPathAccess;
+  }
+
+  const session = await getSessionInEdgeRuntime(request);
+  if (!session) {
+    return createLoginRedirect(request, request.nextUrl.pathname, {
+      auth: authConfig,
+    });
+  }
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-user-session", JSON.stringify(session));
+
+  return NextResponse.next({ request: { headers: requestHeaders } });
+};
+
+const handleError = (request: NextRequest) => {
+  const authPlugin = getServerPlugin("auth");
+  const authConfig = authPlugin?.config ?? {};
+  if (authPlugin?.config) {
+    return createLoginRedirect(request, request.nextUrl.pathname, {
+      auth: authConfig,
+    });
+  }
+  return NextResponse.next();
+};
+
 export async function middleware(request: NextRequest) {
   try {
-    const { pathname } = request.nextUrl;
-
-    // Check for waitlist redirect (optional plugin)
-    if (isPluginEnabled("waitlist")) {
-      const waitlistRedirect = checkWaitlistRedirect(request);
-      if (waitlistRedirect) {
-        return waitlistRedirect;
-      }
+    const waitlistRedirect = handleWaitlist(request);
+    if (waitlistRedirect) {
+      return waitlistRedirect;
     }
 
-    // Check if path is a blog path (optional plugin)
-    const blogPlugin = getServerPlugin("blog");
-    const blogConfig = blogPlugin?.config ?? {};
-
-    if (blogPlugin?.middleware?.checkBlogPathAccess) {
-      const blogPathAccess = blogPlugin.middleware.checkBlogPathAccess(
-        request,
-        { blog: blogConfig }
-      );
-      if (blogPathAccess) {
-        return blogPathAccess;
-      }
+    const blogPathAccess = handleBlogAccess(request);
+    if (blogPathAccess) {
+      return blogPathAccess;
     }
 
-    // Handle authentication if auth plugin is enabled
-    const authPlugin = getServerPlugin("auth");
-    const authConfig = authPlugin?.config ?? {};
-    if (authPlugin?.config) {
-      // Check if path is publicly accessible (auth public paths)
-      const publicPathAccess = checkPublicPathAccess(request, {
-        auth: authConfig,
-      });
-      if (publicPathAccess) {
-        return publicPathAccess;
-      }
-
-      // Fetch session from API using edge runtime compatible method
-      const session = await getSessionInEdgeRuntime(request);
-
-      if (!session) {
-        // Redirect unauthenticated users to login with the original path as a query param
-        return createLoginRedirect(request, pathname, { auth: authConfig });
-      }
-
-      // Add session headers for authenticated requests
-      const requestHeaders = new Headers(request.headers);
-      requestHeaders.set("x-user-session", JSON.stringify(session));
-
-      const response = NextResponse.next({
-        request: { headers: requestHeaders },
-      });
-
-      return response;
+    const authResponse = await handleAuth(request);
+    if (authResponse) {
+      return authResponse;
     }
 
-    // If auth plugin is disabled, just continue with the request
     return NextResponse.next();
   } catch (error) {
     logMiddlewareError(error);
-
-    // On error, if auth is enabled, redirect to login
-    const authPlugin = getServerPlugin("auth");
-    const authConfig = authPlugin?.config ?? {};
-    if (authPlugin?.config) {
-      return createLoginRedirect(request, request.nextUrl.pathname, {
-        auth: authConfig,
-      });
-    }
-
-    // If auth is disabled, continue with the request even on error
-    return NextResponse.next();
+    return handleError(request);
   }
 }
 
