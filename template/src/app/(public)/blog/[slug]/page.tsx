@@ -1,9 +1,12 @@
+import { getServerPluginConfig } from "@/lib/zap.server";
 import {
   _BlogSlugPage,
   type _BlogSlugPageProps,
   _generateMetadata,
   _generateStaticParams,
 } from "@/zap/blog/pages/slug.page";
+
+const pluginConfig = getServerPluginConfig("blog");
 
 export async function generateMetadata({
   params,
@@ -14,9 +17,9 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams() {
-  return await _generateStaticParams();
+  return await _generateStaticParams(pluginConfig);
 }
 
 export default function BlogSlugPage({ params }: _BlogSlugPageProps) {
-  return <_BlogSlugPage params={params} />;
+  return <_BlogSlugPage params={params} pluginConfig={pluginConfig} />;
 }

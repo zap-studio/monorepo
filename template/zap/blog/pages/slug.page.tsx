@@ -12,17 +12,24 @@ import {
   getBlogPostsMetadata,
 } from "../utils";
 
+type GenerateMetadataParams = {
+  params: Promise<{ slug: string }>;
+};
+
 export async function _generateMetadata({
   params,
-}: _BlogSlugPageProps): Promise<Metadata> {
+}: GenerateMetadataParams): Promise<Metadata> {
   const { slug } = await params;
   return await generateBlogPostMetadata(slug);
 }
 
 export async function _generateStaticParams(
-  config: Partial<BlogServerPluginConfig>
+  pluginConfig?: Partial<BlogServerPluginConfig>
 ) {
-  const posts = await getBlogPostsMetadata(config);
+  if (!pluginConfig) {
+    return [];
+  }
+  const posts = await getBlogPostsMetadata(pluginConfig);
   return posts.map((post) => ({
     slug: post.slug,
   }));
@@ -30,12 +37,18 @@ export async function _generateStaticParams(
 
 export type _BlogSlugPageProps = {
   params: Promise<{ slug: string }>;
-  config: Partial<BlogServerPluginConfig>;
+  pluginConfig?: Partial<BlogServerPluginConfig>;
 };
 
-export async function _BlogSlugPage({ params, config }: _BlogSlugPageProps) {
+export async function _BlogSlugPage({
+  params,
+  pluginConfig,
+}: _BlogSlugPageProps) {
   const { slug } = await params;
-  const post = await getBlogPost(slug, config);
+  if (!pluginConfig) {
+    notFound();
+  }
+  const post = await getBlogPost(slug, pluginConfig);
 
   if (!post) {
     notFound();
