@@ -23,10 +23,16 @@ import { $LoginFormSchema } from "../../schemas";
 
 type LoginFormValues = z.infer<ReturnType<typeof $LoginFormSchema>>;
 
-export function LoginForm(pluginConfig: Partial<AuthClientPluginConfig>) {
+type LoginFormProps = {
+  pluginConfigs: {
+    auth: Partial<AuthClientPluginConfig>;
+  };
+};
+
+export function LoginForm({ pluginConfigs }: LoginFormProps) {
   const [callbackURL, setCallbackURL] = useState<string | undefined>(undefined);
   const { isInCooldown, cooldown, isSubmitting, handleLoginSubmit } = useAuth(
-    pluginConfig,
+    pluginConfigs,
     callbackURL
   );
 
@@ -40,7 +46,7 @@ export function LoginForm(pluginConfig: Partial<AuthClientPluginConfig>) {
   }, []);
 
   const form = useForm<LoginFormValues>({
-    resolver: zodResolver($LoginFormSchema(pluginConfig)),
+    resolver: zodResolver($LoginFormSchema(pluginConfigs)),
     defaultValues: {
       email: "",
       password: "",
@@ -83,7 +89,7 @@ export function LoginForm(pluginConfig: Partial<AuthClientPluginConfig>) {
                   className="text-sm underline-offset-4 hover:underline active:underline"
                   href={{
                     pathname:
-                      pluginConfig.FORGOT_PASSWORD_URL ??
+                      pluginConfigs.auth.FORGOT_PASSWORD_URL ??
                       DEFAULT_CONFIG.auth.FORGOT_PASSWORD_URL,
                   }}
                 >

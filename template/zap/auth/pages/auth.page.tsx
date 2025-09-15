@@ -22,7 +22,7 @@ type AuthPageProps = {
     linkText: string;
     linkHref: string;
   };
-  pluginConfig: Partial<AuthServerPluginConfig>;
+  pluginConfigs: { auth: Partial<AuthServerPluginConfig> };
 };
 
 const isLegalEnabled = isPluginEnabled("legal");
@@ -32,7 +32,7 @@ export function _AuthPage({
   description,
   form,
   bottomText,
-  pluginConfig,
+  pluginConfigs,
 }: AuthPageProps) {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted/50 p-6 md:p-10">
@@ -48,16 +48,16 @@ export function _AuthPage({
           <Card className="border shadow-none">
             <CardHeader className="text-center">
               <CardTitle className="text-xl">{title}</CardTitle>
-              {!!pluginConfig.ENABLE_SOCIAL_PROVIDER && description && (
+              {!!pluginConfigs.auth.ENABLE_SOCIAL_PROVIDER && description && (
                 <CardDescription>{description}</CardDescription>
               )}
             </CardHeader>
 
             <CardContent>
               <div className="grid gap-6">
-                {!!pluginConfig.ENABLE_SOCIAL_PROVIDER && (
+                {!!pluginConfigs.auth.ENABLE_SOCIAL_PROVIDER && (
                   <>
-                    <SocialProviders />
+                    <SocialProviders pluginConfigs={pluginConfigs} />
                     <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-border after:border-t">
                       <span className="relative z-10 bg-card px-2 text-muted-foreground">
                         Or continue with
@@ -88,8 +88,12 @@ export function _AuthPage({
   );
 }
 
-function SocialProviders(config: Partial<AuthServerPluginConfig>) {
-  const providers = config.PROVIDERS;
+type SocialProvidersProps = {
+  pluginConfigs: { auth: Partial<AuthServerPluginConfig> };
+};
+
+function SocialProviders({ pluginConfigs }: SocialProvidersProps) {
+  const providers = pluginConfigs.auth.PROVIDERS;
 
   if (!providers || providers.length === 0) {
     return null;
@@ -99,8 +103,8 @@ function SocialProviders(config: Partial<AuthServerPluginConfig>) {
     <div className="flex flex-col gap-4">
       {providers.map((provider) => (
         <SocialProviderButton
-          config={config}
           key={provider}
+          pluginConfigs={pluginConfigs}
           provider={provider}
         />
       ))}

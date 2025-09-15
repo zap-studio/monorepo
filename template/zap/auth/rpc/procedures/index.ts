@@ -14,28 +14,34 @@ import {
 } from "../../services";
 import { $authMiddleware } from "../middlewares";
 
-const $isAuthenticated = (pluginConfig: Partial<AuthServerPluginConfig>) =>
-  base.use($authMiddleware(pluginConfig)).handler(
+const $isAuthenticated = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
+  base.use($authMiddleware(pluginConfigs)).handler(
     withRpcHandler((_opt) => {
-      return isAuthenticatedService(pluginConfig);
+      return isAuthenticatedService(pluginConfigs);
     })
   );
-const $getUserId = (pluginConfig: Partial<AuthServerPluginConfig>) =>
-  base.use($authMiddleware(pluginConfig)).handler(
+const $getUserId = (pluginConfigs: { auth: Partial<AuthServerPluginConfig> }) =>
+  base.use($authMiddleware(pluginConfigs)).handler(
     withRpcHandler((_opt) => {
-      return getUserIdService(pluginConfig);
+      return getUserIdService(pluginConfigs);
     })
   );
-const $getSession = (pluginConfig: Partial<AuthServerPluginConfig>) =>
-  base.use($authMiddleware(pluginConfig)).handler(
+const $getSession = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
+  base.use($authMiddleware(pluginConfigs)).handler(
     withRpcHandler((_opt) => {
-      return getSessionService(pluginConfig);
+      return getSessionService(pluginConfigs);
     })
   );
-const $isUserAdmin = (pluginConfig: Partial<AuthServerPluginConfig>) =>
-  base.use($authMiddleware(pluginConfig)).handler(
+const $isUserAdmin = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
+  base.use($authMiddleware(pluginConfigs)).handler(
     withRpcHandler((_opt) => {
-      return isUserAdminService(pluginConfig);
+      return isUserAdminService(pluginConfigs);
     })
   );
 const getNumberOfUsers = base.handler(withRpcHandler(getNumberOfUsersService));
@@ -45,12 +51,14 @@ const getUserIdFromMail = base.input(InputGetUserIdFromMailSchema).handler(
   })
 );
 
-export const $auth = (config: Partial<AuthServerPluginConfig>) => {
+export const $auth = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) => {
   return {
-    getUserId: $getUserId(config),
-    getSession: $getSession(config),
-    isAuthenticated: $isAuthenticated(config),
-    isUserAdmin: $isUserAdmin(config),
+    getUserId: $getUserId(pluginConfigs),
+    getSession: $getSession(pluginConfigs),
+    isAuthenticated: $isAuthenticated(pluginConfigs),
+    isUserAdmin: $isUserAdmin(pluginConfigs),
     getNumberOfUsers,
     getUserIdFromMail,
   };

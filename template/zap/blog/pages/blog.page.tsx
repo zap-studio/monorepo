@@ -10,7 +10,7 @@ export const _metadata: Metadata = {
 };
 
 type BlogPageProps = {
-  pluginConfigs?: { blog: Partial<BlogServerPluginConfig> };
+  pluginConfigs: { blog: Partial<BlogServerPluginConfig> };
 };
 
 export async function _BlogPage({ pluginConfigs }: BlogPageProps) {

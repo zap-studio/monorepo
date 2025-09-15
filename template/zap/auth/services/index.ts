@@ -15,42 +15,42 @@ export async function getNumberOfUsersService() {
   return count;
 }
 
-export async function getSessionService(
-  config: Partial<AuthServerPluginConfig>
-) {
+export async function getSessionService(pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) {
   const _headers = await headers();
-  const result = await $betterAuthServer(config).api.getSession({
+  const result = await $betterAuthServer(pluginConfigs).api.getSession({
     headers: _headers,
   });
 
   return result?.session;
 }
 
-export async function getAuthServerData(
-  config: Partial<AuthServerPluginConfig>
-) {
+export async function getAuthServerData(pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) {
   const _headers = await headers();
-  const result = await $betterAuthServer(config).api.getSession({
+  const result = await $betterAuthServer(pluginConfigs).api.getSession({
     headers: _headers,
   });
 
   return result;
 }
 
-export async function getAuthServerDataOrRedirectToLoginService(
-  config: Partial<AuthServerPluginConfig>
-) {
-  const result = await getAuthServerData(config);
+export async function getAuthServerDataOrRedirectToLoginService(pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) {
+  const result = await getAuthServerData(pluginConfigs);
   if (!result?.session) {
-    return redirectToLogin(config);
+    return redirectToLogin(pluginConfigs);
   }
   return { user: result.user, session: result.session };
 }
 
-export async function getUserIdService(
-  config: Partial<AuthServerPluginConfig>
-) {
-  const currentUser = await getUserService(config);
+export async function getUserIdService(pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) {
+  const currentUser = await getUserService(pluginConfigs);
 
   if (!currentUser) {
     throw new AuthenticationError("User not authenticated");
@@ -59,19 +59,21 @@ export async function getUserIdService(
   return currentUser.id;
 }
 
-export async function getUserService(config: Partial<AuthServerPluginConfig>) {
+export async function getUserService(pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) {
   const _headers = await headers();
-  const result = await $betterAuthServer(config).api.getSession({
+  const result = await $betterAuthServer(pluginConfigs).api.getSession({
     headers: _headers,
   });
 
   return result?.user;
 }
 
-export async function isAuthenticatedService(
-  config: Partial<AuthServerPluginConfig>
-) {
-  const session = await getSessionService(config);
+export async function isAuthenticatedService(pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) {
+  const session = await getSessionService(pluginConfigs);
 
   if (!session) {
     return false;
@@ -80,10 +82,10 @@ export async function isAuthenticatedService(
   return true;
 }
 
-export async function isUserAdminService(
-  config: Partial<AuthServerPluginConfig>
-) {
-  const currentUser = await getUserService(config);
+export async function isUserAdminService(pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) {
+  const currentUser = await getUserService(pluginConfigs);
 
   if (!currentUser) {
     throw new NotFoundError("User not found");

@@ -20,12 +20,16 @@ import { $RegisterFormSchema } from "../../schemas";
 
 type RegisterFormValues = z.infer<ReturnType<typeof $RegisterFormSchema>>;
 
-export function RegisterForm(pluginConfig: Partial<AuthClientPluginConfig>) {
+type RegisterFormProps = {
+  pluginConfigs: { auth: Partial<AuthClientPluginConfig> };
+};
+
+export function RegisterForm({ pluginConfigs }: RegisterFormProps) {
   const { isInCooldown, cooldown, isSubmitting, handleRegisterSubmit } =
-    useAuth(pluginConfig);
+    useAuth(pluginConfigs);
 
   const form = useForm<RegisterFormValues>({
-    resolver: zodResolver($RegisterFormSchema(pluginConfig)),
+    resolver: zodResolver($RegisterFormSchema(pluginConfigs)),
     defaultValues: {
       name: "",
       email: "",

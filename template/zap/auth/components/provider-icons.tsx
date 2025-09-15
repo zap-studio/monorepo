@@ -1,6 +1,5 @@
 import type { JSX } from "react";
-
-import type { Provider } from "../zap.plugin.config.types";
+import type { Provider } from "@/zap/plugins/types/auth.plugin";
 
 export const PROVIDER_ICONS: Record<Provider, JSX.Element> = {
   github: (

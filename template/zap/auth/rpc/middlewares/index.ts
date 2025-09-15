@@ -13,11 +13,13 @@ export type SessionContext = {
   readonly headers: Headers;
 };
 
-export const $authMiddleware = (config: Partial<AuthServerPluginConfig>) => {
+export const $authMiddleware = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) => {
   return base.middleware(async ({ next }) => {
     const _headers = await headers();
 
-    const session = await $betterAuthServer(config).api.getSession({
+    const session = await $betterAuthServer(pluginConfigs).api.getSession({
       headers: _headers,
     });
 

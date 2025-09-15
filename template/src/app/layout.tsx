@@ -15,6 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const analytics = getServerPlugin("analytics");
+  const analyticsConfig = analytics?.config ?? {};
   const VercelProvider = analytics?.providers?.VercelProvider;
 
   return (
@@ -24,7 +25,9 @@ export default function RootLayout({
           {children}
 
           <Toaster position="top-center" />
-          {VercelProvider && <VercelProvider config={analytics?.config} />}
+          {VercelProvider && (
+            <VercelProvider pluginConfigs={{ analytics: analyticsConfig }} />
+          )}
         </Providers>
       </body>
     </html>

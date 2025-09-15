@@ -25,7 +25,7 @@ export async function _generateMetadata({
   return await generateBlogPostMetadata(slug, pluginConfigs);
 }
 
-export async function _generateStaticParams(pluginConfigs?: {
+export async function _generateStaticParams(pluginConfigs: {
   blog: Partial<BlogServerPluginConfig>;
 }) {
   if (!pluginConfigs?.blog) {

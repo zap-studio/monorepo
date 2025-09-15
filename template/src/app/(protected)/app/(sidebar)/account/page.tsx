@@ -1,10 +1,10 @@
-import { getServerPlugin } from "@/lib/zap.server";
+import { getServerPluginConfig } from "@/lib/zap.server";
 import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
 
-const authConfig = getServerPlugin("auth").config ?? {};
+const authConfig = getServerPluginConfig("auth") ?? {};
 
 export default async function AccountPage() {
-  await getAuthServerDataOrRedirectToLoginService(authConfig);
+  await getAuthServerDataOrRedirectToLoginService({ auth: authConfig });
 
   return null;
 }

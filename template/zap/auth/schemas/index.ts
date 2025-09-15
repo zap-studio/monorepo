@@ -6,59 +6,59 @@ export const InputGetUserIdFromMailSchema = z.object({
   email: z.string(),
 });
 
-export const $LoginFormSchema = (
-  pluginConfig: Partial<AuthClientPluginConfig>
-) => {
+export const $LoginFormSchema = (pluginConfigs: {
+  auth: Partial<AuthClientPluginConfig>;
+}) => {
   return z.object({
     email: z.email(),
     password: z
       .string()
       .min(
-        pluginConfig?.MINIMUM_PASSWORD_LENGTH ??
+        pluginConfigs.auth.MINIMUM_PASSWORD_LENGTH ??
           DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH,
         {
-          message: `Password must be at least ${pluginConfig?.MINIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH} characters.`,
+          message: `Password must be at least ${pluginConfigs.auth.MINIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH} characters.`,
         }
       ),
   });
 };
 
-export const $RegisterFormSchema = (
-  pluginConfig: Partial<AuthClientPluginConfig>
-) => {
+export const $RegisterFormSchema = (pluginConfigs: {
+  auth: Partial<AuthClientPluginConfig>;
+}) => {
   return z
     .object({
       name: z
         .string()
         .min(
-          pluginConfig.MINIMUM_USERNAME_LENGTH ??
+          pluginConfigs.auth.MINIMUM_USERNAME_LENGTH ??
             DEFAULT_CONFIG.auth.MINIMUM_USERNAME_LENGTH,
           {
-            message: `Name must be at least ${pluginConfig.MINIMUM_USERNAME_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_USERNAME_LENGTH} characters.`,
+            message: `Name must be at least ${pluginConfigs.auth?.MINIMUM_USERNAME_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_USERNAME_LENGTH} characters.`,
           }
         )
         .max(
-          pluginConfig.MAXIMUM_USERNAME_LENGTH ??
+          pluginConfigs?.auth?.MAXIMUM_USERNAME_LENGTH ??
             DEFAULT_CONFIG.auth.MAXIMUM_USERNAME_LENGTH,
           {
-            message: `Name must be at most ${pluginConfig.MAXIMUM_USERNAME_LENGTH ?? DEFAULT_CONFIG.auth.MAXIMUM_USERNAME_LENGTH} characters.`,
+            message: `Name must be at most ${pluginConfigs.auth.MAXIMUM_USERNAME_LENGTH ?? DEFAULT_CONFIG.auth.MAXIMUM_USERNAME_LENGTH} characters.`,
           }
         ),
       email: z.email(),
       password: z
         .string()
         .min(
-          pluginConfig.MINIMUM_PASSWORD_LENGTH ??
+          pluginConfigs.auth.MINIMUM_PASSWORD_LENGTH ??
             DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH,
           {
-            message: `Password must be at least ${pluginConfig.MINIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH} characters.`,
+            message: `Password must be at least ${pluginConfigs.auth.MINIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MINIMUM_PASSWORD_LENGTH} characters.`,
           }
         )
         .max(
-          pluginConfig.MAXIMUM_PASSWORD_LENGTH ??
+          pluginConfigs.auth.MAXIMUM_PASSWORD_LENGTH ??
             DEFAULT_CONFIG.auth.MAXIMUM_PASSWORD_LENGTH,
           {
-            message: `Password must be at most ${pluginConfig.MAXIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MAXIMUM_PASSWORD_LENGTH} characters.`,
+            message: `Password must be at most ${pluginConfigs.auth.MAXIMUM_PASSWORD_LENGTH ?? DEFAULT_CONFIG.auth.MAXIMUM_PASSWORD_LENGTH} characters.`,
           }
         ),
       confirmPassword: z.string(),

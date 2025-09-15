@@ -6,20 +6,23 @@ import {
   _generateStaticParams,
 } from "@/zap/blog/pages/slug.page";
 
-const pluginConfig = getServerPluginConfig("blog");
+const blogConfig = getServerPluginConfig("blog") ?? {};
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  return await _generateMetadata({ params });
+  return await _generateMetadata({
+    params,
+    pluginConfigs: { blog: blogConfig },
+  });
 }
 
 export async function generateStaticParams() {
-  return await _generateStaticParams(pluginConfig);
+  return await _generateStaticParams({ blog: blogConfig });
 }
 
 export default function BlogSlugPage({ params }: _BlogSlugPageProps) {
-  return <_BlogSlugPage params={params} pluginConfig={pluginConfig} />;
+  return <_BlogSlugPage params={params} pluginConfigs={{ blog: blogConfig }} />;
 }

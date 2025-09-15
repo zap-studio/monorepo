@@ -1,8 +1,8 @@
-import { getServerPlugin } from "@/lib/zap.server";
+import { getServerPluginConfig } from "@/lib/zap.server";
 import { RegisterForm } from "@/zap/auth/components/forms/register-form";
 import { _AuthPage } from "@/zap/auth/pages/auth.page";
 
-const authConfig = getServerPlugin("auth").config ?? {};
+const authConfig = getServerPluginConfig("auth") ?? {};
 
 export default function RegisterPage() {
   return (
@@ -12,9 +12,9 @@ export default function RegisterPage() {
         linkText: "Log in",
         linkHref: "/login",
       }}
-      config={authConfig}
       description="Sign up with your Github or Google account"
-      form={<RegisterForm />}
+      form={<RegisterForm pluginConfigs={{ auth: authConfig }} />}
+      pluginConfigs={{ auth: authConfig }}
       title="Create your account"
     />
   );

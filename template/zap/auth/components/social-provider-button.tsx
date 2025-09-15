@@ -15,12 +15,12 @@ import { PROVIDER_ICONS } from "./provider-icons";
 
 type SocialProviderButtonProps = {
   provider: Provider;
-  config: Partial<AuthClientPluginConfig>;
+  pluginConfigs: { auth: Partial<AuthClientPluginConfig> };
 };
 
 export function SocialProviderButton({
   provider,
-  config,
+  pluginConfigs,
 }: SocialProviderButtonProps) {
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +30,7 @@ export function SocialProviderButton({
     try {
       const { data, error } = await betterAuthClient.signIn.social({
         provider: _provider,
-        callbackURL: config.REDIRECT_URL_AFTER_SIGN_IN,
+        callbackURL: pluginConfigs.auth.REDIRECT_URL_AFTER_SIGN_IN,
       });
 
       if (error) {

@@ -27,10 +27,12 @@ export async function middleware(request: NextRequest) {
 
     // Check if path is a blog path (optional plugin)
     const blogPlugin = getServerPlugin("blog");
+    const blogConfig = blogPlugin?.config ?? {};
+
     if (blogPlugin?.middleware?.checkBlogPathAccess) {
       const blogPathAccess = blogPlugin.middleware.checkBlogPathAccess(
         request,
-        blogPlugin?.config
+        { blog: blogConfig }
       );
       if (blogPathAccess) {
         return blogPathAccess;
@@ -39,12 +41,12 @@ export async function middleware(request: NextRequest) {
 
     // Handle authentication if auth plugin is enabled
     const authPlugin = getServerPlugin("auth");
+    const authConfig = authPlugin?.config ?? {};
     if (authPlugin?.config) {
       // Check if path is publicly accessible (auth public paths)
-      const publicPathAccess = checkPublicPathAccess(
-        request,
-        authPlugin?.config
-      );
+      const publicPathAccess = checkPublicPathAccess(request, {
+        auth: authConfig,
+      });
       if (publicPathAccess) {
         return publicPathAccess;
       }
@@ -54,7 +56,7 @@ export async function middleware(request: NextRequest) {
 
       if (!session) {
         // Redirect unauthenticated users to login with the original path as a query param
-        return createLoginRedirect(request, pathname, authPlugin?.config);
+        return createLoginRedirect(request, pathname, { auth: authConfig });
       }
 
       // Add session headers for authenticated requests
@@ -75,12 +77,11 @@ export async function middleware(request: NextRequest) {
 
     // On error, if auth is enabled, redirect to login
     const authPlugin = getServerPlugin("auth");
+    const authConfig = authPlugin?.config ?? {};
     if (authPlugin?.config) {
-      return createLoginRedirect(
-        request,
-        request.nextUrl.pathname,
-        authPlugin?.config
-      );
+      return createLoginRedirect(request, request.nextUrl.pathname, {
+        auth: authConfig,
+      });
     }
 
     // If auth is disabled, continue with the request even on error
