@@ -3,5 +3,12 @@
   "extends": ["ultracite"],
   "files": {
     "includes": ["**", "!src/components/ui"]
+  },
+  "linter": {
+    "rules": {
+      "nursery": {
+        "noImportCycles": "error"
+      }
+    }
   }
 }
