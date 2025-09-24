@@ -23,7 +23,7 @@
     "ai": "^5.0.27",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "fumadocs-core": "^15.7.4",
+    "fumadocs-core": "^15.8.0",
     "fumadocs-mdx": "^11.8.1",
     "fumadocs-typescript": "^4.0.6",
     "fumadocs-ui": "^15.7.4",
