@@ -6,8 +6,8 @@
   "author": "Alexandre Trotel",
   "scripts": {
     "build": "next build --turbopack",
-    "postbuild": "next-sitemap",
     "build:analyze": "ANALYZE=true next build",
+    "check": "npx tsc --noEmit",
     "db:check": "drizzle-kit check",
     "dev:db:check": "drizzle-kit check --config=drizzle.config.dev.ts",
     "db:export": "drizzle-kit export --config=drizzle.config.prod.ts",
@@ -26,16 +26,17 @@
     "dev:db:up": "drizzle-kit up --config=drizzle.config.dev.ts",
     "dev": "next dev --turbopack",
     "dev:debug": "cross-env NODE_OPTIONS='--inspect' next dev --turbopack",
+    "dev:mail": "email dev",
     "dev:scan": "next dev --turbopack & react-scan localhost:3000",
     "dev:trace": "NEXT_TURBOPACK_TRACING=1 next dev --turbopack",
     "format": "ultracite fix",
     "lint": "ultracite check",
     "lint:fix": "ultracite fix",
-    "dev:mail": "email dev",
+    "postbuild": "next-sitemap",
+    "prepare": "husky",
     "start": "next start",
     "typegen": "next typegen",
-    "zap": "zap",
-    "prepare": "husky"
+    "zap": "zap"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
