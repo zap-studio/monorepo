@@ -21,9 +21,11 @@ import {
   updateLastTimestampMailSentService,
 } from "../../services";
 
-const $canSendMail = (authConfig: Partial<AuthServerPluginConfig>) =>
+const $canSendMail = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
   base
-    .use($authMiddleware(authConfig))
+    .use($authMiddleware(pluginConfigs))
     .input(InputCanSendMailSchema)
     .handler(
       withRpcHandler(
@@ -34,11 +36,11 @@ const $canSendMail = (authConfig: Partial<AuthServerPluginConfig>) =>
       )
     );
 
-const $updateLastTimestampMailSent = (
-  authConfig: Partial<AuthServerPluginConfig>
-) =>
+const $updateLastTimestampMailSent = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
   base
-    .use($authMiddleware(authConfig))
+    .use($authMiddleware(pluginConfigs))
     .input(InputUpdateLastTimestampMailSentSchema)
     .handler(
       withRpcHandler(
@@ -89,11 +91,13 @@ const sendMail = base.input(InputSendMailSchema).handler(
   )
 );
 
-export const mails = (authConfig: Partial<AuthServerPluginConfig>) => ({
+export const $mails = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) => ({
   sendForgotPasswordMail,
   sendVerificationMail,
   sendMagicLinkMail,
   sendMail,
-  canSendMail: $canSendMail(authConfig),
-  updateLastTimestampMailSent: $updateLastTimestampMailSent(authConfig),
+  canSendMail: $canSendMail(pluginConfigs),
+  updateLastTimestampMailSent: $updateLastTimestampMailSent(pluginConfigs),
 });

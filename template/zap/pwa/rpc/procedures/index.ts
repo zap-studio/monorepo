@@ -18,15 +18,17 @@ const subscribeUserToPushNotifications = base
     )
   );
 
-const $unsubscribeUserFromPushNotifications = (
-  authConfig: Partial<AuthServerPluginConfig>
-) =>
+const $unsubscribeUserFromPushNotifications = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
   base
-    .use($authMiddleware(authConfig))
+    .use($authMiddleware(pluginConfigs))
     .handler(withRpcHandler(unsubscribeUserFromPushNotificationsService));
 
-export const pwa = (authConfig: Partial<AuthServerPluginConfig>) => ({
+export const $pwa = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) => ({
   subscribeUserToPushNotifications,
   unsubscribeUserFromPushNotifications:
-    $unsubscribeUserFromPushNotifications(authConfig),
+    $unsubscribeUserFromPushNotifications(pluginConfigs),
 });

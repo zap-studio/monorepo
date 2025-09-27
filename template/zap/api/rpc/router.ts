@@ -3,12 +3,13 @@ import "server-only";
 import { getServerPlugin } from "@/lib/zap.server";
 import { $ai } from "@/zap/ai/rpc/procedures";
 import { $auth } from "@/zap/auth/rpc/procedures";
-import { feedbacks } from "@/zap/feedbacks/rpc/procedures";
-import { mails } from "@/zap/mails/rpc/procedures";
-import { pwa } from "@/zap/pwa/rpc/procedures";
+import { $feedbacks } from "@/zap/feedbacks/rpc/procedures";
+import { $mails } from "@/zap/mails/rpc/procedures";
+import { $pwa } from "@/zap/pwa/rpc/procedures";
 import { waitlist } from "@/zap/waitlist/rpc/procedures";
 
 const authConfig = getServerPlugin("auth").config ?? {};
+const aiConfig = getServerPlugin("ai").config ?? {};
 
 /**
  * This file aggregates the routers from various plugins.
@@ -24,10 +25,10 @@ const authConfig = getServerPlugin("auth").config ?? {};
  * Keep only what you need to reduce type surface & build time.
  */
 export const router = {
-  ai: $ai(authConfig),
-  auth: $auth(authConfig),
-  feedbacks,
-  mails,
-  pwa,
+  ai: $ai({ auth: authConfig, ai: aiConfig }),
+  auth: $auth({ auth: authConfig }),
+  feedbacks: $feedbacks({ auth: authConfig }),
+  mails: $mails({ auth: authConfig }),
+  pwa: $pwa({ auth: authConfig }),
   waitlist,
 };

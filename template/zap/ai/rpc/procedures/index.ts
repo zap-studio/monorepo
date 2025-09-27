@@ -5,6 +5,7 @@ import type { UIMessage } from "ai";
 import { base } from "@/zap/api/rpc/middlewares";
 import { $authMiddleware } from "@/zap/auth/rpc/middlewares";
 import { withRpcHandler } from "@/zap/errors/handlers";
+import type { AIServerPluginConfig } from "@/zap/plugins/types/ai.plugin";
 import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import {
   InputDeleteAPIKeySchema,
@@ -29,7 +30,7 @@ const $getAISettings = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
 }) =>
   base
-    .use($authMiddleware(pluginConfigs.auth))
+    .use($authMiddleware(pluginConfigs))
     .input(InputGetAPIKeySchema)
     .handler(
       withRpcHandler(
@@ -45,7 +46,7 @@ const $saveAISettings = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
 }) =>
   base
-    .use($authMiddleware(pluginConfigs.auth))
+    .use($authMiddleware(pluginConfigs))
     .input(InputSaveAPIKeySchema)
     .handler(
       withRpcHandler(({ input, context }) =>
@@ -60,7 +61,7 @@ const $updateAISettings = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
 }) =>
   base
-    .use($authMiddleware(pluginConfigs.auth))
+    .use($authMiddleware(pluginConfigs))
     .input(InputUpdateAPIKeySchema)
     .handler(
       withRpcHandler(({ input, context }) =>
@@ -75,7 +76,7 @@ const $deleteAPIKey = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
 }) =>
   base
-    .use($authMiddleware(pluginConfigs.auth))
+    .use($authMiddleware(pluginConfigs))
     .input(InputDeleteAPIKeySchema)
     .handler(
       withRpcHandler(({ input, context }) =>
@@ -90,7 +91,7 @@ const $saveOrUpdateAISettings = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
 }) =>
   base
-    .use($authMiddleware(pluginConfigs.auth))
+    .use($authMiddleware(pluginConfigs))
     .input(InputSaveAPIKeySchema)
     .handler(
       withRpcHandler(({ input, context }) =>
@@ -105,7 +106,7 @@ const $testAPIKey = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
 }) =>
   base
-    .use($authMiddleware(pluginConfigs.auth))
+    .use($authMiddleware(pluginConfigs))
     .input(InputTestAPIKeySchema)
     .handler(
       withRpcHandler(({ input }) =>
@@ -117,9 +118,10 @@ const $testAPIKey = (pluginConfigs: {
 
 const $streamChat = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
+  ai: Partial<AIServerPluginConfig>;
 }) =>
   base
-    .use($authMiddleware(pluginConfigs.auth))
+    .use($authMiddleware(pluginConfigs))
     .input(
       type<{
         provider: AIProviderId;
@@ -131,15 +133,17 @@ const $streamChat = (pluginConfigs: {
         streamChatService({
           userId: context.session.session.userId,
           ...input,
+          pluginConfigs,
         })
       )
     );
 
 const $streamCompletion = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
+  ai: Partial<AIServerPluginConfig>;
 }) =>
   base
-    .use($authMiddleware(pluginConfigs.auth))
+    .use($authMiddleware(pluginConfigs))
     .input(
       type<{
         provider: AIProviderId;
@@ -151,12 +155,14 @@ const $streamCompletion = (pluginConfigs: {
         streamCompletionService({
           userId: context.session.session.userId,
           ...input,
+          pluginConfigs,
         })
       )
     );
 
 export const $ai = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
+  ai: Partial<AIServerPluginConfig>;
 }) => ({
   getAISettings: $getAISettings(pluginConfigs),
   saveAISettings: $saveAISettings(pluginConfigs),

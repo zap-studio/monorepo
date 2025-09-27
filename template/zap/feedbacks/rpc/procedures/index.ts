@@ -11,9 +11,9 @@ import {
   submitFeedbackService,
 } from "../../services";
 
-const $submit = (authConfig: Partial<AuthServerPluginConfig>) =>
+const $submit = (pluginConfigs: { auth: Partial<AuthServerPluginConfig> }) =>
   base
-    .use($authMiddleware(authConfig))
+    .use($authMiddleware(pluginConfigs))
     .input(InputFeedbackSchema)
     .handler(
       withRpcHandler(
@@ -25,8 +25,10 @@ const $submit = (authConfig: Partial<AuthServerPluginConfig>) =>
       )
     );
 
-const $getUserFeedback = (authConfig: Partial<AuthServerPluginConfig>) =>
-  base.use($authMiddleware(authConfig)).handler(
+const $getUserFeedback = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
+  base.use($authMiddleware(pluginConfigs)).handler(
     withRpcHandler(
       async ({ context }) =>
         await getUserFeedbackService({
@@ -37,8 +39,10 @@ const $getUserFeedback = (authConfig: Partial<AuthServerPluginConfig>) =>
 
 const getAverageRating = base.handler(withRpcHandler(getAverageRatingService));
 
-export const feedbacks = (authConfig: Partial<AuthServerPluginConfig>) => ({
-  submit: $submit(authConfig),
-  getUserFeedback: $getUserFeedback(authConfig),
+export const $feedbacks = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) => ({
+  submit: $submit(pluginConfigs),
+  getUserFeedback: $getUserFeedback(pluginConfigs),
   getAverageRating,
 });
