@@ -120,13 +120,12 @@ export function useAISettings(form: ReturnType<typeof useForm<AIFormValues>>) {
     }
   };
 
-  const handleTestApiKey = async () => {
-    return await testApiKeyMutation.mutateAsync({
+  const handleTestApiKey = async () =>
+    await testApiKeyMutation.mutateAsync({
       provider: form.getValues("provider"),
       apiKey: form.getValues("apiKey"),
       model: form.getValues("model"),
     });
-  };
 
   return {
     saving: saveSettingsMutation.isPending,

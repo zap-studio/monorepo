@@ -26,11 +26,12 @@ const $canSendMail = (authConfig: Partial<AuthServerPluginConfig>) =>
     .use($authMiddleware(authConfig))
     .input(InputCanSendMailSchema)
     .handler(
-      withRpcHandler(async ({ context }) => {
-        return await canSendMailService({
-          userId: context.session.session.userId,
-        });
-      })
+      withRpcHandler(
+        async ({ context }) =>
+          await canSendMailService({
+            userId: context.session.session.userId,
+          })
+      )
     );
 
 const $updateLastTimestampMailSent = (
@@ -40,47 +41,52 @@ const $updateLastTimestampMailSent = (
     .use($authMiddleware(authConfig))
     .input(InputUpdateLastTimestampMailSentSchema)
     .handler(
-      withRpcHandler(async ({ context }) => {
-        return await updateLastTimestampMailSentService({
-          userId: context.session.session.userId,
-        });
-      })
+      withRpcHandler(
+        async ({ context }) =>
+          await updateLastTimestampMailSentService({
+            userId: context.session.session.userId,
+          })
+      )
     );
 
 const sendForgotPasswordMail = base
   .input(InputSendForgotPasswordMailSchema)
   .handler(
-    withRpcHandler(async ({ input }) => {
-      return await sendForgotPasswordMailService({
-        ...input,
-      });
-    })
+    withRpcHandler(
+      async ({ input }) =>
+        await sendForgotPasswordMailService({
+          ...input,
+        })
+    )
   );
 
 const sendVerificationMail = base
   .input(InputSendVerificationMailSchema)
   .handler(
-    withRpcHandler(async ({ input }) => {
-      return await sendVerificationMailService({
-        ...input,
-      });
-    })
+    withRpcHandler(
+      async ({ input }) =>
+        await sendVerificationMailService({
+          ...input,
+        })
+    )
   );
 
 const sendMagicLinkMail = base.input(InputSendMagicLinkMailSchema).handler(
-  withRpcHandler(async ({ input }) => {
-    return await sendMagicLinkMailService({
-      ...input,
-    });
-  })
+  withRpcHandler(
+    async ({ input }) =>
+      await sendMagicLinkMailService({
+        ...input,
+      })
+  )
 );
 
 const sendMail = base.input(InputSendMailSchema).handler(
-  withRpcHandler(async ({ input }) => {
-    return await sendMailService({
-      ...input,
-    });
-  })
+  withRpcHandler(
+    async ({ input }) =>
+      await sendMailService({
+        ...input,
+      })
+  )
 );
 
 export const mails = (authConfig: Partial<AuthServerPluginConfig>) => ({

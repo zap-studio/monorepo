@@ -25,8 +25,8 @@ import { betterAuthClient } from "../../providers/better-auth/client";
 
 const $formSchema = (pluginConfigs: {
   auth: Partial<AuthClientPluginConfig>;
-}) => {
-  return z
+}) =>
+  z
     .object({
       password: z
         .string()
@@ -47,7 +47,6 @@ const $formSchema = (pluginConfigs: {
       message: "Passwords don't match",
       path: ["confirmPassword"],
     });
-};
 
 type FormSchema = z.infer<ReturnType<typeof $formSchema>>;
 

@@ -111,8 +111,8 @@ export function SidebarUser({ user }: SidebarUserProps) {
     { label: "Log out", icon: LogOut, onClick: handleSignOut },
   ];
 
-  const renderMenuItems = (items: MenuItem[]) => {
-    return items
+  const renderMenuItems = (items: MenuItem[]) =>
+    items
       .map(({ label, icon: Icon, href, onClick, disabled }) => {
         if (disabled) {
           return null;
@@ -141,7 +141,6 @@ export function SidebarUser({ user }: SidebarUserProps) {
         );
       })
       .filter((item) => item !== null);
-  };
 
   return (
     <SidebarMenu>

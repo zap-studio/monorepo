@@ -8,8 +8,8 @@ export const InputGetUserIdFromMailSchema = z.object({
 
 export const $LoginFormSchema = (pluginConfigs: {
   auth: Partial<AuthClientPluginConfig>;
-}) => {
-  return z.object({
+}) =>
+  z.object({
     email: z.email(),
     password: z
       .string()
@@ -21,12 +21,11 @@ export const $LoginFormSchema = (pluginConfigs: {
         }
       ),
   });
-};
 
 export const $RegisterFormSchema = (pluginConfigs: {
   auth: Partial<AuthClientPluginConfig>;
-}) => {
-  return z
+}) =>
+  z
     .object({
       name: z
         .string()
@@ -67,4 +66,3 @@ export const $RegisterFormSchema = (pluginConfigs: {
       message: "Passwords do not match.",
       path: ["confirmPassword"],
     });
-};

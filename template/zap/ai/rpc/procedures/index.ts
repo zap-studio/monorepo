@@ -32,12 +32,13 @@ const $getAISettings = (pluginConfigs: {
     .use($authMiddleware(pluginConfigs.auth))
     .input(InputGetAPIKeySchema)
     .handler(
-      withRpcHandler(async ({ input, context }) => {
-        return await getAISettingsService({
-          userId: context.session.session.userId,
-          provider: input.provider,
-        });
-      })
+      withRpcHandler(
+        async ({ input, context }) =>
+          await getAISettingsService({
+            userId: context.session.session.userId,
+            provider: input.provider,
+          })
+      )
     );
 
 const $saveAISettings = (pluginConfigs: {
@@ -47,12 +48,12 @@ const $saveAISettings = (pluginConfigs: {
     .use($authMiddleware(pluginConfigs.auth))
     .input(InputSaveAPIKeySchema)
     .handler(
-      withRpcHandler(({ input, context }) => {
-        return saveAISettingsService({
+      withRpcHandler(({ input, context }) =>
+        saveAISettingsService({
           userId: context.session.session.userId,
           ...input,
-        });
-      })
+        })
+      )
     );
 
 const $updateAISettings = (pluginConfigs: {
@@ -62,12 +63,12 @@ const $updateAISettings = (pluginConfigs: {
     .use($authMiddleware(pluginConfigs.auth))
     .input(InputUpdateAPIKeySchema)
     .handler(
-      withRpcHandler(({ input, context }) => {
-        return updateAISettingsService({
+      withRpcHandler(({ input, context }) =>
+        updateAISettingsService({
           userId: context.session.session.userId,
           ...input,
-        });
-      })
+        })
+      )
     );
 
 const $deleteAPIKey = (pluginConfigs: {
@@ -77,12 +78,12 @@ const $deleteAPIKey = (pluginConfigs: {
     .use($authMiddleware(pluginConfigs.auth))
     .input(InputDeleteAPIKeySchema)
     .handler(
-      withRpcHandler(({ input, context }) => {
-        return deleteAPIKeyService({
+      withRpcHandler(({ input, context }) =>
+        deleteAPIKeyService({
           userId: context.session.session.userId,
           ...input,
-        });
-      })
+        })
+      )
     );
 
 const $saveOrUpdateAISettings = (pluginConfigs: {
@@ -92,12 +93,12 @@ const $saveOrUpdateAISettings = (pluginConfigs: {
     .use($authMiddleware(pluginConfigs.auth))
     .input(InputSaveAPIKeySchema)
     .handler(
-      withRpcHandler(({ input, context }) => {
-        return saveOrUpdateAISettingsService({
+      withRpcHandler(({ input, context }) =>
+        saveOrUpdateAISettingsService({
           userId: context.session.session.userId,
           ...input,
-        });
-      })
+        })
+      )
     );
 
 const $testAPIKey = (pluginConfigs: {
@@ -107,11 +108,11 @@ const $testAPIKey = (pluginConfigs: {
     .use($authMiddleware(pluginConfigs.auth))
     .input(InputTestAPIKeySchema)
     .handler(
-      withRpcHandler(({ input }) => {
-        return testAPIKeyService({
+      withRpcHandler(({ input }) =>
+        testAPIKeyService({
           ...input,
-        });
-      })
+        })
+      )
     );
 
 const $streamChat = (pluginConfigs: {
@@ -126,12 +127,12 @@ const $streamChat = (pluginConfigs: {
       }>()
     )
     .handler(
-      withRpcHandler(({ input, context }) => {
-        return streamChatService({
+      withRpcHandler(({ input, context }) =>
+        streamChatService({
           userId: context.session.session.userId,
           ...input,
-        });
-      })
+        })
+      )
     );
 
 const $streamCompletion = (pluginConfigs: {
@@ -146,12 +147,12 @@ const $streamCompletion = (pluginConfigs: {
       }>()
     )
     .handler(
-      withRpcHandler(({ input, context }) => {
-        return streamCompletionService({
+      withRpcHandler(({ input, context }) =>
+        streamCompletionService({
           userId: context.session.session.userId,
           ...input,
-        });
-      })
+        })
+      )
     );
 
 export const $ai = (pluginConfigs: {

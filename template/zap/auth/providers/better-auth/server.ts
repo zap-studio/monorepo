@@ -30,8 +30,8 @@ import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 
 export const $betterAuthServer = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
-}) => {
-  return betterAuth({
+}) =>
+  betterAuth({
     appName: "Zap.ts",
     database: drizzleAdapter(db, { provider: "pg" }),
     emailAndPassword: {
@@ -148,4 +148,3 @@ export const $betterAuthServer = (pluginConfigs: {
       }),
     ],
   });
-};

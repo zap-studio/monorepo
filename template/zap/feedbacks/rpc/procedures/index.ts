@@ -16,21 +16,23 @@ const $submit = (authConfig: Partial<AuthServerPluginConfig>) =>
     .use($authMiddleware(authConfig))
     .input(InputFeedbackSchema)
     .handler(
-      withRpcHandler(async ({ input, context }) => {
-        return await submitFeedbackService({
-          userId: context.session.session.userId,
-          ...input,
-        });
-      })
+      withRpcHandler(
+        async ({ input, context }) =>
+          await submitFeedbackService({
+            userId: context.session.session.userId,
+            ...input,
+          })
+      )
     );
 
 const $getUserFeedback = (authConfig: Partial<AuthServerPluginConfig>) =>
   base.use($authMiddleware(authConfig)).handler(
-    withRpcHandler(async ({ context }) => {
-      return await getUserFeedbackService({
-        userId: context.session.session.userId,
-      });
-    })
+    withRpcHandler(
+      async ({ context }) =>
+        await getUserFeedbackService({
+          userId: context.session.session.userId,
+        })
+    )
   );
 
 const getAverageRating = base.handler(withRpcHandler(getAverageRatingService));

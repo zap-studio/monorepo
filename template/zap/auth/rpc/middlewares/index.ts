@@ -15,8 +15,8 @@ export type SessionContext = {
 
 export const $authMiddleware = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
-}) => {
-  return base.middleware(async ({ next }) => {
+}) =>
+  base.middleware(async ({ next }) => {
     const _headers = await headers();
 
     const session = await $betterAuthServer(pluginConfigs).api.getSession({
@@ -36,4 +36,3 @@ export const $authMiddleware = (pluginConfigs: {
       },
     });
   });
-};

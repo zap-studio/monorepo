@@ -17,49 +17,41 @@ import { $authMiddleware } from "../middlewares";
 const $isAuthenticated = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
 }) =>
-  base.use($authMiddleware(pluginConfigs)).handler(
-    withRpcHandler((_opt) => {
-      return isAuthenticatedService(pluginConfigs);
-    })
-  );
+  base
+    .use($authMiddleware(pluginConfigs))
+    .handler(withRpcHandler((_opt) => isAuthenticatedService(pluginConfigs)));
 const $getUserId = (pluginConfigs: { auth: Partial<AuthServerPluginConfig> }) =>
-  base.use($authMiddleware(pluginConfigs)).handler(
-    withRpcHandler((_opt) => {
-      return getUserIdService(pluginConfigs);
-    })
-  );
+  base
+    .use($authMiddleware(pluginConfigs))
+    .handler(withRpcHandler((_opt) => getUserIdService(pluginConfigs)));
 const $getSession = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
 }) =>
-  base.use($authMiddleware(pluginConfigs)).handler(
-    withRpcHandler((_opt) => {
-      return getSessionService(pluginConfigs);
-    })
-  );
+  base
+    .use($authMiddleware(pluginConfigs))
+    .handler(withRpcHandler((_opt) => getSessionService(pluginConfigs)));
 const $isUserAdmin = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
 }) =>
-  base.use($authMiddleware(pluginConfigs)).handler(
-    withRpcHandler((_opt) => {
-      return isUserAdminService(pluginConfigs);
-    })
-  );
+  base
+    .use($authMiddleware(pluginConfigs))
+    .handler(withRpcHandler((_opt) => isUserAdminService(pluginConfigs)));
 const getNumberOfUsers = base.handler(withRpcHandler(getNumberOfUsersService));
-const getUserIdFromMail = base.input(InputGetUserIdFromMailSchema).handler(
-  withRpcHandler(async ({ input }) => {
-    return await getUserIdFromMailService({ ...input });
-  })
-);
+const getUserIdFromMail = base
+  .input(InputGetUserIdFromMailSchema)
+  .handler(
+    withRpcHandler(
+      async ({ input }) => await getUserIdFromMailService({ ...input })
+    )
+  );
 
 export const $auth = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
-}) => {
-  return {
-    getUserId: $getUserId(pluginConfigs),
-    getSession: $getSession(pluginConfigs),
-    isAuthenticated: $isAuthenticated(pluginConfigs),
-    isUserAdmin: $isUserAdmin(pluginConfigs),
-    getNumberOfUsers,
-    getUserIdFromMail,
-  };
-};
+}) => ({
+  getUserId: $getUserId(pluginConfigs),
+  getSession: $getSession(pluginConfigs),
+  isAuthenticated: $isAuthenticated(pluginConfigs),
+  isUserAdmin: $isUserAdmin(pluginConfigs),
+  getNumberOfUsers,
+  getUserIdFromMail,
+});

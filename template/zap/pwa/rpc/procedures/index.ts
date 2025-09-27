@@ -13,9 +13,9 @@ import {
 const subscribeUserToPushNotifications = base
   .input(InputSubscribeUserSchema)
   .handler(
-    withRpcHandler(({ input }) => {
-      return subscribeUserToPushNotificationsService({ ...input });
-    })
+    withRpcHandler(({ input }) =>
+      subscribeUserToPushNotificationsService({ ...input })
+    )
   );
 
 const $unsubscribeUserFromPushNotifications = (
