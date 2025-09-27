@@ -9,5 +9,12 @@
       "!apps/docs/src/components/ui",
       "!apps/zap-studio/components/ui"
     ]
+  },
+  "linter": {
+    "rules": {
+      "style": {
+        "useNamingConvention": "off"
+      }
+    }
   }
 }
