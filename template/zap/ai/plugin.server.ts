@@ -9,7 +9,7 @@ import type { AIServerPluginConfig } from "@/zap/plugins/types/ai.plugin";
 import { AI_PROVIDERS_OBJECT, DEFAULT_MODEL, ModelsByProvider } from "./data";
 import { getApiSettingsForUserAndProviderQuery } from "./db/providers/drizzle/queries";
 import { userAISettings } from "./db/providers/drizzle/schema";
-import { ai } from "./rpc/procedures";
+import { $ai } from "./rpc/procedures";
 import {
   AIFormSchema,
   AIProviderIdSchema,
@@ -70,7 +70,7 @@ export function aiPlugin(
   {
     userAISettings: typeof userAISettings;
   },
-  typeof ai,
+  typeof $ai,
   RpcMiddlewareMap,
   {
     getAISettingsService: typeof getAISettingsService;
@@ -121,9 +121,7 @@ export function aiPlugin(
       },
     },
     rpc: {
-      procedures: {
-        ...ai,
-      },
+      procedures: $ai,
     },
     services: {
       getAISettingsService,

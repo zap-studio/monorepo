@@ -46,7 +46,9 @@ export type DbQuery<T extends AnyPgSelect = AnyPgSelect> = PgSelectPrepare<T>;
 export type DbSchema<T extends Partial<TableConfig> = {}> = AnyPgTable<T>;
 
 export type RpcMiddlewareMap = Record<string, RpcMiddleware>;
-export type RpcProcedureMap = Record<string, RpcProcedure>;
+export type RpcProcedureMap =
+  | Record<string, RpcProcedure>
+  | ((args: any) => Record<string, RpcProcedure>);
 
 /* ---------------------------- Base Plugin Type ---------------------------- */
 
