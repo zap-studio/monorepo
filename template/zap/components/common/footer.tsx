@@ -4,11 +4,13 @@ import { LEGAL_LINKS } from "../data";
 import { ThemeSwitcher } from "./theme-switcher";
 
 type FooterProps = {
-  blogPlugin?: ZapServerPluginInstance<"blog">;
+  plugins: {
+    blog?: ZapServerPluginInstance<"blog">;
+  };
 };
 
-export function Footer({ blogPlugin }: FooterProps) {
-  const LatestBlogPosts = blogPlugin?.components?.LatestBlogPosts;
+export function Footer({ plugins }: FooterProps) {
+  const LatestBlogPosts = plugins.blog?.components?.LatestBlogPosts;
 
   return (
     <footer className="w-full border-t bg-background px-4 md:px-8">
@@ -40,8 +42,8 @@ export function Footer({ blogPlugin }: FooterProps) {
             <ThemeSwitcher />
           </div>
 
-          {LatestBlogPosts && blogPlugin?.config && (
-            <LatestBlogPosts config={blogPlugin?.config} />
+          {LatestBlogPosts && plugins.blog?.config && (
+            <LatestBlogPosts pluginConfigs={{ blog: plugins.blog?.config }} />
           )}
         </div>
       </div>

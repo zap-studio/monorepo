@@ -8,8 +8,12 @@ import type { AuthClientPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { ZAP_CORE_CONFIG } from "@/zap.config";
 import { betterAuthClient } from "../providers/better-auth/client";
 
-export function SessionButton(pluginConfigs: {
-  auth: Partial<AuthClientPluginConfig>;
+export function SessionButton({
+  pluginConfigs,
+}: {
+  pluginConfigs: {
+    auth: Partial<AuthClientPluginConfig>;
+  };
 }) {
   const { data: result } = betterAuthClient.useSession();
   const session = result?.session;
