@@ -50,8 +50,12 @@ const $formSchema = (pluginConfigs: {
 
 type FormSchema = z.infer<ReturnType<typeof $formSchema>>;
 
-export function ResetPasswordForm(pluginConfigs: {
-  auth: Partial<AuthClientPluginConfig>;
+export function ResetPasswordForm({
+  pluginConfigs,
+}: {
+  pluginConfigs: {
+    auth: Partial<AuthClientPluginConfig>;
+  };
 }) {
   const [submitting, setSubmitting] = useState(false);
   const [token, setToken] = useState<string | null>(null);

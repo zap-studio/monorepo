@@ -5,10 +5,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
+import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { ResetPasswordForm } from "../components/forms/reset-password-form";
 
-export function _ResetPasswordPage() {
+export function _ResetPasswordPage({
+  pluginConfigs,
+}: {
+  pluginConfigs: { auth: Partial<AuthServerPluginConfig> };
+}) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/50 px-4">
       <Card className="w-full max-w-md border shadow-none">
@@ -21,7 +25,7 @@ export function _ResetPasswordPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <ResetPasswordForm />
+          <ResetPasswordForm pluginConfigs={pluginConfigs} />
         </CardContent>
       </Card>
     </div>
