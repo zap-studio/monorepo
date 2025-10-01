@@ -16,12 +16,12 @@
   "devDependencies": {
     "@zap-ts/config": "workspace:*",
     "@types/bun": "latest",
-    "@types/react": "^19.1.13",
-    "tsdown": "^0.15.4",
+    "@types/react": "^19.1.17",
+    "tsdown": "^0.15.6",
     "typedoc": "^0.28.13"
   },
   "peerDependencies": {
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "react": "^19.1.1"
