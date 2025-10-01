@@ -8,7 +8,7 @@ import { db } from "@/zap/db/providers/drizzle";
 import { PUBLIC_ENV } from "@/zap/env/public";
 import { SERVER_ENV } from "@/zap/env/server";
 import { PushNotificationError } from "@/zap/errors";
-
+import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { pushNotifications } from "../db/providers/drizzle/schema";
 import { ZAP_PWA_CONFIG } from "../zap.plugin.config";
 
@@ -45,14 +45,16 @@ export async function getWebPushService() {
 
 type SubscribeUserService = {
   subscription: webpush.PushSubscription;
+  pluginConfigs: { auth: Partial<AuthServerPluginConfig> };
 };
 
 export async function subscribeUserToPushNotificationsService({
   subscription,
+  pluginConfigs,
 }: SubscribeUserService) {
   await getWebPushService();
 
-  const userId = await getUserIdService();
+  const userId = await getUserIdService(pluginConfigs);
 
   await db
     .insert(pushNotifications)
@@ -70,8 +72,11 @@ export async function subscribeUserToPushNotificationsService({
   return { message: "User subscribed successfully" };
 }
 
-export async function unsubscribeUserFromPushNotificationsService() {
-  const userId = await getUserIdService();
+export async function unsubscribeUserFromPushNotificationsService(pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) {
+  await getWebPushService();
+  const userId = await getUserIdService(pluginConfigs);
 
   await db
     .delete(pushNotifications)
