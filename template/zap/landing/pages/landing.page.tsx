@@ -1,4 +1,5 @@
 import { isPluginEnabled } from "@/lib/plugins";
+import type { ZapServerPluginInstance } from "@/lib/zap.server";
 import { Footer } from "@/zap/components/common/footer";
 import { Header } from "@/zap/components/common/header";
 import { FaqSection } from "../components/faq-section";
@@ -48,10 +49,17 @@ export const SECTIONS = [
   },
 ];
 
-export function _LandingPage() {
+type LandingPageProps = {
+  plugins: Partial<{
+    auth: ZapServerPluginInstance<"auth">;
+    blog: ZapServerPluginInstance<"blog">;
+  }>;
+};
+
+export function _LandingPage({ plugins }: LandingPageProps) {
   return (
     <div className="relative flex min-h-screen flex-col">
-      <Header />
+      <Header plugins={plugins} />
       <main className="flex-1">
         {SECTIONS.map(({ id, component: Component, className, disabled }) => {
           if (disabled) {
@@ -65,7 +73,7 @@ export function _LandingPage() {
           );
         })}
       </main>
-      <Footer />
+      <Footer plugins={plugins} />
     </div>
   );
 }
