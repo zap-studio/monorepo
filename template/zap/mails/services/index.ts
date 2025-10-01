@@ -10,6 +10,7 @@ import { user } from "@/zap/auth/db/providers/drizzle/schema";
 import { isUserAdminService } from "@/zap/auth/services";
 import { db } from "@/zap/db/providers/drizzle";
 import { MailError, NotFoundError, UnauthorizedError } from "@/zap/errors";
+import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { resend } from "../providers/resend/server";
 import { ZAP_MAILS_CONFIG } from "../zap.plugin.config";
 
@@ -67,8 +68,11 @@ export async function canSendMailService({ userId }: { userId: string }) {
 export async function sendAdminEmailService({
   subject,
   recipients,
-}: MailServiceParams) {
-  if (!(await isUserAdminService())) {
+  pluginConfigs,
+}: MailServiceParams & {
+  pluginConfigs: { auth: Partial<AuthServerPluginConfig> };
+}) {
+  if (!(await isUserAdminService(pluginConfigs))) {
     throw new UnauthorizedError("Admin access required");
   }
 
