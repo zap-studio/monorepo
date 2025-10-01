@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
 import { ZapButton } from "@/zap/components/core/button";
+import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { SUPPORT_EMAIL } from "@/zap.config";
 import { BillingCards } from "../components/billing-cards";
 import { FAQ } from "../components/faq";
 
-export async function _BillingPage() {
-  await getAuthServerDataOrRedirectToLoginService();
+type BillingPageProps = {
+  pluginConfigs: {
+    auth: Partial<AuthServerPluginConfig>;
+  };
+};
+
+export async function _BillingPage({ pluginConfigs }: BillingPageProps) {
+  await getAuthServerDataOrRedirectToLoginService(pluginConfigs);
 
   return (
     <div className="flex min-h-screen flex-1 flex-col gap-4 px-4 py-12 md:py-24">
