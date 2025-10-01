@@ -17,9 +17,9 @@ export function PluginProviders({ children }: PluginProvidersProps) {
   const wrappedChildren = useMemo(() => {
     let content = children;
 
-    if (AnalyticsProvider) {
+    if (AnalyticsProvider && analytics?.config) {
       content = (
-        <AnalyticsProvider config={analytics?.config}>
+        <AnalyticsProvider pluginConfigs={{ analytics: analytics?.config }}>
           {content}
         </AnalyticsProvider>
       );
