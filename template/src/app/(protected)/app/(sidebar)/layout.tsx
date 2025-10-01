@@ -1,8 +1,9 @@
-import {
-  _AppLayout,
-  type _AppLayoutProps,
-} from "@/zap/sidebar/layouts/app.layout";
+import { _AppLayout } from "@/zap/sidebar/layouts/app.layout";
 
-export default function AppLayout({ children }: _AppLayoutProps) {
+type AppLayoutProps = {
+  children: React.ReactNode;
+};
+
+export default function AppLayout({ children }: AppLayoutProps) {
   return <_AppLayout>{children}</_AppLayout>;
 }
