@@ -1,16 +1,23 @@
 import Link from "next/link";
 import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
 import { ZapButton } from "@/zap/components/core/button";
+import type { AuthServerPluginConfig } from "@/zap/plugins/types/auth.plugin";
 import { ZAP_CORE_CONFIG } from "@/zap.config";
 
 export type _SuccessPageProps = {
   searchParams: Promise<{
     checkout_id?: string;
   }>;
+  pluginConfigs: {
+    auth: Partial<AuthServerPluginConfig>;
+  };
 };
 
-export async function _SuccessPage({ searchParams }: _SuccessPageProps) {
-  await getAuthServerDataOrRedirectToLoginService();
+export async function _SuccessPage({
+  searchParams,
+  pluginConfigs,
+}: _SuccessPageProps) {
+  await getAuthServerDataOrRedirectToLoginService(pluginConfigs);
 
   const { checkout_id } = await searchParams;
 
