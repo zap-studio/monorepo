@@ -3,6 +3,7 @@ import "client-only";
 
 import {
   type InferDataFromTag,
+  type MutationFunctionContext,
   type QueryKey,
   type UseQueryOptions,
   useQuery,
@@ -137,10 +138,10 @@ import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
  * @template TData - The type of data returned by the mutation.
  * @template TError - The type of error thrown by the mutation.
  * @template TVariables - The type of variables passed to the mutation function.
- * @template TContext - Optional context returned by `onMutate`.
+ * @template TOnMutateResult - The type of context returned by `onMutate`.
  */
-interface ZapMutationOptions<TData, TError, TVariables, TContext>
-  extends UseMutationOptions<TData, TError, TVariables, TContext> {
+interface ZapMutationOptions<TData, TError, TVariables, TOnMutateResult>
+  extends UseMutationOptions<TData, TError, TVariables, TOnMutateResult> {
   showSuccessToast?: boolean;
   successMessage?: string;
   skipErrorHandling?: boolean;
@@ -149,12 +150,14 @@ interface ZapMutationOptions<TData, TError, TVariables, TContext>
     data: TData | undefined,
     error: TError | null,
     variables: TVariables,
-    context: TContext | undefined
+    onMutateResult: TOnMutateResult | undefined,
+    context: MutationFunctionContext
   ) => void;
   onError?: (
     error: TError,
     variables: TVariables,
-    context: TContext | undefined
+    onMutateResult: TOnMutateResult | undefined,
+    context: MutationFunctionContext
   ) => void;
 }
 
@@ -164,7 +167,7 @@ interface ZapMutationOptions<TData, TError, TVariables, TContext>
  * @template TData - The type of data returned by the mutation.
  * @template TError - The type of error thrown by the mutation.
  * @template TVariables - The type of variables passed to the mutation function.
- * @template TContext - Optional context returned by `onMutate`.
+ * @template TOnMutateResult - The type of context returned by `onMutate`.
  * @param options - Zap mutation options
  * @returns The result of `useMutation`.
  */
@@ -172,8 +175,8 @@ export function useZapMutation<
   TData = unknown,
   TError = Error,
   TVariables = void,
-  TContext = unknown,
->(options: ZapMutationOptions<TData, TError, TVariables, TContext>) {
+  TOnMutateResult = unknown,
+>(options: ZapMutationOptions<TData, TError, TVariables, TOnMutateResult>) {
   const {
     showSuccessToast = true,
     skipErrorHandling = false,
@@ -182,22 +185,29 @@ export function useZapMutation<
 
   return useMutation({
     ...restOptions,
+    // biome-ignore lint/nursery/useMaxParams: We need all these parameters becaue it's a wrapper around Tanstack's useMutation
     onSettled: (
       data: TData | undefined,
       error: TError | null,
       variables: TVariables,
-      context: TContext | undefined
+      onMutateResult: TOnMutateResult | undefined,
+      context: MutationFunctionContext
     ) => {
       if (!error && showSuccessToast && options?.successMessage) {
         handleSuccess(options.successMessage);
       }
-      options?.onSettled?.(data, error, variables, context);
+      options?.onSettled?.(data, error, variables, onMutateResult, context);
     },
-    onError: (error: TError, variables: TVariables, context?: TContext) => {
+    onError: (
+      error: TError,
+      variables: TVariables,
+      onMutateResult: TOnMutateResult | undefined,
+      context: MutationFunctionContext
+    ) => {
       if (!skipErrorHandling) {
         handleClientError(error);
       }
-      options?.onError?.(error, variables, context);
+      options?.onError?.(error, variables, onMutateResult, context);
     },
   });
 }
@@ -269,16 +279,17 @@ export function useZapOptimisticMutation<
         queryClient.setQueryData(queryKey, snapshot);
       };
     },
-    onSettled: (data, error, variables, rollback) => {
-      restOptions.onSettled?.(data, error, variables, rollback);
+    // biome-ignore lint/nursery/useMaxParams: We need all these parameters becaue it's a wrapper around Tanstack's useMutation
+    onSettled: (data, error, variables, onMutateResult, rollback) => {
+      restOptions.onSettled?.(data, error, variables, onMutateResult, rollback);
 
       if (!error && invalidates) {
         queryClient.invalidateQueries({ queryKey: invalidates });
       }
     },
-    onError: (error, variables, rollback) => {
-      rollback?.();
-      restOptions.onError?.(error, variables, rollback);
+    onError: (error, variables, onMutateResult, context) => {
+      onMutateResult?.();
+      restOptions.onError?.(error, variables, onMutateResult, context);
     },
   });
 }
