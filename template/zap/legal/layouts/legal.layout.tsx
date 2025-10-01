@@ -11,7 +11,7 @@ export type _LegalLayoutProps = {
   }>;
 };
 
-export default function _LegalLayout({ children, plugins }: _LegalLayoutProps) {
+export function _LegalLayout({ children, plugins }: _LegalLayoutProps) {
   return (
     <div className="relative flex min-h-screen flex-col">
       <Header plugins={plugins} />

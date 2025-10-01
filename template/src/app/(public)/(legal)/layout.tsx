@@ -1,5 +1,6 @@
 import { getServerPlugin } from "@/lib/zap.server";
-import _LegalLayout, {
+import {
+  _LegalLayout,
   type _LegalLayoutProps,
 } from "@/zap/legal/layouts/legal.layout";
 
