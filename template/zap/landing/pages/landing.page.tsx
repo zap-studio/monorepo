@@ -68,7 +68,7 @@ export function _LandingPage({ plugins }: LandingPageProps) {
 
           return (
             <section className={className} id={id} key={id}>
-              <Component />
+              <Component plugins={plugins} />
             </section>
           );
         })}

@@ -60,14 +60,12 @@ const getStatsData = cache(
 );
 
 type HeroSectionProps = {
-  authPlugin: ZapServerPluginInstance<"auth">;
-  isAuthPluginEnabled: boolean;
+  plugins: Partial<{
+    auth: ZapServerPluginInstance<"auth">;
+  }>;
 };
 
-export function HeroSection({
-  authPlugin,
-  isAuthPluginEnabled,
-}: HeroSectionProps) {
+export function HeroSection({ plugins }: HeroSectionProps) {
   return (
     <AnimatedSection isNotSection>
       <div className="flex w-full items-center justify-center px-4 pb-32 md:px-6 md:pb-48">
@@ -86,7 +84,7 @@ export function HeroSection({
               <Link
                 href={{
                   pathname:
-                    authPlugin.config?.SIGN_UP_URL ??
+                    plugins.auth?.config?.SIGN_UP_URL ??
                     DEFAULT_CONFIG.auth.SIGN_UP_URL,
                 }}
               >
@@ -105,7 +103,7 @@ export function HeroSection({
             </ZapButton>
           </div>
 
-          <Stats isAuthPluginEnabled={isAuthPluginEnabled} />
+          <Stats isAuthPluginEnabled={!!plugins.auth} />
         </div>
       </div>
     </AnimatedSection>
