@@ -10,25 +10,33 @@ import {
   unsubscribeUserFromPushNotificationsService,
 } from "../../services";
 
-const subscribeUserToPushNotifications = base
-  .input(InputSubscribeUserSchema)
-  .handler(
-    withRpcHandler(({ input }) =>
-      subscribeUserToPushNotificationsService({ ...input })
-    )
-  );
+const $subscribeUserToPushNotifications = (pluginConfigs: {
+  auth: Partial<AuthServerPluginConfig>;
+}) =>
+  base
+    .input(InputSubscribeUserSchema)
+    .handler(
+      withRpcHandler(({ input }) =>
+        subscribeUserToPushNotificationsService({ ...input, pluginConfigs })
+      )
+    );
 
 const $unsubscribeUserFromPushNotifications = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
 }) =>
   base
     .use($authMiddleware(pluginConfigs))
-    .handler(withRpcHandler(unsubscribeUserFromPushNotificationsService));
+    .handler(
+      withRpcHandler(() =>
+        unsubscribeUserFromPushNotificationsService(pluginConfigs)
+      )
+    );
 
 export const $pwa = (pluginConfigs: {
   auth: Partial<AuthServerPluginConfig>;
 }) => ({
-  subscribeUserToPushNotifications,
+  subscribeUserToPushNotifications:
+    $subscribeUserToPushNotifications(pluginConfigs),
   unsubscribeUserFromPushNotifications:
     $unsubscribeUserFromPushNotifications(pluginConfigs),
 });
