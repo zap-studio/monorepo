@@ -1,5 +1,3 @@
-import "server-only";
-
 import { getPriceDisplay } from "../utils";
 import type { RecurringInterval } from "../zap.plugin.config.types";
 
