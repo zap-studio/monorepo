@@ -1,3 +1,5 @@
+import "server-only";
+
 import { _AppLayout } from "@/zap/sidebar/layouts/app.layout";
 
 type AppLayoutProps = {

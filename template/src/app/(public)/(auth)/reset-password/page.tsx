@@ -1,3 +1,5 @@
+import "server-only";
+
 import { getServerPluginConfig } from "@/lib/zap.server";
 import { _ResetPasswordPage } from "@/zap/auth/pages/reset-password.page";
 

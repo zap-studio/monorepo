@@ -1,3 +1,5 @@
+import "server-only";
+
 import { getServerPluginConfig } from "@/lib/zap.server";
 import { _MailVerifiedPage } from "@/zap/auth/pages/mail-verified.page";
 

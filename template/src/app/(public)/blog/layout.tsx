@@ -1,3 +1,5 @@
+import "server-only";
+
 import { getServerPlugin } from "@/lib/zap.server";
 import { _BlogLayout } from "@/zap/blog/layouts/blog.layout";
 

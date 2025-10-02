@@ -1,3 +1,5 @@
+import "server-only";
+
 import { getServerPluginConfig } from "@/lib/zap.server";
 import { _BillingPage } from "@/zap/payments/pages/billing.page";
 

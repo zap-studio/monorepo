@@ -1,3 +1,5 @@
+import "server-only";
+
 import { getServerPluginConfig } from "@/lib/zap.server";
 import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
 

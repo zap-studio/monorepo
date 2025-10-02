@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { Metadata } from "next";
 import { getServerPluginConfig } from "@/lib/zap.server";
 import { _BlogPage, _metadata } from "@/zap/blog/pages/blog.page";

@@ -1,3 +1,5 @@
+import "server-only";
+
 import { _WaitlistPage } from "@/zap/waitlist/pages/waitlist.page";
 
 export const revalidate = 60;

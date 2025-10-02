@@ -1,3 +1,5 @@
+import "server-only";
+
 import { getServerPluginConfig } from "@/lib/zap.server";
 import { LoginForm } from "@/zap/auth/components/forms/login-form";
 import { _AuthPage } from "@/zap/auth/pages/auth.page";

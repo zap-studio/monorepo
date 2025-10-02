@@ -1,3 +1,5 @@
+import "server-only";
+
 import { _LegalPage } from "@/zap/legal/pages/legal.page";
 import { generateLegalMetadata } from "@/zap/legal/utils";
 

@@ -1,3 +1,5 @@
+import "server-only";
+
 import { getServerPlugin } from "@/lib/zap.server";
 import { _LandingPage } from "@/zap/landing/pages/landing.page";
 
