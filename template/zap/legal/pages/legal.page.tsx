@@ -1,3 +1,5 @@
+import "server-only";
+
 import { CustomMDX } from "@/zap/markdown/mdx";
 
 import { getLegalContent } from "../utils";

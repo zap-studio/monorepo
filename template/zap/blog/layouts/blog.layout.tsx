@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { ZapServerPluginInstance } from "@/lib/zap.server";
 import { Footer } from "@/zap/components/common/footer";
 import { Header } from "@/zap/components/common/header";

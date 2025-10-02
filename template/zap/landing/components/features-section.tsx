@@ -1,3 +1,5 @@
+import "server-only";
+
 import { Check } from "lucide-react";
 
 import { FEATURES } from "../data";

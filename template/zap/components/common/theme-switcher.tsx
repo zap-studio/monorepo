@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";

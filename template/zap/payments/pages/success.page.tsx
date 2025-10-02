@@ -1,3 +1,5 @@
+import "server-only";
+
 import Link from "next/link";
 import { getAuthServerDataOrRedirectToLoginService } from "@/zap/auth/services";
 import { ZapButton } from "@/zap/components/core/button";

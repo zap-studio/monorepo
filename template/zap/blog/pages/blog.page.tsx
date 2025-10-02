@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { Metadata } from "next";
 import Link from "next/link";
 import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";

@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import { Check, Clipboard } from "lucide-react";
 import { useState } from "react";

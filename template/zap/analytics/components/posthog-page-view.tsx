@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import { usePathname, useSearchParams } from "next/navigation";
 import { usePostHog } from "posthog-js/react";

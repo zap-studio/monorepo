@@ -1,3 +1,5 @@
+import "server-only";
+
 import Link from "next/link";
 import type { ZapServerPluginInstance } from "@/lib/zap.server";
 import { LEGAL_LINKS } from "../data";

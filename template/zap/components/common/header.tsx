@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import { useRouter } from "@bprogress/next/app";
 import { AlignJustify, X } from "lucide-react";

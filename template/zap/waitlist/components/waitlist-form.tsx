@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import { AnimatePresence, motion } from "motion/react";
 

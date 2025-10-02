@@ -1,3 +1,5 @@
+import "server-only";
+
 import { ArrowRight, ArrowUpRight, Star } from "lucide-react";
 import Link from "next/link";
 import { cache } from "react";

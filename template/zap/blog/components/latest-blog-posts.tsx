@@ -1,3 +1,5 @@
+import "server-only";
+
 import Link from "next/link";
 import { DEFAULT_CONFIG } from "@/zap/plugins/config/default";
 import type { BlogServerPluginConfig } from "@/zap/plugins/types/blog.plugin";

@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import { Check } from "lucide-react";
 import Link from "next/link";

@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import { motion, useSpring, useTransform } from "motion/react";
 import { useEffect } from "react";

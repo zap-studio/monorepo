@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { BlogPosting, WithContext } from "schema-dts";

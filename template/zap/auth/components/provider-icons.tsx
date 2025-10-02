@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { JSX } from "react";
 import type { Provider } from "@/zap/plugins/types/auth.plugin";
 

@@ -1,4 +1,5 @@
 "use client";
+import "client-only";
 
 import { Bot, HelpCircle, Settings } from "lucide-react";
 import Link from "next/link";
