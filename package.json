@@ -12,12 +12,12 @@
     "clean": "rm -rf node_modules .turbo apps/*/.next apps/*/.source apps/*/node_modules core/node_modules core/.next packages/*/node_modules"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.4",
+    "@biomejs/biome": "^2.2.5",
     "@changesets/cli": "^2.29.7",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.3",
     "turbo": "^2.5.8",
-    "ultracite": "^5.4.6"
+    "ultracite": "^5.6.1"
   },
   "workspaces": [
     "packages/*",
