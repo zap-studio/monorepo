@@ -28,7 +28,7 @@
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "fumadocs-core": "^15.8.2",
-        "fumadocs-mdx": "^12.0.1",
+        "fumadocs-mdx": "^12.0.3",
         "fumadocs-typescript": "^4.0.10",
         "fumadocs-ui": "^15.8.2",
         "hast-util-to-jsx-runtime": "^2.3.6",
@@ -138,11 +138,11 @@
         "@types/figlet": "^1.7.0",
         "@types/fs-extra": "^11.0.4",
         "@types/inquirer": "^9.0.9",
-        "@types/node": "^24.5.2",
+        "@types/node": "^24.6.1",
         "@zap-ts/config": "workspace:*",
-        "tsdown": "^0.15.4",
+        "tsdown": "^0.15.6",
         "typedoc": "^0.28.13",
-        "typescript": "^5.9.2",
+        "typescript": "^5.9.3",
       },
       "peerDependencies": {
         "typescript": "^5.8.3",
@@ -927,7 +927,7 @@
 
     "fumadocs-core": ["fumadocs-core@15.8.2", "", { "dependencies": { "@formatjs/intl-localematcher": "^0.6.1", "@orama/orama": "^3.1.14", "@shikijs/rehype": "^3.13.0", "@shikijs/transformers": "^3.13.0", "github-slugger": "^2.0.0", "hast-util-to-estree": "^3.1.3", "hast-util-to-jsx-runtime": "^2.3.6", "image-size": "^2.0.2", "negotiator": "^1.0.0", "npm-to-yarn": "^3.0.1", "path-to-regexp": "^8.3.0", "react-remove-scroll": "^2.7.1", "remark": "^15.0.0", "remark-gfm": "^4.0.1", "remark-rehype": "^11.1.2", "scroll-into-view-if-needed": "^3.1.0", "shiki": "^3.13.0", "unist-util-visit": "^5.0.0" }, "peerDependencies": { "@mixedbread/sdk": "^0.19.0", "@oramacloud/client": "1.x.x || 2.x.x", "@tanstack/react-router": "1.x.x", "@types/react": "*", "algoliasearch": "5.x.x", "lucide-react": "*", "next": "14.x.x || 15.x.x", "react": "18.x.x || 19.x.x", "react-dom": "18.x.x || 19.x.x", "react-router": "7.x.x", "waku": "^0.26.0" }, "optionalPeers": ["@mixedbread/sdk", "@oramacloud/client", "@tanstack/react-router", "@types/react", "algoliasearch", "lucide-react", "next", "react", "react-dom", "react-router", "waku"] }, "sha512-8x6nwL9gQyfU94VrX3xOIRb3avG9txEJXd0/XdldxHeH6uIAtSGnZ6YV1LksJfEsSIUL+DRxrxRfvL0rbwBP1g=="],
 
-    "fumadocs-mdx": ["fumadocs-mdx@12.0.1", "", { "dependencies": { "@mdx-js/mdx": "^3.1.1", "@standard-schema/spec": "^1.0.0", "chokidar": "^4.0.3", "esbuild": "^0.25.10", "estree-util-value-to-estree": "^3.4.0", "js-yaml": "^4.1.0", "lru-cache": "^11.2.2", "mdast-util-to-markdown": "^2.1.2", "picocolors": "^1.1.1", "remark-mdx": "^3.1.1", "remark-parse": "^11.0.0", "tinyexec": "^1.0.1", "tinyglobby": "^0.2.15", "unified": "^11.0.5", "unist-util-visit": "^5.0.0", "zod": "^4.1.11" }, "peerDependencies": { "@fumadocs/mdx-remote": "^1.4.0", "fumadocs-core": "^14.0.0 || ^15.0.0", "next": "^15.3.0", "react": "*", "vite": "6.x.x || 7.x.x" }, "optionalPeers": ["@fumadocs/mdx-remote", "next", "react", "vite"], "bin": { "fumadocs-mdx": "dist/bin.js" } }, "sha512-o0Qf5pY5RGjn0IoiWbJQ+Yx2MKCwg/RTe0MdtLY2ue8OeRnZHCoPedBJFHQ0ep1X2rzAhjcmfTT5hxc3SELJGg=="],
+    "fumadocs-mdx": ["fumadocs-mdx@12.0.3", "", { "dependencies": { "@mdx-js/mdx": "^3.1.1", "@standard-schema/spec": "^1.0.0", "chokidar": "^4.0.3", "esbuild": "^0.25.10", "estree-util-value-to-estree": "^3.4.0", "js-yaml": "^4.1.0", "lru-cache": "^11.2.2", "mdast-util-to-markdown": "^2.1.2", "picocolors": "^1.1.1", "remark-mdx": "^3.1.1", "remark-parse": "^11.0.0", "tinyexec": "^1.0.1", "tinyglobby": "^0.2.15", "unified": "^11.0.5", "unist-util-visit": "^5.0.0", "zod": "^4.1.11" }, "peerDependencies": { "@fumadocs/mdx-remote": "^1.4.0", "fumadocs-core": "^14.0.0 || ^15.0.0", "next": "^15.3.0", "react": "*", "vite": "6.x.x || 7.x.x" }, "optionalPeers": ["@fumadocs/mdx-remote", "next", "react", "vite"], "bin": { "fumadocs-mdx": "dist/bin.js" } }, "sha512-OYqbHSmzkejG+iUMlZJJOitaVbCgBdo/REc/9Sq1WaZ1vq6bH9PCFU0cKJlRdHbQSGRfVg5EJJy5uKy5+iNFGQ=="],
 
     "fumadocs-typescript": ["fumadocs-typescript@4.0.10", "", { "dependencies": { "estree-util-value-to-estree": "^3.4.0", "hast-util-to-estree": "^3.1.3", "hast-util-to-jsx-runtime": "^2.3.6", "remark": "^15.0.1", "remark-rehype": "^11.1.2", "tinyglobby": "^0.2.15", "ts-morph": "^27.0.0", "unist-util-visit": "^5.0.0" }, "peerDependencies": { "@types/react": "*", "fumadocs-core": "^15.7.0", "fumadocs-ui": "^15.7.0", "typescript": "*" }, "optionalPeers": ["@types/react", "fumadocs-ui"] }, "sha512-+B5FWDqOE1KbAGUHF658pnqSqwbnMGwyr/2G9WpH077LKqC/taienSLIsOhyFw2Q2KlBFD0lH6nam8xCGq+sqg=="],
 
