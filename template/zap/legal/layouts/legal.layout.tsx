@@ -16,9 +16,9 @@ export type _LegalLayoutProps = {
 export function _LegalLayout({ children, plugins }: _LegalLayoutProps) {
   return (
     <div className="relative flex min-h-screen flex-col">
-      <Header plugins={plugins} />
+      <Header plugins={{ auth: plugins.auth }} />
       <div className="mx-auto max-w-3xl px-4 py-12 md:py-24">{children}</div>
-      <Footer plugins={plugins} />
+      <Footer plugins={{ blog: plugins.blog }} />
     </div>
   );
 }

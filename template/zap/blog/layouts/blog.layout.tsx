@@ -15,9 +15,9 @@ export type _BlogLayoutProps = {
 export function _BlogLayout({ children, plugins }: _BlogLayoutProps) {
   return (
     <div className="relative flex min-h-screen flex-col">
-      <Header plugins={plugins} />
+      <Header plugins={{ auth: plugins.auth }} />
       <main className="flex-1 px-4">{children}</main>
-      <Footer plugins={plugins} />
+      <Footer plugins={{ blog: plugins.blog }} />
     </div>
   );
 }

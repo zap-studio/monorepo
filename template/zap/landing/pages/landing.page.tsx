@@ -61,7 +61,7 @@ type LandingPageProps = {
 export function _LandingPage({ plugins }: LandingPageProps) {
   return (
     <div className="relative flex min-h-screen flex-col">
-      <Header plugins={plugins} />
+      <Header plugins={{ auth: plugins.auth }} />
       <main className="flex-1">
         {SECTIONS.map(({ id, component: Component, className, disabled }) => {
           if (disabled) {
@@ -70,12 +70,12 @@ export function _LandingPage({ plugins }: LandingPageProps) {
 
           return (
             <section className={className} id={id} key={id}>
-              <Component plugins={plugins} />
+              <Component plugins={{ auth: plugins.auth }} />
             </section>
           );
         })}
       </main>
-      <Footer plugins={plugins} />
+      <Footer plugins={{ blog: plugins.blog }} />
     </div>
   );
 }
