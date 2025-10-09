@@ -9,7 +9,6 @@ import { useState } from "react";
 
 import { useBodyScrollLock } from "@/hooks/utils/use-body-scroll-lock";
 import { cn } from "@/lib/utils";
-import { isClientPluginEnabled } from "@/lib/zap.client";
 import type { ZapServerPluginInstance } from "@/lib/zap.server";
 import { SessionButton } from "@/zap/auth/components/session-button";
 import { ZapButton } from "../core/button";
@@ -24,8 +23,6 @@ type HeaderProps = {
 export function Header({ plugins }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   useBodyScrollLock(isOpen);
-
-  const isAuthEnabled = isClientPluginEnabled("auth");
 
   return (
     <header
@@ -59,7 +56,7 @@ export function Header({ plugins }: HeaderProps) {
         </div>
 
         <div className="hidden flex-1 items-center justify-end space-x-4 md:flex">
-          {isAuthEnabled && plugins.auth?.config && (
+          {plugins.auth?.config && (
             <SessionButton pluginConfigs={{ auth: plugins.auth?.config }} />
           )}
         </div>
