@@ -5,11 +5,11 @@ import { useRouter } from "@bprogress/next/app";
 import { AlignJustify, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { useBodyScrollLock } from "@/hooks/utils/use-body-scroll-lock";
-import { isPluginEnabled } from "@/lib/plugins";
 import { cn } from "@/lib/utils";
+import { isClientPluginEnabled } from "@/lib/zap.client";
 import type { ZapServerPluginInstance } from "@/lib/zap.server";
 import { SessionButton } from "@/zap/auth/components/session-button";
 import { ZapButton } from "../core/button";
@@ -25,7 +25,7 @@ export function Header({ plugins }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   useBodyScrollLock(isOpen);
 
-  const isAuthEnabled = useMemo(() => isPluginEnabled("auth"), []);
+  const isAuthEnabled = isClientPluginEnabled("auth");
 
   return (
     <header
