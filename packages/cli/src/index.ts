@@ -5,6 +5,8 @@ import { generateEnv } from "./commands/generate-env.js";
 import { getPackageVersion } from "./utils/cli/cli.js";
 import { summarizePlugins } from "./utils/debug/summarize-plugins.js";
 
+// TODO: add a command to the CLI to add a new package in the monorepo
+
 async function main() {
   try {
     const version = await getPackageVersion();
