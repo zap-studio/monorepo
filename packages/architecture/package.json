@@ -13,14 +13,14 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/react": "^19.1.12",
+    "@types/react": "^19.2.2",
     "typedoc": "^0.28.11"
   },
   "peerDependencies": {
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "react": "^19.1.1"
+    "react": "^19.2.0"
   },
   "files": [
     "dist",
