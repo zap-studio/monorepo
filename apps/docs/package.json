@@ -25,7 +25,7 @@
     "clsx": "^2.1.1",
     "fumadocs-core": "^15.7.4",
     "fumadocs-mdx": "^11.8.1",
-    "fumadocs-typescript": "^4.0.6",
+    "fumadocs-typescript": "^4.0.12",
     "fumadocs-ui": "^15.7.4",
     "hast-util-to-jsx-runtime": "^2.3.6",
     "lucide-react": "^0.542.0",
