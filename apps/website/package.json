@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc -b && vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"check-types": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@radix-ui/react-slot": "^1.2.3",
