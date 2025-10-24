@@ -4,12 +4,15 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "test": "vitest",
+		"test:watch": "vitest --watch"
   },
   "devDependencies": {
     "@types/node": "latest",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
+    "jsdom": "latest",
     "typescript": "latest",
     "vitest": "latest"
   },
