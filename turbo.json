@@ -1,11 +1,16 @@
 {
 	"$schema": "https://turbo.build/schema.json",
-	"globalDependencies": ["**/.env", "apps/**", "packages/**"],
-	"globalEnv": ["*"],
+	"ui": "tui",
+	"globalDependencies": ["tsconfig.json", ".env*", "package.json"],
 	"tasks": {
 		"build": {
-			"cache": false,
 			"dependsOn": ["^build"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				".env*",
+				"!**/*.test.{ts,tsx,js,jsx}",
+				"!**/*.spec.{ts,tsx,js,jsx}"
+			],
 			"outputs": [".next/**", "!.next/cache/**", "dist/**"]
 		},
 		"dev": {
