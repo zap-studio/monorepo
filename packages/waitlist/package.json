@@ -4,19 +4,33 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
+		"build": "tsdown --config tsdown.config.ts",
 		"check-types": "tsc --noEmit",
 		"test": "vitest",
 		"test:watch": "vitest --watch"
 	},
+	"dependencies": {
+		"nanoid": "^5.1.6"
+	},
 	"devDependencies": {
 		"@types/node": "latest",
+		"@zap-studio/tsdown-config": "workspace:*",
 		"@zap-studio/typescript-config": "workspace:*",
 		"@zap-studio/vitest-config": "workspace:*",
 		"jsdom": "latest",
+		"tsdown": "latest",
 		"typescript": "latest",
 		"vitest": "latest"
 	},
 	"exports": {
-		".": "./src/index.ts"
+		"./types": {
+			"import": "./dist/types.js",
+			"require": "./dist/types.cjs"
+		},
+		"./utils": {
+			"import": "./dist/utils.js",
+			"require": "./dist/utils.cjs"
+		},
+		"./package.json": "./package.json"
 	}
 }

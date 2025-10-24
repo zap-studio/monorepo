@@ -242,10 +242,17 @@ importers:
         version: 5.9.3
 
   packages/waitlist:
+    dependencies:
+      nanoid:
+        specifier: ^5.1.6
+        version: 5.1.6
     devDependencies:
       '@types/node':
         specifier: latest
         version: 24.9.1
+      '@zap-studio/tsdown-config':
+        specifier: workspace:*
+        version: link:../../configs/tsdown-config
       '@zap-studio/typescript-config':
         specifier: workspace:*
         version: link:../../configs/typescript-config
@@ -255,6 +262,9 @@ importers:
       jsdom:
         specifier: latest
         version: 27.0.1(postcss@8.5.6)
+      tsdown:
+        specifier: latest
+        version: 0.15.9(typescript@5.9.3)
       typescript:
         specifier: latest
         version: 5.9.3
@@ -3839,6 +3849,11 @@ packages:
   nanoid@3.3.11:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
+  nanoid@5.1.6:
+    resolution: {integrity: sha512-c7+7RQ+dMB5dPwwCp4ee1/iV/q2P6aK1mTZcfr1BTuVlyW9hJYiMPybJCcnBlQtuSmTIWNeazm/zqNoZSSElBg==}
+    engines: {node: ^18 || >=20}
     hasBin: true
 
   natural-compare@1.4.0:
@@ -8935,6 +8950,8 @@ snapshots:
   mute-stream@0.0.8: {}
 
   nanoid@3.3.11: {}
+
+  nanoid@5.1.6: {}
 
   natural-compare@1.4.0: {}
 
