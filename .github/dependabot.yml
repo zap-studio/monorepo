@@ -8,7 +8,11 @@ updates:
   - package-ecosystem: "npm" # See documentation for possible values
     directories:
       - "/"
-      - "/apps/docs"
+      - "/apps/website"
+      - "/apps/zap-ts-docs"
+      - "/configs/tsdown-config"
+      - "/configs/typescript-config"
+      - "/configs/vitest-config"
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"
