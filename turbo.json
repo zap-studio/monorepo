@@ -36,6 +36,16 @@
 		},
 		"clean": {
 			"cache": false
+		},
+		"test": {
+			"dependsOn": ["transit", "@zap/vitest-config#build"]
+		},
+		"transit": {
+			"dependsOn": ["^transit"]
+		},
+		"test:watch": {
+			"cache": false,
+			"persistent": true
 		}
 	}
 }
