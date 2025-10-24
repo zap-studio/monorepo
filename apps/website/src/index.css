@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* biome-ignore lint/suspicious/noUnknownAtRules: This is a Tailwind v4 valid at-rule */
 @custom-variant dark (&:is(.dark *));
 
 @font-face {
@@ -9,7 +8,6 @@
   src: local("Geist-Regular"), url("./assets/fonts/Geist/Geist-Regular.ttf");
 }
 
-/* biome-ignore lint/suspicious/noUnknownAtRules: This is a Tailwind v4 valid at-rule */
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -119,15 +117,12 @@
 
 @layer base {
   * {
-    /* biome-ignore lint/suspicious/noUnknownAtRules: This is a Tailwind v4 valid at-rule */
     @apply border-border outline-ring/50;
   }
   body {
-    /* biome-ignore lint/suspicious/noUnknownAtRules: This is a Tailwind v4 valid at-rule */
     @apply bg-background text-foreground;
   }
   a {
-    /* biome-ignore lint/suspicious/noUnknownAtRules: This is a Tailwind v4 valid at-rule */
     @apply text-primary font-semibold hover:underline;
   }
 }
