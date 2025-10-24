@@ -5,7 +5,8 @@
 		"includes": [
 			"**",
 			"!apps/docs/src/components/ui",
-			"!apps/website/src/components/ui"
+			"!apps/website/src/components/ui",
+			"!!**dist/"
 		]
 	}
 }
