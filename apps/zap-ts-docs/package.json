@@ -7,9 +7,7 @@
 		"dev": "next dev --turbopack",
 		"start": "next start",
 		"postinstall": "fumadocs-mdx",
-		"typegen": "next typegen",
-		"lint": "ultracite check",
-		"format": "ultracite fix"
+		"typegen": "next typegen"
 	},
 	"dependencies": {
 		"@ai-sdk/openai-compatible": "^1.0.22",
