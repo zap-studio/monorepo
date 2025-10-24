@@ -1,3 +1,3 @@
-import { createConfig } from "@zap/tsdown-config";
+import { createConfig } from "@zap-studio/tsdown-config";
 
 export default createConfig();
