@@ -8,5 +8,10 @@
 			"!apps/website/src/components/ui",
 			"!!**/dist"
 		]
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
 	}
 }
