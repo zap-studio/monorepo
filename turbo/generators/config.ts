@@ -29,23 +29,4 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
 			},
 		],
 	});
-
-	// E2E generator
-	createGenerator(plop, "e2e", {
-		directory: "e2e",
-		description: "Create a new E2E test package in the e2e directory",
-		promptMessage: "What is the name of the E2E test package?",
-		additionalActions: [
-			{
-				type: "add",
-				path: "e2e/{{ name }}/playwright.config.ts",
-				templateFile: "templates/e2e/playwright.config.ts.hbs",
-			},
-			{
-				type: "add",
-				path: "e2e/{{ name }}/tests/.gitkeep",
-				template: "",
-			},
-		],
-	});
 }
