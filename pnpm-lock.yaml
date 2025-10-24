@@ -246,6 +246,9 @@ importers:
       nanoid:
         specifier: ^5.1.6
         version: 5.1.6
+      zod:
+        specifier: ^4.1.12
+        version: 4.1.12
     devDependencies:
       '@types/node':
         specifier: latest

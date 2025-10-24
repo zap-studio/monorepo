@@ -10,7 +10,8 @@
 		"test:watch": "vitest --watch"
 	},
 	"dependencies": {
-		"nanoid": "^5.1.6"
+		"nanoid": "^5.1.6",
+		"zod": "^4.1.12"
 	},
 	"devDependencies": {
 		"@types/node": "latest",
