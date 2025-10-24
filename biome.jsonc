@@ -4,17 +4,8 @@
 	"files": {
 		"includes": [
 			"**",
-			".github/workflows/*",
-			"!template",
 			"!apps/docs/src/components/ui",
 			"!apps/website/src/components/ui"
 		]
-	},
-	"linter": {
-		"rules": {
-			"style": {
-				"useNamingConvention": "off"
-			}
-		}
 	}
 }
