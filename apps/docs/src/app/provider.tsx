@@ -1,6 +1,6 @@
 "use client";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
-import { RootProvider } from "fumadocs-ui/provider";
+import { RootProvider } from "fumadocs-ui/provider/next";
 import type { ReactNode } from "react";
 import SearchDialog from "@/components/search";
 
