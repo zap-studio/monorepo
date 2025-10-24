@@ -10,8 +10,7 @@
 	"include": [
 		"next-env.d.ts",
 		"next.config.ts",
-		"**/*.ts",
-		"**/*.tsx",
+		"**/*.{js,jsx,ts,tsx,md,mdx}",
 		".next/types/**/*.ts"
 	],
 	"exclude": ["node_modules"]
