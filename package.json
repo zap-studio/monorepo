@@ -7,8 +7,8 @@
 		"build": "turbo run build",
 		"check-types": "turbo run check-types",
 		"dev": "turbo run dev",
-		"lint": "ultracite check",
-		"format": "ultracite fix",
+		"lint": "npx ultracite check",
+		"format": "npx ultracite fix",
 		"clean": "turbo run clean && rimraf node_modules",
 		"typegen": "turbo run typegen"
 	},
