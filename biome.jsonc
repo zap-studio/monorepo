@@ -5,6 +5,7 @@
 		"includes": [
 			"**",
 			"!**/.next",
+			"!**/.source",
 			"!!**/dist",
 			"!!**/node_modules",
 			"!apps/docs/src/components/ui",
