@@ -20,8 +20,8 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
 			},
 			{
 				type: "add",
-				path: "packages/{{ name }}/src/__tests__/index.test.ts",
-				templateFile: "templates/package/src/__tests__/index.test.ts.hbs",
+				path: "packages/{{ name }}/tests/index.test.ts",
+				templateFile: "templates/package/tests/index.test.ts.hbs",
 			},
 		],
 	});
