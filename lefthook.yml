@@ -1,0 +1,17 @@
+pre-commit:
+  jobs:
+    - run: npx ultracite fix
+      glob: 
+        - "*.js"
+        - "*.jsx"
+        - "*.ts"
+        - "*.tsx"
+        - "*.json"
+        - "*.jsonc"
+        - "*.css"
+      stage_fixed: true
+
+commit-msg:
+  commands:
+    "lint commit message":
+      run: npx commitlint --edit {1}

@@ -1,4 +1,4 @@
-name: Lint
+name: Build
 
 on:
   pull_request:
@@ -8,16 +8,11 @@ permissions:
   contents: read
 
 jobs:
-  lint-monorepo:
+  build-monorepo:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v5
-
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v2
-        with:
-          version: latest
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -31,5 +26,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run linter on the monorepo
-        run: pnpm run lint
+      - name: Build monorepo
+        run: pnpm run build
+        env:
+          SKIP_ENV_VALIDATION: true

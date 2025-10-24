@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+  - configs/*
+
+onlyBuiltDependencies:
+  - '@swc/core'
+  - core-js-pure
+  - esbuild
+  - lefthook
+  - sharp

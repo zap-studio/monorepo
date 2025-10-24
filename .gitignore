@@ -1,41 +1,87 @@
-# dependencies
-/node_modules/
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# FeedYourAI
-feedyourai.txt
+# pnpm
+.pnpm-store/
+.pnpm-debug.log
 
-# output
-out/**
-dist/**
-*.tgz
+# TypeScript
+dist/
+build/
+*.tsbuildinfo
 
-# code coverage
-coverage/**
-*.lcov
+# Monorepo / Turbo / package managers
+**/node_modules/
+**/.turbo/
+**/.next/
+**/.out/
+**/.parcel-cache/
+**/.vercel/
+**/.expo/
+packages/*/dist/
+apps/*/dist/
 
-# logs
-logs/**
-_.log
+# Logs
+logs
 *.log
-report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# dotenv environment variable files
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports (https://nodejs.org/en/docs/guides/diagnostic-report/)
+report.[0-9]*.[0-9]*.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Environment files
 .env
+.env.*
+!.env.example
+.env.local
 .env.development.local
 .env.test.local
 .env.production.local
-.env.local
 
-# caches
+# Optional npm cache directory
+.npm
 .eslintcache
-.cache
-*.tsbuildinfo
 
-# IntelliJ based IDEs
-.idea
+# Mac specific
+.Spotlight-V100
+.fseventsd
 
-# Finder (MacOS) folder config
-.DS_Store
+# JetBrains
+*.iml
 
-# Turborepo
-.turbo/
+# TypeScript cache
+.turbo/cache/
+
+# Misc
+coverage/
+.nyc_output/
+/.cache/
+
+# fyai
+fyai.txt
+
+# todo
+todo.json

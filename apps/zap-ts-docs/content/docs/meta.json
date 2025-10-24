@@ -1,0 +1,11 @@
+{
+	"title": "Documentation",
+	"pages": [
+		"introduction",
+		"cli",
+		"plugins",
+		"ai-powered-ide",
+		"migration",
+		"misc"
+	]
+}

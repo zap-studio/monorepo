@@ -5,16 +5,17 @@
 
 version: 2
 updates:
-  - package-ecosystem: "bun" # See documentation for possible values
+  - package-ecosystem: "npm" # See documentation for possible values
     directories:
       - "/"
-      - "/core"
-      - "/apps/docs"
-      - "/packages/architecture"
-      - "/packages/create-zap-app"
+      - "/apps/website"
+      - "/apps/zap-ts-docs"
+      - "/configs/tsdown-config"
+      - "/configs/typescript-config"
+      - "/configs/vitest-config"
     schedule:
-      interval: "daily"
+      interval: "weekly"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"

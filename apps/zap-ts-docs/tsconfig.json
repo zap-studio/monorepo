@@ -1,0 +1,17 @@
+{
+	"extends": "@zap-studio/typescript-config/nextjs.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/.source": ["./.source/index.ts"],
+			"@/*": ["./src/*"]
+		}
+	},
+	"include": [
+		"next-env.d.ts",
+		"next.config.ts",
+		"**/*.{js,jsx,ts,tsx,md,mdx}",
+		".next/types/**/*.ts"
+	],
+	"exclude": ["node_modules"]
+}

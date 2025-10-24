@@ -1,9 +1,0 @@
-{
-  "title": "Migration",
-  "pages": [
-    "why-migrate",
-    "migrate-from-react",
-    "migrate-from-vite",
-    "migrate-from-nextjs"
-  ]
-}

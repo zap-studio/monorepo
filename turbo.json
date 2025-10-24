@@ -1,16 +1,51 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env", "apps/**", "packages/**"],
-  "globalEnv": ["*"],
-  "tasks": {
-    "build": {
-      "cache": false,
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    }
-  }
+	"$schema": "https://turbo.build/schema.json",
+	"ui": "tui",
+	"globalDependencies": ["tsconfig.json", ".env*", "package.json"],
+	"tasks": {
+		"build": {
+			"dependsOn": ["^build"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				".env*",
+				"!**/*.test.{ts,tsx,js,jsx}",
+				"!**/*.spec.{ts,tsx,js,jsx}"
+			],
+			"outputs": ["dist/**", ".next/**", "build/**", "!.next/cache/**"]
+		},
+		"//#lint": {},
+		"//#format": {
+			"cache": false
+		},
+		"topo": {
+			"dependsOn": ["^topo"]
+		},
+		"check-types": {
+			"dependsOn": ["^build", "^typegen", "topo"],
+			"inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
+			"outputs": ["*.tsbuildinfo"],
+			"outputLogs": "new-only"
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
+		},
+		"typegen": {
+			"cache": false,
+			"outputs": [".next/types/**"]
+		},
+		"clean": {
+			"cache": false
+		},
+		"test": {
+			"dependsOn": ["transit", "@zap-studio/vitest-config#build"]
+		},
+		"transit": {
+			"dependsOn": ["^transit"]
+		},
+		"test:watch": {
+			"cache": false,
+			"persistent": true
+		}
+	}
 }
