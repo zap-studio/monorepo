@@ -38,7 +38,7 @@
 			"cache": false
 		},
 		"test": {
-			"dependsOn": ["transit", "@zap/vitest-config#build"]
+			"dependsOn": ["transit", "@zap-studio/vitest-config#build"]
 		},
 		"transit": {
 			"dependsOn": ["^transit"]
