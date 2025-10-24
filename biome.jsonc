@@ -4,9 +4,11 @@
 	"files": {
 		"includes": [
 			"**",
+			"!**/.next",
+			"!!**/dist",
+			"!!**/node_modules",
 			"!apps/docs/src/components/ui",
-			"!apps/website/src/components/ui",
-			"!!**/dist"
+			"!apps/website/src/components/ui"
 		]
 	},
 	"css": {
