@@ -1,0 +1,26 @@
+{
+	"name": "@zap-studio/vitest-config",
+	"version": "0.0.0",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"build": "tsdown --config tsdown.config.ts",
+		"check-types": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@zap-studio/tsdown-config": "workspace:*",
+		"@zap-studio/typescript-config": "workspace:*",
+		"tsdown": "^0.15.9",
+		"typescript": "^5.9.3"
+	},
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		},
+		"./package.json": "./package.json"
+	},
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.cts"
+}
