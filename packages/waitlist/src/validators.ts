@@ -1,5 +1,5 @@
 import { EmailSchema } from "./schemas";
-import type { WaitlistConfig } from "./types";
+import type { EmailValidationConfig } from "./types";
 
 /**
  * Validates an email address based on the provided configuration.
@@ -14,22 +14,25 @@ import type { WaitlistConfig } from "./types";
  */
 export function validateEmail(
 	email: string,
-	config?: WaitlistConfig,
+	config?: EmailValidationConfig,
 ): { valid: boolean; error?: string } {
 	const result = EmailSchema.safeParse(email);
 	if (!result.success) {
 		return { valid: false, error: result.error.message };
 	}
 
-	const base = config?.emailValidation;
+	const base: EmailValidationConfig = config || {
+		allowPlus: false,
+		allowSubdomains: false,
+	};
 
 	// Check for allowPlus configuration
-	if (!base?.allowPlus && email.includes("+")) {
+	if (!base.allowPlus && email.includes("+")) {
 		return { valid: false, error: "Plus addressing not allowed" };
 	}
 
 	// Check for subdomain configuration
-	if (!base?.allowSubdomains) {
+	if (!base.allowSubdomains) {
 		const domainPart = email.split("@")[1];
 		const parts = domainPart?.split(".") || [];
 

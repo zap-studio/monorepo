@@ -16,11 +16,16 @@ export interface Referral {
 	bonus?: number;
 }
 
+export type EmailValidationConfig = {
+	allowPlus?: boolean;
+	allowSubdomains?: boolean;
+};
+
 export interface WaitlistConfig {
 	referralPrefix?: string;
 	maxReferrals?: number;
 	rateLimit?: { windowMs: number; max: number };
-	emailValidation?: { allowPlus?: boolean; allowSubdomains?: boolean };
+	emailValidation?: EmailValidationConfig;
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: We need to allow any for maximum flexibility since we want to allow any payload.
