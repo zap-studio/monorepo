@@ -21,7 +21,7 @@
 			"dependsOn": ["^topo"]
 		},
 		"check-types": {
-			"dependsOn": ["^build", "topo"],
+			"dependsOn": ["^build", "^typegen", "topo"],
 			"inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
 			"outputs": ["*.tsbuildinfo"],
 			"outputLogs": "new-only"
