@@ -16,6 +16,17 @@
 		"dev": {
 			"cache": false,
 			"persistent": true
+		},
+		"//#lint": {},
+		"//#format": {
+			"cache": false
+		},
+		"typegen": {
+			"cache": false,
+			"outputs": [".next/types/**"]
+		},
+		"clean": {
+			"cache": false
 		}
 	}
 }
