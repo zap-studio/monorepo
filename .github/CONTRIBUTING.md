@@ -23,7 +23,7 @@ Thank you for your interest in contributing to Zap.ts! We welcome all contributi
    - Rename the generated file to `.env` inside `template/`.
    - Run `bun install` again in `template/`.
 
-> The `.env` file may be required for the `template` package to compile and for Husky pre-commit hooks to pass. If Husky blocks your commit, you may use `git commit --no-verify` and/or `git push --no-verify`, but this is discouraged and may reduce the chance of your PR being merged.
+> If Lefthook blocks your commit, you may use `git commit --no-verify` and/or `git push --no-verify`, but this is discouraged and may reduce the chance of your PR being merged.
 
 ## Making Changes
 
@@ -47,7 +47,7 @@ Thank you for your interest in contributing to Zap.ts! We welcome all contributi
 
 ## Quality and DX tools
 
-- **[Husky](https://typicode.github.io/husky/#/)**: Enforces pre-commit checks for code quality.
+- **[Lefthook](https://github.com/evilmartians/lefthook)**: Manages Git hooks (pre-commit, pre-push) defined in `.lefthook.yml` at the repository root.
 - **[Ultracite](https://www.ultracite.ai)**: Ensures accessibility and code style rules.
 - **[Changesets](https://github.com/changesets/changesets)**: Used for managing versioning and changelogs.
 - **[Turbo](https://turbo.build/)**: Used for fast monorepo builds, caching, and running tasks efficiently across packages.

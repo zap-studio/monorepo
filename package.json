@@ -1,32 +1,22 @@
 {
-  "name": "@zap-ts/monorepo",
-  "author": "Alexandre Trotel",
-  "private": true,
-  "packageManager": "bun@1.2.20",
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "ultracite check",
-    "format": "ultracite fix",
-    "prepare": "husky",
-    "clean": "rm -rf node_modules .turbo apps/*/.next apps/*/.source apps/*/node_modules core/node_modules core/.next packages/*/node_modules"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.2.5",
-    "@changesets/cli": "^2.29.7",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.2.3",
-    "turbo": "^2.5.8",
-    "ultracite": "^5.6.1"
-  },
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
-  "trustedDependencies": [
-    "@tailwindcss/oxide",
-    "@vercel/speed-insights",
-    "core-js",
-    "unrs-resolver"
-  ]
+	"name": "@zap-studio/monorepo",
+	"author": "Alexandre Trotel",
+	"private": true,
+	"packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8",
+	"scripts": {
+		"build": "turbo run build",
+		"dev": "turbo run dev",
+		"lint": "ultracite check",
+		"format": "ultracite fix",
+		"clean": "turbo run clean && rimraf node_modules"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.2.5",
+		"@changesets/cli": "^2.29.7",
+		"@turbo/gen": "^2.5.8",
+		"lefthook": "^2.0.1",
+		"rimraf": "^6.0.1",
+		"turbo": "^2.5.8",
+		"ultracite": "^6.0.0"
+	}
 }

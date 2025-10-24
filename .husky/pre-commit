@@ -1,2 +1,0 @@
-lint-staged
-cd template && npm run format

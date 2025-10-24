@@ -1,16 +1,16 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env", "apps/**", "packages/**"],
-  "globalEnv": ["*"],
-  "tasks": {
-    "build": {
-      "cache": false,
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    }
-  }
+	"$schema": "https://turbo.build/schema.json",
+	"globalDependencies": ["**/.env", "apps/**", "packages/**"],
+	"globalEnv": ["*"],
+	"tasks": {
+		"build": {
+			"cache": false,
+			"dependsOn": ["^build"],
+			"outputs": [".next/**", "!.next/cache/**", "dist/**"]
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
+		}
+	}
 }

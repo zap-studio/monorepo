@@ -1,10 +1,10 @@
 {
-  "title": "Introduction",
-  "pages": [
-    "motivation",
-    "installation",
-    "getting-started",
-    "architecture",
-    "deployment"
-  ]
+	"title": "Introduction",
+	"pages": [
+		"motivation",
+		"installation",
+		"getting-started",
+		"architecture",
+		"deployment"
+	]
 }

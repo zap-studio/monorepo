@@ -1,0 +1,8 @@
+packages:
+  - apps/*
+  - configs/*
+
+onlyBuiltDependencies:
+  - core-js-pure
+  - esbuild
+  - sharp

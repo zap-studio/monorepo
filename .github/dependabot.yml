@@ -5,13 +5,10 @@
 
 version: 2
 updates:
-  - package-ecosystem: "bun" # See documentation for possible values
+  - package-ecosystem: "npm" # See documentation for possible values
     directories:
       - "/"
-      - "/template"
       - "/apps/docs"
-      - "/packages/architecture"
-      - "/packages/create-zap-app"
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"

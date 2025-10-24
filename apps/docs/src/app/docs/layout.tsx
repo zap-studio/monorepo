@@ -6,20 +6,20 @@ import { DEMO_URL } from "@/data/website";
 import { source } from "@/lib/source";
 
 export default function Layout({ children }: { children: ReactNode }) {
-  return (
-    <DocsLayout
-      links={[
-        {
-          text: "Demo",
-          url: DEMO_URL,
-          icon: <ArrowUpRight />,
-        },
-      ]}
-      nav={{ ...baseOptions.nav }}
-      tree={source.pageTree}
-      {...baseOptions}
-    >
-      {children}
-    </DocsLayout>
-  );
+	return (
+		<DocsLayout
+			links={[
+				{
+					text: "Demo",
+					url: DEMO_URL,
+					icon: <ArrowUpRight />,
+				},
+			]}
+			nav={{ ...baseOptions.nav }}
+			tree={source.pageTree}
+			{...baseOptions}
+		>
+			{children}
+		</DocsLayout>
+	);
 }

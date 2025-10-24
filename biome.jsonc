@@ -1,20 +1,20 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.5/schema.json",
-  "extends": ["ultracite"],
-  "files": {
-    "includes": [
-      "**",
-      ".github/workflows/*",
-      "!template",
-      "!apps/docs/src/components/ui",
-      "!apps/zap-studio/components/ui"
-    ]
-  },
-  "linter": {
-    "rules": {
-      "style": {
-        "useNamingConvention": "off"
-      }
-    }
-  }
+	"$schema": "https://biomejs.dev/schemas/2.2.5/schema.json",
+	"extends": ["ultracite"],
+	"files": {
+		"includes": [
+			"**",
+			".github/workflows/*",
+			"!template",
+			"!apps/docs/src/components/ui",
+			"!apps/zap-studio/components/ui"
+		]
+	},
+	"linter": {
+		"rules": {
+			"style": {
+				"useNamingConvention": "off"
+			}
+		}
+	}
 }
