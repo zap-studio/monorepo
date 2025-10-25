@@ -1,5 +1,5 @@
 import { EmailSchema } from "./schemas";
-import type { EmailValidationConfig } from "./types";
+import type { Email, EmailValidationConfig } from "./types";
 
 /**
  * Validates an email address based on the provided configuration.
@@ -13,7 +13,7 @@ import type { EmailValidationConfig } from "./types";
  * });
  */
 export function validateEmail(
-	email: string,
+	email: Email,
 	config?: EmailValidationConfig,
 ): { valid: boolean; error?: string } {
 	const result = EmailSchema.safeParse(email);

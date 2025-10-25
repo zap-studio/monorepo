@@ -1,5 +1,5 @@
 import { customAlphabet } from "nanoid";
-import type { EmailEntry } from "./types";
+import type { Email, EmailEntry } from "./types";
 
 /**
  * Generate short human-readable referral codes (6 chars with dash, uppercase letters and numbers).
@@ -20,15 +20,15 @@ export function generateReferralCode(length: number = 6): string {
  *
  * @example
  * const entries = [
- *   { id: "1", createdAt: new Date("2023-01-01") },
- *   { id: "2", createdAt: new Date("2023-01-02") },
- *   { id: "3", createdAt: new Date("2023-01-03") },
+ *   { email: "jean@example.com", createdAt: new Date("2023-01-01") },
+ *   { email: "alice@example.com", createdAt: new Date("2023-01-02") },
+ *   { email: "bob@example.com", createdAt: new Date("2023-01-03") },
  * ];
- * calculatePosition(entries, "2"); // 2
+ * calculatePosition(entries, "bob@example.com"); // 3
  */
-export function calculatePosition(entries: EmailEntry[], id: string): number {
+export function calculatePosition(entries: EmailEntry[], email: Email): number {
 	const sorted = [...entries].sort(
 		(a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
 	);
-	return sorted.findIndex((e) => e.id === id) + 1;
+	return sorted.findIndex((e) => e.email === email) + 1;
 }

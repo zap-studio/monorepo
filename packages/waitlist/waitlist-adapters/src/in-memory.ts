@@ -1,36 +1,36 @@
-import type { EmailEntry, ID } from "@zap-studio/waitlist-core/types";
+import type { EmailEntry, Email } from "@zap-studio/waitlist-core/types";
 import type { WaitlistAdapter } from "./types";
 
 export class InMemoryAdapter implements WaitlistAdapter {
-	private entries = new Map<ID, EmailEntry>();
+	private entries = new Map<Email, EmailEntry>();
 	private referrals = new Map<string, number>();
 
 	async create(entry: EmailEntry): Promise<EmailEntry> {
-		this.entries.set(entry.id, entry);
+		this.entries.set(entry.email, entry);
 		if (entry.referralCode) this.referrals.set(entry.referralCode, 0);
 		return entry;
 	}
 
-	async update(id: ID, patch: Partial<EmailEntry>): Promise<EmailEntry> {
-		const existing = this.entries.get(id);
+	async update(email: Email, patch: Partial<EmailEntry>): Promise<EmailEntry> {
+		const existing = this.entries.get(email);
 		if (!existing) throw new Error("Entry not found");
 		const updated = { ...existing, ...patch };
-		this.entries.set(id, updated);
+		this.entries.set(email, updated);
 		return updated;
 	}
 
-	async delete(id: ID): Promise<void> {
-		this.entries.delete(id);
+	async delete(email: Email): Promise<void> {
+		this.entries.delete(email);
 	}
 
-	async findByEmail(email: string): Promise<EmailEntry | null> {
+	async findByEmail(email: Email): Promise<EmailEntry | null> {
 		for (const entry of this.entries.values()) {
 			if (entry.email === email) return entry;
 		}
 		return null;
 	}
 
-	async findById(id: ID): Promise<EmailEntry | null> {
+	async findById(id: Email): Promise<EmailEntry | null> {
 		return this.entries.get(id) ?? null;
 	}
 

@@ -1,11 +1,12 @@
-export type ID = string & { readonly brand: unique symbol };
+import type z from "zod";
+import type { EmailSchema } from "./schemas";
+
+export type Email = z.infer<typeof EmailSchema>;
 
 /** Represents a participant's email entry in the waitlist. */
 export interface EmailEntry {
-	/** The unique ID of the participant. */
-	id: ID;
 	/** The email address of the participant. */
-	email: string;
+	email: Email;
 	/** The date when the participant joined the waitlist. */
 	createdAt: Date;
 	/** The unique referral code assigned to the participant. */
@@ -16,22 +17,12 @@ export interface EmailEntry {
 	meta?: Record<string, unknown>;
 }
 
-/** A referral link created for a participant. */
-export interface Referral {
-	/** The unique referral code associated with this participant. */
-	code: string;
-	/** The ID of the participant who owns this referral code. */
-	ownerId: ID;
-	/** The number of successful joins through this code. */
-	uses: number;
-}
-
 /** A record of an actual referral relationship (who referred whom). */
 export interface ReferralLink {
 	/** The referrer (owner of the code). */
-	referrerId: ID;
+	referrerId: Email;
 	/** The referee (the person who joined with the code). */
-	refereeId: ID;
+	refereeId: Email;
 	/** Timestamp of when this referral occurred. */
 	createdAt: Date;
 }
@@ -50,6 +41,8 @@ export interface WaitlistConfig {
 	referralPrefix?: string;
 	/** The maximum number of referrals a participant can have. */
 	maxReferrals?: number;
+	/** The length of the referral codes. */
+	referralCodeLength?: number;
 	/** The rate limit configuration for the waitlist. */
 	rateLimit?: { windowMs: number; max: number };
 	/** The email validation configuration. */
@@ -72,13 +65,13 @@ export interface WaitlistAdapter {
 	/** Creates a new email entry in the waitlist. */
 	create(entry: EmailEntry): Promise<EmailEntry>;
 	/** Updates an existing email entry in the waitlist. */
-	update(id: ID, patch: Partial<EmailEntry>): Promise<EmailEntry>;
+	update(id: Email, patch: Partial<EmailEntry>): Promise<EmailEntry>;
 	/** Deletes an email entry from the waitlist. */
-	delete(id: ID): Promise<void>;
+	delete(id: Email): Promise<void>;
 	/** Finds an email entry by its email address. */
-	findByEmail(email: string): Promise<EmailEntry | null>;
+	findByEmail(email: Email): Promise<EmailEntry | null>;
 	/** Finds an email entry by its ID. */
-	findById(id: ID): Promise<EmailEntry | null>;
+	findById(id: Email): Promise<EmailEntry | null>;
 	/** Lists all email entries in the waitlist. */
 	list(): Promise<EmailEntry[]>;
 	/** Counts the total number of email entries in the waitlist. */

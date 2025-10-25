@@ -1,11 +1,11 @@
-import type { EmailEntry, ID } from "@zap-studio/waitlist-core/types";
+import type { EmailEntry, Email } from "@zap-studio/waitlist-core/types";
 
 export interface WaitlistAdapter {
 	create(entry: EmailEntry): Promise<EmailEntry>;
-	update(id: ID, patch: Partial<EmailEntry>): Promise<EmailEntry>;
-	delete(id: ID): Promise<void>;
-	findByEmail(email: string): Promise<EmailEntry | null>;
-	findById(id: ID): Promise<EmailEntry | null>;
+	update(email: Email, patch: Partial<EmailEntry>): Promise<EmailEntry>;
+	delete(email: Email): Promise<void>;
+	findByEmail(email: Email): Promise<EmailEntry | null>;
+	findById(email: Email): Promise<EmailEntry | null>;
 	list(): Promise<EmailEntry[]>;
 	count(): Promise<number>;
 
