@@ -46,6 +46,10 @@ pnpm test
 
 See the **[`guides/`](./guides)** folder for contributor documentation:
 - **[Release Process](./guides/release.md)** – How to ship packages
+- **[Testing](./guides/testing.md)** – Testing strategy and best practices
+- **[Linting & Formatting](./guides/linting-formatting.md)** – Code quality tools and standards
+- **[Git Hooks](./guides/git-hooks.md)** – Pre-commit and pre-push automation
+- **[Turborepo Generators](./guides/turborepo-generators.md)** – Scaffolding new packages
 
 We use pnpm workspaces, Turborepo for builds, and Changesets for versioning.
 
