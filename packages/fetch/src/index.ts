@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import { FetchError } from "./errors";
-import type { FetchConfig, ResponseType, ResponseTypeMap } from "./types";
+import type { FetchConfig, ResponseType } from "./types";
+import { parseResponse, prepareHeadersAndBody } from "./utils";
 
 /**
  * Type-safe fetch wrapper with Zod validation
@@ -46,40 +47,14 @@ export async function safeFetch<
 		...rest
 	} = config || {};
 
-	const options: RequestInit = {
+	const { body: preparedBody, headers: preparedHeaders } =
+		prepareHeadersAndBody(body, headers);
+
+	const response = await fetch(resource, {
 		...rest,
-		headers: {
-			...headers,
-		},
-	};
-
-	// Only set Content-Type if body exists and it's not FormData
-	if (body !== undefined) {
-		const shouldSetContentType =
-			!headers ||
-			(typeof headers === "object" &&
-				!Array.isArray(headers) &&
-				!(headers instanceof Headers) &&
-				!("Content-Type" in headers));
-
-		if (body instanceof FormData) {
-			options.body = body;
-		} else if (typeof body === "string") {
-			options.body = body;
-			if (shouldSetContentType) {
-				(options.headers as Record<string, string>)["Content-Type"] =
-					"text/plain";
-			}
-		} else {
-			options.body = JSON.stringify(body);
-			if (shouldSetContentType) {
-				(options.headers as Record<string, string>)["Content-Type"] =
-					"application/json";
-			}
-		}
-	}
-
-	const response = await fetch(resource, options);
+		body: preparedBody,
+		headers: preparedHeaders,
+	});
 
 	if (!response.ok) {
 		throw new FetchError(
@@ -90,63 +65,11 @@ export async function safeFetch<
 		);
 	}
 
-	// Parse response based on responseType
-	let data: ResponseTypeMap[TResponseType];
+	const data = await parseResponse(response, responseType);
 
-	const contentType = response.headers.get("content-type");
-	if (responseType === "json") {
-		if (!contentType?.includes("application/json")) {
-			throw new FetchError(
-				"Expected JSON response but received no content type",
-				response.status,
-				response.statusText,
-				response,
-			);
-		}
-		data = (await response.json()) as ResponseTypeMap[TResponseType];
-	} else if (responseType === "arrayBuffer") {
-		data = (await response.arrayBuffer()) as ResponseTypeMap[TResponseType];
-	} else if (responseType === "blob") {
-		data = (await response.blob()) as ResponseTypeMap[TResponseType];
-	} else if (responseType === "bytes") {
-		const buffer = await response.arrayBuffer();
-		data = new Uint8Array(buffer) as ResponseTypeMap[TResponseType];
-	} else if (responseType === "clone") {
-		data = response.clone() as ResponseTypeMap[TResponseType];
-	} else if (responseType === "formData") {
-		if (contentType?.includes("multipart/form-data") === false) {
-			throw new FetchError(
-				"Expected FormData response but received different content type",
-				response.status,
-				response.statusText,
-				response,
-			);
-		}
-		data = (await response.formData()) as ResponseTypeMap[TResponseType];
-	} else if (responseType === "text") {
-		if (contentType?.includes("text/") === false) {
-			throw new FetchError(
-				"Expected text response but received different content type",
-				response.status,
-				response.statusText,
-				response,
-			);
-		}
-		data = (await response.text()) as ResponseTypeMap[TResponseType];
-	} else {
-		throw new FetchError(
-			`Unsupported response type: ${responseType}`,
-			response.status,
-			response.statusText,
-			response,
-		);
-	}
-
-	if (throwOnValidationError) {
-		return responseSchema.parse(data);
-	}
-
-	return responseSchema.safeParse(data);
+	return throwOnValidationError
+		? responseSchema.parse(data)
+		: responseSchema.safeParse(data);
 }
 
 /**
