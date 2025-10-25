@@ -2,6 +2,7 @@ import type z from "zod";
 import type { EmailSchema } from "../core/schemas";
 
 export type Email = z.infer<typeof EmailSchema>;
+export type ReferralCode = string;
 
 /** Represents a participant's email entry in the waitlist. */
 export interface EmailEntry {
@@ -10,12 +11,15 @@ export interface EmailEntry {
 	/** The date when the participant joined the waitlist. */
 	createdAt: Date;
 	/** The unique referral code assigned to the participant. */
-	referralCode?: string;
+	referralCode?: ReferralCode;
 	/** The referral code used by the participant to join, if any. */
-	referredBy?: string;
+	referredBy?: ReferralCode;
 	/** Additional metadata associated with the participant. */
 	meta?: Record<string, unknown>;
 }
+
+/** Represents a referral relationship (who referred whom). */
+export type ReferralKey = { referrer: Email; referee: Email };
 
 /** A record of an actual referral relationship (who referred whom). */
 export interface ReferralLink {
@@ -84,17 +88,19 @@ export interface WaitlistStorageAdapter {
 	update(id: Email, patch: Partial<EmailEntry>): Promise<EmailEntry>;
 	/** Updates an existing referral link in the waitlist. */
 	updateReferral(
-		id: string,
+		key: ReferralKey,
 		patch: Partial<ReferralLink>,
 	): Promise<ReferralLink>;
 	/** Deletes an email entry from the waitlist. */
 	delete(id: Email): Promise<void>;
 	/** Deletes a referral link from the waitlist. */
-	deleteReferral(id: string): Promise<void>;
+	deleteReferral(key: ReferralKey): Promise<void>;
 	/** Finds an email entry by its email address. */
 	findByEmail(email: Email): Promise<EmailEntry | null>;
 	/** Find a referrer by their referral code. */
-	findByReferralCode(code: string): Promise<EmailEntry | null>;
+	findByReferralCode(code: ReferralCode): Promise<EmailEntry | null>;
+	/** Get referral count for a specific email. */
+	getReferralCount(email: Email): Promise<number>;
 	/** Lists all email entries in the waitlist. */
 	list(): Promise<EmailEntry[]>;
 	/** List all emails in the waitlist. */
@@ -108,6 +114,4 @@ export interface WaitlistStorageAdapter {
 
 	/** Optional: get leaderboard */
 	getLeaderboard?(): Promise<LeaderboardEntry[]>;
-	/** Optional: increment referral usage counter */
-	incrementReferral?(code: string, delta?: number): Promise<number>;
 }

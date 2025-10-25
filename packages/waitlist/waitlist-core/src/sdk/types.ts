@@ -1,6 +1,10 @@
-import type { WaitlistStorageAdapter, ReferralLink, Email } from "../types";
 import type { EventBus } from "../events";
-import type { EmailEntry } from "../types";
+import type {
+	Email,
+	EmailEntry,
+	ReferralLink,
+	WaitlistStorageAdapter,
+} from "../types";
 
 /** Options for configuring the waitlist */
 export interface WaitlistOptions {
