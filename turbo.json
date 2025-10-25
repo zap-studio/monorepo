@@ -38,11 +38,17 @@
 			"cache": false
 		},
 		"test": {
-			"dependsOn": ["transit", "@zap-studio/vitest-config#build"],
+			"dependsOn": ["^test", "@zap-studio/vitest-config#build"],
 			"outputs": ["coverage/**"]
 		},
-		"transit": {
-			"dependsOn": ["^transit"]
+		"merge-coverage": {
+			"inputs": ["coverage/raw/**"],
+			"outputs": ["coverage/merged/**"]
+		},
+		"report-coverage": {
+			"dependsOn": ["merge-coverage"],
+			"inputs": ["coverage/merged"],
+			"outputs": ["coverage/report/**"]
 		},
 		"test:watch": {
 			"cache": false,
