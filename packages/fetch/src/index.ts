@@ -64,29 +64,24 @@ export async function safeFetch<TResponse, TBody = unknown>(
 
 	// Only set Content-Type if body exists and it's not FormData
 	if (body !== undefined) {
+		const shouldSetContentType =
+			!headers ||
+			(typeof headers === "object" &&
+				!Array.isArray(headers) &&
+				!(headers instanceof Headers) &&
+				!("Content-Type" in headers));
+
 		if (body instanceof FormData) {
 			fetchConfig.body = body;
 		} else if (typeof body === "string") {
 			fetchConfig.body = body;
-			if (
-				!headers ||
-				(typeof headers === "object" &&
-					!Array.isArray(headers) &&
-					!(headers instanceof Headers) &&
-					!("Content-Type" in headers))
-			) {
+			if (shouldSetContentType) {
 				(fetchConfig.headers as Record<string, string>)["Content-Type"] =
 					"text/plain";
 			}
 		} else {
 			fetchConfig.body = JSON.stringify(body);
-			if (
-				!headers ||
-				(typeof headers === "object" &&
-					!Array.isArray(headers) &&
-					!(headers instanceof Headers) &&
-					!("Content-Type" in headers))
-			) {
+			if (shouldSetContentType) {
 				(fetchConfig.headers as Record<string, string>)["Content-Type"] =
 					"application/json";
 			}
