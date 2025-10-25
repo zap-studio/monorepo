@@ -16,14 +16,24 @@ export interface EmailEntry {
 	meta?: Record<string, unknown>;
 }
 
-/** Represents a referral link between two participants. */
+/** A referral link created for a participant. */
 export interface Referral {
-	/** The unique code for the referral link. */
+	/** The unique referral code associated with this participant. */
 	code: string;
-	/** The ID of the participant who owns the referral link. */
+	/** The ID of the participant who owns this referral code. */
 	ownerId: ID;
-	/** The number of times the referral link has been used. */
+	/** The number of successful joins through this code. */
 	uses: number;
+}
+
+/** A record of an actual referral relationship (who referred whom). */
+export interface ReferralLink {
+	/** The referrer (owner of the code). */
+	referrerId: ID;
+	/** The referee (the person who joined with the code). */
+	refereeId: ID;
+	/** Timestamp of when this referral occurred. */
+	createdAt: Date;
 }
 
 /** Represents the configuration options for email validation. */
