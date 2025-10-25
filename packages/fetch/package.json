@@ -1,0 +1,37 @@
+{
+	"name": "@zap-studio/fetch",
+	"version": "0.1.0",
+	"type": "module",
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsdown --config tsdown.config.ts",
+		"check-types": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest --watch"
+	},
+	"dependencies": {
+		"zod": "^4.1.12"
+	},
+	"devDependencies": {
+		"@types/node": "latest",
+		"@zap-studio/tsdown-config": "workspace:*",
+		"@zap-studio/typescript-config": "workspace:*",
+		"@zap-studio/vitest-config": "workspace:*",
+		"jsdom": "latest",
+		"tsdown": "latest",
+		"typescript": "latest",
+		"vitest": "latest"
+	},
+	"exports": {
+		".": "./dist/index.js",
+		"./errors": "./dist/errors/index.js",
+		"./types": "./dist/types/index.js",
+		"./package.json": "./package.json"
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts"
+}
