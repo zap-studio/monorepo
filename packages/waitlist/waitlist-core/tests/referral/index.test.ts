@@ -22,13 +22,13 @@ describe("referral logic", () => {
 			const participant: Email = "user@example.com";
 			const links: ReferralLink[] = [
 				{
-					referrerId: "user@example.com",
-					refereeId: "other@example.com",
+					referrer: "user@example.com",
+					referee: "other@example.com",
 					createdAt: new Date(),
 				},
 				{
-					referrerId: "user@example.com",
-					refereeId: "jean@example.com",
+					referrer: "user@example.com",
+					referee: "jean@example.com",
 					createdAt: new Date(),
 				},
 			];
@@ -42,18 +42,18 @@ describe("referral logic", () => {
 			const participant: Email = "user@example.com";
 			const links: ReferralLink[] = [
 				{
-					referrerId: "user@example.com",
-					refereeId: "other@example.com",
+					referrer: "user@example.com",
+					referee: "other@example.com",
 					createdAt: new Date(),
 				},
 				{
-					referrerId: "john@example.com",
-					refereeId: "user@example.com",
+					referrer: "john@example.com",
+					referee: "user@example.com",
 					createdAt: new Date(),
 				},
 				{
-					referrerId: "alice@example.com",
-					refereeId: "bob@example.com",
+					referrer: "alice@example.com",
+					referee: "bob@example.com",
 					createdAt: new Date(),
 				},
 			];
@@ -67,28 +67,28 @@ describe("referral logic", () => {
 			const participant: Email = "popular@example.com";
 			const links: ReferralLink[] = [
 				{
-					referrerId: "popular@example.com",
-					refereeId: "referee1@example.com",
+					referrer: "popular@example.com",
+					referee: "referee1@example.com",
 					createdAt: new Date(),
 				},
 				{
-					referrerId: "popular@example.com",
-					refereeId: "referee2@example.com",
+					referrer: "popular@example.com",
+					referee: "referee2@example.com",
 					createdAt: new Date(),
 				},
 				{
-					referrerId: "popular@example.com",
-					refereeId: "referee3@example.com",
+					referrer: "popular@example.com",
+					referee: "referee3@example.com",
 					createdAt: new Date(),
 				},
 				{
-					referrerId: "popular@example.com",
-					refereeId: "referee4@example.com",
+					referrer: "popular@example.com",
+					referee: "referee4@example.com",
 					createdAt: new Date(),
 				},
 				{
-					referrerId: "popular@example.com",
-					refereeId: "referee5@example.com",
+					referrer: "popular@example.com",
+					referee: "referee5@example.com",
 					createdAt: new Date(),
 				},
 			];
@@ -113,13 +113,13 @@ describe("referral logic", () => {
 			const referrer: Email = "user@example.com";
 			const links: ReferralLink[] = [
 				{
-					referrerId: "user@example.com",
-					refereeId: "alice@example.com",
+					referrer: "user@example.com",
+					referee: "alice@example.com",
 					createdAt: new Date(),
 				},
 				{
-					referrerId: "user@example.com",
-					refereeId: "bob@example.com",
+					referrer: "user@example.com",
+					referee: "bob@example.com",
 					createdAt: new Date(),
 				},
 			];
@@ -133,18 +133,18 @@ describe("referral logic", () => {
 			const referrer: Email = "user@example.com";
 			const links: ReferralLink[] = [
 				{
-					referrerId: "user@example.com",
-					refereeId: "alice@example.com",
+					referrer: "user@example.com",
+					referee: "alice@example.com",
 					createdAt: new Date(),
 				},
 				{
-					referrerId: "other@example.com",
-					refereeId: "bob@example.com",
+					referrer: "other@example.com",
+					referee: "bob@example.com",
 					createdAt: new Date(),
 				},
 				{
-					referrerId: "user@example.com",
-					refereeId: "charlie@example.com",
+					referrer: "user@example.com",
+					referee: "charlie@example.com",
 					createdAt: new Date(),
 				},
 			];
@@ -158,18 +158,18 @@ describe("referral logic", () => {
 			const referrer: Email = "user@example.com";
 			const links: ReferralLink[] = [
 				{
-					referrerId: "user@example.com",
-					refereeId: "first@example.com",
+					referrer: "user@example.com",
+					referee: "first@example.com",
 					createdAt: new Date("2023-01-01"),
 				},
 				{
-					referrerId: "user@example.com",
-					refereeId: "second@example.com",
+					referrer: "user@example.com",
+					referee: "second@example.com",
 					createdAt: new Date("2023-01-02"),
 				},
 				{
-					referrerId: "user@example.com",
-					refereeId: "third@example.com",
+					referrer: "user@example.com",
+					referee: "third@example.com",
 					createdAt: new Date("2023-01-03"),
 				},
 			];
@@ -278,8 +278,8 @@ describe("referral logic", () => {
 
 			const link = createReferralLink(referrer, referee);
 
-			expect(link.referrerId).toBe("referrer@example.com");
-			expect(link.refereeId).toBe("referee@example.com");
+			expect(link.referrer).toBe("referrer@example.com");
+			expect(link.referee).toBe("referee@example.com");
 			expect(link.createdAt).toBeInstanceOf(Date);
 		});
 
@@ -306,13 +306,9 @@ describe("referral logic", () => {
 			const link = createReferralLink(referrer, referee);
 
 			// Link should only contain required fields
-			expect(Object.keys(link)).toEqual([
-				"referrerId",
-				"refereeId",
-				"createdAt",
-			]);
-			expect(link.referrerId).toBe("referrer@example.com");
-			expect(link.refereeId).toBe("referee@example.com");
+			expect(Object.keys(link)).toEqual(["referrer", "referee", "createdAt"]);
+			expect(link.referrer).toBe("referrer@example.com");
+			expect(link.referee).toBe("referee@example.com");
 		});
 
 		it("should handle multiple referral links from same referrer", () => {
@@ -323,10 +319,10 @@ describe("referral logic", () => {
 			const link1 = createReferralLink(referrer, referee1);
 			const link2 = createReferralLink(referrer, referee2);
 
-			expect(link1.referrerId).toBe("referrer@example.com");
-			expect(link2.referrerId).toBe("referrer@example.com");
-			expect(link1.refereeId).toBe("referee1@example.com");
-			expect(link2.refereeId).toBe("referee2@example.com");
+			expect(link1.referrer).toBe("referrer@example.com");
+			expect(link2.referrer).toBe("referrer@example.com");
+			expect(link1.referee).toBe("referee1@example.com");
+			expect(link2.referee).toBe("referee2@example.com");
 		});
 	});
 

@@ -20,9 +20,9 @@ export interface EmailEntry {
 /** A record of an actual referral relationship (who referred whom). */
 export interface ReferralLink {
 	/** The referrer (owner of the code). */
-	referrerId: Email;
+	referrer: Email;
 	/** The referee (the person who joined with the code). */
-	refereeId: Email;
+	referee: Email;
 	/** Timestamp of when this referral occurred. */
 	createdAt: Date;
 }
@@ -83,6 +83,8 @@ export interface WaitlistStorageAdapter {
 	findById(id: Email): Promise<EmailEntry | null>;
 	/** Lists all email entries in the waitlist. */
 	list(): Promise<EmailEntry[]>;
+	/** Lists all referral links in the waitlist. */
+	listReferrals(): Promise<ReferralLink[]>;
 	/** Counts the total number of email entries in the waitlist. */
 	count(): Promise<number>;
 

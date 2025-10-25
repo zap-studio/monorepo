@@ -7,9 +7,9 @@ import { generateReferralCode } from "../core/utils";
  * @example
  * const participant: Email = "user@example.com";
  * const links: ReferralLink[] = [
- *   { referrerId: "user@example.com", refereeId: "other@example.com", createdAt: new Date() },
- *   { referrerId: "user@example.com", refereeId: "jean@example.com", createdAt: new Date() },
- *   { referrerId: "john@example.com", refereeId: "alice@example.com", createdAt: new Date() },
+ *   { referrer: "user@example.com", referee: "other@example.com", createdAt: new Date() },
+ *   { referrer: "user@example.com", referee: "jean@example.com", createdAt: new Date() },
+ *   { referrer: "john@example.com", referee: "alice@example.com", createdAt: new Date() },
  * ];
  * const score = computeReferralScore(participant, links); // 2
  */
@@ -17,7 +17,7 @@ export function computeReferralScore(
 	participant: Email,
 	links: ReferralLink[],
 ): number {
-	return links.filter((l) => l.referrerId === participant).length;
+	return links.filter((l) => l.referrer === participant).length;
 }
 
 /**
@@ -28,7 +28,7 @@ export function computeReferralScore(
  * const referees = getReferees(participant); // ["alice@example.com", "bob@example.com"]
  */
 export function getReferees(referrer: Email, links: ReferralLink[]): Email[] {
-	return links.filter((l) => l.referrerId === referrer).map((l) => l.refereeId);
+	return links.filter((l) => l.referrer === referrer).map((l) => l.referee);
 }
 
 /**
@@ -52,15 +52,15 @@ export function addReferralCode(
  * @example
  * const referrer: Email = "referrer@example.com";
  * const referee: Email = "referee@example.com";
- * const referralLink = createReferralLink(referrer, referee); // { referrerId: "user@example.com", refereeId: "referee@example.com", createdAt: new Date() }
+ * const referralLink = createReferralLink(referrer, referee); // { referrer: "user@example.com", referee: "referee@example.com", createdAt: new Date() }
  */
 export function createReferralLink(
 	referrer: Email,
 	referee: Email,
 ): ReferralLink {
 	return {
-		referrerId: referrer,
-		refereeId: referee,
+		referrer,
+		referee,
 		createdAt: new Date(),
 	};
 }
