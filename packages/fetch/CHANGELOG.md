@@ -1,5 +1,11 @@
 # @zap-studio/fetch
 
+## 0.1.1
+
+### Patch Changes
+
+- 5f1812b: Change files field in package.json to distribute only necessary artifacts
+
 ## 0.1.0
 
 ### Minor Changes
