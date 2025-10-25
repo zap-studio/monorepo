@@ -49,11 +49,20 @@ export interface WaitlistConfig {
 	emailValidation?: EmailValidationConfig;
 }
 
+export type EventPayloadMap = {
+	join: { email: Email };
+	referral: { referrerId: Email; refereeId: Email };
+	remove: { email: Email; reason?: string };
+	error: { err: unknown; source: keyof EventPayloadMap };
+};
+
+export type WaitlistEventType = keyof EventPayloadMap;
+
 /** Represents an event in the waitlist system. */
 // biome-ignore lint/suspicious/noExplicitAny: We need to allow any for maximum flexibility since we want to allow any payload.
 export interface WaitlistEvent<T = any> {
 	/** The type of event. */
-	type: "join" | "referral" | "remove" | "error";
+	type: WaitlistEventType;
 	/** The payload associated with the event. */
 	payload: T;
 	/** The timestamp when the event occurred. */
