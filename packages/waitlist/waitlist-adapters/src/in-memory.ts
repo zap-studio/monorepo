@@ -1,7 +1,10 @@
-import type { EmailEntry, Email } from "@zap-studio/waitlist-core/types";
-import type { WaitlistAdapter } from "./types";
+import type {
+	EmailEntry,
+	Email,
+	WaitlistStorageAdapter,
+} from "@zap-studio/waitlist-core/types";
 
-export class InMemoryAdapter implements WaitlistAdapter {
+export class InMemoryAdapter implements WaitlistStorageAdapter {
 	private entries = new Map<Email, EmailEntry>();
 	private referrals = new Map<string, number>();
 

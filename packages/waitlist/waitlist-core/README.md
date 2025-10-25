@@ -105,10 +105,10 @@ interface WaitlistConfig {
 
 ## Creating Custom Adapters
 
-Implement the `WaitlistAdapter` interface to connect your preferred storage:
+Implement the `WaitlistStorageAdapter` interface to connect your preferred storage:
 
 ```ts
-interface WaitlistAdapter {
+interface WaitlistStorageAdapter {
   create(entry: EmailEntry): Promise<EmailEntry>
   update(id: ID, patch: Partial<EmailEntry>): Promise<EmailEntry>
   delete(id: ID): Promise<void>
@@ -116,5 +116,6 @@ interface WaitlistAdapter {
   findById(id: ID): Promise<EmailEntry | null>
   list(): Promise<EmailEntry[]>
   count(): Promise<number>
+  incrementReferral?(code: string, delta?: number): Promise<number>;
 }
 ```

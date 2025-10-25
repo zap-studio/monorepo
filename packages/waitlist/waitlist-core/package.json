@@ -27,6 +27,10 @@
 		"vitest": "latest"
 	},
 	"exports": {
+		"./events": {
+			"import": "./dist/events/index.js",
+			"require": "./dist/events/index.cjs"
+		},
 		"./referral": {
 			"import": "./dist/referral/index.js",
 			"require": "./dist/referral/index.cjs"

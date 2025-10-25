@@ -70,7 +70,7 @@ export interface WaitlistEvent<T = any> {
 }
 
 /** Represents the adapter for the waitlist system. */
-export interface WaitlistAdapter {
+export interface WaitlistStorageAdapter {
 	/** Creates a new email entry in the waitlist. */
 	create(entry: EmailEntry): Promise<EmailEntry>;
 	/** Updates an existing email entry in the waitlist. */
@@ -85,4 +85,7 @@ export interface WaitlistAdapter {
 	list(): Promise<EmailEntry[]>;
 	/** Counts the total number of email entries in the waitlist. */
 	count(): Promise<number>;
+
+	/** Optional: increment referral usage counter */
+	incrementReferral?(code: string, delta?: number): Promise<number>;
 }
