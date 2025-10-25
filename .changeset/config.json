@@ -7,5 +7,5 @@
 	"access": "public",
 	"baseBranch": "main",
 	"updateInternalDependencies": "patch",
-	"ignore": ["@zap-ts/docs"]
+	"ignore": ["zap-ts-docs"]
 }
