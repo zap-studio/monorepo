@@ -30,7 +30,7 @@ export async function parseResponse<TResponseType extends ResponseType>(
 		},
 		clone: async () => response.clone(),
 		formData: async () => {
-			if (contentType?.includes("multipart/form-data") === false) {
+			if (!contentType?.includes("multipart/form-data")) {
 				throw new FetchError(
 					"Expected FormData response but received different content type",
 					response.status,
@@ -41,7 +41,7 @@ export async function parseResponse<TResponseType extends ResponseType>(
 			return response.formData();
 		},
 		text: async () => {
-			if (contentType?.includes("text/") === false) {
+			if (!contentType?.includes("text/")) {
 				throw new FetchError(
 					"Expected text response but received different content type",
 					response.status,
