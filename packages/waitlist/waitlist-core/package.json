@@ -51,6 +51,14 @@
 			"import": "./dist/referral/index.js",
 			"require": "./dist/referral/index.cjs"
 		},
+		"./sdk/base": {
+			"import": "./dist/sdk/base.js",
+			"require": "./dist/sdk/base.cjs"
+		},
+		"./sdk/types": {
+			"import": "./dist/sdk/types.js",
+			"require": "./dist/sdk/types.cjs"
+		},
 		"./server": {
 			"import": "./dist/server.js",
 			"require": "./dist/server.cjs"
