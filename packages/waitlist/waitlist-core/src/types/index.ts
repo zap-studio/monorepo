@@ -51,7 +51,7 @@ export interface WaitlistConfig {
 
 export type EventPayloadMap = {
 	join: { email: Email };
-	referral: { referrerId: Email; refereeId: Email };
+	referral: { referrer: Email; referee: Email };
 	remove: { email: Email; reason?: string };
 	error: { err: unknown; source: keyof EventPayloadMap };
 };
@@ -69,25 +69,45 @@ export interface WaitlistEvent<T = any> {
 	timestamp: Date;
 }
 
+export type LeaderboardEntry = {
+	email: Email;
+	score: number;
+};
+
 /** Represents the adapter for the waitlist system. */
 export interface WaitlistStorageAdapter {
 	/** Creates a new email entry in the waitlist. */
 	create(entry: EmailEntry): Promise<EmailEntry>;
+	/** Creates a new referral link in the waitlist. */
+	createReferral(link: ReferralLink): Promise<ReferralLink>;
 	/** Updates an existing email entry in the waitlist. */
 	update(id: Email, patch: Partial<EmailEntry>): Promise<EmailEntry>;
+	/** Updates an existing referral link in the waitlist. */
+	updateReferral(
+		id: string,
+		patch: Partial<ReferralLink>,
+	): Promise<ReferralLink>;
 	/** Deletes an email entry from the waitlist. */
 	delete(id: Email): Promise<void>;
+	/** Deletes a referral link from the waitlist. */
+	deleteReferral(id: string): Promise<void>;
 	/** Finds an email entry by its email address. */
 	findByEmail(email: Email): Promise<EmailEntry | null>;
-	/** Finds an email entry by its ID. */
-	findById(id: Email): Promise<EmailEntry | null>;
+	/** Find a referrer by their referral code. */
+	findByReferralCode(code: string): Promise<EmailEntry | null>;
 	/** Lists all email entries in the waitlist. */
 	list(): Promise<EmailEntry[]>;
+	/** List all emails in the waitlist. */
+	listEmails(): Promise<Email[]>;
 	/** Lists all referral links in the waitlist. */
 	listReferrals(): Promise<ReferralLink[]>;
 	/** Counts the total number of email entries in the waitlist. */
 	count(): Promise<number>;
+	/** Counts the total number of referral links in the waitlist. */
+	countReferrals(): Promise<number>;
 
+	/** Optional: get leaderboard */
+	getLeaderboard?(): Promise<LeaderboardEntry[]>;
 	/** Optional: increment referral usage counter */
 	incrementReferral?(code: string, delta?: number): Promise<number>;
 }
