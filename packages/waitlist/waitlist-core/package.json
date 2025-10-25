@@ -24,6 +24,14 @@
 		"vitest": "latest"
 	},
 	"exports": {
+		"./referral": {
+			"import": "./dist/referral/index.js",
+			"require": "./dist/referral/index.cjs"
+		},
+		"./schemas": {
+			"import": "./dist/schemas.js",
+			"require": "./dist/schemas.cjs"
+		},
 		"./types": {
 			"import": "./dist/types.js",
 			"require": "./dist/types.cjs"
@@ -31,6 +39,10 @@
 		"./utils": {
 			"import": "./dist/utils.js",
 			"require": "./dist/utils.cjs"
+		},
+		"./validators": {
+			"import": "./dist/validators.js",
+			"require": "./dist/validators.cjs"
 		},
 		"./package.json": "./package.json"
 	}
