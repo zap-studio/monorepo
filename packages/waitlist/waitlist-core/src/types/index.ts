@@ -1,5 +1,5 @@
 import type z from "zod";
-import type { EmailSchema } from "./schemas";
+import type { EmailSchema } from "../core/schemas";
 
 export type Email = z.infer<typeof EmailSchema>;
 

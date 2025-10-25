@@ -27,6 +27,22 @@
 		"vitest": "latest"
 	},
 	"exports": {
+		"./client": {
+			"import": "./dist/client.js",
+			"require": "./dist/client.cjs"
+		},
+		"./core/schemas": {
+			"import": "./dist/core/schemas.js",
+			"require": "./dist/core/schemas.cjs"
+		},
+		"./core/utils": {
+			"import": "./dist/core/utils.js",
+			"require": "./dist/core/utils.cjs"
+		},
+		"./core/validators": {
+			"import": "./dist/core/validators.js",
+			"require": "./dist/core/validators.cjs"
+		},
 		"./events": {
 			"import": "./dist/events/index.js",
 			"require": "./dist/events/index.cjs"
@@ -35,21 +51,13 @@
 			"import": "./dist/referral/index.js",
 			"require": "./dist/referral/index.cjs"
 		},
-		"./schemas": {
-			"import": "./dist/schemas.js",
-			"require": "./dist/schemas.cjs"
+		"./server": {
+			"import": "./dist/server.js",
+			"require": "./dist/server.cjs"
 		},
 		"./types": {
-			"import": "./dist/types.js",
-			"require": "./dist/types.cjs"
-		},
-		"./utils": {
-			"import": "./dist/utils.js",
-			"require": "./dist/utils.cjs"
-		},
-		"./validators": {
-			"import": "./dist/validators.js",
-			"require": "./dist/validators.cjs"
+			"import": "./dist/types/index.js",
+			"require": "./dist/types/index.cjs"
 		},
 		"./package.json": "./package.json"
 	}

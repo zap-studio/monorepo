@@ -1,5 +1,5 @@
 import type { Email, EmailEntry, ReferralLink } from "../types";
-import { generateReferralCode } from "../utils";
+import { generateReferralCode } from "../core/utils";
 
 /**
  * Computes a user's total referral score based on all referral links.

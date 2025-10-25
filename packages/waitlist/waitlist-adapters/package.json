@@ -26,14 +26,13 @@
 		"vitest": "latest"
 	},
 	"exports": {
-		"./in-memory": {
+		".": {
 			"import": "./dist/in-memory.js",
 			"require": "./dist/in-memory.cjs"
 		},
-		"./types": {
-			"import": "./dist/types.js",
-			"require": "./dist/types.cjs"
-		},
 		"./package.json": "./package.json"
-	}
+	},
+	"main": "./dist/in-memory.cjs",
+	"module": "./dist/in-memory.js",
+	"types": "./dist/in-memory.d.cts"
 }

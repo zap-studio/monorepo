@@ -1,5 +1,5 @@
 import { EmailSchema } from "./schemas";
-import type { Email, EmailValidationConfig } from "./types";
+import type { Email, EmailValidationConfig } from "../types";
 
 /**
  * Validates an email address based on the provided configuration.

@@ -1,5 +1,5 @@
 import { customAlphabet } from "nanoid";
-import type { Email, EmailEntry } from "./types";
+import type { Email, EmailEntry } from "../types";
 
 /**
  * Generate short human-readable referral codes (6 chars with dash, uppercase letters and numbers).
