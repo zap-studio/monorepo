@@ -1,11 +1,11 @@
-import { computeReferralScore } from "@zap-studio/waitlist-core/referral";
+import { computeReferralScore } from "../referral";
 import type {
 	Email,
 	EmailEntry,
 	ReferralCode,
 	ReferralLink,
 	WaitlistStorageAdapter,
-} from "@zap-studio/waitlist-core/types";
+} from "../types";
 
 export class InMemoryAdapter implements WaitlistStorageAdapter {
 	private entries = new Map<Email, EmailEntry>();

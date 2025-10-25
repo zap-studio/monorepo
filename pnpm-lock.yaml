@@ -241,38 +241,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  packages/waitlist/waitlist-adapters:
-    dependencies:
-      '@zap-studio/waitlist-core':
-        specifier: workspace:*
-        version: link:../waitlist-core
-    devDependencies:
-      '@types/node':
-        specifier: latest
-        version: 24.9.1
-      '@zap-studio/tsdown-config':
-        specifier: workspace:*
-        version: link:../../../configs/tsdown-config
-      '@zap-studio/typescript-config':
-        specifier: workspace:*
-        version: link:../../../configs/typescript-config
-      '@zap-studio/vitest-config':
-        specifier: workspace:*
-        version: link:../../../configs/vitest-config
-      jsdom:
-        specifier: latest
-        version: 27.0.1(postcss@8.5.6)
-      tsdown:
-        specifier: latest
-        version: 0.15.9(typescript@5.9.3)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-      vitest:
-        specifier: latest
-        version: 4.0.3(@types/debug@4.1.12)(@types/node@24.9.1)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)
-
-  packages/waitlist/waitlist-core:
+  packages/waitlist:
     dependencies:
       nanoid:
         specifier: ^5.1.6
@@ -286,13 +255,13 @@ importers:
         version: 24.9.1
       '@zap-studio/tsdown-config':
         specifier: workspace:*
-        version: link:../../../configs/tsdown-config
+        version: link:../../configs/tsdown-config
       '@zap-studio/typescript-config':
         specifier: workspace:*
-        version: link:../../../configs/typescript-config
+        version: link:../../configs/typescript-config
       '@zap-studio/vitest-config':
         specifier: workspace:*
-        version: link:../../../configs/vitest-config
+        version: link:../../configs/vitest-config
       jsdom:
         specifier: latest
         version: 27.0.1(postcss@8.5.6)

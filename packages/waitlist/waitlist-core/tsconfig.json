@@ -1,5 +1,0 @@
-{
-	"extends": "@zap-studio/typescript-config/base.json",
-	"include": ["."],
-	"exclude": ["node_modules", "dist", ".turbo"]
-}

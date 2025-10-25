@@ -1,6 +1,6 @@
-import type { EmailEntry, ReferralLink } from "@zap-studio/waitlist-core/types";
 import { beforeEach, describe, expect, it } from "vitest";
-import { InMemoryAdapter } from "../src/in-memory";
+import { InMemoryAdapter } from "../../src/adapters/in-memory";
+import type { EmailEntry, ReferralLink } from "../../src/types";
 
 describe("InMemoryAdapter", () => {
 	let adapter: InMemoryAdapter;
