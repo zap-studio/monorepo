@@ -23,6 +23,14 @@
 		"vitest": "latest"
 	},
 	"exports": {
-		".": "./src/index.ts"
+		"./in-memory": {
+			"import": "./dist/in-memory.js",
+			"require": "./dist/in-memory.cjs"
+		},
+		"./types": {
+			"import": "./dist/types.js",
+			"require": "./dist/types.cjs"
+		},
+		"./package.json": "./package.json"
 	}
 }
