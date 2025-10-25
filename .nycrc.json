@@ -1,0 +1,15 @@
+{
+	"report-dir": "coverage/report",
+	"temp-dir": "coverage/merged",
+	"reporter": ["html", "text", "lcov"],
+	"all": true,
+	"exclude": [
+		"**/node_modules/**",
+		"**/dist/**",
+		"**/*.config.{ts,js}",
+		"**/*.d.ts",
+		"**/test/**",
+		"**/*.test.{ts,tsx}",
+		"**/*.spec.{ts,tsx}"
+	]
+}

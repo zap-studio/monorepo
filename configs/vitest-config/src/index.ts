@@ -5,6 +5,7 @@ export const config = {
 		coverage: {
 			provider: "v8" as const,
 			reporter: ["text", "json", "html"],
+			reportsDirectory: "coverage",
 			exclude: [
 				"node_modules/",
 				"dist/",

@@ -12,7 +12,10 @@
 		"clean": "turbo run clean && rimraf node_modules",
 		"typegen": "turbo run typegen",
 		"test": "turbo run test",
-		"test:watch": "turbo run test:watch"
+		"test:watch": "turbo run test:watch",
+		"test:coverage": "turbo run test -- --coverage && pnpm merge-coverage && pnpm report-coverage",
+		"merge-coverage": "rimraf coverage/merged && mkdir -p coverage/merged && find packages apps -name 'coverage' -type d -exec sh -c 'test -f \"$1/coverage-final.json\" && echo \"$1\"' _ {} \\; | xargs -I {} sh -c 'cp {}/coverage-final.json coverage/merged/$(echo {} | tr / -).json' || true",
+		"report-coverage": "nyc report --reporter=html --reporter=text --reporter=lcov --report-dir=coverage/report --temp-dir=coverage/merged"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.0",
@@ -20,7 +23,9 @@
 		"@commitlint/cli": "^20.1.0",
 		"@commitlint/config-conventional": "^20.0.0",
 		"@turbo/gen": "^2.5.8",
+		"@vitest/coverage-v8": "^4.0.3",
 		"lefthook": "^2.0.1",
+		"nyc": "^17.1.0",
 		"rimraf": "^6.0.1",
 		"turbo": "^2.5.8",
 		"ultracite": "^6.0.0"
