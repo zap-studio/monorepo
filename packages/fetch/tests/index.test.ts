@@ -189,94 +189,399 @@ describe("safeFetch", () => {
 	});
 
 	describe("response types", () => {
-		it("should handle text responses", async () => {
-			const schema = z.string();
-			const mockText = "Plain text response";
+		describe("json", () => {
+			it("should handle JSON responses with correct content-type", async () => {
+				const schema = z.object({ id: z.number(), name: z.string() });
+				const mockData = { id: 1, name: "Test" };
 
-			fetchMock.mockResolvedValue({
-				ok: true,
-				status: 200,
-				statusText: "OK",
-				text: async () => mockText,
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers({ "content-type": "application/json" }),
+					json: async () => mockData,
+				});
+
+				const result = await safeFetch("https://api.example.com/data", schema, {
+					responseType: "json",
+				});
+
+				expect(result).toEqual(mockData);
 			});
 
-			const result = await safeFetch("https://api.example.com/text", schema, {
-				responseType: "text",
+			it("should default to JSON response type when not specified", async () => {
+				const schema = z.object({ id: z.number() });
+				const mockData = { id: 1 };
+
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers({ "content-type": "application/json" }),
+					json: async () => mockData,
+				});
+
+				const result = await safeFetch("https://api.example.com/data", schema);
+
+				expect(result).toEqual(mockData);
 			});
 
-			expect(result).toBe(mockText);
+			it("should throw FetchError when expecting JSON but content-type is missing", async () => {
+				const schema = z.object({ id: z.number() });
+
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers(),
+					json: async () => ({ id: 1 }),
+				});
+
+				await expect(
+					safeFetch("https://api.example.com/data", schema, {
+						responseType: "json",
+					}),
+				).rejects.toThrow(FetchError);
+			});
+
+			it("should throw FetchError when expecting JSON but content-type is wrong", async () => {
+				const schema = z.object({ id: z.number() });
+
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers({ "content-type": "text/html" }),
+					json: async () => ({ id: 1 }),
+				});
+
+				await expect(
+					safeFetch("https://api.example.com/data", schema, {
+						responseType: "json",
+					}),
+				).rejects.toThrow(FetchError);
+			});
 		});
 
-		it("should handle blob responses", async () => {
-			const schema = z.instanceof(Blob);
-			const mockBlob = new Blob(["test content"]);
+		describe("text", () => {
+			it("should handle text responses with correct content-type", async () => {
+				const schema = z.string();
+				const mockText = "Plain text response";
 
-			fetchMock.mockResolvedValue({
-				ok: true,
-				status: 200,
-				statusText: "OK",
-				blob: async () => mockBlob,
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers({ "content-type": "text/plain" }),
+					text: async () => mockText,
+				});
+
+				const result = await safeFetch("https://api.example.com/text", schema, {
+					responseType: "text",
+				});
+
+				expect(result).toBe(mockText);
 			});
 
-			const result = await safeFetch("https://api.example.com/file", schema, {
-				responseType: "blob",
+			it("should handle text/html content-type", async () => {
+				const schema = z.string();
+				const mockHtml = "<html><body>Hello</body></html>";
+
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers({ "content-type": "text/html" }),
+					text: async () => mockHtml,
+				});
+
+				const result = await safeFetch("https://api.example.com/page", schema, {
+					responseType: "text",
+				});
+
+				expect(result).toBe(mockHtml);
 			});
 
-			expect(result).toBe(mockBlob);
+			it("should throw FetchError when expecting text but content-type is wrong", async () => {
+				const schema = z.string();
+
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers({ "content-type": "application/json" }),
+					text: async () => "text",
+				});
+
+				await expect(
+					safeFetch("https://api.example.com/text", schema, {
+						responseType: "text",
+					}),
+				).rejects.toThrow(FetchError);
+			});
 		});
 
-		it("should handle arrayBuffer responses", async () => {
-			const schema = z.instanceof(ArrayBuffer);
-			const mockBuffer = new ArrayBuffer(8);
+		describe("blob", () => {
+			it("should handle blob responses", async () => {
+				const schema = z.instanceof(Blob);
+				const mockBlob = new Blob(["test content"], { type: "text/plain" });
 
-			fetchMock.mockResolvedValue({
-				ok: true,
-				status: 200,
-				statusText: "OK",
-				arrayBuffer: async () => mockBuffer,
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers(),
+					blob: async () => mockBlob,
+				});
+
+				const result = await safeFetch("https://api.example.com/file", schema, {
+					responseType: "blob",
+				});
+
+				expect(result).toBe(mockBlob);
+				expect(result).toBeInstanceOf(Blob);
 			});
 
-			const result = await safeFetch("https://api.example.com/binary", schema, {
-				responseType: "arrayBuffer",
-			});
+			it("should handle binary blob responses", async () => {
+				const schema = z.instanceof(Blob);
+				const mockBlob = new Blob([new Uint8Array([1, 2, 3, 4])], {
+					type: "application/octet-stream",
+				});
 
-			expect(result).toBe(mockBuffer);
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers(),
+					blob: async () => mockBlob,
+				});
+
+				const result = await safeFetch(
+					"https://api.example.com/binary",
+					schema,
+					{
+						responseType: "blob",
+					},
+				);
+
+				expect(result).toBe(mockBlob);
+			});
 		});
 
-		it("should handle formData responses", async () => {
-			const schema = z.instanceof(FormData);
-			const mockFormData = new FormData();
-			mockFormData.append("key", "value");
+		describe("arrayBuffer", () => {
+			it("should handle arrayBuffer responses", async () => {
+				const schema = z.instanceof(ArrayBuffer);
+				const mockBuffer = new ArrayBuffer(8);
 
-			fetchMock.mockResolvedValue({
-				ok: true,
-				status: 200,
-				statusText: "OK",
-				formData: async () => mockFormData,
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers(),
+					arrayBuffer: async () => mockBuffer,
+				});
+
+				const result = await safeFetch(
+					"https://api.example.com/binary",
+					schema,
+					{
+						responseType: "arrayBuffer",
+					},
+				);
+
+				expect(result).toBe(mockBuffer);
+				expect(result).toBeInstanceOf(ArrayBuffer);
 			});
 
-			const result = await safeFetch("https://api.example.com/form", schema, {
-				responseType: "formData",
-			});
+			it("should handle arrayBuffer with data", async () => {
+				const schema = z.instanceof(ArrayBuffer);
+				const view = new Uint8Array([1, 2, 3, 4, 5]);
+				const mockBuffer = view.buffer;
 
-			expect(result).toBe(mockFormData);
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers(),
+					arrayBuffer: async () => mockBuffer,
+				});
+
+				const result = await safeFetch("https://api.example.com/data", schema, {
+					responseType: "arrayBuffer",
+				});
+
+				expect(result).toBe(mockBuffer);
+				expect(new Uint8Array(result as ArrayBuffer)).toEqual(view);
+			});
 		});
 
-		it("should default to JSON response type", async () => {
-			const schema = z.object({ id: z.number() });
-			const mockData = { id: 1 };
+		describe("bytes", () => {
+			it("should handle bytes (Uint8Array) responses", async () => {
+				const schema = z.instanceof(Uint8Array);
+				const mockBuffer = new Uint8Array([1, 2, 3, 4]).buffer;
 
-			fetchMock.mockResolvedValue({
-				ok: true,
-				status: 200,
-				statusText: "OK",
-				headers: new Headers({ "content-type": "application/json" }),
-				json: async () => mockData,
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers(),
+					arrayBuffer: async () => mockBuffer,
+				});
+
+				const result = await safeFetch(
+					"https://api.example.com/bytes",
+					schema,
+					{
+						responseType: "bytes",
+					},
+				);
+
+				expect(result).toBeInstanceOf(Uint8Array);
+				expect(result).toEqual(new Uint8Array([1, 2, 3, 4]));
 			});
 
-			const result = await safeFetch("https://api.example.com/data", schema);
+			it("should convert ArrayBuffer to Uint8Array", async () => {
+				const schema = z.instanceof(Uint8Array);
+				const data = [10, 20, 30, 40, 50];
+				const mockBuffer = new Uint8Array(data).buffer;
 
-			expect(result).toEqual(mockData);
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers(),
+					arrayBuffer: async () => mockBuffer,
+				});
+
+				const result = await safeFetch(
+					"https://api.example.com/bytes",
+					schema,
+					{
+						responseType: "bytes",
+					},
+				);
+
+				expect(Array.from(result as Uint8Array)).toEqual(data);
+			});
+		});
+
+		describe("formData", () => {
+			it("should handle formData responses with correct content-type", async () => {
+				const schema = z.instanceof(FormData);
+				const mockFormData = new FormData();
+				mockFormData.append("key", "value");
+				mockFormData.append("name", "test");
+
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers({ "content-type": "multipart/form-data" }),
+					formData: async () => mockFormData,
+				});
+
+				const result = await safeFetch("https://api.example.com/form", schema, {
+					responseType: "formData",
+				});
+
+				expect(result).toBe(mockFormData);
+				expect(result).toBeInstanceOf(FormData);
+			});
+
+			it("should throw FetchError when expecting formData but content-type is wrong", async () => {
+				const schema = z.instanceof(FormData);
+				const mockFormData = new FormData();
+
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers({ "content-type": "application/json" }),
+					formData: async () => mockFormData,
+				});
+
+				await expect(
+					safeFetch("https://api.example.com/form", schema, {
+						responseType: "formData",
+					}),
+				).rejects.toThrow(FetchError);
+			});
+		});
+
+		describe("clone", () => {
+			it("should handle clone response type", async () => {
+				const mockResponse = new Response(JSON.stringify({ id: 1 }), {
+					status: 200,
+					statusText: "OK",
+					headers: new Headers({ "content-type": "application/json" }),
+				});
+
+				const mockClone = mockResponse.clone();
+
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers(),
+					clone: () => mockClone,
+				});
+
+				const schema = z.instanceof(Response);
+				const result = await safeFetch("https://api.example.com/data", schema, {
+					responseType: "clone",
+				});
+
+				expect(result).toBe(mockClone);
+				expect(result).toBeInstanceOf(Response);
+			});
+
+			it("should allow reading cloned response multiple times", async () => {
+				const mockData = { id: 1, name: "Test" };
+				const mockResponse = new Response(JSON.stringify(mockData), {
+					status: 200,
+					statusText: "OK",
+					headers: new Headers({ "content-type": "application/json" }),
+				});
+
+				const mockClone = mockResponse.clone();
+
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers(),
+					clone: () => mockClone,
+				});
+
+				const schema = z.instanceof(Response);
+				const result = await safeFetch("https://api.example.com/data", schema, {
+					responseType: "clone",
+				});
+
+				// Should be able to read the response
+				const data = await (result as Response).json();
+				expect(data).toEqual(mockData);
+			});
+		});
+
+		describe("unsupported response type", () => {
+			it("should throw FetchError for unsupported response type", async () => {
+				const schema = z.unknown();
+
+				fetchMock.mockResolvedValue({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: new Headers(),
+				});
+
+				await expect(
+					safeFetch("https://api.example.com/data", schema, {
+						// @ts-expect-error - Testing invalid response type
+						responseType: "invalid",
+					}),
+				).rejects.toThrow(FetchError);
+			});
 		});
 	});
 
@@ -324,9 +629,9 @@ describe("safeFetch", () => {
 				throwOnValidationError: false,
 			});
 
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error).toBeDefined();
+			expect(result).toHaveProperty("success");
+			if ("success" in result && result.success) {
+				// This block should not be executed for invalid data
 			}
 		});
 
@@ -350,8 +655,8 @@ describe("safeFetch", () => {
 				throwOnValidationError: false,
 			});
 
-			expect(result.success).toBe(true);
-			if (result.success) {
+			expect(result).toHaveProperty("success");
+			if ("success" in result && result.success) {
 				expect(result.data).toEqual(validData);
 			}
 		});

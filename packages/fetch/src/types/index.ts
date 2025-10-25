@@ -4,8 +4,20 @@ export type FetchConfig<TBody> = Omit<RequestInit, "body"> & {
 };
 
 export type ResponseType =
-	| "json"
-	| "text"
-	| "blob"
 	| "arrayBuffer"
-	| "formData";
+	| "blob"
+	| "bytes"
+	| "clone"
+	| "formData"
+	| "json"
+	| "text";
+
+export type ResponseTypeMap = {
+	arrayBuffer: ArrayBuffer;
+	blob: Blob;
+	bytes: Uint8Array;
+	clone: Response;
+	formData: FormData;
+	json: unknown;
+	text: string;
+};
