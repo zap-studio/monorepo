@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { generateReferralCode, calculatePosition } from "../src/utils";
+import { describe, expect, it } from "vitest";
 import type { EmailEntry, ID } from "../src/types";
+import { calculatePosition, generateReferralCode } from "../src/utils";
 
 describe("generateReferralCode", () => {
 	it("returns deterministic code when seed provided", () => {

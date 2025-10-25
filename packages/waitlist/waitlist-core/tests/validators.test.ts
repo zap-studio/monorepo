@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { validateEmail } from "../src/validators";
+import { describe, expect, it } from "vitest";
 import type { EmailValidationConfig } from "../src/types";
+import { validateEmail } from "../src/validators";
 
 describe("validateEmail", () => {
 	describe("basic email validation", () => {
