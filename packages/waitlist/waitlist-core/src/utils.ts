@@ -26,7 +26,13 @@ export function generateReferralCode(length: number = 6): string {
  * ];
  * calculatePosition(entries, "bob@example.com"); // 3
  */
-export function calculatePosition(entries: EmailEntry[], email: Email): number {
+export function calculatePosition(
+	entries: EmailEntry[],
+	email: Email,
+): number | undefined {
+	if (entries.length === 0 || !entries.find((e) => e.email === email)) {
+		return;
+	}
 	const sorted = [...entries].sort(
 		(a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
 	);

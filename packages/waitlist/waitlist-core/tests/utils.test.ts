@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { EmailEntry, ID } from "../src/types";
+import type { EmailEntry } from "../src/types";
 import { calculatePosition, generateReferralCode } from "../src/utils";
 
 describe("generateReferralCode", () => {
@@ -23,13 +23,14 @@ describe("generateReferralCode", () => {
 
 describe("calculatePosition", () => {
 	const entries: EmailEntry[] = [
-		{ id: "1" as ID, email: "a@test.com", createdAt: new Date(1) },
-		{ id: "2" as ID, email: "b@test.com", createdAt: new Date(2) },
-		{ id: "3" as ID, email: "c@test.com", createdAt: new Date(3) },
+		{ email: "a@test.com", createdAt: new Date(1) },
+		{ email: "b@test.com", createdAt: new Date(2) },
+		{ email: "c@test.com", createdAt: new Date(3) },
 	];
 
 	it("returns correct position", () => {
-		expect(calculatePosition(entries, "1")).toBe(1);
-		expect(calculatePosition(entries, "3")).toBe(3);
+		expect(calculatePosition(entries, "a@test.com")).toBe(1);
+		expect(calculatePosition(entries, "c@test.com")).toBe(3);
+		expect(calculatePosition(entries, "d@test.com")).toBeUndefined();
 	});
 });
