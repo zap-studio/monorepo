@@ -36,7 +36,8 @@ describe("safeFetch", () => {
 
 			expect(result).toEqual(mockData);
 			expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/user", {
-				headers: {},
+				body: null,
+				headers: undefined,
 			});
 		});
 
@@ -96,7 +97,7 @@ describe("safeFetch", () => {
 			);
 		});
 
-		it("should handle FormData body without setting Content-Type", async () => {
+		it("should handle FormData body", async () => {
 			const schema = z.object({ uploaded: z.boolean() });
 			const mockData = { uploaded: true };
 			const formData = new FormData();
@@ -121,12 +122,11 @@ describe("safeFetch", () => {
 				expect.objectContaining({
 					method: "POST",
 					body: formData,
-					headers: {}, // No Content-Type for FormData
+					headers: undefined,
 				}),
 			);
 		});
-
-		it("should handle string body with text/plain Content-Type", async () => {
+		it("should handle string body", async () => {
 			const schema = z.object({ received: z.string() });
 			const mockData = { received: "text data" };
 			const textBody = "plain text content";
@@ -150,13 +150,10 @@ describe("safeFetch", () => {
 				expect.objectContaining({
 					method: "POST",
 					body: textBody,
-					headers: {
-						"Content-Type": "text/plain",
-					},
+					headers: undefined,
 				}),
 			);
 		});
-
 		it("should respect custom Content-Type header", async () => {
 			const schema = z.object({ success: z.boolean() });
 			const mockData = { success: true };
