@@ -9,10 +9,11 @@ import type {
 
 export class InMemoryAdapter implements WaitlistStorageAdapter {
 	private entries = new Map<Email, EmailEntry>();
-	private referrals = new Map<
-		{ referrer: Email; referee: Email },
-		ReferralLink
-	>();
+	private referrals = new Map<string, ReferralLink>();
+
+	private getReferralKey(referrer: Email, referee: Email): string {
+		return `${referrer}:${referee}`;
+	}
 
 	async create(entry: EmailEntry): Promise<EmailEntry> {
 		this.entries.set(entry.email, entry);
@@ -20,10 +21,8 @@ export class InMemoryAdapter implements WaitlistStorageAdapter {
 	}
 
 	async createReferral(link: ReferralLink): Promise<ReferralLink> {
-		this.referrals.set(
-			{ referrer: link.referrer, referee: link.referee },
-			link,
-		);
+		const key = this.getReferralKey(link.referrer, link.referee);
+		this.referrals.set(key, link);
 		return link;
 	}
 
@@ -39,10 +38,11 @@ export class InMemoryAdapter implements WaitlistStorageAdapter {
 		key: { referrer: Email; referee: Email },
 		patch: Partial<ReferralLink>,
 	): Promise<ReferralLink> {
-		const existing = this.referrals.get(key);
+		const referralKey = this.getReferralKey(key.referrer, key.referee);
+		const existing = this.referrals.get(referralKey);
 		if (!existing) throw new Error("Referral not found");
 		const updated = { ...existing, ...patch };
-		this.referrals.set(key, updated);
+		this.referrals.set(referralKey, updated);
 		return updated;
 	}
 
@@ -54,7 +54,8 @@ export class InMemoryAdapter implements WaitlistStorageAdapter {
 		referrer: Email;
 		referee: Email;
 	}): Promise<void> {
-		this.referrals.delete(key);
+		const referralKey = this.getReferralKey(key.referrer, key.referee);
+		this.referrals.delete(referralKey);
 	}
 
 	async findByEmail(email: Email): Promise<EmailEntry | null> {
