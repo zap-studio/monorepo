@@ -38,6 +38,7 @@ The configuration lives in `lefthook.yml`:
 
 ```yaml
 pre-commit:
+  parallel: true
   jobs:
     - run: npx ultracite fix
       glob: 
@@ -49,6 +50,13 @@ pre-commit:
         - "*.jsonc"
         - "*.css"
       stage_fixed: true
+      
+    - run: pnpm check-types
+      glob:
+        - "*.js"
+        - "*.jsx"
+        - "*.ts"
+        - "*.tsx"
 
 commit-msg:
   commands:
