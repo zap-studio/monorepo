@@ -27,50 +27,17 @@
 		"vitest": "latest"
 	},
 	"exports": {
-		"./adapters/in-memory": {
-			"import": "./dist/adapters/in-memory.js",
-			"require": "./dist/adapters/in-memory.cjs"
-		},
-		"./client": {
-			"import": "./dist/client.js",
-			"require": "./dist/client.cjs"
-		},
-		"./core/schemas": {
-			"import": "./dist/core/schemas.js",
-			"require": "./dist/core/schemas.cjs"
-		},
-		"./core/utils": {
-			"import": "./dist/core/utils.js",
-			"require": "./dist/core/utils.cjs"
-		},
-		"./core/validators": {
-			"import": "./dist/core/validators.js",
-			"require": "./dist/core/validators.cjs"
-		},
-		"./events": {
-			"import": "./dist/events/index.js",
-			"require": "./dist/events/index.cjs"
-		},
-		"./referral": {
-			"import": "./dist/referral/index.js",
-			"require": "./dist/referral/index.cjs"
-		},
-		"./sdk/base": {
-			"import": "./dist/sdk/base.js",
-			"require": "./dist/sdk/base.cjs"
-		},
-		"./sdk/types": {
-			"import": "./dist/sdk/types.js",
-			"require": "./dist/sdk/types.cjs"
-		},
-		"./server": {
-			"import": "./dist/server.js",
-			"require": "./dist/server.cjs"
-		},
-		"./types": {
-			"import": "./dist/types/index.js",
-			"require": "./dist/types/index.cjs"
-		},
+		"./adapters/storage/in-memory": "./dist/adapters/storage/in-memory.js",
+		"./client": "./dist/client.js",
+		"./core/schemas": "./dist/core/schemas.js",
+		"./core/utils": "./dist/core/utils.js",
+		"./core/validators": "./dist/core/validators.js",
+		"./events": "./dist/events/index.js",
+		"./referral": "./dist/referral/index.js",
+		"./sdk/base": "./dist/sdk/base.js",
+		"./sdk/types": "./dist/sdk/types.js",
+		"./server": "./dist/server.js",
+		"./types": "./dist/types/index.js",
 		"./package.json": "./package.json"
 	}
 }
