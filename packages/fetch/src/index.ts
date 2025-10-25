@@ -1,6 +1,6 @@
 import type { z } from "zod";
-import type { FetchConfig, ResponseType } from "./types";
 import { FetchError } from "./errors";
+import type { FetchConfig, ResponseType } from "./types";
 
 /**
  * Type-safe fetch wrapper with Zod validation

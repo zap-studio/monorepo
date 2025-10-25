@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
-import { safeFetch, api } from "../src";
+import { api, safeFetch } from "../src";
 import { FetchError } from "../src/errors";
 
 describe("safeFetch", () => {
