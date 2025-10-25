@@ -6,6 +6,11 @@
 	"publishConfig": {
 		"access": "public"
 	},
+	"files": [
+		"dist",
+		"README.md",
+		"CHANGELOG.md"
+	],
 	"scripts": {
 		"build": "tsdown --config tsdown.config.ts",
 		"check-types": "tsc --noEmit",
