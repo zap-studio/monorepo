@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import { FetchError } from "./errors";
 import type { FetchConfig, ResponseType } from "./types";
+import { parseResponse, prepareHeadersAndBody } from "./utils";
 
 /**
  * Type-safe fetch wrapper with Zod validation
@@ -24,71 +25,36 @@ import type { FetchConfig, ResponseType } from "./types";
  *   return user; // user is typed as { id: number; name: string; email: string; }
  * }
  */
-export async function safeFetch<TResponse, TBody = unknown>(
-	url: string,
+export async function safeFetch<
+	TResponse,
+	TBody = unknown,
+	TResponseType extends ResponseType = "json",
+>(
+	resource: string,
 	responseSchema: z.ZodType<TResponse>,
 	config?: FetchConfig<TBody> & {
-		throwOnValidationError?: true;
-		responseType?: ResponseType;
+		throwOnValidationError?: boolean;
+		responseType?: TResponseType;
 	},
-): Promise<TResponse>;
-
-export async function safeFetch<TResponse, TBody = unknown>(
-	url: string,
-	responseSchema: z.ZodType<TResponse>,
-	config?: FetchConfig<TBody> & {
-		throwOnValidationError: false;
-		responseType?: ResponseType;
-	},
-): Promise<ReturnType<typeof responseSchema.safeParse>>;
-
-export async function safeFetch<TResponse, TBody = unknown>(
-	url: string,
-	responseSchema: z.ZodType<TResponse>,
-	config?: FetchConfig<TBody> & { responseType?: ResponseType },
-): Promise<TResponse | ReturnType<typeof responseSchema.safeParse>> {
+): Promise<
+	TResponse | z.ZodSafeParseSuccess<TResponse> | z.ZodSafeParseError<TResponse>
+> {
 	const {
 		body,
 		headers,
 		throwOnValidationError = true,
-		responseType = "json",
+		responseType = "json" as TResponseType,
 		...rest
 	} = config || {};
 
-	const fetchConfig: RequestInit = {
+	const { body: preparedBody, headers: preparedHeaders } =
+		prepareHeadersAndBody(body, headers);
+
+	const response = await fetch(resource, {
 		...rest,
-		headers: {
-			...(headers as Record<string, string>),
-		},
-	};
-
-	// Only set Content-Type if body exists and it's not FormData
-	if (body !== undefined) {
-		const shouldSetContentType =
-			!headers ||
-			(typeof headers === "object" &&
-				!Array.isArray(headers) &&
-				!(headers instanceof Headers) &&
-				!("Content-Type" in headers));
-
-		if (body instanceof FormData) {
-			fetchConfig.body = body;
-		} else if (typeof body === "string") {
-			fetchConfig.body = body;
-			if (shouldSetContentType) {
-				(fetchConfig.headers as Record<string, string>)["Content-Type"] =
-					"text/plain";
-			}
-		} else {
-			fetchConfig.body = JSON.stringify(body);
-			if (shouldSetContentType) {
-				(fetchConfig.headers as Record<string, string>)["Content-Type"] =
-					"application/json";
-			}
-		}
-	}
-
-	const response = await fetch(url, fetchConfig);
+		body: preparedBody,
+		headers: preparedHeaders,
+	});
 
 	if (!response.ok) {
 		throw new FetchError(
@@ -99,36 +65,11 @@ export async function safeFetch<TResponse, TBody = unknown>(
 		);
 	}
 
-	// Parse response based on responseType
-	let data: unknown;
+	const data = await parseResponse(response, responseType);
 
-	if (responseType === "json") {
-		const contentType = response.headers.get("content-type");
-		if (contentType?.includes("application/json")) {
-			data = await response.json();
-		} else {
-			throw new FetchError(
-				"Expected JSON response but received different content type",
-				response.status,
-				response.statusText,
-				response,
-			);
-		}
-	} else if (responseType === "text") {
-		data = await response.text();
-	} else if (responseType === "blob") {
-		data = await response.blob();
-	} else if (responseType === "arrayBuffer") {
-		data = await response.arrayBuffer();
-	} else if (responseType === "formData") {
-		data = await response.formData();
-	}
-
-	if (throwOnValidationError) {
-		return responseSchema.parse(data);
-	}
-
-	return responseSchema.safeParse(data);
+	return throwOnValidationError
+		? responseSchema.parse(data)
+		: responseSchema.safeParse(data);
 }
 
 /**
@@ -151,35 +92,35 @@ export async function safeFetch<TResponse, TBody = unknown>(
  */
 export const api = {
 	get: <TResponse>(
-		url: string,
+		resource: string,
 		schema: z.ZodType<TResponse>,
-		config?: Omit<RequestInit, "method" | "body">,
-	) => safeFetch(url, schema, { ...config, method: "GET" }),
+		options?: Omit<RequestInit, "method" | "body">,
+	) => safeFetch(resource, schema, { ...options, method: "GET" }),
 
 	post: <TResponse, TBody = unknown>(
-		url: string,
+		resource: string,
 		schema: z.ZodType<TResponse>,
 		body?: TBody,
-		config?: Omit<RequestInit, "method" | "body">,
-	) => safeFetch(url, schema, { ...config, method: "POST", body }),
+		options?: Omit<RequestInit, "method" | "body">,
+	) => safeFetch(resource, schema, { ...options, method: "POST", body }),
 
 	put: <TResponse, TBody = unknown>(
-		url: string,
+		resource: string,
 		schema: z.ZodType<TResponse>,
 		body?: TBody,
-		config?: Omit<RequestInit, "method" | "body">,
-	) => safeFetch(url, schema, { ...config, method: "PUT", body }),
+		options?: Omit<RequestInit, "method" | "body">,
+	) => safeFetch(resource, schema, { ...options, method: "PUT", body }),
 
 	patch: <TResponse, TBody = unknown>(
-		url: string,
+		resource: string,
 		schema: z.ZodType<TResponse>,
 		body?: TBody,
-		config?: Omit<RequestInit, "method" | "body">,
-	) => safeFetch(url, schema, { ...config, method: "PATCH", body }),
+		options?: Omit<RequestInit, "method" | "body">,
+	) => safeFetch(resource, schema, { ...options, method: "PATCH", body }),
 
 	delete: <TResponse>(
-		url: string,
+		resource: string,
 		schema: z.ZodType<TResponse>,
-		config?: Omit<RequestInit, "method" | "body">,
-	) => safeFetch(url, schema, { ...config, method: "DELETE" }),
+		options?: Omit<RequestInit, "method" | "body">,
+	) => safeFetch(resource, schema, { ...options, method: "DELETE" }),
 };
