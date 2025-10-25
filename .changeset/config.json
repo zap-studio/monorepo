@@ -3,9 +3,9 @@
 	"changelog": "@changesets/cli/changelog",
 	"commit": false,
 	"fixed": [],
-	"linked": [],
+	"linked": [["@zap-studio/waitlist-core", "@zap-studio/waitlist-adapters"]],
 	"access": "public",
 	"baseBranch": "main",
 	"updateInternalDependencies": "patch",
-	"ignore": ["@zap-ts/docs"]
+	"ignore": ["website", "zap-ts-docs"]
 }
