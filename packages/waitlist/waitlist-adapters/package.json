@@ -1,0 +1,28 @@
+{
+	"name": "@zap-studio/waitlist-adapters",
+	"version": "0.0.0",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"build": "tsdown --config tsdown.config.ts",
+		"check-types": "tsc --noEmit",
+		"test": "vitest",
+		"test:watch": "vitest --watch"
+	},
+	"dependencies": {
+		"@zap-studio/waitlist-core": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "latest",
+		"@zap-studio/typescript-config": "workspace:*",
+		"@zap-studio/tsdown-config": "workspace:*",
+		"@zap-studio/vitest-config": "workspace:*",
+		"jsdom": "latest",
+		"typescript": "latest",
+		"tsdown": "latest",
+		"vitest": "latest"
+	},
+	"exports": {
+		".": "./src/index.ts"
+	}
+}
