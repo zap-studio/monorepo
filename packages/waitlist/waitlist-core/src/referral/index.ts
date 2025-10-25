@@ -5,7 +5,7 @@ import { generateReferralCode } from "../utils";
  * Computes a user's total referral score based on all referral links.
  *
  * @example
- * const participant: EmailEntry = { email: "user@example.com", createdAt: new Date() };
+ * const participant: Email = "user@example.com";
  * const links: ReferralLink[] = [
  *   { referrerId: "user@example.com", refereeId: "other@example.com", createdAt: new Date() },
  *   { referrerId: "user@example.com", refereeId: "jean@example.com", createdAt: new Date() },
@@ -14,26 +14,21 @@ import { generateReferralCode } from "../utils";
  * const score = computeReferralScore(participant, links); // 2
  */
 export function computeReferralScore(
-	participant: EmailEntry,
+	participant: Email,
 	links: ReferralLink[],
 ): number {
-	return links.filter((l) => l.referrerId === participant.email).length;
+	return links.filter((l) => l.referrerId === participant).length;
 }
 
 /**
  * Get the list of referees for a given referrer.
  *
  * @example
- * const participant: EmailEntry = { email: "user@example.com", createdAt: new Date() };
+ * const participant: Email = "user@example.com";
  * const referees = getReferees(participant); // ["alice@example.com", "bob@example.com"]
  */
-export function getReferees(
-	referrer: EmailEntry,
-	links: ReferralLink[],
-): Email[] {
-	return links
-		.filter((l) => l.referrerId === referrer.email)
-		.map((l) => l.refereeId);
+export function getReferees(referrer: Email, links: ReferralLink[]): Email[] {
+	return links.filter((l) => l.referrerId === referrer).map((l) => l.refereeId);
 }
 
 /**
@@ -55,17 +50,17 @@ export function addReferralCode(
  * Create a referral link between a referrer and a referee.
  *
  * @example
- * const referrer: EmailEntry = { email: "user@example.com", createdAt: new Date() };
- * const referee: EmailEntry = { email: "referee@example.com", createdAt: new Date() };
+ * const referrer: Email = "referrer@example.com";
+ * const referee: Email = "referee@example.com";
  * const referralLink = createReferralLink(referrer, referee); // { referrerId: "user@example.com", refereeId: "referee@example.com", createdAt: new Date() }
  */
 export function createReferralLink(
-	referrer: EmailEntry,
-	referee: EmailEntry,
+	referrer: Email,
+	referee: Email,
 ): ReferralLink {
 	return {
-		referrerId: referrer.email,
-		refereeId: referee.email,
+		referrerId: referrer,
+		refereeId: referee,
 		createdAt: new Date(),
 	};
 }
