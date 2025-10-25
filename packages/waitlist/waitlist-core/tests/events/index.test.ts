@@ -62,13 +62,13 @@ describe("EventBus", () => {
 			bus.on("referral", handler);
 
 			await bus.emit("referral", {
-				referrerId: "referrer@example.com",
-				refereeId: "referee@example.com",
+				referrer: "referrer@example.com",
+				referee: "referee@example.com",
 			});
 
 			expect(handler).toHaveBeenCalledWith({
-				referrerId: "referrer@example.com",
-				refereeId: "referee@example.com",
+				referrer: "referrer@example.com",
+				referee: "referee@example.com",
 			});
 		});
 
@@ -253,8 +253,8 @@ describe("EventBus", () => {
 
 			await bus.emit("join", { email: "test@example.com" });
 			await bus.emit("referral", {
-				referrerId: "referrer@example.com",
-				refereeId: "referee@example.com",
+				referrer: "referrer@example.com",
+				referee: "referee@example.com",
 			});
 			await bus.emit("remove", { email: "test@example.com" });
 			await bus.emit("error", { err: new Error("Test"), source: "join" });
@@ -278,8 +278,8 @@ describe("EventBus", () => {
 
 			await bus.emit("join", { email: "test@example.com" });
 			await bus.emit("referral", {
-				referrerId: "referrer@example.com",
-				refereeId: "referee@example.com",
+				referrer: "referrer@example.com",
+				referee: "referee@example.com",
 			});
 
 			expect(handler1).not.toHaveBeenCalled();
@@ -299,8 +299,8 @@ describe("EventBus", () => {
 
 			await bus.emit("join", { email: "test@example.com" });
 			await bus.emit("referral", {
-				referrerId: "referrer@example.com",
-				refereeId: "referee@example.com",
+				referrer: "referrer@example.com",
+				referee: "referee@example.com",
 			});
 			await bus.emit("remove", { email: "test@example.com" });
 
