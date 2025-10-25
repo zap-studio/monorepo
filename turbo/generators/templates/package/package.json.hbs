@@ -2,7 +2,10 @@
   "name": "@zap-studio/{{ packageName }}",
   "version": "0.0.0",
   "type": "module",
-  "private": true,
+  "private": false,
+	"publishConfig": {
+		"access": "public"
+	},
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
     "check-types": "tsc --noEmit",
