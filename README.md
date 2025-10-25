@@ -4,7 +4,9 @@ We're making the web better.
 
 ## The Problem
 
-Every app needs the same core features: waitlists, authentication, payments, analytics. Yet developers waste weeks reinventing these from scratch—often building poorly, rushing to launch, creating technical debt that haunts them for years.
+Every app needs the same core features: waitlists, authentication, payments, analytics.
+
+Yet developers waste weeks reinventing these from scratch—often building poorly, rushing to launch, creating technical debt that haunts them for years.
 
 The alternative? Framework-specific solutions that lock you in. Want to migrate from Next.js to Remix? Rewrite everything.
 
