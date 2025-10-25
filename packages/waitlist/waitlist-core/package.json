@@ -1,5 +1,5 @@
 {
-	"name": "@zap-studio/waitlist",
+	"name": "@zap-studio/waitlist-core",
 	"version": "0.0.0",
 	"type": "module",
 	"private": true,

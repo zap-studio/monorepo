@@ -1,7 +1,7 @@
 packages:
   - apps/*
   - configs/*
-  - packages/*
+  - packages/waitlist/*
 
 onlyBuiltDependencies:
   - '@swc/core'
