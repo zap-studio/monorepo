@@ -24,7 +24,7 @@
 		"fumadocs-core": "^16.0.2",
 		"fumadocs-mdx": "^13.0.0",
 		"fumadocs-typescript": "^4.0.12",
-		"fumadocs-ui": "^16.0.2",
+		"fumadocs-ui": "^16.0.4",
 		"hast-util-to-jsx-runtime": "^2.3.6",
 		"lucide-react": "^0.548.0",
 		"next": "^16.0.0",
