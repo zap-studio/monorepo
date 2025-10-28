@@ -6,7 +6,7 @@ import type { Email, EmailEntry } from "../types";
  *
  * @example
  * generateReferralCode(); // e.g., "4F7-G8H"
- * generateReferralCode(8); // e.g., "A1B-C2D3"
+ * generateReferralCode(8); // e.g., "A1B2-C3D4"
  */
 export function generateReferralCode(length: number = 6): string {
 	const nanoid = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", length);
