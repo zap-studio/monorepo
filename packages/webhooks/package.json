@@ -49,8 +49,15 @@
 	},
 	"exports": {
 		".": "./dist/index.js",
-		"./adapters": "./dist/adapters/index.js",
+		"./adapters/frameworks": "./dist/adapters/frameworks/index.js",
+		"./adapters/validators": "./dist/adapters/validators/index.js",
+		"./adapters/validators/arktype": "./dist/adapters/validators/arktype.js",
+		"./adapters/validators/valibot": "./dist/adapters/validators/valibot.js",
+		"./adapters/validators/yup": "./dist/adapters/validators/yup.js",
+		"./adapters/validators/zod": "./dist/adapters/validators/zod.js",
 		"./types": "./dist/types/index.js",
+		"./utils": "./dist/utils/index.js",
+		"./verify": "./dist/verify.js",
 		"./package.json": "./package.json"
 	},
 	"main": "./dist/index.js",
