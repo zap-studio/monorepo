@@ -14,10 +14,10 @@ import type { Email, EmailEntry, ReferralLink } from "../types";
  * const score = computeReferralScore(participant, links); // 2
  */
 export function computeReferralScore(
-	participant: Email,
-	links: ReferralLink[],
+  participant: Email,
+  links: ReferralLink[]
 ): number {
-	return links.filter((l) => l.referrer === participant).length;
+  return links.filter((l) => l.referrer === participant).length;
 }
 
 /**
@@ -28,7 +28,7 @@ export function computeReferralScore(
  * const referees = getReferees(participant); // ["alice@example.com", "bob@example.com"]
  */
 export function getReferees(referrer: Email, links: ReferralLink[]): Email[] {
-	return links.filter((l) => l.referrer === referrer).map((l) => l.referee);
+  return links.filter((l) => l.referrer === referrer).map((l) => l.referee);
 }
 
 /**
@@ -39,11 +39,11 @@ export function getReferees(referrer: Email, links: ReferralLink[]): Email[] {
  * const participantWithCode = addReferralCode(participant, 8); // { email: "user@example.com", createdAt: new Date(), referralCode: "XXXX-XXXX" }
  */
 export function addReferralCode(
-	participant: EmailEntry,
-	referralCodeLength?: number,
+  participant: EmailEntry,
+  referralCodeLength?: number
 ): EmailEntry & { referralCode: string } {
-	const code = generateReferralCode(referralCodeLength);
-	return { ...participant, referralCode: code };
+  const code = generateReferralCode(referralCodeLength);
+  return { ...participant, referralCode: code };
 }
 
 /**
@@ -55,12 +55,12 @@ export function addReferralCode(
  * const referralLink = createReferralLink(referrer, referee); // { referrer: "user@example.com", referee: "referee@example.com", createdAt: new Date() }
  */
 export function createReferralLink(
-	referrer: Email,
-	referee: Email,
+  referrer: Email,
+  referee: Email
 ): ReferralLink {
-	return {
-		referrer,
-		referee,
-		createdAt: new Date(),
-	};
+  return {
+    referrer,
+    referee,
+    createdAt: new Date(),
+  };
 }
