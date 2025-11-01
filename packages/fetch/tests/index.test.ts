@@ -8,7 +8,7 @@ describe("safeFetch", () => {
 
 	beforeEach(() => {
 		fetchMock = vi.fn();
-		global.fetch = fetchMock;
+		global.fetch = fetchMock as unknown as typeof fetch;
 	});
 
 	afterEach(() => {
@@ -101,7 +101,8 @@ describe("safeFetch", () => {
 			const schema = z.object({ uploaded: z.boolean() });
 			const mockData = { uploaded: true };
 			const formData = new FormData();
-			formData.append("file", new Blob(["test"]), "test.txt");
+			const file = new File(["test"], "test.txt", { type: "text/plain" });
+			formData.append("file", file);
 
 			fetchMock.mockResolvedValue({
 				ok: true,
@@ -755,7 +756,7 @@ describe("api convenience methods", () => {
 
 	beforeEach(() => {
 		fetchMock = vi.fn();
-		global.fetch = fetchMock;
+		global.fetch = fetchMock as unknown as typeof fetch;
 	});
 
 	afterEach(() => {
