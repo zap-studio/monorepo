@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
-import type { Adapter } from "./types";
+import type { NormalizedRequest, NormalizedResponse } from "../types";
+import type { Adapter } from "./base";
 
 /**
  * Express adapter for the webhook router
@@ -14,59 +15,82 @@ import type { Adapter } from "./types";
  * const router = new WebhookRouter<WebhookMap>();
  *
  * // Important: Use express.raw() middleware to preserve raw body
- * app.post("/webhook/*", express.raw({ type: "application/json" }), async (req, res) => {
- *   const normalizedRequest = await expressAdapter.toNormalizedRequest(req);
- *   const normalizedResponse = await router.handle(normalizedRequest);
- *   await expressAdapter.toFrameworkResponse(res, normalizedResponse);
- * });
+ * app.post("/webhook/*", express.raw({ type: "application/json" }), expressAdapter.handleWebhook(router));
  * ```
  */
-export const expressAdapter: Adapter = {
-  async toNormalizedRequest(req: Request) {
-    // Get the raw body (should be a Buffer from express.raw() middleware)
-    let rawBody: Buffer;
+class ExpressAdapter implements Adapter {
+  /**
+   * Extract raw body from Express request
+   */
+  private extractRawBody(body: unknown): Buffer {
+    if (Buffer.isBuffer(body)) {
+      return body;
+    }
 
-    if (Buffer.isBuffer(req.body)) {
-      rawBody = req.body;
-    } else if (typeof req.body === "string") {
-      rawBody = Buffer.from(req.body);
-    } else if (typeof req.body === "object" && req.body !== null) {
+    if (typeof body === "string") {
+      return Buffer.from(body);
+    }
+
+    if (typeof body === "object" && body !== null) {
       // If body is already parsed JSON, stringify it back
-      rawBody = Buffer.from(JSON.stringify(req.body));
-    } else {
-      // Fallback: empty body
-      rawBody = Buffer.alloc(0);
+      return Buffer.from(JSON.stringify(body));
     }
 
-    // Convert Express headers to Web Headers API
+    // Fallback: empty body
+    return Buffer.alloc(0);
+  }
+
+  /**
+   * Convert Express headers to Web Headers API
+   */
+  private convertHeaders(reqHeaders: Request["headers"]): Headers {
     const headers = new Headers();
-    for (const [key, value] of Object.entries(req.headers)) {
-      if (value !== undefined && value !== null) {
-        if (Array.isArray(value)) {
-          // For multiple header values, join them with commas (HTTP spec)
-          headers.set(key, value.join(", "));
-        } else {
-          headers.set(key, String(value));
-        }
+
+    for (const [key, value] of Object.entries(reqHeaders)) {
+      if (value === undefined || value === null) {
+        continue;
+      }
+
+      if (Array.isArray(value)) {
+        // For multiple header values, join them with commas (HTTP spec)
+        headers.set(key, value.join(", "));
+      } else {
+        headers.set(key, String(value));
       }
     }
 
-    // Parse JSON if content-type is application/json
-    let json: unknown;
-    const contentType = req.headers["content-type"];
-    if (contentType?.includes("application/json")) {
-      try {
-        if (Buffer.isBuffer(req.body)) {
-          json = JSON.parse(req.body.toString());
-        } else if (typeof req.body === "object" && req.body !== null) {
-          json = req.body;
-        }
-      } catch {
-        // If JSON parsing fails, leave json as undefined
-      }
+    return headers;
+  }
+
+  /**
+   * Parse JSON body if content-type is application/json
+   */
+  private parseJsonBody(body: unknown, contentType?: string): unknown {
+    if (!contentType?.includes("application/json")) {
+      return;
     }
 
-    return {
+    try {
+      if (Buffer.isBuffer(body)) {
+        return JSON.parse(body.toString());
+      }
+
+      if (typeof body === "object" && body !== null) {
+        return body;
+      }
+    } catch {
+      // If JSON parsing fails, leave json as undefined
+    }
+
+    return;
+  }
+
+  async toNormalizedRequest(req: Request): Promise<NormalizedRequest> {
+    const rawBody = this.extractRawBody(req.body);
+    const headers = this.convertHeaders(req.headers);
+    const json = this.parseJsonBody(req.body, req.headers["content-type"]);
+
+    return await Promise.resolve({
       method: req.method as
         | "GET"
         | "HEAD"
@@ -83,10 +107,19 @@ export const expressAdapter: Adapter = {
       json,
       query: req.query as Record<string, string | string[]>,
       params: req.params as Record<string, string>,
-    };
-  },
+    });
+  }
 
-  async toFrameworkResponse(res: Response, normalizedResponse) {
+  /**
+   * Convert a NormalizedResponse to a framework-specific response
+   * @param res The Express response object
+   * @param normalizedResponse The normalized response to convert
+   * @returns A promise that resolves when the response is sent
+   */
+  async toFrameworkResponse(
+    res: Response,
+    normalizedResponse: NormalizedResponse
+  ): Promise<Response> {
     // Set custom headers if provided
     if (normalizedResponse.headers) {
       for (const [key, value] of normalizedResponse.headers.entries()) {
@@ -114,6 +147,37 @@ export const expressAdapter: Adapter = {
       res.end();
     }
 
-    return res;
-  },
-};
+    return await Promise.resolve(res);
+  }
+
+  /**
+   * Express middleware to handle incoming webhooks
+   *
+   * @example
+   * ```ts
+   * import express from "express";
+   * import { WebhookRouter } from "@zap-studio/webhooks";
+   * import { expressAdapter } from "@zap-studio/webhooks/adapters/express";
+   *
+   * const app = express();
+   * const router = new WebhookRouter<WebhookMap>();
+   *
+   * // Important: Use express.raw() middleware to preserve raw body
+   * app.post("/webhook/*", express.raw({ type: "application/json" }), expressAdapter.handleWebhook(router));
+   * ```
+   */
+  handleWebhook(router: {
+    handle(req: NormalizedRequest): Promise<NormalizedResponse>;
+  }): (req: Request, res: Response) => Promise<void> {
+    return async (req: Request, res: Response) => {
+      const normalizedRequest = await this.toNormalizedRequest(req);
+      const normalizedResponse = await router.handle(normalizedRequest);
+      await this.toFrameworkResponse(res, normalizedResponse);
+    };
+  }
+}
+
+/**
+ * Express adapter instance for the webhook router
+ */
+export const expressAdapter = new ExpressAdapter();
