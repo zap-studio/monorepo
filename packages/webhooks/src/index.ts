@@ -148,17 +148,19 @@ export class WebhookRouter<TMap extends Record<string, any>> {
       // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
       this.handlers.set(path, { handler: handlerOrOptions as any });
     } else {
-      const beforeHooks = handlerOrOptions.before
-        ? Array.isArray(handlerOrOptions.before)
+      let beforeHooks: BeforeHook[] | undefined;
+      if (handlerOrOptions.before) {
+        beforeHooks = Array.isArray(handlerOrOptions.before)
           ? handlerOrOptions.before
-          : [handlerOrOptions.before]
-        : undefined;
+          : [handlerOrOptions.before];
+      }
 
-      const afterHooks = handlerOrOptions.after
-        ? Array.isArray(handlerOrOptions.after)
+      let afterHooks: AfterHook[] | undefined;
+      if (handlerOrOptions.after) {
+        afterHooks = Array.isArray(handlerOrOptions.after)
           ? handlerOrOptions.after
-          : [handlerOrOptions.after]
-        : undefined;
+          : [handlerOrOptions.after];
+      }
 
       this.handlers.set(path, {
         // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
