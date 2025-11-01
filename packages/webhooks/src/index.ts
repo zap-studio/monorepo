@@ -180,101 +180,179 @@ export class WebhookRouter<TMap extends Record<string, any>> {
    */
   async handle(req: NormalizedRequest): Promise<NormalizedResponse> {
     try {
-      // Run global before hooks
-      for (const hook of this.globalBeforeHooks) {
-        await hook(req);
-      }
+      await this.runGlobalBeforeHooks(req);
 
-      // strict path matching first (extendable to prefix or pattern)
       const handlerEntry = this.handlers.get(req.path);
       if (!handlerEntry) {
         return { status: 404, body: { error: "not found" } };
       }
 
-      // Run route-specific before hooks
-      if (handlerEntry.before) {
-        for (const hook of handlerEntry.before) {
-          await hook(req);
-        }
-      }
+      await this.runRouteBeforeHooks(handlerEntry, req);
 
       if (this.verify) {
         await this.verify(req);
       }
 
-      // try parse JSON safely
-      const parsedJson = (() => {
-        try {
-          return JSON.parse(req.rawBody.toString());
-        } catch {
-          return;
-        }
-      })();
-      req.json = parsedJson;
+      const parsedJson = this.parseRequestBody(req);
+      const validationResult = await this.validatePayload(
+        handlerEntry,
+        parsedJson
+      );
 
-      // Validate with schema if provided
-      let validatedPayload = parsedJson;
-      if (handlerEntry.schema) {
-        const result = await handlerEntry.schema.validate(parsedJson);
-        if (!result.success) {
-          return {
-            status: 400,
-            body: {
-              error: "validation failed",
-              issues: result.errors,
-            },
-          };
-        }
-        validatedPayload = result.data;
+      if (this.isErrorResponse(validationResult)) {
+        return validationResult;
       }
 
-      // call handler with typed payload
-      const responded = await handlerEntry.handler({
+      const response = await this.executeHandler(
+        handlerEntry,
         req,
-        // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
-        payload: validatedPayload as any,
-        ack: async (r?: Partial<NormalizedResponse>) => ({
-          // biome-ignore lint/style/noMagicNumbers: Default status code is 200 and only used here
-          status: r?.status ?? 200,
-          body: r?.body ?? "ok",
-          headers: r?.headers,
-        }),
-      });
-      const response: NormalizedResponse = responded ?? {
-        status: 200,
-        body: "ok",
-      };
+        validationResult
+      );
 
-      // Run route-specific after hooks
-      if (handlerEntry.after) {
-        for (const hook of handlerEntry.after) {
-          await hook(req, response);
-        }
-      }
-
-      // Run global after hooks
-      for (const hook of this.globalAfterHooks) {
-        await hook(req, response);
-      }
+      await this.runRouteAfterHooks(handlerEntry, req, response);
+      await this.runGlobalAfterHooks(req, response);
 
       return response;
     } catch (error) {
-      // Handle errors through onError hook if provided
-      if (this.globalErrorHook) {
-        const errorResponse = await this.globalErrorHook(error as Error, req);
-        if (errorResponse) {
-          return errorResponse;
-        }
-      }
+      return this.handleError(error, req);
+    }
+  }
 
-      // Default error response
+  private async runGlobalBeforeHooks(req: NormalizedRequest): Promise<void> {
+    for (const hook of this.globalBeforeHooks) {
+      await hook(req);
+    }
+  }
+
+  private async runRouteBeforeHooks(
+    handlerEntry: {
+      handler: HandlerMap<TMap>[string];
+      schema?: SchemaValidator<unknown>;
+      before?: BeforeHook[];
+      after?: AfterHook[];
+    },
+    req: NormalizedRequest
+  ): Promise<void> {
+    if (handlerEntry.before) {
+      for (const hook of handlerEntry.before) {
+        await hook(req);
+      }
+    }
+  }
+
+  private parseRequestBody(req: NormalizedRequest): unknown {
+    try {
+      const parsed = JSON.parse(req.rawBody.toString());
+      req.json = parsed;
+      return parsed;
+    } catch {
+      return;
+    }
+  }
+
+  private isErrorResponse(value: unknown): value is NormalizedResponse {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      "status" in value &&
+      typeof value.status === "number"
+    );
+  }
+
+  private async validatePayload(
+    handlerEntry: {
+      handler: HandlerMap<TMap>[string];
+      schema?: SchemaValidator<unknown>;
+      before?: BeforeHook[];
+      after?: AfterHook[];
+    },
+    parsedJson: unknown
+  ): Promise<unknown | NormalizedResponse> {
+    if (!handlerEntry.schema) {
+      return parsedJson;
+    }
+
+    const result = await handlerEntry.schema.validate(parsedJson);
+    if (!result.success) {
       return {
-        status: 500,
+        status: 400,
         body: {
-          error:
-            error instanceof Error ? error.message : "Internal server error",
+          error: "validation failed",
+          issues: result.errors,
         },
       };
     }
+
+    return result.data;
+  }
+
+  private async executeHandler(
+    handlerEntry: {
+      handler: HandlerMap<TMap>[string];
+      schema?: SchemaValidator<unknown>;
+      before?: BeforeHook[];
+      after?: AfterHook[];
+    },
+    req: NormalizedRequest,
+    validatedPayload: unknown
+  ): Promise<NormalizedResponse> {
+    const responded = await handlerEntry.handler({
+      req,
+      // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
+      payload: validatedPayload as any,
+      ack: async (r?: Partial<NormalizedResponse>) => ({
+        // biome-ignore lint/style/noMagicNumbers: Default status code is 200 and only used here
+        status: r?.status ?? 200,
+        body: r?.body ?? "ok",
+        headers: r?.headers,
+      }),
+    });
+
+    return responded ?? { status: 200, body: "ok" };
+  }
+
+  private async runRouteAfterHooks(
+    handlerEntry: {
+      handler: HandlerMap<TMap>[string];
+      schema?: SchemaValidator<unknown>;
+      before?: BeforeHook[];
+      after?: AfterHook[];
+    },
+    req: NormalizedRequest,
+    response: NormalizedResponse
+  ): Promise<void> {
+    if (handlerEntry.after) {
+      for (const hook of handlerEntry.after) {
+        await hook(req, response);
+      }
+    }
+  }
+
+  private async runGlobalAfterHooks(
+    req: NormalizedRequest,
+    response: NormalizedResponse
+  ): Promise<void> {
+    for (const hook of this.globalAfterHooks) {
+      await hook(req, response);
+    }
+  }
+
+  private async handleError(
+    error: unknown,
+    req: NormalizedRequest
+  ): Promise<NormalizedResponse> {
+    if (this.globalErrorHook) {
+      const errorResponse = await this.globalErrorHook(error as Error, req);
+      if (errorResponse) {
+        return errorResponse;
+      }
+    }
+
+    return {
+      status: 500,
+      body: {
+        error: error instanceof Error ? error.message : "Internal server error",
+      },
+    };
   }
 }
