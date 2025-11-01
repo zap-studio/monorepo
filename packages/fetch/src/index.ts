@@ -26,50 +26,50 @@ import { parseResponse, prepareHeadersAndBody } from "./utils";
  * }
  */
 export async function safeFetch<
-	TResponse,
-	TBody = unknown,
-	TResponseType extends ResponseType = "json",
+  TResponse,
+  TBody = unknown,
+  TResponseType extends ResponseType = "json",
 >(
-	resource: string,
-	responseSchema: z.ZodType<TResponse>,
-	config?: FetchConfig<TBody> & {
-		throwOnValidationError?: boolean;
-		responseType?: TResponseType;
-	},
+  resource: string,
+  responseSchema: z.ZodType<TResponse>,
+  config?: FetchConfig<TBody> & {
+    throwOnValidationError?: boolean;
+    responseType?: TResponseType;
+  }
 ): Promise<
-	TResponse | z.ZodSafeParseSuccess<TResponse> | z.ZodSafeParseError<TResponse>
+  TResponse | z.ZodSafeParseSuccess<TResponse> | z.ZodSafeParseError<TResponse>
 > {
-	const {
-		body,
-		headers,
-		throwOnValidationError = true,
-		responseType = "json" as TResponseType,
-		...rest
-	} = config || {};
+  const {
+    body,
+    headers,
+    throwOnValidationError = true,
+    responseType = "json" as TResponseType,
+    ...rest
+  } = config || {};
 
-	const { body: preparedBody, headers: preparedHeaders } =
-		prepareHeadersAndBody(body, headers);
+  const { body: preparedBody, headers: preparedHeaders } =
+    prepareHeadersAndBody(body, headers);
 
-	const response = await fetch(resource, {
-		...rest,
-		body: preparedBody,
-		headers: preparedHeaders,
-	});
+  const response = await fetch(resource, {
+    ...rest,
+    body: preparedBody,
+    headers: preparedHeaders,
+  });
 
-	if (!response.ok) {
-		throw new FetchError(
-			`HTTP ${response.status}: ${response.statusText}`,
-			response.status,
-			response.statusText,
-			response,
-		);
-	}
+  if (!response.ok) {
+    throw new FetchError(
+      `HTTP ${response.status}: ${response.statusText}`,
+      response.status,
+      response.statusText,
+      response
+    );
+  }
 
-	const data = await parseResponse(response, responseType);
+  const data = await parseResponse(response, responseType);
 
-	return throwOnValidationError
-		? responseSchema.parse(data)
-		: responseSchema.safeParse(data);
+  return throwOnValidationError
+    ? responseSchema.parse(data)
+    : responseSchema.safeParse(data);
 }
 
 /**
@@ -91,36 +91,36 @@ export async function safeFetch<
  * }
  */
 export const api = {
-	get: <TResponse>(
-		resource: string,
-		schema: z.ZodType<TResponse>,
-		options?: Omit<RequestInit, "method" | "body">,
-	) => safeFetch(resource, schema, { ...options, method: "GET" }),
+  get: <TResponse>(
+    resource: string,
+    schema: z.ZodType<TResponse>,
+    options?: Omit<RequestInit, "method" | "body">
+  ) => safeFetch(resource, schema, { ...options, method: "GET" }),
 
-	post: <TResponse, TBody = unknown>(
-		resource: string,
-		schema: z.ZodType<TResponse>,
-		body?: TBody,
-		options?: Omit<RequestInit, "method" | "body">,
-	) => safeFetch(resource, schema, { ...options, method: "POST", body }),
+  post: <TResponse, TBody = unknown>(
+    resource: string,
+    schema: z.ZodType<TResponse>,
+    body?: TBody,
+    options?: Omit<RequestInit, "method" | "body">
+  ) => safeFetch(resource, schema, { ...options, method: "POST", body }),
 
-	put: <TResponse, TBody = unknown>(
-		resource: string,
-		schema: z.ZodType<TResponse>,
-		body?: TBody,
-		options?: Omit<RequestInit, "method" | "body">,
-	) => safeFetch(resource, schema, { ...options, method: "PUT", body }),
+  put: <TResponse, TBody = unknown>(
+    resource: string,
+    schema: z.ZodType<TResponse>,
+    body?: TBody,
+    options?: Omit<RequestInit, "method" | "body">
+  ) => safeFetch(resource, schema, { ...options, method: "PUT", body }),
 
-	patch: <TResponse, TBody = unknown>(
-		resource: string,
-		schema: z.ZodType<TResponse>,
-		body?: TBody,
-		options?: Omit<RequestInit, "method" | "body">,
-	) => safeFetch(resource, schema, { ...options, method: "PATCH", body }),
+  patch: <TResponse, TBody = unknown>(
+    resource: string,
+    schema: z.ZodType<TResponse>,
+    body?: TBody,
+    options?: Omit<RequestInit, "method" | "body">
+  ) => safeFetch(resource, schema, { ...options, method: "PATCH", body }),
 
-	delete: <TResponse>(
-		resource: string,
-		schema: z.ZodType<TResponse>,
-		options?: Omit<RequestInit, "method" | "body">,
-	) => safeFetch(resource, schema, { ...options, method: "DELETE" }),
+  delete: <TResponse>(
+    resource: string,
+    schema: z.ZodType<TResponse>,
+    options?: Omit<RequestInit, "method" | "body">
+  ) => safeFetch(resource, schema, { ...options, method: "DELETE" }),
 };
