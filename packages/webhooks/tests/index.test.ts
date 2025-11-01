@@ -1,154 +1,620 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
+import { zodValidator } from "../src/adapters/standard-schema";
 import { WebhookRouter } from "../src/index";
-import type { NormalizedRequest } from "../src/types";
+import type { NormalizedRequest, SchemaValidator } from "../src/types";
 
 describe("WebhookRouter", () => {
 	const createMockRequest = (
 		path: string,
 		body: unknown,
+		method: "POST" | "GET" = "POST",
 	): NormalizedRequest => ({
-		method: "POST",
+		method,
 		path,
 		headers: new Headers(),
 		rawBody: Buffer.from(JSON.stringify(body)),
 	});
 
-	it("should handle webhook without schema validation", async () => {
-		interface WebhookMap {
-			"/test": { id: string };
-		}
+	describe("Basic routing", () => {
+		it("should handle webhook without schema validation", async () => {
+			interface WebhookMap {
+				"/test": { id: string };
+			}
 
-		const router = new WebhookRouter<WebhookMap>();
+			const router = new WebhookRouter<WebhookMap>();
 
-		router.register("/test", async ({ payload, ack }) => {
-			expect(payload).toEqual({ id: "123" });
-			return ack({ status: 200, body: "success" });
+			router.register("/test", async ({ payload, ack }) => {
+				expect(payload).toEqual({ id: "123" });
+				return ack({ status: 200, body: "success" });
+			});
+
+			const response = await router.handle(
+				createMockRequest("/test", { id: "123" }),
+			);
+
+			expect(response).toEqual({ status: 200, body: "success" });
 		});
 
-		const response = await router.handle(
-			createMockRequest("/test", { id: "123" }),
-		);
+		it("should return 404 for unregistered paths", async () => {
+			interface WebhookMap {
+				"/test": { id: string };
+			}
 
-		expect(response).toEqual({ status: 200, body: "success" });
-	});
+			const router = new WebhookRouter<WebhookMap>();
 
-	it("should validate payload with Zod schema", async () => {
-		interface WebhookMap {
-			"/payment": { id: string; amount: number };
-		}
+			const response = await router.handle(
+				createMockRequest("/unknown", { id: "123" }),
+			);
 
-		const router = new WebhookRouter<WebhookMap>();
-
-		const paymentSchema = z.object({
-			id: z.string(),
-			amount: z.number().positive(),
+			expect(response).toEqual({ status: 404, body: { error: "not found" } });
 		});
 
-		router.register("/payment", {
-			schema: paymentSchema,
-			handler: async ({ payload, ack }) => {
-				expect(payload).toEqual({ id: "pay_123", amount: 100 });
-				return ack({ status: 200, body: "payment processed" });
-			},
+		it("should handle multiple registered paths", async () => {
+			interface WebhookMap {
+				"/payment": { amount: number };
+				"/user": { name: string };
+				"/order": { id: string };
+			}
+
+			const router = new WebhookRouter<WebhookMap>();
+
+			router.register("/payment", async ({ payload, ack }) => {
+				return ack({ status: 200, body: { received: payload.amount } });
+			});
+
+			router.register("/user", async ({ payload, ack }) => {
+				return ack({
+					status: 200,
+					body: { greeting: `Hello ${payload.name}` },
+				});
+			});
+
+			router.register("/order", async ({ payload, ack }) => {
+				return ack({ status: 200, body: { orderId: payload.id } });
+			});
+
+			const paymentResponse = await router.handle(
+				createMockRequest("/payment", { amount: 100 }),
+			);
+			expect(paymentResponse).toEqual({
+				status: 200,
+				body: { received: 100 },
+			});
+
+			const userResponse = await router.handle(
+				createMockRequest("/user", { name: "Alice" }),
+			);
+			expect(userResponse).toEqual({
+				status: 200,
+				body: { greeting: "Hello Alice" },
+			});
+
+			const orderResponse = await router.handle(
+				createMockRequest("/order", { id: "order_123" }),
+			);
+			expect(orderResponse).toEqual({
+				status: 200,
+				body: { orderId: "order_123" },
+			});
 		});
 
-		const response = await router.handle(
-			createMockRequest("/payment", { id: "pay_123", amount: 100 }),
-		);
+		it("should handle request without explicit response", async () => {
+			interface WebhookMap {
+				"/silent": { data: string };
+			}
 
-		expect(response).toEqual({ status: 200, body: "payment processed" });
-	});
+			const router = new WebhookRouter<WebhookMap>();
 
-	it("should reject invalid payload when schema is provided", async () => {
-		interface WebhookMap {
-			"/payment": { id: string; amount: number };
-		}
+			router.register("/silent", async () => {
+				// No return statement - returns undefined
+				return undefined;
+			});
 
-		const router = new WebhookRouter<WebhookMap>();
+			const response = await router.handle(
+				createMockRequest("/silent", { data: "test" }),
+			);
 
-		const paymentSchema = z.object({
-			id: z.string(),
-			amount: z.number().positive(),
+			expect(response).toEqual({ status: 200, body: "ok" });
 		});
 
-		router.register("/payment", {
-			schema: paymentSchema,
-			handler: async ({ ack }) => {
+		it("should preserve request metadata in handler", async () => {
+			interface WebhookMap {
+				"/metadata": { value: string };
+			}
+
+			const router = new WebhookRouter<WebhookMap>();
+
+			router.register("/metadata", async ({ req, ack }) => {
+				expect(req.method).toBe("POST");
+				expect(req.path).toBe("/metadata");
+				expect(req.headers).toBeInstanceOf(Headers);
+				expect(req.rawBody).toBeInstanceOf(Buffer);
+				expect(req.json).toBeDefined();
 				return ack({ status: 200 });
-			},
+			});
+
+			await router.handle(createMockRequest("/metadata", { value: "test" }));
 		});
-
-		const response = await router.handle(
-			createMockRequest("/payment", { id: "pay_123", amount: -100 }),
-		);
-
-		expect(response.status).toBe(400);
-		expect(response.body).toHaveProperty("error", "validation failed");
-		expect(response.body).toHaveProperty("issues");
 	});
 
-	it("should reject payload with missing required fields", async () => {
-		interface WebhookMap {
-			"/user": { id: string; email: string };
-		}
+	describe("Schema validation with Zod", () => {
+		it("should validate payload with Zod schema", async () => {
+			interface WebhookMap {
+				"/payment": { id: string; amount: number };
+			}
 
-		const router = new WebhookRouter<WebhookMap>();
+			const router = new WebhookRouter<WebhookMap>();
 
-		const userSchema = z.object({
-			id: z.string(),
-			email: z.string().email(),
+			const paymentSchema = z.object({
+				id: z.string(),
+				amount: z.number().positive(),
+			});
+
+			router.register("/payment", {
+				schema: zodValidator(paymentSchema),
+				handler: async ({ payload, ack }) => {
+					expect(payload).toEqual({ id: "pay_123", amount: 100 });
+					return ack({ status: 200, body: "payment processed" });
+				},
+			});
+
+			const response = await router.handle(
+				createMockRequest("/payment", { id: "pay_123", amount: 100 }),
+			);
+
+			expect(response).toEqual({ status: 200, body: "payment processed" });
 		});
 
-		router.register("/user", {
-			schema: userSchema,
-			handler: async ({ ack }) => {
+		it("should reject invalid payload when schema is provided", async () => {
+			interface WebhookMap {
+				"/payment": { id: string; amount: number };
+			}
+
+			const router = new WebhookRouter<WebhookMap>();
+
+			const paymentSchema = z.object({
+				id: z.string(),
+				amount: z.number().positive(),
+			});
+
+			router.register("/payment", {
+				schema: zodValidator(paymentSchema),
+				handler: async ({ ack }) => {
+					return ack({ status: 200 });
+				},
+			});
+
+			const response = await router.handle(
+				createMockRequest("/payment", { id: "pay_123", amount: -100 }),
+			);
+
+			expect(response.status).toBe(400);
+			expect(response.body).toHaveProperty("error", "validation failed");
+			expect(response.body).toHaveProperty("issues");
+		});
+
+		it("should reject payload with missing required fields", async () => {
+			interface WebhookMap {
+				"/user": { id: string; email: string };
+			}
+
+			const router = new WebhookRouter<WebhookMap>();
+
+			const userSchema = z.object({
+				id: z.string(),
+				email: z.string().email(),
+			});
+
+			router.register("/user", {
+				schema: zodValidator(userSchema),
+				handler: async ({ ack }) => {
+					return ack({ status: 200 });
+				},
+			});
+
+			const response = await router.handle(
+				createMockRequest("/user", { id: "123" }),
+			);
+
+			expect(response.status).toBe(400);
+			expect(response.body).toHaveProperty("error", "validation failed");
+		});
+
+		it("should validate complex nested schemas", async () => {
+			interface WebhookMap {
+				"/order": {
+					id: string;
+					items: Array<{ sku: string; quantity: number }>;
+					customer: { email: string; name: string };
+				};
+			}
+
+			const router = new WebhookRouter<WebhookMap>();
+
+			const orderSchema = z.object({
+				id: z.string(),
+				items: z.array(
+					z.object({
+						sku: z.string(),
+						quantity: z.number().int().positive(),
+					}),
+				),
+				customer: z.object({
+					email: z.string().email(),
+					name: z.string().min(1),
+				}),
+			});
+
+			router.register("/order", {
+				schema: zodValidator(orderSchema),
+				handler: async ({ payload, ack }) => {
+					expect(payload.items).toHaveLength(2);
+					expect(payload.customer.email).toBe("test@example.com");
+					return ack({ status: 200 });
+				},
+			});
+
+			const validOrder = {
+				id: "order_123",
+				items: [
+					{ sku: "WIDGET-1", quantity: 2 },
+					{ sku: "GADGET-5", quantity: 1 },
+				],
+				customer: {
+					email: "test@example.com",
+					name: "John Doe",
+				},
+			};
+
+			const response = await router.handle(
+				createMockRequest("/order", validOrder),
+			);
+
+			expect(response.status).toBe(200);
+		});
+
+		it("should transform data with Zod transforms", async () => {
+			interface WebhookMap {
+				"/data": { value: number };
+			}
+
+			const router = new WebhookRouter<WebhookMap>();
+
+			const schema = z.object({
+				value: z.string().transform((val) => Number.parseInt(val, 10)),
+			});
+
+			router.register("/data", {
+				schema: zodValidator(schema),
+				handler: async ({ payload, ack }) => {
+					expect(typeof payload.value).toBe("number");
+					expect(payload.value).toBe(42);
+					return ack({ status: 200 });
+				},
+			});
+
+			const response = await router.handle(
+				createMockRequest("/data", { value: "42" }),
+			);
+
+			expect(response.status).toBe(200);
+		});
+	});
+
+	describe("Custom schema validator", () => {
+		it("should work with custom schema validator", async () => {
+			interface WebhookMap {
+				"/custom": { value: number };
+			}
+
+			const router = new WebhookRouter<WebhookMap>();
+
+			// Custom validator that ensures value is between 1 and 100
+			const customValidator: SchemaValidator<{ value: number }> = {
+				validate: (data: unknown) => {
+					const obj = data as { value?: unknown };
+					if (
+						typeof obj.value !== "number" ||
+						obj.value < 1 ||
+						obj.value > 100
+					) {
+						return {
+							success: false,
+							errors: [
+								{
+									path: ["value"],
+									message: "Value must be a number between 1 and 100",
+								},
+							],
+						};
+					}
+					return {
+						success: true,
+						data: { value: obj.value },
+					};
+				},
+			};
+
+			router.register("/custom", {
+				schema: customValidator,
+				handler: async ({ payload, ack }) => {
+					expect(payload.value).toBe(50);
+					return ack({ status: 200 });
+				},
+			});
+
+			const validResponse = await router.handle(
+				createMockRequest("/custom", { value: 50 }),
+			);
+			expect(validResponse.status).toBe(200);
+
+			const invalidResponse = await router.handle(
+				createMockRequest("/custom", { value: 150 }),
+			);
+			expect(invalidResponse.status).toBe(400);
+			expect(invalidResponse.body).toHaveProperty("error", "validation failed");
+		});
+
+		it("should support async validators", async () => {
+			interface WebhookMap {
+				"/async": { id: string };
+			}
+
+			const router = new WebhookRouter<WebhookMap>();
+
+			// Async validator that simulates database check
+			const asyncValidator: SchemaValidator<{ id: string }> = {
+				validate: async (data: unknown) => {
+					const obj = data as { id?: unknown };
+
+					// Simulate async operation
+					await new Promise((resolve) => setTimeout(resolve, 10));
+
+					if (typeof obj.id !== "string" || !obj.id.startsWith("valid_")) {
+						return {
+							success: false,
+							errors: [
+								{
+									path: ["id"],
+									message: "ID must start with 'valid_'",
+								},
+							],
+						};
+					}
+
+					return {
+						success: true,
+						data: { id: obj.id },
+					};
+				},
+			};
+
+			router.register("/async", {
+				schema: asyncValidator,
+				handler: async ({ payload, ack }) => {
+					expect(payload.id).toBe("valid_123");
+					return ack({ status: 200 });
+				},
+			});
+
+			const validResponse = await router.handle(
+				createMockRequest("/async", { id: "valid_123" }),
+			);
+			expect(validResponse.status).toBe(200);
+
+			const invalidResponse = await router.handle(
+				createMockRequest("/async", { id: "invalid_123" }),
+			);
+			expect(invalidResponse.status).toBe(400);
+		});
+	});
+
+	describe("Request verification", () => {
+		it("should work with custom verify function", async () => {
+			interface WebhookMap {
+				"/secure": { data: string };
+			}
+
+			let verifyWasCalled = false;
+
+			const router = new WebhookRouter<WebhookMap>({
+				verify: async (req) => {
+					verifyWasCalled = true;
+					expect(req.path).toBe("/secure");
+				},
+			});
+
+			router.register("/secure", async ({ ack }) => {
 				return ack({ status: 200 });
-			},
+			});
+
+			await router.handle(createMockRequest("/secure", { data: "test" }));
+
+			expect(verifyWasCalled).toBe(true);
 		});
 
-		const response = await router.handle(
-			createMockRequest("/user", { id: "123" }),
-		);
+		it("should run verify before schema validation", async () => {
+			interface WebhookMap {
+				"/verified": { value: number };
+			}
 
-		expect(response.status).toBe(400);
-		expect(response.body).toHaveProperty("error", "validation failed");
+			const callOrder: string[] = [];
+
+			const router = new WebhookRouter<WebhookMap>({
+				verify: async () => {
+					callOrder.push("verify");
+				},
+			});
+
+			const schema = z.object({ value: z.number() });
+
+			router.register("/verified", {
+				schema: zodValidator(schema),
+				handler: async ({ ack }) => {
+					callOrder.push("handler");
+					return ack({ status: 200 });
+				},
+			});
+
+			await router.handle(createMockRequest("/verified", { value: 42 }));
+
+			expect(callOrder).toEqual(["verify", "handler"]);
+		});
+
+		it("should support async verify functions", async () => {
+			interface WebhookMap {
+				"/async-verify": { data: string };
+			}
+
+			const router = new WebhookRouter<WebhookMap>({
+				verify: async (req) => {
+					await new Promise((resolve) => setTimeout(resolve, 10));
+					expect(req.path).toBe("/async-verify");
+				},
+			});
+
+			router.register("/async-verify", async ({ ack }) => {
+				return ack({ status: 200 });
+			});
+
+			const response = await router.handle(
+				createMockRequest("/async-verify", { data: "test" }),
+			);
+
+			expect(response.status).toBe(200);
+		});
 	});
 
-	it("should return 404 for unregistered paths", async () => {
-		interface WebhookMap {
-			"/test": { id: string };
-		}
+	describe("Response handling", () => {
+		it("should support custom status codes", async () => {
+			interface WebhookMap {
+				"/created": { name: string };
+			}
 
-		const router = new WebhookRouter<WebhookMap>();
+			const router = new WebhookRouter<WebhookMap>();
 
-		const response = await router.handle(
-			createMockRequest("/unknown", { id: "123" }),
-		);
+			router.register("/created", async ({ ack }) => {
+				return ack({ status: 201, body: { created: true } });
+			});
 
-		expect(response).toEqual({ status: 404, body: { error: "not found" } });
+			const response = await router.handle(
+				createMockRequest("/created", { name: "test" }),
+			);
+
+			expect(response.status).toBe(201);
+			expect(response.body).toEqual({ created: true });
+		});
+
+		it("should support custom headers", async () => {
+			interface WebhookMap {
+				"/headers": { data: string };
+			}
+
+			const router = new WebhookRouter<WebhookMap>();
+
+			const customHeaders = new Headers();
+			customHeaders.set("X-Custom-Header", "test-value");
+
+			router.register("/headers", async ({ ack }) => {
+				return ack({
+					status: 200,
+					body: "ok",
+					headers: customHeaders,
+				});
+			});
+
+			const response = await router.handle(
+				createMockRequest("/headers", { data: "test" }),
+			);
+
+			expect(response.status).toBe(200);
+			expect(response.headers).toBe(customHeaders);
+		});
+
+		it("should handle different body types", async () => {
+			interface WebhookMap {
+				"/string": { data: string };
+				"/object": { data: string };
+				"/number": { data: string };
+			}
+
+			const router = new WebhookRouter<WebhookMap>();
+
+			router.register("/string", async ({ ack }) => {
+				return ack({ status: 200, body: "plain text" });
+			});
+
+			router.register("/object", async ({ ack }) => {
+				return ack({ status: 200, body: { key: "value" } });
+			});
+
+			router.register("/number", async ({ ack }) => {
+				return ack({ status: 200, body: 42 });
+			});
+
+			const stringResponse = await router.handle(
+				createMockRequest("/string", { data: "test" }),
+			);
+			expect(stringResponse.body).toBe("plain text");
+
+			const objectResponse = await router.handle(
+				createMockRequest("/object", { data: "test" }),
+			);
+			expect(objectResponse.body).toEqual({ key: "value" });
+
+			const numberResponse = await router.handle(
+				createMockRequest("/number", { data: "test" }),
+			);
+			expect(numberResponse.body).toBe(42);
+		});
 	});
 
-	it("should work with custom verify function", async () => {
-		interface WebhookMap {
-			"/secure": { data: string };
-		}
+	describe("Error handling", () => {
+		it("should handle malformed JSON gracefully", async () => {
+			interface WebhookMap {
+				"/json": { data: string };
+			}
 
-		let verifyWasCalled = false;
+			const router = new WebhookRouter<WebhookMap>();
 
-		const router = new WebhookRouter<WebhookMap>({
-			verify: async (req) => {
-				verifyWasCalled = true;
-				expect(req.path).toBe("/secure");
-			},
+			router.register("/json", async ({ payload, ack }) => {
+				expect(payload).toBeUndefined();
+				return ack({ status: 200 });
+			});
+
+			const malformedRequest: NormalizedRequest = {
+				method: "POST",
+				path: "/json",
+				headers: new Headers(),
+				rawBody: Buffer.from("not valid json{"),
+			};
+
+			const response = await router.handle(malformedRequest);
+			expect(response.status).toBe(200);
 		});
 
-		router.register("/secure", async ({ ack }) => {
-			return ack({ status: 200 });
+		it("should handle empty request body", async () => {
+			interface WebhookMap {
+				"/empty": { data?: string };
+			}
+
+			const router = new WebhookRouter<WebhookMap>();
+
+			router.register("/empty", async ({ payload, ack }) => {
+				expect(payload).toBeUndefined();
+				return ack({ status: 200 });
+			});
+
+			const emptyRequest: NormalizedRequest = {
+				method: "POST",
+				path: "/empty",
+				headers: new Headers(),
+				rawBody: Buffer.from(""),
+			};
+
+			const response = await router.handle(emptyRequest);
+			expect(response.status).toBe(200);
 		});
-
-		await router.handle(createMockRequest("/secure", { data: "test" }));
-
-		expect(verifyWasCalled).toBe(true);
 	});
 });
