@@ -63,7 +63,7 @@ const response = await router.handle(incomingRequest);
 
 ```typescript
 import { WebhookRouter } from "@zap-studio/webhooks";
-import { zodValidator } from "@zap-studio/webhooks/adapters/validators";
+import { zodValidator } from "@zap-studio/webhooks/validators";
 import { z } from "zod";
 
 type WebhookMap = {
@@ -466,7 +466,7 @@ const router = new WebhookRouter({
 ### Zod (Recommended)
 
 ```typescript
-import { zodValidator } from "@zap-studio/webhooks/adapters/validators";
+import { zodValidator } from "@zap-studio/webhooks/validators";
 import { z } from "zod";
 
 const schema = z.object({
@@ -490,7 +490,7 @@ router.register("/order", {
 ### Yup
 
 ```typescript
-import { yupValidator } from "@zap-studio/webhooks/adapters/validators";
+import { yupValidator } from "@zap-studio/webhooks/validators";
 import * as yup from "yup";
 
 const schema = yup.object({
@@ -509,7 +509,7 @@ router.register("/payment", {
 ### Valibot
 
 ```typescript
-import { valibotValidator } from "@zap-studio/webhooks/adapters/validators";
+import { valibotValidator } from "@zap-studio/webhooks/validators";
 import * as v from "valibot";
 
 const schema = v.object({
@@ -528,7 +528,7 @@ router.register("/payment", {
 ### ArkType
 
 ```typescript
-import { arktypeValidator } from "@zap-studio/webhooks/adapters/validators";
+import { arktypeValidator } from "@zap-studio/webhooks/validators";
 import { type } from "arktype";
 
 const schema = type({
