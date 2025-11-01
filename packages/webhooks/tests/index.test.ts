@@ -617,4 +617,601 @@ describe("WebhookRouter", () => {
 			expect(response.status).toBe(200);
 		});
 	});
+
+	describe("Lifecycle hooks", () => {
+		describe("Global before hooks", () => {
+			it("should execute before hooks before handler", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				const callOrder: string[] = [];
+
+				const router = new WebhookRouter<WebhookMap>({
+					before: async (req) => {
+						callOrder.push("before");
+						expect(req.path).toBe("/test");
+					},
+				});
+
+				router.register("/test", async ({ ack }) => {
+					callOrder.push("handler");
+					return ack({ status: 200 });
+				});
+
+				await router.handle(createMockRequest("/test", { value: "test" }));
+
+				expect(callOrder).toEqual(["before", "handler"]);
+			});
+
+			it("should execute multiple before hooks in order", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				const callOrder: string[] = [];
+
+				const router = new WebhookRouter<WebhookMap>({
+					before: [
+						async () => {
+							callOrder.push("before-1");
+						},
+						async () => {
+							callOrder.push("before-2");
+						},
+						async () => {
+							callOrder.push("before-3");
+						},
+					],
+				});
+
+				router.register("/test", async ({ ack }) => {
+					callOrder.push("handler");
+					return ack({ status: 200 });
+				});
+
+				await router.handle(createMockRequest("/test", { value: "test" }));
+
+				expect(callOrder).toEqual([
+					"before-1",
+					"before-2",
+					"before-3",
+					"handler",
+				]);
+			});
+
+			it("should allow before hooks to enrich request", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				const router = new WebhookRouter<WebhookMap>({
+					before: async (req) => {
+						(req as { metadata?: { timestamp: number } }).metadata = {
+							timestamp: Date.now(),
+						};
+					},
+				});
+
+				router.register("/test", async ({ req, ack }) => {
+					expect(
+						(req as { metadata?: { timestamp: number } }).metadata,
+					).toBeDefined();
+					expect(
+						typeof (req as { metadata?: { timestamp: number } }).metadata
+							?.timestamp,
+					).toBe("number");
+					return ack({ status: 200 });
+				});
+
+				await router.handle(createMockRequest("/test", { value: "test" }));
+			});
+
+			it("should stop execution if before hook throws", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				let handlerCalled = false;
+
+				const router = new WebhookRouter<WebhookMap>({
+					before: async () => {
+						throw new Error("Before hook error");
+					},
+					onError: async (error) => {
+						return { status: 400, body: { error: error.message } };
+					},
+				});
+
+				router.register("/test", async ({ ack }) => {
+					handlerCalled = true;
+					return ack({ status: 200 });
+				});
+
+				const response = await router.handle(
+					createMockRequest("/test", { value: "test" }),
+				);
+
+				expect(handlerCalled).toBe(false);
+				expect(response.status).toBe(400);
+				expect(response.body).toEqual({ error: "Before hook error" });
+			});
+		});
+
+		describe("Global after hooks", () => {
+			it("should execute after hooks after handler", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				const callOrder: string[] = [];
+
+				const router = new WebhookRouter<WebhookMap>({
+					after: async (req, res) => {
+						callOrder.push("after");
+						expect(req.path).toBe("/test");
+						expect(res.status).toBe(200);
+					},
+				});
+
+				router.register("/test", async ({ ack }) => {
+					callOrder.push("handler");
+					return ack({ status: 200 });
+				});
+
+				await router.handle(createMockRequest("/test", { value: "test" }));
+
+				expect(callOrder).toEqual(["handler", "after"]);
+			});
+
+			it("should execute multiple after hooks in order", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				const callOrder: string[] = [];
+
+				const router = new WebhookRouter<WebhookMap>({
+					after: [
+						async () => {
+							callOrder.push("after-1");
+						},
+						async () => {
+							callOrder.push("after-2");
+						},
+						async () => {
+							callOrder.push("after-3");
+						},
+					],
+				});
+
+				router.register("/test", async ({ ack }) => {
+					callOrder.push("handler");
+					return ack({ status: 200 });
+				});
+
+				await router.handle(createMockRequest("/test", { value: "test" }));
+
+				expect(callOrder).toEqual(["handler", "after-1", "after-2", "after-3"]);
+			});
+
+			it("should receive response in after hooks", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				const router = new WebhookRouter<WebhookMap>({
+					after: async (_req, res) => {
+						expect(res.status).toBe(201);
+						expect(res.body).toEqual({ result: "success" });
+					},
+				});
+
+				router.register("/test", async ({ ack }) => {
+					return ack({ status: 201, body: { result: "success" } });
+				});
+
+				await router.handle(createMockRequest("/test", { value: "test" }));
+			});
+
+			it("should not execute after hooks if handler throws", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				let afterCalled = false;
+
+				const router = new WebhookRouter<WebhookMap>({
+					after: async () => {
+						afterCalled = true;
+					},
+					onError: async () => {
+						return { status: 500, body: { error: "Handler error" } };
+					},
+				});
+
+				router.register("/test", async () => {
+					throw new Error("Handler error");
+				});
+
+				await router.handle(createMockRequest("/test", { value: "test" }));
+
+				expect(afterCalled).toBe(false);
+			});
+		});
+
+		describe("Global onError hook", () => {
+			it("should execute onError hook when handler throws", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				let errorHookCalled = false;
+
+				const router = new WebhookRouter<WebhookMap>({
+					onError: async (error, req) => {
+						errorHookCalled = true;
+						expect(error.message).toBe("Test error");
+						expect(req.path).toBe("/test");
+						return { status: 500, body: { error: error.message } };
+					},
+				});
+
+				router.register("/test", async () => {
+					throw new Error("Test error");
+				});
+
+				const response = await router.handle(
+					createMockRequest("/test", { value: "test" }),
+				);
+
+				expect(errorHookCalled).toBe(true);
+				expect(response.status).toBe(500);
+				expect(response.body).toEqual({ error: "Test error" });
+			});
+
+			it("should execute onError hook when verify throws", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				let errorHookCalled = false;
+
+				const router = new WebhookRouter<WebhookMap>({
+					verify: async () => {
+						throw new Error("Verification failed");
+					},
+					onError: async (error) => {
+						errorHookCalled = true;
+						expect(error.message).toBe("Verification failed");
+						return { status: 401, body: { error: "Unauthorized" } };
+					},
+				});
+
+				router.register("/test", async ({ ack }) => {
+					return ack({ status: 200 });
+				});
+
+				const response = await router.handle(
+					createMockRequest("/test", { value: "test" }),
+				);
+
+				expect(errorHookCalled).toBe(true);
+				expect(response.status).toBe(401);
+			});
+
+			it("should execute onError hook when before hook throws", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				let errorHookCalled = false;
+
+				const router = new WebhookRouter<WebhookMap>({
+					before: async () => {
+						throw new Error("Before hook error");
+					},
+					onError: async (error) => {
+						errorHookCalled = true;
+						return { status: 400, body: { error: error.message } };
+					},
+				});
+
+				router.register("/test", async ({ ack }) => {
+					return ack({ status: 200 });
+				});
+
+				const response = await router.handle(
+					createMockRequest("/test", { value: "test" }),
+				);
+
+				expect(errorHookCalled).toBe(true);
+				expect(response.status).toBe(400);
+			});
+
+			it("should use default error response if onError returns undefined", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				const router = new WebhookRouter<WebhookMap>({
+					onError: async () => {
+						// Return undefined to use default error response
+						return undefined;
+					},
+				});
+
+				router.register("/test", async () => {
+					throw new Error("Custom error");
+				});
+
+				const response = await router.handle(
+					createMockRequest("/test", { value: "test" }),
+				);
+
+				expect(response.status).toBe(500);
+				expect(response.body).toEqual({ error: "Custom error" });
+			});
+
+			it("should handle different error types", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				const router = new WebhookRouter<WebhookMap>({
+					onError: async (error) => {
+						if (error.message === "Rate limit exceeded") {
+							return { status: 429, body: { error: "Too many requests" } };
+						}
+						if (error.message === "Unauthorized") {
+							return { status: 403, body: { error: "Forbidden" } };
+						}
+						return { status: 500, body: { error: "Internal error" } };
+					},
+				});
+
+				router.register("/test", async () => {
+					throw new Error("Rate limit exceeded");
+				});
+
+				const response = await router.handle(
+					createMockRequest("/test", { value: "test" }),
+				);
+
+				expect(response.status).toBe(429);
+				expect(response.body).toEqual({ error: "Too many requests" });
+			});
+		});
+
+		describe("Route-level hooks", () => {
+			it("should execute route-level before hooks after global before hooks", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				const callOrder: string[] = [];
+
+				const router = new WebhookRouter<WebhookMap>({
+					before: async () => {
+						callOrder.push("global-before");
+					},
+				});
+
+				router.register("/test", {
+					before: async () => {
+						callOrder.push("route-before");
+					},
+					handler: async ({ ack }) => {
+						callOrder.push("handler");
+						return ack({ status: 200 });
+					},
+				});
+
+				await router.handle(createMockRequest("/test", { value: "test" }));
+
+				expect(callOrder).toEqual(["global-before", "route-before", "handler"]);
+			});
+
+			it("should execute route-level after hooks before global after hooks", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				const callOrder: string[] = [];
+
+				const router = new WebhookRouter<WebhookMap>({
+					after: async () => {
+						callOrder.push("global-after");
+					},
+				});
+
+				router.register("/test", {
+					handler: async ({ ack }) => {
+						callOrder.push("handler");
+						return ack({ status: 200 });
+					},
+					after: async () => {
+						callOrder.push("route-after");
+					},
+				});
+
+				await router.handle(createMockRequest("/test", { value: "test" }));
+
+				expect(callOrder).toEqual(["handler", "route-after", "global-after"]);
+			});
+
+			it("should support multiple route-level hooks", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				const callOrder: string[] = [];
+
+				const router = new WebhookRouter<WebhookMap>();
+
+				router.register("/test", {
+					before: [
+						async () => {
+							callOrder.push("route-before-1");
+						},
+						async () => {
+							callOrder.push("route-before-2");
+						},
+					],
+					handler: async ({ ack }) => {
+						callOrder.push("handler");
+						return ack({ status: 200 });
+					},
+					after: [
+						async () => {
+							callOrder.push("route-after-1");
+						},
+						async () => {
+							callOrder.push("route-after-2");
+						},
+					],
+				});
+
+				await router.handle(createMockRequest("/test", { value: "test" }));
+
+				expect(callOrder).toEqual([
+					"route-before-1",
+					"route-before-2",
+					"handler",
+					"route-after-1",
+					"route-after-2",
+				]);
+			});
+
+			it("should handle single hook or array of hooks", async () => {
+				interface WebhookMap {
+					"/single": { value: string };
+					"/array": { value: string };
+				}
+
+				const callOrder: string[] = [];
+
+				const router = new WebhookRouter<WebhookMap>();
+
+				router.register("/single", {
+					before: async () => {
+						callOrder.push("single-before");
+					},
+					handler: async ({ ack }) => {
+						return ack({ status: 200 });
+					},
+					after: async () => {
+						callOrder.push("single-after");
+					},
+				});
+
+				router.register("/array", {
+					before: [
+						async () => {
+							callOrder.push("array-before-1");
+						},
+						async () => {
+							callOrder.push("array-before-2");
+						},
+					],
+					handler: async ({ ack }) => {
+						return ack({ status: 200 });
+					},
+					after: [
+						async () => {
+							callOrder.push("array-after-1");
+						},
+						async () => {
+							callOrder.push("array-after-2");
+						},
+					],
+				});
+
+				await router.handle(createMockRequest("/single", { value: "test" }));
+				await router.handle(createMockRequest("/array", { value: "test" }));
+
+				expect(callOrder).toEqual([
+					"single-before",
+					"single-after",
+					"array-before-1",
+					"array-before-2",
+					"array-after-1",
+					"array-after-2",
+				]);
+			});
+		});
+
+		describe("Complete hook execution order", () => {
+			it("should execute all hooks in correct order", async () => {
+				interface WebhookMap {
+					"/test": { value: string };
+				}
+
+				const callOrder: string[] = [];
+
+				const router = new WebhookRouter<WebhookMap>({
+					before: [
+						async () => {
+							callOrder.push("global-before-1");
+						},
+						async () => {
+							callOrder.push("global-before-2");
+						},
+					],
+					verify: async () => {
+						callOrder.push("verify");
+					},
+					after: [
+						async () => {
+							callOrder.push("global-after-1");
+						},
+						async () => {
+							callOrder.push("global-after-2");
+						},
+					],
+				});
+
+				const schema = z.object({ value: z.string() });
+
+				router.register("/test", {
+					before: [
+						async () => {
+							callOrder.push("route-before-1");
+						},
+						async () => {
+							callOrder.push("route-before-2");
+						},
+					],
+					schema: zodValidator(schema),
+					handler: async ({ ack }) => {
+						callOrder.push("handler");
+						return ack({ status: 200 });
+					},
+					after: [
+						async () => {
+							callOrder.push("route-after-1");
+						},
+						async () => {
+							callOrder.push("route-after-2");
+						},
+					],
+				});
+
+				await router.handle(createMockRequest("/test", { value: "test" }));
+
+				expect(callOrder).toEqual([
+					"global-before-1",
+					"global-before-2",
+					"route-before-1",
+					"route-before-2",
+					"verify",
+					"handler",
+					"route-after-1",
+					"route-after-2",
+					"global-after-1",
+					"global-after-2",
+				]);
+			});
+		});
+	});
 });
