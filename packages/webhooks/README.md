@@ -62,7 +62,7 @@ const response = await router.handle(incomingRequest);
 
 ```typescript
 import { WebhookRouter } from "@zap-studio/webhooks";
-import { zodValidator } from "@zap-studio/webhooks/adapters";
+import { zodValidator } from "@zap-studio/webhooks/adapters/validators";
 import { z } from "zod";
 
 interface WebhookMap {
@@ -91,12 +91,19 @@ router.register("/payment", {
 
 ```typescript
 import { WebhookRouter } from "@zap-studio/webhooks";
-import { createHmac } from "crypto";
 
+// Custom verify function
 const router = new WebhookRouter({
   verify: async (req) => {
     const signature = req.headers.get("x-webhook-signature");
-    const expectedSignature = createHmac("sha256", process.env.WEBHOOK_SECRET!)
+    if (!signature) {
+      throw new Error("Missing signature");
+    }
+    
+    // Example: HMAC signature verification
+    const crypto = await import("node:crypto");
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.WEBHOOK_SECRET!)
       .update(req.rawBody)
       .digest("hex");
     
@@ -112,7 +119,7 @@ const router = new WebhookRouter({
 ### Zod (Recommended)
 
 ```typescript
-import { zodValidator } from "@zap-studio/webhooks/adapters";
+import { zodValidator } from "@zap-studio/webhooks/adapters/validators";
 import { z } from "zod";
 
 const schema = z.object({
@@ -136,7 +143,7 @@ router.register("/order", {
 ### Yup
 
 ```typescript
-import { yupValidator } from "@zap-studio/webhooks/adapters";
+import { yupValidator } from "@zap-studio/webhooks/adapters/validators";
 import * as yup from "yup";
 
 const schema = yup.object({
@@ -155,7 +162,7 @@ router.register("/payment", {
 ### Valibot
 
 ```typescript
-import { valibotValidator } from "@zap-studio/webhooks/adapters";
+import { valibotValidator } from "@zap-studio/webhooks/adapters/validators";
 import * as v from "valibot";
 
 const schema = v.object({
@@ -174,7 +181,7 @@ router.register("/payment", {
 ### ArkType
 
 ```typescript
-import { arktypeValidator } from "@zap-studio/webhooks/adapters";
+import { arktypeValidator } from "@zap-studio/webhooks/adapters/validators";
 import { type } from "arktype";
 
 const schema = type({
