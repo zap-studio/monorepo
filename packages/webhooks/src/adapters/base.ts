@@ -1,7 +1,7 @@
 import type { NormalizedRequest, NormalizedResponse } from "../types";
 
 /** Adapter interface for framework-specific request/response handling */
-export type Adapter = {
+export interface Adapter {
   /** Convert framework request to the NormalizedRequest (must include raw body)
    * @example
    * ```ts
@@ -32,4 +32,25 @@ export type Adapter = {
    */
   // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here because it depends on the framework
   toFrameworkResponse(frameworkRes: any, res: NormalizedResponse): Promise<any>;
-};
+
+  /**
+   * Create a framework-specific route handler for the webhook router
+   *
+   * @example
+   * ```ts
+   * import express from "express";
+   *
+   * const app = express();
+   * const router = new WebhookRouter<WebhookMap>();
+   *
+   * app.post("/webhook/*", express.raw({ type: "application/json" }), adapter.handleWebhook(router));
+   * ```
+   */
+  // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here because it depends on the framework
+  handleWebhook(
+    router: {
+      handle(req: NormalizedRequest): Promise<NormalizedResponse>;
+    }
+  ): // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here because it depends on the framework
+  (req: any, res: any) => Promise<void>;
+}
