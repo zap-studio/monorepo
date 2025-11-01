@@ -87,3 +87,6 @@ export type WebhookHandler<T = unknown> = (ctx: {
 export type HandlerMap<TMap extends Record<string, any>> = {
 	[P in keyof TMap]: WebhookHandler<TMap[P]>;
 };
+
+/** Verification function for incoming requests */
+export type VerifyFn = (req: NormalizedRequest) => Promise<void> | void;
