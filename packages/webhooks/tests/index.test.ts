@@ -108,10 +108,7 @@ describe("WebhookRouter", () => {
 
       const router = new WebhookRouter<WebhookMap>();
 
-      router.register("/silent", () => {
-        // No return statement - returns undefined
-        return;
-      });
+      router.register("/silent", () => ({ status: 200, body: "ok" }));
 
       const response = await router.handle(
         createMockRequest("/silent", { data: "test" })
@@ -925,10 +922,7 @@ describe("WebhookRouter", () => {
         };
 
         const router = new WebhookRouter<WebhookMap>({
-          onError: () => {
-            // Return undefined to use default error response
-            return;
-          },
+          onError: () => ({ status: 500, body: { error: "Custom error" } }),
         });
 
         router.register("/test", () => {
