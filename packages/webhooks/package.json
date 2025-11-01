@@ -50,7 +50,6 @@
   "exports": {
     ".": "./dist/index.js",
     "./adapters/frameworks": "./dist/adapters/frameworks/index.js",
-    "./adapters/validators": "./dist/adapters/validators/index.js",
     "./adapters/validators/arktype": "./dist/adapters/validators/arktype.js",
     "./adapters/validators/valibot": "./dist/adapters/validators/valibot.js",
     "./adapters/validators/yup": "./dist/adapters/validators/yup.js",
