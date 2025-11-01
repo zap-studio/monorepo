@@ -3,6 +3,44 @@ import type { PlopTypes } from "@turbo/gen";
 const VALID_PACKAGE_NAME_REGEX = /^[a-z0-9-]+$/;
 const VALID_PATH_SEGMENT_REGEX = /^[a-z0-9-/]+$/;
 
+const validateSegment = (segment: string): string | true => {
+  if (segment.length === 0) {
+    return "Package path cannot have empty segments";
+  }
+  if (!VALID_PACKAGE_NAME_REGEX.test(segment)) {
+    return "Each path segment must contain only lowercase letters, numbers, and hyphens";
+  }
+  if (segment.startsWith("-") || segment.endsWith("-")) {
+    return "Path segments cannot start or end with a hyphen";
+  }
+  return true;
+};
+
+const validateNestedPackagePath = (input: string): string | true => {
+  if (!VALID_PATH_SEGMENT_REGEX.test(input)) {
+    return "Package path must contain only lowercase letters, numbers, hyphens, and forward slashes";
+  }
+
+  const segments = input.split("/");
+  for (const segment of segments) {
+    const result = validateSegment(segment);
+    if (result !== true) {
+      return result;
+    }
+  }
+  return true;
+};
+
+const validateSinglePackageName = (input: string): string | true => {
+  if (!VALID_PACKAGE_NAME_REGEX.test(input)) {
+    return "Package name must contain only lowercase letters, numbers, and hyphens";
+  }
+  if (input.startsWith("-") || input.endsWith("-")) {
+    return "Package name cannot start or end with a hyphen";
+  }
+  return true;
+};
+
 const validatePackageName = (input: string): string | true => {
   if (input.length === 0) {
     return "Package name is required";
@@ -11,35 +49,11 @@ const validatePackageName = (input: string): string | true => {
     return "Package name cannot include spaces";
   }
 
-  // Check if path contains slashes (nested package)
   if (input.includes("/")) {
-    if (!VALID_PATH_SEGMENT_REGEX.test(input)) {
-      return "Package path must contain only lowercase letters, numbers, hyphens, and forward slashes";
-    }
-    // Validate each segment
-    const segments = input.split("/");
-    for (const segment of segments) {
-      if (segment.length === 0) {
-        return "Package path cannot have empty segments";
-      }
-      if (!VALID_PACKAGE_NAME_REGEX.test(segment)) {
-        return "Each path segment must contain only lowercase letters, numbers, and hyphens";
-      }
-      if (segment.startsWith("-") || segment.endsWith("-")) {
-        return "Path segments cannot start or end with a hyphen";
-      }
-    }
-    return true;
+    return validateNestedPackagePath(input);
   }
 
-  // Single package name validation
-  if (!VALID_PACKAGE_NAME_REGEX.test(input)) {
-    return "Package name must contain only lowercase letters, numbers, and hyphens";
-  }
-  if (input.startsWith("-") || input.endsWith("-")) {
-    return "Package name cannot start or end with a hyphen";
-  }
-  return true;
+  return validateSinglePackageName(input);
 };
 
 const createStandardActions = (
