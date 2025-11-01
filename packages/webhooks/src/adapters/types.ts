@@ -1,4 +1,4 @@
-import type { NormalizedRequest, NormalizedResponse } from "../../types";
+import type { NormalizedRequest, NormalizedResponse } from "../types";
 
 /** Adapter interface for framework-specific request/response handling */
 export type Adapter = {
