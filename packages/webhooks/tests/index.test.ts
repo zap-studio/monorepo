@@ -2,9 +2,9 @@
 
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { zodValidator } from "../src/adapters/validators/zod";
 import { WebhookRouter } from "../src/index";
 import type { NormalizedRequest, SchemaValidator } from "../src/types";
+import { zodValidator } from "../src/validators/zod";
 
 describe("WebhookRouter", () => {
   const createMockRequest = (
