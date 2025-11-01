@@ -153,7 +153,7 @@ describe("constantTimeEquals", () => {
 		it("should handle very long strings", () => {
 			const str1 = "a".repeat(10000);
 			const str2 = "a".repeat(10000);
-			const str3 = "a".repeat(9999) + "b";
+			const str3 = `${"a".repeat(9999)}b`;
 
 			expect(constantTimeEquals(str1, str2)).toBe(true);
 			expect(constantTimeEquals(str1, str3)).toBe(false);
