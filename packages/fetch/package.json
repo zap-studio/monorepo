@@ -34,6 +34,7 @@
 		".": "./dist/index.js",
 		"./errors": "./dist/errors/index.js",
 		"./types": "./dist/types/index.js",
+		"./utils": "./dist/utils/index.js",
 		"./package.json": "./package.json"
 	},
 	"main": "./dist/index.js",
