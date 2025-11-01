@@ -1,0 +1,33 @@
+{
+	"name": "@zap-studio/webhooks",
+	"version": "0.0.0",
+	"type": "module",
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"CHANGELOG.md"
+	],
+	"scripts": {
+		"build": "tsdown --config tsdown.config.ts",
+		"check-types": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest --watch"
+	},
+	"devDependencies": {
+		"@types/node": "latest",
+		"@zap-studio/tsdown-config": "workspace:*",
+		"@zap-studio/typescript-config": "workspace:*",
+		"@zap-studio/vitest-config": "workspace:*",
+		"jsdom": "latest",
+		"tsdown": "latest",
+		"typescript": "latest",
+		"vitest": "latest"
+	},
+	"exports": {
+		".": "./src/index.ts"
+	}
+}
