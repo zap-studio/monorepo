@@ -28,6 +28,11 @@
 		"vitest": "latest"
 	},
 	"exports": {
-		".": "./src/index.ts"
-	}
+		".": "./dist/index.js",
+		"./types": "./dist/types/index.js",
+		"./package.json": "./package.json"
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts"
 }
