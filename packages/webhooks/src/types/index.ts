@@ -1,3 +1,5 @@
+import type { z } from "zod";
+
 /** HTTP methods */
 export type HTTPMethod =
 	| "GET"
@@ -38,6 +40,14 @@ export interface NormalizedResponse {
 	body?: unknown;
 	/** The headers of the response */
 	headers?: Headers;
+}
+
+/** Options for registering a webhook handler */
+export interface RegisterOptions<T> {
+	/** The handler function to process the webhook */
+	handler: WebhookHandler<T>;
+	/** Optional Zod schema to validate the webhook payload */
+	schema?: z.ZodType<T>;
 }
 
 /** The webhook handler function, responsible for processing incoming webhook events. */
