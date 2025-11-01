@@ -1,5 +1,3 @@
-import type { z } from "zod";
-
 /** HTTP methods */
 export type HTTPMethod =
 	| "GET"
@@ -42,12 +40,39 @@ export interface NormalizedResponse {
 	headers?: Headers;
 }
 
+/**
+ * Validation result for schema validation
+ */
+export interface ValidationResult<T> {
+	/** Whether validation succeeded */
+	success: boolean;
+	/** The validated data if successful */
+	data?: T;
+	/** Validation errors if failed */
+	errors?: Array<{
+		path?: string[];
+		message: string;
+	}>;
+}
+
+/**
+ * Generic schema validator interface that can be implemented by any validation library
+ */
+export interface SchemaValidator<T> {
+	/**
+	 * Validate data against the schema
+	 * @param data - The data to validate
+	 * @returns Validation result with success flag, data, and potential errors
+	 */
+	validate(data: unknown): ValidationResult<T> | Promise<ValidationResult<T>>;
+}
+
 /** Options for registering a webhook handler */
 export interface RegisterOptions<T> {
 	/** The handler function to process the webhook */
 	handler: WebhookHandler<T>;
-	/** Optional Zod schema to validate the webhook payload */
-	schema?: z.ZodType<T>;
+	/** Optional schema validator to validate the webhook payload */
+	schema?: SchemaValidator<T>;
 }
 
 /** The webhook handler function, responsible for processing incoming webhook events. */
