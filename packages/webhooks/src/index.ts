@@ -26,8 +26,8 @@ import type {
  * }
  *
  * interface MyWebhookMap {
- *   "/payment": PaymentPayload;
- *   "/subscription": SubscriptionPayload;
+ *   "payment": PaymentPayload;
+ *   "subscription": SubscriptionPayload;
  * }
  *
  * const router = new WebhookRouter<MyWebhookMap>({
