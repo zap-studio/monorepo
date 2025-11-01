@@ -43,9 +43,9 @@ const validatePackageName = (input: string): string | true => {
 };
 
 const createStandardActions = (
-	directory: string,
-	templateDir: string,
-	additionalActions: PlopTypes.ActionType[] = [],
+  directory: string,
+  templateDir: string,
+  additionalActions: PlopTypes.ActionType[] = []
 ): PlopTypes.ActionType[] => {
 	const standardActions: PlopTypes.ActionType[] = [
 		{
@@ -65,20 +65,20 @@ const createStandardActions = (
 		},
 	];
 
-	return [...standardActions, ...additionalActions];
+  return [...standardActions, ...additionalActions];
 };
 
 type GeneratorConfig = {
-	directory: string;
-	description: string;
-	promptMessage: string;
-	additionalActions?: PlopTypes.ActionType[];
+  directory: string;
+  description: string;
+  promptMessage: string;
+  additionalActions?: PlopTypes.ActionType[];
 };
 
 export const createGenerator = (
-	plop: PlopTypes.NodePlopAPI,
-	name: string,
-	config: GeneratorConfig,
+  plop: PlopTypes.NodePlopAPI,
+  name: string,
+  config: GeneratorConfig
 ): void => {
 	plop.setGenerator(name, {
 		description: config.description,
