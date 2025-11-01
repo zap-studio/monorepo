@@ -1,7 +1,9 @@
+import type { z } from "zod";
 import type {
 	HandlerMap,
 	NormalizedRequest,
 	NormalizedResponse,
+	RegisterOptions,
 } from "./types";
 
 /**
@@ -9,6 +11,8 @@ import type {
  *
  * @example
  * ```ts
+ * import { z } from "zod";
+ *
  * interface PaymentPayload {
  *   id: string;
  *   amount: number;
@@ -31,14 +35,24 @@ import type {
  *   },
  * });
  *
+ * // Without Zod validation
  * router.register("/payment", async ({ req, payload, ack }) => {
  *   // Handle payment webhook
  *   return ack({ status: 200, body: "Payment received" });
  * });
  *
- * router.register("/subscription", async ({ req, payload, ack }) => {
- *   // Handle subscription webhook
- *   return ack({ status: 200, body: "Subscription updated" });
+ * // With Zod validation
+ * const subscriptionSchema = z.object({
+ *   id: z.string(),
+ *   status: z.enum(["active", "canceled"]),
+ * });
+ *
+ * router.register("/subscription", {
+ *   schema: subscriptionSchema,
+ *   handler: async ({ req, payload, ack }) => {
+ *     // payload is now validated and typed
+ *     return ack({ status: 200, body: "Subscription updated" });
+ *   },
  * });
  *
  * // In your server handler
@@ -48,7 +62,10 @@ import type {
 
 // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
 export class WebhookRouter<TMap extends Record<string, any>> {
-	private handlers = new Map<string, HandlerMap<TMap>[string]>();
+	private handlers = new Map<
+		string,
+		{ handler: HandlerMap<TMap>[string]; schema?: z.ZodType }
+	>();
 	private verify?: (req: NormalizedRequest) => Promise<void> | void;
 
 	constructor(opts?: {
@@ -57,18 +74,57 @@ export class WebhookRouter<TMap extends Record<string, any>> {
 		if (opts?.verify) this.verify = opts.verify;
 	}
 
+	/**
+	 * Register a webhook handler for a specific path.
+	 *
+	 * @param path - The webhook path to handle
+	 * @param handlerOrOptions - Either a handler function or options object with handler and optional schema
+	 *
+	 * @example
+	 * ```ts
+	 * // Simple handler without validation
+	 * router.register("/webhook", async ({ payload, ack }) => {
+	 *   return ack({ status: 200 });
+	 * });
+	 *
+	 * // Handler with Zod validation
+	 * router.register("/webhook", {
+	 *   schema: z.object({ id: z.string() }),
+	 *   handler: async ({ payload, ack }) => {
+	 *     // payload.id is validated and typed as string
+	 *     return ack({ status: 200 });
+	 *   },
+	 * });
+	 * ```
+	 */
 	register<Path extends keyof TMap & string>(
 		path: Path,
-		handler: HandlerMap<TMap>[Path],
+		handlerOrOptions: HandlerMap<TMap>[Path] | RegisterOptions<TMap[Path]>,
 	) {
-		// biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
-		this.handlers.set(path, handler as any);
+		if (typeof handlerOrOptions === "function") {
+			// biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
+			this.handlers.set(path, { handler: handlerOrOptions as any });
+		} else {
+			this.handlers.set(path, {
+				// biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
+				handler: handlerOrOptions.handler as any,
+				schema: handlerOrOptions.schema,
+			});
+		}
 	}
 
+	/**
+	 * Handle an incoming request.
+	 *
+	 * @example
+	 * ```ts
+	 * const response = await router.handle(incomingRequest);
+	 * ```
+	 */
 	async handle(req: NormalizedRequest): Promise<NormalizedResponse> {
 		// strict path matching first (extendable to prefix or pattern)
-		const handler = this.handlers.get(req.path);
-		if (!handler) return { status: 404, body: { error: "not found" } };
+		const handlerEntry = this.handlers.get(req.path);
+		if (!handlerEntry) return { status: 404, body: { error: "not found" } };
 
 		if (this.verify) await this.verify(req);
 
@@ -82,13 +138,28 @@ export class WebhookRouter<TMap extends Record<string, any>> {
 		})();
 		req.json = parsedJson;
 
-		// call handler with typed payload = generic caller responsibility
-		// biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
-		const maybePayload = parsedJson as any;
-		const responded = await handler({
+		// Validate with Zod schema if provided
+		let validatedPayload = parsedJson;
+		if (handlerEntry.schema) {
+			const result = handlerEntry.schema.safeParse(parsedJson);
+			if (!result.success) {
+				return {
+					status: 400,
+					body: {
+						error: "validation failed",
+						issues: result.error.issues,
+					},
+				};
+			}
+			validatedPayload = result.data;
+		}
+
+		// call handler with typed payload
+		const responded = await handlerEntry.handler({
 			req,
-			payload: maybePayload,
-			ack: async (r) => ({
+			// biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
+			payload: validatedPayload as any,
+			ack: async (r?: Partial<NormalizedResponse>) => ({
 				status: r?.status ?? 200,
 				body: r?.body ?? "ok",
 				headers: r?.headers,
