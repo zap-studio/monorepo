@@ -1,9 +1,9 @@
-import type { z } from "zod";
 import type {
 	HandlerMap,
 	NormalizedRequest,
 	NormalizedResponse,
 	RegisterOptions,
+	SchemaValidator,
 } from "./types";
 
 /**
@@ -12,6 +12,7 @@ import type {
  * @example
  * ```ts
  * import { z } from "zod";
+ * import { zodValidator } from "@zap-studio/webhooks/adapters";
  *
  * interface PaymentPayload {
  *   id: string;
@@ -35,20 +36,20 @@ import type {
  *   },
  * });
  *
- * // Without Zod validation
+ * // Without schema validation
  * router.register("/payment", async ({ req, payload, ack }) => {
  *   // Handle payment webhook
  *   return ack({ status: 200, body: "Payment received" });
  * });
  *
- * // With Zod validation
+ * // With schema validation using Zod
  * const subscriptionSchema = z.object({
  *   id: z.string(),
  *   status: z.enum(["active", "canceled"]),
  * });
  *
  * router.register("/subscription", {
- *   schema: subscriptionSchema,
+ *   schema: zodValidator(subscriptionSchema),
  *   handler: async ({ req, payload, ack }) => {
  *     // payload is now validated and typed
  *     return ack({ status: 200, body: "Subscription updated" });
@@ -64,7 +65,7 @@ import type {
 export class WebhookRouter<TMap extends Record<string, any>> {
 	private handlers = new Map<
 		string,
-		{ handler: HandlerMap<TMap>[string]; schema?: z.ZodType }
+		{ handler: HandlerMap<TMap>[string]; schema?: SchemaValidator<unknown> }
 	>();
 	private verify?: (req: NormalizedRequest) => Promise<void> | void;
 
@@ -138,16 +139,16 @@ export class WebhookRouter<TMap extends Record<string, any>> {
 		})();
 		req.json = parsedJson;
 
-		// Validate with Zod schema if provided
+		// Validate with schema if provided
 		let validatedPayload = parsedJson;
 		if (handlerEntry.schema) {
-			const result = handlerEntry.schema.safeParse(parsedJson);
+			const result = await handlerEntry.schema.validate(parsedJson);
 			if (!result.success) {
 				return {
 					status: 400,
 					body: {
 						error: "validation failed",
-						issues: result.error.issues,
+						issues: result.errors,
 					},
 				};
 			}
