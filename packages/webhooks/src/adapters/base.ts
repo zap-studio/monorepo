@@ -46,7 +46,6 @@ export type Adapter = {
    * app.post("/webhook/*", express.raw({ type: "application/json" }), adapter.handleWebhook(router));
    * ```
    */
-  // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here because it depends on the framework
   handleWebhook(router: {
     handle(req: NormalizedRequest): Promise<NormalizedResponse>;
   }): // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here because it depends on the framework
