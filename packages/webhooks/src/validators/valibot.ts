@@ -1,4 +1,4 @@
-import type { SchemaValidator, ValidationResult } from "../../types";
+import type { SchemaValidator, ValidationResult } from "../types";
 
 /**
  * Example: Create a schema validator from a Valibot schema

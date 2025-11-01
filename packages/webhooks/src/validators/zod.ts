@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { SchemaValidator, ValidationResult } from "../../types";
+import type { SchemaValidator, ValidationResult } from "../types";
 
 /**
  * Create a schema validator from a Zod schema
