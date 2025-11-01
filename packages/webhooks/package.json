@@ -17,6 +17,26 @@
 		"test": "vitest run",
 		"test:watch": "vitest --watch"
 	},
+	"peerDependencies": {
+		"arktype": ">=2.0.0",
+		"valibot": ">=0.30.0",
+		"yup": ">=1.0.0",
+		"zod": ">=3.0.0"
+	},
+	"peerDependenciesMeta": {
+		"arktype": {
+			"optional": true
+		},
+		"valibot": {
+			"optional": true
+		},
+		"yup": {
+			"optional": true
+		},
+		"zod": {
+			"optional": true
+		}
+	},
 	"devDependencies": {
 		"@types/node": "latest",
 		"@zap-studio/tsdown-config": "workspace:*",
@@ -29,13 +49,11 @@
 	},
 	"exports": {
 		".": "./dist/index.js",
+		"./adapters": "./dist/adapters/index.js",
 		"./types": "./dist/types/index.js",
 		"./package.json": "./package.json"
 	},
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"dependencies": {
-		"zod": "^4.1.12"
-	}
+	"types": "./dist/index.d.ts"
 }
