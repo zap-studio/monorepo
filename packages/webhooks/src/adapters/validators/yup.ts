@@ -21,33 +21,33 @@ import type { SchemaValidator, ValidationResult } from "../../types";
  * ```
  */
 export function yupValidator<T>(
-	// biome-ignore lint/suspicious/noExplicitAny: Yup schema type
-	schema: any,
+  // biome-ignore lint/suspicious/noExplicitAny: Yup schema type
+  schema: any
 ): SchemaValidator<T> {
-	return {
-		validate: async (data: unknown): Promise<ValidationResult<T>> => {
-			try {
-				const validatedData = await schema.validate(data, {
-					abortEarly: false,
-				});
-				return {
-					success: true,
-					data: validatedData,
-				};
-			} catch (error) {
-				// biome-ignore lint/suspicious/noExplicitAny: Yup ValidationError type
-				const yupError = error as any;
-				return {
-					success: false,
-					errors: yupError.inner?.map(
-						// biome-ignore lint/suspicious/noExplicitAny: Yup error type
-						(err: any) => ({
-							path: err.path ? err.path.split(".") : [],
-							message: err.message,
-						}),
-					) || [{ message: yupError.message }],
-				};
-			}
-		},
-	};
+  return {
+    validate: async (data: unknown): Promise<ValidationResult<T>> => {
+      try {
+        const validatedData = await schema.validate(data, {
+          abortEarly: false,
+        });
+        return {
+          success: true,
+          data: validatedData,
+        };
+      } catch (error) {
+        // biome-ignore lint/suspicious/noExplicitAny: Yup ValidationError type
+        const yupError = error as any;
+        return {
+          success: false,
+          errors: yupError.inner?.map(
+            // biome-ignore lint/suspicious/noExplicitAny: Yup error type
+            (err: any) => ({
+              path: err.path ? err.path.split(".") : [],
+              message: err.message,
+            })
+          ) || [{ message: yupError.message }],
+        };
+      }
+    },
+  };
 }

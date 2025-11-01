@@ -21,30 +21,30 @@ import type { SchemaValidator, ValidationResult } from "../../types";
  * ```
  */
 export function arktypeValidator<T>(
-	// biome-ignore lint/suspicious/noExplicitAny: ArkType schema type
-	schema: any,
+  // biome-ignore lint/suspicious/noExplicitAny: ArkType schema type
+  schema: any
 ): SchemaValidator<T> {
-	return {
-		validate: (data: unknown): ValidationResult<T> => {
-			const result = schema(data);
+  return {
+    validate: (data: unknown): ValidationResult<T> => {
+      const result = schema(data);
 
-			if (result.problems) {
-				return {
-					success: false,
-					errors: result.problems.map(
-						// biome-ignore lint/suspicious/noExplicitAny: ArkType problem type
-						(problem: any) => ({
-							path: problem.path || [],
-							message: problem.message,
-						}),
-					),
-				};
-			}
+      if (result.problems) {
+        return {
+          success: false,
+          errors: result.problems.map(
+            // biome-ignore lint/suspicious/noExplicitAny: ArkType problem type
+            (problem: any) => ({
+              path: problem.path || [],
+              message: problem.message,
+            })
+          ),
+        };
+      }
 
-			return {
-				success: true,
-				data: result.data,
-			};
-		},
-	};
+      return {
+        success: true,
+        data: result.data,
+      };
+    },
+  };
 }

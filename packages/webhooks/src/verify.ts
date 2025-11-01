@@ -1,6 +1,8 @@
 import type { VerifyFn } from "./types";
 import { constantTimeEquals } from "./utils";
 
+const SIGNATURE_REGEX = /^sha256=/;
+
 /**
  * A factory function to create an HMAC verifier for incoming requests.
  *
@@ -22,32 +24,33 @@ import { constantTimeEquals } from "./utils";
  * ```
  */
 export function createHmacVerifier({
-	headerName,
-	secret,
-	algo = "sha256",
+  headerName,
+  secret,
+  algo = "sha256",
 }: {
-	headerName: string;
-	secret: string;
-	algo?: string;
+  headerName: string;
+  secret: string;
+  algo?: string;
 }): VerifyFn {
-	return async (req) => {
-		const sig = req.headers.get(headerName.toLowerCase()) || "";
-		if (!sig) {
-			throw Object.assign(new Error("missing signature"), {
-				name: "SignatureError",
-			});
-		}
+  return async (req) => {
+    const sig = req.headers.get(headerName.toLowerCase()) || "";
+    if (!sig) {
+      throw Object.assign(new Error("missing signature"), {
+        name: "SignatureError",
+      });
+    }
 
-		// compute HMAC of rawBody (it uses Node.js crypto module, so it works only in Node.js environment)
-		const crypto = await import("node:crypto");
-		const expected = crypto
-			.createHmac(algo, secret)
-			.update(req.rawBody)
-			.digest("hex");
+    // compute HMAC of rawBody (it uses Node.js crypto module, so it works only in Node.js environment)
+    const crypto = await import("node:crypto");
+    const expected = crypto
+      .createHmac(algo, secret)
+      .update(req.rawBody)
+      .digest("hex");
 
-		if (!constantTimeEquals(expected, sig.replace(/^sha256=/, "")))
-			throw Object.assign(new Error("invalid signature"), {
-				name: "SignatureError",
-			});
-	};
+    if (!constantTimeEquals(expected, sig.replace(SIGNATURE_REGEX, ""))) {
+      throw Object.assign(new Error("invalid signature"), {
+        name: "SignatureError",
+      });
+    }
+  };
 }

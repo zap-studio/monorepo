@@ -43,7 +43,7 @@ pnpm add arktype
 ```typescript
 import { WebhookRouter } from "@zap-studio/webhooks";
 
-interface WebhookMap {
+type WebhookMap = {
   "payment": { id: string; amount: number };
   "subscription": { id: string; status: "active" | "canceled" };
 }
@@ -66,7 +66,7 @@ import { WebhookRouter } from "@zap-studio/webhooks";
 import { zodValidator } from "@zap-studio/webhooks/adapters/validators";
 import { z } from "zod";
 
-interface WebhookMap {
+type WebhookMap = {
   "payment": { id: string; amount: number; currency: string };
 }
 
@@ -645,7 +645,7 @@ const response = await router.handle(normalizedRequest);
 ### `NormalizedRequest`
 
 ```typescript
-interface NormalizedRequest {
+type NormalizedRequest = {
   method: HTTPMethod;
   path: string;
   headers: Headers;
@@ -660,7 +660,7 @@ interface NormalizedRequest {
 ### `NormalizedResponse`
 
 ```typescript
-interface NormalizedResponse {
+type NormalizedResponse = {
   status: number;
   body?: unknown;
   headers?: Headers;
@@ -670,11 +670,11 @@ interface NormalizedResponse {
 ### `SchemaValidator<T>`
 
 ```typescript
-interface SchemaValidator<T> {
+type SchemaValidator<T> = {
   validate(data: unknown): ValidationResult<T> | Promise<ValidationResult<T>>;
 }
 
-interface ValidationResult<T> {
+type ValidationResult<T> = {
   success: boolean;
   data?: T;
   errors?: Array<{

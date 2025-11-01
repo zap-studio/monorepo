@@ -24,24 +24,24 @@ import type { SchemaValidator, ValidationResult } from "../../types";
  * ```
  */
 export function zodValidator<T>(schema: z.ZodType<T>): SchemaValidator<T> {
-	return {
-		validate: (data: unknown): ValidationResult<T> => {
-			const result = schema.safeParse(data);
+  return {
+    validate: (data: unknown): ValidationResult<T> => {
+      const result = schema.safeParse(data);
 
-			if (result.success) {
-				return {
-					success: true,
-					data: result.data,
-				};
-			}
+      if (result.success) {
+        return {
+          success: true,
+          data: result.data,
+        };
+      }
 
-			return {
-				success: false,
-				errors: result.error.issues.map((err) => ({
-					path: err.path.map(String),
-					message: err.message,
-				})),
-			};
-		},
-	};
+      return {
+        success: false,
+        errors: result.error.issues.map((err) => ({
+          path: err.path.map(String),
+          message: err.message,
+        })),
+      };
+    },
+  };
 }
