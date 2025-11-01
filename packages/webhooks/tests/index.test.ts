@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { zodValidator } from "../src/adapters/standard-schema";
+import { zodValidator } from "../src/adapters/validators";
 import { WebhookRouter } from "../src/index";
 import type { NormalizedRequest, SchemaValidator } from "../src/types";
 
