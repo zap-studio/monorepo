@@ -53,7 +53,8 @@
   },
   "exports": {
     ".": "./dist/index.js",
-    "./adapters/frameworks": "./dist/adapters/frameworks/index.js",
+    "./adapters/frameworks/express": "./dist/adapters/frameworks/express.js",
+    "./adapters/frameworks/types": "./dist/adapters/frameworks/types.js",
     "./adapters/validators/arktype": "./dist/adapters/validators/arktype.js",
     "./adapters/validators/valibot": "./dist/adapters/validators/valibot.js",
     "./adapters/validators/yup": "./dist/adapters/validators/yup.js",
