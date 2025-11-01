@@ -1,0 +1,71 @@
+{
+  "name": "@zap-studio/webhooks",
+  "version": "0.0.0",
+  "type": "module",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsdown --config tsdown.config.ts",
+    "check-types": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest --watch"
+  },
+  "peerDependencies": {
+    "arktype": ">=2.0.0",
+    "elysia": ">=0.28.0",
+    "express": ">=4.0.0",
+    "hono": ">=3.0.0",
+    "next": ">=12.0.0",
+    "valibot": ">=0.30.0",
+    "yup": ">=1.0.0",
+    "zod": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "arktype": {
+      "optional": true
+    },
+    "valibot": {
+      "optional": true
+    },
+    "yup": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.5",
+    "@types/node": "latest",
+    "@zap-studio/tsdown-config": "workspace:*",
+    "@zap-studio/typescript-config": "workspace:*",
+    "@zap-studio/vitest-config": "workspace:*",
+    "jsdom": "latest",
+    "tsdown": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./adapters/frameworks/express": "./dist/adapters/frameworks/express.js",
+    "./adapters/frameworks/types": "./dist/adapters/frameworks/types.js",
+    "./adapters/validators/arktype": "./dist/adapters/validators/arktype.js",
+    "./adapters/validators/valibot": "./dist/adapters/validators/valibot.js",
+    "./adapters/validators/yup": "./dist/adapters/validators/yup.js",
+    "./adapters/validators/zod": "./dist/adapters/validators/zod.js",
+    "./types": "./dist/types/index.js",
+    "./utils": "./dist/utils/index.js",
+    "./verify": "./dist/verify.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
