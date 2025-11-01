@@ -43,8 +43,8 @@ pnpm add arktype
 import { WebhookRouter } from "@zap-studio/webhooks";
 
 interface WebhookMap {
-  "/payment": { id: string; amount: number };
-  "/subscription": { id: string; status: "active" | "canceled" };
+  "payment": { id: string; amount: number };
+  "subscription": { id: string; status: "active" | "canceled" };
 }
 
 const router = new WebhookRouter<WebhookMap>();
@@ -66,7 +66,7 @@ import { zodValidator } from "@zap-studio/webhooks/adapters";
 import { z } from "zod";
 
 interface WebhookMap {
-  "/payment": { id: string; amount: number; currency: string };
+  "payment": { id: string; amount: number; currency: string };
 }
 
 const router = new WebhookRouter<WebhookMap>();
