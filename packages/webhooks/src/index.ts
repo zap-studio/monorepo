@@ -1,4 +1,7 @@
 import type {
+	AfterHook,
+	BeforeHook,
+	ErrorHook,
 	HandlerMap,
 	NormalizedRequest,
 	NormalizedResponse,
@@ -65,14 +68,36 @@ import type {
 export class WebhookRouter<TMap extends Record<string, any>> {
 	private handlers = new Map<
 		string,
-		{ handler: HandlerMap<TMap>[string]; schema?: SchemaValidator<unknown> }
+		{
+			handler: HandlerMap<TMap>[string];
+			schema?: SchemaValidator<unknown>;
+			before?: BeforeHook[];
+			after?: AfterHook[];
+		}
 	>();
 	private verify?: (req: NormalizedRequest) => Promise<void> | void;
+	private globalBeforeHooks: BeforeHook[] = [];
+	private globalAfterHooks: AfterHook[] = [];
+	private globalErrorHook?: ErrorHook;
 
 	constructor(opts?: {
 		verify?: (req: NormalizedRequest) => Promise<void> | void;
+		before?: BeforeHook | BeforeHook[];
+		after?: AfterHook | AfterHook[];
+		onError?: ErrorHook;
 	}) {
 		if (opts?.verify) this.verify = opts.verify;
+		if (opts?.before) {
+			this.globalBeforeHooks = Array.isArray(opts.before)
+				? opts.before
+				: [opts.before];
+		}
+		if (opts?.after) {
+			this.globalAfterHooks = Array.isArray(opts.after)
+				? opts.after
+				: [opts.after];
+		}
+		if (opts?.onError) this.globalErrorHook = opts.onError;
 	}
 
 	/**
@@ -96,6 +121,19 @@ export class WebhookRouter<TMap extends Record<string, any>> {
 	 *     return ack({ status: 200 });
 	 *   },
 	 * });
+	 *
+	 * // Handler with lifecycle hooks
+	 * router.register("/webhook", {
+	 *   before: [async (req) => {
+	 *     console.log("Route-specific before hook");
+	 *   }],
+	 *   handler: async ({ payload, ack }) => {
+	 *     return ack({ status: 200 });
+	 *   },
+	 *   after: [async (req, res) => {
+	 *     console.log("Route-specific after hook");
+	 *   }],
+	 * });
 	 * ```
 	 */
 	register<Path extends keyof TMap & string>(
@@ -106,10 +144,24 @@ export class WebhookRouter<TMap extends Record<string, any>> {
 			// biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
 			this.handlers.set(path, { handler: handlerOrOptions as any });
 		} else {
+			const beforeHooks = handlerOrOptions.before
+				? Array.isArray(handlerOrOptions.before)
+					? handlerOrOptions.before
+					: [handlerOrOptions.before]
+				: undefined;
+
+			const afterHooks = handlerOrOptions.after
+				? Array.isArray(handlerOrOptions.after)
+					? handlerOrOptions.after
+					: [handlerOrOptions.after]
+				: undefined;
+
 			this.handlers.set(path, {
 				// biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
 				handler: handlerOrOptions.handler as any,
 				schema: handlerOrOptions.schema,
+				before: beforeHooks,
+				after: afterHooks,
 			});
 		}
 	}
@@ -123,50 +175,95 @@ export class WebhookRouter<TMap extends Record<string, any>> {
 	 * ```
 	 */
 	async handle(req: NormalizedRequest): Promise<NormalizedResponse> {
-		// strict path matching first (extendable to prefix or pattern)
-		const handlerEntry = this.handlers.get(req.path);
-		if (!handlerEntry) return { status: 404, body: { error: "not found" } };
-
-		if (this.verify) await this.verify(req);
-
-		// try parse JSON safely
-		const parsedJson = (() => {
-			try {
-				return JSON.parse(req.rawBody.toString());
-			} catch {
-				return undefined;
+		try {
+			// Run global before hooks
+			for (const hook of this.globalBeforeHooks) {
+				await hook(req);
 			}
-		})();
-		req.json = parsedJson;
 
-		// Validate with schema if provided
-		let validatedPayload = parsedJson;
-		if (handlerEntry.schema) {
-			const result = await handlerEntry.schema.validate(parsedJson);
-			if (!result.success) {
-				return {
-					status: 400,
-					body: {
-						error: "validation failed",
-						issues: result.errors,
-					},
-				};
+			// strict path matching first (extendable to prefix or pattern)
+			const handlerEntry = this.handlers.get(req.path);
+			if (!handlerEntry) return { status: 404, body: { error: "not found" } };
+
+			// Run route-specific before hooks
+			if (handlerEntry.before) {
+				for (const hook of handlerEntry.before) {
+					await hook(req);
+				}
 			}
-			validatedPayload = result.data;
+
+			if (this.verify) await this.verify(req);
+
+			// try parse JSON safely
+			const parsedJson = (() => {
+				try {
+					return JSON.parse(req.rawBody.toString());
+				} catch {
+					return undefined;
+				}
+			})();
+			req.json = parsedJson;
+
+			// Validate with schema if provided
+			let validatedPayload = parsedJson;
+			if (handlerEntry.schema) {
+				const result = await handlerEntry.schema.validate(parsedJson);
+				if (!result.success) {
+					return {
+						status: 400,
+						body: {
+							error: "validation failed",
+							issues: result.errors,
+						},
+					};
+				}
+				validatedPayload = result.data;
+			}
+
+			// call handler with typed payload
+			const responded = await handlerEntry.handler({
+				req,
+				// biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
+				payload: validatedPayload as any,
+				ack: async (r?: Partial<NormalizedResponse>) => ({
+					status: r?.status ?? 200,
+					body: r?.body ?? "ok",
+					headers: r?.headers,
+				}),
+			});
+			const response: NormalizedResponse = responded ?? {
+				status: 200,
+				body: "ok",
+			};
+
+			// Run route-specific after hooks
+			if (handlerEntry.after) {
+				for (const hook of handlerEntry.after) {
+					await hook(req, response);
+				}
+			}
+
+			// Run global after hooks
+			for (const hook of this.globalAfterHooks) {
+				await hook(req, response);
+			}
+
+			return response;
+		} catch (error) {
+			// Handle errors through onError hook if provided
+			if (this.globalErrorHook) {
+				const errorResponse = await this.globalErrorHook(error as Error, req);
+				if (errorResponse) return errorResponse;
+			}
+
+			// Default error response
+			return {
+				status: 500,
+				body: {
+					error:
+						error instanceof Error ? error.message : "Internal server error",
+				},
+			};
 		}
-
-		// call handler with typed payload
-		const responded = await handlerEntry.handler({
-			req,
-			// biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
-			payload: validatedPayload as any,
-			ack: async (r?: Partial<NormalizedResponse>) => ({
-				status: r?.status ?? 200,
-				body: r?.body ?? "ok",
-				headers: r?.headers,
-			}),
-		});
-		if (!responded) return { status: 200, body: "ok" };
-		return responded as NormalizedResponse;
 	}
 }
