@@ -73,6 +73,10 @@ export interface RegisterOptions<T> {
 	handler: WebhookHandler<T>;
 	/** Optional schema validator to validate the webhook payload */
 	schema?: SchemaValidator<T>;
+	/** Hooks that run before request processing (after global before hooks) */
+	before?: BeforeHook | BeforeHook[];
+	/** Hooks that run after successful processing (before global after hooks) */
+	after?: AfterHook | AfterHook[];
 }
 
 /** The webhook handler function, responsible for processing incoming webhook events. */
@@ -90,3 +94,18 @@ export type HandlerMap<TMap extends Record<string, any>> = {
 
 /** Verification function for incoming requests */
 export type VerifyFn = (req: NormalizedRequest) => Promise<void> | void;
+
+/** Hook function that runs before request processing */
+export type BeforeHook = (req: NormalizedRequest) => Promise<void> | void;
+
+/** Hook function that runs after successful request processing */
+export type AfterHook = (
+	req: NormalizedRequest,
+	res: NormalizedResponse,
+) => Promise<void> | void;
+
+/** Hook function that runs when an error occurs */
+export type ErrorHook = (
+	error: Error,
+	req: NormalizedRequest,
+) => Promise<NormalizedResponse | undefined> | NormalizedResponse | undefined;
