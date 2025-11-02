@@ -1274,4 +1274,264 @@ describe("WebhookRouter", () => {
       );
     });
   });
+
+  describe("Path normalization (normalizePath)", () => {
+    it("should normalize simple relative paths", async () => {
+      type WebhookMap = {
+        simple: { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("simple", ({ req, ack }) => {
+        expect(req.path).toBe("/simple");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(createMockRequest("/simple", { data: "test" }));
+    });
+
+    it("should normalize paths without leading slash", async () => {
+      type WebhookMap = {
+        noslash: { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("noslash", ({ req, ack }) => {
+        expect(req.path).toBe("noslash");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(createMockRequest("noslash", { data: "test" }));
+    });
+
+    it("should extract pathname from full URL", async () => {
+      type WebhookMap = {
+        extracted: { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("extracted", ({ req, ack }) => {
+        expect(req.path).toBe("/extracted");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest("https://example.com/extracted", { data: "test" })
+      );
+    });
+
+    it("should strip /webhooks/ prefix from pathname", async () => {
+      type WebhookMap = {
+        stripped: { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("stripped", ({ req, ack }) => {
+        expect(req.path).toBe("/stripped");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest("/webhooks/stripped", { data: "test" })
+      );
+    });
+
+    it("should strip /webhooks/ prefix from full URL pathname", async () => {
+      type WebhookMap = {
+        fullstrip: { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("fullstrip", ({ req, ack }) => {
+        expect(req.path).toBe("/fullstrip");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest("https://example.com/webhooks/fullstrip", {
+          data: "test",
+        })
+      );
+    });
+
+    it("should handle paths with /webhooks/ in the middle", async () => {
+      type WebhookMap = {
+        "api/webhooks/event": { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("api/webhooks/event", ({ req, ack }) => {
+        expect(req.path).toBe("/api/webhooks/event");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest("/api/webhooks/event", { data: "test" })
+      );
+    });
+
+    it("should preserve query parameters in full URL", async () => {
+      type WebhookMap = {
+        withquery: { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("withquery", ({ req, ack }) => {
+        expect(req.path).toBe("/withquery");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest(
+          "https://example.com/webhooks/withquery?foo=bar&baz=qux",
+          { data: "test" }
+        )
+      );
+    });
+
+    it("should handle URL with hash fragment", async () => {
+      type WebhookMap = {
+        withhash: { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("withhash", ({ req, ack }) => {
+        expect(req.path).toBe("/withhash");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest("https://example.com/webhooks/withhash#section", {
+          data: "test",
+        })
+      );
+    });
+
+    it("should handle nested paths after /webhooks/ prefix", async () => {
+      type WebhookMap = {
+        "api/v1/events": { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("api/v1/events", ({ req, ack }) => {
+        expect(req.path).toBe("/api/v1/events");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest("/webhooks/api/v1/events", { data: "test" })
+      );
+    });
+
+    it("should handle URL with port number", async () => {
+      type WebhookMap = {
+        withport: { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("withport", ({ req, ack }) => {
+        expect(req.path).toBe("/withport");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest("https://example.com:8080/webhooks/withport", {
+          data: "test",
+        })
+      );
+    });
+
+    it("should handle URL with authentication", async () => {
+      type WebhookMap = {
+        withauth: { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("withauth", ({ req, ack }) => {
+        expect(req.path).toBe("/withauth");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest("https://user:pass@example.com/webhooks/withauth", {
+          data: "test",
+        })
+      );
+    });
+
+    it("should not strip /webhooks/ if it doesn't start with it", async () => {
+      type WebhookMap = {
+        "api/webhooks": { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("api/webhooks", ({ req, ack }) => {
+        expect(req.path).toBe("/api/webhooks");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(createMockRequest("/api/webhooks", { data: "test" }));
+    });
+
+    it("should handle root path", async () => {
+      type WebhookMap = {
+        "": { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("", ({ req, ack }) => {
+        expect(req.path).toBe("/");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(createMockRequest("/", { data: "test" }));
+    });
+
+    it("should handle /webhooks/ as root webhook path", async () => {
+      type WebhookMap = {
+        "": { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("", ({ req, ack }) => {
+        expect(req.path).toBe("/");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(createMockRequest("/webhooks/", { data: "test" }));
+    });
+
+    it("should handle encoded URL paths", async () => {
+      type WebhookMap = {
+        "with spaces": { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("with spaces", ({ req, ack }) => {
+        expect(req.path).toBe("/with%20spaces");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest("https://example.com/webhooks/with%20spaces", {
+          data: "test",
+        })
+      );
+    });
+  });
 });
