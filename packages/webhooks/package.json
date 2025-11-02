@@ -68,8 +68,6 @@
   "exports": {
     ".": "./dist/index.js",
     "./adapters/base": "./dist/adapters/base.js",
-    "./adapters/express": "./dist/adapters/express.js",
-    "./adapters/next": "./dist/adapters/next.js",
     "./types": "./dist/types/index.js",
     "./utils": "./dist/utils/index.js",
     "./validators/arktype": "./dist/validators/arktype.js",
