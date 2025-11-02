@@ -185,26 +185,7 @@ export class WebhookRouter<
    */
   async handle(req: NormalizedRequest): Promise<NormalizedResponse> {
     try {
-      let pathname = req.path;
-      try {
-        // Try to parse as URL (e.g. handles full URLs like https://example.com/webhooks/path -> /webhooks/path)
-        const url = new URL(req.path);
-        pathname = url.pathname;
-      } catch {
-        // Not a full URL, use the path as-is
-      }
-
-      // Strip /webhooks/ prefix (e.g. /webhooks/path -> /path)
-      const webhooksPrefix = "/webhooks/";
-      if (pathname.startsWith(webhooksPrefix)) {
-        pathname = pathname.slice(webhooksPrefix.length - 1); // Keep the leading slash
-      }
-      req.path = pathname;
-
-      // Normalize path by removing leading slash for handler matching (e.g. /path -> path)
-      const normalizedPath = pathname.startsWith("/")
-        ? pathname.slice(1)
-        : pathname;
+      const normalizedPath = this.normalizePath(req);
 
       const handlerEntry = this.handlers.get(normalizedPath);
       if (!handlerEntry) {
@@ -241,6 +222,31 @@ export class WebhookRouter<
     } catch (error) {
       return this.handleError(error, req);
     }
+  }
+
+  private normalizePath(req: NormalizedRequest): string {
+    let pathname = req.path;
+    try {
+      // Try to parse as URL (e.g. handles full URLs like https://example.com/webhooks/path -> /webhooks/path)
+      const url = new URL(req.path);
+      pathname = url.pathname;
+    } catch {
+      // Not a full URL, use the path as-is
+    }
+
+    // Strip /webhooks/ prefix (e.g. /webhooks/path -> /path)
+    const webhooksPrefix = "/webhooks/";
+    if (pathname.startsWith(webhooksPrefix)) {
+      pathname = pathname.slice(webhooksPrefix.length - 1); // Keep the leading slash
+    }
+    req.path = pathname;
+
+    // Normalize path by removing leading slash for handler matching (e.g. /path -> path)
+    const normalizedPath = pathname.startsWith("/")
+      ? pathname.slice(1)
+      : pathname;
+
+    return normalizedPath;
   }
 
   private async runGlobalBeforeHooks(req: NormalizedRequest): Promise<void> {
