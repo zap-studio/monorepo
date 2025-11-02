@@ -21,12 +21,12 @@ describe("WebhookRouter", () => {
   describe("Basic routing", () => {
     it("should handle webhook without schema validation", async () => {
       type WebhookMap = {
-        "/test": { id: string };
+        test: { id: string };
       };
 
       const router = new WebhookRouter<WebhookMap>();
 
-      router.register("/test", ({ payload, ack }) => {
+      router.register("test", ({ payload, ack }) => {
         expect(payload).toEqual({ id: "123" });
         return ack({ status: 200, body: "success" });
       });
@@ -40,7 +40,7 @@ describe("WebhookRouter", () => {
 
     it("should return 404 for unregistered paths", async () => {
       type WebhookMap = {
-        "/test": { id: string };
+        test: { id: string };
       };
 
       const router = new WebhookRouter<WebhookMap>();
@@ -54,25 +54,25 @@ describe("WebhookRouter", () => {
 
     it("should handle multiple registered paths", async () => {
       type WebhookMap = {
-        "/payment": { amount: number };
-        "/user": { name: string };
-        "/order": { id: string };
+        payment: { amount: number };
+        user: { name: string };
+        order: { id: string };
       };
 
       const router = new WebhookRouter<WebhookMap>();
 
-      router.register("/payment", ({ payload, ack }) =>
+      router.register("payment", ({ payload, ack }) =>
         ack({ status: 200, body: { received: payload.amount } })
       );
 
-      router.register("/user", ({ payload, ack }) =>
+      router.register("user", ({ payload, ack }) =>
         ack({
           status: 200,
           body: { greeting: `Hello ${payload.name}` },
         })
       );
 
-      router.register("/order", ({ payload, ack }) =>
+      router.register("order", ({ payload, ack }) =>
         ack({ status: 200, body: { orderId: payload.id } })
       );
 
@@ -103,12 +103,12 @@ describe("WebhookRouter", () => {
 
     it("should handle request without explicit response", async () => {
       type WebhookMap = {
-        "/silent": { data: string };
+        silent: { data: string };
       };
 
       const router = new WebhookRouter<WebhookMap>();
 
-      router.register("/silent", () => ({ status: 200, body: "ok" }));
+      router.register("silent", () => ({ status: 200, body: "ok" }));
 
       const response = await router.handle(
         createMockRequest("/silent", { data: "test" })
@@ -119,12 +119,12 @@ describe("WebhookRouter", () => {
 
     it("should preserve request metadata in handler", async () => {
       type WebhookMap = {
-        "/metadata": { value: string };
+        metadata: { value: string };
       };
 
       const router = new WebhookRouter<WebhookMap>();
 
-      router.register("/metadata", ({ req, ack }) => {
+      router.register("metadata", ({ req, ack }) => {
         expect(req.method).toBe("POST");
         expect(req.path).toBe("/metadata");
         expect(req.headers).toBeInstanceOf(Headers);
@@ -140,7 +140,7 @@ describe("WebhookRouter", () => {
   describe("Schema validation with Zod", () => {
     it("should validate payload with Zod schema", async () => {
       type WebhookMap = {
-        "/payment": { id: string; amount: number };
+        payment: { id: string; amount: number };
       };
 
       const router = new WebhookRouter<WebhookMap>();
@@ -150,7 +150,7 @@ describe("WebhookRouter", () => {
         amount: z.number().positive(),
       });
 
-      router.register("/payment", {
+      router.register("payment", {
         schema: zodValidator(paymentSchema),
         handler: ({ payload, ack }) => {
           expect(payload).toEqual({ id: "pay_123", amount: 100 });
@@ -167,7 +167,7 @@ describe("WebhookRouter", () => {
 
     it("should reject invalid payload when schema is provided", async () => {
       type WebhookMap = {
-        "/payment": { id: string; amount: number };
+        payment: { id: string; amount: number };
       };
 
       const router = new WebhookRouter<WebhookMap>();
@@ -177,7 +177,7 @@ describe("WebhookRouter", () => {
         amount: z.number().positive(),
       });
 
-      router.register("/payment", {
+      router.register("payment", {
         schema: zodValidator(paymentSchema),
         handler: ({ ack }) => ack({ status: 200 }),
       });
@@ -193,7 +193,7 @@ describe("WebhookRouter", () => {
 
     it("should reject payload with missing required fields", async () => {
       type WebhookMap = {
-        "/user": { id: string; email: string };
+        user: { id: string; email: string };
       };
 
       const router = new WebhookRouter<WebhookMap>();
@@ -203,7 +203,7 @@ describe("WebhookRouter", () => {
         email: z.string().email(),
       });
 
-      router.register("/user", {
+      router.register("user", {
         schema: zodValidator(userSchema),
         handler: ({ ack }) => ack({ status: 200 }),
       });
@@ -218,7 +218,7 @@ describe("WebhookRouter", () => {
 
     it("should validate complex nested schemas", async () => {
       type WebhookMap = {
-        "/order": {
+        order: {
           id: string;
           items: Array<{ sku: string; quantity: number }>;
           customer: { email: string; name: string };
@@ -241,7 +241,7 @@ describe("WebhookRouter", () => {
         }),
       });
 
-      router.register("/order", {
+      router.register("order", {
         schema: zodValidator(orderSchema),
         handler: ({ payload, ack }) => {
           expect(payload.items).toHaveLength(2);
@@ -271,7 +271,7 @@ describe("WebhookRouter", () => {
 
     it("should transform data with Zod transforms", async () => {
       type WebhookMap = {
-        "/data": { value: number };
+        data: { value: number };
       };
 
       const router = new WebhookRouter<WebhookMap>();
@@ -280,7 +280,7 @@ describe("WebhookRouter", () => {
         value: z.string().transform((val) => Number.parseInt(val, 10)),
       });
 
-      router.register("/data", {
+      router.register("data", {
         schema: zodValidator(schema),
         handler: ({ payload, ack }) => {
           expect(typeof payload.value).toBe("number");
@@ -300,7 +300,7 @@ describe("WebhookRouter", () => {
   describe("Custom schema validator", () => {
     it("should work with custom schema validator", async () => {
       type WebhookMap = {
-        "/custom": { value: number };
+        custom: { value: number };
       };
 
       const router = new WebhookRouter<WebhookMap>();
@@ -331,7 +331,7 @@ describe("WebhookRouter", () => {
         },
       };
 
-      router.register("/custom", {
+      router.register("custom", {
         schema: customValidator,
         handler: ({ payload, ack }) => {
           expect(payload.value).toBe(50);
@@ -353,7 +353,7 @@ describe("WebhookRouter", () => {
 
     it("should support async validators", async () => {
       type WebhookMap = {
-        "/async": { id: string };
+        async: { id: string };
       };
 
       const router = new WebhookRouter<WebhookMap>();
@@ -385,7 +385,7 @@ describe("WebhookRouter", () => {
         },
       };
 
-      router.register("/async", {
+      router.register("async", {
         schema: asyncValidator,
         handler: ({ payload, ack }) => {
           expect(payload.id).toBe("valid_123");
@@ -408,7 +408,7 @@ describe("WebhookRouter", () => {
   describe("Request verification", () => {
     it("should work with custom verify function", async () => {
       type WebhookMap = {
-        "/secure": { data: string };
+        secure: { data: string };
       };
 
       let verifyWasCalled = false;
@@ -420,7 +420,7 @@ describe("WebhookRouter", () => {
         },
       });
 
-      router.register("/secure", ({ ack }) => ack({ status: 200 }));
+      router.register("secure", ({ ack }) => ack({ status: 200 }));
 
       await router.handle(createMockRequest("/secure", { data: "test" }));
 
@@ -429,7 +429,7 @@ describe("WebhookRouter", () => {
 
     it("should run verify before schema validation", async () => {
       type WebhookMap = {
-        "/verified": { value: number };
+        verified: { value: number };
       };
 
       const callOrder: string[] = [];
@@ -442,7 +442,7 @@ describe("WebhookRouter", () => {
 
       const schema = z.object({ value: z.number() });
 
-      router.register("/verified", {
+      router.register("verified", {
         schema: zodValidator(schema),
         handler: ({ ack }) => {
           callOrder.push("handler");
@@ -457,7 +457,7 @@ describe("WebhookRouter", () => {
 
     it("should support async verify functions", async () => {
       type WebhookMap = {
-        "/async-verify": { data: string };
+        "async-verify": { data: string };
       };
 
       const router = new WebhookRouter<WebhookMap>({
@@ -467,7 +467,7 @@ describe("WebhookRouter", () => {
         },
       });
 
-      router.register("/async-verify", ({ ack }) => ack({ status: 200 }));
+      router.register("async-verify", ({ ack }) => ack({ status: 200 }));
 
       const response = await router.handle(
         createMockRequest("/async-verify", { data: "test" })
@@ -480,12 +480,12 @@ describe("WebhookRouter", () => {
   describe("Response handling", () => {
     it("should support custom status codes", async () => {
       type WebhookMap = {
-        "/created": { name: string };
+        created: { name: string };
       };
 
       const router = new WebhookRouter<WebhookMap>();
 
-      router.register("/created", ({ ack }) =>
+      router.register("created", ({ ack }) =>
         ack({ status: 201, body: { created: true } })
       );
 
@@ -499,7 +499,7 @@ describe("WebhookRouter", () => {
 
     it("should support custom headers", async () => {
       type WebhookMap = {
-        "/headers": { data: string };
+        headers: { data: string };
       };
 
       const router = new WebhookRouter<WebhookMap>();
@@ -507,7 +507,7 @@ describe("WebhookRouter", () => {
       const customHeaders = new Headers();
       customHeaders.set("X-Custom-Header", "test-value");
 
-      router.register("/headers", ({ ack }) =>
+      router.register("headers", ({ ack }) =>
         ack({
           status: 200,
           body: "ok",
@@ -525,22 +525,22 @@ describe("WebhookRouter", () => {
 
     it("should handle different body types", async () => {
       type WebhookMap = {
-        "/string": { data: string };
-        "/object": { data: string };
-        "/number": { data: string };
+        string: { data: string };
+        object: { data: string };
+        number: { data: string };
       };
 
       const router = new WebhookRouter<WebhookMap>();
 
-      router.register("/string", ({ ack }) =>
+      router.register("string", ({ ack }) =>
         ack({ status: 200, body: "plain text" })
       );
 
-      router.register("/object", ({ ack }) =>
+      router.register("object", ({ ack }) =>
         ack({ status: 200, body: { key: "value" } })
       );
 
-      router.register("/number", ({ ack }) => ack({ status: 200, body: 42 }));
+      router.register("number", ({ ack }) => ack({ status: 200, body: 42 }));
 
       const stringResponse = await router.handle(
         createMockRequest("/string", { data: "test" })
@@ -562,12 +562,12 @@ describe("WebhookRouter", () => {
   describe("Error handling", () => {
     it("should handle malformed JSON gracefully", async () => {
       type WebhookMap = {
-        "/json": { data: string };
+        json: { data: string };
       };
 
       const router = new WebhookRouter<WebhookMap>();
 
-      router.register("/json", ({ payload, ack }) => {
+      router.register("json", ({ payload, ack }) => {
         expect(payload).toBeUndefined();
         return ack({ status: 200 });
       });
@@ -585,12 +585,12 @@ describe("WebhookRouter", () => {
 
     it("should handle empty request body", async () => {
       type WebhookMap = {
-        "/empty": { data?: string };
+        empty: { data?: string };
       };
 
       const router = new WebhookRouter<WebhookMap>();
 
-      router.register("/empty", ({ payload, ack }) => {
+      router.register("empty", ({ payload, ack }) => {
         expect(payload).toBeUndefined();
         return ack({ status: 200 });
       });
@@ -611,7 +611,7 @@ describe("WebhookRouter", () => {
     describe("Global before hooks", () => {
       it("should execute before hooks before handler", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         const callOrder: string[] = [];
@@ -623,7 +623,7 @@ describe("WebhookRouter", () => {
           },
         });
 
-        router.register("/test", ({ ack }) => {
+        router.register("test", ({ ack }) => {
           callOrder.push("handler");
           return ack({ status: 200 });
         });
@@ -635,7 +635,7 @@ describe("WebhookRouter", () => {
 
       it("should execute multiple before hooks in order", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         const callOrder: string[] = [];
@@ -654,7 +654,7 @@ describe("WebhookRouter", () => {
           ],
         });
 
-        router.register("/test", ({ ack }) => {
+        router.register("test", ({ ack }) => {
           callOrder.push("handler");
           return ack({ status: 200 });
         });
@@ -671,7 +671,7 @@ describe("WebhookRouter", () => {
 
       it("should allow before hooks to enrich request", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         const router = new WebhookRouter<WebhookMap>({
@@ -682,7 +682,7 @@ describe("WebhookRouter", () => {
           },
         });
 
-        router.register("/test", ({ req, ack }) => {
+        router.register("test", ({ req, ack }) => {
           expect(
             (req as { metadata?: { timestamp: number } }).metadata
           ).toBeDefined();
@@ -698,7 +698,7 @@ describe("WebhookRouter", () => {
 
       it("should stop execution if before hook throws", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         let handlerCalled = false;
@@ -713,7 +713,7 @@ describe("WebhookRouter", () => {
           }),
         });
 
-        router.register("/test", ({ ack }) => {
+        router.register("test", ({ ack }) => {
           handlerCalled = true;
           return ack({ status: 200 });
         });
@@ -731,7 +731,7 @@ describe("WebhookRouter", () => {
     describe("Global after hooks", () => {
       it("should execute after hooks after handler", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         const callOrder: string[] = [];
@@ -744,7 +744,7 @@ describe("WebhookRouter", () => {
           },
         });
 
-        router.register("/test", ({ ack }) => {
+        router.register("test", ({ ack }) => {
           callOrder.push("handler");
           return ack({ status: 200 });
         });
@@ -756,7 +756,7 @@ describe("WebhookRouter", () => {
 
       it("should execute multiple after hooks in order", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         const callOrder: string[] = [];
@@ -775,7 +775,7 @@ describe("WebhookRouter", () => {
           ],
         });
 
-        router.register("/test", ({ ack }) => {
+        router.register("test", ({ ack }) => {
           callOrder.push("handler");
           return ack({ status: 200 });
         });
@@ -787,7 +787,7 @@ describe("WebhookRouter", () => {
 
       it("should receive response in after hooks", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         const router = new WebhookRouter<WebhookMap>({
@@ -797,7 +797,7 @@ describe("WebhookRouter", () => {
           },
         });
 
-        router.register("/test", ({ ack }) =>
+        router.register("test", ({ ack }) =>
           ack({ status: 201, body: { result: "success" } })
         );
 
@@ -806,7 +806,7 @@ describe("WebhookRouter", () => {
 
       it("should not execute after hooks if handler throws", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         let afterCalled = false;
@@ -821,7 +821,7 @@ describe("WebhookRouter", () => {
           }),
         });
 
-        router.register("/test", () => {
+        router.register("test", () => {
           throw new Error("Handler error");
         });
 
@@ -834,7 +834,7 @@ describe("WebhookRouter", () => {
     describe("Global onError hook", () => {
       it("should execute onError hook when handler throws", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         let errorHookCalled = false;
@@ -848,7 +848,7 @@ describe("WebhookRouter", () => {
           },
         });
 
-        router.register("/test", () => {
+        router.register("test", () => {
           throw new Error("Test error");
         });
 
@@ -863,7 +863,7 @@ describe("WebhookRouter", () => {
 
       it("should execute onError hook when verify throws", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         let errorHookCalled = false;
@@ -879,7 +879,7 @@ describe("WebhookRouter", () => {
           },
         });
 
-        router.register("/test", ({ ack }) => ack({ status: 200 }));
+        router.register("test", ({ ack }) => ack({ status: 200 }));
 
         const response = await router.handle(
           createMockRequest("/test", { value: "test" })
@@ -891,7 +891,7 @@ describe("WebhookRouter", () => {
 
       it("should execute onError hook when before hook throws", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         let errorHookCalled = false;
@@ -906,7 +906,7 @@ describe("WebhookRouter", () => {
           },
         });
 
-        router.register("/test", ({ ack }) => ack({ status: 200 }));
+        router.register("test", ({ ack }) => ack({ status: 200 }));
 
         const response = await router.handle(
           createMockRequest("/test", { value: "test" })
@@ -918,14 +918,14 @@ describe("WebhookRouter", () => {
 
       it("should use default error response if onError returns undefined", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         const router = new WebhookRouter<WebhookMap>({
           onError: () => ({ status: 500, body: { error: "Custom error" } }),
         });
 
-        router.register("/test", () => {
+        router.register("test", () => {
           throw new Error("Custom error");
         });
 
@@ -939,7 +939,7 @@ describe("WebhookRouter", () => {
 
       it("should handle different error types", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         const router = new WebhookRouter<WebhookMap>({
@@ -954,7 +954,7 @@ describe("WebhookRouter", () => {
           },
         });
 
-        router.register("/test", () => {
+        router.register("test", () => {
           throw new Error("Rate limit exceeded");
         });
 
@@ -970,7 +970,7 @@ describe("WebhookRouter", () => {
     describe("Route-level hooks", () => {
       it("should execute route-level before hooks after global before hooks", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         const callOrder: string[] = [];
@@ -981,7 +981,7 @@ describe("WebhookRouter", () => {
           },
         });
 
-        router.register("/test", {
+        router.register("test", {
           before: () => {
             callOrder.push("route-before");
           },
@@ -998,7 +998,7 @@ describe("WebhookRouter", () => {
 
       it("should execute route-level after hooks before global after hooks", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         const callOrder: string[] = [];
@@ -1009,7 +1009,7 @@ describe("WebhookRouter", () => {
           },
         });
 
-        router.register("/test", {
+        router.register("test", {
           handler: ({ ack }) => {
             callOrder.push("handler");
             return ack({ status: 200 });
@@ -1026,14 +1026,14 @@ describe("WebhookRouter", () => {
 
       it("should support multiple route-level hooks", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         const callOrder: string[] = [];
 
         const router = new WebhookRouter<WebhookMap>();
 
-        router.register("/test", {
+        router.register("test", {
           before: [
             () => {
               callOrder.push("route-before-1");
@@ -1069,15 +1069,15 @@ describe("WebhookRouter", () => {
 
       it("should handle single hook or array of hooks", async () => {
         type WebhookMap = {
-          "/single": { value: string };
-          "/array": { value: string };
+          single: { value: string };
+          array: { value: string };
         };
 
         const callOrder: string[] = [];
 
         const router = new WebhookRouter<WebhookMap>();
 
-        router.register("/single", {
+        router.register("single", {
           before: () => {
             callOrder.push("single-before");
           },
@@ -1087,7 +1087,7 @@ describe("WebhookRouter", () => {
           },
         });
 
-        router.register("/array", {
+        router.register("array", {
           before: [
             () => {
               callOrder.push("array-before-1");
@@ -1124,7 +1124,7 @@ describe("WebhookRouter", () => {
     describe("Complete hook execution order", () => {
       it("should execute all hooks in correct order", async () => {
         type WebhookMap = {
-          "/test": { value: string };
+          test: { value: string };
         };
 
         const callOrder: string[] = [];
@@ -1153,7 +1153,7 @@ describe("WebhookRouter", () => {
 
         const schema = z.object({ value: z.string() });
 
-        router.register("/test", {
+        router.register("test", {
           before: [
             () => {
               callOrder.push("route-before-1");
