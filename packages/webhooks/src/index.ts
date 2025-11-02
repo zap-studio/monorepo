@@ -185,7 +185,11 @@ export class WebhookRouter<
    */
   async handle(req: NormalizedRequest): Promise<NormalizedResponse> {
     try {
-      const handlerEntry = this.handlers.get(req.path);
+      // Normalize path by removing leading slash
+      const normalizedPath = req.path.startsWith("/")
+        ? req.path.slice(1)
+        : req.path;
+      const handlerEntry = this.handlers.get(normalizedPath);
       if (!handlerEntry) {
         return { status: 404, body: { error: "not found" } };
       }
