@@ -1194,4 +1194,82 @@ describe("WebhookRouter", () => {
       });
     });
   });
+
+  describe("Routing with full URLs", () => {
+    it("should route correctly with full URL paths", async () => {
+      type WebhookMap = {
+        fullurl: { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("fullurl", ({ ack }) => ack({ status: 200, body: "ok" }));
+
+      const response = await router.handle(
+        createMockRequest("https://example.com/fullurl", { data: "test" })
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBe("ok");
+    });
+
+    it("should handle URLs with query parameters", async () => {
+      type WebhookMap = {
+        query: { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("query", ({ ack }) =>
+        ack({ status: 200, body: "query received" })
+      );
+
+      const response = await router.handle(
+        createMockRequest("https://example.com/webhooks/query?param=value", {
+          data: "test",
+        })
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBe("query received");
+    });
+
+    it("should return 404 for unknown full URL paths", async () => {
+      type WebhookMap = {
+        known: { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("known", ({ ack }) =>
+        ack({ status: 200, body: "known route" })
+      );
+
+      const response = await router.handle(
+        createMockRequest("https://example.com/unknown", { data: "test" })
+      );
+
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: "not found" });
+    });
+
+    it("should preserve full URL in request metadata", async () => {
+      type WebhookMap = {
+        metadata: { value: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("metadata", ({ req, ack }) => {
+        expect(req.path).toBe("/metadata");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest("https://example.com/webhooks/metadata", {
+          value: "test",
+        })
+      );
+    });
+  });
 });
