@@ -91,11 +91,7 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <html
-      className={`${font.className} antialiased`}
-      lang="en"
-      suppressHydrationWarning
-    >
+    <html className={`${font.className} antialiased`} lang="en">
       <body className="flex min-h-screen flex-col">
         <Provider>
           {children}
