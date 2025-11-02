@@ -189,6 +189,7 @@ export class WebhookRouter<
       const normalizedPath = req.path.startsWith("/")
         ? req.path.slice(1)
         : req.path;
+
       const handlerEntry = this.handlers.get(normalizedPath);
       if (!handlerEntry) {
         return { status: 404, body: { error: "not found" } };
