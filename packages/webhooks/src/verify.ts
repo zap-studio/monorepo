@@ -1,3 +1,4 @@
+import type { BinaryLike, KeyObject } from "node:crypto";
 import type { VerifyFn } from "./types";
 import { constantTimeEquals } from "./utils";
 
@@ -29,7 +30,7 @@ export function createHmacVerifier({
   algo = "sha256",
 }: {
   headerName: string;
-  secret: string;
+  secret: BinaryLike | KeyObject;
   algo?: string;
 }): VerifyFn {
   return async (req) => {
