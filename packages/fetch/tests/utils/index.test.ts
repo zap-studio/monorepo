@@ -334,18 +334,24 @@ describe("parseResponse", () => {
   });
 
   describe("unsupported response type", () => {
-    it("should throw FetchError for unsupported response type", async () => {
+    it("should throw FetchError for unsupported response type", () => {
       const response = new Response("test", {
         status: 200,
         statusText: "OK",
       });
 
       // @ts-expect-error - testing invalid response type
-      await expect(parseResponse(response, "invalid")).rejects.toThrow(
-        FetchError
-      );
+      expect(() => parseResponse(response, "invalid")).toThrow(FetchError);
+    });
+
+    it("should throw FetchError with correct message for unsupported response type", () => {
+      const response = new Response("test", {
+        status: 200,
+        statusText: "OK",
+      });
+
       // @ts-expect-error - testing invalid response type
-      await expect(parseResponse(response, "invalid")).rejects.toThrow(
+      expect(() => parseResponse(response, "invalid")).toThrow(
         "Unsupported response type: invalid"
       );
     });
