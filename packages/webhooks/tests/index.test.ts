@@ -1246,7 +1246,9 @@ describe("WebhookRouter", () => {
       );
 
       const response = await router.handle(
-        createMockRequest("https://example.com/unknown", { data: "test" })
+        createMockRequest("https://example.com/webhooks/unknown", {
+          data: "test",
+        })
       );
 
       expect(response.status).toBe(404);
