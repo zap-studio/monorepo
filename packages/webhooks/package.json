@@ -31,6 +31,18 @@
     "arktype": {
       "optional": true
     },
+    "elysia": {
+      "optional": true
+    },
+    "express": {
+      "optional": true
+    },
+    "hono": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    },
     "valibot": {
       "optional": true
     },
