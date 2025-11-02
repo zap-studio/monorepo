@@ -182,13 +182,12 @@ export class WebhookRouter<TMap extends Record<string, any>> {
    */
   async handle(req: NormalizedRequest): Promise<NormalizedResponse> {
     try {
-      await this.runGlobalBeforeHooks(req);
-
       const handlerEntry = this.handlers.get(req.path);
       if (!handlerEntry) {
         return { status: 404, body: { error: "not found" } };
       }
 
+      await this.runGlobalBeforeHooks(req);
       await this.runRouteBeforeHooks(handlerEntry, req);
 
       if (this.verify) {
