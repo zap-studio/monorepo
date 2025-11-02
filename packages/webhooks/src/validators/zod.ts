@@ -25,7 +25,7 @@ import type { SchemaValidator, ValidationResult } from "../types";
  */
 export function zodValidator<T>(schema: z.ZodType<T>): SchemaValidator<T> {
   return {
-    validate: (data: unknown): ValidationResult<T> => {
+    validate: <TData = unknown>(data: TData): ValidationResult<T> => {
       const result = schema.safeParse(data);
 
       if (result.success) {

@@ -1,3 +1,10 @@
+import type {
+  BaseIssue,
+  BaseSchema,
+  BaseSchemaAsync,
+  InferOutput,
+} from "valibot";
+import { safeParse, safeParseAsync } from "valibot";
 import type { SchemaValidator, ValidationResult } from "../types";
 
 /**
@@ -20,38 +27,70 @@ import type { SchemaValidator, ValidationResult } from "../types";
  * });
  * ```
  */
-export function valibotValidator<T>(
-  // biome-ignore lint/suspicious/noExplicitAny: Valibot schema type
-  schema: any
-): SchemaValidator<T> {
+export function valibotValidator<
+  TSchema extends BaseSchema<unknown, unknown, BaseIssue<unknown>>,
+>(schema: TSchema): SchemaValidator<InferOutput<TSchema>>;
+export function valibotValidator<
+  TSchema extends BaseSchemaAsync<unknown, unknown, BaseIssue<unknown>>,
+>(schema: TSchema): SchemaValidator<InferOutput<TSchema>>;
+export function valibotValidator<
+  TSchema extends
+    | BaseSchema<unknown, unknown, BaseIssue<unknown>>
+    | BaseSchemaAsync<unknown, unknown, BaseIssue<unknown>>,
+>(schema: TSchema): SchemaValidator<InferOutput<TSchema>> {
   return {
-    validate: (data: unknown): ValidationResult<T> => {
-      try {
-        const result =
-          // biome-ignore lint/suspicious/noExplicitAny: Valibot parse function
-          (schema as any).parse?.(data) ?? (schema as any)._parse?.(data, {});
+    validate: <TData = unknown>(
+      data: TData
+    ):
+      | ValidationResult<InferOutput<TSchema>>
+      | Promise<ValidationResult<InferOutput<TSchema>>> => {
+      // Handle async schemas
+      if ("async" in schema && schema.async === true) {
+        const asyncSchema = schema as BaseSchemaAsync<
+          unknown,
+          unknown,
+          BaseIssue<unknown>
+        >;
+        return safeParseAsync(asyncSchema, data).then((asyncResult) => {
+          if (asyncResult.success) {
+            return {
+              success: true,
+              data: asyncResult.output,
+            };
+          }
+
+          return {
+            success: false,
+            errors: asyncResult.issues.map((issue) => ({
+              path: issue.path?.map((item) => String(item.key)) || [],
+              message: issue.message,
+            })),
+          };
+        });
+      }
+
+      // Handle sync schemas
+      const syncSchema = schema as BaseSchema<
+        unknown,
+        unknown,
+        BaseIssue<unknown>
+      >;
+      const parseResult = safeParse(syncSchema, data);
+
+      if (parseResult.success) {
         return {
           success: true,
-          data: result,
-        };
-      } catch (error) {
-        // biome-ignore lint/suspicious/noExplicitAny: Valibot error type
-        const valibotError = error as any;
-        return {
-          success: false,
-          errors: valibotError.issues?.map(
-            // biome-ignore lint/suspicious/noExplicitAny: Valibot issue type
-            (issue: any) => ({
-              path:
-                issue.path?.map(
-                  // biome-ignore lint/suspicious/noExplicitAny: Path item type
-                  (item: any) => item.key || String(item)
-                ) || [],
-              message: issue.message,
-            })
-          ) || [{ message: valibotError.message || "Validation failed" }],
+          data: parseResult.output,
         };
       }
+
+      return {
+        success: false,
+        errors: parseResult.issues.map((issue) => ({
+          path: issue.path?.map((item) => String(item.key)) || [],
+          message: issue.message,
+        })),
+      };
     },
   };
 }
