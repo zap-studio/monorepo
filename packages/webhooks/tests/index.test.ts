@@ -32,7 +32,7 @@ describe("WebhookRouter", () => {
       });
 
       const response = await router.handle(
-        createMockRequest("/test", { id: "123" })
+        createMockRequest("/webhooks/test", { id: "123" })
       );
 
       expect(response).toEqual({ status: 200, body: "success" });
@@ -46,7 +46,25 @@ describe("WebhookRouter", () => {
       const router = new WebhookRouter<WebhookMap>();
 
       const response = await router.handle(
-        createMockRequest("/unknown", { id: "123" })
+        createMockRequest("/webhooks/unknown", { id: "123" })
+      );
+
+      expect(response).toEqual({ status: 404, body: { error: "not found" } });
+    });
+
+    it("should return 404 for paths without /webhooks/ prefix", async () => {
+      type WebhookMap = {
+        test: { id: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("test", ({ ack }) =>
+        ack({ status: 200, body: "success" })
+      );
+
+      const response = await router.handle(
+        createMockRequest("/test", { id: "123" })
       );
 
       expect(response).toEqual({ status: 404, body: { error: "not found" } });
@@ -77,7 +95,7 @@ describe("WebhookRouter", () => {
       );
 
       const paymentResponse = await router.handle(
-        createMockRequest("/payment", { amount: 100 })
+        createMockRequest("/webhooks/payment", { amount: 100 })
       );
       expect(paymentResponse).toEqual({
         status: 200,
@@ -85,7 +103,7 @@ describe("WebhookRouter", () => {
       });
 
       const userResponse = await router.handle(
-        createMockRequest("/user", { name: "Alice" })
+        createMockRequest("/webhooks/user", { name: "Alice" })
       );
       expect(userResponse).toEqual({
         status: 200,
@@ -93,7 +111,7 @@ describe("WebhookRouter", () => {
       });
 
       const orderResponse = await router.handle(
-        createMockRequest("/order", { id: "order_123" })
+        createMockRequest("/webhooks/order", { id: "order_123" })
       );
       expect(orderResponse).toEqual({
         status: 200,
@@ -111,7 +129,7 @@ describe("WebhookRouter", () => {
       router.register("silent", () => ({ status: 200, body: "ok" }));
 
       const response = await router.handle(
-        createMockRequest("/silent", { data: "test" })
+        createMockRequest("/webhooks/silent", { data: "test" })
       );
 
       expect(response).toEqual({ status: 200, body: "ok" });
@@ -133,7 +151,9 @@ describe("WebhookRouter", () => {
         return ack({ status: 200 });
       });
 
-      await router.handle(createMockRequest("/metadata", { value: "test" }));
+      await router.handle(
+        createMockRequest("/webhooks/metadata", { value: "test" })
+      );
     });
   });
 
@@ -159,7 +179,7 @@ describe("WebhookRouter", () => {
       });
 
       const response = await router.handle(
-        createMockRequest("/payment", { id: "pay_123", amount: 100 })
+        createMockRequest("/webhooks/payment", { id: "pay_123", amount: 100 })
       );
 
       expect(response).toEqual({ status: 200, body: "payment processed" });
@@ -183,7 +203,7 @@ describe("WebhookRouter", () => {
       });
 
       const response = await router.handle(
-        createMockRequest("/payment", { id: "pay_123", amount: -100 })
+        createMockRequest("/webhooks/payment", { id: "pay_123", amount: -100 })
       );
 
       expect(response.status).toBe(400);
@@ -209,7 +229,7 @@ describe("WebhookRouter", () => {
       });
 
       const response = await router.handle(
-        createMockRequest("/user", { id: "123" })
+        createMockRequest("/webhooks/user", { id: "123" })
       );
 
       expect(response.status).toBe(400);
@@ -263,7 +283,7 @@ describe("WebhookRouter", () => {
       };
 
       const response = await router.handle(
-        createMockRequest("/order", validOrder)
+        createMockRequest("/webhooks/order", validOrder)
       );
 
       expect(response.status).toBe(200);
@@ -290,7 +310,7 @@ describe("WebhookRouter", () => {
       });
 
       const response = await router.handle(
-        createMockRequest("/data", { value: "42" })
+        createMockRequest("/webhooks/data", { value: "42" })
       );
 
       expect(response.status).toBe(200);
@@ -340,12 +360,12 @@ describe("WebhookRouter", () => {
       });
 
       const validResponse = await router.handle(
-        createMockRequest("/custom", { value: 50 })
+        createMockRequest("/webhooks/custom", { value: 50 })
       );
       expect(validResponse.status).toBe(200);
 
       const invalidResponse = await router.handle(
-        createMockRequest("/custom", { value: 150 })
+        createMockRequest("/webhooks/custom", { value: 150 })
       );
       expect(invalidResponse.status).toBe(400);
       expect(invalidResponse.body).toHaveProperty("error", "validation failed");
@@ -394,12 +414,12 @@ describe("WebhookRouter", () => {
       });
 
       const validResponse = await router.handle(
-        createMockRequest("/async", { id: "valid_123" })
+        createMockRequest("/webhooks/async", { id: "valid_123" })
       );
       expect(validResponse.status).toBe(200);
 
       const invalidResponse = await router.handle(
-        createMockRequest("/async", { id: "invalid_123" })
+        createMockRequest("/webhooks/async", { id: "invalid_123" })
       );
       expect(invalidResponse.status).toBe(400);
     });
@@ -422,7 +442,9 @@ describe("WebhookRouter", () => {
 
       router.register("secure", ({ ack }) => ack({ status: 200 }));
 
-      await router.handle(createMockRequest("/secure", { data: "test" }));
+      await router.handle(
+        createMockRequest("/webhooks/secure", { data: "test" })
+      );
 
       expect(verifyWasCalled).toBe(true);
     });
@@ -450,7 +472,9 @@ describe("WebhookRouter", () => {
         },
       });
 
-      await router.handle(createMockRequest("/verified", { value: 42 }));
+      await router.handle(
+        createMockRequest("/webhooks/verified", { value: 42 })
+      );
 
       expect(callOrder).toEqual(["verify", "handler"]);
     });
@@ -470,7 +494,7 @@ describe("WebhookRouter", () => {
       router.register("async-verify", ({ ack }) => ack({ status: 200 }));
 
       const response = await router.handle(
-        createMockRequest("/async-verify", { data: "test" })
+        createMockRequest("/webhooks/async-verify", { data: "test" })
       );
 
       expect(response.status).toBe(200);
@@ -490,7 +514,7 @@ describe("WebhookRouter", () => {
       );
 
       const response = await router.handle(
-        createMockRequest("/created", { name: "test" })
+        createMockRequest("/webhooks/created", { name: "test" })
       );
 
       expect(response.status).toBe(201);
@@ -516,7 +540,7 @@ describe("WebhookRouter", () => {
       );
 
       const response = await router.handle(
-        createMockRequest("/headers", { data: "test" })
+        createMockRequest("/webhooks/headers", { data: "test" })
       );
 
       expect(response.status).toBe(200);
@@ -543,17 +567,17 @@ describe("WebhookRouter", () => {
       router.register("number", ({ ack }) => ack({ status: 200, body: 42 }));
 
       const stringResponse = await router.handle(
-        createMockRequest("/string", { data: "test" })
+        createMockRequest("/webhooks/string", { data: "test" })
       );
       expect(stringResponse.body).toBe("plain text");
 
       const objectResponse = await router.handle(
-        createMockRequest("/object", { data: "test" })
+        createMockRequest("/webhooks/object", { data: "test" })
       );
       expect(objectResponse.body).toEqual({ key: "value" });
 
       const numberResponse = await router.handle(
-        createMockRequest("/number", { data: "test" })
+        createMockRequest("/webhooks/number", { data: "test" })
       );
       expect(numberResponse.body).toBe(42);
     });
@@ -574,7 +598,7 @@ describe("WebhookRouter", () => {
 
       const malformedRequest: NormalizedRequest = {
         method: "POST",
-        path: "/json",
+        path: "/webhooks/json",
         headers: new Headers(),
         rawBody: Buffer.from("not valid json{"),
       };
@@ -597,7 +621,7 @@ describe("WebhookRouter", () => {
 
       const emptyRequest: NormalizedRequest = {
         method: "POST",
-        path: "/empty",
+        path: "/webhooks/empty",
         headers: new Headers(),
         rawBody: Buffer.from(""),
       };
@@ -628,7 +652,9 @@ describe("WebhookRouter", () => {
           return ack({ status: 200 });
         });
 
-        await router.handle(createMockRequest("/test", { value: "test" }));
+        await router.handle(
+          createMockRequest("/webhooks/test", { value: "test" })
+        );
 
         expect(callOrder).toEqual(["before", "handler"]);
       });
@@ -659,7 +685,9 @@ describe("WebhookRouter", () => {
           return ack({ status: 200 });
         });
 
-        await router.handle(createMockRequest("/test", { value: "test" }));
+        await router.handle(
+          createMockRequest("/webhooks/test", { value: "test" })
+        );
 
         expect(callOrder).toEqual([
           "before-1",
@@ -693,7 +721,9 @@ describe("WebhookRouter", () => {
           return ack({ status: 200 });
         });
 
-        await router.handle(createMockRequest("/test", { value: "test" }));
+        await router.handle(
+          createMockRequest("/webhooks/test", { value: "test" })
+        );
       });
 
       it("should stop execution if before hook throws", async () => {
@@ -719,7 +749,7 @@ describe("WebhookRouter", () => {
         });
 
         const response = await router.handle(
-          createMockRequest("/test", { value: "test" })
+          createMockRequest("/webhooks/test", { value: "test" })
         );
 
         expect(handlerCalled).toBe(false);
@@ -749,7 +779,9 @@ describe("WebhookRouter", () => {
           return ack({ status: 200 });
         });
 
-        await router.handle(createMockRequest("/test", { value: "test" }));
+        await router.handle(
+          createMockRequest("/webhooks/test", { value: "test" })
+        );
 
         expect(callOrder).toEqual(["handler", "after"]);
       });
@@ -780,7 +812,9 @@ describe("WebhookRouter", () => {
           return ack({ status: 200 });
         });
 
-        await router.handle(createMockRequest("/test", { value: "test" }));
+        await router.handle(
+          createMockRequest("/webhooks/test", { value: "test" })
+        );
 
         expect(callOrder).toEqual(["handler", "after-1", "after-2", "after-3"]);
       });
@@ -801,7 +835,9 @@ describe("WebhookRouter", () => {
           ack({ status: 201, body: { result: "success" } })
         );
 
-        await router.handle(createMockRequest("/test", { value: "test" }));
+        await router.handle(
+          createMockRequest("/webhooks/test", { value: "test" })
+        );
       });
 
       it("should not execute after hooks if handler throws", async () => {
@@ -825,7 +861,9 @@ describe("WebhookRouter", () => {
           throw new Error("Handler error");
         });
 
-        await router.handle(createMockRequest("/test", { value: "test" }));
+        await router.handle(
+          createMockRequest("/webhooks/test", { value: "test" })
+        );
 
         expect(afterCalled).toBe(false);
       });
@@ -853,7 +891,7 @@ describe("WebhookRouter", () => {
         });
 
         const response = await router.handle(
-          createMockRequest("/test", { value: "test" })
+          createMockRequest("/webhooks/test", { value: "test" })
         );
 
         expect(errorHookCalled).toBe(true);
@@ -882,7 +920,7 @@ describe("WebhookRouter", () => {
         router.register("test", ({ ack }) => ack({ status: 200 }));
 
         const response = await router.handle(
-          createMockRequest("/test", { value: "test" })
+          createMockRequest("/webhooks/test", { value: "test" })
         );
 
         expect(errorHookCalled).toBe(true);
@@ -909,7 +947,7 @@ describe("WebhookRouter", () => {
         router.register("test", ({ ack }) => ack({ status: 200 }));
 
         const response = await router.handle(
-          createMockRequest("/test", { value: "test" })
+          createMockRequest("/webhooks/test", { value: "test" })
         );
 
         expect(errorHookCalled).toBe(true);
@@ -930,7 +968,7 @@ describe("WebhookRouter", () => {
         });
 
         const response = await router.handle(
-          createMockRequest("/test", { value: "test" })
+          createMockRequest("/webhooks/test", { value: "test" })
         );
 
         expect(response.status).toBe(500);
@@ -959,7 +997,7 @@ describe("WebhookRouter", () => {
         });
 
         const response = await router.handle(
-          createMockRequest("/test", { value: "test" })
+          createMockRequest("/webhooks/test", { value: "test" })
         );
 
         expect(response.status).toBe(429);
@@ -991,7 +1029,9 @@ describe("WebhookRouter", () => {
           },
         });
 
-        await router.handle(createMockRequest("/test", { value: "test" }));
+        await router.handle(
+          createMockRequest("/webhooks/test", { value: "test" })
+        );
 
         expect(callOrder).toEqual(["global-before", "route-before", "handler"]);
       });
@@ -1019,7 +1059,9 @@ describe("WebhookRouter", () => {
           },
         });
 
-        await router.handle(createMockRequest("/test", { value: "test" }));
+        await router.handle(
+          createMockRequest("/webhooks/test", { value: "test" })
+        );
 
         expect(callOrder).toEqual(["handler", "route-after", "global-after"]);
       });
@@ -1056,7 +1098,9 @@ describe("WebhookRouter", () => {
           ],
         });
 
-        await router.handle(createMockRequest("/test", { value: "test" }));
+        await router.handle(
+          createMockRequest("/webhooks/test", { value: "test" })
+        );
 
         expect(callOrder).toEqual([
           "route-before-1",
@@ -1107,8 +1151,12 @@ describe("WebhookRouter", () => {
           ],
         });
 
-        await router.handle(createMockRequest("/single", { value: "test" }));
-        await router.handle(createMockRequest("/array", { value: "test" }));
+        await router.handle(
+          createMockRequest("/webhooks/single", { value: "test" })
+        );
+        await router.handle(
+          createMockRequest("/webhooks/array", { value: "test" })
+        );
 
         expect(callOrder).toEqual([
           "single-before",
@@ -1177,7 +1225,9 @@ describe("WebhookRouter", () => {
           ],
         });
 
-        await router.handle(createMockRequest("/test", { value: "test" }));
+        await router.handle(
+          createMockRequest("/webhooks/test", { value: "test" })
+        );
 
         expect(callOrder).toEqual([
           "global-before-1",
@@ -1206,7 +1256,9 @@ describe("WebhookRouter", () => {
       router.register("fullurl", ({ ack }) => ack({ status: 200, body: "ok" }));
 
       const response = await router.handle(
-        createMockRequest("https://example.com/fullurl", { data: "test" })
+        createMockRequest("https://example.com/webhooks/fullurl", {
+          data: "test",
+        })
       );
 
       expect(response.status).toBe(200);
@@ -1288,7 +1340,9 @@ describe("WebhookRouter", () => {
         return ack({ status: 200 });
       });
 
-      await router.handle(createMockRequest("/simple", { data: "test" }));
+      await router.handle(
+        createMockRequest("/webhooks/simple", { data: "test" })
+      );
     });
 
     it("should normalize paths without leading slash", async () => {
@@ -1372,7 +1426,7 @@ describe("WebhookRouter", () => {
       });
 
       await router.handle(
-        createMockRequest("/api/webhooks/event", { data: "test" })
+        createMockRequest("/webhooks/api/webhooks/event", { data: "test" })
       );
     });
 
@@ -1482,7 +1536,12 @@ describe("WebhookRouter", () => {
         return ack({ status: 200 });
       });
 
-      await router.handle(createMockRequest("/api/webhooks", { data: "test" }));
+      const response = await router.handle(
+        createMockRequest("/webhooks/api/webhooks", { data: "test" })
+      );
+
+      // Should match since path starts with /webhooks/ and handler matches "api/webhooks"
+      expect(response.status).toBe(200);
     });
 
     it("should handle root path", async () => {
@@ -1497,7 +1556,12 @@ describe("WebhookRouter", () => {
         return ack({ status: 200 });
       });
 
-      await router.handle(createMockRequest("/", { data: "test" }));
+      const response = await router.handle(
+        createMockRequest("/webhooks/", { data: "test" })
+      );
+
+      // Should match the root handler
+      expect(response.status).toBe(200);
     });
 
     it("should handle /webhooks/ as root webhook path", async () => {
@@ -1531,6 +1595,168 @@ describe("WebhookRouter", () => {
         createMockRequest("https://example.com/webhooks/with%20spaces", {
           data: "test",
         })
+      );
+    });
+  });
+
+  describe("Configurable prefix", () => {
+    it("should use custom prefix when provided", async () => {
+      type WebhookMap = {
+        payment: { id: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>({
+        prefix: "/api/hooks/",
+      });
+
+      router.register("payment", ({ payload, ack }) => {
+        expect(payload.id).toBe("123");
+        return ack({ status: 200, body: "success" });
+      });
+
+      const response = await router.handle(
+        createMockRequest("/api/hooks/payment", { id: "123" })
+      );
+
+      expect(response).toEqual({ status: 200, body: "success" });
+    });
+
+    it("should return 404 for paths not matching custom prefix", async () => {
+      type WebhookMap = {
+        payment: { id: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>({
+        prefix: "/api/hooks/",
+      });
+
+      router.register("payment", ({ ack }) => ack({ status: 200 }));
+
+      // Wrong prefix
+      const response1 = await router.handle(
+        createMockRequest("/webhooks/payment", { id: "123" })
+      );
+      expect(response1).toEqual({ status: 404, body: { error: "not found" } });
+
+      // No prefix
+      const response2 = await router.handle(
+        createMockRequest("/payment", { id: "123" })
+      );
+      expect(response2).toEqual({ status: 404, body: { error: "not found" } });
+    });
+
+    it("should handle custom prefix with full URLs", async () => {
+      type WebhookMap = {
+        event: { data: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>({
+        prefix: "/custom/",
+      });
+
+      router.register("event", ({ req, ack }) => {
+        expect(req.path).toBe("/event");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest("https://example.com/custom/event", { data: "test" })
+      );
+    });
+
+    it("should default to /webhooks/ prefix when not provided", async () => {
+      type WebhookMap = {
+        test: { id: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("test", ({ ack }) =>
+        ack({ status: 200, body: "success" })
+      );
+
+      const response = await router.handle(
+        createMockRequest("/webhooks/test", { id: "123" })
+      );
+
+      expect(response).toEqual({ status: 200, body: "success" });
+    });
+
+    it("should handle empty string prefix", async () => {
+      type WebhookMap = {
+        payment: { id: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>({
+        prefix: "/",
+      });
+
+      router.register("payment", ({ payload, ack }) => {
+        expect(payload.id).toBe("123");
+        return ack({ status: 200, body: "success" });
+      });
+
+      const response = await router.handle(
+        createMockRequest("/payment", { id: "123" })
+      );
+
+      expect(response).toEqual({ status: 200, body: "success" });
+    });
+
+    it("should handle nested paths with custom prefix", async () => {
+      type WebhookMap = {
+        "stripe/events": { type: string };
+        "github/push": { ref: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>({
+        prefix: "/api/v1/webhooks/",
+      });
+
+      router.register("stripe/events", ({ req, ack }) => {
+        expect(req.path).toBe("/stripe/events");
+        return ack({ status: 200 });
+      });
+
+      router.register("github/push", ({ req, ack }) => {
+        expect(req.path).toBe("/github/push");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest("/webhooks/api/v1/webhooks/stripe/events", {
+          type: "payment",
+        })
+      );
+
+      await router.handle(
+        createMockRequest("/webhooks/api/v1/webhooks/github/push", {
+          ref: "main",
+        })
+      );
+    });
+
+    it("should handle custom prefix with query parameters", async () => {
+      type WebhookMap = {
+        notify: { message: string };
+      };
+
+      const router = new WebhookRouter<WebhookMap>({
+        prefix: "/notifications/",
+      });
+
+      router.register("notify", ({ req, ack }) => {
+        expect(req.path).toBe("/notify");
+        return ack({ status: 200 });
+      });
+
+      await router.handle(
+        createMockRequest(
+          "/webhooks/notifications/notify?priority=high&channel=email",
+          {
+            message: "test",
+          }
+        )
       );
     });
   });
