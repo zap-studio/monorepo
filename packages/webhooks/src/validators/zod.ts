@@ -14,7 +14,7 @@ import type { SchemaValidator, ValidationResult } from "../types";
  *   amount: z.number().positive(),
  * });
  *
- * router.register("/payment", {
+ * router.register("payment", {
  *   schema: zodValidator(schema),
  *   handler: async ({ payload, ack }) => {
  *     // payload is validated and typed

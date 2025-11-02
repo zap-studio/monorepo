@@ -12,7 +12,7 @@ import type { SchemaValidator, ValidationResult } from "../types";
  *   amount: yup.number().positive().required(),
  * });
  *
- * router.register("/payment", {
+ * router.register("payment", {
  *   schema: yupValidator(schema),
  *   handler: async ({ payload, ack }) => {
  *     return ack({ status: 200 });

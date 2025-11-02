@@ -40,7 +40,7 @@ import type {
  * });
  *
  * // Without schema validation
- * router.register("/payment", async ({ req, payload, ack }) => {
+ * router.register("payment", async ({ req, payload, ack }) => {
  *   // Handle payment webhook
  *   return ack({ status: 200, body: "Payment received" });
  * });
@@ -51,7 +51,7 @@ import type {
  *   status: z.enum(["active", "canceled"]),
  * });
  *
- * router.register("/subscription", {
+ * router.register("subscription", {
  *   schema: zodValidator(subscriptionSchema),
  *   handler: async ({ req, payload, ack }) => {
  *     // payload is now validated and typed
@@ -113,12 +113,12 @@ export class WebhookRouter<TMap extends Record<string, any>> {
    * @example
    * ```ts
    * // Simple handler without validation
-   * router.register("/webhook", async ({ payload, ack }) => {
+   * router.register("webhook", async ({ payload, ack }) => {
    *   return ack({ status: 200 });
    * });
    *
    * // Handler with Zod validation
-   * router.register("/webhook", {
+   * router.register("webhook", {
    *   schema: z.object({ id: z.string() }),
    *   handler: async ({ payload, ack }) => {
    *     // payload.id is validated and typed as string
@@ -127,7 +127,7 @@ export class WebhookRouter<TMap extends Record<string, any>> {
    * });
    *
    * // Handler with lifecycle hooks
-   * router.register("/webhook", {
+   * router.register("webhook", {
    *   before: [async (req) => {
    *     console.log("Route-specific before hook");
    *   }],

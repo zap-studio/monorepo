@@ -50,7 +50,7 @@ type WebhookMap = {
 
 const router = new WebhookRouter<WebhookMap>();
 
-router.register("/payment", async ({ payload, ack }) => {
+router.register("payment", async ({ payload, ack }) => {
   console.log(`Payment received: $${payload.amount}`);
   return ack({ status: 200, body: "Payment processed" });
 });
@@ -78,7 +78,7 @@ const paymentSchema = z.object({
   currency: z.string().length(3),
 });
 
-router.register("/payment", {
+router.register("payment", {
   schema: zodValidator(paymentSchema),
   handler: async ({ payload, ack }) => {
     // payload is validated and fully typed!
@@ -199,7 +199,7 @@ const router = new WebhookRouter({
 Route-level hooks are specific to individual routes and execute after global `before` hooks but before global `after` hooks.
 
 ```typescript
-router.register("/payment", {
+router.register("payment", {
   schema: zodValidator(paymentSchema),
   
   // Route-specific before hooks (run after global before hooks)
@@ -325,7 +325,7 @@ import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const router = new WebhookRouter<{
-  "/stripe": Stripe.Event
+  "stripe": Stripe.Event
 }>({
   before: [
     async (req) => {
@@ -397,7 +397,7 @@ const router = new WebhookRouter<{
   }
 });
 
-router.register("/stripe", async ({ payload, ack }) => {
+router.register("stripe", async ({ payload, ack }) => {
   // Process Stripe event
   switch (payload.type) {
     case "payment_intent.succeeded":
@@ -478,7 +478,7 @@ const schema = z.object({
   })),
 });
 
-router.register("/order", {
+router.register("order", {
   schema: zodValidator(schema),
   handler: async ({ payload, ack }) => {
     // Fully validated and typed
@@ -498,7 +498,7 @@ const schema = yup.object({
   amount: yup.number().positive().required(),
 });
 
-router.register("/payment", {
+router.register("payment", {
   schema: yupValidator(schema),
   handler: async ({ payload, ack }) => {
     return ack({ status: 200 });
@@ -517,7 +517,7 @@ const schema = v.object({
   amount: v.pipe(v.number(), v.minValue(0)),
 });
 
-router.register("/payment", {
+router.register("payment", {
   schema: valibotValidator(schema),
   handler: async ({ payload, ack }) => {
     return ack({ status: 200 });
@@ -536,7 +536,7 @@ const schema = type({
   amount: "number>0",
 });
 
-router.register("/payment", {
+router.register("payment", {
   schema: arktypeValidator(schema),
   handler: async ({ payload, ack }) => {
     return ack({ status: 200 });
@@ -577,7 +577,7 @@ const customValidator: SchemaValidator<{ id: string; value: number }> = {
   },
 };
 
-router.register("/custom", {
+router.register("custom", {
   schema: customValidator,
   handler: async ({ payload, ack }) => {
     return ack({ status: 200 });
@@ -606,7 +606,7 @@ const router = new WebhookRouter<WebhookMap>(options?);
 Register a webhook handler without validation.
 
 ```typescript
-router.register("/webhook", async ({ req, payload, ack }) => {
+router.register("webhook", async ({ req, payload, ack }) => {
   return ack({ status: 200, body: "Success" });
 });
 ```
@@ -616,7 +616,7 @@ router.register("/webhook", async ({ req, payload, ack }) => {
 Register a webhook handler with schema validation and/or route-level hooks.
 
 ```typescript
-router.register("/webhook", {
+router.register("webhook", {
   schema: zodValidator(mySchema),
   before: [async (req) => { /* ... */ }],
   handler: async ({ req, payload, ack }) => {

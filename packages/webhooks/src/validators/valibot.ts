@@ -12,7 +12,7 @@ import type { SchemaValidator, ValidationResult } from "../types";
  *   amount: v.pipe(v.number(), v.minValue(0)),
  * });
  *
- * router.register("/payment", {
+ * router.register("payment", {
  *   schema: valibotValidator(schema),
  *   handler: async ({ payload, ack }) => {
  *     return ack({ status: 200 });

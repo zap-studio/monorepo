@@ -12,7 +12,7 @@ import type { SchemaValidator, ValidationResult } from "../types";
  *   amount: "number>0",
  * });
  *
- * router.register("/payment", {
+ * router.register("payment", {
  *   schema: arktypeValidator(schema),
  *   handler: async ({ payload, ack }) => {
  *     return ack({ status: 200 });
