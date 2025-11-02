@@ -31,11 +31,11 @@ export type NormalizedRequest = {
 };
 
 /** This is the normalized response object so every adapter can rely on the same structure */
-export type NormalizedResponse = {
+export type NormalizedResponse<TBody = unknown> = {
   /** The HTTP status code of the response */
   status: number;
   /** The body of the response */
-  body?: unknown;
+  body?: TBody;
   /** The headers of the response */
   headers?: Headers;
 };
@@ -64,7 +64,9 @@ export type SchemaValidator<T> = {
    * @param data - The data to validate
    * @returns Validation result with success flag, data, and potential errors
    */
-  validate(data: unknown): ValidationResult<T> | Promise<ValidationResult<T>>;
+  validate<TData = unknown>(
+    data: TData
+  ): ValidationResult<T> | Promise<ValidationResult<T>>;
 };
 
 /** Options for registering a webhook handler */
