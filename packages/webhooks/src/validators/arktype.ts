@@ -1,3 +1,5 @@
+import type { Type } from "arktype";
+import { ArkErrors } from "arktype";
 import type { SchemaValidator, ValidationResult } from "../types";
 
 /**
@@ -20,30 +22,33 @@ import type { SchemaValidator, ValidationResult } from "../types";
  * });
  * ```
  */
-export function arktypeValidator<T>(
-  // biome-ignore lint/suspicious/noExplicitAny: ArkType schema type
-  schema: any
-): SchemaValidator<T> {
+export function arktypeValidator<T>(schema: Type<T>): SchemaValidator<T> {
   return {
-    validate: (data: unknown): ValidationResult<T> => {
+    validate: <TData = unknown>(data: TData): ValidationResult<T> => {
       const result = schema(data);
 
-      if (result.problems) {
+      if (result instanceof ArkErrors) {
         return {
           success: false,
-          errors: result.problems.map(
-            // biome-ignore lint/suspicious/noExplicitAny: ArkType problem type
-            (problem: any) => ({
-              path: problem.path || [],
+          errors: result.map((problem) => {
+            let path: string[] = [];
+            if (Array.isArray(problem.path)) {
+              path = problem.path as string[];
+            } else if (problem.path) {
+              path = [String(problem.path)];
+            }
+
+            return {
+              path,
               message: problem.message,
-            })
-          ),
+            };
+          }),
         };
       }
 
       return {
         success: true,
-        data: result.data,
+        data: result as T,
       };
     },
   };
