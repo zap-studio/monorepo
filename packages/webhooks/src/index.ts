@@ -64,13 +64,16 @@ import type {
  * ```
  */
 
-// biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
-export class WebhookRouter<TMap extends Record<string, any>> {
+export class WebhookRouter<
+  // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
+  TMap extends Record<string, any>,
+  TSchema = unknown,
+> {
   private readonly handlers = new Map<
     string,
     {
       handler: HandlerMap<TMap>[string];
-      schema?: SchemaValidator<unknown>;
+      schema?: SchemaValidator<TSchema>;
       before?: BeforeHook[];
       after?: AfterHook[];
     }
@@ -188,7 +191,7 @@ export class WebhookRouter<TMap extends Record<string, any>> {
       }
 
       await this.runGlobalBeforeHooks(req);
-      await this.runRouteBeforeHooks(handlerEntry, req);
+      await this.runRouteBeforeHooks(req, handlerEntry.before);
 
       if (this.verify) {
         await this.verify(req);
@@ -196,8 +199,8 @@ export class WebhookRouter<TMap extends Record<string, any>> {
 
       const parsedJson = this.parseRequestBody(req);
       const validationResult = await this.validatePayload(
-        handlerEntry,
-        parsedJson
+        parsedJson,
+        handlerEntry.schema
       );
 
       if (this.isErrorResponse(validationResult)) {
@@ -210,7 +213,7 @@ export class WebhookRouter<TMap extends Record<string, any>> {
         validationResult
       );
 
-      await this.runRouteAfterHooks(handlerEntry, req, response);
+      await this.runRouteAfterHooks(req, response, handlerEntry.after);
       await this.runGlobalAfterHooks(req, response);
 
       return response;
@@ -226,26 +229,23 @@ export class WebhookRouter<TMap extends Record<string, any>> {
   }
 
   private async runRouteBeforeHooks(
-    handlerEntry: {
-      handler: HandlerMap<TMap>[string];
-      schema?: SchemaValidator<unknown>;
-      before?: BeforeHook[];
-      after?: AfterHook[];
-    },
-    req: NormalizedRequest
+    req: NormalizedRequest,
+    before?: BeforeHook[]
   ): Promise<void> {
-    if (handlerEntry.before) {
-      for (const hook of handlerEntry.before) {
+    if (before) {
+      for (const hook of before) {
         await hook(req);
       }
     }
   }
 
-  private parseRequestBody(req: NormalizedRequest): unknown {
+  private parseRequestBody<TParsed = unknown>(
+    req: NormalizedRequest
+  ): TParsed | undefined {
     try {
       const parsed = JSON.parse(req.rawBody.toString());
       req.json = parsed;
-      return parsed;
+      return parsed as TParsed;
     } catch {
       return;
     }
@@ -260,20 +260,15 @@ export class WebhookRouter<TMap extends Record<string, any>> {
     );
   }
 
-  private async validatePayload(
-    handlerEntry: {
-      handler: HandlerMap<TMap>[string];
-      schema?: SchemaValidator<unknown>;
-      before?: BeforeHook[];
-      after?: AfterHook[];
-    },
-    parsedJson: unknown
+  private async validatePayload<TParsed = unknown>(
+    parsedJson: TParsed,
+    schema?: SchemaValidator<TParsed>
   ): Promise<unknown | NormalizedResponse> {
-    if (!handlerEntry.schema) {
+    if (!schema) {
       return parsedJson;
     }
 
-    const result = await handlerEntry.schema.validate(parsedJson);
+    const result = await schema.validate(parsedJson);
     if (!result.success) {
       return {
         status: 400,
@@ -308,17 +303,12 @@ export class WebhookRouter<TMap extends Record<string, any>> {
   }
 
   private async runRouteAfterHooks(
-    handlerEntry: {
-      handler: HandlerMap<TMap>[string];
-      schema?: SchemaValidator<unknown>;
-      before?: BeforeHook[];
-      after?: AfterHook[];
-    },
     req: NormalizedRequest,
-    response: NormalizedResponse
+    response: NormalizedResponse,
+    after?: AfterHook[]
   ): Promise<void> {
-    if (handlerEntry.after) {
-      for (const hook of handlerEntry.after) {
+    if (after) {
+      for (const hook of after) {
         await hook(req, response);
       }
     }
@@ -333,8 +323,8 @@ export class WebhookRouter<TMap extends Record<string, any>> {
     }
   }
 
-  private async handleError(
-    error: unknown,
+  private async handleError<TError = unknown>(
+    error: TError,
     req: NormalizedRequest
   ): Promise<NormalizedResponse> {
     if (this.globalErrorHook) {
