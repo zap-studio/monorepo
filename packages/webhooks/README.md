@@ -115,6 +115,275 @@ const router = new WebhookRouter({
 });
 ```
 
+## Routing Logic
+
+The webhook router intelligently normalizes incoming request paths to match your registered handlers. **All webhook requests MUST include the configured prefix** (default: `/webhooks/`) to prevent conflicts with other application routes.
+
+### How Path Normalization Works
+
+The router performs the following normalization steps in order:
+
+1. **Extract pathname from full URLs** - If the request path is a full URL, extract just the pathname
+2. **Require prefix match** - Verify the path starts with the configured prefix (default: `/webhooks/`)
+3. **Strip prefix** - Remove the prefix from the path (e.g., `/webhooks/payment` → `/payment`)
+4. **Normalize for handler matching** - Remove leading slash for matching against registered handlers (e.g., `/payment` → `payment`)
+
+### Path Normalization Examples
+
+#### ✅ Good Usage Examples
+
+```typescript
+const router = new WebhookRouter<{
+  "payment": { id: string };
+  "subscription": { id: string };
+  "user/created": { userId: string };
+}>();
+
+// Register handlers without leading slashes or prefix
+router.register("payment", handler);
+router.register("subscription", handler);
+router.register("user/created", handler);
+
+// All of these requests will match the "payment" handler:
+await router.handle({ path: "/webhooks/payment", ... });                     // ✅ Matches
+await router.handle({ path: "https://api.com/webhooks/payment", ... });      // ✅ Matches (URL + prefix)
+
+// Nested paths work as expected:
+await router.handle({ path: "/webhooks/user/created", ... });                // ✅ Matches "user/created"
+await router.handle({ path: "https://api.com/webhooks/user/created", ... }); // ✅ Matches "user/created"
+```
+
+#### ❌ Common Mistakes
+
+```typescript
+const router = new WebhookRouter<{
+  "/payment": { id: string };      // ❌ Don't include leading slash in handler name
+  "webhooks/payment": { id: string }; // ❌ Don't include "webhooks/" prefix
+}>();
+
+// This won't work - handler is registered with leading slash
+router.register("/payment", handler);
+await router.handle({ path: "/webhooks/payment", ... }); // ❌ Won't match
+
+// This won't work - handler includes "webhooks/" prefix
+router.register("webhooks/payment", handler);
+await router.handle({ path: "/webhooks/payment", ... }); // ❌ Won't match
+
+// This won't work - missing required prefix
+router.register("payment", handler);
+await router.handle({ path: "/payment", ... }); // ❌ 404 - prefix required!
+```
+
+### Configurable Prefix
+
+You can customize the required prefix to match your application's routing structure:
+
+```typescript
+// Custom prefix
+const router = new WebhookRouter<WebhookMap>({
+  prefix: "/api/webhooks/",  // Custom prefix
+});
+
+router.register("payment", handler);
+
+// Now this path is required:
+await router.handle({ path: "/api/webhooks/payment", ... }); // ✅ Matches
+
+// These won't work:
+await router.handle({ path: "/webhooks/payment", ... });      // ❌ Wrong prefix
+await router.handle({ path: "/payment", ... });               // ❌ No prefix
+```
+
+#### Using Root Prefix
+
+If you want to handle webhooks at the root level (no prefix), use `"/"`:
+
+```typescript
+const router = new WebhookRouter<WebhookMap>({
+  prefix: "/",  // No prefix required
+});
+
+router.register("payment", handler);
+
+await router.handle({ path: "/payment", ... }); // ✅ Matches
+```
+
+### Special Cases
+
+#### Root Webhook Path
+
+```typescript
+// Register root webhook handler
+router.register("", handler);
+
+// This matches the root handler:
+await router.handle({ path: "/webhooks/", ... }); // ✅ Matches
+```
+
+#### Query Parameters and Fragments
+
+Query parameters and URL fragments are preserved in the request but don't affect routing:
+
+```typescript
+router.register("payment", handler);
+
+// Query parameters don't affect routing:
+await router.handle({ 
+  path: "/webhooks/payment?id=123&source=stripe", 
+  ... 
+}); // ✅ Matches "payment"
+
+// Hash fragments don't affect routing:
+await router.handle({ 
+  path: "https://api.com/webhooks/payment#section", 
+  ... 
+}); // ✅ Matches "payment"
+```
+
+#### Nested Paths
+
+```typescript
+router.register("api/v1/events", handler);
+
+await router.handle({ path: "/webhooks/api/v1/events", ... }); // ✅ Matches
+```
+
+### Why Require a Prefix?
+
+**Conflict Prevention**: Requiring a prefix prevents webhook routes from conflicting with your existing application routes. For example:
+
+```typescript
+// Without prefix requirement (problematic):
+// Your app might have: GET /payment/123 (view payment page)
+// Webhook would be:   POST /payment    (webhook handler)
+// This creates ambiguity and potential conflicts!
+
+// With prefix requirement (safe):
+// Your app:    GET /payment/123        (view payment page)
+// Webhook:     POST /webhooks/payment  (webhook handler)
+// No conflicts - clear separation! ✅
+```
+
+### Best Practices
+
+1. **Always register handlers without leading slashes**
+   ```typescript
+   // ✅ Good
+   router.register("payment", handler);
+   router.register("user/created", handler);
+   
+   // ❌ Bad
+   router.register("/payment", handler);
+   router.register("/user/created", handler);
+   ```
+
+2. **Never include the prefix in handler registration**
+   ```typescript
+   // ✅ Good
+   router.register("payment", handler);
+   
+   // ❌ Bad
+   router.register("webhooks/payment", handler);
+   ```
+
+3. **Configure your webhook URLs to include the prefix**
+   ```typescript
+   // When configuring webhooks with providers (Stripe, GitHub, etc.):
+   // ✅ Good: https://yourdomain.com/webhooks/stripe
+   // ❌ Bad:  https://yourdomain.com/stripe
+   ```
+
+4. **Use nested paths with forward slashes**
+   ```typescript
+   // ✅ Good - clear hierarchy
+   router.register("stripe/payment", handler);
+   router.register("stripe/subscription", handler);
+   router.register("user/created", handler);
+   router.register("user/updated", handler);
+   ```
+
+5. **Choose a prefix that fits your application structure**
+   ```typescript
+   // API versioning
+   const router = new WebhookRouter({ prefix: "/api/v1/webhooks/" });
+   
+   // Simple prefix
+   const router = new WebhookRouter({ prefix: "/webhooks/" }); // Default
+   
+   // Custom naming
+   const router = new WebhookRouter({ prefix: "/hooks/" });
+   ```
+
+### Real-World Routing Example
+
+```typescript
+import { WebhookRouter } from "@zap-studio/webhooks";
+
+type WebhookMap = {
+  // Payment provider webhooks
+  "stripe/events": StripeEvent;
+  "paypal/ipn": PayPalIPN;
+  
+  // User lifecycle webhooks
+  "user/created": { userId: string; email: string };
+  "user/updated": { userId: string; changes: Record<string, any> };
+  "user/deleted": { userId: string };
+  
+  // Application events
+  "deploy/started": { deployId: string; environment: string };
+  "deploy/completed": { deployId: string; duration: number };
+  "deploy/failed": { deployId: string; error: string };
+};
+
+const router = new WebhookRouter<WebhookMap>({
+  prefix: "/api/webhooks/",  // Custom prefix for API structure
+  verify: async (req) => {
+    // Verify webhook signatures
+    const signature = req.headers.get("x-webhook-signature");
+    await verifySignature(req.rawBody, signature);
+  }
+});
+
+// Register all handlers
+router.register("stripe/events", stripeHandler);
+router.register("paypal/ipn", paypalHandler);
+router.register("user/created", userCreatedHandler);
+router.register("user/updated", userUpdatedHandler);
+router.register("user/deleted", userDeletedHandler);
+router.register("deploy/started", deployStartedHandler);
+router.register("deploy/completed", deployCompletedHandler);
+router.register("deploy/failed", deployFailedHandler);
+
+// Configure webhook URLs with providers:
+// Stripe:  https://api.example.com/api/webhooks/stripe/events
+// PayPal:  https://api.example.com/api/webhooks/paypal/ipn
+// Custom:  https://api.example.com/api/webhooks/user/created
+// Deploy:  https://api.example.com/api/webhooks/deploy/started
+//
+// The /api/webhooks/ prefix is required and automatically stripped,
+// and the remaining path is matched against registered handlers.
+```
+
+### Debugging Routing Issues
+
+If your webhooks aren't matching:
+
+1. **Verify the prefix** - Ensure incoming requests include the configured prefix
+2. **Check your handler registration** - Ensure no leading slashes or prefix in handler names
+3. **Use a before hook to debug** - Log the incoming path and registered handlers
+4. **Test with different URL formats** - Try with and without full URLs
+
+```typescript
+const router = new WebhookRouter({
+  before: [
+    (req) => {
+      console.log("Incoming path:", req.path);
+      console.log("Required prefix:", router.prefix || "/webhooks/");
+    }
+  ]
+});
+```
+
 ## Lifecycle Hooks
 
 The webhook router supports three types of lifecycle hooks: `before`, `after`, and `onError`. These hooks provide fine-grained control over request processing and allow you to add cross-cutting concerns like logging, monitoring, and error handling.
@@ -596,6 +865,7 @@ const router = new WebhookRouter<WebhookMap>(options?);
 ```
 
 **Options:**
+- `prefix?: string` - The required path prefix for all webhooks (default: `"/webhooks/"`)
 - `verify?: (req: NormalizedRequest) => Promise<void> | void` - Optional function to verify incoming requests (e.g., signature verification)
 - `before?: BeforeHook | BeforeHook[]` - Hook(s) that run before request processing
 - `after?: AfterHook | AfterHook[]` - Hook(s) that run after successful request processing
