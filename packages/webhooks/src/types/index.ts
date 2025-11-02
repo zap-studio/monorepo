@@ -86,7 +86,26 @@ export type WebhookHandler<T = unknown> = (ctx: {
   ack: (res?: Partial<NormalizedResponse>) => Promise<NormalizedResponse>;
 }) => Promise<NormalizedResponse | undefined> | NormalizedResponse | undefined;
 
-/** A map of webhook event types to their corresponding handler functions. */
+/**
+ * A map of webhook event types to their corresponding handler functions.
+ *
+ * @example
+ * ```ts
+ * const handlers: HandlerMap<{
+ *   payment_succeeded: PaymentSucceededPayload;
+ *   payment_failed: PaymentFailedPayload;
+ * }> = {
+ *   payment_succeeded: async ({ req, payload, ack }) => {
+ *     // Handle payment succeeded event
+ *     return ack({ status: 200, body: "Payment succeeded processed" });
+ *   },
+ *   payment_failed: async ({ req, payload, ack }) => {
+ *     // Handle payment failed event
+ *     return ack({ status: 200, body: "Payment failed processed" });
+ *   },
+ * };
+ * ```
+ */
 // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
 export type HandlerMap<TMap extends Record<string, any>> = {
   [P in keyof TMap]: WebhookHandler<TMap[P]>;
