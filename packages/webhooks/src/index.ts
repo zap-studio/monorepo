@@ -205,7 +205,7 @@ export class WebhookRouter<TMap extends Record<string, any>> {
       }
 
       const response = await this.executeHandler(
-        handlerEntry,
+        handlerEntry.handler,
         req,
         validationResult
       );
@@ -287,17 +287,12 @@ export class WebhookRouter<TMap extends Record<string, any>> {
     return result.data;
   }
 
-  private async executeHandler(
-    handlerEntry: {
-      handler: HandlerMap<TMap>[string];
-      schema?: SchemaValidator<unknown>;
-      before?: BeforeHook[];
-      after?: AfterHook[];
-    },
+  private async executeHandler<TPayload = unknown>(
+    handler: HandlerMap<TMap>[string],
     req: NormalizedRequest,
-    validatedPayload: unknown
+    validatedPayload: TPayload
   ): Promise<NormalizedResponse> {
-    const responded = await handlerEntry.handler({
+    const responded = await handler({
       req,
       // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
       payload: validatedPayload as any,
