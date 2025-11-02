@@ -14,7 +14,7 @@ export type HTTPMethod =
 export type NormalizedRequest = {
   /** The HTTP method of the request */
   method: HTTPMethod;
-  /** The path of the request (e.g. "/payment") */
+  /** The path of the request you registered in the router (e.g. "payment", "subscription") */
   path: string;
   /** The headers of the request (e.g. { "Authorization": "Bearer token" }) */
   headers: Headers;
