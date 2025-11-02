@@ -1,3 +1,4 @@
+import type { AnySchema, InferType, ValidationError } from "yup";
 import type { SchemaValidator, ValidationResult } from "../types";
 
 /**
@@ -20,12 +21,13 @@ import type { SchemaValidator, ValidationResult } from "../types";
  * });
  * ```
  */
-export function yupValidator<T>(
-  // biome-ignore lint/suspicious/noExplicitAny: Yup schema type
-  schema: any
-): SchemaValidator<T> {
+export function yupValidator<TSchema extends AnySchema>(
+  schema: TSchema
+): SchemaValidator<InferType<TSchema>> {
   return {
-    validate: async (data: unknown): Promise<ValidationResult<T>> => {
+    validate: async <TData = unknown>(
+      data: TData
+    ): Promise<ValidationResult<InferType<TSchema>>> => {
       try {
         const validatedData = await schema.validate(data, {
           abortEarly: false,
@@ -35,19 +37,43 @@ export function yupValidator<T>(
           data: validatedData,
         };
       } catch (error) {
-        // biome-ignore lint/suspicious/noExplicitAny: Yup ValidationError type
-        const yupError = error as any;
-        return {
-          success: false,
-          errors: yupError.inner?.map(
-            // biome-ignore lint/suspicious/noExplicitAny: Yup error type
-            (err: any) => ({
-              path: err.path ? err.path.split(".") : [],
-              message: err.message,
-            })
-          ) || [{ message: yupError.message }],
-        };
+        return handleValidationError(error);
       }
     },
+  };
+}
+
+function handleValidationError<T>(error: unknown): ValidationResult<T> {
+  if (error instanceof Error && "inner" in error) {
+    const yupError = error as ValidationError;
+
+    if (yupError.inner.length > 0) {
+      return {
+        success: false,
+        errors: yupError.inner.map((err) => ({
+          path: err.path ? err.path.split(".") : [],
+          message: err.message,
+        })),
+      };
+    }
+
+    return {
+      success: false,
+      errors: [
+        {
+          path: yupError.path ? yupError.path.split(".") : [],
+          message: yupError.message,
+        },
+      ],
+    };
+  }
+
+  return {
+    success: false,
+    errors: [
+      {
+        message: error instanceof Error ? error.message : "Validation failed",
+      },
+    ],
   };
 }
