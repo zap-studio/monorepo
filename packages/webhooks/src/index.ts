@@ -34,6 +34,7 @@ import type {
  * };
  *
  * const router = new WebhookRouter<MyWebhookMap>({
+ *   prefix: "/webhooks/", // Optional, defaults to "/webhooks/"
  *   verify: async (req) => {
  *     // Custom verification logic (e.g., signature verification)
  *   },
@@ -82,13 +83,17 @@ export class WebhookRouter<
   private readonly globalBeforeHooks: BeforeHook[] = [];
   private readonly globalAfterHooks: AfterHook[] = [];
   private readonly globalErrorHook?: ErrorHook;
+  private readonly prefix: string;
 
   constructor(opts?: {
     verify?: (req: NormalizedRequest) => Promise<void> | void;
     before?: BeforeHook | BeforeHook[];
     after?: AfterHook | AfterHook[];
     onError?: ErrorHook;
+    prefix?: string;
   }) {
+    this.prefix = opts?.prefix ?? "/webhooks/";
+
     if (opts?.verify) {
       this.verify = opts.verify;
     }
@@ -187,6 +192,10 @@ export class WebhookRouter<
     try {
       const normalizedPath = this.normalizePath(req);
 
+      if (normalizedPath === null) {
+        return { status: 404, body: { error: "not found" } };
+      }
+
       const handlerEntry = this.handlers.get(normalizedPath);
       if (!handlerEntry) {
         return { status: 404, body: { error: "not found" } };
@@ -224,7 +233,7 @@ export class WebhookRouter<
     }
   }
 
-  private normalizePath(req: NormalizedRequest): string {
+  private normalizePath(req: NormalizedRequest): string | null {
     let pathname = req.path;
     try {
       // Try to parse as URL (e.g. handles full URLs like https://example.com/webhooks/path -> /webhooks/path)
@@ -234,11 +243,14 @@ export class WebhookRouter<
       // Not a full URL, use the path as-is
     }
 
-    // Strip /webhooks/ prefix (e.g. /webhooks/path -> /path)
-    const webhooksPrefix = "/webhooks/";
-    if (pathname.startsWith(webhooksPrefix)) {
-      pathname = pathname.slice(webhooksPrefix.length - 1); // Keep the leading slash
+    // Require prefix (e.g. /webhooks/path -> /path)
+    if (!pathname.startsWith(this.prefix)) {
+      // Path doesn't start with the required prefix - not a webhook route
+      return null;
     }
+
+    // Strip prefix and keep the leading slash
+    pathname = pathname.slice(this.prefix.length - 1);
     req.path = pathname;
 
     // Normalize path by removing leading slash for handler matching (e.g. /path -> path)
