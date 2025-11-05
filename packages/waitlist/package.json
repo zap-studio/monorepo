@@ -32,17 +32,17 @@
     "vitest": "latest"
   },
   "exports": {
-    "./adapters/storage/in-memory": "./dist/adapters/storage/in-memory.js",
-    "./client": "./dist/client.js",
-    "./core/schemas": "./dist/core/schemas.js",
-    "./core/utils": "./dist/core/utils.js",
-    "./core/validators": "./dist/core/validators.js",
-    "./events": "./dist/events/index.js",
-    "./referral": "./dist/referral/index.js",
-    "./sdk/base": "./dist/sdk/base.js",
-    "./sdk/types": "./dist/sdk/types.js",
-    "./server": "./dist/server.js",
-    "./types": "./dist/types/index.js",
+    "./adapters/storage/in-memory": "./dist/adapters/storage/in-memory.mjs",
+    "./client": "./dist/client.mjs",
+    "./core/schemas": "./dist/core/schemas.mjs",
+    "./core/utils": "./dist/core/utils.mjs",
+    "./core/validators": "./dist/core/validators.mjs",
+    "./events": "./dist/events/index.mjs",
+    "./referral": "./dist/referral/index.mjs",
+    "./sdk/base": "./dist/sdk/base.mjs",
+    "./sdk/types": "./dist/sdk/types.mjs",
+    "./server": "./dist/server.mjs",
+    "./types": "./dist/types/index.mjs",
     "./package.json": "./package.json"
   }
 }
