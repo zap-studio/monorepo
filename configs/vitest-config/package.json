@@ -10,7 +10,7 @@
   "devDependencies": {
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
-    "tsdown": "^0.15.12",
+    "tsdown": "^0.16.0",
     "typescript": "^5.9.3"
   },
   "exports": {

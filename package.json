@@ -20,7 +20,7 @@
     "validate": "turbo run lint test check-types build"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.0",
+    "@biomejs/biome": "^2.3.4",
     "@changesets/cli": "^2.29.7",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
@@ -29,6 +29,6 @@
     "nyc": "^17.1.0",
     "rimraf": "^6.0.1",
     "turbo": "^2.6.0",
-    "ultracite": "^6.0.1"
+    "ultracite": "^6.3.0"
   }
 }
