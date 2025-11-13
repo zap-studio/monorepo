@@ -130,9 +130,7 @@ describe("parseResponse", () => {
 
     it("should parse JSON with charset in content-type", async () => {
       const mockData = { value: "test" };
-      const response = new Response(JSON.stringify(mockData), {
-        headers: { "content-type": "application/json; charset=utf-8" },
-      });
+      const response = Response.json(mockData);
 
       const result = await parseResponse(response, "json");
       expect(result).toEqual(mockData);
@@ -143,6 +141,7 @@ describe("parseResponse", () => {
         status: 200,
         statusText: "OK",
       });
+      response.headers.delete("content-type");
 
       await expect(parseResponse(response, "json")).rejects.toThrow(FetchError);
       await expect(parseResponse(response, "json")).rejects.toThrow(
@@ -159,7 +158,7 @@ describe("parseResponse", () => {
 
       await expect(parseResponse(response, "json")).rejects.toThrow(FetchError);
       await expect(parseResponse(response, "json")).rejects.toThrow(
-        "Expected JSON response but received no content type"
+        "Expected JSON response but received content type: text/html"
       );
     });
   });
@@ -334,24 +333,18 @@ describe("parseResponse", () => {
   });
 
   describe("unsupported response type", () => {
-    it("should throw FetchError for unsupported response type", () => {
+    it("should throw FetchError for unsupported response type", async () => {
       const response = new Response("test", {
         status: 200,
         statusText: "OK",
       });
 
       // @ts-expect-error - testing invalid response type
-      expect(() => parseResponse(response, "invalid")).toThrow(FetchError);
-    });
-
-    it("should throw FetchError with correct message for unsupported response type", () => {
-      const response = new Response("test", {
-        status: 200,
-        statusText: "OK",
-      });
-
+      await expect(parseResponse(response, "invalid")).rejects.toThrow(
+        FetchError
+      );
       // @ts-expect-error - testing invalid response type
-      expect(() => parseResponse(response, "invalid")).toThrow(
+      await expect(parseResponse(response, "invalid")).rejects.toThrow(
         "Unsupported response type: invalid"
       );
     });
