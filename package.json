@@ -23,6 +23,8 @@
     "@changesets/cli": "^2.29.7",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
+    "@vitest/coverage-v8": "^4.0.3",
+    "nyc": "^17.1.0",
     "@turbo/gen": "^2.6.1",
     "lefthook": "^2.0.4",
     "rimraf": "^6.1.0",
