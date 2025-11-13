@@ -30,6 +30,9 @@ Modern HTTP client with proper error handling. Because `fetch()` should have bee
 **[@zap-studio/waitlist](./packages/waitlist)**  
 Launch faster with built-in waitlist management, referral tracking, and analytics.
 
+**[@zap-studio/webhooks](./packages/webhooks)**  
+Lightweight, type-safe webhook router with schema-agnostic validation. Works with any validation library.
+
 More coming soon.
 
 ## For Contributors

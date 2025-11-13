@@ -1,3 +1,5 @@
+// biome-ignore-all lint/style/noMagicNumbers: It's a test file so magic numbers are fine
+
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import { api, safeFetch } from "../src";
@@ -101,7 +103,8 @@ describe("safeFetch", () => {
       const schema = z.object({ uploaded: z.boolean() });
       const mockData = { uploaded: true };
       const formData = new FormData();
-      formData.append("file", new Blob(["test"]), "test.txt");
+      const file = new File(["test"], "test.txt", { type: "text/plain" });
+      formData.append("file", file);
 
       fetchMock.mockResolvedValue({
         ok: true,
