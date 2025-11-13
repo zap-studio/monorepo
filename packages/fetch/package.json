@@ -32,12 +32,13 @@
     "vitest": "latest"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./errors": "./dist/errors/index.js",
-    "./types": "./dist/types/index.js",
+    ".": "./dist/index.mjs",
+    "./errors": "./dist/errors/index.mjs",
+    "./types": "./dist/types/index.mjs",
+    "./utils": "./dist/utils/index.mjs",
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts"
 }
