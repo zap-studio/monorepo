@@ -12,9 +12,17 @@ export async function parseResponse<TResponseType extends ResponseType>(
     () => Promise<ResponseTypeMap[ResponseType]>
   > = {
     json: async () => {
-      if (!contentType?.includes("application/json")) {
+      if (!contentType) {
         throw new FetchError(
           "Expected JSON response but received no content type",
+          response.status,
+          response.statusText,
+          response
+        );
+      }
+      if (!contentType.includes("application/json")) {
+        throw new FetchError(
+          `Expected JSON response but received content type: ${contentType}`,
           response.status,
           response.statusText,
           response

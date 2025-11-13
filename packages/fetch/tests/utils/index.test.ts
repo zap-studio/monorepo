@@ -135,7 +135,11 @@ describe("parseResponse", () => {
     });
 
     it("should throw FetchError when JSON expected but content-type missing", async () => {
-      const response = Response.json({ data: "test" });
+      const response = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+        statusText: "OK",
+      });
+      response.headers.delete("content-type");
 
       await expect(parseResponse(response, "json")).rejects.toThrow(FetchError);
       await expect(parseResponse(response, "json")).rejects.toThrow(
@@ -152,7 +156,7 @@ describe("parseResponse", () => {
 
       await expect(parseResponse(response, "json")).rejects.toThrow(FetchError);
       await expect(parseResponse(response, "json")).rejects.toThrow(
-        "Expected JSON response but received no content type"
+        "Expected JSON response but received content type: text/html"
       );
     });
   });
