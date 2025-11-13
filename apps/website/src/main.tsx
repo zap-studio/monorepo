@@ -8,11 +8,11 @@ import { Page } from "./page.tsx";
 
 const rootElement = document.getElementById("root");
 if (rootElement) {
-	createRoot(rootElement).render(
-		<StrictMode>
-			<ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-				<Page />
-			</ThemeProvider>
-		</StrictMode>,
-	);
+  createRoot(rootElement).render(
+    <StrictMode>
+      <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+        <Page />
+      </ThemeProvider>
+    </StrictMode>
+  );
 }

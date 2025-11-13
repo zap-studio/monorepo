@@ -1,32 +1,32 @@
 {
-	"name": "@zap-studio/monorepo",
-	"author": "Alexandre Trotel",
-	"private": true,
-	"packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8",
-	"scripts": {
-		"build": "turbo run build",
-		"check-types": "turbo run check-types",
-		"dev": "turbo run dev",
-		"lint": "npx ultracite check",
-		"format": "npx ultracite fix",
-		"clean": "turbo run clean && rimraf node_modules",
-		"typegen": "turbo run typegen",
-		"test": "turbo run test",
-		"test:watch": "turbo run test:watch",
-		"test:coverage": "turbo run test -- --coverage && pnpm merge-coverage && pnpm report-coverage",
-		"merge-coverage": "rimraf coverage/merged && mkdir -p coverage/merged && find packages apps -name 'coverage' -type d -exec sh -c 'test -f \"$1/coverage-final.json\" && echo \"$1\"' _ {} \\; | xargs -I {} sh -c 'cp {}/coverage-final.json coverage/merged/$(echo {} | tr / -).json' || true",
-		"report-coverage": "nyc report --reporter=html --reporter=text --reporter=lcov --report-dir=coverage/report --temp-dir=coverage/merged",
-		"publish-packages": "turbo run build lint test && changeset version && changeset publish"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "^2.3.0",
-		"@changesets/cli": "^2.29.7",
-		"@commitlint/cli": "^20.1.0",
-		"@commitlint/config-conventional": "^20.0.0",
-		"@turbo/gen": "^2.5.8",
-		"lefthook": "^2.0.1",
-		"rimraf": "^6.0.1",
-		"turbo": "^2.5.8",
-		"ultracite": "^6.0.1"
-	}
+  "name": "@zap-studio/monorepo",
+  "author": "Alexandre Trotel",
+  "private": true,
+  "packageManager": "pnpm@10.22.0+sha512.bf049efe995b28f527fd2b41ae0474ce29186f7edcb3bf545087bd61fbbebb2bf75362d1307fda09c2d288e1e499787ac12d4fcb617a974718a6051f2eee741c",
+  "scripts": {
+    "build": "turbo run build",
+    "check-types": "turbo run check-types",
+    "dev": "turbo run dev",
+    "lint": "npx ultracite check",
+    "format": "npx ultracite fix",
+    "clean": "turbo run clean && rimraf node_modules",
+    "typegen": "turbo run typegen",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "test:coverage": "turbo run test -- --coverage && pnpm merge-coverage && pnpm report-coverage",
+    "merge-coverage": "rimraf coverage/merged && mkdir -p coverage/merged && find packages apps -name 'coverage' -type d -exec sh -c 'test -f \"$1/coverage-final.json\" && echo \"$1\"' _ {} \\; | xargs -I {} sh -c 'cp {}/coverage-final.json coverage/merged/$(echo {} | tr / -).json' || true",
+    "report-coverage": "nyc report --reporter=html --reporter=text --reporter=lcov --report-dir=coverage/report --temp-dir=coverage/merged",
+    "publish-packages": "turbo run build lint test && changeset version && changeset publish"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.5",
+    "@changesets/cli": "^2.29.7",
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@turbo/gen": "^2.6.1",
+    "lefthook": "^2.0.4",
+    "rimraf": "^6.1.0",
+    "turbo": "^2.6.1",
+    "ultracite": "^6.3.2"
+  }
 }
