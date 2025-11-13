@@ -66,18 +66,18 @@
     "vitest": "latest"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./adapters/base": "./dist/adapters/base.js",
-    "./types": "./dist/types/index.js",
-    "./utils": "./dist/utils/index.js",
-    "./validators/arktype": "./dist/validators/arktype.js",
-    "./validators/valibot": "./dist/validators/valibot.js",
-    "./validators/yup": "./dist/validators/yup.js",
-    "./validators/zod": "./dist/validators/zod.js",
-    "./verify": "./dist/verify.js",
+    ".": "./dist/index.mjs",
+    "./adapters/base": "./dist/adapters/base.mjs",
+    "./types": "./dist/types/index.mjs",
+    "./utils": "./dist/utils/index.mjs",
+    "./validators/arktype": "./dist/validators/arktype.mjs",
+    "./validators/valibot": "./dist/validators/valibot.mjs",
+    "./validators/yup": "./dist/validators/yup.mjs",
+    "./validators/zod": "./dist/validators/zod.mjs",
+    "./verify": "./dist/verify.mjs",
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts"
 }
