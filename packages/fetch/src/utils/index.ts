@@ -13,8 +13,11 @@ export function parseResponse<TResponseType extends ResponseType>(
   > = {
     json: async () => {
       if (!contentType?.includes("application/json")) {
+        const errorMessage = contentType
+          ? `Expected JSON response but received content type: ${contentType}`
+          : "Expected JSON response but received no content type";
         throw new FetchError(
-          "Expected JSON response but received no content type",
+          errorMessage,
           response.status,
           response.statusText,
           response
@@ -55,12 +58,14 @@ export function parseResponse<TResponseType extends ResponseType>(
 
   const parser = parsers[responseType];
   if (!parser) {
-    throw new FetchError(
-      `Unsupported response type: ${responseType}`,
-      response.status,
-      response.statusText,
-      response
-    );
+    return Promise.reject(
+      new FetchError(
+        `Unsupported response type: ${responseType}`,
+        response.status,
+        response.statusText,
+        response
+      )
+    ) as Promise<ResponseTypeMap[TResponseType]>;
   }
 
   return parser() as Promise<ResponseTypeMap[TResponseType]>;

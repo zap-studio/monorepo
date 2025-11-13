@@ -9,8 +9,8 @@ describe("safeFetch", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    fetchMock = vi.fn();
-    global.fetch = fetchMock as unknown as typeof fetch;
+    fetchMock = vi.fn<typeof fetch>();
+    global.fetch = fetchMock as typeof fetch;
   });
 
   afterEach(() => {
@@ -757,8 +757,8 @@ describe("api convenience methods", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    fetchMock = vi.fn();
-    global.fetch = fetchMock as unknown as typeof fetch;
+    fetchMock = vi.fn<typeof fetch>();
+    global.fetch = fetchMock as typeof fetch;
   });
 
   afterEach(() => {
