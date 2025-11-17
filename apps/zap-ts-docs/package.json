@@ -22,7 +22,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "fumadocs-core": "^16.0.11",
-    "fumadocs-mdx": "^13.0.8",
+    "fumadocs-mdx": "^14.0.1",
     "fumadocs-typescript": "^4.0.13",
     "fumadocs-ui": "^16.0.11",
     "hast-util-to-jsx-runtime": "^2.3.6",
