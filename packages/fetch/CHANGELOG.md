@@ -1,5 +1,11 @@
 # @zap-studio/fetch
 
+## 0.1.2
+
+### Patch Changes
+
+- 69c2b21: Change `safeFetch` to `$fetch` syntax and make sure `safeFetch` can also be used for legacy
+
 ## 0.1.1
 
 ### Patch Changes
