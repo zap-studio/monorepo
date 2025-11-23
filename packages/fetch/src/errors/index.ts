@@ -10,9 +10,9 @@ export class FetchError extends Error {
     response: Response
   ) {
     super(message);
+    this.name = "FetchError";
     this.status = status;
     this.statusText = statusText;
     this.response = response;
-    this.name = "FetchError";
   }
 }

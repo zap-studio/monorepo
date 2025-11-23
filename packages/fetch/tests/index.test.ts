@@ -1,9 +1,11 @@
+// biome-ignore-all lint/style/noMagicNumbers: It's a test file so magic numbers are fine
+
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
-import { api, safeFetch } from "../src";
+import { $fetch, api } from "../src";
 import { FetchError } from "../src/errors";
 
-describe("safeFetch", () => {
+describe("$fetch", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
@@ -32,7 +34,7 @@ describe("safeFetch", () => {
         json: async () => mockData,
       });
 
-      const result = await safeFetch("https://api.example.com/user", schema);
+      const result = await $fetch("https://api.example.com/user", schema);
 
       expect(result).toEqual(mockData);
       expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/user", {
@@ -53,7 +55,7 @@ describe("safeFetch", () => {
         json: async () => mockData,
       });
 
-      const result = await safeFetch("https://api.example.com/data", schema, {
+      const result = await $fetch("https://api.example.com/data", schema, {
         method: "GET",
       });
 
@@ -79,7 +81,7 @@ describe("safeFetch", () => {
         json: async () => mockData,
       });
 
-      const result = await safeFetch("https://api.example.com/items", schema, {
+      const result = await $fetch("https://api.example.com/items", schema, {
         method: "POST",
         body: requestBody,
       });
@@ -101,7 +103,8 @@ describe("safeFetch", () => {
       const schema = z.object({ uploaded: z.boolean() });
       const mockData = { uploaded: true };
       const formData = new FormData();
-      formData.append("file", new Blob(["test"]), "test.txt");
+      const file = new File(["test"], "test.txt", { type: "text/plain" });
+      formData.append("file", file);
 
       fetchMock.mockResolvedValue({
         ok: true,
@@ -111,7 +114,7 @@ describe("safeFetch", () => {
         json: async () => mockData,
       });
 
-      const result = await safeFetch("https://api.example.com/upload", schema, {
+      const result = await $fetch("https://api.example.com/upload", schema, {
         method: "POST",
         body: formData,
       });
@@ -139,7 +142,7 @@ describe("safeFetch", () => {
         json: async () => mockData,
       });
 
-      const result = await safeFetch("https://api.example.com/text", schema, {
+      const result = await $fetch("https://api.example.com/text", schema, {
         method: "POST",
         body: textBody,
       });
@@ -166,7 +169,7 @@ describe("safeFetch", () => {
         json: async () => mockData,
       });
 
-      await safeFetch("https://api.example.com/custom", schema, {
+      await $fetch("https://api.example.com/custom", schema, {
         method: "POST",
         body: { data: "test" },
         headers: {
@@ -199,7 +202,7 @@ describe("safeFetch", () => {
           json: async () => mockData,
         });
 
-        const result = await safeFetch("https://api.example.com/data", schema, {
+        const result = await $fetch("https://api.example.com/data", schema, {
           responseType: "json",
         });
 
@@ -218,7 +221,7 @@ describe("safeFetch", () => {
           json: async () => mockData,
         });
 
-        const result = await safeFetch("https://api.example.com/data", schema);
+        const result = await $fetch("https://api.example.com/data", schema);
 
         expect(result).toEqual(mockData);
       });
@@ -235,7 +238,7 @@ describe("safeFetch", () => {
         });
 
         await expect(
-          safeFetch("https://api.example.com/data", schema, {
+          $fetch("https://api.example.com/data", schema, {
             responseType: "json",
           })
         ).rejects.toThrow(FetchError);
@@ -253,7 +256,7 @@ describe("safeFetch", () => {
         });
 
         await expect(
-          safeFetch("https://api.example.com/data", schema, {
+          $fetch("https://api.example.com/data", schema, {
             responseType: "json",
           })
         ).rejects.toThrow(FetchError);
@@ -273,7 +276,7 @@ describe("safeFetch", () => {
           text: async () => mockText,
         });
 
-        const result = await safeFetch("https://api.example.com/text", schema, {
+        const result = await $fetch("https://api.example.com/text", schema, {
           responseType: "text",
         });
 
@@ -292,7 +295,7 @@ describe("safeFetch", () => {
           text: async () => mockHtml,
         });
 
-        const result = await safeFetch("https://api.example.com/page", schema, {
+        const result = await $fetch("https://api.example.com/page", schema, {
           responseType: "text",
         });
 
@@ -311,7 +314,7 @@ describe("safeFetch", () => {
         });
 
         await expect(
-          safeFetch("https://api.example.com/text", schema, {
+          $fetch("https://api.example.com/text", schema, {
             responseType: "text",
           })
         ).rejects.toThrow(FetchError);
@@ -331,7 +334,7 @@ describe("safeFetch", () => {
           blob: async () => mockBlob,
         });
 
-        const result = await safeFetch("https://api.example.com/file", schema, {
+        const result = await $fetch("https://api.example.com/file", schema, {
           responseType: "blob",
         });
 
@@ -353,13 +356,9 @@ describe("safeFetch", () => {
           blob: async () => mockBlob,
         });
 
-        const result = await safeFetch(
-          "https://api.example.com/binary",
-          schema,
-          {
-            responseType: "blob",
-          }
-        );
+        const result = await $fetch("https://api.example.com/binary", schema, {
+          responseType: "blob",
+        });
 
         expect(result).toBe(mockBlob);
       });
@@ -378,13 +377,9 @@ describe("safeFetch", () => {
           arrayBuffer: async () => mockBuffer,
         });
 
-        const result = await safeFetch(
-          "https://api.example.com/binary",
-          schema,
-          {
-            responseType: "arrayBuffer",
-          }
-        );
+        const result = await $fetch("https://api.example.com/binary", schema, {
+          responseType: "arrayBuffer",
+        });
 
         expect(result).toBe(mockBuffer);
         expect(result).toBeInstanceOf(ArrayBuffer);
@@ -403,7 +398,7 @@ describe("safeFetch", () => {
           arrayBuffer: async () => mockBuffer,
         });
 
-        const result = await safeFetch("https://api.example.com/data", schema, {
+        const result = await $fetch("https://api.example.com/data", schema, {
           responseType: "arrayBuffer",
         });
 
@@ -425,13 +420,9 @@ describe("safeFetch", () => {
           arrayBuffer: async () => mockBuffer,
         });
 
-        const result = await safeFetch(
-          "https://api.example.com/bytes",
-          schema,
-          {
-            responseType: "bytes",
-          }
-        );
+        const result = await $fetch("https://api.example.com/bytes", schema, {
+          responseType: "bytes",
+        });
 
         expect(result).toBeInstanceOf(Uint8Array);
         expect(result).toEqual(new Uint8Array([1, 2, 3, 4]));
@@ -450,13 +441,9 @@ describe("safeFetch", () => {
           arrayBuffer: async () => mockBuffer,
         });
 
-        const result = await safeFetch(
-          "https://api.example.com/bytes",
-          schema,
-          {
-            responseType: "bytes",
-          }
-        );
+        const result = await $fetch("https://api.example.com/bytes", schema, {
+          responseType: "bytes",
+        });
 
         expect(Array.from(result as Uint8Array)).toEqual(data);
       });
@@ -477,7 +464,7 @@ describe("safeFetch", () => {
           formData: async () => mockFormData,
         });
 
-        const result = await safeFetch("https://api.example.com/form", schema, {
+        const result = await $fetch("https://api.example.com/form", schema, {
           responseType: "formData",
         });
 
@@ -498,7 +485,7 @@ describe("safeFetch", () => {
         });
 
         await expect(
-          safeFetch("https://api.example.com/form", schema, {
+          $fetch("https://api.example.com/form", schema, {
             responseType: "formData",
           })
         ).rejects.toThrow(FetchError);
@@ -524,7 +511,7 @@ describe("safeFetch", () => {
         });
 
         const schema = z.instanceof(Response);
-        const result = await safeFetch("https://api.example.com/data", schema, {
+        const result = await $fetch("https://api.example.com/data", schema, {
           responseType: "clone",
         });
 
@@ -551,7 +538,7 @@ describe("safeFetch", () => {
         });
 
         const schema = z.instanceof(Response);
-        const result = await safeFetch("https://api.example.com/data", schema, {
+        const result = await $fetch("https://api.example.com/data", schema, {
           responseType: "clone",
         });
 
@@ -573,7 +560,7 @@ describe("safeFetch", () => {
         });
 
         await expect(
-          safeFetch("https://api.example.com/data", schema, {
+          $fetch("https://api.example.com/data", schema, {
             // @ts-expect-error - Testing invalid response type
             responseType: "invalid",
           })
@@ -600,7 +587,7 @@ describe("safeFetch", () => {
       });
 
       await expect(
-        safeFetch("https://api.example.com/user", schema, {
+        $fetch("https://api.example.com/user", schema, {
           throwOnValidationError: true,
         })
       ).rejects.toThrow();
@@ -622,7 +609,7 @@ describe("safeFetch", () => {
         json: async () => invalidData,
       });
 
-      const result = await safeFetch("https://api.example.com/user", schema, {
+      const result = await $fetch("https://api.example.com/user", schema, {
         throwOnValidationError: false,
       });
 
@@ -648,7 +635,7 @@ describe("safeFetch", () => {
         json: async () => validData,
       });
 
-      const result = await safeFetch("https://api.example.com/user", schema, {
+      const result = await $fetch("https://api.example.com/user", schema, {
         throwOnValidationError: false,
       });
 
@@ -670,11 +657,11 @@ describe("safeFetch", () => {
       const schema = z.object({ id: z.number() });
 
       await expect(
-        safeFetch("https://api.example.com/notfound", schema)
+        $fetch("https://api.example.com/notfound", schema)
       ).rejects.toThrow(FetchError);
 
       try {
-        await safeFetch("https://api.example.com/notfound", schema);
+        await $fetch("https://api.example.com/notfound", schema);
       } catch (error) {
         expect(error).toBeInstanceOf(FetchError);
         if (error instanceof FetchError) {
@@ -695,7 +682,7 @@ describe("safeFetch", () => {
       const schema = z.object({ id: z.number() });
 
       await expect(
-        safeFetch("https://api.example.com/error", schema)
+        $fetch("https://api.example.com/error", schema)
       ).rejects.toThrow(FetchError);
     });
 
@@ -710,7 +697,7 @@ describe("safeFetch", () => {
       const schema = z.object({ id: z.number() });
 
       await expect(
-        safeFetch("https://api.example.com/html", schema, {
+        $fetch("https://api.example.com/html", schema, {
           responseType: "json",
         })
       ).rejects.toThrow(FetchError);
@@ -730,7 +717,7 @@ describe("safeFetch", () => {
         json: async () => mockData,
       });
 
-      await safeFetch("https://api.example.com/auth", schema, {
+      await $fetch("https://api.example.com/auth", schema, {
         headers: {
           Authorization: "Bearer token123",
           "X-Custom-Header": "custom-value",

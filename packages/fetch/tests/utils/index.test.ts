@@ -1,3 +1,5 @@
+// biome-ignore-all lint/style/noMagicNumbers: It's a test file so magic numbers are fine
+
 import { describe, expect, it } from "vitest";
 import { FetchError } from "../../src/errors";
 import { parseResponse, prepareHeadersAndBody } from "../../src/utils";

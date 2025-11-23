@@ -3,6 +3,8 @@ name: Lint
 on:
   pull_request:
     branches: ["**"]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -26,7 +28,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "latest"
-          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

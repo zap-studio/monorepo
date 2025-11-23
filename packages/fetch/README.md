@@ -84,12 +84,12 @@ const deleted = await api.delete("/api/users/1", UserSchema);
 
 ## Advanced Usage
 
-### Using `safeFetch` directly
+### Using `$fetch` directly
 
 ```typescript
-import { safeFetch } from "@zap-studio/fetch";
+import { $fetch } from "@zap-studio/fetch";
 
-const result = await safeFetch(
+const result = await $fetch(
   "https://api.example.com/users/1",
   UserSchema,
   {
@@ -105,14 +105,14 @@ const result = await safeFetch(
 
 ```typescript
 // Get text response
-const text = await safeFetch(
+const text = await $fetch(
   "/api/data",
   z.string(),
   { responseType: "text" }
 );
 
 // Get blob response
-const blob = await safeFetch(
+const blob = await $fetch(
   "/api/file",
   z.instanceof(Blob),
   { responseType: "blob" }
@@ -137,12 +137,12 @@ try {
 
 ```typescript
 // Throw on validation error (default)
-const user = await safeFetch(url, UserSchema, {
+const user = await $fetch(url, UserSchema, {
   throwOnValidationError: true,
 });
 
 // Return validation result without throwing
-const result = await safeFetch(url, UserSchema, {
+const result = await $fetch(url, UserSchema, {
   throwOnValidationError: false,
 });
 

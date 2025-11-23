@@ -1,7 +1,7 @@
 import { FetchError } from "../errors";
 import type { ResponseType, ResponseTypeMap } from "../types";
 
-export async function parseResponse<TResponseType extends ResponseType>(
+export function parseResponse<TResponseType extends ResponseType>(
   response: Response,
   responseType: TResponseType
 ): Promise<ResponseTypeMap[TResponseType]> {
@@ -12,17 +12,12 @@ export async function parseResponse<TResponseType extends ResponseType>(
     () => Promise<ResponseTypeMap[ResponseType]>
   > = {
     json: async () => {
-      if (!contentType) {
+      if (!contentType?.includes("application/json")) {
+        const errorMessage = contentType
+          ? `Expected JSON response but received content type: ${contentType}`
+          : "Expected JSON response but received no content type";
         throw new FetchError(
-          "Expected JSON response but received no content type",
-          response.status,
-          response.statusText,
-          response
-        );
-      }
-      if (!contentType.includes("application/json")) {
-        throw new FetchError(
-          `Expected JSON response but received content type: ${contentType}`,
+          errorMessage,
           response.status,
           response.statusText,
           response
@@ -30,13 +25,13 @@ export async function parseResponse<TResponseType extends ResponseType>(
       }
       return await response.json();
     },
-    arrayBuffer: async () => await response.arrayBuffer(),
-    blob: async () => await response.blob(),
+    arrayBuffer: async () => response.arrayBuffer(),
+    blob: async () => response.blob(),
     bytes: async () => {
       const buffer = await response.arrayBuffer();
       return new Uint8Array(buffer);
     },
-    clone: async () => await Promise.resolve(response.clone()),
+    clone: async () => response.clone(),
     formData: async () => {
       if (!contentType?.includes("multipart/form-data")) {
         throw new FetchError(
@@ -63,15 +58,17 @@ export async function parseResponse<TResponseType extends ResponseType>(
 
   const parser = parsers[responseType];
   if (!parser) {
-    throw new FetchError(
-      `Unsupported response type: ${responseType}`,
-      response.status,
-      response.statusText,
-      response
-    );
+    return Promise.reject(
+      new FetchError(
+        `Unsupported response type: ${responseType}`,
+        response.status,
+        response.statusText,
+        response
+      )
+    ) as Promise<ResponseTypeMap[TResponseType]>;
   }
 
-  return (await parser()) as Promise<ResponseTypeMap[TResponseType]>;
+  return parser() as Promise<ResponseTypeMap[TResponseType]>;
 }
 
 export function prepareHeadersAndBody<TBody = unknown>(
