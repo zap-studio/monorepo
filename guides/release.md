@@ -100,7 +100,9 @@ git push origin feat/<package-name>
 
 ### Preparing a Release
 
-Once features are ready in `develop`, prepare for release:
+Once features are ready in `develop`, prepare for release.
+
+**IMPORTANT:** All versioning must be done on the `develop` branch before creating a release PR to `main`.
 
 #### 1. Version the Packages
 
@@ -135,14 +137,19 @@ git push origin develop
 
 #### 3. Create a Release PR to `main`
 
-1. Create a PR from `develop` to `main`
+**CRITICAL:** The release PR must include all the version updates from step 1.
+
+1. Create a PR to `main`
 2. Title: `Release: <date>` or `Release: <version>`
 3. Include a summary of all packages being released
-4. Request reviews from maintainers
+4. Verify the PR includes updated `package.json` versions and `CHANGELOG.md` files
+5. Request reviews from maintainers
 
 ### Publishing the Release
 
-Once the release PR is approved and merged into `main`:
+Once the release PR is approved and merged into `main`, the `main` branch will contain all the updated versions from `develop`.
+
+**At this point, NO versioning should happen - only building, testing, and publishing.**
 
 #### 1. Checkout `main` and Pull
 
@@ -153,7 +160,7 @@ git pull origin main
 
 #### 2. Publish to NPM
 
-Use the convenient `publish-packages` script that handles the full release workflow:
+Use the convenient `publish-packages` script that handles the publishing workflow:
 
 ```bash
 pnpm publish-packages
@@ -163,9 +170,8 @@ This script will:
 1. **Build** all packages (`turbo run build`)
 2. **Lint** the codebase (`turbo run lint`)
 3. **Run tests** (`turbo run test`)
-4. **Version packages** (`changeset version`) - if any changesets remain
-5. **Publish to npm** (`changeset publish`)
-6. **Create git tags** for each published package
+4. **Publish to npm** (`changeset publish`)
+5. **Create git tags** for each published package
 
 **Alternative - Manual Steps:**
 
@@ -176,9 +182,6 @@ If you prefer to run the steps individually:
 pnpm build
 pnpm lint
 pnpm test
-
-# Version
-pnpm changeset version
 
 # Publish
 pnpm changeset publish
@@ -285,6 +288,19 @@ jobs:
 ```
 
 **Note:** The GitHub Action uses the `publish-packages` script, which includes building, linting, and testing before publishing.
+
+## Common Mistakes to Avoid
+
+### ❌ DON'T: Run `changeset version` on `main`
+
+Versioning should ONLY happen on the `develop` branch.
+
+**Correct flow:**
+1. Version on `develop` → 2. PR to `main` → 3. Publish on `main`
+
+### ❌ DON'T: Forget to merge `main` back to `develop`
+
+After publishing, always merge `main` back to `develop` to keep the tags and any minor changes in sync.
 
 ## Best Practices
 
@@ -393,9 +409,10 @@ pnpm changeset status
    ```bash
    pnpm changeset version  # Auto-commits version updates
    git push
+   # Create PR from develop to main
    ```
 
-3. **Publishing** (on `main`)
+3. **Publishing** (on `main` - after merging release PR)
    ```bash
    pnpm publish-packages  # Builds, tests, and publishes
    git push --follow-tags
@@ -436,6 +453,14 @@ If `publish-packages` or publish fails:
 4. Ensure you have publish rights to the package scope
 5. If build/lint/test fails, fix those first before publishing
 6. Use `pnpm changeset publish` directly if you've already validated the build
+
+### "Nothing to publish" Error
+
+If you see "No packages to publish" or similar:
+1. Verify you ran `pnpm changeset version` on `develop` before the release PR
+2. Check that the version changes were included in the merge to `main`
+3. Ensure `package.json` versions are higher than what's on npm
+4. The `publish-packages` script does NOT version - it expects versions to already be updated
 
 ### Accidental Publish
 
