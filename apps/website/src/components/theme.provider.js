@@ -15,7 +15,8 @@ export function ThemeProvider({
     if (typeof window === "undefined") {
       return defaultTheme;
     }
-    return localStorage.getItem(storageKey) || defaultTheme;
+    const storedTheme = localStorage.getItem(storageKey);
+    return storedTheme || defaultTheme;
   });
   useEffect(() => {
     const root = window.document.documentElement;
