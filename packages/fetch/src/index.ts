@@ -8,7 +8,7 @@ import { parseResponse, prepareHeadersAndBody } from "./utils";
  *
  * @example
  * import { z } from "zod";
- * import { safeFetch } from "@zap-studio/fetch";
+ * import { $fetch } from "@zap-studio/fetch";
  *
  * const UserSchema = z.object({
  *   id: z.number(),
@@ -17,7 +17,7 @@ import { parseResponse, prepareHeadersAndBody } from "./utils";
  * });
  *
  * async function getUser(userId: number) {
- *   const user = await safeFetch(
+ *   const user = await $fetch(
  *     `https://api.example.com/users/${userId}`,
  *     UserSchema,
  *     { method: "GET" }
@@ -25,7 +25,7 @@ import { parseResponse, prepareHeadersAndBody } from "./utils";
  *   return user; // user is typed as { id: number; name: string; email: string; }
  * }
  */
-export async function safeFetch<
+export async function $fetch<
   TResponse,
   TBody = unknown,
   TResponseType extends ResponseType = "json",
@@ -72,6 +72,8 @@ export async function safeFetch<
     : responseSchema.safeParse(data);
 }
 
+export const safeFetch = $fetch;
+
 /**
  * Convenience methods for common HTTP verbs
  *
@@ -95,32 +97,32 @@ export const api = {
     resource: string,
     schema: z.ZodType<TResponse>,
     options?: Omit<RequestInit, "method" | "body">
-  ) => safeFetch(resource, schema, { ...options, method: "GET" }),
+  ) => $fetch(resource, schema, { ...options, method: "GET" }),
 
   post: <TResponse, TBody = unknown>(
     resource: string,
     schema: z.ZodType<TResponse>,
     body?: TBody,
     options?: Omit<RequestInit, "method" | "body">
-  ) => safeFetch(resource, schema, { ...options, method: "POST", body }),
+  ) => $fetch(resource, schema, { ...options, method: "POST", body }),
 
   put: <TResponse, TBody = unknown>(
     resource: string,
     schema: z.ZodType<TResponse>,
     body?: TBody,
     options?: Omit<RequestInit, "method" | "body">
-  ) => safeFetch(resource, schema, { ...options, method: "PUT", body }),
+  ) => $fetch(resource, schema, { ...options, method: "PUT", body }),
 
   patch: <TResponse, TBody = unknown>(
     resource: string,
     schema: z.ZodType<TResponse>,
     body?: TBody,
     options?: Omit<RequestInit, "method" | "body">
-  ) => safeFetch(resource, schema, { ...options, method: "PATCH", body }),
+  ) => $fetch(resource, schema, { ...options, method: "PATCH", body }),
 
   delete: <TResponse>(
     resource: string,
     schema: z.ZodType<TResponse>,
     options?: Omit<RequestInit, "method" | "body">
-  ) => safeFetch(resource, schema, { ...options, method: "DELETE" }),
+  ) => $fetch(resource, schema, { ...options, method: "DELETE" }),
 };

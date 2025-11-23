@@ -331,7 +331,6 @@ export class WebhookRouter<
       // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
       payload: validatedPayload as any,
       ack: async (r?: Partial<NormalizedResponse>) => ({
-        // biome-ignore lint/style/noMagicNumbers: Default status code is 200 and only used here
         status: r?.status ?? 200,
         body: r?.body ?? "ok",
         headers: r?.headers,
