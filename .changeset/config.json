@@ -7,5 +7,11 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["zap-ts-docs"]
+  "ignore": [
+    "@zap-studio/tsdown-config",
+    "@zap-studio/typescript-config",
+    "@zap-studio/vitest-config",
+    "website",
+    "zap-ts-docs"
+  ]
 }
