@@ -101,10 +101,10 @@ importers:
     dependencies:
       '@ai-sdk/openai-compatible':
         specifier: ^1.0.27
-        version: 1.0.27(zod@4.1.12)
+        version: 1.0.27(zod@4.1.13)
       '@ai-sdk/react':
         specifier: ^2.0.100
-        version: 2.0.100(react@19.2.0)(zod@4.1.12)
+        version: 2.0.100(react@19.2.0)(zod@4.1.13)
       '@bprogress/next':
         specifier: ^3.2.12
         version: 3.2.12(next@16.0.3(@opentelemetry/api@1.9.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -122,7 +122,7 @@ importers:
         version: 1.5.0(next@16.0.3(@opentelemetry/api@1.9.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)
       ai:
         specifier: ^5.0.100
-        version: 5.0.100(zod@4.1.12)
+        version: 5.0.100(zod@4.1.13)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -178,8 +178,8 @@ importers:
         specifier: ^3.4.0
         version: 3.4.0
       zod:
-        specifier: ^4.1.12
-        version: 4.1.12
+        specifier: ^4.1.13
+        version: 4.1.13
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4.1.17
@@ -244,8 +244,8 @@ importers:
   packages/fetch:
     dependencies:
       zod:
-        specifier: ^4.1.12
-        version: 4.1.12
+        specifier: ^4.1.13
+        version: 4.1.13
     devDependencies:
       '@types/node':
         specifier: latest
@@ -5238,8 +5238,8 @@ packages:
     resolution: {integrity: sha512-4LCcse/U2MHZ63HAJVE+v71o7yOdIe4cZ70Wpf8D/IyjDKYQLV5GD46B+hSTjJsvV5PztjvHoU580EftxjDZFQ==}
     engines: {node: '>=12.20'}
 
-  zod@4.1.12:
-    resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
+  zod@4.1.13:
+    resolution: {integrity: sha512-AvvthqfqrAhNH9dnfmrfKzX5upOdjUVJYFqNSlkmGf64gRaTzlPwz99IHYnVs28qYAybvAlBV+H7pn0saFY4Ig==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -5248,39 +5248,39 @@ snapshots:
 
   '@acemir/cssom@0.9.24': {}
 
-  '@ai-sdk/gateway@2.0.14(zod@4.1.12)':
+  '@ai-sdk/gateway@2.0.14(zod@4.1.13)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.12)
+      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.13)
       '@vercel/oidc': 3.0.5
-      zod: 4.1.12
+      zod: 4.1.13
 
-  '@ai-sdk/openai-compatible@1.0.27(zod@4.1.12)':
+  '@ai-sdk/openai-compatible@1.0.27(zod@4.1.13)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.12)
-      zod: 4.1.12
+      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.13)
+      zod: 4.1.13
 
-  '@ai-sdk/provider-utils@3.0.17(zod@4.1.12)':
+  '@ai-sdk/provider-utils@3.0.17(zod@4.1.13)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@standard-schema/spec': 1.0.0
       eventsource-parser: 3.0.6
-      zod: 4.1.12
+      zod: 4.1.13
 
   '@ai-sdk/provider@2.0.0':
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/react@2.0.100(react@19.2.0)(zod@4.1.12)':
+  '@ai-sdk/react@2.0.100(react@19.2.0)(zod@4.1.13)':
     dependencies:
-      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.12)
-      ai: 5.0.100(zod@4.1.12)
+      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.13)
+      ai: 5.0.100(zod@4.1.13)
       react: 19.2.0
       swr: 2.3.6(react@19.2.0)
       throttleit: 2.1.0
     optionalDependencies:
-      zod: 4.1.12
+      zod: 4.1.13
 
   '@alloc/quick-lru@5.2.0': {}
 
@@ -7276,13 +7276,13 @@ snapshots:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  ai@5.0.100(zod@4.1.12):
+  ai@5.0.100(zod@4.1.13):
     dependencies:
-      '@ai-sdk/gateway': 2.0.14(zod@4.1.12)
+      '@ai-sdk/gateway': 2.0.14(zod@4.1.13)
       '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.12)
+      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.13)
       '@opentelemetry/api': 1.9.0
-      zod: 4.1.12
+      zod: 4.1.13
 
   ajv@6.12.6:
     dependencies:
@@ -8076,7 +8076,7 @@ snapshots:
       unist-util-remove-position: 5.0.0
       unist-util-visit: 5.0.0
       vfile: 6.0.3
-      zod: 4.1.12
+      zod: 4.1.13
     optionalDependencies:
       next: 16.0.3(@opentelemetry/api@1.9.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react: 19.2.0
@@ -10129,12 +10129,12 @@ snapshots:
 
   trough@2.2.0: {}
 
-  trpc-cli@0.12.1(@trpc/server@11.7.1(typescript@5.9.3))(zod@4.1.12):
+  trpc-cli@0.12.1(@trpc/server@11.7.1(typescript@5.9.3))(zod@4.1.13):
     dependencies:
       commander: 14.0.2
     optionalDependencies:
       '@trpc/server': 11.7.1(typescript@5.9.3)
-      zod: 4.1.12
+      zod: 4.1.13
 
   ts-api-utils@2.1.0(typescript@5.9.3):
     dependencies:
@@ -10254,8 +10254,8 @@ snapshots:
       glob: 12.0.0
       jsonc-parser: 3.3.1
       nypm: 0.6.2
-      trpc-cli: 0.12.1(@trpc/server@11.7.1(typescript@5.9.3))(zod@4.1.12)
-      zod: 4.1.12
+      trpc-cli: 0.12.1(@trpc/server@11.7.1(typescript@5.9.3))(zod@4.1.13)
+      zod: 4.1.13
     transitivePeerDependencies:
       - '@orpc/server'
       - '@valibot/to-json-schema'
@@ -10516,6 +10516,6 @@ snapshots:
 
   yocto-queue@1.2.2: {}
 
-  zod@4.1.12: {}
+  zod@4.1.13: {}
 
   zwitch@2.0.4: {}
