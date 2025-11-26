@@ -16,12 +16,7 @@ export function parseResponse<TResponseType extends ResponseType>(
         const errorMessage = contentType
           ? `Expected JSON response but received content type: ${contentType}`
           : "Expected JSON response but received no content type";
-        throw new FetchError(
-          errorMessage,
-          response.status,
-          response.statusText,
-          response
-        );
+        throw new FetchError(errorMessage, response);
       }
       return await response.json();
     },
@@ -36,8 +31,6 @@ export function parseResponse<TResponseType extends ResponseType>(
       if (!contentType?.includes("multipart/form-data")) {
         throw new FetchError(
           "Expected FormData response but received different content type",
-          response.status,
-          response.statusText,
           response
         );
       }
@@ -47,8 +40,6 @@ export function parseResponse<TResponseType extends ResponseType>(
       if (!contentType?.includes("text/")) {
         throw new FetchError(
           "Expected text response but received different content type",
-          response.status,
-          response.statusText,
           response
         );
       }
@@ -59,12 +50,7 @@ export function parseResponse<TResponseType extends ResponseType>(
   const parser = parsers[responseType];
   if (!parser) {
     return Promise.reject(
-      new FetchError(
-        `Unsupported response type: ${responseType}`,
-        response.status,
-        response.statusText,
-        response
-      )
+      new FetchError(`Unsupported response type: ${responseType}`, response)
     ) as Promise<ResponseTypeMap[TResponseType]>;
   }
 
