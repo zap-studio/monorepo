@@ -16,8 +16,8 @@ import { cache, Suspense } from "react";
 import { EmbeddedTweet, TweetNotFound, TweetSkeleton } from "react-tweet";
 import { getTweet as _getTweet } from "react-tweet/api";
 import { Button } from "@/components/ui/button";
-import { testimonials } from "@/data/testimonials";
-import { GITHUB_REPO_URL } from "@/data/website";
+import { testimonials } from "@/constants/testimonials";
+import { GITHUB_REPO_URL } from "@/constants/website";
 import { CopyCommand } from "./_components/copy-command";
 
 const sectionClass = "px-6 md:py-16 py-8";
