@@ -16,3 +16,13 @@ export class FetchError extends Error {
     this.response = response;
   }
 }
+
+export class ValidationError extends Error {
+  issues: unknown[];
+
+  constructor(issues: unknown[]) {
+    super(JSON.stringify(issues, null, 2));
+    this.name = "ValidationError";
+    this.issues = issues;
+  }
+}
