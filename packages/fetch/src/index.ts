@@ -1,7 +1,7 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { FetchError } from "./errors";
 import type { RequestInitExtended, ResponseData, ResponseType } from "./types";
-import { standardValidate } from "./validator";
+import { isStandardSchema, standardValidate } from "./validator";
 
 /**
  * Type-safe fetch wrapper with Standard Schema validation.
@@ -18,60 +18,99 @@ import { standardValidate } from "./validator";
  *
  * const UserSchema = z.object({ id: z.number(), name: z.string() });
  *
- * // Basic usage
+ * // Basic usage (JSON with validation)
  * const user = await $fetch("/api/users/1", UserSchema);
  *
- * // Non-throwing usage
- * const result = await $fetch("/api/users/1", UserSchema, {
- *   throwOnFetchError: false,
- *   throwOnValidationError: false,
- * });
+ * // Raw usage (no schema)
+ * const blob = await $fetch("/api/image", { responseType: "blob" });
+ *
+ * // Raw usage with manual type (no runtime validation)
+ * const data = await $fetch<MyType>("/api/data");
+ *
+ * // Usage with validation errors returned instead of thrown
+ * const result = await $fetch("/api/users/1", UserSchema, { throwOnValidationError: false });
  *
  * if (result.issues) {
- *   console.error("Validation failed:", result.issues);
+ *   console.error("Validation errors:", result.issues);
  * } else {
- *   console.log("Success:", result.value);
+ *   console.log("Validated user:", result.value);
  * }
+ *
+ * // Usage with custom fetch options and fetch error throwing
+ * const user = await $fetch("/api/users/1", UserSchema, {
+ *   method: "GET",
+ *   headers: { "Authorization": "Bearer token" },
+ *   throwOnFetchError: true,
+ * });
  */
 export async function $fetch<TSchema extends StandardSchemaV1>(
   resource: string,
-  responseSchema: TSchema,
+  schema: TSchema,
   options?: RequestInitExtended
 ): Promise<
   | StandardSchemaV1.InferOutput<TSchema>
   | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
 >;
 
-export async function $fetch<
-  TResponseType extends Exclude<ResponseType, "json">,
->(
+export async function $fetch<TResponseType extends ResponseType = "json">(
   resource: string,
-  responseSchema: StandardSchemaV1, // accepted but ignored for non-json
-  options: RequestInitExtended & { responseType: TResponseType }
+  options?: RequestInitExtended
 ): Promise<ResponseData<TResponseType>>;
 
-export async function $fetch<
-  TSchema extends StandardSchemaV1,
-  TResponseType extends ResponseType = "json",
->(
+export async function $fetch<T>(
   resource: string,
-  responseSchema: TSchema,
-  options?: RequestInitExtended & { responseType?: TResponseType }
-): Promise<
-  | StandardSchemaV1.InferOutput<TSchema>
-  | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
-  | ResponseData<TResponseType>
-> {
+  options?: RequestInitExtended
+): Promise<T>;
+
+export async function $fetch(
+  resource: string,
+  schemaOrOptions?: StandardSchemaV1 | RequestInitExtended,
+  optionsOrUndefined?: RequestInitExtended
+): Promise<unknown> {
+  let schema: StandardSchemaV1 | undefined;
+  let options: RequestInitExtended | undefined;
+
+  if (isStandardSchema(schemaOrOptions)) {
+    schema = schemaOrOptions;
+    options = optionsOrUndefined;
+  } else {
+    schema = undefined;
+    options = schemaOrOptions as RequestInitExtended;
+  }
+
   const {
     throwOnValidationError = true,
     throwOnFetchError = true,
-    responseType = "json" as TResponseType,
+    responseType = "json",
     ...rest
   } = options || {};
 
-  const response = await fetch(resource, {
-    ...rest,
-  });
+  const init = { ...rest } as RequestInit;
+
+  // Auto-stringify body and set Content-Type if it's a plain object/array
+  // We exclude common fetch body types that shouldn't be stringified
+  if (
+    options?.body &&
+    typeof options.body === "object" &&
+    !(options.body instanceof Blob) &&
+    !(options.body instanceof FormData) &&
+    !(options.body instanceof URLSearchParams) &&
+    !(
+      typeof ReadableStream !== "undefined" &&
+      options.body instanceof ReadableStream
+    ) &&
+    !(options.body instanceof ArrayBuffer) &&
+    !ArrayBuffer.isView(options.body)
+  ) {
+    init.body = JSON.stringify(options.body);
+    const headers = new Headers(init.headers);
+    if (!headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json");
+    }
+    init.headers = headers;
+  }
+
+  const response = await fetch(resource, init);
 
   if (throwOnFetchError && !response.ok) {
     throw new FetchError(
@@ -89,18 +128,16 @@ export async function $fetch<
   }
 
   // Invoke the corresponding Response method (e.g., json, text, blob, ...)
-  const fn = method as (
-    this: Response,
-    ...args: []
-  ) => ResponseData<TResponseType> | Promise<ResponseData<TResponseType>>;
+  const fn = method as (this: Response, ...args: []) => Promise<unknown>;
   const raw = await Promise.resolve(fn.call(response));
 
-  // For json, validate; for others, return raw
-  if (responseType === "json") {
-    return standardValidate(responseSchema, raw, throwOnValidationError);
+  // For json with schema, validate
+  if (responseType === "json" && schema) {
+    return standardValidate(schema, raw, throwOnValidationError);
   }
 
-  return raw as ResponseData<TResponseType>;
+  // No validation, return raw response data
+  return raw;
 }
 
 /**
