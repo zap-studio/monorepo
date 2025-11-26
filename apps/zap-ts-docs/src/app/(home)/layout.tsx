@@ -2,13 +2,17 @@ import { RiDiscordFill } from "@remixicon/react";
 import { HomeLayout } from "fumadocs-ui/layouts/home";
 import { ArrowUpRight } from "lucide-react";
 import type { ReactNode } from "react";
-import { baseOptions } from "@/app/layout.config";
-import { DEMO_URL, DISCORD_URL, GITHUB_DISCUSSIONS_URL } from "@/data/website";
+import {
+  DEMO_URL,
+  DISCORD_URL,
+  GITHUB_DISCUSSIONS_URL,
+} from "@/constants/website";
+import { baseOptions } from "@/lib/layout.shared";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <HomeLayout
-      {...baseOptions}
+      {...baseOptions()}
       links={[
         {
           text: "Documentation",
