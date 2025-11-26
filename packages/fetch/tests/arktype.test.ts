@@ -166,11 +166,9 @@ describe("$fetch with ArkType schemas", () => {
       json: async () => mockData,
     });
 
-    const result = await api.post(
-      "https://api.example.com/items",
-      schema,
-      body
-    );
+    const result = await api.post("https://api.example.com/items", schema, {
+      body: JSON.stringify(body),
+    });
 
     expect(result).toEqual(mockData);
   });
