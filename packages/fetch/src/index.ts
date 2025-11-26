@@ -1,7 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { FetchError } from "./errors";
-import type { RequestInitExtended, ResponseType } from "./types";
-import { parseResponse } from "./utils";
+import type { RequestInitExtended, ResponseData, ResponseType } from "./types";
 import { standardValidate } from "./validator";
 
 /**
@@ -34,16 +33,34 @@ import { standardValidate } from "./validator";
  *   console.log("Success:", result.value);
  * }
  */
-export async function $fetch<
-  TSchema extends StandardSchemaV1,
-  TResponseType extends ResponseType = "json",
->(
+export async function $fetch<TSchema extends StandardSchemaV1>(
   resource: string,
   responseSchema: TSchema,
   options?: RequestInitExtended
 ): Promise<
   | StandardSchemaV1.InferOutput<TSchema>
   | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
+>;
+
+export async function $fetch<
+  TResponseType extends Exclude<ResponseType, "json">,
+>(
+  resource: string,
+  responseSchema: StandardSchemaV1, // accepted but ignored for non-json
+  options: RequestInitExtended & { responseType: TResponseType }
+): Promise<ResponseData<TResponseType>>;
+
+export async function $fetch<
+  TSchema extends StandardSchemaV1,
+  TResponseType extends ResponseType = "json",
+>(
+  resource: string,
+  responseSchema: TSchema,
+  options?: RequestInitExtended & { responseType?: TResponseType }
+): Promise<
+  | StandardSchemaV1.InferOutput<TSchema>
+  | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
+  | ResponseData<TResponseType>
 > {
   const {
     throwOnValidationError = true,
@@ -63,9 +80,27 @@ export async function $fetch<
     );
   }
 
-  const data = await parseResponse(response, responseType);
+  const method = response[responseType];
+  if (typeof method !== "function") {
+    throw new FetchError(
+      `Unsupported response type: ${String(responseType)}`,
+      response
+    );
+  }
 
-  return standardValidate(responseSchema, data, throwOnValidationError);
+  // Invoke the corresponding Response method (e.g., json, text, blob, ...)
+  const fn = method as (
+    this: Response,
+    ...args: []
+  ) => ResponseData<TResponseType> | Promise<ResponseData<TResponseType>>;
+  const raw = await Promise.resolve(fn.call(response));
+
+  // For json, validate; for others, return raw
+  if (responseType === "json") {
+    return standardValidate(responseSchema, raw, throwOnValidationError);
+  }
+
+  return raw as ResponseData<TResponseType>;
 }
 
 /**
