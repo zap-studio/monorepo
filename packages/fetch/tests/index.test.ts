@@ -1,5 +1,3 @@
-// biome-ignore-all lint/style/noMagicNumbers: It's a test file so magic numbers are fine
-
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import { $fetch, api } from "../src";
