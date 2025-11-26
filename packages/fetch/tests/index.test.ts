@@ -613,10 +613,11 @@ describe("$fetch", () => {
         throwOnValidationError: false,
       });
 
-      expect(result).toHaveProperty("success");
-      if ("success" in result && result.success) {
-        // This block should not be executed for invalid data
-      }
+      expect(result).toHaveProperty("issues");
+      // @ts-expect-error - checking for issues
+      expect(result.issues).toBeDefined();
+      // @ts-expect-error - checking for issues
+      expect(Array.isArray(result.issues)).toBe(true);
     });
 
     it("should return successful parse result when data is valid and throwOnValidationError is false", async () => {
@@ -639,10 +640,11 @@ describe("$fetch", () => {
         throwOnValidationError: false,
       });
 
-      expect(result).toHaveProperty("success");
-      if ("success" in result && result.success) {
-        expect(result.data).toEqual(validData);
-      }
+      expect(result).toHaveProperty("value");
+      // @ts-expect-error - checking for value
+      expect(result.value).toEqual(validData);
+      // @ts-expect-error - checking for issues
+      expect(result.issues).toBeUndefined();
     });
   });
 
