@@ -2,6 +2,13 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { ValidationError } from "./errors";
 
 /**
+ * Type guard to check if a value is a Standard Schema schema
+ */
+export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
+  return !!value && typeof value === "object" && "~standard" in value;
+}
+
+/**
  * Helper function to validate data using Standard Schema
  *
  * @throws {ValidationError} When `throwOnError` is true and validation fails

@@ -1,7 +1,12 @@
 /**
  * Extended RequestInit type to include custom fetch options
  */
-export type RequestInitExtended = RequestInit & {
+export type RequestInitExtended = Omit<RequestInit, "body"> & {
+  /**
+   * Body of the request. Can be a plain object/array (will be JSON stringified)
+   * or any valid BodyInit (Blob, BufferSource, FormData, URLSearchParams, ReadableStream, string).
+   */
+  body?: unknown;
   /**
    * Whether to throw a FetchError on HTTP errors (non-2xx responses)
    */
