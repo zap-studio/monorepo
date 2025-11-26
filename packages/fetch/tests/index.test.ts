@@ -83,7 +83,7 @@ describe("$fetch", () => {
 
       const result = await $fetch("https://api.example.com/items", schema, {
         method: "POST",
-        body: requestBody,
+        body: JSON.stringify(requestBody),
       });
 
       expect(result).toEqual(mockData);
@@ -171,7 +171,7 @@ describe("$fetch", () => {
 
       await $fetch("https://api.example.com/custom", schema, {
         method: "POST",
-        body: { data: "test" },
+        body: JSON.stringify({ data: "test" }),
         headers: {
           "Content-Type": "application/xml",
         },
@@ -668,7 +668,6 @@ describe("$fetch", () => {
         expect(error).toBeInstanceOf(FetchError);
         if (error instanceof FetchError) {
           expect(error.status).toBe(404);
-          expect(error.statusText).toBe("Not Found");
           expect(error.message).toContain("404");
         }
       }
@@ -787,11 +786,9 @@ describe("api convenience methods", () => {
       json: async () => mockData,
     });
 
-    const result = await api.post(
-      "https://api.example.com/items",
-      schema,
-      body
-    );
+    const result = await api.post("https://api.example.com/items", schema, {
+      body: JSON.stringify(body),
+    });
 
     expect(result).toEqual(mockData);
     expect(fetchMock).toHaveBeenCalledWith(
@@ -819,11 +816,9 @@ describe("api convenience methods", () => {
       json: async () => mockData,
     });
 
-    const result = await api.put(
-      "https://api.example.com/items/123",
-      schema,
-      body
-    );
+    const result = await api.put("https://api.example.com/items/123", schema, {
+      body: JSON.stringify(body),
+    });
 
     expect(result).toEqual(mockData);
     expect(fetchMock).toHaveBeenCalledWith(
@@ -851,7 +846,7 @@ describe("api convenience methods", () => {
     const result = await api.patch(
       "https://api.example.com/items/123",
       schema,
-      body
+      { body: JSON.stringify(body) }
     );
 
     expect(result).toEqual(mockData);
@@ -929,19 +924,13 @@ describe("FetchError", () => {
       statusText: "Not Found",
     });
 
-    const error = new FetchError(
-      "HTTP 404: Not Found",
-      404,
-      "Not Found",
-      mockResponse
-    );
+    const error = new FetchError("HTTP 404: Not Found", mockResponse);
 
     expect(error).toBeInstanceOf(Error);
     expect(error).toBeInstanceOf(FetchError);
     expect(error.name).toBe("FetchError");
     expect(error.message).toBe("HTTP 404: Not Found");
     expect(error.status).toBe(404);
-    expect(error.statusText).toBe("Not Found");
     expect(error.response).toBe(mockResponse);
   });
 
@@ -952,12 +941,7 @@ describe("FetchError", () => {
     });
 
     expect(() => {
-      throw new FetchError(
-        "Server error",
-        500,
-        "Internal Server Error",
-        mockResponse
-      );
+      throw new FetchError("Server error", mockResponse);
     }).toThrow(FetchError);
   });
 });
