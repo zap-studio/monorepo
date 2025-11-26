@@ -1,78 +1,72 @@
-import type { z } from "zod";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { FetchError } from "./errors";
-import type { FetchConfig, ResponseType } from "./types";
-import { parseResponse, prepareHeadersAndBody } from "./utils";
+import type { RequestInitExtended, ResponseType } from "./types";
+import { parseResponse } from "./utils";
+import { standardValidate } from "./validator";
 
 /**
- * Type-safe fetch wrapper with Zod validation
+ * Type-safe fetch wrapper with Standard Schema validation.
+ *
+ * - When `throwOnValidationError: true`: validated data of type `TSchema`
+ * - When `throwOnValidationError: false`: Standard Schema Result object `{ value?, issues? }`
+ *
+ * @throws {FetchError} When `throwOnFetchError: true` and response is not ok
+ * @throws {ValidationError} When `throwOnValidationError: true` and validation fails
  *
  * @example
  * import { z } from "zod";
  * import { $fetch } from "@zap-studio/fetch";
  *
- * const UserSchema = z.object({
- *   id: z.number(),
- *   name: z.string(),
- *   email: z.string().email(),
+ * const UserSchema = z.object({ id: z.number(), name: z.string() });
+ *
+ * // Basic usage
+ * const user = await $fetch("/api/users/1", UserSchema);
+ *
+ * // Non-throwing usage
+ * const result = await $fetch("/api/users/1", UserSchema, {
+ *   throwOnFetchError: false,
+ *   throwOnValidationError: false,
  * });
  *
- * async function getUser(userId: number) {
- *   const user = await $fetch(
- *     `https://api.example.com/users/${userId}`,
- *     UserSchema,
- *     { method: "GET" }
- *   );
- *   return user; // user is typed as { id: number; name: string; email: string; }
+ * if (result.issues) {
+ *   console.error("Validation failed:", result.issues);
+ * } else {
+ *   console.log("Success:", result.value);
  * }
  */
 export async function $fetch<
-  TResponse,
-  TBody = unknown,
+  TSchema extends StandardSchemaV1,
   TResponseType extends ResponseType = "json",
 >(
   resource: string,
-  responseSchema: z.ZodType<TResponse>,
-  config?: FetchConfig<TBody> & {
-    throwOnValidationError?: boolean;
-    responseType?: TResponseType;
-  }
+  responseSchema: TSchema,
+  options?: RequestInitExtended
 ): Promise<
-  TResponse | z.ZodSafeParseSuccess<TResponse> | z.ZodSafeParseError<TResponse>
+  | StandardSchemaV1.InferOutput<TSchema>
+  | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
 > {
   const {
-    body,
-    headers,
     throwOnValidationError = true,
+    throwOnFetchError = true,
     responseType = "json" as TResponseType,
     ...rest
-  } = config || {};
-
-  const { body: preparedBody, headers: preparedHeaders } =
-    prepareHeadersAndBody(body, headers);
+  } = options || {};
 
   const response = await fetch(resource, {
     ...rest,
-    body: preparedBody,
-    headers: preparedHeaders,
   });
 
-  if (!response.ok) {
+  if (throwOnFetchError && !response.ok) {
     throw new FetchError(
       `HTTP ${response.status}: ${response.statusText}`,
-      response.status,
-      response.statusText,
       response
     );
   }
 
   const data = await parseResponse(response, responseType);
 
-  return throwOnValidationError
-    ? responseSchema.parse(data)
-    : responseSchema.safeParse(data);
+  return standardValidate(responseSchema, data, throwOnValidationError);
 }
-
-export const safeFetch = $fetch;
 
 /**
  * Convenience methods for common HTTP verbs
@@ -93,36 +87,33 @@ export const safeFetch = $fetch;
  * }
  */
 export const api = {
-  get: <TResponse>(
+  get: <TSchema extends StandardSchemaV1>(
     resource: string,
-    schema: z.ZodType<TResponse>,
-    options?: Omit<RequestInit, "method" | "body">
+    schema: TSchema,
+    options?: Omit<RequestInitExtended, "method">
   ) => $fetch(resource, schema, { ...options, method: "GET" }),
 
-  post: <TResponse, TBody = unknown>(
+  post: <TSchema extends StandardSchemaV1>(
     resource: string,
-    schema: z.ZodType<TResponse>,
-    body?: TBody,
-    options?: Omit<RequestInit, "method" | "body">
-  ) => $fetch(resource, schema, { ...options, method: "POST", body }),
+    schema: TSchema,
+    options?: Omit<RequestInitExtended, "method">
+  ) => $fetch(resource, schema, { ...options, method: "POST" }),
 
-  put: <TResponse, TBody = unknown>(
+  put: <TSchema extends StandardSchemaV1>(
     resource: string,
-    schema: z.ZodType<TResponse>,
-    body?: TBody,
-    options?: Omit<RequestInit, "method" | "body">
-  ) => $fetch(resource, schema, { ...options, method: "PUT", body }),
+    schema: TSchema,
+    options?: Omit<RequestInitExtended, "method">
+  ) => $fetch(resource, schema, { ...options, method: "PUT" }),
 
-  patch: <TResponse, TBody = unknown>(
+  patch: <TSchema extends StandardSchemaV1>(
     resource: string,
-    schema: z.ZodType<TResponse>,
-    body?: TBody,
-    options?: Omit<RequestInit, "method" | "body">
-  ) => $fetch(resource, schema, { ...options, method: "PATCH", body }),
+    schema: TSchema,
+    options?: Omit<RequestInitExtended, "method">
+  ) => $fetch(resource, schema, { ...options, method: "PATCH" }),
 
-  delete: <TResponse>(
+  delete: <TSchema extends StandardSchemaV1>(
     resource: string,
-    schema: z.ZodType<TResponse>,
-    options?: Omit<RequestInit, "method" | "body">
+    schema: TSchema,
+    options?: Omit<RequestInitExtended, "method">
   ) => $fetch(resource, schema, { ...options, method: "DELETE" }),
 };
