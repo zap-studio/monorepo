@@ -36,9 +36,9 @@
   },
   "exports": {
     ".": "./dist/index.mjs",
-    "./errors": "./dist/errors/index.mjs",
-    "./types": "./dist/types/index.mjs",
-    "./utils": "./dist/utils/index.mjs",
+    "./errors": "./dist/errors.mjs",
+    "./types": "./dist/types.mjs",
+    "./utils": "./dist/utils.mjs",
     "./validator": "./dist/validator.mjs",
     "./package.json": "./package.json"
   },
