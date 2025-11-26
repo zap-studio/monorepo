@@ -1,12 +1,26 @@
 # @zap-studio/fetch
 
-A type-safe fetch wrapper with Zod validation for TypeScript.
+A type-safe fetch wrapper with Standard Schema validation.
+
+## Why @zap-studio/fetch?
+
+**Before:**
+```typescript
+const response = await fetch("/api/users/1");
+const data = await response.json();
+const user = data as User; // 😱 Unsafe type assertion
+```
+
+**After:**
+```typescript
+const user = await api.get("/api/users/1", UserSchema);
+// ✨ Typed, validated, and safe!
+```
 
 ## Features
 
 - 🎯 **Type-safe requests** with automatic type inference
-- 🛡️ **Runtime validation** using Zod schemas
-- 🔄 **Automatic content-type** detection and handling
+- 🛡️ **Runtime validation** using Standard Schema (Zod, Valibot, ArkType, etc.)
 - ⚡️ **Convenient API methods** (GET, POST, PUT, PATCH, DELETE)
 - 📦 **Multiple response types** (JSON, text, blob, arrayBuffer)
 - 🚨 **Custom error handling** with FetchError class
@@ -51,28 +65,35 @@ console.log(user.name); // TypeScript knows this is a string
 const user = await api.get("/api/users/1", UserSchema);
 ```
 
-### `api.post(url, schema, body?, options?)`
+### `api.post(url, schema, options?)`
 
 ```typescript
 const newUser = await api.post("/api/users", UserSchema, {
-  name: "John Doe",
-  email: "john@example.com",
+  body: JSON.stringify({
+    name: "John Doe",
+    email: "john@example.com",
+  }),
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 ```
 
-### `api.put(url, schema, body?, options?)`
+### `api.put(url, schema, options?)`
 
 ```typescript
 const updated = await api.put("/api/users/1", UserSchema, {
-  name: "Jane Doe",
+  body: JSON.stringify({ name: "Jane Doe" }),
+  headers: { "Content-Type": "application/json" },
 });
 ```
 
-### `api.patch(url, schema, body?, options?)`
+### `api.patch(url, schema, options?)`
 
 ```typescript
 const patched = await api.patch("/api/users/1", UserSchema, {
-  email: "newemail@example.com",
+  body: JSON.stringify({ email: "newemail@example.com" }),
+  headers: { "Content-Type": "application/json" },
 });
 ```
 
@@ -107,14 +128,14 @@ const result = await $fetch(
 // Get text response
 const text = await $fetch(
   "/api/data",
-  z.string(),
+  z.string(), // Schema is ignored for non-json responses but required by type definition
   { responseType: "text" }
 );
 
 // Get blob response
 const blob = await $fetch(
   "/api/file",
-  z.instanceof(Blob),
+  z.any(),
   { responseType: "blob" }
 );
 ```
@@ -146,24 +167,11 @@ const result = await $fetch(url, UserSchema, {
   throwOnValidationError: false,
 });
 
-if (result.success) {
-  console.log(result.data);
+if (result.issues) {
+  console.error("Validation failed:", result.issues);
 } else {
-  console.error(result.error);
+  console.log("Success:", result.value);
 }
 ```
 
-## Why @zap-studio/fetch?
 
-**Before:**
-```typescript
-const response = await fetch("/api/users/1");
-const data = await response.json();
-const user = data as User; // 😱 Unsafe type assertion
-```
-
-**After:**
-```typescript
-const user = await api.get("/api/users/1", UserSchema);
-// ✨ Typed, validated, and safe!
-```
