@@ -1,6 +1,7 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { FetchError } from "./errors";
 import type { RequestInitExtended, ResponseData, ResponseType } from "./types";
+import { isPlainObject } from "./utils";
 import { isStandardSchema, standardValidate } from "./validator";
 
 /**
@@ -88,19 +89,9 @@ export async function $fetch(
   const init = { ...rest } as RequestInit;
 
   // Auto-stringify body and set Content-Type if it's a plain object/array
-  // We exclude common fetch body types that shouldn't be stringified
   if (
     options?.body &&
-    typeof options.body === "object" &&
-    !(options.body instanceof Blob) &&
-    !(options.body instanceof FormData) &&
-    !(options.body instanceof URLSearchParams) &&
-    !(
-      typeof ReadableStream !== "undefined" &&
-      options.body instanceof ReadableStream
-    ) &&
-    !(options.body instanceof ArrayBuffer) &&
-    !ArrayBuffer.isView(options.body)
+    (isPlainObject(options.body) || Array.isArray(options.body))
   ) {
     init.body = JSON.stringify(options.body);
     const headers = new Headers(init.headers);
