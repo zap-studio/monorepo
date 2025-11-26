@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Geist as Font } from "next/font/google";
 import type { ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
-import { ALEXANDRE_TROTEL_WEBSITE_URL, BASE_URL } from "@/data/website";
+import { ALEXANDRE_TROTEL_WEBSITE_URL, BASE_URL } from "@/constants/website";
 import { Provider } from "./provider";
 
 const font = Font({
