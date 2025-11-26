@@ -126,6 +126,9 @@ const text = await $fetch("/api/data", { responseType: "text" });
 
 // Get blob response
 const blob = await $fetch("/api/file", { responseType: "blob" });
+
+// Manually typed response (no runtime validation)
+const data = await $fetch<MyType>("/api/data");
 ```
 
 ### Error handling
