@@ -43,3 +43,8 @@ export type ResponseTypeMap = {
     ? Awaited<ReturnType<Response[K]>>
     : never;
 };
+
+/**
+ * Type of response data based on the specified ResponseType
+ */
+export type ResponseData<T extends ResponseType> = ResponseTypeMap[T];
