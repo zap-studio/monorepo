@@ -1,8 +1,8 @@
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import { ArrowUpRight } from "lucide-react";
 import type { ReactNode } from "react";
-import { baseOptions } from "@/app/layout.config";
-import { DEMO_URL } from "@/data/website";
+import { DEMO_URL } from "@/constants/website";
+import { baseOptions } from "@/lib/layout.shared";
 import { source } from "@/lib/source";
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -15,9 +15,9 @@ export default function Layout({ children }: { children: ReactNode }) {
           icon: <ArrowUpRight />,
         },
       ]}
-      nav={{ ...baseOptions.nav }}
+      nav={{ ...baseOptions().nav }}
       tree={source.pageTree}
-      {...baseOptions}
+      {...baseOptions()}
     >
       {children}
     </DocsLayout>
