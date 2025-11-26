@@ -18,7 +18,7 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "zod": "^4.1.12"
+    "@standard-schema/spec": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "latest",
@@ -26,10 +26,13 @@
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
+    "arktype": "^2.1.27",
     "jsdom": "latest",
     "tsdown": "latest",
     "typescript": "latest",
-    "vitest": "latest"
+    "valibot": "^1.2.0",
+    "vitest": "latest",
+    "zod": "^4.1.13"
   },
   "exports": {
     ".": "./dist/index.mjs",
