@@ -26,7 +26,6 @@ describe("isPlainObject", () => {
   });
 
   it("returns false for functions", () => {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const fn = () => {
       // empty
     };
