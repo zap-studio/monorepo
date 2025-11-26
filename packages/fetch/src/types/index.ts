@@ -17,26 +17,29 @@ export type RequestInitExtended = RequestInit & {
 };
 
 /**
- * Response types supported by the fetch wrapper
+ * Response types supported by the fetch wrapper (e.g., 'json', 'text', etc.)
  */
-export type ResponseType =
-  | "arrayBuffer"
-  | "blob"
-  | "bytes"
-  | "clone"
-  | "formData"
-  | "json"
-  | "text";
+type ResponsePromiseMethodNames = {
+  [K in keyof Response]: Response[K] extends () => Promise<unknown> ? K : never;
+}[keyof Response];
+
+/**
+ * Method name for Response.clone()
+ */
+type ResponseCloneMethodName = {
+  [K in keyof Response]: Response[K] extends () => Response ? K : never;
+}[keyof Response];
+
+/**
+ * Union type of supported response types
+ */
+export type ResponseType = ResponsePromiseMethodNames | ResponseCloneMethodName;
 
 /**
  * Mapping of ResponseType to actual response data types
  */
 export type ResponseTypeMap = {
-  arrayBuffer: ArrayBuffer;
-  blob: Blob;
-  bytes: Uint8Array;
-  clone: Response;
-  formData: FormData;
-  json: unknown;
-  text: string;
+  [K in ResponseType]: K extends keyof Response
+    ? Awaited<ReturnType<Response[K]>>
+    : never;
 };
