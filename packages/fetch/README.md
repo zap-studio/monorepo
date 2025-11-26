@@ -69,22 +69,19 @@ const user = await api.get("/api/users/1", UserSchema);
 
 ```typescript
 const newUser = await api.post("/api/users", UserSchema, {
-  body: JSON.stringify({
+  body: {
     name: "John Doe",
     email: "john@example.com",
-  }),
-  headers: {
-    "Content-Type": "application/json",
   },
 });
+// Automatically stringifies body and sets Content-Type: application/json
 ```
 
 ### `api.put(url, schema, options?)`
 
 ```typescript
 const updated = await api.put("/api/users/1", UserSchema, {
-  body: JSON.stringify({ name: "Jane Doe" }),
-  headers: { "Content-Type": "application/json" },
+  body: { name: "Jane Doe" },
 });
 ```
 
@@ -92,8 +89,7 @@ const updated = await api.put("/api/users/1", UserSchema, {
 
 ```typescript
 const patched = await api.patch("/api/users/1", UserSchema, {
-  body: JSON.stringify({ email: "newemail@example.com" }),
-  headers: { "Content-Type": "application/json" },
+  body: { email: "newemail@example.com" },
 });
 ```
 
@@ -126,18 +122,10 @@ const result = await $fetch(
 
 ```typescript
 // Get text response
-const text = await $fetch(
-  "/api/data",
-  z.string(), // Schema is ignored for non-json responses but required by type definition
-  { responseType: "text" }
-);
+const text = await $fetch("/api/data", { responseType: "text" });
 
 // Get blob response
-const blob = await $fetch(
-  "/api/file",
-  z.any(),
-  { responseType: "blob" }
-);
+const blob = await $fetch("/api/file", { responseType: "blob" });
 ```
 
 ### Error handling
