@@ -77,13 +77,16 @@ export async function $fetch(
 
   const init = { ...rest } as RequestInit;
 
-  // Auto-stringify body and set Content-Type if we have a schema
+  // Auto-stringify body and set default Content-Type if we have a schema
   if (schema && init.body) {
     init.body = JSON.stringify(init.body);
-    init.headers = {
-      ...(init.headers || {}),
-      "Content-Type": "application/json",
-    };
+
+    const existingHeaders = new Headers(init.headers);
+    if (!existingHeaders.has("Content-Type")) {
+      existingHeaders.set("Content-Type", "application/json");
+    }
+
+    init.headers = existingHeaders;
   }
 
   const response = await fetch(resource, init);
