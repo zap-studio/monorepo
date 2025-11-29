@@ -1,3 +1,5 @@
+import type { StandardSchemaV1 } from "@standard-schema/spec";
+
 export class FetchError extends Error {
   status: Response["status"];
   response: Response;
@@ -11,9 +13,9 @@ export class FetchError extends Error {
 }
 
 export class ValidationError extends Error {
-  issues: unknown[];
+  issues: StandardSchemaV1.Issue[];
 
-  constructor(issues: unknown[]) {
+  constructor(issues: StandardSchemaV1.Issue[]) {
     super(JSON.stringify(issues, null, 2));
     this.name = "ValidationError";
     this.issues = issues;
