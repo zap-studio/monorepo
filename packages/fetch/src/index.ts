@@ -208,7 +208,10 @@ export const api = {
  * // Or use $fetch directly
  * const response = await $fetch("/users", UserSchema, { method: "POST", body: { name: "John" } });
  */
-export function createFetch(factoryOptions: CreateFetchOptions = {}) {
+export function createFetch(factoryOptions: CreateFetchOptions = {}): {
+  $fetch: typeof $fetch;
+  api: typeof api;
+} {
   const defaults: FetchDefaults = {
     baseURL: factoryOptions.baseURL ?? "",
     headers: factoryOptions.headers,
