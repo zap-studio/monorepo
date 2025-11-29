@@ -25,9 +25,10 @@ import { isStandardSchema, standardValidate } from "./validator";
  * const user = await $fetch("/api/users/1", UserSchema, { headers: { "Authorization": "Bearer token" } });
  * console.log("Validated user:", user);
  *
- * // Raw usage (no schema validation)
+ * // Raw usage (no schema validation and typed Response object)
  * const result = await $fetch("/api/data", { method: "POST", body: JSON.stringify({ key: "value" }) });
- * console.log("Raw response:", await result.json());
+ * const json = await result.json() as ResultType;
+ * console.log("Raw response data:", json);
  *
  * // Usage with validation errors returned instead of thrown
  * const result = await $fetch("/api/users/1", UserSchema, { throwOnValidationError: false });
