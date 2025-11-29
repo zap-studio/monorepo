@@ -5,8 +5,8 @@ import type {
   FetchDefaults,
   RequestInitExtended,
 } from "./types";
-import { isStandardSchema } from "./validator";
 import { fetchInternal } from "./utils";
+import { isStandardSchema } from "./validator";
 
 /**
  * Type-safe fetch wrapper with Standard Schema validation.

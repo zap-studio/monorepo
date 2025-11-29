@@ -1,6 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { FetchError } from "./errors";
-import type { RequestInitExtended, FetchDefaults } from "./types";
+import type { FetchDefaults, RequestInitExtended } from "./types";
 import { standardValidate } from "./validator";
 
 /**
