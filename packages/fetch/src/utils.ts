@@ -2,8 +2,6 @@
  * Merges two HeadersInit objects, with the second one taking precedence
  *
  * @example
- * import { mergeHeaders } from "@zap-studio/fetch";
- *
  * const baseHeaders = { "Authorization": "Bearer token", "Content-Type": "application/json" };
  * const overrideHeaders = { "Content-Type": "application/xml", "X-Custom-Header": "value" };
  *
