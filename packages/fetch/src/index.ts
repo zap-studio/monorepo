@@ -1,4 +1,5 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { GLOBAL_DEFAULTS } from "./contants";
 import { FetchError } from "./errors";
 import type {
   CreateFetchOptions,
@@ -8,21 +9,8 @@ import type {
 import { mergeHeaders } from "./utils";
 import { isStandardSchema, standardValidate } from "./validator";
 
-/**
- * Regex patterns for URL normalization
- */
 const TRAILING_SLASHES = /\/+$/;
 const LEADING_SLASHES = /^\/+/;
-
-/**
- * Default options for the global $fetch
- */
-const globalDefaults = {
-  baseURL: "",
-  headers: undefined,
-  throwOnFetchError: true,
-  throwOnValidationError: true,
-} as const satisfies FetchDefaults;
 
 /**
  * Internal fetch implementation used by both $fetch and createFetch
@@ -138,7 +126,7 @@ export async function $fetch(
     ? [schemaOrOptions, optionsOrUndefined]
     : [undefined, schemaOrOptions];
 
-  return await fetchInternal(resource, schema, options, globalDefaults);
+  return await fetchInternal(resource, schema, options, GLOBAL_DEFAULTS);
 }
 
 /**
