@@ -14,7 +14,7 @@ export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
  * @throws {ValidationError} When `throwOnError` is true and validation fails
  *
  * @example
- * import { standardValidate } from "@zap-studio/fetch";
+ * import { standardValidate } from "@zap-studio/fetch/validator";
  * import { z } from "zod";
  *
  * const UserSchema = z.object({ id: z.number(), name: z.string() });
