@@ -119,7 +119,7 @@ export async function $fetch(
   options?: RequestInitExtended
 ): Promise<Response>;
 
-export function $fetch(
+export async function $fetch(
   resource: string,
   schemaOrOptions?: StandardSchemaV1 | RequestInitExtended,
   optionsOrUndefined?: RequestInitExtended
@@ -128,7 +128,7 @@ export function $fetch(
     ? [schemaOrOptions, optionsOrUndefined]
     : [undefined, schemaOrOptions];
 
-  return fetchInternal(resource, schema, options, globalDefaults);
+  return await fetchInternal(resource, schema, options, globalDefaults);
 }
 
 /**
@@ -233,7 +233,7 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}): {
     options?: RequestInitExtended
   ): Promise<Response>;
 
-  function customFetch(
+  async function customFetch(
     resource: string,
     schemaOrOptions?: StandardSchemaV1 | RequestInitExtended,
     optionsOrUndefined?: RequestInitExtended
@@ -242,7 +242,7 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}): {
       ? [schemaOrOptions, optionsOrUndefined]
       : [undefined, schemaOrOptions];
 
-    return fetchInternal(resource, schema, options, defaults);
+    return await fetchInternal(resource, schema, options, defaults);
   }
 
   const customApi = {
