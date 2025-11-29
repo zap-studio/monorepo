@@ -15,27 +15,32 @@ export type RequestInitExtended = RequestInit & {
 };
 
 /**
- * Options for creating a custom fetch instance with `createFetch`
+ * Internal defaults used by fetchInternal
  */
-export type CreateFetchOptions = {
+export type FetchDefaults = {
   /**
    * Base URL to prepend to all requests
-   * @example "https://api.example.com"
+   * @default ""
    */
-  baseURL?: string;
+  baseURL: string;
   /**
    * Default headers to include in all requests
-   * @example { "Authorization": "Bearer token" }
+   * @default undefined
    */
-  headers?: HeadersInit;
+  headers: HeadersInit | undefined;
   /**
-   * Default value for throwOnFetchError
+   * Whether to throw a `FetchError` on HTTP errors (non-2xx responses)
    * @default true
    */
-  throwOnFetchError?: boolean;
+  throwOnFetchError: boolean;
   /**
-   * Default value for throwOnValidationError
+   * Whether to throw a `ValidationError` on validation errors
    * @default true
    */
-  throwOnValidationError?: boolean;
+  throwOnValidationError: boolean;
 };
+
+/**
+ * Options for creating a custom fetch instance with `createFetch`
+ */
+export type CreateFetchOptions = Partial<FetchDefaults>;

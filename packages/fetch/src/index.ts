@@ -1,8 +1,73 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { FetchError } from "./errors";
-import type { CreateFetchOptions, RequestInitExtended } from "./types";
+import type {
+  CreateFetchOptions,
+  FetchDefaults,
+  RequestInitExtended,
+} from "./types";
 import { isStandardSchema, standardValidate } from "./validator";
 import { mergeHeaders } from "./utils";
+
+/**
+ * Default options for the global $fetch
+ */
+const globalDefaults: FetchDefaults = {
+  baseURL: "",
+  headers: undefined,
+  throwOnFetchError: true,
+  throwOnValidationError: true,
+};
+
+/**
+ * Internal fetch implementation used by both $fetch and createFetch
+ */
+async function fetchInternal(
+  resource: string,
+  schema: StandardSchemaV1 | undefined,
+  options: RequestInitExtended | undefined,
+  defaults: FetchDefaults
+): Promise<unknown> {
+  const {
+    throwOnValidationError = defaults.throwOnValidationError,
+    throwOnFetchError = defaults.throwOnFetchError,
+    headers: requestHeaders,
+    ...rest
+  } = options || {};
+
+  const mergedHeaders = mergeHeaders(defaults.headers, requestHeaders);
+  const init = { ...rest, headers: mergedHeaders } as RequestInit;
+
+  // Auto-stringify body and set default Content-Type if we have a schema
+  if (schema && init.body) {
+    init.body = JSON.stringify(init.body);
+
+    const existingHeaders = new Headers(init.headers);
+    if (!existingHeaders.has("Content-Type")) {
+      existingHeaders.set("Content-Type", "application/json");
+    }
+
+    init.headers = existingHeaders;
+  }
+
+  const url = defaults.baseURL + resource;
+  const response = await fetch(url, init);
+
+  if (throwOnFetchError && !response.ok) {
+    throw new FetchError(
+      `HTTP ${response.status}: ${response.statusText}`,
+      response
+    );
+  }
+
+  // For json with schema, validate
+  if (schema) {
+    const raw = await response.json();
+    return standardValidate(schema, raw, throwOnValidationError);
+  }
+
+  // No validation, return raw response data
+  return response;
+}
 
 /**
  * Type-safe fetch wrapper with Standard Schema validation.
@@ -54,63 +119,23 @@ export async function $fetch(
   options?: RequestInitExtended
 ): Promise<Response>;
 
-export async function $fetch(
+export function $fetch(
   resource: string,
   schemaOrOptions?: StandardSchemaV1 | RequestInitExtended,
   optionsOrUndefined?: RequestInitExtended
 ): Promise<unknown> {
-  let schema: StandardSchemaV1 | undefined;
-  let options: RequestInitExtended | undefined;
+  const [schema, options] = isStandardSchema(schemaOrOptions)
+    ? [schemaOrOptions, optionsOrUndefined]
+    : [undefined, schemaOrOptions];
 
-  if (isStandardSchema(schemaOrOptions)) {
-    schema = schemaOrOptions;
-    options = optionsOrUndefined;
-  } else {
-    schema = undefined;
-    options = schemaOrOptions as RequestInitExtended;
-  }
-
-  const {
-    throwOnValidationError = true,
-    throwOnFetchError = true,
-    ...rest
-  } = options || {};
-
-  const init = { ...rest } as RequestInit;
-
-  // Auto-stringify body and set default Content-Type if we have a schema
-  if (schema && init.body) {
-    init.body = JSON.stringify(init.body);
-
-    const existingHeaders = new Headers(init.headers);
-    if (!existingHeaders.has("Content-Type")) {
-      existingHeaders.set("Content-Type", "application/json");
-    }
-
-    init.headers = existingHeaders;
-  }
-
-  const response = await fetch(resource, init);
-
-  if (throwOnFetchError && !response.ok) {
-    throw new FetchError(
-      `HTTP ${response.status}: ${response.statusText}`,
-      response
-    );
-  }
-
-  // For json with schema, validate
-  if (schema) {
-    const raw = await response.json();
-    return standardValidate(schema, raw, throwOnValidationError);
-  }
-
-  // No validation, return raw response data
-  return response;
+  return fetchInternal(resource, schema, options, globalDefaults);
 }
 
 /**
- * Convenience methods for common HTTP verbs
+ * Convenience methods for common HTTP verbs.
+ *
+ * These methods always require a schema for validation.
+ * For raw responses without validation, use `$fetch` directly.
  *
  * @example
  * import { z } from "zod";
@@ -123,7 +148,7 @@ export async function $fetch(
  * });
  *
  * async function fetchPost(postId: number) {
- *  const post = await api.get(`https://api.example.com/posts/${postId}`, PostSchema);
+ *   const post = await api.get(`https://api.example.com/posts/${postId}`, PostSchema);
  *   return post; // post is typed as { id: number; title: string; content: string; }
  * }
  */
@@ -173,8 +198,6 @@ export const api = {
  * const { $fetch, api } = createFetch({
  *   baseURL: "https://api.example.com",
  *   headers: { "Authorization": "Bearer token" },
- *   throwOnFetchError: false,
- *   throwOnValidationError: true,
  * });
  *
  * const UserSchema = z.object({ id: z.number(), name: z.string() });
@@ -186,12 +209,12 @@ export const api = {
  * const response = await $fetch("/users", UserSchema, { method: "POST", body: { name: "John" } });
  */
 export function createFetch(factoryOptions: CreateFetchOptions = {}) {
-  const {
-    baseURL = "",
-    headers: defaultHeaders,
-    throwOnFetchError: defaultThrowOnFetchError = true,
-    throwOnValidationError: defaultThrowOnValidationError = true,
-  } = factoryOptions;
+  const defaults: FetchDefaults = {
+    baseURL: factoryOptions.baseURL ?? "",
+    headers: factoryOptions.headers,
+    throwOnFetchError: factoryOptions.throwOnFetchError ?? true,
+    throwOnValidationError: factoryOptions.throwOnValidationError ?? true,
+  };
 
   async function customFetch<TSchema extends StandardSchemaV1>(
     resource: string,
@@ -207,62 +230,16 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}) {
     options?: RequestInitExtended
   ): Promise<Response>;
 
-  async function customFetch(
+  function customFetch(
     resource: string,
     schemaOrOptions?: StandardSchemaV1 | RequestInitExtended,
     optionsOrUndefined?: RequestInitExtended
   ): Promise<unknown> {
-    let schema: StandardSchemaV1 | undefined;
-    let options: RequestInitExtended | undefined;
+    const [schema, options] = isStandardSchema(schemaOrOptions)
+      ? [schemaOrOptions, optionsOrUndefined]
+      : [undefined, schemaOrOptions];
 
-    if (isStandardSchema(schemaOrOptions)) {
-      schema = schemaOrOptions;
-      options = optionsOrUndefined;
-    } else {
-      schema = undefined;
-      options = schemaOrOptions as RequestInitExtended;
-    }
-
-    const {
-      throwOnValidationError = defaultThrowOnValidationError,
-      throwOnFetchError = defaultThrowOnFetchError,
-      headers: requestHeaders,
-      ...rest
-    } = options || {};
-
-    const mergedHeaders = mergeHeaders(defaultHeaders, requestHeaders);
-    const init = { ...rest, headers: mergedHeaders } as RequestInit;
-
-    // Auto-stringify body and set default Content-Type if we have a schema
-    if (schema && init.body) {
-      init.body = JSON.stringify(init.body);
-
-      const existingHeaders = new Headers(init.headers);
-      if (!existingHeaders.has("Content-Type")) {
-        existingHeaders.set("Content-Type", "application/json");
-      }
-
-      init.headers = existingHeaders;
-    }
-
-    const url = baseURL + resource;
-    const response = await fetch(url, init);
-
-    if (throwOnFetchError && !response.ok) {
-      throw new FetchError(
-        `HTTP ${response.status}: ${response.statusText}`,
-        response
-      );
-    }
-
-    // For json with schema, validate
-    if (schema) {
-      const raw = await response.json();
-      return standardValidate(schema, raw, throwOnValidationError);
-    }
-
-    // No validation, return raw response data
-    return response;
+    return fetchInternal(resource, schema, options, defaults);
   }
 
   const customApi = {
