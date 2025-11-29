@@ -5,8 +5,8 @@ import type {
   FetchDefaults,
   RequestInitExtended,
 } from "./types";
-import { isStandardSchema, standardValidate } from "./validator";
 import { mergeHeaders } from "./utils";
+import { isStandardSchema, standardValidate } from "./validator";
 
 /**
  * Default options for the global $fetch
