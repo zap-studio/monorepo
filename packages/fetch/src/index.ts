@@ -1,7 +1,8 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { FetchError } from "./errors";
-import type { RequestInitExtended } from "./types";
+import type { CreateFetchOptions, RequestInitExtended } from "./types";
 import { isStandardSchema, standardValidate } from "./validator";
+import { mergeHeaders } from "./utils";
 
 /**
  * Type-safe fetch wrapper with Standard Schema validation.
@@ -157,3 +158,147 @@ export const api = {
     options?: Omit<RequestInitExtended, "method">
   ) => $fetch(resource, schema, { ...options, method: "DELETE" }),
 };
+
+/**
+ * Creates a custom fetch instance with pre-configured defaults.
+ *
+ * Use this factory to create API clients with a base URL, default headers,
+ * and other shared configuration. Each instance is independent.
+ *
+ * @example
+ * import { z } from "zod";
+ * import { createFetch } from "@zap-studio/fetch";
+ *
+ * // Create a configured instance
+ * const { $fetch, api } = createFetch({
+ *   baseURL: "https://api.example.com",
+ *   headers: { "Authorization": "Bearer token" },
+ *   throwOnFetchError: false,
+ *   throwOnValidationError: true,
+ * });
+ *
+ * const UserSchema = z.object({ id: z.number(), name: z.string() });
+ *
+ * // Now use relative paths - baseURL is prepended automatically
+ * const user = await api.get("/users/1", UserSchema);
+ *
+ * // Or use $fetch directly
+ * const response = await $fetch("/users", UserSchema, { method: "POST", body: { name: "John" } });
+ */
+export function createFetch(factoryOptions: CreateFetchOptions = {}) {
+  const {
+    baseURL = "",
+    headers: defaultHeaders,
+    throwOnFetchError: defaultThrowOnFetchError = true,
+    throwOnValidationError: defaultThrowOnValidationError = true,
+  } = factoryOptions;
+
+  async function customFetch<TSchema extends StandardSchemaV1>(
+    resource: string,
+    schema: TSchema,
+    options?: RequestInitExtended
+  ): Promise<
+    | StandardSchemaV1.InferOutput<TSchema>
+    | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
+  >;
+
+  async function customFetch(
+    resource: string,
+    options?: RequestInitExtended
+  ): Promise<Response>;
+
+  async function customFetch(
+    resource: string,
+    schemaOrOptions?: StandardSchemaV1 | RequestInitExtended,
+    optionsOrUndefined?: RequestInitExtended
+  ): Promise<unknown> {
+    let schema: StandardSchemaV1 | undefined;
+    let options: RequestInitExtended | undefined;
+
+    if (isStandardSchema(schemaOrOptions)) {
+      schema = schemaOrOptions;
+      options = optionsOrUndefined;
+    } else {
+      schema = undefined;
+      options = schemaOrOptions as RequestInitExtended;
+    }
+
+    const {
+      throwOnValidationError = defaultThrowOnValidationError,
+      throwOnFetchError = defaultThrowOnFetchError,
+      headers: requestHeaders,
+      ...rest
+    } = options || {};
+
+    const mergedHeaders = mergeHeaders(defaultHeaders, requestHeaders);
+    const init = { ...rest, headers: mergedHeaders } as RequestInit;
+
+    // Auto-stringify body and set default Content-Type if we have a schema
+    if (schema && init.body) {
+      init.body = JSON.stringify(init.body);
+
+      const existingHeaders = new Headers(init.headers);
+      if (!existingHeaders.has("Content-Type")) {
+        existingHeaders.set("Content-Type", "application/json");
+      }
+
+      init.headers = existingHeaders;
+    }
+
+    const url = baseURL + resource;
+    const response = await fetch(url, init);
+
+    if (throwOnFetchError && !response.ok) {
+      throw new FetchError(
+        `HTTP ${response.status}: ${response.statusText}`,
+        response
+      );
+    }
+
+    // For json with schema, validate
+    if (schema) {
+      const raw = await response.json();
+      return standardValidate(schema, raw, throwOnValidationError);
+    }
+
+    // No validation, return raw response data
+    return response;
+  }
+
+  const customApi = {
+    get: <TSchema extends StandardSchemaV1>(
+      resource: string,
+      schema: TSchema,
+      options?: Omit<RequestInitExtended, "method">
+    ) => customFetch(resource, schema, { ...options, method: "GET" }),
+
+    post: <TSchema extends StandardSchemaV1>(
+      resource: string,
+      schema: TSchema,
+      options?: Omit<RequestInitExtended, "method">
+    ) => customFetch(resource, schema, { ...options, method: "POST" }),
+
+    put: <TSchema extends StandardSchemaV1>(
+      resource: string,
+      schema: TSchema,
+      options?: Omit<RequestInitExtended, "method">
+    ) => customFetch(resource, schema, { ...options, method: "PUT" }),
+
+    patch: <TSchema extends StandardSchemaV1>(
+      resource: string,
+      schema: TSchema,
+      options?: Omit<RequestInitExtended, "method">
+    ) => customFetch(resource, schema, { ...options, method: "PATCH" }),
+
+    delete: <TSchema extends StandardSchemaV1>(
+      resource: string,
+      schema: TSchema,
+      options?: Omit<RequestInitExtended, "method">
+    ) => customFetch(resource, schema, { ...options, method: "DELETE" }),
+  };
+
+  return {
+    $fetch: customFetch,
+    api: customApi,
+  };
+}

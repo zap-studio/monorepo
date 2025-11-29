@@ -29,11 +29,13 @@ export type CreateFetchOptions = {
    */
   headers?: HeadersInit;
   /**
-   * Default value for throwOnFetchError (defaults to true)
+   * Default value for throwOnFetchError
+   * @default true
    */
   throwOnFetchError?: boolean;
   /**
-   * Default value for throwOnValidationError (defaults to true)
+   * Default value for throwOnValidationError
+   * @default true
    */
   throwOnValidationError?: boolean;
 };
