@@ -11,12 +11,12 @@ import { isStandardSchema, standardValidate } from "./validator";
 /**
  * Default options for the global $fetch
  */
-const globalDefaults: FetchDefaults = {
+const globalDefaults = {
   baseURL: "",
   headers: undefined,
   throwOnFetchError: true,
   throwOnValidationError: true,
-};
+} as const satisfies FetchDefaults;
 
 /**
  * Internal fetch implementation used by both $fetch and createFetch
