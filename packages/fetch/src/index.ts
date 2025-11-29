@@ -89,11 +89,8 @@ export async function $fetch(
   const init = { ...rest } as RequestInit;
 
   // Auto-stringify body and set Content-Type if it's a plain object/array
-  if (
-    options?.body &&
-    (isPlainObject(options.body) || Array.isArray(options.body))
-  ) {
-    init.body = JSON.stringify(options.body);
+  if (init?.body && (isPlainObject(init.body) || Array.isArray(init.body))) {
+    init.body = JSON.stringify(init.body);
     const headers = new Headers(init.headers);
     if (!headers.has("Content-Type")) {
       headers.set("Content-Type", "application/json");
