@@ -1,5 +1,8 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
+/**
+ * Error thrown for HTTP errors (non-2xx responses)
+ */
 export class FetchError extends Error {
   status: Response["status"];
   response: Response;
@@ -12,6 +15,9 @@ export class FetchError extends Error {
   }
 }
 
+/**
+ * Error thrown for validation errors
+ */
 export class ValidationError extends Error {
   issues: StandardSchemaV1.Issue[];
 
