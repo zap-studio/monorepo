@@ -1,7 +1,7 @@
 /**
  * Extended RequestInit type to include custom fetch options
  */
-export type RequestInitExtended = Omit<RequestInit, "body"> & {
+export type RequestInitExtended = RequestInit & {
   /**
    * Whether to throw a FetchError on HTTP errors (non-2xx responses)
    */
