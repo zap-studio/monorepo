@@ -9,6 +9,12 @@ import { mergeHeaders } from "./utils";
 import { isStandardSchema, standardValidate } from "./validator";
 
 /**
+ * Regex patterns for URL normalization
+ */
+const TRAILING_SLASHES = /\/+$/;
+const LEADING_SLASHES = /^\/+/;
+
+/**
  * Default options for the global $fetch
  */
 const globalDefaults = {
@@ -49,7 +55,11 @@ async function fetchInternal(
     init.headers = existingHeaders;
   }
 
-  const url = defaults.baseURL + resource;
+  // Normalize URL by avoiding double slashes between baseURL and resource
+  const base = defaults.baseURL.replace(TRAILING_SLASHES, "");
+  const path = resource.replace(LEADING_SLASHES, "");
+  const url = base ? `${base}/${path}` : resource;
+
   const response = await fetch(url, init);
 
   if (throwOnFetchError && !response.ok) {
