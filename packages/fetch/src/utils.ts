@@ -1,7 +1,7 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { $fetch } from ".";
 import { FetchError } from "./errors";
-import type { FetchDefaults, RequestInitExtended } from "./types";
+import type { ExtendedRequestInit, FetchDefaults } from "./types";
 import { standardValidate } from "./validator";
 
 /**
@@ -47,7 +47,7 @@ const LEADING_SLASHES = /^\/+/;
 export async function fetchInternal(
   resource: string,
   schema: StandardSchemaV1 | undefined,
-  options: RequestInitExtended | undefined,
+  options: ExtendedRequestInit | undefined,
   defaults: FetchDefaults
 ): Promise<unknown> {
   const {
@@ -106,6 +106,6 @@ export function createMethod<TFetch extends typeof $fetch>(
   return <TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
-    options?: Omit<RequestInitExtended, "method">
+    options?: Omit<ExtendedRequestInit, "method">
   ) => fetchFn(resource, schema, { ...options, method });
 }

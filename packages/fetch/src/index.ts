@@ -2,8 +2,8 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { GLOBAL_DEFAULTS } from "./contants";
 import type {
   CreateFetchOptions,
+  ExtendedRequestInit,
   FetchDefaults,
-  RequestInitExtended,
 } from "./types";
 import { createMethod, fetchInternal } from "./utils";
 import { isStandardSchema } from "./validator";
@@ -47,7 +47,7 @@ import { isStandardSchema } from "./validator";
 export async function $fetch<TSchema extends StandardSchemaV1>(
   resource: string,
   schema: TSchema,
-  options?: RequestInitExtended
+  options?: ExtendedRequestInit
 ): Promise<
   | StandardSchemaV1.InferOutput<TSchema>
   | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
@@ -55,13 +55,13 @@ export async function $fetch<TSchema extends StandardSchemaV1>(
 
 export async function $fetch(
   resource: string,
-  options?: RequestInitExtended
+  options?: ExtendedRequestInit
 ): Promise<Response>;
 
 export async function $fetch(
   resource: string,
-  schemaOrOptions?: StandardSchemaV1 | RequestInitExtended,
-  optionsOrUndefined?: RequestInitExtended
+  schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
+  optionsOrUndefined?: ExtendedRequestInit
 ): Promise<unknown> {
   const [schema, options] = isStandardSchema(schemaOrOptions)
     ? [schemaOrOptions, optionsOrUndefined]
@@ -137,7 +137,7 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}): {
   async function customFetch<TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
-    options?: RequestInitExtended
+    options?: ExtendedRequestInit
   ): Promise<
     | StandardSchemaV1.InferOutput<TSchema>
     | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
@@ -145,13 +145,13 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}): {
 
   async function customFetch(
     resource: string,
-    options?: RequestInitExtended
+    options?: ExtendedRequestInit
   ): Promise<Response>;
 
   async function customFetch(
     resource: string,
-    schemaOrOptions?: StandardSchemaV1 | RequestInitExtended,
-    optionsOrUndefined?: RequestInitExtended
+    schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
+    optionsOrUndefined?: ExtendedRequestInit
   ): Promise<unknown> {
     const [schema, options] = isStandardSchema(schemaOrOptions)
       ? [schemaOrOptions, optionsOrUndefined]
