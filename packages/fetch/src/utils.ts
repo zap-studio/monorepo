@@ -17,7 +17,11 @@
 export function mergeHeaders(
   base: HeadersInit | undefined,
   override: HeadersInit | undefined
-): Headers {
+): Headers | undefined {
+  if (!(base || override)) {
+    return;
+  }
+
   const merged = new Headers(base);
   if (override) {
     const overrideHeaders = new Headers(override);
