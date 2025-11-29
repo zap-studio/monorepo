@@ -5,7 +5,7 @@ import type {
   FetchDefaults,
   RequestInitExtended,
 } from "./types";
-import { fetchInternal } from "./utils";
+import { createMethod, fetchInternal } from "./utils";
 import { isStandardSchema } from "./validator";
 
 /**
@@ -92,35 +92,11 @@ export async function $fetch(
  * }
  */
 export const api = {
-  get: <TSchema extends StandardSchemaV1>(
-    resource: string,
-    schema: TSchema,
-    options?: Omit<RequestInitExtended, "method">
-  ) => $fetch(resource, schema, { ...options, method: "GET" }),
-
-  post: <TSchema extends StandardSchemaV1>(
-    resource: string,
-    schema: TSchema,
-    options?: Omit<RequestInitExtended, "method">
-  ) => $fetch(resource, schema, { ...options, method: "POST" }),
-
-  put: <TSchema extends StandardSchemaV1>(
-    resource: string,
-    schema: TSchema,
-    options?: Omit<RequestInitExtended, "method">
-  ) => $fetch(resource, schema, { ...options, method: "PUT" }),
-
-  patch: <TSchema extends StandardSchemaV1>(
-    resource: string,
-    schema: TSchema,
-    options?: Omit<RequestInitExtended, "method">
-  ) => $fetch(resource, schema, { ...options, method: "PATCH" }),
-
-  delete: <TSchema extends StandardSchemaV1>(
-    resource: string,
-    schema: TSchema,
-    options?: Omit<RequestInitExtended, "method">
-  ) => $fetch(resource, schema, { ...options, method: "DELETE" }),
+  get: createMethod($fetch, "GET"),
+  post: createMethod($fetch, "POST"),
+  put: createMethod($fetch, "PUT"),
+  patch: createMethod($fetch, "PATCH"),
+  delete: createMethod($fetch, "DELETE"),
 };
 
 /**
@@ -185,35 +161,11 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}): {
   }
 
   const customApi = {
-    get: <TSchema extends StandardSchemaV1>(
-      resource: string,
-      schema: TSchema,
-      options?: Omit<RequestInitExtended, "method">
-    ) => customFetch(resource, schema, { ...options, method: "GET" }),
-
-    post: <TSchema extends StandardSchemaV1>(
-      resource: string,
-      schema: TSchema,
-      options?: Omit<RequestInitExtended, "method">
-    ) => customFetch(resource, schema, { ...options, method: "POST" }),
-
-    put: <TSchema extends StandardSchemaV1>(
-      resource: string,
-      schema: TSchema,
-      options?: Omit<RequestInitExtended, "method">
-    ) => customFetch(resource, schema, { ...options, method: "PUT" }),
-
-    patch: <TSchema extends StandardSchemaV1>(
-      resource: string,
-      schema: TSchema,
-      options?: Omit<RequestInitExtended, "method">
-    ) => customFetch(resource, schema, { ...options, method: "PATCH" }),
-
-    delete: <TSchema extends StandardSchemaV1>(
-      resource: string,
-      schema: TSchema,
-      options?: Omit<RequestInitExtended, "method">
-    ) => customFetch(resource, schema, { ...options, method: "DELETE" }),
+    get: createMethod(customFetch, "GET"),
+    post: createMethod(customFetch, "POST"),
+    put: createMethod(customFetch, "PUT"),
+    patch: createMethod(customFetch, "PATCH"),
+    delete: createMethod(customFetch, "DELETE"),
   };
 
   return {

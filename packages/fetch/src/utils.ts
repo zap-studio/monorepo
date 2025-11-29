@@ -1,4 +1,5 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { $fetch } from ".";
 import { FetchError } from "./errors";
 import type { FetchDefaults, RequestInitExtended } from "./types";
 import { standardValidate } from "./validator";
@@ -93,4 +94,18 @@ export async function fetchInternal(
 
   // No validation, return raw response data
   return response;
+}
+
+/**
+ * Creates an HTTP method helper bound to a fetch function
+ */
+export function createMethod<TFetch extends typeof $fetch>(
+  fetchFn: TFetch,
+  method: string
+) {
+  return <TSchema extends StandardSchemaV1>(
+    resource: string,
+    schema: TSchema,
+    options?: Omit<RequestInitExtended, "method">
+  ) => fetchFn(resource, schema, { ...options, method });
 }
