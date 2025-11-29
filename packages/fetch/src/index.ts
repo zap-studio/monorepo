@@ -1,7 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { FetchError } from "./errors";
-import type { RequestInitExtended, ResponseData, ResponseType } from "./types";
-import { isPlainObject } from "./utils";
+import type { RequestInitExtended } from "./types";
 import { isStandardSchema, standardValidate } from "./validator";
 
 /**
@@ -9,6 +8,9 @@ import { isStandardSchema, standardValidate } from "./validator";
  *
  * - When `throwOnValidationError: true`: validated data of type `TSchema`
  * - When `throwOnValidationError: false`: Standard Schema Result object `{ value?, issues? }`
+ * - When `throwOnFetchError: true`: throws `FetchError` on non-ok responses
+ *
+ * If no schema is provided, returns the raw `Response` object.
  *
  * @throws {FetchError} When `throwOnFetchError: true` and response is not ok
  * @throws {ValidationError} When `throwOnValidationError: true` and validation fails
@@ -19,14 +21,13 @@ import { isStandardSchema, standardValidate } from "./validator";
  *
  * const UserSchema = z.object({ id: z.number(), name: z.string() });
  *
- * // Basic usage (JSON with validation)
- * const user = await $fetch("/api/users/1", UserSchema);
+ * // Basic usage (schema validation)
+ * const user = await $fetch("/api/users/1", UserSchema, { headers: { "Authorization": "Bearer token" } });
+ * console.log("Validated user:", user);
  *
- * // Raw usage (no schema)
- * const blob = await $fetch("/api/image", { responseType: "blob" });
- *
- * // Raw usage with manual type (no runtime validation)
- * const data = await $fetch<MyType>("/api/data");
+ * // Raw usage (no schema validation)
+ * const result = await $fetch("/api/data", { method: "POST", body: JSON.stringify({ key: "value" }) });
+ * console.log("Raw response:", await result.json());
  *
  * // Usage with validation errors returned instead of thrown
  * const result = await $fetch("/api/users/1", UserSchema, { throwOnValidationError: false });
@@ -36,13 +37,6 @@ import { isStandardSchema, standardValidate } from "./validator";
  * } else {
  *   console.log("Validated user:", result.value);
  * }
- *
- * // Usage with custom fetch options and fetch error throwing
- * const user = await $fetch("/api/users/1", UserSchema, {
- *   method: "GET",
- *   headers: { "Authorization": "Bearer token" },
- *   throwOnFetchError: true,
- * });
  */
 export async function $fetch<TSchema extends StandardSchemaV1>(
   resource: string,
@@ -53,15 +47,10 @@ export async function $fetch<TSchema extends StandardSchemaV1>(
   | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
 >;
 
-export async function $fetch<TResponseType extends ResponseType = "json">(
+export async function $fetch(
   resource: string,
   options?: RequestInitExtended
-): Promise<ResponseData<TResponseType>>;
-
-export async function $fetch<T>(
-  resource: string,
-  options?: RequestInitExtended
-): Promise<T>;
+): Promise<Response>;
 
 export async function $fetch(
   resource: string,
@@ -82,20 +71,18 @@ export async function $fetch(
   const {
     throwOnValidationError = true,
     throwOnFetchError = true,
-    responseType = "json",
     ...rest
   } = options || {};
 
   const init = { ...rest } as RequestInit;
 
-  // Auto-stringify body and set Content-Type if it's a plain object/array
-  if (init?.body && (isPlainObject(init.body) || Array.isArray(init.body))) {
+  // Auto-stringify body and set Content-Type if we have a schema
+  if (schema && init.body) {
     init.body = JSON.stringify(init.body);
-    const headers = new Headers(init.headers);
-    if (!headers.has("Content-Type")) {
-      headers.set("Content-Type", "application/json");
-    }
-    init.headers = headers;
+    init.headers = {
+      ...(init.headers || {}),
+      "Content-Type": "application/json",
+    };
   }
 
   const response = await fetch(resource, init);
@@ -107,25 +94,14 @@ export async function $fetch(
     );
   }
 
-  const method = response[responseType];
-  if (typeof method !== "function") {
-    throw new FetchError(
-      `Unsupported response type: ${String(responseType)}`,
-      response
-    );
-  }
-
-  // Invoke the corresponding Response method (e.g., json, text, blob, ...)
-  const fn = method as (this: Response, ...args: []) => Promise<unknown>;
-  const raw = await Promise.resolve(fn.call(response));
-
   // For json with schema, validate
-  if (responseType === "json" && schema) {
+  if (schema) {
+    const raw = await response.json();
     return standardValidate(schema, raw, throwOnValidationError);
   }
 
   // No validation, return raw response data
-  return raw;
+  return response;
 }
 
 /**
