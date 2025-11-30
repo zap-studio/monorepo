@@ -25,6 +25,7 @@
     "@commitlint/config-conventional": "^20.0.0",
     "@turbo/gen": "^2.6.1",
     "lefthook": "^2.0.4",
+    "nyc": "^17.1.0",
     "rimraf": "^6.1.2",
     "turbo": "^2.6.1",
     "ultracite": "^6.3.6"
