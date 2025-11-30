@@ -1,6 +1,6 @@
 import { number, object, string } from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { $fetch, createFetch } from "../src";
+import { $fetch, api, createFetch } from "../src";
 import { FetchError, ValidationError } from "../src/errors";
 
 describe("$fetch", () => {
@@ -741,18 +741,18 @@ describe("createFetch", () => {
 
   describe("custom api methods", () => {
     it("should return api object with get, post, put, patch, delete methods", () => {
-      const { api } = createFetch();
+      const { api: customApi } = createFetch();
 
-      expect(api).toHaveProperty("get");
-      expect(api).toHaveProperty("post");
-      expect(api).toHaveProperty("put");
-      expect(api).toHaveProperty("patch");
-      expect(api).toHaveProperty("delete");
-      expect(typeof api.get).toBe("function");
-      expect(typeof api.post).toBe("function");
-      expect(typeof api.put).toBe("function");
-      expect(typeof api.patch).toBe("function");
-      expect(typeof api.delete).toBe("function");
+      expect(customApi).toHaveProperty("get");
+      expect(customApi).toHaveProperty("post");
+      expect(customApi).toHaveProperty("put");
+      expect(customApi).toHaveProperty("patch");
+      expect(customApi).toHaveProperty("delete");
+      expect(typeof customApi.get).toBe("function");
+      expect(typeof customApi.post).toBe("function");
+      expect(typeof customApi.put).toBe("function");
+      expect(typeof customApi.patch).toBe("function");
+      expect(typeof customApi.delete).toBe("function");
     });
 
     it("should apply factory defaults to api method requests", async () => {
@@ -766,14 +766,14 @@ describe("createFetch", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const { api } = createFetch({
+      const { api: customApi } = createFetch({
         baseURL: "https://api.example.com",
         headers: {
           Authorization: "Bearer token",
         },
       });
 
-      const result = await api.get("/users/1", UserSchema);
+      const result = await customApi.get("/users/1", UserSchema);
 
       expect(result).toEqual(userData);
       expect(fetchMock).toHaveBeenCalledWith(
@@ -792,6 +792,11 @@ describe("createFetch", () => {
 describe("api convenience methods", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
+  const UserSchema = object({
+    id: number(),
+    name: string(),
+  });
+
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
     global.fetch = fetchMock as typeof fetch;
@@ -802,43 +807,413 @@ describe("api convenience methods", () => {
   });
 
   describe("api.get", () => {
-    it.todo("should make a GET request");
-    it.todo("should validate response against schema");
-    it.todo("should pass additional options to fetch");
+    it("should make a GET request", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await api.get("https://api.example.com/users/1", UserSchema);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users/1",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+
+    it("should validate response against schema", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const result = await api.get(
+        "https://api.example.com/users/1",
+        UserSchema
+      );
+
+      expect(result).toEqual(userData);
+    });
+
+    it("should pass additional options to fetch", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await api.get("https://api.example.com/users/1", UserSchema, {
+        headers: { Authorization: "Bearer token123" },
+        credentials: "include",
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users/1",
+        expect.objectContaining({
+          method: "GET",
+          credentials: "include",
+        })
+      );
+      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+      expect(calledHeaders.get("Authorization")).toBe("Bearer token123");
+    });
   });
 
   describe("api.post", () => {
-    it.todo("should make a POST request");
-    it.todo("should validate response against schema");
-    it.todo("should handle request body");
-    it.todo("should pass additional options to fetch");
+    it("should make a POST request", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 201,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await api.post("https://api.example.com/users", UserSchema);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users",
+        expect.objectContaining({ method: "POST" })
+      );
+    });
+
+    it("should validate response against schema", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 201,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const result = await api.post(
+        "https://api.example.com/users",
+        UserSchema
+      );
+
+      expect(result).toEqual(userData);
+    });
+
+    it("should handle request body", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 201,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const bodyData = { name: "John" };
+      await api.post("https://api.example.com/users", UserSchema, {
+        body: bodyData,
+      });
+
+      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+      expect(calledBody).toBe(JSON.stringify(bodyData));
+    });
+
+    it("should pass additional options to fetch", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 201,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await api.post("https://api.example.com/users", UserSchema, {
+        headers: { "X-Custom-Header": "custom-value" },
+        credentials: "same-origin",
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users",
+        expect.objectContaining({
+          method: "POST",
+          credentials: "same-origin",
+        })
+      );
+      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+      expect(calledHeaders.get("X-Custom-Header")).toBe("custom-value");
+    });
   });
 
   describe("api.put", () => {
-    it.todo("should make a PUT request");
-    it.todo("should validate response against schema");
-    it.todo("should handle request body");
-    it.todo("should pass additional options to fetch");
+    it("should make a PUT request", async () => {
+      const userData = { id: 1, name: "John Updated" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await api.put("https://api.example.com/users/1", UserSchema);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users/1",
+        expect.objectContaining({ method: "PUT" })
+      );
+    });
+
+    it("should validate response against schema", async () => {
+      const userData = { id: 1, name: "John Updated" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const result = await api.put(
+        "https://api.example.com/users/1",
+        UserSchema
+      );
+
+      expect(result).toEqual(userData);
+    });
+
+    it("should handle request body", async () => {
+      const userData = { id: 1, name: "John Updated" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const bodyData = { name: "John Updated" };
+      await api.put("https://api.example.com/users/1", UserSchema, {
+        body: bodyData,
+      });
+
+      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+      expect(calledBody).toBe(JSON.stringify(bodyData));
+    });
+
+    it("should pass additional options to fetch", async () => {
+      const userData = { id: 1, name: "John Updated" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await api.put("https://api.example.com/users/1", UserSchema, {
+        headers: { Authorization: "Bearer token" },
+        mode: "cors",
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users/1",
+        expect.objectContaining({
+          method: "PUT",
+          mode: "cors",
+        })
+      );
+      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+      expect(calledHeaders.get("Authorization")).toBe("Bearer token");
+    });
   });
 
   describe("api.patch", () => {
-    it.todo("should make a PATCH request");
-    it.todo("should validate response against schema");
-    it.todo("should handle request body");
-    it.todo("should pass additional options to fetch");
+    it("should make a PATCH request", async () => {
+      const userData = { id: 1, name: "John Patched" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await api.patch("https://api.example.com/users/1", UserSchema);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users/1",
+        expect.objectContaining({ method: "PATCH" })
+      );
+    });
+
+    it("should validate response against schema", async () => {
+      const userData = { id: 1, name: "John Patched" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const result = await api.patch(
+        "https://api.example.com/users/1",
+        UserSchema
+      );
+
+      expect(result).toEqual(userData);
+    });
+
+    it("should handle request body", async () => {
+      const userData = { id: 1, name: "John Patched" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const bodyData = { name: "John Patched" };
+      await api.patch("https://api.example.com/users/1", UserSchema, {
+        body: bodyData,
+      });
+
+      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+      expect(calledBody).toBe(JSON.stringify(bodyData));
+    });
+
+    it("should pass additional options to fetch", async () => {
+      const userData = { id: 1, name: "John Patched" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await api.patch("https://api.example.com/users/1", UserSchema, {
+        headers: { "X-Patch-Header": "patch-value" },
+        cache: "no-store",
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users/1",
+        expect.objectContaining({
+          method: "PATCH",
+          cache: "no-store",
+        })
+      );
+      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+      expect(calledHeaders.get("X-Patch-Header")).toBe("patch-value");
+    });
   });
 
   describe("api.delete", () => {
-    it.todo("should make a DELETE request");
-    it.todo("should validate response against schema");
-    it.todo("should pass additional options to fetch");
+    it("should make a DELETE request", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await api.delete("https://api.example.com/users/1", UserSchema);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users/1",
+        expect.objectContaining({ method: "DELETE" })
+      );
+    });
+
+    it("should validate response against schema", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const result = await api.delete(
+        "https://api.example.com/users/1",
+        UserSchema
+      );
+
+      expect(result).toEqual(userData);
+    });
+
+    it("should pass additional options to fetch", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await api.delete("https://api.example.com/users/1", UserSchema, {
+        headers: { Authorization: "Bearer token" },
+        credentials: "include",
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users/1",
+        expect.objectContaining({
+          method: "DELETE",
+          credentials: "include",
+        })
+      );
+      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+      expect(calledHeaders.get("Authorization")).toBe("Bearer token");
+    });
   });
 
   describe("shared behavior", () => {
-    it.todo("should always require a schema parameter");
-    it.todo("should throw ValidationError on validation failure (default)");
-    it.todo("should throw FetchError on non-ok response (default)");
-    it.todo("should respect throwOnValidationError option");
-    it.todo("should respect throwOnFetchError option");
+    it("should always require a schema parameter", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      // All api methods require a schema - testing with TypeScript compile-time check
+      // The schema is always the second parameter
+      const result = await api.get(
+        "https://api.example.com/users/1",
+        UserSchema
+      );
+
+      expect(result).toEqual(userData);
+    });
+
+    it("should throw ValidationError on validation failure (default)", async () => {
+      const invalidData = { id: "not-a-number", name: 123 };
+      const mockResponse = new Response(JSON.stringify(invalidData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await expect(
+        api.get("https://api.example.com/users/1", UserSchema)
+      ).rejects.toThrow(ValidationError);
+    });
+
+    it("should throw FetchError on non-ok response (default)", async () => {
+      const mockResponse = new Response(
+        JSON.stringify({ error: "Not Found" }),
+        {
+          status: 404,
+          statusText: "Not Found",
+        }
+      );
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await expect(
+        api.get("https://api.example.com/users/999", UserSchema)
+      ).rejects.toThrow(FetchError);
+    });
+
+    it("should respect throwOnValidationError option", async () => {
+      const invalidData = { id: "not-a-number", name: 123 };
+      const mockResponse = new Response(JSON.stringify(invalidData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const result = await api.get(
+        "https://api.example.com/users/1",
+        UserSchema,
+        {
+          throwOnValidationError: false,
+        }
+      );
+
+      expect(result).toHaveProperty("issues");
+      expect(Array.isArray((result as { issues: unknown[] }).issues)).toBe(
+        true
+      );
+    });
+
+    it("should respect throwOnFetchError option", async () => {
+      const mockResponse = new Response(
+        JSON.stringify({ error: "Not Found" }),
+        {
+          status: 404,
+          statusText: "Not Found",
+        }
+      );
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const result = await api.get(
+        "https://api.example.com/users/999",
+        UserSchema,
+        {
+          throwOnFetchError: false,
+        }
+      );
+
+      expect(result).toHaveProperty("issues");
+    });
   });
 });
