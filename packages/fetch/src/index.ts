@@ -1,81 +1,80 @@
-import type { z } from "zod";
-import { FetchError } from "./errors";
-import type { FetchConfig, ResponseType } from "./types";
-import { parseResponse, prepareHeadersAndBody } from "./utils";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { GLOBAL_DEFAULTS } from "./internal/constants";
+import { createMethod, fetchInternal } from "./internal/utils";
+import type {
+  CreateFetchOptions,
+  ExtendedRequestInit,
+  FetchDefaults,
+} from "./types";
+import { isStandardSchema } from "./validator";
 
 /**
- * Type-safe fetch wrapper with Zod validation
+ * Type-safe fetch wrapper with Standard Schema validation.
+ *
+ * - When `throwOnValidationError: true`: validated data of type `TSchema`
+ * - When `throwOnValidationError: false`: Standard Schema Result object `{ value?, issues? }`
+ * - When `throwOnFetchError: true`: throws `FetchError` on non-ok responses
+ *
+ * If no schema is provided, returns the raw `Response` object.
+ *
+ * @throws {FetchError} When `throwOnFetchError: true` and response is not ok
+ * @throws {ValidationError} When `throwOnValidationError: true` and validation fails
  *
  * @example
  * import { z } from "zod";
  * import { $fetch } from "@zap-studio/fetch";
  *
- * const UserSchema = z.object({
- *   id: z.number(),
- *   name: z.string(),
- *   email: z.string().email(),
- * });
+ * const UserSchema = z.object({ id: z.number(), name: z.string() });
  *
- * async function getUser(userId: number) {
- *   const user = await $fetch(
- *     `https://api.example.com/users/${userId}`,
- *     UserSchema,
- *     { method: "GET" }
- *   );
- *   return user; // user is typed as { id: number; name: string; email: string; }
+ * // Basic usage (schema validation)
+ * const user = await $fetch("/api/users/1", UserSchema, { headers: { "Authorization": "Bearer token" } });
+ * console.log("Validated user:", user);
+ *
+ * // Raw usage (no schema validation and typed Response object)
+ * const result = await $fetch("/api/data", { method: "POST", body: JSON.stringify({ key: "value" }) });
+ * const json = await result.json() as ResultType;
+ * console.log("Raw response data:", json);
+ *
+ * // Usage with validation errors returned instead of thrown
+ * const result = await $fetch("/api/users/1", UserSchema, { throwOnValidationError: false });
+ *
+ * if (result.issues) {
+ *   console.error("Validation errors:", result.issues);
+ * } else {
+ *   console.log("Validated user:", result.value);
  * }
  */
-export async function $fetch<
-  TResponse,
-  TBody = unknown,
-  TResponseType extends ResponseType = "json",
->(
+export async function $fetch<TSchema extends StandardSchemaV1>(
   resource: string,
-  responseSchema: z.ZodType<TResponse>,
-  config?: FetchConfig<TBody> & {
-    throwOnValidationError?: boolean;
-    responseType?: TResponseType;
-  }
+  schema: TSchema,
+  options?: ExtendedRequestInit
 ): Promise<
-  TResponse | z.ZodSafeParseSuccess<TResponse> | z.ZodSafeParseError<TResponse>
-> {
-  const {
-    body,
-    headers,
-    throwOnValidationError = true,
-    responseType = "json" as TResponseType,
-    ...rest
-  } = config || {};
+  | StandardSchemaV1.InferOutput<TSchema>
+  | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
+>;
 
-  const { body: preparedBody, headers: preparedHeaders } =
-    prepareHeadersAndBody(body, headers);
+export async function $fetch(
+  resource: string,
+  options?: ExtendedRequestInit
+): Promise<Response>;
 
-  const response = await fetch(resource, {
-    ...rest,
-    body: preparedBody,
-    headers: preparedHeaders,
-  });
+export async function $fetch(
+  resource: string,
+  schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
+  optionsOrUndefined?: ExtendedRequestInit
+): Promise<unknown> {
+  const [schema, options] = isStandardSchema(schemaOrOptions)
+    ? [schemaOrOptions, optionsOrUndefined]
+    : [undefined, schemaOrOptions];
 
-  if (!response.ok) {
-    throw new FetchError(
-      `HTTP ${response.status}: ${response.statusText}`,
-      response.status,
-      response.statusText,
-      response
-    );
-  }
-
-  const data = await parseResponse(response, responseType);
-
-  return throwOnValidationError
-    ? responseSchema.parse(data)
-    : responseSchema.safeParse(data);
+  return await fetchInternal(resource, schema, options, GLOBAL_DEFAULTS);
 }
 
-export const safeFetch = $fetch;
-
 /**
- * Convenience methods for common HTTP verbs
+ * Convenience methods for common HTTP verbs.
+ *
+ * These methods always require a schema for validation.
+ * For raw responses without validation, use `$fetch` directly.
  *
  * @example
  * import { z } from "zod";
@@ -88,41 +87,89 @@ export const safeFetch = $fetch;
  * });
  *
  * async function fetchPost(postId: number) {
- *  const post = await api.get(`https://api.example.com/posts/${postId}`, PostSchema);
+ *   const post = await api.get(`https://api.example.com/posts/${postId}`, PostSchema);
  *   return post; // post is typed as { id: number; title: string; content: string; }
  * }
  */
 export const api = {
-  get: <TResponse>(
-    resource: string,
-    schema: z.ZodType<TResponse>,
-    options?: Omit<RequestInit, "method" | "body">
-  ) => $fetch(resource, schema, { ...options, method: "GET" }),
-
-  post: <TResponse, TBody = unknown>(
-    resource: string,
-    schema: z.ZodType<TResponse>,
-    body?: TBody,
-    options?: Omit<RequestInit, "method" | "body">
-  ) => $fetch(resource, schema, { ...options, method: "POST", body }),
-
-  put: <TResponse, TBody = unknown>(
-    resource: string,
-    schema: z.ZodType<TResponse>,
-    body?: TBody,
-    options?: Omit<RequestInit, "method" | "body">
-  ) => $fetch(resource, schema, { ...options, method: "PUT", body }),
-
-  patch: <TResponse, TBody = unknown>(
-    resource: string,
-    schema: z.ZodType<TResponse>,
-    body?: TBody,
-    options?: Omit<RequestInit, "method" | "body">
-  ) => $fetch(resource, schema, { ...options, method: "PATCH", body }),
-
-  delete: <TResponse>(
-    resource: string,
-    schema: z.ZodType<TResponse>,
-    options?: Omit<RequestInit, "method" | "body">
-  ) => $fetch(resource, schema, { ...options, method: "DELETE" }),
+  get: createMethod($fetch, "GET"),
+  post: createMethod($fetch, "POST"),
+  put: createMethod($fetch, "PUT"),
+  patch: createMethod($fetch, "PATCH"),
+  delete: createMethod($fetch, "DELETE"),
 };
+
+/**
+ * Creates a custom fetch instance with pre-configured defaults.
+ *
+ * Use this factory to create API clients with a base URL, default headers,
+ * and other shared configuration. Each instance is independent.
+ *
+ * @example
+ * import { z } from "zod";
+ * import { createFetch } from "@zap-studio/fetch";
+ *
+ * // Create a configured instance
+ * const { $fetch, api } = createFetch({
+ *   baseURL: "https://api.example.com",
+ *   headers: { "Authorization": "Bearer token" },
+ * });
+ *
+ * const UserSchema = z.object({ id: z.number(), name: z.string() });
+ *
+ * // Now use relative paths - baseURL is prepended automatically
+ * const user = await api.get("/users/1", UserSchema);
+ *
+ * // Or use $fetch directly
+ * const response = await $fetch("/users", UserSchema, { method: "POST", body: { name: "John" } });
+ */
+export function createFetch(factoryOptions: CreateFetchOptions = {}): {
+  $fetch: typeof $fetch;
+  api: typeof api;
+} {
+  const defaults: FetchDefaults = {
+    baseURL: factoryOptions.baseURL ?? "",
+    headers: factoryOptions.headers,
+    throwOnFetchError: factoryOptions.throwOnFetchError ?? true,
+    throwOnValidationError: factoryOptions.throwOnValidationError ?? true,
+  };
+
+  async function customFetch<TSchema extends StandardSchemaV1>(
+    resource: string,
+    schema: TSchema,
+    options?: ExtendedRequestInit
+  ): Promise<
+    | StandardSchemaV1.InferOutput<TSchema>
+    | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
+  >;
+
+  async function customFetch(
+    resource: string,
+    options?: ExtendedRequestInit
+  ): Promise<Response>;
+
+  async function customFetch(
+    resource: string,
+    schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
+    optionsOrUndefined?: ExtendedRequestInit
+  ): Promise<unknown> {
+    const [schema, options] = isStandardSchema(schemaOrOptions)
+      ? [schemaOrOptions, optionsOrUndefined]
+      : [undefined, schemaOrOptions];
+
+    return await fetchInternal(resource, schema, options, defaults);
+  }
+
+  const customApi = {
+    get: createMethod(customFetch, "GET"),
+    post: createMethod(customFetch, "POST"),
+    put: createMethod(customFetch, "PUT"),
+    patch: createMethod(customFetch, "PATCH"),
+    delete: createMethod(customFetch, "DELETE"),
+  };
+
+  return {
+    $fetch: customFetch,
+    api: customApi,
+  };
+}
