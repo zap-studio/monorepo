@@ -264,7 +264,7 @@ describe("fetchInternal", () => {
       await fetchInternal(
         "endpoint",
         dummySchema,
-        { method: "POST", body: JSON.stringify(body) },
+        { method: "POST", body },
         {
           baseURL: "https://api.example.com",
           headers: undefined,
@@ -634,7 +634,7 @@ describe("createMethod", () => {
       } satisfies StandardSchemaV1;
       await patch("/users/1", schema, {
         headers: { A: "1" },
-        body: JSON.stringify({ name: "x" }),
+        body: { name: "x" },
       });
       const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
       expect(call[2]).toMatchObject({
