@@ -18,7 +18,7 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "zod": "^4.1.13"
+    "zod": "catalog:base"
   },
   "devDependencies": {
     "@types/node": "catalog:types",

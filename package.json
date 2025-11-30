@@ -20,14 +20,14 @@
     "typegen": "turbo run typegen"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.8",
-    "@changesets/cli": "^2.29.8",
-    "@commitlint/cli": "^20.1.0",
-    "@commitlint/config-conventional": "^20.0.0",
-    "@turbo/gen": "^2.6.1",
-    "lefthook": "^2.0.4",
-    "rimraf": "^6.1.2",
-    "turbo": "^2.6.1",
-    "ultracite": "^6.3.8"
+    "@biomejs/biome": "catalog:linting",
+    "@changesets/cli": "catalog:tooling",
+    "@commitlint/cli": "catalog:linting",
+    "@commitlint/config-conventional": "catalog:linting",
+    "@turbo/gen": "catalog:tooling",
+    "lefthook": "catalog:tooling",
+    "rimraf": "catalog:tooling",
+    "turbo": "catalog:tooling",
+    "ultracite": "catalog:linting"
   }
 }
