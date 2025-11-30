@@ -5,7 +5,11 @@ import { ValidationError } from "./errors";
  * Type guard to check if a value is a Standard Schema schema
  */
 export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
-  return !!value && typeof value === "object" && "~standard" in value;
+  return (
+    !!value &&
+    (typeof value === "object" || typeof value === "function") &&
+    "~standard" in value
+  );
 }
 
 /**
