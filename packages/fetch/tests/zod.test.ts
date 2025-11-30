@@ -19,7 +19,7 @@ describe("$fetch with Zod schemas", () => {
     const schema = z.object({
       id: z.number(),
       name: z.string(),
-      email: z.string().email(),
+      email: z.email(),
     });
 
     const mockData = { id: 1, name: "Test User", email: "test@example.com" };
@@ -40,7 +40,7 @@ describe("$fetch with Zod schemas", () => {
   it("should throw ValidationError on invalid data with Zod", async () => {
     const schema = z.object({
       id: z.number(),
-      email: z.string().email(),
+      email: z.email(),
     });
 
     const invalidData = { id: 1, email: "not-an-email" };
@@ -61,7 +61,7 @@ describe("$fetch with Zod schemas", () => {
   it("should return validation result when throwOnValidationError is false with Zod", async () => {
     const schema = z.object({
       id: z.number(),
-      email: z.string().email(),
+      email: z.email(),
     });
 
     const invalidData = { id: 1, email: "not-an-email" };
@@ -79,16 +79,16 @@ describe("$fetch with Zod schemas", () => {
     });
 
     expect(result).toHaveProperty("issues");
-    // @ts-expect-error - checking for issues
-    expect(result.issues).toBeDefined();
-    // @ts-expect-error - checking for issues
-    expect(Array.isArray(result.issues)).toBe(true);
+    if ("issues" in result) {
+      expect(result.issues).toBeDefined();
+      expect(Array.isArray(result.issues)).toBe(true);
+    }
   });
 
   it("should return successful validation result when data is valid and throwOnValidationError is false", async () => {
     const schema = z.object({
       id: z.number(),
-      email: z.string().email(),
+      email: z.email(),
     });
 
     const validData = { id: 1, email: "test@example.com" };
@@ -106,10 +106,10 @@ describe("$fetch with Zod schemas", () => {
     });
 
     expect(result).toHaveProperty("value");
-    // @ts-expect-error - checking for value
-    expect(result.value).toEqual(validData);
-    // @ts-expect-error - checking for issues
-    expect(result.issues).toBeUndefined();
+    if ("value" in result) {
+      expect(result.value).toEqual(validData);
+      expect(result.issues).toBeUndefined();
+    }
   });
 
   it("should work with Zod array schemas", async () => {
