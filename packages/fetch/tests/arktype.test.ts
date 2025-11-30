@@ -79,10 +79,10 @@ describe("$fetch with ArkType schemas", () => {
     });
 
     expect(result).toHaveProperty("issues");
-    // @ts-expect-error - checking for issues
-    expect(result.issues).toBeDefined();
-    // @ts-expect-error - checking for issues
-    expect(Array.isArray(result.issues)).toBe(true);
+    if ("issues" in result) {
+      expect(result.issues).toBeDefined();
+      expect(Array.isArray(result.issues)).toBe(true);
+    }
   });
 
   it("should return successful validation result when data is valid and throwOnValidationError is false", async () => {
@@ -106,10 +106,10 @@ describe("$fetch with ArkType schemas", () => {
     });
 
     expect(result).toHaveProperty("value");
-    // @ts-expect-error - checking for value
-    expect(result.value).toEqual(validData);
-    // @ts-expect-error - checking for issues
-    expect(result.issues).toBeUndefined();
+    if ("value" in result) {
+      expect(result.value).toEqual(validData);
+      expect(result.issues).toBeUndefined();
+    }
   });
 
   it("should work with ArkType array schemas", async () => {
