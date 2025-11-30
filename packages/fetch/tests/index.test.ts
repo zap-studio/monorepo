@@ -512,29 +512,280 @@ describe("createFetch", () => {
   });
 
   describe("default headers", () => {
-    it.todo("should include default headers in all requests");
-    it.todo("should allow request headers to override default headers");
-    it.todo("should merge default and request headers");
+    it("should include default headers in all requests", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        headers: {
+          Authorization: "Bearer default-token",
+          "X-API-Key": "api-key-123",
+        },
+      });
+
+      await customFetch("https://api.example.com/users");
+
+      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+      expect(calledHeaders.get("Authorization")).toBe("Bearer default-token");
+      expect(calledHeaders.get("X-API-Key")).toBe("api-key-123");
+    });
+
+    it("should allow request headers to override default headers", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        headers: {
+          Authorization: "Bearer default-token",
+        },
+      });
+
+      await customFetch("https://api.example.com/users", {
+        headers: {
+          Authorization: "Bearer override-token",
+        },
+      });
+
+      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+      expect(calledHeaders.get("Authorization")).toBe("Bearer override-token");
+    });
+
+    it("should merge default and request headers", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        headers: {
+          Authorization: "Bearer default-token",
+          "X-Default-Header": "default-value",
+        },
+      });
+
+      await customFetch("https://api.example.com/users", {
+        headers: {
+          "X-Request-Header": "request-value",
+        },
+      });
+
+      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+      expect(calledHeaders.get("Authorization")).toBe("Bearer default-token");
+      expect(calledHeaders.get("X-Default-Header")).toBe("default-value");
+      expect(calledHeaders.get("X-Request-Header")).toBe("request-value");
+    });
   });
 
   describe("default options", () => {
-    it.todo("should use throwOnFetchError default from factory options");
-    it.todo("should use throwOnValidationError default from factory options");
-    it.todo("should allow per-request override of throwOnFetchError");
-    it.todo("should allow per-request override of throwOnValidationError");
+    it("should use throwOnFetchError default from factory options", async () => {
+      const mockResponse = new Response(
+        JSON.stringify({ error: "Not Found" }),
+        {
+          status: 404,
+          statusText: "Not Found",
+        }
+      );
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        throwOnFetchError: false,
+      });
+
+      const result = await customFetch("https://api.example.com/missing");
+
+      expect(result).toBeInstanceOf(Response);
+      expect(result.status).toBe(404);
+    });
+
+    it("should use throwOnValidationError default from factory options", async () => {
+      const UserSchema = object({
+        id: number(),
+        name: string(),
+      });
+      const invalidData = { id: "not-a-number", name: 123 };
+      const mockResponse = new Response(JSON.stringify(invalidData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        throwOnValidationError: false,
+      });
+
+      const result = await customFetch(
+        "https://api.example.com/user",
+        UserSchema
+      );
+
+      expect(result).toHaveProperty("issues");
+    });
+
+    it("should allow per-request override of throwOnFetchError", async () => {
+      const mockResponse = new Response(
+        JSON.stringify({ error: "Not Found" }),
+        {
+          status: 404,
+          statusText: "Not Found",
+        }
+      );
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        throwOnFetchError: false,
+      });
+
+      await expect(
+        customFetch("https://api.example.com/missing", {
+          throwOnFetchError: true,
+        })
+      ).rejects.toThrow(FetchError);
+    });
+
+    it("should allow per-request override of throwOnValidationError", async () => {
+      const UserSchema = object({
+        id: number(),
+        name: string(),
+      });
+      const invalidData = { id: "not-a-number", name: 123 };
+      const mockResponse = new Response(JSON.stringify(invalidData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        throwOnValidationError: false,
+      });
+
+      await expect(
+        customFetch("https://api.example.com/user", UserSchema, {
+          throwOnValidationError: true,
+        })
+      ).rejects.toThrow(ValidationError);
+    });
   });
 
   describe("custom $fetch behavior", () => {
-    it.todo("should behave like global $fetch with schema validation");
-    it.todo("should behave like global $fetch without schema");
-    it.todo("should apply factory defaults to all requests");
+    it("should behave like global $fetch with schema validation", async () => {
+      const UserSchema = object({
+        id: number(),
+        name: string(),
+      });
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        baseURL: "https://api.example.com",
+      });
+
+      const result = await customFetch("/user", UserSchema);
+
+      expect(result).toEqual(userData);
+    });
+
+    it("should behave like global $fetch without schema", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        baseURL: "https://api.example.com",
+      });
+
+      const result = await customFetch("/test");
+
+      expect(result).toBeInstanceOf(Response);
+      expect(result).toBe(mockResponse);
+    });
+
+    it("should apply factory defaults to all requests", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        baseURL: "https://api.example.com",
+        headers: {
+          Authorization: "Bearer token",
+        },
+      });
+
+      await customFetch("/users");
+      await customFetch("/posts");
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+
+      const firstCallHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+      const secondCallHeaders = fetchMock.mock.calls[1]?.[1]
+        ?.headers as Headers;
+
+      expect(firstCallHeaders.get("Authorization")).toBe("Bearer token");
+      expect(secondCallHeaders.get("Authorization")).toBe("Bearer token");
+
+      expect(fetchMock.mock.calls[0]?.[0]).toBe(
+        "https://api.example.com/users"
+      );
+      expect(fetchMock.mock.calls[1]?.[0]).toBe(
+        "https://api.example.com/posts"
+      );
+    });
   });
 
   describe("custom api methods", () => {
-    it.todo(
-      "should return api object with get, post, put, patch, delete methods"
-    );
-    it.todo("should apply factory defaults to api method requests");
+    it("should return api object with get, post, put, patch, delete methods", () => {
+      const { api } = createFetch();
+
+      expect(api).toHaveProperty("get");
+      expect(api).toHaveProperty("post");
+      expect(api).toHaveProperty("put");
+      expect(api).toHaveProperty("patch");
+      expect(api).toHaveProperty("delete");
+      expect(typeof api.get).toBe("function");
+      expect(typeof api.post).toBe("function");
+      expect(typeof api.put).toBe("function");
+      expect(typeof api.patch).toBe("function");
+      expect(typeof api.delete).toBe("function");
+    });
+
+    it("should apply factory defaults to api method requests", async () => {
+      const UserSchema = object({
+        id: number(),
+        name: string(),
+      });
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { api } = createFetch({
+        baseURL: "https://api.example.com",
+        headers: {
+          Authorization: "Bearer token",
+        },
+      });
+
+      const result = await api.get("/users/1", UserSchema);
+
+      expect(result).toEqual(userData);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users/1",
+        expect.objectContaining({
+          method: "GET",
+        })
+      );
+
+      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+      expect(calledHeaders.get("Authorization")).toBe("Bearer token");
+    });
   });
 });
 
