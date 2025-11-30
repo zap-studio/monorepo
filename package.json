@@ -26,6 +26,7 @@
     "@commitlint/config-conventional": "catalog:linting",
     "@turbo/gen": "catalog:tooling",
     "lefthook": "catalog:tooling",
+    "nyc": "^17.1.0",
     "rimraf": "catalog:tooling",
     "turbo": "catalog:tooling",
     "ultracite": "catalog:linting"
