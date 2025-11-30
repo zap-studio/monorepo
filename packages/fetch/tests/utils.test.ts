@@ -427,7 +427,7 @@ describe("fetchInternal", () => {
         throwOnValidationError: true,
       });
       // When throwOnValidationError is true, standardValidate returns the validated value
-      expect(result).toEqual({ value: { value: 42 } });
+      expect(result).toEqual({ value: 42 });
     });
 
     it("should return validated value when throwOnValidationError is true", async () => {
@@ -447,7 +447,7 @@ describe("fetchInternal", () => {
         throwOnFetchError: true,
         throwOnValidationError: true,
       });
-      expect(result).toEqual({ value: { val: "x" } });
+      expect(result).toEqual({ val: "x" });
     });
 
     it("should return result object when throwOnValidationError is false", async () => {
