@@ -475,7 +475,6 @@ describe("createFetch", () => {
       );
     });
 
-    // FIXME: review this behavior
     it("should not modify absolute URLs", async () => {
       const mockResponse = new Response(JSON.stringify({ data: "test" }), {
         status: 200,
@@ -489,7 +488,25 @@ describe("createFetch", () => {
       await customFetch("https://other-api.example.com/users");
 
       expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/https://other-api.example.com/users",
+        "https://other-api.example.com/users",
+        expect.any(Object)
+      );
+    });
+
+    it("should not modify protocol-relative URLs", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        baseURL: "https://api.example.com",
+      });
+
+      await customFetch("//other-api.example.com/users");
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "//other-api.example.com/users",
         expect.any(Object)
       );
     });

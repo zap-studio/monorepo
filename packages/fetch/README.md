@@ -159,10 +159,12 @@ const newUser = await api.post("/users", UserSchema, {
 
 | Option                   | Type          | Default | Description                                      |
 | ------------------------ | ------------- | ------- | ------------------------------------------------ |
-| `baseURL`                | `string`      | `""`    | Base URL prepended to all requests               |
+| `baseURL`                | `string`      | `""`    | Base URL prepended to relative paths only        |
 | `headers`                | `HeadersInit` | -       | Default headers included in all requests         |
 | `throwOnFetchError`      | `boolean`     | `true`  | Throw `FetchError` on non-2xx responses          |
 | `throwOnValidationError` | `boolean`     | `true`  | Throw `ValidationError` on schema validation failures |
+
+> **Note:** Absolute URLs (starting with `http://`, `https://`, or `//`) are used as-is and ignore the `baseURL`.
 
 #### Multiple API Clients
 

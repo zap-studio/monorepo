@@ -40,6 +40,14 @@ export function mergeHeaders(
 
 const TRAILING_SLASHES = /\/+$/;
 const LEADING_SLASHES = /^\/+/;
+const ABSOLUTE_URL_PATTERN = /^(https?:)?\/\//i;
+
+/**
+ * Checks if a URL is absolute (starts with http://, https://, or //)
+ */
+function isAbsoluteURL(url: string): boolean {
+  return ABSOLUTE_URL_PATTERN.test(url);
+}
 
 /**
  * Internal fetch implementation used by both $fetch and createFetch
@@ -72,10 +80,16 @@ export async function fetchInternal(
     init.headers = existingHeaders;
   }
 
-  // Normalize URL by avoiding double slashes between baseURL and resource
-  const base = defaults.baseURL.replace(TRAILING_SLASHES, "");
-  const path = resource.replace(LEADING_SLASHES, "");
-  const url = base ? `${base}/${path}` : resource;
+  // For absolute URLs, ignore baseURL entirely
+  let url: string;
+  if (isAbsoluteURL(resource)) {
+    url = resource;
+  } else {
+    // Normalize URL by avoiding double slashes between baseURL and resource
+    const base = defaults.baseURL.replace(TRAILING_SLASHES, "");
+    const path = resource.replace(LEADING_SLASHES, "");
+    url = base ? `${base}/${path}` : resource;
+  }
 
   const response = await fetch(url, init);
 
