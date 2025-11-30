@@ -26,13 +26,13 @@
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
-    "arktype": "^2.1.27",
+    "arktype": "catalog:base",
     "jsdom": "catalog:testing",
     "tsdown": "catalog:base",
     "typescript": "catalog:base",
-    "valibot": "^1.2.0",
+    "valibot": "catalog:base",
     "vitest": "catalog:testing",
-    "zod": "^4.1.13"
+    "zod": "catalog:base"
   },
   "exports": {
     ".": "./dist/index.mjs",
