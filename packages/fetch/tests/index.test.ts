@@ -1,4 +1,7 @@
-import { afterEach, beforeEach, describe, it, vi } from "vitest";
+import { number, object, string } from "valibot";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { $fetch } from "../src";
+import { ValidationError } from "../src/errors";
 
 describe("$fetch", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
@@ -13,25 +16,163 @@ describe("$fetch", () => {
   });
 
   describe("basic functionality", () => {
-    it.todo("should make a fetch request to the given URL");
-    it.todo("should return raw Response when no schema is provided");
-    it.todo("should pass RequestInit options to fetch");
-    it.todo("should support all HTTP methods via options.method");
+    it("should make a fetch request to the given URL", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await $fetch("https://api.example.com/test");
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/test",
+        expect.any(Object)
+      );
+    });
+
+    it("should return raw Response when no schema is provided", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const result = await $fetch("https://api.example.com/test");
+
+      expect(result).toBeInstanceOf(Response);
+      expect(result).toBe(mockResponse);
+    });
+
+    it("should pass RequestInit options to fetch", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await $fetch("https://api.example.com/test", {
+        method: "POST",
+        credentials: "include",
+        mode: "cors",
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/test",
+        expect.objectContaining({
+          method: "POST",
+          credentials: "include",
+          mode: "cors",
+        })
+      );
+    });
+
+    it("should support all HTTP methods via options.method", async () => {
+      const methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"];
+
+      for (const method of methods) {
+        const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+          status: 200,
+        });
+        fetchMock.mockResolvedValue(mockResponse);
+
+        await $fetch("https://api.example.com/test", { method });
+
+        expect(fetchMock).toHaveBeenCalledWith(
+          "https://api.example.com/test",
+          expect.objectContaining({ method })
+        );
+
+        fetchMock.mockClear();
+      }
+    });
   });
 
   describe("schema validation", () => {
-    it.todo("should validate response data against the provided schema");
-    it.todo("should return validated data when schema validation passes");
-    it.todo(
-      "should throw ValidationError when validation fails and throwOnValidationError is true (default)"
-    );
-    it.todo(
-      "should return result object with issues when validation fails and throwOnValidationError is false"
-    );
-    it.todo(
-      "should return result object with value when validation passes and throwOnValidationError is false"
-    );
-    it.todo("should parse response as JSON when schema is provided");
+    const UserSchema = object({
+      id: number(),
+      name: string(),
+    });
+
+    it("should validate response data against the provided schema", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const result = await $fetch("https://api.example.com/user", UserSchema);
+
+      expect(result).toEqual(userData);
+    });
+
+    it("should return validated data when schema validation passes", async () => {
+      const userData = { id: 42, name: "Jane Doe" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const result = await $fetch("https://api.example.com/user", UserSchema);
+
+      expect(result).toEqual(userData);
+      expect(result).toHaveProperty("id", 42);
+      expect(result).toHaveProperty("name", "Jane Doe");
+    });
+
+    it("should throw ValidationError when validation fails and throwOnValidationError is true (default)", async () => {
+      const invalidData = { id: "not-a-number", name: 123 };
+      const mockResponse = new Response(JSON.stringify(invalidData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await expect(
+        $fetch("https://api.example.com/user", UserSchema)
+      ).rejects.toThrow(ValidationError);
+    });
+
+    it("should return result object with issues when validation fails and throwOnValidationError is false", async () => {
+      const invalidData = { id: "not-a-number", name: 123 };
+      const mockResponse = new Response(JSON.stringify(invalidData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const result = await $fetch("https://api.example.com/user", UserSchema, {
+        throwOnValidationError: false,
+      });
+
+      expect(result).toHaveProperty("issues");
+      expect(Array.isArray((result as { issues: unknown[] }).issues)).toBe(
+        true
+      );
+    });
+
+    it("should return result object with value when validation passes and throwOnValidationError is false", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const result = await $fetch("https://api.example.com/user", UserSchema, {
+        throwOnValidationError: false,
+      });
+
+      expect(result).toHaveProperty("value");
+      expect((result as { value: unknown }).value).toEqual(userData);
+    });
+
+    it("should parse response as JSON when schema is provided", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      const jsonSpy = vi.spyOn(mockResponse, "json");
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await $fetch("https://api.example.com/user", UserSchema);
+
+      expect(jsonSpy).toHaveBeenCalled();
+    });
   });
 
   describe("error handling", () => {
