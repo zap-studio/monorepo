@@ -21,17 +21,17 @@
     "@standard-schema/spec": "^1.0.0"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "@vitest/coverage-v8": "^4.0.14",
+    "@types/node": "catalog:types",
+    "@vitest/coverage-v8": "catalog:testing",
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
     "arktype": "^2.1.27",
-    "jsdom": "latest",
-    "tsdown": "latest",
-    "typescript": "latest",
+    "jsdom": "catalog:testing",
+    "tsdown": "catalog:base",
+    "typescript": "catalog:base",
     "valibot": "^1.2.0",
-    "vitest": "latest",
+    "vitest": "catalog:testing",
     "zod": "^4.1.13"
   },
   "exports": {
