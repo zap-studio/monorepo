@@ -10,8 +10,8 @@
   "devDependencies": {
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
-    "tsdown": "^0.16.6",
-    "typescript": "^5.9.3"
+    "tsdown": "catalog:base",
+    "typescript": "catalog:base"
   },
   "exports": {
     ".": "./dist/index.mjs",
