@@ -2,6 +2,20 @@ import { type } from "arktype";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { $fetch, api } from "../src";
 import { ValidationError } from "../src/errors";
+import { isStandardSchema } from "../src/validator";
+
+describe("ArkType Standard Schema compatibility", () => {
+  it("should expose ~standard property", () => {
+    const schema = type({ id: "number" });
+    expect("~standard" in schema).toBe(true);
+    expect(schema["~standard"]).toBeDefined();
+  });
+
+  it("should be recognized by isStandardSchema", () => {
+    const schema = type({ id: "number" });
+    expect(isStandardSchema(schema)).toBe(true);
+  });
+});
 
 describe("$fetch with ArkType schemas", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
