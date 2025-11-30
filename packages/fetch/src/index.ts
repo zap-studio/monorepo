@@ -1,5 +1,5 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { GLOBAL_DEFAULTS } from "./internal/contants";
+import { GLOBAL_DEFAULTS } from "./internal/constants";
 import { createMethod, fetchInternal } from "./internal/utils";
 import type {
   CreateFetchOptions,
