@@ -1,6 +1,6 @@
 import { number, object, string } from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { $fetch } from "../src";
+import { $fetch, createFetch } from "../src";
 import { FetchError, ValidationError } from "../src/errors";
 
 describe("$fetch", () => {
@@ -368,19 +368,147 @@ describe("createFetch", () => {
   });
 
   describe("factory creation", () => {
-    it.todo("should return an object with $fetch and api properties");
-    it.todo("should create independent fetch instances");
+    it("should return an object with $fetch and api properties", () => {
+      const instance = createFetch();
+
+      expect(instance).toHaveProperty("$fetch");
+      expect(instance).toHaveProperty("api");
+      expect(typeof instance.$fetch).toBe("function");
+      expect(typeof instance.api).toBe("object");
+    });
+
+    it("should create independent fetch instances", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const instance1 = createFetch({ baseURL: "https://api1.example.com" });
+      const instance2 = createFetch({ baseURL: "https://api2.example.com" });
+
+      await instance1.$fetch("/endpoint");
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api1.example.com/endpoint",
+        expect.any(Object)
+      );
+
+      fetchMock.mockClear();
+
+      await instance2.$fetch("/endpoint");
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api2.example.com/endpoint",
+        expect.any(Object)
+      );
+    });
   });
 
   describe("baseURL", () => {
-    it.todo("should prepend baseURL to relative paths");
-    it.todo("should handle baseURL with trailing slash");
-    it.todo("should handle resource with leading slash");
-    it.todo(
-      "should handle both baseURL with trailing and resource with leading slash"
-    );
-    it.todo("should not modify absolute URLs");
-    it.todo("should work without baseURL");
+    it("should prepend baseURL to relative paths", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        baseURL: "https://api.example.com",
+      });
+
+      await customFetch("users");
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users",
+        expect.any(Object)
+      );
+    });
+
+    it("should handle baseURL with trailing slash", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        baseURL: "https://api.example.com/",
+      });
+
+      await customFetch("users");
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users",
+        expect.any(Object)
+      );
+    });
+
+    it("should handle resource with leading slash", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        baseURL: "https://api.example.com",
+      });
+
+      await customFetch("/users");
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users",
+        expect.any(Object)
+      );
+    });
+
+    it("should handle both baseURL with trailing and resource with leading slash", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        baseURL: "https://api.example.com/",
+      });
+
+      await customFetch("/users");
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users",
+        expect.any(Object)
+      );
+    });
+
+    // FIXME: review this behavior
+    it("should not modify absolute URLs", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        baseURL: "https://api.example.com",
+      });
+
+      await customFetch("https://other-api.example.com/users");
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/https://other-api.example.com/users",
+        expect.any(Object)
+      );
+    });
+
+    it("should work without baseURL", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch();
+
+      await customFetch("https://api.example.com/users");
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users",
+        expect.any(Object)
+      );
+    });
   });
 
   describe("default headers", () => {
