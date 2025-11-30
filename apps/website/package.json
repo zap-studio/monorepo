@@ -10,14 +10,14 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@radix-ui/react-slot": "catalog:base",
+    "@radix-ui/react-slot": "catalog:ui",
     "@tailwindcss/vite": "catalog:tailwind4",
-    "class-variance-authority": "catalog:base",
-    "clsx": "catalog:base",
-    "lucide-react": "catalog:base",
+    "class-variance-authority": "catalog:ui",
+    "clsx": "catalog:ui",
+    "lucide-react": "catalog:ui",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
-    "tailwind-merge": "catalog:base",
+    "tailwind-merge": "catalog:ui",
     "tailwindcss": "catalog:tailwind4"
   },
   "devDependencies": {
@@ -26,10 +26,10 @@
     "@types/react-dom": "catalog:types",
     "@vitejs/plugin-react": "catalog:react19",
     "babel-plugin-react-compiler": "catalog:react19",
-    "globals": "^16.5.0",
+    "globals": "catalog:linting",
     "tw-animate-css": "catalog:tailwind4",
     "typescript": "catalog:base",
     "typescript-eslint": "catalog:base",
-    "vite": "npm:rolldown-vite@^7.2.8"
+    "vite": "catalog:vite"
   }
 }
