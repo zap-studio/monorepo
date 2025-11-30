@@ -477,7 +477,7 @@ importers:
         version: 4.10.7
       next:
         specifier: '>=12.0.0'
-        version: 16.0.5(@opentelemetry/api@1.9.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 16.0.6(@opentelemetry/api@1.9.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       valibot:
         specifier: '>=0.30.0'
         version: 1.2.0(typescript@5.9.3)
