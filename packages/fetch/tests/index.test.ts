@@ -1,7 +1,7 @@
 import { number, object, string } from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { $fetch } from "../src";
-import { ValidationError } from "../src/errors";
+import { FetchError, ValidationError } from "../src/errors";
 
 describe("$fetch", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
@@ -176,27 +176,182 @@ describe("$fetch", () => {
   });
 
   describe("error handling", () => {
-    it.todo(
-      "should throw FetchError on non-ok response when throwOnFetchError is true (default)"
-    );
-    it.todo(
-      "should return Response without throwing when throwOnFetchError is false"
-    );
-    it.todo("should include status and response in FetchError");
-    it.todo("should include status text in FetchError message");
+    it("should throw FetchError on non-ok response when throwOnFetchError is true (default)", async () => {
+      const mockResponse = new Response(
+        JSON.stringify({ error: "Not Found" }),
+        {
+          status: 404,
+          statusText: "Not Found",
+        }
+      );
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await expect($fetch("https://api.example.com/missing")).rejects.toThrow(
+        FetchError
+      );
+    });
+
+    it("should return Response without throwing when throwOnFetchError is false", async () => {
+      const mockResponse = new Response(
+        JSON.stringify({ error: "Not Found" }),
+        {
+          status: 404,
+          statusText: "Not Found",
+        }
+      );
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const result = await $fetch("https://api.example.com/missing", {
+        throwOnFetchError: false,
+      });
+
+      expect(result).toBeInstanceOf(Response);
+      expect((result as Response).status).toBe(404);
+    });
+
+    it("should include status and response in FetchError", async () => {
+      const mockResponse = new Response(
+        JSON.stringify({ error: "Server Error" }),
+        {
+          status: 500,
+          statusText: "Internal Server Error",
+        }
+      );
+      fetchMock.mockResolvedValue(mockResponse);
+
+      try {
+        await $fetch("https://api.example.com/error");
+        expect.fail("Should have thrown FetchError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(FetchError);
+        expect((error as FetchError).status).toBe(500);
+        expect((error as FetchError).response).toBe(mockResponse);
+      }
+    });
+
+    it("should include status text in FetchError message", async () => {
+      const mockResponse = new Response(
+        JSON.stringify({ error: "Forbidden" }),
+        {
+          status: 403,
+          statusText: "Forbidden",
+        }
+      );
+      fetchMock.mockResolvedValue(mockResponse);
+
+      try {
+        await $fetch("https://api.example.com/forbidden");
+        expect.fail("Should have thrown FetchError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(FetchError);
+        expect((error as FetchError).message).toContain("403");
+        expect((error as FetchError).message).toContain("Forbidden");
+      }
+    });
   });
 
   describe("headers", () => {
-    it.todo("should pass custom headers to fetch");
-    it.todo(
-      "should auto-set Content-Type to application/json when schema and body are provided"
-    );
-    it.todo("should not override existing Content-Type header");
+    const UserSchema = object({
+      id: number(),
+      name: string(),
+    });
+
+    it("should pass custom headers to fetch", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await $fetch("https://api.example.com/test", {
+        headers: {
+          Authorization: "Bearer token123",
+          "X-Custom-Header": "custom-value",
+        },
+      });
+
+      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+      expect(calledHeaders.get("Authorization")).toBe("Bearer token123");
+      expect(calledHeaders.get("X-Custom-Header")).toBe("custom-value");
+    });
+
+    it("should auto-set Content-Type to application/json when schema and body are provided", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await $fetch("https://api.example.com/user", UserSchema, {
+        method: "POST",
+        body: { name: "New User" },
+      });
+
+      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+      expect(calledHeaders.get("Content-Type")).toBe("application/json");
+    });
+
+    it("should not override existing Content-Type header", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      await $fetch("https://api.example.com/user", UserSchema, {
+        method: "POST",
+        body: { name: "New User" },
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+      });
+
+      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+      expect(calledHeaders.get("Content-Type")).toBe(
+        "application/json; charset=utf-8"
+      );
+    });
   });
 
   describe("body handling", () => {
-    it.todo("should auto-stringify body when schema is provided");
-    it.todo("should not stringify body when no schema is provided");
+    const UserSchema = object({
+      id: number(),
+      name: string(),
+    });
+
+    it("should auto-stringify body when schema is provided", async () => {
+      const userData = { id: 1, name: "John" };
+      const mockResponse = new Response(JSON.stringify(userData), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const bodyData = { name: "New User", email: "user@example.com" };
+      await $fetch("https://api.example.com/user", UserSchema, {
+        method: "POST",
+        body: bodyData,
+      });
+
+      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+      expect(calledBody).toBe(JSON.stringify(bodyData));
+    });
+
+    it("should not stringify body when no schema is provided", async () => {
+      const mockResponse = new Response(JSON.stringify({ success: true }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const formData = new FormData();
+      formData.append("file", "test-content");
+
+      await $fetch("https://api.example.com/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+      expect(calledBody).toBe(formData);
+    });
   });
 });
 
