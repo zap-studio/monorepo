@@ -1210,6 +1210,7 @@ describe("api convenience methods", () => {
         UserSchema,
         {
           throwOnFetchError: false,
+          throwOnValidationError: false,
         }
       );
 
