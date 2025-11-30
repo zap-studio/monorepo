@@ -7,18 +7,18 @@ This document outlines the release process for the Zap Studio monorepo, which us
 The repository follows a structured branching model:
 
 - **`main`** - Production branch containing stable, released code
-- **`develop`** - Integration branch for ongoing development
+- **`staging`** - Integration branch for ongoing development
 - **`feat/<package-name>`** - Feature branches for specific packages (e.g., `feat/waitlist`, `feat/fetch`)
 
 ## Making Changes
 
 ### 1. Create a Feature Branch
 
-Create a feature branch from `develop` for the package you're working on:
+Create a feature branch from `staging` for the package you're working on:
 
 ```bash
-git checkout develop
-git pull origin develop
+git checkout staging
+git pull origin staging
 git checkout -b feat/<package-name>
 ```
 
@@ -62,7 +62,7 @@ This interactive command will:
 
 **Example:**
 ```
-🦋  Which packages would you like to include? 
+🦋  Which packages would you like to include?
 ✔ @zap-studio/waitlist
 
 🦋  Which type of change is this for @zap-studio/waitlist?
@@ -84,9 +84,9 @@ git push origin feat/<package-name>
 
 **Note:** Since changesets are now automatically committed, you don't need to manually stage and commit them. Just push your feature branch after running `pnpm changeset`.
 
-### 5. Create a Pull Request to `develop`
+### 5. Create a Pull Request to `staging`
 
-1. Open a PR from your feature branch to `develop`
+1. Open a PR from your feature branch to `staging`
 2. Fill out the PR template with:
    - Description of changes
    - Related issues
@@ -94,23 +94,23 @@ git push origin feat/<package-name>
    - Breaking changes (if any)
 3. Request reviews from maintainers
 4. Address any feedback
-5. Once approved, merge into `develop`
+5. Once approved, merge into `staging`
 
 ## Release Process
 
 ### Preparing a Release
 
-Once features are ready in `develop`, prepare for release.
+Once features are ready in `staging`, prepare for release.
 
-**IMPORTANT:** All versioning must be done on the `develop` branch before creating a release PR to `main`.
+**IMPORTANT:** All versioning must be done on the `staging` branch before creating a release PR to `main`.
 
 #### 1. Version the Packages
 
-On the `develop` branch, consume the changesets to version packages:
+On the `staging` branch, consume the changesets to version packages:
 
 ```bash
-git checkout develop
-git pull origin develop
+git checkout staging
+git pull origin staging
 pnpm changeset version
 ```
 
@@ -129,8 +129,8 @@ The commit message will be generated automatically by changesets, typically: `"c
 # Review the changes that were committed
 git show HEAD
 
-# Push to develop
-git push origin develop
+# Push to staging
+git push origin staging
 ```
 
 **Note:** You no longer need to manually commit version changes as this is handled automatically by changesets.
@@ -147,7 +147,7 @@ git push origin develop
 
 ### Publishing the Release
 
-Once the release PR is approved and merged into `main`, the `main` branch will contain all the updated versions from `develop`.
+Once the release PR is approved and merged into `main`, the `main` branch will contain all the updated versions from `staging`.
 
 **At this point, NO versioning should happen - only building, testing, and publishing.**
 
@@ -203,14 +203,14 @@ For each published package:
 3. Add release notes from the CHANGELOG
 4. Publish the release
 
-#### 5. Merge `main` back to `develop`
+#### 5. Merge `main` back to `staging`
 
-Keep `develop` in sync with `main`:
+Keep `staging` in sync with `main`:
 
 ```bash
-git checkout develop
+git checkout staging
 git merge main
-git push origin develop
+git push origin staging
 ```
 
 ## Changeset Configuration
@@ -293,14 +293,14 @@ jobs:
 
 ### ❌ DON'T: Run `changeset version` on `main`
 
-Versioning should ONLY happen on the `develop` branch.
+Versioning should ONLY happen on the `staging` branch.
 
 **Correct flow:**
-1. Version on `develop` → 2. PR to `main` → 3. Publish on `main`
+1. Version on `staging` → 2. PR to `main` → 3. Publish on `main`
 
-### ❌ DON'T: Forget to merge `main` back to `develop`
+### ❌ DON'T: Forget to merge `main` back to `staging`
 
-After publishing, always merge `main` back to `develop` to keep the tags and any minor changes in sync.
+After publishing, always merge `main` back to `staging` to keep the tags and any minor changes in sync.
 
 ## Best Practices
 
@@ -321,7 +321,7 @@ After publishing, always merge `main` back to `develop` to keep the tags and any
 2. **Batch releases when possible** - don't release after every small change
 3. **Communicate breaking changes** - announce them in advance
 4. **Keep CHANGELOG.md clean** - edit generated entries if needed
-5. **Test in `develop` before releasing** - catch integration issues early
+5. **Test in `staging` before releasing** - catch integration issues early
 6. **Document migration paths** for breaking changes
 7. **Use `publish-packages` script** - ensures all checks pass before publishing
 8. **Verify auto-commits** - check that changesets auto-commits are working properly
@@ -405,11 +405,11 @@ pnpm changeset status
    git push
    ```
 
-2. **Release Preparation** (on `develop`)
+2. **Release Preparation** (on `staging`)
    ```bash
    pnpm changeset version  # Auto-commits version updates
    git push
-   # Create PR from develop to main
+   # Create PR from staging to main
    ```
 
 3. **Publishing** (on `main` - after merging release PR)
@@ -457,7 +457,7 @@ If `publish-packages` or publish fails:
 ### "Nothing to publish" Error
 
 If you see "No packages to publish" or similar:
-1. Verify you ran `pnpm changeset version` on `develop` before the release PR
+1. Verify you ran `pnpm changeset version` on `staging` before the release PR
 2. Check that the version changes were included in the merge to `main`
 3. Ensure `package.json` versions are higher than what's on npm
 4. The `publish-packages` script does NOT version - it expects versions to already be updated

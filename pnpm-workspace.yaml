@@ -17,9 +17,17 @@ catalogs:
     ai: ^5.0.104
 
   base:
+    "@radix-ui/react-dialog": ^1.1.15
+    "@radix-ui/react-slot": ^1.2.4
+    arktype: ^2.1.27
+    class-variance-authority: ^0.7.1
+    clsx: ^2.1.1
+    lucide-react: ^0.555.0
+    tailwind-merge: ^3.4.0
     tsdown: "^0.17.0-beta.4"
     typescript: ^5.9.3
     typescript-eslint: ^8.48.0
+    valibot: ^1.2.0
     zod: ^4.1.13
 
   docs:

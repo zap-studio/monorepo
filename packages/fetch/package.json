@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/fetch",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "type": "module",
   "private": false,
   "publishConfig": {
@@ -18,7 +18,7 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "zod": "catalog:base"
+    "@standard-schema/spec": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "catalog:types",
@@ -26,16 +26,19 @@
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
+    "arktype": "catalog:base",
     "jsdom": "catalog:testing",
     "tsdown": "catalog:base",
     "typescript": "catalog:base",
-    "vitest": "catalog:testing"
+    "valibot": "catalog:base",
+    "vitest": "catalog:testing",
+    "zod": "catalog:base"
   },
   "exports": {
     ".": "./dist/index.mjs",
-    "./errors": "./dist/errors/index.mjs",
-    "./types": "./dist/types/index.mjs",
-    "./utils": "./dist/utils/index.mjs",
+    "./errors": "./dist/errors.mjs",
+    "./types": "./dist/types.mjs",
+    "./validator": "./dist/validator.mjs",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.mjs",
