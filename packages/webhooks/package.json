@@ -1,0 +1,83 @@
+{
+  "name": "@zap-studio/webhooks",
+  "version": "0.0.0",
+  "type": "module",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsdown --config tsdown.config.ts",
+    "check-types": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest --watch"
+  },
+  "peerDependencies": {
+    "arktype": ">=2.0.0",
+    "elysia": ">=0.28.0",
+    "express": ">=4.0.0",
+    "hono": ">=3.0.0",
+    "next": ">=12.0.0",
+    "valibot": ">=0.30.0",
+    "yup": ">=1.0.0",
+    "zod": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "arktype": {
+      "optional": true
+    },
+    "elysia": {
+      "optional": true
+    },
+    "express": {
+      "optional": true
+    },
+    "hono": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    },
+    "valibot": {
+      "optional": true
+    },
+    "yup": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.5",
+    "@types/node": "latest",
+    "@vitest/coverage-v8": "^4.0.6",
+    "@zap-studio/tsdown-config": "workspace:*",
+    "@zap-studio/typescript-config": "workspace:*",
+    "@zap-studio/vitest-config": "workspace:*",
+    "jsdom": "latest",
+    "tsdown": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
+  },
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./adapters/base": "./dist/adapters/base.mjs",
+    "./types": "./dist/types/index.mjs",
+    "./utils": "./dist/utils/index.mjs",
+    "./validators/arktype": "./dist/validators/arktype.mjs",
+    "./validators/valibot": "./dist/validators/valibot.mjs",
+    "./validators/yup": "./dist/validators/yup.mjs",
+    "./validators/zod": "./dist/validators/zod.mjs",
+    "./verify": "./dist/verify.mjs",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts"
+}
