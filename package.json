@@ -6,18 +6,19 @@
   "scripts": {
     "build": "turbo run build",
     "check-types": "turbo run check-types",
-    "dev": "turbo run dev",
-    "lint": "npx ultracite check",
-    "format": "npx ultracite fix",
     "clean": "turbo run clean && rimraf node_modules",
-    "typegen": "turbo run typegen",
-    "test": "turbo run test",
-    "test:watch": "turbo run test:watch",
-    "test:coverage": "turbo run test -- --coverage && pnpm merge-coverage && pnpm report-coverage",
+    "dev": "turbo run dev",
+    "format": "npx ultracite fix",
+    "lint": "npx ultracite check",
     "merge-coverage": "rimraf coverage/merged && mkdir -p coverage/merged && find packages apps -name 'coverage' -type d -exec sh -c 'test -f \"$1/coverage-final.json\" && echo \"$1\"' _ {} \\; | xargs -I {} sh -c 'cp {}/coverage-final.json coverage/merged/$(echo {} | tr / -).json' || true",
-    "report-coverage": "nyc report --reporter=html --reporter=text --reporter=lcov --report-dir=coverage/report --temp-dir=coverage/merged",
+    "prepublishOnly": "turbo run build lint test",
     "publish-packages": "turbo run build lint test && changeset publish",
-    "validate": "turbo run lint test check-types build"
+    "report-coverage": "nyc report --reporter=html --reporter=text --reporter=lcov --report-dir=coverage/report --temp-dir=coverage/merged",
+    "validate": "turbo run lint test check-types build",
+    "test": "turbo run test",
+    "test:coverage": "turbo run test -- --coverage && pnpm merge-coverage && pnpm report-coverage",
+    "test:watch": "turbo run test:watch",
+    "typegen": "turbo run typegen"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.7",
