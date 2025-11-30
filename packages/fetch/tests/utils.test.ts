@@ -248,10 +248,13 @@ describe("fetchInternal", () => {
   });
 
   describe("body handling", () => {
-    const dummySchema: StandardSchemaV1 = {
-      version: 1,
-      parse: (input: unknown) => ({ value: input }),
-    } as unknown as StandardSchemaV1;
+    const dummySchema = {
+      "~standard": {
+        version: 1,
+        vendor: "standard-schema",
+        validate: (input: unknown) => ({ value: input }),
+      },
+    } satisfies StandardSchemaV1;
 
     it("should stringify body when schema is provided", async () => {
       fetchMock.mockResolvedValue(
