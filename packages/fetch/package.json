@@ -21,15 +21,15 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "@vitest/coverage-v8": "^4.0.14",
+    "@types/node": "catalog:types",
+    "@vitest/coverage-v8": "catalog:testing",
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
-    "jsdom": "latest",
-    "tsdown": "latest",
-    "typescript": "latest",
-    "vitest": "latest"
+    "jsdom": "catalog:testing",
+    "tsdown": "catalog:base",
+    "typescript": "catalog:base",
+    "vitest": "catalog:testing"
   },
   "exports": {
     ".": "./dist/index.mjs",
