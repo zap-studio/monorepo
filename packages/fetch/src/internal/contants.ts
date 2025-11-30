@@ -1,4 +1,4 @@
-import type { FetchDefaults } from "./types";
+import type { FetchDefaults } from "../types";
 
 /**
  * Default options for the global $fetch

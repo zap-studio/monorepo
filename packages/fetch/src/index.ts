@@ -1,11 +1,11 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { GLOBAL_DEFAULTS } from "./contants";
+import { GLOBAL_DEFAULTS } from "./internal/contants";
+import { createMethod, fetchInternal } from "./internal/utils";
 import type {
   CreateFetchOptions,
   ExtendedRequestInit,
   FetchDefaults,
 } from "./types";
-import { createMethod, fetchInternal } from "./utils";
 import { isStandardSchema } from "./validator";
 
 /**
