@@ -18,14 +18,14 @@
 		"test:watch": "vitest --watch"
 	},
   "devDependencies": {
-		"@types/node": "latest",
+		"@types/node": "catalog:types",
 		"@zap-studio/tsdown-config": "workspace:*",
 		"@zap-studio/typescript-config": "workspace:*",
 		"@zap-studio/vitest-config": "workspace:*",
-		"jsdom": "latest",
-		"tsdown": "latest",
-		"typescript": "latest",
-		"vitest": "latest"
+		"jsdom": "catalog:testing",
+		"tsdown": "catalog:base",
+		"typescript": "catalog:base",
+		"vitest": "catalog:testing"
 	},
   "exports": {
     ".": "./src/index.ts"

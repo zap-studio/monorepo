@@ -205,9 +205,9 @@ turbo/
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
-    "tsdown": "^0.3.0",
-    "typescript": "^5.7.3",
-    "vitest": "^3.2.9"
+    "tsdown": "catalog:base",
+    "typescript": "catalog:base",
+    "vitest": "catalog:base"
   }
 }
 ```
