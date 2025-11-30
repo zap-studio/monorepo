@@ -2,6 +2,20 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import { $fetch, api } from "../src";
 import { ValidationError } from "../src/errors";
+import { isStandardSchema } from "../src/validator";
+
+describe("Zod Standard Schema compatibility", () => {
+  it("should expose ~standard property", () => {
+    const schema = z.object({ id: z.number() });
+    expect("~standard" in schema).toBe(true);
+    expect(schema["~standard"]).toBeDefined();
+  });
+
+  it("should be recognized by isStandardSchema", () => {
+    const schema = z.object({ id: z.number() });
+    expect(isStandardSchema(schema)).toBe(true);
+  });
+});
 
 describe("$fetch with Zod schemas", () => {
   let fetchMock: ReturnType<typeof vi.fn>;

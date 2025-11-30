@@ -3,6 +3,20 @@ import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { $fetch, api } from "../src";
 import { ValidationError } from "../src/errors";
+import { isStandardSchema } from "../src/validator";
+
+describe("Valibot Standard Schema compatibility", () => {
+  it("should expose ~standard property", () => {
+    const schema = v.object({ id: v.number() });
+    expect("~standard" in schema).toBe(true);
+    expect(schema["~standard"]).toBeDefined();
+  });
+
+  it("should be recognized by isStandardSchema", () => {
+    const schema = v.object({ id: v.number() });
+    expect(isStandardSchema(schema)).toBe(true);
+  });
+});
 
 describe("$fetch with Valibot schemas", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
