@@ -38,9 +38,29 @@ export function mergeHeaders(
   return merged;
 }
 
-const TRAILING_SLASHES = /\/+$/;
-const LEADING_SLASHES = /^\/+/;
-const ABSOLUTE_URL_PATTERN = /^(https?:)?\/\//i;
+/**
+ * Removes trailing slashes from a string
+ */
+function trimTrailingSlashes(str: string): string {
+  let end = str.length;
+  while (end > 0 && str[end - 1] === "/") {
+    end -= 1;
+  }
+  return str.slice(0, end);
+}
+
+/**
+ * Removes leading slashes from a string
+ */
+function trimLeadingSlashes(str: string): string {
+  let start = 0;
+  while (start < str.length && str[start] === "/") {
+    start += 1;
+  }
+  return str.slice(start);
+}
+
+const ABSOLUTE_URL_PATTERN = /^(?:https?:)?\/\//i;
 
 /**
  * Checks if a URL is absolute (starts with http://, https://, or //)
@@ -86,8 +106,8 @@ export async function fetchInternal(
     url = resource;
   } else {
     // Normalize URL by avoiding double slashes between baseURL and resource
-    const base = defaults.baseURL.replace(TRAILING_SLASHES, "");
-    const path = resource.replace(LEADING_SLASHES, "");
+    const base = trimTrailingSlashes(defaults.baseURL);
+    const path = trimLeadingSlashes(resource);
     url = base ? `${base}/${path}` : resource;
   }
 
