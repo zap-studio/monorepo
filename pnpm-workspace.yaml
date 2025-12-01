@@ -14,7 +14,7 @@ catalogs:
   ai:
     "@ai-sdk/openai-compatible": ^1.0.28
     "@ai-sdk/react": ^2.0.104
-    ai: ^5.0.104
+    ai: ^5.0.105
 
   base:
     "@radix-ui/react-dialog": ^1.1.15
