@@ -1,5 +1,11 @@
 # @zap-studio/fetch
 
+## 0.2.1
+
+### Patch Changes
+
+- 82bac5c: Replace regex-based slash trimming with more efficient string manipulation functions for URL normalization
+
 ## 0.2.0
 
 ### Minor Changes
