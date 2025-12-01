@@ -53,7 +53,6 @@ This interactive command will:
 1. Ask which packages have changed
 2. Ask whether the change is a `patch`, `minor`, or `major` version bump
 3. Prompt you to write a summary of the changes
-4. **Automatically commit the changeset** (thanks to `"commit": true` in the config)
 
 **Version Bump Guidelines (Semantic Versioning):**
 - **Major (x.0.0)**: Breaking changes that require users to modify their code
@@ -70,19 +69,17 @@ This interactive command will:
 
 🦋  Please enter a summary for this change:
 ✔ Add support for custom referral codes
-
-🦋  Changeset added and committed! ✨
 ```
 
-This creates a markdown file in `.changeset/` directory with your change description and automatically commits it.
+This creates a markdown file in `.changeset/` directory with your change description.
 
-### 4. Push Your Changes
+### 4. Commit and Push Your Changes
 
 ```bash
+git add .changeset/
+git commit -m "chore: add changeset"
 git push origin feat/<package-name>
 ```
-
-**Note:** Since changesets are now automatically committed, you don't need to manually stage and commit them. Just push your feature branch after running `pnpm changeset`.
 
 ### 5. Create a Pull Request to `staging`
 
@@ -119,21 +116,21 @@ This command will:
 - Update package versions in `package.json` files
 - Update `CHANGELOG.md` files
 - Delete the processed changeset files
-- **Automatically commit these changes** (thanks to `"commit": true` in the config)
 
-The commit message will be generated automatically by changesets, typically: `"chore: version packages"` or similar.
-
-#### 2. Review and Push Version Changes
+#### 2. Commit and Push Version Changes
 
 ```bash
-# Review the changes that were committed
-git show HEAD
+# Review the changes
+git status
+git diff
+
+# Commit the version updates
+git add .
+git commit -m "chore: version packages"
 
 # Push to staging
 git push origin staging
 ```
-
-**Note:** You no longer need to manually commit version changes as this is handled automatically by changesets.
 
 #### 3. Create a Release PR to `main`
 
@@ -220,16 +217,16 @@ The project uses the following changeset configuration (`.changeset/config.json`
 ```json
 {
   "changelog": "@changesets/cli/changelog",
-  "commit": true,  // Automatically commits changesets and version updates
+  "commit": false,
   "access": "public",  // Publishes packages as public to npm
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["zap-ts-docs"]  // Don't version the docs site
+  "ignore": ["website", "zap-ts-docs"]  // Don't version these packages
 }
 ```
 
 **Key Settings:**
-- **`"commit": true`**: Automatically commits when you run `pnpm changeset` and `pnpm changeset version`
+- **`"commit": false`**: You need to manually commit changesets and version updates
 - **`"ignore": ["zap-ts-docs"]`**: The docs site won't be versioned or published to npm
 - **`"access": "public"`**: All packages are published publicly to npm
 
@@ -312,7 +309,7 @@ After publishing, always merge `main` back to `staging` to keep the tags and any
 4. **Test thoroughly** before creating a PR
 5. **Keep feature branches focused** - one package per branch when possible
 6. **Keep PRs small and focused** - easier to review and less risky
-7. **Let changesets auto-commit** - don't manually commit changeset files, the tool handles it
+7. **Commit changeset files** - remember to commit the generated changeset files after running `pnpm changeset`
 8. **Run `pnpm changeset` once per logical change** - multiple related changes can go in one changeset
 
 ### For Maintainers
@@ -324,7 +321,7 @@ After publishing, always merge `main` back to `staging` to keep the tags and any
 5. **Test in `staging` before releasing** - catch integration issues early
 6. **Document migration paths** for breaking changes
 7. **Use `publish-packages` script** - ensures all checks pass before publishing
-8. **Verify auto-commits** - check that changesets auto-commits are working properly
+8. **Verify commits** - ensure changeset and version files are properly committed
 
 ### Changeset Examples
 
@@ -379,10 +376,10 @@ Improve error handling across packages - waitlist now uses the updated fetch err
 ### Common Commands
 
 ```bash
-# Add a changeset (auto-commits)
+# Add a changeset
 pnpm changeset
 
-# Version packages (auto-commits)
+# Version packages
 pnpm changeset version
 
 # Build, lint, test, and publish (full workflow)
@@ -401,13 +398,17 @@ pnpm changeset status
    ```bash
    git checkout -b feat/my-feature
    # Make changes...
-   pnpm changeset  # Auto-commits changeset
+   pnpm changeset
+   git add .changeset/
+   git commit -m "chore: add changeset"
    git push
    ```
 
 2. **Release Preparation** (on `staging`)
    ```bash
-   pnpm changeset version  # Auto-commits version updates
+   pnpm changeset version
+   git add .
+   git commit -m "chore: version packages"
    git push
    # Create PR from staging to main
    ```
@@ -428,15 +429,6 @@ If `pnpm changeset` isn't working, ensure Changesets is installed:
 pnpm add -Dw @changesets/cli
 pnpm changeset init
 ```
-
-### Auto-Commit Not Working
-
-If changesets aren't being auto-committed:
-
-1. Check `.changeset/config.json` has `"commit": true`
-2. Ensure you have a clean git working directory
-3. Verify git is properly configured (user.name and user.email)
-4. Check you're not in detached HEAD state
 
 ### Merge Conflicts in CHANGELOG
 
