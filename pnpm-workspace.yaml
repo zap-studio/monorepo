@@ -57,7 +57,7 @@ catalogs:
   testing:
     '@vitest/coverage-v8': ^4.0.14
     jsdom: ^27.2.0
-    vitest: ^4.0.14
+    vitest: ^4.0.15
   tooling:
     '@changesets/cli': ^2.29.8
     '@turbo/gen': ^2.6.1
