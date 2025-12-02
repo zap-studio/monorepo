@@ -155,7 +155,7 @@ git checkout main
 git pull origin main
 ```
 
-#### 2. Publish to NPM
+#### 2. Publish to npm
 
 Use the convenient `publish-packages` script that handles the publishing workflow:
 
@@ -184,7 +184,26 @@ pnpm test
 pnpm changeset publish
 ```
 
-#### 3. Push Tags to GitHub
+#### 3. Publish to JSR
+
+After publishing to npm, publish packages to [JSR](https://jsr.io) (JavaScript Registry):
+
+```bash
+# Navigate to the package directory
+cd packages/fetch
+
+# Sync jsr.json with package.json (updates version and metadata)
+pnpm run jsr:sync
+
+# Publish to JSR
+npx jsr publish
+```
+
+**Note:** The `jsr:sync` command uses `@vyke/jsr-sync` to synchronize the `jsr.json` file with the package's `package.json`, ensuring version numbers and other metadata stay in sync.
+
+Repeat this process for each package that publishes to JSR.
+
+#### 4. Push Tags to GitHub
 
 ```bash
 git push --follow-tags
@@ -192,7 +211,7 @@ git push --follow-tags
 
 **Note:** This pushes the git tags created by `changeset publish` to the remote repository.
 
-#### 4. Create GitHub Releases
+#### 5. Create GitHub Releases
 
 For each published package:
 1. Go to GitHub Releases
@@ -200,7 +219,7 @@ For each published package:
 3. Add release notes from the CHANGELOG
 4. Publish the release
 
-#### 5. Merge `main` back to `staging`
+#### 6. Merge `main` back to `staging`
 
 Keep `staging` in sync with `main`:
 
@@ -382,14 +401,17 @@ pnpm changeset
 # Version packages
 pnpm changeset version
 
-# Build, lint, test, and publish (full workflow)
+# Build, lint, test, and publish to npm (full workflow)
 pnpm publish-packages
 
-# Publish only (skip build/lint/test)
+# Publish to npm only (skip build/lint/test)
 pnpm changeset publish
 
 # Check changeset status
 pnpm changeset status
+
+# Sync and publish to JSR (run from package directory)
+pnpm run jsr:sync && npx jsr publish
 ```
 
 ### Workflow Summary
@@ -415,8 +437,12 @@ pnpm changeset status
 
 3. **Publishing** (on `main` - after merging release PR)
    ```bash
-   pnpm publish-packages  # Builds, tests, and publishes
+   pnpm publish-packages  # Builds, tests, and publishes to npm
    git push --follow-tags
+
+   # Publish to JSR (for each package)
+   cd packages/fetch
+   pnpm run jsr:sync && npx jsr publish
    ```
 
 ## Troubleshooting
