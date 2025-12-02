@@ -14,6 +14,16 @@ export default defineConfig({
       { text: "Home", link: "/" },
       { text: "Team", link: "/team" },
       { text: "About Us", link: "/about-us" },
+      {
+        text: "More",
+        items: [
+          { text: "llms.txt", link: "https://www.zapstudio.dev/llms.txt" },
+          {
+            text: "llms-full.txt",
+            link: "https://www.zapstudio.dev/llms-full.txt",
+          },
+        ],
+      },
     ],
 
     sidebar: [
