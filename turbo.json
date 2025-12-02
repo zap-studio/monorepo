@@ -11,7 +11,13 @@
         "!**/*.test.{ts,tsx,js,jsx}",
         "!**/*.spec.{ts,tsx,js,jsx}"
       ],
-      "outputs": ["dist/**", ".next/**", "build/**", "!.next/cache/**"]
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "build/**",
+        "!.next/cache/**",
+        ".vitepress/dist/**"
+      ]
     },
     "//#lint": {},
     "//#format": {

@@ -1,5 +1,11 @@
 # @zap-studio/fetch
 
+## 0.2.2
+
+### Patch Changes
+
+- 5c3abbf: Prepare JSR publish and isolatedDeclarations support with new explicit types for `$Fetch` and `ApiMethods`
+
 ## 0.2.1
 
 ### Patch Changes

@@ -8,8 +8,7 @@ updates:
   - package-ecosystem: "npm" # See documentation for possible values
     directories:
       - "/"
-      - "/apps/website"
-      - "/apps/zap-ts-docs"
+      - "/apps/docs"
       - "/configs/tsdown-config"
       - "/configs/typescript-config"
       - "/configs/vitest-config"
