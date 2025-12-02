@@ -2,6 +2,7 @@
   "name": "@zap-studio/webhooks",
   "version": "0.0.0",
   "type": "module",
+  "license": "MIT",
   "private": false,
   "publishConfig": {
     "access": "public"
