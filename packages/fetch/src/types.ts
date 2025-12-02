@@ -81,7 +81,7 @@ export type $Fetch = {
 };
 
 /**
- * API for creating HTTP method-specific fetch functions
+ * API HTTP method-specific fetch functions
  */
 export type ApiMethods = {
   /**
