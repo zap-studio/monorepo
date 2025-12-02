@@ -7,8 +7,9 @@ import llmstxt, {
 export default defineConfig({
   title: "Zap Studio",
   description: "Making the web better",
-  srcDir: "./src",
   head: [["link", { rel: "icon", href: "/favicon.ico" }]],
+  cleanUrls: true,
+  srcDir: "./src",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
