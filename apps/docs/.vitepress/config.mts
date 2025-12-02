@@ -1,3 +1,4 @@
+import { transformerTwoslash } from "@shikijs/vitepress-twoslash";
 import { defineConfig } from "vitepress";
 import llmstxt, {
   copyOrDownloadAsMarkdownButtons,
@@ -62,6 +63,10 @@ export default defineConfig({
   },
   lastUpdated: true,
   markdown: {
+    // @ts-expect-error // FIXME: remove when plugin types are fixed
+    codeTransformers: [transformerTwoslash()],
+    // @ts-expect-error // FIXME: remove when plugin types are fixed
+    languages: ["js", "jsx", "ts", "tsx"],
     config(md) {
       md.use(copyOrDownloadAsMarkdownButtons);
     },
