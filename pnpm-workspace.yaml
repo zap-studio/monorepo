@@ -28,7 +28,7 @@ catalogs:
     remark-gfm: ^4.0.1
     remark-rehype: ^11.1.2
   fumadocs16:
-    fumadocs-core: ^16.2.1
+    fumadocs-core: ^16.2.2
     fumadocs-mdx: ^14.0.4
     fumadocs-typescript: ^4.0.13
     fumadocs-ui: ^16.2.1
