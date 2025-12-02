@@ -7,12 +7,18 @@ export default defineConfig({
   srcDir: "./src",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
-    nav: [{ text: "Home", link: "/" }],
+    nav: [
+      { text: "Home", link: "/" },
+      { text: "About Us", link: "/about-us" },
+    ],
 
     sidebar: [
       {
-        text: "Zap Studio",
-        items: [],
+        text: "Overview",
+        items: [
+          { text: "Introduction", link: "/introduction" },
+          { text: "About Us", link: "/about-us" },
+        ],
       },
     ],
 
