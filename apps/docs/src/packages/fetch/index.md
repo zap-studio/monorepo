@@ -46,7 +46,7 @@ import { api } from "@zap-studio/fetch";
 const UserSchema = z.object({
   id: z.number(),
   name: z.string(),
-  email: z.email(),
+  email: z.string().email(),
 });
 
 // Make a type-safe request
@@ -55,3 +55,11 @@ const user = await api.get("https://api.example.com/users/1", UserSchema);
 // user is fully typed and validated! ✨
 console.log(user.name); // TypeScript knows this is a string
 ```
+
+## What's Next?
+
+- [API Methods](/packages/fetch/api-methods) - Learn about GET, POST, PUT, PATCH, DELETE
+- [Using $fetch](/packages/fetch/fetch-function) - Direct fetch usage with and without validation
+- [Factory Pattern](/packages/fetch/create-fetch) - Create pre-configured instances
+- [Error Handling](/packages/fetch/errors) - Handle HTTP and validation errors
+- [Validation](/packages/fetch/validation) - Deep dive into schema validation
