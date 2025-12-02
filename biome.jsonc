@@ -7,7 +7,13 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/.source", "!apps/zap-ts-docs/src/components/ui"]
+    "includes": [
+      "**",
+      "!**/.source",
+      "!apps/zap-ts-docs/src/components/ui",
+      "!apps/docs/.vitepress/dist",
+      "!apps/docs/.vitepress/cache"
+    ]
   },
   "css": {
     "parser": {
