@@ -5,7 +5,6 @@
     ".": "./src/index.ts",
     "./errors": "./src/errors.ts",
     "./types": "./src/types.ts",
-    "./validator": "./src/validator.ts",
-    "./package.json": "./package.ts"
+    "./validator": "./src/validator.ts"
   }
 }

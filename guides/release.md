@@ -199,7 +199,7 @@ pnpm run jsr:sync
 npx jsr publish
 ```
 
-**Note:** The `jsr:sync` command uses `@vyke/jsr-sync` to synchronize the `jsr.json` file with the package's `package.json`, ensuring version numbers and other metadata stay in sync.
+**Note:** The `jsr:sync` command uses `pkg-to-jsr` to synchronize the `jsr.json` file with the package's `package.json`, ensuring version numbers and other metadata stay in sync.
 
 Repeat this process for each package that publishes to JSR.
 
