@@ -1,0 +1,111 @@
+import { transformerTwoslash } from "@shikijs/vitepress-twoslash";
+import { defineConfig } from "vitepress";
+import llmstxt, {
+  copyOrDownloadAsMarkdownButtons,
+} from "vitepress-plugin-llms";
+
+// https://vitepress.dev/reference/site-config
+export default defineConfig({
+  title: "Zap Studio",
+  description: "Making the web better",
+  head: [["link", { rel: "icon", href: "/favicon.ico" }]],
+  cleanUrls: true,
+  srcDir: "./src",
+  themeConfig: {
+    // https://vitepress.dev/reference/default-theme-config
+    logo: "/icon.png",
+    nav: [
+      { text: "Home", link: "/" },
+      { text: "Zap.ts", link: "/zap-ts/" },
+      { text: "Packages", link: "/packages/fetch/" },
+      { text: "Team", link: "/team" },
+      { text: "About", link: "/about-us" },
+      {
+        text: "More",
+        items: [
+          { text: "llms.txt", link: "/llms.txt" },
+          {
+            text: "llms-full.txt",
+            link: "/llms-full.txt",
+          },
+        ],
+      },
+    ],
+
+    sidebar: {
+      "/": [
+        {
+          text: "Overview",
+          items: [
+            { text: "Introduction", link: "/introduction" },
+            { text: "About", link: "/about-us" },
+          ],
+        },
+      ],
+      "/zap-ts/": [
+        {
+          text: "Zap.ts",
+          items: [{ text: "Overview", link: "/zap-ts/" }],
+        },
+      ],
+      "/packages/": [
+        {
+          text: "@zap-studio/fetch",
+          collapsed: false,
+          items: [
+            { text: "Overview", link: "/packages/fetch/" },
+            { text: "API Methods", link: "/packages/fetch/api-methods" },
+            { text: "Using $fetch", link: "/packages/fetch/fetch-function" },
+            { text: "Factory Pattern", link: "/packages/fetch/create-fetch" },
+            { text: "Error Handling", link: "/packages/fetch/errors" },
+            { text: "Validation", link: "/packages/fetch/validation" },
+          ],
+        },
+        {
+          text: "@zap-studio/webhooks",
+          collapsed: false,
+          items: [{ text: "Overview", link: "/packages/webhooks/" }],
+        },
+        {
+          text: "@zap-studio/waitlist",
+          collapsed: false,
+          items: [{ text: "Overview", link: "/packages/waitlist/" }],
+        },
+      ],
+    },
+
+    socialLinks: [
+      { icon: "github", link: "https://github.com/zap-studio" },
+      { icon: "discord", link: "https://discord.gg/8Ke3VCjjMf" },
+    ],
+
+    editLink: {
+      pattern:
+        "https://github.com/zap-studio/monorepo/edit/main/apps/docs/src/:path",
+    },
+    footer: {
+      message: "Released under the MIT License.",
+      copyright:
+        "Copyright © 2025-present Zap Studio (Alexandre Trotel and Contributors)",
+    },
+    search: {
+      provider: "local",
+      options: {
+        detailedView: true,
+      },
+    },
+  },
+  lastUpdated: true,
+  markdown: {
+    // @ts-expect-error // FIXME: remove when plugin types are fixed
+    codeTransformers: [transformerTwoslash()],
+    // @ts-expect-error // FIXME: remove when plugin types are fixed
+    languages: ["js", "jsx", "ts", "tsx"],
+    config(md) {
+      md.use(copyOrDownloadAsMarkdownButtons);
+    },
+  },
+  vite: {
+    plugins: [llmstxt()],
+  },
+});

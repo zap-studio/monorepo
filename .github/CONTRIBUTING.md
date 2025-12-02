@@ -16,12 +16,12 @@ Thank you for your interest in contributing to Zap.ts! We welcome all contributi
 ## Setting Up the Monorepo
 
 1. **Install dependencies**
-   - Run `bun install` from the root directory to install all packages.
+   - Run `pnpm install` from the root directory to install all packages.
 
 2. **Set up environment variables**
    - In the `template/` directory, run: `zap generate env`
    - Rename the generated file to `.env` inside `template/`.
-   - Run `bun install` again in `template/`.
+   - Run `pnpm install` again in `template/`.
 
 > If Lefthook blocks your commit, you may use `git commit --no-verify` and/or `git push --no-verify`, but this is discouraged and may reduce the chance of your PR being merged.
 
@@ -29,7 +29,7 @@ Thank you for your interest in contributing to Zap.ts! We welcome all contributi
 
 - Make your changes in a dedicated branch.
 - Ensure your code passes all checks and tests.
-- If you add or change features, create a changeset: `bun changeset`.
+- If you add or change features, create a changeset: `pnpm changeset`.
 
 ## Opening a Pull Request
 
