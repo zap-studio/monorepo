@@ -8,6 +8,7 @@ export default defineConfig({
   title: "Zap Studio",
   description: "Making the web better",
   srcDir: "./src",
+  head: [["link", { rel: "icon", href: "/favicon.ico" }]],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
@@ -17,10 +18,10 @@ export default defineConfig({
       {
         text: "More",
         items: [
-          { text: "llms.txt", link: "https://www.zapstudio.dev/llms.txt" },
+          { text: "llms.txt", link: "/llms.txt" },
           {
             text: "llms-full.txt",
-            link: "https://www.zapstudio.dev/llms-full.txt",
+            link: "/llms-full.txt",
           },
         ],
       },
