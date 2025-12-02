@@ -83,6 +83,7 @@ catalogs:
   tooling:
     "@changesets/cli": ^2.29.8
     "@turbo/gen": ^2.6.1
+    "@vyke/jsr-sync": ^0.0.4
     lefthook: ^2.0.4
     rimraf: ^6.1.2
     turbo: ^2.6.1

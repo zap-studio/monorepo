@@ -14,6 +14,7 @@
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
     "check-types": "tsc --noEmit",
+    "jsr:sync": "npx @vyke/jsr-sync start",
     "test": "vitest run",
     "test:watch": "vitest --watch"
   },
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@types/node": "catalog:types",
     "@vitest/coverage-v8": "catalog:testing",
+    "@vyke/jsr-sync": "catalog:tooling",
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
