@@ -31,7 +31,8 @@ export default defineConfig({
     },
     footer: {
       message: "Released under the MIT License.",
-      copyright: "Copyright © 2025-present Zap Studio and Contributors",
+      copyright:
+        "Copyright © 2025-present Zap Studio (Alexandre Trotel and Contributors)",
     },
     search: {
       provider: "local",
