@@ -14,8 +14,8 @@ hero:
       text: Introduction
       link: /introduction
     - theme: alt
-      text: About Us
-      link: /about-us
+      text: About
+      link: /about
 
 features:
   - title: Zap.ts

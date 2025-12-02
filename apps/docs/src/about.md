@@ -1,4 +1,4 @@
-# About Us
+# About
 
 ## Our Mission
 
