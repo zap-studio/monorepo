@@ -1,6 +1,7 @@
 {
   "name": "@zap-studio/fetch",
   "version": "0.2.1",
+  "license": "MIT",
   "exports": {
     ".": "./dist/index.mjs",
     "./errors": "./dist/errors.mjs",
