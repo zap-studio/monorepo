@@ -85,23 +85,23 @@ export type $Fetch = {
  */
 export type ApiMethods = {
   /**
-   * Create a GET method fetch function
+   * GET method fetch function
    */
   get: $Fetch;
   /**
-   * Create a POST method fetch function
+   * POST method fetch function
    */
   post: $Fetch;
   /**
-   * Create a PUT method fetch function
+   * PUT method fetch function
    */
   put: $Fetch;
   /**
-   * Create a DELETE method fetch function
+   * DELETE method fetch function
    */
   delete: $Fetch;
   /**
-   * Create a PATCH method fetch function
+   * PATCH method fetch function
    */
   patch: $Fetch;
 };
