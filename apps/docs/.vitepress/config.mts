@@ -16,6 +16,8 @@ export default defineConfig({
     logo: "/icon.png",
     nav: [
       { text: "Home", link: "/" },
+      { text: "Zap.ts", link: "/zap-ts/" },
+      { text: "Packages", link: "/packages/fetch/" },
       { text: "Team", link: "/team" },
       { text: "About Us", link: "/about-us" },
       {
@@ -30,15 +32,47 @@ export default defineConfig({
       },
     ],
 
-    sidebar: [
-      {
-        text: "Overview",
-        items: [
-          { text: "Introduction", link: "/introduction" },
-          { text: "About Us", link: "/about-us" },
-        ],
-      },
-    ],
+    sidebar: {
+      "/": [
+        {
+          text: "Overview",
+          items: [
+            { text: "Introduction", link: "/introduction" },
+            { text: "About Us", link: "/about-us" },
+          ],
+        },
+      ],
+      "/zap-ts/": [
+        {
+          text: "Zap.ts",
+          items: [{ text: "Overview", link: "/zap-ts/" }],
+        },
+      ],
+      "/packages/": [
+        {
+          text: "@zap-studio/fetch",
+          collapsed: false,
+          items: [
+            { text: "Overview", link: "/packages/fetch/" },
+            { text: "API Methods", link: "/packages/fetch/api-methods" },
+            { text: "Using $fetch", link: "/packages/fetch/fetch-function" },
+            { text: "Factory Pattern", link: "/packages/fetch/create-fetch" },
+            { text: "Error Handling", link: "/packages/fetch/errors" },
+            { text: "Validation", link: "/packages/fetch/validation" },
+          ],
+        },
+        {
+          text: "@zap-studio/webhooks",
+          collapsed: false,
+          items: [{ text: "Overview", link: "/packages/webhooks/" }],
+        },
+        {
+          text: "@zap-studio/waitlist",
+          collapsed: false,
+          items: [{ text: "Overview", link: "/packages/waitlist/" }],
+        },
+      ],
+    },
 
     socialLinks: [
       { icon: "github", link: "https://github.com/zap-studio" },
