@@ -20,8 +20,8 @@ catalogs:
       specifier: ^2.1.27
       version: 2.1.27
     tsdown:
-      specifier: ^0.17.0-beta.4
-      version: 0.17.0-beta.4
+      specifier: ^0.17.0-beta.5
+      version: 0.17.0-beta.5
     typescript:
       specifier: ^5.9.3
       version: 5.9.3
@@ -340,7 +340,7 @@ importers:
         version: link:../typescript-config
       tsdown:
         specifier: catalog:base
-        version: 0.17.0-beta.4(typescript@5.9.3)
+        version: 0.17.0-beta.5(typescript@5.9.3)
       typescript:
         specifier: catalog:base
         version: 5.9.3
@@ -357,7 +357,7 @@ importers:
         version: link:../typescript-config
       tsdown:
         specifier: catalog:base
-        version: 0.17.0-beta.4(typescript@5.9.3)
+        version: 0.17.0-beta.5(typescript@5.9.3)
       typescript:
         specifier: catalog:base
         version: 5.9.3
@@ -391,7 +391,7 @@ importers:
         version: 27.2.0
       tsdown:
         specifier: catalog:base
-        version: 0.17.0-beta.4(typescript@5.9.3)
+        version: 0.17.0-beta.5(typescript@5.9.3)
       typescript:
         specifier: catalog:base
         version: 5.9.3
@@ -4967,8 +4967,8 @@ packages:
   import-meta-resolve@4.2.0:
     resolution: {integrity: sha512-Iqv2fzaTQN28s/FwZAoFq0ZSs/7hMAHJVX+w8PZl3cY19Pxk6jFFalxQoIfW2826i/fDLXv8IiEZRIT0lDuWcg==}
 
-  import-without-cache@0.1.3:
-    resolution: {integrity: sha512-OZH1TcBGBP1YGCFUVAV0cVLU9ULxE4cGEez1wMNdH5+UqmGdJP8uS5myn405d6iZRtjJwhxmkSR7/RgbaOqvLQ==}
+  import-without-cache@0.2.1:
+    resolution: {integrity: sha512-jGgFAxyuS1M51bQKNoWlqaN1UXyMAzX4+yYwzU2adEs5rt90j4sqLT17vWm+nyiQCjHxCnaDxx6CmfYaqy44WA==}
     engines: {node: '>=20.19.0'}
 
   impound@1.0.0:
@@ -7293,8 +7293,8 @@ packages:
       '@swc/wasm':
         optional: true
 
-  tsdown@0.17.0-beta.4:
-    resolution: {integrity: sha512-/ECe7U9bYrgXTHpos7m0LdmgnY5gkhN3xwAbFWPdCaJ2EB5oRcy76dOkGeVPA7+EDd4cQ7ySq42oh9gI76ezeg==}
+  tsdown@0.17.0-beta.5:
+    resolution: {integrity: sha512-Rmu4kmNsyYA4aI+h2okJKYaxj04pIJHlTxyYRprKWYaR1QOqos+rDfz3N38Sb5kGDXoZJl67Kqokjdk+p5oZ2A==}
     engines: {node: '>=20.19.0'}
     hasBin: true
     peerDependencies:
@@ -12892,7 +12892,7 @@ snapshots:
 
   import-meta-resolve@4.2.0: {}
 
-  import-without-cache@0.1.3: {}
+  import-without-cache@0.2.1: {}
 
   impound@1.0.0:
     dependencies:
@@ -15841,13 +15841,13 @@ snapshots:
     optionalDependencies:
       '@swc/core': 1.13.21(@swc/helpers@0.5.17)
 
-  tsdown@0.17.0-beta.4(typescript@5.9.3):
+  tsdown@0.17.0-beta.5(typescript@5.9.3):
     dependencies:
       ansis: 4.2.0
       cac: 6.7.14
       empathic: 2.0.0
       hookable: 5.5.3
-      import-without-cache: 0.1.3
+      import-without-cache: 0.2.1
       obug: 2.1.1
       rolldown: 1.0.0-beta.52
       rolldown-plugin-dts: 0.18.1(rolldown@1.0.0-beta.52)(typescript@5.9.3)
