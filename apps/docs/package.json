@@ -1,0 +1,13 @@
+{
+  "name": "docs",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "@shikijs/vitepress-twoslash": "^3.18.0",
+    "vitepress": "^1.6.4",
+    "vitepress-plugin-llms": "^1.9.3"
+  }
+}

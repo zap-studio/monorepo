@@ -1,11 +1,15 @@
 {
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
   "name": "@zap-studio/fetch",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
     "./errors": "./src/errors.ts",
     "./types": "./src/types.ts",
     "./validator": "./src/validator.ts"
+  },
+  "publish": {
+    "include": ["src", "README.md", "CHANGELOG.md"]
   }
 }
