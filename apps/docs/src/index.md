@@ -3,7 +3,7 @@
 layout: home
 
 hero:
-  name: "Zap Studio"
+  name: "Zap Studio ⚡️"
   tagline: "We are a developer-focused studio building open-source projects to help developers ship faster with confidence."
   actions:
     - theme: brand
@@ -15,17 +15,21 @@ hero:
 
 features:
   - title: Zap.ts
-    details: A production-grade monorepo starter kit to help developers build web applications quickly and securely.
+    icon: "⚡️"
+    details: A production-grade monorepo starter kit to ship quickly and securely.
     link: https://zap-ts.zapstudio.dev
 
   - title: "@zap-studio/fetch"
+    icon: "📡"
     details: A lightweight, type-safe fetch wrapper with built-in validation and error handling.
     link: https://www.npmjs.com/package/@zap-studio/fetch
 
   - title: "@zap-studio/waitlist"
+    icon: "⏳"
     details: A simple waitlist management solution for your applications.
 
   - title: "@zap-studio/webhooks"
+    icon: "🪝"
     details: A robust webhook handling library with signature verification.
 
 ---
