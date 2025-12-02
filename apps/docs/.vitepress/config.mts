@@ -23,5 +23,14 @@ export default defineConfig({
     ],
 
     socialLinks: [{ icon: "github", link: "https://github.com/zap-studio" }],
+
+    editLink: {
+      pattern:
+        "https://github.com/zap-studio/monorepo/edit/main/apps/docs/src/:path",
+    },
+    search: {
+      provider: "local",
+    },
   },
+  lastUpdated: true,
 });
