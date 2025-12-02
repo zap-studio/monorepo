@@ -2,6 +2,7 @@
   "name": "@zap-studio/fetch",
   "version": "0.2.1",
   "type": "module",
+  "license": "MIT",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -14,7 +15,6 @@
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
     "check-types": "tsc --noEmit",
-    "jsr:sync": "npx pkg-to-jsr",
     "test": "vitest run",
     "test:watch": "vitest --watch"
   },
@@ -24,7 +24,6 @@
   "devDependencies": {
     "@types/node": "catalog:types",
     "@vitest/coverage-v8": "catalog:testing",
-    "pkg-to-jsr": "catalog:tooling",
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
