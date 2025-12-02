@@ -1,12 +1,11 @@
 {
-  "name": "@zap-studio/fetch",
   "version": "0.2.1",
+  "name": "@zap-studio/fetch",
   "exports": {
     ".": "./src/index.ts",
     "./errors": "./src/errors.ts",
     "./types": "./src/types.ts",
     "./validator": "./src/validator.ts",
     "./package.json": "./package.ts"
-  },
-  "license": "MIT"
+  }
 }
