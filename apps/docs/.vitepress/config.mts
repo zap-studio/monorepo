@@ -29,6 +29,10 @@ export default defineConfig({
       pattern:
         "https://github.com/zap-studio/monorepo/edit/main/apps/docs/src/:path",
     },
+    footer: {
+      message: "Released under the MIT License.",
+      copyright: "Copyright © 2025-present Zap Studio and Contributors",
+    },
     search: {
       provider: "local",
     },
