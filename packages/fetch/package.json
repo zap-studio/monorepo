@@ -24,12 +24,12 @@
   "devDependencies": {
     "@types/node": "catalog:types",
     "@vitest/coverage-v8": "catalog:testing",
-    "pkg-to-jsr": "catalog:tooling",
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
     "arktype": "catalog:base",
     "jsdom": "catalog:testing",
+    "pkg-to-jsr": "catalog:tooling",
     "tsdown": "catalog:base",
     "typescript": "catalog:base",
     "valibot": "catalog:base",
