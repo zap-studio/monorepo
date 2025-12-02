@@ -40,7 +40,7 @@ catalogs:
     ultracite: ^6.3.8
   next16:
     '@bprogress/next': ^3.2.12
-    '@vercel/analytics': ^1.6.0
+    '@vercel/analytics': ^1.6.1
     next: ^16.0.6
     next-themes: ^0.4.6
   react19:
