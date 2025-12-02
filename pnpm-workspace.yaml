@@ -62,8 +62,6 @@ catalogs:
     '@changesets/cli': ^2.29.8
     '@turbo/gen': ^2.6.1
     lefthook: ^2.0.4
-    nyc: ^17.1.0
-    pkg-to-jsr: ^1.5.0
     rimraf: ^6.1.2
     turbo: ^2.6.1
   types:

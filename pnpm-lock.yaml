@@ -463,9 +463,6 @@ importers:
       jsdom:
         specifier: catalog:testing
         version: 27.2.0
-      pkg-to-jsr:
-        specifier: catalog:tooling
-        version: 1.5.0
       tsdown:
         specifier: catalog:base
         version: 0.17.0-beta.4(typescript@5.9.3)
@@ -506,6 +503,9 @@ importers:
       jsdom:
         specifier: latest
         version: 27.2.0
+      pkg-to-jsr:
+        specifier: catalog:tooling
+        version: 1.5.0
       tsdown:
         specifier: latest
         version: 0.17.0-beta.5(typescript@5.9.3)

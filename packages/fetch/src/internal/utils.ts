@@ -1,7 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import type { $fetch } from "..";
 import { FetchError } from "../errors";
-import type { ExtendedRequestInit, FetchDefaults } from "../types";
+import type { $Fetch, ExtendedRequestInit, FetchDefaults } from "../types";
 import { standardValidate } from "../validator";
 
 /**
@@ -133,10 +132,10 @@ export async function fetchInternal(
 /**
  * Creates an HTTP method helper bound to a fetch function
  */
-export function createMethod<TFetch extends typeof $fetch>(
+export function createMethod<TFetch extends $Fetch>(
   fetchFn: TFetch,
   method: string
-) {
+): $Fetch {
   return <TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,

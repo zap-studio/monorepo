@@ -15,7 +15,6 @@
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
     "check-types": "tsc --noEmit",
-    "jsr:sync": "npx pkg-to-jsr",
     "test": "vitest run",
     "test:watch": "vitest --watch"
   },
@@ -30,7 +29,6 @@
     "@zap-studio/vitest-config": "workspace:*",
     "arktype": "catalog:base",
     "jsdom": "catalog:testing",
-    "pkg-to-jsr": "catalog:tooling",
     "tsdown": "catalog:base",
     "typescript": "catalog:base",
     "valibot": "catalog:base",
