@@ -12,6 +12,7 @@ export default defineConfig({
   srcDir: "./src",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
+    logo: "/icon.png",
     nav: [
       { text: "Home", link: "/" },
       { text: "Team", link: "/team" },
