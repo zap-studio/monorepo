@@ -1,0 +1,14 @@
+{
+  "name": "@zap-studio/fetch",
+  "version": "0.2.1",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./errors": "./dist/errors.mjs",
+    "./types": "./dist/types.mjs",
+    "./validator": "./dist/validator.mjs",
+    "./package.json": "./package.json"
+  },
+  "publish": {
+    "include": ["dist", "README.md", "CHANGELOG.md"]
+  }
+}
