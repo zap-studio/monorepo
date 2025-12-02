@@ -7,12 +7,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": [
-      "**",
-      "!**/.source",
-      "!apps/zap-ts-docs/src/components/ui",
-      "!apps/website/src/components/ui"
-    ]
+    "includes": ["**", "!**/.source", "!apps/zap-ts-docs/src/components/ui"]
   },
   "css": {
     "parser": {
