@@ -2,6 +2,8 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { GLOBAL_DEFAULTS } from "./internal/constants";
 import { createMethod, fetchInternal } from "./internal/utils";
 import type {
+  $Fetch,
+  ApiMethods,
   CreateFetchOptions,
   ExtendedRequestInit,
   FetchDefaults,
@@ -91,7 +93,7 @@ export async function $fetch(
  *   return post; // post is typed as { id: number; title: string; content: string; }
  * }
  */
-export const api = {
+export const api: ApiMethods = {
   get: createMethod($fetch, "GET"),
   post: createMethod($fetch, "POST"),
   put: createMethod($fetch, "PUT"),
@@ -124,8 +126,8 @@ export const api = {
  * const response = await $fetch("/users", UserSchema, { method: "POST", body: { name: "John" } });
  */
 export function createFetch(factoryOptions: CreateFetchOptions = {}): {
-  $fetch: typeof $fetch;
-  api: typeof api;
+  $fetch: $Fetch;
+  api: ApiMethods;
 } {
   const defaults: FetchDefaults = {
     baseURL: factoryOptions.baseURL ?? "",
