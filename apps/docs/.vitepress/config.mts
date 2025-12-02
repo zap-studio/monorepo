@@ -23,7 +23,10 @@ export default defineConfig({
       },
     ],
 
-    socialLinks: [{ icon: "github", link: "https://github.com/zap-studio" }],
+    socialLinks: [
+      { icon: "github", link: "https://github.com/zap-studio" },
+      { icon: "discord", link: "https://discord.gg/8Ke3VCjjMf" },
+    ],
 
     editLink: {
       pattern:
