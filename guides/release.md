@@ -184,22 +184,38 @@ pnpm test
 pnpm changeset publish
 ```
 
-#### 3. Publish to JSR
+#### 3. Publish to JSR (Manual)
 
-After publishing to npm, publish packages to [JSR](https://jsr.io) (JavaScript Registry):
+After publishing to npm, manually publish packages to [JSR](https://jsr.io) (JavaScript Registry).
+
+**Pre-publish Checklist:**
+
+- [ ] **Version matches**: Ensure the `version` in `jsr.json` matches the `version` in `package.json`
+- [ ] **Exports match**: Verify that exports in `jsr.json` match those in `package.json`, but point directly to TypeScript source files (e.g., `./src/index.ts` instead of `./dist/index.js`) since transpilation is handled by the JSR registry
+- [ ] **Package name**: Confirm the JSR package name follows the `@zap-studio/<package>` convention
+
+**Publishing Steps:**
 
 ```bash
 # Navigate to the package directory
 cd packages/fetch
 
-# Sync jsr.json with package.json (updates version and metadata)
-pnpm run jsr:sync
+# Verify jsr.json is up to date (check version and exports manually)
+cat jsr.json
 
 # Publish to JSR
 npx jsr publish
 ```
 
-**Note:** The `jsr:sync` command uses `pkg-to-jsr` to synchronize the `jsr.json` file with the package's `package.json`, ensuring version numbers and other metadata stay in sync.
+**Example `jsr.json`:**
+
+```json
+{
+  "name": "@zap-studio/fetch",
+  "version": "1.0.0",
+  "exports": "./src/index.ts"
+}
+```
 
 Repeat this process for each package that publishes to JSR.
 
@@ -410,8 +426,8 @@ pnpm changeset publish
 # Check changeset status
 pnpm changeset status
 
-# Sync and publish to JSR (run from package directory)
-pnpm run jsr:sync && npx jsr publish
+# Publish to JSR (run from package directory, after verifying jsr.json)
+pnpm dlx jsr publish
 ```
 
 ### Workflow Summary
@@ -440,9 +456,9 @@ pnpm run jsr:sync && npx jsr publish
    pnpm publish-packages  # Builds, tests, and publishes to npm
    git push --follow-tags
 
-   # Publish to JSR (for each package)
+   # Publish to JSR (for each package, after verifying jsr.json)
    cd packages/fetch
-   pnpm run jsr:sync && npx jsr publish
+   pnpm dlx jsr publish
    ```
 
 ## Troubleshooting
