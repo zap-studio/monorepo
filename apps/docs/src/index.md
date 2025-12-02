@@ -4,7 +4,11 @@ layout: home
 
 hero:
   name: "Zap Studio ⚡️"
-  tagline: "We are a developer-focused studio building open-source projects to help developers ship faster with confidence."
+  tagline: "Building open-source projects to help developers ship faster with confidence."
+  # image:
+    # light: /code-light.png
+    # dark: /code-dark.png
+    # alt: Zap Studio Code Snippet
   actions:
     - theme: brand
       text: Introduction

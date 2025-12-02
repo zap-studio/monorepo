@@ -1,0 +1,9 @@
+body {
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+@media screen and (max-width: 960px) {
+  .VPHero.has-image .image {
+    display: none;
+  }
+}

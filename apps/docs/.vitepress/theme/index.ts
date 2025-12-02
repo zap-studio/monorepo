@@ -1,3 +1,5 @@
+import "./custom.css";
+
 import type { Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
 // @ts-expect-error // FIXME: remove when plugin types are fixed
