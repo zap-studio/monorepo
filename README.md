@@ -32,27 +32,6 @@ Launch faster with built-in waitlist management, referral tracking, and analytic
 
 More coming soon.
 
-## For Contributors
+## Documentation
 
-### Quick Start
-
-```bash
-pnpm install
-pnpm build
-pnpm test
-```
-
-### Documentation
-
-See the **[`guides/`](./guides)** folder for contributor documentation:
-- **[Release Process](./guides/release.md)** – How to ship packages
-- **[Testing](./guides/testing.md)** – Testing strategy and best practices
-- **[Linting & Formatting](./guides/linting-formatting.md)** – Code quality tools and standards
-- **[Git Hooks](./guides/git-hooks.md)** – Pre-commit and pre-push automation
-- **[Turborepo Generators](./guides/turborepo-generators.md)** – Scaffolding new packages
-
-We use pnpm workspaces, Turborepo for builds, and Changesets for versioning.
-
----
-
-**Building the infrastructure for modern web development.**
+Full documentation for all packages and [Zap.ts](https://github.com/zap-studio/zap.ts) is available at [zapstudio.dev](https://www.zapstudio.dev).
