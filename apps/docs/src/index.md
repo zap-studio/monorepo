@@ -21,12 +21,12 @@ features:
   - title: Zap.ts
     icon: "⚡️"
     details: A production-grade monorepo starter kit to ship quickly and securely.
-    link: https://zap-ts.zapstudio.dev
+    link: ./zap-ts
 
   - title: "@zap-studio/fetch"
     icon: "📡"
     details: A lightweight, type-safe fetch wrapper with built-in validation and error handling.
-    link: https://www.npmjs.com/package/@zap-studio/fetch
+    link: ./packages/fetch
 
   - title: "@zap-studio/waitlist"
     icon: "⏳"

@@ -17,7 +17,7 @@ Millions of hours are wasted every year rebuilding the same infrastructure: auth
 
 ### Zap.ts — Ship in Days, Not Months
 
-[Zap.ts](https://zap-ts.zapstudio.dev) is our flagship product: a production-ready Next.js starter that handles all the boring stuff so you can focus on your product.
+[Zap.ts](./zap-ts/index.md) is our flagship product: a production-ready Next.js starter that handles all the boring stuff so you can focus on your product.
 
 Teams using Zap.ts go from zero to deployed in under an hour.
 
@@ -27,7 +27,7 @@ We're building a suite of composable packages under the `@zap-studio` scope:
 
 | Package | What it does |
 |---------|-------------|
-| [@zap-studio/fetch](https://www.npmjs.com/package/@zap-studio/fetch) | Type-safe HTTP client with runtime validation |
+| [@zap-studio/fetch](./packages/fetch/index.md) | Type-safe HTTP client with runtime validation |
 | @zap-studio/waitlist | Launch waitlists in minutes |
 | @zap-studio/webhooks | Secure webhook handling with zero config |
 

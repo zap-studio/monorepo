@@ -12,7 +12,7 @@ We're solving this by building a suite of modular, production-ready tools that j
 
 ### Zap.ts
 
-Our flagship product is [Zap.ts](https://zap-ts.zapstudio.dev) — the fastest way to go from idea to production. It's a modular starter kit that includes everything you need to build and scale a web application.
+Our flagship product is [Zap.ts](https://zapstudio.dev/zap-ts) — the fastest way to go from idea to production. It's a modular starter kit that includes everything you need to build and scale a web application.
 
 **What's included:**
 - 🔐 Authentication with Better Auth
@@ -35,7 +35,7 @@ We're also building a suite of packages that solve common problems with modern, 
 
 | Package | Description | Status |
 |---------|-------------|--------|
-| [@zap-studio/fetch](https://www.npmjs.com/package/@zap-studio/fetch) | Type-safe fetch wrapper with validation | ✅ Available |
+| [@zap-studio/fetch](./packages/fetch/index.md) | Type-safe fetch wrapper with validation | ✅ Available |
 | @zap-studio/waitlist | Waitlist management solution | 🚧 Coming Soon |
 | @zap-studio/webhooks | Webhook handling with signature verification | 🚧 Coming Soon |
 
