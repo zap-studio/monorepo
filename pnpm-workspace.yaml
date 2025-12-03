@@ -80,6 +80,10 @@ catalogs:
     tailwind-merge: ^3.4.0
   vite:
     vite: npm:rolldown-vite@^7.2.8
+  vitepress:
+    '@shikijs/vitepress-twoslash': ^3.18.0
+    vitepress: ^1.6.4
+    vitepress-plugin-llms: ^1.9.3
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
