@@ -31,10 +31,12 @@ features:
   - title: "@zap-studio/waitlist"
     icon: "⏳"
     details: A simple waitlist management solution for your applications.
+    link: ./packages/waitlist
 
   - title: "@zap-studio/webhooks"
     icon: "🪝"
     details: A robust webhook handling library with signature verification.
+    link: ./packages/webhooks
 
 ---
 
