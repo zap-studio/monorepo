@@ -18,7 +18,6 @@ export default defineConfig({
       { text: "Home", link: "/" },
       { text: "Zap.ts", link: "/zap-ts/" },
       { text: "Packages", link: "/packages/fetch/" },
-      { text: "Team", link: "/team" },
       { text: "About", link: "/about" },
       {
         text: "More",
