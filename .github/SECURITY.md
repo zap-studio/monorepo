@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Only the latest version of Zap.ts (CLI and template) is officially supported.  
+Only the latest version of Zap.ts (CLI and template) is officially supported.
 I do not maintain or patch older versions. If you're using an outdated version, I strongly recommend upgrading to the latest release.
 
 ## Reporting a Vulnerability
@@ -26,7 +26,7 @@ This policy applies to:
 
 - The `zap` CLI tool
 - The Next.js template provided by the CLI
-- The content and logic of the documentation hosted at [zap-ts.zapstudio.dev](https://zap-ts.zapstudio.dev/)
+- The content and logic of the documentation hosted at [zapstudio.dev/zap-ts](https://www.zapstudio.dev/zap-ts/)
 
 This policy does **not** apply to:
 - Projects generated from Zap.ts (these become user projects)
