@@ -102,6 +102,50 @@ function normalizeSearchParams(
 }
 
 /**
+ * Parses a URL string into its path, query, and hash components.
+ * Handles both absolute URLs (using URL constructor) and relative paths.
+ */
+function parseUrlComponents(url: string): {
+  pathOnly: string;
+  existingQuery: string;
+  hash: string;
+} {
+  // Try parsing as absolute URL first
+  if (isAbsoluteURL(url)) {
+    try {
+      const parsed = new URL(url);
+      const pathOnly = `${parsed.origin}${parsed.pathname}`;
+      // parsed.search includes the leading "?", so strip it
+      const existingQuery = parsed.search.startsWith("?")
+        ? parsed.search.slice(1)
+        : parsed.search;
+      return { pathOnly, existingQuery, hash: parsed.hash };
+    } catch {
+      // Fall through to manual parsing if URL constructor fails
+    }
+  }
+
+  // Manual parsing for relative URLs or if URL constructor failed
+  let hash = "";
+  let urlWithoutHash = url;
+  const hashIndex = url.indexOf("#");
+  if (hashIndex !== -1) {
+    hash = url.slice(hashIndex);
+    urlWithoutHash = url.slice(0, hashIndex);
+  }
+
+  // Find the first "?" to split path and query
+  const queryIndex = urlWithoutHash.indexOf("?");
+  if (queryIndex === -1) {
+    return { pathOnly: urlWithoutHash, existingQuery: "", hash };
+  }
+
+  const pathOnly = urlWithoutHash.slice(0, queryIndex);
+  const existingQuery = urlWithoutHash.slice(queryIndex + 1);
+  return { pathOnly, existingQuery, hash };
+}
+
+/**
  * Builds a URL with merged search parameters from factory defaults,
  * request options, and existing query parameters.
  *
@@ -114,15 +158,14 @@ function normalizeSearchParams(
  * 3. Request search parameters
  *
  * If no search parameters are provided, the URL will not have a query string.
+ * Any trailing hash/fragment is preserved.
  */
 function buildUrlWithMergedSearchParams(
   url: string,
   factorySearch: FetchDefaults["searchParams"] | undefined,
   requestSearch: ExtendedRequestInit["searchParams"] | undefined
 ): string {
-  const parts = url.split("?");
-  const pathOnly = parts[0] || "";
-  const existingQuery = parts[1] || "";
+  const { pathOnly, existingQuery, hash } = parseUrlComponents(url);
 
   const mergedParams = new URLSearchParams();
 
@@ -142,11 +185,12 @@ function buildUrlWithMergedSearchParams(
     mergedParams.set(k, v);
   }
 
-  if (mergedParams.toString()) {
-    return `${pathOnly}?${mergedParams.toString()}`;
+  const queryString = mergedParams.toString();
+  if (queryString) {
+    return `${pathOnly}?${queryString}${hash}`;
   }
 
-  return pathOnly;
+  return `${pathOnly}${hash}`;
 }
 
 /**
