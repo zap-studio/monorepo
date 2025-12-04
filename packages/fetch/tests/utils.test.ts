@@ -897,6 +897,69 @@ describe("searchParams merging", () => {
     );
   });
 
+  it("should not add query string when searchParams is an empty string", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
+    await fetchInternal(
+      "endpoint",
+      undefined,
+      { searchParams: "" },
+      {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      }
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/endpoint",
+      expect.any(Object)
+    );
+  });
+
+  it("should not add query string when searchParams is an empty object", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
+    await fetchInternal(
+      "endpoint",
+      undefined,
+      { searchParams: {} },
+      {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      }
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/endpoint",
+      expect.any(Object)
+    );
+  });
+
+  it("should not add query string when searchParams is empty with hash preserved", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
+    await fetchInternal(
+      "endpoint#section",
+      undefined,
+      { searchParams: {} },
+      {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      }
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/endpoint#section",
+      expect.any(Object)
+    );
+  });
+
   it("should work with absolute URLs and searchParams", async () => {
     fetchMock.mockResolvedValue(
       new Response(JSON.stringify({ ok: true }), { status: 200 })
