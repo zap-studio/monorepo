@@ -37,7 +37,7 @@ const newUser = await api.post("/users", UserSchema, {
 | ------------------------ | ------------- | ------- | ----------------------------------------------------- |
 | `baseURL`                | `string`      | `""`    | Base URL prepended to relative paths only             |
 | `headers`                | `HeadersInit` | -       | Default headers included in all requests (can be overridden per request)             |
-| `searchParams`           | `URLSearchParams \| Record<string, string>` | - | Default query/search params included in all requests (can be overridden per request) |
+| `searchParams`           | `URLSearchParams \| Record<string, string> \| string \| [string, string][]` | - | Default query/search params included in all requests (can be overridden per request) |
 | `throwOnFetchError`      | `boolean`     | `true`  | Throw `FetchError` on non-2xx responses               |
 | `throwOnValidationError` | `boolean`     | `true`  | Throw `ValidationError` on schema validation failures |
 
