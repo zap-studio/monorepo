@@ -172,6 +172,12 @@ function buildUrlWithMergedSearchParams(
 ): string {
   const { pathOnly, existingQuery, hash } = parseUrlComponents(url);
 
+  // Early return if no search params to merge
+  const hasSearchParams = factorySearch ?? requestSearch ?? existingQuery;
+  if (!hasSearchParams) {
+    return url;
+  }
+
   const mergedParams = new URLSearchParams();
 
   const resourceParams = new URLSearchParams(existingQuery);
