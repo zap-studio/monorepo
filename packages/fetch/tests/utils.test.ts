@@ -656,8 +656,8 @@ describe("createMethod", () => {
           validate: (i: unknown) => ({ value: i }),
         },
       } satisfies StandardSchemaV1;
-      const badOptions = { method: "GET" } as unknown as Omit<
-        ExtendedRequestInit,
+      const badOptions = { method: "GET" } as Omit<
+        ExtendedRequestInit<true>,
         "method"
       >;
       await del("/users/1", schema, badOptions);
