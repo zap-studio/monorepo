@@ -36,7 +36,8 @@ const newUser = await api.post("/users", UserSchema, {
 | Option                   | Type          | Default | Description                                           |
 | ------------------------ | ------------- | ------- | ----------------------------------------------------- |
 | `baseURL`                | `string`      | `""`    | Base URL prepended to relative paths only             |
-| `headers`                | `HeadersInit` | -       | Default headers included in all requests              |
+| `headers`                | `HeadersInit` | -       | Default headers included in all requests (can be overridden per request)             |
+| `searchParams`           | `URLSearchParams \| Record<string, string> \| string \| [string, string][]` | - | Default query/search params included in all requests (can be overridden per request) |
 | `throwOnFetchError`      | `boolean`     | `true`  | Throw `FetchError` on non-2xx responses               |
 | `throwOnValidationError` | `boolean`     | `true`  | Throw `ValidationError` on schema validation failures |
 
@@ -78,6 +79,7 @@ const { api } = createFetch({
     Authorization: "Bearer default-token",
     "Content-Type": "application/json",
   },
+  searchParams: { locale: "en", page: "1" },
 });
 
 // This request will have:
@@ -89,6 +91,8 @@ const user = await api.get("/users/1", UserSchema, {
     Authorization: "Bearer override-token",
     "X-Custom": "value",
   },
+  // per-request search params override factory defaults
+  searchParams: { page: "2", q: "alex" },
 });
 ```
 
