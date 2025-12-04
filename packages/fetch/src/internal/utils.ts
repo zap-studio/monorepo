@@ -157,10 +157,10 @@ function parseUrlComponents(url: string): {
  * This function takes a base URL, factory search parameters,
  * and request search parameters, and combines them into a single URL.
  *
- * The order of precedence is:
- * 1. Factory search parameters
- * 2. Existing query parameters from the URL
- * 3. Request search parameters
+ * Priority (highest to lowest):
+ * 1. Request search parameters (highest priority, overwrites all others)
+ * 2. Existing query parameters from the URL (overwrites factory defaults)
+ * 3. Factory search parameters (lowest priority, overwritten by all others)
  *
  * If no search parameters are provided, the URL will not have a query string.
  * Any trailing hash/fragment is preserved.
