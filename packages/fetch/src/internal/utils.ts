@@ -119,7 +119,12 @@ function parseUrlComponents(url: string): {
       const existingQuery = parsed.search.startsWith("?")
         ? parsed.search.slice(1)
         : parsed.search;
-      return { pathOnly, existingQuery, hash: parsed.hash };
+      // URL constructor normalizes away empty hash, if original URL had # at end, preserve it
+      let hash = parsed.hash;
+      if (hash === "" && url.endsWith("#")) {
+        hash = "#";
+      }
+      return { pathOnly, existingQuery, hash };
     } catch {
       // Fall through to manual parsing if URL constructor fails
     }

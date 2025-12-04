@@ -921,3 +921,282 @@ describe("searchParams merging", () => {
     expect(params.get("ignored")).toBe("no");
   });
 });
+
+describe("URL parsing with hash and special characters", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    global.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  describe("hash/fragment preservation", () => {
+    it("should preserve hash fragment in relative URL", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      await fetchInternal("endpoint#section", undefined, undefined, {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/endpoint#section",
+        expect.any(Object)
+      );
+    });
+
+    it("should preserve hash fragment in absolute URL", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      await fetchInternal(
+        "https://other.com/path#section",
+        undefined,
+        undefined,
+        {
+          baseURL: "https://api.example.com",
+          headers: undefined,
+          throwOnFetchError: true,
+          throwOnValidationError: true,
+        }
+      );
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://other.com/path#section",
+        expect.any(Object)
+      );
+    });
+
+    it("should preserve hash fragment with query params in relative URL", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      await fetchInternal("endpoint?foo=bar#section", undefined, undefined, {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/endpoint?foo=bar#section",
+        expect.any(Object)
+      );
+    });
+
+    it("should preserve hash fragment with query params in absolute URL", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      await fetchInternal(
+        "https://other.com/path?foo=bar#section",
+        undefined,
+        undefined,
+        {
+          baseURL: "https://api.example.com",
+          headers: undefined,
+          throwOnFetchError: true,
+          throwOnValidationError: true,
+        }
+      );
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://other.com/path?foo=bar#section",
+        expect.any(Object)
+      );
+    });
+
+    it("should preserve hash fragment when adding searchParams", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      await fetchInternal(
+        "endpoint#section",
+        undefined,
+        { searchParams: { key: "value" } },
+        {
+          baseURL: "https://api.example.com",
+          headers: undefined,
+          throwOnFetchError: true,
+          throwOnValidationError: true,
+        }
+      );
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/endpoint?key=value#section",
+        expect.any(Object)
+      );
+    });
+
+    it("should preserve hash fragment when merging searchParams with existing query", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      await fetchInternal(
+        "endpoint?existing=yes#section",
+        undefined,
+        { searchParams: { added: "value" } },
+        {
+          baseURL: "https://api.example.com",
+          headers: undefined,
+          throwOnFetchError: true,
+          throwOnValidationError: true,
+        }
+      );
+      const url = fetchMock.mock.calls[0]?.[0] as string;
+      expect(url).toContain("existing=yes");
+      expect(url).toContain("added=value");
+      expect(url.endsWith("#section")).toBe(true);
+    });
+  });
+
+  describe("URLs with multiple question marks", () => {
+    it("should handle URL with multiple ? characters in query value", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      // Query value contains a ? character (e.g., encoded URL)
+      await fetchInternal(
+        "https://api.example.com/path?redirect=https://other.com?foo=bar",
+        undefined,
+        undefined,
+        {
+          baseURL: "",
+          headers: undefined,
+          throwOnFetchError: true,
+          throwOnValidationError: true,
+        }
+      );
+      const url = fetchMock.mock.calls[0]?.[0] as string;
+      // The URL constructor will properly parse this
+      expect(url).toContain("redirect=https");
+      // The ? in the value should be preserved (URL-encoded or as part of query)
+    });
+
+    it("should handle relative URL with multiple ? characters", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      await fetchInternal(
+        "/path?key=value?with?question?marks",
+        undefined,
+        undefined,
+        {
+          baseURL: "https://api.example.com",
+          headers: undefined,
+          throwOnFetchError: true,
+          throwOnValidationError: true,
+        }
+      );
+      const url = fetchMock.mock.calls[0]?.[0] as string;
+      // Should preserve everything after first ? as the query string
+      expect(url).toContain("key=value%3Fwith%3Fquestion%3Fmarks");
+    });
+  });
+
+  describe("edge cases", () => {
+    it("should handle URL with only hash (no query)", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      await fetchInternal("/path#anchor", undefined, undefined, {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/path#anchor",
+        expect.any(Object)
+      );
+    });
+
+    it("should handle URL with empty hash", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      await fetchInternal("/path#", undefined, undefined, {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/path#",
+        expect.any(Object)
+      );
+    });
+
+    it("should handle URL with hash containing special characters", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      await fetchInternal("/path#section/subsection", undefined, undefined, {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/path#section/subsection",
+        expect.any(Object)
+      );
+    });
+
+    it("should handle protocol-relative URL with hash", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      await fetchInternal(
+        "//other.com/path?query=1#section",
+        undefined,
+        undefined,
+        {
+          baseURL: "https://api.example.com",
+          headers: undefined,
+          throwOnFetchError: true,
+          throwOnValidationError: true,
+        }
+      );
+      const url = fetchMock.mock.calls[0]?.[0] as string;
+      expect(url).toContain("other.com/path");
+      expect(url).toContain("query=1");
+      expect(url.endsWith("#section")).toBe(true);
+    });
+
+    it("should handle just a path with no base URL and hash", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      await fetchInternal("/api/users#top", undefined, undefined, {
+        baseURL: "",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/api/users#top",
+        expect.any(Object)
+      );
+    });
+
+    it("should handle hash before query in malformed URL (hash takes precedence)", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      // In a proper URL, anything after # is the fragment, even if it contains ?
+      await fetchInternal("/path#anchor?notquery=1", undefined, undefined, {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/path#anchor?notquery=1",
+        expect.any(Object)
+      );
+    });
+  });
+});
