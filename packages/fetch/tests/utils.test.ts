@@ -726,3 +726,198 @@ describe("createMethod", () => {
     });
   });
 });
+
+describe("searchParams merging", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    global.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should append factory default searchParams to URL", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
+    await fetchInternal("endpoint", undefined, undefined, {
+      baseURL: "https://api.example.com",
+      headers: undefined,
+      searchParams: { locale: "en", page: "1" },
+      throwOnFetchError: true,
+      throwOnValidationError: true,
+    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/endpoint?locale=en&page=1",
+      expect.any(Object)
+    );
+  });
+
+  it("should merge factory searchParams with resource query string", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
+    await fetchInternal("endpoint?existing=yes", undefined, undefined, {
+      baseURL: "https://api.example.com",
+      headers: undefined,
+      searchParams: { locale: "en" },
+      throwOnFetchError: true,
+      throwOnValidationError: true,
+    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/endpoint?locale=en&existing=yes",
+      expect.any(Object)
+    );
+  });
+
+  it("should allow resource query string to override factory searchParams", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
+    await fetchInternal("endpoint?page=5", undefined, undefined, {
+      baseURL: "https://api.example.com",
+      headers: undefined,
+      searchParams: { page: "1", locale: "en" },
+      throwOnFetchError: true,
+      throwOnValidationError: true,
+    });
+    const url = fetchMock.mock.calls[0]?.[0] as string;
+    const params = new URLSearchParams(url.split("?")[1]);
+    expect(params.get("page")).toBe("5");
+    expect(params.get("locale")).toBe("en");
+  });
+
+  it("should allow per-request searchParams to override factory and resource params", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
+    await fetchInternal(
+      "endpoint?page=2",
+      undefined,
+      { searchParams: { page: "10", q: "test" } },
+      {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        searchParams: { page: "1", locale: "en" },
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      }
+    );
+    const url = fetchMock.mock.calls[0]?.[0] as string;
+    const params = new URLSearchParams(url.split("?")[1]);
+    expect(params.get("page")).toBe("10");
+    expect(params.get("locale")).toBe("en");
+    expect(params.get("q")).toBe("test");
+  });
+
+  it("should support URLSearchParams as searchParams input", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
+    await fetchInternal(
+      "endpoint",
+      undefined,
+      { searchParams: new URLSearchParams({ foo: "bar" }) },
+      {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      }
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/endpoint?foo=bar",
+      expect.any(Object)
+    );
+  });
+
+  it("should support string as searchParams input", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
+    await fetchInternal(
+      "endpoint",
+      undefined,
+      { searchParams: "a=1&b=2" },
+      {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      }
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/endpoint?a=1&b=2",
+      expect.any(Object)
+    );
+  });
+
+  it("should support array of tuples as searchParams input", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
+    await fetchInternal(
+      "endpoint",
+      undefined,
+      {
+        searchParams: [
+          ["x", "1"],
+          ["y", "2"],
+        ],
+      },
+      {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      }
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/endpoint?x=1&y=2",
+      expect.any(Object)
+    );
+  });
+
+  it("should not add query string when no searchParams are provided", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
+    await fetchInternal("endpoint", undefined, undefined, {
+      baseURL: "https://api.example.com",
+      headers: undefined,
+      throwOnFetchError: true,
+      throwOnValidationError: true,
+    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/endpoint",
+      expect.any(Object)
+    );
+  });
+
+  it("should work with absolute URLs and searchParams", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
+    await fetchInternal(
+      "https://other.com/path",
+      undefined,
+      { searchParams: { key: "value" } },
+      {
+        baseURL: "https://api.example.com",
+        headers: undefined,
+        searchParams: { ignored: "no" },
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      }
+    );
+    const url = fetchMock.mock.calls[0]?.[0] as string;
+    expect(url.startsWith("https://other.com/path")).toBe(true);
+    const params = new URLSearchParams(url.split("?")[1]);
+    expect(params.get("key")).toBe("value");
+    // factory searchParams are still merged
+    expect(params.get("ignored")).toBe("no");
+  });
+});

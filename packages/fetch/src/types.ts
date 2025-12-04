@@ -1,6 +1,18 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 /**
+ * Type representing various formats for search parameters
+ * that can be used in requests.
+ * Can be a URLSearchParams object, a record of string pairs,
+ * a query string, or an array of tuples.
+ */
+export type SearchedParams =
+  | URLSearchParams
+  | Record<string, string>
+  | string
+  | [string, string][];
+
+/**
  * Extended RequestInit type to include custom fetch options
  */
 export type ExtendedRequestInit = Omit<RequestInit, "body"> & {
@@ -8,6 +20,11 @@ export type ExtendedRequestInit = Omit<RequestInit, "body"> & {
    * Request body - can be a BodyInit value or an object that will be JSON-stringified
    */
   body?: BodyInit | Record<string, unknown>;
+  /**
+   * Per-request query/search params
+   * @default undefined
+   */
+  searchParams?: SearchedParams;
   /**
    * Whether to throw a FetchError on HTTP errors (non-2xx responses)
    * @default true
@@ -30,10 +47,15 @@ export type FetchDefaults = {
    */
   baseURL: string;
   /**
-   * Default headers to include in all requests
+   * Default headers to include in all requests (can be overridden per request)
    * @default undefined
    */
-  headers: HeadersInit | undefined;
+  headers?: HeadersInit;
+  /**
+   * Default query/search params applied to every request (can be overridden per request)
+   * @default undefined
+   */
+  searchParams?: SearchedParams;
   /**
    * Whether to throw a `FetchError` on HTTP errors (non-2xx responses)
    * @default true

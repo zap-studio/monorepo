@@ -69,6 +69,87 @@ function isAbsoluteURL(url: string): boolean {
 }
 
 /**
+ * Normalizes search parameters into a URLSearchParams object.
+ */
+function normalizeSearchParams(
+  input:
+    | FetchDefaults["searchParams"]
+    | ExtendedRequestInit["searchParams"]
+    | undefined
+): URLSearchParams {
+  if (!input) {
+    return new URLSearchParams();
+  }
+
+  if (input instanceof URLSearchParams) {
+    return new URLSearchParams(input);
+  }
+
+  if (typeof input === "string") {
+    return new URLSearchParams(input);
+  }
+
+  if (Array.isArray(input)) {
+    return new URLSearchParams(input);
+  }
+
+  const params = new URLSearchParams();
+  for (const [k, v] of Object.entries(input)) {
+    params.set(k, v);
+  }
+
+  return params;
+}
+
+/**
+ * Builds a URL with merged search parameters from factory defaults,
+ * request options, and existing query parameters.
+ *
+ * This function takes a base URL, factory search parameters,
+ * and request search parameters, and combines them into a single URL.
+ *
+ * The order of precedence is:
+ * 1. Factory search parameters
+ * 2. Existing query parameters from the URL
+ * 3. Request search parameters
+ *
+ * If no search parameters are provided, the URL will not have a query string.
+ */
+function buildUrlWithMergedSearchParams(
+  url: string,
+  factorySearch: FetchDefaults["searchParams"] | undefined,
+  requestSearch: ExtendedRequestInit["searchParams"] | undefined
+): string {
+  const parts = url.split("?");
+  const pathOnly = parts[0] || "";
+  const existingQuery = parts[1] || "";
+
+  const mergedParams = new URLSearchParams();
+
+  const resourceParams = new URLSearchParams(existingQuery);
+  const factoryParams = normalizeSearchParams(factorySearch);
+  const reqParams = normalizeSearchParams(requestSearch);
+
+  for (const [k, v] of factoryParams.entries()) {
+    mergedParams.set(k, v);
+  }
+
+  for (const [k, v] of resourceParams.entries()) {
+    mergedParams.set(k, v);
+  }
+
+  for (const [k, v] of reqParams.entries()) {
+    mergedParams.set(k, v);
+  }
+
+  if (mergedParams.toString()) {
+    return `${pathOnly}?${mergedParams.toString()}`;
+  }
+
+  return pathOnly;
+}
+
+/**
  * Internal fetch implementation used by both $fetch and createFetch
  */
 export async function fetchInternal(
@@ -81,6 +162,7 @@ export async function fetchInternal(
     throwOnValidationError = defaults.throwOnValidationError,
     throwOnFetchError = defaults.throwOnFetchError,
     headers: requestHeaders,
+    searchParams: requestSearchParams,
     ...rest
   } = options || {};
 
@@ -109,6 +191,13 @@ export async function fetchInternal(
     const path = trimLeadingSlashes(resource);
     url = base ? `${base}/${path}` : resource;
   }
+
+  // Merge query/search params
+  url = buildUrlWithMergedSearchParams(
+    url,
+    defaults.searchParams,
+    requestSearchParams
+  );
 
   const response = await fetch(url, init);
 
