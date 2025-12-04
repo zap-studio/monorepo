@@ -1,6 +1,11 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { FetchError } from "../errors";
-import type { $Fetch, ExtendedRequestInit, FetchDefaults } from "../types";
+import type {
+  $Fetch,
+  ExtendedRequestInit,
+  FetchDefaults,
+  SearchParams,
+} from "../types";
 import { standardValidate } from "../validator";
 
 /**
@@ -72,12 +77,9 @@ function isAbsoluteURL(url: string): boolean {
  * Normalizes search parameters into a URLSearchParams object.
  */
 function normalizeSearchParams(
-  input:
-    | FetchDefaults["searchParams"]
-    | ExtendedRequestInit["searchParams"]
-    | undefined
+  input: SearchParams | undefined
 ): URLSearchParams {
-  if (!input) {
+  if (input === undefined || input === null) {
     return new URLSearchParams();
   }
 
