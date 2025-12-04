@@ -79,7 +79,6 @@ const { api } = createFetch({
     Authorization: "Bearer default-token",
     "Content-Type": "application/json",
   },
-  searchParams: { locale: "en", page: "1" },
 });
 
 // This request will have:
@@ -91,7 +90,46 @@ const user = await api.get("/users/1", UserSchema, {
     Authorization: "Bearer override-token",
     "X-Custom": "value",
   },
-  // per-request search params override factory defaults
+});
+```
+
+## Search Params Merging
+
+Default search params from the factory are merged with per-request search params. Per-request search params take precedence:
+
+```typescript
+const { api } = createFetch({
+  baseURL: "https://api.example.com",
+  searchParams: { locale: "en", page: "1" },
+});
+
+// This request will have:
+// - locale: en (from defaults)
+// - page: 2 (overridden)
+// - q: alex (new param)
+const user = await api.get("/users/1", UserSchema, {
+  searchParams: { page: "2", q: "alex" },
+});
+```
+
+Query params in the URL are also merged with factory and per-request search params. The priority order is (highest priority last):
+
+1. **Factory defaults** — lowest priority
+2. **URL params** — override factory defaults
+3. **Per-request params** — highest priority, override everything
+
+```typescript
+const { api } = createFetch({
+  baseURL: "https://api.example.com",
+  searchParams: { locale: "en", page: "1" },
+});
+
+// This request will have:
+// - locale: en (from factory defaults)
+// - sort: asc (from URL)
+// - page: 2 (overridden by per-request)
+// - q: alex (new param from per-request)
+const user = await api.get("/users?sort=asc&page=0", UserSchema, {
   searchParams: { page: "2", q: "alex" },
 });
 ```
