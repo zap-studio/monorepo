@@ -132,6 +132,7 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}): {
   const defaults: FetchDefaults = {
     baseURL: factoryOptions.baseURL ?? "",
     headers: factoryOptions.headers,
+    searchParams: factoryOptions.searchParams,
     throwOnFetchError: factoryOptions.throwOnFetchError ?? true,
     throwOnValidationError: factoryOptions.throwOnValidationError ?? true,
   };
