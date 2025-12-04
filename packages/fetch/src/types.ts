@@ -6,7 +6,7 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
  * Can be a URLSearchParams object, a record of string pairs,
  * a query string, or an array of tuples.
  */
-export type SearchedParams =
+export type SearchParams =
   | URLSearchParams
   | Record<string, string>
   | string
@@ -24,7 +24,7 @@ export type ExtendedRequestInit = Omit<RequestInit, "body"> & {
    * Per-request query/search params
    * @default undefined
    */
-  searchParams?: SearchedParams;
+  searchParams?: SearchParams;
   /**
    * Whether to throw a FetchError on HTTP errors (non-2xx responses)
    * @default true
@@ -55,7 +55,7 @@ export type FetchDefaults = {
    * Default query/search params applied to every request (can be overridden per request)
    * @default undefined
    */
-  searchParams?: SearchedParams;
+  searchParams?: SearchParams;
   /**
    * Whether to throw a `FetchError` on HTTP errors (non-2xx responses)
    * @default true
