@@ -17,7 +17,14 @@ export default defineConfig({
     nav: [
       { text: "Home", link: "/" },
       { text: "Zap.ts", link: "/zap-ts/" },
-      { text: "Packages", link: "/packages/fetch/" },
+      {
+        text: "Packages",
+        items: [
+          { text: "@zap-studio/fetch", link: "/packages/fetch/" },
+          { text: "@zap-studio/webhooks", link: "/packages/webhooks/" },
+          { text: "@zap-studio/waitlist", link: "/packages/waitlist/" },
+        ],
+      },
       { text: "About", link: "/about" },
       {
         text: "More",
@@ -47,10 +54,9 @@ export default defineConfig({
           items: [{ text: "Overview", link: "/zap-ts/" }],
         },
       ],
-      "/packages/": [
+      "/packages/fetch/": [
         {
           text: "@zap-studio/fetch",
-          collapsed: false,
           items: [
             { text: "Overview", link: "/packages/fetch/" },
             { text: "API Methods", link: "/packages/fetch/api-methods" },
@@ -60,14 +66,16 @@ export default defineConfig({
             { text: "Validation", link: "/packages/fetch/validation" },
           ],
         },
+      ],
+      "/packages/webhooks/": [
         {
           text: "@zap-studio/webhooks",
-          collapsed: false,
           items: [{ text: "Overview", link: "/packages/webhooks/" }],
         },
+      ],
+      "/packages/waitlist/": [
         {
           text: "@zap-studio/waitlist",
-          collapsed: false,
           items: [{ text: "Overview", link: "/packages/waitlist/" }],
         },
       ],
