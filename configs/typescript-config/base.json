@@ -13,8 +13,7 @@
     "verbatimModuleSyntax": true,
     "allowImportingTsExtensions": true,
 
-    "declaration": true,
-    "declarationMap": true,
+    "noEmit": true,
 
     "esModuleInterop": true,
     "skipLibCheck": true,
