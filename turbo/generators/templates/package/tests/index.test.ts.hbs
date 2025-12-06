@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { greeting } from "../src";
 
-describe("{{ name }} package", () => {
-	it("should work", () => {
-		expect(1 + 1).toBe(2);
-	});
+describe("{{ name }}", () => {
+  it("should export greeting", () => {
+    expect(greeting).toBe("Hello, world!");
+  });
 });
