@@ -7,6 +7,7 @@ import type {
   NormalizedResponse,
   RegisterOptions,
   SchemaValidator,
+  WebhookHandler,
 } from "./types";
 
 /**
@@ -149,8 +150,9 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
     handlerOrOptions: HandlerMap<TMap>[Path] | RegisterOptions<TMap[Path]>
   ) {
     if (typeof handlerOrOptions === "function") {
-      // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
-      this.handlers.set(path, { handler: handlerOrOptions as any });
+      this.handlers.set(path, {
+        handler: handlerOrOptions as WebhookHandler<TMap[string]>,
+      });
     } else {
       let beforeHooks: BeforeHook[] | undefined;
       if (handlerOrOptions.before) {
@@ -167,8 +169,7 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
       }
 
       this.handlers.set(path, {
-        // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
-        handler: handlerOrOptions.handler as any,
+        handler: handlerOrOptions.handler as WebhookHandler<TMap[string]>,
         schema: handlerOrOptions.schema,
         before: beforeHooks,
         after: afterHooks,
@@ -324,8 +325,7 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
   ): Promise<NormalizedResponse> {
     const responded = await handler({
       req,
-      // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
-      payload: validatedPayload as any,
+      payload: validatedPayload as TMap[string],
       ack: async (r?: Partial<NormalizedResponse>) => ({
         status: r?.status ?? 200,
         body: r?.body ?? "ok",
