@@ -117,7 +117,6 @@ export class EventBus {
             });
           } catch (errorEmitFailed) {
             // Log the failure if emitting the error event fails
-            // biome-ignore lint/suspicious/noConsole: We want to log errors here
             console.error(
               "EventBus: Failed to emit error event",
               err,
@@ -126,7 +125,6 @@ export class EventBus {
           }
         } else {
           // If an error handler itself throws, just log it
-          // biome-ignore lint/suspicious/noConsole: We want to log errors here
           console.error("EventBus: Error handler threw an error", err);
         }
       }
