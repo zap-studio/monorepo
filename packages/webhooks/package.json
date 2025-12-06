@@ -9,8 +9,9 @@
   },
   "files": [
     "dist",
-    "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "README.md"
   ],
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
@@ -55,16 +56,15 @@
     }
   },
   "devDependencies": {
-    "@types/express": "^5.0.5",
-    "@types/node": "latest",
-    "@vitest/coverage-v8": "^4.0.6",
+    "@types/express": "catalog:types",
+    "@types/node": "catalog:types",
+    "@vitest/coverage-v8": "catalog:testing",
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
-    "jsdom": "latest",
-    "tsdown": "latest",
-    "typescript": "latest",
-    "vitest": "latest"
+    "tsdown": "catalog:base",
+    "typescript": "catalog:base",
+    "vitest": "catalog:testing"
   },
   "exports": {
     ".": "./dist/index.mjs",
