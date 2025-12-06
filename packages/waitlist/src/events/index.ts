@@ -1,5 +1,3 @@
-// biome-ignore-all lint/suspicious/noExplicitAny: We need to allow any here for the event payloads
-
 import type { EventPayloadMap, WaitlistEventType } from "../types";
 
 /** A function that handles events within the waitlist and takes a payload */

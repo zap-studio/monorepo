@@ -63,8 +63,7 @@ export type EventPayloadMap = {
 export type WaitlistEventType = keyof EventPayloadMap;
 
 /** Represents an event in the waitlist system. */
-// biome-ignore lint/suspicious/noExplicitAny: We need to allow any for maximum flexibility since we want to allow any payload.
-export type WaitlistEvent<T = any> = {
+export type WaitlistEvent<T = unknown> = {
   /** The type of event. */
   type: WaitlistEventType;
   /** The payload associated with the event. */
