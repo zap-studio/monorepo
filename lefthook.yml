@@ -1,7 +1,7 @@
 pre-commit:
   parallel: true
   jobs:
-    - run: npx ultracite fix
+    - run: pnpm dlx ultracite fix
       glob:
         - "*.js"
         - "*.jsx"
@@ -22,4 +22,4 @@ pre-commit:
 commit-msg:
   commands:
     "lint commit message":
-      run: npx commitlint --edit {1}
+      run: pnpm dlx commitlint --edit {1}
