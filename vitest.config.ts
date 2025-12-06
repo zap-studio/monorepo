@@ -1,10 +1,11 @@
 import { sharedConfig } from "@zap-studio/vitest-config";
-import { defineConfig } from "vitest/config";
+import { defineConfig, mergeConfig } from "vitest/config";
 
-export default defineConfig({
-  ...sharedConfig,
-  test: {
-    ...sharedConfig.test,
-    projects: ["packages/*"],
-  },
-});
+export default mergeConfig(
+  sharedConfig,
+  defineConfig({
+    test: {
+      projects: ["packages/*"],
+    },
+  }),
+);
