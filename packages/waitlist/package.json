@@ -9,8 +9,9 @@
   },
   "files": [
     "dist",
-    "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "README.md"
   ],
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
@@ -19,18 +20,17 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "nanoid": "^5.1.6",
-    "zod": "^4.1.12"
+    "nanoid": "catalog:base",
+    "zod": "catalog:base"
   },
   "devDependencies": {
-    "@types/node": "latest",
+    "@types/node": "catalog:types",
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
-    "jsdom": "latest",
-    "tsdown": "latest",
-    "typescript": "latest",
-    "vitest": "latest"
+    "tsdown": "catalog:base",
+    "typescript": "catalog:base",
+    "vitest": "catalog:testing"
   },
   "exports": {
     "./adapters/storage/in-memory": "./dist/adapters/storage/in-memory.mjs",
