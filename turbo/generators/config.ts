@@ -13,6 +13,26 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         path: "packages/{{ name }}/src/index.ts",
         templateFile: "templates/package/src/index.ts.hbs",
       },
+      {
+        type: "add",
+        path: "packages/{{ name }}/jsr.json",
+        templateFile: "templates/package/jsr.json.hbs",
+      },
+      {
+        type: "add",
+        path: "packages/{{ name }}/LICENSE.md",
+        templateFile: "templates/package/LICENSE.md.hbs",
+      },
+      {
+        type: "add",
+        path: "packages/{{ name }}/tsdown.config.ts",
+        templateFile: "templates/package/tsdown.config.ts.hbs",
+      },
+      {
+        type: "add",
+        path: "packages/{{ name }}/vitest.config.ts",
+        templateFile: "templates/package/vitest.config.ts.hbs",
+      },
     ],
   });
 

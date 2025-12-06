@@ -64,6 +64,11 @@ const createStandardActions = (
   const standardActions: PlopTypes.ActionType[] = [
     {
       type: "add",
+      path: `${directory}/{{ path }}/.gitignore`,
+      templateFile: `templates/${templateDir}/.gitignore.hbs`,
+    },
+    {
+      type: "add",
       path: `${directory}/{{ path }}/package.json`,
       templateFile: `templates/${templateDir}/package.json.hbs`,
     },
@@ -71,11 +76,6 @@ const createStandardActions = (
       type: "add",
       path: `${directory}/{{ path }}/tsconfig.json`,
       templateFile: `templates/${templateDir}/tsconfig.json.hbs`,
-    },
-    {
-      type: "add",
-      path: `${directory}/{{ path }}/.gitignore`,
-      templateFile: `templates/${templateDir}/.gitignore.hbs`,
     },
   ];
 
