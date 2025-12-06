@@ -3,6 +3,10 @@
   "ui": "tui",
   "globalDependencies": ["package.json", "tsconfig.json", ".env*"],
   "tasks": {
+    "//#format": {
+      "cache": false
+    },
+    "//#lint": {},
     "build": {
       "dependsOn": ["^build"],
       "inputs": [
@@ -13,35 +17,31 @@
       ],
       "outputs": ["dist/**", ".vitepress/dist/**"]
     },
-    "//#lint": {},
-    "//#format": {
-      "cache": false
-    },
-    "topo": {
-      "dependsOn": ["^topo"]
-    },
     "check-types": {
       "dependsOn": ["^build", "topo"],
       "inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
       "outputs": ["*.tsbuildinfo"],
       "outputLogs": "new-only"
     },
+    "clean": {
+      "cache": false
+    },
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "clean": {
-      "cache": false
-    },
     "test": {
       "dependsOn": ["transit", "@zap-studio/vitest-config#build"]
-    },
-    "transit": {
-      "dependsOn": ["^transit"]
     },
     "test:watch": {
       "cache": false,
       "persistent": true
+    },
+    "topo": {
+      "dependsOn": ["^topo"]
+    },
+    "transit": {
+      "dependsOn": ["^transit"]
     }
   }
 }
