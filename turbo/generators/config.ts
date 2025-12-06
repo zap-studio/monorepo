@@ -15,13 +15,13 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
       },
       {
         type: "add",
-        path: "packages/{{ name }}/src/jsr.json",
-        templateFile: "templates/package/src/jsr.json.hbs",
+        path: "packages/{{ name }}/jsr.json",
+        templateFile: "templates/package/jsr.json.hbs",
       },
       {
         type: "add",
-        path: "packages/{{ name }}/src/LICENSE.md",
-        templateFile: "templates/package/src/LICENSE.md.hbs",
+        path: "packages/{{ name }}/LICENSE.md",
+        templateFile: "templates/package/LICENSE.md.hbs",
       },
       {
         type: "add",
