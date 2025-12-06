@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalDependencies": ["tsconfig.json", ".env*", "package.json"],
+  "globalDependencies": ["package.json", "tsconfig.json", ".env*"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -11,13 +11,7 @@
         "!**/*.test.{ts,tsx,js,jsx}",
         "!**/*.spec.{ts,tsx,js,jsx}"
       ],
-      "outputs": [
-        "dist/**",
-        ".next/**",
-        "build/**",
-        "!.next/cache/**",
-        ".vitepress/dist/**"
-      ]
+      "outputs": ["dist/**", ".vitepress/dist/**"]
     },
     "//#lint": {},
     "//#format": {
@@ -27,7 +21,7 @@
       "dependsOn": ["^topo"]
     },
     "check-types": {
-      "dependsOn": ["^build", "^typegen", "topo"],
+      "dependsOn": ["^build", "topo"],
       "inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
       "outputs": ["*.tsbuildinfo"],
       "outputLogs": "new-only"
@@ -35,10 +29,6 @@
     "dev": {
       "cache": false,
       "persistent": true
-    },
-    "typegen": {
-      "cache": false,
-      "outputs": [".next/types/**"]
     },
     "clean": {
       "cache": false

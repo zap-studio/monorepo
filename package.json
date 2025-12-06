@@ -16,8 +16,7 @@
     "report-coverage": "nyc report --reporter=html --reporter=text --reporter=lcov --report-dir=coverage/report --temp-dir=coverage/merged",
     "test": "turbo run test",
     "test:coverage": "turbo run test -- --coverage && pnpm merge-coverage && pnpm report-coverage",
-    "test:watch": "turbo run test:watch",
-    "typegen": "turbo run typegen"
+    "test:watch": "turbo run test:watch"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:linting",
