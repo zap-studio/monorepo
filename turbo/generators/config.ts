@@ -3,6 +3,8 @@ import { createGenerator } from "./utils";
 
 export default function generator(plop: PlopTypes.NodePlopAPI): void {
   // Package generator
+  const packageBasePath = "packages/{{ name }}";
+  const packageTemplateBase = "templates/package";
   createGenerator(plop, "package", {
     directory: "packages",
     description: "Create a new package in the packages directory",
@@ -10,33 +12,40 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
     additionalActions: [
       {
         type: "add",
-        path: "packages/{{ name }}/src/index.ts",
-        templateFile: "templates/package/src/index.ts.hbs",
+        path: `${packageBasePath}/src/index.ts`,
+        templateFile: `${packageTemplateBase}/src/index.ts.hbs`,
       },
       {
         type: "add",
-        path: "packages/{{ name }}/jsr.json",
-        templateFile: "templates/package/jsr.json.hbs",
+        path: `${packageBasePath}/jsr.json`,
+        templateFile: `${packageTemplateBase}/jsr.json.hbs`,
       },
       {
         type: "add",
-        path: "packages/{{ name }}/LICENSE.md",
-        templateFile: "templates/package/LICENSE.md.hbs",
+        path: `${packageBasePath}/LICENSE.md`,
+        templateFile: `${packageTemplateBase}/LICENSE.md.hbs`,
       },
       {
         type: "add",
-        path: "packages/{{ name }}/tsdown.config.ts",
-        templateFile: "templates/package/tsdown.config.ts.hbs",
+        path: `${packageBasePath}/tsdown.config.ts`,
+        templateFile: `${packageTemplateBase}/tsdown.config.ts.hbs`,
       },
       {
         type: "add",
-        path: "packages/{{ name }}/vitest.config.ts",
-        templateFile: "templates/package/vitest.config.ts.hbs",
+        path: `${packageBasePath}/vitest.config.ts`,
+        templateFile: `${packageTemplateBase}/vitest.config.ts.hbs`,
+      },
+      {
+        type: "add",
+        path: `${packageBasePath}/tests/index.test.ts`,
+        templateFile: `${packageTemplateBase}/tests/index.test.ts.hbs`,
       },
     ],
   });
 
   // Config generator
+  const configBasePath = "configs/{{ name }}";
+  const configTemplateBase = "templates/config";
   createGenerator(plop, "config", {
     directory: "configs",
     description: "Create a new config package in the configs directory",
@@ -44,8 +53,8 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
     additionalActions: [
       {
         type: "add",
-        path: "configs/{{ name }}/src/index.ts",
-        templateFile: "templates/config/src/index.ts.hbs",
+        path: `${configBasePath}/src/index.ts`,
+        templateFile: `${configTemplateBase}/src/index.ts.hbs`,
       },
     ],
   });
