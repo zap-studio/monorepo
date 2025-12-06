@@ -10,7 +10,6 @@
     "includes": [
       "**",
       "!**/.source",
-      "!apps/zap-ts-docs/src/components/ui",
       "!apps/docs/.vitepress/dist",
       "!apps/docs/.vitepress/cache"
     ]
