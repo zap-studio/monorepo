@@ -9,8 +9,9 @@
   },
   "files": [
     "dist",
-    "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "README.md"
   ],
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
