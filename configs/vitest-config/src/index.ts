@@ -1,4 +1,4 @@
-import { defineConfig, type ViteUserConfig } from "vitest/config";
+import { defineConfig, mergeConfig, type ViteUserConfig } from "vitest/config";
 
 export const sharedConfig: ViteUserConfig = {
   test: {
@@ -23,5 +23,5 @@ export const sharedConfig: ViteUserConfig = {
 };
 
 export function createConfig(overrides?: ViteUserConfig) {
-  return defineConfig({ ...sharedConfig, ...overrides });
+  return defineConfig(mergeConfig(sharedConfig, overrides ?? {}));
 }
