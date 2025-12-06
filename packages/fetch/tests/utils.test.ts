@@ -656,8 +656,8 @@ describe("createMethod", () => {
           validate: (i: unknown) => ({ value: i }),
         },
       } satisfies StandardSchemaV1;
-      const badOptions = { method: "GET" } as unknown as Omit<
-        ExtendedRequestInit,
+      const badOptions = { method: "GET" } as Omit<
+        ExtendedRequestInit<true>,
         "method"
       >;
       await del("/users/1", schema, badOptions);
@@ -723,6 +723,114 @@ describe("createMethod", () => {
       await del("/r", schema);
       const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
       expect(call[2]).toMatchObject({ method: "DELETE" });
+    });
+  });
+
+  describe("throwOnValidationError option handling", () => {
+    const successSchema = {
+      "~standard": {
+        version: 1,
+        vendor: "standard-schema",
+        validate: (input: unknown) => ({ value: input }),
+      },
+    } satisfies StandardSchemaV1;
+
+    const failureSchema = {
+      "~standard": {
+        version: 1,
+        vendor: "standard-schema",
+        validate: (_input: unknown) => ({
+          issues: [{ message: "validation error", path: ["field"] }],
+        }),
+      },
+    } satisfies StandardSchemaV1;
+
+    it("should return validated value when throwOnValidationError is true", async () => {
+      const $fetchMock = vi.fn(() =>
+        Promise.resolve({ id: 1, name: "test" })
+      ) as unknown as typeof $fetch;
+      const get = createMethod($fetchMock, "GET");
+      await get("/users/1", successSchema, { throwOnValidationError: true });
+      const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
+      expect(call[2]).toMatchObject({
+        method: "GET",
+        throwOnValidationError: true,
+      });
+    });
+
+    it("should return validated value when throwOnValidationError is undefined (default)", async () => {
+      const $fetchMock = vi.fn(() =>
+        Promise.resolve({ id: 1, name: "test" })
+      ) as unknown as typeof $fetch;
+      const get = createMethod($fetchMock, "GET");
+      await get("/users/1", successSchema);
+      const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
+      expect(call[2]).toMatchObject({ method: "GET" });
+      expect(
+        (call[2] as { throwOnValidationError?: boolean }).throwOnValidationError
+      ).toBeUndefined();
+    });
+
+    it("should return result object when throwOnValidationError is false", async () => {
+      const $fetchMock = vi.fn(() =>
+        Promise.resolve({
+          issues: [{ message: "validation error", path: ["field"] }],
+        })
+      ) as unknown as typeof $fetch;
+      const get = createMethod($fetchMock, "GET");
+      await get("/users/1", failureSchema, { throwOnValidationError: false });
+      const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
+      expect(call[2]).toMatchObject({
+        method: "GET",
+        throwOnValidationError: false,
+      });
+    });
+
+    it("should pass throwOnValidationError: false through POST method", async () => {
+      const $fetchMock = vi.fn(() =>
+        Promise.resolve({ value: { id: 1 } })
+      ) as unknown as typeof $fetch;
+      const post = createMethod($fetchMock, "POST");
+      await post("/users", successSchema, {
+        body: { name: "test" },
+        throwOnValidationError: false,
+      });
+      const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
+      expect(call[2]).toMatchObject({
+        method: "POST",
+        throwOnValidationError: false,
+        body: { name: "test" },
+      });
+    });
+
+    it("should pass throwOnValidationError: true through PATCH method", async () => {
+      const $fetchMock = vi.fn(() =>
+        Promise.resolve({ id: 1, name: "updated" })
+      ) as unknown as typeof $fetch;
+      const patch = createMethod($fetchMock, "PATCH");
+      await patch("/users/1", successSchema, {
+        body: { name: "updated" },
+        throwOnValidationError: true,
+      });
+      const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
+      expect(call[2]).toMatchObject({
+        method: "PATCH",
+        throwOnValidationError: true,
+        body: { name: "updated" },
+      });
+    });
+
+    it("should pass throwOnValidationError: false through DELETE method", async () => {
+      const $fetchMock = vi.fn(() =>
+        Promise.resolve({ value: { success: true } })
+      ) as unknown as typeof $fetch;
+      const del = createMethod($fetchMock, "DELETE");
+      await del("/users/1", successSchema, { throwOnValidationError: false });
+      const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
+      expect(call[2]).toMatchObject({
+        method: "DELETE",
+        throwOnValidationError: false,
+      });
     });
   });
 });

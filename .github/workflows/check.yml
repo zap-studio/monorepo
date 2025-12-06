@@ -1,4 +1,4 @@
-name: Test
+name: Check
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  test-monorepo:
+  check-monorepo:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
@@ -27,5 +27,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run tests
-        run: pnpm run test:ci
+      - name: Run check on the monorepo
+        run: pnpm run check
