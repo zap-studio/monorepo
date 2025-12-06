@@ -1,3 +1,5 @@
+import type { LeaderboardEntry } from "./types";
+
 /** Options for the WaitlistClient */
 export type WaitlistClientOptions = {
   /** The base URL for the API */
@@ -25,7 +27,7 @@ export class WaitlistClient {
    * const waitlistClient = new WaitlistClient({ baseUrl: "http://localhost:3000" });
    * const result = await waitlistClient.join("user@example.com", "REF-123");
    */
-  async join(email: string, referralCode?: string) {
+  async join(email: string, referralCode?: string): Promise<void> {
     const res = await fetch(`${this.baseUrl}/api/waitlist/join`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -44,7 +46,7 @@ export class WaitlistClient {
    * const waitlistClient = new WaitlistClient({ baseUrl: "http://localhost:3000" });
    * const leaderboard = await waitlistClient.getLeaderboard();
    */
-  async getLeaderboard() {
+  async getLeaderboard(): Promise<LeaderboardEntry[]> {
     const res = await fetch(`${this.baseUrl}/api/waitlist/leaderboard`);
     if (!res.ok) {
       throw new Error("Failed to fetch leaderboard", { cause: res });

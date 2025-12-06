@@ -9,15 +9,16 @@ import type {
   EmailEntry,
   LeaderboardEntry,
   ReferralLink,
+  WaitlistStorageAdapter,
 } from "../types";
 import type { JoinInput, JoinResult, WaitlistOptions } from "./types";
 
 /** Base class for the waitlist SDK */
 export class BaseWaitlistSDK {
   /** The storage adapter for the waitlist */
-  protected adapter;
+  protected adapter: WaitlistStorageAdapter;
   /** The event bus for handling waitlist events */
-  protected events;
+  protected events: EventBus;
 
   /** Create a new waitlist SDK instance */
   constructor({ adapter, events }: WaitlistOptions) {
