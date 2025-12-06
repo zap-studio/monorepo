@@ -7,5 +7,5 @@ export default mergeConfig(
     test: {
       projects: ["packages/*"],
     },
-  }),
+  })
 );
