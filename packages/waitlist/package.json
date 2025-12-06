@@ -20,6 +20,7 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
+    "@zap-studio/fetch": "workspace:*",
     "nanoid": "catalog:base",
     "zod": "catalog:base"
   },

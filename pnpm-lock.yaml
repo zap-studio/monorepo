@@ -215,6 +215,9 @@ importers:
 
   packages/waitlist:
     dependencies:
+      '@zap-studio/fetch':
+        specifier: workspace:*
+        version: link:../fetch
       nanoid:
         specifier: catalog:base
         version: 5.1.6

@@ -1,4 +1,29 @@
+import { createFetch } from "@zap-studio/fetch";
+import z from "zod";
+import { EmailSchema } from "./core/schemas";
 import type { LeaderboardEntry } from "./types";
+
+/** Schema for join response validation */
+const JoinResponseSchema: z.ZodObject<{
+  email: z.ZodEmail;
+  referralCode: z.ZodOptional<z.ZodString>;
+}> = z.object({
+  email: EmailSchema,
+  referralCode: z.string().optional(),
+});
+
+/** Schema for leaderboard entry validation */
+const LeaderboardEntrySchema: z.ZodObject<{
+  email: z.ZodEmail;
+  score: z.ZodNumber;
+}> = z.object({
+  email: EmailSchema,
+  score: z.number(),
+});
+
+/** Schema for leaderboard response validation */
+const LeaderboardResponseSchema: z.ZodArray<typeof LeaderboardEntrySchema> =
+  z.array(LeaderboardEntrySchema);
 
 /** Options for the WaitlistClient */
 export type WaitlistClientOptions = {
@@ -10,6 +35,9 @@ export class WaitlistClient {
   /** The base URL for the API */
   baseUrl: string;
 
+  /** The configured fetch instance */
+  private readonly api: ReturnType<typeof createFetch>["api"];
+
   /**
    * Creates an instance of WaitlistClient.
    *
@@ -18,6 +46,13 @@ export class WaitlistClient {
    */
   constructor({ baseUrl }: WaitlistClientOptions) {
     this.baseUrl = baseUrl;
+
+    const { api } = createFetch({
+      baseURL: baseUrl,
+      headers: { "Content-Type": "application/json" },
+    });
+
+    this.api = api;
   }
 
   /**
@@ -27,16 +62,13 @@ export class WaitlistClient {
    * const waitlistClient = new WaitlistClient({ baseUrl: "http://localhost:3000" });
    * const result = await waitlistClient.join("user@example.com", "REF-123");
    */
-  async join(email: string, referralCode?: string): Promise<void> {
-    const res = await fetch(`${this.baseUrl}/api/waitlist/join`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, referralCode }),
+  async join(
+    email: string,
+    referralCode?: string
+  ): Promise<z.infer<typeof JoinResponseSchema>> {
+    return await this.api.post("/api/waitlist/join", JoinResponseSchema, {
+      body: { email, referralCode },
     });
-    if (!res.ok) {
-      throw new Error("Failed to join waitlist", { cause: res });
-    }
-    return res.json();
   }
 
   /**
@@ -47,10 +79,9 @@ export class WaitlistClient {
    * const leaderboard = await waitlistClient.getLeaderboard();
    */
   async getLeaderboard(): Promise<LeaderboardEntry[]> {
-    const res = await fetch(`${this.baseUrl}/api/waitlist/leaderboard`);
-    if (!res.ok) {
-      throw new Error("Failed to fetch leaderboard", { cause: res });
-    }
-    return res.json();
+    return await this.api.get(
+      "/api/waitlist/leaderboard",
+      LeaderboardResponseSchema
+    );
   }
 }
