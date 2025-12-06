@@ -30,10 +30,6 @@
       "cache": false,
       "persistent": true
     },
-    "test": {
-      "dependsOn": ["^test", "@zap-studio/vitest-config#build"],
-      "outputs": ["coverage/**"]
-    },
     "merge-coverage": {
       "inputs": ["coverage/raw/**"],
       "outputs": ["coverage/merged/**"]
@@ -42,6 +38,10 @@
       "dependsOn": ["merge-coverage"],
       "inputs": ["coverage/merged"],
       "outputs": ["coverage/report/**"]
+    },
+    "test": {
+      "dependsOn": ["^test", "@zap-studio/vitest-config#build"],
+      "outputs": ["coverage/**"]
     },
     "test:watch": {
       "cache": false,
