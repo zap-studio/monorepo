@@ -1,23 +1,25 @@
-export const config = {
+import {
+  configDefaults,
+  defineConfig,
+  mergeConfig,
+  type ViteUserConfig,
+} from "vitest/config";
+
+export const sharedConfig: ViteUserConfig = {
   test: {
-    globals: true,
-    environment: "jsdom",
     coverage: {
-      provider: "v8" as const,
-      reporter: ["text", "json", "html"],
-      reportsDirectory: "coverage",
-      exclude: [
-        "node_modules/",
-        "dist/",
-        "**/*.config.{ts,js}",
-        "**/*.d.ts",
-        "**/test/**",
-      ],
+      provider: "v8",
+      reporter: ["html", "json", "lcov", "text"],
+      exclude: [...configDefaults.exclude, "**/dist/**"],
     },
-    mockReset: true,
+    environment: "node",
+    globals: true,
+    reporters: process.env.CI ? ["dot"] : ["default"],
     restoreMocks: true,
-    clearMocks: true,
-    include: ["**/*.{test,spec}.{ts,tsx}"],
-    exclude: ["node_modules", "dist", ".next", ".turbo"],
+    exclude: ["dist", "node_modules", ".turbo"],
   },
 };
+
+export function createConfig(overrides?: ViteUserConfig) {
+  return defineConfig(mergeConfig(sharedConfig, overrides ?? {}));
+}

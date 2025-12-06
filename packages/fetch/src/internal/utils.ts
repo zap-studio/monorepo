@@ -6,7 +6,7 @@ import type {
   FetchDefaults,
   SearchParams,
 } from "../types";
-import { standardValidate } from "../validator";
+import { isStandardSchema, standardValidate } from "../validator";
 
 /**
  * Merges two HeadersInit objects, with the second one taking precedence
@@ -282,9 +282,38 @@ export function createMethod<TFetch extends $Fetch>(
   fetchFn: TFetch,
   method: string
 ): $Fetch {
-  return <TSchema extends StandardSchemaV1>(
+  function methodFetch<TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
+    options: Omit<ExtendedRequestInit<false>, "method">
+  ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
+
+  function methodFetch<TSchema extends StandardSchemaV1>(
+    resource: string,
+    schema: TSchema,
+    options?: Omit<ExtendedRequestInit<true | undefined>, "method">
+  ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
+
+  function methodFetch(
+    resource: string,
     options?: Omit<ExtendedRequestInit, "method">
-  ) => fetchFn(resource, schema, { ...options, method });
+  ): Promise<Response>;
+
+  function methodFetch(
+    resource: string,
+    schemaOrOptions?: StandardSchemaV1 | Omit<ExtendedRequestInit, "method">,
+    optionsOrUndefined?: Omit<ExtendedRequestInit, "method">
+  ): Promise<unknown> {
+    const [schema, options] = isStandardSchema(schemaOrOptions)
+      ? [schemaOrOptions, optionsOrUndefined]
+      : [undefined, schemaOrOptions];
+
+    return (fetchFn as (...args: unknown[]) => Promise<unknown>)(
+      resource,
+      schema,
+      { ...options, method }
+    );
+  }
+
+  return methodFetch;
 }

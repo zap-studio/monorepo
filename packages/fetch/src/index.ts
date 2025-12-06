@@ -49,11 +49,14 @@ import { isStandardSchema } from "./validator";
 export async function $fetch<TSchema extends StandardSchemaV1>(
   resource: string,
   schema: TSchema,
-  options?: ExtendedRequestInit
-): Promise<
-  | StandardSchemaV1.InferOutput<TSchema>
-  | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
->;
+  options: ExtendedRequestInit<false>
+): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
+
+export async function $fetch<TSchema extends StandardSchemaV1>(
+  resource: string,
+  schema: TSchema,
+  options?: ExtendedRequestInit<true | undefined>
+): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
 export async function $fetch(
   resource: string,
@@ -140,11 +143,14 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}): {
   async function customFetch<TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
-    options?: ExtendedRequestInit
-  ): Promise<
-    | StandardSchemaV1.InferOutput<TSchema>
-    | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
-  >;
+    options: ExtendedRequestInit<false>
+  ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
+
+  async function customFetch<TSchema extends StandardSchemaV1>(
+    resource: string,
+    schema: TSchema,
+    options?: ExtendedRequestInit<true | undefined>
+  ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   async function customFetch(
     resource: string,

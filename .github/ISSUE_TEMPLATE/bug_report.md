@@ -7,6 +7,14 @@ assignees: ''
 
 ---
 
+**Affected Package(s):**
+
+- [ ] `@zap-studio/fetch`
+- [ ] `@zap-studio/waitlist`
+- [ ] `@zap-studio/webhooks`
+- [ ] Documentation (`docs`)
+- [ ] Other (please specify)
+
 **Description:**
 A concise summary of the problem, including what was expected to happen and what actually occurred.
 
@@ -23,10 +31,10 @@ What actually happened, including any error messages or unexpected outcomes.
 
 **Environment:**
 
-* **Zap.ts Version:** e.g., v1.2.3
-* **Node.js Version:** e.g., v16.6.0
-* **Operating System:** e.g., macOS 12.3
-* **Package Manager:** e.g., npm v7.24.0
+* **Package Version:** e.g., @zap-studio/fetch@0.3.1
+* **Node.js Version:** e.g., v20.x or v22.x
+* **Operating System:** e.g., macOS 15.x
+* **Package Manager:** e.g., pnpm v10.24.0
 
 **Additional Context:**
 Any other information that might be helpful, such as related issues, logs, or screenshots.

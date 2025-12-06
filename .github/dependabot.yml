@@ -8,12 +8,6 @@ updates:
   - package-ecosystem: "npm" # See documentation for possible values
     directories:
       - "/"
-      - "/apps/docs"
-      - "/configs/tsdown-config"
-      - "/configs/typescript-config"
-      - "/configs/vitest-config"
-      - "/packages/fetch"
-      - "/packages/waitlist"
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"

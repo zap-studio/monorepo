@@ -7,6 +7,13 @@ assignees: ''
 
 ---
 
+**Package/Scope:**
+- [ ] `@zap-studio/fetch`
+- [ ] `@zap-studio/waitlist`
+- [ ] `@zap-studio/webhooks`
+- [ ] Documentation (`docs`)
+- [ ] Other (please specify)
+
 **Description:**
 A detailed explanation of the feature, including its purpose and how it would enhance the project.
 
