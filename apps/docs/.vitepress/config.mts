@@ -21,8 +21,8 @@ export default defineConfig({
         text: "Packages",
         items: [
           { text: "@zap-studio/fetch", link: "/packages/fetch/" },
-          { text: "@zap-studio/webhooks", link: "/packages/webhooks/" },
           { text: "@zap-studio/waitlist", link: "/packages/waitlist/" },
+          { text: "@zap-studio/webhooks", link: "/packages/webhooks/" },
         ],
       },
       { text: "About", link: "/about" },
@@ -67,16 +67,16 @@ export default defineConfig({
           ],
         },
       ],
-      "/packages/webhooks/": [
-        {
-          text: "@zap-studio/webhooks",
-          items: [{ text: "Overview", link: "/packages/webhooks/" }],
-        },
-      ],
       "/packages/waitlist/": [
         {
           text: "@zap-studio/waitlist",
           items: [{ text: "Overview", link: "/packages/waitlist/" }],
+        },
+      ],
+      "/packages/webhooks/": [
+        {
+          text: "@zap-studio/webhooks",
+          items: [{ text: "Overview", link: "/packages/webhooks/" }],
         },
       ],
     },
