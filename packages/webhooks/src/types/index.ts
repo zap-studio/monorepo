@@ -96,8 +96,7 @@ export type WebhookHandler<T = unknown> = (ctx: {
  * };
  * ```
  */
-// biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
-export type HandlerMap<TMap extends Record<string, any>> = {
+export type HandlerMap<TMap extends Record<string, unknown>> = {
   [P in keyof TMap]: WebhookHandler<TMap[P]>;
 };
 

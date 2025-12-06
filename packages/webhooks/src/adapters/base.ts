@@ -12,8 +12,7 @@ export type Adapter = {
    * const normalizedReq = await adapter.toNormalizedRequest(req);
    * ```
    */
-  // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here because it depends on the framework
-  toNormalizedRequest<TReq = any>(req: TReq): Promise<NormalizedRequest>;
+  toNormalizedRequest<TReq = unknown>(req: TReq): Promise<NormalizedRequest>;
 
   /**
    * Convert NormalizedResponse to the framework response
@@ -30,8 +29,7 @@ export type Adapter = {
    * );
    * ```
    */
-  // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here because it depends on the framework
-  toFrameworkResponse<TFrameworkRes = any>(
+  toFrameworkResponse<TFrameworkRes = unknown>(
     frameworkRes: TFrameworkRes,
     res: NormalizedResponse
   ): Promise<TFrameworkRes>;
@@ -49,8 +47,7 @@ export type Adapter = {
    * app.post("/webhook/*", express.raw({ type: "application/json" }), adapter.handleWebhook(router));
    * ```
    */
-  // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here because it depends on the framework
-  handleWebhook<TFrameworkReq = any, TFrameworkRes = any>(router: {
+  handleWebhook<TFrameworkReq = unknown, TFrameworkRes = unknown>(router: {
     handle(req: NormalizedRequest): Promise<NormalizedResponse>;
   }): (req: TFrameworkReq, res: TFrameworkRes) => Promise<void>;
 };

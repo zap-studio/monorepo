@@ -65,16 +65,12 @@ import type {
  * ```
  */
 
-export class WebhookRouter<
-  // biome-ignore lint/suspicious/noExplicitAny: We want to allow any type here for flexibility
-  TMap extends Record<string, any>,
-  TSchema = unknown,
-> {
+export class WebhookRouter<TMap extends Record<string, unknown>> {
   private readonly handlers = new Map<
     string,
     {
       handler: HandlerMap<TMap>[string];
-      schema?: SchemaValidator<TSchema>;
+      schema?: SchemaValidator<unknown>;
       before?: BeforeHook[];
       after?: AfterHook[];
     }
