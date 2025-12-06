@@ -6,6 +6,9 @@ settings:
 
 catalogs:
   base:
+    '@standard-schema/spec':
+      specifier: ^1.0.0
+      version: 1.0.0
     arktype:
       specifier: ^2.1.28
       version: 2.1.28
@@ -167,7 +170,7 @@ importers:
   packages/fetch:
     dependencies:
       '@standard-schema/spec':
-        specifier: ^1.0.0
+        specifier: catalog:base
         version: 1.0.0
     devDependencies:
       '@types/node':
