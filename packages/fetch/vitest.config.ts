@@ -1,3 +1,3 @@
-import { createVitestConfig } from "@zap-studio/vitest-config";
+import { createConfig } from "@zap-studio/vitest-config";
 
-export default createVitestConfig();
+export default createConfig();

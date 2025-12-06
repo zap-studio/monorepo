@@ -23,5 +23,5 @@ export const sharedConfig: ViteUserConfig = {
   },
 };
 
-export const createVitestConfig = (overrides?: ViteUserConfig) =>
+export const createConfig = (overrides?: ViteUserConfig) =>
   defineConfig({ ...sharedConfig, ...overrides });
