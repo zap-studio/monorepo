@@ -4,6 +4,9 @@
   "extends": "./base.json",
   "compilerOptions": {
     "declaration": true,
-    "isolatedDeclarations": true
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "isolatedDeclarations": true,
+    "noEmit": false
   }
 }
