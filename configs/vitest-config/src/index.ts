@@ -3,13 +3,12 @@ import { defineConfig, type ViteUserConfig } from "vitest/config";
 export const sharedConfig: ViteUserConfig = {
   test: {
     globals: true,
-    environment: "jsdom",
     coverage: {
-      provider: "v8" as const,
+      provider: "v8",
       reporter: ["text", "json", "html"],
       exclude: [
-        "node_modules/",
         "dist/",
+        "node_modules/",
         "**/*.config.{ts,js}",
         "**/*.d.ts",
         "**/test/**",
@@ -23,5 +22,6 @@ export const sharedConfig: ViteUserConfig = {
   },
 };
 
-export const createConfig = (overrides?: ViteUserConfig) =>
-  defineConfig({ ...sharedConfig, ...overrides });
+export function createConfig(overrides?: ViteUserConfig) {
+  return defineConfig({ ...sharedConfig, ...overrides });
+}
