@@ -1,16 +1,15 @@
 # @zap-studio/webhooks
 
-A lightweight, type-safe webhook router with schema-agnostic validation support. Works with any validation library including Zod, Yup, Valibot, ArkType, and custom validators.
+A lightweight, type-safe webhook router with [Standard Schema](https://github.com/standard-schema/standard-schema) validation support. Works with any validation library that implements the Standard Schema spec, including Zod, Valibot, and ArkType.
 
 ## Features
 
 - 🎯 **Type-safe routing** - Full TypeScript support with path-to-payload type mapping
-- ✅ **Schema-agnostic validation** - Works with any validation library
+- ✅ **Standard Schema validation** - Works with any Standard Schema-compatible library
 - 🔒 **Request verification** - Built-in support for signature verification
 - 🪝 **Lifecycle hooks** - Before, after, and error hooks for fine-grained control
-- 🚀 **Zero dependencies** (validation libraries are optional peer dependencies)
+- 🚀 **Zero dependencies** (validation libraries are optional)
 - 📦 **Tiny bundle size** - Only includes what you need
-- 🔌 **Adapter pattern** - Easy integration with existing validation libraries
 
 ## Installation
 
@@ -20,14 +19,11 @@ npm install @zap-studio/webhooks
 pnpm add @zap-studio/webhooks
 ```
 
-If you want to use schema validation, install your preferred validation library:
+If you want to use schema validation, install any Standard Schema-compatible validation library:
 
 ```bash
-# Zod (recommended)
+# Zod (v3.24+)
 pnpm add zod
-
-# Or Yup
-pnpm add yup
 
 # Or Valibot
 pnpm add valibot
@@ -61,9 +57,10 @@ const response = await router.handle(incomingRequest);
 
 ### With Zod Validation
 
+Zod v3.24+ implements Standard Schema natively, so you can pass schemas directly:
+
 ```typescript
 import { WebhookRouter } from "@zap-studio/webhooks";
-import { zodValidator } from "@zap-studio/webhooks/validators";
 import { z } from "zod";
 
 type WebhookMap = {
@@ -79,7 +76,7 @@ const paymentSchema = z.object({
 });
 
 router.register("payment", {
-  schema: zodValidator(paymentSchema),
+  schema: paymentSchema,
   handler: async ({ payload, ack }) => {
     // payload is validated and fully typed!
     console.log(`Payment ${payload.id}: ${payload.amount} ${payload.currency}`);
@@ -469,7 +466,7 @@ Route-level hooks are specific to individual routes and execute after global `be
 
 ```typescript
 router.register("payment", {
-  schema: zodValidator(paymentSchema),
+  schema: paymentSchema,
   
   // Route-specific before hooks (run after global before hooks)
   before: [
@@ -730,12 +727,15 @@ const router = new WebhookRouter({
 6. **Log strategically** - Use hooks for consistent logging across all webhooks
 7. **Return custom error responses** - Use `onError` to provide meaningful error messages to clients
 
-## Schema Validation Libraries
+## Standard Schema Validation
 
-### Zod (Recommended)
+This library uses [Standard Schema](https://github.com/standard-schema/standard-schema), a common interface for TypeScript validation libraries. Any library that implements Standard Schema can be used directly with the webhook router.
+
+### Zod
+
+Zod v3.24+ implements Standard Schema natively:
 
 ```typescript
-import { zodValidator } from "@zap-studio/webhooks/validators";
 import { z } from "zod";
 
 const schema = z.object({
@@ -748,28 +748,9 @@ const schema = z.object({
 });
 
 router.register("order", {
-  schema: zodValidator(schema),
+  schema,
   handler: async ({ payload, ack }) => {
-    // Fully validated and typed
-    return ack({ status: 200 });
-  },
-});
-```
-
-### Yup
-
-```typescript
-import { yupValidator } from "@zap-studio/webhooks/validators";
-import * as yup from "yup";
-
-const schema = yup.object({
-  id: yup.string().required(),
-  amount: yup.number().positive().required(),
-});
-
-router.register("payment", {
-  schema: yupValidator(schema),
-  handler: async ({ payload, ack }) => {
+    // payload is fully validated and typed
     return ack({ status: 200 });
   },
 });
@@ -777,8 +758,9 @@ router.register("payment", {
 
 ### Valibot
 
+Valibot implements Standard Schema natively:
+
 ```typescript
-import { valibotValidator } from "@zap-studio/webhooks/validators";
 import * as v from "valibot";
 
 const schema = v.object({
@@ -787,7 +769,7 @@ const schema = v.object({
 });
 
 router.register("payment", {
-  schema: valibotValidator(schema),
+  schema,
   handler: async ({ payload, ack }) => {
     return ack({ status: 200 });
   },
@@ -796,8 +778,9 @@ router.register("payment", {
 
 ### ArkType
 
+ArkType implements Standard Schema natively:
+
 ```typescript
-import { arktypeValidator } from "@zap-studio/webhooks/validators";
 import { type } from "arktype";
 
 const schema = type({
@@ -806,52 +789,91 @@ const schema = type({
 });
 
 router.register("payment", {
-  schema: arktypeValidator(schema),
+  schema,
   handler: async ({ payload, ack }) => {
     return ack({ status: 200 });
   },
 });
 ```
 
-### Custom Validator
+### Custom Standard Schema Validator
 
-You can create your own validator by implementing the `SchemaValidator` interface:
+You can create your own Standard Schema-compatible validator by implementing the `StandardSchemaV1` interface:
 
 ```typescript
-import type { SchemaValidator } from "@zap-studio/webhooks";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
-const customValidator: SchemaValidator<{ id: string; value: number }> = {
-  validate: (data: unknown) => {
-    const obj = data as any;
-    
-    // Your validation logic
-    if (!obj.id || typeof obj.id !== "string") {
+const customValidator: StandardSchemaV1<unknown, { id: string; value: number }> = {
+  "~standard": {
+    version: 1,
+    vendor: "my-custom-validator",
+    validate: (data: unknown) => {
+      const obj = data as { id?: unknown; value?: unknown };
+      
+      // Return issues for validation errors
+      if (!obj.id || typeof obj.id !== "string") {
+        return {
+          issues: [{ path: ["id"], message: "ID is required and must be a string" }],
+        };
+      }
+      
+      if (typeof obj.value !== "number" || obj.value < 0) {
+        return {
+          issues: [{ path: ["value"], message: "Value must be a positive number" }],
+        };
+      }
+      
+      // Return the validated value on success
       return {
-        success: false,
-        errors: [{ path: ["id"], message: "ID is required and must be a string" }],
+        value: { id: obj.id, value: obj.value },
       };
-    }
-    
-    if (!obj.value || typeof obj.value !== "number" || obj.value < 0) {
-      return {
-        success: false,
-        errors: [{ path: ["value"], message: "Value must be a positive number" }],
-      };
-    }
-    
-    return {
-      success: true,
-      data: { id: obj.id, value: obj.value },
-    };
+    },
   },
 };
 
 router.register("custom", {
   schema: customValidator,
   handler: async ({ payload, ack }) => {
+    // payload is typed as { id: string; value: number }
     return ack({ status: 200 });
   },
 });
+```
+
+### Async Validation
+
+Standard Schema supports async validators for cases like database lookups:
+
+```typescript
+import type { StandardSchemaV1 } from "@standard-schema/spec";
+
+const asyncValidator: StandardSchemaV1<unknown, { id: string }> = {
+  "~standard": {
+    version: 1,
+    vendor: "my-async-validator",
+    validate: async (data: unknown) => {
+      const obj = data as { id?: unknown };
+      
+      if (typeof obj.id !== "string") {
+        return {
+          issues: [{ path: ["id"], message: "ID must be a string" }],
+        };
+      }
+      
+      // Simulate async database check
+      const exists = await checkIdExistsInDatabase(obj.id);
+      if (!exists) {
+        return {
+          issues: [{ path: ["id"], message: "ID not found in database" }],
+        };
+      }
+      
+      return {
+        value: { id: obj.id },
+      };
+    },
+  },
+};
 ```
 
 ## API Reference
@@ -887,7 +909,7 @@ Register a webhook handler with schema validation and/or route-level hooks.
 
 ```typescript
 router.register("webhook", {
-  schema: zodValidator(mySchema),
+  schema: mySchema, // Any Standard Schema-compatible schema
   before: [async (req) => { /* ... */ }],
   handler: async ({ req, payload, ack }) => {
     return ack({ status: 200 });
@@ -898,7 +920,7 @@ router.register("webhook", {
 
 **Options:**
 - `handler: WebhookHandler<T>` - The handler function to process the webhook
-- `schema?: SchemaValidator<T>` - Optional schema validator
+- `schema?: StandardSchemaV1<unknown, T>` - Optional Standard Schema-compatible validator
 - `before?: BeforeHook | BeforeHook[]` - Route-specific before hook(s)
 - `after?: AfterHook | AfterHook[]` - Route-specific after hook(s)
 
@@ -916,7 +938,7 @@ const response = await router.handle(normalizedRequest);
 
 ```typescript
 type NormalizedRequest = {
-  method: HTTPMethod;
+  method: string;
   path: string;
   headers: Headers;
   rawBody: Buffer;
@@ -934,23 +956,6 @@ type NormalizedResponse = {
   status: number;
   body?: unknown;
   headers?: Headers;
-}
-```
-
-### `SchemaValidator<T>`
-
-```typescript
-type SchemaValidator<T> = {
-  validate(data: unknown): ValidationResult<T> | Promise<ValidationResult<T>>;
-}
-
-type ValidationResult<T> = {
-  success: boolean;
-  data?: T;
-  errors?: Array<{
-    path?: string[];
-    message: string;
-  }>;
 }
 ```
 
