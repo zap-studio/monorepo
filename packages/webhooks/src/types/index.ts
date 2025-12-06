@@ -1,19 +1,7 @@
-/** HTTP methods */
-export type HTTPMethod =
-  | "GET"
-  | "HEAD"
-  | "POST"
-  | "PUT"
-  | "DELETE"
-  | "CONNECT"
-  | "OPTIONS"
-  | "TRACE"
-  | "PATCH";
-
 /** This is the normalized request object so every adapter can rely on the same structure */
 export type NormalizedRequest = {
   /** The HTTP method of the request */
-  method: HTTPMethod;
+  method: Request["method"];
   /** The path of the request you registered in the router (e.g. "payment", "subscription") */
   path: string;
   /** The headers of the request (e.g. { "Authorization": "Bearer token" }) */
