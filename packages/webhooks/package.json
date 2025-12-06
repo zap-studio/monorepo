@@ -19,20 +19,16 @@
     "test": "vitest run",
     "test:watch": "vitest --watch"
   },
+  "dependencies": {
+    "@standard-schema/spec": "catalog:base"
+  },
   "peerDependencies": {
-    "arktype": ">=2.0.0",
     "elysia": ">=0.28.0",
     "express": ">=4.0.0",
     "hono": ">=3.0.0",
-    "next": ">=12.0.0",
-    "valibot": ">=0.30.0",
-    "yup": ">=1.0.0",
-    "zod": ">=3.0.0"
+    "next": ">=12.0.0"
   },
   "peerDependenciesMeta": {
-    "arktype": {
-      "optional": true
-    },
     "elysia": {
       "optional": true
     },
@@ -43,15 +39,6 @@
       "optional": true
     },
     "next": {
-      "optional": true
-    },
-    "valibot": {
-      "optional": true
-    },
-    "yup": {
-      "optional": true
-    },
-    "zod": {
       "optional": true
     }
   },
@@ -64,17 +51,14 @@
     "@zap-studio/vitest-config": "workspace:*",
     "tsdown": "catalog:base",
     "typescript": "catalog:base",
-    "vitest": "catalog:testing"
+    "vitest": "catalog:testing",
+    "zod": "catalog:base"
   },
   "exports": {
     ".": "./dist/index.mjs",
     "./adapters/base": "./dist/adapters/base.mjs",
     "./types": "./dist/types/index.mjs",
     "./utils": "./dist/utils/index.mjs",
-    "./validators/arktype": "./dist/validators/arktype.mjs",
-    "./validators/valibot": "./dist/validators/valibot.mjs",
-    "./validators/yup": "./dist/validators/yup.mjs",
-    "./validators/zod": "./dist/validators/zod.mjs",
     "./verify": "./dist/verify.mjs",
     "./package.json": "./package.json"
   },

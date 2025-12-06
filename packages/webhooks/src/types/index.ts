@@ -1,3 +1,5 @@
+import type { StandardSchemaV1 } from "@standard-schema/spec";
+
 /** This is the normalized request object so every adapter can rely on the same structure */
 export type NormalizedRequest = {
   /** The HTTP method of the request */
@@ -28,41 +30,12 @@ export type NormalizedResponse<TBody = unknown> = {
   headers?: Headers;
 };
 
-/**
- * Validation result for schema validation
- */
-export type ValidationResult<T> = {
-  /** Whether validation succeeded */
-  success: boolean;
-  /** The validated data if successful */
-  data?: T;
-  /** Validation errors if failed */
-  errors?: Array<{
-    path?: string[];
-    message: string;
-  }>;
-};
-
-/**
- * Generic schema validator interface that can be implemented by any validation library
- */
-export type SchemaValidator<T> = {
-  /**
-   * Validate data against the schema
-   * @param data - The data to validate
-   * @returns Validation result with success flag, data, and potential errors
-   */
-  validate<TData = unknown>(
-    data: TData
-  ): ValidationResult<T> | Promise<ValidationResult<T>>;
-};
-
 /** Options for registering a webhook handler */
 export type RegisterOptions<T> = {
   /** The handler function to process the webhook */
   handler: WebhookHandler<T>;
-  /** Optional schema validator to validate the webhook payload */
-  schema?: SchemaValidator<T>;
+  /** Optional Standard Schema validator to validate the webhook payload */
+  schema?: StandardSchemaV1<unknown, T>;
   /** Hooks that run before request processing (after global before hooks) */
   before?: BeforeHook | BeforeHook[];
   /** Hooks that run after successful processing (before global after hooks) */

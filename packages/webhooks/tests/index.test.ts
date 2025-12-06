@@ -1,10 +1,10 @@
 // biome-ignore-all lint/style/noMagicNumbers: This is a test file so magic numbers are acceptable here.
 
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import { WebhookRouter } from "../src/index";
-import type { NormalizedRequest, SchemaValidator } from "../src/types";
-import { zodValidator } from "../src/validators/zod";
+import type { NormalizedRequest } from "../src/types";
 
 describe("WebhookRouter", () => {
   const createMockRequest = (
@@ -171,7 +171,7 @@ describe("WebhookRouter", () => {
       });
 
       router.register("payment", {
-        schema: zodValidator(paymentSchema),
+        schema: paymentSchema,
         handler: ({ payload, ack }) => {
           expect(payload).toEqual({ id: "pay_123", amount: 100 });
           return ack({ status: 200, body: "payment processed" });
@@ -198,7 +198,7 @@ describe("WebhookRouter", () => {
       });
 
       router.register("payment", {
-        schema: zodValidator(paymentSchema),
+        schema: paymentSchema,
         handler: ({ ack }) => ack({ status: 200 }),
       });
 
@@ -224,7 +224,7 @@ describe("WebhookRouter", () => {
       });
 
       router.register("user", {
-        schema: zodValidator(userSchema),
+        schema: userSchema,
         handler: ({ ack }) => ack({ status: 200 }),
       });
 
@@ -262,7 +262,7 @@ describe("WebhookRouter", () => {
       });
 
       router.register("order", {
-        schema: zodValidator(orderSchema),
+        schema: orderSchema,
         handler: ({ payload, ack }) => {
           expect(payload.items).toHaveLength(2);
           expect(payload.customer.email).toBe("test@example.com");
@@ -301,7 +301,7 @@ describe("WebhookRouter", () => {
       });
 
       router.register("data", {
-        schema: zodValidator(schema),
+        schema,
         handler: ({ payload, ack }) => {
           expect(typeof payload.value).toBe("number");
           expect(payload.value).toBe(42);
@@ -318,36 +318,38 @@ describe("WebhookRouter", () => {
   });
 
   describe("Custom schema validator", () => {
-    it("should work with custom schema validator", async () => {
+    it("should work with custom Standard Schema validator", async () => {
       type WebhookMap = {
         custom: { value: number };
       };
 
       const router = new WebhookRouter<WebhookMap>();
 
-      // Custom validator that ensures value is between 1 and 100
-      const customValidator: SchemaValidator<{ value: number }> = {
-        validate: (data: unknown) => {
-          const obj = data as { value?: unknown };
-          if (
-            typeof obj.value !== "number" ||
-            obj.value < 1 ||
-            obj.value > 100
-          ) {
+      // Custom Standard Schema validator that ensures value is between 1 and 100
+      const customValidator: StandardSchemaV1<unknown, { value: number }> = {
+        "~standard": {
+          version: 1,
+          vendor: "custom",
+          validate: (data: unknown) => {
+            const obj = data as { value?: unknown };
+            if (
+              typeof obj.value !== "number" ||
+              obj.value < 1 ||
+              obj.value > 100
+            ) {
+              return {
+                issues: [
+                  {
+                    path: ["value"],
+                    message: "Value must be a number between 1 and 100",
+                  },
+                ],
+              };
+            }
             return {
-              success: false,
-              errors: [
-                {
-                  path: ["value"],
-                  message: "Value must be a number between 1 and 100",
-                },
-              ],
+              value: { value: obj.value },
             };
-          }
-          return {
-            success: true,
-            data: { value: obj.value },
-          };
+          },
         },
       };
 
@@ -378,30 +380,32 @@ describe("WebhookRouter", () => {
 
       const router = new WebhookRouter<WebhookMap>();
 
-      // Async validator that simulates database check
-      const asyncValidator: SchemaValidator<{ id: string }> = {
-        validate: async (data: unknown) => {
-          const obj = data as { id?: unknown };
+      // Async Standard Schema validator that simulates database check
+      const asyncValidator: StandardSchemaV1<unknown, { id: string }> = {
+        "~standard": {
+          version: 1,
+          vendor: "custom",
+          validate: async (data: unknown) => {
+            const obj = data as { id?: unknown };
 
-          // Simulate async operation
-          await new Promise((resolve) => setTimeout(resolve, 10));
+            // Simulate async operation
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
-          if (typeof obj.id !== "string" || !obj.id.startsWith("valid_")) {
+            if (typeof obj.id !== "string" || !obj.id.startsWith("valid_")) {
+              return {
+                issues: [
+                  {
+                    path: ["id"],
+                    message: "ID must start with 'valid_'",
+                  },
+                ],
+              };
+            }
+
             return {
-              success: false,
-              errors: [
-                {
-                  path: ["id"],
-                  message: "ID must start with 'valid_'",
-                },
-              ],
+              value: { id: obj.id },
             };
-          }
-
-          return {
-            success: true,
-            data: { id: obj.id },
-          };
+          },
         },
       };
 
@@ -465,7 +469,7 @@ describe("WebhookRouter", () => {
       const schema = z.object({ value: z.number() });
 
       router.register("verified", {
-        schema: zodValidator(schema),
+        schema,
         handler: ({ ack }) => {
           callOrder.push("handler");
           return ack({ status: 200 });
@@ -1210,7 +1214,7 @@ describe("WebhookRouter", () => {
               callOrder.push("route-before-2");
             },
           ],
-          schema: zodValidator(schema),
+          schema,
           handler: ({ ack }) => {
             callOrder.push("handler");
             return ack({ status: 200 });

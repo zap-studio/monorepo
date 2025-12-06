@@ -1,3 +1,4 @@
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type {
   AfterHook,
   BeforeHook,
@@ -6,7 +7,6 @@ import type {
   NormalizedRequest,
   NormalizedResponse,
   RegisterOptions,
-  SchemaValidator,
   WebhookHandler,
 } from "./types";
 
@@ -16,7 +16,6 @@ import type {
  * @example
  * ```ts
  * import { z } from "zod";
- * import { zodValidator } from "@zap-studio/webhooks/adapters";
  *
  * type PaymentPayload = {
  *   id: string;
@@ -47,14 +46,14 @@ import type {
  *   return ack({ status: 200, body: "Payment received" });
  * });
  *
- * // With schema validation using Zod
- * const subscriptionSchema = z.object({
+ * // With schema validation using any Standard Schema compatible library
+ * const SubscriptionSchema = z.object({
  *   id: z.string(),
  *   status: z.enum(["active", "canceled"]),
  * });
  *
  * router.register("subscription", {
- *   schema: zodValidator(subscriptionSchema),
+ *   schema: SubscriptionSchema,
  *   handler: async ({ req, payload, ack }) => {
  *     // payload is now validated and typed
  *     return ack({ status: 200, body: "Subscription updated" });
@@ -71,7 +70,7 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
     string,
     {
       handler: HandlerMap<TMap>[string];
-      schema?: SchemaValidator<unknown>;
+      schema?: StandardSchemaV1<unknown, unknown>;
       before?: BeforeHook[];
       after?: AfterHook[];
     }
@@ -122,7 +121,7 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
    *   return ack({ status: 200 });
    * });
    *
-   * // Handler with Zod validation
+   * // Handler with any Standard Schema compatible library
    * router.register("webhook", {
    *   schema: z.object({ id: z.string() }),
    *   handler: async ({ payload, ack }) => {
@@ -298,24 +297,33 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
 
   private async validatePayload<TParsed = unknown>(
     parsedJson: TParsed,
-    schema?: SchemaValidator<TParsed>
+    schema?: StandardSchemaV1<unknown, unknown>
   ): Promise<unknown | NormalizedResponse> {
     if (!schema) {
       return parsedJson;
     }
 
-    const result = await schema.validate(parsedJson);
-    if (!result.success) {
+    let result = schema["~standard"].validate(parsedJson);
+    if (result instanceof Promise) {
+      result = await result;
+    }
+
+    if (result.issues) {
       return {
         status: 400,
         body: {
           error: "validation failed",
-          issues: result.errors,
+          issues: result.issues.map((issue) => ({
+            path: issue.path?.map((p) =>
+              typeof p === "object" && "key" in p ? String(p.key) : String(p)
+            ),
+            message: issue.message,
+          })),
         },
       };
     }
 
-    return result.data;
+    return result.value;
   }
 
   private async executeHandler<TPayload = unknown>(
