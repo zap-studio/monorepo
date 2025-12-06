@@ -8,7 +8,7 @@
   },
   "exports": {
     "./base.json": "./base.json",
-    "./lib.json": "./lib.json",
+    "./library.json": "./library.json",
     "./nextjs.json": "./nextjs.json",
     "./react-library.json": "./react-library.json"
   }

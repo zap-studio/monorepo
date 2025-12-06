@@ -29,7 +29,6 @@
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
     "arktype": "catalog:base",
-    "jsdom": "catalog:testing",
     "tsdown": "catalog:base",
     "typescript": "catalog:base",
     "valibot": "catalog:base",
