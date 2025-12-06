@@ -7,6 +7,9 @@
     "build": "tsdown --config tsdown.config.ts",
     "check-types": "tsc --noEmit"
   },
+  "dependencies": {
+    "vitest": "catalog:testing"
+  },
   "devDependencies": {
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",

@@ -1,4 +1,6 @@
-export const config = {
+import { defineConfig, type ViteUserConfig } from "vitest/config";
+
+export const sharedConfig: ViteUserConfig = {
   test: {
     globals: true,
     environment: "jsdom",
@@ -20,3 +22,6 @@ export const config = {
     exclude: ["node_modules", "dist", ".next", ".turbo"],
   },
 };
+
+export const createVitestConfig = (overrides?: ViteUserConfig) =>
+  defineConfig({ ...sharedConfig, ...overrides });
