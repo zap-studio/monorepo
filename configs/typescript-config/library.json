@@ -3,6 +3,7 @@
   "display": "Library",
   "extends": "./base.json",
   "compilerOptions": {
+    "declaration": true,
     "isolatedDeclarations": true
   }
 }
