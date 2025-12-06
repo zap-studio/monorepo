@@ -10,6 +10,6 @@
     "./validator": "./src/validator.ts"
   },
   "publish": {
-    "include": ["src", "README.md", "CHANGELOG.md"]
+    "include": ["src", "CHANGELOG.md", "LICENSE.md", "README.md"]
   }
 }
