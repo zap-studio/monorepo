@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a",
   "scripts": {
     "build": "turbo run build",
-    "check-types": "turbo run check-types",
+    "check": "turbo run check",
     "clean": "turbo run clean && rimraf node_modules",
     "dev": "turbo run dev",
     "format": "pnpm dlx ultracite fix",
@@ -19,7 +19,7 @@
     "test:coverage": "turbo run test -- --coverage && pnpm merge-coverage && pnpm report-coverage",
     "test:ui": "vitest --ui",
     "test:watch": "vitest --watch",
-    "validate": "turbo run build check-types lint test"
+    "validate": "turbo run build check lint test"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:linting",

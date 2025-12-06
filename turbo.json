@@ -17,7 +17,7 @@
       ],
       "outputs": ["dist/**", ".vitepress/dist/**"]
     },
-    "check-types": {
+    "check": {
       "dependsOn": ["^build", "topo"],
       "inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
       "outputs": ["*.tsbuildinfo"],
