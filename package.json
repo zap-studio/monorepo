@@ -11,12 +11,14 @@
     "format": "pnpm dlx ultracite fix",
     "lint": "pnpm dlx ultracite check",
     "merge-coverage": "rimraf coverage/merged && mkdir -p coverage/merged && find packages apps -name 'coverage' -type d -exec sh -c 'test -f \"$1/coverage-final.json\" && echo \"$1\"' _ {} \\; | xargs -I {} sh -c 'cp {}/coverage-final.json coverage/merged/$(echo {} | tr / -).json' || true",
-    "prepublishOnly": "turbo run build lint test",
-    "publish-packages": "turbo run build lint test && changeset publish",
+    "prepublishOnly": "turbo run build lint test:ci",
+    "publish-packages": "turbo run build lint test:ci && changeset publish",
     "report-coverage": "nyc report --reporter=html --reporter=text --reporter=lcov --report-dir=coverage/report --temp-dir=coverage/merged",
-    "test": "turbo run test",
+    "test": "vitest run",
+    "test:ci": "turbo run test",
     "test:coverage": "turbo run test -- --coverage && pnpm merge-coverage && pnpm report-coverage",
-    "test:watch": "turbo run test:watch",
+    "test:ui": "vitest --ui",
+    "test:watch": "vitest --watch",
     "validate": "turbo run build check-types lint test"
   },
   "devDependencies": {
@@ -25,10 +27,13 @@
     "@commitlint/cli": "catalog:linting",
     "@commitlint/config-conventional": "catalog:linting",
     "@turbo/gen": "catalog:tooling",
+    "@vitest/ui": "catalog:testing",
+    "@zap-studio/vitest-config": "workspace:*",
     "lefthook": "catalog:tooling",
     "nyc": "^17.1.0",
     "rimraf": "catalog:tooling",
     "turbo": "catalog:tooling",
-    "ultracite": "catalog:linting"
+    "ultracite": "catalog:linting",
+    "vitest": "catalog:testing"
   }
 }

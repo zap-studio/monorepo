@@ -17,6 +17,7 @@ catalogs:
     ultracite: ^6.3.9
   testing:
     "@vitest/coverage-v8": ^4.0.15
+    "@vitest/ui": ^4.0.15
     vitest: ^4.0.15
   tooling:
     "@changesets/cli": ^2.29.8
