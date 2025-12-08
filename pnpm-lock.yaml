@@ -13,8 +13,8 @@ catalogs:
       specifier: ^2.1.28
       version: 2.1.28
     tsdown:
-      specifier: ^0.17.0
-      version: 0.17.0
+      specifier: ^0.17.2
+      version: 0.17.2
     typescript:
       specifier: ^5.9.3
       version: 5.9.3
@@ -141,7 +141,7 @@ importers:
         version: link:../typescript-config
       tsdown:
         specifier: catalog:base
-        version: 0.17.0(typescript@5.9.3)
+        version: 0.17.2(typescript@5.9.3)
       typescript:
         specifier: catalog:base
         version: 5.9.3
@@ -162,7 +162,7 @@ importers:
         version: link:../typescript-config
       tsdown:
         specifier: catalog:base
-        version: 0.17.0(typescript@5.9.3)
+        version: 0.17.2(typescript@5.9.3)
       typescript:
         specifier: catalog:base
         version: 5.9.3
@@ -193,7 +193,7 @@ importers:
         version: 2.1.28
       tsdown:
         specifier: catalog:base
-        version: 0.17.0(typescript@5.9.3)
+        version: 0.17.2(typescript@5.9.3)
       typescript:
         specifier: catalog:base
         version: 5.9.3
@@ -1017,10 +1017,6 @@ packages:
   '@opentelemetry/api@1.9.0':
     resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
     engines: {node: '>=8.0.0'}
-
-  '@oxc-project/runtime@0.101.0':
-    resolution: {integrity: sha512-t3qpfVZIqSiLQ5Kqt/MC4Ge/WCOGrrcagAdzTcDaggupjiGxUx4nJF2v6wUCXWSzWHn5Ns7XLv13fCJEwCOERQ==}
-    engines: {node: ^20.19.0 || >=22.12.0}
 
   '@oxc-project/types@0.101.0':
     resolution: {integrity: sha512-nuFhqlUzJX+gVIPPfuE6xurd4lST3mdcWOhyK/rZO0B9XWMKm79SuszIQEnSMmmDhq1DC8WWVYGVd+6F93o1gQ==}
@@ -3818,13 +3814,13 @@ packages:
       '@swc/wasm':
         optional: true
 
-  tsdown@0.17.0:
-    resolution: {integrity: sha512-NPZRrlC51X9Bb55ZTDwrWges8Dm1niCvNA5AYw7aix6pfnDnB4WR0neG5RPq75xIodg3hqlQUzzyrX7n4dmnJg==}
+  tsdown@0.17.2:
+    resolution: {integrity: sha512-SuU+0CWm/95KfXqojHTVuwcouIsdn7HpYcwDyOdKktJi285NxKwysjFUaxYLxpCNqqPvcFvokXLO4dZThRwzkw==}
     engines: {node: '>=20.19.0'}
     hasBin: true
     peerDependencies:
       '@arethetypeswrong/core': ^0.18.1
-      '@vitejs/devtools': ^0.0.0-alpha.18
+      '@vitejs/devtools': ^0.0.0-alpha.19
       publint: ^0.3.0
       typescript: ^5.0.0
       unplugin-lightningcss: ^0.4.0
@@ -3973,8 +3969,8 @@ packages:
     resolution: {integrity: sha512-5uKD0nqiYVzlmCRs01Fhs2BdkEgBS3SAVP6ndrBsuK42iC2+JHyxM05Rm9G8+5mkmRtzMZGY8Ct5+mliZxU/Ww==}
     engines: {node: '>=18.12.0'}
 
-  unrun@0.2.17:
-    resolution: {integrity: sha512-mumOyjZp1K1bsa1QwfRPw7+9TxyVHSgx6LHB2dBWI4m1hGDG9b2TK3fS3H8vCl/Gl9YTSxhZ9XuLbWv3QF8GEA==}
+  unrun@0.2.19:
+    resolution: {integrity: sha512-DbwbJ9BvPEb3BeZnIpP9S5tGLO/JIgPQ3JrpMRFIfZMZfMG19f26OlLbC2ml8RRdrI2ZA7z2t+at5tsIHbh6Qw==}
     engines: {node: '>=20.19.0'}
     hasBin: true
     peerDependencies:
@@ -5187,8 +5183,6 @@ snapshots:
 
   '@opentelemetry/api@1.9.0':
     optional: true
-
-  '@oxc-project/runtime@0.101.0': {}
 
   '@oxc-project/types@0.101.0': {}
 
@@ -8288,7 +8282,7 @@ snapshots:
     optionalDependencies:
       '@swc/core': 1.13.21(@swc/helpers@0.5.17)
 
-  tsdown@0.17.0(typescript@5.9.3):
+  tsdown@0.17.2(typescript@5.9.3):
     dependencies:
       ansis: 4.2.0
       cac: 6.7.14
@@ -8303,7 +8297,7 @@ snapshots:
       tinyglobby: 0.2.15
       tree-kill: 1.2.2
       unconfig-core: 7.4.2
-      unrun: 0.2.17
+      unrun: 0.2.19
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -8466,9 +8460,8 @@ snapshots:
       webpack-virtual-modules: 0.6.2
     optional: true
 
-  unrun@0.2.17:
+  unrun@0.2.19:
     dependencies:
-      '@oxc-project/runtime': 0.101.0
       rolldown: 1.0.0-beta.53
 
   untyped@2.0.0:
