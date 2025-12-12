@@ -11,10 +11,15 @@ import type {
  * Subscriber entry in the in-memory emitter
  */
 type Subscriber<TSchemas extends EventSchemaMap> = {
+  /* Channel name */
   channel?: string;
+  /* Filter function */
   filter?: (event: EventMessage<TSchemas>) => boolean;
+  /* Queue of events */
   queue: EventMessage<TSchemas>[];
+  /* Resolve function */
   resolve: ((value: IteratorResult<EventMessage<TSchemas>>) => void) | null;
+  /* Abort signal */
   signal?: AbortSignal;
 };
 
