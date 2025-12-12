@@ -1,4 +1,4 @@
-import { BaseServerEmitter, createEventMessage } from "../server/emitter";
+import { BaseServerEmitter, createEventMessage } from "../internal/server/emitter";
 import type {
   EventMessage,
   EventSchemaMap,
