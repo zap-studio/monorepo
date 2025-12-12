@@ -16,6 +16,9 @@ catalogs:
     '@commitlint/cli': ^20.2.0
     '@commitlint/config-conventional': ^20.2.0
     ultracite: ^6.4.0
+  react:
+    '@types/react': ^19.2.7
+    react: ^19.2.3
   testing:
     '@vitest/coverage-v8': ^4.0.15
     '@vitest/ui': ^4.0.15

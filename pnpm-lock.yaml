@@ -37,6 +37,13 @@ catalogs:
     ultracite:
       specifier: ^6.4.0
       version: 6.4.0
+  react:
+    '@types/react':
+      specifier: ^19.2.7
+      version: 19.2.7
+    react:
+      specifier: ^19.2.3
+      version: 19.2.3
   testing:
     '@vitest/coverage-v8':
       specifier: ^4.0.15
@@ -200,6 +207,49 @@ importers:
       valibot:
         specifier: catalog:base
         version: 1.2.0(typescript@5.9.3)
+      vitest:
+        specifier: catalog:testing
+        version: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.0.1)(@vitest/ui@4.0.15)(jiti@2.6.1)(jsdom@27.2.0(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
+      zod:
+        specifier: catalog:base
+        version: 4.1.13
+
+  packages/realtime:
+    dependencies:
+      '@standard-schema/spec':
+        specifier: catalog:base
+        version: 1.0.0
+      zustand:
+        specifier: '>=4.0.0'
+        version: 5.0.9(@types/react@19.2.7)(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: catalog:types
+        version: 25.0.1
+      '@types/react':
+        specifier: catalog:react
+        version: 19.2.7
+      '@vitest/coverage-v8':
+        specifier: catalog:testing
+        version: 4.0.15(vitest@4.0.15)
+      '@zap-studio/tsdown-config':
+        specifier: workspace:*
+        version: link:../../configs/tsdown-config
+      '@zap-studio/typescript-config':
+        specifier: workspace:*
+        version: link:../../configs/typescript-config
+      '@zap-studio/vitest-config':
+        specifier: workspace:*
+        version: link:../../configs/vitest-config
+      react:
+        specifier: catalog:react
+        version: 19.2.3
+      tsdown:
+        specifier: catalog:base
+        version: 0.17.3(typescript@5.9.3)
+      typescript:
+        specifier: catalog:base
+        version: 5.9.3
       vitest:
         specifier: catalog:testing
         version: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.0.1)(@vitest/ui@4.0.15)(jiti@2.6.1)(jsdom@27.2.0(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
@@ -1429,6 +1479,9 @@ packages:
 
   '@types/node@25.0.1':
     resolution: {integrity: sha512-czWPzKIAXucn9PtsttxmumiQ9N0ok9FrBwgRWrwmVLlp86BrMExzvXRLFYRJ+Ex3g6yqj+KuaxfX1JTgV2lpfg==}
+
+  '@types/react@19.2.7':
+    resolution: {integrity: sha512-MWtvHrGZLFttgeEj28VXHxpmwYbor/ATPYbBfSFZEIRK0ecCFLl2Qo55z52Hss+UV9CRN7trSeq1zbgx7YDWWg==}
 
   '@types/through@0.0.33':
     resolution: {integrity: sha512-HsJ+z3QuETzP3cswwtzt2vEIiHBk/dCcHGhbmG5X3ecnwFD/lPrMpliGXxSCg03L9AhrdwA4Oz/qfspkDW+xGQ==}
@@ -3371,6 +3424,10 @@ packages:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
 
+  react@19.2.3:
+    resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==}
+    engines: {node: '>=0.10.0'}
+
   read-yaml-file@1.1.0:
     resolution: {integrity: sha512-VIMnQi/Z4HT2Fxuwg5KrY174U1VdUIASQVWXXyqtNRtxSr9IYkn1rsI6Tb6HsrHCmB7gVpNwX6JxPTHcH6IoTA==}
     engines: {node: '>=6'}
@@ -4277,6 +4334,24 @@ packages:
 
   zod@4.1.13:
     resolution: {integrity: sha512-AvvthqfqrAhNH9dnfmrfKzX5upOdjUVJYFqNSlkmGf64gRaTzlPwz99IHYnVs28qYAybvAlBV+H7pn0saFY4Ig==}
+
+  zustand@5.0.9:
+    resolution: {integrity: sha512-ALBtUj0AfjJt3uNRQoL1tL2tMvj6Gp/6e39dnfT6uzpelGru8v1tPOGBzayOWbPJvujM8JojDk3E1LxeFisBNg==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -5578,6 +5653,10 @@ snapshots:
   '@types/node@25.0.1':
     dependencies:
       undici-types: 7.16.0
+
+  '@types/react@19.2.7':
+    dependencies:
+      csstype: 3.2.3
 
   '@types/through@0.0.33':
     dependencies:
@@ -7811,6 +7890,8 @@ snapshots:
       minimist: 1.2.8
       strip-json-comments: 2.0.1
 
+  react@19.2.3: {}
+
   read-yaml-file@1.1.0:
     dependencies:
       graceful-fs: 4.2.11
@@ -8786,5 +8867,10 @@ snapshots:
   yocto-queue@1.2.2: {}
 
   zod@4.1.13: {}
+
+  zustand@5.0.9(@types/react@19.2.7)(react@19.2.3):
+    optionalDependencies:
+      '@types/react': 19.2.7
+      react: 19.2.3
 
   zwitch@2.0.4: {}

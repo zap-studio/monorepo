@@ -1,0 +1,91 @@
+{
+  "name": "@zap-studio/realtime",
+  "version": "0.0.0",
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "description": "Type-safe real-time event streaming library with SSE support",
+  "keywords": [
+    "realtime",
+    "sse",
+    "server-sent-events",
+    "websocket",
+    "events",
+    "pubsub",
+    "typescript",
+    "type-safe"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsdown --config tsdown.config.ts",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest --watch"
+  },
+  "dependencies": {
+    "@standard-schema/spec": "catalog:base"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:types",
+    "@types/react": "catalog:react",
+    "@vitest/coverage-v8": "catalog:testing",
+    "@zap-studio/tsdown-config": "workspace:*",
+    "@zap-studio/typescript-config": "workspace:*",
+    "@zap-studio/vitest-config": "workspace:*",
+    "react": "catalog:react",
+    "tsdown": "catalog:base",
+    "typescript": "catalog:base",
+    "vitest": "catalog:testing",
+    "zod": "catalog:base"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "zustand": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "zustand": {
+      "optional": true
+    }
+  },
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./adapters/elysia/sse": "./dist/adapters/elysia/sse.mjs",
+    "./adapters/hono/sse": "./dist/adapters/hono/sse.mjs",
+    "./adapters/next/sse": "./dist/adapters/next/sse.mjs",
+    "./adapters/tanstack/sse": "./dist/adapters/tanstack/sse.mjs",
+    "./client/react/hooks": "./dist/client/react/hooks.mjs",
+    "./client/vanilla": "./dist/client/vanilla.mjs",
+    "./client/zustand": "./dist/client/zustand.mjs",
+    "./emitter": "./dist/emitter.mjs",
+    "./emitters": "./dist/emitters/index.mjs",
+    "./emitters/in-memory": "./dist/emitters/in-memory.mjs",
+    "./emitters/redis": "./dist/emitters/redis.mjs",
+    "./events": "./dist/events.mjs",
+    "./plugins": "./dist/plugins/index.mjs",
+    "./plugins/chat": "./dist/plugins/chat.mjs",
+    "./plugins/notifications": "./dist/plugins/notifications.mjs",
+    "./schema": "./dist/schema.mjs",
+    "./transport/sse": "./dist/transport/sse/index.mjs",
+    "./transport/sse/client": "./dist/transport/sse/client.mjs",
+    "./transport/sse/server": "./dist/transport/sse/server.mjs",
+    "./transport/ws": "./dist/transport/ws/index.mjs",
+    "./transport/ws/client": "./dist/transport/ws/client.mjs",
+    "./transport/ws/server": "./dist/transport/ws/server.mjs",
+    "./types": "./dist/types.mjs",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts"
+}
