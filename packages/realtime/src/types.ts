@@ -93,12 +93,12 @@ export type ServerEmitter<TSchemas extends EventSchemaMap> = {
 /**
  * Server transport interface, it handles streaming events to clients
  */
-export type ServerTransport = {
+export type ServerTransport<TSchemas extends EventSchemaMap> = {
   /**
    * Create a streaming response from a subscription
    */
   createResponse(
-    subscription: AsyncGenerator<EventMessage, void, unknown>,
+    subscription: AsyncGenerator<EventMessage<TSchemas>, void, unknown>,
     options?: ServerTransportOptions
   ): Response;
 };
