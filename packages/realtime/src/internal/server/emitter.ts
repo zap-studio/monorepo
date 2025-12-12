@@ -5,7 +5,7 @@ import type {
   PublishOptions,
   ServerEmitter,
   SubscribeOptions,
-} from "../types";
+} from "../../types";
 
 /**
  * Generate a unique event ID
