@@ -14,19 +14,6 @@ export type InferEventTypes<TSchemas extends EventSchemaMap> = {
 
 /**
  * Event message structure sent over transports
- *
- * @example
- *
- * const message: EventMessage = {
- *   id: uuid(),
- *   event: "user.created",
- *   data: {
- *     id: uuid(),
- *     email: "user@example.com",
- *     name: "John Doe",
- *   },
- *   timestamp: Date.now(),
- * };
  */
 export type EventMessage<
   TSchemas extends EventSchemaMap = EventSchemaMap,
@@ -79,25 +66,10 @@ export type PublishOptions = {
 
 /**
  * Server-side emitter interface for pub/sub
- *
- * @example
- * const emitter = new ServerEmitter();
- *
- * // Subscribe to events
- * const subscription = emitter.subscribe({ channel: 'my-channel', filter: (event) => event.type === 'my-event', signal: abortSignal });
- *
- * // Publish an event
- * emitter.publish('my-event', { id: '123', data: 'hello' });
- *
- * // Close the emitter and cleanup resources
- * emitter.close();
  */
 export type ServerEmitter<TSchemas extends EventSchemaMap> = {
   /**
    * Subscribe to events, returns an async iterator
-   *
-   * @example
-   * emitter.subscribe({ channel: 'my-channel', filter: (event) => event.type === 'my-event', signal: abortSignal });
    */
   subscribe(
     options?: SubscribeOptions
@@ -105,9 +77,6 @@ export type ServerEmitter<TSchemas extends EventSchemaMap> = {
 
   /**
    * Publish an event
-   *
-   * @example
-   * emitter.publish('my-event', { id: '123', data: 'hello' });
    */
   publish<TEvent extends keyof TSchemas & string>(
     event: TEvent,
@@ -117,32 +86,16 @@ export type ServerEmitter<TSchemas extends EventSchemaMap> = {
 
   /**
    * Close the emitter and cleanup resources
-   *
-   * @example
-   * emitter.close();
    */
   close(): Promise<void>;
 };
 
 /**
  * Server transport interface, it handles streaming events to clients
- *
- * @example
- * const transport = new ServerTransport();
- *
- * // Create a streaming response from a subscription
- * const response = await transport.createResponse(subscription);
  */
 export type ServerTransport = {
   /**
    * Create a streaming response from a subscription
-   *
-   * @example
-   * const response = await transport.createResponse(subscription, {
-   *   heartbeatInterval: 30000,
-   *   headers: { 'X-Custom-Header': 'value' },
-   *   signal: abortSignal,
-   * });
    */
   createResponse(
     subscription: AsyncGenerator<EventMessage, void, unknown>,
@@ -164,61 +117,20 @@ export type ServerTransportOptions = {
 
 /**
  * Client transport interface, it handles receiving events from server
- *
- * @example
- *
- * const transport = new ClientTransport();
- *
- * // Connect to the event stream
- * await transport.connect();
- *
- * // Register an event handler
- * transport.on('event', data => {
- *   console.log(data);
- * });
- *
- * // Disconnect from the event stream
- * await transport.disconnect();
  */
 export type ClientTransport<TSchemas extends EventSchemaMap> = {
   /**
    * Connect to the event stream
-   *
-   * @example
-   * const transport = new ClientTransport();
-   *
-   * // Connect to the event stream
-   * await transport.connect();
    */
-  connect(): Promise<void>;
+  connect(): void;
 
   /**
    * Disconnect from the event stream
-   *
-   * @example
-   * const transport = new ClientTransport();
-   *
-   * // Connect to the event stream
-   * await transport.connect();
-   *
-   * // Disconnect from the event stream
-   * await transport.disconnect();
    */
-  disconnect(): Promise<void>;
+  disconnect(): void;
 
   /**
    * Register an event handler
-   *
-   * @example
-   * const transport = new ClientTransport();
-   *
-   * // Connect to the event stream
-   * await transport.connect();
-   *
-   * // Register an event handler
-   * transport.on('event', data => {
-   *   console.log(data);
-   * });
    */
   on<TEvent extends keyof TSchemas & string>(
     event: TEvent,
@@ -227,17 +139,6 @@ export type ClientTransport<TSchemas extends EventSchemaMap> = {
 
   /**
    * Register handler for all events
-   *
-   * @example
-   * const transport = new ClientTransport();
-   *
-   * // Connect to the event stream
-   * await transport.connect();
-   *
-   * // Register an event handler for all events
-   * transport.onAny((event, data) => {
-   *   console.log(event, data);
-   * });
    */
   onAny(
     handler: <TEvent extends keyof TSchemas & string>(
@@ -248,77 +149,22 @@ export type ClientTransport<TSchemas extends EventSchemaMap> = {
 
   /**
    * Register error handler
-   *
-   * @example
-   * const transport = new ClientTransport();
-   *
-   * // Connect to the event stream
-   * await transport.connect();
-   *
-   * // Register an error handler
-   * transport.onError(error => {
-   *   console.error(error);
-   * });
    */
   onError(handler: (error: Error) => void): () => void;
 
   /**
    * Register connection state change handler
-   *
-   * @example
-   * const transport = new ClientTransport();
-   *
-   * // Connect to the event stream
-   * await transport.connect();
-   *
-   * // Register a connection state change handler
-   * transport.onConnectionChange(connected => {
-   *   console.log(`Connected: ${connected}`);
-   * });
    */
   onConnectionChange(handler: (connected: boolean) => void): () => void;
 
   /**
    * Check if currently connected
-   *
-   * @example
-   * const transport = new ClientTransport();
-   *
-   * // Connect to the event stream
-   * await transport.connect();
-   *
-   * // Check if currently connected
-   * console.log(transport.connected);
    */
   readonly connected: boolean;
 };
 
 /**
  * Client transport options
- *
- * @example
- *
- * const transport = new ClientTransport({
- *   schemas: {
- *     UserCreated: z.object({
- *       id: z.string().uuid(),
- *       email: z.string().email(),
- *       name: z.string().min(2).max(100),
- *       age: z.number().min(0).max(150),
- *       createdAt: z.string().datetime(),
- *       updatedAt: z.string().datetime().optional()
- *     })
- *   },
- *   validate: true,
- *   reconnect: {
- *     enabled: true,
- *     maxAttempts: Infinity,
- *     delay: 1000,
- *     maxDelay: 30000,
- *     multiplier: 2
- *   }
- * });
- *
  */
 export type ClientTransportOptions<TSchemas extends EventSchemaMap> = {
   /** Event schemas for validation */
@@ -358,85 +204,15 @@ export type ClientTransportOptions<TSchemas extends EventSchemaMap> = {
   };
 };
 
-// FIXME: review API for events (especially the way to handle emitter)
 /**
  * Events API interface returned by createEvents
- *
- * @example
- * const events = createEvents({
- *   schemas: {
- *     "user.created": z.object({ id: z.string(), name: z.string() }),
- *   },
- * });
- *
- * // Create a server emitter for publishing and subscribing to events (FIXME: review API)
- * const emitter = events.createEmitter();
- *
- * // Publish an event
- * await events.publish(emitter, 'user.created', { id: '123', name: 'John' });
- *
- * // Subscribe to events
- * const subscription = await events.subscribe({
- *   "user.created": (event) => console.log(event.data.name),
- * });
- *
- * for await (const event of subscription) {
- *   console.log(event.data.name);
- * }
- *
- * // Validate event data against schema
- * const output = await events.validate('user.created', { id: '123', name: 'John' });
- * // output: { id: '123', name: 'John' }
- *
- * // Unsubscribe from events
- * await subscription.unsubscribe();
  */
 export type EventsAPI<TSchemas extends EventSchemaMap> = {
   /** The event schemas */
   schemas: TSchemas;
 
   /**
-   * Create a server emitter for publishing and subscribing to events
-   */
-  createEmitter(emitter: ServerEmitter<TSchemas>): ServerEmitter<TSchemas>;
-
-  /**
-   * Subscribe to events from an emitter
-   *
-   * @example
-   * const subscription = await events.subscribe(emitter, {
-   *   channel: 'user-created',
-   *   filter: { id: '123' },
-   * });
-   *
-   * for await (const event of subscription) {
-   *   console.log(event.data.name);
-   * }
-   */
-  subscribe(
-    emitter: ServerEmitter<TSchemas>,
-    options?: SubscribeOptions
-  ): AsyncGenerator<EventMessage<TSchemas>, void, unknown>;
-
-  /**
-   * Publish an event through an emitter
-   *
-   * @example
-   * await events.publish(emitter, 'user-created', { id: '123', name: 'John' });
-   */
-  publish<TEvent extends keyof TSchemas & string>(
-    emitter: ServerEmitter<TSchemas>,
-    event: TEvent,
-    data: InferEventTypes<TSchemas>[TEvent],
-    options?: PublishOptions
-  ): Promise<void>;
-
-  /**
    * Validate event data against schema
-   *
-   * @example
-   * const output = await events.validate('user-created', { id: '123', name: 'John' });
-   * // output: { id: '123', name: 'John' }
    */
   validate<TEvent extends keyof TSchemas & string>(
     event: TEvent,
@@ -445,25 +221,7 @@ export type EventsAPI<TSchemas extends EventSchemaMap> = {
 };
 
 /**
- * Emitter factory function type, it creates a new emitter instance from the provided schemas.
- */
-export type EmitterFactory<TSchemas extends EventSchemaMap> = (
-  schemas: TSchemas
-) => ServerEmitter<TSchemas>;
-
-/**
  * Plugin definition type
- *
- * @example
- * const chatPlugin = new RealtimePlugin({
- *   name: 'chat',
- *   schemas: {
- *     messageCreated: {
- *       id: { type: 'string', format: 'uuid' },
- *       text: { type: 'string', minLength: 1, maxLength: 1000 },
- *     },
- *   },
- * });
  */
 export type RealtimePlugin<TSchemas extends EventSchemaMap> = {
   /** Plugin name */
