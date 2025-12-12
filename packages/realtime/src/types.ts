@@ -110,7 +110,7 @@ export type ServerTransportOptions = {
   /** Heartbeat interval in milliseconds (0 to disable) */
   heartbeatInterval?: number;
   /** Custom headers to add to the response */
-  headers?: Headers;
+  headers?: Record<string, string>;
   /** AbortSignal to cancel the stream */
   signal?: AbortSignal;
 };
