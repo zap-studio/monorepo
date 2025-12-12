@@ -87,7 +87,7 @@ export type ServerEmitter<TSchemas extends EventSchemaMap> = {
   /**
    * Close the emitter and cleanup resources
    */
-  close(): Promise<void>;
+  close(): void;
 };
 
 /**
