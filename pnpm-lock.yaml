@@ -12,6 +12,9 @@ catalogs:
     arktype:
       specifier: ^2.1.28
       version: 2.1.28
+    nanoid:
+      specifier: ^5.1.6
+      version: 5.1.6
     tsdown:
       specifier: ^0.17.3
       version: 0.17.3
@@ -57,6 +60,9 @@ catalogs:
     lefthook:
       specifier: ^2.0.9
       version: 2.0.9
+    nyc:
+      specifier: ^17.1.0
+      version: 17.1.0
     rimraf:
       specifier: ^6.1.2
       version: 6.1.2
@@ -107,7 +113,7 @@ importers:
         specifier: catalog:tooling
         version: 2.0.9
       nyc:
-        specifier: ^17.1.0
+        specifier: catalog:tooling
         version: 17.1.0
       rimraf:
         specifier: catalog:tooling
@@ -206,6 +212,40 @@ importers:
       zod:
         specifier: catalog:base
         version: 4.1.13
+
+  packages/waitlist:
+    dependencies:
+      '@zap-studio/fetch':
+        specifier: workspace:*
+        version: link:../fetch
+      nanoid:
+        specifier: catalog:base
+        version: 5.1.6
+      zod:
+        specifier: catalog:base
+        version: 4.1.13
+    devDependencies:
+      '@types/node':
+        specifier: catalog:types
+        version: 25.0.1
+      '@zap-studio/tsdown-config':
+        specifier: workspace:*
+        version: link:../../configs/tsdown-config
+      '@zap-studio/typescript-config':
+        specifier: workspace:*
+        version: link:../../configs/typescript-config
+      '@zap-studio/vitest-config':
+        specifier: workspace:*
+        version: link:../../configs/vitest-config
+      tsdown:
+        specifier: catalog:base
+        version: 0.17.3(typescript@5.9.3)
+      typescript:
+        specifier: catalog:base
+        version: 5.9.3
+      vitest:
+        specifier: catalog:testing
+        version: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.0.1)(@vitest/ui@4.0.15)(jiti@2.6.1)(jsdom@27.2.0(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
 
 packages:
 
@@ -3102,6 +3142,11 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  nanoid@5.1.6:
+    resolution: {integrity: sha512-c7+7RQ+dMB5dPwwCp4ee1/iV/q2P6aK1mTZcfr1BTuVlyW9hJYiMPybJCcnBlQtuSmTIWNeazm/zqNoZSSElBg==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
@@ -5569,7 +5614,7 @@ snapshots:
 
   '@types/minimatch@6.0.0':
     dependencies:
-      minimatch: 9.0.5
+      minimatch: 10.1.1
 
   '@types/ms@2.1.0': {}
 
@@ -7482,6 +7527,8 @@ snapshots:
   mute-stream@0.0.8: {}
 
   nanoid@3.3.11: {}
+
+  nanoid@5.1.6: {}
 
   neo-async@2.6.2: {}
 
