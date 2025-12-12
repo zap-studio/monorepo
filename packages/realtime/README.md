@@ -4,24 +4,63 @@ A type-safe real-time event streaming library with SSE support.
 
 ## Why @zap-studio/realtime?
 
-**Before:**
+Define your events once, get end-to-end type safety and runtime validation everywhere:
 
 ```typescript
-const eventSource = new EventSource("/api/events");
-eventSource.onmessage = (e) => {
-  const data = JSON.parse(e.data); // unknown type
-  console.log(data.title); // no type safety
+// lib/events.ts — Single source of truth
+import { z } from "zod";
+import { type EventSchemaMap } from "@zap-studio/realtime/types";
+
+export const events: EventSchemaMap = {
+  "chat:message": z.object({
+    id: z.string(),
+    author: z.string(),
+    content: z.string(),
+    timestamp: z.number(),
+  }),
+  "user:typing": z.object({
+    userId: z.string(),
+    typing: z.boolean(),
+  }),
 };
-```
 
-**After:**
+// app/api/events/route.ts — Type-safe publishing
+import { createInMemoryEmitter } from "@zap-studio/realtime/emitters";
+import { nextSSERoute } from "@zap-studio/realtime/adapters/next/sse";
 
-```typescript
-const client = createVanillaSSEClient("/api/events", MyEvents);
-client.on("message", (data) => {
-  console.log(data.title); // fully typed
+const emitter = createInMemoryEmitter<typeof events>();
+
+export const GET = nextSSERoute(() => emitter.subscribe());
+
+// Publishing is fully typed — typos and wrong payloads are compile-time errors
+await emitter.publish("chat:message", {
+  id: crypto.randomUUID(),
+  author: "alice",
+  content: "Hello!",
+  timestamp: Date.now(),
 });
+
+// client.tsx — Type-safe consumption with React
+import { useEventHistory } from "@zap-studio/realtime/client/react/hooks";
+import { events } from "@/lib/events.ts";
+
+function Chat() {
+  const { events, connected } = useEventHistory("/api/events", "chat:message", events, {
+    maxEvents: 50,
+  });
+
+  return (
+    <ul>
+      {events.map((msg) => (
+        // msg.author, msg.content, msg.timestamp — all fully typed
+        <li key={msg.id}>{msg.author}: {msg.content}</li>
+      ))}
+    </ul>
+  );
+}
 ```
+
+Invalid payloads fail at runtime with clear errors. TypeScript catches mistakes at compile time. No more `JSON.parse(e.data)` with `unknown` types.
 
 ## Features
 
