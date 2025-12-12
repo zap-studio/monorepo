@@ -2,6 +2,7 @@ import {
   BaseServerEmitter,
   createEventMessage,
 } from "../internal/server/emitter";
+import { handleSubscription } from "../internal/server/utils";
 import type {
   EventMessage,
   EventSchemaMap,
@@ -9,22 +10,7 @@ import type {
   PublishOptions,
   SubscribeOptions,
 } from "../types";
-
-/**
- * Subscriber entry in the in-memory emitter
- */
-type Subscriber<TSchemas extends EventSchemaMap> = {
-  /* Channel name */
-  channel?: string;
-  /* Filter function */
-  filter?: (event: EventMessage<TSchemas>) => boolean;
-  /* Queue of events */
-  queue: EventMessage<TSchemas>[];
-  /* Resolve function */
-  resolve: ((value: IteratorResult<EventMessage<TSchemas>>) => void) | null;
-  /* Abort signal */
-  signal?: AbortSignal;
-};
+import type { Subscriber } from "./types";
 
 /**
  * In-Memory Server Emitter
@@ -57,10 +43,12 @@ export class InMemoryEmitter<
 
     this.subscribers.add(subscriber);
 
+    const remove = async () => this.subscribers.delete(subscriber);
+
     // Handle abort signal
     if (options?.signal) {
-      options.signal.addEventListener("abort", () => {
-        this.subscribers.delete(subscriber);
+      options.signal.addEventListener("abort", async () => {
+        await remove();
         if (subscriber.resolve) {
           subscriber.resolve({ value: undefined, done: true });
           subscriber.resolve = null;
@@ -68,33 +56,8 @@ export class InMemoryEmitter<
       });
     }
 
-    try {
-      while (!(this.closed || options?.signal?.aborted)) {
-        // Check if there are queued events
-        if (subscriber.queue.length > 0) {
-          const event = subscriber.queue.shift();
-          if (event) {
-            yield event;
-            continue;
-          }
-        }
-
-        // Wait for next event
-        const event = await new Promise<IteratorResult<EventMessage<TSchemas>>>(
-          (resolve) => {
-            subscriber.resolve = resolve;
-          }
-        );
-
-        if (event.done) {
-          return;
-        }
-
-        yield event.value;
-      }
-    } finally {
-      this.subscribers.delete(subscriber);
-    }
+    await Promise.resolve();
+    yield* handleSubscription(subscriber, remove, () => this.closed);
   }
 
   async publish<TEvent extends keyof TSchemas & string>(

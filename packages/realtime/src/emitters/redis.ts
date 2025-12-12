@@ -2,6 +2,7 @@ import {
   BaseServerEmitter,
   createEventMessage,
 } from "../internal/server/emitter";
+import { handleSubscription } from "../internal/server/utils";
 import type {
   EventMessage,
   EventSchemaMap,
@@ -10,6 +11,7 @@ import type {
   RawEventMessage,
   SubscribeOptions,
 } from "../types";
+import type { Subscriber } from "./types";
 
 /**
  * Redis client should implement this interface
@@ -72,15 +74,8 @@ export class RedisEmitter<
   private readonly defaultChannel: string;
 
   /** A map of the full channel name (including prefix) to subscribers */
-  private readonly subscriptions: Map<
-    string,
-    Set<{
-      filter?: (event: RawEventMessage) => boolean;
-      queue: EventMessage<TSchemas>[];
-      resolve: ((value: IteratorResult<EventMessage<TSchemas>>) => void) | null;
-      signal?: AbortSignal;
-    }>
-  > = new Map();
+  private readonly subscriptions: Map<string, Set<Subscriber<TSchemas>>> =
+    new Map();
 
   constructor(options: RedisEmitterOptions) {
     super();
@@ -144,9 +139,11 @@ export class RedisEmitter<
 
     const channelName = this.getChannelName(options?.channel);
 
-    const subscriber = {
-      filter: options?.filter,
-      queue: [] as EventMessage<TSchemas>[],
+    const subscriber: Subscriber<TSchemas> = {
+      filter: options?.filter as
+        | ((event: EventMessage<TSchemas>) => boolean)
+        | undefined,
+      queue: [],
       resolve: null as
         | ((value: IteratorResult<EventMessage<TSchemas>>) => void)
         | null,
@@ -162,10 +159,12 @@ export class RedisEmitter<
     }
     channelSubscribers.add(subscriber);
 
+    const remove = async () => this.removeSubscriber(channelName, subscriber);
+
     // Handle abort signal
     if (options?.signal) {
       options.signal.addEventListener("abort", async () => {
-        await this.removeSubscriber(channelName, subscriber);
+        await remove();
         if (subscriber.resolve) {
           subscriber.resolve({ value: undefined, done: true });
           subscriber.resolve = null;
@@ -173,43 +172,12 @@ export class RedisEmitter<
       });
     }
 
-    try {
-      while (!(this.closed || options?.signal?.aborted)) {
-        // Check if there are queued events
-        if (subscriber.queue.length > 0) {
-          const event = subscriber.queue.shift();
-          if (event) {
-            yield event;
-            continue;
-          }
-        }
-
-        // Wait for next event
-        const event = await new Promise<IteratorResult<EventMessage<TSchemas>>>(
-          (resolve) => {
-            subscriber.resolve = resolve;
-          }
-        );
-
-        if (event.done) {
-          return;
-        }
-
-        yield event.value;
-      }
-    } finally {
-      await this.removeSubscriber(channelName, subscriber);
-    }
+    yield* handleSubscription(subscriber, remove, () => this.closed);
   }
 
   private async removeSubscriber(
     channelName: string,
-    subscriber: {
-      filter?: (event: RawEventMessage) => boolean;
-      queue: EventMessage<TSchemas>[];
-      resolve: ((value: IteratorResult<EventMessage<TSchemas>>) => void) | null;
-      signal?: AbortSignal;
-    }
+    subscriber: Subscriber<TSchemas>
   ): Promise<void> {
     const channelSubscribers = this.subscriptions.get(channelName);
     if (channelSubscribers) {
