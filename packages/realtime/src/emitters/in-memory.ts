@@ -28,6 +28,9 @@ type Subscriber<TSchemas extends EventSchemaMap> = {
  *
  * Simple pub/sub implementation for development and testing.
  * Events are broadcast to all subscribers in the same process.
+ *
+ * @example
+ * const emitter = new InMemoryEmitter();
  */
 export class InMemoryEmitter<
   TSchemas extends EventSchemaMap,
