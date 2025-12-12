@@ -5,38 +5,38 @@ packages:
 
 catalogs:
   base:
-    "@standard-schema/spec": ^1.0.0
+    '@standard-schema/spec': ^1.0.0
     arktype: ^2.1.28
-    tsdown: ^0.17.0
+    tsdown: ^0.17.3
     typescript: ^5.9.3
     valibot: ^1.2.0
     zod: ^4.1.13
   linting:
-    "@biomejs/biome": ^2.3.8
-    "@commitlint/cli": ^20.2.0
-    "@commitlint/config-conventional": ^20.2.0
-    ultracite: ^6.3.9
+    '@biomejs/biome': ^2.3.8
+    '@commitlint/cli': ^20.2.0
+    '@commitlint/config-conventional': ^20.2.0
+    ultracite: ^6.4.0
   testing:
-    "@vitest/coverage-v8": ^4.0.15
-    "@vitest/ui": ^4.0.15
+    '@vitest/coverage-v8': ^4.0.15
+    '@vitest/ui': ^4.0.15
     vitest: ^4.0.15
   tooling:
     "@changesets/cli": ^2.29.8
     "@turbo/gen": ^2.6.3
-    lefthook: ^2.0.8
+    lefthook: ^2.0.9
     nyc: ^17.1.0
     rimraf: ^6.1.2
     turbo: ^2.6.3
   types:
     "@types/express": ^5.0.5
-    "@types/node": ^24.10.1
+    "@types/node": ^25.0.1
   vitepress:
-    "@shikijs/vitepress-twoslash": ^3.19.0
+    '@shikijs/vitepress-twoslash': ^3.20.0
     vitepress: ^1.6.4
     vitepress-plugin-llms: ^1.9.3
 
 onlyBuiltDependencies:
-  - "@swc/core"
+  - '@swc/core'
   - core-js-pure
   - esbuild
   - lefthook
