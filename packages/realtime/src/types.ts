@@ -218,6 +218,22 @@ export type EventsAPI<TSchemas extends EventSchemaMap> = {
     event: TEvent,
     data: unknown
   ): Promise<InferEventTypes<TSchemas>[TEvent]>;
+
+  /**
+   * Publish an event
+   */
+  publish<TEvent extends keyof TSchemas & string>(
+     event: TEvent,
+     data: InferEventTypes<TSchemas>[TEvent],
+     options?: PublishOptions
+   ): Promise<void>;
+
+  /**
+   * Subscribe to events
+   */
+  subscribe(
+    options?: SubscribeOptions
+   ): AsyncGenerator<EventMessage<TSchemas>, void, unknown>;
 };
 
 /**
