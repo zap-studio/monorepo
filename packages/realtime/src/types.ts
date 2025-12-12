@@ -223,7 +223,7 @@ export type EventsAPI<TSchemas extends EventSchemaMap> = {
 /**
  * Plugin definition type
  */
-export type RealtimePlugin<TSchemas extends EventSchemaMap = {}> = {
+export type RealtimePlugin<TSchemas extends EventSchemaMap> = {
   /** Plugin name */
   name: string;
   /** Event schemas provided by this plugin */
