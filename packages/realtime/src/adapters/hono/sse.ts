@@ -1,9 +1,8 @@
-import type { Context, Env, Input, Next } from "hono";
+import type { Context, Env, Input } from "hono";
 
 import { createSSEResponse } from "../../transport/sse/server";
 import type {
   EventDefinitions,
-  EventMessage,
   EventsAPI,
   ServerTransportOptions,
 } from "../../types";
@@ -59,57 +58,5 @@ export function honoSSEHandler<
         signal: context.req.raw.signal,
       })
     );
-  };
-}
-
-/**
- * Hono middleware for SSE routes
- *
- * @example
- * ```ts
- * import { Hono } from 'hono'
- * import { events } from '@/lib/events'
- * import { sseMiddleware } from '@zap-studio/realtime/adapters/hono/sse'
- *
- * const app = new Hono()
- *
- * app.use('/events/*', sseMiddleware())
- * app.get('/events', (c) => {
- *   return c.get('sse').stream(events.subscribe())
- * })
- * ```
- */
-export function sseMiddleware<
-  TEventDefinitions extends EventDefinitions,
-  E extends Env = {
-    Variables: {
-      sse: {
-        stream: (
-          subscription: AsyncGenerator<EventMessage, void, unknown>
-        ) => Response;
-      };
-    };
-  },
-  // biome-ignore lint/suspicious/noExplicitAny: Defined as is in Context
-  P extends string = any,
-  // biome-ignore lint/complexity/noBannedTypes: Defined as is in Context
-  I extends Input = {},
->(options?: HonoSSEHandlerOptions) {
-  return async (context: Context<E, P, I>, next: Next): Promise<void> => {
-    context.set("sse", {
-      stream: (
-        subscription: AsyncGenerator<
-          EventMessage<TEventDefinitions>,
-          void,
-          unknown
-        >
-      ): Response =>
-        createSSEResponse(subscription, {
-          ...options,
-          signal: context.req.raw.signal,
-        }),
-    });
-
-    await next();
   };
 }
