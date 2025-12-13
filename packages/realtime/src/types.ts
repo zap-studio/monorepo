@@ -222,7 +222,7 @@ export type ClientTransportOptions<TEventDefinitions extends EventDefinitions> =
   };
 
 /**
- * Events API interface returned by createEvents
+ * Events API interface
  */
 export type EventsAPI<TEventDefinitions extends EventDefinitions> = {
   /** The event definitions */
