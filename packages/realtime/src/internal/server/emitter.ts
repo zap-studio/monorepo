@@ -1,6 +1,6 @@
 import type {
   EventMessage,
-  EventSchemaMap,
+  EventDefinitions,
   InferEventTypes,
   PublishOptions,
   ServerEmitter,
@@ -18,13 +18,13 @@ export function generateEventId(): string {
  * Create an event message
  */
 export function createEventMessage<
-  TSchemas extends EventSchemaMap,
-  TEvent extends keyof TSchemas & string,
+  TEventDefinitions extends EventDefinitions,
+  TEvent extends keyof TEventDefinitions,
 >(
   event: TEvent,
-  data: InferEventTypes<TSchemas>[TEvent],
+  data: InferEventTypes<TEventDefinitions>[TEvent],
   options?: PublishOptions
-): EventMessage<TSchemas, TEvent> {
+): EventMessage<TEventDefinitions, TEvent> {
   return {
     id: generateEventId(),
     event,
@@ -38,18 +38,18 @@ export function createEventMessage<
  * Abstract base class for server emitters
  * Provides common functionality for all emitter implementations
  */
-export abstract class BaseServerEmitter<TSchemas extends EventSchemaMap>
-  implements ServerEmitter<TSchemas>
+export abstract class BaseServerEmitter<TEventDefinitions extends EventDefinitions>
+  implements ServerEmitter<TEventDefinitions>
 {
   protected closed = false;
 
   abstract subscribe(
     options?: SubscribeOptions
-  ): AsyncGenerator<EventMessage<TSchemas>, void, unknown>;
+  ): AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown>;
 
-  abstract publish<TEvent extends keyof TSchemas & string>(
+  abstract publish<TEvent extends keyof TEventDefinitions>(
     event: TEvent,
-    data: InferEventTypes<TSchemas>[TEvent],
+    data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions
   ): Promise<void>;
 
