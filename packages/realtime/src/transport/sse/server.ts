@@ -27,7 +27,7 @@ const SSE_HEADERS: Record<string, string> = {
 /**
  * Format an event message as SSE data
  */
-export function formatSSEMessage<TEventDefinitions extends EventDefinitions>(
+function formatSSEMessage<TEventDefinitions extends EventDefinitions>(
   message: EventMessage<TEventDefinitions>
 ): string {
   const lines: string[] = [];
@@ -52,7 +52,7 @@ export function formatSSEMessage<TEventDefinitions extends EventDefinitions>(
 /**
  * Format a heartbeat/keep-alive comment
  */
-export function formatHeartbeat(): string {
+function formatHeartbeat(): string {
   return `: heartbeat ${Date.now()}\n\n`;
 }
 
