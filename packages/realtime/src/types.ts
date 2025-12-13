@@ -3,23 +3,23 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 /**
  * A record of event names to their Standard Schema validators
  */
- export type EventDefinitions = {
-   [key in string]: StandardSchemaV1;
- };
+export type EventDefinitions = {
+  [key in string]: StandardSchemaV1;
+};
 
- /**
-  * Extract only string keys from an EventDefinitions type
-  */
- export type EventKeys<TEventDefinitions extends EventDefinitions> = Extract<
-   keyof TEventDefinitions,
-   string
- >;
+/**
+ * Extract only string keys from an EventDefinitions type
+ */
+export type EventKeys<TEventDefinitions extends EventDefinitions> = Extract<
+  keyof TEventDefinitions,
+  string
+>;
 
 /**
  * Infer the output types from a schema map
  */
 export type InferEventTypes<TEventDefinitions extends EventDefinitions> = {
-  [K in keyof TEventDefinitions]: StandardSchemaV1.InferOutput<
+  [K in EventKeys<TEventDefinitions>]: StandardSchemaV1.InferOutput<
     TEventDefinitions[K]
   >;
 };
@@ -29,7 +29,7 @@ export type InferEventTypes<TEventDefinitions extends EventDefinitions> = {
  */
 export type EventMessage<
   TEventDefinitions extends EventDefinitions = EventDefinitions,
-  TEvent extends keyof TEventDefinitions = keyof TEventDefinitions,
+  TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
 > = {
   /** Unique event ID */
   id: string;
@@ -90,7 +90,7 @@ export type ServerEmitter<TEventDefinitions extends EventDefinitions> = {
   /**
    * Publish an event
    */
-  publish<TEvent extends keyof TEventDefinitions>(
+  publish<TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent,
     data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions
@@ -148,7 +148,7 @@ export type ClientTransport<TEventDefinitions extends EventDefinitions> = {
   /**
    * Register an event handler
    */
-  on<TEvent extends keyof TEventDefinitions>(
+  on<TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent,
     handler: (data: InferEventTypes<TEventDefinitions>[TEvent]) => void
   ): () => void;
@@ -157,7 +157,7 @@ export type ClientTransport<TEventDefinitions extends EventDefinitions> = {
    * Register handler for all events
    */
   onAny(
-    handler: <TEvent extends keyof TEventDefinitions>(
+    handler: <TEvent extends EventKeys<TEventDefinitions>>(
       event: TEvent,
       data: InferEventTypes<TEventDefinitions>[TEvent]
     ) => void
@@ -231,7 +231,7 @@ export type EventsAPI<TEventDefinitions extends EventDefinitions> = {
   /**
    * Validate event data against schema
    */
-  validate<TEvent extends keyof TEventDefinitions>(
+  validate<TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent,
     data: unknown
   ): Promise<InferEventTypes<TEventDefinitions>[TEvent]>;
@@ -239,7 +239,7 @@ export type EventsAPI<TEventDefinitions extends EventDefinitions> = {
   /**
    * Publish an event
    */
-  publish<TEvent extends keyof TEventDefinitions>(
+  publish<TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent,
     data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions

@@ -5,6 +5,7 @@ import {
 import { handleSubscription } from "../internal/server/utils";
 import type {
   EventDefinitions,
+  EventKeys,
   EventMessage,
   InferEventTypes,
   PublishOptions,
@@ -60,7 +61,7 @@ export class InMemoryEmitter<
     yield* handleSubscription(subscriber, remove, () => this.closed);
   }
 
-  async publish<TEvent extends keyof TEventDefinitions>(
+  async publish<TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent,
     data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions

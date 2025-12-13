@@ -1,5 +1,6 @@
 import type {
   EventDefinitions,
+  EventKeys,
   EventMessage,
   InferEventTypes,
   PublishOptions,
@@ -21,7 +22,7 @@ export abstract class BaseServerEmitter<
     options?: SubscribeOptions
   ): AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown>;
 
-  abstract publish<TEvent extends keyof TEventDefinitions>(
+  abstract publish<TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent,
     data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions

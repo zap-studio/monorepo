@@ -1,6 +1,7 @@
 import { validateSchema } from "../schema";
 import type {
   EventDefinitions,
+  EventKeys,
   EventsAPI,
   InferEventTypes,
   ServerEmitter,
@@ -51,7 +52,7 @@ export function createEvents<
   return {
     definitions,
 
-    async validate<TEvent extends keyof TEventDefinitions>(
+    async validate<TEvent extends EventKeys<TEventDefinitions>>(
       event: TEvent,
       data: unknown
     ): Promise<InferEventTypes<TEventDefinitions>[TEvent]> {

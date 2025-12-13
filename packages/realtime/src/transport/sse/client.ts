@@ -3,6 +3,7 @@ import type {
   ClientTransport,
   ClientTransportOptions,
   EventDefinitions,
+  EventKeys,
   InferEventTypes,
 } from "../../types";
 
@@ -85,7 +86,7 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
     }
   }
 
-  on<TEvent extends keyof TEventDefinitions>(
+  on<TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent,
     handler: (data: InferEventTypes<TEventDefinitions>[TEvent]) => void
   ): () => void {
@@ -108,7 +109,7 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
   }
 
   onAny(
-    handler: <TEvent extends keyof TEventDefinitions>(
+    handler: <TEvent extends EventKeys<TEventDefinitions>>(
       event: TEvent,
       data: InferEventTypes<TEventDefinitions>[TEvent]
     ) => void
@@ -158,7 +159,7 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
     }
   }
 
-  private registerEventListener<TEvent extends keyof TEventDefinitions>(
+  private registerEventListener<TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent
   ): void {
     if (!this.eventSource) {
@@ -171,7 +172,7 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
   }
 
   private async handleEvent<
-    TEvent extends keyof TEventDefinitions,
+    TEvent extends EventKeys<TEventDefinitions>,
     TData extends string,
   >(event: TEvent, e: MessageEvent<TData>): Promise<void> {
     try {
@@ -184,7 +185,7 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
     }
   }
 
-  private async parseAndValidate<TEvent extends keyof TEventDefinitions>(
+  private async parseAndValidate<TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent,
     rawData: string
   ): Promise<InferEventTypes<TEventDefinitions>[TEvent]> {
@@ -201,7 +202,7 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
     return data as InferEventTypes<TEventDefinitions>[TEvent];
   }
 
-  private dispatchEvent<TEvent extends keyof TEventDefinitions>(
+  private dispatchEvent<TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent,
     data: InferEventTypes<TEventDefinitions>[TEvent]
   ): void {

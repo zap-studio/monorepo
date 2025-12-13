@@ -5,6 +5,7 @@ import {
 import { handleSubscription } from "../internal/server/utils";
 import type {
   EventDefinitions,
+  EventKeys,
   EventMessage,
   InferEventTypes,
   PublishOptions,
@@ -191,7 +192,7 @@ export class RedisEmitter<
     }
   }
 
-  async publish<TEvent extends keyof TEventDefinitions>(
+  async publish<TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent,
     data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions

@@ -1,5 +1,6 @@
 import type {
   EventDefinitions,
+  EventKeys,
   EventMessage,
   InferEventTypes,
   PublishOptions,
@@ -17,7 +18,7 @@ export function generateEventId(): string {
  */
 export function createEventMessage<
   TEventDefinitions extends EventDefinitions,
-  TEvent extends keyof TEventDefinitions,
+  TEvent extends EventKeys<TEventDefinitions>,
 >(
   event: TEvent,
   data: InferEventTypes<TEventDefinitions>[TEvent],
