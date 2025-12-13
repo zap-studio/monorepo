@@ -1,6 +1,6 @@
 import type {
+  EventDefinitions,
   EventMessage,
-  EventSchemaMap,
   ServerTransport,
   ServerTransportOptions,
 } from "../../types";
@@ -27,8 +27,8 @@ const SSE_HEADERS: Record<string, string> = {
 /**
  * Format an event message as SSE data
  */
-export function formatSSEMessage<TSchema extends EventSchemaMap>(
-  message: EventMessage<TSchema>
+export function formatSSEMessage<TEventDefinitions extends EventDefinitions>(
+  message: EventMessage<TEventDefinitions>
 ): string {
   const lines: string[] = [];
 
@@ -61,8 +61,8 @@ export function formatHeartbeat(): string {
  *
  * Creates streaming responses from event subscriptions using Server-Sent Events
  */
-export class SSEServerTransport<TSchemas extends EventSchemaMap>
-  implements ServerTransport<TSchemas>
+export class SSEServerTransport<TEventDefinitions extends EventDefinitions>
+  implements ServerTransport<TEventDefinitions>
 {
   private readonly defaultHeartbeatInterval: number;
 
@@ -74,7 +74,11 @@ export class SSEServerTransport<TSchemas extends EventSchemaMap>
    * Create an SSE Response from an async generator of events
    */
   createResponse(
-    subscription: AsyncGenerator<EventMessage<TSchemas>, void, unknown>,
+    subscription: AsyncGenerator<
+      EventMessage<TEventDefinitions>,
+      void,
+      unknown
+    >,
     options?: ServerTransportOptions
   ): Response {
     const heartbeatInterval =
@@ -178,11 +182,11 @@ export class SSEServerTransport<TSchemas extends EventSchemaMap>
 /**
  * Convenience function to create an SSE response directly
  */
-export function createSSEResponse<TSchemas extends EventSchemaMap>(
-  subscription: AsyncGenerator<EventMessage<TSchemas>, void, unknown>,
+export function createSSEResponse<TEventDefinitions extends EventDefinitions>(
+  subscription: AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown>,
   options?: ServerTransportOptions & { heartbeatInterval?: number }
 ): Response {
-  const transport = new SSEServerTransport<TSchemas>({
+  const transport = new SSEServerTransport<TEventDefinitions>({
     heartbeatInterval: options?.heartbeatInterval,
   });
   return transport.createResponse(subscription, options);
