@@ -2,7 +2,7 @@ import { validateSchema } from "../../schema";
 import type {
   ClientTransport,
   ClientTransportOptions,
-  EventSchemaMap,
+  EventDefinitions,
   InferEventTypes,
 } from "../../types";
 
@@ -19,11 +19,11 @@ type ParsedEventData = {
  *
  * Wraps EventSource for type-safe event handling with schema validation
  */
-export class SSEClientTransport<TSchemas extends EventSchemaMap>
-  implements ClientTransport<TSchemas>
+export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
+  implements ClientTransport<TEventDefinitions>
 {
   private readonly url: string;
-  private readonly schemas: TSchemas;
+  private readonly definitions: TEventDefinitions;
   private readonly validate: boolean;
 
   private readonly reconnectEnabled: boolean;
@@ -48,9 +48,9 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
   private reconnectAttempts = 0;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(url: string, options: ClientTransportOptions<TSchemas>) {
+  constructor(url: string, options: ClientTransportOptions<TEventDefinitions>) {
     this.url = url;
-    this.schemas = options.schemas;
+    this.definitions = options.definitions;
     this.validate = options.validate ?? true;
 
     const reconnect = options.reconnect ?? {};
@@ -85,9 +85,9 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
     }
   }
 
-  on<TEvent extends keyof TSchemas & string>(
+  on<TEvent extends keyof TEventDefinitions>(
     event: TEvent,
-    handler: (data: InferEventTypes<TSchemas>[TEvent]) => void
+    handler: (data: InferEventTypes<TEventDefinitions>[TEvent]) => void
   ): () => void {
     let handlers = this.eventHandlers.get(event);
 
@@ -108,9 +108,9 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
   }
 
   onAny(
-    handler: <TEvent extends keyof TSchemas & string>(
+    handler: <TEvent extends keyof TEventDefinitions>(
       event: TEvent,
-      data: InferEventTypes<TSchemas>[TEvent]
+      data: InferEventTypes<TEventDefinitions>[TEvent]
     ) => void
   ): () => void {
     this.anyHandlers.add(handler);
@@ -158,7 +158,7 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
     }
   }
 
-  private registerEventListener<TEvent extends keyof TSchemas & string>(
+  private registerEventListener<TEvent extends keyof TEventDefinitions>(
     event: TEvent
   ): void {
     if (!this.eventSource) {
@@ -171,7 +171,7 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
   }
 
   private async handleEvent<
-    TEvent extends keyof TSchemas & string,
+    TEvent extends keyof TEventDefinitions,
     TData extends string,
   >(event: TEvent, e: MessageEvent<TData>): Promise<void> {
     try {
@@ -184,10 +184,10 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
     }
   }
 
-  private async parseAndValidate<TEvent extends keyof TSchemas & string>(
+  private async parseAndValidate<TEvent extends keyof TEventDefinitions>(
     event: TEvent,
     rawData: string
-  ): Promise<InferEventTypes<TSchemas>[TEvent]> {
+  ): Promise<InferEventTypes<TEventDefinitions>[TEvent]> {
     const parsed: ParsedEventData = JSON.parse(rawData);
     let data = parsed.data;
 
@@ -198,12 +198,12 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
       }
     }
 
-    return data as InferEventTypes<TSchemas>[TEvent];
+    return data as InferEventTypes<TEventDefinitions>[TEvent];
   }
 
-  private dispatchEvent<TEvent extends keyof TSchemas & string>(
+  private dispatchEvent<TEvent extends keyof TEventDefinitions>(
     event: TEvent,
-    data: InferEventTypes<TSchemas>[TEvent]
+    data: InferEventTypes<TEventDefinitions>[TEvent]
   ): void {
     const handlers = this.eventHandlers.get(event);
 
