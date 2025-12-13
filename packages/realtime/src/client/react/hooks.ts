@@ -152,11 +152,23 @@ export function useEvents<TEventDefinitions extends EventDefinitions>(
   }, [url, definitions, enabled, options?.validate, options?.reconnect]);
 
   // Store pending handlers that were registered before client was ready
-  const pendingHandlersRef = useRef<Map<string, Set<(data: unknown) => void>>>(
-    new Map()
-  );
+  const pendingHandlersRef = useRef<
+    Map<
+      EventKeys<TEventDefinitions>,
+      Set<
+        (
+          data: InferEventTypes<TEventDefinitions>[EventKeys<TEventDefinitions>]
+        ) => void
+      >
+    >
+  >(new Map());
   const pendingAnyHandlersRef = useRef<
-    Set<(event: string, data: unknown) => void>
+    Set<
+      <TEvent extends EventKeys<TEventDefinitions>>(
+        event: TEvent,
+        data: InferEventTypes<TEventDefinitions>[TEvent]
+      ) => void
+    >
   >(new Set());
 
   // Register pending handlers when client becomes available (re-run when connection state changes)
@@ -357,7 +369,9 @@ export function useEventHistory<
   clear: () => void;
 } {
   const maxEvents = options?.maxEvents ?? 100;
-  const [events, setEvents] = useState<InferEventTypes<TEventDefinitions>[TEvent][]>([]);
+  const [events, setEvents] = useState<
+    InferEventTypes<TEventDefinitions>[TEvent][]
+  >([]);
   const { on, connected, error } = useEvents(url, schemas, options);
 
   useEffect(() => {
