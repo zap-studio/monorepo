@@ -84,34 +84,60 @@ export class SSEServerTransport<TSchemas extends EventSchemaMap>
     let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
     let isClosed = false;
 
+    const encoder = new TextEncoder();
+
+    const enqueue = (
+      controller: ReadableStreamDefaultController,
+      text: string
+    ) => {
+      controller.enqueue(encoder.encode(text));
+    };
+
+    const cleanup = (
+      controller?: ReadableStreamDefaultController,
+      closeStream = true
+    ) => {
+      if (isClosed) {
+        return;
+      }
+      isClosed = true;
+
+      if (heartbeatTimer) {
+        clearInterval(heartbeatTimer);
+        heartbeatTimer = null;
+      }
+
+      if (closeStream && controller) {
+        try {
+          controller.close();
+        } catch {
+          /* already closed */
+        }
+      }
+    };
+
+    const startHeartbeat = (controller: ReadableStreamDefaultController) => {
+      if (heartbeatInterval <= 0) {
+        return;
+      }
+
+      heartbeatTimer = setInterval(() => {
+        if (!isClosed) {
+          try {
+            enqueue(controller, formatHeartbeat());
+          } catch {
+            /* stream closed */
+          }
+        }
+      }, heartbeatInterval);
+    };
+
     const stream = new ReadableStream({
       async start(controller) {
-        // Set up heartbeat if enabled
-        if (heartbeatInterval > 0) {
-          heartbeatTimer = setInterval(() => {
-            if (!isClosed) {
-              try {
-                controller.enqueue(new TextEncoder().encode(formatHeartbeat()));
-              } catch {
-                // Stream may be closed
-              }
-            }
-          }, heartbeatInterval);
-        }
+        startHeartbeat(controller);
 
-        // Handle abort signal
         if (signal) {
-          signal.addEventListener("abort", () => {
-            isClosed = true;
-            if (heartbeatTimer) {
-              clearInterval(heartbeatTimer);
-            }
-            try {
-              controller.close();
-            } catch {
-              // Already closed
-            }
-          });
+          signal.addEventListener("abort", () => cleanup(controller));
         }
 
         try {
@@ -119,32 +145,19 @@ export class SSEServerTransport<TSchemas extends EventSchemaMap>
             if (isClosed || signal?.aborted) {
               break;
             }
-
-            const sseData = formatSSEMessage(event);
-            controller.enqueue(new TextEncoder().encode(sseData));
+            enqueue(controller, formatSSEMessage(event));
           }
         } catch (error) {
           if (!isClosed) {
             controller.error(error);
           }
         } finally {
-          isClosed = true;
-          if (heartbeatTimer) {
-            clearInterval(heartbeatTimer);
-          }
-          try {
-            controller.close();
-          } catch {
-            // Already closed
-          }
+          cleanup(controller);
         }
       },
 
       cancel() {
-        isClosed = true;
-        if (heartbeatTimer) {
-          clearInterval(heartbeatTimer);
-        }
+        cleanup(undefined, false);
       },
     });
 
