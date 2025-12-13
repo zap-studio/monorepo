@@ -59,6 +59,8 @@ export type RedisEmitterOptions = {
  * Allows horizontal scaling across multiple server instances.
  *
  * @example
+ * import { RedisEmitter } from "@zap-studio/realtime/emitters/redis";
+ *
  * const emitter = new RedisEmitter({
  *   publisher: yourRedisClient,
  *   subscriber: anotherRedisClient,

@@ -20,6 +20,8 @@ import type { Subscriber } from "./types";
  * Events are broadcast to all subscribers in the same process.
  *
  * @example
+ * import {InMemoryEmitter} from "@zap-studio/realtime/emitters/in-memory";
+ *
  * const emitter = new InMemoryEmitter();
  */
 export class InMemoryEmitter<
