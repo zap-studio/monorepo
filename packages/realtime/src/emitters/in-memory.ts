@@ -1,7 +1,4 @@
-import {
-  BaseServerEmitter,
-  createEventMessage,
-} from "../internal/server/emitter";
+import { createEventMessage } from "../internal/server/emitter";
 import { handleSubscription } from "../internal/server/utils";
 import type {
   EventDefinitions,
@@ -11,6 +8,7 @@ import type {
   PublishOptions,
   SubscribeOptions,
 } from "../types";
+import { BaseServerEmitter } from ".";
 import type { Subscriber } from "./types";
 
 /**
@@ -36,9 +34,7 @@ export class InMemoryEmitter<
 
     const subscriber: Subscriber<TEventDefinitions> = {
       channel: options?.channel,
-      filter: options?.filter as
-        | ((event: EventMessage<TEventDefinitions>) => boolean)
-        | undefined,
+      filter: options?.filter,
       queue: [],
       resolve: null,
       signal: options?.signal,

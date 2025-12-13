@@ -1,7 +1,4 @@
-import {
-  BaseServerEmitter,
-  createEventMessage,
-} from "../internal/server/emitter";
+import { createEventMessage } from "../internal/server/emitter";
 import { handleSubscription } from "../internal/server/utils";
 import type {
   EventDefinitions,
@@ -12,6 +9,7 @@ import type {
   RawEventMessage,
   SubscribeOptions,
 } from "../types";
+import { BaseServerEmitter } from ".";
 import type { Subscriber } from "./types";
 
 /**
@@ -145,13 +143,9 @@ export class RedisEmitter<
     const channelName = this.getChannelName(options?.channel);
 
     const subscriber: Subscriber<TEventDefinitions> = {
-      filter: options?.filter as
-        | ((event: EventMessage<TEventDefinitions>) => boolean)
-        | undefined,
+      filter: options?.filter,
       queue: [],
-      resolve: null as
-        | ((value: IteratorResult<EventMessage<TEventDefinitions>>) => void)
-        | null,
+      resolve: null,
       signal: options?.signal,
     };
 
