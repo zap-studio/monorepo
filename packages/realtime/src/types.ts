@@ -3,28 +3,30 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 /**
  * A record of event names to their Standard Schema validators
  */
-export type EventSchemaMap = Record<string, StandardSchemaV1>;
+export type EventDefinitions = Record<string, StandardSchemaV1>;
 
 /**
  * Infer the output types from a schema map
  */
-export type InferEventTypes<TSchemas extends EventSchemaMap> = {
-  [K in keyof TSchemas]: StandardSchemaV1.InferOutput<TSchemas[K]>;
+export type InferEventTypes<TEventDefinitions extends EventDefinitions> = {
+  [K in keyof TEventDefinitions]: StandardSchemaV1.InferOutput<
+    TEventDefinitions[K]
+  >;
 };
 
 /**
  * Event message structure sent over transports
  */
 export type EventMessage<
-  TSchemas extends EventSchemaMap = EventSchemaMap,
-  TEvent extends keyof TSchemas = keyof TSchemas,
+  TEventDefinitions extends EventDefinitions = EventDefinitions,
+  TEvent extends keyof TEventDefinitions = keyof TEventDefinitions,
 > = {
   /** Unique event ID */
   id: string;
   /** Event name */
   event: TEvent;
   /** Event payload data */
-  data: InferEventTypes<TSchemas>[TEvent];
+  data: InferEventTypes<TEventDefinitions>[TEvent];
   /** Timestamp when event was created */
   timestamp: number;
   /** Optional retry interval in milliseconds for SSE */
@@ -67,20 +69,20 @@ export type PublishOptions = {
 /**
  * Server-side emitter interface for pub/sub
  */
-export type ServerEmitter<TSchemas extends EventSchemaMap> = {
+export type ServerEmitter<TEventDefinitions extends EventDefinitions> = {
   /**
    * Subscribe to events, returns an async iterator
    */
   subscribe(
     options?: SubscribeOptions
-  ): AsyncGenerator<EventMessage<TSchemas>, void, unknown>;
+  ): AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown>;
 
   /**
    * Publish an event
    */
-  publish<TEvent extends keyof TSchemas & string>(
+  publish<TEvent extends keyof TEventDefinitions>(
     event: TEvent,
-    data: InferEventTypes<TSchemas>[TEvent],
+    data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions
   ): Promise<void>;
 
@@ -93,12 +95,16 @@ export type ServerEmitter<TSchemas extends EventSchemaMap> = {
 /**
  * Server transport interface, it handles streaming events to clients
  */
-export type ServerTransport<TSchemas extends EventSchemaMap> = {
+export type ServerTransport<TEventDefinitions extends EventDefinitions> = {
   /**
    * Create a streaming response from a subscription
    */
   createResponse(
-    subscription: AsyncGenerator<EventMessage<TSchemas>, void, unknown>,
+    subscription: AsyncGenerator<
+      EventMessage<TEventDefinitions>,
+      void,
+      unknown
+    >,
     options?: ServerTransportOptions
   ): Response;
 };
@@ -118,7 +124,7 @@ export type ServerTransportOptions = {
 /**
  * Client transport interface, it handles receiving events from server
  */
-export type ClientTransport<TSchemas extends EventSchemaMap> = {
+export type ClientTransport<TEventDefinitions extends EventDefinitions> = {
   /**
    * Connect to the event stream
    */
@@ -132,18 +138,18 @@ export type ClientTransport<TSchemas extends EventSchemaMap> = {
   /**
    * Register an event handler
    */
-  on<TEvent extends keyof TSchemas & string>(
+  on<TEvent extends keyof TEventDefinitions>(
     event: TEvent,
-    handler: (data: InferEventTypes<TSchemas>[TEvent]) => void
+    handler: (data: InferEventTypes<TEventDefinitions>[TEvent]) => void
   ): () => void;
 
   /**
    * Register handler for all events
    */
   onAny(
-    handler: <TEvent extends keyof TSchemas & string>(
+    handler: <TEvent extends keyof TEventDefinitions>(
       event: TEvent,
-      data: InferEventTypes<TSchemas>[TEvent]
+      data: InferEventTypes<TEventDefinitions>[TEvent]
     ) => void
   ): () => void;
 
@@ -166,65 +172,66 @@ export type ClientTransport<TSchemas extends EventSchemaMap> = {
 /**
  * Client transport options
  */
-export type ClientTransportOptions<TSchemas extends EventSchemaMap> = {
-  /** Event schemas for validation */
-  schemas: TSchemas;
-  /**
-   * Whether to validate incoming events
-   * @default true
-   */
-  validate?: boolean;
-  /** Reconnection options */
-  reconnect?: {
+export type ClientTransportOptions<TEventDefinitions extends EventDefinitions> =
+  {
+    /** Event definitions for validation */
+    events: TEventDefinitions;
     /**
-     * Enable automatic reconnection
+     * Whether to validate incoming events
      * @default true
      */
-    enabled?: boolean;
-    /**
-     * Maximum number of reconnection attempts
-     * @default Infinity
-     */
-    maxAttempts?: number;
-    /**
-     * Initial delay in ms before reconnecting
-     * @default 1000
-     */
-    delay?: number;
-    /**
-     * Maximum delay in ms
-     * @default 30000
-     */
-    maxDelay?: number;
-    /**
-     * Delay multiplier for exponential backoff
-     * @default 2
-     */
-    multiplier?: number;
+    validate?: boolean;
+    /** Reconnection options */
+    reconnect?: {
+      /**
+       * Enable automatic reconnection
+       * @default true
+       */
+      enabled?: boolean;
+      /**
+       * Maximum number of reconnection attempts
+       * @default Infinity
+       */
+      maxAttempts?: number;
+      /**
+       * Initial delay in ms before reconnecting
+       * @default 1000
+       */
+      delay?: number;
+      /**
+       * Maximum delay in ms
+       * @default 30000
+       */
+      maxDelay?: number;
+      /**
+       * Delay multiplier for exponential backoff
+       * @default 2
+       */
+      multiplier?: number;
+    };
   };
-};
 
 /**
  * Events API interface returned by createEvents
  */
-export type EventsAPI<TSchemas extends EventSchemaMap> = {
-  /** The event schemas */
-  schemas: TSchemas;
+export type EventsAPI<TEventDefinitions extends EventDefinitions> = {
+  /** The event definitions */
+  events: TEventDefinitions;
 
   /**
    * Validate event data against schema
    */
-  validate<TEvent extends keyof TSchemas & string>(
+  validate<TEvent extends keyof TEventDefinitions>(
     event: TEvent,
     data: unknown
-  ): Promise<InferEventTypes<TSchemas>[TEvent]>;
+  ): Promise<InferEventTypes<TEventDefinitions>[TEvent]>;
 
   /**
    * Publish an event
    */
-  publish<TEvent extends keyof TSchemas & string>(
+  publish<TEvent extends keyof TEventDefinitions>(
     event: TEvent,
-    data: InferEventTypes<TSchemas>[TEvent],
+    data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions
   ): Promise<void>;
 
@@ -233,17 +240,17 @@ export type EventsAPI<TSchemas extends EventSchemaMap> = {
    */
   subscribe(
     options?: SubscribeOptions
-  ): AsyncGenerator<EventMessage<TSchemas>, void, unknown>;
+  ): AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown>;
 };
 
 /**
  * Plugin definition type
  */
-export type RealtimePlugin<TSchemas extends EventSchemaMap> = {
+export type RealtimePlugin<TEventDefinitions extends EventDefinitions> = {
   /** Plugin name */
   name: string;
-  /** Event schemas provided by this plugin */
-  schemas: TSchemas;
+  /** Event definitions provided by this plugin */
+  definitions: TEventDefinitions;
   /** Optional helper functions */
   helpers?: Record<string, (...args: unknown[]) => unknown>;
 };
