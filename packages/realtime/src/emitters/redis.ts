@@ -4,8 +4,8 @@ import {
 } from "../internal/server/emitter";
 import { handleSubscription } from "../internal/server/utils";
 import type {
+  EventDefinitions,
   EventMessage,
-  EventSchemaMap,
   InferEventTypes,
   PublishOptions,
   RawEventMessage,
@@ -66,16 +66,18 @@ export type RedisEmitterOptions = {
  * });
  */
 export class RedisEmitter<
-  TSchemas extends EventSchemaMap,
-> extends BaseServerEmitter<TSchemas> {
+  TEventDefinitions extends EventDefinitions,
+> extends BaseServerEmitter<TEventDefinitions> {
   private readonly publisher: RedisClient;
   private readonly subscriber: RedisClient;
   private readonly channelPrefix: string;
   private readonly defaultChannel: string;
 
   /** A map of the full channel name (including prefix) to subscribers */
-  private readonly subscriptions: Map<string, Set<Subscriber<TSchemas>>> =
-    new Map();
+  private readonly subscriptions: Map<
+    string,
+    Set<Subscriber<TEventDefinitions>>
+  > = new Map();
 
   constructor(options: RedisEmitterOptions) {
     super();
@@ -104,7 +106,7 @@ export class RedisEmitter<
     }
 
     try {
-      const parsed: EventMessage<TSchemas> = JSON.parse(message);
+      const parsed: EventMessage<TEventDefinitions> = JSON.parse(message);
 
       for (const subscriber of subscribers) {
         // Check custom filter
@@ -134,18 +136,18 @@ export class RedisEmitter<
 
   async *subscribe(
     options?: SubscribeOptions
-  ): AsyncGenerator<EventMessage<TSchemas>, void, unknown> {
+  ): AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown> {
     this.ensureNotClosed();
 
     const channelName = this.getChannelName(options?.channel);
 
-    const subscriber: Subscriber<TSchemas> = {
+    const subscriber: Subscriber<TEventDefinitions> = {
       filter: options?.filter as
-        | ((event: EventMessage<TSchemas>) => boolean)
+        | ((event: EventMessage<TEventDefinitions>) => boolean)
         | undefined,
       queue: [],
       resolve: null as
-        | ((value: IteratorResult<EventMessage<TSchemas>>) => void)
+        | ((value: IteratorResult<EventMessage<TEventDefinitions>>) => void)
         | null,
       signal: options?.signal,
     };
@@ -177,7 +179,7 @@ export class RedisEmitter<
 
   private async removeSubscriber(
     channelName: string,
-    subscriber: Subscriber<TSchemas>
+    subscriber: Subscriber<TEventDefinitions>
   ): Promise<void> {
     const channelSubscribers = this.subscriptions.get(channelName);
     if (channelSubscribers) {
@@ -189,14 +191,18 @@ export class RedisEmitter<
     }
   }
 
-  async publish<TEvent extends keyof TSchemas & string>(
+  async publish<TEvent extends keyof TEventDefinitions>(
     event: TEvent,
-    data: InferEventTypes<TSchemas>[TEvent],
+    data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions
   ): Promise<void> {
     this.ensureNotClosed();
 
-    const message = createEventMessage<TSchemas, TEvent>(event, data, options);
+    const message = createEventMessage<TEventDefinitions, TEvent>(
+      event,
+      data,
+      options
+    );
     const channelName = this.getChannelName(options?.channel);
 
     await this.publisher.publish(channelName, JSON.stringify(message));

@@ -4,8 +4,8 @@ import {
 } from "../internal/server/emitter";
 import { handleSubscription } from "../internal/server/utils";
 import type {
+  EventDefinitions,
   EventMessage,
-  EventSchemaMap,
   InferEventTypes,
   PublishOptions,
   SubscribeOptions,
@@ -22,19 +22,19 @@ import type { Subscriber } from "./types";
  * const emitter = new InMemoryEmitter();
  */
 export class InMemoryEmitter<
-  TSchemas extends EventSchemaMap,
-> extends BaseServerEmitter<TSchemas> {
-  private readonly subscribers: Set<Subscriber<TSchemas>> = new Set();
+  TEventDefinitions extends EventDefinitions,
+> extends BaseServerEmitter<TEventDefinitions> {
+  private readonly subscribers: Set<Subscriber<TEventDefinitions>> = new Set();
 
   async *subscribe(
     options?: SubscribeOptions
-  ): AsyncGenerator<EventMessage<TSchemas>, void, unknown> {
+  ): AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown> {
     this.ensureNotClosed();
 
-    const subscriber: Subscriber<TSchemas> = {
+    const subscriber: Subscriber<TEventDefinitions> = {
       channel: options?.channel,
       filter: options?.filter as
-        | ((event: EventMessage<TSchemas>) => boolean)
+        | ((event: EventMessage<TEventDefinitions>) => boolean)
         | undefined,
       queue: [],
       resolve: null,
@@ -60,14 +60,18 @@ export class InMemoryEmitter<
     yield* handleSubscription(subscriber, remove, () => this.closed);
   }
 
-  async publish<TEvent extends keyof TSchemas & string>(
+  async publish<TEvent extends keyof TEventDefinitions>(
     event: TEvent,
-    data: InferEventTypes<TSchemas>[TEvent],
+    data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions
   ): Promise<void> {
     this.ensureNotClosed();
 
-    const message = createEventMessage<TSchemas, TEvent>(event, data, options);
+    const message = createEventMessage<TEventDefinitions, TEvent>(
+      event,
+      data,
+      options
+    );
 
     for (const subscriber of this.subscribers) {
       // Check channel filter
