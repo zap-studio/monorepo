@@ -192,7 +192,7 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
     let data = parsed.data;
 
     if (this.validate) {
-      const schema = this.schemas[event];
+      const schema = this.definitions[event];
       if (schema) {
         data = await validateSchema(schema, data);
       }
