@@ -216,7 +216,7 @@ export type ClientTransportOptions<TEventDefinitions extends EventDefinitions> =
  */
 export type EventsAPI<TEventDefinitions extends EventDefinitions> = {
   /** The event definitions */
-  events: TEventDefinitions;
+  definitions: TEventDefinitions;
 
   /**
    * Validate event data against schema
