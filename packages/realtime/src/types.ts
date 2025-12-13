@@ -3,7 +3,9 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 /**
  * A record of event names to their Standard Schema validators
  */
-export type EventDefinitions = Record<string, StandardSchemaV1>;
+ export type EventDefinitions = {
+   [key in string]: StandardSchemaV1;
+ };
 
 /**
  * Infer the output types from a schema map
