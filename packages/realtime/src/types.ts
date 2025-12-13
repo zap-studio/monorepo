@@ -7,6 +7,14 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
    [key in string]: StandardSchemaV1;
  };
 
+ /**
+  * Extract only string keys from an EventDefinitions type
+  */
+ export type EventKeys<TEventDefinitions extends EventDefinitions> = Extract<
+   keyof TEventDefinitions,
+   string
+ >;
+
 /**
  * Infer the output types from a schema map
  */
