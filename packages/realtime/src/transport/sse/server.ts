@@ -27,7 +27,9 @@ const SSE_HEADERS: Record<string, string> = {
 /**
  * Format an event message as SSE data
  */
-export function formatSSEMessage(message: EventMessage): string {
+export function formatSSEMessage<TSchema extends EventSchemaMap>(
+  message: EventMessage<TSchema>
+): string {
   const lines: string[] = [];
 
   lines.push(`id: ${message.id}`);
