@@ -1,6 +1,6 @@
 import { validateSchema } from "../schema";
 import type {
-  EventSchemaMap,
+  EventDefinitions,
   EventsAPI,
   InferEventTypes,
   ServerEmitter,
@@ -16,10 +16,10 @@ import type {
  * ```ts
  * import { z } from "zod";
  * import { createEvents } from "@zap-studio/realtime";
- * import { type EventSchemaMap } from "./types";
+ * import { type EventDefinitions } from "@zap-studio/realtime/types";
  *
  * // Define event schemas using any Standard Schema library
- * const allEvents: EventSchemaMap = {
+ * const allEvents: EventDefinitions = {
  *   message: z.object({ title: z.string(), body: z.string() }),
  *   userPresence: z.object({ userId: z.string(), online: z.boolean() })
  * };
@@ -42,23 +42,23 @@ import type {
  * ```
  */
 export function createEvents<
-  TSchemas extends EventSchemaMap,
-  TEmitter extends ServerEmitter<TSchemas>,
->(schemas: TSchemas, emitter: TEmitter): EventsAPI<TSchemas> {
+  TEventDefinitions extends EventDefinitions,
+  TEmitter extends ServerEmitter<TEventDefinitions>,
+>(definitions: TEventDefinitions, emitter: TEmitter): EventsAPI<TEventDefinitions> {
   return {
-    schemas,
+    definitions,
 
-    async validate<TEvent extends keyof TSchemas & string>(
+    async validate<TEvent extends keyof TEventDefinitions>(
       event: TEvent,
       data: unknown
-    ): Promise<InferEventTypes<TSchemas>[TEvent]> {
-      const schema = schemas[event];
+    ): Promise<InferEventTypes<TEventDefinitions>[TEvent]> {
+      const schema = definitions[event];
       if (!schema) {
         throw new Error(`Unknown event type: ${String(event)}`);
       }
 
       const result = await validateSchema(schema, data);
-      return result as InferEventTypes<TSchemas>[TEvent];
+      return result as InferEventTypes<TEventDefinitions>[TEvent];
     },
 
     publish(event, data, options) {
