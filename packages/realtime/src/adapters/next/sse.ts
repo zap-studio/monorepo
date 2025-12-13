@@ -39,10 +39,12 @@ export function nextSSERoute<TEventDefinitions extends EventDefinitions>(
   ): Promise<Response | NextResponse> => {
     const subscription = events.subscribe(request);
 
-    return createSSEResponse(subscription, {
-      ...options,
-      signal: request.signal,
-    });
+    return await Promise.resolve(
+      createSSEResponse(subscription, {
+        ...options,
+        signal: request.signal,
+      })
+    );
   };
 }
 
