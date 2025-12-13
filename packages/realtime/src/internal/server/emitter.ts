@@ -1,6 +1,6 @@
 import type {
-  EventMessage,
   EventDefinitions,
+  EventMessage,
   InferEventTypes,
   PublishOptions,
   ServerEmitter,
@@ -38,8 +38,9 @@ export function createEventMessage<
  * Abstract base class for server emitters
  * Provides common functionality for all emitter implementations
  */
-export abstract class BaseServerEmitter<TEventDefinitions extends EventDefinitions>
-  implements ServerEmitter<TEventDefinitions>
+export abstract class BaseServerEmitter<
+  TEventDefinitions extends EventDefinitions,
+> implements ServerEmitter<TEventDefinitions>
 {
   protected closed = false;
 
