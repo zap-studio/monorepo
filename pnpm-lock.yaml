@@ -24,6 +24,10 @@ catalogs:
     zod:
       specifier: ^4.1.13
       version: 4.1.13
+  hono:
+    hono:
+      specifier: ^4.11.0
+      version: 4.11.0
   linting:
     '@biomejs/biome':
       specifier: ^2.3.8
@@ -37,6 +41,10 @@ catalogs:
     ultracite:
       specifier: ^6.4.0
       version: 6.4.0
+  next:
+    next:
+      specifier: ^16.0.10
+      version: 16.0.10
   react:
     '@types/react':
       specifier: ^19.2.7
@@ -219,12 +227,6 @@ importers:
       '@standard-schema/spec':
         specifier: catalog:base
         version: 1.0.0
-      hono:
-        specifier: '>=3.0.0'
-        version: 4.11.0
-      next:
-        specifier: '>=15.0.0'
-        version: 16.0.10(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
     devDependencies:
       '@types/node':
         specifier: catalog:types
@@ -244,6 +246,12 @@ importers:
       '@zap-studio/vitest-config':
         specifier: workspace:*
         version: link:../../configs/vitest-config
+      hono:
+        specifier: catalog:hono
+        version: 4.11.0
+      next:
+        specifier: catalog:next
+        version: 16.0.10(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: catalog:react
         version: 19.2.3

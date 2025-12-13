@@ -40,6 +40,8 @@
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
+    "hono": "catalog:hono",
+    "next": "catalog:next",
     "react": "catalog:react",
     "tsdown": "catalog:base",
     "typescript": "catalog:base",

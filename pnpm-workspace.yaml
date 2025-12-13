@@ -11,11 +11,15 @@ catalogs:
     typescript: ^5.9.3
     valibot: ^1.2.0
     zod: ^4.1.13
+  hono:
+    hono: ^4.11.0
   linting:
     '@biomejs/biome': ^2.3.8
     '@commitlint/cli': ^20.2.0
     '@commitlint/config-conventional': ^20.2.0
     ultracite: ^6.4.0
+  next:
+    next: ^16.0.10
   react:
     '@types/react': ^19.2.7
     react: ^19.2.3
