@@ -25,6 +25,7 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
   private readonly url: string;
   private readonly schemas: TSchemas;
   private readonly validate: boolean;
+
   private readonly reconnectEnabled: boolean;
   private readonly reconnectMaxAttempts: number;
   private readonly reconnectDelay: number;
@@ -32,13 +33,17 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
   private readonly reconnectMultiplier: number;
 
   private eventSource: EventSource | null = null;
-  private readonly eventHandlers: Map<string, Set<(data: unknown) => void>> =
-    new Map();
-  private readonly anyHandlers: Set<(event: string, data: unknown) => void> =
-    new Set();
-  private readonly errorHandlers: Set<(error: Error) => void> = new Set();
-  private readonly connectionHandlers: Set<(connected: boolean) => void> =
-    new Set();
+
+  private readonly eventHandlers = new Map<
+    string,
+    Set<(data: unknown) => void>
+  >();
+  private readonly anyHandlers = new Set<
+    (event: string, data: unknown) => void
+  >();
+  private readonly errorHandlers = new Set<(error: Error) => void>();
+  private readonly connectionHandlers = new Set<(connected: boolean) => void>();
+
   private isConnected = false;
   private reconnectAttempts = 0;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -62,21 +67,17 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
   }
 
   connect(): void {
-    if (this.eventSource) {
-      return;
+    if (!this.eventSource) {
+      this.createEventSource();
     }
-
-    this.createEventSource();
   }
 
   disconnect(): void {
     this.clearReconnectTimer();
     this.reconnectAttempts = 0;
 
-    if (this.eventSource) {
-      this.eventSource.close();
-      this.eventSource = null;
-    }
+    this.eventSource?.close();
+    this.eventSource = null;
 
     if (this.isConnected) {
       this.isConnected = false;
@@ -89,11 +90,13 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
     handler: (data: InferEventTypes<TSchemas>[TEvent]) => void
   ): () => void {
     let handlers = this.eventHandlers.get(event);
+
     if (!handlers) {
       handlers = new Set();
       this.eventHandlers.set(event, handlers);
       this.registerEventListener(event);
     }
+
     handlers.add(handler);
 
     return () => {
@@ -111,23 +114,17 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
     ) => void
   ): () => void {
     this.anyHandlers.add(handler);
-    return () => {
-      this.anyHandlers.delete(handler);
-    };
+    return () => this.anyHandlers.delete(handler);
   }
 
   onError(handler: (error: Error) => void): () => void {
     this.errorHandlers.add(handler);
-    return () => {
-      this.errorHandlers.delete(handler);
-    };
+    return () => this.errorHandlers.delete(handler);
   }
 
   onConnectionChange(handler: (connected: boolean) => void): () => void {
     this.connectionHandlers.add(handler);
-    return () => {
-      this.connectionHandlers.delete(handler);
-    };
+    return () => this.connectionHandlers.delete(handler);
   }
 
   private createEventSource(): void {
@@ -161,59 +158,64 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
     }
   }
 
-  private registerEventListener(event: string): void {
+  private registerEventListener<TEvent extends keyof TSchemas & string>(
+    event: TEvent
+  ): void {
     if (!this.eventSource) {
       return;
     }
 
-    this.eventSource.addEventListener(event, async (e: Event) => {
-      const messageEvent = e as MessageEvent;
-      try {
-        const parsed: ParsedEventData = JSON.parse(messageEvent.data);
-        let data = parsed.data;
-
-        // Validate against schema if enabled
-        if (this.validate) {
-          const schema = this.schemas[event];
-          if (schema) {
-            data = await validateSchema(schema, data);
-          }
-        }
-
-        // Notify specific handlers
-        const handlers = this.eventHandlers.get(event);
-        if (handlers) {
-          for (const handler of handlers) {
-            try {
-              handler(data);
-            } catch (handlerError) {
-              this.notifyError(
-                handlerError instanceof Error
-                  ? handlerError
-                  : new Error(String(handlerError))
-              );
-            }
-          }
-        }
-
-        // Notify any handlers
-        for (const handler of this.anyHandlers) {
-          try {
-            handler(event, data);
-          } catch (handlerError) {
-            this.notifyError(
-              handlerError instanceof Error
-                ? handlerError
-                : new Error(String(handlerError))
-            );
-          }
-        }
-      } catch (error) {
-        this.notifyError(
-          error instanceof Error ? error : new Error(String(error))
-        );
-      }
+    this.eventSource.addEventListener(event, (e) => {
+      this.handleEvent(event, e);
     });
+  }
+
+  private async handleEvent<
+    TEvent extends keyof TSchemas & string,
+    TData extends string,
+  >(event: TEvent, e: MessageEvent<TData>): Promise<void> {
+    try {
+      const data = await this.parseAndValidate(event, e.data);
+      this.dispatchEvent(event, data);
+    } catch (error) {
+      this.notifyError(
+        error instanceof Error ? error : new Error(String(error))
+      );
+    }
+  }
+
+  private async parseAndValidate<TEvent extends keyof TSchemas & string>(
+    event: TEvent,
+    rawData: string
+  ): Promise<InferEventTypes<TSchemas>[TEvent]> {
+    const parsed: ParsedEventData = JSON.parse(rawData);
+    let data = parsed.data;
+
+    if (this.validate) {
+      const schema = this.schemas[event];
+      if (schema) {
+        data = await validateSchema(schema, data);
+      }
+    }
+
+    return data as InferEventTypes<TSchemas>[TEvent];
+  }
+
+  private dispatchEvent<TEvent extends keyof TSchemas & string>(
+    event: TEvent,
+    data: InferEventTypes<TSchemas>[TEvent]
+  ): void {
+    const handlers = this.eventHandlers.get(event);
+
+    if (handlers) {
+      for (const handler of handlers) {
+        this.safeCall(() => handler(data));
+      }
+    }
+
+    for (const handler of this.anyHandlers) {
+      this.safeCall(() => handler(event, data));
+    }
   }
 
   private handleReconnect(): void {
@@ -251,21 +253,21 @@ export class SSEClientTransport<TSchemas extends EventSchemaMap>
 
   private notifyError(error: Error): void {
     for (const handler of this.errorHandlers) {
-      try {
-        handler(error);
-      } catch {
-        // Ignore errors in error handlers
-      }
+      this.safeCall(() => handler(error));
     }
   }
 
   private notifyConnectionChange(connected: boolean): void {
     for (const handler of this.connectionHandlers) {
-      try {
-        handler(connected);
-      } catch {
-        // Ignore errors in connection handlers
-      }
+      this.safeCall(() => handler(connected));
+    }
+  }
+
+  private safeCall(fn: () => void): void {
+    try {
+      fn();
+    } catch {
+      // intentionally ignored
     }
   }
 }
