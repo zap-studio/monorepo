@@ -22,7 +22,9 @@ export abstract class BaseServerEmitter<
     options?: SubscribeOptions
   ): AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown>;
 
-  abstract publish<TEvent extends EventKeys<TEventDefinitions>>(
+  abstract publish<
+    TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
+  >(
     event: TEvent,
     data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions

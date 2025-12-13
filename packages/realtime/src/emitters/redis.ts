@@ -188,7 +188,9 @@ export class RedisEmitter<
     }
   }
 
-  async publish<TEvent extends EventKeys<TEventDefinitions>>(
+  async publish<
+    TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
+  >(
     event: TEvent,
     data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions

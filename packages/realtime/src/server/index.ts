@@ -57,7 +57,9 @@ export class Events<
   /**
    * Validate event data against its schema
    */
-  async validate<TEvent extends EventKeys<TEventDefinitions>>(
+  async validate<
+    TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
+  >(
     event: TEvent,
     data: unknown
   ): Promise<InferEventTypes<TEventDefinitions>[TEvent]> {
@@ -73,7 +75,9 @@ export class Events<
   /**
    * Publish an event
    */
-  async publish<TEvent extends EventKeys<TEventDefinitions>>(
+  async publish<
+    TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
+  >(
     event: TEvent,
     data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions

@@ -18,7 +18,7 @@ export function generateEventId(): string {
  */
 export function createEventMessage<
   TEventDefinitions extends EventDefinitions,
-  TEvent extends EventKeys<TEventDefinitions>,
+  TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
 >(
   event: TEvent,
   data: InferEventTypes<TEventDefinitions>[TEvent],

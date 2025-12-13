@@ -16,6 +16,24 @@ type ParsedEventData = {
 };
 
 /**
+ * Handler function for a specific event type.
+ */
+type EventHandler<
+  TEventDefinitions extends EventDefinitions,
+  TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
+> = (data: InferEventTypes<TEventDefinitions>[TEvent]) => void;
+
+/**
+ * Generic handler function for any event type.
+ */
+type AnyEventHandler<TEventDefinitions extends EventDefinitions> = <
+  TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
+>(
+  event: TEvent,
+  data: InferEventTypes<TEventDefinitions>[TEvent]
+) => void;
+
+/**
  * SSE Client Transport
  *
  * Wraps EventSource for type-safe event handling with schema validation
@@ -36,12 +54,10 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
   private eventSource: EventSource | null = null;
 
   private readonly eventHandlers = new Map<
-    string,
-    Set<(data: unknown) => void>
+    EventKeys<TEventDefinitions>,
+    Set<EventHandler<TEventDefinitions>>
   >();
-  private readonly anyHandlers = new Set<
-    (event: string, data: unknown) => void
-  >();
+  private readonly anyHandlers = new Set<AnyEventHandler<TEventDefinitions>>();
   private readonly errorHandlers = new Set<(error: Error) => void>();
   private readonly connectionHandlers = new Set<(connected: boolean) => void>();
 
@@ -86,7 +102,9 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
     }
   }
 
-  on<TEvent extends EventKeys<TEventDefinitions>>(
+  on<
+    TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
+  >(
     event: TEvent,
     handler: (data: InferEventTypes<TEventDefinitions>[TEvent]) => void
   ): () => void {
@@ -109,7 +127,10 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
   }
 
   onAny(
-    handler: <TEvent extends EventKeys<TEventDefinitions>>(
+    handler: <
+      TEvent extends
+        EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
+    >(
       event: TEvent,
       data: InferEventTypes<TEventDefinitions>[TEvent]
     ) => void
@@ -159,9 +180,9 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
     }
   }
 
-  private registerEventListener<TEvent extends EventKeys<TEventDefinitions>>(
-    event: TEvent
-  ): void {
+  private registerEventListener<
+    TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
+  >(event: TEvent): void {
     if (!this.eventSource) {
       return;
     }
@@ -172,8 +193,8 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
   }
 
   private async handleEvent<
-    TEvent extends EventKeys<TEventDefinitions>,
     TData extends string,
+    TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
   >(event: TEvent, e: MessageEvent<TData>): Promise<void> {
     try {
       const data = await this.parseAndValidate(event, e.data);
@@ -185,7 +206,9 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
     }
   }
 
-  private async parseAndValidate<TEvent extends EventKeys<TEventDefinitions>>(
+  private async parseAndValidate<
+    TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
+  >(
     event: TEvent,
     rawData: string
   ): Promise<InferEventTypes<TEventDefinitions>[TEvent]> {
@@ -202,10 +225,9 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
     return data as InferEventTypes<TEventDefinitions>[TEvent];
   }
 
-  private dispatchEvent<TEvent extends EventKeys<TEventDefinitions>>(
-    event: TEvent,
-    data: InferEventTypes<TEventDefinitions>[TEvent]
-  ): void {
+  private dispatchEvent<
+    TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
+  >(event: TEvent, data: InferEventTypes<TEventDefinitions>[TEvent]): void {
     const handlers = this.eventHandlers.get(event);
 
     if (handlers) {
