@@ -47,10 +47,14 @@
     "zod": "catalog:base"
   },
   "peerDependencies": {
+    "hono": ">=3.0.0",
     "next": ">=15.0.0",
     "react": ">=18.0.0"
   },
   "peerDependenciesMeta": {
+    "hono": {
+      "optional": true
+    },
     "next": {
       "optional": true
     },
