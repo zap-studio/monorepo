@@ -2,75 +2,96 @@ import { validateSchema } from "../schema";
 import type {
   EventDefinitions,
   EventKeys,
+  EventMessage,
   EventsAPI,
   InferEventTypes,
+  PublishOptions,
   ServerEmitter,
+  SubscribeOptions,
 } from "../types";
 
 /**
- * Create a type-safe events API from a schema map
- *
- * @throws Error if an unknown event type is provided
- * @throws ValidationError if the data does not match the schema
+ * Type-safe Events class to manage event definitions and emit events
  *
  * @example
- * ```ts
- * import { z } from "zod";
- * import { createEvents } from "@zap-studio/realtime";
- * import { type EventDefinitions } from "@zap-studio/realtime/types";
+ * import { InMemoryEmitter } from "@zap-studio/realtime/emitters/in-memory";
  *
- * // Define event schemas using any Standard Schema library
- * const allEvents: EventDefinitions = {
- *   message: z.object({ title: z.string(), body: z.string() }),
- *   userPresence: z.object({ userId: z.string(), online: z.boolean() })
- * };
+ * const emitter = new InMemoryEmitter();
  *
- * // Create a type-safe events API from the schema map
- * export const events = createEvents(allEvents);
+ * const events = new Events(emitter, {
+ *   userCreated: {
+ *     type: "userCreated",
+ *     schema: z.object({
+ *       id: z.string().uuid(),
+ *       email: z.string().email(),
+ *     }),
+ *   },
+ * });
  *
  * // Publish an event
- * await events.publish("message", { title: "Hello", body: "World" });
+ * events.publish("userCreated", { id: "123", email: "test@example.com" });
  *
  * // Subscribe to events
- * for await (const event of events.subscribe()) {
- *   console.log(event);
+ * for await (const message of events.subscribe()) {
+ *   console.log(message);
  * }
  *
- * // Validate an event
- * const result = await events.validate("message", { title: "Hello", body: "World" });
- * console.log(result);
- * // result is { title: "Hello", body: "World" }
- * ```
+ * // Validate event data
+ * const data = await events.validate("userCreated", { id: "123", email: "test@example.com" });
+ * console.log(data);
+ * // data is { id: "123", email: "test@example.com" }
  */
-export function createEvents<
+export class Events<
   TEventDefinitions extends EventDefinitions,
   TEmitter extends ServerEmitter<TEventDefinitions>,
->(
-  definitions: TEventDefinitions,
-  emitter: TEmitter
-): EventsAPI<TEventDefinitions> {
-  return {
-    definitions,
+> implements EventsAPI<TEventDefinitions>
+{
+  private readonly definitions: TEventDefinitions;
+  private readonly emitter: TEmitter;
 
-    async validate<TEvent extends EventKeys<TEventDefinitions>>(
-      event: TEvent,
-      data: unknown
-    ): Promise<InferEventTypes<TEventDefinitions>[TEvent]> {
-      const schema = definitions[event];
-      if (!schema) {
-        throw new Error(`Unknown event type: ${String(event)}`);
-      }
+  constructor(emitter: TEmitter, definitions: TEventDefinitions) {
+    this.emitter = emitter;
+    this.definitions = definitions;
+  }
 
-      const result = await validateSchema(schema, data);
-      return result as InferEventTypes<TEventDefinitions>[TEvent];
-    },
+  /**
+   * Validate event data against its schema
+   */
+  async validate<TEvent extends EventKeys<TEventDefinitions>>(
+    event: TEvent,
+    data: unknown
+  ): Promise<InferEventTypes<TEventDefinitions>[TEvent]> {
+    const schema = this.definitions[event];
+    if (!schema) {
+      throw new Error(`Unknown event type: ${String(event)}`);
+    }
 
-    publish(event, data, options) {
-      return emitter.publish(event, data, options);
-    },
+    const result = await validateSchema(schema, data);
+    return result as InferEventTypes<TEventDefinitions>[TEvent];
+  }
 
-    subscribe(options) {
-      return emitter.subscribe(options);
-    },
-  };
+  /**
+   * Publish an event
+   */
+  async publish<TEvent extends EventKeys<TEventDefinitions>>(
+    event: TEvent,
+    data: InferEventTypes<TEventDefinitions>[TEvent],
+    options?: PublishOptions
+  ): Promise<void> {
+    return await this.emitter.publish(event, data, options);
+  }
+
+  /**
+   * Subscribe to events
+   */
+  async *subscribe(
+    options?: SubscribeOptions
+  ): AsyncGenerator<
+    EventMessage<TEventDefinitions, EventKeys<TEventDefinitions>>,
+    void,
+    unknown
+  > {
+    await Promise.resolve();
+    yield* this.emitter.subscribe(options);
+  }
 }
