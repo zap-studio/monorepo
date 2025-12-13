@@ -41,3 +41,4 @@ onlyBuiltDependencies:
   - core-js-pure
   - esbuild
   - lefthook
+  - sharp

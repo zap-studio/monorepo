@@ -47,9 +47,13 @@
     "zod": "catalog:base"
   },
   "peerDependencies": {
+    "next": ">=15.0.0",
     "react": ">=18.0.0"
   },
   "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    },
     "react": {
       "optional": true
     }
