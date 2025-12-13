@@ -1,5 +1,5 @@
 import type { Subscriber } from "../../emitters/types";
-import type { EventMessage, EventSchemaMap } from "../../types";
+import type { EventDefinitions, EventMessage } from "../../types";
 
 /**
  * Handles the subscription logic for an `AsyncGenerator` of events.
@@ -10,11 +10,13 @@ import type { EventMessage, EventSchemaMap } from "../../types";
  *
  * It will continue yielding events until the subscriber is aborted or the emitter is closed.
  */
-export async function* handleSubscription<TSchemas extends EventSchemaMap>(
-  subscriber: Subscriber<TSchemas>,
+export async function* handleSubscription<
+  TEventDefinitions extends EventDefinitions,
+>(
+  subscriber: Subscriber<TEventDefinitions>,
   removeSubscriber: () => Promise<void> | Promise<boolean>,
   closed: () => boolean
-): AsyncGenerator<EventMessage<TSchemas>, void, unknown> {
+): AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown> {
   try {
     while (!(closed() || subscriber.signal?.aborted)) {
       if (subscriber.queue.length > 0) {
@@ -25,11 +27,11 @@ export async function* handleSubscription<TSchemas extends EventSchemaMap>(
         continue;
       }
 
-      const event = await new Promise<IteratorResult<EventMessage<TSchemas>>>(
-        (resolve) => {
-          subscriber.resolve = resolve;
-        }
-      );
+      const event = await new Promise<
+        IteratorResult<EventMessage<TEventDefinitions>>
+      >((resolve) => {
+        subscriber.resolve = resolve;
+      });
 
       if (event.done) {
         return;
