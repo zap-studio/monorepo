@@ -175,7 +175,7 @@ export type ClientTransport<TEventDefinitions extends EventDefinitions> = {
 export type ClientTransportOptions<TEventDefinitions extends EventDefinitions> =
   {
     /** Event definitions for validation */
-    events: TEventDefinitions;
+    definitions: TEventDefinitions;
     /**
      * Whether to validate incoming events
      * @default true
