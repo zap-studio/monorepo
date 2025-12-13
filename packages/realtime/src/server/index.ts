@@ -44,7 +44,10 @@ import type {
 export function createEvents<
   TEventDefinitions extends EventDefinitions,
   TEmitter extends ServerEmitter<TEventDefinitions>,
->(definitions: TEventDefinitions, emitter: TEmitter): EventsAPI<TEventDefinitions> {
+>(
+  definitions: TEventDefinitions,
+  emitter: TEmitter
+): EventsAPI<TEventDefinitions> {
   return {
     definitions,
 
