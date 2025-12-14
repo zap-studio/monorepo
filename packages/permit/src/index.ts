@@ -1,4 +1,4 @@
-import type { ConditionFn, PolicyFn } from "./types";
+import type { Action, ConditionFn, PolicyFn, Resource } from "./types";
 
 /**
  * Returns a policy function that always allows the action.
@@ -11,8 +11,8 @@ import type { ConditionFn, PolicyFn } from "./types";
  */
 export function allow<
   TContext,
-  TAction = unknown,
-  TResource = unknown,
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
 >(): PolicyFn<TContext, TAction, TResource> {
   return () => "allow";
 }
@@ -28,8 +28,8 @@ export function allow<
  */
 export function deny<
   TContext,
-  TAction = unknown,
-  TResource = unknown,
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
 >(): PolicyFn<TContext, TAction, TResource> {
   return () => "deny";
 }
@@ -44,7 +44,11 @@ export function deny<
  * policy({ role: "user" }, "read", "post"); // "deny"
  * ```
  */
-export function when<TContext, TAction = unknown, TResource = unknown>(
+export function when<
+  TContext,
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
+>(
   condition: ConditionFn<TContext, TAction, TResource>
 ): PolicyFn<TContext, TAction, TResource> {
   return (context, action, resource) =>
@@ -61,7 +65,11 @@ export function when<TContext, TAction = unknown, TResource = unknown>(
  * policy({ role: "admin" }, "write", "post"); // false
  * ```
  */
-export function and<TContext, TAction = unknown, TResource = unknown>(
+export function and<
+  TContext,
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
+>(
   ...conditions: ConditionFn<TContext, TAction, TResource>[]
 ): ConditionFn<TContext, TAction, TResource> {
   return (context, action, resource) =>
@@ -78,7 +86,11 @@ export function and<TContext, TAction = unknown, TResource = unknown>(
  * policy({ role: "user" }, "read", "post"); // true
  * ```
  */
-export function or<TContext, TAction = unknown, TResource = unknown>(
+export function or<
+  TContext,
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
+>(
   ...conditions: ConditionFn<TContext, TAction, TResource>[]
 ): ConditionFn<TContext, TAction, TResource> {
   return (context, action, resource) =>
@@ -95,7 +107,11 @@ export function or<TContext, TAction = unknown, TResource = unknown>(
  * policy({ role: "user" }, "read", "post"); // true
  * ```
  */
-export function not<TContext, TAction = unknown, TResource = unknown>(
+export function not<
+  TContext,
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
+>(
   condition: ConditionFn<TContext, TAction, TResource>
 ): ConditionFn<TContext, TAction, TResource> {
   return (context, action, resource) => !condition(context, action, resource);
