@@ -37,6 +37,10 @@
     "vitest": "catalog:testing"
   },
   "exports": {
-    ".": "./src/index.ts"
-  }
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts"
 }
