@@ -4,6 +4,12 @@
   "type": "module",
   "license": "MIT",
   "private": false,
+  "homepage": "https://www.zapstudio.dev/packages/fetch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/fetch"
+  },
   "description": "A type-safe fetch wrapper for HTTP requests with runtime schema validation.",
   "keywords": [
     "fetch",
