@@ -4,6 +4,12 @@
   "type": "module",
   "license": "MIT",
   "private": false,
+  "homepage": "https://www.zapstudio.dev/packages/realtime",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/realtime"
+  },
   "description": "Type-safe real-time event streaming library with SSE support",
   "keywords": [
     "realtime",
