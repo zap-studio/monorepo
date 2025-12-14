@@ -30,7 +30,7 @@ export type Context<
  * A function that determines whether a given action on a resource is allowed in a specific context.
  */
 export type PolicyFn<
-  TContext,
+  TContext extends Context,
   TAction extends Action = Action,
   TResource extends Resource = Resource,
 > = (context: TContext, action: TAction, resource: TResource) => Decision;
@@ -39,7 +39,7 @@ export type PolicyFn<
  * A function that evaluates a condition for a given action and resource in a specific context.
  */
 export type ConditionFn<
-  TContext,
+  TContext extends Context,
   TAction extends Action = Action,
   TResource extends Resource = Resource,
 > = (context: TContext, action: TAction, resource: TResource) => boolean;
@@ -57,7 +57,7 @@ export type ConditionFn<
  * };
  */
 export type Actions<
-  TContext,
+  TContext extends Context,
   TAction extends Action = Action,
   TResource extends Resource = Resource,
 > = {
@@ -83,7 +83,7 @@ export type Actions<
  * };
  */
 export type Resources<
-  TContext,
+  TContext extends Context,
   TResource extends Resource = Resource,
   TAction extends Action = Action,
 > = {
