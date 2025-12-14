@@ -45,9 +45,9 @@ export type WSClientTransportOptions<
 export class WSClientTransport<TEventDefinitions extends EventDefinitions>
   implements ClientTransport<TEventDefinitions>
 {
-  // @ts-ignore need to fix this later
+  // @ts-expect-error need to fix this later
   private readonly url: string;
-  // @ts-ignore need to fix this later
+  // @ts-expect-error need to fix this later
   private readonly options: WSClientTransportOptions<TEventDefinitions>;
 
   constructor(
