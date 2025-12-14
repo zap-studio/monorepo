@@ -200,7 +200,7 @@ export function createChatHelpers<
  * });
  *
  * // Get helper functions
- * const { sendMessage, editMessage, deleteMessage, joinChat, leaveChat, markAsRead, dismiss, clearAll } = chat.createHelpers(emitter);
+ * const { sendMessage, editMessage, deleteMessage, joinChat, leaveChat } = chat.createHelpers(emitter);
  *
  * // Use helper functions
  * await sendMessage(userId, chatId, content);
@@ -208,9 +208,6 @@ export function createChatHelpers<
  * await deleteMessage(userId, chatId, messageId);
  * await joinChat(userId, chatId);
  * await leaveChat(userId, chatId);
- * await markAsRead(userId, chatId);
- * await dismiss(userId, chatId);
- * await clearAll(userId);
  * ```
  */
 export function createChatPlugin<
