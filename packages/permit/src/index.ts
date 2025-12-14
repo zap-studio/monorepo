@@ -322,32 +322,59 @@ export function collectInheritedRoles<TRole extends Role = Role>(
 /**
  * Checks if a user has a specific role, considering the role hierarchy.
  *
+ * This function supports both direct role assignment and inherited roles via a hierarchy.
+ * The user's roles can be a single value or an array of roles.
+ *
  * @example
  * ```ts
- * const userRoles = ["editor", "moderator"];
- * const hasEditorRole = hasRole("editor")(userRoles);
- * // Result: true
+ * // User with a single role, no hierarchy
+ * const ctx1 = { role: "editor" };
+ * const canEdit = hasRole("editor");
+ * canEdit(ctx1); // true
+ * canEdit({ role: "user" }); // false
  *
- * const hasAdminRole = hasRole("admin")(userRoles);
- * // Result: false
+ * // User with multiple roles, no hierarchy
+ * const ctx2 = { role: ["user", "moderator"] };
+ * const canModerate = hasRole("moderator");
+ * hasRole("moderator")(ctx2); // true
+ * hasRole("admin")(ctx2); // false
  *
- * const hasSuperadminRole = hasRole("superadmin")(userRoles);
- * // Result: false
+ * // With hierarchy: editor inherits from user, admin inherits from editor
+ * const hierarchy = {
+ *   user: [],
+ *   editor: ["user"],
+ *   admin: ["editor"],
+ * };
+ * const ctx3 = { role: "admin" };
+ * hasRole("user", hierarchy)(ctx3); // true (admin -> editor -> user)
+ * hasRole("editor", hierarchy)(ctx3); // true
+ * hasRole("admin", hierarchy)(ctx3); // true
+ * hasRole("moderator", hierarchy)(ctx3); // false
  *
- * const hasSuperadminRoleWithHierarchy = hasRole("superadmin", hierarchy)(userRoles);
- * // Result: true
+ * // User with multiple roles and hierarchy
+ * const ctx4 = { role: ["moderator", "editor"] };
+ * hasRole("user", hierarchy)(ctx4); // true (editor -> user)
+ * hasRole("admin", hierarchy)(ctx4); // false
  * ```
  */
-export function hasRole(role: Role, hierarchy?: RoleHierarchy) {
-  return <TContext extends Context & { role: Role | Role[] }>(
-    context: TContext
-  ): boolean => {
+export function hasRole<
+  TContext extends Context & { role: TRole | TRole[] },
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
+  TRole extends Role = Role,
+>(
+  role: TRole,
+  hierarchy?: RoleHierarchy
+): ConditionFn<TContext, TAction, TResource> {
+  return (context) => {
     const userRoles = Array.isArray(context.role)
       ? context.role
       : [context.role];
+
     if (!hierarchy) {
       return userRoles.includes(role);
     }
+
     const inherited = collectInheritedRoles(userRoles, hierarchy);
     return inherited.has(role);
   };
