@@ -11,6 +11,8 @@ catalogs:
     typescript: ^5.9.3
     valibot: ^1.2.0
     zod: ^4.1.13
+  elysia:
+    elysia: ^1.4.19
   hono:
     hono: ^4.11.0
   linting:

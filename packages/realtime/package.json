@@ -40,6 +40,7 @@
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
+    "elysia": "catalog:elysia",
     "hono": "catalog:hono",
     "next": "catalog:next",
     "react": "catalog:react",
@@ -49,11 +50,15 @@
     "zod": "catalog:base"
   },
   "peerDependencies": {
+    "elysia": ">=1.0.0",
     "hono": ">=3.0.0",
     "next": ">=15.0.0",
     "react": ">=18.0.0"
   },
   "peerDependenciesMeta": {
+    "elysia": {
+      "optional": true
+    },
     "hono": {
       "optional": true
     },
