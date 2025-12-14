@@ -2,8 +2,8 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type {
   ChatEventDefinitions,
   ChatMessagePayload,
-  TypingIndicatorPayload,
   UserPresencePayload,
+  UserTypingIndicatorPayload,
 } from "./types";
 
 /**
@@ -102,7 +102,7 @@ export function createChatEventsSchema<
       userName: schemaBuilder.string(),
       chatId: schemaBuilder.string(),
       typing: schemaBuilder.boolean(),
-    }) as StandardSchemaV1<TypingIndicatorPayload>,
+    }) as StandardSchemaV1<UserTypingIndicatorPayload>,
 
     userJoined: schemaBuilder.object({
       userId: schemaBuilder.string(),

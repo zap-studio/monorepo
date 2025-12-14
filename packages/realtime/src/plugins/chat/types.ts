@@ -72,9 +72,9 @@ export type UserPresencePayload = {
 };
 
 /**
- * Typing indicator payload type
+ * User typing indicator payload type
  */
-export type TypingIndicatorPayload = {
+export type UserTypingIndicatorPayload = {
   /** User ID */
   userId: string;
   /** User display name */
@@ -130,7 +130,7 @@ export type ChatEventDefinitions = {
   /**
    * User typing event definition
    */
-  userTyping: StandardSchemaV1<TypingIndicatorPayload>;
+  userTyping: StandardSchemaV1<UserTypingIndicatorPayload>;
   /**
    * User joined event definition
    */
