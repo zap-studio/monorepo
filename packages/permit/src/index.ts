@@ -1,4 +1,4 @@
-import type { Action, ConditionFn, PolicyFn, Resource } from "./types";
+import type { Action, ConditionFn, Context, PolicyFn, Resource } from "./types";
 
 /**
  * Returns a policy function that always allows the action.
@@ -10,7 +10,7 @@ import type { Action, ConditionFn, PolicyFn, Resource } from "./types";
  * ```
  */
 export function allow<
-  TContext,
+  TContext extends Context,
   TAction extends Action = Action,
   TResource extends Resource = Resource,
 >(): PolicyFn<TContext, TAction, TResource> {
@@ -27,7 +27,7 @@ export function allow<
  * ```
  */
 export function deny<
-  TContext,
+  TContext extends Context,
   TAction extends Action = Action,
   TResource extends Resource = Resource,
 >(): PolicyFn<TContext, TAction, TResource> {
@@ -45,7 +45,7 @@ export function deny<
  * ```
  */
 export function when<
-  TContext,
+  TContext extends Context,
   TAction extends Action = Action,
   TResource extends Resource = Resource,
 >(
@@ -66,7 +66,7 @@ export function when<
  * ```
  */
 export function and<
-  TContext,
+  TContext extends Context,
   TAction extends Action = Action,
   TResource extends Resource = Resource,
 >(
@@ -87,7 +87,7 @@ export function and<
  * ```
  */
 export function or<
-  TContext,
+  TContext extends Context,
   TAction extends Action = Action,
   TResource extends Resource = Resource,
 >(
@@ -108,7 +108,7 @@ export function or<
  * ```
  */
 export function not<
-  TContext,
+  TContext extends Context,
   TAction extends Action = Action,
   TResource extends Resource = Resource,
 >(
@@ -127,9 +127,9 @@ export function not<
  * isAdmin({ role: "user" }); // false
  * ```
  */
-export function has<
-  TContext extends Record<string, unknown>,
-  K extends keyof TContext,
->(key: K, value: TContext[K]): ConditionFn<TContext> {
+export function has<TContext extends Context, K extends keyof TContext>(
+  key: K,
+  value: TContext[K]
+): ConditionFn<TContext> {
   return (context) => context[key] === value;
 }
