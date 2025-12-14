@@ -17,6 +17,7 @@ import type {
  * ```ts
  * const policy = allow();
  * policy({ role: "admin" }, "read", "post"); // "allow"
+ * policy({ role: "user" }, "read", { type: "post", id: 1 }); // "allow"
  * ```
  */
 export function allow<
@@ -34,6 +35,7 @@ export function allow<
  * ```ts
  * const policy = deny();
  * policy({ role: "user" }, "read", "post"); // "deny"
+ * policy({ role: "user" }, "read", { type: "post", id: 1 }); // "deny"
  * ```
  */
 export function deny<
@@ -52,6 +54,7 @@ export function deny<
  * const policy = when((user, action, resource) => user === "admin");
  * policy({ role: "admin" }, "read", "post"); // "allow"
  * policy({ role: "user" }, "read", "post"); // "deny"
+ * policy({ role: "user" }, "read", { type: "post", id: 1 }); // "deny"
  * ```
  */
 export function when<
@@ -73,6 +76,7 @@ export function when<
  * const policy = and((user, action, resource) => user === "admin", (user, action, resource) => action === "read");
  * policy({ role: "admin" }, "read", "post"); // true
  * policy({ role: "admin" }, "write", "post"); // false
+ * policy({ role: "user" }, "read", { type: "post", id: 1 }); // false
  * ```
  */
 export function and<
@@ -94,6 +98,7 @@ export function and<
  * const policy = or((user, action, resource) => user === "admin", (user, action, resource) => action === "read");
  * policy({ role: "admin" }, "read", "post"); // true
  * policy({ role: "user" }, "read", "post"); // true
+ * policy({ role: "user" }, "write", { type: "post", id: 1 }); // false
  * ```
  */
 export function or<
@@ -115,6 +120,7 @@ export function or<
  * const policy = not((user, action, resource) => user === "admin");
  * policy({ role: "admin" }, "read", "post"); // false
  * policy({ role: "user" }, "read", "post"); // true
+ * policy({ role: "user" }, "write", { type: "post", id: 1 }); // true
  * ```
  */
 export function not<
@@ -145,26 +151,25 @@ export function has<TContext extends Context, K extends keyof TContext>(
 }
 
 /**
- * Creates a policy object from a mapping of resources and actions to policy functions.
+ * Creates a policy object from a mapping of resource types and actions to policy functions.
  *
- * This utility helps you define a policy by providing a map of resources, each mapping to actions,
+ * This utility helps you define a policy by providing a map of resource types (strings), each mapping to actions,
  * each mapping to a policy function. The returned policy object exposes a `can` method to check
  * if a given action on a resource is allowed in a specific context.
  *
  * @example
- * ```ts
- * type Context = {
- *   user: string;
- * };
- *
+ * type Context = { user: { id: number; role: string } };
  * type Action = "read" | "write";
+ * type Post = { type: 'post'; visibility: 'public' | 'private'; authorId: number };
+ * type Comment = { type: 'comment'; authorId: number };
+ * type MyResource = Post | Comment;
  *
- * type Resource = "post" | "comment";
- *
- * const policy = definePolicy<Context, Action, Resource>()({
+ * const policy = definePolicy<Context, Action, MyResource>(
+ *   (resource) => resource.type  // Extract type from object (e.g., 'post' or 'comment')
+ * )({
  *   post: {
- *     read: allow(),
- *     write: when((ctx) => ctx.role === "admin"),
+ *     read: when((ctx, action, resource) => resource.visibility === 'public' || ctx.user.id === resource.authorId),
+ *     write: when((ctx, action, resource) => ctx.user.id === resource.authorId),
  *   },
  *   comment: {
  *     read: allow(),
@@ -172,20 +177,28 @@ export function has<TContext extends Context, K extends keyof TContext>(
  *   },
  * });
  *
- * policy.can({ role: "admin" }, "write", "post"); // true
- * policy.can({ role: "user" }, "write", "post"); // false
- * ```
+ * const post: Post = { type: 'post', visibility: 'private', authorId: 123 };
+ * policy.can({ user: { id: 123, role: 'user' } }, 'read', post); // true (author match)
+ * policy.can({ user: { id: 456, role: 'user' } }, 'read', post); // false (private, not author)
+ * policy.can({ user: { id: 123, role: 'user' } }, 'write', comment); // false (always deny writing comment)
  */
 export function definePolicy<
   TContext extends Context,
   TAction extends Action = Action,
   TResource extends Resource = Resource,
->() {
+>(getResourceType?: (resource: TResource) => string) {
   return (
     map: Resources<TContext, TAction, TResource>
   ): Policy<TContext, TAction, TResource> => ({
     can(context, action, resource) {
-      const resourcePolicies = map[resource];
+      let resourceType: string;
+      if (getResourceType) {
+        resourceType = getResourceType(resource);
+      } else {
+        resourceType = String(resource); // 'resource' is the type key (string)
+      }
+
+      const resourcePolicies = map[resourceType];
       if (!resourcePolicies) {
         return false;
       }
