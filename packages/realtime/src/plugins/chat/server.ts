@@ -183,6 +183,35 @@ export function createChatHelpers<
 
 /**
  * Create a complete chat plugin
+ *
+ * @example
+ * ```ts
+ * import { createChatPlugin } from "@zap-studio/realtime/plugins/chat/server";
+ * import { z } from "zod";
+ *
+ * const chat = createChatPlugin({
+ *   messageEdited: z.object({
+ *       userId: z.string().uuid(),
+ *       chatId: z.string().uuid(),
+ *       content: z.string().min(1).max(1000),
+ *       editedAt: z.number().min(0).default(Date.now()),
+ *   }),
+ *   // all other event definitions
+ * });
+ *
+ * // Get helper functions
+ * const { sendMessage, editMessage, deleteMessage, joinChat, leaveChat, markAsRead, dismiss, clearAll } = chat.createHelpers(emitter);
+ *
+ * // Use helper functions
+ * await sendMessage(userId, chatId, content);
+ * await editMessage(userId, chatId, messageId, content);
+ * await deleteMessage(userId, chatId, messageId);
+ * await joinChat(userId, chatId);
+ * await leaveChat(userId, chatId);
+ * await markAsRead(userId, chatId);
+ * await dismiss(userId, chatId);
+ * await clearAll(userId);
+ * ```
  */
 export function createChatPlugin<
   TEventDefinitions extends EventDefinitions & ChatEventDefinitions,
