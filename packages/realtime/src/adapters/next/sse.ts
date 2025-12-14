@@ -26,8 +26,9 @@ export type NextSSERouteOptions = ServerTransportOptions & {
  * // app/api/events/route.ts
  * import { events } from "@/lib/events";
  * import { nextSSERoute } from "@zap-studio/realtime/adapters/next/sse";
+ * import type { ExtractEventDefinitions } from "@zap-studio/realtime/types";
  *
- * export const GET = nextSSERoute<typeof events>(() => events.subscribe());
+ * export const GET = nextSSERoute<ExtractEventDefinitions<typeof events>>(events);
  * ```
  */
 export function nextSSERoute<TEventDefinitions extends EventDefinitions>(
@@ -56,8 +57,9 @@ export function nextSSERoute<TEventDefinitions extends EventDefinitions>(
  * // app/api/events/[channel]/route.ts
  * import { events } from "@/lib/events";
  * import { nextSSERouteWithParams } from "@zap-studio/realtime/adapters/next/sse";
+ * import type { ExtractEventDefinitions } from "@zap-studio/realtime/types";
  *
- * export const GET = nextSSERouteWithParams(
+ * export const GET = nextSSERouteWithParams<ExtractEventDefinitions<typeof events>>(
  *   (request, { params }) =>
  *     events.subscribe({ channel: params.channel })
  * );
