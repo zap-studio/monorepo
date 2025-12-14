@@ -4,6 +4,24 @@
   "type": "module",
   "license": "MIT",
   "private": false,
+  "description": "A type-safe fetch wrapper for HTTP requests with runtime schema validation.",
+  "keywords": [
+    "fetch",
+    "type-safe",
+    "validation",
+    "schema",
+    "typescript",
+    "http",
+    "api",
+    "zod",
+    "valibot",
+    "arktype",
+    "runtime validation",
+    "error handling",
+    "standard schema",
+    "request",
+    "response"
+  ],
   "publishConfig": {
     "access": "public"
   },
