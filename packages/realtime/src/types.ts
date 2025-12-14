@@ -251,6 +251,12 @@ export type EventsAPI<TEventDefinitions extends EventDefinitions> = {
 };
 
 /**
+ * Extract EventDefinitions from EventsAPI type
+ */
+export type ExtractEventDefinitions<T> =
+  T extends EventsAPI<infer TEventDefinitions> ? TEventDefinitions : never;
+
+/**
  * Plugin definition type
  */
 export type RealtimePlugin<TEventDefinitions extends EventDefinitions> = {
