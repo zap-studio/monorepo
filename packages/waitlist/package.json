@@ -4,6 +4,12 @@
   "type": "module",
   "license": "MIT",
   "private": false,
+  "homepage": "https://www.zapstudio.dev/packages/waitlist",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/waitlist"
+  },
   "description": "A lightweight, type-safe, and adapter-agnostic SDK for building and managing waitlists with referral tracking, position management, and email validation.",
   "keywords": [
     "waitlist",
