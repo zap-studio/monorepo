@@ -13,10 +13,9 @@ export type Action<TAction extends string | number | symbol = string> = TAction;
 
 /**
  * Represents a resource on which actions can be performed.
- * Typically a string identifier such as "document", "user", etc.
+ * Can be any type, such as a string identifier or an object with attributes.
  */
-export type Resource<TResource extends string | number | symbol = string> =
-  TResource;
+export type Resource<TResource = unknown> = TResource;
 
 /**
  * Represents the context in which a policy decision is made.
@@ -65,20 +64,20 @@ export type Actions<
 };
 
 /**
- * Maps resources to their corresponding action maps.
+ * Maps resource types (strings) to their corresponding action maps.
  *
- * Each key is a resource, and the value is an ActionMap that maps actions
- * to policy functions for that resource in the given context.
+ * Each key is a resource type (e.g., 'post'), and the value is Actions that maps actions
+ * to policy functions for resources of that type in the given context.
  *
  * @example
- * const resources: ResourceMap<Context, Resource> = {
- *   user: {
- *     read: (ctx, action, resource) => ctx.user.id === resource.id,
- *     write: (ctx, action, resource) => ctx.user.id === resource.id,
- *   },
+ * const resources: Resources<Context, Action, Resource> = {
  *   post: {
- *     read: (ctx, action, resource) => ctx.user.role === 'admin',
+ *     read: (ctx, action, resource) => resource.visibility === 'public',  // resource is object
  *     write: (ctx, action, resource) => ctx.user.id === resource.authorId,
+ *   },
+ *   comment: {
+ *     read: allow(),
+ *     write: deny(),
  *   },
  * };
  */
@@ -86,9 +85,7 @@ export type Resources<
   TContext extends Context,
   TAction extends Action = Action,
   TResource extends Resource = Resource,
-> = {
-  [R in TResource]?: Actions<TContext, TAction, R>;
-};
+> = Record<string, Actions<TContext, TAction, TResource>>;
 
 /**
  * Represents a policy object that can evaluate permissions and optionally provide explanations.
