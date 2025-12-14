@@ -4,6 +4,12 @@
   "type": "module",
   "license": "MIT",
   "private": false,
+  "homepage": "https://www.zapstudio.dev/packages/webhooks",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/webhooks"
+  },
   "description": "A lightweight, type-safe webhook router with Standard Schema validation, signature verification, and lifecycle hooks.",
   "keywords": [
     "webhooks",
