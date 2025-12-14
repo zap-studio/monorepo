@@ -25,6 +25,8 @@ catalogs:
   react:
     '@types/react': ^19.2.7
     react: ^19.2.3
+  tanstack:
+    '@tanstack/react-router': ^1.141.2
   testing:
     '@vitest/coverage-v8': ^4.0.15
     '@vitest/ui': ^4.0.15

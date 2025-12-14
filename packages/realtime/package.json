@@ -34,6 +34,7 @@
     "@standard-schema/spec": "catalog:base"
   },
   "devDependencies": {
+    "@tanstack/react-router": "catalog:tanstack",
     "@types/node": "catalog:types",
     "@types/react": "catalog:react",
     "@vitest/coverage-v8": "catalog:testing",
@@ -50,12 +51,16 @@
     "zod": "catalog:base"
   },
   "peerDependencies": {
+    "@tanstack/react-router": "catalog:tanstack",
     "elysia": ">=1.0.0",
     "hono": ">=3.0.0",
     "next": ">=15.0.0",
     "react": ">=18.0.0"
   },
   "peerDependenciesMeta": {
+    "@tanstack/react-router": {
+      "optional": true
+    },
     "elysia": {
       "optional": true
     },
