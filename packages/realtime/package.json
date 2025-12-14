@@ -57,7 +57,7 @@
     "zod": "catalog:base"
   },
   "peerDependencies": {
-    "@tanstack/react-router": "catalog:tanstack",
+    "@tanstack/react-router": ">=1.0.0",
     "elysia": ">=1.0.0",
     "hono": ">=3.0.0",
     "next": ">=15.0.0",
