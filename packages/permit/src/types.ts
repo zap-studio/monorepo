@@ -121,4 +121,4 @@ export type Role<TRole extends string = string> = TRole;
 /**
  * Represents a role hierarchy within the system.
  */
-export type RoleHierarchy = Record<Role, Role[]>;
+export type RoleHierarchy<TRole extends Role = Role> = Record<TRole, TRole[]>;
