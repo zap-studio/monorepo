@@ -22,7 +22,9 @@ export type Resource<TResource extends string | number | symbol = string> =
  * Represents the context in which a policy decision is made.
  * Can include user information, environment, or any relevant data.
  */
-export type Context = Record<string, unknown>;
+export type Context<
+  TContext extends Record<string, unknown> = Record<string, unknown>,
+> = TContext;
 
 /**
  * A function that determines whether a given action on a resource is allowed in a specific context.
