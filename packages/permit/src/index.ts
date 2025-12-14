@@ -1,4 +1,12 @@
-import type { Action, ConditionFn, Context, PolicyFn, Resource } from "./types";
+import type {
+  Action,
+  ConditionFn,
+  Context,
+  Policy,
+  PolicyFn,
+  Resource,
+  Resources,
+} from "./types";
 
 /**
  * Returns a policy function that always allows the action.
@@ -132,4 +140,60 @@ export function has<TContext extends Context, K extends keyof TContext>(
   value: TContext[K]
 ): ConditionFn<TContext> {
   return (context) => context[key] === value;
+}
+
+/**
+ * Creates a policy object from a mapping of resources and actions to policy functions.
+ *
+ * This utility helps you define a policy by providing a map of resources, each mapping to actions,
+ * each mapping to a policy function. The returned policy object exposes a `can` method to check
+ * if a given action on a resource is allowed in a specific context.
+ *
+ * @example
+ * ```ts
+ * type Context = {
+ *   user: string;
+ * };
+ *
+ * type Action = "read" | "write";
+ *
+ * type Resource = "post" | "comment";
+ *
+ * const policy = definePolicy<Context, Action, Resource>()({
+ *   post: {
+ *     read: allow(),
+ *     write: when((ctx) => ctx.role === "admin"),
+ *   },
+ *   comment: {
+ *     read: allow(),
+ *     write: deny(),
+ *   },
+ * });
+ *
+ * policy.can({ role: "admin" }, "write", "post"); // true
+ * policy.can({ role: "user" }, "write", "post"); // false
+ * ```
+ */
+export function definePolicy<
+  TContext extends Context,
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
+>() {
+  return (
+    map: Resources<TContext, TAction, TResource>
+  ): Policy<TContext, TAction, TResource> => ({
+    can(context, action, resource) {
+      const resourcePolicies = map[resource];
+      if (!resourcePolicies) {
+        return false;
+      }
+
+      const policy = resourcePolicies[action];
+      if (!policy) {
+        return false;
+      }
+
+      return policy(context, action, resource) === "allow";
+    },
+  });
 }
