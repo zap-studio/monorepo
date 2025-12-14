@@ -112,3 +112,13 @@ export type Policy<
    */
   explain?(context: TContext, action: TAction, resource: TResource): string;
 };
+
+/**
+ * Represents a role within the system.
+ */
+export type Role<TRole extends string = string> = TRole;
+
+/**
+ * Represents a role hierarchy within the system.
+ */
+export type RoleHierarchy = Record<Role, Role[]>;
