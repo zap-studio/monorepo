@@ -197,3 +197,75 @@ export function definePolicy<
     },
   });
 }
+
+/**
+ * Merge multiple policies into one.
+ *
+ * By default, uses "deny-overrides" (fail-closed):
+ * - If any policy denies, the merged policy denies.
+ * - If all policies allow, the merged policy allows.
+ *
+ * @example
+ * ```ts
+ * const policy1 = definePolicy<Context, Action, Resource>()({ post: { read: allow() } });
+ * const policy2 = definePolicy<Context, Action, Resource>()({ post: { read: when(ctx => ctx.role === "admin") } });
+ * const merged = mergePolicies(policy1, policy2);
+ * merged.can({ role: "user" }, "read", "post"); // combined decision (false since policy2 denies if role !== "admin")
+ * ```
+ */
+export function mergePolicies<
+  TContext extends Context,
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
+>(
+  ...policies: Policy<TContext, TAction, TResource>[]
+): Policy<TContext, TAction, TResource> {
+  return {
+    can(context, action, resource) {
+      // deny-overrides: if any policy denies, the merged policy denies
+      for (const p of policies) {
+        if (!p.can(context, action, resource)) {
+          return false;
+        }
+      }
+      return true;
+    },
+
+    explain(context, action, resource) {
+      const reasons: string[] = [];
+      for (const p of policies) {
+        if (p.explain) {
+          reasons.push(p.explain(context, action, resource));
+        }
+      }
+      return reasons.join(" AND ");
+    },
+  };
+}
+
+/**
+ * Merges policies using "allow-overrides" (fail-open):
+ * - If any policy allows, the merged policy allows.
+ * - If all policies deny, the merged policy denies.
+ *
+ * @example
+ * ```ts
+ * const policy1 = definePolicy<Context, Action, Resource>()({ post: { read: allow() } });
+ * const policy2 = definePolicy<Context, Action, Resource>()({ post: { read: when(ctx => ctx.role === "admin") } });
+ * const merged = mergePoliciesAny(policy1, policy2);
+ * merged.can({ role: "user" }, "read", "post"); // combined decision (true since policy1 allows)
+ * ```
+ */
+export function mergePoliciesAny<
+  TContext extends Context,
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
+>(
+  ...policies: Policy<TContext, TAction, TResource>[]
+): Policy<TContext, TAction, TResource> {
+  return {
+    can(context, action, resource) {
+      return policies.some((p) => p.can(context, action, resource));
+    },
+  };
+}
