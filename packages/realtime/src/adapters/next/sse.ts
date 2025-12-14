@@ -65,7 +65,7 @@ export function nextSSERoute<TEventDefinitions extends EventDefinitions>(
  */
 export function nextSSERouteWithParams<
   TEventDefinitions extends EventDefinitions,
-  TParams extends Record<string, string | string[]>,
+  TParams extends Record<string, string>,
 >(
   events: EventsAPI<TEventDefinitions>,
   options?: NextSSERouteOptions
@@ -78,10 +78,10 @@ export function nextSSERouteWithParams<
     context: { params: Promise<TParams> }
   ): Promise<Response | NextResponse> => {
     const params = await context.params;
-    const channel = Array.isArray(params.channel)
-      ? params.channel[0]
-      : params.channel;
-    const subscription = events.subscribe({ channel });
+    const subscription = events.subscribe({
+      ...request,
+      channel: params.channel,
+    });
 
     return createSSEResponse(subscription, {
       ...options,
