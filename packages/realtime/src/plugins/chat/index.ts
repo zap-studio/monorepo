@@ -1,5 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type {
+  ChatEventDefinitions,
   ChatMessagePayload,
   TypingIndicatorPayload,
   UserPresencePayload,
@@ -47,24 +48,7 @@ export function createChatEventsSchema<
     schema: T
   ) => StandardSchemaV1<Record<string, StandardSchemaV1.InferOutput<T>>>;
   unknown: () => TUnknown;
-}): {
-  message: StandardSchemaV1<ChatMessagePayload>;
-  messageEdited: StandardSchemaV1<{
-    id: string;
-    chatId: string;
-    content: string;
-    editedAt: number;
-  }>;
-  messageDeleted: StandardSchemaV1<{ id: string; chatId: string }>;
-  userPresence: StandardSchemaV1<UserPresencePayload>;
-  typing: StandardSchemaV1<TypingIndicatorPayload>;
-  userJoined: StandardSchemaV1<{
-    userId: string;
-    userName: string;
-    chatId: string;
-  }>;
-  userLeft: StandardSchemaV1<{ userId: string; chatId: string }>;
-} {
+}): ChatEventDefinitions {
   const messageTypeSchema = schemaBuilder.enum([
     "text",
     "image",
@@ -113,7 +97,7 @@ export function createChatEventsSchema<
       lastSeen: schemaBuilder.number(),
     }) as StandardSchemaV1<UserPresencePayload>,
 
-    typing: schemaBuilder.object({
+    userTyping: schemaBuilder.object({
       userId: schemaBuilder.string(),
       userName: schemaBuilder.string(),
       chatId: schemaBuilder.string(),
