@@ -58,3 +58,19 @@ export type NotificationsEventDefinitions = {
   notificationDismissed: StandardSchemaV1<NotificationDismissedPayload>;
   notificationCleared: StandardSchemaV1<NotificationClearedPayload>;
 };
+
+/**
+ * Notification helper options
+ */
+export type NotifyUserOptions = {
+  /** Notification type/category */
+  type?: string;
+  /** Priority level */
+  priority?: NotificationPriority;
+  /** Optional action URL */
+  actionUrl?: string;
+  /** Optional action text */
+  actionText?: string;
+  /** Optional metadata */
+  metadata?: Record<string, unknown>;
+};
