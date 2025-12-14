@@ -13,8 +13,9 @@ import type { ChatEventDefinitions, SendMessageOptions } from "./types";
  * ```ts
  * import { InMemoryEmitter } from "@zap-studio/realtime/emitters/in-memory";
  * import { createChatHelpers } from "@zap-studio/realtime/plugins/chat/server";
+ * import type { ChatEventDefinitions } from "@zap-studio/realtime/plugins/chat/types";
  *
- * const emitter = new InMemoryEmitter<typeof ChatEvents>();
+ * const emitter = new InMemoryEmitter<ChatEventDefinitions>();
  * const chat = createChatHelpers(emitter);
  *
  * // Send a message
