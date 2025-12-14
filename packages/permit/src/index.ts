@@ -318,3 +318,37 @@ export function collectInheritedRoles<TRole extends Role = Role>(
   roles.forEach(add);
   return inherited;
 }
+
+/**
+ * Checks if a user has a specific role, considering the role hierarchy.
+ *
+ * @example
+ * ```ts
+ * const userRoles = ["editor", "moderator"];
+ * const hasEditorRole = hasRole("editor")(userRoles);
+ * // Result: true
+ *
+ * const hasAdminRole = hasRole("admin")(userRoles);
+ * // Result: false
+ *
+ * const hasSuperadminRole = hasRole("superadmin")(userRoles);
+ * // Result: false
+ *
+ * const hasSuperadminRoleWithHierarchy = hasRole("superadmin", hierarchy)(userRoles);
+ * // Result: true
+ * ```
+ */
+export function hasRole(role: Role, hierarchy?: RoleHierarchy) {
+  return <TContext extends Context & { role: Role | Role[] }>(
+    context: TContext
+  ): boolean => {
+    const userRoles = Array.isArray(context.role)
+      ? context.role
+      : [context.role];
+    if (!hierarchy) {
+      return userRoles.includes(role);
+    }
+    const inherited = collectInheritedRoles(userRoles, hierarchy);
+    return inherited.has(role);
+  };
+}
