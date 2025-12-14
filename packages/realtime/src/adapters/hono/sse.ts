@@ -16,7 +16,9 @@ export type HonoSSEHandlerOptions = ServerTransportOptions & {
    * @default 30000
    */
   heartbeatInterval?: number;
-}; /**
+};
+
+/**
  * Create a Hono SSE route handler
  *
  * @example
@@ -28,12 +30,6 @@ export type HonoSSEHandlerOptions = ServerTransportOptions & {
  * const app = new Hono()
  *
  * app.get('/api/events', honoSSEHandler(events))
- *
- * // With channel from URL
- * app.get('/api/events/:channel', (c) => {
- *   const channel = c.req.param('channel')
- *   return honoSSEHandler(events, { channel })
- * })
  * ```
  */
 export function honoSSEHandler<
@@ -51,6 +47,47 @@ export function honoSSEHandler<
   return async (context): Promise<Response> => {
     const request = context.req.raw;
     const subscription = events.subscribe(request);
+
+    return await Promise.resolve(
+      createSSEResponse(subscription, {
+        ...options,
+        signal: context.req.raw.signal,
+      })
+    );
+  };
+}
+
+/**
+ * Creates a SSE handler with params
+ *
+ * @example
+ * ```ts
+ * import { Hono } from 'hono';
+ * import { honoSSEHandlerWithParams } from '@upstash/realtime';
+ *
+ * const app = new Hono();
+ *
+ * app.get('/api/events/:channel', honoSSEHandlerWithParams(events));
+ * ```
+ */
+export function honoSSEHandlerWithParams<
+  TEventDefinitions extends EventDefinitions,
+  // biome-ignore lint/suspicious/noExplicitAny: Defined as is in Context
+  E extends Env = any,
+  // biome-ignore lint/suspicious/noExplicitAny: Defined as is in Context
+  P extends string = any,
+  // biome-ignore lint/complexity/noBannedTypes: Defined as is in Context
+  I extends Input = {},
+>(
+  events: EventsAPI<TEventDefinitions>,
+  options?: HonoSSEHandlerOptions
+): (context: Context<E, P, I>) => Promise<Response> {
+  return async (context): Promise<Response> => {
+    const request = context.req.raw;
+    const subscription = events.subscribe({
+      ...request,
+      channel: context.req.param("channel"),
+    });
 
     return await Promise.resolve(
       createSSEResponse(subscription, {
