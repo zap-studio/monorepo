@@ -6,6 +6,8 @@ import type {
   PolicyFn,
   Resource,
   Resources,
+  Role,
+  RoleHierarchy,
 } from "./types";
 
 /**
@@ -268,4 +270,51 @@ export function mergePoliciesAny<
       return policies.some((p) => p.can(context, action, resource));
     },
   };
+}
+
+/**
+ * Returns all roles a user has including inherited roles.
+ *
+ * This function traverses the role hierarchy recursively, collecting all direct and indirect (inherited) roles.
+ *
+ * @example
+ * ```ts
+ * type Role = "guest" | "user" | "editor" | "admin" | "moderator" | "superadmin";
+ *
+ * const hierarchy: Record<Role, Role[]> = {
+ *   guest: [],
+ *   user: ["guest"],
+ *   editor: ["user"],
+ *   moderator: ["user"],
+ *   admin: ["editor"],
+ *   superadmin: ["admin", "moderator"], // superadmin inherits from both admin and moderator
+ * };
+ *
+ * const userRoles: Role[] = ["editor", "moderator"];
+ *
+ * // User has "editor" and "moderator" roles directly
+ * const effectiveRoles = collectInheritedRoles(userRoles, hierarchy);
+ * // Result: Set { "editor", "user", "guest", "moderator" }
+ *
+ * // If user is also a "superadmin":
+ * const allRoles = collectInheritedRoles(["superadmin"], hierarchy);
+ * // Result: Set { "superadmin", "admin", "editor", "user", "moderator", "guest" }
+ * ```
+ */
+export function collectInheritedRoles<TRole extends Role = Role>(
+  roles: TRole[],
+  hierarchy: RoleHierarchy<TRole>
+): Set<TRole> {
+  const inherited = new Set<TRole>();
+
+  function add(role: TRole) {
+    if (!inherited.has(role)) {
+      inherited.add(role);
+      const parents = hierarchy[role] ?? [];
+      parents.forEach(add); // recursively add parent roles
+    }
+  }
+
+  roles.forEach(add);
+  return inherited;
 }
