@@ -35,7 +35,9 @@ export type TanStackSSEHandlerOptions = ServerTransportOptions & {
  * });
  * ```
  */
-export function tanstackStartSSEHandler<TEventDefinitions extends EventDefinitions>(
+export function tanstackStartSSEHandler<
+  TEventDefinitions extends EventDefinitions,
+>(
   events: EventsAPI<TEventDefinitions>,
   options?: TanStackSSEHandlerOptions
 ): ({ request }: { request: Request }) => Promise<Response> {
