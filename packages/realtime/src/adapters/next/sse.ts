@@ -67,7 +67,7 @@ export function nextSSERoute<TEventDefinitions extends EventDefinitions>(
  */
 export function nextSSERouteWithParams<
   TEventDefinitions extends EventDefinitions,
-  TParams extends Record<string, string>,
+  TParams extends Record<string, string> = Record<string, string>,
 >(
   events: EventsAPI<TEventDefinitions>,
   options?: NextSSERouteOptions

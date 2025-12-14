@@ -25,13 +25,14 @@ export type ElysiaSSEHandlerOptions = ServerTransportOptions & {
  * import { Elysia } from "elysia";
  * import { events } from "@/lib/events";
  * import { elysiaSSEHandler } from "@zap-studio/realtime/adapters/elysia/sse";
+ * import type { ExtractEventDefinitions } from "@zap-studio/realtime/types";
  *
- * const app = new Elysia().get("/events", elysiaSSEHandler(events));
+ * const app = new Elysia().get("/api/events", elysiaSSEHandler<ExtractEventDefinitions<typeof events>>(events));
  * ```
  */
 export function elysiaSSEHandler<
   TEventDefinitions extends EventDefinitions,
-  TContext extends Context,
+  TContext extends Context = Context,
 >(
   events: EventsAPI<TEventDefinitions>,
   options?: ElysiaSSEHandlerOptions
@@ -57,13 +58,14 @@ export function elysiaSSEHandler<
  * import { Elysia } from "elysia";
  * import { events } from "@/lib/events";
  * import { elysiaSSEHandlerWithParams } from "@zap-studio/realtime/adapters/elysia/sse";
+ * import type { ExtractEventDefinitions } from "@zap-studio/realtime/types";
  *
- * const app = new Elysia().get("/events/:channel", elysiaSSEHandlerWithParams(events));
+ * const app = new Elysia().get("/events/:channel", elysiaSSEHandlerWithParams<ExtractEventDefinitions<typeof events>>(events));
  * ```
  */
 export function elysiaSSEHandlerWithParams<
   TEventDefinitions extends EventDefinitions,
-  TContext extends Context,
+  TContext extends Context = Context,
 >(
   events: EventsAPI<TEventDefinitions>,
   options?: ElysiaSSEHandlerOptions

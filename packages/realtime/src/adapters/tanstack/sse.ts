@@ -25,11 +25,12 @@ export type TanStackSSEHandlerOptions = ServerTransportOptions & {
  * import { createFileRoute } from "@tanstack/react-router";
  * import { events } from "@/lib/events";
  * import { tanstackSSEHandler } from "@zap-studio/realtime/adapters/tanstack/sse";
+ * import type { ExtractEventDefinitions } from "@zap-studio/realtime/types";
  *
  * export const Route = createFileRoute("/api/events")({
  *  server: {
  *    handlers: {
- *      GET: tanstackSSEHandler(events),
+ *      GET: tanstackSSEHandler<ExtractEventDefinitions<typeof events>>(events),
  *    },
  *  },
  * });
@@ -62,9 +63,10 @@ export function tanstackStartSSEHandler<
  * import { createFileRoute } from "@tanstack/react-router";
  * import { events } from "@/lib/events";
  * import { tanstackSSEHandlerWithParams } from "@zap-studio/realtime/adapters/tanstack/sse";
+ * import type { ExtractEventDefinitions } from "@zap-studio/realtime/types";
  *
  * export const Route = createFileRoute("/api/events/$channel")({
- *   GET: tanstackSSEHandlerWithParams(({ request,params }) => {
+ *   GET: tanstackSSEHandlerWithParams<ExtractEventDefinitions<typeof events>>(({ request, params }) => {
  *     return events.subscribe({ channel: params.channel });
  *   }),
  * });
@@ -72,7 +74,7 @@ export function tanstackStartSSEHandler<
  */
 export function tanstackSSEHandlerWithParams<
   TEventDefinitions extends EventDefinitions,
-  TParams extends Record<string, string>,
+  TParams extends Record<string, string> = Record<string, string>,
 >(
   events: EventsAPI<TEventDefinitions>,
   options?: TanStackSSEHandlerOptions

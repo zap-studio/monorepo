@@ -23,13 +23,14 @@ export type HonoSSEHandlerOptions = ServerTransportOptions & {
  *
  * @example
  * ```ts
- * import { Hono } from 'hono'
- * import { events } from '@/lib/events'
- * import { honoSSEHandler } from '@zap-studio/realtime/adapters/hono/sse'
+ * import { Hono } from 'hono';
+ * import { events } from '@/lib/events';
+ * import { honoSSEHandler } from '@zap-studio/realtime/adapters/hono/sse';
+ * import type { ExtractEventDefinitions } from '@zap-studio/realtime/types';
  *
- * const app = new Hono()
+ * const app = new Hono();
  *
- * app.get('/api/events', honoSSEHandler(events))
+ * app.get('/api/events', honoSSEHandler<ExtractEventDefinitions<typeof events>>(events));
  * ```
  */
 export function honoSSEHandler<
@@ -64,10 +65,11 @@ export function honoSSEHandler<
  * ```ts
  * import { Hono } from 'hono';
  * import { honoSSEHandlerWithParams } from '@upstash/realtime';
+ * import type { ExtractEventDefinitions } from '@zap-studio/realtime/types';
  *
  * const app = new Hono();
  *
- * app.get('/api/events/:channel', honoSSEHandlerWithParams(events));
+ * app.get('/api/events/:channel', honoSSEHandlerWithParams<ExtractEventDefinitions<typeof events>>(events));
  * ```
  */
 export function honoSSEHandlerWithParams<
