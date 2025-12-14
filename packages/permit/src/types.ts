@@ -84,8 +84,31 @@ export type Actions<
  */
 export type Resources<
   TContext extends Context,
-  TResource extends Resource = Resource,
   TAction extends Action = Action,
+  TResource extends Resource = Resource,
 > = {
   [R in TResource]?: Actions<TContext, TAction, R>;
+};
+
+/**
+ * Represents a policy object that can evaluate permissions and optionally provide explanations.
+ *
+ * An object of this type must implement a `can` method to determine if an action is permitted
+ * on a resource in a given context, and may optionally implement an `explain` method to provide
+ * a human-readable explanation for the decision.
+ */
+export type Policy<
+  TContext extends Context,
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
+> = {
+  /**
+   * Determines if the specified action is permitted on the resource in the given context.
+   */
+  can(context: TContext, action: TAction, resource: TResource): boolean;
+
+  /**
+   * (Optional) Provides a human-readable explanation for the policy decision.
+   */
+  explain?(context: TContext, action: TAction, resource: TResource): string;
 };
