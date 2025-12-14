@@ -9,13 +9,14 @@ export type Decision = "allow" | "deny";
  * Represents an action that can be performed.
  * Typically a string identifier such as "read", "write", etc.
  */
-export type Action = string;
+export type Action<TAction extends string | number | symbol = string> = TAction;
 
 /**
  * Represents a resource on which actions can be performed.
  * Typically a string identifier such as "document", "user", etc.
  */
-export type Resource = string;
+export type Resource<TResource extends string | number | symbol = string> =
+  TResource;
 
 /**
  * Represents the context in which a policy decision is made.
@@ -26,20 +27,20 @@ export type Context = Record<string, unknown>;
 /**
  * A function that determines whether a given action on a resource is allowed in a specific context.
  */
-export type PolicyFn<TContext, TAction, TResource> = (
-  context: TContext,
-  action: TAction,
-  resource: TResource
-) => Decision;
+export type PolicyFn<
+  TContext,
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
+> = (context: TContext, action: TAction, resource: TResource) => Decision;
 
 /**
  * A function that evaluates a condition for a given action and resource in a specific context.
  */
-export type ConditionFn<TContext, TAction = unknown, TResource = unknown> = (
-  context: TContext,
-  action: TAction,
-  resource: TResource
-) => boolean;
+export type ConditionFn<
+  TContext,
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
+> = (context: TContext, action: TAction, resource: TResource) => boolean;
 
 /**
  * Maps actions to their corresponding policy functions for a specific resource.
@@ -55,10 +56,10 @@ export type ConditionFn<TContext, TAction = unknown, TResource = unknown> = (
  */
 export type Actions<
   TContext,
-  TAction extends string | number | symbol,
-  TResource,
+  TAction extends Action = Action,
+  TResource extends Resource = Resource,
 > = {
-  [A in TAction]?: PolicyFn<TContext, TAction, TResource>;
+  [A in TAction]?: PolicyFn<TContext, A, TResource>;
 };
 
 /**
@@ -79,6 +80,10 @@ export type Actions<
  *   },
  * };
  */
-export type Resources<TContext, TResource extends string | number | symbol> = {
-  [R in TResource]?: Actions<TContext, Action, TResource>;
+export type Resources<
+  TContext,
+  TResource extends Resource = Resource,
+  TAction extends Action = Action,
+> = {
+  [R in TResource]?: Actions<TContext, TAction, R>;
 };
