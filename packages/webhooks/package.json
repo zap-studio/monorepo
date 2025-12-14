@@ -4,6 +4,26 @@
   "type": "module",
   "license": "MIT",
   "private": false,
+  "description": "A lightweight, type-safe webhook router with Standard Schema validation, signature verification, and lifecycle hooks.",
+  "keywords": [
+    "webhooks",
+    "webhook router",
+    "type-safe",
+    "typescript",
+    "validation",
+    "schema",
+    "standard schema",
+    "zod",
+    "valibot",
+    "arktype",
+    "signature verification",
+    "lifecycle hooks",
+    "express",
+    "elysia",
+    "hono",
+    "nextjs",
+    "payload validation"
+  ],
   "publishConfig": {
     "access": "public"
   },
