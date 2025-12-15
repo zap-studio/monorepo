@@ -10,8 +10,20 @@
     "url": "https://github.com/zap-studio/monorepo.git",
     "directory": "packages/permit"
   },
-  "description": "",
-  "keywords": [],
+  "description": "A type-safe, declarative authorization library for TypeScript with Standard Schema support",
+  "keywords": [
+    "authorization",
+    "permissions",
+    "access-control",
+    "rbac",
+    "abac",
+    "policy",
+    "typescript",
+    "standard-schema",
+    "zod",
+    "valibot",
+    "arktype"
+  ],
   "publishConfig": {
     "access": "public"
   },
