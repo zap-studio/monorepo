@@ -1,3 +1,5 @@
+import type { StandardSchemaV1 } from "@standard-schema/spec";
+
 /**
  * Represents the possible outcomes of a policy decision.
  * - "allow": The action is permitted.
@@ -6,109 +8,10 @@
 export type Decision = "allow" | "deny";
 
 /**
- * Represents an action that can be performed.
- * Typically a string identifier such as "read", "write", etc.
- */
-export type Action<TAction extends string | number | symbol = string> = TAction;
-
-/**
- * Represents a resource on which actions can be performed.
- * Can be any type, such as a string identifier or an object with attributes.
- */
-export type Resource<TResource = unknown> = TResource;
-
-/**
  * Represents the context in which a policy decision is made.
  * Can include user information, environment, or any relevant data.
  */
-export type Context<
-  TContext extends Record<string, unknown> = Record<string, unknown>,
-> = TContext;
-
-/**
- * A function that determines whether a given action on a resource is allowed in a specific context.
- */
-export type PolicyFn<
-  TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
-> = (context: TContext, action: TAction, resource: TResource) => Decision;
-
-/**
- * A function that evaluates a condition for a given action and resource in a specific context.
- */
-export type ConditionFn<
-  TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
-> = (context: TContext, action: TAction, resource: TResource) => boolean;
-
-/**
- * Maps actions to their corresponding policy functions for a specific resource.
- *
- * Each key is an action, and the value is a policy function that determines
- * whether the action is allowed on the resource in the given context.
- *
- * @example
- * const actions: ActionMap<Context, Action, Resource> = {
- *   read: (ctx, action, resource) => ctx.user.role === 'admin',
- *   write: (ctx, action, resource) => ctx.user.id === resource.id,
- * };
- */
-export type Actions<
-  TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
-> = {
-  [A in TAction]?: PolicyFn<TContext, A, TResource>;
-};
-
-/**
- * Maps resource types (strings) to their corresponding action maps.
- *
- * Each key is a resource type (e.g., 'post'), and the value is Actions that maps actions
- * to policy functions for resources of that type in the given context.
- *
- * @example
- * const resources: Resources<Context, Action, Resource> = {
- *   post: {
- *     read: (ctx, action, resource) => resource.visibility === 'public',  // resource is object
- *     write: (ctx, action, resource) => ctx.user.id === resource.authorId,
- *   },
- *   comment: {
- *     read: allow(),
- *     write: deny(),
- *   },
- * };
- */
-export type Resources<
-  TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
-> = Record<string, Actions<TContext, TAction, TResource>>;
-
-/**
- * Represents a policy object that can evaluate permissions and optionally provide explanations.
- *
- * An object of this type must implement a `can` method to determine if an action is permitted
- * on a resource in a given context, and may optionally implement an `explain` method to provide
- * a human-readable explanation for the decision.
- */
-export type Policy<
-  TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
-> = {
-  /**
-   * Determines if the specified action is permitted on the resource in the given context.
-   */
-  can(context: TContext, action: TAction, resource: TResource): boolean;
-
-  /**
-   * (Optional) Provides a human-readable explanation for the policy decision.
-   */
-  explain?(context: TContext, action: TAction, resource: TResource): string;
-};
+export type Context<TContext = unknown> = TContext;
 
 /**
  * Represents a role within the system.
@@ -117,5 +20,171 @@ export type Role<TRole extends string = string> = TRole;
 
 /**
  * Represents a role hierarchy within the system.
+ * Maps each role to an array of roles it inherits from.
+ *
+ * @example
+ * ```ts
+ * type Roles = "guest" | "user" | "admin";
+ *
+ * const hierarchy: RoleHierarchy<Roles> = {
+ *   guest: [],
+ *   user: ["guest"],
+ *   admin: ["user"],
+ * };
+ * ```
  */
 export type RoleHierarchy<TRole extends Role = Role> = Record<TRole, TRole[]>;
+
+/**
+ * Type helper for defining resource schemas using Standard Schema.
+ * Use with `satisfies` to ensure type safety when defining resources.
+ *
+ * @example
+ * ```ts
+ * import { z } from "zod";
+ * import type { Resources } from "@zap-studio/permit";
+ *
+ * const resources = {
+ *   post: z.object({ id: z.string(), authorId: z.string() }),
+ *   comment: z.object({ id: z.string(), postId: z.string() }),
+ * } satisfies Resources;
+ * ```
+ */
+export type Resources<TResourceKey extends string = string> = Record<
+  TResourceKey,
+  StandardSchemaV1
+>;
+
+/**
+ * Type helper for defining actions per resource.
+ * Use with `satisfies` to ensure keys match the resource definitions.
+ *
+ * @example
+ * ```ts
+ * import type { Actions } from "@zap-studio/permit";
+ *
+ * const actions = {
+ *   post: ["read", "write", "delete"],
+ *   comment: ["read", "write"],
+ * } as const satisfies Actions<typeof resources>;
+ * ```
+ */
+export type Actions<TResources extends Resources> = {
+  [K in keyof TResources]: readonly string[];
+};
+
+/**
+ * Infers the output type from a Standard Schema.
+ */
+export type InferResource<
+  TResources extends Resources,
+  TResourceKey extends keyof TResources,
+> = StandardSchemaV1.InferOutput<TResources[TResourceKey]>;
+
+/**
+ * Infers the action union type for a specific resource.
+ */
+export type InferAction<
+  TActions extends Record<string, readonly string[]>,
+  K extends keyof TActions,
+> = TActions[K][number];
+
+/**
+ * A function that determines whether a given action on a resource is allowed in a specific context.
+ */
+export type PolicyFn<
+  TContext extends Context,
+  TAction extends string = string,
+  TResource = unknown,
+> = (context: TContext, action: TAction, resource: TResource) => Decision;
+
+/**
+ * A function that evaluates a condition for a given action and resource in a specific context.
+ */
+export type ConditionFn<
+  TContext extends Context,
+  TAction extends string = string,
+  TResource = unknown,
+> = (context: TContext, action: TAction, resource: TResource) => boolean;
+
+/**
+ * Maps actions to their corresponding policy functions for a specific resource.
+ */
+export type ActionPolicyMap<
+  TContext extends Context,
+  TAction extends string = string,
+  TResource = unknown,
+> = {
+  [A in TAction]?: PolicyFn<TContext, A, TResource>;
+};
+
+/**
+ * Defines the rules for each resource and action combination.
+ * Each resource key maps to an object where each action key maps to a policy function.
+ */
+export type Rules<
+  TContext extends Context,
+  TResources extends Resources = Resources,
+  TActions extends Actions<TResources> = Actions<TResources>,
+> = {
+  [K in keyof TResources & keyof TActions]: ActionPolicyMap<
+    TContext,
+    InferAction<TActions, K>,
+    InferResource<TResources, K>
+  >;
+};
+
+/**
+ * Configuration object for creating a permit policy.
+ *
+ * @example
+ * ```ts
+ * const config: PermitConfig<MyContext> = {
+ *   resources,
+ *   actions,
+ *   rules: {
+ *     post: { read: allow(), write: deny() },
+ *   },
+ * };
+ * ```
+ */
+export type PermitConfig<
+  TContext extends Context,
+  TResources extends Resources = Resources,
+  TActions extends Actions<TResources> = Actions<TResources>,
+> = {
+  resources: TResources;
+  actions: TActions;
+  rules: Rules<TContext, TResources, TActions>;
+};
+
+/**
+ * Represents a policy object that can evaluate permissions.
+ * The `can` method checks if a given action is permitted on a resource in a specific context.
+ *
+ * @example
+ * ```ts
+ * const policy: Policy<MyContext> = createPermit({
+ *   resources,
+ *   actions,
+ *   rules: { ... },
+ * });
+ *
+ * policy.can(ctx, "read", "post", postData); // true or false
+ * ```
+ */
+export type Policy<
+  TContext extends Context,
+  TResources extends Resources = Resources,
+  TActions extends Actions<TResources> = Actions<TResources>,
+> = {
+  /**
+   * Determines if the specified action is permitted on the resource in the given context.
+   */
+  can<K extends keyof TResources & keyof TActions>(
+    context: TContext,
+    action: InferAction<TActions, K>,
+    resourceType: K,
+    resource: InferResource<TResources, K>
+  ): boolean;
+};
