@@ -1153,9 +1153,7 @@ describe("mergePoliciesAny", () => {
         rules: {
           post: { read: allow() },
           comment: { read: allow() },
-        } as typeof resources extends Resources
-          ? { [K in keyof typeof resources]: object }
-          : never,
+        },
       }
     );
 
