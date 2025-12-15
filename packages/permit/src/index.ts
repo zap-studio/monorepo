@@ -1,10 +1,12 @@
 import type {
-  Action,
+  Actions,
   ConditionFn,
   Context,
+  InferAction,
+  InferResource,
+  PermitConfig,
   Policy,
   PolicyFn,
-  Resource,
   Resources,
   Role,
   RoleHierarchy,
@@ -15,15 +17,21 @@ import type {
  *
  * @example
  * ```ts
- * const policy = allow();
- * policy({ role: "admin" }, "read", "post"); // "allow"
- * policy({ role: "user" }, "read", { type: "post", id: 1 }); // "allow"
+ * const policy = createPolicy({
+ *   resources,
+ *   actions,
+ *   rules: {
+ *     post: {
+ *       read: allow(), // Always allow reading posts
+ *     },
+ *   },
+ * });
  * ```
  */
 export function allow<
   TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
+  TAction extends string = string,
+  TResource = unknown,
 >(): PolicyFn<TContext, TAction, TResource> {
   return () => "allow";
 }
@@ -33,34 +41,45 @@ export function allow<
  *
  * @example
  * ```ts
- * const policy = deny();
- * policy({ role: "user" }, "read", "post"); // "deny"
- * policy({ role: "user" }, "read", { type: "post", id: 1 }); // "deny"
+ * const policy = createPolicy({
+ *   resources,
+ *   actions,
+ *   rules: {
+ *     post: {
+ *       delete: deny(), // Never allow deleting posts
+ *     },
+ *   },
+ * });
  * ```
  */
 export function deny<
   TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
+  TAction extends string = string,
+  TResource = unknown,
 >(): PolicyFn<TContext, TAction, TResource> {
   return () => "deny";
 }
 
 /**
- * Returns a policy function that returns "allow" if the condition is true, otherwise returns "deny".
+ * Returns a policy function that allows or denies based on a condition.
  *
  * @example
  * ```ts
- * const policy = when((user, action, resource) => user === "admin");
- * policy({ role: "admin" }, "read", "post"); // "allow"
- * policy({ role: "user" }, "read", "post"); // "deny"
- * policy({ role: "user" }, "read", { type: "post", id: 1 }); // "deny"
+ * const policy = createPolicy({
+ *   resources,
+ *   actions,
+ *   rules: {
+ *     post: {
+ *       write: when((ctx, action, resource) => ctx.user.id === resource.authorId),
+ *     },
+ *   },
+ * });
  * ```
  */
 export function when<
   TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
+  TAction extends string = string,
+  TResource = unknown,
 >(
   condition: ConditionFn<TContext, TAction, TResource>
 ): PolicyFn<TContext, TAction, TResource> {
@@ -69,20 +88,26 @@ export function when<
 }
 
 /**
- * Returns a condition function that returns true if all conditions are true, otherwise returns false.
+ * Returns a condition function that returns `true` if all conditions are met.
  *
  * @example
  * ```ts
- * const policy = and((user, action, resource) => user === "admin", (user, action, resource) => action === "read");
- * policy({ role: "admin" }, "read", "post"); // true
- * policy({ role: "admin" }, "write", "post"); // false
- * policy({ role: "user" }, "read", { type: "post", id: 1 }); // false
+ * const isOwnerAndPublished = and(
+ *   (ctx, action, resource) => ctx.user.id === resource.authorId,
+ *   (ctx, action, resource) => resource.status === "published"
+ * );
+ *
+ * rules: {
+ *   post: {
+ *     delete: when(isOwnerAndPublished),
+ *   },
+ * }
  * ```
  */
 export function and<
   TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
+  TAction extends string = string,
+  TResource = unknown,
 >(
   ...conditions: ConditionFn<TContext, TAction, TResource>[]
 ): ConditionFn<TContext, TAction, TResource> {
@@ -91,20 +116,26 @@ export function and<
 }
 
 /**
- * Returns a condition function that returns true if any condition is true, otherwise returns false.
+ * Returns a condition function that returns `true` if any condition is met.
  *
  * @example
  * ```ts
- * const policy = or((user, action, resource) => user === "admin", (user, action, resource) => action === "read");
- * policy({ role: "admin" }, "read", "post"); // true
- * policy({ role: "user" }, "read", "post"); // true
- * policy({ role: "user" }, "write", { type: "post", id: 1 }); // false
+ * const isOwnerOrAdmin = or(
+ *   (ctx, action, resource) => ctx.user.id === resource.authorId,
+ *   (ctx, action, resource) => ctx.user.role === "admin"
+ * );
+ *
+ * rules: {
+ *   post: {
+ *     write: when(isOwnerOrAdmin),
+ *   },
+ * }
  * ```
  */
 export function or<
   TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
+  TAction extends string = string,
+  TResource = unknown,
 >(
   ...conditions: ConditionFn<TContext, TAction, TResource>[]
 ): ConditionFn<TContext, TAction, TResource> {
@@ -113,20 +144,23 @@ export function or<
 }
 
 /**
- * Returns a condition function that returns true if the condition is false, otherwise returns false.
+ * Returns a condition function that negates another condition.
  *
  * @example
  * ```ts
- * const policy = not((user, action, resource) => user === "admin");
- * policy({ role: "admin" }, "read", "post"); // false
- * policy({ role: "user" }, "read", "post"); // true
- * policy({ role: "user" }, "write", { type: "post", id: 1 }); // true
+ * const isNotOwner = not((ctx, action, resource) => ctx.user.id === resource.authorId);
+ *
+ * rules: {
+ *   post: {
+ *     like: when(isNotOwner), // Can only like posts you don't own
+ *   },
+ * }
  * ```
  */
 export function not<
   TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
+  TAction extends string = string,
+  TResource = unknown,
 >(
   condition: ConditionFn<TContext, TAction, TResource>
 ): ConditionFn<TContext, TAction, TResource> {
@@ -134,13 +168,15 @@ export function not<
 }
 
 /**
- * Returns a condition function that returns true if the user has the specified role, otherwise returns false.
+ * Returns a condition function that checks if a context property equals a value.
  *
  * @example
  * ```ts
- * const isAdmin = has("role", "admin");
- * isAdmin({ role: "admin" }); // true
- * isAdmin({ role: "user" }); // false
+ * rules: {
+ *   post: {
+ *     write: when(has("role", "admin")), // Only admins can write
+ *   },
+ * }
  * ```
  */
 export function has<TContext extends Context, K extends keyof TContext>(
@@ -151,167 +187,20 @@ export function has<TContext extends Context, K extends keyof TContext>(
 }
 
 /**
- * Creates a policy object from a mapping of resource types and actions to policy functions.
- *
- * This utility helps you define a policy by providing a map of resource types (strings), each mapping to actions,
- * each mapping to a policy function. The returned policy object exposes a `can` method to check
- * if a given action on a resource is allowed in a specific context.
- *
- * @example
- * type Context = { user: { id: number; role: string } };
- * type Action = "read" | "write";
- * type Post = { type: 'post'; visibility: 'public' | 'private'; authorId: number };
- * type Comment = { type: 'comment'; authorId: number };
- * type MyResource = Post | Comment;
- *
- * const policy = definePolicy<Context, Action, MyResource>(
- *   (resource) => resource.type  // Extract type from object (e.g., 'post' or 'comment')
- * )({
- *   post: {
- *     read: when((ctx, action, resource) => resource.visibility === 'public' || ctx.user.id === resource.authorId),
- *     write: when((ctx, action, resource) => ctx.user.id === resource.authorId),
- *   },
- *   comment: {
- *     read: allow(),
- *     write: deny(),
- *   },
- * });
- *
- * const post: Post = { type: 'post', visibility: 'private', authorId: 123 };
- * policy.can({ user: { id: 123, role: 'user' } }, 'read', post); // true (author match)
- * policy.can({ user: { id: 456, role: 'user' } }, 'read', post); // false (private, not author)
- * policy.can({ user: { id: 123, role: 'user' } }, 'write', comment); // false (always deny writing comment)
- */
-export function definePolicy<
-  TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
->(getResourceType?: (resource: TResource) => string) {
-  return (
-    map: Resources<TContext, TAction, TResource>
-  ): Policy<TContext, TAction, TResource> => ({
-    can(context, action, resource) {
-      let resourceType: string;
-      if (getResourceType) {
-        resourceType = getResourceType(resource);
-      } else {
-        resourceType = String(resource); // 'resource' is the type key (string)
-      }
-
-      const resourcePolicies = map[resourceType];
-      if (!resourcePolicies) {
-        return false;
-      }
-
-      const policy = resourcePolicies[action];
-      if (!policy) {
-        return false;
-      }
-
-      return policy(context, action, resource) === "allow";
-    },
-  });
-}
-
-/**
- * Merge multiple policies into one.
- *
- * By default, uses "deny-overrides" (fail-closed):
- * - If any policy denies, the merged policy denies.
- * - If all policies allow, the merged policy allows.
+ * Collects all roles including inherited ones from a role hierarchy.
  *
  * @example
  * ```ts
- * const policy1 = definePolicy<Context, Action, Resource>()({ post: { read: allow() } });
- * const policy2 = definePolicy<Context, Action, Resource>()({ post: { read: when(ctx => ctx.role === "admin") } });
- * const merged = mergePolicies(policy1, policy2);
- * merged.can({ role: "user" }, "read", "post"); // combined decision (false since policy2 denies if role !== "admin")
- * ```
- */
-export function mergePolicies<
-  TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
->(
-  ...policies: Policy<TContext, TAction, TResource>[]
-): Policy<TContext, TAction, TResource> {
-  return {
-    can(context, action, resource) {
-      // deny-overrides: if any policy denies, the merged policy denies
-      for (const p of policies) {
-        if (!p.can(context, action, resource)) {
-          return false;
-        }
-      }
-      return true;
-    },
-
-    explain(context, action, resource) {
-      const reasons: string[] = [];
-      for (const p of policies) {
-        if (p.explain) {
-          reasons.push(p.explain(context, action, resource));
-        }
-      }
-      return reasons.join(" AND ");
-    },
-  };
-}
-
-/**
- * Merges policies using "allow-overrides" (fail-open):
- * - If any policy allows, the merged policy allows.
- * - If all policies deny, the merged policy denies.
+ * type Role = "guest" | "user" | "admin";
  *
- * @example
- * ```ts
- * const policy1 = definePolicy<Context, Action, Resource>()({ post: { read: allow() } });
- * const policy2 = definePolicy<Context, Action, Resource>()({ post: { read: when(ctx => ctx.role === "admin") } });
- * const merged = mergePoliciesAny(policy1, policy2);
- * merged.can({ role: "user" }, "read", "post"); // combined decision (true since policy1 allows)
- * ```
- */
-export function mergePoliciesAny<
-  TContext extends Context,
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
->(
-  ...policies: Policy<TContext, TAction, TResource>[]
-): Policy<TContext, TAction, TResource> {
-  return {
-    can(context, action, resource) {
-      return policies.some((p) => p.can(context, action, resource));
-    },
-  };
-}
-
-/**
- * Returns all roles a user has including inherited roles.
- *
- * This function traverses the role hierarchy recursively, collecting all direct and indirect (inherited) roles.
- *
- * @example
- * ```ts
- * type Role = "guest" | "user" | "editor" | "admin" | "moderator" | "superadmin";
- *
- * const hierarchy: Record<Role, Role[]> = {
+ * const hierarchy: RoleHierarchy<Role> = {
  *   guest: [],
  *   user: ["guest"],
- *   editor: ["user"],
- *   moderator: ["user"],
- *   admin: ["editor"],
- *   superadmin: ["admin", "moderator"], // superadmin inherits from both admin and moderator
+ *   admin: ["user"],
  * };
  *
- * const userRoles: Role[] = ["editor", "moderator"];
- *
- * // User has "editor" and "moderator" roles directly
- * const effectiveRoles = collectInheritedRoles(userRoles, hierarchy);
- * // Result: Set { "editor", "user", "guest", "moderator" }
- *
- * // If user is also a "superadmin":
- * const allRoles = collectInheritedRoles(["superadmin"], hierarchy);
- * // Result: Set { "superadmin", "admin", "editor", "user", "moderator", "guest" }
+ * collectInheritedRoles(["admin"], hierarchy);
+ * // Returns: Set { "admin", "user", "guest" }
  * ```
  */
 export function collectInheritedRoles<TRole extends Role = Role>(
@@ -333,51 +222,40 @@ export function collectInheritedRoles<TRole extends Role = Role>(
 }
 
 /**
- * Checks if a user has a specific role, considering the role hierarchy.
- *
- * This function supports both direct role assignment and inherited roles via a hierarchy.
- * The user's roles can be a single value or an array of roles.
+ * Returns a condition function that checks if the user has a specific role.
+ * Supports role hierarchy for inherited permissions.
  *
  * @example
  * ```ts
- * // User with a single role, no hierarchy
- * const ctx1 = { role: "editor" };
- * const canEdit = hasRole("editor");
- * canEdit(ctx1); // true
- * canEdit({ role: "user" }); // false
+ * // Without hierarchy
+ * rules: {
+ *   post: {
+ *     delete: when(hasRole("admin")),
+ *   },
+ * }
  *
- * // User with multiple roles, no hierarchy
- * const ctx2 = { role: ["user", "moderator"] };
- * const canModerate = hasRole("moderator");
- * hasRole("moderator")(ctx2); // true
- * hasRole("admin")(ctx2); // false
- *
- * // With hierarchy: editor inherits from user, admin inherits from editor
+ * // With hierarchy
  * const hierarchy = {
- *   user: [],
- *   editor: ["user"],
- *   admin: ["editor"],
+ *   guest: [],
+ *   user: ["guest"],
+ *   admin: ["user"],
  * };
- * const ctx3 = { role: "admin" };
- * hasRole("user", hierarchy)(ctx3); // true (admin -> editor -> user)
- * hasRole("editor", hierarchy)(ctx3); // true
- * hasRole("admin", hierarchy)(ctx3); // true
- * hasRole("moderator", hierarchy)(ctx3); // false
  *
- * // User with multiple roles and hierarchy
- * const ctx4 = { role: ["moderator", "editor"] };
- * hasRole("user", hierarchy)(ctx4); // true (editor -> user)
- * hasRole("admin", hierarchy)(ctx4); // false
+ * rules: {
+ *   post: {
+ *     read: when(hasRole("guest", hierarchy)), // Admins and users can also read
+ *   },
+ * }
  * ```
  */
 export function hasRole<
   TContext extends Context & { role: TRole | TRole[] },
-  TAction extends Action = Action,
-  TResource extends Resource = Resource,
+  TAction extends string = string,
+  TResource = unknown,
   TRole extends Role = Role,
 >(
   role: TRole,
-  hierarchy?: RoleHierarchy
+  hierarchy?: RoleHierarchy<TRole>
 ): ConditionFn<TContext, TAction, TResource> {
   return (context) => {
     const userRoles = Array.isArray(context.role)
@@ -390,5 +268,164 @@ export function hasRole<
 
     const inherited = collectInheritedRoles(userRoles, hierarchy);
     return inherited.has(role);
+  };
+}
+
+/**
+ * Creates a type-safe policy from resource schemas, actions, and rules.
+ *
+ * @example
+ * ```ts
+ * import { z } from "zod";
+ * import { createPolicy, allow, deny, when } from "@zap-studio/permit";
+ * import type { Resources, Actions } from "@zap-studio/permit";
+ *
+ * // Define resource schemas
+ * const resources = {
+ *   post: z.object({
+ *     id: z.string(),
+ *     authorId: z.string(),
+ *     visibility: z.enum(["public", "private"]),
+ *   }),
+ *   comment: z.object({
+ *     id: z.string(),
+ *     postId: z.string(),
+ *     authorId: z.string(),
+ *   }),
+ * } satisfies Resources;
+ *
+ * // Define actions per resource
+ * const actions = {
+ *   post: ["read", "write", "delete"],
+ *   comment: ["read", "write"],
+ * } as const satisfies Actions<typeof resources>;
+ *
+ * // Define context type
+ * type AppContext = { user: { id: string; role: string } };
+ *
+ * // Create the policy
+ * const policy = createPolicy<AppContext>({
+ *   resources,
+ *   actions,
+ *   rules: {
+ *     post: {
+ *       read: when((ctx, action, resource) => resource.visibility === "public"),
+ *       write: when((ctx, action, resource) => ctx.user.id === resource.authorId),
+ *       delete: deny(),
+ *     },
+ *     comment: {
+ *       read: allow(),
+ *       write: when((ctx, action, resource) => ctx.user.id === resource.authorId),
+ *     },
+ *   },
+ * });
+ *
+ * // Check permissions
+ * const post = { id: "1", authorId: "user-1", visibility: "public" as const };
+ * policy.can(ctx, "read", "post", post); // true
+ * policy.can(ctx, "write", "post", post); // depends on ctx.user.id
+ * ```
+ */
+export function createPolicy<
+  TContext extends Context,
+  TResources extends Resources = Resources,
+  TActions extends Actions<TResources> = Actions<TResources>,
+>(
+  config: PermitConfig<TContext, TResources, TActions>
+): Policy<TContext, TResources, TActions> {
+  const { rules } = config;
+
+  return {
+    can<K extends keyof TResources & keyof TActions>(
+      context: TContext,
+      action: InferAction<TActions, K>,
+      resourceType: K,
+      resource: InferResource<TResources, K>
+    ): boolean {
+      const resourceRules = rules[resourceType];
+
+      if (!resourceRules) {
+        return false;
+      }
+
+      const policyFn = resourceRules[action];
+
+      if (!policyFn) {
+        return false;
+      }
+
+      return policyFn(context, action, resource) === "allow";
+    },
+  };
+}
+
+/**
+ * Merges multiple policies into one using "deny-overrides" strategy.
+ * If any policy denies, the merged policy denies. All must allow for the result to allow.
+ *
+ * @example
+ * ```ts
+ * const basePolicy = createPolicy({ ... });
+ * const adminPolicy = createPolicy({ ... });
+ *
+ * const merged = mergePolicies(basePolicy, adminPolicy);
+ * // Both policies must allow for the action to be permitted
+ * ```
+ */
+export function mergePolicies<
+  TContext extends Context,
+  TResources extends Resources = Resources,
+  TActions extends Actions<TResources> = Actions<TResources>,
+>(
+  ...policies: Policy<TContext, TResources, TActions>[]
+): Policy<TContext, TResources, TActions> {
+  return {
+    can<K extends keyof TResources & keyof TActions>(
+      context: TContext,
+      action: InferAction<TActions, K>,
+      resourceType: K,
+      resource: InferResource<TResources, K>
+    ): boolean {
+      for (const policy of policies) {
+        if (!policy.can(context, action, resourceType, resource)) {
+          return false;
+        }
+      }
+      return true;
+    },
+  };
+}
+
+/**
+ * Merges multiple policies into one using "allow-overrides" strategy.
+ * If any policy allows, the merged policy allows. All must deny for the result to deny.
+ *
+ * @example
+ * ```ts
+ * const guestPolicy = createPolicy({ ... });
+ * const memberPolicy = createPolicy({ ... });
+ *
+ * const merged = mergePoliciesAny(guestPolicy, memberPolicy);
+ * // If either policy allows, the action is permitted
+ * ```
+ */
+export function mergePoliciesAny<
+  TContext extends Context,
+  TResources extends Resources = Resources,
+  TActions extends Actions<TResources> = Actions<TResources>,
+>(
+  ...policies: Policy<TContext, TResources, TActions>[]
+): Policy<TContext, TResources, TActions> {
+  return {
+    can<K extends keyof TResources & keyof TActions>(
+      context: TContext,
+      action: InferAction<TActions, K>,
+      resourceType: K,
+      resource: InferResource<TResources, K>
+    ): boolean {
+      return policies.some((policy) =>
+        policy.can(context, action, resourceType, resource)
+      );
+    },
   };
 }
