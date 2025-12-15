@@ -149,8 +149,8 @@ describe("when", () => {
   });
 
   it("should pass resource to the condition", () => {
-    type Post = { authorId: string };
-    const policyFn = when<TestContext, string, Post>(
+    type AuthoredPost = { authorId: string };
+    const policyFn = when<TestContext, string, AuthoredPost>(
       (ctx, _action, resource) => ctx.user.id === resource.authorId
     );
 
@@ -218,8 +218,8 @@ describe("and", () => {
   });
 
   it("should pass context, action, and resource to all conditions", () => {
-    type Post = { authorId: string };
-    const condition = and<TestContext, string, Post>(
+    type AuthoredPost = { authorId: string };
+    const condition = and<TestContext, string, AuthoredPost>(
       (ctx) => ctx.user.role === "admin",
       (_ctx, action) => action === "delete",
       (_ctx, _action, resource) => resource.authorId === "user-1"
@@ -289,8 +289,8 @@ describe("or", () => {
   });
 
   it("should pass context, action, and resource to conditions", () => {
-    type Post = { visibility: "public" | "private" };
-    const condition = or<TestContext, string, Post>(
+    type VisiblePost = { visibility: "public" | "private" };
+    const condition = or<TestContext, string, VisiblePost>(
       (ctx) => ctx.user.role === "admin",
       (_ctx, _action, resource) => resource.visibility === "public"
     );
@@ -327,9 +327,12 @@ describe("not", () => {
   });
 
   it("should pass context, action, and resource to the condition", () => {
-    type Post = { authorId: string };
-    const isOwner = (ctx: TestContext, _action: string, resource: Post) =>
-      ctx.user.id === resource.authorId;
+    type AuthoredPost = { authorId: string };
+    const isOwner = (
+      ctx: TestContext,
+      _action: string,
+      resource: AuthoredPost
+    ) => ctx.user.id === resource.authorId;
     const isNotOwner = not(isOwner);
 
     expect(
@@ -667,22 +670,22 @@ describe("createPolicy", () => {
       rules: {
         post: {
           read: when(
-            (ctx, _action, resource) =>
+            (_ctx, _action, resource) =>
               resource.visibility === "public" ||
-              ctx.user.id === resource.authorId
+              _ctx.user.id === resource.authorId
           ),
           write: when(
-            (ctx, _action, resource) => ctx.user.id === resource.authorId
+            (_ctx, _action, resource) => _ctx.user.id === resource.authorId
           ),
-          delete: when((ctx) => ctx.user.role === "admin"),
+          delete: when((_ctx) => _ctx.user.role === "admin"),
           publish: deny(),
         },
         comment: {
           read: allow(),
           write: when(
-            (ctx, _action, resource) => ctx.user.id === resource.authorId
+            (_ctx, _action, resource) => _ctx.user.id === resource.authorId
           ),
-          delete: when((ctx) => ctx.user.role === "admin"),
+          delete: when((_ctx) => _ctx.user.role === "admin"),
         },
       },
     });
