@@ -1,0 +1,308 @@
+# Merging Policies
+
+As your application grows, you may want to organize authorization logic into separate policies. `@zap-studio/permit` provides two strategies for merging policies: deny-overrides and allow-overrides.
+
+## Why Merge Policies?
+
+Merging policies is useful when:
+
+- **Separation of concerns** — Keep domain-specific rules in separate files
+- **Layered security** — Apply base rules that can be tightened or relaxed
+- **Feature flags** — Enable/disable features by adding or removing policies
+- **Multi-tenancy** — Combine organization policies with application policies
+
+## mergePolicies() — Deny-Overrides Strategy
+
+The `mergePolicies()` function combines policies using a deny-overrides strategy. An action is allowed only if **all** policies allow it.
+
+```typescript
+import { mergePolicies } from "@zap-studio/permit";
+
+const mergedPolicy = mergePolicies(policy1, policy2, policy3);
+```
+
+Think of it as an AND operation: `policy1 AND policy2 AND policy3`
+
+### Behavior
+
+| Policy 1 | Policy 2 | Result  |
+| -------- | -------- | ------- |
+| allow    | allow    | allow   |
+| allow    | deny     | **deny** |
+| deny     | allow    | **deny** |
+| deny     | deny     | deny    |
+
+### Example: Base + Restrictive Policy
+
+```typescript
+import { z } from "zod";
+import { createPolicy, when, mergePolicies, allow } from "@zap-studio/permit";
+import type { Resources, Actions } from "@zap-studio/permit/types";
+
+const resources = {
+  document: z.object({
+    id: z.string(),
+    ownerId: z.string(),
+    classification: z.enum(["public", "internal", "confidential"]),
+  }),
+} satisfies Resources;
+
+const actions = {
+  document: ["read", "write", "delete"],
+} as const satisfies Actions<typeof resources>;
+
+type AppContext = {
+  user: { id: string; clearanceLevel: number } | null;
+};
+
+// Base policy: standard access rules
+const basePolicy = createPolicy<AppContext>({
+  resources,
+  actions,
+  rules: {
+    document: {
+      read: when((ctx, _, doc) =>
+        doc.classification === "public" || ctx.user?.id === doc.ownerId
+      ),
+      write: when((ctx, _, doc) => ctx.user?.id === doc.ownerId),
+      delete: when((ctx, _, doc) => ctx.user?.id === doc.ownerId),
+    },
+  },
+});
+
+// Security policy: additional clearance requirements
+const securityPolicy = createPolicy<AppContext>({
+  resources,
+  actions,
+  rules: {
+    document: {
+      read: when((ctx, _, doc) => {
+        if (doc.classification === "confidential") {
+          return (ctx.user?.clearanceLevel ?? 0) >= 3;
+        }
+        if (doc.classification === "internal") {
+          return (ctx.user?.clearanceLevel ?? 0) >= 1;
+        }
+        return true; // Public documents have no clearance requirement
+      }),
+      write: when((ctx, _, doc) => {
+        if (doc.classification === "confidential") {
+          return (ctx.user?.clearanceLevel ?? 0) >= 3;
+        }
+        return true;
+      }),
+      delete: when((ctx, _, doc) => {
+        // Only high clearance can delete confidential docs
+        if (doc.classification === "confidential") {
+          return (ctx.user?.clearanceLevel ?? 0) >= 4;
+        }
+        return true;
+      }),
+    },
+  },
+});
+
+// Merge: both policies must allow
+const policy = mergePolicies(basePolicy, securityPolicy);
+
+// Usage
+const confidentialDoc = {
+  id: "doc-1",
+  ownerId: "user-123",
+  classification: "confidential" as const,
+};
+
+// Owner with low clearance: base allows, security denies → DENIED
+const lowClearanceOwner: AppContext = {
+  user: { id: "user-123", clearanceLevel: 1 },
+};
+console.log(policy.can(lowClearanceOwner, "read", "document", confidentialDoc)); // false
+
+// Owner with high clearance: both allow → ALLOWED
+const highClearanceOwner: AppContext = {
+  user: { id: "user-123", clearanceLevel: 3 },
+};
+console.log(policy.can(highClearanceOwner, "read", "document", confidentialDoc)); // true
+```
+
+## mergePoliciesAny() — Allow-Overrides Strategy
+
+The `mergePoliciesAny()` function combines policies using an allow-overrides strategy. An action is allowed if **any** policy allows it.
+
+```typescript
+import { mergePoliciesAny } from "@zap-studio/permit";
+
+const mergedPolicy = mergePoliciesAny(policy1, policy2, policy3);
+```
+
+Think of it as an OR operation: `policy1 OR policy2 OR policy3`
+
+### Behavior
+
+| Policy 1 | Policy 2 | Result    |
+| -------- | -------- | --------- |
+| allow    | allow    | allow     |
+| allow    | deny     | **allow** |
+| deny     | allow    | **allow** |
+| deny     | deny     | deny      |
+
+### Example: Multiple Access Paths
+
+```typescript
+import { z } from "zod";
+import { createPolicy, when, mergePoliciesAny, allow } from "@zap-studio/permit";
+import type { Resources, Actions } from "@zap-studio/permit/types";
+
+const resources = {
+  file: z.object({
+    id: z.string(),
+    ownerId: z.string(),
+    isPublic: z.boolean(),
+    sharedWith: z.array(z.string()),
+    teamId: z.string().nullable(),
+  }),
+} satisfies Resources;
+
+const actions = {
+  file: ["read", "write", "delete"],
+} as const satisfies Actions<typeof resources>;
+
+type FileContext = {
+  user: { id: string; teamIds: string[] } | null;
+};
+
+// Owner access policy
+const ownerPolicy = createPolicy<FileContext>({
+  resources,
+  actions,
+  rules: {
+    file: {
+      read: when((ctx, _, file) => ctx.user?.id === file.ownerId),
+      write: when((ctx, _, file) => ctx.user?.id === file.ownerId),
+      delete: when((ctx, _, file) => ctx.user?.id === file.ownerId),
+    },
+  },
+});
+
+// Public access policy
+const publicPolicy = createPolicy<FileContext>({
+  resources,
+  actions,
+  rules: {
+    file: {
+      read: when((_, __, file) => file.isPublic),
+      write: when(() => false), // Public doesn't grant write
+      delete: when(() => false), // Public doesn't grant delete
+    },
+  },
+});
+
+// Shared access policy
+const sharedPolicy = createPolicy<FileContext>({
+  resources,
+  actions,
+  rules: {
+    file: {
+      read: when((ctx, _, file) => file.sharedWith.includes(ctx.user?.id ?? "")),
+      write: when((ctx, _, file) => file.sharedWith.includes(ctx.user?.id ?? "")),
+      delete: when(() => false), // Shared users can't delete
+    },
+  },
+});
+
+// Team access policy
+const teamPolicy = createPolicy<FileContext>({
+  resources,
+  actions,
+  rules: {
+    file: {
+      read: when((ctx, _, file) =>
+        file.teamId !== null && ctx.user?.teamIds.includes(file.teamId)
+      ),
+      write: when((ctx, _, file) =>
+        file.teamId !== null && ctx.user?.teamIds.includes(file.teamId)
+      ),
+      delete: when(() => false), // Team members can't delete
+    },
+  },
+});
+
+// Any of these policies can grant access
+const filePolicy = mergePoliciesAny(ownerPolicy, publicPolicy, sharedPolicy, teamPolicy);
+
+// Usage
+const file = {
+  id: "file-1",
+  ownerId: "user-owner",
+  isPublic: false,
+  sharedWith: ["user-shared"],
+  teamId: "team-1",
+};
+
+// User with shared access can read
+const sharedUser: FileContext = {
+  user: { id: "user-shared", teamIds: [] },
+};
+console.log(filePolicy.can(sharedUser, "read", "file", file)); // true (via sharedPolicy)
+console.log(filePolicy.can(sharedUser, "write", "file", file)); // true (via sharedPolicy)
+console.log(filePolicy.can(sharedUser, "delete", "file", file)); // false (no policy allows)
+
+// Team member can also read/write
+const teamMember: FileContext = {
+  user: { id: "user-team", teamIds: ["team-1"] },
+};
+console.log(filePolicy.can(teamMember, "read", "file", file)); // true (via teamPolicy)
+```
+
+## Combining Both Strategies
+
+You can combine `mergePolicies` and `mergePoliciesAny` for complex scenarios:
+
+```typescript
+import { mergePolicies, mergePoliciesAny } from "@zap-studio/permit";
+
+// Access layer: multiple paths to access
+const accessPolicy = mergePoliciesAny(ownerPolicy, sharedPolicy, publicPolicy);
+
+// Security layer: must pass all security checks
+const securityPolicy = mergePolicies(auditPolicy, compliancePolicy, ratePolicy);
+
+// Final policy: must have access AND pass security
+const finalPolicy = mergePolicies(accessPolicy, securityPolicy);
+```
+
+### Visualization
+
+```
+                   ┌─────────────┐
+                   │ finalPolicy │
+                   └──────┬──────┘
+                          │ AND (mergePolicies)
+            ┌─────────────┴─────────────┐
+            │                           │
+     ┌──────┴──────┐             ┌──────┴──────┐
+     │accessPolicy │             │securityPolicy│
+     └──────┬──────┘             └──────┬──────┘
+            │ OR                        │ AND
+    ┌───────┼───────┐           ┌───────┼───────┐
+    │       │       │           │       │       │
+ owner   shared   public     audit  compliance rate
+```
+
+## Empty Policy Arrays
+
+- `mergePolicies()` with no policies returns `true` (vacuously true—no policy denies)
+- `mergePoliciesAny()` with no policies returns `false` (no policy allows)
+
+```typescript
+const emptyAnd = mergePolicies(); // Always allows
+const emptyOr = mergePoliciesAny(); // Always denies
+```
+
+## Best Practices
+
+1. **Name policies descriptively** — `securityPolicy`, `ownerAccessPolicy`, `compliancePolicy`
+2. **Keep policies focused** — Each policy should handle one concern
+3. **Document merge order** — Explain why policies are merged in a specific order
+4. **Test merged policies** — Ensure the combined behavior is correct
+5. **Consider performance** — Fewer policies means fewer checks
