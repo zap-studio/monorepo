@@ -164,7 +164,7 @@ export type PermitConfig<
  *
  * @example
  * ```ts
- * const policy: Policy<MyContext> = createPermit({
+ * const policy: Policy<MyContext> = createPolicy({
  *   resources,
  *   actions,
  *   rules: { ... },
