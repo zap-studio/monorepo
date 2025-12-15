@@ -128,8 +128,8 @@ assertNever(badValue);
 
 ## Best Practices
 
-1. **Use PolicyError for authorization failures** — Makes it easy to distinguish from other errors
-2. **Catch errors at boundaries** — Handle PolicyError in middleware or API handlers
+1. **Use `PolicyError` for authorization failures** — Makes it easy to distinguish from other errors
+2. **Catch errors at boundaries** — Handle `PolicyError` in middleware or API handlers
 3. **Include context in error messages** — "Not authorized to delete post-123" is better than "Forbidden"
-4. **Use assertNever for exhaustive checks** — Especially when handling actions or resource types
+4. **Use `assertNever` for exhaustive checks** — Especially when handling actions or resource types
 5. **Log denied attempts** — Track authorization failures for security monitoring
