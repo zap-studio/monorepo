@@ -40,7 +40,6 @@
     "@standard-schema/spec": "catalog:base"
   },
   "devDependencies": {
-    "@sinclair/typebox": "catalog:base",
     "@tanstack/react-router": "catalog:tanstack",
     "@types/node": "catalog:types",
     "@types/react": "catalog:react",
@@ -60,7 +59,6 @@
     "zod": "catalog:base"
   },
   "peerDependencies": {
-    "@sinclair/typebox": ">=0.30.0",
     "@tanstack/react-router": ">=1.0.0",
     "arktype": ">=2.0.0",
     "elysia": ">=1.0.0",
@@ -71,9 +69,6 @@
     "zod": ">=3.0.0"
   },
   "peerDependenciesMeta": {
-    "@sinclair/typebox": {
-      "optional": true
-    },
     "@tanstack/react-router": {
       "optional": true
     },
@@ -125,7 +120,6 @@
     "./plugins/notifications/types": "./dist/plugins/notifications/types.mjs",
     "./presets": "./dist/presets/index.mjs",
     "./presets/arktype": "./dist/presets/arktype.mjs",
-    "./presets/typebox": "./dist/presets/typebox.mjs",
     "./presets/valibot": "./dist/presets/valibot.mjs",
     "./presets/zod": "./dist/presets/zod.mjs",
     "./schema": "./dist/schema.mjs",

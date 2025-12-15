@@ -35,15 +35,6 @@ import { createChatEventsSchema } from "@zap-studio/realtime/plugins/chat";
 const ChatEvents = createChatEventsSchema(arktypeSchemaBuilder);
 ```
 
-### TypeBox
-
-```typescript
-import { typeboxSchemaBuilder } from "@zap-studio/realtime/presets/typebox";
-import { createChatEventsSchema } from "@zap-studio/realtime/plugins/chat";
-
-const ChatEvents = createChatEventsSchema(typeboxSchemaBuilder);
-```
-
 ## Using with Plugins
 
 ### Chat Plugin
@@ -178,7 +169,4 @@ pnpm add valibot
 
 # For ArkType
 pnpm add arktype
-
-# For TypeBox
-pnpm add @sinclair/typebox
 ```
