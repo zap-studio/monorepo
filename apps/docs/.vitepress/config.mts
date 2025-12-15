@@ -21,6 +21,7 @@ export default defineConfig({
         text: "Packages",
         items: [
           { text: "@zap-studio/fetch", link: "/packages/fetch/" },
+          { text: "@zap-studio/permit", link: "/packages/permit/" },
           { text: "@zap-studio/waitlist", link: "/packages/waitlist/" },
           { text: "@zap-studio/webhooks", link: "/packages/webhooks/" },
         ],
@@ -64,6 +65,29 @@ export default defineConfig({
             { text: "Factory Pattern", link: "/packages/fetch/create-fetch" },
             { text: "Error Handling", link: "/packages/fetch/errors" },
             { text: "Validation", link: "/packages/fetch/validation" },
+          ],
+        },
+      ],
+      "/packages/permit/": [
+        {
+          text: "@zap-studio/permit",
+          items: [
+            { text: "Overview", link: "/packages/permit/" },
+            {
+              text: "Creating Policies",
+              link: "/packages/permit/creating-policies",
+            },
+            { text: "Policy Rules", link: "/packages/permit/policy-rules" },
+            { text: "Conditions", link: "/packages/permit/conditions" },
+            {
+              text: "Role-Based Access Control",
+              link: "/packages/permit/roles",
+            },
+            {
+              text: "Merging Policies",
+              link: "/packages/permit/merging-policies",
+            },
+            { text: "Error Handling", link: "/packages/permit/errors" },
           ],
         },
       ],
