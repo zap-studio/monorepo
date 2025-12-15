@@ -111,7 +111,10 @@ export default defineConfig({
             { text: "Overview", link: "/packages/realtime/" },
             { text: "Emitters", link: "/packages/realtime/emitters" },
             { text: "SSE Transport", link: "/packages/realtime/sse" },
-            { text: "WebSocket Transport", link: "/packages/realtime/websocket" },
+            {
+              text: "WebSocket Transport",
+              link: "/packages/realtime/websocket",
+            },
             { text: "React Hooks", link: "/packages/realtime/react-hooks" },
             { text: "Framework Adapters", link: "/packages/realtime/adapters" },
             { text: "Plugins", link: "/packages/realtime/plugins" },
