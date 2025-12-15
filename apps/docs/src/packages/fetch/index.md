@@ -4,29 +4,36 @@ A type-safe fetch wrapper with Standard Schema validation.
 
 ## Why @zap-studio/fetch?
 
+When fetching data from APIs, TypeScript can't verify that the response matches your expected type. You end up with unsafe type assertions that can cause runtime errors.
+
 **Before:**
 
 ```typescript
 const response = await fetch("/api/users/1");
 const data = await response.json();
 const user = data as User; // 😱 Unsafe type assertion
+// If the API returns { name: "John" } instead of { id: 1, name: "John" },
+// your app breaks at runtime with no warning
 ```
 
 **After:**
 
 ```typescript
+import { api } from "@zap-studio/fetch";
+
 const user = await api.get("/api/users/1", UserSchema);
 // ✨ Typed, validated, and safe!
+// If the API response doesn't match UserSchema, you get a clear error
 ```
 
 ## Features
 
-- 🎯 **Type-safe requests** with automatic type inference
-- 🛡️ **Runtime validation** using Standard Schema (Zod, Valibot, ArkType, etc.)
-- ⚡️ **Convenient API methods** (GET, POST, PUT, PATCH, DELETE)
-- 🏭 **Factory pattern** for creating pre-configured instances with base URLs
-- 🚨 **Custom error handling** with FetchError and ValidationError classes
-- 📘 **Full TypeScript support** with zero configuration
+- **Type-safe requests** with automatic type inference
+- **Runtime validation** using Standard Schema (Zod, Valibot, ArkType, etc.)
+- **Convenient API methods** (GET, POST, PUT, PATCH, DELETE)
+- **Factory pattern** for creating pre-configured instances with base URLs
+- **Custom error handling** with FetchError and ValidationError classes
+- **Full TypeScript support** with zero configuration
 
 ## Installation
 
@@ -38,28 +45,62 @@ npm install @zap-studio/fetch
 
 ## Quick Start
 
+Let's build a type-safe API client for a user management system.
+
+### 1. Define Your Schema
+
+First, define the shape of your API responses using any Standard Schema library:
+
 ```typescript
 import { z } from "zod";
-import { api } from "@zap-studio/fetch";
 
-// Define your schema
+// Define the user schema
 const UserSchema = z.object({
   id: z.number(),
   name: z.string(),
   email: z.string().email(),
+  role: z.enum(["admin", "user", "guest"]),
+  createdAt: z.string().transform((s) => new Date(s)),
 });
 
-// Make a type-safe request
+type User = z.infer<typeof UserSchema>;
+```
+
+### 2. Make Type-Safe Requests
+
+```typescript
+import { api } from "@zap-studio/fetch";
+
+// Fetch a single user - fully typed and validated
 const user = await api.get("https://api.example.com/users/1", UserSchema);
 
-// user is fully typed and validated! ✨
-console.log(user.name); // TypeScript knows this is a string
+console.log(user.name);      // TypeScript knows this is a string
+console.log(user.createdAt); // TypeScript knows this is a Date
+```
+
+### 3. Handle Errors Gracefully
+
+```typescript
+import { FetchError, ValidationError } from "@zap-studio/fetch/errors";
+
+try {
+  const user = await api.get("https://api.example.com/users/1", UserSchema);
+  console.log(`Hello, ${user.name}!`);
+} catch (error) {
+  if (error instanceof FetchError) {
+    // HTTP error (404, 500, etc.)
+    console.error(`API error: ${error.status}`);
+  } else if (error instanceof ValidationError) {
+    // Response didn't match schema
+    console.error("Invalid API response:", error.issues);
+  }
+}
 ```
 
 ## What's Next?
 
-- [API Methods](/packages/fetch/api-methods) - Learn about GET, POST, PUT, PATCH, DELETE
-- [Using $fetch](/packages/fetch/fetch-function) - Direct fetch usage with and without validation
-- [Factory Pattern](/packages/fetch/create-fetch) - Create pre-configured instances
-- [Error Handling](/packages/fetch/errors) - Handle HTTP and validation errors
-- [Validation](/packages/fetch/validation) - Deep dive into schema validation
+- [API Methods](/packages/fetch/api-methods) — Learn about GET, POST, PUT, PATCH, DELETE
+- [Using $fetch](/packages/fetch/fetch-function) — Direct fetch usage with and without validation
+- [Factory Pattern](/packages/fetch/create-fetch) — Create pre-configured instances
+- [Error Handling](/packages/fetch/errors) — Handle HTTP and validation errors
+- [Validation](/packages/fetch/validation) — Deep dive into schema validation

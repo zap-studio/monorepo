@@ -1,6 +1,34 @@
 # Factory Pattern with createFetch
 
-The `createFetch` function allows you to create pre-configured fetch instances with base URLs and default headers. This is perfect for building API clients.
+The `createFetch` function allows you to create pre-configured fetch instances with base URLs and default headers. This is ideal for building API clients that need consistent configuration across requests.
+
+## Why Use createFetch?
+
+When building applications, you often make requests to the same API with the same headers (authentication, content type, etc.). Instead of repeating this configuration:
+
+```typescript
+// Without createFetch - repetitive
+const user = await $fetch("https://api.example.com/users/1", UserSchema, {
+  headers: { Authorization: "Bearer token", "X-API-Key": "key" },
+});
+
+const posts = await $fetch("https://api.example.com/posts", PostsSchema, {
+  headers: { Authorization: "Bearer token", "X-API-Key": "key" },
+});
+```
+
+You can configure once and reuse:
+
+```typescript
+// With createFetch - clean and DRY
+const { api } = createFetch({
+  baseURL: "https://api.example.com",
+  headers: { Authorization: "Bearer token", "X-API-Key": "key" },
+});
+
+const user = await api.get("/users/1", UserSchema);
+const posts = await api.get("/posts", PostsSchema);
+```
 
 ## Basic Usage
 
@@ -8,7 +36,6 @@ The `createFetch` function allows you to create pre-configured fetch instances w
 import { z } from "zod";
 import { createFetch } from "@zap-studio/fetch";
 
-// Create a configured instance
 const { $fetch, api } = createFetch({
   baseURL: "https://api.example.com",
   headers: {
@@ -22,7 +49,7 @@ const UserSchema = z.object({
   name: z.string(),
 });
 
-// Now use relative paths - baseURL is prepended automatically
+// Use relative paths - baseURL is prepended automatically
 const user = await api.get("/users/1", UserSchema);
 
 // POST with auto-stringified body
@@ -33,13 +60,13 @@ const newUser = await api.post("/users", UserSchema, {
 
 ## Factory Options
 
-| Option                   | Type          | Default | Description                                           |
-| ------------------------ | ------------- | ------- | ----------------------------------------------------- |
-| `baseURL`                | `string`      | `""`    | Base URL prepended to relative paths only             |
-| `headers`                | `HeadersInit` | -       | Default headers included in all requests (can be overridden per request)             |
-| `searchParams`           | `URLSearchParams \| Record<string, string> \| string \| [string, string][]` | - | Default query/search params included in all requests (can be overridden per request) |
-| `throwOnFetchError`      | `boolean`     | `true`  | Throw `FetchError` on non-2xx responses               |
-| `throwOnValidationError` | `boolean`     | `true`  | Throw `ValidationError` on schema validation failures |
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `baseURL` | `string` | `""` | Base URL prepended to relative paths only |
+| `headers` | `HeadersInit` | - | Default headers included in all requests |
+| `searchParams` | `URLSearchParams \| Record<string, string>` | - | Default query params included in all requests |
+| `throwOnFetchError` | `boolean` | `true` | Throw `FetchError` on non-2xx responses |
+| `throwOnValidationError` | `boolean` | `true` | Throw `ValidationError` on schema validation failures |
 
 ## URL Handling
 
@@ -95,7 +122,7 @@ const user = await api.get("/users/1", UserSchema, {
 
 ## Search Params Merging
 
-Default search params from the factory are merged with per-request search params. Per-request search params take precedence:
+Default search params are merged with per-request and URL params:
 
 ```typescript
 const { api } = createFetch({
@@ -103,65 +130,71 @@ const { api } = createFetch({
   searchParams: { locale: "en", page: "1" },
 });
 
-// This request will have:
+// Final URL: /users?locale=en&page=2&q=alex
 // - locale: en (from defaults)
-// - page: 2 (overridden)
+// - page: 2 (overridden by per-request)
 // - q: alex (new param)
-const user = await api.get("/users/1", UserSchema, {
+const user = await api.get("/users", UserSchema, {
   searchParams: { page: "2", q: "alex" },
 });
 ```
 
-Query params in the URL are also merged with factory and per-request search params. The priority order is (highest priority last):
-
+Priority order:
 1. **Factory defaults** — lowest priority
 2. **URL params** — override factory defaults
-3. **Per-request params** — highest priority, override everything
+3. **Per-request params** — highest priority
+
+## Real-World Examples
+
+### Multiple API Clients
+
+Create separate clients for different APIs in your application:
 
 ```typescript
-const { api } = createFetch({
-  baseURL: "https://api.example.com",
-  searchParams: { locale: "en", page: "1" },
-});
-
-// This request will have:
-// - locale: en (from factory defaults)
-// - sort: asc (from URL)
-// - page: 2 (overridden by per-request)
-// - q: alex (new param from per-request)
-const user = await api.get("/users?sort=asc&page=0", UserSchema, {
-  searchParams: { page: "2", q: "alex" },
-});
-```
-
-## Multiple API Clients
-
-You can create separate fetch instances for different APIs:
-
-```typescript
+import { z } from "zod";
 import { createFetch } from "@zap-studio/fetch";
 
 // GitHub API client
 const github = createFetch({
   baseURL: "https://api.github.com",
-  headers: { Authorization: "Bearer github-token" },
-});
-
-// Internal API client
-const internal = createFetch({
-  baseURL: "https://internal.example.com/api",
-  headers: { "X-Internal-Key": "secret" },
+  headers: {
+    Authorization: `token ${process.env.GITHUB_TOKEN}`,
+    Accept: "application/vnd.github.v3+json",
+  },
 });
 
 // Stripe API client
 const stripe = createFetch({
   baseURL: "https://api.stripe.com/v1",
-  headers: { Authorization: "Bearer sk_test_..." },
+  headers: {
+    Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+  },
 });
 
-// Use them independently
+// Internal API client
+const internal = createFetch({
+  baseURL: process.env.API_URL,
+  headers: {
+    "X-Internal-Key": process.env.INTERNAL_API_KEY,
+  },
+});
+
+// Schemas
+const RepoSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  full_name: z.string(),
+  private: z.boolean(),
+});
+
+const CustomerSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  name: z.string().nullable(),
+});
+
+// Usage
 const repo = await github.api.get("/repos/owner/repo", RepoSchema);
-const data = await internal.api.get("/data", DataSchema);
 const customer = await stripe.api.get("/customers/cus_123", CustomerSchema);
 ```
 
@@ -176,7 +209,7 @@ const { api } = createFetch({
   throwOnValidationError: false,
 });
 
-// All requests will return Result objects instead of throwing
+// All requests return Result objects instead of throwing
 const result = await api.get("/users/1", UserSchema);
 
 if (result.issues) {
