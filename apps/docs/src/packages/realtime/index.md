@@ -138,7 +138,7 @@ await events.publish("message", {
 
 - [SSE Transport](/packages/realtime/sse) — Server-Sent Events for one-way streaming
 - [WebSocket Transport](/packages/realtime/websocket) — Bidirectional real-time communication
-- [Schema Presets](/packages/realtime/presets) — Quick setup with Zod, Valibot, ArkType, or TypeBox
+- [Schema Presets](/packages/realtime/presets) — Quick setup with Zod, Valibot, or ArkType
 - [React Hooks](/packages/realtime/react-hooks) — Client-side integration with React
 - [Framework Adapters](/packages/realtime/adapters) — Next.js, Hono, Elysia, TanStack Start
 - [Plugins](/packages/realtime/plugins) — Pre-built chat and notification systems
