@@ -29,17 +29,17 @@ export const arktypeSchemaBuilder = {
   /**
    * Create a string schema
    */
-  string: () => type("string") as StandardSchemaV1<string>,
+  string: (): StandardSchemaV1<string> => type("string"),
 
   /**
    * Create a number schema
    */
-  number: () => type("number") as StandardSchemaV1<number>,
+  number: (): StandardSchemaV1<number> => type("number"),
 
   /**
    * Create a boolean schema
    */
-  boolean: () => type("boolean") as StandardSchemaV1<boolean>,
+  boolean: (): StandardSchemaV1<boolean> => type("boolean"),
 
   /**
    * Create an enum schema
@@ -58,9 +58,7 @@ export const arktypeSchemaBuilder = {
     schema: T
   ): StandardSchemaV1<StandardSchemaV1.InferOutput<T> | undefined> => {
     const arkSchema = schema as unknown as Type<unknown>;
-    return arkSchema.or(type("undefined")) as StandardSchemaV1<
-      StandardSchemaV1.InferOutput<T> | undefined
-    >;
+    return arkSchema.or(type("undefined"));
   },
 
   /**
@@ -79,7 +77,7 @@ export const arktypeSchemaBuilder = {
   /**
    * Create an unknown schema
    */
-  unknown: () => type("unknown") as StandardSchemaV1<unknown>,
+  unknown: (): StandardSchemaV1<unknown> => type("unknown"),
 
   /**
    * Create an array schema
@@ -88,9 +86,7 @@ export const arktypeSchemaBuilder = {
     schema: T
   ): StandardSchemaV1<StandardSchemaV1.InferOutput<T>[]> => {
     const arkSchema = schema as unknown as Type<unknown>;
-    return arkSchema.array() as StandardSchemaV1<
-      StandardSchemaV1.InferOutput<T>[]
-    >;
+    return arkSchema.array();
   },
 
   /**
@@ -100,9 +96,7 @@ export const arktypeSchemaBuilder = {
     schema: T
   ): StandardSchemaV1<StandardSchemaV1.InferOutput<T> | null> => {
     const arkSchema = schema as unknown as Type<unknown>;
-    return arkSchema.or(
-      type("null")
-    ) as StandardSchemaV1<StandardSchemaV1.InferOutput<T> | null>;
+    return arkSchema.or(type("null"));
   },
 
   /**
@@ -132,7 +126,7 @@ export const arktypeSchemaBuilder = {
     for (let i = 2; i < arkSchemas.length; i++) {
       result = result.or(arkSchemas[i] as Type<unknown>);
     }
-    return result as StandardSchemaV1<StandardSchemaV1.InferOutput<T[number]>>;
+    return result;
   },
 };
 
