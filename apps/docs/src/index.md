@@ -28,6 +28,11 @@ features:
     details: A lightweight, type-safe fetch wrapper with built-in validation and error handling.
     link: ./packages/fetch
 
+  - title: "@zap-studio/permit"
+    icon: "🔐"
+    details: A type-safe, declarative authorization library with Standard Schema support.
+    link: ./packages/permit
+
   - title: "@zap-studio/waitlist"
     icon: "⏳"
     details: A simple waitlist management solution for your applications.
