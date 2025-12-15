@@ -343,11 +343,6 @@ export function createPolicy<
       resource: InferResource<TResources, K>
     ): boolean {
       const resourceRules = rules[resourceType];
-
-      if (!resourceRules) {
-        return false;
-      }
-
       const policyFn = resourceRules[action];
 
       if (!policyFn) {
