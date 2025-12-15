@@ -42,7 +42,7 @@ export type RoleHierarchy<TRole extends Role = Role> = Record<TRole, TRole[]>;
  * @example
  * ```ts
  * import { z } from "zod";
- * import type { Resources } from "@zap-studio/permit";
+ * import type { Resources } from "@zap-studio/permit/types";
  *
  * const resources = {
  *   post: z.object({ id: z.string(), authorId: z.string() }),
@@ -61,7 +61,7 @@ export type Resources<TResourceKey extends string = string> = Record<
  *
  * @example
  * ```ts
- * import type { Actions } from "@zap-studio/permit";
+ * import type { Actions } from "@zap-studio/permit/types";
  *
  * const actions = {
  *   post: ["read", "write", "delete"],

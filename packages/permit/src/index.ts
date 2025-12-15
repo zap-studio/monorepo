@@ -278,7 +278,7 @@ export function hasRole<
  * ```ts
  * import { z } from "zod";
  * import { createPolicy, allow, deny, when } from "@zap-studio/permit";
- * import type { Resources, Actions } from "@zap-studio/permit";
+ * import type { Resources, Actions } from "@zap-studio/permit/types";
  *
  * // Define resource schemas
  * const resources = {
