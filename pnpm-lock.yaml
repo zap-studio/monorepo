@@ -35,8 +35,8 @@ catalogs:
       specifier: ^20.2.0
       version: 20.2.0
     ultracite:
-      specifier: ^6.4.0
-      version: 6.4.0
+      specifier: ^6.4.1
+      version: 6.4.1
   testing:
     '@vitest/coverage-v8':
       specifier: ^4.0.15
@@ -117,7 +117,7 @@ importers:
         version: 2.6.3
       ultracite:
         specifier: catalog:linting
-        version: 6.4.0(typescript@5.9.3)(valibot@1.2.0(typescript@5.9.3))
+        version: 6.4.1(typescript@5.9.3)(valibot@1.2.0(typescript@5.9.3))
       vitest:
         specifier: catalog:testing
         version: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.0.1)(@vitest/ui@4.0.15)(jiti@2.6.1)(jsdom@27.2.0(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
@@ -3819,6 +3819,7 @@ packages:
   tsdown@0.17.3:
     resolution: {integrity: sha512-bgLgTog+oyadDTr9SZ57jZtb+A4aglCjo3xgJrkCDxbzcQl2l2iDDr4b06XHSQHwyDNIhYFDgPRhuu1wL3pNsw==}
     engines: {node: '>=20.19.0'}
+    deprecated: Including an unexpected breaking change (copy behavior)
     hasBin: true
     peerDependencies:
       '@arethetypeswrong/core': ^0.18.1
@@ -3921,8 +3922,8 @@ packages:
     engines: {node: '>=0.8.0'}
     hasBin: true
 
-  ultracite@6.4.0:
-    resolution: {integrity: sha512-N7D427ofOfZLuMAK8JMosTzb1ww+y/UGA8fqaBItRpCQLTsf/V/HDjmNVrzeS+8I7gBW7Ng3vp29+2RtW2gANA==}
+  ultracite@6.4.1:
+    resolution: {integrity: sha512-RgkWJcrKH57OGWOK8C2huohLxDa70DYVWM0FmmISRhvoWCngK5E13DkPSujvDoD7b5BgzOkNwsmiIKBmlZo94A==}
     hasBin: true
 
   unconfig-core@7.4.2:
@@ -8382,7 +8383,7 @@ snapshots:
   uglify-js@3.19.3:
     optional: true
 
-  ultracite@6.4.0(typescript@5.9.3)(valibot@1.2.0(typescript@5.9.3)):
+  ultracite@6.4.1(typescript@5.9.3)(valibot@1.2.0(typescript@5.9.3)):
     dependencies:
       '@clack/prompts': 0.11.0
       '@trpc/server': 11.7.2(typescript@5.9.3)
