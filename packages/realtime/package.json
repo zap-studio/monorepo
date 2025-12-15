@@ -10,7 +10,7 @@
     "url": "https://github.com/zap-studio/monorepo.git",
     "directory": "packages/realtime"
   },
-  "description": "Type-safe real-time event streaming library with SSE support",
+  "description": "Type-safe real-time event streaming library with SSE and WebSocket support",
   "keywords": [
     "realtime",
     "sse",
@@ -40,6 +40,7 @@
     "@standard-schema/spec": "catalog:base"
   },
   "devDependencies": {
+    "@sinclair/typebox": "catalog:base",
     "@tanstack/react-router": "catalog:tanstack",
     "@types/node": "catalog:types",
     "@types/react": "catalog:react",
@@ -47,24 +48,36 @@
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
+    "arktype": "catalog:base",
     "elysia": "catalog:elysia",
     "hono": "catalog:hono",
     "next": "catalog:next",
     "react": "catalog:react",
     "tsdown": "catalog:base",
     "typescript": "catalog:base",
+    "valibot": "catalog:base",
     "vitest": "catalog:testing",
     "zod": "catalog:base"
   },
   "peerDependencies": {
+    "@sinclair/typebox": ">=0.30.0",
     "@tanstack/react-router": ">=1.0.0",
+    "arktype": ">=2.0.0",
     "elysia": ">=1.0.0",
     "hono": ">=3.0.0",
     "next": ">=15.0.0",
-    "react": ">=18.0.0"
+    "react": ">=18.0.0",
+    "valibot": ">=1.0.0",
+    "zod": ">=3.0.0"
   },
   "peerDependenciesMeta": {
+    "@sinclair/typebox": {
+      "optional": true
+    },
     "@tanstack/react-router": {
+      "optional": true
+    },
+    "arktype": {
       "optional": true
     },
     "elysia": {
@@ -78,15 +91,27 @@
     },
     "react": {
       "optional": true
+    },
+    "valibot": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
     }
   },
   "exports": {
     "./adapters/elysia/sse": "./dist/adapters/elysia/sse.mjs",
+    "./adapters/elysia/ws": "./dist/adapters/elysia/ws.mjs",
     "./adapters/hono/sse": "./dist/adapters/hono/sse.mjs",
+    "./adapters/hono/ws": "./dist/adapters/hono/ws.mjs",
     "./adapters/next/sse": "./dist/adapters/next/sse.mjs",
+    "./adapters/next/ws": "./dist/adapters/next/ws.mjs",
     "./adapters/tanstack/sse": "./dist/adapters/tanstack/sse.mjs",
+    "./adapters/tanstack/ws": "./dist/adapters/tanstack/ws.mjs",
     "./client/react/hooks": "./dist/client/react/hooks.mjs",
+    "./client/react/ws-hooks": "./dist/client/react/ws-hooks.mjs",
     "./client/vanilla": "./dist/client/vanilla.mjs",
+    "./client/ws": "./dist/client/ws.mjs",
     "./emitters": "./dist/emitters/index.mjs",
     "./emitters/in-memory": "./dist/emitters/in-memory.mjs",
     "./emitters/redis": "./dist/emitters/redis.mjs",
@@ -98,6 +123,11 @@
     "./plugins/notifications": "./dist/plugins/notifications/index.mjs",
     "./plugins/notifications/server": "./dist/plugins/notifications/server.mjs",
     "./plugins/notifications/types": "./dist/plugins/notifications/types.mjs",
+    "./presets": "./dist/presets/index.mjs",
+    "./presets/arktype": "./dist/presets/arktype.mjs",
+    "./presets/typebox": "./dist/presets/typebox.mjs",
+    "./presets/valibot": "./dist/presets/valibot.mjs",
+    "./presets/zod": "./dist/presets/zod.mjs",
     "./schema": "./dist/schema.mjs",
     "./server": "./dist/server/index.mjs",
     "./transport/sse/client": "./dist/transport/sse/client.mjs",

@@ -5,6 +5,7 @@ packages:
 
 catalogs:
   base:
+    '@sinclair/typebox': ^0.34.33
     '@standard-schema/spec': ^1.0.0
     arktype: ^2.1.29
     tsdown: ^0.18.0
