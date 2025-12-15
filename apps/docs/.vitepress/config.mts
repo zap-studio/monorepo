@@ -22,6 +22,7 @@ export default defineConfig({
         items: [
           { text: "@zap-studio/fetch", link: "/packages/fetch/" },
           { text: "@zap-studio/permit", link: "/packages/permit/" },
+          { text: "@zap-studio/realtime", link: "/packages/realtime/" },
           { text: "@zap-studio/waitlist", link: "/packages/waitlist/" },
           { text: "@zap-studio/webhooks", link: "/packages/webhooks/" },
         ],
@@ -101,6 +102,21 @@ export default defineConfig({
         {
           text: "@zap-studio/webhooks",
           items: [{ text: "Overview", link: "/packages/webhooks/" }],
+        },
+      ],
+      "/packages/realtime/": [
+        {
+          text: "@zap-studio/realtime",
+          items: [
+            { text: "Overview", link: "/packages/realtime/" },
+            { text: "Emitters", link: "/packages/realtime/emitters" },
+            { text: "SSE Transport", link: "/packages/realtime/sse" },
+            { text: "WebSocket Transport", link: "/packages/realtime/websocket" },
+            { text: "React Hooks", link: "/packages/realtime/react-hooks" },
+            { text: "Framework Adapters", link: "/packages/realtime/adapters" },
+            { text: "Plugins", link: "/packages/realtime/plugins" },
+            { text: "Schema Presets", link: "/packages/realtime/presets" },
+          ],
         },
       ],
     },
