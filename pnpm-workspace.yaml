@@ -23,7 +23,7 @@ catalogs:
   tooling:
     '@changesets/cli': ^2.29.8
     '@turbo/gen': ^2.6.3
-    lefthook: ^2.0.9
+    lefthook: ^2.0.12
     rimraf: ^6.1.2
     turbo: ^2.6.3
   types:
