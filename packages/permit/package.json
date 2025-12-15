@@ -1,0 +1,65 @@
+{
+  "name": "@zap-studio/permit",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "homepage": "https://www.zapstudio.dev/packages/permit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/permit"
+  },
+  "description": "A type-safe, declarative authorization library for TypeScript with Standard Schema support",
+  "keywords": [
+    "authorization",
+    "permissions",
+    "access-control",
+    "rbac",
+    "abac",
+    "policy",
+    "typescript",
+    "standard-schema",
+    "zod",
+    "valibot",
+    "arktype"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsdown --config tsdown.config.ts",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest --watch"
+  },
+  "dependencies": {
+    "@standard-schema/spec": "catalog:base"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:types",
+    "@vitest/coverage-v8": "catalog:testing",
+    "@zap-studio/tsdown-config": "workspace:*",
+    "@zap-studio/typescript-config": "workspace:*",
+    "@zap-studio/vitest-config": "workspace:*",
+    "tsdown": "catalog:base",
+    "typescript": "catalog:base",
+    "vitest": "catalog:testing"
+  },
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./errors": "./dist/errors.mjs",
+    "./helpers": "./dist/helpers.mjs",
+    "./types": "./dist/types.mjs",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts"
+}

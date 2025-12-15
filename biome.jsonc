@@ -7,11 +7,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": [
-      "**",
-      "!apps/docs/.vitepress/dist",
-      "!apps/docs/.vitepress/cache"
-    ]
+    "includes": ["!apps/docs/.vitepress/dist", "!apps/docs/.vitepress/cache"]
   },
   "css": {
     "parser": {
