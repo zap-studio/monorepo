@@ -6,7 +6,7 @@ packages:
 catalogs:
   base:
     '@standard-schema/spec': ^1.0.0
-    arktype: ^2.1.28
+    arktype: ^2.1.29
     tsdown: ^0.17.3
     typescript: ^5.9.3
     valibot: ^1.2.0
