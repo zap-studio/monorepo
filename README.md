@@ -27,8 +27,17 @@ We're building **the higher layer above TanStack for modern apps**—agnostic co
 **[@zap-studio/fetch](./packages/fetch)**  
 Modern HTTP client with proper error handling. Because `fetch()` should have been better from day one.
 
+**[@zap-studio/permit](./packages/permit)**  
+Type-safe centralized & secure authorization with zero config.
+
+**[@zap-studio/realtime](./packages/realtime)**
+Realtime events with SSE and WebSocket support.
+
 **[@zap-studio/waitlist](./packages/waitlist)**  
 Launch faster with built-in waitlist management, referral tracking, and analytics.
+
+**[@zap-studio/webhooks](./packages/webhooks)**  
+Easy webhook handling and validation.
 
 More coming soon.
 
