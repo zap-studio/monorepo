@@ -208,6 +208,10 @@ importers:
         version: 4.1.13
 
   packages/permit:
+    dependencies:
+      '@standard-schema/spec':
+        specifier: catalog:base
+        version: 1.0.0
     devDependencies:
       '@types/node':
         specifier: catalog:types

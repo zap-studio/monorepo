@@ -27,6 +27,9 @@
     "test": "vitest run",
     "test:watch": "vitest --watch"
   },
+  "dependencies": {
+    "@standard-schema/spec": "catalog:base"
+  },
   "devDependencies": {
     "@types/node": "catalog:types",
     "@zap-studio/tsdown-config": "workspace:*",
@@ -38,6 +41,9 @@
   },
   "exports": {
     ".": "./dist/index.mjs",
+    "./errors": "./dist/errors.mjs",
+    "./helpers": "./dist/helpers.mjs",
+    "./types": "./dist/types.mjs",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.mjs",
