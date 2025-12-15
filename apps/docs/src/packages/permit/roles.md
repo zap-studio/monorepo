@@ -1,0 +1,291 @@
+# Role-Based Access Control
+
+Role-Based Access Control (RBAC) is a common authorization pattern where permissions are assigned to roles, and users are assigned roles. `@zap-studio/permit` provides utilities for implementing RBAC with support for role hierarchies.
+
+## Understanding RBAC
+
+In RBAC, instead of assigning permissions directly to users, you:
+
+1. Define **roles** (e.g., "guest", "user", "admin")
+2. Assign **permissions** to roles (e.g., admin can delete posts)
+3. Assign **roles** to users (e.g., Alice is an admin)
+
+This simplifies permission management—when you need to change what admins can do, you update the role's permissions once instead of updating every admin user.
+
+## Simple Role Checks
+
+The `hasRole()` function checks if the current user has a specific role:
+
+```typescript
+import { hasRole } from "@zap-studio/permit";
+
+hasRole(role)
+```
+
+### Context Requirements
+
+Your context must include a `role` property that can be:
+- A single role: `{ role: "admin" }`
+- An array of roles: `{ role: ["user", "moderator"] }`
+
+### Example: Basic RBAC
+
+```typescript
+import { z } from "zod";
+import { createPolicy, when, hasRole, or } from "@zap-studio/permit";
+import type { Resources, Actions } from "@zap-studio/permit/types";
+
+const resources = {
+  post: z.object({
+    id: z.string(),
+    authorId: z.string(),
+    status: z.enum(["draft", "published", "archived"]),
+  }),
+  user: z.object({
+    id: z.string(),
+    email: z.string(),
+  }),
+} satisfies Resources;
+
+const actions = {
+  post: ["read", "write", "delete", "publish"],
+  user: ["read", "update", "delete", "ban"],
+} as const satisfies Actions<typeof resources>;
+
+type Role = "guest" | "user" | "moderator" | "admin";
+
+type AppContext = {
+  user: { id: string } | null;
+  role: Role;
+};
+
+const policy = createPolicy<AppContext>({
+  resources,
+  actions,
+  rules: {
+    post: {
+      // Guests can read published posts
+      read: when((ctx, _, post) =>
+        post.status === "published" || ctx.role === "user"
+      ),
+      // Users can write their own posts
+      write: when((ctx, _, post) =>
+        ctx.role === "user" && ctx.user?.id === post.authorId
+      ),
+      // Moderators and admins can delete any post
+      delete: when(
+        or(
+          hasRole("moderator"),
+          hasRole("admin")
+        )
+      ),
+      // Only admins can publish
+      publish: when(hasRole("admin")),
+    },
+    user: {
+      // Users can read their own profile, admins can read any
+      read: when(
+        or(
+          (ctx, _, user) => ctx.user?.id === user.id,
+          hasRole("admin")
+        )
+      ),
+      // Users can update their own profile
+      update: when((ctx, _, user) => ctx.user?.id === user.id),
+      // Only admins can delete users
+      delete: when(hasRole("admin")),
+      // Moderators and admins can ban users
+      ban: when(
+        or(
+          hasRole("moderator"),
+          hasRole("admin")
+        )
+      ),
+    },
+  },
+});
+```
+
+::: warning
+For now, `hasRole()` returns a `ConditionFn`, which can be used in `when()` conditions. Thus, it doesn't return a boolean value directly. Prefer using `role` directly in conditions.
+:::
+
+## Role Hierarchies
+
+Often, higher-level roles inherit permissions from lower-level roles. For example, an admin should have all permissions that a user has, plus admin-specific ones.
+
+### Defining a Role Hierarchy
+
+A role hierarchy maps each role to an array of roles it inherits from:
+
+```typescript
+import type { RoleHierarchy } from "@zap-studio/permit/types";
+
+type Role = "guest" | "user" | "moderator" | "admin";
+
+const roleHierarchy: RoleHierarchy<Role> = {
+  guest: [],                    // No inherited roles
+  user: ["guest"],              // Users inherit guest permissions
+  moderator: ["user"],          // Moderators inherit user permissions
+  admin: ["moderator"],         // Admins inherit moderator permissions
+};
+
+// Permission inheritance chain:
+// admin → moderator → user → guest
+```
+
+### Using hasRole with Hierarchy
+
+Pass the hierarchy as the second argument to `hasRole()`:
+
+```typescript
+import { hasRole } from "@zap-studio/permit";
+
+// Without hierarchy: only matches exact role
+hasRole("user")  // Only true if role === "user"
+
+// With hierarchy: matches role or any role that inherits from it
+hasRole("user", roleHierarchy)  // True for "user", "moderator", or "admin"
+```
+
+## Multiple Roles
+
+Users can have multiple roles. The context can include an array of roles:
+
+```typescript
+type AppContext = {
+  user: { id: string } | null;
+  role: Role[];  // Array of roles
+};
+
+const context: AppContext = {
+  user: { id: "user-1" },
+  role: ["user", "beta-tester"],  // User has both roles
+};
+```
+
+`hasRole()` checks if any of the user's roles match (or inherit from) the required role.
+
+### Example: Multiple Roles
+
+```typescript
+import { z } from "zod";
+import { createPolicy, when, hasRole, and, or } from "@zap-studio/permit";
+import type { Resources, Actions, RoleHierarchy } from "@zap-studio/permit/types";
+
+const resources = {
+  betaFeature: z.object({
+    id: z.string(),
+    name: z.string(),
+  }),
+  supportTicket: z.object({
+    id: z.string(),
+    userId: z.string(),
+    priority: z.enum(["low", "normal", "high", "urgent"]),
+  }),
+} satisfies Resources;
+
+const actions = {
+  betaFeature: ["access"],
+  supportTicket: ["create", "escalate"],
+} as const satisfies Actions<typeof resources>;
+
+type Role = "user" | "beta-tester" | "premium" | "support-agent" | "admin";
+
+const roleHierarchy: RoleHierarchy<Role> = {
+  user: [],
+  "beta-tester": ["user"],
+  premium: ["user"],
+  "support-agent": ["user"],
+  admin: ["premium", "support-agent"],  // Admin inherits from multiple roles
+};
+
+type MultiRoleContext = {
+  user: { id: string } | null;
+  role: Role[];
+};
+
+const multiRolePolicy = createPolicy<MultiRoleContext>({
+  resources,
+  actions,
+  rules: {
+    betaFeature: {
+      // Only beta testers can access beta features
+      access: when(hasRole("beta-tester", roleHierarchy)),
+    },
+    supportTicket: {
+      // Any authenticated user can create tickets
+      create: when(hasRole("user", roleHierarchy)),
+
+      // Only premium users or support agents can escalate
+      escalate: when(
+        or(
+          hasRole("premium", roleHierarchy),
+          hasRole("support-agent", roleHierarchy)
+        )
+      ),
+    },
+  },
+});
+
+// User with multiple roles
+const betaPremiumUser: MultiRoleContext = {
+  user: { id: "u1" },
+  role: ["user", "beta-tester", "premium"],
+};
+
+const ticket = { id: "t1", userId: "u1", priority: "normal" as const };
+const feature = { id: "f1", name: "New Dashboard" };
+
+console.log(multiRolePolicy.can(betaPremiumUser, "access", "betaFeature", feature)); // true (has beta-tester)
+console.log(multiRolePolicy.can(betaPremiumUser, "escalate", "supportTicket", ticket)); // true (has premium)
+```
+
+## Collecting Inherited Roles
+
+The `collectInheritedRoles()` function returns all roles a user has, including inherited ones:
+
+```typescript
+import { collectInheritedRoles } from "@zap-studio/permit";
+
+collectInheritedRoles(roles, hierarchy)
+```
+
+### Example: Role Inspection
+
+```typescript
+import { collectInheritedRoles } from "@zap-studio/permit";
+import type { RoleHierarchy } from "@zap-studio/permit/types";
+
+type Role = "guest" | "user" | "moderator" | "admin";
+
+const hierarchy: RoleHierarchy<Role> = {
+  guest: [],
+  user: ["guest"],
+  moderator: ["user"],
+  admin: ["moderator"],
+};
+
+// Get all roles for an admin
+const adminRoles = collectInheritedRoles(["admin"], hierarchy);
+console.log(adminRoles); // Set { "admin", "moderator", "user", "guest" }
+
+// Get all roles for a moderator
+const modRoles = collectInheritedRoles(["moderator"], hierarchy);
+console.log(modRoles); // Set { "moderator", "user", "guest" }
+
+// Multiple input roles
+const mixedRoles = collectInheritedRoles(["user", "beta-tester"], {
+  ...hierarchy,
+  "beta-tester": [],
+});
+console.log(mixedRoles); // Set { "user", "guest", "beta-tester" }
+```
+
+## Best Practices
+
+1. **Keep hierarchies simple** — Deep hierarchies are hard to reason about
+2. **Document role permissions** — Maintain a clear mapping of what each role can do
+3. **Use meaningful role names** — "editor" is clearer than "level-3"
+4. **Avoid circular dependencies** — Role A should not inherit from role B if B inherits from A
+5. **Test edge cases** — Especially when users have multiple roles
