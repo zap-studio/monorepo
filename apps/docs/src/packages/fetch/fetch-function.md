@@ -1,6 +1,15 @@
 # Using $fetch
 
-The `$fetch` function provides more control over your requests. You can use it with or without schema validation.
+The `$fetch` function provides more control over your requests. You can use it with or without schema validation, making it flexible for different use cases.
+
+## When to Use $fetch
+
+Use `$fetch` instead of `api.*` methods when you need:
+
+- Raw `Response` objects for headers, status codes, or streaming
+- Non-JSON responses (binary files, text, HTML)
+- Conditional validation based on response status
+- More control over the request/response cycle
 
 ## With Schema Validation
 
@@ -13,6 +22,7 @@ import { $fetch } from "@zap-studio/fetch";
 const UserSchema = z.object({
   id: z.number(),
   name: z.string(),
+  email: z.string().email(),
 });
 
 const user = await $fetch("https://api.example.com/users/1", UserSchema, {
@@ -21,7 +31,7 @@ const user = await $fetch("https://api.example.com/users/1", UserSchema, {
   },
 });
 
-// user is typed as { id: number; name: string; }
+// user is typed as { id: number; name: string; email: string }
 console.log(user.name);
 ```
 
@@ -32,19 +42,13 @@ When you don't pass a schema, `$fetch` returns the raw `Response` object:
 ```typescript
 import { $fetch } from "@zap-studio/fetch";
 
-const response = await $fetch("https://api.example.com/users/1", {
-  method: "GET",
-});
+const response = await $fetch("https://api.example.com/users/1");
 
 // response is a standard Response object
-const data = await response.json();
+console.log(response.status);      // 200
+console.log(response.headers);     // Headers object
+const data = await response.json(); // Manual parsing
 ```
-
-This is useful when:
-
-- You need access to response headers or status
-- You're working with non-JSON responses (binary, text, etc.)
-- You want to handle the response manually
 
 ## Function Signatures
 
@@ -67,11 +71,12 @@ async function $fetch(
 
 ## Extended Request Options
 
-| Option                   | Type                              | Default | Description                                           |
-| ------------------------ | --------------------------------- | ------- | ----------------------------------------------------- |
-| `body`                   | `BodyInit \| Record<string, unknown>` | -       | Request body (auto-stringified when schema is present) |
-| `throwOnFetchError`      | `boolean`                         | `true`  | Throw `FetchError` on non-2xx responses               |
-| `throwOnValidationError` | `boolean`                         | `true`  | Throw `ValidationError` on schema validation failures |
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `body` | `BodyInit \| Record<string, unknown>` | - | Request body (auto-stringified when schema is present) |
+| `searchParams` | `URLSearchParams \| Record<string, string>` | - | Query parameters |
+| `throwOnFetchError` | `boolean` | `true` | Throw `FetchError` on non-2xx responses |
+| `throwOnValidationError` | `boolean` | `true` | Throw `ValidationError` on schema validation failures |
 
 Plus all standard [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit) options.
 

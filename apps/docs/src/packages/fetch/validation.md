@@ -2,14 +2,35 @@
 
 `@zap-studio/fetch` uses [Standard Schema](https://standardschema.dev/) for runtime validation, which means it works with any schema library that implements the Standard Schema specification.
 
+## Why Validation Matters
+
+APIs change. Without runtime validation, you might get data that doesn't match your TypeScript types, causing subtle bugs that are hard to track down:
+
+```typescript
+// Without validation
+const user = await fetch("/api/users/1").then((r) => r.json()) as User;
+// What if the API returns { id: "123" } instead of { id: 123 }?
+// TypeScript thinks id is a number, but it's actually a string!
+user.id + 1; // "1231" instead of 124 😱
+```
+
+With `@zap-studio/fetch`, you get runtime validation that catches these issues immediately:
+
+```typescript
+// With validation
+const user = await api.get("/api/users/1", UserSchema);
+// If the API returns { id: "123" }, you get a ValidationError
+// instead of silent type mismatch
+```
+
 ## Supported Schema Libraries
 
-Any library implementing Standard Schema v1 is supported, including:
+Any library implementing Standard Schema v1 is supported:
 
-- [Zod](https://zod.dev/)
-- [Valibot](https://valibot.dev/)
-- [ArkType](https://arktype.io/)
-- [TypeBox](https://github.com/sinclairzx81/typebox)
+- [Zod](https://zod.dev/) — The most popular TypeScript-first schema library
+- [Valibot](https://valibot.dev/) — Smaller bundle size alternative
+- [ArkType](https://arktype.io/) — 1:1 TypeScript syntax
+- [TypeBox](https://github.com/sinclairzx81/typebox) — JSON Schema compatible
 - And more...
 
 ## Using Different Schema Libraries
@@ -64,7 +85,7 @@ const user = await api.get("/users/1", UserSchema);
 
 ## The standardValidate Helper
 
-For standalone validation needs, you can use the `standardValidate` helper function:
+For standalone validation needs, use the `standardValidate` helper:
 
 ```typescript
 import { standardValidate } from "@zap-studio/fetch/validator";
@@ -186,13 +207,7 @@ const user = await api.get("/users/1", UserSchema);
 
 ## Best Practices
 
-1. **Define schemas once, reuse everywhere** - Create schema files for your API types
-2. **Use strict schemas** - Validate exactly what you expect from the API
-3. **Handle validation errors gracefully** - APIs can change unexpectedly
-4. **Consider non-throwing mode** - For expected variations in API responses
-5. **Use schema transforms** - Parse dates, numbers, etc. directly in your schema
-
-### Schema Organization Example
+### 1. Define Schemas Once, Reuse Everywhere
 
 ```typescript
 // schemas/user.ts
@@ -208,10 +223,81 @@ export const UserSchema = z.object({
 export type User = z.infer<typeof UserSchema>;
 
 // api/users.ts
-import { api } from "@/lib/fetch";
+import { api } from "@zap-studio/fetch";
 import { UserSchema, type User } from "@/schemas/user";
 
 export async function getUser(id: number): Promise<User> {
   return api.get(`/users/${id}`, UserSchema);
 }
+```
+
+### 2. Use Strict Schemas
+
+Validate exactly what you expect:
+
+```typescript
+// Too loose - accepts any extra fields
+const LooseSchema = z.object({ id: z.number() });
+
+// Better - rejects unknown fields
+const StrictSchema = z.object({ id: z.number() }).strict();
+```
+
+### 3. Handle Validation Errors Gracefully
+
+APIs can change unexpectedly:
+
+```typescript
+async function getUser(id: string) {
+  try {
+    return await api.get(`/users/${id}`, UserSchema);
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      // Log for debugging but don't crash
+      console.error("API response changed:", error.issues);
+      // Return partial data or fallback
+      return null;
+    }
+    throw error;
+  }
+}
+```
+
+### 4. Use Schema Transforms
+
+Parse and transform data in your schema:
+
+```typescript
+const DateSchema = z.string().transform((s) => new Date(s));
+
+const PriceSchema = z.number().transform((cents) => ({
+  cents,
+  dollars: cents / 100,
+  formatted: `$${(cents / 100).toFixed(2)}`,
+}));
+```
+
+### 5. Compose Schemas
+
+Build complex schemas from simpler parts:
+
+```typescript
+const AddressSchema = z.object({
+  street: z.string(),
+  city: z.string(),
+  country: z.string(),
+});
+
+const UserSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  address: AddressSchema.optional(),
+});
+
+const OrderSchema = z.object({
+  id: z.string(),
+  user: UserSchema,
+  shippingAddress: AddressSchema,
+  billingAddress: AddressSchema.optional(),
+});
 ```
