@@ -1,0 +1,135 @@
+# Error Handling
+
+`@zap-studio/permit` provides utilities for handling errors and ensuring exhaustive type checking in your authorization logic.
+
+## PolicyError
+
+The `PolicyError` class is a custom error type for policy-related errors. Use it to distinguish authorization errors from other application errors.
+
+```typescript
+import { PolicyError } from "@zap-studio/permit/errors";
+```
+
+### Properties
+
+| Property  | Type     | Description              |
+| --------- | -------- | ------------------------ |
+| `name`    | `string` | Always `"PolicyError"`   |
+| `message` | `string` | Error description        |
+| `stack`   | `string` | Stack trace (inherited)  |
+
+### Creating Policy Errors
+
+```typescript
+import { PolicyError } from "@zap-studio/permit/errors";
+
+// Throw when an authorization check fails
+throw new PolicyError("User is not authorized to delete this resource");
+
+// Throw for invalid policy configuration
+throw new PolicyError("Unknown resource type: 'invalid'");
+
+// Throw for missing context
+throw new PolicyError("User context is required for this action");
+```
+
+### Catching Policy Errors
+
+```typescript
+import { PolicyError } from "@zap-studio/permit/errors";
+
+async function deletePost(postId: string, context: AppContext) {
+  try {
+    const post = await getPost(postId);
+
+    if (!policy.can(context, "delete", "post", post)) {
+      throw new PolicyError("Not authorized to delete this post");
+    }
+
+    await db.posts.delete(postId);
+    return { success: true };
+  } catch (error) {
+    if (error instanceof PolicyError) {
+      // Handle authorization errors
+      return { success: false, error: error.message, code: "FORBIDDEN" };
+    }
+
+    // Re-throw unexpected errors
+    throw error;
+  }
+}
+```
+
+## assertNever
+
+The `assertNever()` helper ensures exhaustive type checking in TypeScript. It causes a compile-time error if a switch statement or if-else chain doesn't handle all possible cases.
+
+```typescript
+import { assertNever } from "@zap-studio/permit/helpers";
+```
+
+### How It Works
+
+`assertNever()` accepts a value of type `never`. If TypeScript can prove that a value could reach `assertNever()`, it means you've missed a case.
+
+### Example: Exhaustive Action Handling
+
+```typescript
+import { assertNever } from "@zap-studio/permit/helpers";
+
+type Action = "read" | "write" | "delete";
+
+function getPermissionLevel(action: Action): number {
+  switch (action) {
+    case "read":
+      return 1;
+    case "write":
+      return 2;
+    case "delete":
+      return 3;
+    default:
+      // TypeScript error if we forget a case
+      return assertNever(action);
+  }
+}
+```
+
+If you add a new action without updating the switch:
+
+```typescript
+type Action = "read" | "write" | "delete" | "archive"; // Added "archive"
+
+function getPermissionLevel(action: Action): number {
+  switch (action) {
+    case "read":
+      return 1;
+    case "write":
+      return 2;
+    case "delete":
+      return 3;
+    default:
+      // TypeScript ERROR: Argument of type 'string' is not assignable to parameter of type 'never'.
+      return assertNever(action);
+  }
+}
+```
+
+### Runtime Behavior
+
+If `assertNever()` is reached at runtime (e.g., due to type assertions or JavaScript calling the function), it throws an error:
+
+```typescript
+import { assertNever } from "@zap-studio/permit/helpers";
+
+// This would throw: Error: Unexpected value: unknown
+const badValue = "unknown" as never;
+assertNever(badValue);
+```
+
+## Best Practices
+
+1. **Use PolicyError for authorization failures** — Makes it easy to distinguish from other errors
+2. **Catch errors at boundaries** — Handle PolicyError in middleware or API handlers
+3. **Include context in error messages** — "Not authorized to delete post-123" is better than "Forbidden"
+4. **Use assertNever for exhaustive checks** — Especially when handling actions or resource types
+5. **Log denied attempts** — Track authorization failures for security monitoring
