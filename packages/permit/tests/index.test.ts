@@ -489,35 +489,35 @@ describe("hasRole", () => {
   describe("without hierarchy", () => {
     it("should return true when user has the exact role (single role)", () => {
       type Ctx = { role: Role };
-      const condition = hasRole<Ctx, string, unknown, Role>("admin");
+      const condition = hasRole<Ctx>("admin");
 
       expect(condition({ role: "admin" }, "read", {})).toBe(true);
     });
 
     it("should return false when user does not have the role (single role)", () => {
       type Ctx = { role: Role };
-      const condition = hasRole<Ctx, string, unknown, Role>("admin");
+      const condition = hasRole<Ctx>("admin");
 
       expect(condition({ role: "user" }, "read", {})).toBe(false);
     });
 
     it("should return true when user has the role in array", () => {
       type Ctx = { role: Role[] };
-      const condition = hasRole<Ctx, string, unknown, Role>("admin");
+      const condition = hasRole<Ctx>("admin");
 
       expect(condition({ role: ["user", "admin"] }, "read", {})).toBe(true);
     });
 
     it("should return false when user does not have the role in array", () => {
       type Ctx = { role: Role[] };
-      const condition = hasRole<Ctx, string, unknown, Role>("admin");
+      const condition = hasRole<Ctx>("admin");
 
       expect(condition({ role: ["guest", "user"] }, "read", {})).toBe(false);
     });
 
     it("should handle empty role array", () => {
       type Ctx = { role: Role[] };
-      const condition = hasRole<Ctx, string, unknown, Role>("admin");
+      const condition = hasRole<Ctx>("admin");
 
       expect(condition({ role: [] }, "read", {})).toBe(false);
     });
@@ -746,9 +746,7 @@ describe("createPolicy", () => {
         comment: {
           read: allow(),
         },
-      } as typeof resources extends Resources
-        ? { [K in keyof typeof resources]: object }
-        : never,
+      },
     });
 
     const ctx: TestContext = { user: { id: "user-1", role: "admin" } };
@@ -763,16 +761,24 @@ describe("createPolicy", () => {
   });
 
   it("should work with complex conditions using and/or/not", () => {
-    const isOwner = (
+    type PostResource = { authorId: string; visibility: string };
+    type CommentResource = { authorId: string };
+
+    const isPostOwner = (
       ctx: TestContext,
       _action: string,
-      resource: { authorId: string }
+      resource: PostResource
+    ) => ctx.user.id === resource.authorId;
+    const isCommentOwner = (
+      ctx: TestContext,
+      _action: string,
+      resource: CommentResource
     ) => ctx.user.id === resource.authorId;
     const isAdmin = (ctx: TestContext) => ctx.user.role === "admin";
     const isPublic = (
       _ctx: TestContext,
       _action: string,
-      resource: { visibility: string }
+      resource: PostResource
     ) => resource.visibility === "public";
 
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
@@ -780,15 +786,15 @@ describe("createPolicy", () => {
       actions,
       rules: {
         post: {
-          read: when(or(isPublic, isOwner, isAdmin)),
-          write: when(or(isOwner, isAdmin)),
-          delete: when(and(isOwner, not(isPublic))),
+          read: when(or(isPublic, isPostOwner, isAdmin)),
+          write: when(or(isPostOwner, isAdmin)),
+          delete: when(and(isPostOwner, not(isPublic))),
           publish: when(isAdmin),
         },
         comment: {
           read: allow(),
-          write: when(isOwner),
-          delete: when(or(isOwner, isAdmin)),
+          write: when(isCommentOwner),
+          delete: when(or(isCommentOwner, isAdmin)),
         },
       },
     });

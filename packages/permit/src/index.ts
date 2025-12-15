@@ -249,13 +249,28 @@ export function collectInheritedRoles<TRole extends Role = Role>(
  * ```
  */
 export function hasRole<
+  TContext extends Context & { role: Role | Role[] },
+  TAction extends string = string,
+  TResource = unknown,
+>(role: Role): ConditionFn<TContext, TAction, TResource>;
+
+export function hasRole<
   TContext extends Context & { role: TRole | TRole[] },
   TAction extends string = string,
   TResource = unknown,
   TRole extends Role = Role,
 >(
   role: TRole,
-  hierarchy?: RoleHierarchy<TRole>
+  hierarchy: RoleHierarchy<TRole>
+): ConditionFn<TContext, TAction, TResource>;
+
+export function hasRole<
+  TContext extends Context & { role: Role | Role[] },
+  TAction extends string = string,
+  TResource = unknown,
+>(
+  role: Role,
+  hierarchy?: RoleHierarchy<Role>
 ): ConditionFn<TContext, TAction, TResource> {
   return (context) => {
     const userRoles = Array.isArray(context.role)
