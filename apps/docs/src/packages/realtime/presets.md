@@ -112,22 +112,22 @@ const mySchemaBuilder = {
   object: <T extends Record<string, StandardSchemaV1>>(shape: T) =>
     myValidator.object(shape) as StandardSchemaV1<...>,
 
-  string: () => myValidator.string() as StandardSchemaV1<string>,
+  string: (): StandardSchemaV1<string> => myValidator.string(),
 
-  number: () => myValidator.number() as StandardSchemaV1<number>,
+  number: (): StandardSchemaV1<number> => myValidator.number(),
 
-  boolean: () => myValidator.boolean() as StandardSchemaV1<boolean>,
+  boolean: (): StandardSchemaV1<boolean> => myValidator.boolean(),
 
   enum: <T extends readonly [string, ...string[]]>(values: T) =>
-    myValidator.oneOf(values) as StandardSchemaV1<T[number]>,
+    myValidator.oneOf(values),
 
   optional: <T extends StandardSchemaV1>(schema: T) =>
-    myValidator.optional(schema) as StandardSchemaV1<... | undefined>,
+    myValidator.optional(schema),
 
   record: <T extends StandardSchemaV1>(schema: T) =>
-    myValidator.record(schema) as StandardSchemaV1<Record<string, ...>>,
+    myValidator.record(schema),
 
-  unknown: () => myValidator.any() as StandardSchemaV1<unknown>,
+  unknown: (): StandardSchemaV1<unknown> => myValidator.unknown(),
 };
 
 // Use with plugins
