@@ -14,6 +14,7 @@ import {
   or,
   when,
 } from "../src";
+import { PolicyError } from "../src/errors";
 import type { Actions, Resources, RoleHierarchy } from "../src/types";
 
 // Helper to create a mock Standard Schema
@@ -310,6 +311,48 @@ describe("or", () => {
         visibility: "private",
       })
     ).toBe(false);
+  });
+});
+
+describe("mergePolicies", () => {
+  it("should deny when called with no policies", () => {
+    const policy = mergePolicies<
+      TestContext,
+      typeof resources,
+      typeof actions
+    >();
+    const ctx: TestContext = {
+      user: { id: "1", role: "user" },
+    };
+    const post: Post = {
+      id: "1",
+      authorId: "1",
+      visibility: "public",
+      status: "published",
+    };
+
+    expect(policy.can(ctx, "read", "post", post)).toBe(false);
+  });
+});
+
+describe("mergePoliciesAny", () => {
+  it("should deny when called with no policies", () => {
+    const policy = mergePoliciesAny<
+      TestContext,
+      typeof resources,
+      typeof actions
+    >();
+    const ctx: TestContext = {
+      user: { id: "1", role: "user" },
+    };
+    const post: Post = {
+      id: "1",
+      authorId: "1",
+      visibility: "public",
+      status: "published",
+    };
+
+    expect(policy.can(ctx, "read", "post", post)).toBe(false);
   });
 });
 
@@ -836,6 +879,167 @@ describe("createPolicy", () => {
     expect(policy.can(user, "publish", "post", publicPost)).toBe(false);
   });
 
+  it("should deny when actions for a resource are missing at runtime", () => {
+    const badActions = {
+      post: actions.post,
+    } as unknown as Actions<typeof resources>;
+
+    const policy = createPolicy<
+      TestContext,
+      typeof resources,
+      typeof badActions
+    >({
+      resources,
+      actions: badActions,
+      rules: {
+        post: {
+          read: allow(),
+        },
+        comment: {
+          read: allow(),
+        },
+      },
+    });
+
+    const ctx: TestContext = { user: { id: "user-1", role: "user" } };
+    const comment: Comment = {
+      id: "1",
+      postId: "post-1",
+      authorId: "user-1",
+    };
+
+    expect(policy.can(ctx, "read", "comment", comment)).toBe(false);
+  });
+
+  it("should deny when resource validation reports issues", () => {
+    const failingResources = {
+      post: {
+        "~standard": {
+          version: 1,
+          vendor: "test",
+          validate: () => ({
+            issues: [{ message: "invalid" } as StandardSchemaV1.Issue],
+          }),
+        },
+      } as StandardSchemaV1,
+    } satisfies Resources<"post">;
+
+    const failingActions = {
+      post: ["read"],
+    } as const satisfies Actions<typeof failingResources>;
+
+    const policy = createPolicy<
+      TestContext,
+      typeof failingResources,
+      typeof failingActions
+    >({
+      resources: failingResources,
+      actions: failingActions,
+      rules: {
+        post: {
+          read: allow(),
+        },
+      },
+    });
+
+    const ctx: TestContext = { user: { id: "user-1", role: "user" } };
+    const post: Post = {
+      id: "1",
+      authorId: "user-1",
+      visibility: "public",
+      status: "published",
+    };
+
+    expect(policy.can(ctx, "read", "post", post)).toBe(false);
+  });
+
+  it("should throw PolicyError when a resource schema is missing", () => {
+    const brokenResources = {
+      post: undefined as unknown as StandardSchemaV1,
+    } satisfies Resources<"post">;
+
+    const brokenActions = {
+      post: ["read"],
+    } as const satisfies Actions<typeof brokenResources>;
+
+    expect(() =>
+      createPolicy<TestContext, typeof brokenResources, typeof brokenActions>({
+        resources: brokenResources,
+        actions: brokenActions,
+        rules: {
+          post: {
+            read: allow(),
+          },
+        },
+      })
+    ).toThrow(PolicyError);
+  });
+
+  it("should throw PolicyError when a resource schema validate returns a Promise", () => {
+    const asyncResources = {
+      post: {
+        "~standard": {
+          version: 1,
+          vendor: "test",
+          validate: async () => ({ value: {} }),
+        },
+      } as StandardSchemaV1,
+    } satisfies Resources<"post">;
+
+    const asyncActions = {
+      post: ["read"],
+    } as const satisfies Actions<typeof asyncResources>;
+
+    const ctx: TestContext = { user: { id: "user-1", role: "user" } };
+    const post: Post = {
+      id: "1",
+      authorId: "user-1",
+      visibility: "public",
+      status: "published",
+    };
+
+    const policy = createPolicy<
+      TestContext,
+      typeof asyncResources,
+      typeof asyncActions
+    >({
+      resources: asyncResources,
+      actions: asyncActions,
+      rules: {
+        post: {
+          read: allow(),
+        },
+      },
+    });
+
+    expect(policy.can(ctx, "read", "post", post)).toBe(false);
+  });
+
+  it("should deny when a policy function throws", () => {
+    const policy = createPolicy<TestContext, typeof resources, typeof actions>({
+      resources,
+      actions,
+      rules: {
+        post: {
+          read: () => {
+            throw new Error("boom");
+          },
+        },
+        comment: {},
+      },
+    });
+
+    const ctx: TestContext = { user: { id: "user-1", role: "user" } };
+    const post: Post = {
+      id: "1",
+      authorId: "user-1",
+      visibility: "public",
+      status: "published",
+    };
+
+    expect(policy.can(ctx, "read", "post", post)).toBe(false);
+  });
+
   it("should work with role-based access using hasRole", () => {
     type RoleContext = {
       user: { id: string };
@@ -1039,8 +1243,8 @@ describe("mergePolicies", () => {
       status: "published" as const,
     };
 
-    // With no policies, should allow (vacuously true)
-    expect(merged.can(ctx, "read", "post", post)).toBe(true);
+    // With no policies, should deny (no policy allows)
+    expect(merged.can(ctx, "read", "post", post)).toBe(false);
   });
 
   it("should short-circuit on first deny", () => {
