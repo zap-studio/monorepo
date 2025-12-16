@@ -1,12 +1,8 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { $fetch } from "../src";
-import {
-  createMethod,
-  fetchInternal,
-  mergeHeaders,
-} from "../src/internal/utils";
 import type { ExtendedRequestInit } from "../src/types";
+import { createMethod, fetchInternal, mergeHeaders } from "../src/utils";
 
 const RE_HTTP_500 = /HTTP 500: Server Error/;
 const RE_HTTP_400 = /HTTP 400: Bad Request/;

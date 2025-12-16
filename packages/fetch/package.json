@@ -1,9 +1,33 @@
 {
   "name": "@zap-studio/fetch",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "type": "module",
   "license": "MIT",
   "private": false,
+  "homepage": "https://www.zapstudio.dev/packages/fetch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/fetch"
+  },
+  "description": "A type-safe fetch wrapper for HTTP requests with runtime schema validation.",
+  "keywords": [
+    "fetch",
+    "type-safe",
+    "validation",
+    "schema",
+    "typescript",
+    "http",
+    "api",
+    "zod",
+    "valibot",
+    "arktype",
+    "runtime validation",
+    "error handling",
+    "standard schema",
+    "request",
+    "response"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -37,8 +61,10 @@
   },
   "exports": {
     ".": "./dist/index.mjs",
+    "./constants": "./dist/constants.mjs",
     "./errors": "./dist/errors.mjs",
     "./types": "./dist/types.mjs",
+    "./utils": "./dist/utils.mjs",
     "./validator": "./dist/validator.mjs",
     "./package.json": "./package.json"
   },
