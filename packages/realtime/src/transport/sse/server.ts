@@ -1,9 +1,10 @@
 import type {
   EventDefinitions,
   EventMessage,
+  SSEServerTransport as ISSEServerTransport,
   ServerSSETransportOptions,
-  ServerTransport,
 } from "../../types";
+import { BaseServerTransport } from "../base/server";
 
 /**
  * Default HTTP headers for Server-Sent Events (SSE) responses.
@@ -57,17 +58,36 @@ function formatHeartbeat(): string {
 }
 
 /**
+ * SSE server transport options
+ */
+export type SSEServerTransportOptions = {
+  /** Heartbeat interval in milliseconds (0 to disable) */
+  heartbeatInterval?: number;
+};
+
+/**
  * SSE Server Transport
  *
- * Creates streaming responses from event subscriptions using Server-Sent Events
+ * Creates streaming responses from event subscriptions using Server-Sent Events.
+ *
+ * @example
+ * ```ts
+ * import { SSEServerTransport } from "@zap-studio/realtime/transport/sse/server";
+ *
+ * const transport = new SSEServerTransport({
+ *   heartbeatInterval: 30000,
+ * });
+ *
+ * // In your request handler
+ * const response = transport.createResponse(events.subscribe());
+ * ```
  */
 export class SSEServerTransport<TEventDefinitions extends EventDefinitions>
-  implements ServerTransport<TEventDefinitions>
+  extends BaseServerTransport<TEventDefinitions>
+  implements ISSEServerTransport<TEventDefinitions>
 {
-  private readonly defaultHeartbeatInterval: number;
-
-  constructor(options?: { heartbeatInterval?: number }) {
-    this.defaultHeartbeatInterval = options?.heartbeatInterval ?? 30_000;
+  constructor(options?: SSEServerTransportOptions) {
+    super({ keepAliveInterval: options?.heartbeatInterval });
   }
 
   /**
@@ -82,7 +102,7 @@ export class SSEServerTransport<TEventDefinitions extends EventDefinitions>
     options?: ServerSSETransportOptions
   ): Response {
     const heartbeatInterval =
-      options?.heartbeatInterval ?? this.defaultHeartbeatInterval;
+      options?.heartbeatInterval ?? this.keepAliveInterval;
     const signal = options?.signal;
 
     let heartbeatTimer: ReturnType<typeof setInterval> | null = null;

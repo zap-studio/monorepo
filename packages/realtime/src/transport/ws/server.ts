@@ -3,9 +3,12 @@ import type {
   EventKeys,
   EventMessage,
   InferEventTypes,
-  ServerTransport,
+  WSServerTransport as IWSServerTransport,
   ServerWebSocketTransportOptions,
+  WSConnectionHandler,
+  WSProtocolMessage,
 } from "../../types";
+import { BaseServerTransport, generateId } from "../base/server";
 
 /**
  * WebSocket server transport options
@@ -18,44 +21,9 @@ export type WSServerTransportOptions = ServerWebSocketTransportOptions & {
 };
 
 /**
- * WebSocket message types for protocol
+ * WebSocket message type
  */
 export type WSMessageType = "event" | "ping" | "pong" | "subscribe" | "error";
-
-/**
- * WebSocket protocol message structure
- */
-export type WSProtocolMessage<
-  TEventDefinitions extends EventDefinitions = EventDefinitions,
-> = {
-  type: WSMessageType;
-  payload?:
-    | EventMessage<TEventDefinitions>
-    | { channel?: string }
-    | { message: string };
-  timestamp: number;
-};
-
-/**
- * WebSocket connection handler type
- */
-export type WSConnectionHandler<TEventDefinitions extends EventDefinitions> = {
-  /** Send an event to this connection */
-  send<TEvent extends EventKeys<TEventDefinitions>>(
-    event: TEvent,
-    data: InferEventTypes<TEventDefinitions>[TEvent]
-  ): void;
-  /** Send raw message */
-  sendRaw(message: WSProtocolMessage<TEventDefinitions>): void;
-  /** Close the connection */
-  close(code?: number, reason?: string): void;
-  /** Check if connection is open */
-  readonly isOpen: boolean;
-  /** Connection ID */
-  readonly id: string;
-  /** Subscribed channels */
-  readonly channels: Set<string>;
-};
 
 /**
  * Format an event as a WebSocket protocol message
@@ -111,19 +79,10 @@ export function parseWSMessage<TEventDefinitions extends EventDefinitions>(
 }
 
 /**
- * Generate a unique connection ID
- */
-function generateConnectionId(): string {
-  return `ws-${Date.now().toString(36)}-${Math.random()
-    .toString(36)
-    .slice(2, 11)}`;
-}
-
-/**
  * WebSocket Server Transport
  *
- * This class handles WebSocket connections for real-time events.
- * It provides bidirectional communication and supports channels.
+ * Handles WebSocket connections for real-time events.
+ * Provides bidirectional communication and supports channels.
  *
  * @example
  * ```ts
@@ -133,35 +92,30 @@ function generateConnectionId(): string {
  *   pingInterval: 30000,
  * });
  *
- * // Handle WebSocket upgrade
- * const handler = transport.handleUpgrade(events, {
- *   onConnection: (conn) => {
- *     console.log("Client connected:", conn.id);
- *   },
- *   onMessage: (conn, event, data) => {
- *     // Handle client messages
- *   },
- *   onClose: (conn) => {
- *     console.log("Client disconnected:", conn.id);
- *   },
+ * // Handle WebSocket connection
+ * const handler = transport.createConnectionHandler(ws, {
+ *   onClose: () => console.log("Client disconnected"),
  * });
+ *
+ * // Send events
+ * handler.send("notification", { title: "Hello!" });
  * ```
  */
 export class WSServerTransport<TEventDefinitions extends EventDefinitions>
-  implements ServerTransport<TEventDefinitions>
+  extends BaseServerTransport<TEventDefinitions>
+  implements IWSServerTransport<TEventDefinitions>
 {
-  private readonly pingInterval: number;
   private readonly pongTimeout: number;
 
   constructor(options?: WSServerTransportOptions) {
-    this.pingInterval = options?.pingInterval ?? 30_000;
+    super({ keepAliveInterval: options?.pingInterval });
     this.pongTimeout = options?.pongTimeout ?? 10_000;
   }
 
   /**
    * Create a WebSocket connection handler
    *
-   * This creates a handler that wraps a WebSocket and provides
+   * Creates a handler that wraps a WebSocket and provides
    * type-safe event sending and channel management.
    */
   createConnectionHandler(
@@ -171,7 +125,7 @@ export class WSServerTransport<TEventDefinitions extends EventDefinitions>
       onError?: (error: Error) => void;
     }
   ): WSConnectionHandler<TEventDefinitions> {
-    const id = generateConnectionId();
+    const id = `ws-${generateId()}`;
     const channels = new Set<string>();
 
     const sendRaw = (message: WSProtocolMessage<TEventDefinitions>) => {
@@ -180,12 +134,7 @@ export class WSServerTransport<TEventDefinitions extends EventDefinitions>
       }
     };
 
-    const keepAlive = this.setupKeepAlive(
-      ws,
-      this.pingInterval,
-      this.pongTimeout,
-      sendRaw
-    );
+    const keepAlive = this.setupKeepAlive(ws, sendRaw);
 
     const originalOnMessage = ws.onmessage;
 
@@ -222,9 +171,7 @@ export class WSServerTransport<TEventDefinitions extends EventDefinitions>
       ) {
         sendRaw(
           formatWSMessage({
-            id: `${Date.now().toString(36)}-${Math.random()
-              .toString(36)
-              .slice(2, 9)}`,
+            id: generateId(),
             event,
             data,
             timestamp: Date.now(),
@@ -242,10 +189,22 @@ export class WSServerTransport<TEventDefinitions extends EventDefinitions>
     };
   }
 
+  /**
+   * Get ping interval
+   */
+  getPingInterval(): number {
+    return this.keepAliveInterval;
+  }
+
+  /**
+   * Get pong timeout
+   */
+  getPongTimeout(): number {
+    return this.pongTimeout;
+  }
+
   private setupKeepAlive(
     ws: WebSocket,
-    pingInterval: number,
-    pongTimeout: number,
     sendRaw: (msg: WSProtocolMessage<TEventDefinitions>) => void
   ) {
     let pingTimer: ReturnType<typeof setInterval> | null = null;
@@ -266,7 +225,7 @@ export class WSServerTransport<TEventDefinitions extends EventDefinitions>
       clearPongTimeout();
     };
 
-    if (pingInterval > 0) {
+    if (this.keepAliveInterval > 0) {
       pingTimer = setInterval(() => {
         if (ws.readyState !== WebSocket.OPEN) return;
 
@@ -274,8 +233,8 @@ export class WSServerTransport<TEventDefinitions extends EventDefinitions>
 
         pongTimer = setTimeout(() => {
           ws.close(1000, "Pong timeout");
-        }, pongTimeout);
-      }, pingInterval);
+        }, this.pongTimeout);
+      }, this.keepAliveInterval);
     }
 
     return {
@@ -316,20 +275,6 @@ export class WSServerTransport<TEventDefinitions extends EventDefinitions>
     } catch {
       return false;
     }
-  }
-
-  /**
-   * Get ping interval
-   */
-  getPingInterval(): number {
-    return this.pingInterval;
-  }
-
-  /**
-   * Get pong timeout
-   */
-  getPongTimeout(): number {
-    return this.pongTimeout;
   }
 }
 

@@ -103,64 +103,10 @@ export type ServerEmitter<TEventDefinitions extends EventDefinitions> = {
 };
 
 /**
- * Server transport interface, it handles streaming events to clients
- */
-export type ServerTransport<TEventDefinitions extends EventDefinitions> = {
-  /**
-   * Create a streaming response from a subscription
-   */
-  createResponse?(
-    subscription: AsyncGenerator<
-      EventMessage<TEventDefinitions>,
-      void,
-      unknown
-    >,
-    options?: ServerSSETransportOptions
-  ): Response;
-
-  /**
-   * Create a WebSocket connection handler
-   */
-  createConnectionHandler?(
-    connection: WebSocket,
-    options?: ServerWebSocketTransportOptions
-  ): void;
-
-  /**
-   * Get the ping interval in milliseconds
-   */
-  getPingInterval?(): number;
-
-  /**
-   * Get the pong timeout in milliseconds
-   */
-  getPongTimeout?(): number;
-};
-
-/**
- * Server SSE transport configuration options
- */
-export type ServerSSETransportOptions = {
-  /** Heartbeat interval in milliseconds (0 to disable) */
-  heartbeatInterval?: number;
-  /** Custom headers to add to the response */
-  headers?: Record<string, string>;
-  /** AbortSignal to cancel the stream */
-  signal?: AbortSignal;
-};
-
-/**
- * Server WebSocket transport configuration options
- */
-export type ServerWebSocketTransportOptions = {
-  /** Callback to execute when the connection is closed */
-  onClose?: () => void;
-  /** Callback to execute when an error occurs */
-  onError?: (error: Error) => void;
-};
-
-/**
- * Client transport interface, it handles receiving events from server
+ * Base client transport interface for receiving events from server.
+ *
+ * This is the common interface implemented by all client transports (SSE, WebSocket).
+ * It provides unidirectional event reception with reconnection support.
  */
 export type ClientTransport<TEventDefinitions extends EventDefinitions> = {
   /**
@@ -174,7 +120,7 @@ export type ClientTransport<TEventDefinitions extends EventDefinitions> = {
   disconnect(): void;
 
   /**
-   * Register an event handler
+   * Register an event handler for a specific event type
    */
   on<TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent,
@@ -208,7 +154,30 @@ export type ClientTransport<TEventDefinitions extends EventDefinitions> = {
 };
 
 /**
- * Client transport options
+ * Bidirectional client transport interface.
+ *
+ * Extends the base client transport with the ability to send events
+ * back to the server. Used by WebSocket transport.
+ */
+export type BidirectionalClientTransport<
+  TEventDefinitions extends EventDefinitions,
+> = ClientTransport<TEventDefinitions> & {
+  /**
+   * Send an event to the server
+   */
+  send<TEvent extends EventKeys<TEventDefinitions>>(
+    event: TEvent,
+    data: InferEventTypes<TEventDefinitions>[TEvent]
+  ): void;
+
+  /**
+   * Subscribe to a channel for filtered events
+   */
+  subscribe(channel: string): void;
+};
+
+/**
+ * Client transport options with reconnection configuration
  */
 export type ClientTransportOptions<TEventDefinitions extends EventDefinitions> =
   {
@@ -220,34 +189,157 @@ export type ClientTransportOptions<TEventDefinitions extends EventDefinitions> =
      */
     validate?: boolean;
     /** Reconnection options */
-    reconnect?: {
-      /**
-       * Enable automatic reconnection
-       * @default true
-       */
-      enabled?: boolean;
-      /**
-       * Maximum number of reconnection attempts
-       * @default Infinity
-       */
-      maxAttempts?: number;
-      /**
-       * Initial delay in ms before reconnecting
-       * @default 1000
-       */
-      delay?: number;
-      /**
-       * Maximum delay in ms
-       * @default 30000
-       */
-      maxDelay?: number;
-      /**
-       * Delay multiplier for exponential backoff
-       * @default 2
-       */
-      multiplier?: number;
-    };
+    reconnect?: ReconnectOptions;
   };
+
+/**
+ * Reconnection options for client transports
+ */
+export type ReconnectOptions = {
+  /**
+   * Enable automatic reconnection
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Maximum number of reconnection attempts
+   * @default Infinity
+   */
+  maxAttempts?: number;
+  /**
+   * Initial delay in ms before reconnecting
+   * @default 1000
+   */
+  delay?: number;
+  /**
+   * Maximum delay in ms
+   * @default 30000
+   */
+  maxDelay?: number;
+  /**
+   * Delay multiplier for exponential backoff
+   * @default 2
+   */
+  multiplier?: number;
+};
+
+/**
+ * Base server transport interface.
+ *
+ * Common interface for all server transports. Specific transport types
+ * extend this with their own methods.
+ */
+export type ServerTransport = {
+  /**
+   * Get the keep-alive interval in milliseconds
+   */
+  getKeepAliveInterval?(): number;
+};
+
+/**
+ * SSE server transport interface.
+ *
+ * Handles streaming events to clients using Server-Sent Events.
+ * This is a unidirectional transport (server to client only).
+ */
+export type SSEServerTransport<TEventDefinitions extends EventDefinitions> =
+  ServerTransport & {
+    /**
+     * Create a streaming SSE response from an event subscription
+     */
+    createResponse(
+      subscription: AsyncGenerator<
+        EventMessage<TEventDefinitions>,
+        void,
+        unknown
+      >,
+      options?: ServerSSETransportOptions
+    ): Response;
+  };
+
+/**
+ * WebSocket server transport interface.
+ *
+ * Handles bidirectional communication with clients using WebSocket.
+ * Supports channels and connection management.
+ */
+export type WSServerTransport<TEventDefinitions extends EventDefinitions> =
+  ServerTransport & {
+    /**
+     * Create a connection handler for a WebSocket connection
+     */
+    createConnectionHandler(
+      connection: WebSocket,
+      options?: ServerWebSocketTransportOptions
+    ): WSConnectionHandler<TEventDefinitions>;
+
+    /**
+     * Get the ping interval in milliseconds
+     */
+    getPingInterval(): number;
+
+    /**
+     * Get the pong timeout in milliseconds
+     */
+    getPongTimeout(): number;
+  };
+
+/**
+ * WebSocket protocol message structure
+ */
+export type WSProtocolMessage<
+  TEventDefinitions extends EventDefinitions = EventDefinitions,
+> = {
+  type: "event" | "ping" | "pong" | "subscribe" | "error";
+  payload?:
+    | EventMessage<TEventDefinitions>
+    | { channel?: string }
+    | { message: string };
+  timestamp: number;
+};
+
+/**
+ * WebSocket connection handler interface
+ */
+export type WSConnectionHandler<TEventDefinitions extends EventDefinitions> = {
+  /** Unique connection ID */
+  readonly id: string;
+  /** Check if connection is open */
+  readonly isOpen: boolean;
+  /** Subscribed channels */
+  readonly channels: Set<string>;
+  /** Send an event to this connection */
+  send<TEvent extends EventKeys<TEventDefinitions>>(
+    event: TEvent,
+    data: InferEventTypes<TEventDefinitions>[TEvent]
+  ): void;
+  /** Send raw protocol message */
+  sendRaw(message: WSProtocolMessage<TEventDefinitions>): void;
+  /** Close the connection */
+  close(code?: number, reason?: string): void;
+};
+
+/**
+ * Server SSE transport configuration options
+ */
+export type ServerSSETransportOptions = {
+  /** Heartbeat interval in milliseconds (0 to disable) */
+  heartbeatInterval?: number;
+  /** Custom headers to add to the response */
+  headers?: Record<string, string>;
+  /** AbortSignal to cancel the stream */
+  signal?: AbortSignal;
+};
+
+/**
+ * Server WebSocket transport configuration options
+ */
+export type ServerWebSocketTransportOptions = {
+  /** Callback to execute when the connection is closed */
+  onClose?: () => void;
+  /** Callback to execute when an error occurs */
+  onError?: (error: Error) => void;
+};
 
 /**
  * Events API interface

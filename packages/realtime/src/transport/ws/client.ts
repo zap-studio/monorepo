@@ -1,13 +1,12 @@
-import { validateSchema } from "../../schema";
 import type {
-  ClientTransport,
   ClientTransportOptions,
   EventDefinitions,
   EventKeys,
   EventMessage,
   InferEventTypes,
+  WSProtocolMessage,
 } from "../../types";
-import type { WSProtocolMessage } from "./server";
+import { BaseClientTransport } from "../base/client";
 
 /**
  * WebSocket client transport options
@@ -20,28 +19,32 @@ export type WSClientTransportOptions<
 };
 
 /**
- * Handler function for a specific event type
+ * Bidirectional client transport interface
+ *
+ * Extends the base client transport with send capabilities
  */
-type EventHandler<
+export interface BidirectionalClientTransport<
   TEventDefinitions extends EventDefinitions,
-  TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
-> = (data: InferEventTypes<TEventDefinitions>[TEvent]) => void;
+> {
+  /**
+   * Send an event to the server
+   */
+  send<TEvent extends EventKeys<TEventDefinitions>>(
+    event: TEvent,
+    data: InferEventTypes<TEventDefinitions>[TEvent]
+  ): void;
 
-/**
- * Generic handler function for any event type
- */
-type AnyEventHandler<TEventDefinitions extends EventDefinitions> = <
-  TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
->(
-  event: TEvent,
-  data: InferEventTypes<TEventDefinitions>[TEvent]
-) => void;
+  /**
+   * Subscribe to a channel
+   */
+  subscribe(channel: string): void;
+}
 
 /**
  * WebSocket Client Transport
  *
- * This class handles WebSocket connections for real-time events with
- * automatic reconnection, validation, and bidirectional communication.
+ * Handles WebSocket connections for real-time events with automatic
+ * reconnection, validation, and bidirectional communication.
  *
  * @example
  * ```ts
@@ -69,61 +72,23 @@ type AnyEventHandler<TEventDefinitions extends EventDefinitions> = <
  * ```
  */
 export class WSClientTransport<TEventDefinitions extends EventDefinitions>
-  implements ClientTransport<TEventDefinitions>
+  extends BaseClientTransport<TEventDefinitions>
+  implements BidirectionalClientTransport<TEventDefinitions>
 {
-  private readonly url: string;
-  private readonly definitions: TEventDefinitions;
-  private readonly validate: boolean;
   private readonly protocols?: string | string[];
-
-  private readonly reconnectEnabled: boolean;
-  private readonly reconnectMaxAttempts: number;
-  private readonly reconnectDelay: number;
-  private readonly reconnectMaxDelay: number;
-  private readonly reconnectMultiplier: number;
-
   private ws: WebSocket | null = null;
-
-  private readonly eventHandlers = new Map<
-    EventKeys<TEventDefinitions>,
-    Set<EventHandler<TEventDefinitions>>
-  >();
-  private readonly anyHandlers = new Set<AnyEventHandler<TEventDefinitions>>();
-  private readonly errorHandlers = new Set<(error: Error) => void>();
-  private readonly connectionHandlers = new Set<(connected: boolean) => void>();
-
-  private isConnected = false;
-  private reconnectAttempts = 0;
-  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private intentionalClose = false;
 
   constructor(
     url: string,
     options: WSClientTransportOptions<TEventDefinitions>
   ) {
-    this.url = url;
-    this.definitions = options.definitions;
-    this.validate = options.validate ?? true;
+    super(url, options);
     this.protocols = options.protocols;
-
-    const reconnect = options.reconnect ?? {};
-    this.reconnectEnabled = reconnect.enabled ?? true;
-    this.reconnectMaxAttempts =
-      reconnect.maxAttempts ?? Number.POSITIVE_INFINITY;
-    this.reconnectDelay = reconnect.delay ?? 1000;
-    this.reconnectMaxDelay = reconnect.maxDelay ?? 30_000;
-    this.reconnectMultiplier = reconnect.multiplier ?? 2;
   }
 
   /**
-   * Returns the current connection status.
-   */
-  get connected(): boolean {
-    return this.isConnected;
-  }
-
-  /**
-   * Connects to the WebSocket server.
+   * Connect to the WebSocket server
    */
   connect(): void {
     if (this.ws && this.ws.readyState !== WebSocket.CLOSED) {
@@ -135,75 +100,21 @@ export class WSClientTransport<TEventDefinitions extends EventDefinitions>
   }
 
   /**
-   * Disconnects from the WebSocket server.
+   * Disconnect from the WebSocket server
    */
   disconnect(): void {
     this.intentionalClose = true;
-    this.clearReconnectTimer();
-    this.reconnectAttempts = 0;
+    super.disconnect();
+  }
 
+  /**
+   * Close the underlying WebSocket connection
+   */
+  protected closeConnection(): void {
     if (this.ws) {
       this.ws.close(1000, "Client disconnect");
       this.ws = null;
     }
-
-    if (this.isConnected) {
-      this.isConnected = false;
-      this.notifyConnectionChange(false);
-    }
-  }
-
-  /**
-   * Registers an event listener for the specified event.
-   */
-  on<TEvent extends EventKeys<TEventDefinitions>>(
-    event: TEvent,
-    handler: (data: InferEventTypes<TEventDefinitions>[TEvent]) => void
-  ): () => void {
-    let handlers = this.eventHandlers.get(event);
-
-    if (!handlers) {
-      handlers = new Set();
-      this.eventHandlers.set(event, handlers);
-    }
-
-    handlers.add(handler);
-
-    return () => {
-      handlers?.delete(handler);
-      if (handlers?.size === 0) {
-        this.eventHandlers.delete(event);
-      }
-    };
-  }
-
-  /**
-   * Registers an event listener for any event.
-   */
-  onAny(
-    handler: <TEvent extends EventKeys<TEventDefinitions>>(
-      event: TEvent,
-      data: InferEventTypes<TEventDefinitions>[TEvent]
-    ) => void
-  ): () => void {
-    this.anyHandlers.add(handler);
-    return () => this.anyHandlers.delete(handler);
-  }
-
-  /**
-   * Registers an error listener.
-   */
-  onError(handler: (error: Error) => void): () => void {
-    this.errorHandlers.add(handler);
-    return () => this.errorHandlers.delete(handler);
-  }
-
-  /**
-   * Registers a connection change listener.
-   */
-  onConnectionChange(handler: (connected: boolean) => void): () => void {
-    this.connectionHandlers.add(handler);
-    return () => this.connectionHandlers.delete(handler);
   }
 
   /**
@@ -256,22 +167,15 @@ export class WSClientTransport<TEventDefinitions extends EventDefinitions>
     this.ws = new WebSocket(this.url, this.protocols);
 
     this.ws.onopen = () => {
-      this.isConnected = true;
-      this.reconnectAttempts = 0;
-      this.notifyConnectionChange(true);
+      this.onConnectionEstablished();
     };
 
     this.ws.onclose = (event) => {
-      const wasConnected = this.isConnected;
-      this.isConnected = false;
+      this.onConnectionLost();
       this.ws = null;
 
-      if (wasConnected) {
-        this.notifyConnectionChange(false);
-      }
-
       if (!this.intentionalClose && event.code !== 1000) {
-        this.handleReconnect();
+        this.handleReconnect(() => this.createWebSocket());
       }
     };
 
@@ -311,94 +215,14 @@ export class WSClientTransport<TEventDefinitions extends EventDefinitions>
 
       if (message.type === "event" && message.payload) {
         const eventMessage = message.payload as EventMessage<TEventDefinitions>;
-
         const event = eventMessage.event;
-        let data = eventMessage.data;
-
-        // Validate if enabled
-        if (this.validate) {
-          const schema = this.definitions[event];
-          if (schema) {
-            data = await validateSchema(schema, data);
-          }
-        }
-
+        const data = await this.validateEventData(event, eventMessage.data);
         this.dispatchEvent(event, data);
       }
     } catch (error) {
       this.notifyError(
         error instanceof Error ? error : new Error(String(error))
       );
-    }
-  }
-
-  private dispatchEvent<TEvent extends EventKeys<TEventDefinitions>>(
-    event: TEvent,
-    data: InferEventTypes<TEventDefinitions>[TEvent]
-  ): void {
-    const handlers = this.eventHandlers.get(event);
-
-    if (handlers) {
-      for (const handler of handlers) {
-        this.safeCall(() => handler(data));
-      }
-    }
-
-    for (const handler of this.anyHandlers) {
-      this.safeCall(() => handler(event, data));
-    }
-  }
-
-  private handleReconnect(): void {
-    if (
-      !this.reconnectEnabled ||
-      this.reconnectAttempts >= this.reconnectMaxAttempts
-    ) {
-      this.notifyError(
-        new Error(
-          `WebSocket connection closed. Max reconnect attempts (${this.reconnectMaxAttempts}) reached.`
-        )
-      );
-      return;
-    }
-
-    const delay = Math.min(
-      this.reconnectDelay * this.reconnectMultiplier ** this.reconnectAttempts,
-      this.reconnectMaxDelay
-    );
-
-    this.reconnectAttempts += 1;
-
-    this.reconnectTimer = setTimeout(() => {
-      this.reconnectTimer = null;
-      this.createWebSocket();
-    }, delay);
-  }
-
-  private clearReconnectTimer(): void {
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
-    }
-  }
-
-  private notifyError(error: Error): void {
-    for (const handler of this.errorHandlers) {
-      this.safeCall(() => handler(error));
-    }
-  }
-
-  private notifyConnectionChange(connected: boolean): void {
-    for (const handler of this.connectionHandlers) {
-      this.safeCall(() => handler(connected));
-    }
-  }
-
-  private safeCall(fn: () => void): void {
-    try {
-      fn();
-    } catch {
-      // intentionally ignored
     }
   }
 }
