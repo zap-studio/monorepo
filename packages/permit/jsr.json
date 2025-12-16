@@ -9,5 +9,8 @@
     "./errors": "./src/errors.ts",
     "./types": "./src/types.ts"
   },
+  "imports": {
+    "@standard-schema/spec": "npm:@standard-schema/spec@1.1.0"
+  },
   "publish": { "include": ["src", "CHANGELOG.md", "LICENSE.md", "README.md"] }
 }
