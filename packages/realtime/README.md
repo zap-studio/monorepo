@@ -90,14 +90,14 @@ Subscribe to events:
 ```tsx
 // components/Chat.tsx
 import { z } from "zod";
-import { useEvents } from "@zap-studio/realtime/client/react/hooks";
+import { useSSE } from "@zap-studio/realtime/client/react/sse";
 
 const MyEvents = {
   message: z.object({ text: z.string(), user: z.string() }),
 };
 
 function Chat() {
-  const { on, connected, error } = useEvents("/api/events", MyEvents);
+  const { on, connected, error } = useSSE("/api/events", MyEvents);
 
   useEffect(() => {
     const unsubscribe = on("message", (data) => {
@@ -213,7 +213,7 @@ Similar to chat, use `createNotificationsPlugin` for notifications.
 Customize reconnection:
 
 ```ts
-useEvents(url, schemas, {
+useSSE(url, schemas, {
   reconnect: {
     enabled: true,
     maxAttempts: 10,
@@ -227,7 +227,7 @@ useEvents(url, schemas, {
 ### Vanilla JS Client
 
 ```ts
-import { createVanillaSSEClient } from "@zap-studio/realtime/client/vanilla";
+import { createVanillaSSEClient } from "@zap-studio/realtime/client/vanilla/sse";
 
 const client = createVanillaSSEClient(url, schemas);
 client.on("message", (data) => console.log(data));

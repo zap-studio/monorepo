@@ -4,15 +4,15 @@ We provide React Hooks for easy integration with SSE and WebSocket transports.
 
 ## SSE Hooks
 
-### useEvents
+### useSSE
 
 The primary hook for subscribing to SSE events.
 
 ```tsx
-import { useEvents } from "@zap-studio/realtime/client/react/hooks";
+import { useSSE } from "@zap-studio/realtime/client/react/sse";
 
 function MyComponent() {
-  const { on, onAny, connected, error, connect, disconnect } = useEvents(
+  const { on, onAny, connected, error, connect, disconnect } = useSSE(
     "/api/events",
     eventSchemas,
     {
@@ -51,15 +51,15 @@ function MyComponent() {
 }
 ```
 
-### useEvent
+### useSSEEvent
 
 Hook for subscribing to a single event type with automatic state management.
 
 ```tsx
-import { useEvent } from "@zap-studio/realtime/client/react/hooks";
+import { useSSEEvent } from "@zap-studio/realtime/client/react/sse";
 
 function LatestNotification() {
-  const { data, connected, error } = useEvent(
+  const { data, connected, error } = useSSEEvent(
     "/api/events",
     "notification",
     eventSchemas
@@ -77,15 +77,15 @@ function LatestNotification() {
 }
 ```
 
-### useEventHistory
+### useSSEEventHistory
 
 Hook for collecting events into an array (useful for feeds and logs).
 
 ```tsx
-import { useEventHistory } from "@zap-studio/realtime/client/react/hooks";
+import { useSSEEventHistory } from "@zap-studio/realtime/client/react/sse";
 
 function NotificationFeed() {
-  const { events, connected, error, clear } = useEventHistory(
+  const { events, connected, error, clear } = useSSEEventHistory(
     "/api/events",
     "notification",
     eventSchemas,
@@ -112,7 +112,7 @@ function NotificationFeed() {
 The primary hook for bidirectional WebSocket communication.
 
 ```tsx
-import { useWebSocket } from "@zap-studio/realtime/client/react/ws-hooks";
+import { useWebSocket } from "@zap-studio/realtime/client/react/ws";
 
 function Chat() {
   const { on, send, subscribe, connected, error, connect, disconnect } = useWebSocket(
@@ -164,7 +164,7 @@ function Chat() {
 Hook for a single event type with send capability.
 
 ```tsx
-import { useWebSocketEvent } from "@zap-studio/realtime/client/react/ws-hooks";
+import { useWebSocketEvent } from "@zap-studio/realtime/client/react/ws";
 
 function MessageDisplay() {
   const { data, send, connected, error } = useWebSocketEvent(
@@ -189,7 +189,7 @@ function MessageDisplay() {
 Hook for collecting events with send capability.
 
 ```tsx
-import { useWebSocketEventHistory } from "@zap-studio/realtime/client/react/ws-hooks";
+import { useWebSocketEventHistory } from "@zap-studio/realtime/client/react/ws";
 
 function ChatRoom() {
   const { events, send, connected, error, clear } = useWebSocketEventHistory(
@@ -284,7 +284,7 @@ on("event", (data) => handleData(data));
 
 ```tsx
 function MyComponent() {
-  const { connected, error } = useEvents(url, schemas);
+  const { connected, error } = useSSE(url, schemas);
 
   if (error) {
     return <ErrorBoundary error={error} />;
@@ -302,7 +302,7 @@ function MyComponent() {
 
 ```tsx
 function MyComponent({ shouldConnect }) {
-  const { connected } = useEvents(url, schemas, {
+  const { connected } = useSSE(url, schemas, {
     enabled: shouldConnect, // Only connect when needed
   });
 }
@@ -312,7 +312,7 @@ function MyComponent({ shouldConnect }) {
 
 ```tsx
 function Dashboard() {
-  const { on } = useEvents(url, schemas);
+  const { on } = useSSE(url, schemas);
 
   useEffect(() => {
     const unsubs = [

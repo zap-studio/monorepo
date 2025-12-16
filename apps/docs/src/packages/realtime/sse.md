@@ -50,7 +50,7 @@ Learn more about [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/
 ### Vanilla JavaScript
 
 ```typescript
-import { createVanillaSSEClient } from "@zap-studio/realtime/client/vanilla";
+import { createVanillaSSEClient } from "@zap-studio/realtime/client/vanilla/sse";
 import { z } from "zod";
 
 const schemas = {
@@ -84,11 +84,11 @@ client.disconnect();
 ### React Hooks
 
 ```tsx
-import { useEvents, useEvent, useEventHistory } from "@zap-studio/realtime/client/react/hooks";
+import { useSSE, useSSEEvent, useSSEEventHistory } from "@zap-studio/realtime/client/react/sse";
 
 // Basic usage
 function Notifications() {
-  const { on, connected, error } = useEvents("/api/events", schemas);
+  const { on, connected, error } = useSSE("/api/events", schemas);
 
   useEffect(() => {
     on("notification", (data) => {
@@ -101,7 +101,7 @@ function Notifications() {
 
 // Single event with state
 function LatestNotification() {
-  const { data, connected } = useEvent("/api/events", "notification", schemas);
+  const { data, connected } = useSSEEvent("/api/events", "notification", schemas);
 
   if (!data) return <div>Waiting for notifications...</div>;
   return <div>{data.title}: {data.message}</div>;
@@ -109,7 +109,7 @@ function LatestNotification() {
 
 // Event history
 function NotificationList() {
-  const { events, clear } = useEventHistory("/api/events", "notification", schemas, {
+  const { events, clear } = useSSEEventHistory("/api/events", "notification", schemas, {
     maxEvents: 50,
   });
 

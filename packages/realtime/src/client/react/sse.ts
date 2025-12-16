@@ -14,9 +14,9 @@ import type {
 } from "../../types";
 
 /**
- * useEvents hook options
+ * useSSE hook options
  */
-export type UseEventsOptions<TEventDefinitions extends EventDefinitions> = Omit<
+export type UseSSEOptions<TEventDefinitions extends EventDefinitions> = Omit<
   ClientTransportOptions<TEventDefinitions>,
   "definitions"
 > & {
@@ -28,9 +28,9 @@ export type UseEventsOptions<TEventDefinitions extends EventDefinitions> = Omit<
 };
 
 /**
- * useEvents hook return type
+ * useSSE hook return type
  */
-export type UseEventsReturn<TEventDefinitions extends EventDefinitions> = {
+export type UseSSEReturn<TEventDefinitions extends EventDefinitions> = {
   /** Whether currently connected */
   connected: boolean;
   /** Register event handler */
@@ -59,7 +59,7 @@ export type UseEventsReturn<TEventDefinitions extends EventDefinitions> = {
  * @example
  * ```tsx
  * import { z } from "zod";
- * import { useEvents } from "@zap-studio/realtime/client/react/hooks";
+ * import { useSSE } from "@zap-studio/realtime/client/react/sse";
  *
  * const MyEvents = {
  *   message: z.object({ title: z.string(), body: z.string() }),
@@ -67,7 +67,7 @@ export type UseEventsReturn<TEventDefinitions extends EventDefinitions> = {
  * };
  *
  * function ChatComponent() {
- *   const { on, connected, error } = useEvents("/api/events", MyEvents);
+ *   const { on, connected, error } = useSSE("/api/events", MyEvents);
  *
  *   useEffect(() => {
  *     const unsubscribe = on("message", (msg) => {
@@ -83,11 +83,11 @@ export type UseEventsReturn<TEventDefinitions extends EventDefinitions> = {
  * }
  * ```
  */
-export function useEvents<TEventDefinitions extends EventDefinitions>(
+export function useSSE<TEventDefinitions extends EventDefinitions>(
   url: string,
   definitions: TEventDefinitions,
-  options?: UseEventsOptions<TEventDefinitions>
-): UseEventsReturn<TEventDefinitions> {
+  options?: UseSSEOptions<TEventDefinitions>
+): UseSSEReturn<TEventDefinitions> {
   const enabled = options?.enabled ?? true;
   const clientRef = useRef<SSEClientTransport<TEventDefinitions> | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -268,17 +268,17 @@ export function useEvents<TEventDefinitions extends EventDefinitions>(
 }
 
 /**
- * React hook for subscribing to a specific event
+ * React hook for subscribing to a specific SSE event
  *
  * @example
  * ```tsx
  * import { z } from "zod";
- * import { useEvent } from "@zap-studio/realtime/client/react/hooks";
+ * import { useSSEEvent } from "@zap-studio/realtime/client/react/sse";
  *
  * const MessageSchema = z.object({ title: z.string(), body: z.string() });
  *
  * function MessageComponent() {
- *   const { data, connected } = useEvent("/api/events", "message", MessageSchema);
+ *   const { data, connected } = useSSEEvent("/api/events", "message", { message: MessageSchema });
  *
  *   if (!data) return <div>Waiting for messages...</div>;
  *
@@ -291,14 +291,14 @@ export function useEvents<TEventDefinitions extends EventDefinitions>(
  * }
  * ```
  */
-export function useEvent<
+export function useSSEEvent<
   TEventDefinitions extends EventDefinitions,
   TEvent extends EventKeys<TEventDefinitions>,
 >(
   url: string,
   event: TEvent,
   schemas: TEventDefinitions,
-  options?: UseEventsOptions<TEventDefinitions>
+  options?: UseSSEOptions<TEventDefinitions>
 ): {
   data: InferEventTypes<TEventDefinitions>[TEvent] | null;
   connected: boolean;
@@ -307,7 +307,7 @@ export function useEvent<
   const [data, setData] = useState<
     InferEventTypes<TEventDefinitions>[TEvent] | null
   >(null);
-  const { on, connected, error } = useEvents(url, schemas, options);
+  const { on, connected, error } = useSSE(url, schemas, options);
 
   useEffect(() => {
     const unsubscribe = on(event, (eventData) => {
@@ -320,17 +320,17 @@ export function useEvent<
 }
 
 /**
- * React hook for collecting events into an array
+ * React hook for collecting SSE events into an array
  *
  * @example
  * ```tsx
  * import { z } from "zod";
- * import { useEventHistory } from "@zap-studio/realtime/client/react/hooks";
+ * import { useSSEEventHistory } from "@zap-studio/realtime/client/react/sse";
  *
  * const MessageSchema = z.object({ title: z.string(), body: z.string() });
  *
  * function MessageListComponent() {
- *   const { events, connected, clear } = useEventHistory("/api/events", "message", MessageSchema, {
+ *   const { events, connected, clear } = useSSEEventHistory("/api/events", "message", { message: MessageSchema }, {
  *     maxEvents: 100,
  *   });
  *
@@ -348,14 +348,14 @@ export function useEvent<
  * }
  * ```
  */
-export function useEventHistory<
+export function useSSEEventHistory<
   TEventDefinitions extends EventDefinitions,
   TEvent extends EventKeys<TEventDefinitions>,
 >(
   url: string,
   event: TEvent,
   schemas: TEventDefinitions,
-  options?: UseEventsOptions<TEventDefinitions> & {
+  options?: UseSSEOptions<TEventDefinitions> & {
     /**
      * Maximum number of events to keep
      * @default 100
@@ -372,7 +372,7 @@ export function useEventHistory<
   const [events, setEvents] = useState<
     InferEventTypes<TEventDefinitions>[TEvent][]
   >([]);
-  const { on, connected, error } = useEvents(url, schemas, options);
+  const { on, connected, error } = useSSE(url, schemas, options);
 
   useEffect(() => {
     const unsubscribe = on(event, (eventData) => {

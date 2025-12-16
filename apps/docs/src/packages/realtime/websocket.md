@@ -47,7 +47,7 @@ On the client, you can use Vanilla JavaScript or React Hooks.
 ### Vanilla JavaScript
 
 ```typescript
-import { createVanillaWSClient } from "@zap-studio/realtime/client/ws";
+import { createVanillaWSClient } from "@zap-studio/realtime/client/vanilla/ws";
 import { z } from "zod";
 
 const schemas = {
@@ -82,7 +82,7 @@ client.disconnect();
 Using a factory for multiple connections:
 
 ```typescript
-import { createWSClientFactory } from "@zap-studio/realtime/client/ws";
+import { createWSClientFactory } from "@zap-studio/realtime/client/vanilla/ws";
 
 const createClient = createWSClientFactory(schemas, {
   reconnect: { maxAttempts: 5 },
@@ -99,7 +99,7 @@ import {
   useWebSocket, 
   useWebSocketEvent, 
   useWebSocketEventHistory 
-} from "@zap-studio/realtime/client/react/ws-hooks";
+} from "@zap-studio/realtime/client/react/ws";
 
 // Basic usage with send capability
 function Chat() {

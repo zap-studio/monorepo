@@ -20,7 +20,7 @@ eventSource.onmessage = (event) => {
 **After:**
 
 ```typescript
-import { useEvents } from "@zap-studio/realtime/client/react/hooks";
+import { useSSE } from "@zap-studio/realtime/client/react/sse";
 import { z } from "zod";
 
 const MyEvents = {
@@ -29,7 +29,7 @@ const MyEvents = {
 };
 
 function ChatComponent() {
-  const { on, connected } = useEvents("/api/events", MyEvents);
+  const { on, connected } = useSSE("/api/events", MyEvents);
 
   useEffect(() => {
     return on("message", (msg) => {
@@ -102,11 +102,11 @@ export const GET = nextSSERoute(events);
 
 ```tsx
 // components/Chat.tsx
-import { useEvents } from "@zap-studio/realtime/client/react/hooks";
+import { useSSE } from "@zap-studio/realtime/client/react/sse";
 import { eventSchemas } from "@/lib/events";
 
 function Chat() {
-  const { on, connected, error } = useEvents("/api/events", eventSchemas);
+  const { on, connected, error } = useSSE("/api/events", eventSchemas);
 
   useEffect(() => {
     const unsubscribe = on("message", (msg) => {

@@ -1,5 +1,5 @@
-import { SSEClientTransport } from "../transport/sse/client";
-import type { ClientTransportOptions, EventDefinitions } from "../types";
+import { SSEClientTransport } from "../../transport/sse/client";
+import type { ClientTransportOptions, EventDefinitions } from "../../types";
 
 /**
  * Vanilla JS SSE client options
@@ -22,7 +22,7 @@ export type VanillaSSEClientOptions<
  * @example
  * ```ts
  * import { z } from "zod";
- * import { createVanillaSSEClient } from "@zap-studio/realtime/client/vanilla";
+ * import { createVanillaSSEClient } from "@zap-studio/realtime/client/vanilla/sse";
  *
  * const schemas = {
  *   message: z.object({ title: z.string(), body: z.string() }),
@@ -88,7 +88,7 @@ export function createVanillaSSEClient<
  * @example
  * ```ts
  * import { z } from "zod";
- * import { createSSEClientFactory } from "@zap-studio/realtime/client/vanilla";
+ * import { createSSEClientFactory } from "@zap-studio/realtime/client/vanilla/sse";
  *
  * const schemas = {
  *   message: z.object({ title: z.string(), body: z.string() }),
