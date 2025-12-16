@@ -7,8 +7,8 @@ settings:
 catalogs:
   base:
     '@standard-schema/spec':
-      specifier: ^1.0.0
-      version: 1.0.0
+      specifier: ^1.1.0
+      version: 1.1.0
     arktype:
       specifier: ^2.1.29
       version: 2.1.29
@@ -171,7 +171,7 @@ importers:
     dependencies:
       '@standard-schema/spec':
         specifier: catalog:base
-        version: 1.0.0
+        version: 1.1.0
     devDependencies:
       '@types/node':
         specifier: catalog:types
@@ -211,7 +211,7 @@ importers:
     dependencies:
       '@standard-schema/spec':
         specifier: catalog:base
-        version: 1.0.0
+        version: 1.1.0
     devDependencies:
       '@types/node':
         specifier: catalog:types
@@ -1302,6 +1302,9 @@ packages:
 
   '@standard-schema/spec@1.0.0':
     resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
+
+  '@standard-schema/spec@1.1.0':
+    resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
   '@swc/core-darwin-arm64@1.13.21':
     resolution: {integrity: sha512-0jaz9r7f0PDK8OyyVooadv8dkFlQmVmBK6DtAnWSRjkCbNt4sdqsc9ZkyEDJXaxOVcMQ3pJx/Igniyw5xqACLw==}
@@ -5437,6 +5440,8 @@ snapshots:
   '@shikijs/vscode-textmate@10.0.2': {}
 
   '@standard-schema/spec@1.0.0': {}
+
+  '@standard-schema/spec@1.1.0': {}
 
   '@swc/core-darwin-arm64@1.13.21':
     optional: true
