@@ -313,6 +313,48 @@ describe("or", () => {
   });
 });
 
+describe("mergePolicies", () => {
+  it("should deny when called with no policies", () => {
+    const policy = mergePolicies<
+      TestContext,
+      typeof resources,
+      typeof actions
+    >();
+    const ctx: TestContext = {
+      user: { id: "1", role: "user" },
+    };
+    const post: Post = {
+      id: "1",
+      authorId: "1",
+      visibility: "public",
+      status: "published",
+    };
+
+    expect(policy.can(ctx, "read", "post", post)).toBe(false);
+  });
+});
+
+describe("mergePoliciesAny", () => {
+  it("should deny when called with no policies", () => {
+    const policy = mergePoliciesAny<
+      TestContext,
+      typeof resources,
+      typeof actions
+    >();
+    const ctx: TestContext = {
+      user: { id: "1", role: "user" },
+    };
+    const post: Post = {
+      id: "1",
+      authorId: "1",
+      visibility: "public",
+      status: "published",
+    };
+
+    expect(policy.can(ctx, "read", "post", post)).toBe(false);
+  });
+});
+
 describe("not", () => {
   it("should negate a true condition", () => {
     const condition = not(() => true);
@@ -1039,8 +1081,8 @@ describe("mergePolicies", () => {
       status: "published" as const,
     };
 
-    // With no policies, should allow (vacuously true)
-    expect(merged.can(ctx, "read", "post", post)).toBe(true);
+    // With no policies, should deny (no policy allows)
+    expect(merged.can(ctx, "read", "post", post)).toBe(false);
   });
 
   it("should short-circuit on first deny", () => {
