@@ -2,13 +2,13 @@ import { createSSEResponse } from "../../transport/sse/server";
 import type {
   EventDefinitions,
   EventsAPI,
-  ServerTransportOptions,
+  ServerSSETransportOptions,
 } from "../../types";
 
 /**
  * Options for TanStack Start SSE handler
  */
-export type TanStackSSEHandlerOptions = ServerTransportOptions & {
+export type TanStackSSEHandlerOptions = ServerSSETransportOptions & {
   /**
    * Heartbeat interval in milliseconds
    * @default 30000

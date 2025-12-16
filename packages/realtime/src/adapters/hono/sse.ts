@@ -4,13 +4,13 @@ import { createSSEResponse } from "../../transport/sse/server";
 import type {
   EventDefinitions,
   EventsAPI,
-  ServerTransportOptions,
+  ServerSSETransportOptions,
 } from "../../types";
 
 /**
  * Options for Hono SSE handler
  */
-export type HonoSSEHandlerOptions = ServerTransportOptions & {
+export type HonoSSEHandlerOptions = ServerSSETransportOptions & {
   /**
    * Heartbeat interval in milliseconds
    * @default 30000

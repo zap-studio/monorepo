@@ -3,13 +3,13 @@ import { createSSEResponse } from "../../transport/sse/server";
 import type {
   EventDefinitions,
   EventsAPI,
-  ServerTransportOptions,
+  ServerSSETransportOptions,
 } from "../../types";
 
 /**
  * Options for Elysia SSE handler
  */
-export type ElysiaSSEHandlerOptions = ServerTransportOptions & {
+export type ElysiaSSEHandlerOptions = ServerSSETransportOptions & {
   /**
    * Heartbeat interval in milliseconds
    * @default 30000

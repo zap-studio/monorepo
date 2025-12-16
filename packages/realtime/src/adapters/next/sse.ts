@@ -4,13 +4,13 @@ import { createSSEResponse } from "../../transport/sse/server";
 import type {
   EventDefinitions,
   EventsAPI,
-  ServerTransportOptions,
+  ServerSSETransportOptions,
 } from "../../types";
 
 /**
  * Options for Next.js SSE route handler
  */
-export type NextSSERouteOptions = ServerTransportOptions & {
+export type NextSSERouteOptions = ServerSSETransportOptions & {
   /**
    * Heartbeat interval in milliseconds
    * @default 30000

@@ -1,8 +1,8 @@
 import type {
   EventDefinitions,
   EventMessage,
+  ServerSSETransportOptions,
   ServerTransport,
-  ServerTransportOptions,
 } from "../../types";
 
 /**
@@ -79,7 +79,7 @@ export class SSEServerTransport<TEventDefinitions extends EventDefinitions>
       void,
       unknown
     >,
-    options?: ServerTransportOptions
+    options?: ServerSSETransportOptions
   ): Response {
     const heartbeatInterval =
       options?.heartbeatInterval ?? this.defaultHeartbeatInterval;
@@ -184,7 +184,7 @@ export class SSEServerTransport<TEventDefinitions extends EventDefinitions>
  */
 export function createSSEResponse<TEventDefinitions extends EventDefinitions>(
   subscription: AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown>,
-  options?: ServerTransportOptions & { heartbeatInterval?: number }
+  options?: ServerSSETransportOptions & { heartbeatInterval?: number }
 ): Response {
   const transport = new SSEServerTransport<TEventDefinitions>({
     heartbeatInterval: options?.heartbeatInterval,
