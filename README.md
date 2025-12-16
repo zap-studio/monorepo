@@ -30,7 +30,7 @@ Modern HTTP client with proper error handling. Because `fetch()` should have bee
 **[@zap-studio/permit](./packages/permit)**  
 Type-safe centralized & secure authorization with zero config.
 
-**[@zap-studio/realtime](./packages/realtime)**
+**[@zap-studio/realtime](./packages/realtime)**  
 Realtime events with SSE and WebSocket support.
 
 **[@zap-studio/waitlist](./packages/waitlist)**  

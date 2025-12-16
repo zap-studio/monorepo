@@ -1,3 +1,5 @@
+import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { PolicyError } from "./errors";
 import type {
   Actions,
   ConditionFn,
@@ -348,7 +350,49 @@ export function createPolicy<
 >(
   config: PermitConfig<TContext, TResources, TActions>
 ): Policy<TContext, TResources, TActions> {
-  const { rules } = config;
+  const { rules, resources, actions } = config;
+  const validators = new Map<
+    keyof TResources,
+    (input: unknown) => StandardSchemaV1.Result<unknown>
+  >();
+
+  const getValidatedResource = <K extends keyof TResources>(
+    resourceType: K,
+    resource: InferResource<TResources, K>
+  ): InferResource<TResources, K> | null => {
+    const validator = validators.get(resourceType);
+    if (!validator) {
+      return null;
+    }
+    try {
+      const result = validator(resource);
+      if (result.issues) {
+        return null;
+      }
+      return result.value as InferResource<TResources, K>;
+    } catch (error) {
+      console.warn(
+        `Resource validation failed for ${String(resourceType)}: ${String(error)}`
+      );
+      return null;
+    }
+  };
+
+  for (const key of Object.keys(resources) as Array<keyof TResources>) {
+    const schema = resources[key];
+    if (!schema) {
+      throw new PolicyError(`Missing schema for resource: ${String(key)}`);
+    }
+    validators.set(key, (input: unknown) => {
+      const result = schema["~standard"].validate(input);
+      if (result instanceof Promise) {
+        throw new PolicyError(
+          "Async schemas are not supported in createPolicy"
+        );
+      }
+      return result;
+    });
+  }
 
   return {
     can<K extends keyof TResources & keyof TActions>(
@@ -357,14 +401,38 @@ export function createPolicy<
       resourceType: K,
       resource: InferResource<TResources, K>
     ): boolean {
+      const allowedActions = actions[resourceType];
+      if (!allowedActions) {
+        return false;
+      }
+      if (!allowedActions.includes(action)) {
+        return false;
+      }
+
+      const validatedResource = getValidatedResource(resourceType, resource);
+      if (!validatedResource) {
+        return false;
+      }
+
       const resourceRules = rules[resourceType];
+      if (!resourceRules) {
+        return false;
+      }
+
       const policyFn = resourceRules[action];
 
       if (!policyFn) {
         return false;
       }
 
-      return policyFn(context, action, resource) === "allow";
+      try {
+        return policyFn(context, action, validatedResource) === "allow";
+      } catch (error) {
+        console.warn(
+          `Policy evaluation error for ${String(resourceType)}.${String(action)}: ${String(error)}`
+        );
+        return false;
+      }
     },
   };
 }
@@ -396,6 +464,9 @@ export function mergePolicies<
       resourceType: K,
       resource: InferResource<TResources, K>
     ): boolean {
+      if (!policies.length) {
+        return false;
+      }
       for (const policy of policies) {
         if (!policy.can(context, action, resourceType, resource)) {
           return false;
@@ -433,6 +504,9 @@ export function mergePoliciesAny<
       resourceType: K,
       resource: InferResource<TResources, K>
     ): boolean {
+      if (!policies.length) {
+        return false;
+      }
       return policies.some((policy) =>
         policy.can(context, action, resourceType, resource)
       );
