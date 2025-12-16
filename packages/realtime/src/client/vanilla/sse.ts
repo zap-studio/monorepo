@@ -1,18 +1,17 @@
 import { SSEClientTransport } from "../../transport/sse/client";
-import type { ClientTransportOptions, EventDefinitions } from "../../types";
+import type { EventDefinitions } from "../../types";
+import {
+  createTransportClientFactory,
+  createVanillaClient,
+  type VanillaClientOptions,
+} from "../base/vanilla/create-transport-client";
 
 /**
  * Vanilla JS SSE client options
  */
 export type VanillaSSEClientOptions<
   TEventDefinitions extends EventDefinitions,
-> = Omit<ClientTransportOptions<TEventDefinitions>, "definitions"> & {
-  /**
-   * Whether to auto-connect on creation
-   * @default true
-   */
-  autoConnect?: boolean;
-};
+> = VanillaClientOptions<TEventDefinitions>;
 
 /**
  * Vanilla JS SSE client wrapper
@@ -62,24 +61,8 @@ export function createVanillaSSEClient<
   url: string,
   definitions: TEventDefinitions,
   options?: VanillaSSEClientOptions<TEventDefinitions>
-): SSEClientTransport<TEventDefinitions> & {
-  /** Manually connect if autoConnect was false */
-  connect: () => void;
-  /** Disconnect and cleanup */
-  disconnect: () => void;
-} {
-  const client = new SSEClientTransport(url, {
-    definitions,
-    validate: options?.validate,
-    reconnect: options?.reconnect,
-  });
-
-  const autoConnect = options?.autoConnect ?? true;
-  if (autoConnect) {
-    client.connect();
-  }
-
-  return client;
+): SSEClientTransport<TEventDefinitions> {
+  return createVanillaClient(SSEClientTransport, url, definitions, options);
 }
 
 /**
@@ -112,9 +95,9 @@ export function createSSEClientFactory<
   url: string,
   options?: VanillaSSEClientOptions<TEventDefinitions>
 ) => SSEClientTransport<TEventDefinitions> {
-  return (url: string, options?: VanillaSSEClientOptions<TEventDefinitions>) =>
-    createVanillaSSEClient(url, schemas, {
-      ...defaultOptions,
-      ...options,
-    });
+  return createTransportClientFactory(
+    SSEClientTransport,
+    schemas,
+    defaultOptions
+  );
 }

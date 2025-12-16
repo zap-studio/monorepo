@@ -1,16 +1,16 @@
 import { WSClientTransport } from "../../transport/ws/client";
-import type { ClientTransportOptions, EventDefinitions } from "../../types";
+import type { EventDefinitions } from "../../types";
+import {
+  createTransportClientFactory,
+  createVanillaClient,
+  type VanillaClientOptions,
+} from "../base/vanilla/create-transport-client";
 
 /**
  * Vanilla JS WebSocket client options
  */
 export type VanillaWSClientOptions<TEventDefinitions extends EventDefinitions> =
-  Omit<ClientTransportOptions<TEventDefinitions>, "definitions"> & {
-    /**
-     * Whether to auto-connect on creation
-     * @default true
-     */
-    autoConnect?: boolean;
+  VanillaClientOptions<TEventDefinitions> & {
     /**
      * Custom WebSocket protocols
      */
@@ -72,27 +72,8 @@ export function createVanillaWSClient<
   url: string,
   definitions: TEventDefinitions,
   options?: VanillaWSClientOptions<TEventDefinitions>
-): WSClientTransport<TEventDefinitions> & {
-  /** Manually connect if autoConnect was false */
-  connect: () => void;
-  /** Disconnect and cleanup */
-  disconnect: () => void;
-  /** Subscribe to a channel */
-  subscribe: (channel: string) => void;
-} {
-  const client = new WSClientTransport(url, {
-    definitions,
-    validate: options?.validate,
-    reconnect: options?.reconnect,
-    protocols: options?.protocols,
-  });
-
-  const autoConnect = options?.autoConnect ?? true;
-  if (autoConnect) {
-    client.connect();
-  }
-
-  return client;
+): WSClientTransport<TEventDefinitions> {
+  return createVanillaClient(WSClientTransport, url, definitions, options);
 }
 
 /**
@@ -129,11 +110,11 @@ export function createWSClientFactory<
   url: string,
   options?: VanillaWSClientOptions<TEventDefinitions>
 ) => WSClientTransport<TEventDefinitions> {
-  return (url: string, options?: VanillaWSClientOptions<TEventDefinitions>) =>
-    createVanillaWSClient(url, schemas, {
-      ...defaultOptions,
-      ...options,
-    });
+  return createTransportClientFactory(
+    WSClientTransport,
+    schemas,
+    defaultOptions
+  );
 }
 
 /**
