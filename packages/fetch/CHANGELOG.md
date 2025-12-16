@@ -1,5 +1,11 @@
 # @zap-studio/fetch
 
+## 0.4.0
+
+### Minor Changes
+
+- 69057cd: Expose fetch defaults constants and utility helpers as public exports.
+
 ## 0.3.1
 
 ### Patch Changes
