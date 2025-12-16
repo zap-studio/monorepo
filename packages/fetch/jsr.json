@@ -11,6 +11,9 @@
     "./utils": "./src/utils.ts",
     "./validator": "./src/validator.ts"
   },
+  "imports": {
+    "@standard-schema/spec": "npm:@standard-schema/spec@1.1.0"
+  },
   "publish": {
     "include": ["src", "CHANGELOG.md", "LICENSE.md", "README.md"]
   }
