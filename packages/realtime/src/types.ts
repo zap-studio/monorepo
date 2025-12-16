@@ -109,26 +109,54 @@ export type ServerTransport<TEventDefinitions extends EventDefinitions> = {
   /**
    * Create a streaming response from a subscription
    */
-  createResponse(
+  createResponse?(
     subscription: AsyncGenerator<
       EventMessage<TEventDefinitions>,
       void,
       unknown
     >,
-    options?: ServerTransportOptions
+    options?: ServerSSETransportOptions
   ): Response;
+
+  /**
+   * Create a WebSocket connection handler
+   */
+  createConnectionHandler?(
+    connection: WebSocket,
+    options?: ServerWebSocketTransportOptions
+  ): void;
+
+  /**
+   * Get the ping interval in milliseconds
+   */
+  getPingInterval?(): number;
+
+  /**
+   * Get the pong timeout in milliseconds
+   */
+  getPongTimeout?(): number;
 };
 
 /**
- * Server transport configuration options
+ * Server SSE transport configuration options
  */
-export type ServerTransportOptions = {
+export type ServerSSETransportOptions = {
   /** Heartbeat interval in milliseconds (0 to disable) */
   heartbeatInterval?: number;
   /** Custom headers to add to the response */
   headers?: Record<string, string>;
   /** AbortSignal to cancel the stream */
   signal?: AbortSignal;
+};
+
+/**
+ * Server WebSocket transport configuration options
+ */
+export type ServerWebSocketTransportOptions = {
+  /** Callback to execute when the connection is closed */
+  onClose?: () => void;
+  /** Callback to execute when an error occurs */
+  onError?: (error: Error) => void;
 };
 
 /**
