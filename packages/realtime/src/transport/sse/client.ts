@@ -79,16 +79,25 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
     this.reconnectMultiplier = reconnect.multiplier ?? 2;
   }
 
+  /**
+   * Returns the current connection status.
+   */
   get connected(): boolean {
     return this.isConnected;
   }
 
+  /**
+   * Connects to the SSE server.
+   */
   connect(): void {
     if (!this.eventSource) {
       this.createEventSource();
     }
   }
 
+  /**
+   * Disconnects from the SSE server.
+   */
   disconnect(): void {
     this.clearReconnectTimer();
     this.reconnectAttempts = 0;
@@ -102,6 +111,9 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
     }
   }
 
+  /**
+   * Registers an event listener for the specified event.
+   */
   on<
     TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
   >(
@@ -126,6 +138,9 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
     };
   }
 
+  /**
+   * Registers an event listener for any event.
+   */
   onAny(
     handler: <
       TEvent extends
@@ -139,11 +154,17 @@ export class SSEClientTransport<TEventDefinitions extends EventDefinitions>
     return () => this.anyHandlers.delete(handler);
   }
 
+  /**
+   * Registers an error listener.
+   */
   onError(handler: (error: Error) => void): () => void {
     this.errorHandlers.add(handler);
     return () => this.errorHandlers.delete(handler);
   }
 
+  /**
+   * Registers a connection change listener.
+   */
   onConnectionChange(handler: (connected: boolean) => void): () => void {
     this.connectionHandlers.add(handler);
     return () => this.connectionHandlers.delete(handler);
