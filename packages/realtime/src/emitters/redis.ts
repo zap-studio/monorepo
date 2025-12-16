@@ -1,5 +1,4 @@
-import { createEventMessage } from "../internal/server/emitter";
-import { handleSubscription } from "../internal/server/utils";
+import { createEventMessage } from "../emitters/utils";
 import type {
   EventDefinitions,
   EventKeys,
@@ -11,6 +10,7 @@ import type {
 } from "../types";
 import { BaseServerEmitter } from ".";
 import type { Subscriber } from "./types";
+import { handleSubscription } from "./utils";
 
 /**
  * Redis client should implement this interface

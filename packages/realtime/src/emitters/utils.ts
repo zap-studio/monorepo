@@ -1,5 +1,38 @@
-import type { Subscriber } from "../../emitters/types";
-import type { EventDefinitions, EventMessage } from "../../types";
+import type {
+  EventDefinitions,
+  EventKeys,
+  EventMessage,
+  InferEventTypes,
+  PublishOptions,
+} from "../types";
+import type { Subscriber } from "./types";
+
+/**
+ * Generate a unique event ID
+ */
+export function generateEventId(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+}
+
+/**
+ * Create an event message
+ */
+export function createEventMessage<
+  TEventDefinitions extends EventDefinitions,
+  TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
+>(
+  event: TEvent,
+  data: InferEventTypes<TEventDefinitions>[TEvent],
+  options?: PublishOptions
+): EventMessage<TEventDefinitions, TEvent> {
+  return {
+    id: generateEventId(),
+    event,
+    data,
+    timestamp: Date.now(),
+    retry: options?.retry,
+  };
+}
 
 /**
  * Handles the subscription logic for an `AsyncGenerator` of events.
