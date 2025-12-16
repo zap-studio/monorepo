@@ -1,12 +1,12 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { FetchError } from "../errors";
+import { FetchError } from "./errors";
 import type {
   $Fetch,
   ExtendedRequestInit,
   FetchDefaults,
   SearchParams,
-} from "../types";
-import { isStandardSchema, standardValidate } from "../validator";
+} from "./types";
+import { isStandardSchema, standardValidate } from "./validator";
 
 /**
  * Merges two HeadersInit objects, with the second one taking precedence
