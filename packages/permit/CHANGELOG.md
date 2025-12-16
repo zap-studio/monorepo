@@ -1,5 +1,11 @@
 # @zap-studio/permit
 
+## 0.1.1
+
+### Patch Changes
+
+- 907d903: Add runtime resource validation and fail-closed behavior, including denying access when merges are called with no policies.
+
 ## 0.1.0
 
 ### Minor Changes
