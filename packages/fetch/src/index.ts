@@ -1,6 +1,5 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { GLOBAL_DEFAULTS } from "./internal/constants";
-import { createMethod, fetchInternal } from "./internal/utils";
+import { GLOBAL_DEFAULTS } from "./constants";
 import type {
   $Fetch,
   ApiMethods,
@@ -8,6 +7,7 @@ import type {
   ExtendedRequestInit,
   FetchDefaults,
 } from "./types";
+import { createMethod, fetchInternal } from "./utils";
 import { isStandardSchema } from "./validator";
 
 /**
