@@ -73,27 +73,27 @@ export function formatWSMessage<TEventDefinitions extends EventDefinitions>(
 /**
  * Format a ping message
  */
-export function formatPingMessage(): WSProtocolMessage {
-  return {
-    type: "ping",
-    timestamp: Date.now(),
-  };
+export function formatPingMessage<
+  TEventDefinitions extends EventDefinitions,
+>(): WSProtocolMessage<TEventDefinitions> {
+  return { type: "ping", timestamp: Date.now() };
 }
 
 /**
  * Format a pong message
  */
-export function formatPongMessage(): WSProtocolMessage {
-  return {
-    type: "pong",
-    timestamp: Date.now(),
-  };
+export function formatPongMessage<
+  TEventDefinitions extends EventDefinitions,
+>(): WSProtocolMessage<TEventDefinitions> {
+  return { type: "pong", timestamp: Date.now() };
 }
 
 /**
  * Format an error message
  */
-export function formatErrorMessage(message: string): WSProtocolMessage {
+export function formatErrorMessage<TEventDefinitions extends EventDefinitions>(
+  message: string
+): WSProtocolMessage<TEventDefinitions> {
   return {
     type: "error",
     payload: { message },
@@ -114,7 +114,9 @@ export function parseWSMessage<TEventDefinitions extends EventDefinitions>(
  * Generate a unique connection ID
  */
 function generateConnectionId(): string {
-  return `ws-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
+  return `ws-${Date.now().toString(36)}-${Math.random()
+    .toString(36)
+    .slice(2, 11)}`;
 }
 
 /**
@@ -171,19 +173,6 @@ export class WSServerTransport<TEventDefinitions extends EventDefinitions>
   ): WSConnectionHandler<TEventDefinitions> {
     const id = generateConnectionId();
     const channels = new Set<string>();
-    let pingTimer: ReturnType<typeof setInterval> | null = null;
-    let pongTimer: ReturnType<typeof setTimeout> | null = null;
-
-    const cleanup = () => {
-      if (pingTimer) {
-        clearInterval(pingTimer);
-        pingTimer = null;
-      }
-      if (pongTimer) {
-        clearTimeout(pongTimer);
-        pongTimer = null;
-      }
-    };
 
     const sendRaw = (message: WSProtocolMessage<TEventDefinitions>) => {
       if (ws.readyState === WebSocket.OPEN) {
@@ -191,101 +180,142 @@ export class WSServerTransport<TEventDefinitions extends EventDefinitions>
       }
     };
 
-    // Start ping/pong keep-alive
-    if (this.pingInterval > 0) {
-      pingTimer = setInterval(() => {
-        if (ws.readyState === WebSocket.OPEN) {
-          const pingMsg: WSProtocolMessage<TEventDefinitions> = {
-            type: "ping",
-            timestamp: Date.now(),
-          };
-          sendRaw(pingMsg);
+    const keepAlive = this.setupKeepAlive(
+      ws,
+      this.pingInterval,
+      this.pongTimeout,
+      sendRaw
+    );
 
-          // Set pong timeout
-          pongTimer = setTimeout(() => {
-            // No pong received, close connection
-            ws.close(1000, "Pong timeout");
-          }, this.pongTimeout);
-        }
-      }, this.pingInterval);
-    }
-
-    // Handle incoming messages for ping/pong
     const originalOnMessage = ws.onmessage;
+
     ws.onmessage = (event) => {
-      try {
-        const message = parseWSMessage<TEventDefinitions>(event.data as string);
+      const handled = this.handleProtocolMessage(
+        event,
+        channels,
+        sendRaw,
+        keepAlive
+      );
 
-        if (message.type === "pong") {
-          // Clear pong timeout
-          if (pongTimer) {
-            clearTimeout(pongTimer);
-            pongTimer = null;
-          }
-          return;
-        }
-
-        if (message.type === "ping") {
-          // Respond with pong
-          const pongMsg: WSProtocolMessage<TEventDefinitions> = {
-            type: "pong",
-            timestamp: Date.now(),
-          };
-          sendRaw(pongMsg);
-          return;
-        }
-
-        if (message.type === "subscribe" && message.payload) {
-          const payload = message.payload as { channel?: string };
-          if (payload.channel) {
-            channels.add(payload.channel);
-          }
-          return;
-        }
-      } catch {
-        // Not a protocol message, pass through
-      }
-
-      // Call original handler if exists
-      if (originalOnMessage) {
+      if (!handled && originalOnMessage) {
         originalOnMessage.call(ws, event);
       }
     };
 
     ws.onclose = () => {
-      cleanup();
+      keepAlive.cleanup();
       options?.onClose?.();
     };
 
     ws.onerror = (event) => {
-      cleanup();
+      keepAlive.cleanup();
       options?.onError?.(new Error(`WebSocket error: ${event.type}`));
     };
 
     return {
+      id,
+      channels,
+
       send<TEvent extends EventKeys<TEventDefinitions>>(
         event: TEvent,
         data: InferEventTypes<TEventDefinitions>[TEvent]
       ) {
-        const message: EventMessage<TEventDefinitions> = {
-          id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`,
-          event,
-          data,
-          timestamp: Date.now(),
-        };
-        sendRaw(formatWSMessage(message));
+        sendRaw(
+          formatWSMessage({
+            id: `${Date.now().toString(36)}-${Math.random()
+              .toString(36)
+              .slice(2, 9)}`,
+            event,
+            data,
+            timestamp: Date.now(),
+          })
+        );
       },
       sendRaw,
       close(code?: number, reason?: string) {
-        cleanup();
+        keepAlive.cleanup();
         ws.close(code, reason);
       },
       get isOpen() {
         return ws.readyState === WebSocket.OPEN;
       },
-      id,
-      channels,
     };
+  }
+
+  private setupKeepAlive(
+    ws: WebSocket,
+    pingInterval: number,
+    pongTimeout: number,
+    sendRaw: (msg: WSProtocolMessage<TEventDefinitions>) => void
+  ) {
+    let pingTimer: ReturnType<typeof setInterval> | null = null;
+    let pongTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const clearPongTimeout = () => {
+      if (pongTimer) {
+        clearTimeout(pongTimer);
+        pongTimer = null;
+      }
+    };
+
+    const cleanup = () => {
+      if (pingTimer) {
+        clearInterval(pingTimer);
+        pingTimer = null;
+      }
+      clearPongTimeout();
+    };
+
+    if (pingInterval > 0) {
+      pingTimer = setInterval(() => {
+        if (ws.readyState !== WebSocket.OPEN) return;
+
+        sendRaw(formatPingMessage());
+
+        pongTimer = setTimeout(() => {
+          ws.close(1000, "Pong timeout");
+        }, pongTimeout);
+      }, pingInterval);
+    }
+
+    return {
+      cleanup,
+      onPong: clearPongTimeout,
+    };
+  }
+
+  private handleProtocolMessage(
+    event: MessageEvent,
+    channels: Set<string>,
+    sendRaw: (msg: WSProtocolMessage<TEventDefinitions>) => void,
+    keepAlive: { onPong: () => void }
+  ): boolean {
+    try {
+      const message = parseWSMessage<TEventDefinitions>(event.data as string);
+
+      switch (message.type) {
+        case "pong":
+          keepAlive.onPong();
+          return true;
+
+        case "ping":
+          sendRaw(formatPongMessage());
+          return true;
+
+        case "subscribe": {
+          const payload = message.payload as { channel?: string };
+          if (payload?.channel) {
+            channels.add(payload.channel);
+          }
+          return true;
+        }
+
+        default:
+          return false;
+      }
+    } catch {
+      return false;
+    }
   }
 
   /**
@@ -311,6 +341,7 @@ export class WSConnectionManager<TEventDefinitions extends EventDefinitions> {
     string,
     WSConnectionHandler<TEventDefinitions>
   >();
+
   private readonly channelSubscriptions = new Map<
     string,
     Set<WSConnectionHandler<TEventDefinitions>>
@@ -328,19 +359,17 @@ export class WSConnectionManager<TEventDefinitions extends EventDefinitions> {
    */
   remove(id: string): void {
     const handler = this.connections.get(id);
-    if (handler) {
-      // Remove from all channels
-      for (const channel of handler.channels) {
-        const subs = this.channelSubscriptions.get(channel);
-        if (subs) {
-          subs.delete(handler);
-          if (subs.size === 0) {
-            this.channelSubscriptions.delete(channel);
-          }
-        }
+    if (!handler) return;
+
+    for (const channel of handler.channels) {
+      const subs = this.channelSubscriptions.get(channel);
+      subs?.delete(handler);
+      if (subs?.size === 0) {
+        this.channelSubscriptions.delete(channel);
       }
-      this.connections.delete(id);
     }
+
+    this.connections.delete(id);
   }
 
   /**
@@ -348,15 +377,16 @@ export class WSConnectionManager<TEventDefinitions extends EventDefinitions> {
    */
   subscribe(id: string, channel: string): void {
     const handler = this.connections.get(id);
-    if (handler) {
-      handler.channels.add(channel);
-      let subs = this.channelSubscriptions.get(channel);
-      if (!subs) {
-        subs = new Set();
-        this.channelSubscriptions.set(channel, subs);
-      }
-      subs.add(handler);
+    if (!handler) return;
+
+    handler.channels.add(channel);
+
+    let subs = this.channelSubscriptions.get(channel);
+    if (!subs) {
+      subs = new Set();
+      this.channelSubscriptions.set(channel, subs);
     }
+    subs.add(handler);
   }
 
   /**
@@ -364,15 +394,14 @@ export class WSConnectionManager<TEventDefinitions extends EventDefinitions> {
    */
   unsubscribe(id: string, channel: string): void {
     const handler = this.connections.get(id);
-    if (handler) {
-      handler.channels.delete(channel);
-      const subs = this.channelSubscriptions.get(channel);
-      if (subs) {
-        subs.delete(handler);
-        if (subs.size === 0) {
-          this.channelSubscriptions.delete(channel);
-        }
-      }
+    if (!handler) return;
+
+    handler.channels.delete(channel);
+
+    const subs = this.channelSubscriptions.get(channel);
+    subs?.delete(handler);
+    if (subs?.size === 0) {
+      this.channelSubscriptions.delete(channel);
     }
   }
 
@@ -399,11 +428,11 @@ export class WSConnectionManager<TEventDefinitions extends EventDefinitions> {
     data: InferEventTypes<TEventDefinitions>[TEvent]
   ): void {
     const subs = this.channelSubscriptions.get(channel);
-    if (subs) {
-      for (const handler of subs) {
-        if (handler.isOpen) {
-          handler.send(event, data);
-        }
+    if (!subs) return;
+
+    for (const handler of subs) {
+      if (handler.isOpen) {
+        handler.send(event, data);
       }
     }
   }
@@ -417,11 +446,10 @@ export class WSConnectionManager<TEventDefinitions extends EventDefinitions> {
     data: InferEventTypes<TEventDefinitions>[TEvent]
   ): boolean {
     const handler = this.connections.get(id);
-    if (handler?.isOpen) {
-      handler.send(event, data);
-      return true;
-    }
-    return false;
+    if (!handler?.isOpen) return false;
+
+    handler.send(event, data);
+    return true;
   }
 
   /**
