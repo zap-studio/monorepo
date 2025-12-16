@@ -71,7 +71,7 @@ app.delete("/posts/:id", async (req, res) => {
 
 - **Declarative policies** — Define authorization rules in one place
 - **Type-safe** — Full TypeScript inference for resources, actions, and context
-- **Standard Schema support** — Works with Zod, Valibot, ArkType, and more
+- **Standard Schema validation** — Validates resources at runtime using your schemas
 - **Composable conditions** — Build complex rules with `and()`, `or()`, `not()`
 - **Role hierarchies** — Support inherited permissions with `hasRole()`
 - **Policy merging** — Combine multiple policies with different strategies
