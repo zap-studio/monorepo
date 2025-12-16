@@ -370,7 +370,10 @@ export function createPolicy<
         return null;
       }
       return result.value as InferResource<TResources, K>;
-    } catch {
+    } catch (error) {
+      console.warn(
+        `Resource validation failed for ${String(resourceType)}: ${String(error)}`
+      );
       return null;
     }
   };
@@ -424,7 +427,10 @@ export function createPolicy<
 
       try {
         return policyFn(context, action, validatedResource) === "allow";
-      } catch {
+      } catch (error) {
+        console.warn(
+          `Policy evaluation error for ${String(resourceType)}.${String(action)}: ${String(error)}`
+        );
         return false;
       }
     },
