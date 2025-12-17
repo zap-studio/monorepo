@@ -46,7 +46,8 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "@standard-schema/spec": "catalog:base"
+    "@standard-schema/spec": "catalog:base",
+    "@zap-studio/validation": "workspace:*"
   },
   "peerDependencies": {
     "elysia": ">=0.28.0",
