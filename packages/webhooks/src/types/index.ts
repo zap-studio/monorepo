@@ -43,9 +43,9 @@ export type RegisterOptions<T> = {
 };
 
 /** The webhook handler function, responsible for processing incoming webhook events. */
-export type WebhookHandler<T = unknown> = (ctx: {
+export type WebhookHandler<TPayload = unknown> = (ctx: {
   req: NormalizedRequest;
-  payload: T;
+  payload: TPayload;
   ack: (res?: Partial<NormalizedResponse>) => Promise<NormalizedResponse>;
 }) => Promise<NormalizedResponse | undefined> | NormalizedResponse | undefined;
 
