@@ -18,6 +18,28 @@ export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
 }
 
 /**
+ * Creates a synchronous Standard Schema validator.
+ *
+ * This helper calls `schema["~standard"].validate` and throws if the schema
+ * performs asynchronous validation (returns a Promise).
+ */
+export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
+  schema: TSchema
+): (
+  input: unknown
+) => StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>> {
+  return (input: unknown) => {
+    const result = schema["~standard"].validate(input);
+    if (result instanceof Promise) {
+      throw new Error(
+        "Async schemas are not supported by createSyncStandardValidator"
+      );
+    }
+    return result;
+  };
+}
+
+/**
  * Validates a value against a Standard Schema.
  *
  * @example

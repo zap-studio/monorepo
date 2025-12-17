@@ -10,7 +10,8 @@
     "./types": "./src/types.ts"
   },
   "imports": {
-    "@standard-schema/spec": "npm:@standard-schema/spec@1.1.0"
+    "@standard-schema/spec": "npm:@standard-schema/spec@1.1.0",
+    "@zap-studio/validation": "jsr:@zap-studio/validation@0.2.0"
   },
   "publish": { "include": ["src", "CHANGELOG.md", "LICENSE.md", "README.md"] }
 }
