@@ -1,5 +1,13 @@
 # @zap-studio/fetch
 
+## 0.4.3
+
+### Patch Changes
+
+- e4542bb: Refine `standardValidate` typings so the return type depends on the `throwOnError` flag, and update `@zap-studio/fetch` to integrate with the new overloads while preserving its boolean configuration API.
+- Updated dependencies [e4542bb]
+  - @zap-studio/validation@0.2.1
+
 ## 0.4.2
 
 ### Patch Changes
