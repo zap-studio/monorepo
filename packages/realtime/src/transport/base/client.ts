@@ -1,4 +1,4 @@
-import { validateSchema } from "../../schema";
+import { standardValidate } from "@zap-studio/validation";
 import type {
   ClientTransport,
   ClientTransportOptions,
@@ -214,9 +214,10 @@ export abstract class BaseClientTransport<
 
     const schema = this.definitions[event];
     if (schema) {
-      return (await validateSchema(
+      return (await standardValidate(
         schema,
-        data
+        data,
+        true
       )) as InferEventTypes<TEventDefinitions>[TEvent];
     }
 

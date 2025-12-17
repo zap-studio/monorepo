@@ -1,4 +1,4 @@
-import { validateSchema } from "../schema";
+import { standardValidate } from "@zap-studio/validation";
 import type {
   EventDefinitions,
   EventKeys,
@@ -68,7 +68,7 @@ export class Events<
       throw new Error(`Unknown event type: ${String(event)}`);
     }
 
-    const result = await validateSchema(schema, data);
+    const result = await standardValidate(schema, data, true);
     return result as InferEventTypes<TEventDefinitions>[TEvent];
   }
 

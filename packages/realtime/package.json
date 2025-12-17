@@ -37,7 +37,8 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "@standard-schema/spec": "catalog:base"
+    "@standard-schema/spec": "catalog:base",
+    "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
     "@tanstack/react-router": "catalog:tanstack",
@@ -115,7 +116,6 @@
     "./emitters/in-memory": "./dist/emitters/in-memory.mjs",
     "./emitters/redis": "./dist/emitters/redis.mjs",
     "./emitters/types": "./dist/emitters/types.mjs",
-    "./errors": "./dist/errors.mjs",
     "./plugins/chat": "./dist/plugins/chat/index.mjs",
     "./plugins/chat/server": "./dist/plugins/chat/server.mjs",
     "./plugins/chat/types": "./dist/plugins/chat/types.mjs",
@@ -125,7 +125,6 @@
     "./presets/arktype": "./dist/presets/arktype.mjs",
     "./presets/valibot": "./dist/presets/valibot.mjs",
     "./presets/zod": "./dist/presets/zod.mjs",
-    "./schema": "./dist/schema.mjs",
     "./server": "./dist/server/index.mjs",
     "./transport/base/client": "./dist/transport/base/client.mjs",
     "./transport/base/server": "./dist/transport/base/server.mjs",
