@@ -66,16 +66,19 @@ import type {
  * ```
  */
 
+type HandlerEntry<TPayload = unknown> = {
+  handler: WebhookHandler<TPayload>;
+  schema?: StandardSchemaV1<unknown, TPayload>;
+  before?: BeforeHook[];
+  after?: AfterHook[];
+};
+
+type HandlerStore<TMap extends Record<string, unknown>> = {
+  [P in keyof TMap]?: HandlerEntry<TMap[P]>;
+};
+
 export class WebhookRouter<TMap extends Record<string, unknown>> {
-  private readonly handlers = new Map<
-    string,
-    {
-      handler: HandlerMap<TMap>[string];
-      schema?: StandardSchemaV1<unknown, unknown>;
-      before?: BeforeHook[];
-      after?: AfterHook[];
-    }
-  >();
+  private readonly handlers: HandlerStore<TMap> = {};
   private readonly verify?: (req: NormalizedRequest) => Promise<void> | void;
   private readonly globalBeforeHooks: BeforeHook[] = [];
   private readonly globalAfterHooks: AfterHook[] = [];
@@ -150,9 +153,9 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
     handlerOrOptions: HandlerMap<TMap>[Path] | RegisterOptions<TMap[Path]>
   ) {
     if (typeof handlerOrOptions === "function") {
-      this.handlers.set(path, {
-        handler: handlerOrOptions as WebhookHandler<TMap[string]>,
-      });
+      this.handlers[path] = {
+        handler: handlerOrOptions,
+      };
     } else {
       let beforeHooks: BeforeHook[] | undefined;
       if (handlerOrOptions.before) {
@@ -168,12 +171,12 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
           : [handlerOrOptions.after];
       }
 
-      this.handlers.set(path, {
-        handler: handlerOrOptions.handler as WebhookHandler<TMap[string]>,
+      this.handlers[path] = {
+        handler: handlerOrOptions.handler,
         schema: handlerOrOptions.schema,
         before: beforeHooks,
         after: afterHooks,
-      });
+      };
     }
   }
 
@@ -193,7 +196,8 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
         return { status: 404, body: { error: "not found" } };
       }
 
-      const handlerEntry = this.handlers.get(normalizedPath);
+      const handlerEntry =
+        this.handlers[normalizedPath as Extract<keyof TMap, string>];
       if (!handlerEntry) {
         return { status: 404, body: { error: "not found" } };
       }
@@ -296,12 +300,12 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
     );
   }
 
-  private async validatePayload<TParsed = unknown>(
-    parsedJson: TParsed,
-    schema?: StandardSchemaV1<unknown, unknown>
-  ): Promise<unknown | NormalizedResponse> {
+  private async validatePayload<TPayload>(
+    parsedJson: unknown,
+    schema?: StandardSchemaV1<unknown, TPayload>
+  ): Promise<TPayload | NormalizedResponse> {
     if (!schema) {
-      return parsedJson;
+      return parsedJson as TPayload;
     }
 
     const result = await standardValidate(schema, parsedJson, false);
@@ -321,17 +325,17 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
       };
     }
 
-    return result.value;
+    return result.value as TPayload;
   }
 
   private async executeHandler<TPayload = unknown>(
-    handler: HandlerMap<TMap>[string],
+    handler: WebhookHandler<TPayload>,
     req: NormalizedRequest,
     validatedPayload: TPayload
   ): Promise<NormalizedResponse> {
     const responded = await handler({
       req,
-      payload: validatedPayload as TMap[string],
+      payload: validatedPayload,
       ack: async (r?: Partial<NormalizedResponse>) => ({
         status: r?.status ?? 200,
         body: r?.body ?? "ok",
