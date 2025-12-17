@@ -1,8 +1,8 @@
+import { isStandardSchema } from "@zap-studio/validation";
+import { ValidationError } from "@zap-studio/validation/errors";
 import { type } from "arktype";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { $fetch, api } from "../src";
-import { ValidationError } from "../src/errors";
-import { isStandardSchema } from "../src/validator";
 
 describe("ArkType Standard Schema compatibility", () => {
   it("should expose ~standard property", () => {

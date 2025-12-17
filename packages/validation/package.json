@@ -1,32 +1,23 @@
 {
-  "name": "@zap-studio/fetch",
-  "version": "0.4.0",
+  "name": "@zap-studio/validation",
+  "version": "0.0.0",
   "type": "module",
   "license": "MIT",
   "private": false,
-  "homepage": "https://www.zapstudio.dev/packages/fetch",
+  "homepage": "https://www.zapstudio.dev/packages/validation",
   "repository": {
     "type": "git",
     "url": "https://github.com/zap-studio/monorepo.git",
-    "directory": "packages/fetch"
+    "directory": "packages/validation"
   },
-  "description": "A type-safe fetch wrapper for HTTP requests with runtime schema validation.",
+  "description": "Standard Schema utilities and ValidationError helpers.",
   "keywords": [
-    "fetch",
-    "type-safe",
     "validation",
+    "standard schema",
     "schema",
     "typescript",
-    "http",
-    "api",
-    "zod",
-    "valibot",
-    "arktype",
     "runtime validation",
-    "error handling",
-    "standard schema",
-    "request",
-    "response"
+    "errors"
   ],
   "publishConfig": {
     "access": "public"
@@ -44,8 +35,7 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "@standard-schema/spec": "catalog:base",
-    "@zap-studio/validation": "workspace:*"
+    "@standard-schema/spec": "catalog:base"
   },
   "devDependencies": {
     "@types/node": "catalog:types",
@@ -53,22 +43,16 @@
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
-    "arktype": "catalog:base",
     "tsdown": "catalog:base",
     "typescript": "catalog:base",
-    "valibot": "catalog:base",
-    "vitest": "catalog:testing",
-    "zod": "catalog:base"
-  },
-  "exports": {
-    ".": "./dist/index.mjs",
-    "./constants": "./dist/constants.mjs",
-    "./errors": "./dist/errors.mjs",
-    "./types": "./dist/types.mjs",
-    "./utils": "./dist/utils.mjs",
-    "./package.json": "./package.json"
+    "vitest": "catalog:testing"
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts"
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./errors": "./dist/errors.mjs",
+    "./package.json": "./package.json"
+  }
 }

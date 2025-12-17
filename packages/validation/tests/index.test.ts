@@ -1,8 +1,7 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { isStandardSchema, standardValidate } from "@zap-studio/validation";
-import { ValidationError } from "@zap-studio/validation/errors";
 import { describe, expect, it } from "vitest";
-import { z } from "zod";
+import { isStandardSchema, standardValidate } from "../src";
+import { ValidationError } from "../src/errors";
 
 function createMockSchema<T>(
   validateFn: (
@@ -23,9 +22,7 @@ function createMockSchemaFunction<T>(
     input: unknown
   ) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>
 ): StandardSchemaV1<unknown, T> {
-  const fn = (): void => {
-    // noop
-  };
+  const fn = (): void => undefined;
   Object.assign(fn, {
     "~standard": {
       version: 1,
@@ -35,6 +32,19 @@ function createMockSchemaFunction<T>(
   });
   return fn as unknown as StandardSchemaV1<unknown, T>;
 }
+
+describe("ValidationError", () => {
+  it("should store issues and stringify them in the message", () => {
+    const issues: StandardSchemaV1.Issue[] = [
+      { message: "Field is required" },
+      { message: "Must be a number" },
+    ];
+    const error = new ValidationError(issues);
+    expect(error.name).toBe("ValidationError");
+    expect(error.issues).toEqual(issues);
+    expect(error.message).toBe(JSON.stringify(issues, null, 2));
+  });
+});
 
 describe("isStandardSchema", () => {
   it("should return true for valid Standard Schema objects", () => {
@@ -66,9 +76,7 @@ describe("isStandardSchema", () => {
     expect(isStandardSchema({})).toBe(false);
     expect(
       isStandardSchema({
-        validate: (): void => {
-          // noop
-        },
+        validate: (): void => undefined,
       })
     ).toBe(false);
     expect(isStandardSchema({ version: 1 })).toBe(false);
@@ -77,11 +85,6 @@ describe("isStandardSchema", () => {
   it("should return false for arrays", () => {
     expect(isStandardSchema([])).toBe(false);
     expect(isStandardSchema([1, 2, 3])).toBe(false);
-  });
-
-  it("should return true for Zod schemas", () => {
-    const schema = z.object({ id: z.number() });
-    expect(isStandardSchema(schema)).toBe(true);
   });
 });
 
@@ -156,7 +159,7 @@ describe("standardValidate", () => {
 
     it("should include issues in thrown ValidationError", async () => {
       const issues: StandardSchemaV1.Issue[] = [
-        { message: "Field is required", path: [{ key: "name" }] },
+        { message: "Field is required" },
         { message: "Must be a number", path: [{ key: "age" }] },
       ];
       const schema = createMockSchema(() => ({ issues }));
@@ -208,88 +211,6 @@ describe("standardValidate", () => {
 
       const result = await standardValidate(schema, "data", false);
       expect(result).toEqual({ issues });
-    });
-  });
-
-  describe("edge cases", () => {
-    it("should handle empty objects", async () => {
-      const schema = z.object({});
-      const result = await standardValidate(schema, {}, true);
-      expect(result).toEqual({});
-    });
-
-    it("should handle nested schemas", async () => {
-      const schema = z.object({
-        user: z.object({
-          profile: z.object({
-            name: z.string(),
-            age: z.number(),
-          }),
-        }),
-      });
-
-      const data = {
-        user: {
-          profile: {
-            name: "John",
-            age: 30,
-          },
-        },
-      };
-
-      const result = await standardValidate(schema, data, true);
-      expect(result).toEqual(data);
-    });
-
-    it("should handle array schemas", async () => {
-      const schema = z.array(z.number());
-      const data = [1, 2, 3, 4, 5];
-      const result = await standardValidate(schema, data, true);
-      expect(result).toEqual(data);
-    });
-
-    it("should handle optional fields", async () => {
-      const schema = z.object({
-        required: z.string(),
-        optional: z.string().optional(),
-      });
-
-      const dataWithOptional = { required: "value", optional: "present" };
-      const dataWithoutOptional = { required: "value" };
-
-      const result1 = await standardValidate(schema, dataWithOptional, true);
-      expect(result1).toEqual(dataWithOptional);
-
-      const result2 = await standardValidate(schema, dataWithoutOptional, true);
-      expect(result2).toEqual(dataWithoutOptional);
-    });
-
-    it("should handle union types", async () => {
-      const schema = z.union([z.string(), z.number()]);
-
-      const result1 = await standardValidate(schema, "string", true);
-      expect(result1).toBe("string");
-
-      const result2 = await standardValidate(schema, 42, true);
-      expect(result2).toBe(42);
-    });
-
-    it("should handle transformed values", async () => {
-      const schema = z.string().transform((val) => val.toUpperCase());
-      const result = await standardValidate(schema, "hello", true);
-      expect(result).toBe("HELLO");
-    });
-
-    it("should handle nullable fields", async () => {
-      const schema = z.object({
-        value: z.string().nullable(),
-      });
-
-      const result1 = await standardValidate(schema, { value: "test" }, true);
-      expect(result1).toEqual({ value: "test" });
-
-      const result2 = await standardValidate(schema, { value: null }, true);
-      expect(result2).toEqual({ value: null });
     });
   });
 });
