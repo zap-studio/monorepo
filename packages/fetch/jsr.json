@@ -8,8 +8,7 @@
     "./constants": "./src/constants.ts",
     "./errors": "./src/errors.ts",
     "./types": "./src/types.ts",
-    "./utils": "./src/utils.ts",
-    "./validator": "./src/validator.ts"
+    "./utils": "./src/utils.ts"
   },
   "imports": {
     "@standard-schema/spec": "npm:@standard-schema/spec@1.1.0"
