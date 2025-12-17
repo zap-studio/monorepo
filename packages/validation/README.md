@@ -11,6 +11,7 @@ When you validate data with different Standard Schema-compatible libraries (Zod,
 - A single `ValidationError` type to represent schema validation failures.
 - A type-safe `isStandardSchema` guard to detect Standard Schema-compatible schemas.
 - A `standardValidate` helper that normalizes sync/async validation and error handling.
+- A `createSyncStandardValidator` helper for building synchronous validators from Standard Schema schemas.
 
 ## Installation
 
@@ -25,6 +26,7 @@ npm install @zap-studio/validation
 ```ts
 import { z } from "zod";
 import {
+  createSyncStandardValidator,
   isStandardSchema,
   standardValidate,
 } from "@zap-studio/validation";
@@ -38,6 +40,13 @@ const UserSchema = z.object({
 // Type guard for Standard Schema-compatible schemas
 if (!isStandardSchema(UserSchema)) {
   throw new Error("Schema is not Standard Schema-compatible");
+}
+
+// Create a sync-only validator (throws if schema is async)
+const validateUser = createSyncStandardValidator(UserSchema);
+const syncResult = validateUser(data);
+if (syncResult.issues) {
+  console.error("Sync validation failed:", syncResult.issues);
 }
 
 try {
