@@ -29,6 +29,8 @@ We're building a suite of composable packages under the `@zap-studio` scope:
 |---------|-------------|
 | [@zap-studio/fetch](./packages/fetch/index.md) | Type-safe HTTP client with runtime validation |
 | [@zap-studio/permit](./packages/permit/index.md) | Type-safe centralized & secure authorization with zero config |
+| [@zap-studio/validation](./packages/validation/index.md) | Shared Standard Schema utilities and validation helpers |
+| @zap-studio/realtime | Realtime events with SSE and WebSocket support |
 | @zap-studio/waitlist | Launch waitlists in minutes |
 | @zap-studio/webhooks | Secure webhook handling with zero config |
 
