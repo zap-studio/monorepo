@@ -11,6 +11,9 @@ export default defineConfig({
   head: [["link", { rel: "icon", href: "/favicon.ico" }]],
   cleanUrls: true,
   srcDir: "./src",
+  sitemap: {
+    hostname: "https://www.zapstudio.dev",
+  },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: "/icon.png",

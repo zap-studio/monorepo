@@ -63,6 +63,18 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
 export async function standardValidate<TSchema extends StandardSchemaV1>(
   schema: TSchema,
   input: unknown,
+  throwOnError: true
+): Promise<StandardSchemaV1.InferOutput<TSchema>>;
+
+export async function standardValidate<TSchema extends StandardSchemaV1>(
+  schema: TSchema,
+  input: unknown,
+  throwOnError: false
+): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
+
+export async function standardValidate<TSchema extends StandardSchemaV1>(
+  schema: TSchema,
+  input: unknown,
   throwOnError: boolean
 ): Promise<
   | StandardSchemaV1.InferOutput<TSchema>
