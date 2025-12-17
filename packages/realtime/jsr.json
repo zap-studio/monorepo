@@ -6,13 +6,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./adapters/elysia/sse": "./src/adapters/elysia/sse.ts",
-    "./adapters/elysia/ws": "./src/adapters/elysia/ws.ts",
     "./adapters/hono/sse": "./src/adapters/hono/sse.ts",
-    "./adapters/hono/ws": "./src/adapters/hono/ws.ts",
     "./adapters/next/sse": "./src/adapters/next/sse.ts",
-    "./adapters/next/ws": "./src/adapters/next/ws.ts",
     "./adapters/tanstack/sse": "./src/adapters/tanstack/sse.ts",
-    "./adapters/tanstack/ws": "./src/adapters/tanstack/ws.ts",
     "./client/react/hooks": "./src/client/react/hooks.ts",
     "./client/react/ws-hooks": "./src/client/react/ws-hooks.ts",
     "./client/vanilla": "./src/client/vanilla.ts",
