@@ -71,4 +71,22 @@ if (result.issues) {
 }
 ```
 
+### createSyncStandardValidator
+
+`createSyncStandardValidator` builds a synchronous validator function from a Standard Schema schema. It calls `schema["~standard"].validate` and throws if the schema performs async validation (returns a Promise).
+
+```ts
+import { createSyncStandardValidator } from "@zap-studio/validation";
+
+// Build a sync-only validator for a Standard Schema-compatible schema
+const validateUser = createSyncStandardValidator(UserSchema);
+
+const result = validateUser(data);
+if (result.issues) {
+  console.error("Validation failed:", result.issues);
+} else {
+  console.log("Validation passed:", result.value);
+}
+```
+
 
