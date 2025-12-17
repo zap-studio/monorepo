@@ -3,12 +3,24 @@
   "version": "0.0.0",
   "type": "module",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "homepage": "https://www.zapstudio.dev/packages/validation",
   "repository": {
     "type": "git",
     "url": "https://github.com/zap-studio/monorepo.git",
     "directory": "packages/validation"
+  },
+  "description": "Standard Schema utilities and ValidationError helpers.",
+  "keywords": [
+    "validation",
+    "standard schema",
+    "schema",
+    "typescript",
+    "runtime validation",
+    "errors"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "dist",
