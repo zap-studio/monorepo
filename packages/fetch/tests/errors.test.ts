@@ -1,6 +1,7 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { ValidationError } from "@zap-studio/validation/errors";
 import { describe, expect, it } from "vitest";
-import { FetchError, ValidationError } from "../src/errors";
+import { FetchError } from "../src/errors";
 
 describe("FetchError", () => {
   describe("constructor", () => {

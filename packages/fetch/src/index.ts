@@ -1,4 +1,5 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { isStandardSchema } from "@zap-studio/validation";
 import { GLOBAL_DEFAULTS } from "./constants";
 import type {
   $Fetch,
@@ -8,7 +9,6 @@ import type {
   FetchDefaults,
 } from "./types";
 import { createMethod, fetchInternal } from "./utils";
-import { isStandardSchema } from "./validator";
 
 /**
  * Type-safe fetch wrapper with Standard Schema validation.

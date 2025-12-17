@@ -1,4 +1,5 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 import { FetchError } from "./errors";
 import type {
   $Fetch,
@@ -6,7 +7,6 @@ import type {
   FetchDefaults,
   SearchParams,
 } from "./types";
-import { isStandardSchema, standardValidate } from "./validator";
 
 /**
  * Merges two HeadersInit objects, with the second one taking precedence

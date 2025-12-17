@@ -1,7 +1,8 @@
+import { ValidationError } from "@zap-studio/validation/errors";
 import { number, object, string } from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { $fetch, api, createFetch } from "../src";
-import { FetchError, ValidationError } from "../src/errors";
+import { FetchError } from "../src/errors";
 
 describe("$fetch", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
