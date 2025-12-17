@@ -1,5 +1,13 @@
 # @zap-studio/permit
 
+## 0.1.2
+
+### Patch Changes
+
+- 2de8183: Add a reusable synchronous Standard Schema validator helper in `@zap-studio/validation` and refactor `@zap-studio/permit` to use it for resource schema validation in `createPolicy`.
+- Updated dependencies [2de8183]
+  - @zap-studio/validation@0.2.0
+
 ## 0.1.1
 
 ### Patch Changes

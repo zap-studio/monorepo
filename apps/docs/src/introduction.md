@@ -37,6 +37,8 @@ We're also building a suite of packages that solve common problems with modern, 
 |---------|-------------|--------|
 | [@zap-studio/fetch](./packages/fetch/index.md) | Type-safe fetch wrapper with validation | ✅ Available |
 | [@zap-studio/permit](./packages/permit/index.md) | Type-safe authorization and access control | ✅ Available |
+| [@zap-studio/validation](./packages/validation/index.md) | Shared Standard Schema utilities and validation helpers | ✅ Available |
+| @zap-studio/realtime | Realtime events with SSE and WebSocket support | 🚧 Coming Soon |
 | @zap-studio/waitlist | Waitlist management solution | 🚧 Coming Soon |
 | @zap-studio/webhooks | Webhook handling with signature verification | 🚧 Coming Soon |
 

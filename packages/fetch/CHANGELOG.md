@@ -1,5 +1,20 @@
 # @zap-studio/fetch
 
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies [2de8183]
+  - @zap-studio/validation@0.2.0
+
+## 0.4.1
+
+### Patch Changes
+
+- 447dbda: Extract shared Standard Schema validation utilities into `@zap-studio/validation` and update `@zap-studio/fetch` to depend on them.
+- Updated dependencies [447dbda]
+  - @zap-studio/validation@0.1.0
+
 ## 0.4.0
 
 ### Minor Changes
