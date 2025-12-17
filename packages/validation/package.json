@@ -3,17 +3,12 @@
   "version": "0.0.0",
   "type": "module",
   "license": "MIT",
-  "private": false,
+  "private": true,
   "homepage": "https://www.zapstudio.dev/packages/validation",
   "repository": {
     "type": "git",
     "url": "https://github.com/zap-studio/monorepo.git",
     "directory": "packages/validation"
-  },
-  "description": "",
-  "keywords": [],
-  "publishConfig": {
-    "access": "public"
   },
   "files": [
     "dist",
@@ -26,6 +21,9 @@
     "check": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest --watch"
+  },
+  "dependencies": {
+    "@standard-schema/spec": "catalog:base"
   },
   "devDependencies": {
     "@types/node": "catalog:types",
