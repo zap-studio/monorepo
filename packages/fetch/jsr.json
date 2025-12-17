@@ -12,7 +12,7 @@
   },
   "imports": {
     "@standard-schema/spec": "npm:@standard-schema/spec@1.1.0",
-    "@zap-studio/validation": "workspace:*"
+    "@zap-studio/validation": "jsr:@zap-studio/validation@0.1.0"
   },
   "publish": {
     "include": ["src", "CHANGELOG.md", "LICENSE.md", "README.md"]
