@@ -10,10 +10,10 @@ The documentation for `@zap-studio/waitlist` is currently under development. Sta
 
 ## Features (Preview)
 
-- 📝 **Easy Integration** - Simple API for adding users to your waitlist
-- 🔗 **Referral System** - Built-in referral tracking and rewards
-- 📊 **Analytics** - Track waitlist growth and engagement
-- 🎨 **Customizable** - Flexible configuration to match your needs
+- **Easy Integration** - Simple API for adding users to your waitlist
+- **Referral System** - Built-in referral tracking and rewards
+- **Analytics** - Track waitlist growth and engagement
+- **Customizable** - Flexible configuration to match your needs
 
 ## Installation
 
