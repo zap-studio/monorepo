@@ -1,8 +1,9 @@
+import type { Email } from "@zap-studio/validation/email/types";
 import type { EventBus } from "../events";
 import type {
-  Email,
   EmailEntry,
   ReferralLink,
+  WaitlistConfig,
   WaitlistStorageAdapter,
 } from "../types";
 
@@ -12,6 +13,8 @@ export type WaitlistOptions = {
   adapter: WaitlistStorageAdapter;
   /** An optional event bus for handling waitlist events */
   events?: EventBus;
+  /** Optional configuration for waitlist behavior */
+  config?: WaitlistConfig;
 };
 
 /** Input for joining the waitlist */
@@ -22,10 +25,27 @@ export type JoinInput = {
   referralCode?: string;
 };
 
-/** Result of joining the waitlist */
-export type JoinResult = {
+/** Possible reasons why joining the waitlist can fail */
+export type JoinErrorReason = "invalid-email";
+
+/** Error result when joining the waitlist fails */
+export type JoinErrorResult = {
+  /** Whether the join operation was successful */
+  ok: false;
+  /** Machine-readable error reason */
+  reason: JoinErrorReason;
+  /** Optional human-readable error message */
+  message?: string;
+};
+
+/** Successful result of joining the waitlist */
+export type JoinSuccessResult = {
+  ok: true;
   /** The email entry for the user */
   entry: EmailEntry;
   /** An optional referral link for the user */
   referralLink?: ReferralLink;
 };
+
+/** Result of joining the waitlist */
+export type JoinResult = JoinSuccessResult | JoinErrorResult;

@@ -1,3 +1,5 @@
+import { validateEmail } from "@zap-studio/validation/email/standard";
+import type { Email } from "@zap-studio/validation/email/types";
 import { EventBus } from "../events";
 import {
   addReferralCode,
@@ -5,13 +7,18 @@ import {
   createReferralLink,
 } from "../referral";
 import type {
-  Email,
   EmailEntry,
   LeaderboardEntry,
   ReferralLink,
+  WaitlistConfig,
   WaitlistStorageAdapter,
 } from "../types";
-import type { JoinInput, JoinResult, WaitlistOptions } from "./types";
+import type {
+  JoinInput,
+  JoinResult,
+  JoinSuccessResult,
+  WaitlistOptions,
+} from "./types";
 
 /** Base class for the waitlist SDK */
 export class BaseWaitlistSDK {
@@ -19,11 +26,14 @@ export class BaseWaitlistSDK {
   protected adapter: WaitlistStorageAdapter;
   /** The event bus for handling waitlist events */
   protected events: EventBus;
+  /** Optional configuration for waitlist behavior */
+  protected config?: WaitlistConfig;
 
   /** Create a new waitlist SDK instance */
-  constructor({ adapter, events }: WaitlistOptions) {
+  constructor({ adapter, events, config }: WaitlistOptions) {
     this.adapter = adapter;
     this.events = events ?? new EventBus();
+    this.config = config;
   }
 
   /**
@@ -36,10 +46,20 @@ export class BaseWaitlistSDK {
   async join(input: JoinInput): Promise<JoinResult> {
     const { email, referralCode } = input;
 
+    const validationResult = validateEmail(email, this.config?.emailValidation);
+    if (!validationResult.valid) {
+      return {
+        ok: false,
+        reason: "invalid-email",
+        message: validationResult.error,
+      };
+    }
+
     // Check if user already exists
     const existing = await this.adapter.findByEmail(email);
     if (existing) {
-      return { entry: existing };
+      const result: JoinSuccessResult = { ok: true, entry: existing };
+      return result;
     }
 
     // Create new entry
@@ -78,7 +98,12 @@ export class BaseWaitlistSDK {
           referee: email,
         });
 
-        return { entry: entryWithReferral, referralLink };
+        const result: JoinSuccessResult = {
+          ok: true,
+          entry: entryWithReferral,
+          referralLink,
+        };
+        return result;
       }
     }
 
@@ -86,7 +111,8 @@ export class BaseWaitlistSDK {
     await this.adapter.create(entryWithCode);
     await this.events.emit("join", { email });
 
-    return { entry: entryWithCode };
+    const result: JoinSuccessResult = { ok: true, entry: entryWithCode };
+    return result;
   }
 
   /**

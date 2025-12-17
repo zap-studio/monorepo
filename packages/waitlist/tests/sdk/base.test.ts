@@ -1,11 +1,11 @@
 // biome-ignore-all lint/style/noMagicNumbers: This is a test file so magic numbers are fine.
 
+import type { Email } from "@zap-studio/validation/email/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { EventBus } from "../../src/events";
 import { BaseWaitlistSDK } from "../../src/sdk/base";
-import type { JoinResult } from "../../src/sdk/types";
+import type { JoinSuccessResult } from "../../src/sdk/types";
 import type {
-  Email,
   EmailEntry,
   ReferralLink,
   WaitlistStorageAdapter,
@@ -138,6 +138,10 @@ describe("BaseWaitlistSDK", () => {
       const email = "user@example.com";
       const result = await sdk.join({ email });
 
+      if (!result.ok) {
+        throw new Error(result.message ?? "Expected join to succeed");
+      }
+
       expect(result.entry.email).toBe(email);
       expect(result.entry.referralCode).toBeDefined();
       expect(result.entry.createdAt).toBeInstanceOf(Date);
@@ -149,7 +153,11 @@ describe("BaseWaitlistSDK", () => {
       eventBus.on("join", handler);
 
       const email = "user@example.com";
-      await sdk.join({ email });
+      const result = await sdk.join({ email });
+
+      if (!result.ok) {
+        throw new Error(result.message ?? "Expected join to succeed");
+      }
 
       expect(handler).toHaveBeenCalledWith({ email });
       expect(handler).toHaveBeenCalledTimes(1);
@@ -160,6 +168,9 @@ describe("BaseWaitlistSDK", () => {
 
       const firstResult = await sdk.join({ email });
       const secondResult = await sdk.join({ email });
+      if (!(firstResult.ok && secondResult.ok)) {
+        throw new Error("Expected both joins to succeed");
+      }
 
       expect(secondResult.entry).toEqual(firstResult.entry);
     });
@@ -169,8 +180,11 @@ describe("BaseWaitlistSDK", () => {
       eventBus.on("join", handler);
 
       const email = "user@example.com";
-      await sdk.join({ email });
-      await sdk.join({ email });
+      const first = await sdk.join({ email });
+      const second = await sdk.join({ email });
+      if (!(first.ok && second.ok)) {
+        throw new Error("Expected joins to succeed");
+      }
 
       expect(handler).toHaveBeenCalledTimes(1);
     });
@@ -181,6 +195,9 @@ describe("BaseWaitlistSDK", () => {
 
       // First user joins
       const referrerResult = await sdk.join({ email: referrerEmail });
+      if (!referrerResult.ok) {
+        throw new Error(referrerResult.message ?? "Expected join to succeed");
+      }
       const referralCode = referrerResult.entry.referralCode;
 
       // Second user joins with referral code
@@ -188,6 +205,10 @@ describe("BaseWaitlistSDK", () => {
         email: refereeEmail,
         referralCode,
       });
+
+      if (!refereeResult.ok) {
+        throw new Error(refereeResult.message ?? "Expected join to succeed");
+      }
 
       expect(refereeResult.entry.referredBy).toBe(referralCode);
       expect(refereeResult.referralLink).toBeDefined();
@@ -205,6 +226,9 @@ describe("BaseWaitlistSDK", () => {
       const refereeEmail = "referee@example.com";
 
       const referrerResult = await sdk.join({ email: referrerEmail });
+      if (!referrerResult.ok) {
+        throw new Error(referrerResult.message ?? "Expected join to succeed");
+      }
       const referralCode = referrerResult.entry.referralCode;
 
       await sdk.join({ email: refereeEmail, referralCode });
@@ -223,6 +247,10 @@ describe("BaseWaitlistSDK", () => {
         referralCode: "INVALID-CODE",
       });
 
+      if (!result.ok) {
+        throw new Error(result.message ?? "Expected join to succeed");
+      }
+
       expect(result.entry.referredBy).toBeUndefined();
       expect(result.referralLink).toBeUndefined();
     });
@@ -232,7 +260,10 @@ describe("BaseWaitlistSDK", () => {
       eventBus.on("referral", referralHandler);
 
       const email = "user@example.com";
-      await sdk.join({ email, referralCode: "INVALID-CODE" });
+      const result = await sdk.join({ email, referralCode: "INVALID-CODE" });
+      if (!result.ok) {
+        throw new Error(result.message ?? "Expected join to succeed");
+      }
 
       expect(referralHandler).not.toHaveBeenCalled();
     });
@@ -240,6 +271,10 @@ describe("BaseWaitlistSDK", () => {
     it("should generate unique referral codes for different users", async () => {
       const result1 = await sdk.join({ email: "user1@example.com" });
       const result2 = await sdk.join({ email: "user2@example.com" });
+
+      if (!(result1.ok && result2.ok)) {
+        throw new Error("Expected joins to succeed");
+      }
 
       expect(result1.entry.referralCode).not.toBe(result2.entry.referralCode);
     });
@@ -284,10 +319,16 @@ describe("BaseWaitlistSDK", () => {
     it("should return leaderboard sorted by referral score", async () => {
       // User A joins
       const userA = await sdk.join({ email: "userA@example.com" });
+      if (!userA.ok) {
+        throw new Error(userA.message ?? "Expected join to succeed");
+      }
       const codeA = userA.entry.referralCode;
 
       // User B joins
       const userB = await sdk.join({ email: "userB@example.com" });
+      if (!userB.ok) {
+        throw new Error(userB.message ?? "Expected join to succeed");
+      }
       const codeB = userB.entry.referralCode;
 
       // User C joins with A's code (A has 1 referral)
@@ -336,9 +377,12 @@ describe("BaseWaitlistSDK", () => {
     });
 
     it("should handle users with same score", async () => {
-      await sdk.join({ email: "user1@example.com" });
-      await sdk.join({ email: "user2@example.com" });
-      await sdk.join({ email: "user3@example.com" });
+      const r1 = await sdk.join({ email: "user1@example.com" });
+      const r2 = await sdk.join({ email: "user2@example.com" });
+      const r3 = await sdk.join({ email: "user3@example.com" });
+      if (!(r1.ok && r2.ok && r3.ok)) {
+        throw new Error("Expected joins to succeed");
+      }
 
       const leaderboard = await sdk.getLeaderboard();
 
@@ -353,6 +397,9 @@ describe("BaseWaitlistSDK", () => {
     it("should handle complex referral chain", async () => {
       // User A joins
       const userA = await sdk.join({ email: "userA@example.com" });
+      if (!userA.ok) {
+        throw new Error(userA.message ?? "Expected join to succeed");
+      }
 
       // User B joins with A's code
       await sdk.join({
@@ -371,11 +418,14 @@ describe("BaseWaitlistSDK", () => {
     });
 
     it("should handle multiple users with different referral counts", async () => {
-      const users: JoinResult[] = [];
+      const users: JoinSuccessResult[] = [];
 
       // Create 5 users
       for (let i = 1; i <= 5; i += 1) {
         const result = await sdk.join({ email: `user${i}@example.com` });
+        if (!result.ok) {
+          throw new Error(result.message ?? "Expected join to succeed");
+        }
         users.push(result);
       }
 
@@ -405,6 +455,9 @@ describe("BaseWaitlistSDK", () => {
 
     it("should maintain referral links after remove", async () => {
       const referrer = await sdk.join({ email: "referrer@example.com" });
+      if (!referrer.ok) {
+        throw new Error(referrer.message ?? "Expected join to succeed");
+      }
       await sdk.join({
         email: "referee@example.com",
         referralCode: referrer.entry.referralCode,

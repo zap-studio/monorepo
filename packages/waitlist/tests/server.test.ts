@@ -1,11 +1,11 @@
 // biome-ignore-all lint/style/noMagicNumbers: This is a test file so magic numbers are fine.
 
+import type { Email } from "@zap-studio/validation/email/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { EventBus } from "../src/events";
-import type { JoinResult } from "../src/sdk/types";
+import type { JoinSuccessResult } from "../src/sdk/types";
 import { WaitlistServer } from "../src/server";
 import type {
-  Email,
   EmailEntry,
   ReferralLink,
   WaitlistStorageAdapter,
@@ -150,6 +150,10 @@ describe("WaitlistServer", () => {
       const email = "user@example.com";
       const result = await server.join({ email });
 
+      if (!result.ok) {
+        throw new Error(result.message ?? "Expected join to succeed");
+      }
+
       expect(result.entry.email).toBe(email);
       expect(result.entry.referralCode).toBeDefined();
       expect(result.entry.createdAt).toBeInstanceOf(Date);
@@ -160,12 +164,19 @@ describe("WaitlistServer", () => {
       const refereeEmail = "referee@example.com";
 
       const referrerResult = await server.join({ email: referrerEmail });
+      if (!referrerResult.ok) {
+        throw new Error(referrerResult.message ?? "Expected join to succeed");
+      }
       const referralCode = referrerResult.entry.referralCode;
 
       const refereeResult = await server.join({
         email: refereeEmail,
         referralCode,
       });
+
+      if (!refereeResult.ok) {
+        throw new Error(refereeResult.message ?? "Expected join to succeed");
+      }
 
       expect(refereeResult.entry.referredBy).toBe(referralCode);
       expect(refereeResult.referralLink).toBeDefined();
@@ -175,7 +186,10 @@ describe("WaitlistServer", () => {
       const handler = vi.fn();
       eventBus.on("join", handler);
 
-      await server.join({ email: "user@example.com" });
+      const result = await server.join({ email: "user@example.com" });
+      if (!result.ok) {
+        throw new Error(result.message ?? "Expected join to succeed");
+      }
 
       expect(handler).toHaveBeenCalledWith({ email: "user@example.com" });
     });
@@ -184,7 +198,10 @@ describe("WaitlistServer", () => {
   describe("inherited remove method", () => {
     it("should remove users from the waitlist", async () => {
       const email = "user@example.com";
-      await server.join({ email });
+      const result = await server.join({ email });
+      if (!result.ok) {
+        throw new Error(result.message ?? "Expected join to succeed");
+      }
 
       await server.remove(email);
 
@@ -197,7 +214,10 @@ describe("WaitlistServer", () => {
       eventBus.on("remove", handler);
 
       const email = "user@example.com";
-      await server.join({ email });
+      const result = await server.join({ email });
+      if (!result.ok) {
+        throw new Error(result.message ?? "Expected join to succeed");
+      }
       await server.remove(email);
 
       expect(handler).toHaveBeenCalledWith({ email });
@@ -208,6 +228,10 @@ describe("WaitlistServer", () => {
     it("should return leaderboard sorted by score", async () => {
       const userA = await server.join({ email: "userA@example.com" });
       const userB = await server.join({ email: "userB@example.com" });
+
+      if (!(userA.ok && userB.ok)) {
+        throw new Error("Expected joins to succeed");
+      }
 
       await server.join({
         email: "userC@example.com",
@@ -239,9 +263,16 @@ describe("WaitlistServer", () => {
 
   describe("server-specific scenarios", () => {
     it("should handle high volume of joins", async () => {
-      const promises: Promise<JoinResult>[] = [];
+      const promises: Promise<JoinSuccessResult>[] = [];
       for (let i = 0; i < 100; i += 1) {
-        promises.push(server.join({ email: `user${i}@example.com` }));
+        promises.push(
+          server.join({ email: `user${i}@example.com` }).then((r) => {
+            if (!r.ok) {
+              throw new Error(r.message ?? "Expected join to succeed");
+            }
+            return r;
+          })
+        );
       }
 
       const results = await Promise.all(promises);
@@ -252,15 +283,25 @@ describe("WaitlistServer", () => {
 
     it("should handle concurrent referrals", async () => {
       const referrer = await server.join({ email: "referrer@example.com" });
+      if (!referrer.ok) {
+        throw new Error(referrer.message ?? "Expected join to succeed");
+      }
       const referralCode = referrer.entry.referralCode;
 
-      const refereePromises: Promise<JoinResult>[] = [];
+      const refereePromises: Promise<JoinSuccessResult>[] = [];
       for (let i = 0; i < 10; i += 1) {
         refereePromises.push(
-          server.join({
-            email: `referee${i}@example.com`,
-            referralCode,
-          })
+          server
+            .join({
+              email: `referee${i}@example.com`,
+              referralCode,
+            })
+            .then((r) => {
+              if (!r.ok) {
+                throw new Error(r.message ?? "Expected join to succeed");
+              }
+              return r;
+            })
         );
       }
 
@@ -273,11 +314,17 @@ describe("WaitlistServer", () => {
     it("should maintain data consistency across operations", async () => {
       // Add users
       const user1 = await server.join({ email: "user1@example.com" });
-      await server.join({ email: "user2@example.com" });
-      await server.join({
+      if (!user1.ok) {
+        throw new Error(user1.message ?? "Expected join to succeed");
+      }
+      const r2 = await server.join({ email: "user2@example.com" });
+      const r3 = await server.join({
         email: "user3@example.com",
         referralCode: user1.entry.referralCode,
       });
+      if (!(r2.ok && r3.ok)) {
+        throw new Error("Expected joins to succeed");
+      }
 
       // Check counts
       expect(await adapter.count()).toBe(3);
@@ -299,7 +346,10 @@ describe("WaitlistServer", () => {
       const email = "user@example.com";
 
       for (let i = 0; i < 5; i += 1) {
-        await server.join({ email });
+        const result = await server.join({ email });
+        if (!result.ok) {
+          throw new Error(result.message ?? "Expected join to succeed");
+        }
         await server.remove(email);
       }
 
@@ -319,10 +369,16 @@ describe("WaitlistServer", () => {
       eventBus.on("remove", removeHandler);
 
       const referrer = await server.join({ email: "referrer@example.com" });
-      await server.join({
+      if (!referrer.ok) {
+        throw new Error(referrer.message ?? "Expected join to succeed");
+      }
+      const referee = await server.join({
         email: "referee@example.com",
         referralCode: referrer.entry.referralCode,
       });
+      if (!referee.ok) {
+        throw new Error(referee.message ?? "Expected join to succeed");
+      }
       await server.remove("referee@example.com");
 
       expect(joinHandler).toHaveBeenCalledTimes(2);
@@ -339,7 +395,10 @@ describe("WaitlistServer", () => {
         .mockRejectedValue(new Error("Handler error"));
       eventBus.on("join", failingHandler);
 
-      await server.join({ email: "user@example.com" });
+      const result = await server.join({ email: "user@example.com" });
+      if (!result.ok) {
+        throw new Error(result.message ?? "Expected join to succeed");
+      }
 
       expect(errorHandler).toHaveBeenCalled();
     });
@@ -350,7 +409,10 @@ describe("WaitlistServer", () => {
       const createSpy = vi.spyOn(adapter, "create");
       const findByEmailSpy = vi.spyOn(adapter, "findByEmail");
 
-      await server.join({ email: "user@example.com" });
+      const result = await server.join({ email: "user@example.com" });
+      if (!result.ok) {
+        throw new Error(result.message ?? "Expected join to succeed");
+      }
 
       expect(findByEmailSpy).toHaveBeenCalledWith("user@example.com");
       expect(createSpy).toHaveBeenCalled();
@@ -375,6 +437,9 @@ describe("WaitlistServer", () => {
       const email = "user@example.com";
       const result1 = await server.join({ email });
       const result2 = await server.join({ email });
+      if (!(result1.ok && result2.ok)) {
+        throw new Error("Expected joins to succeed");
+      }
 
       expect(result1.entry).toEqual(result2.entry);
       expect(await adapter.count()).toBe(1);
@@ -386,12 +451,19 @@ describe("WaitlistServer", () => {
         referralCode: "INVALID",
       });
 
+      if (!result.ok) {
+        throw new Error(result.message ?? "Expected join to succeed");
+      }
+
       expect(result.entry.referredBy).toBeUndefined();
       expect(result.referralLink).toBeUndefined();
     });
 
     it("should handle self-referral attempts", async () => {
       const user = await server.join({ email: "user@example.com" });
+      if (!user.ok) {
+        throw new Error(user.message ?? "Expected join to succeed");
+      }
       const referralCode = user.entry.referralCode;
 
       // Try to refer self - should just return existing entry
@@ -399,6 +471,9 @@ describe("WaitlistServer", () => {
         email: "user@example.com",
         referralCode,
       });
+      if (!result.ok) {
+        throw new Error(result.message ?? "Expected join to succeed");
+      }
 
       expect(result.entry).toEqual(user.entry);
       expect(await adapter.countReferrals()).toBe(0);
@@ -409,7 +484,10 @@ describe("WaitlistServer", () => {
     it("should handle large leaderboards efficiently", async () => {
       // Create many users
       for (let i = 0; i < 50; i += 1) {
-        await server.join({ email: `user${i}@example.com` });
+        const result = await server.join({ email: `user${i}@example.com` });
+        if (!result.ok) {
+          throw new Error(result.message ?? "Expected join to succeed");
+        }
       }
 
       const start = Date.now();
@@ -421,11 +499,14 @@ describe("WaitlistServer", () => {
     });
 
     it("should handle complex referral networks", async () => {
-      const users: JoinResult[] = [];
+      const users: JoinSuccessResult[] = [];
 
       // Create 10 initial users
       for (let i = 0; i < 10; i += 1) {
         const user = await server.join({ email: `user${i}@example.com` });
+        if (!user.ok) {
+          throw new Error(user.message ?? "Expected join to succeed");
+        }
         users.push(user);
       }
 
