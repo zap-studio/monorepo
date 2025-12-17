@@ -15,12 +15,11 @@ We're solving this by building a suite of modular, production-ready tools that j
 Our flagship product is [Zap.ts](https://zapstudio.dev/zap-ts) — the fastest way to go from idea to production. It's a modular starter kit that includes everything you need to build and scale a web application.
 
 **What's included:**
-- 🔐 Authentication with Better Auth
-- 🗄️ Database with Drizzle ORM
-- 🎨 UI with Tailwind CSS + shadcn/ui
-- 📧 Transactional emails with Resend
-- 💳 Payments with Polar
-- 🚀 Deploy anywhere
+-  Authentication with Better Auth
+-  Database with Drizzle ORM
+-  UI with Tailwind CSS + shadcn/ui
+-  Payments with Polar
+-  Deploy anywhere
 
 ### Developer Infrastructure
 
