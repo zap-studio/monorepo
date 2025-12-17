@@ -2,7 +2,12 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { ValidationError } from "./errors";
 
 /**
- * Type guard to check if a value is a Standard Schema schema
+ * Checks if a value is a Standard Schema.
+ *
+ * @example
+ * if (isStandardSchema(value)) {
+ *   console.log("Value is a Standard Schema and TypeScript knows it");
+ * }
  */
 export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
   return (
@@ -13,25 +18,24 @@ export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
 }
 
 /**
- * Helper function to validate data using Standard Schema
- *
- * @throws {ValidationError} When `throwOnError` is true and validation fails
+ * Validates a value against a Standard Schema.
  *
  * @example
- * import { standardValidate } from "@zap-studio/fetch/validator";
- * import { z } from "zod";
+ * // Throwing
+ * try {
+ *   const result = await standardValidate(schema, data, true);
+ * } catch (error) {
+ *   if (error instanceof ValidationError) {
+ *     console.error("Validation failed!", error.issues);
+ *   }
+ * }
  *
- * const UserSchema = z.object({ id: z.number(), name: z.string() });
- *
- * // Basic usage
- * const user = await standardValidate(UserSchema, data);
- *
- * // Non-throwing usage
- * const result = await standardValidate(UserSchema, data, false);
+ * // Without throwing
+ * const result = await standardValidate(schema, data, false);
  * if (result.issues) {
- *   console.error("Validation failed:", result.issues);
+ *   console.error("Validation failed!", result.issues);
  * } else {
- *   console.log("Success:", result.value);
+ *   console.log("Validation passed!", result.value);
  * }
  */
 export async function standardValidate<TSchema extends StandardSchemaV1>(

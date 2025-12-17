@@ -291,11 +291,11 @@ const finalPolicy = mergePolicies(accessPolicy, securityPolicy);
 
 ## Empty Policy Arrays
 
-- `mergePolicies()` with no policies returns `true` (vacuously true—no policy denies)
-- `mergePoliciesAny()` with no policies returns `false` (no policy allows)
+- Calling `mergePolicies()` without any policies returns `false` (denies by default).
+- Calling `mergePoliciesAny()` without any policies also returns `false` (denies by default).
 
 ```typescript
-const emptyAnd = mergePolicies(); // Always allows
+const emptyAnd = mergePolicies(); // Always denies
 const emptyOr = mergePoliciesAny(); // Always denies
 ```
 
