@@ -23,6 +23,7 @@ export default defineConfig({
           { text: "@zap-studio/fetch", link: "/packages/fetch/" },
           { text: "@zap-studio/permit", link: "/packages/permit/" },
           { text: "@zap-studio/realtime", link: "/packages/realtime/" },
+          { text: "@zap-studio/validation", link: "/packages/validation/" },
           { text: "@zap-studio/waitlist", link: "/packages/waitlist/" },
           { text: "@zap-studio/webhooks", link: "/packages/webhooks/" },
         ],
@@ -90,6 +91,12 @@ export default defineConfig({
             },
             { text: "Error Handling", link: "/packages/permit/errors" },
           ],
+        },
+      ],
+      "/packages/validation/": [
+        {
+          text: "@zap-studio/validation",
+          items: [{ text: "Overview", link: "/packages/validation/" }],
         },
       ],
       "/packages/waitlist/": [

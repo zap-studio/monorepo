@@ -1,4 +1,5 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { createSyncStandardValidator } from "@zap-studio/validation";
 import { PolicyError } from "./errors";
 import type {
   Actions,
@@ -383,15 +384,8 @@ export function createPolicy<
     if (!schema) {
       throw new PolicyError(`Missing schema for resource: ${String(key)}`);
     }
-    validators.set(key, (input: unknown) => {
-      const result = schema["~standard"].validate(input);
-      if (result instanceof Promise) {
-        throw new PolicyError(
-          "Async schemas are not supported in createPolicy"
-        );
-      }
-      return result;
-    });
+    const validator = createSyncStandardValidator(schema);
+    validators.set(key, (input: unknown) => validator(input));
   }
 
   return {

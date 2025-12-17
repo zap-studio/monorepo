@@ -10,10 +10,10 @@ The documentation for `@zap-studio/webhooks` is currently under development. Sta
 
 ## Features (Preview)
 
-- 🔒 **Secure Signature Verification** - Built-in signature validation for popular providers
-- 🎯 **Type-Safe Event Handling** - Full TypeScript support with type inference
-- ⚡ **Framework Agnostic** - Works with any Node.js framework
-- 🔌 **Extensible** - Easy to add custom webhook providers
+- **Secure Signature Verification** - Built-in signature validation for popular providers
+- **Type-Safe Event Handling** - Full TypeScript support with type inference
+- **Framework Agnostic** - Works with any Node.js framework
+- **Extensible** - Easy to add custom webhook providers
 
 ## Installation
 
