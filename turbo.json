@@ -40,7 +40,7 @@
       "outputs": ["coverage/report/**"]
     },
     "test": {
-      "dependsOn": ["^test", "@zap-studio/vitest-config#build"],
+      "dependsOn": ["^build", "^test", "@zap-studio/vitest-config#build"],
       "outputs": ["coverage/**"]
     },
     "test:watch": {

@@ -1,8 +1,8 @@
+import { isStandardSchema } from "@zap-studio/validation";
+import { ValidationError } from "@zap-studio/validation/errors";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import { $fetch, api } from "../src";
-import { ValidationError } from "../src/errors";
-import { isStandardSchema } from "../src/validator";
 
 describe("Zod Standard Schema compatibility", () => {
   it("should expose ~standard property", () => {
