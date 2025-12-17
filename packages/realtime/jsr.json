@@ -17,6 +17,7 @@
     "./emitters/in-memory": "./src/emitters/in-memory.ts",
     "./emitters/redis": "./src/emitters/redis.ts",
     "./emitters/types": "./src/emitters/types.ts",
+    "./emitters/utils": "./src/emitters/utils.ts",
     "./plugins/chat": "./src/plugins/chat/index.ts",
     "./plugins/chat/server": "./src/plugins/chat/server.ts",
     "./plugins/chat/types": "./src/plugins/chat/types.ts",
