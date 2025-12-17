@@ -1,7 +1,6 @@
-// biome-ignore lint/performance/noNamespaceImport: We need to import all of Valibot
-
 import { isStandardSchema } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
+// biome-ignore lint/performance/noNamespaceImport: We need to import all of Valibot
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { $fetch, api } from "../src";
