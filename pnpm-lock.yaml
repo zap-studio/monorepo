@@ -250,6 +250,9 @@ importers:
       '@types/node':
         specifier: catalog:types
         version: 25.0.2
+      '@vitest/coverage-v8':
+        specifier: catalog:testing
+        version: 4.0.15(vitest@4.0.15)
       '@zap-studio/tsdown-config':
         specifier: workspace:*
         version: link:../../configs/tsdown-config
