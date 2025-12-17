@@ -1,7 +1,8 @@
-import type z from "zod";
-import type { EmailSchema } from "../core/schemas";
+import type {
+  Email,
+  EmailValidationConfig,
+} from "@zap-studio/validation/email/types";
 
-export type Email = z.infer<typeof EmailSchema>;
 export type ReferralCode = string;
 
 /** Represents a participant's email entry in the waitlist. */
@@ -29,14 +30,6 @@ export type ReferralLink = {
   referee: Email;
   /** Timestamp of when this referral occurred. */
   createdAt: Date;
-};
-
-/** Represents the configuration options for email validation. */
-export type EmailValidationConfig = {
-  /** Whether to allow "+" in the local part of the email address. */
-  allowPlus?: boolean;
-  /** Whether to allow subdomains in the email address. */
-  allowSubdomains?: boolean;
 };
 
 /** Represents the configuration options for the waitlist. */

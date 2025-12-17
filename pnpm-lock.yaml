@@ -271,21 +271,33 @@ importers:
       '@zap-studio/vitest-config':
         specifier: workspace:*
         version: link:../../configs/vitest-config
+      arktype:
+        specifier: catalog:base
+        version: 2.1.29
       tsdown:
         specifier: catalog:base
         version: 0.18.0(typescript@5.9.3)
       typescript:
         specifier: catalog:base
         version: 5.9.3
+      valibot:
+        specifier: catalog:base
+        version: 1.2.0(typescript@5.9.3)
       vitest:
         specifier: catalog:testing
         version: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.0.2)(@vitest/ui@4.0.15)(jiti@2.6.1)(jsdom@27.2.0(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
+      zod:
+        specifier: catalog:base
+        version: 4.2.0
 
   packages/waitlist:
     dependencies:
       '@zap-studio/fetch':
         specifier: workspace:*
         version: link:../fetch
+      '@zap-studio/validation':
+        specifier: workspace:*
+        version: link:../validation
       nanoid:
         specifier: catalog:base
         version: 5.1.6

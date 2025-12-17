@@ -1,7 +1,8 @@
 import { createFetch } from "@zap-studio/fetch";
 import z from "zod";
-import { EmailSchema } from "./core/schemas";
 import type { LeaderboardEntry } from "./types";
+
+const EmailSchema = z.email();
 
 /** Schema for join response validation */
 const JoinResponseSchema: z.ZodObject<{
@@ -66,9 +67,15 @@ export class WaitlistClient {
     email: string,
     referralCode?: string
   ): Promise<z.infer<typeof JoinResponseSchema>> {
-    return await this.api.post("/api/waitlist/join", JoinResponseSchema, {
-      body: { email, referralCode },
-    });
+    const result = await this.api.post(
+      "/api/waitlist/join",
+      JoinResponseSchema,
+      {
+        throwOnValidationError: true,
+        body: { email, referralCode },
+      }
+    );
+    return result;
   }
 
   /**

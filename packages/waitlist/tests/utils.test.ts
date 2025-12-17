@@ -2,8 +2,8 @@
 // biome-ignore-all lint/performance/useTopLevelRegex: This is a test file so performance is not critical.
 
 import { describe, expect, it } from "vitest";
-import { calculatePosition, generateReferralCode } from "../../src/core/utils";
-import type { EmailEntry } from "../../src/types";
+import type { EmailEntry } from "../src/types";
+import { calculatePosition, generateReferralCode } from "../src/utils";
 
 describe("generateReferralCode", () => {
   it("returns deterministic code when seed provided", () => {

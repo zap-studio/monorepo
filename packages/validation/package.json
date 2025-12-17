@@ -37,22 +37,46 @@
   "dependencies": {
     "@standard-schema/spec": "catalog:base"
   },
+  "peerDependencies": {
+    "arktype": "catalog:arktype",
+    "valibot": "catalog:valibot",
+    "zod": "catalog:base"
+  },
+  "peerDependenciesMeta": {
+    "arktype": {
+      "optional": true
+    },
+    "valibot": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/node": "catalog:types",
     "@vitest/coverage-v8": "catalog:testing",
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
+    "arktype": "catalog:base",
     "tsdown": "catalog:base",
     "typescript": "catalog:base",
-    "vitest": "catalog:testing"
+    "vitest": "catalog:testing",
+    "valibot": "catalog:base",
+    "zod": "catalog:base"
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "exports": {
     ".": "./dist/index.mjs",
+    "./email/standard": "./dist/email/standard.mjs",
+    "./email/types": "./dist/email/types.mjs",
     "./errors": "./dist/errors.mjs",
+    "./presets/arktype": "./dist/presets/arktype.mjs",
+    "./presets/valibot": "./dist/presets/valibot.mjs",
+    "./presets/zod": "./dist/presets/zod.mjs",
     "./package.json": "./package.json"
   }
 }
