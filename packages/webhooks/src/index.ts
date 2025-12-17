@@ -1,4 +1,5 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { standardValidate } from "@zap-studio/validation";
 import type {
   AfterHook,
   BeforeHook,
@@ -303,10 +304,7 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
       return parsedJson;
     }
 
-    let result = schema["~standard"].validate(parsedJson);
-    if (result instanceof Promise) {
-      result = await result;
-    }
+    const result = await standardValidate(schema, parsedJson, false);
 
     if (result.issues) {
       return {
