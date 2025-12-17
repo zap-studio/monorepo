@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/permit",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "license": "MIT",
   "private": false,
@@ -40,7 +40,8 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "@standard-schema/spec": "catalog:base"
+    "@standard-schema/spec": "catalog:base",
+    "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "catalog:types",

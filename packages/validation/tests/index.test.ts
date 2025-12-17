@@ -1,6 +1,10 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { describe, expect, it } from "vitest";
-import { isStandardSchema, standardValidate } from "../src";
+import {
+  createSyncStandardValidator,
+  isStandardSchema,
+  standardValidate,
+} from "../src";
 import { ValidationError } from "../src/errors";
 
 function createMockSchema<T>(
@@ -212,5 +216,42 @@ describe("standardValidate", () => {
       const result = await standardValidate(schema, "data", false);
       expect(result).toEqual({ issues });
     });
+  });
+});
+
+describe("createSyncStandardValidator", () => {
+  it("should validate using a synchronous Standard Schema and return the result", () => {
+    const schema: StandardSchemaV1<unknown, string> = {
+      "~standard": {
+        version: 1,
+        vendor: "test",
+        validate: (input: unknown) => ({
+          value: String(input),
+        }),
+      },
+    };
+
+    const validate = createSyncStandardValidator(schema);
+    const result = validate(123);
+
+    expect(result).toEqual({ value: "123" });
+  });
+
+  it("should throw an error when the schema validate function returns a Promise", () => {
+    const schema: StandardSchemaV1<unknown, string> = {
+      "~standard": {
+        version: 1,
+        vendor: "test",
+        validate: async (input: unknown) => ({
+          value: String(input),
+        }),
+      },
+    };
+
+    const validate = createSyncStandardValidator(schema);
+
+    expect(() => validate(123)).toThrowError(
+      "Async schemas are not supported by createSyncStandardValidator"
+    );
   });
 });

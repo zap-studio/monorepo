@@ -30,6 +30,9 @@ Modern HTTP client with proper error handling. Because `fetch()` should have bee
 **[@zap-studio/permit](./packages/permit)**  
 Type-safe centralized & secure authorization with zero config.
 
+**[@zap-studio/validation](./packages/validation)**  
+Shared Standard Schema utilities and validation helpers.
+
 **[@zap-studio/realtime](./packages/realtime)**  
 Realtime events with SSE and WebSocket support.
 
@@ -38,8 +41,6 @@ Launch faster with built-in waitlist management, referral tracking, and analytic
 
 **[@zap-studio/webhooks](./packages/webhooks)**  
 Lightweight, type-safe webhook router with schema-agnostic validation. Works with any validation library.
-
-More coming soon.
 
 ## Documentation
 
