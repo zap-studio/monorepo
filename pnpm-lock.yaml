@@ -12,6 +12,9 @@ catalogs:
     arktype:
       specifier: ^2.1.29
       version: 2.1.29
+    nanoid:
+      specifier: ^5.1.6
+      version: 5.1.6
     tsdown:
       specifier: ^0.18.0
       version: 0.18.0
@@ -57,6 +60,9 @@ catalogs:
     lefthook:
       specifier: ^2.0.12
       version: 2.0.12
+    nyc:
+      specifier: ^17.1.0
+      version: 17.1.0
     rimraf:
       specifier: ^6.1.2
       version: 6.1.2
@@ -107,7 +113,7 @@ importers:
         specifier: catalog:tooling
         version: 2.0.12
       nyc:
-        specifier: ^17.1.0
+        specifier: catalog:tooling
         version: 17.1.0
       rimraf:
         specifier: catalog:tooling
@@ -256,6 +262,43 @@ importers:
       '@vitest/coverage-v8':
         specifier: catalog:testing
         version: 4.0.15(vitest@4.0.15)
+      '@zap-studio/tsdown-config':
+        specifier: workspace:*
+        version: link:../../configs/tsdown-config
+      '@zap-studio/typescript-config':
+        specifier: workspace:*
+        version: link:../../configs/typescript-config
+      '@zap-studio/vitest-config':
+        specifier: workspace:*
+        version: link:../../configs/vitest-config
+      tsdown:
+        specifier: catalog:base
+        version: 0.18.0(typescript@5.9.3)
+      typescript:
+        specifier: catalog:base
+        version: 5.9.3
+      vitest:
+        specifier: catalog:testing
+        version: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.0.2)(@vitest/ui@4.0.15)(jiti@2.6.1)(jsdom@27.2.0(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
+
+  packages/waitlist:
+    dependencies:
+      '@zap-studio/fetch':
+        specifier: workspace:*
+        version: link:../fetch
+      '@zap-studio/validation':
+        specifier: workspace:*
+        version: link:../validation
+      nanoid:
+        specifier: catalog:base
+        version: 5.1.6
+      zod:
+        specifier: catalog:base
+        version: 4.2.0
+    devDependencies:
+      '@types/node':
+        specifier: catalog:types
+        version: 25.0.2
       '@zap-studio/tsdown-config':
         specifier: workspace:*
         version: link:../../configs/tsdown-config
@@ -3168,6 +3211,11 @@ packages:
   nanoid@3.3.11:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
+  nanoid@5.1.6:
+    resolution: {integrity: sha512-c7+7RQ+dMB5dPwwCp4ee1/iV/q2P6aK1mTZcfr1BTuVlyW9hJYiMPybJCcnBlQtuSmTIWNeazm/zqNoZSSElBg==}
+    engines: {node: ^18 || >=20}
     hasBin: true
 
   neo-async@2.6.2:
@@ -7550,6 +7598,8 @@ snapshots:
   mute-stream@0.0.8: {}
 
   nanoid@3.3.11: {}
+
+  nanoid@5.1.6: {}
 
   neo-async@2.6.2: {}
 

@@ -30,6 +30,15 @@
       "cache": false,
       "persistent": true
     },
+    "merge-coverage": {
+      "inputs": ["coverage/raw/**"],
+      "outputs": ["coverage/merged/**"]
+    },
+    "report-coverage": {
+      "dependsOn": ["merge-coverage"],
+      "inputs": ["coverage/merged"],
+      "outputs": ["coverage/report/**"]
+    },
     "test": {
       "dependsOn": ["^build", "^test", "@zap-studio/vitest-config#build"],
       "outputs": ["coverage/**"]

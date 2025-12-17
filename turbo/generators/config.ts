@@ -8,7 +8,8 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
   createGenerator(plop, "package", {
     directory: "packages",
     description: "Create a new package in the packages directory",
-    promptMessage: "What is the name of the package?",
+    promptMessage:
+      "What is the name of the package? (e.g., 'my-package' or 'package/package-core')",
     additionalActions: [
       {
         type: "add",
