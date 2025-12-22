@@ -35,8 +35,8 @@ catalogs:
       specifier: ^20.2.0
       version: 20.2.0
     ultracite:
-      specifier: ^6.4.1
-      version: 6.4.1
+      specifier: ^6.5.0
+      version: 6.5.0
   testing:
     '@vitest/coverage-v8':
       specifier: ^4.0.15
@@ -117,7 +117,7 @@ importers:
         version: 2.6.3
       ultracite:
         specifier: catalog:linting
-        version: 6.4.1(typescript@5.9.3)(valibot@1.2.0(typescript@5.9.3))
+        version: 6.5.0(typescript@5.9.3)(valibot@1.2.0(typescript@5.9.3))
       vitest:
         specifier: catalog:testing
         version: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.0.2)(@vitest/ui@4.0.15)(jiti@2.6.1)(jsdom@27.2.0(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
@@ -3989,8 +3989,8 @@ packages:
     engines: {node: '>=0.8.0'}
     hasBin: true
 
-  ultracite@6.4.1:
-    resolution: {integrity: sha512-RgkWJcrKH57OGWOK8C2huohLxDa70DYVWM0FmmISRhvoWCngK5E13DkPSujvDoD7b5BgzOkNwsmiIKBmlZo94A==}
+  ultracite@6.5.0:
+    resolution: {integrity: sha512-HrXvM0CX/S3t5HEoepWQ6kpMVD9mzNB5X0k/T7zvNObQ6X9+s1pAE4efDR3Nc4KwqDiemK/bwI7pgPApT7Fktw==}
     hasBin: true
 
   unconfig-core@7.4.2:
@@ -8450,7 +8450,7 @@ snapshots:
   uglify-js@3.19.3:
     optional: true
 
-  ultracite@6.4.1(typescript@5.9.3)(valibot@1.2.0(typescript@5.9.3)):
+  ultracite@6.5.0(typescript@5.9.3)(valibot@1.2.0(typescript@5.9.3)):
     dependencies:
       '@clack/prompts': 0.11.0
       '@trpc/server': 11.8.0(typescript@5.9.3)
