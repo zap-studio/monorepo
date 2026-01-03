@@ -90,6 +90,12 @@ export default defineConfig({
             { text: "Splash Screen", link: "/local-ts/splash-screen" },
           ],
         },
+        {
+          text: "Tooling",
+          items: [
+            { text: "Code Quality", link: "/local-ts/code-quality" },
+          ],
+        },
       ],
       "/packages/fetch/": [
         {
