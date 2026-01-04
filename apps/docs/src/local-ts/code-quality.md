@@ -244,20 +244,124 @@ This ensures your code:
 - Passes linting rules
 - Passes all tests
 
-## CI Integration
+## Cargo
 
-In your CI pipeline, leverage Turborepo's caching:
+Local.ts includes a Rust backend in `src-tauri/` with comprehensive tooling for code quality.
 
-```yaml
-# Example GitHub Actions workflow
-- name: Install dependencies
-  run: pnpm install
+The Rust toolchain provides native tools for formatting, linting, type checking, testing, and coverage.
 
-- name: Validate
-  run: turbo validate
+### Available Cargo Commands
+
+| Command | Description |
+|---------|-------------|
+| `cargo fmt` | Format Rust code with rustfmt |
+| `cargo clippy` | Lint Rust code with Clippy |
+| `cargo check` | Type check without building |
+| `cargo test` | Run Rust unit and integration tests |
+| `cargo tarpaulin` | Generate code coverage reports |
+
+### Turborepo Integration
+
+The `src-tauri/` directory includes a `package.json` that bridges Cargo commands to the Turborepo workflow. This allows unified commands across both TypeScript and Rust codebases.
+
+Here is a simplified example:
+
+```json
+{
+  "scripts": {
+    "format": "cargo fmt",
+    "lint": "cargo clippy",
+    "check": "cargo check",
+    "test": "cargo test"
+  }
+}
 ```
 
-Turborepo will cache build artifacts between runs, significantly reducing CI times after the first build.
+Now you can run Cargo commands through Turborepo alongside your TypeScript tasks:
+
+```bash
+# Format both TypeScript and Rust code
+turbo format
+
+# Lint both codebases
+turbo lint
+
+# Type check TypeScript and Rust
+turbo check
+
+# Run tests for both frontend and backend
+turbo test
+```
+
+### Cargo-specific Workflows
+
+For Rust-specific tasks, navigate to `src-tauri/` and use Cargo directly:
+
+```bash
+cd src-tauri
+
+# Watch tests during development
+cargo watch -x test
+
+# Run tests with output
+cargo test -- --nocapture
+
+# Generate coverage report
+cargo tarpaulin --out Html
+
+# Fix clippy warnings automatically
+cargo clippy --fix
+```
+
+### Tarpaulin Coverage
+
+[Cargo Tarpaulin](https://github.com/xd009642/tarpaulin) generates code coverage for Rust tests:
+
+```bash
+# Install tarpaulin
+cargo install cargo-tarpaulin
+
+# Generate HTML coverage report
+cargo tarpaulin --out Html
+
+# View in browser
+open tarpaulin-report.html
+```
+
+Coverage reports help identify untested code paths in your Rust backend.
+
+## CI Integration
+
+Local.ts includes GitHub Actions workflows that run on every pull request to ensure code quality across the monorepo.
+
+### Existing Workflows
+
+| Workflow | File | Description |
+|----------|------|-------------|
+| **Check** | [check.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/check.yml) | Type checks TypeScript and Rust code |
+| **Lint** | [lint.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/lint.yml) | Runs Biome linter on the monorepo |
+| **Test** | [test.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/test.yml) | Executes all test suites |
+| **Build** | [build.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/build.yml) | Builds the entire monorepo |
+
+### Workflow Triggers
+
+All workflows:
+- Run on pull requests
+- Execute in parallel for faster feedback
+- Use pnpm for dependency management
+
+### Leveraging Turborepo in CI
+
+Turborepo caches build artifacts between runs, significantly reducing CI times after the first build:
+
+```yaml
+# Your CI pipeline benefits from Turborepo's cache
+- name: Install dependencies
+  run: pnpm install --frozen-lockfile
+
+- name: Validate
+  run: pnpm turbo run validate
+```
 
 ### Remote Caching
 
@@ -268,4 +372,4 @@ turbo login
 turbo link
 ```
 
-This allows team members to benefit from each other's cached builds.
+This allows team members and CI runners to benefit from each other's cached builds, dramatically speeding up workflows.
