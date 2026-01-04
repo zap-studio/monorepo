@@ -92,9 +92,7 @@ export default defineConfig({
         },
         {
           text: "Tooling",
-          items: [
-            { text: "Code Quality", link: "/local-ts/code-quality" },
-          ],
+          items: [{ text: "Code Quality", link: "/local-ts/code-quality" }],
         },
       ],
       "/packages/fetch/": [
