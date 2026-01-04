@@ -83,7 +83,8 @@ Set default dimensions in `src-tauri/tauri.conf.json` for first launch before an
     "label": "main",
     "visible": false,
     "width": 1280,
-    "height": 720
+    "height": 720,
+    "center": true
   }]
 }
 ```
