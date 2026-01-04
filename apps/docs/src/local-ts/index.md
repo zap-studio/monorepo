@@ -71,7 +71,8 @@ local.ts/
 ├── src-tauri/              # Rust backend
 │   ├── src/
 │   │   ├── commands/       # Tauri commands (API endpoints)
-│   │   ├── database/       # Diesel ORM models and migrations
+│   │   ├── database/       # Diesel ORM models and schema
+│   │   ├── services/       # Business logic and database operations
 │   │   └── plugins/        # Plugin configurations
 │   └── migrations/         # Database migrations
 └── public/                 # Static assets

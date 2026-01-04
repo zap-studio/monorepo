@@ -4,11 +4,24 @@ Local.ts uses [SQLite](https://sqlite.org/index.html) for persistent data storag
 
 ## How It Works
 
-The database system has three parts:
+The database system follows a layered architecture:
 
-1. **SQLite** — A lightweight, file-based database stored locally
-2. **Diesel ORM** — Type-safe database operations in Rust with compile-time query verification
-3. **Tauri Commands** — Bridge between your React frontend and Rust backend
+1. **Models** (`database/models/`) — Data structure definitions and type conversions
+2. **Services** (`services/`) — Business logic and database operations
+3. **Commands** (`commands/`) — Tauri command handlers that call services
+4. **Frontend** — React code that invokes Tauri commands
+
+```
+Frontend (React)
+    ↓ invoke()
+Commands (Tauri handlers)
+    ↓
+Services (Database operations)
+    ↓
+Models (Data structures) + Diesel ORM
+    ↓
+SQLite Database
+```
 
 When your app starts:
 1. The database file is created in the app's data directory if it doesn't exist
@@ -86,7 +99,7 @@ Never edit `schema.rs` manually. It's regenerated automatically when you run mig
 
 ### 4. Create the Rust Model
 
-Create `src-tauri/src/database/models/user.rs`:
+Models define data structures and type conversions. Create `src-tauri/src/database/models/user.rs`:
 
 ```rust
 use diesel::prelude::*;
@@ -110,65 +123,108 @@ pub struct NewUser {
 }
 ```
 
-### 5. Create Tauri Commands
+Export it in `src-tauri/src/database/models/mod.rs`:
 
-Add commands to query and insert users in `src-tauri/src/commands/user.rs`:
+```rust
+pub mod user;
+
+pub use user::{User, NewUser};
+```
+
+### 5. Create the Service
+
+Services contain database operations. Create `src-tauri/src/services/user.rs`:
 
 ```rust
 use diesel::prelude::*;
+use diesel::SqliteConnection;
+use crate::database::DbError;
+use crate::database::models::{User, NewUser};
+use crate::database::schema::users;
+
+pub fn list_users(conn: &mut SqliteConnection) -> Result<Vec<User>, DbError> {
+    users::table
+        .load::<User>(conn)
+        .map_err(Into::into)
+}
+
+pub fn create_user(
+    conn: &mut SqliteConnection,
+    new_user: NewUser
+) -> Result<User, DbError> {
+    diesel::insert_into(users::table)
+        .values(&new_user)
+        .execute(conn)?;
+
+    users::table
+        .order(users::id.desc())
+        .first(conn)
+        .map_err(Into::into)
+}
+
+pub fn get_user(
+    conn: &mut SqliteConnection,
+    user_id: i32
+) -> Result<Option<User>, DbError> {
+    users::table
+        .find(user_id)
+        .first(conn)
+        .optional()
+        .map_err(Into::into)
+}
+```
+
+Export it in `src-tauri/src/services/mod.rs`:
+
+```rust
+pub mod user;
+```
+
+### 6. Create Tauri Commands
+
+Commands are thin wrappers that call services. Create `src-tauri/src/commands/user.rs`:
+
+```rust
 use tauri::State;
 use crate::database::{DbPool, DbError};
-use crate::database::schema::users;
-use super::{User, NewUser};
+use crate::database::models::NewUser;
+use crate::services::user;
 
 #[tauri::command]
-pub fn list_users(pool: State<DbPool>) -> Result<Vec<User>, DbError> {
+pub fn list_users(pool: State<DbPool>) -> Result<Vec<user::User>, DbError> {
     let mut conn = pool.get()?;
-    users::table
-        .load::<User>(&mut conn)
-        .map_err(Into::into)
+    user::list_users(&mut conn)
 }
 
 #[tauri::command]
 pub fn create_user(
     pool: State<DbPool>,
-    user: NewUser
-) -> Result<User, DbError> {
+    new_user: NewUser
+) -> Result<user::User, DbError> {
     let mut conn = pool.get()?;
-    diesel::insert_into(users::table)
-        .values(&user)
-        .execute(&mut conn)?;
-
-    users::table
-        .order(users::id.desc())
-        .first(&mut conn)
-        .map_err(Into::into)
+    user::create_user(&mut conn, new_user)
 }
 
 #[tauri::command]
 pub fn get_user(
     pool: State<DbPool>,
     user_id: i32
-) -> Result<Option<User>, DbError> {
+) -> Result<Option<user::User>, DbError> {
     let mut conn = pool.get()?;
-    users::table
-        .find(user_id)
-        .first(&mut conn)
-        .optional()
-        .map_err(Into::into)
+    user::get_user(&mut conn, user_id)
 }
 ```
 
-### 6. Register the Commands
+### 7. Register the Commands
 
 In `src-tauri/src/lib.rs`:
 
 ```rust
 .invoke_handler(tauri::generate_handler![
     // ... existing commands
-    database::models::user::list_users,
-    database::models::user::create_user,
-    database::models::user::get_user,
+    commands::user::list_users,
+    commands::user::create_user,
+    commands::user::get_user,
 ])
 ```
 
@@ -176,7 +232,7 @@ In `src-tauri/src/lib.rs`:
 If you don't register your commands with Tauri using `invoke_handler`, your frontend won't be able to call them. Always ensure new commands are added here.
 :::
 
-### 7. Call from React
+### 8. Call from React
 
 ```typescript
 import { invoke } from "@tauri-apps/api/core";

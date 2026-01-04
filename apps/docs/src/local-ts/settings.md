@@ -4,13 +4,14 @@ Local.ts includes a complete settings system with persistent storage, type-safe 
 
 ## Understanding the Settings System
 
-Settings in Local.ts flow between three layers:
+Settings in Local.ts flow through a layered architecture:
 
-1. **SQLite Database** — Settings are stored persistently in `local.db`
-2. **Rust Backend** — Diesel ORM handles database operations, exposed via Tauri commands
-3. **React Frontend** — Zustand store manages state and provides hooks for components
+1. **Models** (`database/models/settings.rs`) — Data structures and type definitions
+2. **Services** (`services/settings.rs`) — Database operations (get/update settings)
+3. **Commands** (`commands/settings.rs`) — Tauri handlers that call services
+4. **Frontend** — Zustand store and React hooks
 
-When you update a setting, it's immediately saved to the database and synced to the UI.
+When you update a setting, it flows from the frontend through commands and services to the database, then syncs back to the UI.
 
 ## Available Settings
 
