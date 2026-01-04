@@ -2,10 +2,6 @@
 
 This guide walks you through setting up Local.ts and running your first build.
 
-::: info
-Local.ts comes with pre-made components like the sidebar. These are entirely customizable and exist to help you start building faster—feel free to modify or replace them as needed.
-:::
-
 ## Prerequisites
 
 Before you begin, make sure you have the following installed:
