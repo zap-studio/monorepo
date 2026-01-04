@@ -23,6 +23,11 @@ features:
     details: A production-grade monorepo starter kit to ship quickly and securely.
     link: ./zap-ts
 
+  - title: Local.ts
+    icon: "💾"
+    details: A starter kit for building local-first desktop applications with Tauri and React.
+    link: ./local-ts
+
   - title: "@zap-studio/fetch"
     icon: "📡"
     details: A lightweight, type-safe fetch wrapper with built-in validation and error handling.

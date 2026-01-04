@@ -21,6 +21,12 @@ Millions of hours are wasted every year rebuilding the same infrastructure: auth
 
 Teams using Zap.ts go from zero to deployed in under an hour.
 
+### Local.ts — Local-First Desktop Apps
+
+[Local.ts](./local-ts/index.md) is our starter kit for building cross-platform desktop applications with a local-first architecture. Built with Tauri, React, and Rust.
+
+Your data stays on the device, always available offline, with native performance and a small bundle size.
+
 ### @zap-studio Packages — Modern Primitives
 
 We're building a suite of composable packages under the `@zap-studio` scope:
