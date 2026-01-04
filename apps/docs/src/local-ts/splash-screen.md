@@ -125,6 +125,63 @@ In `tauri.conf.json`:
 
 Setting `decorations: false` removes the window title bar for a cleaner look.
 
+## Error Handling with Retry
+
+If initialization fails (for example, a database connection error), the `StoreInitializer` component displays an error screen with a retry button instead of leaving users stuck on the splash screen.
+
+The component tracks error state and provides a retry mechanism:
+
+```typescript
+const [error, setError] = useState<Error | null>(null);
+
+const handleRetry = async () => {
+  setError(null);
+  setIsInitialized(false);
+
+  try {
+    await initializeSettings();
+    initializeTheme();
+    setIsInitialized(true);
+  } catch (err) {
+    console.error("Retry failed:", err);
+    setError(err instanceof Error ? err : new Error("Unknown error"));
+  }
+};
+
+if (error) {
+  return <InitializationError error={error} onRetry={handleRetry} />;
+}
+```
+
+The error UI component shows a clear message and retry button:
+
+```typescript
+function InitializationError({ error, onRetry }: InitializationErrorProps) {
+  return (
+    <div className="flex h-screen flex-col items-center justify-center gap-4 p-6">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-destructive">
+          Initialization Error
+        </h1>
+        <p className="mt-2 text-muted-foreground">
+          Failed to load application settings
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">{error.message}</p>
+      </div>
+      <button
+        type="button"
+        onClick={onRetry}
+        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+      >
+        Retry
+      </button>
+    </div>
+  );
+}
+```
+
+This ensures users always have a path forward, even when something goes wrong during app startup.
+
 ## Removing the Splash Screen
 
 If you prefer to show the main window immediately:
