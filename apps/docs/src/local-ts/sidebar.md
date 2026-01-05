@@ -1,6 +1,8 @@
 # Sidebar Navigation
 
-Local.ts includes a pre-made sidebar component that's entirely customizable. It exists to help you start building faster, but you can modify or replace it completely to match your app's needs.
+Local.ts includes a pre-made sidebar component that's entirely customizable.
+
+It exists to help you start building faster, but you can modify or replace it completely to match your app's needs.
 
 ## Customizing Sidebar Links
 
