@@ -99,7 +99,7 @@ import {
 const hasPermission = await isPermissionGranted();
 
 // Request permission (shows system prompt if needed)
-const granted = await requestNotificationPermission();
+const granted = await requestPermission();
 if (granted) {
   console.log("Notifications enabled");
 }
