@@ -56,18 +56,7 @@ The output will be in `src-tauri/target/release/bundle/` with platform-specific 
 
 ## Customizing Your App
 
-After cloning, update these files to match your project:
-
-### Project Identity
-
-| File | Fields to Update |
-|------|------------------|
-| `package.json` | `name`, `version`, `description` |
-| `index.html` | `title` |
-| `src/constants/index.ts` | `APP_TITLE` |
-| `src-tauri/Cargo.toml` | `name`, `version`, `description`, `authors` |
-| `src-tauri/tauri.conf.json` | `productName`, `version`, `identifier` |
-| `splash.html` | App name and description text |
+After cloning, update your app's name, version, and branding. See the [Project Identity](/local-ts/project-identity) guide for a complete walkthrough.
 
 ## Available Run Scripts
 
