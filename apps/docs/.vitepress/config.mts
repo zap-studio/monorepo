@@ -66,6 +66,7 @@ export default defineConfig({
           text: "Local.ts",
           items: [
             { text: "Overview", link: "/local-ts/" },
+            { text: "Motivation", link: "/local-ts/motivation" },
             { text: "Getting Started", link: "/local-ts/getting-started" },
           ],
         },
@@ -93,6 +94,10 @@ export default defineConfig({
         {
           text: "Tooling",
           items: [{ text: "Code Quality", link: "/local-ts/code-quality" }],
+        },
+        {
+          text: "Distribution",
+          items: [{ text: "Packaging & Publishing", link: "/local-ts/distribution" }],
         },
       ],
       "/packages/fetch/": [
