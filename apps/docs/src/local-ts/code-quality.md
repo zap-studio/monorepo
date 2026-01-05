@@ -135,7 +135,7 @@ Coverage reports are generated in the `coverage/` directory:
 
 ## Turborepo
 
-[Turborepo](https://turbo.build/) orchestrates tasks across the monorepo, handling both the frontend (Vite) and backend (Tauri/Rust) with unified commands and intelligent caching.
+[Turborepo](https://turborepo.com/) orchestrates tasks across the monorepo, handling both the frontend (Vite) and backend (Tauri/Rust) with unified commands and intelligent caching.
 
 ### Monorepo Structure
 
@@ -365,7 +365,7 @@ Turborepo caches build artifacts between runs, significantly reducing CI times a
 
 ### Remote Caching
 
-For team environments, enable [Turborepo Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache across machines:
+For team environments, enable [Turborepo Remote Caching](https://turborepo.com/repo/docs/core-concepts/remote-caching) to share cache across machines:
 
 ```bash
 turbo login
