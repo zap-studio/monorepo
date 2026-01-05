@@ -60,7 +60,7 @@ Your app will open in a native window with hot reload enabled.
 
 ## Project Structure
 
-```
+```text
 local.ts/
 ├── src/                    # Frontend React code
 │   ├── components/         # UI components
