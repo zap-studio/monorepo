@@ -83,3 +83,9 @@ If you don't need autostart functionality:
    ```
 
 5. **Remove the setting** from the Settings page and database models.
+
+::: tip
+Check whether other dependencies exist inside the `[target.'cfg(any(...)'.dependencies]` section.
+
+If `tauri-plugin-autostart` is the only entry, remove the entire target-specific `[target.'cfg(...)'.dependencies]` section; otherwise delete only the `tauri-plugin-autostart = "2"` line from that section.
+:::
