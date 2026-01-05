@@ -73,6 +73,7 @@ export default defineConfig({
         {
           text: "Customization",
           items: [
+            { text: "Project Identity", link: "/local-ts/project-identity" },
             { text: "Sidebar Navigation", link: "/local-ts/sidebar" },
             { text: "App Icons", link: "/local-ts/app-icons" },
           ],
