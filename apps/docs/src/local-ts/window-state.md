@@ -113,6 +113,10 @@ use tauri_plugin_window_state::{AppHandleExt, StateFlags};
 
 This protects against state loss if the app crashes.
 
+::: info
+The spawned thread runs for the application's entire lifetime — it will only exit when the application terminates, so make sure any resources accessed from that thread are safe to use for the duration of the process.
+:::
+
 ## Removing Window State
 
 If you don't need window state persistence:
