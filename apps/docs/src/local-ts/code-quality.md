@@ -339,7 +339,7 @@ Local.ts includes GitHub Actions workflows that run on every pull request to ens
 | Workflow | File | Description |
 |----------|------|-------------|
 | **Check** | [check.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/check.yml) | Type checks TypeScript and Rust code |
-| **Lint** | [lint.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/lint.yml) | Runs Biome linter on the monorepo |
+| **Lint** | [lint.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/lint.yml) | Runs oxlint linter on the monorepo |
 | **Test** | [test.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/test.yml) | Executes all test suites |
 | **Build** | [build.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/build.yml) | Builds the entire monorepo |
 
