@@ -23,7 +23,7 @@ Our flagship product is [Zap.ts](https://zapstudio.dev/zap-ts) — the fastest w
 
 ### Local.ts
 
-[Local.ts](https://zapstudio.dev/local-ts) is our starter kit for building local-first desktop applications. Your data stays on the device, always available offline, with native performance.
+[Local.ts](./local-ts/) is our starter kit for building local-first desktop applications. Your data stays on the device, always available offline, with native performance.
 
 **What's included:**
 - Cross-platform desktop apps with Tauri
