@@ -13,6 +13,7 @@ Before you begin, make sure you have the following installed:
 
 ::: tip
 For database migrations, optionally install Diesel CLI:
+
 ```bash
 cargo install diesel_cli
 ```
