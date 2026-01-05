@@ -146,6 +146,8 @@ if settings.enable_logging {
 }
 ```
 
+Refer to your settings module or database queries for the actual `get_settings` function signature.
+
 ## Viewing Logs
 
 ### During Development
