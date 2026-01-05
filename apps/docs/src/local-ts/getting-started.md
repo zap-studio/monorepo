@@ -79,8 +79,8 @@ Local.ts includes several scripts to streamline your development workflow.
 | Command | Description |
 |---------|-------------|
 | `turbo dev` | Start Vite dev server (frontend only) |
-| `turbo tauri dev` | Start full app with hot reload |
-| `turbo tauri build` | Build for production |
+| `turbo tauri -- dev` | Start full app with hot reload |
+| `turbo tauri -- build` | Build for production |
 | `turbo check` | TypeScript type checking |
 | `turbo lint` | Run linter |
 | `turbo format` | Format code |
