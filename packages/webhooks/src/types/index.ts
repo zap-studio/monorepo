@@ -1,7 +1,7 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 /** This is the normalized request object so every adapter can rely on the same structure */
-export type NormalizedRequest = {
+export interface NormalizedRequest {
   /** The HTTP method of the request */
   method: Request["method"];
   /** The path of the request you registered in the router (e.g. "payment", "subscription") */
@@ -18,20 +18,20 @@ export type NormalizedRequest = {
   query?: Record<string, string | string[]>;
   /** The route parameters of the request */
   params?: Record<string, string>;
-};
+}
 
 /** This is the normalized response object so every adapter can rely on the same structure */
-export type NormalizedResponse<TBody = unknown> = {
+export interface NormalizedResponse<TBody = unknown> {
   /** The HTTP status code of the response */
   status: number;
   /** The body of the response */
   body?: TBody;
   /** The headers of the response */
   headers?: Headers;
-};
+}
 
 /** Options for registering a webhook handler */
-export type RegisterOptions<T> = {
+export interface RegisterOptions<T> {
   /** The handler function to process the webhook */
   handler: WebhookHandler<T>;
   /** Optional Standard Schema validator to validate the webhook payload */
@@ -40,7 +40,7 @@ export type RegisterOptions<T> = {
   before?: BeforeHook | BeforeHook[];
   /** Hooks that run after successful processing (before global after hooks) */
   after?: AfterHook | AfterHook[];
-};
+}
 
 /** The webhook handler function, responsible for processing incoming webhook events. */
 export type WebhookHandler<TPayload = unknown> = (ctx: {

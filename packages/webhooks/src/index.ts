@@ -66,12 +66,12 @@ import type {
  * ```
  */
 
-type HandlerEntry<TPayload = unknown> = {
+interface HandlerEntry<TPayload = unknown> {
   handler: WebhookHandler<TPayload>;
   schema?: StandardSchemaV1<unknown, TPayload>;
   before?: BeforeHook[];
   after?: AfterHook[];
-};
+}
 
 type HandlerStore<TMap extends Record<string, unknown>> = {
   [P in keyof TMap]?: HandlerEntry<TMap[P]>;

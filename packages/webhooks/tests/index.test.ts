@@ -20,9 +20,9 @@ describe("WebhookRouter", () => {
 
   describe("Basic routing", () => {
     it("should handle webhook without schema validation", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         test: { id: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -39,9 +39,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should return 404 for unregistered paths", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         test: { id: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -53,9 +53,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should return 404 for paths without /webhooks/ prefix", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         test: { id: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -71,11 +71,11 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle multiple registered paths", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         payment: { amount: number };
         user: { name: string };
         order: { id: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -120,9 +120,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle request without explicit response", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         silent: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -136,9 +136,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should preserve request metadata in handler", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         metadata: { value: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -159,9 +159,9 @@ describe("WebhookRouter", () => {
 
   describe("Schema validation with Zod", () => {
     it("should validate payload with Zod schema", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         payment: { id: string; amount: number };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -186,9 +186,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should reject invalid payload when schema is provided", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         payment: { id: string; amount: number };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -212,9 +212,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should reject payload with missing required fields", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         user: { id: string; email: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -237,13 +237,13 @@ describe("WebhookRouter", () => {
     });
 
     it("should validate complex nested schemas", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         order: {
           id: string;
           items: Array<{ sku: string; quantity: number }>;
           customer: { email: string; name: string };
         };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -290,9 +290,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should transform data with Zod transforms", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         data: { value: number };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -319,9 +319,9 @@ describe("WebhookRouter", () => {
 
   describe("Custom schema validator", () => {
     it("should work with custom Standard Schema validator", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         custom: { value: number };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -374,9 +374,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should support async validators", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         async: { id: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -431,9 +431,9 @@ describe("WebhookRouter", () => {
 
   describe("Request verification", () => {
     it("should work with custom verify function", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         secure: { data: string };
-      };
+      }
 
       let verifyWasCalled = false;
 
@@ -454,9 +454,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should run verify before schema validation", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         verified: { value: number };
-      };
+      }
 
       const callOrder: string[] = [];
 
@@ -484,9 +484,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should support async verify functions", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         "async-verify": { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>({
         verify: async (req) => {
@@ -507,9 +507,9 @@ describe("WebhookRouter", () => {
 
   describe("Response handling", () => {
     it("should support custom status codes", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         created: { name: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -526,9 +526,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should support custom headers", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         headers: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -552,11 +552,11 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle different body types", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         string: { data: string };
         object: { data: string };
         number: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -589,9 +589,9 @@ describe("WebhookRouter", () => {
 
   describe("Error handling", () => {
     it("should handle malformed JSON gracefully", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         json: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -612,9 +612,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle empty request body", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         empty: { data?: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -638,9 +638,9 @@ describe("WebhookRouter", () => {
   describe("Lifecycle hooks", () => {
     describe("Global before hooks", () => {
       it("should execute before hooks before handler", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         const callOrder: string[] = [];
 
@@ -664,9 +664,9 @@ describe("WebhookRouter", () => {
       });
 
       it("should execute multiple before hooks in order", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         const callOrder: string[] = [];
 
@@ -702,9 +702,9 @@ describe("WebhookRouter", () => {
       });
 
       it("should allow before hooks to enrich request", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         const router = new WebhookRouter<WebhookMap>({
           before: (req) => {
@@ -731,9 +731,9 @@ describe("WebhookRouter", () => {
       });
 
       it("should stop execution if before hook throws", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         let handlerCalled = false;
 
@@ -764,9 +764,9 @@ describe("WebhookRouter", () => {
 
     describe("Global after hooks", () => {
       it("should execute after hooks after handler", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         const callOrder: string[] = [];
 
@@ -791,9 +791,9 @@ describe("WebhookRouter", () => {
       });
 
       it("should execute multiple after hooks in order", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         const callOrder: string[] = [];
 
@@ -824,9 +824,9 @@ describe("WebhookRouter", () => {
       });
 
       it("should receive response in after hooks", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         const router = new WebhookRouter<WebhookMap>({
           after: (_req, res) => {
@@ -845,9 +845,9 @@ describe("WebhookRouter", () => {
       });
 
       it("should not execute after hooks if handler throws", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         let afterCalled = false;
 
@@ -875,9 +875,9 @@ describe("WebhookRouter", () => {
 
     describe("Global onError hook", () => {
       it("should execute onError hook when handler throws", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         let errorHookCalled = false;
 
@@ -904,9 +904,9 @@ describe("WebhookRouter", () => {
       });
 
       it("should execute onError hook when verify throws", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         let errorHookCalled = false;
 
@@ -932,9 +932,9 @@ describe("WebhookRouter", () => {
       });
 
       it("should execute onError hook when before hook throws", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         let errorHookCalled = false;
 
@@ -959,9 +959,9 @@ describe("WebhookRouter", () => {
       });
 
       it("should use default error response if onError returns undefined", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         const router = new WebhookRouter<WebhookMap>({
           onError: () => ({ status: 500, body: { error: "Custom error" } }),
@@ -980,9 +980,9 @@ describe("WebhookRouter", () => {
       });
 
       it("should handle different error types", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         const router = new WebhookRouter<WebhookMap>({
           onError: (error) => {
@@ -1011,9 +1011,9 @@ describe("WebhookRouter", () => {
 
     describe("Route-level hooks", () => {
       it("should execute route-level before hooks after global before hooks", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         const callOrder: string[] = [];
 
@@ -1041,9 +1041,9 @@ describe("WebhookRouter", () => {
       });
 
       it("should execute route-level after hooks before global after hooks", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         const callOrder: string[] = [];
 
@@ -1071,9 +1071,9 @@ describe("WebhookRouter", () => {
       });
 
       it("should support multiple route-level hooks", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         const callOrder: string[] = [];
 
@@ -1116,10 +1116,10 @@ describe("WebhookRouter", () => {
       });
 
       it("should handle single hook or array of hooks", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           single: { value: string };
           array: { value: string };
-        };
+        }
 
         const callOrder: string[] = [];
 
@@ -1175,9 +1175,9 @@ describe("WebhookRouter", () => {
 
     describe("Complete hook execution order", () => {
       it("should execute all hooks in correct order", async () => {
-        type WebhookMap = {
+        interface WebhookMap {
           test: { value: string };
-        };
+        }
 
         const callOrder: string[] = [];
 
@@ -1251,9 +1251,9 @@ describe("WebhookRouter", () => {
 
   describe("Routing with full URLs", () => {
     it("should route correctly with full URL paths", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         fullurl: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1270,9 +1270,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle URLs with query parameters", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         query: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1291,9 +1291,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should return 404 for unknown full URL paths", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         known: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1312,9 +1312,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should preserve full URL in request metadata", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         metadata: { value: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1333,9 +1333,9 @@ describe("WebhookRouter", () => {
 
   describe("Path normalization (normalizePath)", () => {
     it("should normalize simple relative paths", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         simple: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1350,9 +1350,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should normalize paths without leading slash", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         noslash: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1365,9 +1365,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should extract pathname from full URL", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         extracted: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1382,9 +1382,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should strip /webhooks/ prefix from pathname", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         stripped: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1399,9 +1399,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should strip /webhooks/ prefix from full URL pathname", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         fullstrip: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1418,9 +1418,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle paths with /webhooks/ in the middle", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         "api/webhooks/event": { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1435,9 +1435,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should preserve query parameters in full URL", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         withquery: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1455,9 +1455,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle URL with hash fragment", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         withhash: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1474,9 +1474,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle nested paths after /webhooks/ prefix", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         "api/v1/events": { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1491,9 +1491,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle URL with port number", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         withport: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1510,9 +1510,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle URL with authentication", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         withauth: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1529,9 +1529,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should not strip /webhooks/ if it doesn't start with it", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         "api/webhooks": { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1549,9 +1549,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle root path", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         "": { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1569,9 +1569,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle /webhooks/ as root webhook path", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         "": { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1584,9 +1584,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle encoded URL paths", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         "with spaces": { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1605,9 +1605,9 @@ describe("WebhookRouter", () => {
 
   describe("Configurable prefix", () => {
     it("should use custom prefix when provided", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         payment: { id: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>({
         prefix: "/api/hooks/",
@@ -1626,9 +1626,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should return 404 for paths not matching custom prefix", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         payment: { id: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>({
         prefix: "/api/hooks/",
@@ -1650,9 +1650,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle custom prefix with full URLs", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         event: { data: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>({
         prefix: "/custom/",
@@ -1669,9 +1669,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should default to /webhooks/ prefix when not provided", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         test: { id: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>();
 
@@ -1687,9 +1687,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle empty string prefix", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         payment: { id: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>({
         prefix: "/",
@@ -1708,10 +1708,10 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle nested paths with custom prefix", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         "stripe/events": { type: string };
         "github/push": { ref: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>({
         prefix: "/api/v1/webhooks/",
@@ -1741,9 +1741,9 @@ describe("WebhookRouter", () => {
     });
 
     it("should handle custom prefix with query parameters", async () => {
-      type WebhookMap = {
+      interface WebhookMap {
         notify: { message: string };
-      };
+      }
 
       const router = new WebhookRouter<WebhookMap>({
         prefix: "/notifications/",

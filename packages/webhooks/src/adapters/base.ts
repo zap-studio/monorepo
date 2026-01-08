@@ -1,7 +1,7 @@
 import type { NormalizedRequest, NormalizedResponse } from "../types";
 
 /** Adapter interface for framework-specific request/response handling */
-export type Adapter = {
+export interface Adapter {
   /** Convert framework request to the NormalizedRequest (must include raw body)
    * @example
    * ```ts
@@ -50,4 +50,4 @@ export type Adapter = {
   handleWebhook<TFrameworkReq = unknown, TFrameworkRes = unknown>(router: {
     handle(req: NormalizedRequest): Promise<NormalizedResponse>;
   }): (req: TFrameworkReq, res: TFrameworkRes) => Promise<void>;
-};
+}
