@@ -1,6 +1,5 @@
 # Window State
 
-
 Local.ts uses the [Tauri window state plugin](https://v2.tauri.app/plugin/window-state/) to automatically remember your window size, position, and state across app restarts.
 
 This creates a polished desktop experience where users don't have to resize their window every time they open the app.
@@ -19,33 +18,75 @@ The window state plugin tracks:
 
 ## How It Works
 
+### Initialization
+
+The plugin is initialized during app setup and restores state for all windows:
+
+```rust
+// src-tauri/src/lib.rs
+.setup(|app| {
+    plugins::logging::init(app);
+
+    // Initialize window state plugin
+    #[cfg(desktop)]
+    plugins::window_state::init(app)?;
+
+    // ... other setup code
+    Ok(())
+})
+```
+
+The `init` function registers the plugin and restores saved state.
+
+### Saving State
+
 Window state is saved automatically when the window closes:
 
 ```rust
+// src-tauri/src/lib.rs
 .on_window_event(|window, event| {
     #[cfg(desktop)]
     if let tauri::WindowEvent::CloseRequested { .. } = event {
-        let _ = window.app_handle().save_window_state(StateFlags::all());
+        plugins::window_state::on_close_requested(window);
     }
 })
 ```
 
-On the next launch, the plugin automatically restores the saved state before the window becomes visible.
+The `on_close_requested` function handles the save operation.
 
 ## Customizing What's Saved
 
-You can choose which properties to persist using `StateFlags`:
+You can choose which properties to persist by modifying the `StateFlags` in the plugin module:
 
 ```rust
-use tauri_plugin_window_state::StateFlags;
+// src-tauri/src/plugins/window_state.rs
+pub fn init<R: Runtime>(app: &App<R>) -> Result<(), Box<dyn std::error::Error>> {
+    // ... plugin registration ...
 
-.on_window_event(|window, event| {
-    if let tauri::WindowEvent::CloseRequested { .. } = event {
-        // Only save size and position
-        let flags = StateFlags::SIZE | StateFlags::POSITION;
-        let _ = window.app_handle().save_window_state(flags);
+    // Only restore size and position
+    let flags = StateFlags::SIZE | StateFlags::POSITION;
+    
+    for (label, window) in windows {
+        if let Err(err) = window.restore_state(flags) {
+            log::warn!("Failed to restore state for window '{}': {}", label, err);
+        }
     }
-})
+
+    Ok(())
+}
+
+pub fn on_close_requested<R: Runtime>(window: &Window<R>) {
+    // Only save size and position
+    let flags = StateFlags::SIZE | StateFlags::POSITION;
+    
+    if let Err(err) = window.app_handle().save_window_state(flags) {
+        log::warn!(
+            "Failed to save window state for '{}': {}",
+            window.label(),
+            err
+        );
+    }
+}
 ```
 
 Available flags:
@@ -59,18 +100,6 @@ Available flags:
 | `StateFlags::DECORATIONS` | Window decorations |
 | `StateFlags::FULLSCREEN` | Fullscreen state |
 | `StateFlags::all()` | All of the above |
-
-## Excluding Windows from State Tracking
-
-Skip state restoration for specific windows (like the splash screen):
-
-```rust
-app.handle().plugin(
-    tauri_plugin_window_state::Builder::default()
-        .skip(vec!["splashscreen"])
-        .build()
-)?;
-```
 
 ## Default Window Size
 
@@ -91,22 +120,48 @@ Set default dimensions in `src-tauri/tauri.conf.json` for first launch before an
 
 These defaults are used only on first launch.
 
+## Error Handling
+
+The window state plugin uses proper error handling with logging:
+
+- **Restore failures** are logged as warnings but don't prevent the app from starting
+- **Save failures** are logged as warnings to help debug state persistence issues
+- Window labels are included in error messages for easier troubleshooting
+
+This ensures that state management issues won't crash your application.
+
 ## Saving State Periodically
 
-Instead of (or in addition to) saving on close, you can save state periodically:
+Instead of (or in addition to) saving on close, you can save state periodically by adding a function to the plugin:
 
 ```rust
+// src-tauri/src/plugins/window_state.rs
 use std::time::Duration;
-use tauri_plugin_window_state::{AppHandleExt, StateFlags};
 
-.setup(|app| {
+pub fn start_periodic_save<R: Runtime>(app: &App<R>) {
     let app_handle = app.handle().clone();
     std::thread::spawn(move || {
         loop {
             std::thread::sleep(Duration::from_secs(300)); // 5 minutes
-            let _ = app_handle.save_window_state(StateFlags::all());
+            if let Err(err) = app_handle.save_window_state(StateFlags::all()) {
+                log::warn!("Failed to save window state periodically: {}", err);
+            }
         }
     });
+}
+```
+
+Then call it from your setup:
+
+```rust
+// src-tauri/src/lib.rs
+.setup(|app| {
+    #[cfg(desktop)]
+    {
+        plugins::window_state::init(app)?;
+        plugins::window_state::start_periodic_save(app);
+    }
+    
     Ok(())
 })
 ```
@@ -121,32 +176,33 @@ The spawned thread runs for the application's entire lifetime — it will only e
 
 If you don't need window state persistence:
 
-1. **Remove the import and plugin** from `src-tauri/src/lib.rs`:
+1. **Remove the plugin module** at `src-tauri/src/plugins/window_state.rs`
+
+2. **Remove the initialization** from `src-tauri/src/lib.rs`:
 
    ```diff
-   - use tauri_plugin_window_state::{AppHandleExt, StateFlags};
+   - #[cfg(desktop)]
+   - plugins::window_state::init(app)?;
    ```
 
-   ```diff
-   - app.handle()
-   -     .plugin(tauri_plugin_window_state::Builder::default().build())?;
-   ```
+3. **Remove the window event handler** from `src-tauri/src/lib.rs`:
 
    ```diff
    - .on_window_event(|window, event| {
+   -     #[cfg(desktop)]
    -     if let tauri::WindowEvent::CloseRequested { .. } = event {
-   -         let _ = window.app_handle().save_window_state(StateFlags::all());
+   -         plugins::window_state::on_close_requested(window);
    -     }
    - })
    ```
 
-2. **Remove the dependency** from `src-tauri/Cargo.toml`:
+4. **Remove the dependency** from `src-tauri/Cargo.toml`:
 
    ```diff
    - tauri-plugin-window-state = "2"
    ```
 
-3. **Remove permissions** from `src-tauri/capabilities/default.json`:
+5. **Remove permissions** from `src-tauri/capabilities/default.json`:
 
    ```diff
    - "window-state:default"
