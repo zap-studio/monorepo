@@ -83,12 +83,12 @@ const createStandardActions = (
   return [...standardActions, ...additionalActions];
 };
 
-type GeneratorConfig = {
+interface GeneratorConfig {
   directory: string;
   description: string;
   promptMessage: string;
   additionalActions?: PlopTypes.ActionType[];
-};
+}
 
 export const createGenerator = (
   plop: PlopTypes.NodePlopAPI,

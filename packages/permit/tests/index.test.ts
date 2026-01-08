@@ -29,18 +29,18 @@ function createSchema<T>(): StandardSchemaV1<T, T> {
 }
 
 // Test resource types
-type Post = {
+interface Post {
   id: string;
   authorId: string;
   visibility: "public" | "private";
   status: "draft" | "published";
-};
+}
 
-type Comment = {
+interface Comment {
   id: string;
   postId: string;
   authorId: string;
-};
+}
 
 // Test resources using mock Standard Schema
 const resources = {
@@ -55,12 +55,12 @@ const actions = {
 } as const satisfies Actions<typeof resources>;
 
 // Test context type
-type TestContext = {
+interface TestContext {
   user: {
     id: string;
     role: "guest" | "user" | "admin";
   };
-};
+}
 
 describe("allow", () => {
   it("should return a function that always returns 'allow'", () => {
@@ -150,7 +150,9 @@ describe("when", () => {
   });
 
   it("should pass resource to the condition", () => {
-    type AuthoredPost = { authorId: string };
+    interface AuthoredPost {
+      authorId: string;
+    }
     const policyFn = when<TestContext, string, AuthoredPost>(
       (ctx, _action, resource) => ctx.user.id === resource.authorId
     );
@@ -219,7 +221,9 @@ describe("and", () => {
   });
 
   it("should pass context, action, and resource to all conditions", () => {
-    type AuthoredPost = { authorId: string };
+    interface AuthoredPost {
+      authorId: string;
+    }
     const condition = and<TestContext, string, AuthoredPost>(
       (ctx) => ctx.user.role === "admin",
       (_ctx, action) => action === "delete",
@@ -290,7 +294,9 @@ describe("or", () => {
   });
 
   it("should pass context, action, and resource to conditions", () => {
-    type VisiblePost = { visibility: "public" | "private" };
+    interface VisiblePost {
+      visibility: "public" | "private";
+    }
     const condition = or<TestContext, string, VisiblePost>(
       (ctx) => ctx.user.role === "admin",
       (_ctx, _action, resource) => resource.visibility === "public"
@@ -370,7 +376,9 @@ describe("not", () => {
   });
 
   it("should pass context, action, and resource to the condition", () => {
-    type AuthoredPost = { authorId: string };
+    interface AuthoredPost {
+      authorId: string;
+    }
     const isOwner = (
       ctx: TestContext,
       _action: string,
@@ -531,35 +539,45 @@ describe("hasRole", () => {
 
   describe("without hierarchy", () => {
     it("should return true when user has the exact role (single role)", () => {
-      type Ctx = { role: Role };
+      interface Ctx {
+        role: Role;
+      }
       const condition = hasRole<Ctx>("admin");
 
       expect(condition({ role: "admin" }, "read", {})).toBe(true);
     });
 
     it("should return false when user does not have the role (single role)", () => {
-      type Ctx = { role: Role };
+      interface Ctx {
+        role: Role;
+      }
       const condition = hasRole<Ctx>("admin");
 
       expect(condition({ role: "user" }, "read", {})).toBe(false);
     });
 
     it("should return true when user has the role in array", () => {
-      type Ctx = { role: Role[] };
+      interface Ctx {
+        role: Role[];
+      }
       const condition = hasRole<Ctx>("admin");
 
       expect(condition({ role: ["user", "admin"] }, "read", {})).toBe(true);
     });
 
     it("should return false when user does not have the role in array", () => {
-      type Ctx = { role: Role[] };
+      interface Ctx {
+        role: Role[];
+      }
       const condition = hasRole<Ctx>("admin");
 
       expect(condition({ role: ["guest", "user"] }, "read", {})).toBe(false);
     });
 
     it("should handle empty role array", () => {
-      type Ctx = { role: Role[] };
+      interface Ctx {
+        role: Role[];
+      }
       const condition = hasRole<Ctx>("admin");
 
       expect(condition({ role: [] }, "read", {})).toBe(false);
@@ -568,14 +586,18 @@ describe("hasRole", () => {
 
   describe("with hierarchy", () => {
     it("should return true when user has the exact role", () => {
-      type Ctx = { role: Role };
+      interface Ctx {
+        role: Role;
+      }
       const condition = hasRole<Ctx, string, unknown, Role>("user", hierarchy);
 
       expect(condition({ role: "user" }, "read", {})).toBe(true);
     });
 
     it("should return true when user inherits the role", () => {
-      type Ctx = { role: Role };
+      interface Ctx {
+        role: Role;
+      }
       const condition = hasRole<Ctx, string, unknown, Role>("guest", hierarchy);
 
       expect(condition({ role: "admin" }, "read", {})).toBe(true);
@@ -583,7 +605,9 @@ describe("hasRole", () => {
     });
 
     it("should return false when user does not have or inherit the role", () => {
-      type Ctx = { role: Role };
+      interface Ctx {
+        role: Role;
+      }
       const condition = hasRole<Ctx, string, unknown, Role>("admin", hierarchy);
 
       expect(condition({ role: "user" }, "read", {})).toBe(false);
@@ -591,7 +615,9 @@ describe("hasRole", () => {
     });
 
     it("should work with role arrays and hierarchy", () => {
-      type Ctx = { role: Role[] };
+      interface Ctx {
+        role: Role[];
+      }
       const condition = hasRole<Ctx, string, unknown, Role>("guest", hierarchy);
 
       expect(condition({ role: ["user"] }, "read", {})).toBe(true);
@@ -600,7 +626,9 @@ describe("hasRole", () => {
 
     it("should handle diamond inheritance in hasRole", () => {
       type DiamondRole = "viewer" | "editor" | "commenter" | "owner";
-      type Ctx = { role: DiamondRole };
+      interface Ctx {
+        role: DiamondRole;
+      }
 
       const diamondHierarchy: RoleHierarchy<DiamondRole> = {
         viewer: [],
@@ -804,8 +832,13 @@ describe("createPolicy", () => {
   });
 
   it("should work with complex conditions using and/or/not", () => {
-    type PostResource = { authorId: string; visibility: string };
-    type CommentResource = { authorId: string };
+    interface PostResource {
+      authorId: string;
+      visibility: string;
+    }
+    interface CommentResource {
+      authorId: string;
+    }
 
     const isPostOwner = (
       ctx: TestContext,
@@ -1041,10 +1074,10 @@ describe("createPolicy", () => {
   });
 
   it("should work with role-based access using hasRole", () => {
-    type RoleContext = {
+    interface RoleContext {
       user: { id: string };
       role: "guest" | "user" | "admin";
-    };
+    }
 
     const hierarchy: RoleHierarchy<"guest" | "user" | "admin"> = {
       guest: [],
