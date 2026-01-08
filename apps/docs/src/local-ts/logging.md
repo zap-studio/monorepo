@@ -1,0 +1,194 @@
+# Logging
+
+Local.ts includes built-in logging powered by the [Tauri logging plugin](https://github.com/tauri-apps/tauri-plugin-log) and the basic Rust [log crate](https://docs.rs/log/latest/log/).
+
+Logs are sent to the console, browser devtools, and persistent files for debugging production issues.
+
+## How Logging Works
+
+The logging system outputs to three targets simultaneously:
+
+1. **Console (stdout)** — For development, visible in the terminal
+2. **Webview console** — Rust logs appear in browser devtools
+3. **Log files** — Persistent logs stored on disk with automatic rotation
+
+## Log Levels
+
+| Level | Description | Use Case |
+|-------|-------------|----------|
+| `error` | Critical failures | Database errors, crashes |
+| `warn` | Potential issues | Deprecated usage, recoverable errors |
+| `info` | General information | App started, user actions |
+| `debug` | Detailed debugging | Function calls, state changes |
+| `trace` | Very verbose | Request/response data, loops |
+
+## Logging from Rust
+
+Use the standard Rust `log` macros:
+
+```rust
+log::info!("Application started");
+log::debug!("Processing user: {}", user_id);
+log::warn!("Deprecated API called");
+log::error!("Failed to save settings: {}", error);
+```
+
+## Logging from JavaScript
+
+Import and use the Tauri log plugin:
+
+```typescript
+import { info, debug, warn, error, trace } from "@tauri-apps/plugin-log";
+
+await info("User clicked button");
+await debug(`Processing item ${itemId}`);
+await warn("This feature is deprecated");
+await error("Failed to fetch data");
+```
+
+## Log File Location
+
+Log files are stored in the platform-specific log directory:
+
+| Platform | Location |
+|----------|----------|
+| macOS | `~/Library/Logs/{bundleIdentifier}/logs.log` |
+| Windows | `C:\Users\{User}\AppData\Local\{bundleIdentifier}\logs\logs.log` |
+| Linux | `~/.local/share/{bundleIdentifier}/logs/logs.log` |
+
+Files rotate automatically at 50KB to prevent unbounded growth.
+
+## Configuration
+
+The logging configuration is in `src-tauri/src/plugins/logging.rs`:
+
+```rust
+use tauri_plugin_log::{Target, TargetKind, TimezoneStrategy};
+
+pub fn build() -> tauri_plugin_log::Builder {
+    tauri_plugin_log::Builder::new()
+        .targets([
+            Target::new(TargetKind::Stdout),
+            Target::new(TargetKind::Webview),
+            Target::new(TargetKind::LogDir {
+                file_name: Some("logs".to_string()),
+            }),
+        ])
+        .timezone_strategy(TimezoneStrategy::UseLocal)
+        .max_file_size(50_000)
+}
+```
+
+### Change File Rotation Size
+
+```rust
+.max_file_size(100_000)  // 100KB per file
+```
+
+### Use UTC Timestamps
+
+```rust
+.timezone_strategy(TimezoneStrategy::UseUtc)
+```
+
+### Filter by Log Level
+
+Set the minimum log level:
+
+```rust
+.level(log::LevelFilter::Info)
+```
+
+Set different levels for specific modules:
+
+```rust
+.level(log::LevelFilter::Info)
+.level_for("my_app::database", log::LevelFilter::Debug)
+```
+
+### Log to Separate Files by Level
+
+```rust
+.targets([
+    Target::new(TargetKind::Stdout),
+    Target::new(TargetKind::LogDir { file_name: Some("errors".to_string()) })
+        .filter(|metadata| metadata.level() == log::Level::Error),
+    Target::new(TargetKind::LogDir { file_name: Some("all".to_string()) }),
+])
+```
+
+### Disable Console Logging in Production
+
+```rust
+let targets = if cfg!(debug_assertions) {
+    vec![
+        Target::new(TargetKind::Stdout),
+        Target::new(TargetKind::Webview),
+        Target::new(TargetKind::LogDir { file_name: Some("logs".to_string()) }),
+    ]
+} else {
+    vec![
+        Target::new(TargetKind::LogDir { file_name: Some("logs".to_string()) }),
+    ]
+};
+
+tauri_plugin_log::Builder::new().targets(targets)
+```
+
+## User-Configurable Logging
+
+The Settings page includes toggles for logging and log level. Read these settings in your Rust code to adjust logging behavior:
+
+```rust
+let settings = get_settings(&mut conn)?;
+if settings.enable_logging {
+    log::info!("Detailed logging enabled at level: {:?}", settings.log_level);
+}
+```
+
+Refer to your settings module or database queries for the actual `get_settings` function signature.
+
+## Viewing Logs
+
+### During Development
+
+Logs appear in your terminal when running `turbo tauri -- dev`.
+
+### In Browser DevTools
+
+Open devtools in your app window (Cmd+Option+I on macOS, F12 on Windows/Linux) to see Rust logs in the console.
+
+### Reading Log Files
+
+Navigate to the log directory for your platform and open the log file in any text editor.
+
+## Removing Logging
+
+If you don't need logging:
+
+1. **Delete the logging module** — Remove `src-tauri/src/plugins/logging.rs`
+
+2. **Remove dependencies** from `src-tauri/Cargo.toml`:
+
+   ```diff
+   - tauri-plugin-log = "2"
+   - log = "0.4"
+   ```
+
+3. **Remove the plugin** from `src-tauri/src/lib.rs`:
+
+   ```diff
+   - .plugin(plugins::logging::build().build())
+   ```
+
+4. **Remove permissions** from `src-tauri/capabilities/default.json`:
+
+   ```diff
+   - "log:default"
+   ```
+
+5. **Remove the npm package**:
+
+   ```bash
+   pnpm remove @tauri-apps/plugin-log
+   ```

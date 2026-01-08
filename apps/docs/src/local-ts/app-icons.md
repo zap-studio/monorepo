@@ -1,0 +1,91 @@
+# App Icons
+
+Setting up proper icons ensures your application looks professional across all platforms and contexts.
+
+## Desktop Icons
+
+Desktop icons are used for the application window, taskbar, and installers on Windows, macOS, and Linux.
+
+### Generate Icons
+
+Use the [Tauri Icon Generator](https://tauri.app/develop/icons/) to create icons for all platforms from a single source image:
+
+1. **Prepare your source image**
+   - Format: PNG
+   - Size: 1024x1024 pixels minimum
+   - Background: Transparent (recommended)
+
+2. **Generate icons**
+   ```bash
+   turbo tauri -- icon path/to/your-icon.png
+   ```
+
+3. **Output location**
+   The generated icons will be placed in `src-tauri/icons/` with these files:
+   - `32x32.png`, `128x128.png`, `128x128@2x.png` — Windows
+   - `icon.icns` — macOS
+   - `icon.ico` — Windows
+   - `icon.png` — Linux
+
+::: tip
+The icon generator automatically creates all necessary sizes and formats. You only need to provide one high-quality source image.
+:::
+
+### Manual Icon Placement
+
+If you already have platform-specific icons, place them directly in `src-tauri/icons/`:
+
+```
+src-tauri/
+└── icons/
+    ├── 32x32.png
+    ├── 128x128.png
+    ├── 128x128@2x.png
+    ├── icon.icns      (macOS)
+    ├── icon.ico       (Windows)
+    └── icon.png       (Linux, 512x512)
+```
+
+## Updating Icons
+
+After changing icons:
+
+1. **Clear cache** (if icons don't update immediately):
+   ```bash
+   rm -rf src-tauri/target
+   ```
+
+2. **Rebuild the app**:
+   ```bash
+   turbo tauri -- build
+   ```
+
+## Best Practices
+
+1. **Use high-resolution source images** — Start with at least 1024x1024px
+2. **Keep it simple** — Icons should be recognizable at small sizes (16x16)
+3. **Use transparency** — PNG with transparent backgrounds look better
+4. **Test on all platforms** — Verify icons appear correctly on Windows, macOS, and Linux
+5. **Consistent branding** — Use the same visual identity across desktop and web icons
+
+## Troubleshooting
+
+### Icons not showing in built app
+
+Make sure icon paths in `src-tauri/tauri.conf.json` are correct:
+
+```json
+{
+  "tauri": {
+    "bundle": {
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ]
+    }
+  }
+}
+```

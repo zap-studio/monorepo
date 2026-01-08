@@ -59,10 +59,10 @@ if (isStandardSchema(schema)) {
 ```ts
 import { standardValidate } from "@zap-studio/validation";
 
-// Throwing mode
+// Synchronous or asynchronous schema – handled transparently
 const value = await standardValidate(schema, data, true);
 
-// Non-throwing mode
+// Non-throwing mode (sync or async schema)
 const result = await standardValidate(schema, data, false);
 if (result.issues) {
   console.error("Validation failed:", result.issues);
