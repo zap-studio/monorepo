@@ -9,7 +9,7 @@ export type Email = string;
  * - `allowPlus` - Whether to allow plus addressing (e.g. `user+tag@example.com`).
  * - `allowSubdomains` - Whether to allow subdomains (e.g. `user@mail.example.com`).
  */
-export type EmailValidationConfig = {
+export interface EmailValidationConfig {
   allowPlus?: boolean;
   allowSubdomains?: boolean;
-};
+}

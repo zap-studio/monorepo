@@ -27,10 +27,10 @@ const LeaderboardResponseSchema: z.ZodArray<typeof LeaderboardEntrySchema> =
   z.array(LeaderboardEntrySchema);
 
 /** Options for the WaitlistClient */
-export type WaitlistClientOptions = {
+export interface WaitlistClientOptions {
   /** The base URL for the API */
   baseUrl: string;
-};
+}
 
 export class WaitlistClient {
   /** The base URL for the API */

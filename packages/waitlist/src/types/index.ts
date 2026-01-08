@@ -6,7 +6,7 @@ import type {
 export type ReferralCode = string;
 
 /** Represents a participant's email entry in the waitlist. */
-export type EmailEntry = {
+export interface EmailEntry {
   /** The email address of the participant. */
   email: Email;
   /** The date when the participant joined the waitlist. */
@@ -17,23 +17,26 @@ export type EmailEntry = {
   referredBy?: ReferralCode;
   /** Additional metadata associated with the participant. */
   meta?: Record<string, unknown>;
-};
+}
 
 /** Represents a referral relationship (who referred whom). */
-export type ReferralKey = { referrer: Email; referee: Email };
+export interface ReferralKey {
+  referrer: Email;
+  referee: Email;
+}
 
 /** A record of an actual referral relationship (who referred whom). */
-export type ReferralLink = {
+export interface ReferralLink {
   /** The referrer (owner of the code). */
   referrer: Email;
   /** The referee (the person who joined with the code). */
   referee: Email;
   /** Timestamp of when this referral occurred. */
   createdAt: Date;
-};
+}
 
 /** Represents the configuration options for the waitlist. */
-export type WaitlistConfig = {
+export interface WaitlistConfig {
   /** The prefix to use for referral codes. */
   referralPrefix?: string;
   /** The maximum number of referrals a participant can have. */
@@ -44,34 +47,34 @@ export type WaitlistConfig = {
   rateLimit?: { windowMs: number; max: number };
   /** The email validation configuration. */
   emailValidation?: EmailValidationConfig;
-};
+}
 
-export type EventPayloadMap = {
+export interface EventPayloadMap {
   join: { email: Email };
   referral: { referrer: Email; referee: Email };
   remove: { email: Email; reason?: string };
   error: { err: unknown; source: keyof EventPayloadMap };
-};
+}
 
 export type WaitlistEventType = keyof EventPayloadMap;
 
 /** Represents an event in the waitlist system. */
-export type WaitlistEvent<T = unknown> = {
+export interface WaitlistEvent<T = unknown> {
   /** The type of event. */
   type: WaitlistEventType;
   /** The payload associated with the event. */
   payload: T;
   /** The timestamp when the event occurred. */
   timestamp: Date;
-};
+}
 
-export type LeaderboardEntry = {
+export interface LeaderboardEntry {
   email: Email;
   score: number;
-};
+}
 
 /** Represents the adapter for the waitlist system. */
-export type WaitlistStorageAdapter = {
+export interface WaitlistStorageAdapter {
   /** Creates a new email entry in the waitlist. */
   create(entry: EmailEntry): Promise<EmailEntry>;
   /** Creates a new referral link in the waitlist. */
@@ -106,4 +109,4 @@ export type WaitlistStorageAdapter = {
 
   /** Optional: get leaderboard */
   getLeaderboard?(): Promise<LeaderboardEntry[]>;
-};
+}
