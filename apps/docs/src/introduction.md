@@ -21,6 +21,17 @@ Our flagship product is [Zap.ts](https://zapstudio.dev/zap-ts) — the fastest w
 -  Payments with Polar
 -  Deploy anywhere
 
+### Local.ts
+
+[Local.ts](./local-ts/) is our starter kit for building local-first desktop applications. Your data stays on the device, always available offline, with native performance.
+
+**What's included:**
+- Cross-platform desktop apps with Tauri
+- SQLite database with Diesel ORM
+- Settings, theming, and notifications
+- System tray, autostart, and window state
+- React + TypeScript frontend
+
 ### Developer Infrastructure
 
 We're also building a suite of packages that solve common problems with modern, composable APIs.
