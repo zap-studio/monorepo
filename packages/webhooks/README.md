@@ -1,0 +1,1064 @@
+# @zap-studio/webhooks
+
+A lightweight, type-safe webhook router with [Standard Schema](https://github.com/standard-schema/standard-schema) validation support. Works with any validation library that implements the Standard Schema spec, including Zod, Valibot, and ArkType.
+
+## Features
+
+- 🎯 **Type-safe routing** - Full TypeScript support with path-to-payload type mapping
+- ✅ **Standard Schema validation** - Works with any Standard Schema-compatible library
+- 🔒 **Request verification** - Built-in support for signature verification
+- 🪝 **Lifecycle hooks** - Before, after, and error hooks for fine-grained control
+- 🚀 **Zero dependencies** (validation libraries are optional)
+- 📦 **Tiny bundle size** - Only includes what you need
+
+## Installation
+
+```bash
+npm install @zap-studio/webhooks
+# or
+pnpm add @zap-studio/webhooks
+```
+
+If you want to use schema validation, install any Standard Schema-compatible validation library:
+
+```bash
+# Zod (v3.24+)
+pnpm add zod
+
+# Or Valibot
+pnpm add valibot
+
+# Or ArkType
+pnpm add arktype
+```
+
+## Quick Start
+
+### Basic Usage (No Validation)
+
+```typescript
+import { WebhookRouter } from "@zap-studio/webhooks";
+
+type WebhookMap = {
+  "payment": { id: string; amount: number };
+  "subscription": { id: string; status: "active" | "canceled" };
+}
+
+const router = new WebhookRouter<WebhookMap>();
+
+router.register("payment", async ({ payload, ack }) => {
+  console.log(`Payment received: $${payload.amount}`);
+  return ack({ status: 200, body: "Payment processed" });
+});
+
+// Handle incoming request
+const response = await router.handle(incomingRequest);
+```
+
+### With Zod Validation
+
+Zod v3.24+ implements Standard Schema natively, so you can pass schemas directly:
+
+```typescript
+import { WebhookRouter } from "@zap-studio/webhooks";
+import { z } from "zod";
+
+type WebhookMap = {
+  "payment": { id: string; amount: number; currency: string };
+}
+
+const router = new WebhookRouter<WebhookMap>();
+
+const paymentSchema = z.object({
+  id: z.string().min(1),
+  amount: z.number().positive(),
+  currency: z.string().length(3),
+});
+
+router.register("payment", {
+  schema: paymentSchema,
+  handler: async ({ payload, ack }) => {
+    // payload is validated and fully typed!
+    console.log(`Payment ${payload.id}: ${payload.amount} ${payload.currency}`);
+    return ack({ status: 200 });
+  },
+});
+```
+
+### With Request Verification
+
+```typescript
+import { WebhookRouter } from "@zap-studio/webhooks";
+
+// Custom verify function
+const router = new WebhookRouter({
+  verify: async (req) => {
+    const signature = req.headers.get("x-webhook-signature");
+    if (!signature) {
+      throw new Error("Missing signature");
+    }
+    
+    // Example: HMAC signature verification
+    const crypto = await import("node:crypto");
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.WEBHOOK_SECRET!)
+      .update(req.rawBody)
+      .digest("hex");
+    
+    if (signature !== expectedSignature) {
+      throw new Error("Invalid signature");
+    }
+  },
+});
+```
+
+## Routing Logic
+
+The webhook router intelligently normalizes incoming request paths to match your registered handlers. **All webhook requests MUST include the configured prefix** (default: `/webhooks/`) to prevent conflicts with other application routes.
+
+### How Path Normalization Works
+
+The router performs the following normalization steps in order:
+
+1. **Extract pathname from full URLs** - If the request path is a full URL, extract just the pathname
+2. **Require prefix match** - Verify the path starts with the configured prefix (default: `/webhooks/`)
+3. **Strip prefix** - Remove the prefix from the path (e.g., `/webhooks/payment` → `/payment`)
+4. **Normalize for handler matching** - Remove leading slash for matching against registered handlers (e.g., `/payment` → `payment`)
+
+### Path Normalization Examples
+
+#### ✅ Good Usage Examples
+
+```typescript
+const router = new WebhookRouter<{
+  "payment": { id: string };
+  "subscription": { id: string };
+  "user/created": { userId: string };
+}>();
+
+// Register handlers without leading slashes or prefix
+router.register("payment", handler);
+router.register("subscription", handler);
+router.register("user/created", handler);
+
+// All of these requests will match the "payment" handler:
+await router.handle({ path: "/webhooks/payment", ... });                     // ✅ Matches
+await router.handle({ path: "https://api.com/webhooks/payment", ... });      // ✅ Matches (URL + prefix)
+
+// Nested paths work as expected:
+await router.handle({ path: "/webhooks/user/created", ... });                // ✅ Matches "user/created"
+await router.handle({ path: "https://api.com/webhooks/user/created", ... }); // ✅ Matches "user/created"
+```
+
+#### ❌ Common Mistakes
+
+```typescript
+const router = new WebhookRouter<{
+  "/payment": { id: string };      // ❌ Don't include leading slash in handler name
+  "webhooks/payment": { id: string }; // ❌ Don't include "webhooks/" prefix
+}>();
+
+// This won't work - handler is registered with leading slash
+router.register("/payment", handler);
+await router.handle({ path: "/webhooks/payment", ... }); // ❌ Won't match
+
+// This won't work - handler includes "webhooks/" prefix
+router.register("webhooks/payment", handler);
+await router.handle({ path: "/webhooks/payment", ... }); // ❌ Won't match
+
+// This won't work - missing required prefix
+router.register("payment", handler);
+await router.handle({ path: "/payment", ... }); // ❌ 404 - prefix required!
+```
+
+### Configurable Prefix
+
+You can customize the required prefix to match your application's routing structure:
+
+```typescript
+// Custom prefix
+const router = new WebhookRouter<WebhookMap>({
+  prefix: "/api/webhooks/",  // Custom prefix
+});
+
+router.register("payment", handler);
+
+// Now this path is required:
+await router.handle({ path: "/api/webhooks/payment", ... }); // ✅ Matches
+
+// These won't work:
+await router.handle({ path: "/webhooks/payment", ... });      // ❌ Wrong prefix
+await router.handle({ path: "/payment", ... });               // ❌ No prefix
+```
+
+#### Using Root Prefix
+
+If you want to handle webhooks at the root level (no prefix), use `"/"`:
+
+```typescript
+const router = new WebhookRouter<WebhookMap>({
+  prefix: "/",  // No prefix required
+});
+
+router.register("payment", handler);
+
+await router.handle({ path: "/payment", ... }); // ✅ Matches
+```
+
+### Special Cases
+
+#### Root Webhook Path
+
+```typescript
+// Register root webhook handler
+router.register("", handler);
+
+// This matches the root handler:
+await router.handle({ path: "/webhooks/", ... }); // ✅ Matches
+```
+
+#### Query Parameters and Fragments
+
+Query parameters and URL fragments are preserved in the request but don't affect routing:
+
+```typescript
+router.register("payment", handler);
+
+// Query parameters don't affect routing:
+await router.handle({ 
+  path: "/webhooks/payment?id=123&source=stripe", 
+  ... 
+}); // ✅ Matches "payment"
+
+// Hash fragments don't affect routing:
+await router.handle({ 
+  path: "https://api.com/webhooks/payment#section", 
+  ... 
+}); // ✅ Matches "payment"
+```
+
+#### Nested Paths
+
+```typescript
+router.register("api/v1/events", handler);
+
+await router.handle({ path: "/webhooks/api/v1/events", ... }); // ✅ Matches
+```
+
+### Why Require a Prefix?
+
+**Conflict Prevention**: Requiring a prefix prevents webhook routes from conflicting with your existing application routes. For example:
+
+```typescript
+// Without prefix requirement (problematic):
+// Your app might have: GET /payment/123 (view payment page)
+// Webhook would be:   POST /payment    (webhook handler)
+// This creates ambiguity and potential conflicts!
+
+// With prefix requirement (safe):
+// Your app:    GET /payment/123        (view payment page)
+// Webhook:     POST /webhooks/payment  (webhook handler)
+// No conflicts - clear separation! ✅
+```
+
+### Best Practices
+
+1. **Always register handlers without leading slashes**
+   ```typescript
+   // ✅ Good
+   router.register("payment", handler);
+   router.register("user/created", handler);
+   
+   // ❌ Bad
+   router.register("/payment", handler);
+   router.register("/user/created", handler);
+   ```
+
+2. **Never include the prefix in handler registration**
+   ```typescript
+   // ✅ Good
+   router.register("payment", handler);
+   
+   // ❌ Bad
+   router.register("webhooks/payment", handler);
+   ```
+
+3. **Configure your webhook URLs to include the prefix**
+   ```typescript
+   // When configuring webhooks with providers (Stripe, GitHub, etc.):
+   // ✅ Good: https://yourdomain.com/webhooks/stripe
+   // ❌ Bad:  https://yourdomain.com/stripe
+   ```
+
+4. **Use nested paths with forward slashes**
+   ```typescript
+   // ✅ Good - clear hierarchy
+   router.register("stripe/payment", handler);
+   router.register("stripe/subscription", handler);
+   router.register("user/created", handler);
+   router.register("user/updated", handler);
+   ```
+
+5. **Choose a prefix that fits your application structure**
+   ```typescript
+   // API versioning
+   const router = new WebhookRouter({ prefix: "/api/v1/webhooks/" });
+   
+   // Simple prefix
+   const router = new WebhookRouter({ prefix: "/webhooks/" }); // Default
+   
+   // Custom naming
+   const router = new WebhookRouter({ prefix: "/hooks/" });
+   ```
+
+### Real-World Routing Example
+
+```typescript
+import { WebhookRouter } from "@zap-studio/webhooks";
+
+type WebhookMap = {
+  // Payment provider webhooks
+  "stripe/events": StripeEvent;
+  "paypal/ipn": PayPalIPN;
+  
+  // User lifecycle webhooks
+  "user/created": { userId: string; email: string };
+  "user/updated": { userId: string; changes: Record<string, any> };
+  "user/deleted": { userId: string };
+  
+  // Application events
+  "deploy/started": { deployId: string; environment: string };
+  "deploy/completed": { deployId: string; duration: number };
+  "deploy/failed": { deployId: string; error: string };
+};
+
+const router = new WebhookRouter<WebhookMap>({
+  prefix: "/api/webhooks/",  // Custom prefix for API structure
+  verify: async (req) => {
+    // Verify webhook signatures
+    const signature = req.headers.get("x-webhook-signature");
+    await verifySignature(req.rawBody, signature);
+  }
+});
+
+// Register all handlers
+router.register("stripe/events", stripeHandler);
+router.register("paypal/ipn", paypalHandler);
+router.register("user/created", userCreatedHandler);
+router.register("user/updated", userUpdatedHandler);
+router.register("user/deleted", userDeletedHandler);
+router.register("deploy/started", deployStartedHandler);
+router.register("deploy/completed", deployCompletedHandler);
+router.register("deploy/failed", deployFailedHandler);
+
+// Configure webhook URLs with providers:
+// Stripe:  https://api.example.com/api/webhooks/stripe/events
+// PayPal:  https://api.example.com/api/webhooks/paypal/ipn
+// Custom:  https://api.example.com/api/webhooks/user/created
+// Deploy:  https://api.example.com/api/webhooks/deploy/started
+//
+// The /api/webhooks/ prefix is required and automatically stripped,
+// and the remaining path is matched against registered handlers.
+```
+
+### Debugging Routing Issues
+
+If your webhooks aren't matching:
+
+1. **Verify the prefix** - Ensure incoming requests include the configured prefix
+2. **Check your handler registration** - Ensure no leading slashes or prefix in handler names
+3. **Use a before hook to debug** - Log the incoming path and registered handlers
+4. **Test with different URL formats** - Try with and without full URLs
+
+```typescript
+const router = new WebhookRouter({
+  before: [
+    (req) => {
+      console.log("Incoming path:", req.path);
+      console.log("Required prefix:", router.prefix || "/webhooks/");
+    }
+  ]
+});
+```
+
+## Lifecycle Hooks
+
+The webhook router supports three types of lifecycle hooks: `before`, `after`, and `onError`. These hooks provide fine-grained control over request processing and allow you to add cross-cutting concerns like logging, monitoring, and error handling.
+
+### Hook Execution Order
+
+```
+before (global) → before (route) → verify → validate → handler → after (route) → after (global)
+```
+
+### Global Hooks
+
+Global hooks are defined in the router constructor and apply to all routes.
+
+```typescript
+import { WebhookRouter } from "@zap-studio/webhooks";
+
+const router = new WebhookRouter({
+  // Runs before verification and validation
+  before: [
+    async (req) => {
+      console.log(`[${new Date().toISOString()}] Incoming: ${req.path}`);
+      // Enrich request with metadata
+      req.metadata = { receivedAt: Date.now() };
+    },
+    async (req) => {
+      // Rate limiting check
+      const clientIp = req.headers.get("x-forwarded-for");
+      if (await isRateLimited(clientIp)) {
+        throw new Error("Rate limit exceeded");
+      }
+    }
+  ],
+  
+  // Runs after successful handler completion
+  after: [
+    async (req, res) => {
+      const duration = Date.now() - (req.metadata?.receivedAt || 0);
+      console.log(`[${new Date().toISOString()}] Completed ${req.path} (${duration}ms)`);
+      
+      // Send metrics
+      await metrics.record({
+        path: req.path,
+        status: res.status,
+        duration
+      });
+    }
+  ],
+  
+  // Runs when any error occurs
+  onError: async (error, req) => {
+    console.error(`Error handling ${req.path}:`, error);
+    
+    // Send to error tracking service
+    await errorTracker.capture(error, { 
+      path: req.path,
+      headers: Object.fromEntries(req.headers.entries())
+    });
+    
+    // Return custom error response
+    if (error.message === "Rate limit exceeded") {
+      return { status: 429, body: { error: "Too many requests" } };
+    }
+    
+    if (error.message === "Invalid signature") {
+      return { status: 401, body: { error: "Unauthorized" } };
+    }
+    
+    // Return undefined to use default error response
+    return { status: 500, body: { error: "Internal server error" } };
+  },
+  
+  verify: async (req) => {
+    // Signature verification
+    await verifySignature(req);
+  }
+});
+```
+
+### Route-Level Hooks
+
+Route-level hooks are specific to individual routes and execute after global `before` hooks but before global `after` hooks.
+
+```typescript
+router.register("payment", {
+  schema: paymentSchema,
+  
+  // Route-specific before hooks (run after global before hooks)
+  before: [
+    async (req) => {
+      // Payment-specific validation
+      const apiKey = req.headers.get("x-api-key");
+      if (!await isValidPaymentApiKey(apiKey)) {
+        throw new Error("Invalid API key for payment webhook");
+      }
+    }
+  ],
+  
+  handler: async ({ payload, ack }) => {
+    await processPayment(payload);
+    return ack({ status: 200, body: { received: true } });
+  },
+  
+  // Route-specific after hooks (run before global after hooks)
+  after: [
+    async (req, res) => {
+      // Payment-specific audit logging
+      await auditLog.record({
+        type: "payment_webhook",
+        paymentId: req.json?.id,
+        status: res.status,
+        timestamp: new Date().toISOString()
+      });
+    }
+  ]
+});
+```
+
+### Practical Examples
+
+#### Example 1: Request Logging & Monitoring
+
+```typescript
+const router = new WebhookRouter({
+  before: [
+    async (req) => {
+      // Add request ID for tracing
+      if (!req.headers.get("x-request-id")) {
+        req.headers.set("x-request-id", crypto.randomUUID());
+      }
+      
+      // Log incoming request
+      logger.info("webhook.received", {
+        requestId: req.headers.get("x-request-id"),
+        path: req.path,
+        method: req.method
+      });
+    }
+  ],
+  
+  after: [
+    async (req, res) => {
+      // Log response
+      logger.info("webhook.completed", {
+        requestId: req.headers.get("x-request-id"),
+        path: req.path,
+        status: res.status
+      });
+    }
+  ],
+  
+  onError: async (error, req) => {
+    logger.error("webhook.error", {
+      requestId: req.headers.get("x-request-id"),
+      path: req.path,
+      error: error.message,
+      stack: error.stack
+    });
+    
+    return { status: 500, body: { error: "Internal error" } };
+  }
+});
+```
+
+#### Example 2: Authentication & Authorization
+
+```typescript
+const router = new WebhookRouter({
+  before: [
+    async (req) => {
+      // Parse JWT from Authorization header
+      const token = req.headers.get("authorization")?.replace("Bearer ", "");
+      if (token) {
+        try {
+          req.user = await verifyJWT(token);
+        } catch (error) {
+          throw new Error("Invalid token");
+        }
+      }
+    },
+    async (req) => {
+      // Check admin routes require admin users
+      if (req.path.startsWith("/admin")) {
+        if (!req.user?.isAdmin) {
+          throw new Error("Unauthorized: Admin access required");
+        }
+      }
+    }
+  ],
+  
+  onError: async (error, req) => {
+    if (error.message.startsWith("Unauthorized")) {
+      return { status: 403, body: { error: "Forbidden" } };
+    }
+    if (error.message === "Invalid token") {
+      return { status: 401, body: { error: "Unauthorized" } };
+    }
+  }
+});
+```
+
+#### Example 3: Stripe Webhooks with Complete Monitoring
+
+```typescript
+import { WebhookRouter } from "@zap-studio/webhooks";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+const router = new WebhookRouter<{
+  "stripe": Stripe.Event
+}>({
+  before: [
+    async (req) => {
+      // Track webhook reception time
+      req.metadata = { startTime: Date.now() };
+      
+      console.log(`Stripe webhook received: ${req.headers.get("stripe-signature")?.slice(0, 20)}...`);
+    }
+  ],
+  
+  verify: async (req) => {
+    const signature = req.headers.get("stripe-signature");
+    if (!signature) {
+      throw new Error("No Stripe signature");
+    }
+    
+    try {
+      // Verify Stripe signature
+      stripe.webhooks.constructEvent(
+        req.rawBody,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET!
+      );
+    } catch (err) {
+      throw new Error("Invalid Stripe signature");
+    }
+  },
+  
+  after: [
+    async (req, res) => {
+      const duration = Date.now() - req.metadata.startTime;
+      
+      // Record metrics
+      await metrics.increment("stripe.webhook.processed", {
+        event_type: req.json?.type,
+        status: res.status.toString()
+      });
+      
+      await metrics.timing("stripe.webhook.duration", duration, {
+        event_type: req.json?.type
+      });
+    }
+  ],
+  
+  onError: async (error, req) => {
+    const eventType = req.json?.type || "unknown";
+    
+    // Alert for critical payment webhooks
+    if (eventType.includes("payment") || eventType.includes("charge")) {
+      await alerting.send({
+        severity: "high",
+        title: "Stripe Payment Webhook Failed",
+        message: `Failed to process ${eventType}: ${error.message}`,
+        metadata: {
+          path: req.path,
+          eventType,
+          error: error.message
+        }
+      });
+    }
+    
+    // Log to error tracking
+    await errorTracker.capture(error, {
+      fingerprint: ["stripe-webhook", eventType],
+      tags: { event_type: eventType }
+    });
+    
+    return { status: 500, body: { error: error.message } };
+  }
+});
+
+router.register("stripe", async ({ payload, ack }) => {
+  // Process Stripe event
+  switch (payload.type) {
+    case "payment_intent.succeeded":
+      await handlePaymentSuccess(payload.data.object);
+      break;
+    case "payment_intent.payment_failed":
+      await handlePaymentFailure(payload.data.object);
+      break;
+    case "customer.subscription.created":
+      await handleSubscriptionCreated(payload.data.object);
+      break;
+    case "customer.subscription.deleted":
+      await handleSubscriptionCanceled(payload.data.object);
+      break;
+    default:
+      console.log(`Unhandled event type: ${payload.type}`);
+  }
+  
+  return ack({ status: 200 });
+});
+```
+
+#### Example 4: Database Connection Management
+
+```typescript
+const router = new WebhookRouter({
+  before: [
+    async (req) => {
+      // Attach database connection to request
+      req.db = await database.getConnection();
+    }
+  ],
+  
+  after: [
+    async (req) => {
+      // Clean up database connection
+      if (req.db) {
+        await req.db.close();
+      }
+    }
+  ],
+  
+  onError: async (error, req) => {
+    // Ensure database connection is closed on error
+    if (req.db) {
+      await req.db.close();
+    }
+    
+    return { status: 500, body: { error: "Internal error" } };
+  }
+});
+```
+
+### Hook Best Practices
+
+1. **Keep hooks focused** - Each hook should have a single responsibility
+2. **Handle errors appropriately** - Throw errors in `before` hooks to prevent handler execution
+3. **Use route-level hooks for route-specific logic** - Keep global hooks for cross-cutting concerns
+4. **Avoid modifying responses in after hooks** - They're meant for side effects, not response modification
+5. **Always clean up resources** - Use `after` and `onError` hooks to clean up connections, files, etc.
+6. **Log strategically** - Use hooks for consistent logging across all webhooks
+7. **Return custom error responses** - Use `onError` to provide meaningful error messages to clients
+
+## Standard Schema Validation
+
+This library uses [Standard Schema](https://github.com/standard-schema/standard-schema), a common interface for TypeScript validation libraries. Any library that implements Standard Schema can be used directly with the webhook router.
+
+### Zod
+
+Zod v3.24+ implements Standard Schema natively:
+
+```typescript
+import { z } from "zod";
+
+const schema = z.object({
+  id: z.string(),
+  amount: z.number().positive(),
+  items: z.array(z.object({
+    sku: z.string(),
+    quantity: z.number().int().positive(),
+  })),
+});
+
+router.register("order", {
+  schema,
+  handler: async ({ payload, ack }) => {
+    // payload is fully validated and typed
+    return ack({ status: 200 });
+  },
+});
+```
+
+### Valibot
+
+Valibot implements Standard Schema natively:
+
+```typescript
+import * as v from "valibot";
+
+const schema = v.object({
+  id: v.string(),
+  amount: v.pipe(v.number(), v.minValue(0)),
+});
+
+router.register("payment", {
+  schema,
+  handler: async ({ payload, ack }) => {
+    return ack({ status: 200 });
+  },
+});
+```
+
+### ArkType
+
+ArkType implements Standard Schema natively:
+
+```typescript
+import { type } from "arktype";
+
+const schema = type({
+  id: "string",
+  amount: "number>0",
+});
+
+router.register("payment", {
+  schema,
+  handler: async ({ payload, ack }) => {
+    return ack({ status: 200 });
+  },
+});
+```
+
+### Custom Standard Schema Validator
+
+You can create your own Standard Schema-compatible validator by implementing the `StandardSchemaV1` interface:
+
+```typescript
+import type { StandardSchemaV1 } from "@standard-schema/spec";
+
+const customValidator: StandardSchemaV1<unknown, { id: string; value: number }> = {
+  "~standard": {
+    version: 1,
+    vendor: "my-custom-validator",
+    validate: (data: unknown) => {
+      const obj = data as { id?: unknown; value?: unknown };
+      
+      // Return issues for validation errors
+      if (!obj.id || typeof obj.id !== "string") {
+        return {
+          issues: [{ path: ["id"], message: "ID is required and must be a string" }],
+        };
+      }
+      
+      if (typeof obj.value !== "number" || obj.value < 0) {
+        return {
+          issues: [{ path: ["value"], message: "Value must be a positive number" }],
+        };
+      }
+      
+      // Return the validated value on success
+      return {
+        value: { id: obj.id, value: obj.value },
+      };
+    },
+  },
+};
+
+router.register("custom", {
+  schema: customValidator,
+  handler: async ({ payload, ack }) => {
+    // payload is typed as { id: string; value: number }
+    return ack({ status: 200 });
+  },
+});
+```
+
+### Async Validation
+
+Standard Schema supports async validators for cases like database lookups:
+
+```typescript
+import type { StandardSchemaV1 } from "@standard-schema/spec";
+
+const asyncValidator: StandardSchemaV1<unknown, { id: string }> = {
+  "~standard": {
+    version: 1,
+    vendor: "my-async-validator",
+    validate: async (data: unknown) => {
+      const obj = data as { id?: unknown };
+      
+      if (typeof obj.id !== "string") {
+        return {
+          issues: [{ path: ["id"], message: "ID must be a string" }],
+        };
+      }
+      
+      // Simulate async database check
+      const exists = await checkIdExistsInDatabase(obj.id);
+      if (!exists) {
+        return {
+          issues: [{ path: ["id"], message: "ID not found in database" }],
+        };
+      }
+      
+      return {
+        value: { id: obj.id },
+      };
+    },
+  },
+};
+```
+
+## API Reference
+
+### `WebhookRouter<TMap>`
+
+Creates a new webhook router.
+
+```typescript
+const router = new WebhookRouter<WebhookMap>(options?);
+```
+
+**Options:**
+- `prefix?: string` - The required path prefix for all webhooks (default: `"/webhooks/"`)
+- `verify?: (req: NormalizedRequest) => Promise<void> | void` - Optional function to verify incoming requests (e.g., signature verification)
+- `before?: BeforeHook | BeforeHook[]` - Hook(s) that run before request processing
+- `after?: AfterHook | AfterHook[]` - Hook(s) that run after successful request processing
+- `onError?: ErrorHook` - Hook that runs when an error occurs
+
+### `router.register(path, handler)`
+
+Register a webhook handler without validation.
+
+```typescript
+router.register("webhook", async ({ req, payload, ack }) => {
+  return ack({ status: 200, body: "Success" });
+});
+```
+
+### `router.register(path, options)`
+
+Register a webhook handler with schema validation and/or route-level hooks.
+
+```typescript
+router.register("webhook", {
+  schema: mySchema, // Any Standard Schema-compatible schema
+  before: [async (req) => { /* ... */ }],
+  handler: async ({ req, payload, ack }) => {
+    return ack({ status: 200 });
+  },
+  after: [async (req, res) => { /* ... */ }],
+});
+```
+
+**Options:**
+- `handler: WebhookHandler<T>` - The handler function to process the webhook
+- `schema?: StandardSchemaV1<unknown, T>` - Optional Standard Schema-compatible validator
+- `before?: BeforeHook | BeforeHook[]` - Route-specific before hook(s)
+- `after?: AfterHook | AfterHook[]` - Route-specific after hook(s)
+
+### `router.handle(request)`
+
+Handle an incoming webhook request.
+
+```typescript
+const response = await router.handle(normalizedRequest);
+```
+
+## Type Reference
+
+### `NormalizedRequest`
+
+```typescript
+type NormalizedRequest = {
+  method: string;
+  path: string;
+  headers: Headers;
+  rawBody: Buffer;
+  json?: unknown;
+  text?: string;
+  query?: Record<string, string | string[]>;
+  params?: Record<string, string>;
+}
+```
+
+### `NormalizedResponse`
+
+```typescript
+type NormalizedResponse = {
+  status: number;
+  body?: unknown;
+  headers?: Headers;
+}
+```
+
+### Hook Types
+
+#### `BeforeHook`
+
+Executes before request processing (including verification and validation). Can modify the request or throw to short-circuit execution.
+
+```typescript
+type BeforeHook = (req: NormalizedRequest) => Promise<void> | void;
+```
+
+**Use cases:**
+- Request logging
+- Request enrichment (adding metadata)
+- Rate limiting
+- Early validation
+- Authentication
+
+#### `AfterHook`
+
+Executes after successful handler completion. Receives both request and response. Cannot modify the response.
+
+```typescript
+type AfterHook = (
+  req: NormalizedRequest,
+  res: NormalizedResponse
+) => Promise<void> | void;
+```
+
+**Use cases:**
+- Response logging
+- Metrics collection
+- Resource cleanup
+- Audit logging
+
+#### `ErrorHook`
+
+Executes when any error occurs during request processing. Can return a custom error response or undefined to use the default.
+
+```typescript
+type ErrorHook = (
+  error: Error,
+  req: NormalizedRequest
+) => Promise<NormalizedResponse | undefined> | NormalizedResponse | undefined;
+```
+
+**Use cases:**
+- Error logging
+- Error tracking (Sentry, etc.)
+- Custom error responses
+- Alerting
+- Resource cleanup on errors
+
+## Framework Integration
+
+### Next.js API Route
+
+```typescript
+import { WebhookRouter } from "@zap-studio/webhooks";
+import type { NextApiRequest, NextApiResponse } from "next";
+
+const router = new WebhookRouter<WebhookMap>();
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const normalizedRequest = {
+    method: req.method as any,
+    path: req.url || "/",
+    headers: new Headers(req.headers as any),
+    rawBody: Buffer.from(JSON.stringify(req.body)),
+  };
+
+  const response = await router.handle(normalizedRequest);
+  res.status(response.status).json(response.body);
+}
+```
+
+### Express
+
+```typescript
+import express from "express";
+import { WebhookRouter } from "@zap-studio/webhooks";
+
+const app = express();
+const router = new WebhookRouter<WebhookMap>();
+
+app.post("/webhook/*", express.raw({ type: "application/json" }), async (req, res) => {
+  const normalizedRequest = {
+    method: "POST",
+    path: req.path,
+    headers: new Headers(req.headers as any),
+    rawBody: req.body,
+  };
+
+  const response = await router.handle(normalizedRequest);
+  res.status(response.status).json(response.body);
+});
+```
+
+## License
+
+MIT
