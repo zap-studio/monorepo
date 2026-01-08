@@ -98,7 +98,9 @@ export default defineConfig({
         },
         {
           text: "Distribution",
-          items: [{ text: "Packaging & Publishing", link: "/local-ts/distribution" }],
+          items: [
+            { text: "Packaging & Publishing", link: "/local-ts/distribution" },
+          ],
         },
       ],
       "/packages/fetch/": [
