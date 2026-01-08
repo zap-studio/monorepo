@@ -1,0 +1,212 @@
+# Theming
+
+Local.ts includes a complete theming system with light, dark, and system modes. The theme is persisted in settings and automatically applied on app launch.
+
+## How Theming Works
+
+The theme system has two stores working together:
+
+1. **Settings Store** — Persists the user's theme preference (`light`, `dark`, or `system`)
+2. **Theme Store** — Manages the resolved theme and applies it to the DOM
+
+When the theme is `system`, the app listens for OS theme changes and updates automatically.
+
+## Theme Values
+
+| Value | Description |
+|-------|-------------|
+| `light` | Always use light mode |
+| `dark` | Always use dark mode |
+| `system` | Match the operating system preference |
+
+## Reading the Theme
+
+Use the `useTheme` hook to access theme state:
+
+```typescript
+import { useTheme } from "@/stores/theme";
+
+function ThemeIndicator() {
+  // The user's preference: "light" | "dark" | "system"
+  const theme = useTheme((state) => state.theme);
+
+  // The actual applied theme: "light" | "dark"
+  const resolvedTheme = useTheme((state) => state.resolvedTheme);
+
+  return (
+    <div>
+      <p>Preference: {theme}</p>
+      <p>Applied: {resolvedTheme}</p>
+    </div>
+  );
+}
+```
+
+## Changing the Theme
+
+Use `setTheme` to update the theme. It automatically persists to settings:
+
+```typescript
+import { useTheme } from "@/stores/theme";
+
+function ThemeSwitcher() {
+  const setTheme = useTheme((state) => state.setTheme);
+  const theme = useTheme((state) => state.theme);
+
+  return (
+    <div>
+      <button
+        onClick={() => setTheme("light")}
+        data-active={theme === "light"}
+      >
+        Light
+      </button>
+      <button
+        onClick={() => setTheme("dark")}
+        data-active={theme === "dark"}
+      >
+        Dark
+      </button>
+      <button
+        onClick={() => setTheme("system")}
+        data-active={theme === "system"}
+      >
+        System
+      </button>
+    </div>
+  );
+}
+```
+
+## How Theme Application Works
+
+The theme store applies themes by adding or removing the `dark` class on the document root:
+
+```typescript
+function getSystemTheme(): "light" | "dark" {
+  if (typeof window === "undefined") return "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
+function applyThemeToDOM(theme: Theme): "light" | "dark" {
+  const resolved = theme === "system" ? getSystemTheme() : theme;
+  const root = document.documentElement;
+
+  if (resolved === "dark") {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+
+  return resolved;
+}
+```
+
+This works with Tailwind CSS's dark mode variant. Style dark mode with the `dark:` prefix:
+
+```css
+.card {
+  background: white;
+}
+
+.dark .card {
+  background: #1a1a1a;
+}
+```
+
+Or with Tailwind utilities:
+
+```html
+<div class="bg-white dark:bg-gray-900">
+  Content
+</div>
+```
+
+The following line has already been included in your `styles/globals.css`:
+
+```css
+@custom-variant dark (&:where(.dark, .dark *));
+```
+
+This line defines a custom CSS variant called `dark`. It allows you to target any element with the `dark` class, or any of its descendants, for dark mode styling.
+
+This makes it easier to apply dark mode styles globally using the `.dark` class, especially when working with utility frameworks like Tailwind CSS.
+
+For additional details, refer to [Tailwind's dark mode guide](https://tailwindcss.com/docs/dark-mode).
+
+## System Theme Detection
+
+The theme store listens for system theme changes:
+
+```typescript
+export const useTheme = create<ThemeStore>((set) => ({
+  // ...
+
+  initialize: () => {
+    const settings = useSettings.getState().settings;
+    if (settings) {
+      const resolved = applyThemeToDOM(settings.theme);
+      set({ theme: settings.theme, resolvedTheme: resolved });
+    }
+
+    const handleChange = () => {
+      const currentTheme = useTheme.getState().theme;
+      if (currentTheme === "system") {
+        const resolved = applyThemeToDOM("system");
+        set({ resolvedTheme: resolved });
+      }
+    };
+
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    mediaQuery.addEventListener("change", handleChange);
+  },
+}));
+```
+
+When the OS theme changes and the user has selected `system`, the app updates instantly.
+
+## CSS Variables
+
+Local.ts uses CSS variables for colors, defined in `src/styles/globals.css`. You can customize the color palette:
+
+```css
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --primary: 240 5.9% 10%;
+  /* ... more variables */
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  /* ... dark mode overrides */
+}
+```
+
+Then use them in your styles:
+
+```css
+.my-component {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+```
+
+## Accessing Theme Outside React
+
+To access Zustand store state outside of React components, use the following approach:
+
+```typescript
+import { useTheme } from "@/stores/theme";
+
+// Get current theme
+const { theme, resolvedTheme } = useTheme.getState();
+
+// Check if dark mode
+const isDark = resolvedTheme === "dark";
+```

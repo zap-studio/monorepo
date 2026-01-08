@@ -56,7 +56,7 @@ Thank you for your interest in contributing to Zap Studio! We welcome all contri
 
 - **[Lefthook](https://github.com/evilmartians/lefthook)**: Manages Git hooks (pre-commit, pre-push) defined in `lefthook.yml` at the repository root.
 - **[Ultracite](https://www.ultracite.ai)**: Ensures accessibility and code style rules.
-- **[Turbo](https://turbo.build/)**: Used for fast monorepo builds, caching, and running tasks efficiently across packages.
+- **[Turbo](https://turborepo.com/)**: Used for fast monorepo builds, caching, and running tasks efficiently across packages.
 
 ## Additional Resources
 
