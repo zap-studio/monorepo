@@ -101,23 +101,6 @@ Available flags:
 | `StateFlags::FULLSCREEN` | Fullscreen state |
 | `StateFlags::all()` | All of the above |
 
-## Excluding Windows from State Tracking
-
-Skip state restoration for specific windows (like the splash screen) by modifying the plugin builder:
-
-```rust
-// src-tauri/src/plugins/window_state.rs
-pub fn init<R: Runtime>(app: &App<R>) -> Result<(), Box<dyn std::error::Error>> {
-    app.handle().plugin(
-        tauri_plugin_window_state::Builder::default()
-            .skip(vec!["splashscreen"])
-            .build()
-    )?;
-
-    // ... rest of initialization ...
-}
-```
-
 ## Default Window Size
 
 Set default dimensions in `src-tauri/tauri.conf.json` for first launch before any state is saved:
