@@ -20,6 +20,7 @@ export default defineConfig({
     nav: [
       { text: "Home", link: "/" },
       { text: "Zap.ts", link: "/zap-ts/" },
+      { text: "Local.ts", link: "/local-ts/" },
       {
         text: "Packages",
         items: [
@@ -58,6 +59,46 @@ export default defineConfig({
         {
           text: "Zap.ts",
           items: [{ text: "Overview", link: "/zap-ts/" }],
+        },
+      ],
+      "/local-ts/": [
+        {
+          text: "Local.ts",
+          items: [
+            { text: "Overview", link: "/local-ts/" },
+            { text: "Motivation", link: "/local-ts/motivation" },
+            { text: "Getting Started", link: "/local-ts/getting-started" },
+          ],
+        },
+        {
+          text: "Customization",
+          items: [
+            { text: "Project Identity", link: "/local-ts/project-identity" },
+            { text: "Sidebar Navigation", link: "/local-ts/sidebar" },
+            { text: "App Icons", link: "/local-ts/app-icons" },
+          ],
+        },
+        {
+          text: "Guides",
+          items: [
+            { text: "Settings", link: "/local-ts/settings" },
+            { text: "Theming", link: "/local-ts/theming" },
+            { text: "Database", link: "/local-ts/database" },
+            { text: "Notifications", link: "/local-ts/notifications" },
+            { text: "Logging", link: "/local-ts/logging" },
+            { text: "System Tray", link: "/local-ts/system-tray" },
+            { text: "Window State", link: "/local-ts/window-state" },
+            { text: "Autostart", link: "/local-ts/autostart" },
+            { text: "Splash Screen", link: "/local-ts/splash-screen" },
+          ],
+        },
+        {
+          text: "Tooling",
+          items: [{ text: "Code Quality", link: "/local-ts/code-quality" }],
+        },
+        {
+          text: "Distribution",
+          items: [{ text: "Packaging & Publishing", link: "/local-ts/distribution" }],
         },
       ],
       "/packages/fetch/": [
