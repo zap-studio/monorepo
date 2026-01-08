@@ -1,17 +1,13 @@
-import type {
-  ClientTransportOptions,
-  EventDefinitions,
-  EventKeys,
-} from "../../types";
+import type { EventDefinitions, EventKeys } from "../../types";
 import { BaseClientTransport } from "../base/client";
 
 /**
  * Parsed SSE event data
  */
-type ParsedEventData = {
+interface ParsedEventData {
   data: unknown;
   timestamp: number;
-};
+}
 
 /**
  * SSE Client Transport
@@ -43,10 +39,6 @@ export class SSEClientTransport<
   TEventDefinitions extends EventDefinitions,
 > extends BaseClientTransport<TEventDefinitions> {
   private eventSource: EventSource | null = null;
-
-  constructor(url: string, options: ClientTransportOptions<TEventDefinitions>) {
-    super(url, options);
-  }
 
   /**
    * Connect to the SSE server

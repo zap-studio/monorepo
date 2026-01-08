@@ -58,7 +58,6 @@ export function createChatHelpers<
   leaveChat: (userId: string, chatId: string) => Promise<void>;
 } {
   return {
-    // biome-ignore lint/nursery/useMaxParams: We need to pass all parameters to the function using this API
     async sendMessage(
       chatId: string,
       senderId: string,

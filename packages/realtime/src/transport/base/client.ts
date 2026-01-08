@@ -28,13 +28,13 @@ export type AnyEventHandler<TEventDefinitions extends EventDefinitions> = <
 /**
  * Reconnection configuration extracted from options
  */
-export type ReconnectConfig = {
+export interface ReconnectConfig {
   enabled: boolean;
   maxAttempts: number;
   delay: number;
   maxDelay: number;
   multiplier: number;
-};
+}
 
 /**
  * Base Client Transport

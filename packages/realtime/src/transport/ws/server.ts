@@ -227,7 +227,9 @@ export class WSServerTransport<TEventDefinitions extends EventDefinitions>
 
     if (this.keepAliveInterval > 0) {
       pingTimer = setInterval(() => {
-        if (ws.readyState !== WebSocket.OPEN) return;
+        if (ws.readyState !== WebSocket.OPEN) {
+          return;
+        }
 
         sendRaw(formatPingMessage());
 
@@ -304,7 +306,9 @@ export class WSConnectionManager<TEventDefinitions extends EventDefinitions> {
    */
   remove(id: string): void {
     const handler = this.connections.get(id);
-    if (!handler) return;
+    if (!handler) {
+      return;
+    }
 
     for (const channel of handler.channels) {
       const subs = this.channelSubscriptions.get(channel);
@@ -322,7 +326,9 @@ export class WSConnectionManager<TEventDefinitions extends EventDefinitions> {
    */
   subscribe(id: string, channel: string): void {
     const handler = this.connections.get(id);
-    if (!handler) return;
+    if (!handler) {
+      return;
+    }
 
     handler.channels.add(channel);
 
@@ -339,7 +345,9 @@ export class WSConnectionManager<TEventDefinitions extends EventDefinitions> {
    */
   unsubscribe(id: string, channel: string): void {
     const handler = this.connections.get(id);
-    if (!handler) return;
+    if (!handler) {
+      return;
+    }
 
     handler.channels.delete(channel);
 
@@ -373,7 +381,9 @@ export class WSConnectionManager<TEventDefinitions extends EventDefinitions> {
     data: InferEventTypes<TEventDefinitions>[TEvent]
   ): void {
     const subs = this.channelSubscriptions.get(channel);
-    if (!subs) return;
+    if (!subs) {
+      return;
+    }
 
     for (const handler of subs) {
       if (handler.isOpen) {
@@ -391,7 +401,9 @@ export class WSConnectionManager<TEventDefinitions extends EventDefinitions> {
     data: InferEventTypes<TEventDefinitions>[TEvent]
   ): boolean {
     const handler = this.connections.get(id);
-    if (!handler?.isOpen) return false;
+    if (!handler?.isOpen) {
+      return false;
+    }
 
     handler.send(event, data);
     return true;

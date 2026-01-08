@@ -8,10 +8,10 @@ import type {
 /**
  * Base server transport options
  */
-export type BaseServerTransportOptions = {
+export interface BaseServerTransportOptions {
   /** Keep-alive interval in milliseconds (0 to disable) */
   keepAliveInterval?: number;
-};
+}
 
 /**
  * Generate a unique message/connection ID

@@ -27,10 +27,10 @@ export type InferEventTypes<TEventDefinitions extends EventDefinitions> = {
 /**
  * Event message structure sent over transports
  */
-export type EventMessage<
+export interface EventMessage<
   TEventDefinitions extends EventDefinitions = EventDefinitions,
   TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
-> = {
+> {
   /** Unique event ID */
   id: string;
   /** Event name */
@@ -41,45 +41,45 @@ export type EventMessage<
   timestamp: number;
   /** Optional retry interval in milliseconds for SSE */
   retry?: number;
-};
+}
 
 /**
  * Raw event message before validation
  */
-export type RawEventMessage = {
+export interface RawEventMessage {
   id: string;
   event: string;
   data: unknown;
   timestamp: number;
   retry?: number;
-};
+}
 
 /**
  * Subscription options
  */
-export type SubscribeOptions = {
+export interface SubscribeOptions {
   /** Optional channel/topic to subscribe to */
   channel?: string;
   /** Optional filter function */
   filter?: (event: RawEventMessage) => boolean;
   /** AbortSignal to cancel the subscription */
   signal?: AbortSignal;
-};
+}
 
 /**
  * Publish options
  */
-export type PublishOptions = {
+export interface PublishOptions {
   /** Optional channel/topic to publish to */
   channel?: string;
   /** Optional retry interval hint for SSE clients */
   retry?: number;
-};
+}
 
 /**
  * Server-side emitter interface for pub/sub
  */
-export type ServerEmitter<TEventDefinitions extends EventDefinitions> = {
+export interface ServerEmitter<TEventDefinitions extends EventDefinitions> {
   /**
    * Subscribe to events, returns an async iterator
    */
@@ -100,7 +100,7 @@ export type ServerEmitter<TEventDefinitions extends EventDefinitions> = {
    * Close the emitter and cleanup resources
    */
   close(): void;
-};
+}
 
 /**
  * Base client transport interface for receiving events from server.
@@ -108,7 +108,7 @@ export type ServerEmitter<TEventDefinitions extends EventDefinitions> = {
  * This is the common interface implemented by all client transports (SSE, WebSocket).
  * It provides unidirectional event reception with reconnection support.
  */
-export type ClientTransport<TEventDefinitions extends EventDefinitions> = {
+export interface ClientTransport<TEventDefinitions extends EventDefinitions> {
   /**
    * Connect to the event stream
    */
@@ -151,7 +151,7 @@ export type ClientTransport<TEventDefinitions extends EventDefinitions> = {
    * Check if currently connected
    */
   readonly connected: boolean;
-};
+}
 
 /**
  * Bidirectional client transport interface.
@@ -179,23 +179,24 @@ export type BidirectionalClientTransport<
 /**
  * Client transport options with reconnection configuration
  */
-export type ClientTransportOptions<TEventDefinitions extends EventDefinitions> =
-  {
-    /** Event definitions for validation */
-    definitions: TEventDefinitions;
-    /**
-     * Whether to validate incoming events
-     * @default true
-     */
-    validate?: boolean;
-    /** Reconnection options */
-    reconnect?: ReconnectOptions;
-  };
+export interface ClientTransportOptions<
+  TEventDefinitions extends EventDefinitions,
+> {
+  /** Event definitions for validation */
+  definitions: TEventDefinitions;
+  /**
+   * Whether to validate incoming events
+   * @default true
+   */
+  validate?: boolean;
+  /** Reconnection options */
+  reconnect?: ReconnectOptions;
+}
 
 /**
  * Reconnection options for client transports
  */
-export type ReconnectOptions = {
+export interface ReconnectOptions {
   /**
    * Enable automatic reconnection
    * @default true
@@ -221,7 +222,7 @@ export type ReconnectOptions = {
    * @default 2
    */
   multiplier?: number;
-};
+}
 
 /**
  * Base server transport interface.
@@ -229,12 +230,12 @@ export type ReconnectOptions = {
  * Common interface for all server transports. Specific transport types
  * extend this with their own methods.
  */
-export type ServerTransport = {
+export interface ServerTransport {
   /**
    * Get the keep-alive interval in milliseconds
    */
   getKeepAliveInterval?(): number;
-};
+}
 
 /**
  * SSE server transport interface.
@@ -287,21 +288,23 @@ export type WSServerTransport<TEventDefinitions extends EventDefinitions> =
 /**
  * WebSocket protocol message structure
  */
-export type WSProtocolMessage<
+export interface WSProtocolMessage<
   TEventDefinitions extends EventDefinitions = EventDefinitions,
-> = {
+> {
   type: "event" | "ping" | "pong" | "subscribe" | "error";
   payload?:
     | EventMessage<TEventDefinitions>
     | { channel?: string }
     | { message: string };
   timestamp: number;
-};
+}
 
 /**
  * WebSocket connection handler interface
  */
-export type WSConnectionHandler<TEventDefinitions extends EventDefinitions> = {
+export interface WSConnectionHandler<
+  TEventDefinitions extends EventDefinitions,
+> {
   /** Unique connection ID */
   readonly id: string;
   /** Check if connection is open */
@@ -317,34 +320,34 @@ export type WSConnectionHandler<TEventDefinitions extends EventDefinitions> = {
   sendRaw(message: WSProtocolMessage<TEventDefinitions>): void;
   /** Close the connection */
   close(code?: number, reason?: string): void;
-};
+}
 
 /**
  * Server SSE transport configuration options
  */
-export type ServerSSETransportOptions = {
+export interface ServerSSETransportOptions {
   /** Heartbeat interval in milliseconds (0 to disable) */
   heartbeatInterval?: number;
   /** Custom headers to add to the response */
   headers?: Record<string, string>;
   /** AbortSignal to cancel the stream */
   signal?: AbortSignal;
-};
+}
 
 /**
  * Server WebSocket transport configuration options
  */
-export type ServerWebSocketTransportOptions = {
+export interface ServerWebSocketTransportOptions {
   /** Callback to execute when the connection is closed */
   onClose?: () => void;
   /** Callback to execute when an error occurs */
   onError?: (error: Error) => void;
-};
+}
 
 /**
  * Events API interface
  */
-export type EventsAPI<TEventDefinitions extends EventDefinitions> = {
+export interface EventsAPI<TEventDefinitions extends EventDefinitions> {
   /**
    * Validate event data against schema
    */
@@ -368,7 +371,7 @@ export type EventsAPI<TEventDefinitions extends EventDefinitions> = {
   subscribe(
     options?: SubscribeOptions
   ): AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown>;
-};
+}
 
 /**
  * Extract EventDefinitions from EventsAPI type
@@ -379,11 +382,11 @@ export type ExtractEventDefinitions<T> =
 /**
  * Plugin definition type
  */
-export type RealtimePlugin<TEventDefinitions extends EventDefinitions> = {
+export interface RealtimePlugin<TEventDefinitions extends EventDefinitions> {
   /** Plugin name */
   name: string;
   /** Event definitions provided by this plugin */
   definitions: TEventDefinitions;
   /** Optional helper functions */
   helpers?: Record<string, (...args: unknown[]) => unknown>;
-};
+}

@@ -9,17 +9,17 @@ import type { UseTransportClientReturn } from "./use-transport-client";
 /**
  * Base return type for transport event hooks (receive-only)
  */
-export type UseTransportEventReturn<
+export interface UseTransportEventReturn<
   TEventDefinitions extends EventDefinitions,
   TEvent extends EventKeys<TEventDefinitions>,
-> = {
+> {
   /** Latest event data received */
   data: InferEventTypes<TEventDefinitions>[TEvent] | null;
   /** Whether currently connected */
   connected: boolean;
   /** Last error if any */
   error: Error | null;
-};
+}
 
 /**
  * Extended return type with send capability (for bidirectional transports)

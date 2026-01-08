@@ -6,7 +6,7 @@ import type { EventDefinitions, EventMessage, RawEventMessage } from "../types";
  * Subscribers are used internally to manage event delivery, filtering, and
  * queueing for both in-memory and Redis-based emitters.
  */
-export type Subscriber<TEventDefinitions extends EventDefinitions> = {
+export interface Subscriber<TEventDefinitions extends EventDefinitions> {
   /**
    * Optional channel name this subscriber is listening to.
    * If undefined, subscriber may receive events from default or broadcast channels.
@@ -41,4 +41,4 @@ export type Subscriber<TEventDefinitions extends EventDefinitions> = {
    * If the signal is triggered, the subscriber is removed and the generator completes.
    */
   signal?: AbortSignal;
-};
+}

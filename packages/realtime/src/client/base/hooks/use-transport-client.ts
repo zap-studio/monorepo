@@ -15,7 +15,7 @@ import type {
 /**
  * Base options for transport client hooks
  */
-export type UseTransportClientOptions = {
+export interface UseTransportClientOptions {
   /**
    * Whether to connect on mount
    * @default true
@@ -36,14 +36,14 @@ export type UseTransportClientOptions = {
     maxDelay?: number;
     multiplier?: number;
   };
-};
+}
 
 /**
  * Base return type for transport client hooks
  */
-export type UseTransportClientReturn<
+export interface UseTransportClientReturn<
   TEventDefinitions extends EventDefinitions,
-> = {
+> {
   /** Whether currently connected */
   connected: boolean;
   /** Register event handler */
@@ -64,7 +64,7 @@ export type UseTransportClientReturn<
   connect: () => void;
   /** Manually disconnect */
   disconnect: () => void;
-};
+}
 
 /**
  * Factory function type for creating transport clients
@@ -181,7 +181,9 @@ export function useTransportClient<
   // Register pending handlers when client becomes available
   useEffect(() => {
     const client = clientRef.current;
-    if (!client) return;
+    if (!client) {
+      return;
+    }
 
     const unsubscribes: (() => void)[] = [];
 
@@ -202,7 +204,7 @@ export function useTransportClient<
         unsub();
       }
     };
-  }, [connected]);
+  }, []);
 
   const on = useCallback(
     <TEvent extends EventKeys<TEventDefinitions>>(

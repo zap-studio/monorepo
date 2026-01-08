@@ -8,7 +8,7 @@ export type ChatMessageType = "text" | "image" | "file" | "system";
 /**
  * Standard chat message payload type
  */
-export type ChatMessagePayload = {
+export interface ChatMessagePayload {
   /** Unique message ID */
   id: string;
   /** Chat/room ID */
@@ -29,12 +29,12 @@ export type ChatMessagePayload = {
   createdAt: number;
   /** Edit timestamp */
   editedAt?: number;
-};
+}
 
 /**
  * Message edit payload type
  */
-export type ChatMessageEditedPayload = {
+export interface ChatMessageEditedPayload {
   /** Message ID */
   id: string;
   /** Chat/room ID */
@@ -43,22 +43,22 @@ export type ChatMessageEditedPayload = {
   content: string;
   /** Edit timestamp */
   editedAt: number;
-};
+}
 
 /**
  * Message deleted payload type
  */
-export type ChatMessageDeletedPayload = {
+export interface ChatMessageDeletedPayload {
   /** Message ID */
   id: string;
   /** Chat/room ID */
   chatId: string;
-};
+}
 
 /**
  * User presence payload type
  */
-export type UserPresencePayload = {
+export interface UserPresencePayload {
   /** User ID */
   userId: string;
   /** User display name */
@@ -69,12 +69,12 @@ export type UserPresencePayload = {
   online: boolean;
   /** Last seen timestamp */
   lastSeen: number;
-};
+}
 
 /**
  * User typing indicator payload type
  */
-export type UserTypingIndicatorPayload = {
+export interface UserTypingIndicatorPayload {
   /** User ID */
   userId: string;
   /** User display name */
@@ -83,34 +83,34 @@ export type UserTypingIndicatorPayload = {
   chatId: string;
   /** Whether user is typing */
   typing: boolean;
-};
+}
 
 /**
  * User joined payload type
  */
-export type UserJoinedPayload = {
+export interface UserJoinedPayload {
   /** User ID */
   userId: string;
   /** User display name */
   userName: string;
   /** Chat/room ID */
   chatId: string;
-};
+}
 
 /**
  * User left payload type
  */
-export type UserLeftPayload = {
+export interface UserLeftPayload {
   /** User ID */
   userId: string;
   /** Chat/room ID */
   chatId: string;
-};
+}
 
 /**
  * Complete event definitions
  */
-export type ChatEventDefinitions = {
+export interface ChatEventDefinitions {
   /**
    * Message event definition
    */
@@ -139,12 +139,12 @@ export type ChatEventDefinitions = {
    * User left event definition
    */
   userLeft: StandardSchemaV1<UserLeftPayload>;
-};
+}
 
 /**
  * Send message options
  */
-export type SendMessageOptions = {
+export interface SendMessageOptions {
   /**
    * Message type
    * @default "text"
@@ -154,4 +154,4 @@ export type SendMessageOptions = {
   replyTo?: string;
   /** Optional metadata */
   metadata?: Record<string, unknown>;
-};
+}

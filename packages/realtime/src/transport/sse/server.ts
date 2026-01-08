@@ -60,10 +60,10 @@ function formatHeartbeat(): string {
 /**
  * SSE server transport options
  */
-export type SSEServerTransportOptions = {
+export interface SSEServerTransportOptions {
   /** Heartbeat interval in milliseconds (0 to disable) */
   heartbeatInterval?: number;
-};
+}
 
 /**
  * SSE Server Transport

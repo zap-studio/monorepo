@@ -16,7 +16,7 @@ import { handleSubscription } from "./utils";
  * Redis client should implement this interface
  * Users must provide their own Redis client instance
  */
-export type RedisClient = {
+export interface RedisClient {
   /* Publish a message to a Redis channel */
   publish(channel: string, message: string): Promise<number>;
   /* Subscribe to a Redis channel */
@@ -34,12 +34,12 @@ export type RedisClient = {
   quit(): Promise<void>;
   /* Duplicate the Redis client with same configuration */
   duplicate(): RedisClient;
-};
+}
 
 /**
  * Redis emitter options
  */
-export type RedisEmitterOptions = {
+export interface RedisEmitterOptions {
   /** Redis client for publishing */
   publisher: RedisClient;
   /** Redis client for subscribing (will be the same as publisher if not provided) */
@@ -48,7 +48,7 @@ export type RedisEmitterOptions = {
   channelPrefix?: string;
   /** Default channel name when none specified */
   defaultChannel?: string;
-};
+}
 
 /**
  * Redis Server Emitter
