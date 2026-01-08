@@ -148,15 +148,15 @@ export type Rules<
  * };
  * ```
  */
-export type PermitConfig<
+export interface PermitConfig<
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
-> = {
+> {
   resources: TResources;
   actions: TActions;
   rules: Rules<TContext, TResources, TActions>;
-};
+}
 
 /**
  * Represents a policy object that can evaluate permissions.
@@ -173,11 +173,11 @@ export type PermitConfig<
  * policy.can(ctx, "read", "post", postData); // true or false
  * ```
  */
-export type Policy<
+export interface Policy<
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
-> = {
+> {
   /**
    * Determines if the specified action is permitted on the resource in the given context.
    */
@@ -187,4 +187,4 @@ export type Policy<
     resourceType: K,
     resource: InferResource<TResources, K>
   ): boolean;
-};
+}

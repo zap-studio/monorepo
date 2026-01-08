@@ -48,7 +48,7 @@ export type ExtendedRequestInit<
 /**
  * Internal defaults used by fetchInternal
  */
-export type FetchDefaults = {
+export interface FetchDefaults {
   /**
    * Base URL to prepend to all requests
    * @default ""
@@ -74,7 +74,7 @@ export type FetchDefaults = {
    * @default true
    */
   throwOnValidationError: boolean;
-};
+}
 
 /**
  * Options for creating a custom fetch instance with `createFetch`
@@ -84,7 +84,7 @@ export type CreateFetchOptions = Partial<FetchDefaults>;
 /**
  * Type-safe fetch function with Standard Schema validation support
  */
-export type $Fetch = {
+export interface $Fetch {
   /**
    * Fetch with schema validation and throwOnValidationError: false
    * @param resource - URL or path to fetch
@@ -118,12 +118,12 @@ export type $Fetch = {
    * @returns Raw Response object
    */
   (resource: string, options?: ExtendedRequestInit): Promise<Response>;
-};
+}
 
 /**
  * API HTTP method-specific fetch functions
  */
-export type ApiMethods = {
+export interface ApiMethods {
   /**
    * GET method fetch function
    */
@@ -144,4 +144,4 @@ export type ApiMethods = {
    * PATCH method fetch function
    */
   patch: $Fetch;
-};
+}
