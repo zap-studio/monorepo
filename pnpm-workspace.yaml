@@ -31,7 +31,7 @@ catalogs:
   vitepress:
     '@shikijs/vitepress-twoslash': ^3.20.0
     vitepress: ^2.0.0-alpha.15
-    vitepress-plugin-llms: ^1.9.3
+    vitepress-plugin-llms: ^1.10.0
 
 onlyBuiltDependencies:
   - '@swc/core'
