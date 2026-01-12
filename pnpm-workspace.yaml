@@ -21,13 +21,15 @@ catalogs:
     '@vitest/ui': ^4.0.17
     vitest: ^4.0.17
   tooling:
-    '@changesets/cli': ^2.29.8
-    '@turbo/gen': ^2.7.4
+    "@changesets/cli": ^2.29.8
+    "@turbo/gen": ^2.7.4
     lefthook: ^2.0.14
+    nyc: ^17.1.0
     rimraf: ^6.1.2
     turbo: ^2.7.4
   types:
-    '@types/node': ^25.0.2
+    "@types/express": ^5.0.5
+    "@types/node": ^25.0.2
   vitepress:
     '@shikijs/vitepress-twoslash': ^3.20.0
     vitepress: ^2.0.0-alpha.15
@@ -38,3 +40,4 @@ onlyBuiltDependencies:
   - core-js-pure
   - esbuild
   - lefthook
+  - sharp
