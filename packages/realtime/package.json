@@ -1,0 +1,138 @@
+{
+  "name": "@zap-studio/realtime",
+  "version": "0.0.0",
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "homepage": "https://www.zapstudio.dev/packages/realtime",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/realtime"
+  },
+  "description": "Type-safe real-time event streaming library with SSE and WebSocket support",
+  "keywords": [
+    "realtime",
+    "sse",
+    "server-sent-events",
+    "websocket",
+    "events",
+    "pubsub",
+    "typescript",
+    "type-safe"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsdown --config tsdown.config.ts",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest --watch"
+  },
+  "dependencies": {
+    "@standard-schema/spec": "catalog:base",
+    "@zap-studio/validation": "workspace:*"
+  },
+  "devDependencies": {
+    "@tanstack/react-router": "catalog:tanstack",
+    "@types/node": "catalog:types",
+    "@types/react": "catalog:react",
+    "@vitest/coverage-v8": "catalog:testing",
+    "@zap-studio/tsdown-config": "workspace:*",
+    "@zap-studio/typescript-config": "workspace:*",
+    "@zap-studio/vitest-config": "workspace:*",
+    "arktype": "catalog:base",
+    "elysia": "catalog:elysia",
+    "hono": "catalog:hono",
+    "next": "catalog:next",
+    "react": "catalog:react",
+    "tsdown": "catalog:base",
+    "typescript": "catalog:base",
+    "valibot": "catalog:base",
+    "vitest": "catalog:testing",
+    "zod": "catalog:base"
+  },
+  "peerDependencies": {
+    "@tanstack/react-router": ">=1.0.0",
+    "arktype": ">=2.0.0",
+    "elysia": ">=1.0.0",
+    "hono": ">=3.0.0",
+    "next": ">=15.0.0",
+    "react": ">=18.0.0",
+    "valibot": ">=1.0.0",
+    "zod": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/react-router": {
+      "optional": true
+    },
+    "arktype": {
+      "optional": true
+    },
+    "elysia": {
+      "optional": true
+    },
+    "hono": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "valibot": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
+    }
+  },
+  "exports": {
+    "./adapters/elysia/sse": "./dist/adapters/elysia/sse.mjs",
+    "./adapters/hono/sse": "./dist/adapters/hono/sse.mjs",
+    "./adapters/next/sse": "./dist/adapters/next/sse.mjs",
+    "./adapters/tanstack/sse": "./dist/adapters/tanstack/sse.mjs",
+    "./client/base/hooks/use-transport-client": "./dist/client/base/hooks/use-transport-client.mjs",
+    "./client/base/hooks/use-transport-event": "./dist/client/base/hooks/use-transport-event.mjs",
+    "./client/base/hooks/use-transport-event-history": "./dist/client/base/hooks/use-transport-event-history.mjs",
+    "./client/base/vanilla/create-transport-client": "./dist/client/base/vanilla/create-transport-client.mjs",
+    "./client/react/sse": "./dist/client/react/sse.mjs",
+    "./client/react/ws": "./dist/client/react/ws.mjs",
+    "./client/vanilla/sse": "./dist/client/vanilla/sse.mjs",
+    "./client/vanilla/ws": "./dist/client/vanilla/ws.mjs",
+    "./emitters": "./dist/emitters/index.mjs",
+    "./emitters/in-memory": "./dist/emitters/in-memory.mjs",
+    "./emitters/redis": "./dist/emitters/redis.mjs",
+    "./emitters/types": "./dist/emitters/types.mjs",
+    "./emitters/utils": "./dist/emitters/utils.mjs",
+    "./plugins/chat": "./dist/plugins/chat/index.mjs",
+    "./plugins/chat/server": "./dist/plugins/chat/server.mjs",
+    "./plugins/chat/types": "./dist/plugins/chat/types.mjs",
+    "./plugins/notifications": "./dist/plugins/notifications/index.mjs",
+    "./plugins/notifications/server": "./dist/plugins/notifications/server.mjs",
+    "./plugins/notifications/types": "./dist/plugins/notifications/types.mjs",
+    "./presets/arktype": "./dist/presets/arktype.mjs",
+    "./presets/valibot": "./dist/presets/valibot.mjs",
+    "./presets/zod": "./dist/presets/zod.mjs",
+    "./server": "./dist/server/index.mjs",
+    "./transport/base/client": "./dist/transport/base/client.mjs",
+    "./transport/base/server": "./dist/transport/base/server.mjs",
+    "./transport/sse/client": "./dist/transport/sse/client.mjs",
+    "./transport/sse/server": "./dist/transport/sse/server.mjs",
+    "./transport/ws/client": "./dist/transport/ws/client.mjs",
+    "./transport/ws/server": "./dist/transport/ws/server.mjs",
+    "./types": "./dist/types.mjs",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts"
+}
