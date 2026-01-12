@@ -55,8 +55,8 @@ catalogs:
       specifier: ^2.7.3
       version: 2.7.3
     lefthook:
-      specifier: ^2.0.13
-      version: 2.0.13
+      specifier: ^2.0.14
+      version: 2.0.14
     rimraf:
       specifier: ^6.1.2
       version: 6.1.2
@@ -99,13 +99,13 @@ importers:
         version: 2.7.3(@swc/core@1.13.21(@swc/helpers@0.5.17))(@types/node@25.0.3)(typescript@5.9.3)
       '@vitest/ui':
         specifier: catalog:testing
-        version: 4.0.16(vitest@4.0.16)
+        version: 4.0.16(vitest@4.0.15)
       '@zap-studio/vitest-config':
         specifier: workspace:*
         version: link:configs/vitest-config
       lefthook:
         specifier: catalog:tooling
-        version: 2.0.13
+        version: 2.0.14
       nyc:
         specifier: ^17.1.0
         version: 17.1.0
@@ -120,7 +120,7 @@ importers:
         version: 7.0.10(typescript@5.9.3)(valibot@1.2.0(typescript@5.9.3))
       vitest:
         specifier: catalog:testing
-        version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
+        version: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
 
   apps/docs:
     devDependencies:
@@ -1747,22 +1747,8 @@ packages:
   '@vitest/expect@4.0.15':
     resolution: {integrity: sha512-Gfyva9/GxPAWXIWjyGDli9O+waHDC0Q0jaLdFP1qPAUUfo1FEXPXUfUkp3eZA0sSq340vPycSyOlYUeM15Ft1w==}
 
-  '@vitest/expect@4.0.16':
-    resolution: {integrity: sha512-eshqULT2It7McaJkQGLkPjPjNph+uevROGuIMJdG3V+0BSR2w9u6J9Lwu+E8cK5TETlfou8GRijhafIMhXsimA==}
-
   '@vitest/mocker@4.0.15':
     resolution: {integrity: sha512-CZ28GLfOEIFkvCFngN8Sfx5h+Se0zN+h4B7yOsPVCcgtiO7t5jt9xQh2E1UkFep+eb9fjyMfuC5gBypwb07fvQ==}
-    peerDependencies:
-      msw: ^2.4.9
-      vite: ^6.0.0 || ^7.0.0-0
-    peerDependenciesMeta:
-      msw:
-        optional: true
-      vite:
-        optional: true
-
-  '@vitest/mocker@4.0.16':
-    resolution: {integrity: sha512-yb6k4AZxJTB+q9ycAvsoxGn+j/po0UaPgajllBgt1PzoMAAmJGYFdDk0uCcRcxb3BrME34I6u8gHZTQlkqSZpg==}
     peerDependencies:
       msw: ^2.4.9
       vite: ^6.0.0 || ^7.0.0-0
@@ -1781,20 +1767,11 @@ packages:
   '@vitest/runner@4.0.15':
     resolution: {integrity: sha512-+A+yMY8dGixUhHmNdPUxOh0la6uVzun86vAbuMT3hIDxMrAOmn5ILBHm8ajrqHE0t8R9T1dGnde1A5DTnmi3qw==}
 
-  '@vitest/runner@4.0.16':
-    resolution: {integrity: sha512-VWEDm5Wv9xEo80ctjORcTQRJ539EGPB3Pb9ApvVRAY1U/WkHXmmYISqU5E79uCwcW7xYUV38gwZD+RV755fu3Q==}
-
   '@vitest/snapshot@4.0.15':
     resolution: {integrity: sha512-A7Ob8EdFZJIBjLjeO0DZF4lqR6U7Ydi5/5LIZ0xcI+23lYlsYJAfGn8PrIWTYdZQRNnSRlzhg0zyGu37mVdy5g==}
 
-  '@vitest/snapshot@4.0.16':
-    resolution: {integrity: sha512-sf6NcrYhYBsSYefxnry+DR8n3UV4xWZwWxYbCJUt2YdvtqzSPR7VfGrY0zsv090DAbjFZsi7ZaMi1KnSRyK1XA==}
-
   '@vitest/spy@4.0.15':
     resolution: {integrity: sha512-+EIjOJmnY6mIfdXtE/bnozKEvTC4Uczg19yeZ2vtCz5Yyb0QQ31QWVQ8hswJ3Ysx/K2EqaNsVanjr//2+P3FHw==}
-
-  '@vitest/spy@4.0.16':
-    resolution: {integrity: sha512-4jIOWjKP0ZUaEmJm00E0cOBLU+5WE0BpeNr3XN6TEF05ltro6NJqHWxXD0kA8/Zc8Nh23AT8WQxwNG+WeROupw==}
 
   '@vitest/ui@4.0.15':
     resolution: {integrity: sha512-sxSyJMaKp45zI0u+lHrPuZM1ZJQ8FaVD35k+UxVrha1yyvQ+TZuUYllUixwvQXlB7ixoDc7skf3lQPopZIvaQw==}
@@ -2116,10 +2093,6 @@ packages:
 
   chai@6.2.1:
     resolution: {integrity: sha512-p4Z49OGG5W/WBCPSS/dH3jQ73kD6tiMmUM+bckNK6Jr5JHMG3k9bg/BvKR8lKmtVBKmOiuVaV2ws8s9oSbwysg==}
-    engines: {node: '>=18'}
-
-  chai@6.2.2:
-    resolution: {integrity: sha512-NUPRluOfOiTKBKvWPtSD4PhFvWCqOi0BGStNWs57X9js7XGTprSmFoz5F0tWhR4WPjNeR9jXqdC7/UpSJTnlRg==}
     engines: {node: '>=18'}
 
   chalk@2.4.2:
@@ -3022,58 +2995,58 @@ packages:
   knitwork@1.3.0:
     resolution: {integrity: sha512-4LqMNoONzR43B1W0ek0fhXMsDNW/zxa1NdFAVMY+k28pgZLovR4G3PB5MrpTxCy1QaZCqNoiaKPr5w5qZHfSNw==}
 
-  lefthook-darwin-arm64@2.0.13:
-    resolution: {integrity: sha512-KbQqpNSNTugjtPzt97CNcy/XZy5asJ0+uSLoHc4ML8UCJdsXKYJGozJHNwAd0Xfci/rQlj82A7rPOuTdh0jY0Q==}
+  lefthook-darwin-arm64@2.0.14:
+    resolution: {integrity: sha512-5pSYHM3oiI2dApZ/r+fUE6EEh3fJx5ggUnS3B/XoK7moM8T2gLJJqvSyU8kGP/KE0xZrQs37RQYm1UskO/zeNA==}
     cpu: [arm64]
     os: [darwin]
 
-  lefthook-darwin-x64@2.0.13:
-    resolution: {integrity: sha512-s/vI6sEE8/+rE6CONZzs59LxyuSc/KdU+/3adkNx+Q13R1+p/AvQNeszg3LAHzXmF3NqlxYf8jbj/z5vBzEpRw==}
+  lefthook-darwin-x64@2.0.14:
+    resolution: {integrity: sha512-Hp8DJ9rRfG3eluguHomUz8XU2bGM2wctjsWQYoQ1OTh6eWL6BMQjToumComEt1imJXjO8EVmME5gNjBUJNgjxw==}
     cpu: [x64]
     os: [darwin]
 
-  lefthook-freebsd-arm64@2.0.13:
-    resolution: {integrity: sha512-iQeJTU7Zl8EJlCMQxNZQpJFAQ9xl40pydUIv5SYnbJ4nqIr9ONuvrioNv6N2LtKP5aBl1nIWQQ9vMjgVyb3k+A==}
+  lefthook-freebsd-arm64@2.0.14:
+    resolution: {integrity: sha512-3dwB8e0Jedzgwq8q8pg7QjdLHIX46+fPJ33uH/DkFHayzh0wqaz8cU63VSwFWKo7uq5SJ8IJ8qvTjBpDqfdKTQ==}
     cpu: [arm64]
     os: [freebsd]
 
-  lefthook-freebsd-x64@2.0.13:
-    resolution: {integrity: sha512-99cAXKRIzpq/u3obUXbOQJCHP+0ZkJbN3TF+1ZQZlRo3Y6+mPSCg9fh/oi6dgbtu4gTI5Ifz3o5p2KZzAIF9ZQ==}
+  lefthook-freebsd-x64@2.0.14:
+    resolution: {integrity: sha512-hL8DJzCYDRZH0oW1+QGXUtBPcsl1ZLxutiuuqBUHtFNt0M25QxSKAN7yAx77l1xEYVg+GgxUgOytYSr0Q7K9wQ==}
     cpu: [x64]
     os: [freebsd]
 
-  lefthook-linux-arm64@2.0.13:
-    resolution: {integrity: sha512-RWarenY3kLy/DT4/8dY2bwDlYwlELRq9MIFq+FiMYmoBHES3ckWcLX2JMMlM49Y672paQc7MbneSrNUn/FQWhg==}
+  lefthook-linux-arm64@2.0.14:
+    resolution: {integrity: sha512-VubfIiTNthTsjiDX/ZDROLtXyDFkN3REKQjLYu+VA6VJPHrNPVhRs30bc3975JTFT6bf20gKDSAIWqCokDrewQ==}
     cpu: [arm64]
     os: [linux]
 
-  lefthook-linux-x64@2.0.13:
-    resolution: {integrity: sha512-QZRcxXGf8Uj/75ITBqoBh0zWhJE7+uFoRxEHwBq0Qjv55Q4KcFm7FBN/IFQCSd14reY5pmY3kDaWVVy60cAGJA==}
+  lefthook-linux-x64@2.0.14:
+    resolution: {integrity: sha512-osVNjNAxPTsJnZnX5ahHJJW1XvDYvYuMdddAQ+49mnXPfTyHPQQsPIGo90nHm7WmBi6oUwfOCZC5HPPzqEc2oA==}
     cpu: [x64]
     os: [linux]
 
-  lefthook-openbsd-arm64@2.0.13:
-    resolution: {integrity: sha512-LAuOWwnNmOlRE0RxKMOhIz5Kr9tXi0rCjzXtDARW9lvfAV6Br2wP+47q0rqQ8m/nVwBYoxfJ/RDunLbb86O1nA==}
+  lefthook-openbsd-arm64@2.0.14:
+    resolution: {integrity: sha512-VikhZ+oo9pHWa7HGtYVti/aEUACll/t93Lh06UKeLp9ctUqILINs/pYB0NatUXT0Krc4g6u8w5LtzMtDS8qdlg==}
     cpu: [arm64]
     os: [openbsd]
 
-  lefthook-openbsd-x64@2.0.13:
-    resolution: {integrity: sha512-n9TIN3QLncyxOHomiKKwzDFHKOCm5H28CVNAZFouKqDwEaUGCs5TJI88V85j4/CgmLVUU8uUn4ClVCxIWYG59w==}
+  lefthook-openbsd-x64@2.0.14:
+    resolution: {integrity: sha512-TW3GUSYlbdmrwRJ61bduLJEyXrTTQzOeGszODlf4caRr2cu7jmml1/vSz2wLJ43Gokx/59FXeSIcysMKijIBhw==}
     cpu: [x64]
     os: [openbsd]
 
-  lefthook-windows-arm64@2.0.13:
-    resolution: {integrity: sha512-sdSC4F9Di7y0t43Of9MOA5g/0CmvkM4juQ3sKfUhRcoygetLJn4PR2/pvuDOIaGf4mNMXBP5IrcKaeDON9HrcA==}
+  lefthook-windows-arm64@2.0.14:
+    resolution: {integrity: sha512-TH04uiyvEIe6r1adfQUxQwFDtE7GRGfOcFsRZb7hwMc5OzixLw5a/HqT3qDmNbBlq8QYFpSH9R9VtjLjio/Odw==}
     cpu: [arm64]
     os: [win32]
 
-  lefthook-windows-x64@2.0.13:
-    resolution: {integrity: sha512-ccl1v7Fl10qYoghEtjXN+JC1x/y/zLM/NSHf3NFGeKEGBNd1P5d/j6w8zVmhfzi+ekS8whXrcNbRAkLdAqUrSw==}
+  lefthook-windows-x64@2.0.14:
+    resolution: {integrity: sha512-ucxZc+FJErQu9gS/+ldhEMTKbhA/Ez4F1dPIR06E14Jax7pqdls1IyRWPhRPlvsDh7dkmXrEuBm1iglWpR0/8w==}
     cpu: [x64]
     os: [win32]
 
-  lefthook@2.0.13:
-    resolution: {integrity: sha512-D39rCVl7/GpqakvhQvqz07SBpzUWTvWjXKnBZyIy8O6D+Lf9xD6tnbHtG5nWXd9iPvv1AKGQwL9R/e5rNtV6SQ==}
+  lefthook@2.0.14:
+    resolution: {integrity: sha512-JpNpQLXwJJlWNZB/4gDD8UW1pVdABZ6bYRbCShjYHoPq70xbcuZKVIKj177IxJ4R5Nz6xD33BJVdUb1N1NdO7g==}
     hasBin: true
 
   lightningcss-android-arm64@1.30.2:
@@ -4509,40 +4482,6 @@ packages:
       '@vitest/browser-preview': 4.0.15
       '@vitest/browser-webdriverio': 4.0.15
       '@vitest/ui': 4.0.15
-      happy-dom: '*'
-      jsdom: '*'
-    peerDependenciesMeta:
-      '@edge-runtime/vm':
-        optional: true
-      '@opentelemetry/api':
-        optional: true
-      '@types/node':
-        optional: true
-      '@vitest/browser-playwright':
-        optional: true
-      '@vitest/browser-preview':
-        optional: true
-      '@vitest/browser-webdriverio':
-        optional: true
-      '@vitest/ui':
-        optional: true
-      happy-dom:
-        optional: true
-      jsdom:
-        optional: true
-
-  vitest@4.0.16:
-    resolution: {integrity: sha512-E4t7DJ9pESL6E3I8nFjPa4xGUd3PmiWDLsDztS2qXSJWfHtbQnwAWylaBvSNY48I3vr8PTqIZlyK8TE3V3CA4Q==}
-    engines: {node: ^20.0.0 || ^22.0.0 || >=24.0.0}
-    hasBin: true
-    peerDependencies:
-      '@edge-runtime/vm': '*'
-      '@opentelemetry/api': ^1.9.0
-      '@types/node': ^20.0.0 || ^22.0.0 || >=24.0.0
-      '@vitest/browser-playwright': 4.0.16
-      '@vitest/browser-preview': 4.0.16
-      '@vitest/browser-webdriverio': 4.0.16
-      '@vitest/ui': 4.0.16
       happy-dom: '*'
       jsdom: '*'
     peerDependenciesMeta:
@@ -6170,15 +6109,6 @@ snapshots:
       chai: 6.2.1
       tinyrainbow: 3.0.3
 
-  '@vitest/expect@4.0.16':
-    dependencies:
-      '@standard-schema/spec': 1.1.0
-      '@types/chai': 5.2.3
-      '@vitest/spy': 4.0.16
-      '@vitest/utils': 4.0.16
-      chai: 6.2.2
-      tinyrainbow: 3.0.3
-
   '@vitest/mocker@4.0.15(vite@7.3.0(@types/node@25.0.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))':
     dependencies:
       '@vitest/spy': 4.0.15
@@ -6195,14 +6125,6 @@ snapshots:
     optionalDependencies:
       vite: 7.3.0(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
 
-  '@vitest/mocker@4.0.16(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))':
-    dependencies:
-      '@vitest/spy': 4.0.16
-      estree-walker: 3.0.3
-      magic-string: 0.30.21
-    optionalDependencies:
-      vite: 7.3.1(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
-
   '@vitest/pretty-format@4.0.15':
     dependencies:
       tinyrainbow: 3.0.3
@@ -6216,26 +6138,13 @@ snapshots:
       '@vitest/utils': 4.0.15
       pathe: 2.0.3
 
-  '@vitest/runner@4.0.16':
-    dependencies:
-      '@vitest/utils': 4.0.16
-      pathe: 2.0.3
-
   '@vitest/snapshot@4.0.15':
     dependencies:
       '@vitest/pretty-format': 4.0.15
       magic-string: 0.30.21
       pathe: 2.0.3
 
-  '@vitest/snapshot@4.0.16':
-    dependencies:
-      '@vitest/pretty-format': 4.0.16
-      magic-string: 0.30.21
-      pathe: 2.0.3
-
   '@vitest/spy@4.0.15': {}
-
-  '@vitest/spy@4.0.16': {}
 
   '@vitest/ui@4.0.15(vitest@4.0.15)':
     dependencies:
@@ -6249,7 +6158,7 @@ snapshots:
       vitest: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(@vitest/ui@4.0.15)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
     optional: true
 
-  '@vitest/ui@4.0.16(vitest@4.0.16)':
+  '@vitest/ui@4.0.16(vitest@4.0.15)':
     dependencies:
       '@vitest/utils': 4.0.16
       fflate: 0.8.2
@@ -6258,7 +6167,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
+      vitest: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
 
   '@vitest/utils@4.0.15':
     dependencies:
@@ -6600,8 +6509,6 @@ snapshots:
   ccount@2.0.1: {}
 
   chai@6.2.1: {}
-
-  chai@6.2.2: {}
 
   chalk@2.4.2:
     dependencies:
@@ -7582,48 +7489,48 @@ snapshots:
   knitwork@1.3.0:
     optional: true
 
-  lefthook-darwin-arm64@2.0.13:
+  lefthook-darwin-arm64@2.0.14:
     optional: true
 
-  lefthook-darwin-x64@2.0.13:
+  lefthook-darwin-x64@2.0.14:
     optional: true
 
-  lefthook-freebsd-arm64@2.0.13:
+  lefthook-freebsd-arm64@2.0.14:
     optional: true
 
-  lefthook-freebsd-x64@2.0.13:
+  lefthook-freebsd-x64@2.0.14:
     optional: true
 
-  lefthook-linux-arm64@2.0.13:
+  lefthook-linux-arm64@2.0.14:
     optional: true
 
-  lefthook-linux-x64@2.0.13:
+  lefthook-linux-x64@2.0.14:
     optional: true
 
-  lefthook-openbsd-arm64@2.0.13:
+  lefthook-openbsd-arm64@2.0.14:
     optional: true
 
-  lefthook-openbsd-x64@2.0.13:
+  lefthook-openbsd-x64@2.0.14:
     optional: true
 
-  lefthook-windows-arm64@2.0.13:
+  lefthook-windows-arm64@2.0.14:
     optional: true
 
-  lefthook-windows-x64@2.0.13:
+  lefthook-windows-x64@2.0.14:
     optional: true
 
-  lefthook@2.0.13:
+  lefthook@2.0.14:
     optionalDependencies:
-      lefthook-darwin-arm64: 2.0.13
-      lefthook-darwin-x64: 2.0.13
-      lefthook-freebsd-arm64: 2.0.13
-      lefthook-freebsd-x64: 2.0.13
-      lefthook-linux-arm64: 2.0.13
-      lefthook-linux-x64: 2.0.13
-      lefthook-openbsd-arm64: 2.0.13
-      lefthook-openbsd-x64: 2.0.13
-      lefthook-windows-arm64: 2.0.13
-      lefthook-windows-x64: 2.0.13
+      lefthook-darwin-arm64: 2.0.14
+      lefthook-darwin-x64: 2.0.14
+      lefthook-freebsd-arm64: 2.0.14
+      lefthook-freebsd-x64: 2.0.14
+      lefthook-linux-arm64: 2.0.14
+      lefthook-linux-x64: 2.0.14
+      lefthook-openbsd-arm64: 2.0.14
+      lefthook-openbsd-x64: 2.0.14
+      lefthook-windows-arm64: 2.0.14
+      lefthook-windows-x64: 2.0.14
 
   lightningcss-android-arm64@1.30.2:
     optional: true
@@ -9381,15 +9288,15 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.0.16(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2):
+  vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2):
     dependencies:
-      '@vitest/expect': 4.0.16
-      '@vitest/mocker': 4.0.16(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
-      '@vitest/pretty-format': 4.0.16
-      '@vitest/runner': 4.0.16
-      '@vitest/snapshot': 4.0.16
-      '@vitest/spy': 4.0.16
-      '@vitest/utils': 4.0.16
+      '@vitest/expect': 4.0.15
+      '@vitest/mocker': 4.0.15(vite@7.3.0(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
+      '@vitest/pretty-format': 4.0.15
+      '@vitest/runner': 4.0.15
+      '@vitest/snapshot': 4.0.15
+      '@vitest/spy': 4.0.15
+      '@vitest/utils': 4.0.15
       es-module-lexer: 1.7.0
       expect-type: 1.3.0
       magic-string: 0.30.21
@@ -9401,12 +9308,12 @@ snapshots:
       tinyexec: 1.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vite: 7.3.1(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
+      vite: 7.3.0(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       '@types/node': 25.0.3
-      '@vitest/ui': 4.0.16(vitest@4.0.16)
+      '@vitest/ui': 4.0.16(vitest@4.0.15)
       jsdom: 27.2.0
     transitivePeerDependencies:
       - jiti
