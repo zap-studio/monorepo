@@ -27,7 +27,7 @@ catalogs:
     rimraf: ^6.1.2
     turbo: ^2.7.4
   types:
-    '@types/node': ^25.0.2
+    '@types/node': ^25.0.9
   vitepress:
     '@shikijs/vitepress-twoslash': ^3.20.0
     vitepress: ^2.0.0-alpha.15
