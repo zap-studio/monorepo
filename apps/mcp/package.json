@@ -1,0 +1,27 @@
+{
+    "name": "mcp",
+    "version": "0.1.0",
+    "type": "module",
+    "private": true,
+    "description": "MCP Server aggregator for Zap Studio documentation",
+    "scripts": {
+        "prepare": "node scripts/bundle-docs.mjs",
+        "dev": "node scripts/bundle-docs.mjs && tsx watch src/index.ts",
+        "build": "node scripts/bundle-docs.mjs && tsdown src/index.ts"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.25.2",
+        "glob": "^13.0.0 "
+    },
+    "devDependencies": {
+        "tsx": "catalog:base",
+        "@types/node": "catalog:types",
+        "@zap-studio/typescript-config": "workspace:*",
+        "typescript": "catalog:base",
+        "tsdown": "catalog:base",
+        "@zap-studio/tsdown-config": "workspace:*",
+        "@vitest/coverage-v8": "catalog:testing",
+        "@zap-studio/vitest-config": "workspace:*",
+        "vitest": "catalog:testing"
+    }
+}
