@@ -12,6 +12,7 @@ catalogs:
     typescript: ^5.9.3
     valibot: ^1.2.0
     zod: ^4.2.0
+    tsx: ^4.21.0
   linting:
     '@biomejs/biome': ^2.3.11
     '@commitlint/cli': ^20.3.1

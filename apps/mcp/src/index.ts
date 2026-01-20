@@ -1,8 +1,6 @@
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js"
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
-import { readFile } from "fs/promises";
-import path from "path";
-import { fileURLToPath } from "url";
+import { allDocs } from "./docs-bundle.ts";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 
 
@@ -14,62 +12,55 @@ const server = new McpServer({
 }
 )
 
-// Dynamic template that will be used by the client
-const docTemplate = new ResourceTemplate("docs://{package}/{section}", {
-    list: undefined // On laisse vide car c'est dynamique
-});
-
-// Metadata for the ressource 
-const resourceMetadata = {
-    name: "Zap Studio Knowledge Base",
-    description: "Dynamic access to the project documentation. Replace {package} with the module name (e.g., validation, permit, fetch) and {section} with the specific documentation topic or file name."
-}
 
 
-// Current URL of the file
-const currentUrl = import.meta.url;
-
-// Convert the URL to a system path
-const currentPath = fileURLToPath(currentUrl);
-
-// Only keep the directory 
-const __dirname = path.dirname(currentPath);
-
-
-/**
- * Register the ressource "zap-docs" in the server
- *
- * This allows the Client to get documentation information 
- * about a specific {package} and {section} without giving the
- * whole documentation to the LLM .
- */
 server.registerResource(
-    "zap-docs",
-    docTemplate,
-    resourceMetadata,
-    async (uri, { package: pkg, section }) => {
-
-        const filePath = path.resolve(
-            __dirname,
-            "../../docs/src/packages",
-            pkg as string,
-            `${section}.md`
-        );
-        try {
-            const content = await readFile(filePath, "utf-8");
-            return {
-                contents: [{
-                    uri: uri.href,
-                    text: content,
-                    mimeType: "text/markdown",
-                }],
-            };
-        } catch (error) {
-            throw new Error(`Document ${pkg}/${section}.md not found.`);
-        }
-    }
-
+    "docs-index",
+    "docs://_all",
+    {
+        title: "Documentation Index",
+        description: "Contains the list of all available documentation file paths"
+    },
+    async (uri) => ({
+        contents: [{
+            uri: uri.href,
+            text: "Available documentation paths:\n" + Object.keys(allDocs).join("\n"),
+            mimeType: "text/plain"
+        }]
+    })
 );
 
-const transport = new StdioServerTransport();
-await server.connect(transport);
+server.registerResource(
+    "doc-content",
+    new ResourceTemplate("docs://{+path}", { list: undefined }),
+    {
+        title: "Documentation Content",
+        description: "Retrieves the markdown content. Use the exact path from the index."
+    },
+    async (uri, { path }) => {
+        const pathString = String(path);
+        const cleanPath = pathString.startsWith('/') ? pathString.slice(1) : pathString;
+        const content = allDocs[cleanPath as keyof typeof allDocs];
+        if (!content) {
+            throw new Error(`Document not found: ${path}`);
+        }
+        return {
+            contents: [{
+                uri: uri.href,
+                text: content,
+                mimeType: "text/markdown"
+            }]
+        };
+    }
+);
+
+async function main() {
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    console.error("Zap MCP Server running on stdio");
+}
+
+main().catch((error) => {
+    console.error("Fatal error in main():", error);
+    process.exit(1);
+});
