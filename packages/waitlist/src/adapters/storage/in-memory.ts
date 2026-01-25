@@ -1,6 +1,6 @@
+import type { Email } from "@zap-studio/validation/email/types";
 import { computeReferralScore } from "../../referral";
 import type {
-  Email,
   EmailEntry,
   ReferralCode,
   ReferralLink,
