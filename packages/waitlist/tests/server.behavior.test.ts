@@ -4,9 +4,14 @@ import type { Email } from "@zap-studio/validation/email/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { WaitlistStorageAdapter } from "../src/adapters/storage/types";
 import { EventBus } from "../src/events";
+import { calculateScores, sortEntriesByScores } from "../src/leaderboard";
 import type { ReferralLink } from "../src/referral/types";
 import { WaitlistServer } from "../src/server";
-import type { EmailEntry, JoinSuccessResult } from "../src/types";
+import type {
+  EmailEntry,
+  JoinSuccessResult,
+  PositionStrategy,
+} from "../src/types";
 
 // Mock adapter implementation for testing
 class MockAdapter implements WaitlistStorageAdapter {
@@ -105,6 +110,21 @@ class MockAdapter implements WaitlistStorageAdapter {
 
   async countReferrals(): Promise<number> {
     return await Promise.resolve(this.referrals.size);
+  }
+
+  async getLeaderboard(
+    positionStrategy: PositionStrategy
+  ): Promise<{ email: Email; score: number }[]> {
+    const entries = await this.list();
+    const referrals = await this.listReferrals();
+    const scores = calculateScores(entries, referrals, {
+      strategy: positionStrategy,
+    });
+    const sortedEntries = sortEntriesByScores(entries, scores);
+    return sortedEntries.map((entry) => ({
+      email: entry.email,
+      score: scores.get(entry.email) ?? 0,
+    }));
   }
 }
 
@@ -401,7 +421,9 @@ describe("WaitlistServer", () => {
 
       (
         adapter as MockAdapter & {
-          getLeaderboard?: () => Promise<typeof mockLeaderboard>;
+          getLeaderboard: (
+            strategy: PositionStrategy
+          ) => Promise<typeof mockLeaderboard>;
         }
       ).getLeaderboard = vi.fn().mockResolvedValue(mockLeaderboard);
 
@@ -410,7 +432,9 @@ describe("WaitlistServer", () => {
       expect(
         (
           adapter as MockAdapter & {
-            getLeaderboard?: () => Promise<typeof mockLeaderboard>;
+            getLeaderboard: (
+              strategy: PositionStrategy
+            ) => Promise<typeof mockLeaderboard>;
           }
         ).getLeaderboard
       ).toHaveBeenCalled();

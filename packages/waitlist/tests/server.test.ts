@@ -4,9 +4,14 @@ import type { Email } from "@zap-studio/validation/email/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { WaitlistStorageAdapter } from "../src/adapters/storage/types";
 import { EventBus } from "../src/events";
+import { calculateScores, sortEntriesByScores } from "../src/leaderboard";
 import type { ReferralLink } from "../src/referral/types";
 import { WaitlistServer } from "../src/server";
-import type { EmailEntry, JoinSuccessResult } from "../src/types";
+import type {
+  EmailEntry,
+  JoinSuccessResult,
+  PositionStrategy,
+} from "../src/types";
 
 // Mock adapter implementation for testing
 class MockAdapter implements WaitlistStorageAdapter {
@@ -105,6 +110,21 @@ class MockAdapter implements WaitlistStorageAdapter {
 
   async countReferrals(): Promise<number> {
     return await Promise.resolve(this.referrals.size);
+  }
+
+  async getLeaderboard(
+    positionStrategy: PositionStrategy
+  ): Promise<{ email: Email; score: number }[]> {
+    const entries = await this.list();
+    const referrals = await this.listReferrals();
+    const scores = calculateScores(entries, referrals, {
+      strategy: positionStrategy,
+    });
+    const sortedEntries = sortEntriesByScores(entries, scores);
+    return sortedEntries.map((entry) => ({
+      email: entry.email,
+      score: scores.get(entry.email) ?? 0,
+    }));
   }
 }
 
@@ -502,11 +522,19 @@ describe("WaitlistServer", () => {
     });
 
     it("should handle complex referral networks", async () => {
+      const referralServer = new WaitlistServer({
+        adapter,
+        events: eventBus,
+        config: { positionStrategy: "number-of-referrals" },
+      });
+
       const users: JoinSuccessResult[] = [];
 
       // Create 10 initial users
       for (let i = 0; i < 10; i += 1) {
-        const user = await server.join({ email: `user${i}@example.com` });
+        const user = await referralServer.join({
+          email: `user${i}@example.com`,
+        });
         if (!user.ok) {
           throw new Error(user.message ?? "Expected join to succeed");
         }
@@ -516,14 +544,14 @@ describe("WaitlistServer", () => {
       // Each user refers 3 new users
       for (let i = 0; i < 10; i += 1) {
         for (let j = 0; j < 3; j += 1) {
-          await server.join({
+          await referralServer.join({
             email: `referee${i}-${j}@example.com`,
             referralCode: users[i]?.entry.referralCode,
           });
         }
       }
 
-      const leaderboard = await server.getLeaderboard();
+      const leaderboard = await referralServer.getLeaderboard();
       expect(leaderboard).toHaveLength(40); // 10 initial + 30 referees
 
       // All initial users should have score of 3

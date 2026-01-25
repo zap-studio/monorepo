@@ -329,7 +329,7 @@ describe("InMemoryAdapter", () => {
         createdAt: new Date(),
       });
 
-      const leaderboard = await adapter.getLeaderboard();
+      const leaderboard = await adapter.getLeaderboard("number-of-referrals");
 
       expect(leaderboard).toHaveLength(3);
       // user2 should be first with 2 referrals
@@ -343,7 +343,7 @@ describe("InMemoryAdapter", () => {
     });
 
     it("returns empty leaderboard when no entries exist", async () => {
-      const leaderboard = await adapter.getLeaderboard();
+      const leaderboard = await adapter.getLeaderboard("creation-date");
       expect(leaderboard).toEqual([]);
     });
 
@@ -366,7 +366,7 @@ describe("InMemoryAdapter", () => {
         });
       }
 
-      const leaderboard = await adapter.getLeaderboard();
+      const leaderboard = await adapter.getLeaderboard("number-of-referrals");
       // Verify scores are in descending order
       for (let i = 0; i < leaderboard.length - 1; i += 1) {
         expect(leaderboard[i]?.score).toBeGreaterThanOrEqual(

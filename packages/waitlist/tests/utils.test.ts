@@ -2,8 +2,10 @@
 // biome-ignore-all lint/performance/useTopLevelRegex: This is a test file so performance is not critical.
 
 import { describe, expect, it } from "vitest";
+import { calculatePosition } from "../src/leaderboard";
+import type { ReferralLink } from "../src/referral/types";
 import type { EmailEntry } from "../src/types";
-import { calculatePosition, generateReferralCode } from "../src/utils";
+import { generateReferralCode } from "../src/utils";
 
 describe("generateReferralCode", () => {
   it("returns deterministic code when seed provided", () => {
@@ -59,19 +61,40 @@ describe("calculatePosition", () => {
       { email: "f@test.com", createdAt: new Date(6), referredBy: "AAA" },
     ];
 
+    const referrals: ReferralLink[] = [
+      {
+        referrer: "b@test.com",
+        referee: "d@test.com",
+        createdAt: new Date(4),
+      },
+      {
+        referrer: "b@test.com",
+        referee: "e@test.com",
+        createdAt: new Date(5),
+      },
+      {
+        referrer: "a@test.com",
+        referee: "f@test.com",
+        createdAt: new Date(6),
+      },
+    ];
+
     expect(
       calculatePosition(referralEntries, "b@test.com", {
         strategy: "number-of-referrals",
+        referrals,
       })
     ).toBe(1);
     expect(
       calculatePosition(referralEntries, "a@test.com", {
         strategy: "number-of-referrals",
+        referrals,
       })
     ).toBe(2);
     expect(
       calculatePosition(referralEntries, "c@test.com", {
         strategy: "number-of-referrals",
+        referrals,
       })
     ).toBe(3);
   });
