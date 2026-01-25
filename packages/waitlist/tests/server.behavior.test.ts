@@ -347,6 +347,29 @@ describe("WaitlistServer", () => {
       expect(leaderboard[4]?.score).toBe(0);
     });
 
+    it("should use creation-date strategy when configured", async () => {
+      const strategySdk = new WaitlistServer({
+        adapter,
+        events: eventBus,
+        config: { positionStrategy: "creation-date" },
+      });
+
+      await adapter.create({
+        email: "late@example.com",
+        createdAt: new Date(2),
+      });
+      await adapter.create({
+        email: "early@example.com",
+        createdAt: new Date(1),
+      });
+
+      const leaderboard = await strategySdk.getLeaderboard();
+
+      expect(leaderboard).toHaveLength(2);
+      expect(leaderboard[0]?.email).toBe("early@example.com");
+      expect(leaderboard[1]?.email).toBe("late@example.com");
+    });
+
     it("should use adapter's getLeaderboard if available", async () => {
       const mockLeaderboard = [
         { email: "user1@example.com", score: 10 },
