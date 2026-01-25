@@ -7,6 +7,7 @@ import {
   EmptyResponseSchema,
   JoinResultSchema,
   LeaderboardResponseSchema,
+  PositionResponseSchema,
 } from "./schemas";
 import type { JoinInput, JoinResult } from "./types";
 
@@ -90,9 +91,17 @@ export class WaitlistClient implements WaitlistService {
    * Get a user's current position in the waitlist.
    * Note: Requires a server endpoint to be implemented.
    */
-  async getPosition(_email: Email): Promise<number | undefined> {
-    await Promise.resolve();
-    throw new Error("WaitlistClient.getPosition is not implemented yet.");
+  async getPosition(email: Email): Promise<number | undefined> {
+    const result = await this.api.get(
+      `${this.prefix}/position`,
+      PositionResponseSchema,
+      {
+        throwOnValidationError: true,
+        searchParams: { email },
+      }
+    );
+
+    return result ?? undefined;
   }
 
   /**

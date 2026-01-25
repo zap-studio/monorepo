@@ -62,4 +62,8 @@ export const LeaderboardResponseSchema: z.ZodArray<
   typeof LeaderboardEntrySchema
 > = z.array(LeaderboardEntrySchema);
 
+export const PositionResponseSchema: z.ZodNullable<z.ZodNumber> = z
+  .number()
+  .nullable();
+
 export const EmptyResponseSchema: z.ZodUnknown = z.unknown();
