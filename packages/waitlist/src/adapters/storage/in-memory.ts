@@ -62,21 +62,11 @@ export class InMemoryAdapter implements WaitlistStorageAdapter {
   }
 
   async findByEmail(email: Email): Promise<EmailEntry | null> {
-    for (const entry of this.entries.values()) {
-      if (entry.email === email) {
-        return entry;
-      }
-    }
-    return await Promise.resolve(null);
+    return await Promise.resolve(this.entries.get(email) ?? null);
   }
 
   async findByReferralCode(code: ReferralCode): Promise<EmailEntry | null> {
-    for (const entry of this.entries.values()) {
-      if (entry.referralCode === code) {
-        return entry;
-      }
-    }
-    return await Promise.resolve(null);
+    return await Promise.resolve(this.entries.get(code) ?? null);
   }
 
   async getReferralCount(email: Email): Promise<number> {
