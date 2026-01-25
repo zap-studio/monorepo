@@ -66,7 +66,12 @@ export class InMemoryAdapter implements WaitlistStorageAdapter {
   }
 
   async findByReferralCode(code: ReferralCode): Promise<EmailEntry | null> {
-    return await Promise.resolve(this.entries.get(code) ?? null);
+    for (const entry of this.entries.values()) {
+      if (entry.referralCode === code) {
+        return await Promise.resolve(entry);
+      }
+    }
+    return await Promise.resolve(null);
   }
 
   async getReferralCount(email: Email): Promise<number> {
