@@ -60,6 +60,7 @@
   },
   "exports": {
     "./adapters/storage/in-memory": "./dist/adapters/storage/in-memory.mjs",
+    "./adapters/storage/types": "./dist/adapters/storage/types.mjs",
     "./client": "./dist/client.mjs",
     "./contract": "./dist/contract.mjs",
     "./events": "./dist/events/index.mjs",
