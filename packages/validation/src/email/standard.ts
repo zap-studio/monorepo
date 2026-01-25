@@ -46,7 +46,8 @@ export const EmailSchema: EmailSchema = {
       const parts = value.split("@");
 
       if (parts.length === 2) {
-        const [local, domain] = parts;
+        const local = parts[0] ?? "";
+        const domain = parts[1] ?? "";
 
         if (local.length === 0) {
           issues.push({
