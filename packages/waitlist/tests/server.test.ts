@@ -2,8 +2,8 @@
 
 import type { Email } from "@zap-studio/validation/email/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { JoinSuccessResult } from "../src/contract";
 import { EventBus } from "../src/events";
-import type { JoinSuccessResult } from "../src/sdk/types";
 import { WaitlistServer } from "../src/server";
 import type {
   EmailEntry,
@@ -127,8 +127,8 @@ describe("WaitlistServer", () => {
       expect(server).toBeInstanceOf(WaitlistServer);
     });
 
-    it("should extend BaseWaitlistSDK", () => {
-      // Check that it has the methods from BaseWaitlistSDK
+    it("should expose waitlist methods", () => {
+      // Check that it has the expected methods
       expect(server.join).toBeDefined();
       expect(server.remove).toBeDefined();
       expect(server.getLeaderboard).toBeDefined();

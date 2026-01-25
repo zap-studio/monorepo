@@ -29,14 +29,44 @@ describe("WaitlistClient", () => {
       });
       expect(customClient.baseUrl).toBe("https://api.example.com");
     });
+
+    it("should accept custom prefix", async () => {
+      const customClient = new WaitlistClient({
+        baseUrl,
+        prefix: "/v1/waitlist/",
+      });
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          ok: true,
+          entry: {
+            email: "user@example.com",
+            createdAt: new Date().toISOString(),
+            referralCode: "ABC",
+          },
+        }),
+      });
+
+      await customClient.join({ email: "user@example.com" });
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        `${baseUrl}/v1/waitlist/join`,
+        expect.any(Object)
+      );
+    });
   });
 
   describe("join", () => {
     it("should make POST request to join endpoint", async () => {
       const email = "user@example.com";
       const mockResponse = {
-        email,
-        referralCode: "ABC-123",
+        ok: true,
+        entry: {
+          email,
+          createdAt: new Date().toISOString(),
+          referralCode: "ABC-123",
+        },
       };
 
       mockFetch.mockResolvedValue({
@@ -44,7 +74,7 @@ describe("WaitlistClient", () => {
         json: async () => mockResponse,
       });
 
-      const result = await client.join(email);
+      const result = await client.join({ email });
 
       expect(mockFetch).toHaveBeenCalledWith(
         `${baseUrl}/api/waitlist/join`,
@@ -53,15 +83,25 @@ describe("WaitlistClient", () => {
           body: JSON.stringify({ email, referralCode: undefined }),
         })
       );
-      expect(result).toEqual(mockResponse);
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.entry.email).toBe(email);
+        expect(result.entry.referralCode).toBe("ABC-123");
+        expect(result.entry.createdAt).toBeInstanceOf(Date);
+      }
     });
 
     it("should include referral code when provided", async () => {
       const email = "user@example.com";
       const referralCode = "REF-123";
       const mockResponse = {
-        email,
-        referralCode: "ABC-123",
+        ok: true,
+        entry: {
+          email,
+          createdAt: new Date().toISOString(),
+          referralCode: "ABC-123",
+          referredBy: referralCode,
+        },
       };
 
       mockFetch.mockResolvedValue({
@@ -69,7 +109,7 @@ describe("WaitlistClient", () => {
         json: async () => mockResponse,
       });
 
-      const result = await client.join(email, referralCode);
+      const result = await client.join({ email, referralCode });
 
       expect(mockFetch).toHaveBeenCalledWith(
         `${baseUrl}/api/waitlist/join`,
@@ -78,7 +118,11 @@ describe("WaitlistClient", () => {
           body: JSON.stringify({ email, referralCode }),
         })
       );
-      expect(result).toEqual(mockResponse);
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.entry.email).toBe(email);
+        expect(result.entry.referralCode).toBe("ABC-123");
+      }
     });
 
     it("should throw FetchError when request fails", async () => {
@@ -88,8 +132,10 @@ describe("WaitlistClient", () => {
         statusText: "Bad Request",
       });
 
-      await expect(client.join("invalid-email")).rejects.toThrow(FetchError);
-      await expect(client.join("invalid-email")).rejects.toThrow(
+      await expect(client.join({ email: "invalid-email" })).rejects.toThrow(
+        FetchError
+      );
+      await expect(client.join({ email: "invalid-email" })).rejects.toThrow(
         "HTTP 400: Bad Request"
       );
     });
@@ -97,7 +143,7 @@ describe("WaitlistClient", () => {
     it("should handle network errors", async () => {
       mockFetch.mockRejectedValue(new Error("Network error"));
 
-      await expect(client.join("user@example.com")).rejects.toThrow(
+      await expect(client.join({ email: "user@example.com" })).rejects.toThrow(
         "Network error"
       );
     });
@@ -109,16 +155,22 @@ describe("WaitlistClient", () => {
         statusText: "Internal Server Error",
       });
 
-      await expect(client.join("user@example.com")).rejects.toThrow(FetchError);
-      await expect(client.join("user@example.com")).rejects.toThrow(
+      await expect(client.join({ email: "user@example.com" })).rejects.toThrow(
+        FetchError
+      );
+      await expect(client.join({ email: "user@example.com" })).rejects.toThrow(
         "HTTP 500: Internal Server Error"
       );
     });
 
     it("should use correct endpoint path", async () => {
       const mockResponse = {
-        email: "user@example.com",
-        referralCode: "ABC-123",
+        ok: true,
+        entry: {
+          email: "user@example.com",
+          createdAt: new Date().toISOString(),
+          referralCode: "ABC-123",
+        },
       };
 
       mockFetch.mockResolvedValue({
@@ -126,7 +178,7 @@ describe("WaitlistClient", () => {
         json: async () => mockResponse,
       });
 
-      await client.join("user@example.com");
+      await client.join({ email: "user@example.com" });
 
       expect(mockFetch).toHaveBeenCalledWith(
         `${baseUrl}/api/waitlist/join`,
@@ -210,12 +262,19 @@ describe("WaitlistClient", () => {
     it("should handle multiple join requests", async () => {
       mockFetch.mockResolvedValue({
         ok: true,
-        json: async () => ({ email: "user@example.com", referralCode: "ABC" }),
+        json: async () => ({
+          ok: true,
+          entry: {
+            email: "user@example.com",
+            createdAt: new Date().toISOString(),
+            referralCode: "ABC",
+          },
+        }),
       });
 
-      await client.join("user1@example.com");
-      await client.join("user2@example.com");
-      await client.join("user3@example.com");
+      await client.join({ email: "user1@example.com" });
+      await client.join({ email: "user2@example.com" });
+      await client.join({ email: "user3@example.com" });
 
       expect(mockFetch).toHaveBeenCalledTimes(3);
     });
@@ -228,11 +287,18 @@ describe("WaitlistClient", () => {
 
       mockFetch.mockResolvedValue({
         ok: true,
-        json: async () => ({ email: "user@example.com", referralCode: "ABC" }),
+        json: async () => ({
+          ok: true,
+          entry: {
+            email: "user@example.com",
+            createdAt: new Date().toISOString(),
+            referralCode: "ABC",
+          },
+        }),
       });
 
-      await client1.join("user@example.com");
-      await client2.join("user@example.com");
+      await client1.join({ email: "user@example.com" });
+      await client2.join({ email: "user@example.com" });
 
       expect(mockFetch).toHaveBeenNthCalledWith(
         1,
@@ -251,12 +317,16 @@ describe("WaitlistClient", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          email: "user@example.com",
-          referralCode: "ABC-123",
+          ok: true,
+          entry: {
+            email: "user@example.com",
+            createdAt: new Date().toISOString(),
+            referralCode: "ABC-123",
+          },
         }),
       });
 
-      await client.join("user@example.com");
+      await client.join({ email: "user@example.com" });
 
       // Then get leaderboard
       mockFetch.mockResolvedValueOnce({
@@ -281,7 +351,7 @@ describe("WaitlistClient", () => {
       mockFetch.mockResolvedValue(mockResponse);
 
       try {
-        await client.join("user@example.com");
+        await client.join({ email: "user@example.com" });
         expect.fail("Should have thrown error");
       } catch (err) {
         expect(err).toBeInstanceOf(FetchError);
@@ -299,7 +369,7 @@ describe("WaitlistClient", () => {
         },
       });
 
-      await expect(client.join("user@example.com")).rejects.toThrow(
+      await expect(client.join({ email: "user@example.com" })).rejects.toThrow(
         "Invalid JSON"
       );
     });
@@ -312,7 +382,9 @@ describe("WaitlistClient", () => {
           )
       );
 
-      await expect(client.join("user@example.com")).rejects.toThrow("Timeout");
+      await expect(client.join({ email: "user@example.com" })).rejects.toThrow(
+        "Timeout"
+      );
     });
   });
 
@@ -322,10 +394,17 @@ describe("WaitlistClient", () => {
 
       mockFetch.mockResolvedValue({
         ok: true,
-        json: async () => ({ email, referralCode: "ABC" }),
+        json: async () => ({
+          ok: true,
+          entry: {
+            email,
+            createdAt: new Date().toISOString(),
+            referralCode: "ABC",
+          },
+        }),
       });
 
-      await client.join(email);
+      await client.join({ email });
 
       expect(mockFetch).toHaveBeenCalledWith(
         `${baseUrl}/api/waitlist/join`,
@@ -341,12 +420,16 @@ describe("WaitlistClient", () => {
       mockFetch.mockResolvedValue({
         ok: true,
         json: async () => ({
-          email: "user@example.com",
-          referralCode: "ABC",
+          ok: true,
+          entry: {
+            email: "user@example.com",
+            createdAt: new Date().toISOString(),
+            referralCode: "ABC",
+          },
         }),
       });
 
-      await client.join("user@example.com", referralCode);
+      await client.join({ email: "user@example.com", referralCode });
 
       expect(mockFetch).toHaveBeenCalledWith(
         `${baseUrl}/api/waitlist/join`,
@@ -367,12 +450,16 @@ describe("WaitlistClient", () => {
       mockFetch.mockResolvedValue({
         ok: true,
         json: async () => ({
-          email: "user@example.com",
-          referralCode: "ABC",
+          ok: true,
+          entry: {
+            email: "user@example.com",
+            createdAt: new Date().toISOString(),
+            referralCode: "ABC",
+          },
         }),
       });
 
-      await clientWithSlash.join("user@example.com");
+      await clientWithSlash.join({ email: "user@example.com" });
 
       // @zap-studio/fetch normalizes URLs, removing double slashes
       expect(mockFetch).toHaveBeenCalledWith(

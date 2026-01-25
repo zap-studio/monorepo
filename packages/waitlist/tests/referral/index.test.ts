@@ -1,5 +1,6 @@
 // biome-ignore-all lint/style/noMagicNumbers: This is a test file so magic numbers are fine.
 
+import type { Email } from "@zap-studio/validation/email/types";
 import { describe, expect, it } from "vitest";
 import {
   addReferralCode,
@@ -7,7 +8,7 @@ import {
   createReferralLink,
   getReferees,
 } from "../../src/referral";
-import type { Email, EmailEntry, ReferralLink } from "../../src/types";
+import type { EmailEntry, ReferralLink } from "../../src/types";
 
 describe("referral logic", () => {
   describe("computeReferralScore", () => {
