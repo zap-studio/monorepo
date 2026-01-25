@@ -2,14 +2,10 @@
 
 import type { Email } from "@zap-studio/validation/email/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { JoinSuccessResult } from "../src/contract";
+import type { WaitlistStorageAdapter } from "../src/adapters/storage/types";
 import { EventBus } from "../src/events";
 import { WaitlistServer } from "../src/server";
-import type {
-  EmailEntry,
-  ReferralLink,
-  WaitlistStorageAdapter,
-} from "../src/types";
+import type { EmailEntry, JoinSuccessResult, ReferralLink } from "../src/types";
 
 // Mock adapter implementation for testing
 class MockAdapter implements WaitlistStorageAdapter {
