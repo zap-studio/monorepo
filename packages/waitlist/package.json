@@ -66,6 +66,7 @@
     "./contract": "./dist/contract.mjs",
     "./events": "./dist/events/index.mjs",
     "./referral": "./dist/referral/index.mjs",
+    "./schemas": "./dist/schemas.mjs",
     "./server": "./dist/server.mjs",
     "./types": "./dist/types/index.mjs",
     "./utils": "./dist/utils.mjs",
