@@ -13,6 +13,7 @@ import type { ReferralLink } from "./types";
  *   { referrer: "user@example.com", referee: "jean@example.com", createdAt: new Date() },
  *   { referrer: "john@example.com", referee: "alice@example.com", createdAt: new Date() },
  * ];
+ *
  * const score = computeReferralScore(participant, links); // 2
  */
 export function computeReferralScore(
@@ -27,7 +28,12 @@ export function computeReferralScore(
  *
  * @example
  * const participant: Email = "user@example.com";
- * const referees = getReferees(participant); // ["alice@example.com", "bob@example.com"]
+ * const links: ReferralLink[] = [
+ *   { referrer: "user@example.com", referee: "alice@example.com", createdAt: new Date() },
+ *   { referrer: "user@example.com", referee: "bob@example.com", createdAt: new Date() },
+ * ];
+ *
+ * const referees = getReferees(participant, links); // ["alice@example.com", "bob@example.com"]
  */
 export function getReferees(referrer: Email, links: ReferralLink[]): Email[] {
   return links.filter((l) => l.referrer === referrer).map((l) => l.referee);
