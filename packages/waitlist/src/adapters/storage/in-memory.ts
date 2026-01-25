@@ -1,11 +1,7 @@
 import type { Email } from "@zap-studio/validation/email/types";
 import { computeReferralScore } from "../../referral";
-import type {
-  EmailEntry,
-  ReferralCode,
-  ReferralLink,
-  WaitlistStorageAdapter,
-} from "../../types";
+import type { EmailEntry, ReferralCode, ReferralLink } from "../../types";
+import type { WaitlistStorageAdapter } from "./types";
 
 export class InMemoryAdapter implements WaitlistStorageAdapter {
   private readonly entries = new Map<Email, EmailEntry>();
