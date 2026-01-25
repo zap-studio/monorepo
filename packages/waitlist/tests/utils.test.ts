@@ -36,4 +36,43 @@ describe("calculatePosition", () => {
     expect(calculatePosition(entries, "c@test.com")).toBe(3);
     expect(calculatePosition(entries, "d@test.com")).toBeUndefined();
   });
+
+  it("routes to referral strategy", () => {
+    const referralEntries: EmailEntry[] = [
+      {
+        email: "a@test.com",
+        createdAt: new Date(1),
+        referralCode: "AAA",
+      },
+      {
+        email: "b@test.com",
+        createdAt: new Date(2),
+        referralCode: "BBB",
+      },
+      {
+        email: "c@test.com",
+        createdAt: new Date(3),
+        referralCode: "CCC",
+      },
+      { email: "d@test.com", createdAt: new Date(4), referredBy: "BBB" },
+      { email: "e@test.com", createdAt: new Date(5), referredBy: "BBB" },
+      { email: "f@test.com", createdAt: new Date(6), referredBy: "AAA" },
+    ];
+
+    expect(
+      calculatePosition(referralEntries, "b@test.com", {
+        strategy: "number-of-referrals",
+      })
+    ).toBe(1);
+    expect(
+      calculatePosition(referralEntries, "a@test.com", {
+        strategy: "number-of-referrals",
+      })
+    ).toBe(2);
+    expect(
+      calculatePosition(referralEntries, "c@test.com", {
+        strategy: "number-of-referrals",
+      })
+    ).toBe(3);
+  });
 });

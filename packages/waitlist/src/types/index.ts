@@ -87,3 +87,12 @@ export interface JoinSuccessResult {
 
 /** Result of joining the waitlist */
 export type JoinResult = JoinSuccessResult | JoinErrorResult;
+
+/** The strategy used to calculate the position of a participant in the waitlist. */
+export type PositionStrategy = "creation-date" | "number-of-referrals";
+
+/** The options for calculating the position of a participant in the waitlist. */
+export interface CalculatePositionOptions {
+  /** The strategy used to calculate the position. */
+  strategy?: PositionStrategy;
+}
