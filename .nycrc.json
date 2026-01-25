@@ -9,6 +9,7 @@
     "**/*.config.{ts,js}",
     "**/*.d.ts",
     "**/test/**",
+    "**/tests/**",
     "**/*.test.{ts,tsx}",
     "**/*.spec.{ts,tsx}"
   ]
