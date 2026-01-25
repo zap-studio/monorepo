@@ -1,29 +1,26 @@
 # @zap-studio/waitlist
 
-A lightweight, type-safe, and adapter-agnostic SDK for building and managing waitlists with built-in referral tracking, position management, and email validation.
+A lightweight, type-safe, and adapter-agnostic waitlist toolkit with referral tracking, email validation, and event hooks.
 
 ## Motivation
 
 Building a waitlist for your product launch or beta program often requires implementing the same boilerplate features: email validation, position tracking, referral systems, and duplicate prevention.
 
-**@zap-studio/waitlist** solves this by providing:
+**@zap-studio/waitlist** provides:
 
 - **Adapter Pattern**: Bring your own storage layer (in-memory, Drizzle ORM, Redis, PostgreSQL, etc.)
 - **Type Safety**: Built with TypeScript and Zod for runtime validation
-- **Event-Driven**: Hook into lifecycle events (join, referral, remove, error)
-- **Zero Dependencies**: Core logic has minimal dependencies (just `nanoid` and `zod`)
-- **Production Ready**: Configurable email validation, rate limiting, and referral tracking
+- **Event Hooks**: Subscribe to join, referral, remove, and error events
+- **Minimal Core**: Small surface area you can extend safely
 
 ## Features
 
 - **Flexible Storage** – Works with any database or storage solution via adapters  
 - **Referral System** – Generate unique referral codes and track usage  
-- **Position Tracking** – Automatically calculate user positions in the waitlist  
+- **Position Tracking** – Get a user's position in the waitlist
 - **Email Validation** – Configurable rules (plus addressing, subdomains)  
 - **Event Hooks** – React to join, referral, remove, and error events  
 - **Type Safe** – Full TypeScript support with Zod schemas  
-- **Rate Limiting** – Optional built-in rate limiting configuration  
-- **Metadata Support** – Attach custom data to waitlist entries  
 
 ## Installation
 
@@ -35,71 +32,60 @@ npm i @zap-studio/waitlist
 bun add @zap-studio/waitlist
 ```
 
-## Quick Start
+## Quick Start (server-side)
 
 ```ts
-import { InMemoryAdapter } from "@zap-studio/waitlist/adapters/in-memory"
-import { createWaitlist } from "@zap-studio/waitlist"
-import { generateReferralCode } from "@zap-studio/waitlist/utils"
+import { InMemoryAdapter } from "@zap-studio/waitlist/adapters/storage/in-memory";
+import { EventBus } from "@zap-studio/waitlist/events";
+import { WaitlistServer } from "@zap-studio/waitlist/server";
 
-// 1. Initialize adapter (can swap for Drizzle/Redis/etc.)
-const adapter = new InMemoryAdapter()
+const adapter = new InMemoryAdapter();
+const events = new EventBus();
 
-// 2. Create waitlist SDK instance
-const waitlist = createWaitlist({
+const waitlist = new WaitlistServer({
   adapter,
+  events,
   config: {
-    referralPrefix: "REF",
-    maxReferrals: 5,
-    emailValidation: { 
-      allowPlus: false,
-      allowSubdomains: true 
-    },
+    emailValidation: { allowPlus: false, allowSubdomains: true },
+    referralCodeLength: 8,
   },
-})
+});
 
-// 3. Register event hooks
-waitlist.on("join", (entry) => {
-  console.log(`${entry.email} joined at position ${entry.position}!`)
-})
+events.on("join", ({ email }) => {
+  console.log(`${email} joined`);
+});
 
-waitlist.on("referral", ({ referralCode, referredEntry }) => {
-  console.log(`${referredEntry.email} joined via ${referralCode}`)
-})
+const result = await waitlist.join({ email: "alice@example.com" });
+if (result.ok) {
+  console.log("Referral code:", result.entry.referralCode);
+}
 
-// 4. User joins the waitlist
-const alice = await waitlist.join("alice@example.com")
-console.log("Position:", await waitlist.getPosition(alice.id))
-// => Position: 1
+const position = await waitlist.getPosition("alice@example.com");
+console.log("Position:", position);
+```
 
-// 5. Generate and assign referral code
-const referralCode = generateReferralCode() // e.g., "4F7-G8H"
-await waitlist.update(alice.id, { referralCode })
+## Quick Start (client-side RPC)
 
-// 6. Another user joins via referral
-const bob = await waitlist.join("bob@example.com", { referralCode })
-// Event hook fires: "bob@example.com joined via 4F7-G8H"
+```ts
+import { WaitlistClient } from "@zap-studio/waitlist/client";
 
-// 7. Manage the waitlist
-await waitlist.remove(alice.id)
-const totalUsers = await waitlist.count()
-const allEntries = await waitlist.list()
+const client = new WaitlistClient({
+  baseUrl: "http://localhost:3000",
+  prefix: "/api/waitlist", // optional
+});
+
+const result = await client.join({ email: "user@example.com" });
 ```
 
 ## Configuration
 
 ```ts
 interface WaitlistConfig {
-  referralPrefix?: string           // Prefix for referral codes
-  maxReferrals?: number             // Max uses per referral code
-  rateLimit?: {                     // Rate limiting config
-    windowMs: number
-    max: number
-  }
-  emailValidation?: {               // Email validation rules
-    allowPlus?: boolean             // Allow plus addressing (user+tag@domain.com)
-    allowSubdomains?: boolean       // Allow subdomain emails (mail.example.com)
-  }
+  referralPrefix?: string
+  maxReferrals?: number
+  referralCodeLength?: number
+  rateLimit?: { windowMs: number; max: number }
+  emailValidation?: { allowPlus?: boolean; allowSubdomains?: boolean }
 }
 ```
 
@@ -110,12 +96,19 @@ Implement the `WaitlistStorageAdapter` interface to connect your preferred stora
 ```ts
 interface WaitlistStorageAdapter {
   create(entry: EmailEntry): Promise<EmailEntry>
-  update(id: ID, patch: Partial<EmailEntry>): Promise<EmailEntry>
-  delete(id: ID): Promise<void>
-  findByEmail(email: string): Promise<EmailEntry | null>
-  findById(id: ID): Promise<EmailEntry | null>
+  createReferral(link: ReferralLink): Promise<ReferralLink>
+  update(id: Email, patch: Partial<EmailEntry>): Promise<EmailEntry>
+  updateReferral(key: ReferralKey, patch: Partial<ReferralLink>): Promise<ReferralLink>
+  delete(id: Email): Promise<void>
+  deleteReferral(key: ReferralKey): Promise<void>
+  findByEmail(email: Email): Promise<EmailEntry | null>
+  findByReferralCode(code: ReferralCode): Promise<EmailEntry | null>
+  getReferralCount(email: Email): Promise<number>
   list(): Promise<EmailEntry[]>
+  listEmails(): Promise<Email[]>
+  listReferrals(): Promise<ReferralLink[]>
   count(): Promise<number>
-  incrementReferral?(code: string, delta?: number): Promise<number>;
+  countReferrals(): Promise<number>
+  getLeaderboard?(): Promise<LeaderboardEntry[]>
 }
 ```
