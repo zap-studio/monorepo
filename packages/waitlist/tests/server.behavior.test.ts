@@ -312,30 +312,45 @@ describe("WaitlistServer", () => {
     });
 
     it("should return leaderboard sorted by referral score", async () => {
+      const referralSdk = new WaitlistServer({
+        adapter,
+        events: eventBus,
+        config: { positionStrategy: "number-of-referrals" },
+      });
+
       // User A joins
-      const userA = await sdk.join({ email: "userA@example.com" });
+      const userA = await referralSdk.join({ email: "userA@example.com" });
       if (!userA.ok) {
         throw new Error(userA.message ?? "Expected join to succeed");
       }
       const codeA = userA.entry.referralCode;
 
       // User B joins
-      const userB = await sdk.join({ email: "userB@example.com" });
+      const userB = await referralSdk.join({ email: "userB@example.com" });
       if (!userB.ok) {
         throw new Error(userB.message ?? "Expected join to succeed");
       }
       const codeB = userB.entry.referralCode;
 
       // User C joins with A's code (A has 1 referral)
-      await sdk.join({ email: "userC@example.com", referralCode: codeA });
+      await referralSdk.join({
+        email: "userC@example.com",
+        referralCode: codeA,
+      });
 
       // User D joins with A's code (A has 2 referrals)
-      await sdk.join({ email: "userD@example.com", referralCode: codeA });
+      await referralSdk.join({
+        email: "userD@example.com",
+        referralCode: codeA,
+      });
 
       // User E joins with B's code (B has 1 referral)
-      await sdk.join({ email: "userE@example.com", referralCode: codeB });
+      await referralSdk.join({
+        email: "userE@example.com",
+        referralCode: codeB,
+      });
 
-      const leaderboard = await sdk.getLeaderboard();
+      const leaderboard = await referralSdk.getLeaderboard();
 
       expect(leaderboard).toHaveLength(5);
       expect(leaderboard[0]?.email).toBe("userA@example.com");
@@ -368,9 +383,17 @@ describe("WaitlistServer", () => {
       expect(leaderboard).toHaveLength(2);
       expect(leaderboard[0]?.email).toBe("early@example.com");
       expect(leaderboard[1]?.email).toBe("late@example.com");
+      expect(leaderboard[0]?.score).toBe(2);
+      expect(leaderboard[1]?.score).toBe(1);
     });
 
     it("should use adapter's getLeaderboard if available", async () => {
+      const referralSdk = new WaitlistServer({
+        adapter,
+        events: eventBus,
+        config: { positionStrategy: "number-of-referrals" },
+      });
+
       const mockLeaderboard = [
         { email: "user1@example.com", score: 10 },
         { email: "user2@example.com", score: 5 },
@@ -382,7 +405,7 @@ describe("WaitlistServer", () => {
         }
       ).getLeaderboard = vi.fn().mockResolvedValue(mockLeaderboard);
 
-      const leaderboard = await sdk.getLeaderboard();
+      const leaderboard = await referralSdk.getLeaderboard();
 
       expect(
         (
@@ -395,14 +418,20 @@ describe("WaitlistServer", () => {
     });
 
     it("should handle users with same score", async () => {
-      const r1 = await sdk.join({ email: "user1@example.com" });
-      const r2 = await sdk.join({ email: "user2@example.com" });
-      const r3 = await sdk.join({ email: "user3@example.com" });
+      const referralSdk = new WaitlistServer({
+        adapter,
+        events: eventBus,
+        config: { positionStrategy: "number-of-referrals" },
+      });
+
+      const r1 = await referralSdk.join({ email: "user1@example.com" });
+      const r2 = await referralSdk.join({ email: "user2@example.com" });
+      const r3 = await referralSdk.join({ email: "user3@example.com" });
       if (!(r1.ok && r2.ok && r3.ok)) {
         throw new Error("Expected joins to succeed");
       }
 
-      const leaderboard = await sdk.getLeaderboard();
+      const leaderboard = await referralSdk.getLeaderboard();
 
       expect(leaderboard).toHaveLength(3);
       expect(leaderboard[0]?.score).toBe(0);
@@ -436,11 +465,19 @@ describe("WaitlistServer", () => {
     });
 
     it("should handle multiple users with different referral counts", async () => {
+      const referralSdk = new WaitlistServer({
+        adapter,
+        events: eventBus,
+        config: { positionStrategy: "number-of-referrals" },
+      });
+
       const users: JoinSuccessResult[] = [];
 
       // Create 5 users
       for (let i = 1; i <= 5; i += 1) {
-        const result = await sdk.join({ email: `user${i}@example.com` });
+        const result = await referralSdk.join({
+          email: `user${i}@example.com`,
+        });
         if (!result.ok) {
           throw new Error(result.message ?? "Expected join to succeed");
         }
@@ -449,7 +486,7 @@ describe("WaitlistServer", () => {
 
       // User 1 gets 3 referrals
       for (let i = 6; i <= 8; i += 1) {
-        await sdk.join({
+        await referralSdk.join({
           email: `user${i}@example.com`,
           referralCode: users[0]?.entry.referralCode,
         });
@@ -457,13 +494,13 @@ describe("WaitlistServer", () => {
 
       // User 2 gets 2 referrals
       for (let i = 9; i <= 10; i += 1) {
-        await sdk.join({
+        await referralSdk.join({
           email: `user${i}@example.com`,
           referralCode: users[1]?.entry.referralCode,
         });
       }
 
-      const leaderboard = await sdk.getLeaderboard();
+      const leaderboard = await referralSdk.getLeaderboard();
 
       expect(leaderboard[0]?.email).toBe("user1@example.com");
       expect(leaderboard[0]?.score).toBe(3);

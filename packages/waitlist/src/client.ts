@@ -1,5 +1,6 @@
 import { createFetch } from "@zap-studio/fetch";
 import type { Email } from "@zap-studio/validation/email/types";
+import { DEFAULT_API_PREFIX } from "./constants";
 import type { WaitlistService } from "./contract";
 import {
   EmptyResponseSchema,
@@ -36,7 +37,7 @@ export class WaitlistClient implements WaitlistService {
    */
   constructor({ baseUrl, prefix }: WaitlistClientOptions) {
     this.baseUrl = baseUrl;
-    const normalizedPrefix = prefix ?? "/api/waitlist";
+    const normalizedPrefix = prefix ?? DEFAULT_API_PREFIX;
     const withLeadingSlash = normalizedPrefix.startsWith("/")
       ? normalizedPrefix
       : `/${normalizedPrefix}`;

@@ -223,27 +223,33 @@ describe("WaitlistServer", () => {
 
   describe("inherited getLeaderboard method", () => {
     it("should return leaderboard sorted by score", async () => {
-      const userA = await server.join({ email: "userA@example.com" });
-      const userB = await server.join({ email: "userB@example.com" });
+      const referralServer = new WaitlistServer({
+        adapter,
+        events: eventBus,
+        config: { positionStrategy: "number-of-referrals" },
+      });
+
+      const userA = await referralServer.join({ email: "userA@example.com" });
+      const userB = await referralServer.join({ email: "userB@example.com" });
 
       if (!(userA.ok && userB.ok)) {
         throw new Error("Expected joins to succeed");
       }
 
-      await server.join({
+      await referralServer.join({
         email: "userC@example.com",
         referralCode: userA.entry.referralCode,
       });
-      await server.join({
+      await referralServer.join({
         email: "userD@example.com",
         referralCode: userA.entry.referralCode,
       });
-      await server.join({
+      await referralServer.join({
         email: "userE@example.com",
         referralCode: userB.entry.referralCode,
       });
 
-      const leaderboard = await server.getLeaderboard();
+      const leaderboard = await referralServer.getLeaderboard();
 
       expect(leaderboard).toHaveLength(5);
       expect(leaderboard[0]?.email).toBe("userA@example.com");
