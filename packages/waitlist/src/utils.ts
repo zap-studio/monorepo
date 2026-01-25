@@ -43,12 +43,21 @@ export function calculatePosition(
   }
 
   const strategy: PositionStrategy = options.strategy ?? "creation-date";
-  const sorted =
-    strategy === "number-of-referrals"
-      ? sortByReferrals(entries)
-      : sortByCreatedAt(entries);
+  const sorted = sortEntriesByPositionStrategy(entries, strategy);
 
   return sorted.findIndex((e) => e.email === email) + 1;
+}
+
+/**
+ * Sorts entries by their position strategy.
+ */
+export function sortEntriesByPositionStrategy(
+  entries: EmailEntry[],
+  strategy: PositionStrategy
+): EmailEntry[] {
+  return strategy === "number-of-referrals"
+    ? sortByReferrals(entries)
+    : sortByCreatedAt(entries);
 }
 
 /**
