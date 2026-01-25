@@ -77,6 +77,40 @@ const client = new WaitlistClient({
 const result = await client.join({ email: "user@example.com" });
 ```
 
+## RPC Endpoints
+
+For the client to work over RPC, implement the following HTTP endpoints under the configured `prefix`
+(default: `/api/waitlist`):
+
+Example for `join` endpoint:
+
+```ts
+import { WaitlistServer } from "@zap-studio/waitlist/server";
+
+const waitlist = new WaitlistServer({ adapter });
+
+// POST {prefix}/join
+export async function JoinEndpoint(req: Request): Promise<Response> {
+  const { email, referralCode } = await req.json();
+  const result = await waitlist.join({ email, referralCode });
+  return Response.json(result);
+}
+```
+
+This handler should only wrap the server SDK; the SDK contains the business logic.
+
+- `POST {prefix}/join`
+  - Body: `{ email: string; referralCode?: string }`
+  - Response: `{ ok: true; entry: EmailEntry; referralLink?: ReferralLink }`
+    or `{ ok: false; reason: "invalid-email"; message?: string }`
+- `POST {prefix}/leave`
+  - Body: `{ email: string }`
+  - Response: empty body (any JSON is accepted)
+- `GET {prefix}/leaderboard`
+  - Response: `Array<{ email: string; score: number }>`
+- `GET {prefix}/position?email=...`
+  - Response: `number | null`
+
 ## Configuration
 
 ```ts
