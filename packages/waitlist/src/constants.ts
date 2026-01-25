@@ -1,4 +1,5 @@
-import type { PositionStrategy, WaitlistConfig } from "./types";
+import type { PositionStrategy } from "./leaderboard/types";
+import type { WaitlistConfig } from "./types";
 
 export const DEFAULT_API_PREFIX = "/api/waitlist";
 export const DEFAULT_POSITION_STRATEGY: PositionStrategy = "creation-date";

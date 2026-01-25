@@ -2,6 +2,7 @@ import type {
   Email,
   EmailValidationConfig,
 } from "@zap-studio/validation/email/types";
+import type { PositionStrategy } from "../leaderboard/types";
 import type { ReferralLink } from "../referral/types";
 
 /** The referral code */
@@ -43,17 +44,6 @@ export interface WaitlistConfig {
   emailValidation?: EmailValidationConfig;
 }
 
-/**
- * Represents an entry in the leaderboard.
- */
-export interface LeaderboardEntry {
-  /** The email address of the participant. */
-  email: Email;
-
-  /** The score of the participant. */
-  score: number;
-}
-
 /** Input for joining the waitlist */
 export interface JoinInput {
   /** The email address of the user */
@@ -91,6 +81,3 @@ export interface JoinSuccessResult {
 
 /** Result of joining the waitlist */
 export type JoinResult = JoinSuccessResult | JoinErrorResult;
-
-/** The strategy used to calculate the position of a participant in the waitlist. */
-export type PositionStrategy = "creation-date" | "number-of-referrals";

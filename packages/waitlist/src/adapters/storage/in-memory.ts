@@ -1,5 +1,7 @@
 import type { Email } from "@zap-studio/validation/email/types";
-import { computeReferralScore } from "../../referral";
+import { DEFAULT_POSITION_STRATEGY } from "../../constants";
+import { calculateScores, sortEntriesByScores } from "../../leaderboard";
+import type { Leaderboard, PositionStrategy } from "../../leaderboard/types";
 import type { ReferralLink } from "../../referral/types";
 import type { EmailEntry, ReferralCode } from "../../types";
 import type { WaitlistStorageAdapter } from "./types";
@@ -107,17 +109,20 @@ export class InMemoryAdapter implements WaitlistStorageAdapter {
     return await Promise.resolve(this.referrals.size);
   }
 
-  async getLeaderboard(): Promise<{ email: Email; score: number }[]> {
+  async getLeaderboard(
+    positionStrategy: PositionStrategy = DEFAULT_POSITION_STRATEGY
+  ): Promise<Leaderboard> {
     const entries = await this.list();
     const referrals = await this.listReferrals();
 
-    const leaderboard = entries.map((entry) => ({
+    const scores = calculateScores(entries, referrals, {
+      strategy: positionStrategy,
+    });
+    const sortedEntries = sortEntriesByScores(entries, scores);
+
+    return sortedEntries.map((entry) => ({
       email: entry.email,
-      score: computeReferralScore(entry.email, referrals),
+      score: scores.get(entry.email) ?? 0,
     }));
-
-    leaderboard.sort((a, b) => b.score - a.score);
-
-    return leaderboard;
   }
 }

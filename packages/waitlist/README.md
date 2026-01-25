@@ -144,6 +144,6 @@ interface WaitlistStorageAdapter {
   listReferrals(): Promise<ReferralLink[]>
   count(): Promise<number>
   countReferrals(): Promise<number>
-  getLeaderboard(positionStrategy: "creation-date" | "number-of-referrals"): Promise<LeaderboardEntry[]>
+  getLeaderboard(positionStrategy: "creation-date" | "number-of-referrals"): Promise<Leaderboard>
 }
 ```

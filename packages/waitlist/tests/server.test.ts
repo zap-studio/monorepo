@@ -5,13 +5,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { WaitlistStorageAdapter } from "../src/adapters/storage/types";
 import { EventBus } from "../src/events";
 import { calculateScores, sortEntriesByScores } from "../src/leaderboard";
+import type { PositionStrategy } from "../src/leaderboard/types";
 import type { ReferralLink } from "../src/referral/types";
 import { WaitlistServer } from "../src/server";
-import type {
-  EmailEntry,
-  JoinSuccessResult,
-  PositionStrategy,
-} from "../src/types";
+import type { EmailEntry, JoinSuccessResult } from "../src/types";
 
 // Mock adapter implementation for testing
 class MockAdapter implements WaitlistStorageAdapter {

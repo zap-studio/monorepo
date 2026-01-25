@@ -2,12 +2,13 @@ import { createFetch } from "@zap-studio/fetch";
 import type { Email } from "@zap-studio/validation/email/types";
 import { DEFAULT_API_PREFIX } from "./constants";
 import type { WaitlistService } from "./contract";
+import type { Leaderboard } from "./leaderboard/types";
 import {
   EmptyResponseSchema,
   JoinResultSchema,
   LeaderboardResponseSchema,
 } from "./schemas";
-import type { JoinInput, JoinResult, LeaderboardEntry } from "./types";
+import type { JoinInput, JoinResult } from "./types";
 
 const TrailingSlashRegex = /\/$/;
 
@@ -101,7 +102,7 @@ export class WaitlistClient implements WaitlistService {
    * const waitlistClient = new WaitlistClient({ baseUrl: "http://localhost:3000" });
    * const leaderboard = await waitlistClient.getLeaderboard();
    */
-  async getLeaderboard(): Promise<LeaderboardEntry[]> {
+  async getLeaderboard(): Promise<Leaderboard> {
     return await this.api.get(
       `${this.prefix}/leaderboard`,
       LeaderboardResponseSchema

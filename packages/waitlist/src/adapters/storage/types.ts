@@ -1,11 +1,7 @@
 import type { Email } from "@zap-studio/validation/email/types";
+import type { Leaderboard, PositionStrategy } from "../../leaderboard/types";
 import type { ReferralKey, ReferralLink } from "../../referral/types";
-import type {
-  EmailEntry,
-  LeaderboardEntry,
-  PositionStrategy,
-  ReferralCode,
-} from "../../types";
+import type { EmailEntry, ReferralCode } from "../../types";
 
 /** Represents the adapter for the waitlist system */
 export interface WaitlistStorageAdapter {
@@ -55,7 +51,5 @@ export interface WaitlistStorageAdapter {
   countReferrals(): Promise<number>;
 
   /** Get leaderboard */
-  getLeaderboard(
-    positionStrategy: PositionStrategy
-  ): Promise<LeaderboardEntry[]>;
+  getLeaderboard(positionStrategy: PositionStrategy): Promise<Leaderboard>;
 }

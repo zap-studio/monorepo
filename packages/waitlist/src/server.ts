@@ -1,23 +1,23 @@
 import { validateEmail } from "@zap-studio/validation/email/standard";
 import type { Email } from "@zap-studio/validation/email/types";
 import type { WaitlistStorageAdapter } from "./adapters/storage/types";
+import {
+  DEFAULT_POSITION_STRATEGY,
+  DEFAULT_WAITLIST_CONFIG,
+} from "./constants";
 import type { WaitlistService } from "./contract";
 import { EventBus } from "./events";
-import {
-  addReferralCode,
-  computeReferralScore,
-  createReferralLink,
-} from "./referral";
+import { calculatePosition, unhandledStrategy } from "./leaderboard";
+import type { Leaderboard, PositionStrategy } from "./leaderboard/types";
+import { addReferralCode, createReferralLink } from "./referral";
 import type { ReferralLink } from "./referral/types";
 import type {
   EmailEntry,
   JoinInput,
   JoinResult,
   JoinSuccessResult,
-  LeaderboardEntry,
   WaitlistConfig,
 } from "./types";
-import { calculatePosition } from "./utils";
 
 /** Options for configuring the waitlist server */
 export interface WaitlistServerOptions {
@@ -43,7 +43,10 @@ export class WaitlistServer implements WaitlistService {
   constructor({ adapter, events, config }: WaitlistServerOptions) {
     this.adapter = adapter;
     this.events = events ?? new EventBus();
-    this.config = config;
+    this.config = {
+      ...DEFAULT_WAITLIST_CONFIG,
+      ...config,
+    };
   }
 
   /**
@@ -147,22 +150,10 @@ export class WaitlistServer implements WaitlistService {
    * const server = new WaitlistServer({ adapter: myAdapter });
    * const leaderboard = await server.getLeaderboard();
    */
-  async getLeaderboard(): Promise<LeaderboardEntry[]> {
-    if (this.adapter.getLeaderboard) {
-      return this.adapter.getLeaderboard();
-    }
-
-    const [emails, referrals] = await Promise.all([
-      this.adapter.listEmails(),
-      this.adapter.listReferrals(),
-    ]);
-
-    return emails
-      .map((email) => ({
-        email,
-        score: computeReferralScore(email, referrals),
-      }))
-      .sort((a, b) => b.score - a.score);
+  async getLeaderboard(): Promise<Leaderboard> {
+    const strategy: PositionStrategy =
+      this.config?.positionStrategy ?? DEFAULT_POSITION_STRATEGY;
+    return await Promise.resolve(this.adapter.getLeaderboard(strategy));
   }
 
   /**
@@ -173,7 +164,24 @@ export class WaitlistServer implements WaitlistService {
    * const position = await server.getPosition("user@example.com");
    */
   async getPosition(email: Email): Promise<number | undefined> {
-    const entries = await this.adapter.list();
-    return calculatePosition(entries, email);
+    const strategy = this.config?.positionStrategy;
+    switch (strategy) {
+      case "number-of-referrals": {
+        const [entries, referrals] = await Promise.all([
+          this.adapter.list(),
+          this.adapter.listReferrals(),
+        ]);
+        return calculatePosition(entries, email, {
+          strategy,
+          referrals,
+        });
+      }
+      case "creation-date": {
+        const entries = await this.adapter.list();
+        return calculatePosition(entries, email, { strategy });
+      }
+      default:
+        unhandledStrategy(strategy);
+    }
   }
 }
