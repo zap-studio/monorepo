@@ -43,9 +43,11 @@ export const EmailSchema: EmailSchema = {
       const value = String(input ?? "");
       const issues: StandardSchemaV1.Issue[] = [];
 
-      const [local, domain] = value.split("@");
+      const parts = value.split("@");
 
-      if (local && domain) {
+      if (parts.length === 2) {
+        const [local, domain] = parts;
+
         if (local.length === 0) {
           issues.push({
             path: [],
