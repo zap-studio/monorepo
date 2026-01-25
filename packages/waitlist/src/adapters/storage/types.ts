@@ -1,11 +1,6 @@
 import type { Email } from "@zap-studio/validation/email/types";
-import type {
-  EmailEntry,
-  LeaderboardEntry,
-  ReferralCode,
-  ReferralKey,
-  ReferralLink,
-} from "../../types";
+import type { ReferralKey, ReferralLink } from "../../referral/types";
+import type { EmailEntry, LeaderboardEntry, ReferralCode } from "../../types";
 
 /** Represents the adapter for the waitlist system. */
 export interface WaitlistStorageAdapter {

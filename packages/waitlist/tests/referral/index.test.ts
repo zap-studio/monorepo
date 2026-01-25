@@ -8,7 +8,8 @@ import {
   createReferralLink,
   getReferees,
 } from "../../src/referral";
-import type { EmailEntry, ReferralLink } from "../../src/types";
+import type { ReferralLink } from "../../src/referral/types";
+import type { EmailEntry } from "../../src/types";
 
 describe("referral logic", () => {
   describe("computeReferralScore", () => {

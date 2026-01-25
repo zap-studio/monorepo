@@ -1,4 +1,4 @@
-import type { EventPayloadMap, WaitlistEventType } from "../types";
+import type { EventPayloadMap, WaitlistEventType } from "./types";
 
 /** A function that handles events within the waitlist and takes a payload */
 type Handler<T> = (payload: T) => void | Promise<void>;

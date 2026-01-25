@@ -8,13 +8,13 @@ import {
   computeReferralScore,
   createReferralLink,
 } from "./referral";
+import type { ReferralLink } from "./referral/types";
 import type {
   EmailEntry,
   JoinInput,
   JoinResult,
   JoinSuccessResult,
   LeaderboardEntry,
-  ReferralLink,
   WaitlistConfig,
 } from "./types";
 import { calculatePosition } from "./utils";

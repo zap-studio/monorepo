@@ -2,7 +2,8 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 import { InMemoryAdapter } from "../../src/adapters/storage/in-memory";
-import type { EmailEntry, ReferralLink } from "../../src/types";
+import type { ReferralLink } from "../../src/referral/types";
+import type { EmailEntry } from "../../src/types";
 
 describe("InMemoryAdapter", () => {
   let adapter: InMemoryAdapter;

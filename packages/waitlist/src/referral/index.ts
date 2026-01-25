@@ -1,6 +1,7 @@
 import type { Email } from "@zap-studio/validation/email/types";
-import type { EmailEntry, ReferralLink } from "../types";
+import type { EmailEntry } from "../types";
 import { generateReferralCode } from "../utils";
+import type { ReferralLink } from "./types";
 
 /**
  * Computes a user's total referral score based on all referral links.
