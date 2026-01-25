@@ -73,40 +73,35 @@ export interface LeaderboardEntry {
   score: number;
 }
 
-/** Represents the adapter for the waitlist system. */
-export interface WaitlistStorageAdapter {
-  /** Creates a new email entry in the waitlist. */
-  create(entry: EmailEntry): Promise<EmailEntry>;
-  /** Creates a new referral link in the waitlist. */
-  createReferral(link: ReferralLink): Promise<ReferralLink>;
-  /** Updates an existing email entry in the waitlist. */
-  update(id: Email, patch: Partial<EmailEntry>): Promise<EmailEntry>;
-  /** Updates an existing referral link in the waitlist. */
-  updateReferral(
-    key: ReferralKey,
-    patch: Partial<ReferralLink>
-  ): Promise<ReferralLink>;
-  /** Deletes an email entry from the waitlist. */
-  delete(id: Email): Promise<void>;
-  /** Deletes a referral link from the waitlist. */
-  deleteReferral(key: ReferralKey): Promise<void>;
-  /** Finds an email entry by its email address. */
-  findByEmail(email: Email): Promise<EmailEntry | null>;
-  /** Find a referrer by their referral code. */
-  findByReferralCode(code: ReferralCode): Promise<EmailEntry | null>;
-  /** Get referral count for a specific email. */
-  getReferralCount(email: Email): Promise<number>;
-  /** Lists all email entries in the waitlist. */
-  list(): Promise<EmailEntry[]>;
-  /** List all emails in the waitlist. */
-  listEmails(): Promise<Email[]>;
-  /** Lists all referral links in the waitlist. */
-  listReferrals(): Promise<ReferralLink[]>;
-  /** Counts the total number of email entries in the waitlist. */
-  count(): Promise<number>;
-  /** Counts the total number of referral links in the waitlist. */
-  countReferrals(): Promise<number>;
-
-  /** Optional: get leaderboard */
-  getLeaderboard?(): Promise<LeaderboardEntry[]>;
+/** Input for joining the waitlist */
+export interface JoinInput {
+  /** The email address of the user */
+  email: Email;
+  /** An optional referral code used during signup */
+  referralCode?: string;
 }
+
+/** Possible reasons why joining the waitlist can fail */
+export type JoinErrorReason = "invalid-email";
+
+/** Error result when joining the waitlist fails */
+export interface JoinErrorResult {
+  /** Whether the join operation was successful */
+  ok: false;
+  /** Machine-readable error reason */
+  reason: JoinErrorReason;
+  /** Optional human-readable error message */
+  message?: string;
+}
+
+/** Successful result of joining the waitlist */
+export interface JoinSuccessResult {
+  ok: true;
+  /** The email entry for the user */
+  entry: EmailEntry;
+  /** An optional referral link for the user */
+  referralLink?: ReferralLink;
+}
+
+/** Result of joining the waitlist */
+export type JoinResult = JoinSuccessResult | JoinErrorResult;
