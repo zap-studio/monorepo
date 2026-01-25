@@ -4,6 +4,7 @@ import type {
 } from "@zap-studio/validation/email/types";
 import type { ReferralLink } from "../referral/types";
 
+/** The referral code */
 export type ReferralCode = string;
 
 /** Represents a participant's email entry in the waitlist. */
@@ -34,6 +35,9 @@ export interface WaitlistConfig {
 
   /** The length of the referral codes. */
   referralCodeLength?: number;
+
+  /** Strategy used to compute positions and leaderboard ordering. */
+  positionStrategy?: PositionStrategy;
 
   /** The email validation configuration. */
   emailValidation?: EmailValidationConfig;
