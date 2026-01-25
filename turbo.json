@@ -36,7 +36,7 @@
     },
     "report-coverage": {
       "dependsOn": ["merge-coverage"],
-      "inputs": ["coverage/merged"],
+      "inputs": ["coverage/merged/**"],
       "outputs": ["coverage/report/**"]
     },
     "test": {
