@@ -7,7 +7,7 @@ export interface WaitlistService {
   join(input: JoinInput): Promise<JoinResult>;
 
   /** Remove a user from the waitlist */
-  remove(email: Email): Promise<void>;
+  leave(email: Email): Promise<void>;
 
   /** Get the leaderboard */
   getLeaderboard(): Promise<LeaderboardEntry[]>;

@@ -276,32 +276,30 @@ describe("WaitlistServer", () => {
     });
   });
 
-  describe("remove", () => {
-    it("should remove a user from the waitlist", async () => {
+  describe("leave", () => {
+    it("should leave a user from the waitlist", async () => {
       const email = "user@example.com";
       await sdk.join({ email });
 
-      await sdk.remove(email);
+      await sdk.leave(email);
 
       const entry = await adapter.findByEmail(email);
       expect(entry).toBeNull();
     });
 
-    it("should emit remove event when user is removed", async () => {
+    it("should emit leave event when user is removed", async () => {
       const handler = vi.fn();
-      eventBus.on("remove", handler);
+      eventBus.on("leave", handler);
 
       const email = "user@example.com";
       await sdk.join({ email });
-      await sdk.remove(email);
+      await sdk.leave(email);
 
       expect(handler).toHaveBeenCalledWith({ email });
     });
 
     it("should not throw error when removing non-existent user", async () => {
-      await expect(
-        sdk.remove("nonexistent@example.com")
-      ).resolves.not.toThrow();
+      await expect(sdk.leave("nonexistent@example.com")).resolves.not.toThrow();
     });
   });
 
@@ -449,7 +447,7 @@ describe("WaitlistServer", () => {
       expect(leaderboard[1]?.score).toBe(2);
     });
 
-    it("should maintain referral links after remove", async () => {
+    it("should maintain referral links after leave", async () => {
       const referrer = await sdk.join({ email: "referrer@example.com" });
       if (!referrer.ok) {
         throw new Error(referrer.message ?? "Expected join to succeed");
@@ -463,7 +461,7 @@ describe("WaitlistServer", () => {
       expect(referrals).toHaveLength(1);
 
       // Remove referee
-      await sdk.remove("referee@example.com");
+      await sdk.leave("referee@example.com");
 
       // Referral link should still exist
       const referralsAfter = await adapter.listReferrals();

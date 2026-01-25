@@ -10,7 +10,7 @@ Building a waitlist for your product launch or beta program often requires imple
 
 - **Adapter Pattern**: Bring your own storage layer (in-memory, Drizzle ORM, Redis, PostgreSQL, etc.)
 - **Type Safety**: Built with TypeScript and Zod for runtime validation
-- **Event Hooks**: Subscribe to join, referral, remove, and error events
+- **Event Hooks**: Subscribe to join, referral, leave, and error events
 - **Minimal Core**: Small surface area you can extend safely
 
 ## Features
@@ -19,7 +19,7 @@ Building a waitlist for your product launch or beta program often requires imple
 - **Referral System** – Generate unique referral codes and track usage  
 - **Position Tracking** – Get a user's position in the waitlist
 - **Email Validation** – Configurable rules (plus addressing, subdomains)  
-- **Event Hooks** – React to join, referral, remove, and error events  
+- **Event Hooks** – React to join, referral, leave, and error events  
 - **Type Safe** – Full TypeScript support with Zod schemas  
 
 ## Installation

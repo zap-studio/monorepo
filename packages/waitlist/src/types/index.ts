@@ -52,7 +52,7 @@ export interface WaitlistConfig {
 export interface EventPayloadMap {
   join: { email: Email };
   referral: { referrer: Email; referee: Email };
-  remove: { email: Email; reason?: string };
+  leave: { email: Email; reason?: string };
   error: { err: unknown; source: keyof EventPayloadMap };
 }
 

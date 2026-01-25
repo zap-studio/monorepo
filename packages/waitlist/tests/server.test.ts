@@ -126,7 +126,7 @@ describe("WaitlistServer", () => {
     it("should expose waitlist methods", () => {
       // Check that it has the expected methods
       expect(server.join).toBeDefined();
-      expect(server.remove).toBeDefined();
+      expect(server.leave).toBeDefined();
       expect(server.getLeaderboard).toBeDefined();
     });
 
@@ -191,30 +191,30 @@ describe("WaitlistServer", () => {
     });
   });
 
-  describe("inherited remove method", () => {
-    it("should remove users from the waitlist", async () => {
+  describe("inherited leave method", () => {
+    it("should leave users from the waitlist", async () => {
       const email = "user@example.com";
       const result = await server.join({ email });
       if (!result.ok) {
         throw new Error(result.message ?? "Expected join to succeed");
       }
 
-      await server.remove(email);
+      await server.leave(email);
 
       const entry = await adapter.findByEmail(email);
       expect(entry).toBeNull();
     });
 
-    it("should emit remove event", async () => {
+    it("should emit leave event", async () => {
       const handler = vi.fn();
-      eventBus.on("remove", handler);
+      eventBus.on("leave", handler);
 
       const email = "user@example.com";
       const result = await server.join({ email });
       if (!result.ok) {
         throw new Error(result.message ?? "Expected join to succeed");
       }
-      await server.remove(email);
+      await server.leave(email);
 
       expect(handler).toHaveBeenCalledWith({ email });
     });
@@ -327,7 +327,7 @@ describe("WaitlistServer", () => {
       expect(await adapter.countReferrals()).toBe(1);
 
       // Remove a user
-      await server.remove("user2@example.com");
+      await server.leave("user2@example.com");
 
       // Verify consistency
       expect(await adapter.count()).toBe(2);
@@ -338,7 +338,7 @@ describe("WaitlistServer", () => {
       expect(leaderboard).toHaveLength(2);
     });
 
-    it("should handle rapid add/remove cycles", async () => {
+    it("should handle rapid add/leave cycles", async () => {
       const email = "user@example.com";
 
       for (let i = 0; i < 5; i += 1) {
@@ -346,7 +346,7 @@ describe("WaitlistServer", () => {
         if (!result.ok) {
           throw new Error(result.message ?? "Expected join to succeed");
         }
-        await server.remove(email);
+        await server.leave(email);
       }
 
       const entry = await adapter.findByEmail(email);
@@ -362,7 +362,7 @@ describe("WaitlistServer", () => {
 
       eventBus.on("join", joinHandler);
       eventBus.on("referral", referralHandler);
-      eventBus.on("remove", removeHandler);
+      eventBus.on("leave", removeHandler);
 
       const referrer = await server.join({ email: "referrer@example.com" });
       if (!referrer.ok) {
@@ -375,7 +375,7 @@ describe("WaitlistServer", () => {
       if (!referee.ok) {
         throw new Error(referee.message ?? "Expected join to succeed");
       }
-      await server.remove("referee@example.com");
+      await server.leave("referee@example.com");
 
       expect(joinHandler).toHaveBeenCalledTimes(2);
       expect(referralHandler).toHaveBeenCalledTimes(1);

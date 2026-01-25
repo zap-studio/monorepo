@@ -74,11 +74,11 @@ describe("EventBus", () => {
       });
     });
 
-    it("should handle remove events with optional reason", async () => {
+    it("should handle leave events with optional reason", async () => {
       const handler = vi.fn();
-      bus.on("remove", handler);
+      bus.on("leave", handler);
 
-      await bus.emit("remove", {
+      await bus.emit("leave", {
         email: "test@example.com",
         reason: "User requested removal",
       });
@@ -141,7 +141,7 @@ describe("EventBus", () => {
       expect(handler).toHaveBeenCalledTimes(1); // Still 1
     });
 
-    it("should only remove the specific handler", async () => {
+    it("should only leave the specific handler", async () => {
       const handler1 = vi.fn();
       const handler2 = vi.fn();
 
@@ -251,7 +251,7 @@ describe("EventBus", () => {
 
       bus.on("join", joinHandler);
       bus.on("referral", referralHandler);
-      bus.on("remove", removeHandler);
+      bus.on("leave", removeHandler);
       bus.on("error", errorHandler);
 
       await bus.emit("join", { email: "test@example.com" });
@@ -259,7 +259,7 @@ describe("EventBus", () => {
         referrer: "referrer@example.com",
         referee: "referee@example.com",
       });
-      await bus.emit("remove", { email: "test@example.com" });
+      await bus.emit("leave", { email: "test@example.com" });
       await bus.emit("error", { err: new Error("Test"), source: "join" });
 
       expect(joinHandler).toHaveBeenCalledTimes(1);
@@ -296,7 +296,7 @@ describe("EventBus", () => {
 
       bus.on("join", handler1);
       bus.on("referral", handler2);
-      bus.on("remove", handler3);
+      bus.on("leave", handler3);
 
       bus.clear();
 
@@ -305,7 +305,7 @@ describe("EventBus", () => {
         referrer: "referrer@example.com",
         referee: "referee@example.com",
       });
-      await bus.emit("remove", { email: "test@example.com" });
+      await bus.emit("leave", { email: "test@example.com" });
 
       expect(handler1).not.toHaveBeenCalled();
       expect(handler2).not.toHaveBeenCalled();
@@ -461,7 +461,7 @@ describe("EventBus", () => {
 
       bus.on("join", joinHandler);
       bus.on("referral", referralHandler);
-      bus.on("remove", removeHandler);
+      bus.on("leave", removeHandler);
 
       await bus.emit("join", { email: "test@example.com" });
 

@@ -32,7 +32,7 @@ export class EventBus {
   } = {
     join: [],
     referral: [],
-    remove: [],
+    leave: [],
     error: [],
   };
 
@@ -146,7 +146,7 @@ export class EventBus {
       this.handlers = {
         join: [],
         referral: [],
-        remove: [],
+        leave: [],
         error: [],
       };
     }
