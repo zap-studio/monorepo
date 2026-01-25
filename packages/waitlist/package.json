@@ -39,7 +39,7 @@
   ],
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
-    "check-types": "tsc --noEmit",
+    "check": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest --watch"
   },
@@ -61,10 +61,9 @@
   "exports": {
     "./adapters/storage/in-memory": "./dist/adapters/storage/in-memory.mjs",
     "./client": "./dist/client.mjs",
+    "./contract": "./dist/contract.mjs",
     "./events": "./dist/events/index.mjs",
     "./referral": "./dist/referral/index.mjs",
-    "./sdk/base": "./dist/sdk/base.mjs",
-    "./sdk/types": "./dist/sdk/types.mjs",
     "./server": "./dist/server.mjs",
     "./types": "./dist/types/index.mjs",
     "./utils": "./dist/utils.mjs",
