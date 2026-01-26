@@ -1,5 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { createSyncStandardValidator } from "..";
+import { MULTIPART_LTDS } from "./constants";
 import type { Email, EmailValidationConfig } from "./types";
 
 /**
@@ -135,7 +136,15 @@ export function validateEmail(
   if (!effective.allowSubdomains) {
     const domainPart = email.split("@")[1];
     const parts = domainPart?.split(".") || [];
-    if (parts.length > 2) {
+    const lastTwo = parts.slice(-2).join(".");
+    const lastThree = parts.slice(-3).join(".");
+    let hasSubdomain = parts.length > 2;
+    if (MULTIPART_LTDS.has(lastTwo)) {
+      hasSubdomain = parts.length > 3;
+    } else if (MULTIPART_LTDS.has(lastThree)) {
+      hasSubdomain = parts.length > 4;
+    }
+    if (hasSubdomain) {
       return { valid: false, error: "Subdomains not allowed" };
     }
   }

@@ -52,6 +52,7 @@
   "types": "./dist/index.d.mts",
   "exports": {
     ".": "./dist/index.mjs",
+    "./email/constants": "./dist/email/constants.mjs",
     "./email/standard": "./dist/email/standard.mjs",
     "./email/types": "./dist/email/types.mjs",
     "./errors": "./dist/errors.mjs",
