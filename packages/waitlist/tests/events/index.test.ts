@@ -409,9 +409,11 @@ describe("EventBus", () => {
         "user3@example.com",
       ];
 
-      for (const email of emails) {
-        await bus.emit("join", { email });
-      }
+      const chain = emails.reduce(
+        (promise, email) => promise.then(() => bus.emit("join", { email })),
+        Promise.resolve()
+      );
+      await chain;
 
       expect(handler).toHaveBeenCalledTimes(3);
       expect(handler).toHaveBeenNthCalledWith(1, {

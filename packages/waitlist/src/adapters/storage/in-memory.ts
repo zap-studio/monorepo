@@ -179,8 +179,10 @@ export class InMemoryAdapter implements WaitlistStorageAdapter {
   async getLeaderboard(
     positionStrategy: PositionStrategy = DEFAULT_POSITION_STRATEGY
   ): Promise<Leaderboard> {
-    const entries = await this.list();
-    const referrals = await this.listReferrals();
+    const [entries, referrals] = await Promise.all([
+      this.list(),
+      this.listReferrals(),
+    ]);
 
     const scores = calculateScores(entries, referrals, {
       strategy: positionStrategy,

@@ -517,8 +517,12 @@ describe("WaitlistServer", () => {
   describe("performance scenarios", () => {
     it("should handle large leaderboards efficiently", async () => {
       // Create many users
-      for (let i = 0; i < 50; i += 1) {
-        const result = await server.join({ email: `user${i}@example.com` });
+      const results = await Promise.all(
+        Array.from({ length: 50 }, (_, i) =>
+          server.join({ email: `user${i}@example.com` })
+        )
+      );
+      for (const result of results) {
         if (!result.ok) {
           throw new Error(result.message ?? "Expected join to succeed");
         }

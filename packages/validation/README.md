@@ -68,4 +68,7 @@ if (result.issues) {
 }
 ```
 
+## Email validation
+
+The email validator includes a small list of common multipart public suffixes (e.g. `co.uk`) used to decide whether a domain has subdomains. That list is not exhaustive, so treat `allowSubdomains: false` as a best-effort guard rather than a complete public suffix check.
 

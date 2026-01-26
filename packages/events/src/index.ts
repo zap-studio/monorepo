@@ -109,11 +109,14 @@ export class EventBus<TEventMap extends object = Record<string, unknown>> {
   ): Promise<void> {
     const list = [...(this.handlers[type] ?? [])];
 
-    for (const fn of list) {
-      try {
-        await fn(payload);
-      } catch (err) {
-        this.logger?.error("EventBus: Handler error", err, { event: type });
+    const results = await Promise.allSettled(
+      list.map((fn) => Promise.resolve().then(() => fn(payload)))
+    );
+    for (const result of results) {
+      if (result.status === "rejected") {
+        this.logger?.error("EventBus: Handler error", result.reason, {
+          event: type,
+        });
       }
     }
   }
@@ -129,7 +132,7 @@ export class EventBus<TEventMap extends object = Record<string, unknown>> {
    * bus.clear();
    */
   clear(type?: EventKey<TEventMap>): void {
-    if (type) {
+    if (type !== undefined) {
       this.handlers[type] = [];
     } else {
       this.handlers = {};

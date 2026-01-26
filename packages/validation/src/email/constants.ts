@@ -1,3 +1,6 @@
+/**
+ * Non-exhaustive: used to detect common multipart public suffixes for subdomain checks.
+ */
 export const MULTIPART_LTDS: Set<string> = new Set([
   "co.uk",
   "org.uk",

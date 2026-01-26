@@ -135,7 +135,8 @@ export function validateEmail(
 
   if (!effective.allowSubdomains) {
     const domainPart = email.split("@")[1];
-    const parts = domainPart?.split(".") || [];
+    const normalizedDomain = domainPart?.toLowerCase() ?? "";
+    const parts = normalizedDomain.split(".");
     const lastTwo = parts.slice(-2).join(".");
     const lastThree = parts.slice(-3).join(".");
     let hasSubdomain = parts.length > 2;

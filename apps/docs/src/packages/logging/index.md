@@ -33,11 +33,19 @@ Enable timestamps:
 
 ```ts
 const logger = new ConsoleLogger({ timestamp: true });
+logger.info("Message");
+```
+
+With `{ timestamp: true }`, `ConsoleLogger` prefixes messages with an ISO 8601
+UTC timestamp:
+
+```
+[INFO] 2025-01-26T19:44:00.123Z Message
 ```
 
 ## Custom Logger (step by step)
 
-If you need to forward logs to a third‑party service (Datadog, Sentry, custom
+If you need to forward logs to a third-party service (Datadog, Sentry, custom
 backend), extend `AbstractLogger` and implement the low‑level `write()` method.
 
 ### 1) Define your context
@@ -61,7 +69,17 @@ class AppLogger extends AbstractLogger<Error, AppContext> {
     context?: Partial<AppContext>,
     err?: Error
   ) {
-    // Forward to your logging backend.
+    const logEntry = {
+      level,
+      message,
+      timestamp: new Date().toISOString(),
+      context,
+      error: err
+        ? { name: err.name, message: err.message, stack: err.stack }
+        : undefined,
+    };
+
+    console.log(JSON.stringify(logEntry));
   }
 }
 ```

@@ -20,7 +20,11 @@ export interface ILogger<
   TError = unknown,
   TContext extends Record<string, unknown> = Record<string, unknown>,
 > {
-  log(level: LogLevel, message: string, context?: Partial<TContext>): void;
+  log(
+    level: LogLevel,
+    message: string,
+    context?: Partial<TContext>
+  ): void | Promise<void>;
 
   info: (message: string, context?: Partial<TContext>) => void | Promise<void>;
   warn: (message: string, context?: Partial<TContext>) => void | Promise<void>;
@@ -50,15 +54,19 @@ export abstract class AbstractLogger<
     this.write(level, this.formatMessage(level, message), context);
   }
 
-  info(message: string, context?: Partial<TContext>): void {
+  info(message: string, context?: Partial<TContext>): void | Promise<void> {
     this.log("info", message, context);
   }
 
-  warn(message: string, context?: Partial<TContext>): void {
+  warn(message: string, context?: Partial<TContext>): void | Promise<void> {
     this.log("warn", message, context);
   }
 
-  error(message: string, err?: TError, context?: Partial<TContext>): void {
+  error(
+    message: string,
+    err?: TError,
+    context?: Partial<TContext>
+  ): void | Promise<void> {
     this.write("error", this.formatMessage("error", message), context, err);
   }
 

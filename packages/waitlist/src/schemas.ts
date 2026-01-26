@@ -38,11 +38,16 @@ export const JoinSuccessSchema: z.ZodObject<{
 
 export const JoinErrorSchema: z.ZodObject<{
   ok: z.ZodLiteral<false>;
-  reason: z.ZodLiteral<"invalid-email">;
+  reason: z.ZodUnion<
+    [z.ZodLiteral<"invalid-email">, z.ZodLiteral<"already-registered">]
+  >;
   message: z.ZodOptional<z.ZodString>;
 }> = z.object({
   ok: z.literal(false),
-  reason: z.literal("invalid-email"),
+  reason: z.union([
+    z.literal("invalid-email"),
+    z.literal("already-registered"),
+  ]),
   message: z.string().optional(),
 });
 
