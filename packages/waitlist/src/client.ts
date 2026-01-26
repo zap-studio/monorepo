@@ -23,7 +23,7 @@ export interface WaitlistClientOptions {
 
 export class WaitlistClient implements WaitlistService {
   /** The base URL for the API */
-  baseUrl: string;
+  readonly baseUrl: string;
 
   /** The configured fetch instance */
   private readonly api: ReturnType<typeof createFetch>["api"];
