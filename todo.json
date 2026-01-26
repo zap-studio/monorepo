@@ -18,5 +18,10 @@
     "id": 4,
     "task": "Check integration of events in waitlist SDK",
     "completed": false
+  },
+  {
+    "id": 5,
+    "task": "Simplify event bus, especially logger and errorReport and update docs",
+    "completed": false
   }
 ]
