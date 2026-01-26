@@ -105,8 +105,14 @@ export class InMemoryAdapter implements WaitlistStorageAdapter {
       existing.referrer !== updated.referrer ||
       existing.referee !== updated.referee
     ) {
-      this.referrals.delete(referralKey);
       const updatedKey = this.getReferralKey(updated.referrer, updated.referee);
+      const collision = this.referrals.get(updatedKey);
+      if (collision && collision !== existing) {
+        throw new Error(
+          `Referral key collision for ${updatedKey}; refusing to overwrite existing referral`
+        );
+      }
+      this.referrals.delete(referralKey);
       this.referrals.set(updatedKey, updated);
     } else {
       this.referrals.set(referralKey, updated);
