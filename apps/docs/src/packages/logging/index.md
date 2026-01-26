@@ -12,29 +12,30 @@ npm install @zap-studio/logging
 bun add @zap-studio/logging
 ```
 
-## Specification
+## AbstractLogger
 
-The package defines a small logging contract you can implement in your runtime.
+The package provides a base class with shared behavior and a minimal logging
+contract you can extend in your runtime.
 
 ```ts
-import type { ILogger, LogLevel } from "@zap-studio/logging";
+import { AbstractLogger, type LogLevel } from "@zap-studio/logging";
 
 type AppContext = {
   requestId: string;
   userId?: string;
 };
 
-class AppLogger implements ILogger<Error, AppContext> {
-  log(level: LogLevel, message: string, context?: Partial<AppContext>) {
+class AppLogger extends AbstractLogger<Error, AppContext> {
+  protected write(level: LogLevel, message: string, context?: Partial<AppContext>, err?: Error) {
     // Forward to your logging backend.
   }
-
-  info(message: string, context?: Partial<AppContext>) {}
-
-  warn(message: string, context?: Partial<AppContext>) {}
-
-  error(message: string, err?: Error, context?: Partial<AppContext>) {}
 }
+```
+
+Enable timestamps with the `LoggerOptions` constructor.
+
+```ts
+const logger = new AppLogger({ timestamp: true });
 ```
 
 ## ConsoleLogger
