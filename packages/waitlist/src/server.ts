@@ -174,12 +174,21 @@ export class WaitlistServer implements WaitlistService {
           referredBy: referralCode,
         };
 
-        // Create the entry
-        await this.adapter.create(entryWithReferral);
+        let entryCreated = false;
+        try {
+          // Create the entry
+          await this.adapter.create(entryWithReferral);
+          entryCreated = true;
 
-        // Store the referral link
-        referralLink = createReferralLink(referrer.email, email);
-        await this.adapter.createReferral(referralLink);
+          // Store the referral link
+          referralLink = createReferralLink(referrer.email, email);
+          await this.adapter.createReferral(referralLink);
+        } catch (error) {
+          if (entryCreated) {
+            await this.adapter.delete(entryWithReferral.email);
+          }
+          throw error;
+        }
 
         // Emit events
         await this.events.emit("join", { email });
