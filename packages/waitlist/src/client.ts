@@ -11,7 +11,7 @@ import {
 } from "./schemas";
 import type { JoinInput, JoinResult } from "./types";
 
-const TrailingSlashRegex = /\/$/;
+const TrailingSlashRegex = /\/+$/;
 
 /** Options for the WaitlistClient */
 export interface WaitlistClientOptions {
