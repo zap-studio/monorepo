@@ -144,7 +144,6 @@ interface WaitlistConfig {
   maxReferrals?: number;
   referralCodeLength?: number;
   positionStrategy?: "creation-date" | "number-of-referrals";
-  rateLimit?: { windowMs: number; max: number };
   emailValidation?: { allowPlus?: boolean; allowSubdomains?: boolean };
 }
 ```
