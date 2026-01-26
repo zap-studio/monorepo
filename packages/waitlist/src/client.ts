@@ -11,7 +11,13 @@ import {
 } from "./schemas";
 import type { JoinInput, JoinResult } from "./types";
 
-const TrailingSlashRegex = /\/+$/;
+const trimTrailingSlashes = (value: string): string => {
+  let end = value.length;
+  while (end > 0 && value.charCodeAt(end - 1) === 47) {
+    end -= 1;
+  }
+  return value.slice(0, end);
+};
 
 /** Options for the WaitlistClient */
 export interface WaitlistClientOptions {
@@ -43,7 +49,7 @@ export class WaitlistClient implements WaitlistService {
     const withLeadingSlash = normalizedPrefix.startsWith("/")
       ? normalizedPrefix
       : `/${normalizedPrefix}`;
-    this.prefix = withLeadingSlash.replace(TrailingSlashRegex, "");
+    this.prefix = trimTrailingSlashes(withLeadingSlash);
 
     const { api } = createFetch({
       baseURL: baseUrl,
