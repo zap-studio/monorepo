@@ -32,7 +32,7 @@ npm i @zap-studio/waitlist
 bun add @zap-studio/waitlist
 ```
 
-If you want event hooks, also install the optional event bus:
+If you want event hooks, also install the optional event bus (peer dependency):
 
 ```bash
 pnpm add @zap-studio/events
@@ -42,9 +42,22 @@ npm i @zap-studio/events
 bun add @zap-studio/events
 ```
 
+Without `@zap-studio/events`, the SDK works normally but does not emit events.
+
+## Optional events
+
+The waitlist SDK does not require an event bus. When you provide one, you can:
+
+- trigger emails or notifications when someone joins
+- record analytics or growth metrics
+- sync to CRMs or other systems
+- build internal audit logs
+
+To enable events, install `@zap-studio/events` and pass an instance to `WaitlistServer`.
+
 ## Quick Start (server-side)
 
-If you want event hooks, install `@zap-studio/events` and pass an event bus to the server.
+Event hooks are optional. Pass an event bus if you want to react to `join`, `referral`, `leave`, and `error`.
 
 ```ts
 import { InMemoryAdapter } from "@zap-studio/waitlist/adapters/storage/in-memory";

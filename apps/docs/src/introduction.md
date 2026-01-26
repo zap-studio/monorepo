@@ -47,11 +47,11 @@ We're also building a suite of packages that solve common problems with modern, 
 
 | Package                                                  | Description                                             | Status         |
 | -------------------------------------------------------- | ------------------------------------------------------- | -------------- |
+| [@zap-studio/events](./packages/events/index.md)         | Lightweight event bus for event hooks                   | ✅ Available   |
 | [@zap-studio/fetch](./packages/fetch/index.md)           | Type-safe fetch wrapper with validation                 | ✅ Available   |
 | [@zap-studio/permit](./packages/permit/index.md)         | Type-safe authorization and access control              | ✅ Available   |
-| [@zap-studio/validation](./packages/validation/index.md) | Shared Standard Schema utilities and validation helpers | ✅ Available   |
-| [@zap-studio/events](./packages/events/index.md)         | Lightweight event bus for event hooks                   | ✅ Available   |
 | [@zap-studio/realtime](./packages/realtime/index.md)     | Realtime events with SSE and WebSocket support          | 🚧 Coming Soon |
+| [@zap-studio/validation](./packages/validation/index.md) | Shared Standard Schema utilities and validation helpers | ✅ Available   |
 | [@zap-studio/waitlist](./packages/waitlist/index.md)     | Waitlist management solution                            | ✅ Available   |
 | [@zap-studio/webhooks](./packages/webhooks/index.md)     | Webhook handling with signature verification            | 🚧 Coming Soon |
 

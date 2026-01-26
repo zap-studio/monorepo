@@ -24,6 +24,7 @@ export default defineConfig({
       {
         text: "Packages",
         items: [
+          { text: "@zap-studio/events", link: "/packages/events/" },
           { text: "@zap-studio/fetch", link: "/packages/fetch/" },
           { text: "@zap-studio/permit", link: "/packages/permit/" },
           { text: "@zap-studio/realtime", link: "/packages/realtime/" },
@@ -113,6 +114,17 @@ export default defineConfig({
             { text: "Factory Pattern", link: "/packages/fetch/create-fetch" },
             { text: "Error Handling", link: "/packages/fetch/errors" },
             { text: "Validation", link: "/packages/fetch/validation" },
+          ],
+        },
+      ],
+      "/packages/events/": [
+        {
+          text: "@zap-studio/events",
+          items: [
+            { text: "Overview", link: "/packages/events/" },
+            { text: "Handlers", link: "/packages/events/handlers" },
+            { text: "Error Handling", link: "/packages/events/error-handling" },
+            { text: "Utilities", link: "/packages/events/utilities" },
           ],
         },
       ],

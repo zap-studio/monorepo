@@ -28,6 +28,11 @@ features:
     details: A starter kit for building local-first desktop applications with Tauri and React.
     link: ./local-ts
 
+  - title: "@zap-studio/events"
+    icon: "📣"
+    details: A lightweight typed event bus for event hooks.
+    link: ./packages/events
+
   - title: "@zap-studio/fetch"
     icon: "📡"
     details: A lightweight, type-safe fetch wrapper with built-in validation and error handling.
@@ -38,20 +43,15 @@ features:
     details: A type-safe, declarative authorization library with Standard Schema support.
     link: ./packages/permit
 
-  - title: "@zap-studio/validation"
-    icon: "✅"
-    details: Shared Standard Schema utilities and ValidationError helpers.
-    link: ./packages/validation
-
-  - title: "@zap-studio/events"
-    icon: "📣"
-    details: A lightweight typed event bus for event hooks.
-    link: ./packages/events
-
   - title: "@zap-studio/realtime"
     icon: "📡"
     details: Realtime events with SSE and WebSocket support. Coming soon.
     link: ./packages/realtime
+
+  - title: "@zap-studio/validation"
+    icon: "✅"
+    details: Shared Standard Schema utilities and ValidationError helpers.
+    link: ./packages/validation
 
   - title: "@zap-studio/waitlist"
     icon: "⏳"

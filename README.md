@@ -24,20 +24,20 @@ We're building **the higher layer above TanStack for modern apps**—agnostic co
 
 ## Our Packages
 
+**[@zap-studio/events](./packages/events)**  
+Lightweight event bus for waitlist event hooks.
+
 **[@zap-studio/fetch](./packages/fetch)**  
 Modern HTTP client with proper error handling. Because `fetch()` should have been better from day one.
 
 **[@zap-studio/permit](./packages/permit)**  
 Type-safe centralized & secure authorization with zero config.
 
-**[@zap-studio/validation](./packages/validation)**  
-Shared Standard Schema utilities and validation helpers.
-
-**[@zap-studio/events](./packages/events)**  
-Lightweight event bus for waitlist event hooks.
-
 **[@zap-studio/realtime](./packages/realtime)**  
 Realtime events with SSE and WebSocket support.
+
+**[@zap-studio/validation](./packages/validation)**  
+Shared Standard Schema utilities and validation helpers.
 
 **[@zap-studio/waitlist](./packages/waitlist)**  
 Launch faster with built-in waitlist management, referral tracking, and analytics.
