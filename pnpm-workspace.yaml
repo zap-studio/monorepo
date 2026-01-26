@@ -19,7 +19,7 @@ catalogs:
   testing:
     '@vitest/coverage-v8': ^4.0.15
     '@vitest/ui': ^4.0.17
-    vitest: ^4.0.17
+    vitest: ^4.0.18
   tooling:
     '@changesets/cli': ^2.29.8
     '@turbo/gen': ^2.7.5
