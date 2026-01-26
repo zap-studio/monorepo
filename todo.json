@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "task": "Waitlist storage adapter: Redis (package: redis)",
+    "completed": false
+  },
+  {
+    "id": 2,
+    "task": "Waitlist storage adapter: PostgreSQL (package: pg)",
+    "completed": false
+  },
+  {
+    "id": 3,
+    "task": "Waitlist storage adapter: Drizzle ORM (packages: drizzle-orm, drizzle-kit, pg)",
+    "completed": false
+  }
+]
