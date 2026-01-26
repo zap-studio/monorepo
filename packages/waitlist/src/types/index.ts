@@ -81,3 +81,21 @@ export interface JoinSuccessResult {
 
 /** Result of joining the waitlist */
 export type JoinResult = JoinSuccessResult | JoinErrorResult;
+
+/** Represents the payloads for waitlist events. */
+export interface WaitlistEventPayloadMap {
+  /** Represents the payload of a join event */
+  join: { email: Email };
+
+  /** Represents the payload of a referral event */
+  referral: { referrer: Email; referee: Email };
+
+  /** Represents the payload of a leave event */
+  leave: { email: Email; reason?: string };
+
+  /** Represents the payload of an error event */
+  error: { err: unknown; source: keyof WaitlistEventPayloadMap };
+}
+
+/** Represents the type of an event in the waitlist system */
+export type WaitlistEventType = keyof WaitlistEventPayloadMap;

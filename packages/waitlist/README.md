@@ -32,15 +32,31 @@ npm i @zap-studio/waitlist
 bun add @zap-studio/waitlist
 ```
 
+If you want event hooks, also install the optional event bus:
+
+```bash
+pnpm add @zap-studio/events
+# or
+npm i @zap-studio/events
+# or
+bun add @zap-studio/events
+```
+
 ## Quick Start (server-side)
+
+If you want event hooks, install `@zap-studio/events` and pass an event bus to the server.
 
 ```ts
 import { InMemoryAdapter } from "@zap-studio/waitlist/adapters/storage/in-memory";
-import { EventBus } from "@zap-studio/waitlist/events";
+import { EventBus } from "@zap-studio/events";
+import type { WaitlistEventPayloadMap } from "@zap-studio/waitlist/types";
 import { WaitlistServer } from "@zap-studio/waitlist/server";
 
 const adapter = new InMemoryAdapter();
-const events = new EventBus();
+const events = new EventBus<WaitlistEventPayloadMap>({
+  errorEventType: "error",
+  errorEventPayload: (err, source) => ({ err, source }),
+});
 
 const waitlist = new WaitlistServer({
   adapter,
@@ -69,22 +85,28 @@ console.log("Position:", position ?? "not found");
 `EventBus` does not log to `console` by default. Provide a logger or callback to control how errors are reported when a handler throws.
 
 ```ts
-import { EventBus } from "@zap-studio/waitlist/events";
-import type { ErrorReporter, ILogger } from "@zap-studio/waitlist/events/types";
+import { EventBus } from "@zap-studio/events";
+import type { ErrorReporter, ILogger } from "@zap-studio/events/types";
+import type { WaitlistEventPayloadMap } from "@zap-studio/waitlist/types";
 
-const logger: ILogger = {
+const logger: ILogger<WaitlistEventPayloadMap> = {
   error: (message, err, context) => {
     console.error(message, err, context);
   },
 };
 
-const onError: ErrorReporter = (err, { event, errorEmitFailed }) => {
+const onError: ErrorReporter<WaitlistEventPayloadMap> = (
+  err,
+  { event, errorEmitFailed }
+) => {
   console.error("EventBus error", { event, err, errorEmitFailed });
 };
 
-const events = new EventBus({
+const events = new EventBus<WaitlistEventPayloadMap>({
   logger, // used when onError is not provided
   onError, // takes precedence over logger
+  errorEventType: "error",
+  errorEventPayload: (err, source) => ({ err, source }),
 });
 ```
 

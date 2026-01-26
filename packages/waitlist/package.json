@@ -49,9 +49,18 @@
     "nanoid": "catalog:base",
     "zod": "catalog:base"
   },
+  "peerDependencies": {
+    "@zap-studio/events": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@zap-studio/events": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/node": "catalog:types",
     "@vitest/coverage-v8": "catalog:testing",
+    "@zap-studio/events": "workspace:*",
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
@@ -65,8 +74,6 @@
     "./client": "./dist/client.mjs",
     "./constants": "./dist/constants.mjs",
     "./contract": "./dist/contract.mjs",
-    "./events": "./dist/events/index.mjs",
-    "./events/types": "./dist/events/types.mjs",
     "./leaderboard": "./dist/leaderboard/index.mjs",
     "./leaderboard/types": "./dist/leaderboard/types.mjs",
     "./referral": "./dist/referral/index.mjs",

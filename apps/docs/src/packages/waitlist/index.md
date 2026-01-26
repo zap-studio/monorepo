@@ -15,14 +15,17 @@ The documentation for `@zap-studio/waitlist` is currently under development. Sta
 - **Analytics** - Track waitlist growth and engagement
 - **Customizable** - Flexible configuration to match your needs
 
-## EventBus error reporting
+## EventBus
 
-The `EventBus` does not log to `console` by default. Provide a logger or callback to control error reporting when handlers throw.
+Waitlist events are powered by `@zap-studio/events`. The waitlist package defines the `join`, `referral`, `leave`, and `error` event payloads.
 
 ```ts
-import { EventBus } from "@zap-studio/waitlist/events";
+import { EventBus } from "@zap-studio/events";
+import type { WaitlistEventPayloadMap } from "@zap-studio/waitlist/types";
 
-const events = new EventBus({
+const events = new EventBus<WaitlistEventPayloadMap>({
+  errorEventType: "error",
+  errorEventPayload: (err, source) => ({ err, source }),
   onError: (err, { event, errorEmitFailed }) => {
     console.error("EventBus error", { event, err, errorEmitFailed });
   },
@@ -35,6 +38,14 @@ const events = new EventBus({
 pnpm add @zap-studio/waitlist
 # or
 npm install @zap-studio/waitlist
+```
+
+Optional event hooks:
+
+```bash
+pnpm add @zap-studio/events
+# or
+npm install @zap-studio/events
 ```
 
 ## Stay Updated

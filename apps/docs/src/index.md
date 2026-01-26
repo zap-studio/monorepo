@@ -6,9 +6,9 @@ hero:
   name: "Zap Studio ⚡️"
   tagline: "Building open-source projects to help developers ship faster with confidence."
   # image:
-    # light: /code-light.png
-    # dark: /code-dark.png
-    # alt: Zap Studio Code Snippet
+  # light: /code-light.png
+  # dark: /code-dark.png
+  # alt: Zap Studio Code Snippet
   actions:
     - theme: brand
       text: Introduction
@@ -43,6 +43,11 @@ features:
     details: Shared Standard Schema utilities and ValidationError helpers.
     link: ./packages/validation
 
+  - title: "@zap-studio/events"
+    icon: "📣"
+    details: A lightweight typed event bus for event hooks.
+    link: ./packages/events
+
   - title: "@zap-studio/realtime"
     icon: "📡"
     details: Realtime events with SSE and WebSocket support. Coming soon.
@@ -57,5 +62,4 @@ features:
     icon: "🪝"
     details: A robust webhook handling library with signature verification.
     link: ./packages/webhooks
-
 ---

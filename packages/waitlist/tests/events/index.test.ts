@@ -1,13 +1,17 @@
 // biome-ignore-all lint/style/noMagicNumbers: This is a test file so magic numbers are fine.
 
+import { EventBus } from "@zap-studio/events";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { EventBus } from "../../src/events";
+import type { WaitlistEventPayloadMap } from "../../src/types";
 
 describe("EventBus", () => {
-  let bus: EventBus;
+  let bus: EventBus<WaitlistEventPayloadMap>;
 
   beforeEach(() => {
-    bus = new EventBus();
+    bus = new EventBus<WaitlistEventPayloadMap>({
+      errorEventType: "error",
+      errorEventPayload: (err, source) => ({ err, source }),
+    });
   });
 
   describe("on", () => {
@@ -218,7 +222,11 @@ describe("EventBus", () => {
 
     it("should report errors if error handler throws", async () => {
       const onError = vi.fn();
-      bus = new EventBus({ onError });
+      bus = new EventBus<WaitlistEventPayloadMap>({
+        onError,
+        errorEventType: "error",
+        errorEventPayload: (err, source) => ({ err, source }),
+      });
 
       bus.on("error", () => {
         throw new Error("Error handler error");
@@ -363,7 +371,11 @@ describe("EventBus", () => {
   describe("error handling edge cases", () => {
     it("should not emit error event recursively if error handler is the source", async () => {
       const onError = vi.fn();
-      bus = new EventBus({ onError });
+      bus = new EventBus<WaitlistEventPayloadMap>({
+        onError,
+        errorEventType: "error",
+        errorEventPayload: (err, source) => ({ err, source }),
+      });
 
       const errorCount = { count: 0 };
 
@@ -387,7 +399,11 @@ describe("EventBus", () => {
 
     it("should report errors if error handler throws while emitting error event", async () => {
       const onError = vi.fn();
-      bus = new EventBus({ onError });
+      bus = new EventBus<WaitlistEventPayloadMap>({
+        onError,
+        errorEventType: "error",
+        errorEventPayload: (err, source) => ({ err, source }),
+      });
 
       // Make error handler throw
       bus.on("error", () => {

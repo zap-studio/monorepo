@@ -1,14 +1,18 @@
 // biome-ignore-all lint/style/noMagicNumbers: This is a test file so magic numbers are fine.
 
+import { EventBus } from "@zap-studio/events";
 import type { Email } from "@zap-studio/validation/email/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { WaitlistStorageAdapter } from "../src/adapters/storage/types";
-import { EventBus } from "../src/events";
 import { calculateScores, sortEntriesByScores } from "../src/leaderboard";
 import type { PositionStrategy } from "../src/leaderboard/types";
 import type { ReferralLink } from "../src/referral/types";
 import { WaitlistServer } from "../src/server";
-import type { EmailEntry, JoinSuccessResult } from "../src/types";
+import type {
+  EmailEntry,
+  JoinSuccessResult,
+  WaitlistEventPayloadMap,
+} from "../src/types";
 
 // Mock adapter implementation for testing
 class MockAdapter implements WaitlistStorageAdapter {
@@ -127,12 +131,15 @@ class MockAdapter implements WaitlistStorageAdapter {
 
 describe("WaitlistServer", () => {
   let adapter: MockAdapter;
-  let eventBus: EventBus;
+  let eventBus: EventBus<WaitlistEventPayloadMap>;
   let sdk: WaitlistServer;
 
   beforeEach(() => {
     adapter = new MockAdapter();
-    eventBus = new EventBus();
+    eventBus = new EventBus<WaitlistEventPayloadMap>({
+      errorEventType: "error",
+      errorEventPayload: (err, source) => ({ err, source }),
+    });
     sdk = new WaitlistServer({ adapter, events: eventBus });
   });
 
@@ -141,7 +148,7 @@ describe("WaitlistServer", () => {
       expect(sdk).toBeInstanceOf(WaitlistServer);
     });
 
-    it("should create a default EventBus if not provided", () => {
+    it("should create a default no-op event bus if not provided", () => {
       const sdkWithoutEvents = new WaitlistServer({ adapter });
       expect(sdkWithoutEvents).toBeInstanceOf(WaitlistServer);
     });

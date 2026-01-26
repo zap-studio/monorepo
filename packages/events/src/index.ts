@@ -1,13 +1,12 @@
 import type {
   ErrorReporter,
-  EventPayloadMap,
+  EventBusOptions,
+  EventKey,
   Handler,
-  ILogger,
-  WaitlistEventType,
 } from "./types";
 
 /**
- * A simple event bus for handling waitlist-related events.
+ * A simple event bus for handling typed events.
  *
  * @example
  * const bus = new EventBus();
@@ -28,37 +27,38 @@ import type {
  *   console.log("First referral:", payload.referrer);
  * });
  */
-export class EventBus {
-  private readonly reportError: ErrorReporter;
+type EventHandlers<TEventMap extends object> = Partial<{
+  [K in EventKey<TEventMap>]: Handler<TEventMap[K]>[];
+}>;
+
+export class EventBus<TEventMap extends object = Record<string, unknown>> {
+  private readonly reportError: ErrorReporter<TEventMap>;
+  private readonly errorEventType?: EventKey<TEventMap>;
+  private readonly errorEventPayload?: (
+    err: unknown,
+    source: EventKey<TEventMap>
+  ) => TEventMap[EventKey<TEventMap>];
 
   /** A mapping of event types to their handlers. */
-  private handlers: {
-    [K in WaitlistEventType]: Handler<EventPayloadMap[K]>[];
-  } = {
-    join: [],
-    referral: [],
-    leave: [],
-    error: [],
-  };
+  private handlers: EventHandlers<TEventMap> = {};
 
-  constructor(options: { logger?: ILogger; onError?: ErrorReporter } = {}) {
-    const { logger, onError } = options;
+  constructor(options: EventBusOptions<TEventMap> = {}) {
+    const { logger, onError, errorEventType, errorEventPayload } = options;
 
     if (onError) {
       this.reportError = onError;
-      return;
-    }
-
-    if (logger) {
+    } else if (logger) {
       this.reportError = (err, context) => {
         logger.error("EventBus: Handler error", err, context);
       };
-      return;
+    } else {
+      this.reportError = () => {
+        // No-op
+      };
     }
 
-    this.reportError = () => {
-      // No-op
-    };
+    this.errorEventType = errorEventType;
+    this.errorEventPayload = errorEventPayload;
   }
 
   /**
@@ -69,11 +69,12 @@ export class EventBus {
    *   console.log("New user joined:", payload.email);
    * });
    */
-  on<T extends WaitlistEventType>(
+  on<T extends EventKey<TEventMap>>(
     type: T,
-    handler: Handler<EventPayloadMap[T]>
+    handler: Handler<TEventMap[T]>
   ): () => void {
-    this.handlers[type].push(handler);
+    const list = this.getHandlers(type);
+    list.push(handler);
     return () => this.off(type, handler);
   }
 
@@ -85,11 +86,11 @@ export class EventBus {
    *   console.log("First referral:", payload.referrer);
    * });
    */
-  once<T extends WaitlistEventType>(
+  once<T extends EventKey<TEventMap>>(
     type: T,
-    handler: Handler<EventPayloadMap[T]>
+    handler: Handler<TEventMap[T]>
   ): () => void {
-    const wrappedHandler = async (payload: EventPayloadMap[T]) => {
+    const wrappedHandler = async (payload: TEventMap[T]) => {
       this.off(type, wrappedHandler);
       await handler(payload);
     };
@@ -105,13 +106,18 @@ export class EventBus {
    * // Later...
    * bus.off("join", handler);
    */
-  off<T extends WaitlistEventType>(
+  off<T extends EventKey<TEventMap>>(
     type: T,
-    handler: Handler<EventPayloadMap[T]>
+    handler: Handler<TEventMap[T]>
   ): void {
-    const index = this.handlers[type].indexOf(handler);
+    const list = this.handlers[type];
+    if (!list) {
+      return;
+    }
+
+    const index = list.indexOf(handler);
     if (index > -1) {
-      this.handlers[type].splice(index, 1);
+      list.splice(index, 1);
     }
   }
 
@@ -121,9 +127,9 @@ export class EventBus {
    * @example
    * await bus.emit("join", { email: "user@example.com" });
    */
-  async emit<T extends WaitlistEventType>(
+  async emit<T extends EventKey<TEventMap>>(
     type: T,
-    payload: EventPayloadMap[T]
+    payload: TEventMap[T]
   ): Promise<void> {
     const list = [...(this.handlers[type] ?? [])];
 
@@ -131,18 +137,22 @@ export class EventBus {
       try {
         await fn(payload);
       } catch (err) {
-        if (type !== "error") {
+        if (
+          this.errorEventType &&
+          type !== this.errorEventType &&
+          this.errorEventPayload
+        ) {
           try {
             // Emit error event if handler throws
-            await this.emit("error", {
-              err,
-              source: type,
-            });
+            await this.emit(
+              this.errorEventType,
+              this.errorEventPayload(err, type)
+            );
           } catch (errorEmitFailed) {
             this.reportError(err, { event: type, errorEmitFailed });
           }
         } else {
-          this.reportError(err, { event: "error" });
+          this.reportError(err, { event: type });
         }
       }
     }
@@ -158,16 +168,11 @@ export class EventBus {
    * // Clear all handlers for all event types
    * bus.clear();
    */
-  clear(type?: WaitlistEventType): void {
+  clear(type?: EventKey<TEventMap>): void {
     if (type) {
       this.handlers[type] = [];
     } else {
-      this.handlers = {
-        join: [],
-        referral: [],
-        leave: [],
-        error: [],
-      };
+      this.handlers = {};
     }
   }
 
@@ -177,7 +182,20 @@ export class EventBus {
    * @example
    * const count = bus.listenerCount("join");
    */
-  listenerCount(type: WaitlistEventType): number {
-    return this.handlers[type].length;
+  listenerCount(type: EventKey<TEventMap>): number {
+    return this.handlers[type]?.length ?? 0;
+  }
+
+  private getHandlers<T extends EventKey<TEventMap>>(
+    type: T
+  ): Handler<TEventMap[T]>[] {
+    const existing = this.handlers[type];
+    if (existing) {
+      return existing;
+    }
+
+    const next: Handler<TEventMap[T]>[] = [];
+    this.handlers[type] = next;
+    return next;
   }
 }

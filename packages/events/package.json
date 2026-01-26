@@ -1,0 +1,56 @@
+{
+  "name": "@zap-studio/events",
+  "version": "0.0.0",
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "homepage": "https://www.zapstudio.dev/packages/events",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/events"
+  },
+  "description": "A lightweight event bus for typed events.",
+  "keywords": [
+    "events",
+    "event-bus",
+    "waitlist",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsdown --config tsdown.config.ts",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest --watch"
+  },
+  "dependencies": {
+    "@zap-studio/validation": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:types",
+    "@vitest/coverage-v8": "catalog:testing",
+    "@zap-studio/tsdown-config": "workspace:*",
+    "@zap-studio/typescript-config": "workspace:*",
+    "@zap-studio/vitest-config": "workspace:*",
+    "tsdown": "catalog:base",
+    "typescript": "catalog:base",
+    "vitest": "catalog:testing"
+  },
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./types": "./dist/types.mjs",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts"
+}

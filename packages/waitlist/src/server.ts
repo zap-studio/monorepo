@@ -1,3 +1,4 @@
+import type { EventBus } from "@zap-studio/events";
 import { validateEmail } from "@zap-studio/validation/email/standard";
 import type { Email } from "@zap-studio/validation/email/types";
 import type { WaitlistStorageAdapter } from "./adapters/storage/types";
@@ -6,7 +7,6 @@ import {
   DEFAULT_WAITLIST_CONFIG,
 } from "./constants";
 import type { WaitlistService } from "./contract";
-import { EventBus } from "./events";
 import { calculatePosition, unhandledStrategy } from "./leaderboard";
 import type { Leaderboard, PositionStrategy } from "./leaderboard/types";
 import { addReferralCode, createReferralLink } from "./referral";
@@ -18,6 +18,7 @@ import type {
   JoinSuccessResult,
   ReferralCode,
   WaitlistConfig,
+  WaitlistEventPayloadMap,
 } from "./types";
 
 /** Options for configuring the waitlist server */
@@ -26,7 +27,7 @@ export interface WaitlistServerOptions {
   adapter: WaitlistStorageAdapter;
 
   /** An optional event bus for handling waitlist events */
-  events?: EventBus;
+  events?: EventBus<WaitlistEventPayloadMap>;
 
   /** Optional configuration for waitlist behavior */
   config?: WaitlistConfig;
@@ -36,14 +37,14 @@ export class WaitlistServer implements WaitlistService {
   /** The storage adapter for the waitlist */
   protected adapter: WaitlistStorageAdapter;
   /** The event bus for handling waitlist events */
-  protected events: EventBus;
+  protected events?: EventBus<WaitlistEventPayloadMap>;
   /** Optional configuration for waitlist behavior */
   protected config?: WaitlistConfig;
 
   /** Create a new waitlist server instance */
   constructor({ adapter, events, config }: WaitlistServerOptions) {
     this.adapter = adapter;
-    this.events = events ?? new EventBus();
+    this.events = events;
     this.config = {
       ...DEFAULT_WAITLIST_CONFIG,
       ...config,
@@ -191,8 +192,8 @@ export class WaitlistServer implements WaitlistService {
         }
 
         // Emit events
-        await this.events.emit("join", { email });
-        await this.events.emit("referral", {
+        await this.events?.emit("join", { email });
+        await this.events?.emit("referral", {
           referrer: referrer.email,
           referee: email,
         });
@@ -208,7 +209,7 @@ export class WaitlistServer implements WaitlistService {
 
     // No valid referral code - just create the entry
     await this.adapter.create(entryWithCode);
-    await this.events.emit("join", { email });
+    await this.events?.emit("join", { email });
 
     const result: JoinSuccessResult = { ok: true, entry: entryWithCode };
     return result;
@@ -223,7 +224,7 @@ export class WaitlistServer implements WaitlistService {
    */
   async leave(email: Email): Promise<void> {
     await this.adapter.delete(email);
-    await this.events.emit("leave", { email });
+    await this.events?.emit("leave", { email });
   }
 
   /**
