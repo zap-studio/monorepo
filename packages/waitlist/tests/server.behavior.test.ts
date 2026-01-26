@@ -136,10 +136,7 @@ describe("WaitlistServer", () => {
 
   beforeEach(() => {
     adapter = new MockAdapter();
-    eventBus = new EventBus<WaitlistEventPayloadMap>({
-      errorEventType: "error",
-      errorEventPayload: (err, source) => ({ err, source }),
-    });
+    eventBus = new EventBus<WaitlistEventPayloadMap>();
     sdk = new WaitlistServer({ adapter, events: eventBus });
   });
 
@@ -572,9 +569,15 @@ describe("WaitlistServer", () => {
       ).rejects.toThrow("Database error");
     });
 
-    it("should emit error event when handler fails", async () => {
-      const errorHandler = vi.fn();
-      eventBus.on("error", errorHandler);
+    it("should report event handler errors when a logger is provided", async () => {
+      const logger = {
+        log: vi.fn(),
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+      };
+      eventBus = new EventBus<WaitlistEventPayloadMap>({ logger });
+      sdk = new WaitlistServer({ adapter, events: eventBus });
 
       const failingHandler = vi
         .fn()
@@ -583,10 +586,11 @@ describe("WaitlistServer", () => {
 
       await sdk.join({ email: "user@example.com" });
 
-      expect(errorHandler).toHaveBeenCalledWith({
-        err: expect.any(Error),
-        source: "join",
-      });
+      expect(logger.error).toHaveBeenCalledWith(
+        "EventBus: Handler error",
+        expect.any(Error),
+        { event: "join" }
+      );
     });
   });
 });

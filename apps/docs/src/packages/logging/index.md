@@ -12,32 +12,6 @@ npm install @zap-studio/logging
 bun add @zap-studio/logging
 ```
 
-## AbstractLogger
-
-The package provides a base class with shared behavior and a minimal logging
-contract you can extend in your runtime.
-
-```ts
-import { AbstractLogger, type LogLevel } from "@zap-studio/logging";
-
-type AppContext = {
-  requestId: string;
-  userId?: string;
-};
-
-class AppLogger extends AbstractLogger<Error, AppContext> {
-  protected write(level: LogLevel, message: string, context?: Partial<AppContext>, err?: Error) {
-    // Forward to your logging backend.
-  }
-}
-```
-
-Enable timestamps with the `LoggerOptions` constructor.
-
-```ts
-const logger = new AppLogger({ timestamp: true });
-```
-
 ## ConsoleLogger
 
 `ConsoleLogger` is a lightweight adapter that sends logs to the console with
@@ -51,6 +25,54 @@ const logger = new ConsoleLogger();
 logger.info("Connected", { requestId: "req-1" });
 logger.warn("Retrying request", { requestId: "req-1" });
 logger.error("Failed to connect", new Error("Network error"), {
+  requestId: "req-1",
+});
+```
+
+Enable timestamps:
+
+```ts
+const logger = new ConsoleLogger({ timestamp: true });
+```
+
+## Custom Logger (step by step)
+
+If you need to forward logs to a third‑party service (Datadog, Sentry, custom
+backend), extend `AbstractLogger` and implement the low‑level `write()` method.
+
+### 1) Define your context
+
+```ts
+type AppContext = {
+  requestId: string;
+  userId?: string;
+};
+```
+
+### 2) Extend AbstractLogger
+
+```ts
+import { AbstractLogger, type LogLevel } from "@zap-studio/logging";
+
+class AppLogger extends AbstractLogger<Error, AppContext> {
+  protected write(
+    level: LogLevel,
+    message: string,
+    context?: Partial<AppContext>,
+    err?: Error
+  ) {
+    // Forward to your logging backend.
+  }
+}
+```
+
+### 3) Instantiate and use
+
+```ts
+const logger = new AppLogger({ timestamp: true });
+
+logger.info("User logged in", { requestId: "req-1", userId: "user-1" });
+logger.error("Checkout failed", new Error("Card declined"), {
   requestId: "req-1",
 });
 ```

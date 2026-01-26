@@ -136,10 +136,7 @@ describe("WaitlistServer", () => {
 
   beforeEach(() => {
     adapter = new MockAdapter();
-    eventBus = new EventBus<WaitlistEventPayloadMap>({
-      errorEventType: "error",
-      errorEventPayload: (err, source) => ({ err, source }),
-    });
+    eventBus = new EventBus<WaitlistEventPayloadMap>();
     server = new WaitlistServer({ adapter, events: eventBus });
   });
 
@@ -413,9 +410,15 @@ describe("WaitlistServer", () => {
       expect(removeHandler).toHaveBeenCalledTimes(1);
     });
 
-    it("should handle event errors gracefully", async () => {
-      const errorHandler = vi.fn();
-      eventBus.on("error", errorHandler);
+    it("should report event handler errors when a logger is provided", async () => {
+      const logger = {
+        log: vi.fn(),
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+      };
+      eventBus = new EventBus<WaitlistEventPayloadMap>({ logger });
+      server = new WaitlistServer({ adapter, events: eventBus });
 
       const failingHandler = vi
         .fn()
@@ -427,7 +430,11 @@ describe("WaitlistServer", () => {
         throw new Error(result.message ?? "Expected join to succeed");
       }
 
-      expect(errorHandler).toHaveBeenCalled();
+      expect(logger.error).toHaveBeenCalledWith(
+        "EventBus: Handler error",
+        expect.any(Error),
+        { event: "join" }
+      );
     });
   });
 

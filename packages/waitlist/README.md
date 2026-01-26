@@ -10,7 +10,7 @@ Building a waitlist for your product launch or beta program often requires imple
 
 - **Adapter Pattern**: Bring your own storage layer (in-memory, Drizzle ORM, Redis, PostgreSQL, etc.)
 - **Type Safety**: Built with TypeScript and Zod for runtime validation
-- **Event Hooks**: Subscribe to join, referral, leave, and error events
+- **Event Hooks**: Subscribe to join, referral, and leave events
 - **Minimal Core**: Small surface area you can extend safely
 
 ## Features
@@ -19,7 +19,7 @@ Building a waitlist for your product launch or beta program often requires imple
 - **Referral System** – Generate unique referral codes and track usage
 - **Position Tracking** – Get a user's position in the waitlist
 - **Email Validation** – Configurable rules (plus addressing, subdomains)
-- **Event Hooks** – React to join, referral, leave, and error events
+- **Event Hooks** – React to join, referral, and leave events
 - **Type Safe** – Full TypeScript support with Zod schemas
 
 ## Installation
@@ -57,7 +57,7 @@ To enable events, install `@zap-studio/events` and pass an instance to `Waitlist
 
 ## Quick Start (server-side)
 
-Event hooks are optional. Pass an event bus if you want to react to `join`, `referral`, `leave`, and `error`.
+Event hooks are optional. Pass an event bus if you want to react to `join`, `referral`, and `leave`.
 
 ```ts
 import { InMemoryAdapter } from "@zap-studio/waitlist/adapters/storage/in-memory";
@@ -66,10 +66,7 @@ import type { WaitlistEventPayloadMap } from "@zap-studio/waitlist/types";
 import { WaitlistServer } from "@zap-studio/waitlist/server";
 
 const adapter = new InMemoryAdapter();
-const events = new EventBus<WaitlistEventPayloadMap>({
-  errorEventType: "error",
-  errorEventPayload: (err, source) => ({ err, source }),
-});
+const events = new EventBus<WaitlistEventPayloadMap>();
 
 const waitlist = new WaitlistServer({
   adapter,

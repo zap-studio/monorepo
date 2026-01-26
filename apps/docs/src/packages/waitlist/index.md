@@ -17,7 +17,7 @@ The documentation for `@zap-studio/waitlist` is currently under development. Sta
 
 ## EventBus
 
-Waitlist events are powered by `@zap-studio/events` (optional peer dependency). The waitlist package defines the `join`, `referral`, `leave`, and `error` event payloads.
+Waitlist events are powered by `@zap-studio/events` (optional peer dependency). The waitlist package defines the `join`, `referral`, and `leave` event payloads.
 
 When enabled, events let you:
 
@@ -30,13 +30,7 @@ When enabled, events let you:
 import { EventBus } from "@zap-studio/events";
 import type { WaitlistEventPayloadMap } from "@zap-studio/waitlist/types";
 
-const events = new EventBus<WaitlistEventPayloadMap>({
-  errorEventType: "error",
-  errorEventPayload: (err, source) => ({ err, source }),
-  onError: (err, { event, errorEmitFailed }) => {
-    console.error("EventBus error", { event, err, errorEmitFailed });
-  },
-});
+const events = new EventBus<WaitlistEventPayloadMap>();
 ```
 
 ## Installation
@@ -56,7 +50,3 @@ npm install @zap-studio/events
 ```
 
 Without `@zap-studio/events`, the SDK does not emit events.
-
-## Stay Updated
-
-Join our [Discord community](https://discord.gg/8Ke3VCjjMf) to stay updated on the latest developments.

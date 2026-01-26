@@ -8,10 +8,7 @@ describe("EventBus", () => {
   let bus: EventBus<WaitlistEventPayloadMap>;
 
   beforeEach(() => {
-    bus = new EventBus<WaitlistEventPayloadMap>({
-      errorEventType: "error",
-      errorEventPayload: (err, source) => ({ err, source }),
-    });
+    bus = new EventBus<WaitlistEventPayloadMap>();
   });
 
   describe("on", () => {
@@ -48,7 +45,7 @@ describe("EventBus", () => {
       unsubscribe();
 
       await bus.emit("join", { email: "another@example.com" });
-      expect(handler).toHaveBeenCalledTimes(1); // Still 1, not called again
+      expect(handler).toHaveBeenCalledTimes(1);
     });
 
     it("should handle async handlers", async () => {
@@ -142,7 +139,7 @@ describe("EventBus", () => {
       bus.off("join", handler);
 
       await bus.emit("join", { email: "another@example.com" });
-      expect(handler).toHaveBeenCalledTimes(1); // Still 1
+      expect(handler).toHaveBeenCalledTimes(1);
     });
 
     it("should only leave the specific handler", async () => {
@@ -188,21 +185,27 @@ describe("EventBus", () => {
       expect(calls).toEqual([1, 2, 3]);
     });
 
-    it("should handle errors in handlers by emitting error events", async () => {
-      const errorHandler = vi.fn();
-      const testError = new Error("Test error");
+    it("should report errors when a logger is provided", async () => {
+      const logger = {
+        log: vi.fn(),
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+      };
+      bus = new EventBus<WaitlistEventPayloadMap>({ logger });
 
-      bus.on("error", errorHandler);
+      const testError = new Error("Test error");
       bus.on("join", () => {
         throw testError;
       });
 
       await bus.emit("join", { email: "test@example.com" });
 
-      expect(errorHandler).toHaveBeenCalledWith({
-        err: testError,
-        source: "join",
-      });
+      expect(logger.error).toHaveBeenCalledWith(
+        "EventBus: Handler error",
+        testError,
+        { event: "join" }
+      );
     });
 
     it("should continue executing other handlers after one throws", async () => {
@@ -220,30 +223,6 @@ describe("EventBus", () => {
       expect(handler2).toHaveBeenCalledTimes(1);
     });
 
-    it("should report errors if error handler throws", async () => {
-      const onError = vi.fn();
-      bus = new EventBus<WaitlistEventPayloadMap>({
-        onError,
-        errorEventType: "error",
-        errorEventPayload: (err, source) => ({ err, source }),
-      });
-
-      bus.on("error", () => {
-        throw new Error("Error handler error");
-      });
-
-      bus.on("join", () => {
-        throw new Error("Original error");
-      });
-
-      await bus.emit("join", { email: "test@example.com" });
-
-      expect(onError).toHaveBeenCalledTimes(1);
-      expect(onError).toHaveBeenCalledWith(expect.any(Error), {
-        event: "error",
-      });
-    });
-
     it("should handle events with no handlers gracefully", async () => {
       await expect(
         bus.emit("join", { email: "test@example.com" })
@@ -254,12 +233,10 @@ describe("EventBus", () => {
       const joinHandler = vi.fn();
       const referralHandler = vi.fn();
       const removeHandler = vi.fn();
-      const errorHandler = vi.fn();
 
       bus.on("join", joinHandler);
       bus.on("referral", referralHandler);
       bus.on("leave", removeHandler);
-      bus.on("error", errorHandler);
 
       await bus.emit("join", { email: "test@example.com" });
       await bus.emit("referral", {
@@ -267,12 +244,10 @@ describe("EventBus", () => {
         referee: "referee@example.com",
       });
       await bus.emit("leave", { email: "test@example.com" });
-      await bus.emit("error", { err: new Error("Test"), source: "join" });
 
       expect(joinHandler).toHaveBeenCalledTimes(1);
       expect(referralHandler).toHaveBeenCalledTimes(1);
       expect(removeHandler).toHaveBeenCalledTimes(1);
-      expect(errorHandler).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -365,62 +340,6 @@ describe("EventBus", () => {
       bus.clear("join");
 
       expect(bus.listenerCount("join")).toBe(0);
-    });
-  });
-
-  describe("error handling edge cases", () => {
-    it("should not emit error event recursively if error handler is the source", async () => {
-      const onError = vi.fn();
-      bus = new EventBus<WaitlistEventPayloadMap>({
-        onError,
-        errorEventType: "error",
-        errorEventPayload: (err, source) => ({ err, source }),
-      });
-
-      const errorCount = { count: 0 };
-
-      bus.on("error", () => {
-        errorCount.count += 1;
-        throw new Error("Error in error handler");
-      });
-
-      await bus.emit("error", {
-        err: new Error("Original error"),
-        source: "join",
-      });
-
-      // Should only be called once, not recursively
-      expect(errorCount.count).toBe(1);
-      expect(onError).toHaveBeenCalledTimes(1);
-      expect(onError).toHaveBeenCalledWith(expect.any(Error), {
-        event: "error",
-      });
-    });
-
-    it("should report errors if error handler throws while emitting error event", async () => {
-      const onError = vi.fn();
-      bus = new EventBus<WaitlistEventPayloadMap>({
-        onError,
-        errorEventType: "error",
-        errorEventPayload: (err, source) => ({ err, source }),
-      });
-
-      // Make error handler throw
-      bus.on("error", () => {
-        throw new Error("Error handler throws");
-      });
-
-      // Make join handler throw (which will try to emit error)
-      bus.on("join", () => {
-        throw new Error("Join handler error");
-      });
-
-      await bus.emit("join", { email: "test@example.com" });
-
-      expect(onError).toHaveBeenCalledTimes(1);
-      expect(onError).toHaveBeenCalledWith(expect.any(Error), {
-        event: "error",
-      });
     });
   });
 

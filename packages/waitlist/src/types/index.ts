@@ -92,9 +92,6 @@ export interface WaitlistEventPayloadMap {
 
   /** Represents the payload of a leave event */
   leave: { email: Email; reason?: string };
-
-  /** Represents the payload of an error event */
-  error: { err: unknown; source: keyof WaitlistEventPayloadMap };
 }
 
 /** Represents the type of an event in the waitlist system */

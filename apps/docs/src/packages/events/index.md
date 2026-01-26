@@ -4,7 +4,7 @@ A lightweight, typed event bus for Node and browser runtimes.
 
 - **Typed by default** with a simple event map
 - **Small API surface**: `on`, `once`, `off`, `emit`, `clear`, `listenerCount`
-- **Optional error handling** with typed error events, logger, or callbacks
+- **Optional error handling** with typed error events and an optional logger
 
 ## Installation
 
@@ -23,13 +23,9 @@ import { EventBus } from "@zap-studio/events";
 
 type AppEvents = {
   joined: { email: string };
-  error: { err: unknown; source: keyof AppEvents };
 };
 
-const events = new EventBus<AppEvents>({
-  errorEventType: "error",
-  errorEventPayload: (err, source) => ({ err, source }),
-});
+const events = new EventBus<AppEvents>();
 
 events.on("joined", ({ email }) => {
   console.log(`${email} joined`);

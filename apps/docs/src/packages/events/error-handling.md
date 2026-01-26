@@ -1,46 +1,48 @@
 # Error handling
 
-`EventBus` does not log to `console` by default. Provide a logger or `onError` callback to control how handler errors are reported.
+`EventBus` does not log to `console` by default. Provide a logger from
+`@zap-studio/logging` to control how handler errors are reported.
 
-## Emit a typed error event
+Install `@zap-studio/logging` only if you plan to pass a logger.
+
+Any `AbstractLogger` subclass is compatible here (for example `ConsoleLogger`).
+
+## Use a logger
 
 ```ts
-import { EventBus } from "@zap-studio/events";
-
-type AppEvents = {
-  joined: { email: string };
-  error: { err: unknown; source: keyof AppEvents };
-};
+import { ConsoleLogger } from "@zap-studio/logging/console";
 
 const events = new EventBus<AppEvents>({
-  errorEventType: "error",
-  errorEventPayload: (err, source) => ({ err, source }),
+  logger: new ConsoleLogger(),
 });
 ```
 
-When a handler throws, the bus will emit `error` with `{ err, source }`.
-
-## Use onError or logger
+If you want a small custom logger, implement the full `ILogger` surface:
 
 ```ts
-import type { ErrorReporter, ILogger } from "@zap-studio/events/types";
+import type { ILogger } from "@zap-studio/logging";
 
-const logger: ILogger<AppEvents> = {
+type EventBusContext = {
+  event: keyof AppEvents;
+};
+
+const logger: ILogger<unknown, EventBusContext> = {
+  log: (level, message, context) => {
+    console.log(level, message, context);
+  },
+  info: (message, context) => {
+    console.log(message, context);
+  },
+  warn: (message, context) => {
+    console.warn(message, context);
+  },
   error: (message, err, context) => {
     console.error(message, err, context);
   },
 };
 
-const onError: ErrorReporter<AppEvents> = (err, { event, errorEmitFailed }) => {
-  console.error("EventBus error", { event, err, errorEmitFailed });
-};
-
-const events = new EventBus<AppEvents>({
-  logger,
-  onError,
-  errorEventType: "error",
-  errorEventPayload: (err, source) => ({ err, source }),
-});
+const events = new EventBus<AppEvents>({ logger });
 ```
 
-`onError` takes precedence over `logger`.
+For a full step‑by‑step guide, see the
+[`@zap-studio/logging` documentation](/packages/logging/).

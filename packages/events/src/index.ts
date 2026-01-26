@@ -1,6 +1,6 @@
 import type {
-  ErrorReporter,
   EventBusOptions,
+  EventHandlers,
   EventKey,
   Handler,
 } from "./types";
@@ -27,38 +27,14 @@ import type {
  *   console.log("First referral:", payload.referrer);
  * });
  */
-type EventHandlers<TEventMap extends object> = Partial<{
-  [K in EventKey<TEventMap>]: Handler<TEventMap[K]>[];
-}>;
-
 export class EventBus<TEventMap extends object = Record<string, unknown>> {
-  private readonly reportError: ErrorReporter<TEventMap>;
-  private readonly errorEventType?: EventKey<TEventMap>;
-  private readonly errorEventPayload?: (
-    err: unknown,
-    source: EventKey<TEventMap>
-  ) => TEventMap[EventKey<TEventMap>];
+  private readonly logger?: EventBusOptions<TEventMap>["logger"];
 
   /** A mapping of event types to their handlers. */
   private handlers: EventHandlers<TEventMap> = {};
 
   constructor(options: EventBusOptions<TEventMap> = {}) {
-    const { logger, onError, errorEventType, errorEventPayload } = options;
-
-    if (onError) {
-      this.reportError = onError;
-    } else if (logger) {
-      this.reportError = (err, context) => {
-        logger.error("EventBus: Handler error", err, context);
-      };
-    } else {
-      this.reportError = () => {
-        // No-op
-      };
-    }
-
-    this.errorEventType = errorEventType;
-    this.errorEventPayload = errorEventPayload;
+    this.logger = options.logger;
   }
 
   /**
@@ -137,23 +113,7 @@ export class EventBus<TEventMap extends object = Record<string, unknown>> {
       try {
         await fn(payload);
       } catch (err) {
-        if (
-          this.errorEventType &&
-          type !== this.errorEventType &&
-          this.errorEventPayload
-        ) {
-          try {
-            // Emit error event if handler throws
-            await this.emit(
-              this.errorEventType,
-              this.errorEventPayload(err, type)
-            );
-          } catch (errorEmitFailed) {
-            this.reportError(err, { event: type, errorEmitFailed });
-          }
-        } else {
-          this.reportError(err, { event: type });
-        }
+        this.logger?.error("EventBus: Handler error", err, { event: type });
       }
     }
   }
