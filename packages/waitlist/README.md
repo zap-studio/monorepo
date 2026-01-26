@@ -129,7 +129,8 @@ This handler should only wrap the server SDK; the SDK contains the business logi
     or `{ ok: false; reason: "invalid-email"; message?: string }`
 - `POST {prefix}/leave`
   - Body: `{ email: string }`
-  - Response: empty body (any JSON is accepted)
+  - Response: `{ ok: true }`
+  - Example: `{ "ok": true }`
 - `GET {prefix}/leaderboard?positionStrategy=...`
   - Query: `positionStrategy` = `"creation-date"` | `"number-of-referrals"` (optional)
   - Response: `Array<{ email: string; score: number }>`
