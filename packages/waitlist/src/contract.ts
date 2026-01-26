@@ -1,5 +1,5 @@
 import type { Email } from "@zap-studio/validation/email/types";
-import type { Leaderboard } from "./leaderboard/types";
+import type { Leaderboard, PositionStrategy } from "./leaderboard/types";
 import type { ReferralKey, ReferralLink } from "./referral/types";
 import type { EmailEntry, JoinInput, JoinResult, ReferralCode } from "./types";
 
@@ -57,7 +57,7 @@ export interface WaitlistService {
   leave(email: Email): Promise<void>;
 
   /** Get the leaderboard */
-  getLeaderboard(): Promise<Leaderboard>;
+  getLeaderboard(positionStrategy?: PositionStrategy): Promise<Leaderboard>;
 
   /** Get a user's current position in the waitlist */
   getPosition(email: Email): Promise<number | null>;

@@ -224,9 +224,13 @@ export class WaitlistServer implements WaitlistService {
    * const server = new WaitlistServer({ adapter: myAdapter });
    * const leaderboard = await server.getLeaderboard();
    */
-  async getLeaderboard(): Promise<Leaderboard> {
+  async getLeaderboard(
+    positionStrategy?: PositionStrategy
+  ): Promise<Leaderboard> {
     const strategy: PositionStrategy =
-      this.config?.positionStrategy ?? DEFAULT_POSITION_STRATEGY;
+      positionStrategy ??
+      this.config?.positionStrategy ??
+      DEFAULT_POSITION_STRATEGY;
     return await this.adapter.getLeaderboard(strategy);
   }
 

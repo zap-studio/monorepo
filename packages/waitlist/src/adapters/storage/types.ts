@@ -51,5 +51,5 @@ export interface WaitlistStorageAdapter {
   countReferrals(): Promise<number>;
 
   /** Get leaderboard */
-  getLeaderboard(positionStrategy: PositionStrategy): Promise<Leaderboard>;
+  getLeaderboard(positionStrategy?: PositionStrategy): Promise<Leaderboard>;
 }

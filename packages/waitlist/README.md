@@ -15,12 +15,12 @@ Building a waitlist for your product launch or beta program often requires imple
 
 ## Features
 
-- **Flexible Storage** – Works with any database or storage solution via adapters  
-- **Referral System** – Generate unique referral codes and track usage  
+- **Flexible Storage** – Works with any database or storage solution via adapters
+- **Referral System** – Generate unique referral codes and track usage
 - **Position Tracking** – Get a user's position in the waitlist
-- **Email Validation** – Configurable rules (plus addressing, subdomains)  
-- **Event Hooks** – React to join, referral, leave, and error events  
-- **Type Safe** – Full TypeScript support with Zod schemas  
+- **Email Validation** – Configurable rules (plus addressing, subdomains)
+- **Event Hooks** – React to join, referral, leave, and error events
+- **Type Safe** – Full TypeScript support with Zod schemas
 
 ## Installation
 
@@ -106,7 +106,8 @@ This handler should only wrap the server SDK; the SDK contains the business logi
 - `POST {prefix}/leave`
   - Body: `{ email: string }`
   - Response: empty body (any JSON is accepted)
-- `GET {prefix}/leaderboard`
+- `GET {prefix}/leaderboard?positionStrategy=...`
+  - Query: `positionStrategy` = `"creation-date"` | `"number-of-referrals"` (optional)
   - Response: `Array<{ email: string; score: number }>`
 - `GET {prefix}/position?email=...`
   - Response: `number | null`
@@ -115,12 +116,12 @@ This handler should only wrap the server SDK; the SDK contains the business logi
 
 ```ts
 interface WaitlistConfig {
-  referralPrefix?: string
-  maxReferrals?: number
-  referralCodeLength?: number
-  positionStrategy?: "creation-date" | "number-of-referrals"
-  rateLimit?: { windowMs: number; max: number }
-  emailValidation?: { allowPlus?: boolean; allowSubdomains?: boolean }
+  referralPrefix?: string;
+  maxReferrals?: number;
+  referralCodeLength?: number;
+  positionStrategy?: "creation-date" | "number-of-referrals";
+  rateLimit?: { windowMs: number; max: number };
+  emailValidation?: { allowPlus?: boolean; allowSubdomains?: boolean };
 }
 ```
 
@@ -130,20 +131,20 @@ Implement the `WaitlistStorageAdapter` interface to connect your preferred stora
 
 ```ts
 interface WaitlistStorageAdapter {
-  create(entry: EmailEntry): Promise<EmailEntry>
-  createReferral(link: ReferralLink): Promise<ReferralLink>
-  update(id: Email, patch: Partial<EmailEntry>): Promise<EmailEntry>
-  updateReferral(key: ReferralKey, patch: Partial<ReferralLink>): Promise<ReferralLink>
-  delete(id: Email): Promise<void>
-  deleteReferral(key: ReferralKey): Promise<void>
-  findByEmail(email: Email): Promise<EmailEntry | null>
-  findByReferralCode(code: ReferralCode): Promise<EmailEntry | null>
-  getReferralCount(email: Email): Promise<number>
-  list(): Promise<EmailEntry[]>
-  listEmails(): Promise<Email[]>
-  listReferrals(): Promise<ReferralLink[]>
-  count(): Promise<number>
-  countReferrals(): Promise<number>
-  getLeaderboard(positionStrategy: "creation-date" | "number-of-referrals"): Promise<Leaderboard>
+  create(entry: EmailEntry): Promise<EmailEntry>;
+  createReferral(link: ReferralLink): Promise<ReferralLink>;
+  update(id: Email, patch: Partial<EmailEntry>): Promise<EmailEntry>;
+  updateReferral(key: ReferralKey, patch: Partial<ReferralLink>): Promise<ReferralLink>;
+  delete(id: Email): Promise<void>;
+  deleteReferral(key: ReferralKey): Promise<void>;
+  findByEmail(email: Email): Promise<EmailEntry | null>;
+  findByReferralCode(code: ReferralCode): Promise<EmailEntry | null>;
+  getReferralCount(email: Email): Promise<number>;
+  list(): Promise<EmailEntry[]>;
+  listEmails(): Promise<Email[]>;
+  listReferrals(): Promise<ReferralLink[]>;
+  count(): Promise<number>;
+  countReferrals(): Promise<number>;
+  getLeaderboard(positionStrategy?: PositionStrategy): Promise<Leaderboard>;
 }
 ```

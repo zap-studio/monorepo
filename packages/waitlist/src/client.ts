@@ -2,7 +2,7 @@ import { createFetch } from "@zap-studio/fetch";
 import type { Email } from "@zap-studio/validation/email/types";
 import { DEFAULT_API_PREFIX } from "./constants";
 import type { WaitlistService } from "./contract";
-import type { Leaderboard } from "./leaderboard/types";
+import type { Leaderboard, PositionStrategy } from "./leaderboard/types";
 import type { ReferralKey, ReferralLink } from "./referral/types";
 import {
   CountResponseSchema,
@@ -271,12 +271,15 @@ export class WaitlistClient implements WaitlistService {
    * const waitlistClient = new WaitlistClient({ baseUrl: "http://localhost:3000" });
    * const leaderboard = await waitlistClient.getLeaderboard();
    */
-  async getLeaderboard(): Promise<Leaderboard> {
+  async getLeaderboard(
+    positionStrategy?: PositionStrategy
+  ): Promise<Leaderboard> {
     return await this.api.get(
       `${this.prefix}/leaderboard`,
       LeaderboardResponseSchema,
       {
         throwOnValidationError: true,
+        searchParams: positionStrategy ? { positionStrategy } : undefined,
       }
     );
   }
