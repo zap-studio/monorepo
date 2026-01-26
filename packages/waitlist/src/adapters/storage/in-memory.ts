@@ -56,6 +56,9 @@ export class InMemoryAdapter implements WaitlistStorageAdapter {
   }
 
   async create(entry: EmailEntry): Promise<EmailEntry> {
+    if (this.entries.has(entry.email)) {
+      throw new Error("Entry already exists");
+    }
     this.entries.set(entry.email, entry);
     this.updateReferralIndex(entry);
     return await Promise.resolve(entry);
@@ -63,6 +66,9 @@ export class InMemoryAdapter implements WaitlistStorageAdapter {
 
   async createReferral(link: ReferralLink): Promise<ReferralLink> {
     const key = this.getReferralKey(link.referrer, link.referee);
+    if (this.referrals.has(key)) {
+      throw new Error("Referral already exists");
+    }
     this.referrals.set(key, link);
     this.incrementReferralCount(link.referrer);
     return await Promise.resolve(link);
