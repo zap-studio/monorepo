@@ -15,6 +15,24 @@ The documentation for `@zap-studio/waitlist` is currently under development. Sta
 - **Analytics** - Track waitlist growth and engagement
 - **Customizable** - Flexible configuration to match your needs
 
+## EventBus
+
+Waitlist events are powered by `@zap-studio/events` (optional peer dependency). The waitlist package defines the `join`, `referral`, and `leave` event payloads.
+
+When enabled, events let you:
+
+- trigger emails or notifications on join
+- push analytics or metrics
+- sync to CRMs or other tools
+- keep audit logs of waitlist activity
+
+```ts
+import { EventBus } from "@zap-studio/events";
+import type { WaitlistEventPayloadMap } from "@zap-studio/waitlist/types";
+
+const events = new EventBus<WaitlistEventPayloadMap>();
+```
+
 ## Installation
 
 ```bash
@@ -23,6 +41,12 @@ pnpm add @zap-studio/waitlist
 npm install @zap-studio/waitlist
 ```
 
-## Stay Updated
+Optional event hooks:
 
-Join our [Discord community](https://discord.gg/8Ke3VCjjMf) to stay updated on the latest developments.
+```bash
+pnpm add @zap-studio/events
+# or
+npm install @zap-studio/events
+```
+
+Without `@zap-studio/events`, the SDK does not emit events.

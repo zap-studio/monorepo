@@ -1,4 +1,5 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { ILogger } from "@zap-studio/logging";
 
 /**
  * Represents the possible outcomes of a policy decision.
@@ -156,6 +157,7 @@ export interface PermitConfig<
   resources: TResources;
   actions: TActions;
   rules: Rules<TContext, TResources, TActions>;
+  logger?: ILogger;
 }
 
 /**
