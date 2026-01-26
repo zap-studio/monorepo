@@ -64,6 +64,30 @@ const position = await waitlist.getPosition("alice@example.com");
 console.log("Position:", position ?? "not found");
 ```
 
+## EventBus error reporting
+
+`EventBus` does not log to `console` by default. Provide a logger or callback to control how errors are reported when a handler throws.
+
+```ts
+import { EventBus } from "@zap-studio/waitlist/events";
+import type { ErrorReporter, ILogger } from "@zap-studio/waitlist/events/types";
+
+const logger: ILogger = {
+  error: (message, err, context) => {
+    console.error(message, err, context);
+  },
+};
+
+const onError: ErrorReporter = (err, { event, errorEmitFailed }) => {
+  console.error("EventBus error", { event, err, errorEmitFailed });
+};
+
+const events = new EventBus({
+  logger, // used when onError is not provided
+  onError, // takes precedence over logger
+});
+```
+
 ## Quick Start (client-side RPC)
 
 ```ts

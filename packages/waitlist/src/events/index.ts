@@ -1,7 +1,10 @@
-import type { EventPayloadMap, WaitlistEventType } from "./types";
-
-/** A function that handles events within the waitlist and takes a payload */
-type Handler<T> = (payload: T) => void | Promise<void>;
+import type {
+  ErrorReporter,
+  EventPayloadMap,
+  Handler,
+  ILogger,
+  WaitlistEventType,
+} from "./types";
 
 /**
  * A simple event bus for handling waitlist-related events.
@@ -26,6 +29,8 @@ type Handler<T> = (payload: T) => void | Promise<void>;
  * });
  */
 export class EventBus {
+  private readonly reportError: ErrorReporter;
+
   /** A mapping of event types to their handlers. */
   private handlers: {
     [K in WaitlistEventType]: Handler<EventPayloadMap[K]>[];
@@ -35,6 +40,26 @@ export class EventBus {
     leave: [],
     error: [],
   };
+
+  constructor(options: { logger?: ILogger; onError?: ErrorReporter } = {}) {
+    const { logger, onError } = options;
+
+    if (onError) {
+      this.reportError = onError;
+      return;
+    }
+
+    if (logger) {
+      this.reportError = (err, context) => {
+        logger.error("EventBus: Handler error", err, context);
+      };
+      return;
+    }
+
+    this.reportError = () => {
+      // No-op
+    };
+  }
 
   /**
    * Subscribe to an event. Returns an unsubscribe function.
@@ -114,16 +139,10 @@ export class EventBus {
               source: type,
             });
           } catch (errorEmitFailed) {
-            // Log the failure if emitting the error event fails
-            console.error(
-              "EventBus: Failed to emit error event",
-              err,
-              errorEmitFailed
-            );
+            this.reportError(err, { event: type, errorEmitFailed });
           }
         } else {
-          // If an error handler itself throws, just log it
-          console.error("EventBus: Error handler threw an error", err);
+          this.reportError(err, { event: "error" });
         }
       }
     }

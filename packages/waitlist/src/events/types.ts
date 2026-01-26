@@ -1,5 +1,29 @@
 import type { Email } from "@zap-studio/validation/email/types";
 
+/** A function that handles events within the waitlist and takes a payload */
+export type Handler<T> = (payload: T) => void | Promise<void>;
+
+/** Logger surface for EventBus error reporting */
+export interface ILogger {
+  error: (
+    message: string,
+    err: unknown,
+    context?: {
+      event: WaitlistEventType;
+      errorEmitFailed?: unknown;
+    }
+  ) => void;
+}
+
+/** Error callback surface for EventBus error reporting */
+export type ErrorReporter = (
+  err: unknown,
+  context: {
+    event: WaitlistEventType;
+    errorEmitFailed?: unknown;
+  }
+) => void;
+
 /** Represents the payload of an event in the waitlist system */
 export interface EventPayloadMap {
   /** Represents the payload of a join event */

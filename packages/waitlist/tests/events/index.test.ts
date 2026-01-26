@@ -216,11 +216,9 @@ describe("EventBus", () => {
       expect(handler2).toHaveBeenCalledTimes(1);
     });
 
-    it("should log to console if error handler throws", async () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        // biome-ignore lint/suspicious/noEmptyBlockStatements: We mock console.error here.
-        .mockImplementation(() => {});
+    it("should report errors if error handler throws", async () => {
+      const onError = vi.fn();
+      bus = new EventBus({ onError });
 
       bus.on("error", () => {
         throw new Error("Error handler error");
@@ -232,9 +230,10 @@ describe("EventBus", () => {
 
       await bus.emit("join", { email: "test@example.com" });
 
-      expect(consoleErrorSpy).toHaveBeenCalled();
-
-      consoleErrorSpy.mockRestore();
+      expect(onError).toHaveBeenCalledTimes(1);
+      expect(onError).toHaveBeenCalledWith(expect.any(Error), {
+        event: "error",
+      });
     });
 
     it("should handle events with no handlers gracefully", async () => {
@@ -363,10 +362,8 @@ describe("EventBus", () => {
 
   describe("error handling edge cases", () => {
     it("should not emit error event recursively if error handler is the source", async () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        // biome-ignore lint/suspicious/noEmptyBlockStatements: We mock console.error here.
-        .mockImplementation(() => {});
+      const onError = vi.fn();
+      bus = new EventBus({ onError });
 
       const errorCount = { count: 0 };
 
@@ -382,19 +379,15 @@ describe("EventBus", () => {
 
       // Should only be called once, not recursively
       expect(errorCount.count).toBe(1);
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "EventBus: Error handler threw an error",
-        expect.any(Error)
-      );
-
-      consoleErrorSpy.mockRestore();
+      expect(onError).toHaveBeenCalledTimes(1);
+      expect(onError).toHaveBeenCalledWith(expect.any(Error), {
+        event: "error",
+      });
     });
 
-    it("should log to console if emitting error event fails", async () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        // biome-ignore lint/suspicious/noEmptyBlockStatements: We mock console.error here.
-        .mockImplementation(() => {});
+    it("should report errors if error handler throws while emitting error event", async () => {
+      const onError = vi.fn();
+      bus = new EventBus({ onError });
 
       // Make error handler throw
       bus.on("error", () => {
@@ -408,9 +401,10 @@ describe("EventBus", () => {
 
       await bus.emit("join", { email: "test@example.com" });
 
-      expect(consoleErrorSpy).toHaveBeenCalled();
-
-      consoleErrorSpy.mockRestore();
+      expect(onError).toHaveBeenCalledTimes(1);
+      expect(onError).toHaveBeenCalledWith(expect.any(Error), {
+        event: "error",
+      });
     });
   });
 
