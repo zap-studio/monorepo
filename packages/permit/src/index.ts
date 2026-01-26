@@ -351,7 +351,7 @@ export function createPolicy<
 >(
   config: PermitConfig<TContext, TResources, TActions>
 ): Policy<TContext, TResources, TActions> {
-  const { rules, resources, actions } = config;
+  const { rules, resources, actions, logger } = config;
   const validators = new Map<
     keyof TResources,
     (input: unknown) => StandardSchemaV1.Result<unknown>
@@ -372,7 +372,7 @@ export function createPolicy<
       }
       return result.value as InferResource<TResources, K>;
     } catch (error) {
-      console.warn(
+      logger?.warn(
         `Resource validation failed for ${String(resourceType)}: ${String(error)}`
       );
       return null;
@@ -422,7 +422,7 @@ export function createPolicy<
       try {
         return policyFn(context, action, validatedResource) === "allow";
       } catch (error) {
-        console.warn(
+        logger?.warn(
           `Policy evaluation error for ${String(resourceType)}.${String(action)}: ${String(error)}`
         );
         return false;

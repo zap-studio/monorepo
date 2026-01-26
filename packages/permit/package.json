@@ -43,9 +43,18 @@
     "@standard-schema/spec": "catalog:base",
     "@zap-studio/validation": "workspace:*"
   },
+  "peerDependencies": {
+    "@zap-studio/logging": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@zap-studio/logging": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/node": "catalog:types",
     "@vitest/coverage-v8": "catalog:testing",
+    "@zap-studio/logging": "workspace:*",
     "@zap-studio/tsdown-config": "workspace:*",
     "@zap-studio/typescript-config": "workspace:*",
     "@zap-studio/vitest-config": "workspace:*",
