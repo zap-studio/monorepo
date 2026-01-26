@@ -175,7 +175,7 @@ export function calculateScores(
  *
  * Rules:
  * - Entries with higher scores are sorted first.
- * - Entries with the same score are sorted by their creation date in descending order.
+ * - Entries with the same score are sorted by their creation date in ascending order.
  * - Entries with the same score and creation date are sorted by their email in ascending order.
  *
  * @example
@@ -223,7 +223,7 @@ export function unhandledStrategy(value: never | undefined): never {
 }
 
 /**
- * Sorts entries by their creation date in descending order.
+ * Sorts entries by their creation date in ascending order.
  */
 function sortByCreatedAt(entries: EmailEntry[]): EmailEntry[] {
   return [...entries].sort(
