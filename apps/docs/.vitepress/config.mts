@@ -26,6 +26,7 @@ export default defineConfig({
         items: [
           { text: "@zap-studio/events", link: "/packages/events/" },
           { text: "@zap-studio/fetch", link: "/packages/fetch/" },
+          { text: "@zap-studio/logging", link: "/packages/logging/" },
           { text: "@zap-studio/permit", link: "/packages/permit/" },
           { text: "@zap-studio/realtime", link: "/packages/realtime/" },
           { text: "@zap-studio/validation", link: "/packages/validation/" },
@@ -126,6 +127,12 @@ export default defineConfig({
             { text: "Error Handling", link: "/packages/events/error-handling" },
             { text: "Utilities", link: "/packages/events/utilities" },
           ],
+        },
+      ],
+      "/packages/logging/": [
+        {
+          text: "@zap-studio/logging",
+          items: [{ text: "Overview", link: "/packages/logging/" }],
         },
       ],
       "/packages/permit/": [

@@ -247,6 +247,33 @@ importers:
         specifier: catalog:base
         version: 4.2.0
 
+  packages/logging:
+    devDependencies:
+      '@types/node':
+        specifier: catalog:types
+        version: 25.0.2
+      '@vitest/coverage-v8':
+        specifier: catalog:testing
+        version: 4.0.15(vitest@4.0.18)
+      '@zap-studio/tsdown-config':
+        specifier: workspace:*
+        version: link:../../configs/tsdown-config
+      '@zap-studio/typescript-config':
+        specifier: workspace:*
+        version: link:../../configs/typescript-config
+      '@zap-studio/vitest-config':
+        specifier: workspace:*
+        version: link:../../configs/vitest-config
+      tsdown:
+        specifier: catalog:base
+        version: 0.18.0(typescript@5.9.3)
+      typescript:
+        specifier: catalog:base
+        version: 5.9.3
+      vitest:
+        specifier: catalog:testing
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.0.2)(@vitest/ui@4.0.18)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
+
   packages/permit:
     dependencies:
       '@standard-schema/spec':
@@ -314,9 +341,6 @@ importers:
 
   packages/waitlist:
     dependencies:
-      '@zap-studio/events':
-        specifier: workspace:*
-        version: link:../events
       '@zap-studio/fetch':
         specifier: workspace:*
         version: link:../fetch
@@ -336,6 +360,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: catalog:testing
         version: 4.0.15(vitest@4.0.15)
+      '@zap-studio/events':
+        specifier: workspace:*
+        version: link:../events
       '@zap-studio/tsdown-config':
         specifier: workspace:*
         version: link:../../configs/tsdown-config
