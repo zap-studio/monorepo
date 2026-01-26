@@ -12,7 +12,7 @@ catalogs:
     valibot: ^1.2.0
     zod: ^4.2.0
   linting:
-    '@biomejs/biome': ^2.3.11
+    '@biomejs/biome': ^2.3.13
     '@commitlint/cli': ^20.3.1
     '@commitlint/config-conventional': ^20.3.1
     ultracite: ^7.0.12
