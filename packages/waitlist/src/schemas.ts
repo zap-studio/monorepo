@@ -4,7 +4,7 @@ const EmailSchema: z.ZodEmail = z.email();
 
 export const EmailEntrySchema: z.ZodObject<{
   email: z.ZodEmail;
-  createdAt: z.ZodDate;
+  createdAt: z.ZodCoercedDate;
   referralCode: z.ZodOptional<z.ZodString>;
   referredBy: z.ZodOptional<z.ZodString>;
   meta: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
@@ -19,7 +19,7 @@ export const EmailEntrySchema: z.ZodObject<{
 export const ReferralLinkSchema: z.ZodObject<{
   referrer: z.ZodEmail;
   referee: z.ZodEmail;
-  createdAt: z.ZodDate;
+  createdAt: z.ZodCoercedDate;
 }> = z.object({
   referrer: EmailSchema,
   referee: EmailSchema,
