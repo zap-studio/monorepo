@@ -30,12 +30,12 @@
       "cache": false,
       "persistent": true
     },
-    "merge-coverage": {
+    "merge-json-reports": {
       "inputs": ["coverage/raw/**"],
       "outputs": ["coverage/merged/**"]
     },
     "report-coverage": {
-      "dependsOn": ["merge-coverage"],
+      "dependsOn": ["merge-json-reports"],
       "inputs": ["coverage/merged/**"],
       "outputs": ["coverage/report/**"]
     },
