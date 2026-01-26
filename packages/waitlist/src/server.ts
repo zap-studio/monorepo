@@ -153,7 +153,7 @@ export class WaitlistServer implements WaitlistService {
   async getLeaderboard(): Promise<Leaderboard> {
     const strategy: PositionStrategy =
       this.config?.positionStrategy ?? DEFAULT_POSITION_STRATEGY;
-    return await Promise.resolve(this.adapter.getLeaderboard(strategy));
+    return await this.adapter.getLeaderboard(strategy);
   }
 
   /**
