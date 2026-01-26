@@ -10,8 +10,11 @@ export type EventKey<TEventMap extends object> = Extract<
 export type Handler<T> = (payload: T) => void | Promise<void>;
 
 /** Logger surface for EventBus error reporting. */
-export type EventBusLogger<TEventMap extends object> = ILogger<
-  unknown,
+export type EventBusLogger<
+  TEventMap extends object,
+  TError = unknown,
+> = ILogger<
+  TError,
   {
     event: EventKey<TEventMap>;
   }
