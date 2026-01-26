@@ -11,6 +11,9 @@ import { DEFAULT_REFERRAL_CODE_LENGTH } from "./constants";
 export function generateReferralCode(
   length: number = DEFAULT_REFERRAL_CODE_LENGTH
 ): string {
+  if (!Number.isInteger(length) || length < 2) {
+    throw new RangeError("Length must be an integer >= 2");
+  }
   const effectiveLength = length;
   const nanoid = customAlphabet(
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
