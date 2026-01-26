@@ -55,7 +55,7 @@ export interface JoinInput {
 }
 
 /** Possible reasons why joining the waitlist can fail */
-export type JoinErrorReason = "invalid-email";
+export type JoinErrorReason = "invalid-email" | "already-registered";
 
 /** Error result when joining the waitlist fails */
 export interface JoinErrorResult {
