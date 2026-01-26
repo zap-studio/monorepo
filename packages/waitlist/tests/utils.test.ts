@@ -36,7 +36,7 @@ describe("calculatePosition", () => {
   it("returns correct position", () => {
     expect(calculatePosition(entries, "a@test.com")).toBe(1);
     expect(calculatePosition(entries, "c@test.com")).toBe(3);
-    expect(calculatePosition(entries, "d@test.com")).toBeUndefined();
+    expect(calculatePosition(entries, "d@test.com")).toBeNull();
   });
 
   it("routes to referral strategy", () => {
