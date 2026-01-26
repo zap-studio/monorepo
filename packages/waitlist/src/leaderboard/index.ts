@@ -159,9 +159,9 @@ export function calculateScores(
       const total = sortedEntries.length;
       const scores = new Map<Email, number>();
 
-      sortedEntries.forEach((entry, index) => {
+      for (const [index, entry] of sortedEntries.entries()) {
         scores.set(entry.email, total - index);
-      });
+      }
 
       return scores;
     }
