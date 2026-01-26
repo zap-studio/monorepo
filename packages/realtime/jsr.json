@@ -34,5 +34,7 @@
     "./transport/ws/server": "./src/transport/ws/server.ts",
     "./types": "./src/types.ts"
   },
-  "publish": { "include": ["src", "CHANGELOG.md", "LICENSE.md", "README.md"] }
+  "publish": {
+    "include": ["src", "CHANGELOG.md", "LICENSE", "README.md"]
+  }
 }

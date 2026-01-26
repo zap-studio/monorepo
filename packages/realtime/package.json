@@ -27,7 +27,7 @@
   "files": [
     "dist",
     "CHANGELOG.md",
-    "LICENSE.md",
+    "LICENSE",
     "README.md"
   ],
   "scripts": {
