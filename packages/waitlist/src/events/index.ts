@@ -100,7 +100,7 @@ export class EventBus {
     type: T,
     payload: EventPayloadMap[T]
   ): Promise<void> {
-    const list = this.handlers[type] ?? [];
+    const list = [...(this.handlers[type] ?? [])];
 
     for (const fn of list) {
       try {
