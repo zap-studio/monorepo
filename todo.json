@@ -13,5 +13,10 @@
     "id": 3,
     "task": "Waitlist storage adapter: Drizzle ORM (packages: drizzle-orm, drizzle-kit, pg)",
     "completed": false
+  },
+  {
+    "id": 4,
+    "task": "Check integration of events in waitlist SDK",
+    "completed": false
   }
 ]
