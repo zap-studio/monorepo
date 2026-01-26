@@ -3,13 +3,21 @@ import type { Email } from "@zap-studio/validation/email/types";
 import { DEFAULT_API_PREFIX } from "./constants";
 import type { WaitlistService } from "./contract";
 import type { Leaderboard } from "./leaderboard/types";
+import type { ReferralKey, ReferralLink } from "./referral/types";
 import {
+  CountResponseSchema,
+  EmailEntryListResponseSchema,
+  EmailEntryResponseSchema,
+  EmailEntrySchema,
+  EmailListResponseSchema,
   EmptyResponseSchema,
   JoinResultSchema,
   LeaderboardResponseSchema,
   PositionResponseSchema,
+  ReferralLinkListResponseSchema,
+  ReferralLinkSchema,
 } from "./schemas";
-import type { JoinInput, JoinResult } from "./types";
+import type { EmailEntry, JoinInput, JoinResult, ReferralCode } from "./types";
 
 const trimTrailingSlashes = (value: string): string => {
   let end = value.length;
@@ -57,6 +65,152 @@ export class WaitlistClient implements WaitlistService {
     });
 
     this.api = api;
+  }
+
+  /** Creates a new email entry in the waitlist */
+  async create(entry: EmailEntry): Promise<EmailEntry> {
+    return await this.api.post(`${this.prefix}/entries`, EmailEntrySchema, {
+      throwOnValidationError: true,
+      body: { entry },
+    });
+  }
+
+  /** Creates a new referral link in the waitlist */
+  async createReferral(link: ReferralLink): Promise<ReferralLink> {
+    return await this.api.post(`${this.prefix}/referrals`, ReferralLinkSchema, {
+      throwOnValidationError: true,
+      body: { link },
+    });
+  }
+
+  /** Updates an existing email entry in the waitlist */
+  async update(id: Email, patch: Partial<EmailEntry>): Promise<EmailEntry> {
+    return await this.api.patch(`${this.prefix}/entries`, EmailEntrySchema, {
+      throwOnValidationError: true,
+      body: { id, patch },
+    });
+  }
+
+  /** Updates an existing referral link in the waitlist */
+  async updateReferral(
+    key: ReferralKey,
+    patch: Partial<ReferralLink>
+  ): Promise<ReferralLink> {
+    return await this.api.patch(
+      `${this.prefix}/referrals`,
+      ReferralLinkSchema,
+      {
+        throwOnValidationError: true,
+        body: { key, patch },
+      }
+    );
+  }
+
+  /** Deletes an email entry from the waitlist */
+  async delete(id: Email): Promise<void> {
+    await this.api.post(`${this.prefix}/entries/delete`, EmptyResponseSchema, {
+      throwOnValidationError: true,
+      body: { email: id },
+    });
+  }
+
+  /** Deletes a referral link from the waitlist */
+  async deleteReferral(key: ReferralKey): Promise<void> {
+    await this.api.post(
+      `${this.prefix}/referrals/delete`,
+      EmptyResponseSchema,
+      {
+        throwOnValidationError: true,
+        body: { key },
+      }
+    );
+  }
+
+  /** Finds an email entry by its email address */
+  async findByEmail(email: Email): Promise<EmailEntry | null> {
+    return await this.api.get(
+      `${this.prefix}/entries/by-email`,
+      EmailEntryResponseSchema,
+      {
+        throwOnValidationError: true,
+        searchParams: { email },
+      }
+    );
+  }
+
+  /** Find a referrer by their referral code */
+  async findByReferralCode(code: ReferralCode): Promise<EmailEntry | null> {
+    return await this.api.get(
+      `${this.prefix}/entries/by-referral-code`,
+      EmailEntryResponseSchema,
+      {
+        throwOnValidationError: true,
+        searchParams: { code },
+      }
+    );
+  }
+
+  /** Get referral count for a specific email */
+  async getReferralCount(email: Email): Promise<number> {
+    return await this.api.get(
+      `${this.prefix}/referrals/count`,
+      CountResponseSchema,
+      {
+        throwOnValidationError: true,
+        searchParams: { email },
+      }
+    );
+  }
+
+  /** Lists all email entries in the waitlist */
+  async list(): Promise<EmailEntry[]> {
+    return await this.api.get(
+      `${this.prefix}/entries`,
+      EmailEntryListResponseSchema,
+      {
+        throwOnValidationError: true,
+      }
+    );
+  }
+
+  /** List all emails in the waitlist */
+  async listEmails(): Promise<Email[]> {
+    return await this.api.get(
+      `${this.prefix}/emails`,
+      EmailListResponseSchema,
+      {
+        throwOnValidationError: true,
+      }
+    );
+  }
+
+  /** Lists all referral links in the waitlist */
+  async listReferrals(): Promise<ReferralLink[]> {
+    return await this.api.get(
+      `${this.prefix}/referrals`,
+      ReferralLinkListResponseSchema,
+      {
+        throwOnValidationError: true,
+      }
+    );
+  }
+
+  /** Counts the total number of email entries in the waitlist */
+  async count(): Promise<number> {
+    return await this.api.get(`${this.prefix}/count`, CountResponseSchema, {
+      throwOnValidationError: true,
+    });
+  }
+
+  /** Counts the total number of referral links in the waitlist */
+  async countReferrals(): Promise<number> {
+    return await this.api.get(
+      `${this.prefix}/count-referrals`,
+      CountResponseSchema,
+      {
+        throwOnValidationError: true,
+      }
+    );
   }
 
   /**

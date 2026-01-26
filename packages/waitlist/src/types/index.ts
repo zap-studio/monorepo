@@ -6,8 +6,7 @@ import type { PositionStrategy } from "../leaderboard/types";
 import type { ReferralLink } from "../referral/types";
 
 /** The referral code */
-declare const ReferralCodeBrand: unique symbol;
-export type ReferralCode = string & { readonly [ReferralCodeBrand]: never };
+export type ReferralCode = string;
 
 /** Represents a participant's email entry in the waitlist. */
 export interface EmailEntry {

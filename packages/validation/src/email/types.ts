@@ -1,8 +1,5 @@
-/**
- * Email type.
- */
-declare const EmailBrand: unique symbol;
-export type Email = string & { readonly [EmailBrand]: never };
+/** Email type. */
+export type Email = string;
 
 /**
  * Configuration for email validation.

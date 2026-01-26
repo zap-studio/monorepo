@@ -62,6 +62,21 @@ export const LeaderboardResponseSchema: z.ZodArray<
   typeof LeaderboardEntrySchema
 > = z.array(LeaderboardEntrySchema);
 
+export const EmailEntryListResponseSchema: z.ZodArray<typeof EmailEntrySchema> =
+  z.array(EmailEntrySchema);
+
+export const EmailListResponseSchema: z.ZodArray<typeof EmailSchema> =
+  z.array(EmailSchema);
+
+export const ReferralLinkListResponseSchema: z.ZodArray<
+  typeof ReferralLinkSchema
+> = z.array(ReferralLinkSchema);
+
+export const EmailEntryResponseSchema: z.ZodNullable<typeof EmailEntrySchema> =
+  EmailEntrySchema.nullable();
+
+export const CountResponseSchema: z.ZodNumber = z.number();
+
 export const PositionResponseSchema: z.ZodNullable<z.ZodNumber> = z
   .number()
   .nullable();

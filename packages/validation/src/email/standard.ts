@@ -36,11 +36,11 @@ export const EmailSchema: EmailSchema = {
     version: 1,
     vendor: "@zap-studio/validation/email",
     types: {
-      input: "",
-      output: "",
+      input: "" as Email,
+      output: "" as Email,
     },
     validate(input: unknown) {
-      const value = String(input ?? "");
+      const value = String(input ?? "") as Email;
       const issues: StandardSchemaV1.Issue[] = [];
 
       const parts = value.split("@");

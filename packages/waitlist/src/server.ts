@@ -10,12 +10,13 @@ import { EventBus } from "./events";
 import { calculatePosition, unhandledStrategy } from "./leaderboard";
 import type { Leaderboard, PositionStrategy } from "./leaderboard/types";
 import { addReferralCode, createReferralLink } from "./referral";
-import type { ReferralLink } from "./referral/types";
+import type { ReferralKey, ReferralLink } from "./referral/types";
 import type {
   EmailEntry,
   JoinInput,
   JoinResult,
   JoinSuccessResult,
+  ReferralCode,
   WaitlistConfig,
 } from "./types";
 
@@ -47,6 +48,79 @@ export class WaitlistServer implements WaitlistService {
       ...DEFAULT_WAITLIST_CONFIG,
       ...config,
     };
+  }
+
+  /** Creates a new email entry in the waitlist */
+  async create(entry: EmailEntry): Promise<EmailEntry> {
+    return await this.adapter.create(entry);
+  }
+
+  /** Creates a new referral link in the waitlist */
+  async createReferral(link: ReferralLink): Promise<ReferralLink> {
+    return await this.adapter.createReferral(link);
+  }
+
+  /** Updates an existing email entry in the waitlist */
+  async update(id: Email, patch: Partial<EmailEntry>): Promise<EmailEntry> {
+    return await this.adapter.update(id, patch);
+  }
+
+  /** Updates an existing referral link in the waitlist */
+  async updateReferral(
+    key: ReferralKey,
+    patch: Partial<ReferralLink>
+  ): Promise<ReferralLink> {
+    return await this.adapter.updateReferral(key, patch);
+  }
+
+  /** Deletes an email entry from the waitlist */
+  async delete(id: Email): Promise<void> {
+    await this.adapter.delete(id);
+  }
+
+  /** Deletes a referral link from the waitlist */
+  async deleteReferral(key: ReferralKey): Promise<void> {
+    await this.adapter.deleteReferral(key);
+  }
+
+  /** Finds an email entry by its email address */
+  async findByEmail(email: Email): Promise<EmailEntry | null> {
+    return await this.adapter.findByEmail(email);
+  }
+
+  /** Find a referrer by their referral code */
+  async findByReferralCode(code: ReferralCode): Promise<EmailEntry | null> {
+    return await this.adapter.findByReferralCode(code);
+  }
+
+  /** Get referral count for a specific email */
+  async getReferralCount(email: Email): Promise<number> {
+    return await this.adapter.getReferralCount(email);
+  }
+
+  /** Lists all email entries in the waitlist */
+  async list(): Promise<EmailEntry[]> {
+    return await this.adapter.list();
+  }
+
+  /** List all emails in the waitlist */
+  async listEmails(): Promise<Email[]> {
+    return await this.adapter.listEmails();
+  }
+
+  /** Lists all referral links in the waitlist */
+  async listReferrals(): Promise<ReferralLink[]> {
+    return await this.adapter.listReferrals();
+  }
+
+  /** Counts the total number of email entries in the waitlist */
+  async count(): Promise<number> {
+    return await this.adapter.count();
+  }
+
+  /** Counts the total number of referral links in the waitlist */
+  async countReferrals(): Promise<number> {
+    return await this.adapter.countReferrals();
   }
 
   /**
