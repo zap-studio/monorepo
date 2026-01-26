@@ -114,7 +114,10 @@ export class WaitlistClient implements WaitlistService {
   async getLeaderboard(): Promise<Leaderboard> {
     return await this.api.get(
       `${this.prefix}/leaderboard`,
-      LeaderboardResponseSchema
+      LeaderboardResponseSchema,
+      {
+        throwOnValidationError: true,
+      }
     );
   }
 }
