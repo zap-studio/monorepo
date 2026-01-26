@@ -1,8 +1,14 @@
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js"
-import { allDocs } from "./docs-bundle.ts";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { parseConfig } from "./utils.ts";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const CONFIG_PATH = path.resolve(__dirname, 'docs-bundle.json');
+const allDocs = await parseConfig(CONFIG_PATH);
 
 // Initialisation of the Server
 const server = new McpServer({
@@ -13,41 +19,52 @@ const server = new McpServer({
 )
 
 
-
 server.registerResource(
     "docs-index",
     "docs://_all",
     {
         title: "Documentation Index",
-        description: "Contains the list of all available documentation file paths"
+        description: "List of all available documentation paths in package/resource format"
     },
-    async (uri) => ({
-        contents: [{
-            uri: uri.href,
-            text: "Available documentation paths:\n" + Object.keys(allDocs).join("\n"),
-            mimeType: "text/plain"
-        }]
-    })
-);
-
-server.registerResource(
-    "doc-content",
-    new ResourceTemplate("docs://{+path}", { list: undefined }),
-    {
-        title: "Documentation Content",
-        description: "Retrieves the markdown content. Use the exact path from the index."
-    },
-    async (uri, { path }) => {
-        const pathString = String(path);
-        const cleanPath = pathString.startsWith('/') ? pathString.slice(1) : pathString;
-        const content = allDocs[cleanPath as keyof typeof allDocs];
-        if (!content) {
-            throw new Error(`Document not found: ${path}`);
+    async (uri) => {
+        const paths: string[] = [];
+        for (const [pkg, resources] of Object.entries(allDocs)) {
+            for (const res of Object.keys(resources)) {
+                paths.push(`${pkg}/${res}`);
+            }
         }
         return {
             contents: [{
                 uri: uri.href,
-                text: content,
+                text: "Available documentation paths:\n" + paths.join("\n"),
+                mimeType: "text/plain"
+            }]
+        };
+    }
+);
+
+
+server.registerResource(
+    "doc-content",
+    new ResourceTemplate("docs://{pkg}/{resource}", { list: undefined }),
+    {
+        title: "Documentation Content",
+        description: "Retrieves markdown content for a specific package and resource."
+    },
+    async (uri, { pkg, resource }) => {
+        const pkgName = String(pkg);
+        const resName = String(resource);
+
+        const leaf = allDocs[pkgName]?.[resName];
+
+        if (!leaf) {
+            throw new Error(`Document not found: ${pkgName}/${resName}`);
+        }
+
+        return {
+            contents: [{
+                uri: uri.href,
+                text: leaf.static,
                 mimeType: "text/markdown"
             }]
         };
@@ -57,7 +74,7 @@ server.registerResource(
 async function main() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error("Zap MCP Server running on stdio");
+    console.error("Zap Studio MCP Server running on stdio");
 }
 
 main().catch((error) => {
