@@ -45,16 +45,6 @@ We're also building a suite of packages that solve common problems with modern, 
 - **Modular Architecture** — Core + adapter pattern. Use only what you need.
 - **Tree Shakeable** — Zero bloat. Your bundle stays lean.
 
-| Package                                                  | Description                                             | Status         |
-| -------------------------------------------------------- | ------------------------------------------------------- | -------------- |
-| [@zap-studio/events](./packages/events/index.md)         | Lightweight event bus for event hooks                   | ✅ Available   |
-| [@zap-studio/fetch](./packages/fetch/index.md)           | Type-safe fetch wrapper with validation                 | ✅ Available   |
-| [@zap-studio/permit](./packages/permit/index.md)         | Type-safe authorization and access control              | ✅ Available   |
-| [@zap-studio/realtime](./packages/realtime/index.md)     | Realtime events with SSE and WebSocket support          | 🚧 Coming Soon |
-| [@zap-studio/validation](./packages/validation/index.md) | Shared Standard Schema utilities and validation helpers | ✅ Available   |
-| [@zap-studio/waitlist](./packages/waitlist/index.md)     | Waitlist management solution                            | ✅ Available   |
-| [@zap-studio/webhooks](./packages/webhooks/index.md)     | Webhook handling with signature verification            | 🚧 Coming Soon |
-
 ## Why Now?
 
 The JavaScript ecosystem has matured. TypeScript is the standard. ESM is native. Edge runtimes are everywhere. The tools developers use should reflect this new reality — not carry the weight of a decade of backwards compatibility.
