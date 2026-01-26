@@ -25,7 +25,7 @@ catalogs:
     '@turbo/gen': ^2.7.5
     lefthook: ^2.0.15
     rimraf: ^6.1.2
-    turbo: ^2.7.5
+    turbo: ^2.7.6
   types:
     '@types/node': ^25.0.2
   vitepress:
