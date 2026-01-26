@@ -10,13 +10,7 @@ export interface ReferralKey {
 }
 
 /** A record of an actual referral relationship (who referred whom). */
-export interface ReferralLink {
-  /** The referrer (owner of the code) */
-  referrer: Email;
-
-  /** The referee (the person who joined with the code) */
-  referee: Email;
-
+export interface ReferralLink extends ReferralKey {
   /** Timestamp of when this referral occurred */
   createdAt: Date;
 }
