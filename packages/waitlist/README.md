@@ -93,36 +93,6 @@ const position = await waitlist.getPosition("alice@example.com");
 console.log("Position:", position ?? "not found");
 ```
 
-## EventBus error reporting
-
-`EventBus` does not log to `console` by default. Provide a logger or callback to control how errors are reported when a handler throws.
-
-```ts
-import { EventBus } from "@zap-studio/events";
-import type { ErrorReporter, ILogger } from "@zap-studio/events/types";
-import type { WaitlistEventPayloadMap } from "@zap-studio/waitlist/types";
-
-const logger: ILogger<WaitlistEventPayloadMap> = {
-  error: (message, err, context) => {
-    console.error(message, err, context);
-  },
-};
-
-const onError: ErrorReporter<WaitlistEventPayloadMap> = (
-  err,
-  { event, errorEmitFailed }
-) => {
-  console.error("EventBus error", { event, err, errorEmitFailed });
-};
-
-const events = new EventBus<WaitlistEventPayloadMap>({
-  logger, // used when onError is not provided
-  onError, // takes precedence over logger
-  errorEventType: "error",
-  errorEventPayload: (err, source) => ({ err, source }),
-});
-```
-
 ## Quick Start (client-side RPC)
 
 ```ts
@@ -158,19 +128,55 @@ export async function JoinEndpoint(req: Request): Promise<Response> {
 
 This handler should only wrap the server SDK; the SDK contains the business logic.
 
+The full RPC surface area mirrors the `WaitlistService` and storage adapter methods used by
+`WaitlistClient`:
+
 - `POST {prefix}/join`
   - Body: `{ email: string; referralCode?: string }`
   - Response: `{ ok: true; entry: EmailEntry; referralLink?: ReferralLink }`
     or `{ ok: false; reason: "invalid-email"; message?: string }`
 - `POST {prefix}/leave`
   - Body: `{ email: string }`
-  - Response: `{ ok: true }`
-  - Example: `{ "ok": true }`
+  - Response: `{ ok: true }` (or an empty object)
+- `GET {prefix}/position?email=...`
+  - Response: `number | null`
 - `GET {prefix}/leaderboard?positionStrategy=...`
   - Query: `positionStrategy` = `"creation-date"` | `"number-of-referrals"` (optional)
   - Response: `Array<{ email: string; score: number }>`
-- `GET {prefix}/position?email=...`
-  - Response: `number | null`
+- `POST {prefix}/entries`
+  - Body: `{ entry: EmailEntry }`
+  - Response: `EmailEntry`
+- `PATCH {prefix}/entries`
+  - Body: `{ id: string; patch: Partial<EmailEntry> }`
+  - Response: `EmailEntry`
+- `POST {prefix}/entries/delete`
+  - Body: `{ email: string }`
+  - Response: `{ ok: true }` (or an empty object)
+- `GET {prefix}/entries`
+  - Response: `EmailEntry[]`
+- `GET {prefix}/entries/by-email?email=...`
+  - Response: `EmailEntry | null`
+- `GET {prefix}/entries/by-referral-code?code=...`
+  - Response: `EmailEntry | null`
+- `POST {prefix}/referrals`
+  - Body: `{ link: ReferralLink }`
+  - Response: `ReferralLink`
+- `PATCH {prefix}/referrals`
+  - Body: `{ key: string; patch: Partial<ReferralLink> }`
+  - Response: `ReferralLink`
+- `POST {prefix}/referrals/delete`
+  - Body: `{ key: string }`
+  - Response: `{ ok: true }` (or an empty object)
+- `GET {prefix}/referrals`
+  - Response: `ReferralLink[]`
+- `GET {prefix}/referrals/count?email=...`
+  - Response: `number`
+- `GET {prefix}/emails`
+  - Response: `string[]`
+- `GET {prefix}/count`
+  - Response: `number`
+- `GET {prefix}/count-referrals`
+  - Response: `number`
 
 ## Configuration
 
@@ -186,7 +192,9 @@ interface WaitlistConfig {
 
 ## Creating Custom Adapters
 
-Implement the `WaitlistStorageAdapter` interface to connect your preferred storage:
+This package ships with the in-memory adapter and the most popular storage backends are provided as
+official adapters in the broader `@zap-studio/waitlist` ecosystem. If you need something custom,
+implement the `WaitlistStorageAdapter` interface to connect your preferred storage:
 
 ```ts
 interface WaitlistStorageAdapter {
@@ -207,3 +215,19 @@ interface WaitlistStorageAdapter {
   getLeaderboard(positionStrategy?: PositionStrategy): Promise<Leaderboard>;
 }
 ```
+
+### Adapter expectations
+
+When you implement an adapter, keep these behavioral constraints in mind so the server logic stays
+correct and deterministic:
+
+- **Uniqueness**: `EmailEntry.email` and `EmailEntry.referralCode` must be unique.
+- **Atomic writes**: `create` and `createReferral` should be atomic. If your store supports
+  transactions, use them when you create both an entry and referral link.
+- **Idempotent deletes**: `delete` and `deleteReferral` should succeed even if the record is missing.
+- **Sorting**:
+  - `list()` should return entries ordered by `createdAt` ascending.
+  - `getLeaderboard("number-of-referrals")` should return entries ordered by score descending
+    (break ties by `createdAt` ascending for stable results).
+- **Counts**: `count()` and `countReferrals()` must match the length of `list()` and
+  `listReferrals()` respectively.
