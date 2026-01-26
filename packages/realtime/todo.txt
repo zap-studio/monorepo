@@ -1,0 +1,3 @@
+- Rework plugins (add client helpers for chat and migrate to websocket)
+- Add websocket adapters for Hono, Elysia, Next.js, TanStack Start
+- Add unit tests for this package
