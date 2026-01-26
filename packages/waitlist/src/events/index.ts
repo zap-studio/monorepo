@@ -22,7 +22,7 @@ type Handler<T> = (payload: T) => void | Promise<void>;
  *
  * // One-time listener
  * bus.once("referral", (payload) => {
- *   console.log("First referral:", payload.referrerId);
+ *   console.log("First referral:", payload.referrer);
  * });
  */
 export class EventBus {
@@ -57,7 +57,7 @@ export class EventBus {
    *
    * @example
    * bus.once("referral", (payload) => {
-   *   console.log("First referral:", payload.referrerId);
+   *   console.log("First referral:", payload.referrer);
    * });
    */
   once<T extends WaitlistEventType>(
