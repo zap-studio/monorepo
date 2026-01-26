@@ -5,7 +5,7 @@ packages:
 
 catalogs:
   base:
-    '@standard-schema/spec': ^1.1.0
+    "@standard-schema/spec": ^1.1.0
     arktype: ^2.1.29
     nanoid: ^5.1.6
     tsdown: ^0.18.0
@@ -13,30 +13,30 @@ catalogs:
     valibot: ^1.2.0
     zod: ^4.2.0
   linting:
-    '@biomejs/biome': ^2.3.12
-    '@commitlint/cli': ^20.3.1
-    '@commitlint/config-conventional': ^20.3.1
+    "@biomejs/biome": ^2.3.12
+    "@commitlint/cli": ^20.3.1
+    "@commitlint/config-conventional": ^20.3.1
     ultracite: ^7.0.12
   testing:
-    '@vitest/coverage-v8': ^4.0.15
-    '@vitest/ui': ^4.0.18
+    "@vitest/coverage-v8": ^4.0.15
+    "@vitest/ui": ^4.0.18
     vitest: ^4.0.18
   tooling:
-    '@changesets/cli': ^2.29.8
-    '@turbo/gen': ^2.7.6
+    "@changesets/cli": ^2.29.8
+    "@turbo/gen": ^2.7.6
     lefthook: ^2.0.15
     nyc: ^17.1.0
     rimraf: ^6.1.2
     turbo: ^2.7.6
   types:
-    '@types/node': ^25.0.2
+    "@types/node": ^25.0.2
   vitepress:
-    '@shikijs/vitepress-twoslash': ^3.20.0
+    "@shikijs/vitepress-twoslash": ^3.20.0
     vitepress: ^2.0.0-alpha.15
     vitepress-plugin-llms: ^1.9.3
 
 onlyBuiltDependencies:
-  - '@swc/core'
+  - "@swc/core"
   - core-js-pure
   - esbuild
   - lefthook

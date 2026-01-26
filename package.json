@@ -19,7 +19,8 @@
     "test:coverage": "turbo run test -- --coverage && pnpm merge-coverage && pnpm report-coverage",
     "test:ui": "vitest --ui",
     "test:watch": "vitest --watch",
-    "validate": "turbo run build check lint test"
+    "validate": "turbo run build check lint test",
+    "prepare": "lefthook install"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:linting",
