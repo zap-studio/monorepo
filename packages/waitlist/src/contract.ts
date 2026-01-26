@@ -14,5 +14,5 @@ export interface WaitlistService {
   getLeaderboard(): Promise<Leaderboard>;
 
   /** Get a user's current position in the waitlist */
-  getPosition(email: Email): Promise<number | undefined>;
+  getPosition(email: Email): Promise<number | null>;
 }

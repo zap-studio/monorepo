@@ -76,9 +76,9 @@ export function calculatePosition(
   entries: EmailEntry[],
   email: Email,
   options: CalculatePositionOptions = {}
-): number | undefined {
+): number | null {
   if (entries.length === 0 || !entries.find((e) => e.email === email)) {
-    return;
+    return null;
   }
 
   const strategy: PositionStrategy =

@@ -61,7 +61,7 @@ if (result.ok) {
 }
 
 const position = await waitlist.getPosition("alice@example.com");
-console.log("Position:", position);
+console.log("Position:", position ?? "not found");
 ```
 
 ## Quick Start (client-side RPC)

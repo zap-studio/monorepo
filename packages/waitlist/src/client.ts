@@ -91,7 +91,7 @@ export class WaitlistClient implements WaitlistService {
    * Get a user's current position in the waitlist.
    * Note: Requires a server endpoint to be implemented.
    */
-  async getPosition(email: Email): Promise<number | undefined> {
+  async getPosition(email: Email): Promise<number | null> {
     const result = await this.api.get(
       `${this.prefix}/position`,
       PositionResponseSchema,
@@ -101,7 +101,7 @@ export class WaitlistClient implements WaitlistService {
       }
     );
 
-    return result ?? undefined;
+    return result;
   }
 
   /**

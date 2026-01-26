@@ -163,7 +163,7 @@ export class WaitlistServer implements WaitlistService {
    * const server = new WaitlistServer({ adapter: myAdapter });
    * const position = await server.getPosition("user@example.com");
    */
-  async getPosition(email: Email): Promise<number | undefined> {
+  async getPosition(email: Email): Promise<number | null> {
     const strategy = this.config?.positionStrategy;
     switch (strategy) {
       case "number-of-referrals": {
