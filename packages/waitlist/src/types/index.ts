@@ -6,7 +6,8 @@ import type { PositionStrategy } from "../leaderboard/types";
 import type { ReferralLink } from "../referral/types";
 
 /** The referral code */
-export type ReferralCode = string;
+declare const ReferralCodeBrand: unique symbol;
+export type ReferralCode = string & { readonly [ReferralCodeBrand]: never };
 
 /** Represents a participant's email entry in the waitlist. */
 export interface EmailEntry {
@@ -50,7 +51,7 @@ export interface JoinInput {
   email: Email;
 
   /** An optional referral code used during signup */
-  referralCode?: string;
+  referralCode?: ReferralCode;
 }
 
 /** Possible reasons why joining the waitlist can fail */
