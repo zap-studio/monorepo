@@ -29,7 +29,7 @@ catalogs:
   types:
     '@types/node': ^25.0.2
   vitepress:
-    '@shikijs/vitepress-twoslash': ^3.20.0
+    '@shikijs/vitepress-twoslash': ^3.22.0
     vitepress: ^2.0.0-alpha.15
     vitepress-plugin-llms: ^1.9.3
 
