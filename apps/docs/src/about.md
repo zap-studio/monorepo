@@ -29,16 +29,7 @@ Your data stays on the device, always available offline, with native performance
 
 ### @zap-studio Packages — Modern Primitives
 
-We're building a suite of composable packages under the `@zap-studio` scope:
-
-| Package | What it does |
-|---------|-------------|
-| [@zap-studio/fetch](./packages/fetch/index.md) | Type-safe HTTP client with runtime validation |
-| [@zap-studio/permit](./packages/permit/index.md) | Type-safe centralized & secure authorization with zero config |
-| [@zap-studio/validation](./packages/validation/index.md) | Shared Standard Schema utilities and validation helpers |
-| @zap-studio/realtime | Realtime events with SSE and WebSocket support |
-| @zap-studio/waitlist | Launch waitlists in minutes |
-| @zap-studio/webhooks | Secure webhook handling with zero config |
+We're building a suite of composable packages under the `@zap-studio` scope. These packages are designed to be used together to build modern web applications.
 
 ## Our Approach
 

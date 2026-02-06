@@ -15,17 +15,19 @@ We're solving this by building a suite of modular, production-ready tools that j
 Our flagship product is [Zap.ts](https://zapstudio.dev/zap-ts) — the fastest way to go from idea to production. It's a modular starter kit that includes everything you need to build and scale a web application.
 
 **What's included:**
--  Authentication with Better Auth
--  Database with Drizzle ORM
--  UI with Tailwind CSS + shadcn/ui
--  Payments with Polar
--  Deploy anywhere
+
+- Authentication with Better Auth
+- Database with Drizzle ORM
+- UI with Tailwind CSS + shadcn/ui
+- Payments with Polar
+- Deploy anywhere
 
 ### Local.ts
 
 [Local.ts](./local-ts/) is our starter kit for building local-first desktop applications. Your data stays on the device, always available offline, with native performance.
 
 **What's included:**
+
 - Cross-platform desktop apps with Tauri
 - SQLite database with Diesel ORM
 - Settings, theming, and notifications
@@ -42,15 +44,6 @@ We're also building a suite of packages that solve common problems with modern, 
 - **100% Type Safe** — Full TypeScript with strict types. Catch bugs before they ship.
 - **Modular Architecture** — Core + adapter pattern. Use only what you need.
 - **Tree Shakeable** — Zero bloat. Your bundle stays lean.
-
-| Package | Description | Status |
-|---------|-------------|--------|
-| [@zap-studio/fetch](./packages/fetch/index.md) | Type-safe fetch wrapper with validation | ✅ Available |
-| [@zap-studio/permit](./packages/permit/index.md) | Type-safe authorization and access control | ✅ Available |
-| [@zap-studio/validation](./packages/validation/index.md) | Shared Standard Schema utilities and validation helpers | ✅ Available |
-| @zap-studio/realtime | Realtime events with SSE and WebSocket support | 🚧 Coming Soon |
-| @zap-studio/waitlist | Waitlist management solution | 🚧 Coming Soon |
-| @zap-studio/webhooks | Webhook handling with signature verification | 🚧 Coming Soon |
 
 ## Why Now?
 

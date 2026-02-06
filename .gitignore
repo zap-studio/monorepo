@@ -14,7 +14,7 @@ dist/
 build/
 *.tsbuildinfo
 
-# Monorepo / Turbo / package managers
+# Monorepo / Turbo
 **/node_modules/
 **/.turbo/
 **/.next/
@@ -22,8 +22,6 @@ build/
 **/.parcel-cache/
 **/.vercel/
 **/.expo/
-packages/*/dist/
-apps/*/dist/
 
 # Logs
 logs
@@ -45,12 +43,6 @@ report.[0-9]*.[0-9]*.json
 # OS files
 .DS_Store
 Thumbs.db
-
-# Editor directories and files
-.vscode/
-.idea/
-*.sublime-workspace
-*.sublime-project
 
 # Environment files
 .env
@@ -82,6 +74,3 @@ coverage/
 
 # fyai
 fyai.txt
-
-# todo
-todo.json
