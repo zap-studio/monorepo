@@ -1,0 +1,14 @@
+{
+  "extends": "@zap-studio/typescript-config/library.json",
+  "include": ["."],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "tsdown.config.ts",
+    "vitest.config.ts",
+    ".turbo"
+  ],
+  "compilerOptions": {
+    "strictNullChecks": true
+  }
+}
