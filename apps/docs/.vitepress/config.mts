@@ -19,20 +19,19 @@ export default defineConfig({
     logo: "/icon.png",
     nav: [
       { text: "Home", link: "/" },
-      { text: "Zap.ts", link: "/zap-ts/" },
+      // { text: "Zap.ts", link: "/zap-ts/" },
       { text: "Local.ts", link: "/local-ts/" },
       {
         text: "Packages",
         items: [
           { text: "@zap-studio/fetch", link: "/packages/fetch/" },
           { text: "@zap-studio/permit", link: "/packages/permit/" },
-          { text: "@zap-studio/realtime", link: "/packages/realtime/" },
           { text: "@zap-studio/validation", link: "/packages/validation/" },
-          { text: "@zap-studio/waitlist", link: "/packages/waitlist/" },
-          { text: "@zap-studio/webhooks", link: "/packages/webhooks/" },
+          // { text: "@zap-studio/realtime", link: "/packages/realtime/" },
+          // { text: "@zap-studio/waitlist", link: "/packages/waitlist/" },
+          // { text: "@zap-studio/webhooks", link: "/packages/webhooks/" },
         ],
       },
-      { text: "About", link: "/about" },
       {
         text: "More",
         items: [
@@ -46,21 +45,12 @@ export default defineConfig({
     ],
 
     sidebar: {
-      "/": [
-        {
-          text: "Overview",
-          items: [
-            { text: "Introduction", link: "/introduction" },
-            { text: "About", link: "/about" },
-          ],
-        },
-      ],
-      "/zap-ts/": [
-        {
-          text: "Zap.ts",
-          items: [{ text: "Overview", link: "/zap-ts/" }],
-        },
-      ],
+      // "/zap-ts/": [
+      //   {
+      //     text: "Zap.ts",
+      //     items: [{ text: "Overview", link: "/zap-ts/" }],
+      //   },
+      // ],
       "/local-ts/": [
         {
           text: "Local.ts",
@@ -139,30 +129,30 @@ export default defineConfig({
           ],
         },
       ],
-      "/packages/realtime/": [
-        {
-          text: "@zap-studio/realtime",
-          items: [{ text: "Overview", link: "/packages/realtime/" }],
-        },
-      ],
+      // "/packages/realtime/": [
+      //   {
+      //     text: "@zap-studio/realtime",
+      //     items: [{ text: "Overview", link: "/packages/realtime/" }],
+      //   },
+      // ],
       "/packages/validation/": [
         {
           text: "@zap-studio/validation",
           items: [{ text: "Overview", link: "/packages/validation/" }],
         },
       ],
-      "/packages/waitlist/": [
-        {
-          text: "@zap-studio/waitlist",
-          items: [{ text: "Overview", link: "/packages/waitlist/" }],
-        },
-      ],
-      "/packages/webhooks/": [
-        {
-          text: "@zap-studio/webhooks",
-          items: [{ text: "Overview", link: "/packages/webhooks/" }],
-        },
-      ],
+      // "/packages/waitlist/": [
+      //   {
+      //     text: "@zap-studio/waitlist",
+      //     items: [{ text: "Overview", link: "/packages/waitlist/" }],
+      //   },
+      // ],
+      // "/packages/webhooks/": [
+      //   {
+      //     text: "@zap-studio/webhooks",
+      //     items: [{ text: "Overview", link: "/packages/webhooks/" }],
+      //   },
+      // ],
     },
 
     socialLinks: [

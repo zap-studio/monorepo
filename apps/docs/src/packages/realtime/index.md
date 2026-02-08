@@ -1,3 +1,4 @@
+<!--
 # @zap-studio/realtime
 
 :::: warning Coming Soon
@@ -15,5 +16,5 @@ The documentation for `@zap-studio/realtime` is currently under development. Sta
 ## Stay Updated
 
 Join our [Discord community](https://discord.gg/8Ke3VCjjMf) to stay updated on the latest developments.
-
+-->
 
