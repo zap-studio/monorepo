@@ -15,7 +15,7 @@ catalogs:
     '@biomejs/biome': ^2.3.14
     '@commitlint/cli': ^20.4.1
     '@commitlint/config-conventional': ^20.4.1
-    ultracite: ^7.1.4
+    ultracite: ^7.1.5
   testing:
     '@vitest/coverage-v8': ^4.0.15
     '@vitest/ui': ^4.0.18
