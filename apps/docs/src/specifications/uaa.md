@@ -34,7 +34,7 @@ They adapt your **Core** logic to specific platforms like web browsers, mobile p
 
 ### Core Taxonomy
 
-The **Core** contains six layers:
+The **Core** contains five layers:
 
 | Layer | Name | Purpose |
 |-------|------|---------|
@@ -43,7 +43,6 @@ The **Core** contains six layers:
 | 3 | **State & Signals** | Stores, atoms, sync operations, signals |
 | 4 | **Components** | Primitives, styled components, patterns, blocks, utilities, layout |
 | 5 | **Features** | Pages (navigate to), Flows (progress through), Widgets (interact with) |
-| 6 | **Modules** | Bounded groupings of related features |
 
 Each layer builds on the one below it and stays focused on its job. Dependencies flow downward—higher layers may import from lower layers, but never the reverse.
 
@@ -166,13 +165,31 @@ A feature starts its trace span, coordinates **Services**, updates **State**, an
 - **Flows** — `CheckoutFlow`, `OnboardingFlow`, `PasswordResetFlow`, `SetupWizardFlow`, `KYCVerificationFlow`
 - **Widgets** — `SearchWidget`, `CommandPalette`, `NotificationCenter`, `ChatWidget`, `AIAssistant`, `QuickActions`
 
-#### Layer 6: Modules
+**Organization:**
 
-**Modules** are bounded groupings of related features. They provide a cohesive public API for a business area and establish clear boundaries between different parts of the application.
+Features can be organized in two ways:
 
-Modules group related **Pages**, **Flows**, and **Widgets** that belong to the same area. They can be extracted as packages for reuse across applications.
+1. **Standalone** — Features that don't belong to a specific area live directly in `pages/`, `flows/`, or `widgets/`
+2. **Grouped** — Related features can be grouped in a subfolder (e.g., `auth/`, `checkout/`) with an `index.ts` entrypoint
 
-A module is simply containing features (pages, flows, widgets) that exposes entrypoints to **Adapters**. Modules have no additional sublayers beyond the feature types they contain.
+```
+features/
+├── pages/                    # Standalone pages
+│   ├── LandingPage.tsx
+│   └── NotFoundPage.tsx
+├── widgets/                  # Standalone widgets
+│   └── CommandPalette.tsx
+├── auth/                     # Grouped features
+│   ├── pages/
+│   ├── flows/
+│   └── index.ts              # Entrypoint for Adapters
+└── checkout/                 # Another group
+    ├── pages/
+    ├── flows/
+    └── index.ts
+```
+
+> **Note:** Grouping is an organizational choice, not a separate layer. Grouped features follow the same sublayer structure (**pages**, **flows**, **widgets**) and expose entrypoints via `index.ts`. This keeps the layer hierarchy clean—**Adapters** always call into **Features**, whether standalone or grouped.
 
 ### Adapters
 
@@ -248,15 +265,12 @@ They handle routing, parameter parsing, request lifecycle, and framework binding
 │   │   ├── utilities/           # useControllableState, useId, useFocusTrap, cn()
 │   │   └── layout/              # Sidebar, Header, PageContainer, Footer
 │   │
-│   ├── features/                # Layer 5: Feature types (pages, flows, widgets)
-│   │   ├── pages/               # Standalone pages: LandingPage, NotFoundPage, MaintenancePage
-│   │   ├── flows/               # Standalone flows not tied to a module
-│   │   └── widgets/             # Standalone widgets: CommandPalette, GlobalSearch
-│   │
-│   └── modules/                 # Layer 6: Groupings of related features
-│       ├── auth/                # Auth features + index.ts entrypoint
-│       ├── checkout/            # Checkout features + index.ts entrypoint
-│       └── billing/             # Billing features + index.ts entrypoint
+│   └── features/                # Layer 5: Feature types (pages, flows, widgets)
+│       ├── pages/               # Standalone pages: LandingPage, NotFoundPage
+│       ├── flows/               # Standalone flows
+│       ├── widgets/             # Standalone widgets: CommandPalette, GlobalSearch
+│       ├── auth/                # Grouped features: pages/, flows/, index.ts
+│       └── checkout/            # Grouped features: pages/, flows/, index.ts
 │
 ├── adapters/                    # Framework-specific entry points (thin layer)
 │   └── ...                      # Next.js: app/, TanStack: routes/, Expo: screens/
@@ -273,11 +287,59 @@ They handle routing, parameter parsing, request lifecycle, and framework binding
 
 The **Universal Application Architecture (UAA)** specification provides a robust framework for building portable, observable, and scalable applications by clearly delineating responsibilities across distinct architectural layers and zones.
 
-It structures applications into a **Core** Architecture, encompassing **Primitives**, **Services**, **State**, **Components**, **Features**, and **Modules**, which together form the reusable business logic. Complementing this **Core** are the **Adapters**, responsible for framework-specific routing, parameter parsing, and request lifecycle management, ensuring that business logic remains decoupled from presentation.
+It structures applications into a **Core** Architecture, encompassing **Primitives**, **Services**, **State**, **Components**, and **Features**, which together form the reusable business logic. Complementing this **Core** are the **Adapters**, responsible for framework-specific routing, parameter parsing, and request lifecycle management, ensuring that business logic remains decoupled from presentation.
 
 Furthermore, **UAA** defines **Shared Capabilities** for concerns like **Observability**, **Security**, **Auditing**, **Caching**, and **Events**, which span the entire stack but are implemented as lightweight, modular helpers to avoid diluting the single-responsibility principle of the **Core** layers.
 
 By adhering to these principles, **UAA** enables full execution visibility, cross-surface traceability, structured logging, event-driven extensibility, and compliance readiness, empowering teams to debug, analyze, and evolve their systems with confidence.
+
+## Terminology Rationale
+
+This section explains why we chose specific terms throughout the specification.
+
+### Zones
+
+| Term | Why This Name |
+|------|---------------|
+| **Core** | Represents the essential, central part of the application—the business logic that remains constant regardless of platform. Simple, intuitive, and widely understood. |
+| **Adapters** | Borrowed from [Hexagonal Architecture (Ports and Adapters)](https://alistair.cockburn.us/hexagonal-architecture/). Clearly conveys the role: adapting the Core to different platforms without containing logic. |
+| **Shared Capabilities** | Describes cross-cutting concerns that are truly shared across all layers. "Capabilities" implies functionality that enables other parts. |
+
+### Layers
+
+| Term | Why This Name |
+|------|---------------|
+| **Primitives** | The most basic, foundational building blocks. Like primitives in programming languages—simple, composable, no dependencies. |
+| **Services** | Industry-standard term for encapsulated business operations. The intent is clear that services serve other parts of the application. |
+| **State & Signals** | "State" is universal for application data. "Signals" distinguishes reactive notifications from UI events—borrowed from [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming). |
+| **Components** | Industry-standard term for reusable UI units. Aligns with component-based frameworks ([React](https://react.dev/), [Vue](https://vuejs.org/), [Svelte](https://svelte.dev/)) and [components.build](https://components.build/) taxonomy. |
+| **Features** | Represents user-facing functionality. A feature is something users interact with—pages they visit, flows they complete, widgets they use. |
+
+### Sublayers
+
+| Layer | Sublayer | Why This Name |
+|-------|----------|---------------|
+| **Primitives** | **schemas** | Data shape definitions—"schema" is standard terminology for structured data validation. |
+| | **guards** | Runtime checks that "guard" against invalid states—borrowed from [TypeScript type guards](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates). |
+| | **constants** | Immutable values—standard programming term |
+| | **utils** | Short for utilities—pure helper functions, widely understood |
+| | **errors** | Custom error types—self-explanatory |
+| **Services** | **data** | Data access layer—abstracts persistence concerns |
+| | **providers** | External service integrations—"provides" third-party functionality |
+| | **rules** | Pure business logic—rules that govern behavior without I/O |
+| **State & Signals** | **stores** | State containers—borrowed from [Redux](https://redux.js.org/)/[Zustand](https://zustand.docs.pmnd.rs/) terminology. |
+| | **signals** | Reactive notifications—from [Solid.js](https://www.solidjs.com/) and [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming). |
+| | **sync** | Synchronizes remote and local state—covers both fetching and mutating. |
+| | **atoms** | Fine-grained state units—from [Jotai](https://jotai.org/)/[Recoil](https://recoiljs.org/) terminology. |
+| **Components** | **primitives** | Headless behavioral blocks—aligns with [components.build](https://components.build/definitions) and [Radix UI](https://www.radix-ui.com/). |
+| | **components** | Styled UI units—standard term, distinct from primitives. |
+| | **patterns** | Documented solutions—aligns with [components.build](https://components.build/definitions) Pattern definition. |
+| | **blocks** | Opinionated compositions—aligns with [components.build](https://components.build/definitions) Block definition. |
+| | **utilities** | Non-visual helpers—hooks, class utilities, focus scopes. |
+| | **layout** | Structural arrangement—headers, sidebars, containers. |
+| **Features** | **pages** | Single-route destinations—aligns with [components.build](https://components.build/definitions) Page definition. |
+| | **flows** | Multi-step journeys—conveys progression and orchestration. |
+| | **widgets** | Portable, embeddable units—self-contained interactive elements. |
 
 ## Acknowledgements
 
