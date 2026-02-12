@@ -4,9 +4,7 @@ Architecturing apps *well* is one of the most important things you can do becaus
 
 Too many teams start vibecoding, push in features, and end up with messy codebases, especially now that AI can spin up new ideas in minutes. But be aware, when the stack is messy, it becomes hard to understand what each piece should do.
 
-This guide tries to fix that by giving a clear specification for a portable **Core** and thin **Adapters** so you can keep iterating without breaking the architecture.
-
-Indeed, modern apps run on web, mobile, command-line, desktop, server/API, and background worker platforms. They all need data access, business logic, user interaction, state management, observability, security, and event handling.
+This guide tries to fix that by giving a clear specification for a portable **Core** and thin **Adapters** so you can keep iterating without breaking the architecture. It aims to apply to modern apps (e.g. web, mobile, command-line, desktop, API).
 
 Thus, **Universal Application Architecture (UAA)** gives a shared structure so each surface can reuse the same **Core** ideas.
 
@@ -30,7 +28,7 @@ They adapt your **Core** logic to specific platforms like web browsers, mobile p
 
 ## Taxonomy
 
-**UAA** splits the system into three zones: the **Core** Architecture (reusable business logic, state, and features), the **Adapters** (routing, parameter parsing, and request lifecycle), and the **Shared Capabilities** (observability, security, and configuration).
+**UAA** splits the system into three zones: the **Core** (reusable business logic, state, and features), the **Adapters** (routing, parameter parsing, and request lifecycle), and the **Shared Capabilities** (observability, security, and configuration).
 
 ### Core Taxonomy
 
@@ -63,7 +61,7 @@ This layer holds the smallest reusable pieces: shared **schemas**, validation he
 **Examples:**
 
 - **Schemas** — `UserSchema`, `OrderSchema`
-- **Type guards** — `isAuthenticated()`, `assertNonNull()`
+- **Type guards** — `assertNonNull()`, `assertNever()`
 - **Constants** — `OrderStatus.PENDING`, `ErrorCode.NOT_FOUND`
 - **Utilities** — `formatDate()`, `slugify()`, `generateUUID()`
 - **Errors** — `NotFoundError`, `ValidationError`, `UnauthorizedError`
