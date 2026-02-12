@@ -22,6 +22,12 @@ export default defineConfig({
       // { text: "Zap.ts", link: "/zap-ts/" },
       { text: "Local.ts", link: "/local-ts/" },
       {
+        text: "Playbook",
+        items: [
+          { text: "Universal Architecture Application (UAA)", link: "/playbook/uaa" },
+        ],
+      },
+      {
         text: "Packages",
         items: [
           { text: "@zap-studio/fetch", link: "/packages/fetch/" },
@@ -141,6 +147,14 @@ export default defineConfig({
           items: [{ text: "Overview", link: "/packages/validation/" }],
         },
       ],
+      "/playbook/": [
+        {
+          text: "Playbook",
+          items: [
+            { text: "Universal Architecture Application (UAA)", link: "/playbook/uaa" },
+          ],
+        },
+      ],
       // "/packages/waitlist/": [
       //   {
       //     text: "@zap-studio/waitlist",
@@ -178,9 +192,7 @@ export default defineConfig({
   },
   lastUpdated: true,
   markdown: {
-    // @ts-expect-error // FIXME: remove when plugin types are fixed
     codeTransformers: [transformerTwoslash()],
-    // @ts-expect-error // FIXME: remove when plugin types are fixed
     languages: ["js", "jsx", "ts", "tsx"],
     config(md) {
       md.use(copyOrDownloadAsMarkdownButtons);
