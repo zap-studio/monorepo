@@ -168,7 +168,7 @@ A feature starts its trace span, coordinates **Services**, updates **State**, an
 Features can be organized in two ways:
 
 1. **Standalone** — Features that don't belong to a specific area live directly in `pages/`, `flows/`, or `widgets/`
-2. **Grouped** — Related features can be grouped in a subfolder (e.g., `auth/`, `checkout/`) with an `index.ts` entrypoint
+2. **Grouped** — Related features can be grouped in a subfolder (e.g., `auth/`, `checkout/`)
 
 ```
 features/
@@ -180,14 +180,14 @@ features/
 ├── auth/                     # Grouped features
 │   ├── pages/
 │   ├── flows/
-│   └── index.ts              # Entrypoint for Adapters
 └── checkout/                 # Another group
     ├── pages/
     ├── flows/
-    └── index.ts
 ```
 
-> **Note:** Grouping is an organizational choice, not a separate layer. Grouped features follow the same sublayer structure (**pages**, **flows**, **widgets**) and expose entrypoints via `index.ts`. This keeps the layer hierarchy clean—**Adapters** always call into **Features**, whether standalone or grouped.
+**Note:** Grouping is an *organizational choice*, not a separate layer. Grouped features follow the same sublayer structure (**pages**, **flows**, **widgets**). This keeps the layer hierarchy clean—**Adapters** always call into **Features**, whether standalone or grouped.
+
+> **Recommendation:** Document your feature organization decisions. Clear documentation helps teams understand when to create standalone features versus grouped features, ensuring consistent structure as the codebase grows.
 
 ### Adapters
 
