@@ -71,14 +71,15 @@ Services avoid importing components or **Adapters**-specific code so the busines
 - `data/` — data access abstractions that read and write to persistence layers
 - `providers/` — integrations with third-party APIs and external service providers
 - `rules/` — pure business rules, validations, and domain logic with no I/O
-- `handlers/` — command and operation handlers that mutate state or trigger side effects
+
+Service files (e.g., `auth.ts`, `payment.ts`, `order.ts`) live at the root of `services/` and compose the sublayers above. They expose intent-driven methods that **Features** call. This keeps orchestration in one place—**Features** orchestrate services, services compose their internal pieces.
 
 **Examples:**
 
 - **Data** — `UserRepository.findById()`, `OrderRepository.save()`
 - **Providers** — `StripeClient.createCharge()`, `EmailProvider.send()`
 - **Rules** — `calculateOrderTotal()`, `validateDiscount()`, `applyTaxRules()`
-- **Handlers** — `createUserHandler()`, `processRefundHandler()`, `publishOrderHandler()`
+- **Services** — `AuthService.signIn()`, `PaymentService.charge()`, `OrderService.place()`
 
 #### Layer 3: State & Events
 
@@ -169,41 +170,50 @@ Observe the same pattern for any future **Shared Capabilities** need.
 
 ```
 /src
-├── core/
-│   ├── primitives/
-│   │   ├── schemas/
-│   │   ├── guards/
-│   │   ├── constants/
-│   │   ├── utils/
-│   │   └── errors/
-│   ├── services/
-│   │   ├── data/
-│   │   ├── providers/
-│   │   ├── rules/
-│   │   └── handlers/
-│   ├── state/
-│   │   ├── stores/
-│   │   ├── events/
-│   │   ├── queries/
-│   │   └── atoms/
-│   ├── components/
-│   │   ├── ui/
-│   │   ├── widgets/
-│   │   ├── layout/
-│   │   └── forms/
-│   └── features/
-│       ├── checkout/
-│       ├── onboarding/
-│       ├── dashboard/
-│       └── search/
-├── adapters/                  # Framework-specific (varies by platform)
-│   └── ...                    # e.g., app/ (Next.js), routes/ (TanStack), screens/ (Expo)
-└── shared/
-    ├── observability/
-    ├── security/
-    ├── config/
-    ├── cache/
-    └── events/
+├── core/                        # Portable business logic (framework-agnostic)
+│   │
+│   ├── primitives/              # Layer 1: No dependencies, imported by all layers
+│   │   ├── schemas/             # UserSchema, OrderSchema, ProductSchema
+│   │   ├── guards/              # isAuthenticated(), assertNonNull(), hasPermission()
+│   │   ├── constants/           # OrderStatus, ErrorCode, DEFAULT_LOCALE
+│   │   ├── utils/               # formatDate(), slugify(), generateUUID()
+│   │   └── errors/              # NotFoundError, ValidationError, UnauthorizedError
+│   │
+│   ├── services/                # Layer 2: Depends on primitives only
+│   │   ├── data/                # UserRepository, OrderRepository, ProductRepository
+│   │   ├── providers/           # StripeClient, EmailProvider, SmsProvider
+│   │   ├── rules/               # calculateTotal(), validateOrder(), applyDiscount()
+│   │   ├── auth.ts              # AuthService — composes data, providers, rules
+│   │   ├── payment.ts           # PaymentService — composes data, providers, rules
+│   │   └── order.ts             # OrderService — composes data, providers, rules
+│   │
+│   ├── state/                   # Layer 3: Depends on primitives, services
+│   │   ├── stores/              # useAuthStore, useCartStore, useSettingsStore
+│   │   ├── events/              # OrderPlaced, UserRegistered, PaymentFailed
+│   │   ├── queries/             # useUser(), useOrders(), useProducts()
+│   │   └── atoms/               # currentUserAtom, themeAtom, localeAtom
+│   │
+│   ├── components/              # Layer 4: Depends on primitives, state
+│   │   ├── ui/                  # Button, Input, Modal, Card, Badge
+│   │   ├── widgets/             # DataTable, DatePicker, FileUploader, RichTextEditor
+│   │   ├── layout/              # Sidebar, Header, PageContainer, Footer
+│   │   └── forms/               # LoginForm, CheckoutForm, ProfileForm
+│   │
+│   └── features/                # Layer 5: Composes all layers, called by adapters
+│       ├── checkout/            # Cart → Payment → Confirmation flow
+│       ├── onboarding/          # Signup → Verify → Profile setup flow
+│       ├── dashboard/           # Analytics, charts, filters
+│       └── search/              # Query → Results → Filters flow
+│
+├── adapters/                    # Framework-specific entry points (thin layer)
+│   └── ...                      # Next.js: app/, TanStack: routes/, Expo: screens/
+│
+└── shared/                      # Cross-cutting capabilities (used by all layers)
+    ├── observability/           # logger, tracer, metrics, error-reporter
+    ├── security/                # auth guards, middleware, encryption
+    ├── config/                  # feature flags, environment, settings
+    ├── cache/                   # caching strategies, invalidation
+    └── events/                  # event bus, webhooks, streaming
 ```
 
 ## Common Project Layouts
