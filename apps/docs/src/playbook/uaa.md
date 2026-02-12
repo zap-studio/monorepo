@@ -36,39 +36,6 @@ UAA splits the system into three zones: the **Core** Architecture (reusable doma
 
 ### Core Taxonomy
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        CORE                                 │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │ 5. Features                                           │  │
-│  │    Orchestrate user flows, compose services & state   │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                            ↓                                │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │ 4. Components                                         │  │
-│  │    Render UI, emit events, call feature entrypoints   │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                            ↓                                │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │ 3. State                                              │  │
-│  │    Hold application data, capture domain events       │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                            ↓                                │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │ 2. Services                                           │  │
-│  │    Business logic, data access, domain operations     │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                            ↓                                │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │ 1. Primitives                                         │  │
-│  │    Schemas, validation, guards, platform-neutral code │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
 Each layer builds on the one below it and stays focused on its job. Dependencies flow downward—higher layers may import from lower layers, but never the reverse.
 
 #### Layer 1: Primitives
@@ -77,11 +44,41 @@ This layer holds the smallest reusable pieces: shared schemas, validation helper
 
 Primitives do not depend on anything else and can be imported by any other layer without introducing framework logic.
 
+**Sublayers:**
+
+- `schemas/` — data shape definitions and validation rules for domain entities
+- `guards/` — runtime type checks and assertion helpers that verify conditions
+- `constants/` — immutable values, enumerations, and configuration defaults
+- `utils/` — pure functions with no side effects (formatters, parsers, transformers)
+- `errors/` — custom error classes and factories for domain-specific failures
+
+**Examples:**
+
+- **Schemas** — `UserSchema`, `OrderSchema`
+- **Type guards** — `isAuthenticated()`, `assertNonNull()`
+- **Constants** — `OrderStatus.PENDING`, `ErrorCode.NOT_FOUND`
+- **Utilities** — `formatDate()`, `slugify()`, `generateUUID()`
+- **Errors** — `NotFoundError`, `ValidationError`, `UnauthorizedError`
+
 #### Layer 2: Services
 
 Services group business rules, data access, and domain operations. They expose intent-driven methods that features call, and they only depend on primitives or other services.
 
 Services avoid importing components or **Adapters**-specific code so the business logic stays portable.
+
+**Sublayers:**
+
+- `data/` — data access abstractions that read and write to persistence layers
+- `providers/` — integrations with third-party APIs and external service providers
+- `rules/` — pure business rules, validations, and domain logic with no I/O
+- `handlers/` — command and operation handlers that mutate state or trigger side effects
+
+**Examples:**
+
+- **Data** — `UserRepository.findById()`, `OrderRepository.save()`
+- **Providers** — `StripeClient.createCharge()`, `EmailProvider.send()`
+- **Rules** — `calculateOrderTotal()`, `validateDiscount()`, `applyTaxRules()`
+- **Handlers** — `createUserHandler()`, `processRefundHandler()`, `publishOrderHandler()`
 
 #### Layer 3: State & Events
 
@@ -89,17 +86,61 @@ State represents the facts the UI needs. Events capture domain signals—things 
 
 This layer keeps reads and writes traceable and keeps components from mutating global state directly.
 
+**Sublayers:**
+
+- `stores/` — global state containers that hold application-wide data
+- `events/` — domain event definitions and emitters that signal state changes
+- `queries/` — reactive data fetching abstractions that sync server and client state
+- `atoms/` — fine-grained atomic state units for isolated reactivity
+
+**Examples:**
+
+- **Global stores** — Zustand, Redux slice, Jotai atoms
+- **Domain events** — `OrderPlaced`, `UserRegistered`, `PaymentFailed`
+- **Reactive queries** — TanStack Query, SWR hooks
+- **Local state** — `useState`, `useReducer`
+
 #### Layer 4: Components
 
 Components render the UI or handle interactions. They read from state, emit events, and call feature entrypoints when they need to orchestrate work.
 
 Components do not call services directly.
 
+**Sublayers:**
+
+- `ui/` — atomic design system elements (buttons, inputs, modals, cards)
+- `widgets/` — composite components that combine multiple UI elements
+- `layout/` — structural components that define page and section arrangements
+- `forms/` — input groups, field wrappers, and validation display components
+
+**Examples:**
+
+- **UI primitives** — `Button`, `Input`, `Modal`, `Card`
+- **Composite widgets** — `DataTable`, `DatePicker`, `FileUploader`
+- **Layout components** — `Sidebar`, `Header`, `PageContainer`
+- **Form components** — `LoginForm`, `CheckoutForm`
+
 #### Layer 5: Features
 
 Features compose services, state, and components. Each feature has one entrypoint for the **Adapters** to call.
 
 A feature starts its trace span, coordinates services, updates state, and tells components what to render.
+
+**Sublayers:**
+
+Features are organized by feature name. Each feature folder may contain:
+
+- `index.ts` — feature entrypoint
+- `components/` — feature-specific components (optional)
+- `hooks/` — feature-specific hooks (optional)
+- `utils/` — feature-specific helpers (optional)
+
+**Examples:**
+
+- **Checkout feature** — orchestrates cart, payment service, order confirmation
+- **User onboarding** — coordinates signup, verification, profile setup
+- **Dashboard feature** — composes analytics service, charts, filters
+- **Search feature** — manages query input, search service, results display
 
 ### Adapters
 
@@ -123,6 +164,47 @@ Event streaming (Kafka, NATS, webhooks) stays on services or **Adapters** that k
 Configuration and feature flags live in a shared config layer so every surface sees the same toggles.
 
 Observe the same pattern for any future **Shared Capabilities** need.
+
+## Project Structure
+
+```
+/src
+├── core/
+│   ├── primitives/
+│   │   ├── schemas/
+│   │   ├── guards/
+│   │   ├── constants/
+│   │   ├── utils/
+│   │   └── errors/
+│   ├── services/
+│   │   ├── data/
+│   │   ├── providers/
+│   │   ├── rules/
+│   │   └── handlers/
+│   ├── state/
+│   │   ├── stores/
+│   │   ├── events/
+│   │   ├── queries/
+│   │   └── atoms/
+│   ├── components/
+│   │   ├── ui/
+│   │   ├── widgets/
+│   │   ├── layout/
+│   │   └── forms/
+│   └── features/
+│       ├── checkout/
+│       ├── onboarding/
+│       ├── dashboard/
+│       └── search/
+├── adapters/                  # Framework-specific (varies by platform)
+│   └── ...                    # e.g., app/ (Next.js), routes/ (TanStack), screens/ (Expo)
+└── shared/
+    ├── observability/
+    ├── security/
+    ├── config/
+    ├── cache/
+    └── events/
+```
 
 ## Common Project Layouts
 
