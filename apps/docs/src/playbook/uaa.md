@@ -42,7 +42,7 @@ Each layer builds on the one below it and stays focused on its job. Dependencies
 
 This layer holds the smallest reusable pieces: shared schemas, validation helpers, guarding utilities, and any platform-neutral abstractions.
 
-Primitives do not depend on anything else and can be imported by any other layer without introducing framework logic.
+**Primitives** do not depend on anything else and can be imported by any other layer without introducing framework logic.
 
 **Sublayers:**
 
@@ -62,9 +62,9 @@ Primitives do not depend on anything else and can be imported by any other layer
 
 #### Layer 2: Services
 
-Services group business rules, data access, and domain operations. They expose intent-driven methods that features call, and they only depend on primitives or other services.
+**Services** group business rules, data access, and domain operations. They expose intent-driven methods that features call, and they only depend on primitives or other services.
 
-Services avoid importing components or **Adapters**-specific code so the business logic stays portable.
+**Services** avoid importing components or **Adapters**-specific code so the business logic stays portable.
 
 **Sublayers:**
 
@@ -81,51 +81,61 @@ Service files (e.g., `auth.ts`, `payment.ts`, `order.ts`) live at the root of `s
 - **Rules** — `calculateOrderTotal()`, `validateDiscount()`, `applyTaxRules()`
 - **Services** — `AuthService.signIn()`, `PaymentService.charge()`, `OrderService.place()`
 
-#### Layer 3: State & Events
+#### Layer 3: State & Signals
 
-State represents the facts the UI needs. Events capture domain signals—things that happened—which may update state or trigger services.
+**State** represents the current data the application needs to function. **Signals** are domain events that notify the system when something changes, triggering state updates or service reactions.
 
 This layer keeps reads and writes traceable and keeps components from mutating global state directly.
 
 **Sublayers:**
 
 - `stores/` — global state containers that hold application-wide data
-- `events/` — domain event definitions and emitters that signal state changes
-- `queries/` — reactive data fetching abstractions that sync server and client state
+- `signals/` — signal definitions that notify when something changes
+- `sync/` — reactive data synchronization for fetching and mutating remote state
 - `atoms/` — fine-grained atomic state units for isolated reactivity
+
+In component-based frameworks like React or Vue, state and sync logic are often co-located within components using hooks or composables.
+
+If possible, extract them into dedicated hooks (e.g., `useAuthStore`, `useUser()`) that live in this layer—this keeps **State** logic traceable and separate from UI interactions handled in **Components**.
 
 **Examples:**
 
-- **Global stores** — Zustand, Redux slice, Jotai atoms
-- **Domain events** — `OrderPlaced`, `UserRegistered`, `PaymentFailed`
-- **Reactive queries** — TanStack Query, SWR hooks
-- **Local state** — `useState`, `useReducer`
+- **Stores** — `useAuthStore`, `useCartStore`, `useSettingsStore`
+- **Signals** — `OrderPlaced`, `UserRegistered`, `PaymentFailed`
+- **Sync** — `useUser()`, `useOrders()`, `createOrder()`, `updateProfile()`
+- **Atoms** — `currentUserAtom`, `themeAtom`, `localeAtom`
 
 #### Layer 4: Components
 
-Components render the UI or handle interactions. They read from state, emit events, and call feature entrypoints when they need to orchestrate work.
+**Components** render the UI and handle user interactions. They read from **State**, respond to user actions (clicks, inputs, gestures), and call feature entrypoints when they need to orchestrate work.
 
-Components do not call services directly.
+**Components** do not call **Services** directly.
+
+This layer follows the [components.build](https://components.build/definitions) taxonomy—an open standard for building modern, composable, and accessible UI artifacts.
 
 **Sublayers:**
 
-- `ui/` — atomic design system elements (buttons, inputs, modals, cards)
-- `widgets/` — composite components that combine multiple UI elements
-- `layout/` — structural components that define page and section arrangements
-- `forms/` — input groups, field wrappers, and validation display components
+- `primitives/` — lowest-level building blocks that provide behavior and accessibility without any styling (headless). They encapsulate semantics, focus management, keyboard interaction, ARIA wiring, and portals. Requires consumer-supplied styling.
+- `components/` — styled, reusable UI units that add visual design to primitives or compose multiple elements. They include default styling but remain override-friendly (classes, tokens, slots). May be built from primitives or implement behavior directly.
+- `patterns/` — documented compositions of primitives or components that solve specific UI/UX problems. Patterns describe behavior, accessibility, keyboard maps, and failure modes—often with reference implementations.
+- `blocks/` — opinionated, production-ready compositions of components that solve concrete interface use cases with content scaffolding. Blocks trade generality for speed of adoption and are typically copy-paste friendly rather than imported as dependencies.
+- `utilities/` — non-visual helpers exported for developer ergonomics or composition. Includes hooks, class utilities, keybinding helpers, and focus scopes. Side-effect free and testable in isolation.
+- `layout/` — structural components that define page and section arrangements.
 
 **Examples:**
 
-- **UI primitives** — `Button`, `Input`, `Modal`, `Card`
-- **Composite widgets** — `DataTable`, `DatePicker`, `FileUploader`
-- **Layout components** — `Sidebar`, `Header`, `PageContainer`
-- **Form components** — `LoginForm`, `CheckoutForm`
+- **Primitives** — `DialogPrimitive`, `PopoverPrimitive`, `TooltipPrimitive`, `MenuPrimitive`
+- **Components** — `Button`, `Input`, `Modal`, `Card`, `DataTable`, `Select`
+- **Patterns** — form validation with inline errors, confirming destructive actions, typeahead search, optimistic UI
+- **Blocks** — `PricingTable`, `AuthScreens`, `OnboardingStepper`, `BillingSettingsForm`
+- **Utilities** — `useControllableState`, `useId`, `useFocusTrap`, `cn()` (class merger)
+- **Layout** — `Sidebar`, `Header`, `PageContainer`, `Footer`
 
 #### Layer 5: Features
 
-Features compose services, state, and components. Each feature has one entrypoint for the **Adapters** to call.
+**Features** compose **Services**, **State**, and **Components**. Each feature has one entrypoint for the **Adapters** to call.
 
-A feature starts its trace span, coordinates services, updates state, and tells components what to render.
+A feature starts its trace span, coordinates **Services**, updates **State**, and tells **Components** what to render.
 
 **Sublayers:**
 
@@ -189,15 +199,17 @@ Observe the same pattern for any future **Shared Capabilities** need.
 │   │
 │   ├── state/                   # Layer 3: Depends on primitives, services
 │   │   ├── stores/              # useAuthStore, useCartStore, useSettingsStore
-│   │   ├── events/              # OrderPlaced, UserRegistered, PaymentFailed
-│   │   ├── queries/             # useUser(), useOrders(), useProducts()
+│   │   ├── signals/             # OrderPlaced, UserRegistered, PaymentFailed
+│   │   ├── sync/                # useUser(), useOrders(), createOrder(), updateProfile()
 │   │   └── atoms/               # currentUserAtom, themeAtom, localeAtom
 │   │
-│   ├── components/              # Layer 4: Depends on primitives, state
-│   │   ├── ui/                  # Button, Input, Modal, Card, Badge
-│   │   ├── widgets/             # DataTable, DatePicker, FileUploader, RichTextEditor
-│   │   ├── layout/              # Sidebar, Header, PageContainer, Footer
-│   │   └── forms/               # LoginForm, CheckoutForm, ProfileForm
+│   ├── components/              # Layer 4: Depends on primitives, state (see components.build)
+│   │   ├── primitives/          # DialogPrimitive, PopoverPrimitive, TooltipPrimitive
+│   │   ├── components/          # Button, Input, Modal, Card, DataTable
+│   │   ├── patterns/            # form-validation.md, destructive-confirm.md, typeahead.md
+│   │   ├── blocks/              # PricingTable, AuthScreens, OnboardingStepper
+│   │   ├── utilities/           # useControllableState, useId, useFocusTrap, cn()
+│   │   └── layout/              # Sidebar, Header, PageContainer, Footer
 │   │
 │   └── features/                # Layer 5: Composes all layers, called by adapters
 │       ├── checkout/            # Cart → Payment → Confirmation flow
