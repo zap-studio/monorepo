@@ -35,7 +35,7 @@ export default defineConfig({
       {
         text: "Specifications",
         items: [
-          { text: "Universal Architecture Application (UAA)", link: "/specifications/uaa" },
+          { text: "Universal Application Architecture (UAA)", link: "/specifications/uaa" },
         ],
       },
       {
@@ -151,7 +151,7 @@ export default defineConfig({
         {
           text: "Specifications",
           items: [
-            { text: "Universal Architecture Application (UAA)", link: "/specifications/uaa" },
+            { text: "Universal Application Architecture (UAA)", link: "/specifications/uaa" },
           ],
         },
       ],
