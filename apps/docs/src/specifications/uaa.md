@@ -55,11 +55,11 @@ This layer holds the smallest reusable pieces: shared **schemas**, validation he
 
 **Sublayers:**
 
-- **`schemas/`** — data shape definitions and validation rules for entities
-- **`guards/`** — runtime type checks and assertion helpers that verify conditions
-- **`constants/`** — immutable values, enumerations, and configuration defaults
-- **`utils/`** — pure functions with no side effects (formatters, parsers, transformers)
-- **`errors/`** — custom error classes and factories for application-specific failures
+- **schemas** — data shape definitions and validation rules for entities
+- **guards** — runtime type checks and assertion helpers that verify conditions
+- **constants** — immutable values, enumerations, and configuration defaults
+- **utils** — pure functions with no side effects (formatters, parsers, transformers)
+- **errors** — custom error classes and factories for application-specific failures
 
 **Examples:**
 
@@ -77,9 +77,9 @@ This layer holds the smallest reusable pieces: shared **schemas**, validation he
 
 **Sublayers:**
 
-- **`data/`** — data access abstractions that read and write to persistence layers
-- **`providers/`** — integrations with third-party APIs and external service providers
-- **`rules/`** — pure business rules, validations, and logic with no I/O
+- **data** — data access abstractions that read and write to persistence layers
+- **providers** — integrations with third-party APIs and external service providers
+- **rules** — pure business rules, validations, and logic with no I/O
 
 Service files (e.g., `auth.ts`, `payment.ts`, `order.ts`) live at the root of `services/` and compose the sublayers above. They expose intent-driven methods that **Features** call. This keeps orchestration in one place—**Features** orchestrate services, services compose their internal pieces.
 
@@ -98,10 +98,10 @@ This layer keeps reads and writes traceable and keeps components from mutating g
 
 **Sublayers:**
 
-- **`stores/`** — global state containers that hold application-wide data
-- **`signals/`** — signal definitions that notify when something changes
-- **`sync/`** — reactive data synchronization for fetching and mutating remote state
-- **`atoms/`** — fine-grained atomic state units for isolated reactivity
+- **stores** — global state containers that hold application-wide data
+- **signals** — signal definitions that notify when something changes
+- **sync** — reactive data synchronization for fetching and mutating remote state
+- **atoms** — fine-grained atomic state units for isolated reactivity
 
 In component-based frameworks like React or Vue, state and sync logic are often co-located within components using hooks or composables.
 
@@ -124,12 +124,12 @@ This layer follows the [components.build](https://components.build/definitions) 
 
 **Sublayers:**
 
-- **`primitives/`** — lowest-level building blocks that provide behavior and accessibility without any styling (headless). They encapsulate semantics, focus management, keyboard interaction, ARIA wiring, and portals. Requires consumer-supplied styling.
-- **`components/`** — styled, reusable UI units that add visual design to primitives or compose multiple elements. They include default styling but remain override-friendly (classes, tokens, slots). May be built from primitives or implement behavior directly.
-- **`patterns/`** — documented compositions of primitives or components that solve specific UI/UX problems. Patterns describe behavior, accessibility, keyboard maps, and failure modes—often with reference implementations.
-- **`blocks/`** — opinionated, production-ready compositions of components that solve concrete interface use cases with content scaffolding. Blocks trade generality for speed of adoption and are typically copy-paste friendly rather than imported as dependencies.
-- **`utilities/`** — non-visual helpers exported for developer ergonomics or composition. Includes hooks, class utilities, keybinding helpers, and focus scopes. Side-effect free and testable in isolation.
-- **`layout/`** — structural components that define page and section arrangements.
+- **primitives** — lowest-level building blocks that provide behavior and accessibility without any styling (headless). They encapsulate semantics, focus management, keyboard interaction, ARIA wiring, and portals. Requires consumer-supplied styling.
+- **components** — styled, reusable UI units that add visual design to primitives or compose multiple elements. They include default styling but remain override-friendly (classes, tokens, slots). May be built from primitives or implement behavior directly.
+- **patterns** — documented compositions of primitives or components that solve specific UI/UX problems. Patterns describe behavior, accessibility, keyboard maps, and failure modes—often with reference implementations.
+- **blocks** — opinionated, production-ready compositions of components that solve concrete interface use cases with content scaffolding. Blocks trade generality for speed of adoption and are typically copy-paste friendly rather than imported as dependencies.
+- **utilities** — non-visual helpers exported for developer ergonomics or composition. Includes hooks, class utilities, keybinding helpers, and focus scopes. Side-effect free and testable in isolation.
+- **layout** — structural components that define page and section arrangements.
 
 **Examples:**
 
@@ -156,9 +156,9 @@ A feature starts its trace span, coordinates **Services**, updates **State**, an
 
 **Sublayers:**
 
-- **`pages/`** — single-route view compositions (aligns with [components.build](https://components.build/definitions) **Page**). Composed of blocks arranged in a layout. Tied to a single route/URL with relatively static orchestration (fetch data, render). May contain widgets.
-- **`flows/`** — multi-step journeys that span multiple screens. Maintain progression state (current step, completed steps, navigation). Often have validation gates between steps. May be linear or branching.
-- **`widgets/`** — portable, route-independent feature units. Self-contained state and UI. Often overlay-based (popover, modal, drawer) or embedded. Triggered by user action or always-visible.
+- **pages** — single-route view compositions (aligns with [components.build](https://components.build/definitions) **Page**). Composed of blocks arranged in a layout. Tied to a single route/URL with relatively static orchestration (fetch data, render). May contain widgets.
+- **flows** — multi-step journeys that span multiple screens. Maintain progression state (current step, completed steps, navigation). Often have validation gates between steps. May be linear or branching.
+- **widgets** — portable, route-independent feature units. Self-contained state and UI. Often overlay-based (popover, modal, drawer) or embedded. Triggered by user action or always-visible.
 
 **Examples:**
 
@@ -268,76 +268,6 @@ They handle routing, parameter parsing, request lifecycle, and framework binding
     ├── cache/                   # caching strategies, invalidation
     └── events/                  # event bus, webhooks, streaming
 ```
-
-## Common Project Layouts
-
-Every **Adapters** lives under `/src`, and teams should be explicit about which directories belong to the framework **Adapters** versus the reusable **Core**. This keeps the surface clear even if you have multiple **Adapters** folders.
-
-### Example: Next.js Project Structure
-
-Next.js keeps the `app` directory as the **Adapters**, and it always lives inside `/src` (either `src/app` or nested beneath other folders). Teams should clearly document which paths belong to the **Adapters** versus the reusable **Core** layers, so the split between routing logic and **Core** code stays obvious. The shared **Core** looks like:
-
-```
-/src
-  /features
-  /services
-  /state
-  /components
-  /observability
-  /primitives
-```
-
-### Example: TanStack Start Project Structure
-
-TanStack Start puts routing in `src/routes` and its document **Adapters** in `src/router.tsx`, which keeps the remainder of `/src` reusable for features, services, and observability ([TanStack Start docs](https://tanstack.com/start/latest/docs/framework/react/guide/routing)).
-
-### Example: Web Server Project Structure
-
-`/server/routes` is the **Adapters**, and `/src` contains framework-agnostic services, state, and **Shared Capabilities**.
-
-### Example: Expo Project Structure
-
-`/app/screens` acts as the **Adapters**, while `/src` holds the shared business logic and helpers used across surfaces.
-
-### Example: CLI Project Structure
-
-`/commands` is the **Adapters** entry point, and `/src` keeps business logic and observability helpers.
-
-## Observability Folder Specification: Monitoring and Logging Setup
-
-The `/src/observability` folder stores key helpers:
-
-- `logger.ts` – logging helpers that every layer can use.
-- `tracer.ts` – span and context helpers for traces.
-- `metrics.ts` – emits latency and business metrics.
-- `events.ts` – publishes application events.
-- `error-reporter.ts` – central place to record errors with trace data.
-
-## Data & Trace Flow Model
-
-```
-Input
- ↓
-Adapters (start trace)
- ↓
-Feature (span + orchestration)
- ↓
-Service (span + logs + metrics)
- ↓
-External system
- ↓
-State update
- ↓
-Component render
-```
-
-## Design Goals
-
-We aim for full execution visibility, cross-surface traceability, structured logging, event-driven extensibility, and compliance readiness so you can debug, analyze, and evolve the system with confidence.
-
-## Anti-Patterns: Practices to Avoid
-
-Avoid tying observability to a specific framework, logging only in the **Adapters**, skipping trace propagation, putting business events into plain strings, or emitting metrics inside components—each of those habits scatters responsibility and makes the layers harder to understand.
 
 ## Key Takeaways
 
