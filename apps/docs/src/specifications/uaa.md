@@ -62,7 +62,7 @@ This layer holds the smallest reusable pieces: shared **schemas**, validation he
 
 - **Schemas** — `UserSchema`, `OrderSchema`
 - **Type guards** — `assertNonNull()`, `assertNever()`
-- **Constants** — `OrderStatus.PENDING`, `ErrorCode.NOT_FOUND`
+- **Constants** — `ORDER_STATUSES.PENDING`, `ERROR_CODE.NOT_FOUND`
 - **Utilities** — `formatDate()`, `slugify()`, `generateUUID()`
 - **Errors** — `NotFoundError`, `ValidationError`, `UnauthorizedError`
 
@@ -213,31 +213,39 @@ They handle routing, parameter parsing, request lifecycle, and framework binding
 | **CLI** | Commander, Clap | `commands/`, `bin/` |
 | **Desktop** | Electron, Tauri | `windows/`, `views/` |
 
-#### Middleware
+#### Interceptors
 
-Middleware intercepts and processes requests before they reach feature entrypoints. In **UAA**, middleware lives in the **Adapters** layer because it is inherently tied to the request lifecycle of a specific platform.
+**Interceptors** are adapter-level hooks that process input before it reaches feature entrypoints. They run in a chain — each interceptor can inspect, transform, or reject the input before passing it to the next one.
 
-Middleware **wiring** (registering middleware with a framework like Express, Hono, or Next.js) always belongs in **Adapters**. The **logic** that middleware executes may come from different places depending on the concern:
+Every adapter type has interceptors, but they manifest differently depending on the platform:
+
+| Adapter Type | Interceptor Manifests As | Examples |
+|-------------|--------------------------|----------|
+| **Web App** | HTTP middleware, route guards | Auth check before rendering a page |
+| **Server/API** | Request middleware, route-level hooks | Rate limiting, CORS, body parsing |
+| **CLI** | Command hooks, argument preprocessors | Permission check before executing a command |
+| **Mobile App** | Navigation guards, screen interceptors | Auth gate before navigating to a screen |
+| **Desktop** | Event filters, window guards | License check before opening a window |
+
+Interceptor **wiring** (registering the hook with the platform framework) always belongs in **Adapters**. The **logic** that an interceptor executes may come from different places depending on the concern:
 
 | Concern | Logic Lives In | Adapter Wires It As |
 |---------|---------------|---------------------|
-| **Rate limiting** | **Shared Capabilities** (`shared/security/`) | Request middleware |
-| **Authentication** | **Shared Capabilities** (`shared/security/`) | Request middleware or route guard |
-| **Authorization** | **Core Services** (`core/services/rules/`) | Route-level middleware |
-| **Request logging** | **Shared Capabilities** (`shared/observability/`) | Global middleware |
-| **CORS / Body parsing** | **Adapters** (purely framework-specific) | Global middleware |
-| **Input validation** | **Core Primitives** (`core/primitives/schemas/`) | Route-level middleware |
+| **Rate limiting** | **Shared Capabilities** (`shared/security/`) | Request interceptor |
+| **Authentication** | **Shared Capabilities** (`shared/security/`) | Global interceptor or route guard |
+| **Authorization** | **Core Services** (`core/services/rules/`) | Per-route / per-command interceptor |
+| **Logging** | **Shared Capabilities** (`shared/observability/`) | Global interceptor |
+| **CORS / Body parsing** | **Adapters** (purely framework-specific) | Global interceptor |
+| **Input validation** | **Core Primitives** (`core/primitives/schemas/`) | Per-route / per-command interceptor |
 
-The key principle: **Adapters** decide *when* and *where* middleware runs (global, per-route, per-group), while the **Core** and **Shared Capabilities** provide the *what* (the actual logic). This keeps middleware portable—switching from Express to Hono means rewriting the thin wiring layer, not the rate limiting algorithm or authentication logic.
-
-Not all adapter types use middleware. A CLI adapter, for instance, has no concept of HTTP middleware. Instead, it may use argument parsing hooks or command guards that serve a similar purpose—intercepting input before it reaches the feature entrypoint. The term "middleware" is most relevant to web and API adapters.
+The key principle: **Adapters** decide *when* and *where* interceptors run (globally, per-route, per-command), while the **Core** and **Shared Capabilities** provide the *what* (the actual logic). This keeps interceptors portable — switching from Express to Hono, or from Commander to Clap, means rewriting the thin wiring layer, not the rate limiting algorithm or authentication logic.
 
 ```
-middleware/               # Middleware wiring (adapter-specific)
-├── rate-limit.ts         # Wires shared/security/rateLimiter into Express middleware
-├── auth.ts               # Wires shared/security/verifyToken into Express middleware
-├── cors.ts               # Pure adapter concern — configures CORS headers
-└── validate.ts           # Wires core/primitives/schemas into request validation
+interceptors/                # Interceptor wiring (adapter-specific)
+├── rate-limit.ts            # Wires shared/security/rateLimiter into the platform hook
+├── auth.ts                  # Wires shared/security/verifyToken into the platform hook
+├── cors.ts                  # Pure adapter concern — configures CORS headers (web/API only)
+└── validate.ts              # Wires core/primitives/schemas into input validation
 ```
 
 ### Shared Capabilities
@@ -262,8 +270,8 @@ middleware/               # Middleware wiring (adapter-specific)
 │   │
 │   ├── primitives/              # Layer 1: No dependencies, imported by all layers
 │   │   ├── schemas/             # UserSchema, OrderSchema, ProductSchema
-│   │   ├── guards/              # isAuthenticated(), assertNonNull(), hasPermission()
-│   │   ├── constants/           # OrderStatus, ErrorCode, DEFAULT_LOCALE
+│   │   ├── guards/              # assertNonNull(), assertNever()
+│   │   ├── constants/           # ORDER_STATUSES, ERROR_CODE
 │   │   ├── utils/               # formatDate(), slugify(), generateUUID()
 │   │   └── errors/              # NotFoundError, ValidationError, UnauthorizedError
 │   │
@@ -282,7 +290,7 @@ middleware/               # Middleware wiring (adapter-specific)
 │   │   ├── sync/                # useUser(), useOrders(), createOrder(), updateProfile()
 │   │   └── atoms/               # currentUserAtom, themeAtom, localeAtom
 │   │
-│   ├── components/              # Layer 4: Depends on primitives, state (see components.build)
+│   ├── components/              # Layer 4: Depends on primitives, state
 │   │   ├── primitives/          # DialogPrimitive, PopoverPrimitive, TooltipPrimitive
 │   │   ├── components/          # Button, Input, Modal, Card, DataTable
 │   │   ├── blocks/              # PricingTable, AuthScreens, OnboardingStepper
@@ -293,8 +301,8 @@ middleware/               # Middleware wiring (adapter-specific)
 │       ├── pages/               # Standalone pages: LandingPage, NotFoundPage
 │       ├── flows/               # Standalone flows
 │       ├── widgets/             # Standalone widgets: CommandPalette, GlobalSearch
-│       ├── auth/                # Grouped features: pages/, flows/, index.ts
-│       └── checkout/            # Grouped features: pages/, flows/, index.ts
+│       ├── auth/                # Grouped features: pages/, flows/
+│       └── checkout/            # Grouped features: pages/, flows/
 │
 ├── adapters/                    # Framework-specific entry points (thin layer)
 │   └── ...                      # Next.js: app/, TanStack: routes/, Expo: screens/
@@ -380,6 +388,7 @@ This section explains why we chose specific terms throughout the specification.
 | **Features** | **pages** | Single-route destinations—aligns with [components.build](https://components.build/definitions) Page definition. |
 | | **flows** | Multi-step journeys—conveys progression and orchestration. |
 | | **widgets** | Portable, embeddable units—self-contained interactive elements. |
+| **Adapters** | **interceptors** | Platform-neutral term for hooks that process input before it reaches features. Preferred over "middleware" (HTTP-specific). Borrowed from [Angular](https://angular.dev/guide/http/interceptors), [gRPC](https://grpc.io/docs/guides/interceptors/), and [Axios](https://axios-http.com/docs/interceptors). |
 
 ## Acknowledgements
 
