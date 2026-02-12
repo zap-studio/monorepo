@@ -20,7 +20,7 @@ Think of it as the brain or engine of your application. It's built to be reusabl
 
 ### Adapters
 
-**Adapters** are the parts of your application that handle how users actually see and interact with it. These **Adapters** are kept as simple as possible, acting like translators between the user interface and the powerful **Core**.
+**Adapters** are the parts of your application that handle how users actually see and interact with it. **Adapters** are kept thin, acting as translators between the platform and the **Core**.
 
 They adapt your **Core** logic to specific platforms like web browsers, mobile phones, or desktop apps, without adding complex business rules themselves.
 
@@ -28,11 +28,9 @@ They adapt your **Core** logic to specific platforms like web browsers, mobile p
 
 **Shared Capabilities** are services and infrastructure that span multiple layers of your application. Unlike **Core** logic (which lives within specific layers) or **Adapters** (which are platform-specific), **Shared Capabilities** are accessible across all layers and surfaces without belonging to any single one.
 
-Examples include shared observability (logging, tracing, metrics), shared security (authentication, authorization), shared configuration, shared caching, and shared event streaming. These are implemented as lightweight, modular helpers that any layer can import without breaking the single-responsibility principle.
-
 ## Taxonomy
 
-UAA splits the system into three zones: the **Core** Architecture (reusable business logic, state, and features), the **Adapters** (routing, parameter parsing, and request lifecycle), and the **Shared Capabilities** (observability, security, and configuration).
+**UAA** splits the system into three zones: the **Core** Architecture (reusable business logic, state, and features), the **Adapters** (routing, parameter parsing, and request lifecycle), and the **Shared Capabilities** (observability, security, and configuration).
 
 ### Core Taxonomy
 
@@ -51,17 +49,17 @@ Each layer builds on the one below it and stays focused on its job. Dependencies
 
 #### Layer 1: Primitives
 
-This layer holds the smallest reusable pieces: shared schemas, validation helpers, guarding utilities, and any platform-neutral abstractions.
+This layer holds the smallest reusable pieces: shared **schemas**, validation helpers, **guards**, and any platform-neutral abstractions.
 
 **Primitives** do not depend on anything else and can be imported by any other layer without introducing framework logic.
 
 **Sublayers:**
 
-- `schemas/` — data shape definitions and validation rules for entities
-- `guards/` — runtime type checks and assertion helpers that verify conditions
-- `constants/` — immutable values, enumerations, and configuration defaults
-- `utils/` — pure functions with no side effects (formatters, parsers, transformers)
-- `errors/` — custom error classes and factories for application-specific failures
+- **`schemas/`** — data shape definitions and validation rules for entities
+- **`guards/`** — runtime type checks and assertion helpers that verify conditions
+- **`constants/`** — immutable values, enumerations, and configuration defaults
+- **`utils/`** — pure functions with no side effects (formatters, parsers, transformers)
+- **`errors/`** — custom error classes and factories for application-specific failures
 
 **Examples:**
 
@@ -79,9 +77,9 @@ This layer holds the smallest reusable pieces: shared schemas, validation helper
 
 **Sublayers:**
 
-- `data/` — data access abstractions that read and write to persistence layers
-- `providers/` — integrations with third-party APIs and external service providers
-- `rules/` — pure business rules, validations, and logic with no I/O
+- **`data/`** — data access abstractions that read and write to persistence layers
+- **`providers/`** — integrations with third-party APIs and external service providers
+- **`rules/`** — pure business rules, validations, and logic with no I/O
 
 Service files (e.g., `auth.ts`, `payment.ts`, `order.ts`) live at the root of `services/` and compose the sublayers above. They expose intent-driven methods that **Features** call. This keeps orchestration in one place—**Features** orchestrate services, services compose their internal pieces.
 
@@ -100,10 +98,10 @@ This layer keeps reads and writes traceable and keeps components from mutating g
 
 **Sublayers:**
 
-- `stores/` — global state containers that hold application-wide data
-- `signals/` — signal definitions that notify when something changes
-- `sync/` — reactive data synchronization for fetching and mutating remote state
-- `atoms/` — fine-grained atomic state units for isolated reactivity
+- **`stores/`** — global state containers that hold application-wide data
+- **`signals/`** — signal definitions that notify when something changes
+- **`sync/`** — reactive data synchronization for fetching and mutating remote state
+- **`atoms/`** — fine-grained atomic state units for isolated reactivity
 
 In component-based frameworks like React or Vue, state and sync logic are often co-located within components using hooks or composables.
 
@@ -126,12 +124,12 @@ This layer follows the [components.build](https://components.build/definitions) 
 
 **Sublayers:**
 
-- `primitives/` — lowest-level building blocks that provide behavior and accessibility without any styling (headless). They encapsulate semantics, focus management, keyboard interaction, ARIA wiring, and portals. Requires consumer-supplied styling.
-- `components/` — styled, reusable UI units that add visual design to primitives or compose multiple elements. They include default styling but remain override-friendly (classes, tokens, slots). May be built from primitives or implement behavior directly.
-- `patterns/` — documented compositions of primitives or components that solve specific UI/UX problems. Patterns describe behavior, accessibility, keyboard maps, and failure modes—often with reference implementations.
-- `blocks/` — opinionated, production-ready compositions of components that solve concrete interface use cases with content scaffolding. Blocks trade generality for speed of adoption and are typically copy-paste friendly rather than imported as dependencies.
-- `utilities/` — non-visual helpers exported for developer ergonomics or composition. Includes hooks, class utilities, keybinding helpers, and focus scopes. Side-effect free and testable in isolation.
-- `layout/` — structural components that define page and section arrangements.
+- **`primitives/`** — lowest-level building blocks that provide behavior and accessibility without any styling (headless). They encapsulate semantics, focus management, keyboard interaction, ARIA wiring, and portals. Requires consumer-supplied styling.
+- **`components/`** — styled, reusable UI units that add visual design to primitives or compose multiple elements. They include default styling but remain override-friendly (classes, tokens, slots). May be built from primitives or implement behavior directly.
+- **`patterns/`** — documented compositions of primitives or components that solve specific UI/UX problems. Patterns describe behavior, accessibility, keyboard maps, and failure modes—often with reference implementations.
+- **`blocks/`** — opinionated, production-ready compositions of components that solve concrete interface use cases with content scaffolding. Blocks trade generality for speed of adoption and are typically copy-paste friendly rather than imported as dependencies.
+- **`utilities/`** — non-visual helpers exported for developer ergonomics or composition. Includes hooks, class utilities, keybinding helpers, and focus scopes. Side-effect free and testable in isolation.
+- **`layout/`** — structural components that define page and section arrangements.
 
 **Examples:**
 
@@ -148,7 +146,7 @@ This layer follows the [components.build](https://components.build/definitions) 
 
 A feature starts its trace span, coordinates **Services**, updates **State**, and tells **Components** what to render.
 
-Features are categorized by **user interaction model**.
+**Features** are categorized by user interaction model.
 
 | Type | Description | Interaction Model |
 |------|-------------|-------------------|
@@ -158,9 +156,9 @@ Features are categorized by **user interaction model**.
 
 **Sublayers:**
 
-- `pages/` — single-route view compositions (aligns with [components.build](https://components.build/definitions) **Page**). Composed of blocks arranged in a layout. Tied to a single route/URL with relatively static orchestration (fetch data, render). May contain widgets.
-- `flows/` — multi-step journeys that span multiple screens. Maintain progression state (current step, completed steps, navigation). Often have validation gates between steps. May be linear or branching.
-- `widgets/` — portable, route-independent feature units. Self-contained state and UI. Often overlay-based (popover, modal, drawer) or embedded. Triggered by user action or always-visible.
+- **`pages/`** — single-route view compositions (aligns with [components.build](https://components.build/definitions) **Page**). Composed of blocks arranged in a layout. Tied to a single route/URL with relatively static orchestration (fetch data, render). May contain widgets.
+- **`flows/`** — multi-step journeys that span multiple screens. Maintain progression state (current step, completed steps, navigation). Often have validation gates between steps. May be linear or branching.
+- **`widgets/`** — portable, route-independent feature units. Self-contained state and UI. Often overlay-based (popover, modal, drawer) or embedded. Triggered by user action or always-visible.
 
 **Examples:**
 
@@ -343,17 +341,17 @@ Avoid tying observability to a specific framework, logging only in the **Adapter
 
 ## Key Takeaways
 
-The Universal Architecture Application (UAA) specification provides a robust framework for building portable, observable, and scalable applications by clearly delineating responsibilities across distinct architectural layers and zones.
+The **Universal Application Architecture (UAA)** specification provides a robust framework for building portable, observable, and scalable applications by clearly delineating responsibilities across distinct architectural layers and zones.
 
-It structures applications into a **Core** Architecture, encompassing Primitives, Services, State, Components, Features, and Modules, which together form the reusable business logic. Complementing this **Core** are the **Adapters**, responsible for framework-specific routing, parameter parsing, and request lifecycle management, ensuring that business logic remains decoupled from presentation.
+It structures applications into a **Core** Architecture, encompassing **Primitives**, **Services**, **State**, **Components**, **Features**, and **Modules**, which together form the reusable business logic. Complementing this **Core** are the **Adapters**, responsible for framework-specific routing, parameter parsing, and request lifecycle management, ensuring that business logic remains decoupled from presentation.
 
-Furthermore, UAA defines **Shared Capabilities** for concerns like Observability, Security, Auditing, Caching, and Event Handling, which span the entire stack but are implemented as lightweight, modular helpers to avoid diluting the single-responsibility principle of the **Core** layers.
+Furthermore, **UAA** defines **Shared Capabilities** for concerns like **Observability**, **Security**, **Auditing**, **Caching**, and **Events**, which span the entire stack but are implemented as lightweight, modular helpers to avoid diluting the single-responsibility principle of the **Core** layers.
 
-By adhering to these principles, UAA enables full execution visibility, cross-surface traceability, structured logging, event-driven extensibility, and compliance readiness, empowering teams to debug, analyze, and evolve their systems with confidence.
+By adhering to these principles, **UAA** enables full execution visibility, cross-surface traceability, structured logging, event-driven extensibility, and compliance readiness, empowering teams to debug, analyze, and evolve their systems with confidence.
 
 ## Acknowledgements
 
-The Universal Architecture Application (UAA) specification is a synthesis of established architectural patterns, adapted and refined for modern application development focusing on portability, observability, and scalability. We drew significant inspiration from the following:
+The **Universal Application Architecture (UAA)** specification is a synthesis of established architectural patterns, adapted and refined for modern application development focusing on portability, observability, and scalability. We drew significant inspiration from the following:
 
 - **[Component-based architecture](https://en.wikipedia.org/wiki/Component-based_software_engineering)**: We fully embraced the concept of splitting UI into discrete widgets, which directly inspired our component and feature layers, promoting reusability and clear separation of concerns in the user interface.
 - **[Hexagonal Architecture (Ports and Adapters)](https://alistair.cockburn.us/hexagonal-architecture/)**: The core principle of separating the inside (business logic) from the outside (delivery mechanisms) strongly influenced our **Adapters**/**Core** split. We adopted the idea of "ports" as our feature entrypoints and "adapters" as our framework **Adapters**, ensuring the **Core** remains independent of external technologies.
