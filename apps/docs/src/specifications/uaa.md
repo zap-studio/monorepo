@@ -324,7 +324,7 @@ This section explains why we chose specific terms throughout the specification.
 | | **constants** | Immutable values—standard programming term |
 | | **utils** | Short for utilities—pure helper functions, widely understood |
 | | **errors** | Custom error types—self-explanatory |
-| **Services** | **clients** | Transport-layer abstractions—generic, reusable HTTP, WebSocket, and GraphQL clients not tied to any specific provider |
+| **Services** | **clients** | Transport-layer abstractions—generic, reusable HTTP, WebSocket, and GraphQL clients. |
 | | **data** | Data access layer—abstracts persistence concerns |
 | | **providers** | External service integrations—"provides" third-party functionality. Uses either a dedicated SDK directly or a configured client instance with provider-specific settings. |
 | | **rules** | Pure business logic—rules that govern behavior without I/O |
