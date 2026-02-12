@@ -125,7 +125,6 @@ This layer follows the [components.build](https://components.build/definitions) 
 
 - **primitives** — lowest-level building blocks that provide behavior and accessibility without any styling (headless). They encapsulate semantics, focus management, keyboard interaction, ARIA wiring, and portals. Requires consumer-supplied styling.
 - **components** — styled, reusable UI units that add visual design to primitives or compose multiple elements. They include default styling but remain override-friendly (classes, tokens, slots). May be built from primitives or implement behavior directly.
-- **patterns** — documented compositions of primitives or components that solve specific UI/UX problems. Patterns describe behavior, accessibility, keyboard maps, and failure modes—often with reference implementations.
 - **blocks** — opinionated, production-ready compositions of components that solve concrete interface use cases with content scaffolding. Blocks trade generality for speed of adoption and are typically copy-paste friendly rather than imported as dependencies.
 - **utilities** — non-visual helpers exported for developer ergonomics or composition. Includes hooks, class utilities, keybinding helpers, and focus scopes. Side-effect free and testable in isolation.
 - **layout** — structural components that define page and section arrangements.
@@ -134,7 +133,6 @@ This layer follows the [components.build](https://components.build/definitions) 
 
 - **Primitives** — `DialogPrimitive`, `PopoverPrimitive`, `TooltipPrimitive`, `MenuPrimitive`
 - **Components** — `Button`, `Input`, `Modal`, `Card`, `DataTable`, `Select`
-- **Patterns** — form validation with inline errors, confirming destructive actions, typeahead search, optimistic UI
 - **Blocks** — `PricingTable`, `AuthScreens`, `OnboardingStepper`, `BillingSettingsForm`
 - **Utilities** — `useControllableState`, `useId`, `useFocusTrap`, `cn()` (class merger)
 - **Layout** — `Sidebar`, `Header`, `PageContainer`, `Footer`
@@ -260,7 +258,6 @@ They handle routing, parameter parsing, request lifecycle, and framework binding
 │   ├── components/              # Layer 4: Depends on primitives, state (see components.build)
 │   │   ├── primitives/          # DialogPrimitive, PopoverPrimitive, TooltipPrimitive
 │   │   ├── components/          # Button, Input, Modal, Card, DataTable
-│   │   ├── patterns/            # form-validation.md, destructive-confirm.md, typeahead.md
 │   │   ├── blocks/              # PricingTable, AuthScreens, OnboardingStepper
 │   │   ├── utilities/           # useControllableState, useId, useFocusTrap, cn()
 │   │   └── layout/              # Sidebar, Header, PageContainer, Footer
@@ -331,9 +328,8 @@ This section explains why we chose specific terms throughout the specification.
 | | **signals** | Reactive notifications—from [Solid.js](https://www.solidjs.com/) and [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming). |
 | | **sync** | Synchronizes remote and local state—covers both fetching and mutating. |
 | | **atoms** | Fine-grained state units—from [Jotai](https://jotai.org/)/[Recoil](https://recoiljs.org/) terminology. |
-| **Components** | **primitives** | Headless behavioral blocks—aligns with [components.build](https://components.build/definitions) and [Radix UI](https://www.radix-ui.com/). |
+| **Components** | **primitives** | Headless behavioral blocks—aligns with [components.build](https://components.build/definitions), [Radix UI](https://www.radix-ui.com/), and [Base UI](https://base-ui.com/). |
 | | **components** | Styled UI units—standard term, distinct from primitives. |
-| | **patterns** | Documented solutions—aligns with [components.build](https://components.build/definitions) Pattern definition. |
 | | **blocks** | Opinionated compositions—aligns with [components.build](https://components.build/definitions) Block definition. |
 | | **utilities** | Non-visual helpers—hooks, class utilities, focus scopes. |
 | | **layout** | Structural arrangement—headers, sidebars, containers. |
