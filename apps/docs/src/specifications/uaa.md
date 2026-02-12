@@ -187,7 +187,7 @@ features/
     ├── flows/
 ```
 
-**Note:** Grouping is an *organizational choice*, not a separate layer. Grouped features follow the same sublayer structure (**pages**, **flows**, **widgets**). This keeps the layer hierarchy clean—**Adapters** always call into **Features**, whether standalone or grouped.
+Grouping is an *organizational choice*, not a separate layer. Grouped features follow the same sublayer structure (**pages**, **flows**, **widgets**). This keeps the layer hierarchy clean—**Adapters** always call into **Features**, whether standalone or grouped.
 
 > **Recommendation:** Document your feature organization decisions. Clear documentation helps teams understand when to create standalone features versus grouped features, ensuring consistent structure as the codebase grows.
 
