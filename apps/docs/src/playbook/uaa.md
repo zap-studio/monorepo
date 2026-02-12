@@ -1,6 +1,6 @@
 # Universal Architecture Application (UAA)
 
-This guide explains UAA. It shows why apps need a clear core and how we keep frameworks as thin shells.
+Architecturing apps well is one of the most important things you can do because it keeps projects healthy over the long term. Too many teams start vibecoding, push in features, and end up with messy codebases, especially now that AI can spin up new ideas in minutes. When the stack is messy, it becomes hard to understand what each piece should do. This guide tries to fix that by giving a clear specification for a portable core and thin shells so you can keep iterating without breaking the architecture.
 
 ## Purpose
 
