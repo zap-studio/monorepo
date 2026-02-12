@@ -123,11 +123,11 @@ Each feature has one entrypoint that:
 
 ## Canonical Structures
 
-Every shell hooks into the `/src` core folders so features, services, and observability helpers stay the same.
+Every shell lives under `/src`, and teams should be explicit about which directories belong to the framework shell versus the reusable core. This keeps the surface clear even if you have multiple shell folders.
 
 ### Next.js
 
-Next.js keeps the `app` directory as the shell, and you can put it either at the project root or under `src/app` if you want to keep tooling files at the top level ([Next.js docs](https://nextjs.org/docs/app/building-your-application/routing)). We treat `/src` as the shared core with:
+Next.js keeps the `app` directory as the shell, and it always lives inside `/src` (either `src/app` or nested beneath other folders). Teams should clearly document which paths belong to the shell versus the reusable core layers, so the split between routing logic and core code stays obvious. The shared core looks like:
 
 ```
 /src
