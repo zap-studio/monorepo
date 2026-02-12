@@ -212,7 +212,33 @@ They handle routing, parameter parsing, request lifecycle, and framework binding
 | **Server/API** | Express, Hono, Fastify, tRPC | `routes/`, `handlers/`, `routers/` |
 | **CLI** | Commander, Clap | `commands/`, `bin/` |
 | **Desktop** | Electron, Tauri | `windows/`, `views/` |
-| **Background Worker** | Bull, Temporal, Inngest | `workers/`, `jobs/`, `workflows/` |
+
+#### Middleware
+
+Middleware intercepts and processes requests before they reach feature entrypoints. In **UAA**, middleware lives in the **Adapters** layer because it is inherently tied to the request lifecycle of a specific platform.
+
+Middleware **wiring** (registering middleware with a framework like Express, Hono, or Next.js) always belongs in **Adapters**. The **logic** that middleware executes may come from different places depending on the concern:
+
+| Concern | Logic Lives In | Adapter Wires It As |
+|---------|---------------|---------------------|
+| **Rate limiting** | **Shared Capabilities** (`shared/security/`) | Request middleware |
+| **Authentication** | **Shared Capabilities** (`shared/security/`) | Request middleware or route guard |
+| **Authorization** | **Core Services** (`core/services/rules/`) | Route-level middleware |
+| **Request logging** | **Shared Capabilities** (`shared/observability/`) | Global middleware |
+| **CORS / Body parsing** | **Adapters** (purely framework-specific) | Global middleware |
+| **Input validation** | **Core Primitives** (`core/primitives/schemas/`) | Route-level middleware |
+
+The key principle: **Adapters** decide *when* and *where* middleware runs (global, per-route, per-group), while the **Core** and **Shared Capabilities** provide the *what* (the actual logic). This keeps middleware portable—switching from Express to Hono means rewriting the thin wiring layer, not the rate limiting algorithm or authentication logic.
+
+Not all adapter types use middleware. A CLI adapter, for instance, has no concept of HTTP middleware. Instead, it may use argument parsing hooks or command guards that serve a similar purpose—intercepting input before it reaches the feature entrypoint. The term "middleware" is most relevant to web and API adapters.
+
+```
+middleware/               # Middleware wiring (adapter-specific)
+├── rate-limit.ts         # Wires shared/security/rateLimiter into Express middleware
+├── auth.ts               # Wires shared/security/verifyToken into Express middleware
+├── cors.ts               # Pure adapter concern — configures CORS headers
+└── validate.ts           # Wires core/primitives/schemas into request validation
+```
 
 ### Shared Capabilities
 
@@ -280,6 +306,22 @@ They handle routing, parameter parsing, request lifecycle, and framework binding
     ├── cache/                   # caching strategies, invalidation
     └── events/                  # event bus, webhooks, streaming
 ```
+
+## Optional Layers & Sublayers
+
+Not every application needs every layer or sublayer. The **UAA** taxonomy describes the *full spectrum* of concerns an application might have—your project should only include what it actually uses. Empty layers and placeholder directories add noise without value.
+
+**Which layers apply depends on the adapter type:**
+
+| Layer | Web App | Mobile App | Server/API | CLI | Desktop |
+|-------|---------|------------|------------|-----|---------|
+| **Primitives** | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Services** | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **State & Signals** | ✅ | ✅ | Rare | TUI only | ✅ |
+| **Components** | ✅ | ✅ | ❌ | TUI only | ✅ |
+| **Features** | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+> **Rule of thumb:** If a layer or sublayer would be an empty directory, don't create it. Add it when you have something to put in it. The taxonomy is a map of *possible* concerns, not a checklist of required directories.
 
 ## Key Takeaways
 
