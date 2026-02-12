@@ -178,8 +178,28 @@ A module is simply containing features (pages, flows, widgets) that exposes entr
 
 ### Adapters
 
-TODO
+**Adapters** are thin wrappers that connect your **Core** to specific platforms and frameworks.
 
+They handle routing, parameter parsing, request lifecycle, and framework bindings—but contain no business logic.
+
+**Adapter Responsibilities**
+
+- **Routing** — map URLs, commands, or gestures to feature entrypoints
+- **Parameter parsing** — extract and validate inputs from requests, forms, or CLI arguments
+- **Request lifecycle** — manage authentication checks, middleware, error boundaries
+- **Framework bindings** — wire features to framework-specific APIs (hooks, directives, decorators)
+- **Trace initialization** — start trace spans before calling into features
+
+**Adapter Types**
+
+| Type | Platform | Entry Point Examples |
+|------|----------|---------------------|
+| **Web App** | Next.js, TanStack Start, Remix, SvelteKit | `app/`, `routes/`, `pages/` |
+| **Mobile App** | Expo, React Native | `app/`, `screens/` |
+| **Server/API** | Express, Hono, Fastify, tRPC | `routes/`, `handlers/`, `routers/` |
+| **CLI** | Commander, Clap | `commands/`, `bin/` |
+| **Desktop** | Electron, Tauri | `windows/`, `views/` |
+| **Background Worker** | Bull, Temporal, Inngest | `workers/`, `jobs/`, `workflows/` |
 
 ### Shared Capabilities
 
