@@ -22,12 +22,6 @@ export default defineConfig({
       // { text: "Zap.ts", link: "/zap-ts/" },
       { text: "Local.ts", link: "/local-ts/" },
       {
-        text: "Playbook",
-        items: [
-          { text: "Universal Architecture Application (UAA)", link: "/playbook/uaa" },
-        ],
-      },
-      {
         text: "Packages",
         items: [
           { text: "@zap-studio/fetch", link: "/packages/fetch/" },
@@ -36,6 +30,12 @@ export default defineConfig({
           // { text: "@zap-studio/realtime", link: "/packages/realtime/" },
           // { text: "@zap-studio/waitlist", link: "/packages/waitlist/" },
           // { text: "@zap-studio/webhooks", link: "/packages/webhooks/" },
+        ],
+      },
+      {
+        text: "Specifications",
+        items: [
+          { text: "Universal Architecture Application (UAA)", link: "/specifications/uaa" },
         ],
       },
       {
@@ -147,11 +147,11 @@ export default defineConfig({
           items: [{ text: "Overview", link: "/packages/validation/" }],
         },
       ],
-      "/playbook/": [
+      "/specifications/": [
         {
-          text: "Playbook",
+          text: "Specifications",
           items: [
-            { text: "Universal Architecture Application (UAA)", link: "/playbook/uaa" },
+            { text: "Universal Architecture Application (UAA)", link: "/specifications/uaa" },
           ],
         },
       ],
