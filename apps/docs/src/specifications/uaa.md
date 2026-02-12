@@ -335,7 +335,9 @@ Not every application needs every layer or sublayer. The **UAA** taxonomy descri
 
 The **Universal Application Architecture (UAA)** specification provides a robust framework for building portable, observable, and scalable applications by clearly delineating responsibilities across distinct architectural layers and zones.
 
-It structures applications into a **Core** Architecture, encompassing **Primitives**, **Services**, **State**, **Components**, and **Features**, which together form the reusable business logic. Complementing this **Core** are the **Adapters**, responsible for framework-specific routing, parameter parsing, and request lifecycle management, ensuring that business logic remains decoupled from presentation.
+It structures applications into a **Core** Architecture, encompassing **Primitives**, **Services**, **State**, **Components**, and **Features**, which together form the reusable business logic.
+
+Complementing this **Core** are the **Adapters**, responsible for framework-specific routing, parameter parsing, and request lifecycle management, ensuring that business logic remains decoupled from presentation.
 
 Furthermore, **UAA** defines **Shared Capabilities** for concerns like **Observability**, **Security**, **Auditing**, **Caching**, and **Events**, which span the entire stack but are implemented as lightweight, modular helpers to avoid diluting the single-responsibility principle of the **Core** layers.
 
@@ -392,11 +394,13 @@ This section explains why we chose specific terms throughout the specification.
 
 ## Acknowledgements
 
-The **Universal Application Architecture (UAA)** specification is a synthesis of established architectural patterns, adapted and refined for modern application development focusing on portability, observability, and scalability. We drew significant inspiration from the following:
+The **Universal Application Architecture (UAA)** specification is a synthesis of established architectural patterns, adapted and refined for modern application development focusing on portability, observability, and scalability.
+
+We drew significant inspiration from the following:
 
 - **[Component-based architecture](https://en.wikipedia.org/wiki/Component-based_software_engineering)**: We fully embraced the concept of splitting UI into discrete widgets, which directly inspired our component and feature layers, promoting reusability and clear separation of concerns in the user interface.
 - **[Hexagonal Architecture (Ports and Adapters)](https://alistair.cockburn.us/hexagonal-architecture/)**: The core principle of separating the inside (business logic) from the outside (delivery mechanisms) strongly influenced our **Adapters**/**Core** split. We adopted the idea of "ports" as our feature entrypoints and "adapters" as our framework **Adapters**, ensuring the **Core** remains independent of external technologies.
-- **[Clean Architecture](https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html)**: The layered policies and the emphasis on use cases from Clean Architecture were instrumental in shaping our **Core** taxonomy, particularly how services encapsulate business rules and how dependencies flow inward. While we adopted the spirit of dependency rule and separation, we simplified some layers to better fit the dynamic nature of modern web, mobile, and backend applications, prioritizing practicality and developer experience without compromising core principles.
+- **[Clean Architecture](https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html)**: The layered policies and the emphasis on use cases from Clean Architecture were instrumental in shaping our **Core** taxonomy, particularly how services encapsulate business rules and how dependencies flow inward.
 - **[MVC (Model-View-Controller)](https://developer.mozilla.org/en-US/docs/Glossary/MVC)**: The MVC pattern's approach to separating model, view, and controller helped reinforce our decision to keep orchestration logic (features) distinct from UI rendering (components) and data manipulation (services). We specifically drew from MVC's emphasis on keeping the "View" passive and ensuring "Controllers" (our features) handle interactions and updates, rather than components directly calling services or mutating global state.
 
 This specification diverges from some stricter interpretations of these patterns by providing more explicit guidance on **Shared Capabilities** and prioritizing a pragmatic approach to layer definition that supports rapid iteration while maintaining architectural integrity.
