@@ -203,21 +203,17 @@ They handle routing, parameter parsing, request lifecycle, and framework binding
 
 ### Shared Capabilities
 
-**Shared Capabilities** should be rare and only occur when a capability truly spans the entire stack, so we keep them in lightweight infrastructure modules.
+**Shared Capabilities** are cross-cutting concerns that span multiple layers without belonging to any single one. They should be rare—only add a shared capability when it truly needs to be accessible everywhere.
 
-Observability (logs, traces, metrics, events, error reporting) is a good example: instrumentation lives in `/src/observability`, but it never replaces the single-responsibility nature of the **Core** layers—services or features call the helpers while components and **Adapters** stay focused on their jobs.
+**Capability Types**
 
-Security (authentication, authorization, secrets, guards) lives in middleware or service guards that wrap features and services, keeping policy decisions outside the UI.
-
-Auditing (immutable change records) is a thin wrapper services call without altering state or components.
-
-Caching belongs in services or **Shared Capabilities** helpers, never in components.
-
-Event streaming (Kafka, NATS, webhooks) stays on services or **Adapters** that know how to serialize events.
-
-Configuration and feature flags live in a shared config layer so every surface sees the same toggles.
-
-Observe the same pattern for any future **Shared Capabilities** need.
+| Capability | Purpose | Examples |
+|------------|---------|----------|
+| **Observability** | Logs, traces, metrics, error reporting | `logger.info()`, `tracer.startSpan()`, `metrics.increment()` |
+| **Security** | Authentication, authorization, encryption | `authGuard()`, `hasPermission()`, `encrypt()` |
+| **Configuration** | Feature flags, environment settings | `config.get('featureX')`, `flags.isEnabled('beta')` |
+| **Caching** | Caching strategies, invalidation | `cache.get()`, `cache.invalidate()` |
+| **Events** | Event bus, webhooks, streaming | `eventBus.publish()`, `eventBus.subscribe()` |
 
 ## Project Structure
 
