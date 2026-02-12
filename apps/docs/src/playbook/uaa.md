@@ -61,84 +61,42 @@ UAA splits the system into three zones:
 
 Each layer builds on the one below it and stays focused on its job.
 
+### Layer 1: Primitives / Core
+
+This layer holds the smallest reusable pieces: shared schemas, validation helpers, guarding utilities, and any platform-neutral abstractions. Primitives do not depend on anything else and can be imported by any other layer without introducing framework logic.
+
+### Layer 2: Services / Domain Logic
+
+Services group business rules, data access, and domain operations. They expose intent-driven methods that features call, and they only depend on primitives or other services. Services avoid importing components or shell-specific code so the business logic stays portable.
+
+### Layer 3: State & Events
+
+State represents the facts the UI needs. Events capture domain signals—things that happened—which may update state or trigger services. This layer keeps reads and writes traceable and keeps components from mutating global state directly.
+
+### Layer 4: Components / Widgets
+
+Components render the UI or handle interactions. They read from state, emit events, and call feature entrypoints when they need to orchestrate work. Components do not call services directly.
+
+### Layer 5: Features / Composition
+
+Features compose services, state, and components. Each feature has one entrypoint for the shell to call. A feature starts its trace span, coordinates services, updates state, and tells components what to render.
+
+## Layer Relationships
+
+Features orchestrate components and map service results into state. Services rely on primitives. State sits between services and components and enforces a clear read/write contract. Events flow upward from components to features and services so we can reason about behavior and avoid scattered side effects.
+
 ## Cross-Layer Infrastructure
 
-These capabilities span the whole stack and live in infrastructure layers.
+Cross-layer concerns should be rare and only occur when a capability truly spans the entire stack. Use dedicated infrastructure modules when those cases appear so single-purpose layers remain cohesive.
 
-- **Observability**: logs, traces, metrics, events, and error reports.
-- **Security**: authentication, authorization, secrets, and guards.
-- **Auditing**: immutable records for compliance.
-- **Caching**: data caches that stay outside component logic.
-- **Event streaming**: Kafka, NATS, webhooks, or similar systems.
-- **Configuration & feature flags**: global toggles and environment settings.
+- **Observability** (logs, traces, metrics, domain events, error reporting) is a good example: the instrumentation primitives live in `/src/observability`, but they never replace the single-responsibility nature of the core layers. When you need to trace a request, call an observable helper from a service or feature without letting components or the shell mix in business rules.
+- **Security** (authentication, authorization, secrets, guards) lives in middleware or service guards that wrap features and services, keeping policy decisions outside the UI layers.
+- **Auditing** (immutable change records) should be a thin wrapper that services can call without altering state or components.
+- **Caching** should be implemented in services or infrastructure helpers and never in components.
+- **Event streaming** (Kafka, NATS, webhooks) should be handled by services or cross-layer adapters that understand how to serialize domain events.
+- **Configuration & feature flags** live in a config layer exposed to every surface so features and shells see the same values.
 
-## Observability Specification
-
-Observability uses a few clear patterns:
-
-- Logging
-- Tracing (spans)
-- Metrics
-- Domain events
-- Error reporting
-
-### Logging
-
-- Purpose: record system behavior.
-- Rules: use a shared primitive, keep structured data, and call it from every layer.
-- Example: `log.info("User fetched", { userId })`.
-- Layers: services, features, shell, and components if needed.
-
-### Tracing / Spans
-
-- Purpose: see the path of a request.
-- A trace has spans: request → feature → service → external.
-- Rules: start the trace in the shell and pass the context down.
-
-### Metrics
-
-- Purpose: measure performance.
-- Examples: response time, database latency, cache hits, CLI runtime.
-- Rules: emit from services and the shell only; keep components focused on UI.
-
-### Domain Events
-
-- Purpose: capture business actions.
-- Examples: `UserSignedUp`, `InvoicePaid`, `DeploymentTriggered`.
-- Logs are about operations; events are about domain changes.
-- Events can update state, trigger workflows, feed analytics, or stream outward.
-
-### Error Observability
-
-Errors should always include context metadata, the trace ID, the service that failed, and any user info if it helps. Use a shared reporter that adds this data.
-
-## Other Cross-Layer Concerns
-
-### Security
-
-- Includes authentication, authorization, and secret management.
-- Pattern: use primitives for tokens, guards for services, and middleware for shells.
-
-### Auditing
-
-- Track who did what.
-- Examples: admin deleted a user, a config changed, a payment was refunded.
-- Audit logs stay immutable and support compliance needs.
-
-### Caching
-
-- Decide where caches live and keep them out of components.
-- Put them in services or infrastructure layers.
-
-### Event Streaming
-
-- Used when systems are distributed.
-- Services publish events and features react to them.
-
-### Configuration & Feature Flags
-
-- Use them for rollouts, environments, and UI toggles.
-- Store settings in a config layer and expose them safely to every surface.
+Treat each cross-layer concern as a lightweight module that instruments the stack without becoming another layer. Observability is the special case we document because it often needs to touch every layer, but use the same pattern for any future cross-layer need.
 
 ## Framework Surface Shell
 
