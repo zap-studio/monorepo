@@ -32,9 +32,20 @@ Examples include shared observability (logging, tracing, metrics), shared securi
 
 ## Taxonomy
 
-UAA splits the system into three zones: the **Core** Architecture (reusable domain code, state, and features), the **Adapters** (routing, parameter parsing, and request lifecycle), and the **Shared Capabilities** (observability, security, and configuration).
+UAA splits the system into three zones: the **Core** Architecture (reusable business logic, state, and features), the **Adapters** (routing, parameter parsing, and request lifecycle), and the **Shared Capabilities** (observability, security, and configuration).
 
 ### Core Taxonomy
+
+The **Core** contains six layers:
+
+| Layer | Name | Purpose |
+|-------|------|---------|
+| 1 | **Primitives** | Schemas, guards, constants, utilities, errors |
+| 2 | **Services** | Data access, external providers, business rules |
+| 3 | **State & Signals** | Stores, atoms, sync operations, signals |
+| 4 | **Components** | Primitives, styled components, patterns, blocks, utilities, layout |
+| 5 | **Features** | Pages (navigate to), Flows (progress through), Widgets (interact with) |
+| 6 | **Modules** | Bounded groupings of related features |
 
 Each layer builds on the one below it and stays focused on its job. Dependencies flow downward—higher layers may import from lower layers, but never the reverse.
 
@@ -46,11 +57,11 @@ This layer holds the smallest reusable pieces: shared schemas, validation helper
 
 **Sublayers:**
 
-- `schemas/` — data shape definitions and validation rules for domain entities
+- `schemas/` — data shape definitions and validation rules for entities
 - `guards/` — runtime type checks and assertion helpers that verify conditions
 - `constants/` — immutable values, enumerations, and configuration defaults
 - `utils/` — pure functions with no side effects (formatters, parsers, transformers)
-- `errors/` — custom error classes and factories for domain-specific failures
+- `errors/` — custom error classes and factories for application-specific failures
 
 **Examples:**
 
@@ -62,7 +73,7 @@ This layer holds the smallest reusable pieces: shared schemas, validation helper
 
 #### Layer 2: Services
 
-**Services** group business rules, data access, and domain operations. They expose intent-driven methods that features call, and they only depend on primitives or other services.
+**Services** group business rules, data access, and core operations. They expose intent-driven methods that features call, and they only depend on primitives or other services.
 
 **Services** avoid importing components or **Adapters**-specific code so the business logic stays portable.
 
@@ -70,7 +81,7 @@ This layer holds the smallest reusable pieces: shared schemas, validation helper
 
 - `data/` — data access abstractions that read and write to persistence layers
 - `providers/` — integrations with third-party APIs and external service providers
-- `rules/` — pure business rules, validations, and domain logic with no I/O
+- `rules/` — pure business rules, validations, and logic with no I/O
 
 Service files (e.g., `auth.ts`, `payment.ts`, `order.ts`) live at the root of `services/` and compose the sublayers above. They expose intent-driven methods that **Features** call. This keeps orchestration in one place—**Features** orchestrate services, services compose their internal pieces.
 
@@ -83,7 +94,7 @@ Service files (e.g., `auth.ts`, `payment.ts`, `order.ts`) live at the root of `s
 
 #### Layer 3: State & Signals
 
-**State** represents the current data the application needs to function. **Signals** are domain events that notify the system when something changes, triggering state updates or service reactions.
+**State** represents the current data the application needs to function. **Signals** are events that notify the system when something changes, triggering state updates or service reactions.
 
 This layer keeps reads and writes traceable and keeps components from mutating global state directly.
 
@@ -137,21 +148,63 @@ This layer follows the [components.build](https://components.build/definitions) 
 
 A feature starts its trace span, coordinates **Services**, updates **State**, and tells **Components** what to render.
 
+Features are categorized by **user interaction model**.
+
+| Type | Description | Interaction Model |
+|------|-------------|-------------------|
+| **Page** | Single-route destination composed of blocks. Represents one screen the user navigates to. | User navigates **TO** |
+| **Flow** | Multi-step journey with progression state and orchestration logic. Guides the user through a sequence. | User progresses **THROUGH** |
+| **Widget** | Portable, embeddable feature unit that can appear anywhere. Often triggered by user action or persistent in the UI. | User interacts **WITH** (in context) |
+
 **Sublayers:**
 
-Features are organized by feature name. Each feature folder may contain:
-
-- `index.ts` — feature entrypoint
-- `components/` — feature-specific components (optional)
-- `hooks/` — feature-specific hooks (optional)
-- `utils/` — feature-specific helpers (optional)
+- `pages/` — single-route view compositions (aligns with components.build **Page**). Composed of blocks arranged in a layout. Tied to a single route/URL with relatively static orchestration (fetch data, render). May contain widgets.
+- `flows/` — multi-step journeys that span multiple screens. Maintain progression state (current step, completed steps, navigation). Often have validation gates between steps. May be linear or branching.
+- `widgets/` — portable, route-independent feature units. Self-contained state and UI. Often overlay-based (popover, modal, drawer) or embedded. Triggered by user action or always-visible.
 
 **Examples:**
 
-- **Checkout feature** — orchestrates cart, payment service, order confirmation
-- **User onboarding** — coordinates signup, verification, profile setup
-- **Dashboard feature** — composes analytics service, charts, filters
-- **Search feature** — manages query input, search service, results display
+- **Pages** — `DashboardPage`, `SettingsPage`, `ProfilePage`, `LandingPage`, `ProductDetailPage`, `NotFoundPage`
+- **Flows** — `CheckoutFlow`, `OnboardingFlow`, `PasswordResetFlow`, `SetupWizardFlow`, `KYCVerificationFlow`
+- **Widgets** — `SearchWidget`, `CommandPalette`, `NotificationCenter`, `ChatWidget`, `AIAssistant`, `QuickActions`
+
+#### Layer 6: Modules
+
+**Modules** are bounded groupings of related features. They provide a cohesive public API for a business area and establish clear boundaries between different parts of the application.
+
+Modules group related **Pages**, **Flows**, and **Widgets** that belong to the same area. They can be extracted as packages for reuse across applications.
+
+**Sublayers:**
+
+- `pages/` — module-specific pages
+- `flows/` — module-specific flows
+- `widgets/` — module-specific widgets
+- `index.ts` — public API exposing feature entrypoints to **Adapters**
+
+**Examples:**
+
+- **Auth module** — `LoginPage`, `SignupPage`, `AuthFlow`, `PasswordResetFlow`, `SessionWidget`, `UserMenu`
+- **Checkout module** — `CartPage`, `ConfirmationPage`, `CheckoutFlow`, `MiniCartWidget`
+- **Billing module** — `BillingPage`, `SubscriptionFlow`, `PricingWidget`
+- **Search module** — `SearchResultsPage`, `SearchWidget`, `FilterWidget`
+
+**Module Structure:**
+
+```
+modules/
+├── auth/
+│   ├── index.ts           # Public API for the module
+│   ├── pages/             # LoginPage, SignupPage, ForgotPasswordPage
+│   ├── flows/             # AuthFlow, PasswordResetFlow
+│   └── widgets/           # SessionWidget, UserMenu
+├── checkout/
+│   ├── index.ts
+│   ├── pages/             # CartPage, ConfirmationPage
+│   ├── flows/             # CheckoutFlow
+│   └── widgets/           # MiniCartWidget
+```
+
+> **Note:** Standalone features not tied to a specific module (e.g., `LandingPage`, `NotFoundPage`, `MaintenancePage`) can live directly in `features/pages/` without belonging to a module.
 
 ### Adapters
 
@@ -162,7 +215,7 @@ TODO
 
 **Shared Capabilities** should be rare and only occur when a capability truly spans the entire stack, so we keep them in lightweight infrastructure modules.
 
-Observability (logs, traces, metrics, domain events, error reporting) is a good example: instrumentation lives in `/src/observability`, but it never replaces the single-responsibility nature of the **Core** layers—services or features call the helpers while components and **Adapters** stay focused on their jobs.
+Observability (logs, traces, metrics, events, error reporting) is a good example: instrumentation lives in `/src/observability`, but it never replaces the single-responsibility nature of the **Core** layers—services or features call the helpers while components and **Adapters** stay focused on their jobs.
 
 Security (authentication, authorization, secrets, guards) lives in middleware or service guards that wrap features and services, keeping policy decisions outside the UI.
 
@@ -170,7 +223,7 @@ Auditing (immutable change records) is a thin wrapper services call without alte
 
 Caching belongs in services or **Shared Capabilities** helpers, never in components.
 
-Event streaming (Kafka, NATS, webhooks) stays on services or **Adapters** that know how to serialize domain events.
+Event streaming (Kafka, NATS, webhooks) stays on services or **Adapters** that know how to serialize events.
 
 Configuration and feature flags live in a shared config layer so every surface sees the same toggles.
 
@@ -211,11 +264,27 @@ Observe the same pattern for any future **Shared Capabilities** need.
 │   │   ├── utilities/           # useControllableState, useId, useFocusTrap, cn()
 │   │   └── layout/              # Sidebar, Header, PageContainer, Footer
 │   │
-│   └── features/                # Layer 5: Composes all layers, called by adapters
-│       ├── checkout/            # Cart → Payment → Confirmation flow
-│       ├── onboarding/          # Signup → Verify → Profile setup flow
-│       ├── dashboard/           # Analytics, charts, filters
-│       └── search/              # Query → Results → Filters flow
+│   ├── features/                # Layer 5: Feature types (pages, flows, widgets)
+│   │   ├── pages/               # Standalone pages: LandingPage, NotFoundPage, MaintenancePage
+│   │   ├── flows/               # Standalone flows not tied to a module
+│   │   └── widgets/             # Standalone widgets: CommandPalette, GlobalSearch
+│   │
+│   └── modules/                 # Layer 6: Bounded feature groupings
+│       ├── auth/
+│       │   ├── index.ts         # Public API for the module
+│       │   ├── pages/           # LoginPage, SignupPage, ForgotPasswordPage
+│       │   ├── flows/           # AuthFlow, PasswordResetFlow
+│       │   └── widgets/         # SessionWidget, UserMenu
+│       ├── checkout/
+│       │   ├── index.ts
+│       │   ├── pages/           # CartPage, ConfirmationPage
+│       │   ├── flows/           # CheckoutFlow
+│       │   └── widgets/         # MiniCartWidget
+│       └── billing/
+│           ├── index.ts
+│           ├── pages/           # BillingPage, InvoicesPage
+│           ├── flows/           # SubscriptionFlow
+│           └── widgets/         # PricingWidget
 │
 ├── adapters/                    # Framework-specific entry points (thin layer)
 │   └── ...                      # Next.js: app/, TanStack: routes/, Expo: screens/
@@ -256,11 +325,11 @@ TanStack Start puts routing in `src/routes` and its document **Adapters** in `sr
 
 ### Example: Expo Project Structure
 
-`/app/screens` acts as the **Adapters**, while `/src` holds the shared domain logic and helpers used across surfaces.
+`/app/screens` acts as the **Adapters**, while `/src` holds the shared business logic and helpers used across surfaces.
 
 ### Example: CLI Project Structure
 
-`/commands` is the **Adapters** entry point, and `/src` keeps domain logic and observability helpers.
+`/commands` is the **Adapters** entry point, and `/src` keeps business logic and observability helpers.
 
 ## Observability Folder Specification: Monitoring and Logging Setup
 
@@ -269,7 +338,7 @@ The `/src/observability` folder stores key helpers:
 - `logger.ts` – logging helpers that every layer can use.
 - `tracer.ts` – span and context helpers for traces.
 - `metrics.ts` – emits latency and business metrics.
-- `events.ts` – publishes domain events.
+- `events.ts` – publishes application events.
 - `error-reporter.ts` – central place to record errors with trace data.
 
 ## Data & Trace Flow Model
@@ -302,7 +371,7 @@ Avoid tying observability to a specific framework, logging only in the **Adapter
 
 The Universal Architecture Application (UAA) specification provides a robust framework for building portable, observable, and scalable applications by clearly delineating responsibilities across distinct architectural layers and zones.
 
-It structures applications into a **Core** Architecture, encompassing Primitives, Services, State, Components, and Features, which together form the reusable domain logic. Complementing this **Core** are the **Adapters**, responsible for framework-specific routing, parameter parsing, and request lifecycle management, ensuring that business logic remains decoupled from presentation.
+It structures applications into a **Core** Architecture, encompassing Primitives, Services, State, Components, Features, and Modules, which together form the reusable business logic. Complementing this **Core** are the **Adapters**, responsible for framework-specific routing, parameter parsing, and request lifecycle management, ensuring that business logic remains decoupled from presentation.
 
 Furthermore, UAA defines **Shared Capabilities** for concerns like Observability, Security, Auditing, Caching, and Event Handling, which span the entire stack but are implemented as lightweight, modular helpers to avoid diluting the single-responsibility principle of the **Core** layers.
 
@@ -313,7 +382,7 @@ By adhering to these principles, UAA enables full execution visibility, cross-su
 The Universal Architecture Application (UAA) specification is a synthesis of established architectural patterns, adapted and refined for modern application development focusing on portability, observability, and scalability. We drew significant inspiration from the following:
 
 - **[Component-based architecture](https://en.wikipedia.org/wiki/Component-based_software_engineering)**: We fully embraced the concept of splitting UI into discrete widgets, which directly inspired our component and feature layers, promoting reusability and clear separation of concerns in the user interface.
-- **[Hexagonal Architecture (Ports and Adapters)](https://alistair.cockburn.us/hexagonal-architecture/)**: The core principle of separating the inside (domain logic) from the outside (delivery mechanisms) strongly influenced our **Adapters**/**Core** split. We adopted the idea of "ports" as our feature entrypoints and "adapters" as our framework **Adapters**, ensuring the **Core** remains independent of external technologies.
+- **[Hexagonal Architecture (Ports and Adapters)](https://alistair.cockburn.us/hexagonal-architecture/)**: The core principle of separating the inside (business logic) from the outside (delivery mechanisms) strongly influenced our **Adapters**/**Core** split. We adopted the idea of "ports" as our feature entrypoints and "adapters" as our framework **Adapters**, ensuring the **Core** remains independent of external technologies.
 - **[Clean Architecture](https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html)**: The layered policies and the emphasis on use cases from Clean Architecture were instrumental in shaping our **Core** taxonomy, particularly how services encapsulate business rules and how dependencies flow inward. While we adopted the spirit of dependency rule and separation, we simplified some layers to better fit the dynamic nature of modern web, mobile, and backend applications, prioritizing practicality and developer experience without compromising core principles.
 - **[MVC (Model-View-Controller)](https://developer.mozilla.org/en-US/docs/Glossary/MVC)**: The MVC pattern's approach to separating model, view, and controller helped reinforce our decision to keep orchestration logic (features) distinct from UI rendering (components) and data manipulation (services). We specifically drew from MVC's emphasis on keeping the "View" passive and ensuring "Controllers" (our features) handle interactions and updates, rather than components directly calling services or mutating global state.
 
