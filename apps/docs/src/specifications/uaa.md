@@ -39,7 +39,7 @@ The **Core** contains five layers:
 | Layer | Name | Purpose |
 |-------|------|---------|
 | 1 | **Primitives** | Schemas, guards, constants, utilities, errors |
-| 2 | **Services** | Data access, external providers, business rules |
+| 2 | **Services** | Clients, data access, external providers, business rules |
 | 3 | **State & Signals** | Stores, atoms, sync operations, signals |
 | 4 | **Components** | Primitives, styled components, patterns, blocks, utilities, layout |
 | 5 | **Features** | Pages (navigate to), Flows (progress through), Widgets (interact with) |
@@ -76,14 +76,16 @@ This layer holds the smallest reusable pieces: shared **schemas**, validation he
 
 **Sublayers:**
 
+- **clients** — transport-layer abstractions for HTTP, WebSocket, and other protocols. Clients are generic and reusable—not tied to any specific provider.
 - **data** — data access abstractions that read and write to persistence layers
-- **providers** — integrations with third-party APIs and external service providers
+- **providers** — integrations with third-party APIs and external service providers. Each provider either uses a dedicated SDK directly (e.g., `stripe`, `@aws-sdk/*`) or configures a client instance with provider-specific settings (base URL, auth headers, interceptors).
 - **rules** — pure business rules, validations, and logic with no I/O
 
 Service files (e.g., `auth.ts`, `payment.ts`, `order.ts`) live at the root of `services/` and compose the sublayers above. They expose intent-driven methods that **Features** call. This keeps orchestration in one place—**Features** orchestrate services, services compose their internal pieces.
 
 **Examples:**
 
+- **Clients** — `createHttpClient()`, `WebSocketManager`, `GraphQLClient`
 - **Data** — `UserRepository.findById()`, `OrderRepository.save()`
 - **Providers** — `StripeClient.createCharge()`, `EmailProvider.send()`
 - **Rules** — `calculateOrderTotal()`, `validateDiscount()`, `applyTaxRules()`
@@ -242,6 +244,7 @@ They handle routing, parameter parsing, request lifecycle, and framework binding
 │   │   └── errors/              # NotFoundError, ValidationError, UnauthorizedError
 │   │
 │   ├── services/                # Layer 2: Depends on primitives only
+│   │   ├── clients/             # createHttpClient(), WebSocketManager, GraphQLClient
 │   │   ├── data/                # UserRepository, OrderRepository, ProductRepository
 │   │   ├── providers/           # StripeClient, EmailProvider, SmsProvider
 │   │   ├── rules/               # calculateTotal(), validateOrder(), applyDiscount()
@@ -321,8 +324,9 @@ This section explains why we chose specific terms throughout the specification.
 | | **constants** | Immutable values—standard programming term |
 | | **utils** | Short for utilities—pure helper functions, widely understood |
 | | **errors** | Custom error types—self-explanatory |
-| **Services** | **data** | Data access layer—abstracts persistence concerns |
-| | **providers** | External service integrations—"provides" third-party functionality |
+| **Services** | **clients** | Transport-layer abstractions—generic, reusable HTTP, WebSocket, and GraphQL clients not tied to any specific provider |
+| | **data** | Data access layer—abstracts persistence concerns |
+| | **providers** | External service integrations—"provides" third-party functionality. Uses either a dedicated SDK directly or a configured client instance with provider-specific settings. |
 | | **rules** | Pure business logic—rules that govern behavior without I/O |
 | **State & Signals** | **stores** | State containers—borrowed from [Redux](https://redux.js.org/)/[Zustand](https://zustand.docs.pmnd.rs/) terminology. |
 | | **signals** | Reactive notifications—from [Solid.js](https://www.solidjs.com/) and [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming). |
