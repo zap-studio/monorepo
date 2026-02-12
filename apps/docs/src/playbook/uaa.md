@@ -174,37 +174,7 @@ Features are categorized by **user interaction model**.
 
 Modules group related **Pages**, **Flows**, and **Widgets** that belong to the same area. They can be extracted as packages for reuse across applications.
 
-**Sublayers:**
-
-- `pages/` — module-specific pages
-- `flows/` — module-specific flows
-- `widgets/` — module-specific widgets
-- `index.ts` — public API exposing feature entrypoints to **Adapters**
-
-**Examples:**
-
-- **Auth module** — `LoginPage`, `SignupPage`, `AuthFlow`, `PasswordResetFlow`, `SessionWidget`, `UserMenu`
-- **Checkout module** — `CartPage`, `ConfirmationPage`, `CheckoutFlow`, `MiniCartWidget`
-- **Billing module** — `BillingPage`, `SubscriptionFlow`, `PricingWidget`
-- **Search module** — `SearchResultsPage`, `SearchWidget`, `FilterWidget`
-
-**Module Structure:**
-
-```
-modules/
-├── auth/
-│   ├── index.ts           # Public API for the module
-│   ├── pages/             # LoginPage, SignupPage, ForgotPasswordPage
-│   ├── flows/             # AuthFlow, PasswordResetFlow
-│   └── widgets/           # SessionWidget, UserMenu
-├── checkout/
-│   ├── index.ts
-│   ├── pages/             # CartPage, ConfirmationPage
-│   ├── flows/             # CheckoutFlow
-│   └── widgets/           # MiniCartWidget
-```
-
-> **Note:** Standalone features not tied to a specific module (e.g., `LandingPage`, `NotFoundPage`, `MaintenancePage`) can live directly in `features/pages/` without belonging to a module.
+A module is simply containing features (pages, flows, widgets) that exposes entrypoints to **Adapters**. Modules have no additional sublayers beyond the feature types they contain.
 
 ### Adapters
 
@@ -269,22 +239,10 @@ Observe the same pattern for any future **Shared Capabilities** need.
 │   │   ├── flows/               # Standalone flows not tied to a module
 │   │   └── widgets/             # Standalone widgets: CommandPalette, GlobalSearch
 │   │
-│   └── modules/                 # Layer 6: Bounded feature groupings
-│       ├── auth/
-│       │   ├── index.ts         # Public API for the module
-│       │   ├── pages/           # LoginPage, SignupPage, ForgotPasswordPage
-│       │   ├── flows/           # AuthFlow, PasswordResetFlow
-│       │   └── widgets/         # SessionWidget, UserMenu
-│       ├── checkout/
-│       │   ├── index.ts
-│       │   ├── pages/           # CartPage, ConfirmationPage
-│       │   ├── flows/           # CheckoutFlow
-│       │   └── widgets/         # MiniCartWidget
-│       └── billing/
-│           ├── index.ts
-│           ├── pages/           # BillingPage, InvoicesPage
-│           ├── flows/           # SubscriptionFlow
-│           └── widgets/         # PricingWidget
+│   └── modules/                 # Layer 6: Groupings of related features
+│       ├── auth/                # Auth features + index.ts entrypoint
+│       ├── checkout/            # Checkout features + index.ts entrypoint
+│       └── billing/             # Billing features + index.ts entrypoint
 │
 ├── adapters/                    # Framework-specific entry points (thin layer)
 │   └── ...                      # Next.js: app/, TanStack: routes/, Expo: screens/
