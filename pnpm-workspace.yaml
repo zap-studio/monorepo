@@ -22,7 +22,7 @@ catalogs:
     vitest: ^4.0.18
   tooling:
     '@changesets/cli': ^2.29.8
-    '@turbo/gen': ^2.8.7
+    '@turbo/gen': ^2.8.9
     lefthook: ^2.1.1
     rimraf: ^6.1.2
     turbo: ^2.8.7
