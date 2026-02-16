@@ -24,7 +24,7 @@ catalogs:
     '@changesets/cli': ^2.29.8
     '@turbo/gen': ^2.8.7
     lefthook: ^2.1.1
-    rimraf: ^6.1.2
+    rimraf: ^6.1.3
     turbo: ^2.8.7
   types:
     '@types/node': ^25.0.2
