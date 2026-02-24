@@ -30,16 +30,16 @@ function createSchema<T>(): StandardSchemaV1<T, T> {
 
 // Test resource types
 interface Post {
-  id: string;
   authorId: string;
-  visibility: "public" | "private";
+  id: string;
   status: "draft" | "published";
+  visibility: "public" | "private";
 }
 
 interface Comment {
+  authorId: string;
   id: string;
   postId: string;
-  authorId: string;
 }
 
 // Test resources using mock Standard Schema
@@ -1075,8 +1075,8 @@ describe("createPolicy", () => {
 
   it("should work with role-based access using hasRole", () => {
     interface RoleContext {
-      user: { id: string };
       role: "guest" | "user" | "admin";
+      user: { id: string };
     }
 
     const hierarchy: RoleHierarchy<"guest" | "user" | "admin"> = {

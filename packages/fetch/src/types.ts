@@ -125,9 +125,17 @@ export interface $Fetch {
  */
 export interface ApiMethods {
   /**
+   * DELETE method fetch function
+   */
+  delete: $Fetch;
+  /**
    * GET method fetch function
    */
   get: $Fetch;
+  /**
+   * PATCH method fetch function
+   */
+  patch: $Fetch;
   /**
    * POST method fetch function
    */
@@ -136,12 +144,4 @@ export interface ApiMethods {
    * PUT method fetch function
    */
   put: $Fetch;
-  /**
-   * DELETE method fetch function
-   */
-  delete: $Fetch;
-  /**
-   * PATCH method fetch function
-   */
-  patch: $Fetch;
 }
