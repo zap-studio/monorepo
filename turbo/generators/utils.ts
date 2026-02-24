@@ -84,10 +84,10 @@ const createStandardActions = (
 };
 
 interface GeneratorConfig {
-  directory: string;
-  description: string;
-  promptMessage: string;
   additionalActions?: PlopTypes.ActionType[];
+  description: string;
+  directory: string;
+  promptMessage: string;
 }
 
 export const createGenerator = (
