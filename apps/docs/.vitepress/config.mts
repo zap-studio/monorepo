@@ -33,6 +33,12 @@ export default defineConfig({
         ],
       },
       {
+        text: "Specifications",
+        items: [
+          { text: "Universal Application Architecture (UAA)", link: "/specifications/uaa" },
+        ],
+      },
+      {
         text: "More",
         items: [
           { text: "llms.txt", link: "/llms.txt" },
@@ -141,6 +147,14 @@ export default defineConfig({
           items: [{ text: "Overview", link: "/packages/validation/" }],
         },
       ],
+      "/specifications/": [
+        {
+          text: "Specifications",
+          items: [
+            { text: "Universal Application Architecture (UAA)", link: "/specifications/uaa" },
+          ],
+        },
+      ],
       // "/packages/waitlist/": [
       //   {
       //     text: "@zap-studio/waitlist",
@@ -178,9 +192,7 @@ export default defineConfig({
   },
   lastUpdated: true,
   markdown: {
-    // @ts-expect-error // FIXME: remove when plugin types are fixed
     codeTransformers: [transformerTwoslash()],
-    // @ts-expect-error // FIXME: remove when plugin types are fixed
     languages: ["js", "jsx", "ts", "tsx"],
     config(md) {
       md.use(copyOrDownloadAsMarkdownButtons);
