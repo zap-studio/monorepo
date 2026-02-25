@@ -339,7 +339,7 @@ It structures applications into a **Core** Architecture, encompassing **Primitiv
 
 Complementing this **Core** are the **Adapters**, responsible for framework-specific routing, parameter parsing, and request lifecycle management, ensuring that business logic remains decoupled from presentation.
 
-Furthermore, **UAA** defines **Shared Capabilities** for concerns like **Observability**, **Security**, **Auditing**, **Caching**, and **Events**, which span the entire stack but are implemented as lightweight, modular helpers to avoid diluting the single-responsibility principle of the **Core** layers.
+Furthermore, **UAA** defines **Shared Capabilities** for concerns like **Observability**, **Security**, **Configuration**, **Caching**, and **Events**, which span the entire stack but are implemented as lightweight, modular helpers to avoid diluting the single-responsibility principle of the **Core** layers.
 
 By adhering to these principles, **UAA** enables full execution visibility, cross-surface traceability, structured logging, event-driven extensibility, and compliance readiness, empowering teams to debug, analyze, and evolve their systems with confidence.
 
