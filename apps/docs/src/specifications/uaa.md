@@ -1,6 +1,6 @@
 # Universal Application Architecture (UAA)
 
-Architecturing apps *well* is one of the most important things you can do because it keeps projects healthy over the long term.
+Architecting apps *well* is one of the most important things you can do because it keeps projects healthy over the long term.
 
 Too many teams start vibecoding, push in features, and end up with messy codebases, especially now that AI can spin up new ideas in minutes. But be aware, when the stack is messy, it becomes hard to understand what each piece should do.
 
@@ -126,7 +126,7 @@ This layer follows the [components.build](https://components.build/definitions) 
 - **primitives** — lowest-level building blocks that provide behavior and accessibility without any styling (headless). They encapsulate semantics, focus management, keyboard interaction, ARIA wiring, and portals. Requires consumer-supplied styling.
 - **components** — styled, reusable UI units that add visual design to primitives or compose multiple elements. They include default styling but remain override-friendly (classes, tokens, slots). May be built from primitives or implement behavior directly.
 - **blocks** — opinionated, production-ready compositions of components that solve concrete interface use cases with content scaffolding. Blocks trade generality for speed of adoption and are typically copy-paste friendly rather than imported as dependencies.
-- **utilities** — non-visual helpers exported for developer ergonomics or composition. Includes hooks, class utilities, keybinding helpers, and focus scopes. Side-effect free and testable in isolation.
+- **utilities** — non-visual helpers exported for developer ergonomics or composition. Includes hooks, class utilities, keybinding helpers, and focus scopes. Side-effect-free and testable in isolation.
 - **layout** — structural components that define page and section arrangements.
 
 **Examples:**
@@ -154,7 +154,7 @@ A feature starts its trace span, coordinates **Services**, updates **State**, an
 **Sublayers:**
 
 - **pages** — single-route view compositions (aligns with [components.build](https://components.build/definitions) **Page**). Composed of blocks arranged in a layout. Tied to a single route/URL with relatively static orchestration (fetch data, render). May contain widgets.
-- **flows** — multi-step journeys that span multiple screens. Maintain progression state (current step, completed steps, navigation). Often have validation gates between steps. May be linear or branching.
+- **flows** — multi-step journeys that span multiple screens. Maintain progression state (current step, completed steps, navigation). Often have validation gates between steps. They may be linear or branching.
 - **widgets** — portable, route-independent feature units. Self-contained state and UI. Often overlay-based (popover, modal, drawer) or embedded. Triggered by user action or always-visible.
 
 **Examples:**
