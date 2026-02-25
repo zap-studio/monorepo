@@ -170,7 +170,7 @@ Features can be organized in two ways:
 1. **Standalone** — Features that don't belong to a specific area live directly in `pages/`, `flows/`, or `widgets/`
 2. **Grouped** — Related features can be grouped in a subfolder (e.g., `auth/`, `checkout/`)
 
-```
+```text
 features/
 ├── pages/                    # Standalone pages
 │   ├── LandingPage.tsx
@@ -240,7 +240,7 @@ Interceptor **wiring** (registering the hook with the platform framework) always
 
 The key principle: **Adapters** decide *when* and *where* interceptors run (globally, per-route, per-command), while the **Core** and **Shared Capabilities** provide the *what* (the actual logic). This keeps interceptors portable — switching from Express to Hono, or from Commander to Clap, means rewriting the thin wiring layer, not the rate limiting algorithm or authentication logic.
 
-```
+```text
 interceptors/                # Interceptor wiring (adapter-specific)
 ├── rate-limit.ts            # Wires shared/security/rateLimiter into the platform hook
 ├── auth.ts                  # Wires shared/security/verifyToken into the platform hook
@@ -264,7 +264,7 @@ interceptors/                # Interceptor wiring (adapter-specific)
 
 ## Project Structure
 
-```
+```text
 /src
 ├── core/                        # Portable business logic (framework-agnostic)
 │   │
