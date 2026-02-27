@@ -39,7 +39,7 @@ The **Core** contains five layers:
 | 1 | **Primitives** | Schemas, guards, constants, utilities, errors |
 | 2 | **Services** | Clients, data access, external providers, business rules |
 | 3 | **State & Signals** | Stores, atoms, sync operations, signals |
-| 4 | **Components** | Primitives, styled components, patterns, blocks, utilities, layout |
+| 4 | **UI** | Primitives, styled components, patterns, blocks, utilities, layout |
 | 5 | **Features** | Pages (navigate to), Flows (progress through), Widgets (interact with) |
 
 Each layer builds on the one below it and stays focused on its job. Dependencies flow downward—higher layers may import from lower layers, but never the reverse.
@@ -70,7 +70,7 @@ This layer holds the smallest reusable pieces: shared **schemas**, validation he
 
 **Services** group business rules, data access, and core operations. They expose intent-driven methods that features call, and they only depend on primitives or other services.
 
-**Services** avoid importing components or **Adapters**-specific code so the business logic stays portable.
+**Services** avoid importing **UI** or **Adapters**-specific code so the business logic stays portable.
 
 **Sublayers:**
 
@@ -93,7 +93,7 @@ Service files (e.g., `auth.ts`, `payment.ts`, `order.ts`) live at the root of `s
 
 **State** represents the current data the application needs to function. **Signals** are events that notify the system when something changes, triggering state updates or service reactions.
 
-This layer keeps reads and writes traceable and keeps components from mutating global state directly.
+This layer keeps reads and writes traceable and keeps UI from mutating global state directly.
 
 **Sublayers:**
 
@@ -104,7 +104,7 @@ This layer keeps reads and writes traceable and keeps components from mutating g
 
 In component-based frameworks like React or Vue, state and sync logic are often co-located within components using hooks or composables.
 
-If possible, extract them into dedicated hooks (e.g., `useAuthStore`, `useUser()`) that live in this layer—this keeps **State** logic traceable and separate from UI interactions handled in **Components**.
+If possible, extract them into dedicated hooks (e.g., `useAuthStore`, `useUser()`) that live in this layer—this keeps **State** logic traceable and separate from UI interactions handled in **UI**.
 
 **Examples:**
 
@@ -113,11 +113,11 @@ If possible, extract them into dedicated hooks (e.g., `useAuthStore`, `useUser()
 - **Sync** — `useUser()`, `useOrders()`, `createOrder()`, `updateProfile()`
 - **Atoms** — `currentUserAtom`, `themeAtom`, `localeAtom`
 
-#### Layer 4: Components
+#### Layer 4: UI
 
-**Components** render the UI and handle user interactions. They read from **State**, respond to user actions (clicks, inputs, gestures), and call feature entrypoints when they need to orchestrate work.
+**UI** render the interface and handle user interactions. They read from **State**, respond to user actions (clicks, inputs, gestures), and call feature entrypoints when they need to orchestrate work.
 
-**Components** do not call **Services** directly.
+**UI** do not call **Services** directly.
 
 This layer follows the [components.build](https://components.build/definitions) taxonomy—an open standard for building modern, composable, and accessible UI artifacts.
 
@@ -139,9 +139,9 @@ This layer follows the [components.build](https://components.build/definitions) 
 
 #### Layer 5: Features
 
-**Features** compose **Services**, **State**, and **Components**. Each feature has one entrypoint for the **Adapters** to call.
+**Features** compose **Services**, **State**, and **UI**. Each feature has one entrypoint for the **Adapters** to call.
 
-A feature starts its trace span, coordinates **Services**, updates **State**, and tells **Components** what to render.
+A feature starts its trace span, coordinates **Services**, updates **State**, and tells **UI** what to render.
 
 **Features** are categorized by user interaction model.
 
@@ -290,7 +290,7 @@ interceptors/                # Interceptor wiring (adapter-specific)
 │   │   ├── sync/                # useUser(), useOrders(), createOrder(), updateProfile()
 │   │   └── atoms/               # currentUserAtom, themeAtom, localeAtom
 │   │
-│   ├── components/              # Layer 4: Depends on primitives, state
+│   ├── ui/                      # Layer 4: Depends on primitives, state
 │   │   ├── primitives/          # DialogPrimitive, PopoverPrimitive, TooltipPrimitive
 │   │   ├── components/          # Button, Input, Modal, Card, DataTable
 │   │   ├── blocks/              # PricingTable, AuthScreens, OnboardingStepper
@@ -326,7 +326,7 @@ Not every application needs every layer or sublayer. The **UAA** taxonomy descri
 | **Primitives** | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Services** | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **State & Signals** | ✅ | ✅ | Rare | TUI only | ✅ |
-| **Components** | ✅ | ✅ | ❌ | TUI only | ✅ |
+| **UI** | ✅ | ✅ | ❌ | TUI only | ✅ |
 | **Features** | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 > **Rule of thumb:** If a layer or sublayer would be an empty directory, don't create it. Add it when you have something to put in it. The taxonomy is a map of *possible* concerns, not a checklist of required directories.
@@ -362,7 +362,7 @@ This section explains why we chose specific terms throughout the specification.
 | **Primitives** | The most basic, foundational building blocks. Like primitives in programming languages—simple, composable, no dependencies. |
 | **Services** | Industry-standard term for encapsulated business operations. The intent is clear that services serve other parts of the application. |
 | **State & Signals** | "State" is universal for application data. "Signals" distinguishes reactive notifications from UI events—borrowed from [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming). |
-| **Components** | Industry-standard term for reusable UI units. Aligns with component-based frameworks ([React](https://react.dev/), [Vue](https://vuejs.org/), [Svelte](https://svelte.dev/)) and [components.build](https://components.build/) taxonomy. |
+| **UI** | Industry-standard term for user interface. Aligns with component-based frameworks ([React](https://react.dev/), [Vue](https://vuejs.org/), [Svelte](https://svelte.dev/)) and [components.build](https://components.build/) taxonomy. |
 | **Features** | Represents user-facing functionality. A feature is something users interact with—pages they visit, flows they complete, widgets they use. |
 
 ### Sublayers
@@ -382,7 +382,7 @@ This section explains why we chose specific terms throughout the specification.
 | | **signals** | Reactive notifications—from [Solid.js](https://www.solidjs.com/) and [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming). |
 | | **sync** | Synchronizes remote and local state—covers both fetching and mutating. |
 | | **atoms** | Fine-grained state units—from [Jotai](https://jotai.org/)/[Recoil](https://recoiljs.org/) terminology. |
-| **Components** | **primitives** | Headless behavioral blocks—aligns with [components.build](https://components.build/definitions), [Radix UI](https://www.radix-ui.com/), and [Base UI](https://base-ui.com/). |
+| **UI** | **primitives** | Headless behavioral blocks—aligns with [components.build](https://components.build/definitions), [Radix UI](https://www.radix-ui.com/), and [Base UI](https://base-ui.com/). |
 | | **components** | Styled UI units—standard term, distinct from primitives. |
 | | **blocks** | Opinionated compositions—aligns with [components.build](https://components.build/definitions) Block definition. |
 | | **utilities** | Non-visual helpers—hooks, class utilities, focus scopes. |
