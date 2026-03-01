@@ -50,7 +50,7 @@ export function PackagesSection(): ReactNode {
             Packages
           </p>
 
-          <h2 className="font-serif text-3xl leading-[1.12] md:text-4xl lg:text-5xl">
+          <h2 className="font-serif text-3xl leading-[1.12] sm:text-4xl md:text-5xl">
             Everything you need, <br className="hidden sm:block" />
             nothing you don&apos;t
           </h2>
