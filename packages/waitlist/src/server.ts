@@ -26,11 +26,11 @@ export interface WaitlistServerOptions {
   /** The storage adapter to use for the waitlist */
   adapter: WaitlistStorageAdapter;
 
-  /** An optional event bus for handling waitlist events */
-  events?: EventBus<WaitlistEventPayloadMap>;
-
   /** Optional configuration for waitlist behavior */
   config?: WaitlistConfig;
+
+  /** An optional event bus for handling waitlist events */
+  events?: EventBus<WaitlistEventPayloadMap>;
 }
 
 export class WaitlistServer implements WaitlistService {

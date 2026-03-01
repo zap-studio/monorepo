@@ -20,20 +20,19 @@ export interface ILogger<
   TError = unknown,
   TContext extends Record<string, unknown> = Record<string, unknown>,
 > {
-  log(
-    level: LogLevel,
-    message: string,
-    context?: Partial<TContext>
-  ): void | Promise<void>;
-
-  info: (message: string, context?: Partial<TContext>) => void | Promise<void>;
-  warn: (message: string, context?: Partial<TContext>) => void | Promise<void>;
-
   error: (
     message: string,
     err?: TError,
     context?: Partial<TContext>
   ) => void | Promise<void>;
+
+  info: (message: string, context?: Partial<TContext>) => void | Promise<void>;
+  log(
+    level: LogLevel,
+    message: string,
+    context?: Partial<TContext>
+  ): void | Promise<void>;
+  warn: (message: string, context?: Partial<TContext>) => void | Promise<void>;
 }
 
 /**

@@ -10,38 +10,36 @@ export type ReferralCode = string;
 
 /** Represents a participant's email entry in the waitlist. */
 export interface EmailEntry {
+  /** The date when the participant joined the waitlist. */
+  createdAt: Date;
   /** The email address of the participant. */
   email: Email;
 
-  /** The date when the participant joined the waitlist. */
-  createdAt: Date;
+  /** Additional metadata associated with the participant. */
+  meta?: Record<string, unknown>;
 
   /** The unique referral code assigned to the participant. */
   referralCode?: ReferralCode;
 
   /** The referral code used by the participant to join, if any. */
   referredBy?: ReferralCode;
-
-  /** Additional metadata associated with the participant. */
-  meta?: Record<string, unknown>;
 }
 
 /** Represents the configuration options for the waitlist. */
 export interface WaitlistConfig {
-  /** The prefix to use for referral codes. */
-  referralPrefix?: string;
+  /** The email validation configuration. */
+  emailValidation?: EmailValidationConfig;
 
   /** The maximum number of referrals a participant can have. */
   maxReferrals?: number;
 
-  /** The length of the referral codes. */
-  referralCodeLength?: number;
-
   /** Strategy used to compute positions and leaderboard ordering. */
   positionStrategy?: PositionStrategy;
 
-  /** The email validation configuration. */
-  emailValidation?: EmailValidationConfig;
+  /** The length of the referral codes. */
+  referralCodeLength?: number;
+  /** The prefix to use for referral codes. */
+  referralPrefix?: string;
 }
 
 /** Input for joining the waitlist */
@@ -58,22 +56,20 @@ export type JoinErrorReason = "invalid-email" | "already-registered";
 
 /** Error result when joining the waitlist fails */
 export interface JoinErrorResult {
+  /** Optional human-readable error message */
+  message?: string;
   /** Whether the join operation was successful */
   ok: false;
 
   /** Machine-readable error reason */
   reason: JoinErrorReason;
-
-  /** Optional human-readable error message */
-  message?: string;
 }
 
 /** Successful result of joining the waitlist */
 export interface JoinSuccessResult {
-  ok: true;
-
   /** The email entry for the user */
   entry: EmailEntry;
+  ok: true;
 
   /** An optional referral link for the user */
   referralLink?: ReferralLink;
@@ -87,11 +83,11 @@ export interface WaitlistEventPayloadMap {
   /** Represents the payload of a join event */
   join: { email: Email };
 
-  /** Represents the payload of a referral event */
-  referral: { referrer: Email; referee: Email };
-
   /** Represents the payload of a leave event */
   leave: { email: Email; reason?: string };
+
+  /** Represents the payload of a referral event */
+  referral: { referrer: Email; referee: Email };
 }
 
 /** Represents the type of an event in the waitlist system */
