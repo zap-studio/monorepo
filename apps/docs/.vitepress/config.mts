@@ -33,12 +33,6 @@ export default defineConfig({
         ],
       },
       {
-        text: "Specifications",
-        items: [
-          { text: "Universal Application Architecture (UAA)", link: "/specifications/uaa" },
-        ],
-      },
-      {
         text: "More",
         items: [
           { text: "llms.txt", link: "/llms.txt" },
@@ -145,14 +139,6 @@ export default defineConfig({
         {
           text: "@zap-studio/validation",
           items: [{ text: "Overview", link: "/packages/validation/" }],
-        },
-      ],
-      "/specifications/": [
-        {
-          text: "Specifications",
-          items: [
-            { text: "Universal Application Architecture (UAA)", link: "/specifications/uaa" },
-          ],
         },
       ],
       // "/packages/waitlist/": [
