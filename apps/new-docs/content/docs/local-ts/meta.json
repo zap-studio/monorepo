@@ -1,0 +1,26 @@
+{
+  "title": "Local.ts",
+  "pages": [
+    "index",
+    "motivation",
+    "getting-started",
+    "---Customization---",
+    "project-identity",
+    "sidebar",
+    "app-icons",
+    "---Guides---",
+    "settings",
+    "theming",
+    "database",
+    "notifications",
+    "logging",
+    "system-tray",
+    "window-state",
+    "autostart",
+    "splash-screen",
+    "---Tooling---",
+    "code-quality",
+    "---Distribution---",
+    "distribution"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "@zap-studio/fetch",
+  "pages": [
+    "index",
+    "api-methods",
+    "fetch-function",
+    "create-fetch",
+    "errors",
+    "validation"
+  ]
+}

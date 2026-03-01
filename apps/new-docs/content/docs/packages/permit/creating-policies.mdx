@@ -1,0 +1,338 @@
+---
+title: Creating Policies
+description: Define resources, actions, context, and rules to build your first authorization policy with @zap-studio/permit.
+---
+
+A policy is the core building block of `@zap-studio/permit`. It defines what actions users can perform on your application's resources based on the current context.
+
+## Understanding Policies
+
+Think of a policy as a rulebook that answers questions like:
+
+- "Can this user edit this blog post?"
+- "Can a guest view this private document?"
+- "Can an admin delete any comment?"
+
+A policy consists of three parts:
+
+1. **Resources** — The things being protected (posts, comments, users)
+2. **Actions** — What can be done with resources (read, write, delete)
+3. **Rules** — The logic that determines if an action is allowed
+
+<Callout type="info">
+We recommend defining resources and actions in a centralized location to ensure consistency and type safety.
+</Callout>
+
+## Defining Resources
+
+Resources are defined using [Standard Schema](https://standardschema.dev/), which means you can use Zod, Valibot, ArkType, or any compatible library.
+
+### Using Zod
+
+```typescript
+import { z } from "zod";
+import type { Resources } from "@zap-studio/permit/types";
+
+const resources = {
+  post: z.object({
+    id: z.string(),
+    authorId: z.string(),
+    title: z.string(),
+    visibility: z.enum(["public", "private", "draft"]),
+    createdAt: z.date(),
+  }),
+  comment: z.object({
+    id: z.string(),
+    postId: z.string(),
+    authorId: z.string(),
+    content: z.string(),
+  }),
+  user: z.object({
+    id: z.string(),
+    email: z.string().email(),
+    role: z.enum(["guest", "user", "admin"]),
+  }),
+} satisfies Resources;
+```
+
+### Using Valibot
+
+```typescript
+import * as v from "valibot";
+import type { Resources } from "@zap-studio/permit/types";
+
+const resources = {
+  post: v.object({
+    id: v.string(),
+    authorId: v.string(),
+    visibility: v.picklist(["public", "private"]),
+  }),
+} satisfies Resources;
+```
+
+### Using ArkType
+
+```typescript
+import { type } from "arktype";
+import type { Resources } from "@zap-studio/permit/types";
+
+const resources = {
+  post: type({
+    id: "string",
+    authorId: "string",
+    visibility: "'public' | 'private'",
+  }),
+} satisfies Resources;
+```
+
+<Callout type="warn">
+You should use `satisfies` to ensure type safety and consistency. Learn more about the [TypeScript `satisfies` operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator).
+</Callout>
+
+## Defining Actions
+
+Actions specify what operations are allowed on each resource. Define them as readonly arrays:
+
+```typescript
+import type { Actions } from "@zap-studio/permit/types";
+
+const actions = {
+  post: ["read", "write", "delete", "publish"],
+  comment: ["read", "write", "delete"],
+  user: ["read", "update", "delete", "ban"],
+} as const satisfies Actions<typeof resources>;
+```
+
+<Callout type="warn">
+Use `as const` to ensure TypeScript infers literal types for actions. This enables autocomplete and type checking when writing rules. Learn more about the [TypeScript `as const` operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions).
+</Callout>
+
+## Understanding Context
+
+Context represents the runtime information available when checking permissions. This typically includes the current user, but can contain anything relevant to authorization:
+
+```typescript
+type AppContext = {
+  user: {
+    id: string;
+    role: "guest" | "user" | "admin";
+    permissions: string[];
+    organizationId: string;
+  } | null;
+  request?: {
+    ip: string;
+    userAgent: string;
+  };
+  timestamp: Date;
+};
+```
+
+Context is passed to `policy.can()` at runtime and is available in all your rule functions.
+
+<Callout type="info">
+Context is just a type that represents the runtime information available when checking permissions. It can be anything relevant to your application's authorization needs. Providing context will make your experience way better. Believe me, it's worth it!
+</Callout>
+
+## Creating a Policy
+
+Finally, a policy defines the rules that govern access to resources for each action. It uses the resources and actions defined earlier.
+
+Use `createPolicy()` to create a policy:
+
+```typescript
+import { createPolicy, allow, deny, when } from "@zap-studio/permit";
+
+const policy = createPolicy<AppContext>({
+  resources,
+  actions,
+  rules: {
+    post: {
+      read: allow(),
+      write: when((ctx, _action, post) => ctx.user?.id === post.authorId),
+      delete: deny(),
+      publish: when((ctx) => ctx.user?.role === "admin"),
+    },
+    comment: {
+      read: allow(),
+      write: when((ctx) => ctx.user !== null),
+      delete: when((ctx, _action, comment) => ctx.user?.id === comment.authorId),
+    },
+  },
+});
+```
+
+## Checking Permissions
+
+The policy object provides a `can()` method to check if an action is allowed. It takes the `context`, `action`, `resourceType`, and `resource` as parameters and returns a boolean indicating whether the action is allowed.
+
+```typescript
+policy.can(context, action, resourceType, resource): boolean
+```
+
+### Parameters
+
+| Parameter      | Type       | Description                                          |
+| -------------- | ---------- | ---------------------------------------------------- |
+| `context`      | `TContext` | The current context (user, request, etc.)            |
+| `action`       | `string`   | The action to check (e.g., "read", "write")          |
+| `resourceType` | `string`   | The type of resource (e.g., "post", "comment")       |
+| `resource`     | `object`   | The actual resource being accessed                   |
+
+### Example: Blog Post Authorization
+
+Here is a complete example for a blog application:
+
+```typescript
+// Scenario: User trying to edit a blog post
+const context: AppContext = {
+  user: { id: "user-123", role: "user", permissions: [], organizationId: "org-1" },
+  timestamp: new Date(),
+};
+
+const post = {
+  id: "post-456",
+  authorId: "user-123", // Same as context.user.id (so user is the author)
+  title: "My First Post",
+  visibility: "public" as const,
+  createdAt: new Date(),
+};
+
+// The user is the author, so this returns true according to the policy
+const canEdit = policy.can(context, "write", "post", post);
+console.log(canEdit); // true
+
+// A different user trying to edit
+const otherContext: AppContext = {
+  user: { id: "user-789", role: "user", permissions: [], organizationId: "org-1" },
+  timestamp: new Date(),
+};
+
+const canOtherEdit = policy.can(otherContext, "write", "post", post);
+console.log(canOtherEdit); // false
+```
+
+## Real-World Example: E-commerce Store
+
+Here's another complete example for an e-commerce application:
+
+```typescript
+import { z } from "zod";
+import { createPolicy, allow, deny, when, or } from "@zap-studio/permit";
+import type { Resources, Actions } from "@zap-studio/permit/types";
+
+// Define resources
+const resources = {
+  product: z.object({
+    id: z.string(),
+    sellerId: z.string(),
+    price: z.number(),
+    status: z.enum(["draft", "published", "archived"]),
+  }),
+  order: z.object({
+    id: z.string(),
+    customerId: z.string(),
+    sellerId: z.string(),
+    status: z.enum(["pending", "paid", "shipped", "delivered"]),
+  }),
+  review: z.object({
+    id: z.string(),
+    productId: z.string(),
+    customerId: z.string(),
+    rating: z.number().min(1).max(5),
+  }),
+} satisfies Resources;
+
+const actions = {
+  product: ["read", "create", "update", "delete", "publish"],
+  order: ["read", "create", "update", "cancel"],
+  review: ["read", "create", "update", "delete"],
+} as const satisfies Actions<typeof resources>;
+
+type StoreContext = {
+  user: {
+    id: string;
+    role: "customer" | "seller" | "admin";
+  } | null;
+};
+
+const storePolicy = createPolicy<StoreContext>({
+  resources,
+  actions,
+  rules: {
+    product: {
+      // Anyone can read published products
+      read: when((_, __, product) => product.status === "published"),
+      // Only sellers can create products
+      create: when((ctx) => ctx.user?.role === "seller"),
+      // Sellers can update their own products
+      update: when(
+        (ctx, _, product) =>
+          ctx.user?.role === "seller" && ctx.user.id === product.sellerId
+      ),
+      // Only admins can delete products
+      delete: when((ctx) => ctx.user?.role === "admin"),
+      // Sellers can publish their own products
+      publish: when(
+        (ctx, _, product) =>
+          ctx.user?.role === "seller" && ctx.user.id === product.sellerId
+      ),
+    },
+    order: {
+      // Customers see their orders, sellers see orders for their products
+      read: when(
+        or(
+          (ctx, _, order) => ctx.user?.id === order.customerId,
+          (ctx, _, order) => ctx.user?.id === order.sellerId
+        )
+      ),
+      // Only authenticated customers can create orders
+      create: when((ctx) => ctx.user?.role === "customer"),
+      // Sellers can update order status
+      update: when((ctx, _, order) => ctx.user?.id === order.sellerId),
+      // Customers can cancel pending orders
+      cancel: when(
+        (ctx, _, order) =>
+          ctx.user?.id === order.customerId && order.status === "pending"
+      ),
+    },
+    review: {
+      // Anyone can read reviews
+      read: allow(),
+      // Customers can create reviews
+      create: when((ctx) => ctx.user?.role === "customer"),
+      // Customers can update their own reviews
+      update: when((ctx, _, review) => ctx.user?.id === review.customerId),
+      // Customers can delete their reviews, admins can delete any
+      delete: when(
+        or(
+          (ctx, _, review) => ctx.user?.id === review.customerId,
+          (ctx) => ctx.user?.role === "admin"
+        )
+      ),
+    },
+  },
+});
+
+// Usage
+const product = {
+  id: "prod-1",
+  sellerId: "seller-123",
+  price: 99.99,
+  status: "published" as const,
+};
+
+const customerContext: StoreContext = {
+  user: { id: "customer-456", role: "customer" },
+};
+
+console.log(storePolicy.can(customerContext, "read", "product", product));   // true
+console.log(storePolicy.can(customerContext, "update", "product", product)); // false
+```
+
+## Best Practices
+
+1. **Keep resources focused** — Each resource should represent a single domain entity
+2. **Use descriptive action names** — "publish" is clearer than "update-status"
+3. **Include all relevant data in context** — Don't fetch additional data inside rules
+4. **Start with `deny()` by default** — Be explicit about what's allowed
+5. **Test your policies** — Write unit tests for critical authorization rules
