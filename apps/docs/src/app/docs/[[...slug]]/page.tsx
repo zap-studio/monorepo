@@ -51,7 +51,7 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
         <div className="mt-8 flex flex-row flex-wrap items-center justify-between gap-4 border-t pt-4">
           <a
             className="inline-flex items-center gap-1.5 text-fd-muted-foreground text-sm transition-colors hover:text-fd-foreground"
-            href={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/apps/new-docs/content/docs/${page.path}`}
+            href={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/apps/docs/content/docs/${page.path}`}
             rel="noreferrer noopener"
             target="_blank"
           >
