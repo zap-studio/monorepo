@@ -1,4 +1,5 @@
 import { RootProvider } from "fumadocs-ui/provider/next";
+import type { Metadata } from "next";
 import "./global.css";
 import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
 
@@ -18,6 +19,12 @@ const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
   variable: "--font-instrument-serif",
 });
+
+export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.zapstudio.dev"
+  ),
+};
 
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
