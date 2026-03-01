@@ -1,15 +1,15 @@
 import { RootProvider } from "fumadocs-ui/provider/next";
 import "./global.css";
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
 
-const geistSans = Geist({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  variable: "--font-inter",
 });
 
-const geistMono = Geist_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-geist-mono",
+  variable: "--font-jetbrains-mono",
 });
 
 const instrumentSerif = Instrument_Serif({
@@ -22,7 +22,7 @@ const instrumentSerif = Instrument_Serif({
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html
-      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable}`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable}`}
       lang="en"
       suppressHydrationWarning
     >
