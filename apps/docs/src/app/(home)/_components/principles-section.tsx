@@ -30,29 +30,6 @@ const principles: PrincipleProps[] = [
   },
 ];
 
-function PrincipleItem({
-  icon,
-  title,
-  description,
-}: PrincipleProps): ReactNode {
-  return (
-    <div className="flex gap-5">
-      <div className="group flex size-12 shrink-0 items-center justify-center rounded-xl bg-fd-accent text-fd-primary transition-colors duration-300 hover:bg-fd-primary/15">
-        {icon}
-      </div>
-
-      <div className="flex-1">
-        <h3 className="font-semibold text-base text-fd-foreground leading-6 tracking-tight">
-          {title}
-        </h3>
-        <p className="mt-1.5 text-fd-muted-foreground text-sm leading-6">
-          {description}
-        </p>
-      </div>
-    </div>
-  );
-}
-
 export function PrinciplesSection(): ReactNode {
   return (
     <section className="relative border-fd-border border-y bg-fd-card/40">
@@ -113,5 +90,28 @@ export function PrinciplesSection(): ReactNode {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-fd-primary/20 to-transparent"
       />
     </section>
+  );
+}
+
+function PrincipleItem({
+  icon,
+  title,
+  description,
+}: PrincipleProps): ReactNode {
+  return (
+    <div className="flex gap-5">
+      <div className="group flex size-12 shrink-0 items-center justify-center rounded-xl bg-fd-accent text-fd-primary transition-colors duration-300 hover:bg-fd-primary/15">
+        {icon}
+      </div>
+
+      <div className="flex-1">
+        <h3 className="font-semibold text-base text-fd-foreground leading-6 tracking-tight">
+          {title}
+        </h3>
+        <p className="mt-1.5 text-fd-muted-foreground text-sm leading-6">
+          {description}
+        </p>
+      </div>
+    </div>
   );
 }
