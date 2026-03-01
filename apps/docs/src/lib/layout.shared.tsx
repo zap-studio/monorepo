@@ -2,6 +2,10 @@ import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import { BookIcon, BotIcon, BoxIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
+function NavTitle(): ReactNode {
+  return <span className="font-serif text-lg tracking-tight">Zap Studio</span>;
+}
+
 function Separator(): ReactNode {
   return (
     <div
@@ -35,7 +39,7 @@ export const gitConfig = {
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
-      title: "Zap Studio",
+      title: <NavTitle />,
     },
     githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
     links: [
