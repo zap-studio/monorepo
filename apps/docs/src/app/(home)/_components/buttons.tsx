@@ -105,7 +105,7 @@ export function ButtonGroup({
 }: ButtonGroupProps): ReactNode {
   return (
     <div
-      className={`flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-3 ${className}`}
+      className={`flex w-full flex-row items-center gap-3 sm:w-auto sm:gap-3 ${className}`}
     >
       {children}
     </div>
