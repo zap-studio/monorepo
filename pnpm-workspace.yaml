@@ -11,6 +11,8 @@ catalogs:
     typescript: ^5.9.3
     valibot: ^1.2.0
     zod: ^4.2.0
+  design:
+    motion: ^12.34.3
   fumadocs:
     fumadocs-core: ^16.6.8
     fumadocs-mdx: ^14.2.9
@@ -48,10 +50,6 @@ catalogs:
     '@types/node': ^25.0.2
     '@types/react': ^19.2.14
     '@types/react-dom': ^19.2.3
-  vitepress:
-    '@shikijs/vitepress-twoslash': ^3.20.0
-    vitepress: ^2.0.0-alpha.15
-    vitepress-plugin-llms: ^1.9.3
 
 onlyBuiltDependencies:
   - '@swc/core'

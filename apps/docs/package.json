@@ -16,6 +16,7 @@
     "fumadocs-mdx": "catalog:fumadocs",
     "fumadocs-ui": "catalog:fumadocs",
     "lucide-react": "catalog:react",
+    "motion": "catalog:design",
     "next": "catalog:next",
     "react": "catalog:react",
     "react-dom": "catalog:react",
