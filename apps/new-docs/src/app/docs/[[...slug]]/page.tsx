@@ -3,8 +3,10 @@ import {
   DocsDescription,
   DocsPage,
   DocsTitle,
+  PageLastUpdate,
 } from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
+import { PencilIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
@@ -22,7 +24,12 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
   const MDX = page.data.body;
 
   return (
-    <DocsPage full={page.data.full} toc={page.data.toc}>
+    <DocsPage
+      full={page.data.full}
+      tableOfContent={{ style: "clerk" }}
+      tableOfContentPopover={{ style: "clerk" }}
+      toc={page.data.toc}
+    >
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription className="mb-0">
         {page.data.description}
@@ -41,6 +48,20 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
             a: createRelativeLink(source, page),
           })}
         />
+        <div className="mt-8 flex flex-row flex-wrap items-center justify-between gap-4 border-t pt-4">
+          <a
+            className="inline-flex items-center gap-1.5 text-fd-muted-foreground text-sm transition-colors hover:text-fd-foreground"
+            href={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/apps/new-docs/content/docs/${page.path}`}
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            <PencilIcon className="size-3" />
+            Edit on GitHub
+          </a>
+          {page.data.lastModified && (
+            <PageLastUpdate date={page.data.lastModified} />
+          )}
+        </div>
       </DocsBody>
     </DocsPage>
   );
