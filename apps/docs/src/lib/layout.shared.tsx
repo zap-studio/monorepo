@@ -6,12 +6,15 @@ import {
 } from "fumadocs-ui/layouts/home/navbar";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import {
+  AppWindowIcon,
   BadgeCheckIcon,
+  BotIcon,
   GlobeIcon,
   HeartIcon,
-  LaptopIcon,
+  LayoutTemplateIcon,
   LockIcon,
   MapIcon,
+  PackageIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -75,6 +78,22 @@ export function homeLinks(
 
   return [
     ...(baseOptions().links ?? []),
+    // ── Mobile-only links ───────────────────────────────────────────
+    {
+      text: "Templates",
+      url: "/docs/local-ts",
+      icon: <LayoutTemplateIcon className="size-4" />,
+      active: "nested-url",
+      on: "menu",
+    },
+    {
+      text: "Packages",
+      url: "/docs/packages/fetch",
+      icon: <PackageIcon className="size-4" />,
+      active: "nested-url",
+      on: "menu",
+    },
+    // ── Desktop-only animated menus ─────────────────────────────────
     {
       type: "custom",
       on: "nav",
@@ -85,7 +104,7 @@ export function homeLinks(
             <NavbarMenuLink href="/docs/local-ts">
               <NavbarMenuItemContent
                 description="Desktop app template built on Tauri + Next.js."
-                icon={<LaptopIcon className="size-4" />}
+                icon={<AppWindowIcon className="size-4" />}
                 text="Local.ts"
               />
             </NavbarMenuLink>
@@ -125,6 +144,7 @@ export function homeLinks(
         </NavbarMenu>
       ),
     },
+    // ── Shared links (both desktop and mobile) ──────────────────────
     {
       text: "Roadmap",
       url: "/roadmap",
@@ -161,6 +181,13 @@ export function homeLinks(
           </NavbarMenuContent>
         </NavbarMenu>
       ),
+    },
+    // ── Mobile-only llms.txt (last) ─────────────────────────────────
+    {
+      text: "llms.txt",
+      url: "/llms.txt",
+      icon: <BotIcon className="size-4" />,
+      on: "menu",
     },
   ];
 }

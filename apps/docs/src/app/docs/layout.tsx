@@ -14,7 +14,7 @@ export default function Layout({ children }: LayoutProps<"/docs">): ReactNode {
           transform: (option, node) => ({
             ...option,
             icon: node.icon ? (
-              <span className="flex size-full items-center justify-center text-fd-primary [&_svg]:size-4">
+              <span className="flex size-full items-center justify-center text-fd-primary [&_svg]:size-5 md:[&_svg]:size-4">
                 {node.icon}
               </span>
             ) : undefined,
