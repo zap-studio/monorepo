@@ -18,7 +18,7 @@ export async function GET(
   return new ImageResponse(
     <DefaultImage
       description={page.data.description}
-      site="My App"
+      site="zap Studio"
       title={page.data.title}
     />,
     {
