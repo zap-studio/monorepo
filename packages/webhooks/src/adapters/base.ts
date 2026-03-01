@@ -2,17 +2,22 @@ import type { NormalizedRequest, NormalizedResponse } from "../types";
 
 /** Adapter interface for framework-specific request/response handling */
 export interface Adapter {
-  /** Convert framework request to the NormalizedRequest (must include raw body)
+  /**
+   * Create a framework-specific route handler for the webhook router
+   *
    * @example
    * ```ts
-   * const req = {
-   *   body: { foo: "bar" },
-   *   headers: { "Content-Type": "application/json" },
-   * };
-   * const normalizedReq = await adapter.toNormalizedRequest(req);
+   * import express from "express";
+   *
+   * const app = express();
+   * const router = new WebhookRouter<WebhookMap>();
+   *
+   * app.post("/webhook/*", express.raw({ type: "application/json" }), adapter.handleWebhook(router));
    * ```
    */
-  toNormalizedRequest<TReq = unknown>(req: TReq): Promise<NormalizedRequest>;
+  handleWebhook<TFrameworkReq = unknown, TFrameworkRes = unknown>(router: {
+    handle(req: NormalizedRequest): Promise<NormalizedResponse>;
+  }): (req: TFrameworkReq, res: TFrameworkRes) => Promise<void>;
 
   /**
    * Convert NormalizedResponse to the framework response
@@ -33,21 +38,15 @@ export interface Adapter {
     frameworkRes: TFrameworkRes,
     res: NormalizedResponse
   ): Promise<TFrameworkRes>;
-
-  /**
-   * Create a framework-specific route handler for the webhook router
-   *
+  /** Convert framework request to the NormalizedRequest (must include raw body)
    * @example
    * ```ts
-   * import express from "express";
-   *
-   * const app = express();
-   * const router = new WebhookRouter<WebhookMap>();
-   *
-   * app.post("/webhook/*", express.raw({ type: "application/json" }), adapter.handleWebhook(router));
+   * const req = {
+   *   body: { foo: "bar" },
+   *   headers: { "Content-Type": "application/json" },
+   * };
+   * const normalizedReq = await adapter.toNormalizedRequest(req);
    * ```
    */
-  handleWebhook<TFrameworkReq = unknown, TFrameworkRes = unknown>(router: {
-    handle(req: NormalizedRequest): Promise<NormalizedResponse>;
-  }): (req: TFrameworkReq, res: TFrameworkRes) => Promise<void>;
+  toNormalizedRequest<TReq = unknown>(req: TReq): Promise<NormalizedRequest>;
 }

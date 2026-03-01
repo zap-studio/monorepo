@@ -67,10 +67,10 @@ import type {
  */
 
 interface HandlerEntry<TPayload = unknown> {
+  after?: AfterHook[];
+  before?: BeforeHook[];
   handler: WebhookHandler<TPayload>;
   schema?: StandardSchemaV1<unknown, TPayload>;
-  before?: BeforeHook[];
-  after?: AfterHook[];
 }
 
 type HandlerStore<TMap extends Record<string, unknown>> = {

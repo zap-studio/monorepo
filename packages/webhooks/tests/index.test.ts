@@ -72,9 +72,9 @@ describe("WebhookRouter", () => {
 
     it("should handle multiple registered paths", async () => {
       interface WebhookMap {
+        order: { id: string };
         payment: { amount: number };
         user: { name: string };
-        order: { id: string };
       }
 
       const router = new WebhookRouter<WebhookMap>();
@@ -553,9 +553,9 @@ describe("WebhookRouter", () => {
 
     it("should handle different body types", async () => {
       interface WebhookMap {
-        string: { data: string };
-        object: { data: string };
         number: { data: string };
+        object: { data: string };
+        string: { data: string };
       }
 
       const router = new WebhookRouter<WebhookMap>();
@@ -1117,8 +1117,8 @@ describe("WebhookRouter", () => {
 
       it("should handle single hook or array of hooks", async () => {
         interface WebhookMap {
-          single: { value: string };
           array: { value: string };
+          single: { value: string };
         }
 
         const callOrder: string[] = [];
@@ -1709,8 +1709,8 @@ describe("WebhookRouter", () => {
 
     it("should handle nested paths with custom prefix", async () => {
       interface WebhookMap {
-        "stripe/events": { type: string };
         "github/push": { ref: string };
+        "stripe/events": { type: string };
       }
 
       const router = new WebhookRouter<WebhookMap>({
