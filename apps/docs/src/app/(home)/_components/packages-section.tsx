@@ -20,21 +20,21 @@ interface PackageCardProps {
 const packages: PackageCardProps[] = [
   {
     icon: <GlobeIcon className="size-5" />,
-    name: "@zap-studio/fetch",
+    name: "fetch",
     description:
       "Type-safe HTTP client with Standard Schema validation, proper error handling, and runtime safety built on native fetch.",
     href: "/docs/packages/fetch",
   },
   {
     icon: <ShieldCheckIcon className="size-5" />,
-    name: "@zap-studio/permit",
+    name: "permit",
     description:
       "Declarative authorization with composable conditions. Type-safe RBAC and ABAC policies with Standard Schema support.",
     href: "/docs/packages/permit",
   },
   {
     icon: <LayersIcon className="size-5" />,
-    name: "@zap-studio/validation",
+    name: "validation",
     description:
       "Standard Schema utilities and ValidationError helpers. The shared foundation powering all Zap Studio packages.",
     href: "/docs/packages/validation",

@@ -1,4 +1,5 @@
 {
   "title": "Packages",
+  "description": "Open-source packages by Zap Studio",
   "pages": ["fetch", "permit", "validation"]
 }

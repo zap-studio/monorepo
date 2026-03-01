@@ -1,5 +1,6 @@
 {
-  "title": "@zap-studio/permit",
+  "title": "permit",
+  "icon": "Lock",
   "root": true,
   "pages": [
     "index",

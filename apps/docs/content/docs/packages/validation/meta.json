@@ -1,5 +1,6 @@
 {
-  "title": "@zap-studio/validation",
+  "title": "validation",
+  "icon": "BadgeCheck",
   "root": true,
   "pages": ["index"]
 }

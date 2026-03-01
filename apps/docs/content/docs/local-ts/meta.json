@@ -1,5 +1,6 @@
 {
   "title": "Local.ts",
+  "icon": "AppWindow",
   "root": true,
   "pages": [
     "index",
