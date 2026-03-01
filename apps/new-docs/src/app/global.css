@@ -1,3 +1,103 @@
 @import "tailwindcss";
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+}
+
+@theme {
+  /* Light mode */
+  --color-fd-primary: hsl(38, 92%, 40%);
+  --color-fd-primary-foreground: hsl(0, 0%, 100%);
+
+  --color-fd-background: hsl(0, 0%, 99%);
+  --color-fd-foreground: hsl(0, 0%, 6%);
+
+  --color-fd-card: hsl(0, 0%, 97%);
+  --color-fd-card-foreground: hsl(0, 0%, 6%);
+
+  --color-fd-popover: hsl(0, 0%, 99%);
+  --color-fd-popover-foreground: hsl(0, 0%, 10%);
+
+  --color-fd-muted: hsl(0, 0%, 95%);
+  --color-fd-muted-foreground: hsl(0, 0%, 44%);
+
+  --color-fd-secondary: hsl(0, 0%, 93%);
+  --color-fd-secondary-foreground: hsl(0, 0%, 9%);
+
+  --color-fd-accent: hsla(38, 80%, 55%, 0.12);
+  --color-fd-accent-foreground: hsl(38, 70%, 20%);
+
+  --color-fd-border: hsl(0, 0%, 88%);
+  --color-fd-ring: hsl(38, 92%, 50%);
+}
+
+.dark {
+  /* Dark mode */
+  --color-fd-primary: hsl(43, 96%, 56%);
+  --color-fd-primary-foreground: hsl(0, 0%, 5%);
+
+  --color-fd-background: hsl(0, 0%, 5%);
+  --color-fd-foreground: hsl(0, 0%, 93%);
+
+  --color-fd-card: hsl(0, 0%, 8%);
+  --color-fd-card-foreground: hsl(0, 0%, 93%);
+
+  --color-fd-popover: hsl(0, 0%, 7%);
+  --color-fd-popover-foreground: hsl(0, 0%, 90%);
+
+  --color-fd-muted: hsl(0, 0%, 11%);
+  --color-fd-muted-foreground: hsl(0, 0%, 55%);
+
+  --color-fd-secondary: hsl(0, 0%, 14%);
+  --color-fd-secondary-foreground: hsl(0, 0%, 90%);
+
+  --color-fd-accent: hsla(43, 80%, 55%, 0.1);
+  --color-fd-accent-foreground: hsl(43, 90%, 75%);
+
+  --color-fd-border: hsl(0, 0%, 16%);
+  --color-fd-ring: hsl(43, 96%, 56%);
+
+  --color-fd-sidebar: hsl(0, 0%, 6%);
+}
+
+/* ─── Scrollbar (Webkit) ─────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Light mode */
+
+::-webkit-scrollbar-thumb {
+  background: hsl(0, 0%, 85%);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(0, 0%, 35%);
+}
+
+/* Dark mode */
+
+.dark ::-webkit-scrollbar-thumb {
+  background: hsl(0, 0%, 35%);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: hsl(0, 0%, 55%);
+}
+
+/* ─── Selection highlight ────────────────────────────────────────────────── */
+
+::selection {
+  color: inherit;
+  background-color: hsla(43, 96%, 56%, 0.22);
+}
