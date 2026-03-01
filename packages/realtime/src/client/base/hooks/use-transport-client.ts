@@ -22,11 +22,6 @@ export interface UseTransportClientOptions {
    */
   enabled?: boolean;
   /**
-   * Whether to validate incoming events against schemas
-   * @default true
-   */
-  validate?: boolean;
-  /**
    * Reconnection configuration
    */
   reconnect?: {
@@ -36,6 +31,11 @@ export interface UseTransportClientOptions {
     maxDelay?: number;
     multiplier?: number;
   };
+  /**
+   * Whether to validate incoming events against schemas
+   * @default true
+   */
+  validate?: boolean;
 }
 
 /**
@@ -44,8 +44,14 @@ export interface UseTransportClientOptions {
 export interface UseTransportClientReturn<
   TEventDefinitions extends EventDefinitions,
 > {
+  /** Manually connect */
+  connect: () => void;
   /** Whether currently connected */
   connected: boolean;
+  /** Manually disconnect */
+  disconnect: () => void;
+  /** Last error if any */
+  error: Error | null;
   /** Register event handler */
   on: <TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent,
@@ -58,12 +64,6 @@ export interface UseTransportClientReturn<
       data: InferEventTypes<TEventDefinitions>[TEvent]
     ) => void
   ) => () => void;
-  /** Last error if any */
-  error: Error | null;
-  /** Manually connect */
-  connect: () => void;
-  /** Manually disconnect */
-  disconnect: () => void;
 }
 
 /**

@@ -31,27 +31,27 @@ export interface EventMessage<
   TEventDefinitions extends EventDefinitions = EventDefinitions,
   TEvent extends EventKeys<TEventDefinitions> = EventKeys<TEventDefinitions>,
 > {
-  /** Unique event ID */
-  id: string;
-  /** Event name */
-  event: TEvent;
   /** Event payload data */
   data: InferEventTypes<TEventDefinitions>[TEvent];
-  /** Timestamp when event was created */
-  timestamp: number;
+  /** Event name */
+  event: TEvent;
+  /** Unique event ID */
+  id: string;
   /** Optional retry interval in milliseconds for SSE */
   retry?: number;
+  /** Timestamp when event was created */
+  timestamp: number;
 }
 
 /**
  * Raw event message before validation
  */
 export interface RawEventMessage {
-  id: string;
-  event: string;
   data: unknown;
-  timestamp: number;
+  event: string;
+  id: string;
   retry?: number;
+  timestamp: number;
 }
 
 /**
@@ -81,11 +81,9 @@ export interface PublishOptions {
  */
 export interface ServerEmitter<TEventDefinitions extends EventDefinitions> {
   /**
-   * Subscribe to events, returns an async iterator
+   * Close the emitter and cleanup resources
    */
-  subscribe(
-    options?: SubscribeOptions
-  ): AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown>;
+  close(): void;
 
   /**
    * Publish an event
@@ -95,11 +93,12 @@ export interface ServerEmitter<TEventDefinitions extends EventDefinitions> {
     data: InferEventTypes<TEventDefinitions>[TEvent],
     options?: PublishOptions
   ): Promise<void>;
-
   /**
-   * Close the emitter and cleanup resources
+   * Subscribe to events, returns an async iterator
    */
-  close(): void;
+  subscribe(
+    options?: SubscribeOptions
+  ): AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown>;
 }
 
 /**
@@ -113,6 +112,11 @@ export interface ClientTransport<TEventDefinitions extends EventDefinitions> {
    * Connect to the event stream
    */
   connect(): void;
+
+  /**
+   * Check if currently connected
+   */
+  readonly connected: boolean;
 
   /**
    * Disconnect from the event stream
@@ -138,19 +142,14 @@ export interface ClientTransport<TEventDefinitions extends EventDefinitions> {
   ): () => void;
 
   /**
-   * Register error handler
-   */
-  onError(handler: (error: Error) => void): () => void;
-
-  /**
    * Register connection state change handler
    */
   onConnectionChange(handler: (connected: boolean) => void): () => void;
 
   /**
-   * Check if currently connected
+   * Register error handler
    */
-  readonly connected: boolean;
+  onError(handler: (error: Error) => void): () => void;
 }
 
 /**
@@ -184,19 +183,24 @@ export interface ClientTransportOptions<
 > {
   /** Event definitions for validation */
   definitions: TEventDefinitions;
+  /** Reconnection options */
+  reconnect?: ReconnectOptions;
   /**
    * Whether to validate incoming events
    * @default true
    */
   validate?: boolean;
-  /** Reconnection options */
-  reconnect?: ReconnectOptions;
 }
 
 /**
  * Reconnection options for client transports
  */
 export interface ReconnectOptions {
+  /**
+   * Initial delay in ms before reconnecting
+   * @default 1000
+   */
+  delay?: number;
   /**
    * Enable automatic reconnection
    * @default true
@@ -207,11 +211,6 @@ export interface ReconnectOptions {
    * @default Infinity
    */
   maxAttempts?: number;
-  /**
-   * Initial delay in ms before reconnecting
-   * @default 1000
-   */
-  delay?: number;
   /**
    * Maximum delay in ms
    * @default 30000
@@ -291,12 +290,12 @@ export type WSServerTransport<TEventDefinitions extends EventDefinitions> =
 export interface WSProtocolMessage<
   TEventDefinitions extends EventDefinitions = EventDefinitions,
 > {
-  type: "event" | "ping" | "pong" | "subscribe" | "error";
   payload?:
     | EventMessage<TEventDefinitions>
     | { channel?: string }
     | { message: string };
   timestamp: number;
+  type: "event" | "ping" | "pong" | "subscribe" | "error";
 }
 
 /**
@@ -305,12 +304,14 @@ export interface WSProtocolMessage<
 export interface WSConnectionHandler<
   TEventDefinitions extends EventDefinitions,
 > {
+  /** Subscribed channels */
+  readonly channels: Set<string>;
+  /** Close the connection */
+  close(code?: number, reason?: string): void;
   /** Unique connection ID */
   readonly id: string;
   /** Check if connection is open */
   readonly isOpen: boolean;
-  /** Subscribed channels */
-  readonly channels: Set<string>;
   /** Send an event to this connection */
   send<TEvent extends EventKeys<TEventDefinitions>>(
     event: TEvent,
@@ -318,18 +319,16 @@ export interface WSConnectionHandler<
   ): void;
   /** Send raw protocol message */
   sendRaw(message: WSProtocolMessage<TEventDefinitions>): void;
-  /** Close the connection */
-  close(code?: number, reason?: string): void;
 }
 
 /**
  * Server SSE transport configuration options
  */
 export interface ServerSSETransportOptions {
-  /** Heartbeat interval in milliseconds (0 to disable) */
-  heartbeatInterval?: number;
   /** Custom headers to add to the response */
   headers?: Record<string, string>;
+  /** Heartbeat interval in milliseconds (0 to disable) */
+  heartbeatInterval?: number;
   /** AbortSignal to cancel the stream */
   signal?: AbortSignal;
 }
@@ -349,14 +348,6 @@ export interface ServerWebSocketTransportOptions {
  */
 export interface EventsAPI<TEventDefinitions extends EventDefinitions> {
   /**
-   * Validate event data against schema
-   */
-  validate<TEvent extends EventKeys<TEventDefinitions>>(
-    event: TEvent,
-    data: unknown
-  ): Promise<InferEventTypes<TEventDefinitions>[TEvent]>;
-
-  /**
    * Publish an event
    */
   publish<TEvent extends EventKeys<TEventDefinitions>>(
@@ -371,6 +362,13 @@ export interface EventsAPI<TEventDefinitions extends EventDefinitions> {
   subscribe(
     options?: SubscribeOptions
   ): AsyncGenerator<EventMessage<TEventDefinitions>, void, unknown>;
+  /**
+   * Validate event data against schema
+   */
+  validate<TEvent extends EventKeys<TEventDefinitions>>(
+    event: TEvent,
+    data: unknown
+  ): Promise<InferEventTypes<TEventDefinitions>[TEvent]>;
 }
 
 /**
@@ -383,10 +381,10 @@ export type ExtractEventDefinitions<T> =
  * Plugin definition type
  */
 export interface RealtimePlugin<TEventDefinitions extends EventDefinitions> {
-  /** Plugin name */
-  name: string;
   /** Event definitions provided by this plugin */
   definitions: TEventDefinitions;
   /** Optional helper functions */
   helpers?: Record<string, (...args: unknown[]) => unknown>;
+  /** Plugin name */
+  name: string;
 }

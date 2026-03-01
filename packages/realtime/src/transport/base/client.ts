@@ -29,9 +29,9 @@ export type AnyEventHandler<TEventDefinitions extends EventDefinitions> = <
  * Reconnection configuration extracted from options
  */
 export interface ReconnectConfig {
+  delay: number;
   enabled: boolean;
   maxAttempts: number;
-  delay: number;
   maxDelay: number;
   multiplier: number;
 }

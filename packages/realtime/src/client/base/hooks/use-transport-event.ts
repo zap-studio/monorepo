@@ -13,10 +13,10 @@ export interface UseTransportEventReturn<
   TEventDefinitions extends EventDefinitions,
   TEvent extends EventKeys<TEventDefinitions>,
 > {
-  /** Latest event data received */
-  data: InferEventTypes<TEventDefinitions>[TEvent] | null;
   /** Whether currently connected */
   connected: boolean;
+  /** Latest event data received */
+  data: InferEventTypes<TEventDefinitions>[TEvent] | null;
   /** Last error if any */
   error: Error | null;
 }

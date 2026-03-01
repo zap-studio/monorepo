@@ -13,14 +13,14 @@ export interface UseTransportEventHistoryReturn<
   TEventDefinitions extends EventDefinitions,
   TEvent extends EventKeys<TEventDefinitions>,
 > {
-  /** Array of received events */
-  events: InferEventTypes<TEventDefinitions>[TEvent][];
+  /** Clear the event history */
+  clear: () => void;
   /** Whether currently connected */
   connected: boolean;
   /** Last error if any */
   error: Error | null;
-  /** Clear the event history */
-  clear: () => void;
+  /** Array of received events */
+  events: InferEventTypes<TEventDefinitions>[TEvent][];
 }
 
 /**

@@ -17,12 +17,8 @@ import { handleSubscription } from "./utils";
  * Users must provide their own Redis client instance
  */
 export interface RedisClient {
-  /* Publish a message to a Redis channel */
-  publish(channel: string, message: string): Promise<number>;
-  /* Subscribe to a Redis channel */
-  subscribe(channel: string): Promise<void>;
-  /* Unsubscribe from a Redis channel */
-  unsubscribe(channel: string): Promise<void>;
+  /* Duplicate the Redis client with same configuration */
+  duplicate(): RedisClient;
   /* Register an event listener for Redis client events */
   on(
     event: "message",
@@ -30,24 +26,28 @@ export interface RedisClient {
   ): void;
   /* Register an error handler for the Redis client */
   on(event: "error", callback: (error: Error) => void): void;
+  /* Publish a message to a Redis channel */
+  publish(channel: string, message: string): Promise<number>;
   /* Close the Redis connection */
   quit(): Promise<void>;
-  /* Duplicate the Redis client with same configuration */
-  duplicate(): RedisClient;
+  /* Subscribe to a Redis channel */
+  subscribe(channel: string): Promise<void>;
+  /* Unsubscribe from a Redis channel */
+  unsubscribe(channel: string): Promise<void>;
 }
 
 /**
  * Redis emitter options
  */
 export interface RedisEmitterOptions {
-  /** Redis client for publishing */
-  publisher: RedisClient;
-  /** Redis client for subscribing (will be the same as publisher if not provided) */
-  subscriber?: RedisClient;
   /** Channel prefix for all pub/sub channels */
   channelPrefix?: string;
   /** Default channel name when none specified */
   defaultChannel?: string;
+  /** Redis client for publishing */
+  publisher: RedisClient;
+  /** Redis client for subscribing (will be the same as publisher if not provided) */
+  subscriber?: RedisClient;
 }
 
 /**
