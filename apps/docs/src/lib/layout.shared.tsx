@@ -5,7 +5,14 @@ import {
   NavbarMenuTrigger,
 } from "fumadocs-ui/layouts/home/navbar";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
-import { HeartIcon } from "lucide-react";
+import {
+  BadgeCheckIcon,
+  GlobeIcon,
+  HeartIcon,
+  LaptopIcon,
+  LockIcon,
+  MapIcon,
+} from "lucide-react";
 import type { ReactNode } from "react";
 
 function NavTitle(): ReactNode {
@@ -13,16 +20,21 @@ function NavTitle(): ReactNode {
 }
 
 function NavbarMenuItemContent({
-  text,
   description,
+  icon,
+  text,
 }: {
-  text: string;
   description: string;
+  icon: ReactNode;
+  text: string;
 }): ReactNode {
   return (
-    <div className="flex flex-col gap-0.5">
-      <p className="font-medium text-sm">{text}</p>
-      <p className="text-fd-muted-foreground text-xs">{description}</p>
+    <div className="flex items-start gap-3">
+      <span className="mt-0.5 shrink-0 text-fd-primary">{icon}</span>
+      <div className="flex flex-col gap-0.5">
+        <p className="font-medium text-sm">{text}</p>
+        <p className="text-fd-muted-foreground text-xs">{description}</p>
+      </div>
     </div>
   );
 }
@@ -73,6 +85,7 @@ export function homeLinks(
             <NavbarMenuLink href="/docs/local-ts">
               <NavbarMenuItemContent
                 description="Desktop app template built on Tauri + Next.js."
+                icon={<LaptopIcon className="size-4" />}
                 text="Local.ts"
               />
             </NavbarMenuLink>
@@ -90,24 +103,33 @@ export function homeLinks(
             <NavbarMenuLink href="/docs/packages/fetch">
               <NavbarMenuItemContent
                 description="Type-safe fetch wrapper with Standard Schema validation."
+                icon={<GlobeIcon className="size-4" />}
                 text="fetch"
               />
             </NavbarMenuLink>
             <NavbarMenuLink href="/docs/packages/permit">
               <NavbarMenuItemContent
                 description="Declarative authorization library with composable conditions."
+                icon={<LockIcon className="size-4" />}
                 text="permit"
               />
             </NavbarMenuLink>
             <NavbarMenuLink href="/docs/packages/validation">
               <NavbarMenuItemContent
                 description="Standard Schema utilities and ValidationError helpers."
+                icon={<BadgeCheckIcon className="size-4" />}
                 text="validation"
               />
             </NavbarMenuLink>
           </NavbarMenuContent>
         </NavbarMenu>
       ),
+    },
+    {
+      text: "Roadmap",
+      url: "/roadmap",
+      icon: <MapIcon className="size-4" />,
+      active: "nested-url",
     },
     {
       text: "Sponsors",
@@ -125,12 +147,14 @@ export function homeLinks(
             <NavbarMenuLink href="/llms.txt">
               <NavbarMenuItemContent
                 description="Compact index of all documentation pages."
+                icon={<GlobeIcon className="size-4" />}
                 text="llms.txt"
               />
             </NavbarMenuLink>
             <NavbarMenuLink href="/llms-full.txt">
               <NavbarMenuItemContent
                 description="Full content of all documentation pages."
+                icon={<GlobeIcon className="size-4" />}
                 text="llms-full.txt"
               />
             </NavbarMenuLink>

@@ -5,12 +5,9 @@ import { baseOptions, homeLinks } from "@/lib/layout.shared";
 
 export default function Layout({
   children,
-}: LayoutProps<"/sponsors">): ReactNode {
+}: LayoutProps<"/roadmap">): ReactNode {
   return (
-    <HomeLayout
-      {...baseOptions()}
-      links={homeLinks({ sponsorsActiveMode: "url" })}
-    >
+    <HomeLayout {...baseOptions()} links={homeLinks()}>
       {children}
       <FooterSection />
     </HomeLayout>
