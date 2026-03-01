@@ -1,0 +1,199 @@
+---
+title: Settings
+description: Persistent settings system with type-safe APIs and a pre-built Settings page.
+---
+
+Local.ts includes a complete settings system with persistent storage, type-safe APIs, and a pre-built Settings page.
+
+## Understanding the Settings System
+
+Settings in Local.ts flow through a layered architecture:
+
+1. **Models** (`database/models/settings.rs`) — Data structures and type definitions
+2. **Services** (`services/settings.rs`) — Database operations (get/update settings)
+3. **Commands** (`commands/settings.rs`) — Tauri handlers that call services
+4. **Frontend** — Zustand store and React hooks
+
+When you update a setting, it flows from the frontend through commands and services to the database, then syncs back to the UI.
+
+## Available Settings
+
+| Category | Setting | Description | Default |
+|----------|---------|-------------|---------|
+| Appearance | Theme | Light, dark, or system | `system` |
+| | Sidebar Expanded | Keep sidebar open | `true` |
+| Behavior | Show in System Tray | Display tray icon | `true` |
+| | Launch at Login | Auto-start with system | `false` |
+| Notifications | Enable Notifications | Allow native notifications | `true` |
+| Developer | Enable Logging | Record application logs | `true` |
+| | Log Level | Minimum severity to log | `info` |
+
+## Reading Settings
+
+Use the `useSettings` hook to access settings in your components:
+
+```typescript
+import { useSettings } from "@/stores/settings";
+
+function MyComponent() {
+  const settings = useSettings((state) => state.settings);
+
+  if (!settings) return null;
+
+  return (
+    <div>
+      <p>Current theme: {settings.theme}</p>
+      <p>Logging enabled: {settings.enableLogging ? "Yes" : "No"}</p>
+    </div>
+  );
+}
+```
+
+## Updating Settings
+
+Call `updateSettings` with a partial settings object. Only the fields you provide will be updated:
+
+```typescript
+import { useSettings } from "@/stores/settings";
+
+function ThemeToggle() {
+  const updateSettings = useSettings((state) => state.updateSettings);
+
+  const switchToDark = async () => {
+    await updateSettings({ theme: "dark" });
+  };
+
+  return <button type="button" onClick={switchToDark}>Dark Mode</button>;
+}
+```
+
+You can update multiple settings at once:
+
+```typescript
+await updateSettings({
+  theme: "light",
+  enableLogging: true,
+  logLevel: "debug",
+});
+```
+
+## Accessing Settings Outside React
+
+For non-React code, access the store directly:
+
+```typescript
+import { useSettings } from "@/stores/settings";
+
+// Get current settings
+const settings = useSettings.getState().settings;
+
+// Update settings
+await useSettings.getState().updateSettings({ theme: "dark" });
+```
+
+## TypeScript Types
+
+Settings have full TypeScript support. Import the types for use in your code:
+
+```typescript
+import type { Settings, SettingsUpdate, Theme, LogLevel } from "@/lib/tauri/settings/types";
+
+// Theme: "light" | "dark" | "system"
+// LogLevel: "error" | "warn" | "info" | "debug" | "trace"
+
+function processSettings(settings: Settings) {
+  console.log(settings.theme);
+}
+```
+
+The `Settings` interface:
+
+```typescript
+interface Settings {
+  theme: Theme;
+  sidebarExpanded: boolean;
+  showInTray: boolean;
+  launchAtLogin: boolean;
+  enableLogging: boolean;
+  logLevel: LogLevel;
+  enableNotifications: boolean;
+}
+```
+
+## Adding New Settings
+
+To add a new setting, you need to update both the backend and frontend.
+
+### 1. Create a Database Migration
+
+Generate a new migration:
+
+```bash
+cd src-tauri
+diesel migration generate add_my_setting
+```
+
+Write the SQL in `up.sql`:
+
+```sql
+ALTER TABLE settings ADD COLUMN my_setting INTEGER NOT NULL DEFAULT 0;
+```
+
+And the rollback in `down.sql`:
+
+```sql
+ALTER TABLE settings DROP COLUMN my_setting;
+```
+
+Run the migration:
+
+```bash
+diesel migration run
+```
+
+### 2. Update the Rust Models
+
+In `src-tauri/src/database/models/settings.rs`, add the field to each struct:
+
+```rust
+// In SettingsRow
+pub struct SettingsRow {
+    // ... existing fields
+    pub my_setting: i32,
+}
+
+// In Settings
+pub struct Settings {
+    // ... existing fields
+    pub my_setting: bool,
+}
+
+// In SettingsUpdate
+pub struct SettingsUpdate {
+    // ... existing fields
+    pub my_setting: Option<bool>,
+}
+
+// In SettingsChangeset
+pub struct SettingsChangeset {
+    // ... existing fields
+    pub my_setting: Option<i32>,
+}
+```
+
+Update the `from_row` and `From<SettingsUpdate>` implementations to handle the new field.
+
+### 3. Update TypeScript Types
+
+In `src/lib/tauri/settings/types.ts`:
+
+```typescript
+export interface Settings {
+  // ... existing fields
+  mySetting: boolean;
+}
+```
+
+### 4. Add UI Controls
+
+Add a toggle or input in `src/routes/settings.tsx` for users to modify the setting.
