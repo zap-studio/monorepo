@@ -1,4 +1,4 @@
 {
   "title": "Packages",
-  "pages": ["fetch", "permit", "validation"]
+  "pages": ["index", "fetch", "permit", "validation"]
 }

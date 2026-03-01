@@ -1,5 +1,6 @@
 {
   "title": "@zap-studio/permit",
+  "root": true,
   "pages": [
     "index",
     "creating-policies",
