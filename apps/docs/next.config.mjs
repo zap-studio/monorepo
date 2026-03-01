@@ -14,6 +14,30 @@ const config = {
       },
     ]);
   },
+  async redirects() {
+    return await Promise.resolve([
+      {
+        source: "/local-ts",
+        destination: "/docs/local-ts",
+        permanent: true,
+      },
+      {
+        source: "/packages/fetch",
+        destination: "/docs/packages/fetch",
+        permanent: true,
+      },
+      {
+        source: "/packages/permit",
+        destination: "/docs/packages/permit",
+        permanent: true,
+      },
+      {
+        source: "/packages/validation",
+        destination: "/docs/packages/validation",
+        permanent: true,
+      },
+    ]);
+  },
 };
 
 export default withMDX(config);
