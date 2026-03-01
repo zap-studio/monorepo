@@ -1,5 +1,5 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
-import { BookIcon, BotIcon, BoxIcon } from "lucide-react";
+import { BookIcon, BotIcon, BoxIcon, HeartIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 function NavTitle(): ReactNode {
@@ -99,6 +99,17 @@ export function baseOptions(): BaseLayoutProps {
             },
           },
         ],
+      },
+      {
+        type: "custom",
+        on: "nav",
+        children: <Separator />,
+      },
+      {
+        text: "Sponsors",
+        url: "/sponsors",
+        icon: <HeartIcon />,
+        active: "url",
       },
       {
         type: "custom",

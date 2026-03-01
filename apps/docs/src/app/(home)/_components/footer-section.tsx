@@ -49,6 +49,10 @@ const footerColumns: FooterColumn[] = [
         href: "https://discord.gg/8Ke3VCjjMf",
         external: true,
       },
+      {
+        label: "Sponsors",
+        href: "/sponsors",
+      },
     ],
   },
 ];
