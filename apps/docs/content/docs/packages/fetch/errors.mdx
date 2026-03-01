@@ -1,0 +1,228 @@
+---
+title: Error Handling
+description: Handle HTTP and validation errors with FetchError and ValidationError in @zap-studio/fetch.
+---
+
+`@zap-studio/fetch` provides two specialized error classes for granular error handling: `FetchError` for HTTP errors and `ValidationError` for schema validation failures.
+
+## Why Custom Error Classes?
+
+When fetching data, many things can go wrong:
+
+- **Network errors** — Connection failed, timeout, DNS issues
+- **HTTP errors** — 404 Not Found, 401 Unauthorized, 500 Server Error
+- **Validation errors** — API returned data that doesn't match your schema
+
+Custom error classes let you handle each case appropriately:
+
+```typescript
+try {
+  const user = await api.get("/users/1", UserSchema);
+} catch (error) {
+  if (error instanceof FetchError) {
+    // HTTP error - check status code
+  } else if (error instanceof ValidationError) {
+    // Data doesn't match schema
+  } else {
+    // Network or other error
+  }
+}
+```
+
+## Importing Error Classes
+
+```typescript
+import { FetchError, ValidationError } from "@zap-studio/fetch/errors";
+```
+
+## FetchError
+
+Thrown when the HTTP response status is not ok (non-2xx status codes) and `throwOnFetchError` is `true` (default).
+
+### Properties
+
+| Property | Type | Description |
+| -------- | ---- | ----------- |
+| `name` | `string` | Always `"FetchError"` |
+| `message` | `string` | Error message with status info |
+| `status` | `number` | HTTP status code |
+| `response` | `Response` | The full Response object |
+
+### Basic Example
+
+```typescript
+import { api } from "@zap-studio/fetch";
+import { FetchError } from "@zap-studio/fetch/errors";
+
+try {
+  const user = await api.get("/api/users/999", UserSchema);
+} catch (error) {
+  if (error instanceof FetchError) {
+    console.error(`HTTP Error ${error.status}: ${error.message}`);
+
+    // Access the full response
+    const body = await error.response.text();
+    console.error("Response body:", body);
+
+    // Handle specific status codes
+    if (error.status === 404) {
+      console.log("User not found");
+    } else if (error.status === 401) {
+      console.log("Unauthorized - please log in");
+    }
+  }
+}
+```
+
+## ValidationError
+
+Thrown when schema validation fails and `throwOnValidationError` is `true` (default).
+
+### Properties
+
+| Property | Type | Description |
+| -------- | ---- | ----------- |
+| `name` | `string` | Always `"ValidationError"` |
+| `message` | `string` | JSON-formatted validation issues |
+| `issues` | `StandardSchemaV1.Issue[]` | Array of validation issues |
+
+### Issue Structure
+
+Each issue follows the Standard Schema format:
+
+```typescript
+interface Issue {
+  message: string;      // Human-readable error message
+  path?: PropertyKey[]; // Path to the invalid field
+}
+```
+
+### Basic Example
+
+```typescript
+import { api } from "@zap-studio/fetch";
+import { ValidationError } from "@zap-studio/fetch/errors";
+
+try {
+  const user = await api.get("/api/users/1", UserSchema);
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.error("Validation failed!");
+
+    for (const issue of error.issues) {
+      const path = issue.path?.join(".") ?? "root";
+      console.error(`  - ${path}: ${issue.message}`);
+    }
+  }
+}
+```
+
+## Combined Error Handling
+
+Handle both error types in a single try-catch:
+
+```typescript
+import { z } from "zod";
+import { api } from "@zap-studio/fetch";
+import { FetchError, ValidationError } from "@zap-studio/fetch/errors";
+
+const UserSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+});
+
+type FetchResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: string; code: string };
+
+async function safeGetUser(id: string): Promise<FetchResult<z.infer<typeof UserSchema>>> {
+  try {
+    const data = await api.get(`/api/users/${id}`, UserSchema);
+    return { success: true, data };
+  } catch (error) {
+    if (error instanceof FetchError) {
+      if (error.status === 404) {
+        return { success: false, error: "User not found", code: "NOT_FOUND" };
+      }
+      if (error.status === 401) {
+        return { success: false, error: "Please log in", code: "UNAUTHORIZED" };
+      }
+      return { success: false, error: `Server error: ${error.status}`, code: "SERVER_ERROR" };
+    }
+
+    if (error instanceof ValidationError) {
+      return {
+        success: false,
+        error: "Invalid data received from server",
+        code: "VALIDATION_ERROR",
+      };
+    }
+
+    return { success: false, error: "Network error", code: "NETWORK_ERROR" };
+  }
+}
+
+// Usage
+const result = await safeGetUser("123");
+
+if (result.success) {
+  console.log(`Hello, ${result.data.name}!`);
+} else {
+  console.error(`[${result.code}] ${result.error}`);
+}
+```
+
+## Disabling Error Throwing
+
+You can disable automatic error throwing to handle errors manually.
+
+### Disabling FetchError
+
+```typescript
+const response = await $fetch("/api/users/999", {
+  throwOnFetchError: false,
+});
+
+// Check status manually
+if (!response.ok) {
+  console.log("Request failed:", response.status);
+}
+```
+
+### Disabling ValidationError
+
+When disabled, validation returns a Result object instead of throwing:
+
+```typescript
+const result = await $fetch("/api/users/1", UserSchema, {
+  throwOnValidationError: false,
+});
+
+if (result.issues) {
+  // Validation failed
+  console.error("Validation issues:", result.issues);
+} else {
+  // Validation succeeded
+  console.log("User:", result.value);
+}
+```
+
+### Result Type
+
+When `throwOnValidationError` is `false`, the return type is a Standard Schema Result:
+
+```typescript
+type Result<T> =
+  | { value: T; issues?: undefined }
+  | { value?: undefined; issues: Issue[] };
+```
+
+## Best Practices
+
+1. **Always handle both error types** when making API calls
+2. **Use specific error handlers** for different status codes
+3. **Log validation issues** to help debug API response changes
+4. **Consider disabling throws** for expected error cases (like 404s)
+5. **Re-throw unexpected errors** to avoid silently swallowing issues
+6. **Parse error responses** to get structured error information from APIs

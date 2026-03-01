@@ -1,0 +1,13 @@
+{
+  "title": "@zap-studio/permit",
+  "root": true,
+  "pages": [
+    "index",
+    "creating-policies",
+    "policy-rules",
+    "conditions",
+    "roles",
+    "merging-policies",
+    "errors"
+  ]
+}
