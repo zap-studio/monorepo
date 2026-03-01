@@ -11,11 +11,27 @@ catalogs:
     typescript: ^5.9.3
     valibot: ^1.2.0
     zod: ^4.2.0
+  fumadocs:
+    fumadocs-core: ^16.6.8
+    fumadocs-mdx: ^14.2.9
+    fumadocs-ui: ^16.6.8
   linting:
     '@biomejs/biome': ^2.4.4
     '@commitlint/cli': ^20.4.2
     '@commitlint/config-conventional': ^20.4.2
     ultracite: ^7.2.4
+  next:
+    '@takumi-rs/image-response': ^0.69.5
+    next: ^16.1.6
+  react:
+    lucide-react: ^0.575.0
+    react: ^19.2.4
+    react-dom: ^19.2.4
+  styling:
+    '@tailwindcss/postcss': ^4.2.1
+    postcss: ^8.5.6
+    tailwind-merge: ^3.5.0
+    tailwindcss: ^4.2.1
   testing:
     '@vitest/coverage-v8': ^4.0.15
     '@vitest/ui': ^4.0.18
@@ -28,7 +44,10 @@ catalogs:
     rimraf: ^6.1.3
     turbo: ^2.8.12
   types:
+    '@types/mdx': ^2.0.13
     '@types/node': ^25.0.2
+    '@types/react': ^19.2.14
+    '@types/react-dom': ^19.2.3
   vitepress:
     '@shikijs/vitepress-twoslash': ^3.20.0
     vitepress: ^2.0.0-alpha.15

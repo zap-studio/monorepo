@@ -24,6 +24,16 @@ catalogs:
     zod:
       specifier: ^4.2.0
       version: 4.2.0
+  fumadocs:
+    fumadocs-core:
+      specifier: ^16.6.8
+      version: 16.6.8
+    fumadocs-mdx:
+      specifier: ^14.2.9
+      version: 14.2.9
+    fumadocs-ui:
+      specifier: ^16.6.8
+      version: 16.6.8
   linting:
     '@biomejs/biome':
       specifier: ^2.4.4
@@ -37,6 +47,36 @@ catalogs:
     ultracite:
       specifier: ^7.2.4
       version: 7.2.4
+  next:
+    '@takumi-rs/image-response':
+      specifier: ^0.69.5
+      version: 0.69.5
+    next:
+      specifier: ^16.1.6
+      version: 16.1.6
+  react:
+    lucide-react:
+      specifier: ^0.575.0
+      version: 0.575.0
+    react:
+      specifier: ^19.2.4
+      version: 19.2.4
+    react-dom:
+      specifier: ^19.2.4
+      version: 19.2.4
+  styling:
+    '@tailwindcss/postcss':
+      specifier: ^4.2.1
+      version: 4.2.1
+    postcss:
+      specifier: ^8.5.6
+      version: 8.5.6
+    tailwind-merge:
+      specifier: ^3.5.0
+      version: 3.5.0
+    tailwindcss:
+      specifier: ^4.2.1
+      version: 4.2.1
   testing:
     '@vitest/coverage-v8':
       specifier: ^4.0.15
@@ -67,9 +107,18 @@ catalogs:
       specifier: ^2.8.12
       version: 2.8.12
   types:
+    '@types/mdx':
+      specifier: ^2.0.13
+      version: 2.0.13
     '@types/node':
       specifier: ^25.0.2
       version: 25.0.2
+    '@types/react':
+      specifier: ^19.2.14
+      version: 19.2.14
+    '@types/react-dom':
+      specifier: ^19.2.3
+      version: 19.2.3
   vitepress:
     '@shikijs/vitepress-twoslash':
       specifier: ^3.20.0
@@ -140,56 +189,56 @@ importers:
   apps/new-docs:
     dependencies:
       '@takumi-rs/image-response':
-        specifier: ^0.69.5
+        specifier: catalog:next
         version: 0.69.5
       fumadocs-core:
-        specifier: 16.6.8
+        specifier: catalog:fumadocs
         version: 16.6.8(@mdx-js/mdx@3.1.1)(@types/estree-jsx@1.0.5)(@types/hast@3.0.4)(@types/mdast@4.0.4)(@types/react@19.2.14)(algoliasearch@5.46.0)(lucide-react@0.575.0(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       fumadocs-mdx:
-        specifier: 14.2.9
-        version: 14.2.9(@types/mdast@4.0.4)(@types/mdx@2.0.13)(@types/react@19.2.14)(fumadocs-core@16.6.8(@mdx-js/mdx@3.1.1)(@types/estree-jsx@1.0.5)(@types/hast@3.0.4)(@types/mdast@4.0.4)(@types/react@19.2.14)(algoliasearch@5.46.0)(lucide-react@0.575.0(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
+        specifier: catalog:fumadocs
+        version: 14.2.9(@types/mdast@4.0.4)(@types/mdx@2.0.13)(@types/react@19.2.14)(fumadocs-core@16.6.8(@mdx-js/mdx@3.1.1)(@types/estree-jsx@1.0.5)(@types/hast@3.0.4)(@types/mdast@4.0.4)(@types/react@19.2.14)(algoliasearch@5.46.0)(lucide-react@0.575.0(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(vite@7.3.1(@types/node@25.0.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
       fumadocs-ui:
-        specifier: 16.6.8
+        specifier: catalog:fumadocs
         version: 16.6.8(@takumi-rs/image-response@0.69.5)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(fumadocs-core@16.6.8(@mdx-js/mdx@3.1.1)(@types/estree-jsx@1.0.5)(@types/hast@3.0.4)(@types/mdast@4.0.4)(@types/react@19.2.14)(algoliasearch@5.46.0)(lucide-react@0.575.0(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.1)
       lucide-react:
-        specifier: ^0.575.0
+        specifier: catalog:react
         version: 0.575.0(react@19.2.4)
       next:
-        specifier: 16.1.6
+        specifier: catalog:next
         version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
-        specifier: ^19.2.4
+        specifier: catalog:react
         version: 19.2.4
       react-dom:
-        specifier: ^19.2.4
+        specifier: catalog:react
         version: 19.2.4(react@19.2.4)
       tailwind-merge:
-        specifier: ^3.5.0
+        specifier: catalog:styling
         version: 3.5.0
     devDependencies:
       '@tailwindcss/postcss':
-        specifier: ^4.2.1
+        specifier: catalog:styling
         version: 4.2.1
       '@types/mdx':
-        specifier: ^2.0.13
+        specifier: catalog:types
         version: 2.0.13
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: catalog:types
+        version: 25.0.2
       '@types/react':
-        specifier: ^19.2.14
+        specifier: catalog:types
         version: 19.2.14
       '@types/react-dom':
-        specifier: ^19.2.3
+        specifier: catalog:types
         version: 19.2.3(@types/react@19.2.14)
       postcss:
-        specifier: ^8.5.6
+        specifier: catalog:styling
         version: 8.5.6
       tailwindcss:
-        specifier: ^4.2.1
+        specifier: catalog:styling
         version: 4.2.1
       typescript:
-        specifier: ^5.9.3
+        specifier: catalog:base
         version: 5.9.3
 
   configs/tsdown-config:
@@ -9283,7 +9332,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  fumadocs-mdx@14.2.9(@types/mdast@4.0.4)(@types/mdx@2.0.13)(@types/react@19.2.14)(fumadocs-core@16.6.8(@mdx-js/mdx@3.1.1)(@types/estree-jsx@1.0.5)(@types/hast@3.0.4)(@types/mdast@4.0.4)(@types/react@19.2.14)(algoliasearch@5.46.0)(lucide-react@0.575.0(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)):
+  fumadocs-mdx@14.2.9(@types/mdast@4.0.4)(@types/mdx@2.0.13)(@types/react@19.2.14)(fumadocs-core@16.6.8(@mdx-js/mdx@3.1.1)(@types/estree-jsx@1.0.5)(@types/hast@3.0.4)(@types/mdast@4.0.4)(@types/react@19.2.14)(algoliasearch@5.46.0)(lucide-react@0.575.0(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(vite@7.3.1(@types/node@25.0.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)):
     dependencies:
       '@mdx-js/mdx': 3.1.1
       '@standard-schema/spec': 1.1.0
@@ -9309,7 +9358,7 @@ snapshots:
       '@types/react': 19.2.14
       next: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
-      vite: 7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
+      vite: 7.3.1(@types/node@25.0.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -11758,6 +11807,24 @@ snapshots:
       terser: 5.44.1
       tsx: 4.21.0
       yaml: 2.8.2
+
+  vite@7.3.1(@types/node@25.0.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2):
+    dependencies:
+      esbuild: 0.27.2
+      fdir: 6.5.0(picomatch@4.0.3)
+      picomatch: 4.0.3
+      postcss: 8.5.6
+      rollup: 4.55.2
+      tinyglobby: 0.2.15
+    optionalDependencies:
+      '@types/node': 25.0.2
+      fsevents: 2.3.3
+      jiti: 2.6.1
+      lightningcss: 1.31.1
+      terser: 5.44.1
+      tsx: 4.21.0
+      yaml: 2.8.2
+    optional: true
 
   vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
