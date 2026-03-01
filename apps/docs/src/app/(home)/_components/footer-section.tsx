@@ -133,10 +133,10 @@ export function FooterSection(): ReactNode {
 function FooterColumnGroup({ heading, links }: FooterColumn): ReactNode {
   return (
     <div>
-      <p className="mb-4 font-serif text-fd-foreground/70 text-xs uppercase leading-5 tracking-widest">
+      <p className="mb-2 font-serif text-fd-foreground/70 text-xs uppercase leading-5 tracking-widest md:mb-4">
         {heading}
       </p>
-      <ul className="flex flex-col gap-1">
+      <ul className="flex flex-col md:gap-1">
         {links.map((link) => (
           <FooterLinkItem
             external={link.external}
@@ -154,7 +154,7 @@ function FooterLinkItem({ href, label, external }: FooterLink): ReactNode {
   return (
     <li>
       <Link
-        className="block truncate text-fd-muted-foreground text-sm leading-7 transition-colors duration-200 hover:text-fd-foreground"
+        className="block truncate text-fd-muted-foreground text-xs leading-7 transition-colors duration-200 hover:text-fd-foreground md:text-sm"
         href={href}
         {...(external ? { target: "_blank", rel: "noopener" } : {})}
       >
