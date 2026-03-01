@@ -19,9 +19,9 @@ const footerColumns: FooterColumn[] = [
   {
     heading: "Packages",
     links: [
-      { label: "@zap-studio/fetch", href: "/docs/packages/fetch" },
-      { label: "@zap-studio/permit", href: "/docs/packages/permit" },
-      { label: "@zap-studio/validation", href: "/docs/packages/validation" },
+      { label: "fetch", href: "/docs/packages/fetch" },
+      { label: "permit", href: "/docs/packages/permit" },
+      { label: "validation", href: "/docs/packages/validation" },
     ],
   },
   {

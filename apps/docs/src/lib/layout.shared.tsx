@@ -1,21 +1,18 @@
+import {
+  NavbarMenu,
+  NavbarMenuContent,
+  NavbarMenuLink,
+  NavbarMenuTrigger,
+} from "fumadocs-ui/layouts/home/navbar";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
-import { BookIcon, BotIcon, BoxIcon, HeartIcon } from "lucide-react";
+import { HeartIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 function NavTitle(): ReactNode {
   return <span className="font-serif text-lg tracking-tight">Zap Studio</span>;
 }
 
-function Separator(): ReactNode {
-  return (
-    <div
-      aria-hidden="true"
-      className="mx-2 hidden h-4 w-px bg-fd-border lg:block"
-    />
-  );
-}
-
-function MenuItemContent({
+function NavbarMenuItemContent({
   text,
   description,
 }: {
@@ -23,10 +20,10 @@ function MenuItemContent({
   description: string;
 }): ReactNode {
   return (
-    <>
+    <div className="flex flex-col gap-0.5">
       <p className="font-medium text-sm">{text}</p>
       <p className="text-fd-muted-foreground text-xs">{description}</p>
-    </>
+    </div>
   );
 }
 
@@ -44,120 +41,9 @@ export function baseOptions(): BaseLayoutProps {
     githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
     links: [
       {
-        text: "Local.ts",
-        url: "/docs/local-ts",
-        icon: <BookIcon />,
-        active: "nested-url",
-        on: "nav",
-      },
-      {
-        type: "custom",
-        on: "nav",
-        children: <Separator />,
-      },
-      {
-        type: "menu",
-        text: "Packages",
-        icon: <BoxIcon />,
-        on: "nav",
-        items: [
-          {
-            text: "@zap-studio/fetch",
-            url: "/docs/packages/fetch",
-            menu: {
-              className: "border-none bg-transparent p-2 hover:bg-fd-accent/60",
-              children: (
-                <MenuItemContent
-                  description="Type-safe fetch wrapper with Standard Schema validation."
-                  text="@zap-studio/fetch"
-                />
-              ),
-            },
-          },
-          {
-            text: "@zap-studio/permit",
-            url: "/docs/packages/permit",
-            menu: {
-              className: "border-none bg-transparent p-2 hover:bg-fd-accent/60",
-              children: (
-                <MenuItemContent
-                  description="Declarative authorization library with composable conditions."
-                  text="@zap-studio/permit"
-                />
-              ),
-            },
-          },
-          {
-            text: "@zap-studio/validation",
-            url: "/docs/packages/validation",
-            menu: {
-              className: "border-none bg-transparent p-2 hover:bg-fd-accent/60",
-              children: (
-                <MenuItemContent
-                  description="Standard Schema utilities and ValidationError helpers."
-                  text="@zap-studio/validation"
-                />
-              ),
-            },
-          },
-        ],
-      },
-      {
-        type: "custom",
-        on: "nav",
-        children: <Separator />,
-      },
-      {
-        text: "Sponsors",
-        url: "/sponsors",
-        icon: <HeartIcon />,
-        active: "url",
-        on: "nav",
-      },
-      {
-        type: "custom",
-        on: "nav",
-        children: <Separator />,
-      },
-      {
-        type: "menu",
-        text: "llms.txt",
-        icon: <BotIcon />,
-        on: "nav",
-        items: [
-          {
-            text: "llms.txt",
-            url: "/llms.txt",
-            menu: {
-              className: "border-none bg-transparent p-2 hover:bg-fd-accent/60",
-              children: (
-                <MenuItemContent
-                  description="Compact index of all documentation pages."
-                  text="llms.txt"
-                />
-              ),
-            },
-          },
-          {
-            text: "llms-full.txt",
-            url: "/llms-full.txt",
-            menu: {
-              className: "border-none bg-transparent p-2 hover:bg-fd-accent/60",
-              children: (
-                <MenuItemContent
-                  description="Full content of all documentation pages."
-                  text="llms-full.txt"
-                />
-              ),
-            },
-          },
-        ],
-      },
-      {
         type: "icon",
         text: "Discord",
         url: "https://discord.gg/8Ke3VCjjMf",
-        on: "nav",
         icon: (
           <svg fill="currentColor" role="img" viewBox="0 0 24 24">
             <title>Discord</title>
@@ -168,4 +54,89 @@ export function baseOptions(): BaseLayoutProps {
       },
     ],
   };
+}
+
+export function homeLinks(
+  options: { sponsorsActiveMode?: "url" | "nested-url" | "none" } = {}
+): BaseLayoutProps["links"] {
+  const { sponsorsActiveMode = "nested-url" } = options;
+
+  return [
+    ...(baseOptions().links ?? []),
+    {
+      type: "custom",
+      on: "nav",
+      children: (
+        <NavbarMenu>
+          <NavbarMenuTrigger>Templates</NavbarMenuTrigger>
+          <NavbarMenuContent>
+            <NavbarMenuLink href="/docs/local-ts">
+              <NavbarMenuItemContent
+                description="Desktop app template built on Tauri + Next.js."
+                text="Local.ts"
+              />
+            </NavbarMenuLink>
+          </NavbarMenuContent>
+        </NavbarMenu>
+      ),
+    },
+    {
+      type: "custom",
+      on: "nav",
+      children: (
+        <NavbarMenu>
+          <NavbarMenuTrigger>Packages</NavbarMenuTrigger>
+          <NavbarMenuContent>
+            <NavbarMenuLink href="/docs/packages/fetch">
+              <NavbarMenuItemContent
+                description="Type-safe fetch wrapper with Standard Schema validation."
+                text="fetch"
+              />
+            </NavbarMenuLink>
+            <NavbarMenuLink href="/docs/packages/permit">
+              <NavbarMenuItemContent
+                description="Declarative authorization library with composable conditions."
+                text="permit"
+              />
+            </NavbarMenuLink>
+            <NavbarMenuLink href="/docs/packages/validation">
+              <NavbarMenuItemContent
+                description="Standard Schema utilities and ValidationError helpers."
+                text="validation"
+              />
+            </NavbarMenuLink>
+          </NavbarMenuContent>
+        </NavbarMenu>
+      ),
+    },
+    {
+      text: "Sponsors",
+      url: "/sponsors",
+      icon: <HeartIcon className="size-4" />,
+      active: sponsorsActiveMode,
+    },
+    {
+      type: "custom",
+      on: "nav",
+      children: (
+        <NavbarMenu>
+          <NavbarMenuTrigger>llms.txt</NavbarMenuTrigger>
+          <NavbarMenuContent>
+            <NavbarMenuLink href="/llms.txt">
+              <NavbarMenuItemContent
+                description="Compact index of all documentation pages."
+                text="llms.txt"
+              />
+            </NavbarMenuLink>
+            <NavbarMenuLink href="/llms-full.txt">
+              <NavbarMenuItemContent
+                description="Full content of all documentation pages."
+                text="llms-full.txt"
+              />
+            </NavbarMenuLink>
+          </NavbarMenuContent>
+        </NavbarMenu>
+      ),
+    },
+  ];
 }

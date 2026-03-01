@@ -1,9 +1,9 @@
 ---
 title: Validation
-description: Runtime response validation using Standard Schema in @zap-studio/fetch.
+description: Runtime response validation using Standard Schema in fetch.
 ---
 
-`@zap-studio/fetch` uses [Standard Schema](https://standardschema.dev/) for runtime validation, which means it works with any schema library that implements the Standard Schema specification.
+`fetch` uses [Standard Schema](https://standardschema.dev/) for runtime validation, which means it works with any schema library that implements the Standard Schema specification.
 
 ## Why Validation Matters
 
@@ -17,7 +17,7 @@ const user = await fetch("/api/users/1").then((r) => r.json()) as User;
 user.id + 1; // "1231" instead of 124 😱
 ```
 
-With `@zap-studio/fetch`, you get runtime validation that catches these issues immediately:
+With `fetch`, you get runtime validation that catches these issues immediately:
 
 ```typescript
 // With validation
