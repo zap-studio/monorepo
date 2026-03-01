@@ -76,7 +76,3 @@ Local.ts includes several scripts to streamline your development workflow.
 ::: tip
 The `validate` script is useful before committing or deploying—it ensures your code builds correctly and passes all quality checks in one command.
 :::
-
-## What's Next?
-
-Ready to dive deeper? Explore the guides to learn about specific features like [Settings](/local-ts/settings), [Database](/local-ts/database), and [System Tray](/local-ts/system-tray).

@@ -30,7 +30,7 @@
     "@vitest/ui": "catalog:testing",
     "@zap-studio/vitest-config": "workspace:*",
     "lefthook": "catalog:tooling",
-    "nyc": "^17.1.0",
+    "nyc": "catalog:tooling",
     "rimraf": "catalog:tooling",
     "turbo": "catalog:tooling",
     "ultracite": "catalog:linting",
