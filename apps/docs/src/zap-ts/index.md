@@ -1,3 +1,4 @@
+<!--
 # Zap.ts
 
 ::: warning Coming Soon
@@ -24,3 +25,4 @@ Zap.ts is a modern, full-stack TypeScript monorepo starter kit designed to help 
 Join our [Discord community](https://discord.gg/8Ke3VCjjMf) to stay updated on the latest developments and be the first to know when Zap.ts is ready for public release.
 
 Follow us on [GitHub](https://github.com/zap-studio) for updates and to star the project!
+-->

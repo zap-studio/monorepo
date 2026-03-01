@@ -6,22 +6,15 @@ hero:
   name: "Zap Studio ⚡️"
   tagline: "Building open-source projects to help developers ship faster with confidence."
   # image:
-  # light: /code-light.png
-  # dark: /code-dark.png
-  # alt: Zap Studio Code Snippet
-  actions:
-    - theme: brand
-      text: Introduction
-      link: /introduction
-    - theme: alt
-      text: About
-      link: /about
+    # light: /code-light.png
+    # dark: /code-dark.png
+    # alt: Zap Studio Code Snippet
 
 features:
-  - title: Zap.ts
-    icon: "⚡️"
-    details: A production-grade monorepo starter kit to ship quickly and securely.
-    link: ./zap-ts
+  # - title: Zap.ts
+  #   icon: "⚡️"
+  #   details: A production-grade monorepo starter kit to ship quickly and securely.
+  #   link: ./zap-ts
 
   - title: Local.ts
     icon: "💾"
@@ -48,23 +41,24 @@ features:
     details: A type-safe, declarative authorization library with Standard Schema support.
     link: ./packages/permit
 
-  - title: "@zap-studio/realtime"
-    icon: "📡"
-    details: Realtime events with SSE and WebSocket support. Coming soon.
-    link: ./packages/realtime
-
   - title: "@zap-studio/validation"
     icon: "✅"
     details: Shared Standard Schema utilities and ValidationError helpers.
     link: ./packages/validation
 
-  - title: "@zap-studio/waitlist"
-    icon: "⏳"
-    details: A simple waitlist management solution for your applications.
-    link: ./packages/waitlist
+  # - title: "@zap-studio/realtime"
+  #   icon: "📡"
+  #   details: Realtime events with SSE and WebSocket support. Coming soon.
+  #   link: ./packages/realtime
+  #
+  # - title: "@zap-studio/waitlist"
+  #   icon: "⏳"
+  #   details: A simple waitlist management solution for your applications.
+  #   link: ./packages/waitlist
+  #
+  # - title: "@zap-studio/webhooks"
+  #   icon: "🪝"
+  #   details: A robust webhook handling library with signature verification.
+  #   link: ./packages/webhooks
 
-  - title: "@zap-studio/webhooks"
-    icon: "🪝"
-    details: A robust webhook handling library with signature verification.
-    link: ./packages/webhooks
 ---

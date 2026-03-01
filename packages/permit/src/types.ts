@@ -154,10 +154,10 @@ export interface PermitConfig<
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 > {
-  resources: TResources;
   actions: TActions;
-  rules: Rules<TContext, TResources, TActions>;
   logger?: ILogger;
+  resources: TResources;
+  rules: Rules<TContext, TResources, TActions>;
 }
 
 /**
