@@ -48,6 +48,7 @@ export function baseOptions(): BaseLayoutProps {
         url: "/docs/local-ts",
         icon: <BookIcon />,
         active: "nested-url",
+        on: "nav",
       },
       {
         type: "custom",
@@ -58,6 +59,7 @@ export function baseOptions(): BaseLayoutProps {
         type: "menu",
         text: "Packages",
         icon: <BoxIcon />,
+        on: "nav",
         items: [
           {
             text: "@zap-studio/fetch",
@@ -110,6 +112,7 @@ export function baseOptions(): BaseLayoutProps {
         url: "/sponsors",
         icon: <HeartIcon />,
         active: "url",
+        on: "nav",
       },
       {
         type: "custom",
@@ -120,6 +123,7 @@ export function baseOptions(): BaseLayoutProps {
         type: "menu",
         text: "llms.txt",
         icon: <BotIcon />,
+        on: "nav",
         items: [
           {
             text: "llms.txt",
@@ -153,6 +157,7 @@ export function baseOptions(): BaseLayoutProps {
         type: "icon",
         text: "Discord",
         url: "https://discord.gg/8Ke3VCjjMf",
+        on: "nav",
         icon: (
           <svg fill="currentColor" role="img" viewBox="0 0 24 24">
             <title>Discord</title>
