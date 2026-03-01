@@ -1,8 +1,10 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import {
   BookIcon,
+  BotIcon,
   BoxIcon,
   CheckCircleIcon,
+  FileTextIcon,
   ShieldCheckIcon,
   ZapIcon,
 } from "lucide-react";
@@ -51,6 +53,25 @@ export function baseOptions(): BaseLayoutProps {
               "Standard Schema utilities and ValidationError helpers.",
             url: "/docs/packages/validation",
             icon: <CheckCircleIcon />,
+          },
+        ],
+      },
+      {
+        type: "menu",
+        text: "llms.txt",
+        icon: <BotIcon />,
+        items: [
+          {
+            text: "llms.txt",
+            description: "Compact index of all documentation pages.",
+            url: "/llms.txt",
+            icon: <FileTextIcon />,
+          },
+          {
+            text: "llms-full.txt",
+            description: "Full content of all documentation pages.",
+            url: "/llms-full.txt",
+            icon: <FileTextIcon />,
           },
         ],
       },
