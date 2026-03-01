@@ -1,13 +1,21 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
-import {
-  BookIcon,
-  BotIcon,
-  BoxIcon,
-  CheckCircleIcon,
-  FileTextIcon,
-  ShieldCheckIcon,
-  ZapIcon,
-} from "lucide-react";
+import { BookIcon, BotIcon, BoxIcon } from "lucide-react";
+import type { ReactNode } from "react";
+
+function MenuItemContent({
+  text,
+  description,
+}: {
+  text: string;
+  description: string;
+}): ReactNode {
+  return (
+    <>
+      <p className="font-medium text-sm">{text}</p>
+      <p className="text-fd-muted-foreground text-xs">{description}</p>
+    </>
+  );
+}
 
 export const gitConfig = {
   user: "zap-studio",
@@ -35,24 +43,42 @@ export function baseOptions(): BaseLayoutProps {
         items: [
           {
             text: "@zap-studio/fetch",
-            description:
-              "Type-safe fetch wrapper with Standard Schema validation.",
             url: "/docs/packages/fetch",
-            icon: <ZapIcon />,
+            menu: {
+              className: "border-none bg-transparent p-2 hover:bg-fd-accent/60",
+              children: (
+                <MenuItemContent
+                  description="Type-safe fetch wrapper with Standard Schema validation."
+                  text="@zap-studio/fetch"
+                />
+              ),
+            },
           },
           {
             text: "@zap-studio/permit",
-            description:
-              "Declarative authorization library with composable conditions.",
             url: "/docs/packages/permit",
-            icon: <ShieldCheckIcon />,
+            menu: {
+              className: "border-none bg-transparent p-2 hover:bg-fd-accent/60",
+              children: (
+                <MenuItemContent
+                  description="Declarative authorization library with composable conditions."
+                  text="@zap-studio/permit"
+                />
+              ),
+            },
           },
           {
             text: "@zap-studio/validation",
-            description:
-              "Standard Schema utilities and ValidationError helpers.",
             url: "/docs/packages/validation",
-            icon: <CheckCircleIcon />,
+            menu: {
+              className: "border-none bg-transparent p-2 hover:bg-fd-accent/60",
+              children: (
+                <MenuItemContent
+                  description="Standard Schema utilities and ValidationError helpers."
+                  text="@zap-studio/validation"
+                />
+              ),
+            },
           },
         ],
       },
@@ -63,15 +89,29 @@ export function baseOptions(): BaseLayoutProps {
         items: [
           {
             text: "llms.txt",
-            description: "Compact index of all documentation pages.",
             url: "/llms.txt",
-            icon: <FileTextIcon />,
+            menu: {
+              className: "border-none bg-transparent p-2 hover:bg-fd-accent/60",
+              children: (
+                <MenuItemContent
+                  description="Compact index of all documentation pages."
+                  text="llms.txt"
+                />
+              ),
+            },
           },
           {
             text: "llms-full.txt",
-            description: "Full content of all documentation pages.",
             url: "/llms-full.txt",
-            icon: <FileTextIcon />,
+            menu: {
+              className: "border-none bg-transparent p-2 hover:bg-fd-accent/60",
+              children: (
+                <MenuItemContent
+                  description="Full content of all documentation pages."
+                  text="llms-full.txt"
+                />
+              ),
+            },
           },
         ],
       },
