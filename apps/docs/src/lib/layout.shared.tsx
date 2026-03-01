@@ -2,6 +2,15 @@ import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import { BookIcon, BotIcon, BoxIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
+function Separator(): ReactNode {
+  return (
+    <div
+      aria-hidden="true"
+      className="mx-2 hidden h-4 w-px bg-fd-border lg:block"
+    />
+  );
+}
+
 function MenuItemContent({
   text,
   description,
@@ -35,6 +44,11 @@ export function baseOptions(): BaseLayoutProps {
         url: "/docs/local-ts",
         icon: <BookIcon />,
         active: "nested-url",
+      },
+      {
+        type: "custom",
+        on: "nav",
+        children: <Separator />,
       },
       {
         type: "menu",
@@ -81,6 +95,11 @@ export function baseOptions(): BaseLayoutProps {
             },
           },
         ],
+      },
+      {
+        type: "custom",
+        on: "nav",
+        children: <Separator />,
       },
       {
         type: "menu",
