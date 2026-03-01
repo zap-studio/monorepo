@@ -153,8 +153,8 @@ export interface PermitConfig<
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 > {
-  resources: TResources;
   actions: TActions;
+  resources: TResources;
   rules: Rules<TContext, TResources, TActions>;
 }
 

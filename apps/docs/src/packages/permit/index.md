@@ -172,12 +172,3 @@ if (policy.can(context, "read", "post", post)) {
 ```
 
 Using this approach, you get an awesome way to manage access control in your application. Everything is type-safe, easy to understand and centralized.
-
-## What's Next?
-
-- [Creating Policies](/packages/permit/creating-policies) — Learn about resources, actions, and policy creation
-- [Policy Rules](/packages/permit/policy-rules) — Master `allow()`, `deny()`, and `when()`
-- [Conditions](/packages/permit/conditions) — Build complex rules with combinators
-- [Role-Based Access Control](/packages/permit/roles) — Implement role hierarchies
-- [Merging Policies](/packages/permit/merging-policies) — Compose multiple policies
-- [Error Handling](/packages/permit/errors) — Handle policy errors gracefully

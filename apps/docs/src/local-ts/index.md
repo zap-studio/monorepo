@@ -77,9 +77,3 @@ local.ts/
 │   └── migrations/         # Database migrations
 └── public/                 # Static assets
 ```
-
-## What's Next?
-
-With all these features built-in, Local.ts gives you everything needed to start building production-ready local-first applications.
-
-Explore the individual feature guides to learn more about each capability, customize them for your needs, and ship your first offline-capable desktop app.

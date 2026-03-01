@@ -1,3 +1,4 @@
+<!--
 # @zap-studio/waitlist
 
 ::: warning Coming Soon
@@ -26,3 +27,4 @@ npm install @zap-studio/waitlist
 ## Stay Updated
 
 Join our [Discord community](https://discord.gg/8Ke3VCjjMf) to stay updated on the latest developments.
+-->

@@ -96,11 +96,3 @@ try {
   }
 }
 ```
-
-## What's Next?
-
-- [API Methods](/packages/fetch/api-methods) — Learn about GET, POST, PUT, PATCH, DELETE
-- [Using $fetch](/packages/fetch/fetch-function) — Direct fetch usage with and without validation
-- [Factory Pattern](/packages/fetch/create-fetch) — Create pre-configured instances
-- [Error Handling](/packages/fetch/errors) — Handle HTTP and validation errors
-- [Validation](/packages/fetch/validation) — Deep dive into schema validation
