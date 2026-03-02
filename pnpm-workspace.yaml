@@ -26,7 +26,7 @@ catalogs:
     '@takumi-rs/image-response': ^0.69.5
     next: ^16.1.6
   react:
-    lucide-react: ^0.575.0
+    lucide-react: ^0.576.0
     react: ^19.2.4
     react-dom: ^19.2.4
   styling:
