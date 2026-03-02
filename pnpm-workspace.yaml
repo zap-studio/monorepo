@@ -18,7 +18,7 @@ catalogs:
     fumadocs-mdx: ^14.2.9
     fumadocs-ui: ^16.6.8
   linting:
-    '@biomejs/biome': ^2.4.4
+    '@biomejs/biome': ^2.4.5
     '@commitlint/cli': ^20.4.2
     '@commitlint/config-conventional': ^20.4.2
     ultracite: ^7.2.4
