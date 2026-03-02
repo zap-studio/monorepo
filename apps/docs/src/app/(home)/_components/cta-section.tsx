@@ -51,11 +51,11 @@ export function CTASection(): ReactNode {
 
         <FadeIn delay={0.24} duration={0.5} y={10}>
           <ButtonGroup className="mt-8 justify-center">
-            <PrimaryButton href="/docs/packages/fetch" size="lg" withArrow>
+            <PrimaryButton href="/docs/packages/fetch" size="hero" withArrow>
               Read the Docs
             </PrimaryButton>
 
-            <SecondaryButton href="https://discord.gg/8Ke3VCjjMf" size="lg">
+            <SecondaryButton href="https://discord.gg/8Ke3VCjjMf" size="hero">
               <DiscordIcon className="size-4" />
               Join the Community
             </SecondaryButton>
