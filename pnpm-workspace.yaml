@@ -23,7 +23,7 @@ catalogs:
     '@commitlint/config-conventional': ^20.4.2
     ultracite: ^7.2.4
   next:
-    '@takumi-rs/image-response': ^0.69.5
+    '@takumi-rs/image-response': ^0.70.2
     next: ^16.1.6
   react:
     lucide-react: ^0.575.0
