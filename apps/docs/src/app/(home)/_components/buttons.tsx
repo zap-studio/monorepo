@@ -14,6 +14,7 @@ const SIZES = {
   sm: "h-9 px-3.5 text-xs",
   md: "h-10 px-4 text-sm",
   lg: "h-11 px-5 text-sm",
+  hero: "h-9 px-3.5 text-xs sm:h-10 sm:px-4 sm:text-sm md:h-11 md:px-5",
 } as const;
 
 type Size = keyof typeof SIZES;

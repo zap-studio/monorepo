@@ -63,18 +63,12 @@ export function HeroSection(): ReactNode {
 
         <FadeIn delay={0.28} duration={0.5} y={12}>
           <ButtonGroup className="mt-6 sm:mt-8">
-            <PrimaryButton
-              className="sm:h-10 sm:px-4 md:h-11 md:px-5"
-              href="/docs/packages/fetch"
-              size="sm"
-              withArrow
-            >
+            <PrimaryButton href="/docs/packages/fetch" size="hero" withArrow>
               Get Started
             </PrimaryButton>
             <SecondaryButton
-              className="sm:h-10 sm:px-4 md:h-11 md:px-5"
               href="https://github.com/zap-studio/monorepo"
-              size="sm"
+              size="hero"
             >
               <GitHubIcon className="size-4" />
               Star on GitHub
