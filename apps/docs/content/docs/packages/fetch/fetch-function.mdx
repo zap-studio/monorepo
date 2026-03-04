@@ -76,7 +76,7 @@ async function $fetch(
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
-| `body` | `BodyInit \| Record<string, unknown>` | - | Request body (auto-stringified when schema is present) |
+| `body` | `BodyInit \| JsonValue` | - | Request body (auto-stringified for plain JSON values) |
 | `searchParams` | `URLSearchParams \| Record<string, string>` | - | Query parameters |
 | `throwOnFetchError` | `boolean` | `true` | Throw `FetchError` on non-2xx responses |
 | `throwOnValidationError` | `boolean` | `true` | Throw `ValidationError` on schema validation failures |

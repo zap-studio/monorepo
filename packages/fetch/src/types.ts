@@ -13,13 +13,29 @@ export type SearchParams =
   | [string, string][];
 
 /**
+ * JSON-serializable value used for request bodies.
+ */
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [key: string]: JsonValue };
+
+/**
+ * Request body type accepted by the fetch wrapper.
+ */
+export type RequestBody = BodyInit | JsonValue;
+
+/**
  * Base extended request options without throwOnValidationError
  */
 type BaseExtendedRequestInit = Omit<RequestInit, "body"> & {
   /**
    * Request body - can be a BodyInit value or an object that will be JSON-stringified
    */
-  body?: BodyInit | Record<string, unknown>;
+  body?: RequestBody;
   /**
    * Per-request query/search params
    * @default undefined
