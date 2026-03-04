@@ -336,6 +336,42 @@ describe("$fetch", () => {
       expect(calledBody).toBe(JSON.stringify(bodyData));
     });
 
+    it("should auto-stringify plain object body when no schema is provided", async () => {
+      const mockResponse = new Response(JSON.stringify({ success: true }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const bodyData = { name: "New User", email: "user@example.com" };
+      await $fetch("https://api.example.com/user", {
+        method: "POST",
+        body: bodyData,
+      });
+
+      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+      expect(calledBody).toBe(JSON.stringify(bodyData));
+      const calledHeaders = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
+      expect(calledHeaders.get("Content-Type")).toBe("application/json");
+    });
+
+    it("should auto-stringify array body when no schema is provided", async () => {
+      const mockResponse = new Response(JSON.stringify({ success: true }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const bodyData = [{ token_id: "token_123" }];
+      await $fetch("https://api.example.com/user", {
+        method: "POST",
+        body: bodyData,
+      });
+
+      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+      expect(calledBody).toBe(JSON.stringify(bodyData));
+      const calledHeaders = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
+      expect(calledHeaders.get("Content-Type")).toBe("application/json");
+    });
+
     it("should not stringify body when no schema is provided", async () => {
       const mockResponse = new Response(JSON.stringify({ success: true }), {
         status: 200,

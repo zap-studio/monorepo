@@ -275,14 +275,14 @@ describe("fetchInternal", () => {
       expect(init.body).toBe(JSON.stringify(body));
     });
 
-    it("should set Content-Type to application/json when schema and body", async () => {
+    it("should set Content-Type to application/json when body is plain JSON", async () => {
       fetchMock.mockResolvedValue(
         new Response(JSON.stringify({ ok: true }), { status: 200 })
       );
       await fetchInternal(
         "endpoint",
-        dummySchema,
-        { method: "POST", body: JSON.stringify({ a: 1 }) },
+        undefined,
+        { method: "POST", body: { a: 1 } },
         {
           baseURL: "https://api.example.com",
           headers: undefined,
@@ -306,7 +306,7 @@ describe("fetchInternal", () => {
         dummySchema,
         {
           method: "POST",
-          body: JSON.stringify({ a: 1 }),
+          body: { a: 1 },
           headers: { "Content-Type": "text/plain" },
         },
         {
@@ -321,6 +321,30 @@ describe("fetchInternal", () => {
       const init = call[1];
       const headers = new Headers(init.headers);
       expect(headers.get("Content-Type")).toBe("text/plain");
+    });
+
+    it("should stringify array JSON bodies", async () => {
+      fetchMock.mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), { status: 200 })
+      );
+      const body = [{ token_id: "abc123" }];
+      await fetchInternal(
+        "endpoint",
+        undefined,
+        { method: "POST", body },
+        {
+          baseURL: "https://api.example.com",
+          headers: undefined,
+          throwOnFetchError: true,
+          throwOnValidationError: true,
+        }
+      );
+      expect(fetchMock.mock.calls.length).toBeGreaterThan(0);
+      const call = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+      const init = call[1];
+      expect(init.body).toBe(JSON.stringify(body));
+      const headers = new Headers(init.headers);
+      expect(headers.get("Content-Type")).toBe("application/json");
     });
 
     it("should not stringify body when no schema is provided", async () => {

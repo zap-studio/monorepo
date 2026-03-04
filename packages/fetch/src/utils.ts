@@ -226,8 +226,17 @@ export async function fetchInternal(
   const mergedHeaders = mergeHeaders(defaults.headers, requestHeaders);
   const init = { ...rest, headers: mergedHeaders } as RequestInit;
 
-  // Auto-stringify body and set default Content-Type if we have a schema
-  if (schema && init.body) {
+  const isBodyInit =
+    typeof init.body === "string" ||
+    init.body instanceof FormData ||
+    init.body instanceof URLSearchParams ||
+    init.body instanceof Blob ||
+    init.body instanceof ArrayBuffer ||
+    ArrayBuffer.isView(init.body) ||
+    init.body instanceof ReadableStream;
+
+  // Auto-stringify plain JSON bodies and set default Content-Type
+  if (init.body != null && !isBodyInit) {
     init.body = JSON.stringify(init.body);
 
     const existingHeaders = new Headers(init.headers);

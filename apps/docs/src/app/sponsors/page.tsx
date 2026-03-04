@@ -184,8 +184,11 @@ function TierCard({ tier }: { tier: Tier }): ReactNode {
           {tier.slots} {tier.slots === 1 ? "slot" : "slots"} available
         </p>
         <div className="flex flex-wrap gap-2">
-          {Array.from({ length: tier.slots }, (_, i) => (
-            <PlaceholderAvatar key={`${tier.name}-${i}`} />
+          {Array.from(
+            { length: tier.slots },
+            (_, slotNumber) => `${tier.name}-slot-${slotNumber + 1}`
+          ).map((slotId) => (
+            <PlaceholderAvatar key={slotId} />
           ))}
         </div>
       </div>
