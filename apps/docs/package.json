@@ -1,13 +1,35 @@
 {
   "name": "docs",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "dev": "vitepress dev",
-    "build": "vitepress build",
-    "preview": "vitepress preview"
+    "build": "next build",
+    "check": "pnpm run types:check",
+    "dev": "next dev",
+    "start": "next start",
+    "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
+    "postinstall": "fumadocs-mdx"
+  },
+  "dependencies": {
+    "@takumi-rs/image-response": "catalog:next",
+    "fumadocs-core": "catalog:fumadocs",
+    "fumadocs-mdx": "catalog:fumadocs",
+    "fumadocs-ui": "catalog:fumadocs",
+    "lucide-react": "catalog:react",
+    "motion": "catalog:design",
+    "next": "catalog:next",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
+    "tailwind-merge": "catalog:styling"
   },
   "devDependencies": {
-    "@shikijs/vitepress-twoslash": "catalog:vitepress",
-    "vitepress": "catalog:vitepress",
-    "vitepress-plugin-llms": "catalog:vitepress"
+    "@tailwindcss/postcss": "catalog:styling",
+    "@types/mdx": "catalog:types",
+    "@types/node": "catalog:types",
+    "@types/react": "catalog:types",
+    "@types/react-dom": "catalog:types",
+    "postcss": "catalog:styling",
+    "tailwindcss": "catalog:styling",
+    "typescript": "catalog:base"
   }
 }

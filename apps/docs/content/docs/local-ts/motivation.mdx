@@ -1,0 +1,135 @@
+---
+title: Motivation
+description: Why Local.ts was created and the philosophy behind local-first desktop software.
+---
+
+Local.ts was created to solve a common problem: **building desktop apps with web technologies takes too long to set up right**.
+
+## The Challenge
+
+Starting a new desktop app project typically means:
+
+- **Days of boilerplate** — Setting up Tauri with React, TypeScript, and Rust requires significant configuration
+- **Endless decisions** — State management, theming, database layer, testing setup... each choice takes time
+- **Missing patterns** — Most starters are "hello world" examples that don't show production patterns
+- **Fragmented docs** — Piecing together tutorials for each technology in the stack
+
+We wanted to skip straight to building features.
+
+## The Rise of Homemade Tools
+
+AI is fundamentally changing how software gets built. With coding assistants and AI-powered development tools, **creating custom applications is now accessible to everyone** — not just professional developers.
+
+This shift will lead to a rise in homemade tools:
+
+| Trend | Implication |
+|-------|-------------|
+| **Lower barrier to entry** | More people building personal tools instead of relying on SaaS |
+| **Data ownership** | Users want control over their data, not rental agreements |
+| **Custom workflows** | Generic tools can't match purpose-built solutions |
+
+When everyone can build their own tools, why trust your data to companies that might:
+- Sell your information
+- Get breached
+- Shut down and lose your data
+- Change pricing or terms
+
+**Local-first software puts you back in control.**
+
+### Own Your Data, Own Your Backups
+
+With local-first apps:
+
+- **Your data stays on your device** — No cloud servers to breach
+- **You control backups** — Export, sync, or replicate however you want
+- **No vendor lock-in** — SQLite files are portable and open
+- **Works forever** — Apps don't disappear when companies do
+
+Local.ts makes it easy to build these kinds of tools. Combined with AI assistants, you can create exactly the software you need — with the privacy guarantees you deserve.
+
+## Why Local-First?
+
+Local.ts embraces a local-first architecture where your app's data lives on the user's device:
+
+| Benefit | Description |
+|---------|-------------|
+| **Privacy** | User data never leaves their machine unless they choose to sync |
+| **Offline-ready** | Works without internet connection |
+| **Performance** | No network latency — everything is instant |
+| **No server costs** | Ship apps without backend infrastructure |
+| **Reliability** | No dependencies on external services |
+
+Local-first doesn't mean "never online." You can add sync, cloud backups, or API integrations when needed. But starting local-first gives you a solid foundation.
+
+## Why This Stack?
+
+Every technology in Local.ts was chosen for a reason:
+
+### Tauri v2
+
+- **Tiny binaries** — 10-20MB vs 150MB+ for Electron
+- **Native performance** — Uses system webview, not bundled Chromium
+- **Cross-platform** — macOS, Windows, and Linux from one codebase
+- **Security-focused** — Rust backend with fine-grained permissions
+
+### React + TypeScript
+
+- **Familiar ecosystem** — Use the libraries you already know
+- **Type safety** — Catch errors at compile time
+- **Component model** — Build UIs from composable pieces
+- **Huge community** — Answers for every question
+
+### Rust Backend
+
+- **Memory safety** — No null pointers, no data races
+- **Performance** — Native speed for file operations, database queries
+- **Reliability** — If it compiles, it usually works
+- **Growing ecosystem** — Excellent libraries for desktop development
+
+### SQLite + Diesel
+
+- **Embedded database** — No server to install or manage
+- **Battle-tested** — Powers billions of devices worldwide
+- **Type-safe queries** — Diesel catches SQL errors at compile time
+- **Migrations** — Version your schema with confidence
+
+## What Local.ts Provides
+
+This isn't a minimal starter. It's a production-ready foundation:
+
+### Core Features
+- **Settings system** — Persistent preferences with React integration
+- **Theming** — Light, dark, and system themes with CSS variables
+- **Database layer** — SQLite with migrations, models, services, and commands
+- **Logging** — Structured logs to files and console
+
+### Desktop Integration
+- **System tray** — Background operation with menu actions
+- **Notifications** — Native OS notifications
+- **Autostart** — Launch at login option
+- **Window state** — Remembers size and position
+
+### Developer Experience
+- **Turborepo** — Orchestrated builds across TypeScript and Rust
+- **Ultracite** — Fast linting and formatting (oxlint + oxfmt)
+- **Vitest** — Modern testing with coverage
+- **Pre-commit hooks** — Automated quality checks
+
+### Architecture
+- **Layered design** — Clear separation between frontend, commands, services, and models
+- **Type safety** — End-to-end types from Rust to React
+- **Extensible patterns** — Add features following established conventions
+
+## Who Is This For?
+
+Local.ts is ideal for:
+
+- **Web developers** who want to build desktop apps without learning a new paradigm
+- **Teams** who need a consistent, well-documented starting point
+- **Solo developers** who want to ship desktop apps quickly
+- **AI-assisted builders** who want a solid foundation to extend with AI tools
+- **Anyone** who values user privacy and data ownership
+
+## Getting Started
+
+Ready to build your first local-first desktop app? Check out the [Getting Started guide](./getting-started.mdx) to create your first Local.ts app in minutes.

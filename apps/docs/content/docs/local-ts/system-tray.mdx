@@ -1,0 +1,163 @@
+---
+title: System Tray
+description: Run your Local.ts app in the background with a system tray icon, menu, and settings integration.
+---
+
+The system tray lets your app run in the background and provides quick access to common actions. Local.ts includes a fully configured system tray with show/hide controls and settings integration.
+
+## How It Works
+
+The system tray provides:
+
+- **Tray icon** — Your app icon appears in the system tray (menu bar on macOS, system tray on Windows/Linux)
+- **Right-click menu** — Show, Hide, and Quit options
+- **Left-click behavior** — Clicking the icon shows and focuses the main window
+- **Settings integration** — Users can toggle tray visibility from the Settings page
+
+## Using the System Tray
+
+The tray is automatically set up when your app starts. Users can control its visibility from Settings.
+
+### Toggle Tray Visibility
+
+From your React code:
+
+```typescript
+import { setTrayVisible } from "@/lib/tauri/settings";
+
+// Show the tray icon
+await setTrayVisible(true);
+
+// Hide the tray icon
+await setTrayVisible(false);
+```
+
+### Check Current Visibility
+
+The tray visibility is stored in settings:
+
+```typescript
+import { useSettings } from "@/stores/settings";
+
+function TrayStatus() {
+  const settings = useSettings((state) => state.settings);
+
+  return (
+    <p>Tray is {settings?.showInTray ? "visible" : "hidden"}</p>
+  );
+}
+```
+
+## Customizing the Menu
+
+The tray menu is defined in `src-tauri/src/plugins/system_tray.rs`. To add or modify menu items:
+
+```rust
+use tauri::menu::{Menu, MenuItem};
+
+pub fn setup(app: &App, pool: &DbPool) -> Result<(), Box<dyn std::error::Error>> {
+    // Create menu items
+    let show_i = MenuItem::with_id(app, "show", "Show", true, None::<&str>)?;
+    let hide_i = MenuItem::with_id(app, "hide", "Hide", true, None::<&str>)?;
+    let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+
+    // Build the menu
+    let menu = Menu::with_items(app, &[&show_i, &hide_i, &quit_i])?;
+
+    // ... rest of setup
+}
+```
+
+### Handling Menu Events
+
+Menu events are handled in the `on_menu_event` callback:
+
+```rust
+.on_menu_event(|app, event| match event.id.as_ref() {
+    "show" => {
+        if let Some(window) = app.get_webview_window("main") {
+            let _ = window.show();
+            let _ = window.set_focus();
+        }
+    }
+    "hide" => {
+        if let Some(window) = app.get_webview_window("main") {
+            let _ = window.hide();
+        }
+    }
+    "quit" => {
+        app.exit(0);
+    }
+    "my_custom_action" => {
+        // Handle your custom action
+    }
+    _ => {}
+})
+```
+
+## Customizing Click Behavior
+
+The left-click behavior shows and focuses the main window:
+
+```rust
+.on_tray_icon_event(|tray, event| {
+    if let TrayIconEvent::Click {
+        button: MouseButton::Left,
+        button_state: MouseButtonState::Up,
+        ..
+    } = event
+    {
+        let app = tray.app_handle();
+        if let Some(window) = app.get_webview_window("main") {
+            let _ = window.show();
+            let _ = window.set_focus();
+        }
+    }
+})
+```
+
+To open a specific page on click, emit an event or call a command from this handler.
+
+## Changing the Tray Icon
+
+The tray uses your app's default icon. To use a different icon:
+
+```rust
+let tray = TrayIconBuilder::new()
+    .icon(app.default_window_icon().unwrap().clone())
+    // ... rest of builder
+    .build(app)?;
+```
+
+## Removing the System Tray
+
+If you don't need tray functionality:
+
+1. **Delete the module** — Remove `src-tauri/src/plugins/system_tray.rs`
+
+2. **Remove the tray-icon feature** from `src-tauri/Cargo.toml`:
+
+   ```diff
+   - tauri = { version = "2", features = ["tray-icon"] }
+   + tauri = { version = "2", features = [] }
+   ```
+
+3. **Remove setup and command** from `src-tauri/src/lib.rs`:
+
+   ```diff
+   - plugins::system_tray::setup(app, &pool)?;
+   ```
+
+   ```diff
+   .invoke_handler(tauri::generate_handler![
+       commands::settings::get_app_settings,
+       commands::settings::update_app_settings,
+   -   commands::settings::set_tray_visible,
+   ])
+   ```
+
+4. **Update the plugins module** — Remove the export from `src-tauri/src/plugins/mod.rs`
+
+## Learn More
+
+- [Tauri System Tray Documentation](https://v2.tauri.app/learn/system-tray/) — Official Tauri menu and tray icon documentation

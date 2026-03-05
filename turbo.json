@@ -15,7 +15,7 @@
         "!**/*.test.{ts,tsx,js,jsx}",
         "!**/*.spec.{ts,tsx,js,jsx}"
       ],
-      "outputs": ["dist/**", ".vitepress/dist/**"]
+      "outputs": ["dist/**", ".next/**"]
     },
     "check": {
       "dependsOn": ["^build", "topo"],

@@ -1,0 +1,81 @@
+---
+title: Getting Started
+description: Set up Local.ts and run your first build.
+---
+
+This guide walks you through setting up Local.ts and running your first build.
+
+## Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- **Node.js** (v18 or later) — [nodejs.org](https://nodejs.org/)
+- **Rust** — [rust-lang.org](https://www.rust-lang.org/tools/install)
+- **pnpm** (recommended) — [pnpm.io](https://pnpm.io/)
+- **Turbo** — [turborepo.com](https://turborepo.com/)
+
+<Callout type="info" title="Optional: Diesel CLI">
+For database migrations, optionally install Diesel CLI:
+
+```bash
+cargo install diesel_cli
+```
+</Callout>
+
+## Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/zap-studio/local.ts.git my-app
+cd my-app
+```
+
+### 2. Install Dependencies
+
+```bash
+pnpm install
+```
+
+This installs npm packages.
+
+### 3. Run in Development Mode
+
+```bash
+turbo tauri -- dev
+```
+
+This starts the Vite development server with hot reload and opens your app in a native window. Changes to your React code will update instantly.
+
+## Building for Production
+
+Create a production build for your current platform:
+
+```bash
+turbo tauri -- build
+```
+
+The output will be in `src-tauri/target/release/bundle/` with platform-specific installers.
+
+## Customizing Your App
+
+After cloning, update your app's name, version, and branding. See the [Project Identity](./project-identity.mdx) guide for a complete walkthrough.
+
+## Available Run Scripts
+
+Local.ts includes several scripts to streamline your development workflow.
+
+| Command | Description |
+|---------|-------------|
+| `turbo dev` | Start Vite dev server (frontend only) |
+| `turbo tauri -- dev` | Start full app with hot reload |
+| `turbo tauri -- build` | Build for production |
+| `turbo check` | TypeScript type checking |
+| `turbo lint` | Run linter |
+| `turbo format` | Format code |
+| `turbo test` | Run tests |
+| `turbo validate` | Run build, check, lint, and test to validate everything passes |
+
+<Callout type="info" title="Tip">
+The `validate` script is useful before committing or deploying — it ensures your code builds correctly and passes all quality checks in one command.
+</Callout>

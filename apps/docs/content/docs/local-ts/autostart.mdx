@@ -1,0 +1,94 @@
+---
+title: Autostart
+description: Configure your Local.ts app to launch automatically when users log into their computer.
+---
+
+Local.ts can launch automatically when users log into their computer using the [Tauri autostart plugin](https://v2.tauri.app/plugin/autostart/).
+
+This is useful for apps that should always be running, like status monitors, chat clients, or sync tools.
+
+## How It Works
+
+The autostart feature uses platform-specific mechanisms:
+
+| Platform | Method |
+|----------|--------|
+| macOS | LaunchAgent in `~/Library/LaunchAgents/` |
+| Windows | Registry entry in `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` |
+| Linux | Desktop entry in `~/.config/autostart/` |
+
+The Tauri autostart plugin handles all platform differences automatically.
+
+## Enabling Autostart
+
+From your React code:
+
+```typescript
+import { enable, disable, isEnabled } from "@tauri-apps/plugin-autostart";
+
+// Enable autostart
+await enable();
+
+// Disable autostart
+await disable();
+
+// Check if enabled
+const enabled = await isEnabled();
+```
+
+## Settings Integration
+
+Local.ts includes a "Launch at Login" toggle in Settings. The simplified implementation is the following:
+
+```typescript
+const handleAutostartChange = async (enabled: boolean) => {
+  if (enabled) {
+    await enable();
+  } else {
+    await disable();
+  }
+  await updateSettings({ launchAtLogin: enabled });
+};
+```
+
+## Removing Autostart
+
+If you don't need autostart functionality:
+
+1. **Remove the plugin** from `src-tauri/src/lib.rs`:
+
+   ```diff
+   - app.handle().plugin(tauri_plugin_autostart::init(
+   -     tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+   -     None,
+   - ))?;
+   ```
+
+2. **Remove the dependency** from `src-tauri/Cargo.toml`:
+
+   ```diff
+   - [target.'cfg(any(target_os = "macos", target_os = "windows", target_os = "linux"))'.dependencies]
+   - tauri-plugin-autostart = "2"
+   ```
+
+3. **Remove permissions** from `src-tauri/capabilities/default.json`:
+
+   ```diff
+   - "autostart:allow-enable",
+   - "autostart:allow-disable",
+   - "autostart:allow-is-enabled"
+   ```
+
+4. **Remove the npm package**:
+
+   ```bash
+   pnpm remove @tauri-apps/plugin-autostart
+   ```
+
+5. **Remove the setting** from the Settings page and database models.
+
+<Callout type="info">
+Check whether other dependencies exist inside the `[target.'cfg(any(...)'.dependencies]` section.
+
+If `tauri-plugin-autostart` is the only entry, remove the entire target-specific `[target.'cfg(...)'.dependencies]` section; otherwise delete only the `tauri-plugin-autostart = "2"` line from that section.
+</Callout>

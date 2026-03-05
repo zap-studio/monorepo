@@ -1,0 +1,249 @@
+---
+title: Factory Pattern
+description: Create pre-configured fetch instances with base URLs and default headers using createFetch.
+---
+
+The `createFetch` function allows you to create pre-configured fetch instances with base URLs and default headers. This is ideal for building API clients that need consistent configuration across requests.
+
+## Why Use createFetch?
+
+When building applications, you often make requests to the same API with the same headers (authentication, content type, etc.). Instead of repeating this configuration:
+
+```typescript
+// Without createFetch - repetitive
+const user = await $fetch("https://api.example.com/users/1", UserSchema, {
+  headers: { Authorization: "Bearer token", "X-API-Key": "key" },
+});
+
+const posts = await $fetch("https://api.example.com/posts", PostsSchema, {
+  headers: { Authorization: "Bearer token", "X-API-Key": "key" },
+});
+```
+
+You can configure once and reuse:
+
+```typescript
+// With createFetch - clean and DRY
+const { api } = createFetch({
+  baseURL: "https://api.example.com",
+  headers: { Authorization: "Bearer token", "X-API-Key": "key" },
+});
+
+const user = await api.get("/users/1", UserSchema);
+const posts = await api.get("/posts", PostsSchema);
+```
+
+## Basic Usage
+
+```typescript
+import { z } from "zod";
+import { createFetch } from "@zap-studio/fetch";
+
+const { $fetch, api } = createFetch({
+  baseURL: "https://api.example.com",
+  headers: {
+    Authorization: "Bearer your-token",
+    "X-API-Key": "your-api-key",
+  },
+});
+
+const UserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+// Use relative paths - baseURL is prepended automatically
+const user = await api.get("/users/1", UserSchema);
+
+// POST with auto-stringified body
+const newUser = await api.post("/users", UserSchema, {
+  body: { name: "John Doe" },
+});
+```
+
+## Factory Options
+
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `baseURL` | `string` | `""` | Base URL prepended to relative paths only |
+| `headers` | `HeadersInit` | - | Default headers included in all requests |
+| `searchParams` | `URLSearchParams \| Record<string, string>` | - | Default query params included in all requests |
+| `throwOnFetchError` | `boolean` | `true` | Throw `FetchError` on non-2xx responses |
+| `throwOnValidationError` | `boolean` | `true` | Throw `ValidationError` on schema validation failures |
+
+## URL Handling
+
+### Relative URLs
+
+Relative URLs are automatically prefixed with the `baseURL`:
+
+```typescript
+const { api } = createFetch({ baseURL: "https://api.example.com" });
+
+// Fetches https://api.example.com/users
+const users = await api.get("/users", UsersSchema);
+
+// Leading slash is optional
+const user = await api.get("users/1", UserSchema);
+```
+
+### Absolute URLs
+
+Absolute URLs (starting with `http://`, `https://`, or `//`) ignore the `baseURL`:
+
+```typescript
+const { api } = createFetch({ baseURL: "https://api.example.com" });
+
+// Fetches https://other-api.com/data (ignores baseURL)
+const data = await api.get("https://other-api.com/data", DataSchema);
+```
+
+## Header Merging
+
+Default headers from the factory are merged with per-request headers. Per-request headers take precedence:
+
+```typescript
+const { api } = createFetch({
+  baseURL: "https://api.example.com",
+  headers: {
+    Authorization: "Bearer default-token",
+    "Content-Type": "application/json",
+  },
+});
+
+// This request will have:
+// - Authorization: Bearer override-token (overridden)
+// - Content-Type: application/json (from defaults)
+// - X-Custom: value (new header)
+const user = await api.get("/users/1", UserSchema, {
+  headers: {
+    Authorization: "Bearer override-token",
+    "X-Custom": "value",
+  },
+});
+```
+
+## Search Params Merging
+
+Default search params are merged with per-request and URL params:
+
+```typescript
+const { api } = createFetch({
+  baseURL: "https://api.example.com",
+  searchParams: { locale: "en", page: "1" },
+});
+
+// Final URL: /users?locale=en&page=2&q=alex
+// - locale: en (from defaults)
+// - page: 2 (overridden by per-request)
+// - q: alex (new param)
+const user = await api.get("/users", UserSchema, {
+  searchParams: { page: "2", q: "alex" },
+});
+```
+
+Priority order:
+1. **Factory defaults** — lowest priority
+2. **URL params** — override factory defaults
+3. **Per-request params** — highest priority
+
+## Real-World Examples
+
+### Multiple API Clients
+
+Create separate clients for different APIs in your application:
+
+```typescript
+import { z } from "zod";
+import { createFetch } from "@zap-studio/fetch";
+
+// GitHub API client
+const github = createFetch({
+  baseURL: "https://api.github.com",
+  headers: {
+    Authorization: `token ${process.env.GITHUB_TOKEN}`,
+    Accept: "application/vnd.github.v3+json",
+  },
+});
+
+// Stripe API client
+const stripe = createFetch({
+  baseURL: "https://api.stripe.com/v1",
+  headers: {
+    Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+  },
+});
+
+// Internal API client
+const internal = createFetch({
+  baseURL: process.env.API_URL,
+  headers: {
+    "X-Internal-Key": process.env.INTERNAL_API_KEY,
+  },
+});
+
+// Schemas
+const RepoSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  full_name: z.string(),
+  private: z.boolean(),
+});
+
+const CustomerSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  name: z.string().nullable(),
+});
+
+// Usage
+const repo = await github.api.get("/repos/owner/repo", RepoSchema);
+const customer = await stripe.api.get("/customers/cus_123", CustomerSchema);
+```
+
+## Configuring Error Behavior
+
+You can configure default error throwing behavior at the factory level:
+
+```typescript
+// Never throw validation errors by default
+const { api } = createFetch({
+  baseURL: "https://api.example.com",
+  throwOnValidationError: false,
+});
+
+// All requests return Result objects instead of throwing
+const result = await api.get("/users/1", UserSchema);
+
+if (result.issues) {
+  console.error("Validation failed:", result.issues);
+} else {
+  console.log("Success:", result.value);
+}
+```
+
+You can still override this per-request:
+
+```typescript
+// Override to throw for this specific request
+const user = await api.get("/users/1", UserSchema, {
+  throwOnValidationError: true,
+});
+```
+
+## Return Type
+
+`createFetch` returns an object with both `$fetch` and `api`:
+
+```typescript
+const { $fetch, api } = createFetch({
+  baseURL: "https://api.example.com",
+});
+
+// Use api.* for convenience methods
+const user = await api.get("/users/1", UserSchema);
+
+// Use $fetch for raw responses or more control
+const response = await $fetch("/health");
+console.log("Status:", response.status);
+```

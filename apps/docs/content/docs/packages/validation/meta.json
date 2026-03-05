@@ -1,0 +1,6 @@
+{
+  "title": "validation",
+  "icon": "BadgeCheck",
+  "root": true,
+  "pages": ["index"]
+}

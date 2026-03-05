@@ -25,7 +25,7 @@ Thank you for your interest in contributing to Zap Studio! We welcome all contri
 - **`packages/fetch`** - Modern HTTP client (`@zap-studio/fetch`)
 - **`packages/waitlist`** - Waitlist management (`@zap-studio/waitlist`)
 - **`packages/webhooks`** - Webhook handling (`@zap-studio/webhooks`)
-- **`apps/docs`** - Documentation site (VitePress)
+- **`apps/docs`** - Documentation site (Fumadocs)
 - **`configs/`** - Shared configurations (TypeScript, tsdown, vitest)
 
 ## Running Tests
