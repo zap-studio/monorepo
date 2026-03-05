@@ -987,7 +987,7 @@ describe("WebhookRouter", () => {
         }
 
         const router = new WebhookRouter<WebhookMap>({
-          onError: () => ({ status: 500, body: { error: "Custom error" } }),
+          onError: () => undefined,
         });
 
         router.register("test", () => {
@@ -1000,6 +1000,25 @@ describe("WebhookRouter", () => {
 
         expect(response.status).toBe(500);
         expect(response.body).toEqual({ error: "Custom error" });
+      });
+
+      it("should return internal server error when a non-Error is thrown", async () => {
+        interface WebhookMap {
+          test: { value: string };
+        }
+
+        const router = new WebhookRouter<WebhookMap>();
+
+        router.register("test", () => {
+          throw new Error("Internal server error");
+        });
+
+        const response = await router.handle(
+          createMockRequest("/webhooks/test", { value: "test" })
+        );
+
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({ error: "Internal server error" });
       });
 
       it("should handle different error types", async () => {
