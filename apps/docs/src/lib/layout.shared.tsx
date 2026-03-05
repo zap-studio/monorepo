@@ -15,6 +15,7 @@ import {
   LockIcon,
   MapIcon,
   PackageIcon,
+  WebhookIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -138,6 +139,13 @@ export function homeLinks(
                 description="Standard Schema utilities and ValidationError helpers."
                 icon={<BadgeCheckIcon className="size-4" />}
                 text="validation"
+              />
+            </NavbarMenuLink>
+            <NavbarMenuLink href="/docs/packages/webhooks">
+              <NavbarMenuItemContent
+                description="Schema-first webhook routing with verification and lifecycle hooks."
+                icon={<WebhookIcon className="size-4" />}
+                text="webhooks"
               />
             </NavbarMenuLink>
           </NavbarMenuContent>

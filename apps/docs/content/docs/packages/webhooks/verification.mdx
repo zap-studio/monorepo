@@ -1,0 +1,75 @@
+---
+title: Verification
+description: Verify webhook authenticity with createHmacVerifier or a custom verify function.
+---
+
+`verify` is the authenticity gate for incoming requests.
+
+Concept:
+
+- `verify` runs before schema validation and before the route handler.
+- If `verify` throws, request handling stops.
+
+Why:
+
+- prevents untrusted payloads from reaching business logic
+- avoids spending resources validating/processing forged requests
+
+## HMAC helper
+
+The package exports `createHmacVerifier` from `@zap-studio/webhooks/verify`.
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+import { createHmacVerifier } from "@zap-studio/webhooks/verify";
+
+const router = createWebhookRouter({
+  verify: createHmacVerifier({
+    headerName: "x-hub-signature-256",
+    secret: process.env.GITHUB_WEBHOOK_SECRET!,
+    algo: "sha256", // optional
+  }),
+});
+```
+
+`createHmacVerifier`:
+
+- reads the signature from the configured header
+- computes HMAC from `req.rawBody`
+- compares signatures in constant time
+
+Why constant-time comparison:
+
+- avoids timing side channels when comparing signatures
+
+## Custom verification
+
+For providers with custom signing, pass your own `verify` function.
+
+```ts
+import Stripe from "stripe";
+import { createWebhookRouter } from "@zap-studio/webhooks";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+const router = createWebhookRouter({
+  verify: async (req) => {
+    const signature = req.headers.get("stripe-signature");
+    if (!signature) {
+      throw new Error("Missing Stripe signature");
+    }
+
+    stripe.webhooks.constructEvent(
+      req.rawBody,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
+  },
+});
+```
+
+Use custom verification when a provider:
+
+- uses a non-HMAC signature format
+- requires SDK-specific verification logic
+- includes timestamp or replay-protection checks

@@ -1,0 +1,49 @@
+---
+title: Overview
+description: Schema-first webhook routing with a clear path from setup to production usage.
+---
+
+`@zap-studio/webhooks` is a schema-first router for inbound webhooks.
+
+It centralizes the parts of webhook handling that are easy to get wrong:
+
+- path matching
+- payload validation
+- signature verification
+- lifecycle hooks
+- normalized responses
+
+## Why schema-first
+
+Your schema is the single source of truth for:
+
+- runtime validation
+- inferred payload types in handlers
+
+This package behaves this way to remove drift between “TypeScript types” and “actual payload checks”.
+If a provider payload changes, validation fails early instead of silently breaking business logic.
+
+## Matching behavior
+
+### Concept
+
+A route key is matched from the request path after normalization.
+
+Path matching is exact after normalization:
+
+1. Parse pathname from full URL if needed.
+2. Require configured prefix (default `/webhooks/`).
+3. Strip prefix.
+4. Match exact route key.
+
+### Why this behavior
+
+- Exact matching keeps routing predictable and avoids surprising wildcard collisions.
+- Prefix requirement prevents webhook routes from colliding with normal app routes.
+- URL parsing allows adapters to pass either full URLs or plain paths consistently.
+
+Example:
+
+- registered key: `"github/push"`
+- request path: `"/webhooks/github/push"`
+- normalized key: `"github/push"`

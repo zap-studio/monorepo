@@ -1,0 +1,67 @@
+---
+title: Getting Started
+description: Install the package and register your first schema-first webhook route.
+---
+
+## 1. Install
+
+You need the router package and a Standard Schema-compatible validator.
+
+```bash
+pnpm add @zap-studio/webhooks zod
+```
+
+## 2. Create router
+
+`createWebhookRouter` configures global behavior once (prefix, verification, hooks).
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+
+const router = createWebhookRouter({
+  prefix: "/webhooks/",
+});
+```
+
+## 3. Register route with schema
+
+Each route binds:
+
+- a route key
+- a validation schema
+- a typed handler
+
+The handler payload type is inferred from the schema output.
+
+```ts
+import { z } from "zod";
+
+router.register("payments/succeeded", {
+  schema: z.object({
+    id: z.string(),
+    amount: z.number().positive(),
+    currency: z.string().length(3),
+  }),
+  handler: async ({ payload, ack }) => {
+    // payload inferred from schema
+    return ack({ status: 200, body: `processed ${payload.id}` });
+  },
+});
+```
+
+## 4. Handle request
+
+Your framework layer should convert incoming requests into `NormalizedRequest`
+and call:
+
+```ts
+const response = await router.handle(normalizedReq);
+```
+
+Why this design:
+
+- the router stays framework-agnostic
+- adapters remain thin and reusable
+- request validation and dispatch stay consistent across runtimes
+
+If you need reusable framework integration, see [Adapters](./adapters).
