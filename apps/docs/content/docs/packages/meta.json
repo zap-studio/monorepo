@@ -1,5 +1,5 @@
 {
   "title": "Packages",
   "description": "Open-source packages by Zap Studio",
-  "pages": ["fetch", "permit", "validation"]
+  "pages": ["fetch", "permit", "validation", "webhooks"]
 }

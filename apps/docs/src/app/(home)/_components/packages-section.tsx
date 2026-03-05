@@ -4,6 +4,7 @@ import {
   LayersIcon,
   ShieldCheckIcon,
   SparklesIcon,
+  WebhookIcon,
 } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -38,6 +39,13 @@ const packages: PackageCardProps[] = [
     description:
       "Standard Schema utilities and ValidationError helpers. The shared foundation powering all Zap Studio packages.",
     href: "/docs/packages/validation",
+  },
+  {
+    icon: <WebhookIcon className="size-5" />,
+    name: "webhooks",
+    description:
+      "Schema-first webhook routing with payload validation, signature verification, and lifecycle hooks.",
+    href: "/docs/packages/webhooks",
   },
 ];
 
@@ -134,7 +142,7 @@ function ComingSoonCard(): ReactNode {
       </p>
 
       <div className="mt-6 flex flex-wrap gap-2">
-        {["realtime", "waitlist", "webhooks"].map((label) => (
+        {["realtime", "waitlist"].map((label) => (
           <span
             className="rounded-full border border-fd-border/60 bg-fd-accent/50 px-2.5 py-1 font-mono text-[11px] text-fd-muted-foreground leading-4"
             key={label}

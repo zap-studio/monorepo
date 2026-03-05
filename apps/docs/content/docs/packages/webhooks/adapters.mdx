@@ -1,0 +1,72 @@
+---
+title: Adapters
+description: Build framework adapters with BaseAdapter and the normalized request/response contract.
+---
+
+`@zap-studio/webhooks` is framework-agnostic by design.
+
+It does not ship framework-specific adapters. Instead, it exposes a small adapter contract so you can integrate with your framework in a predictable way.
+
+Why this design:
+
+- no framework lock-in
+- smaller package surface
+- consumers control runtime details (raw body parsing, response writing)
+
+## Why BaseAdapter
+
+`BaseAdapter` exists to avoid rewriting the same plumbing in every app:
+
+- normalize framework request -> `NormalizedRequest`
+- call `router.handle`
+- map `NormalizedResponse` -> framework response
+
+You only implement request/response mapping, while `handleWebhook()` orchestration is shared.
+
+Conceptually:
+
+- adapter = transport layer
+- router = webhook application layer
+
+## Example
+
+```ts
+import { BaseAdapter } from "@zap-studio/webhooks/adapters/base";
+import type {
+  NormalizedRequest,
+  NormalizedResponse,
+} from "@zap-studio/webhooks/types";
+
+class MyHttpAdapter extends BaseAdapter {
+  async toNormalizedRequest(req: any): Promise<NormalizedRequest> {
+    return {
+      method: req.method,
+      path: req.url,
+      headers: new Headers(req.headers),
+      rawBody: req.rawBody,
+    };
+  }
+
+  async toFrameworkResponse(
+    res: any,
+    normalized: NormalizedResponse
+  ): Promise<any> {
+    res.statusCode = normalized.status;
+    res.end(
+      typeof normalized.body === "string"
+        ? normalized.body
+        : JSON.stringify(normalized.body)
+    );
+    return res;
+  }
+}
+```
+
+## Usage
+
+```ts
+const adapter = new MyHttpAdapter();
+const webhookHandler = adapter.handleWebhook(router);
+
+// Plug webhookHandler into your framework route
+```

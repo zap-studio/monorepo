@@ -1,0 +1,75 @@
+---
+title: Lifecycle Hooks
+description: Use before, after, and onError hooks for logging, metrics, and centralized error handling.
+---
+
+Hooks are shared interception points around route execution.
+
+Why they exist:
+
+- keep handlers focused on business logic
+- centralize logging, metrics, and error policy
+- avoid copy/pasting cross-cutting concerns into every route
+
+## Global hooks
+
+Configure once in `createWebhookRouter` options:
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+
+const router = createWebhookRouter({
+  before: (req) => {
+    console.log("incoming", req.path);
+  },
+  after: (_req, res) => {
+    console.log("status", res.status);
+  },
+  onError: (error) => ({
+    status: 500,
+    body: { error: error.message },
+  }),
+});
+```
+
+## Route-level hooks
+
+Route hooks are useful when one endpoint needs extra behavior beyond global hooks.
+
+```ts
+import { z } from "zod";
+
+router.register("github/push", {
+  schema: z.object({ ref: z.string() }),
+  before: (req) => {
+    console.log("route-before", req.path);
+  },
+  handler: async ({ ack }) => ack({ status: 200 }),
+  after: (_req, res) => {
+    console.log("route-after", res.status);
+  },
+});
+```
+
+## Hook order
+
+Understanding order matters when composing observability and validation behavior.
+
+For successful requests:
+
+1. global `before`
+2. route `before`
+3. `verify`
+4. validation
+5. handler
+6. route `after`
+7. global `after`
+
+For errors:
+
+- `onError` is called and may return a custom response.
+
+Why `onError` returns a response:
+
+- gives you one place to standardize error shape/status
+- lets you map provider/framework errors consistently

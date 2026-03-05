@@ -40,7 +40,7 @@ Realtime events with SSE and WebSocket support.
 Launch faster with built-in waitlist management, referral tracking, and analytics.
 
 **[@zap-studio/webhooks](./packages/webhooks)**  
-Easy webhook handling and validation.
+Lightweight, type-safe webhook router with schema-agnostic validation. Works with any validation library.
 
 ## Documentation
 

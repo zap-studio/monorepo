@@ -1,0 +1,82 @@
+---
+title: Guides
+description: Production-oriented provider guides for GitHub and Stripe webhooks.
+---
+
+This page shows provider-specific patterns you can adapt directly.
+
+The important idea: verification and payload validation are separate concerns.
+Verification checks authenticity. Schema checks shape.
+
+## GitHub (HMAC signature)
+
+GitHub uses HMAC signatures. This is the simplest case for `createHmacVerifier`.
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+import { createHmacVerifier } from "@zap-studio/webhooks/verify";
+import { z } from "zod";
+
+const router = createWebhookRouter({
+  verify: createHmacVerifier({
+    headerName: "x-hub-signature-256",
+    secret: process.env.GITHUB_WEBHOOK_SECRET!,
+  }),
+});
+
+router.register("github/push", {
+  schema: z.object({
+    ref: z.string(),
+    repository: z.object({ full_name: z.string() }),
+  }),
+  handler: async ({ payload, ack }) => {
+    console.log(payload.repository.full_name, payload.ref);
+    return ack();
+  },
+});
+```
+
+## Stripe (provider-specific verification)
+
+Stripe uses its own signed payload format, so verification should use the Stripe SDK.
+This is why the package accepts a custom `verify` function.
+
+```ts
+import Stripe from "stripe";
+import { createWebhookRouter } from "@zap-studio/webhooks";
+import { z } from "zod";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+const router = createWebhookRouter({
+  verify: async (req) => {
+    const signature = req.headers.get("stripe-signature");
+    if (!signature) throw new Error("Missing Stripe signature");
+
+    stripe.webhooks.constructEvent(
+      req.rawBody,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
+  },
+});
+
+router.register("stripe/payment_intent.succeeded", {
+  schema: z.object({
+    id: z.string(),
+    object: z.literal("event"),
+    type: z.literal("payment_intent.succeeded"),
+  }),
+  handler: async ({ payload, ack }) => {
+    console.log("Stripe event:", payload.id);
+    return ack({ status: 200 });
+  },
+});
+```
+
+## Production checklist
+
+- keep `rawBody` untouched before verification
+- fail closed when signature header is missing
+- validate payload schema even after signature passes
+- keep handlers idempotent (providers retry on failures)
