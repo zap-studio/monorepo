@@ -178,6 +178,38 @@ describe("WebhookRouter", () => {
         createMockRequest("/webhooks/metadata", { value: "test" })
       );
     });
+
+    it("should use default ack response values when ack is called without args", async () => {
+      interface WebhookMap {
+        default: { value: string };
+      }
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("default", ({ ack }) => ack());
+
+      const response = await router.handle(
+        createMockRequest("/webhooks/default", { value: "test" })
+      );
+
+      expect(response).toEqual({ status: 200, body: "ok", headers: undefined });
+    });
+
+    it("should return default response when handler returns undefined", async () => {
+      interface WebhookMap {
+        empty: { value: string };
+      }
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      router.register("empty", () => undefined);
+
+      const response = await router.handle(
+        createMockRequest("/webhooks/empty", { value: "test" })
+      );
+
+      expect(response).toEqual({ status: 200, body: "ok" });
+    });
   });
 
   describe("Schema validation with Zod", () => {
@@ -449,6 +481,45 @@ describe("WebhookRouter", () => {
         createMockRequest("/webhooks/async", { id: "invalid_123" })
       );
       expect(invalidResponse.status).toBe(400);
+    });
+
+    it("should map object path segments from schema issues", async () => {
+      interface WebhookMap {
+        keyed: { value: number };
+      }
+
+      const router = new WebhookRouter<WebhookMap>();
+
+      const objectPathValidator: StandardSchemaV1<unknown, { value: number }> =
+        {
+          "~standard": {
+            version: 1,
+            vendor: "custom",
+            validate: () => ({
+              issues: [
+                {
+                  path: [{ key: "nested" }],
+                  message: "Invalid nested value",
+                },
+              ],
+            }),
+          },
+        };
+
+      router.register("keyed", {
+        schema: objectPathValidator,
+        handler: ({ ack }) => ack({ status: 200 }),
+      });
+
+      const response = await router.handle(
+        createMockRequest("/webhooks/keyed", { value: 1 })
+      );
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: "validation failed",
+        issues: [{ path: ["nested"], message: "Invalid nested value" }],
+      });
     });
   });
 
@@ -1007,10 +1078,14 @@ describe("WebhookRouter", () => {
           test: { value: string };
         }
 
+        class NonErrorThrown {
+          message = "not-an-error-instance";
+        }
+
         const router = new WebhookRouter<WebhookMap>();
 
         router.register("test", () => {
-          throw new Error("Internal server error");
+          throw new NonErrorThrown();
         });
 
         const response = await router.handle(
@@ -1810,6 +1885,27 @@ describe("WebhookRouter", () => {
           }
         )
       );
+    });
+
+    it("should normalize paths without a leading slash after prefix stripping", async () => {
+      interface WebhookMap {
+        ihello: { value: string };
+      }
+
+      const router = new WebhookRouter<WebhookMap>({
+        prefix: "/api",
+      });
+
+      router.register("ihello", ({ req, ack }) => {
+        expect(req.path).toBe("ihello");
+        return ack({ status: 200, body: "ok" });
+      });
+
+      const response = await router.handle(
+        createMockRequest("/apihello", { value: "test" })
+      );
+
+      expect(response).toEqual({ status: 200, body: "ok" });
     });
   });
 });
