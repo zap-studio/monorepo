@@ -1,6 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
-/** This is the normalized request object so every adapter can rely on the same structure */
+/** Framework-agnostic request shape consumed by the webhook router. */
 export interface NormalizedRequest {
   /** The headers of the request (e.g. { "Authorization": "Bearer token" }) */
   headers: Headers;
@@ -20,7 +20,7 @@ export interface NormalizedRequest {
   text?: string;
 }
 
-/** This is the normalized response object so every adapter can rely on the same structure */
+/** Framework-agnostic response shape returned by the webhook router. */
 export interface NormalizedResponse<TBody = unknown> {
   /** The body of the response */
   body?: TBody;
@@ -30,7 +30,7 @@ export interface NormalizedResponse<TBody = unknown> {
   status: number;
 }
 
-/** Options for registering a webhook handler */
+/** Route registration options for a webhook handler. */
 export interface RegisterOptions<T> {
   /** Hooks that run after successful processing (before global after hooks) */
   after?: AfterHook | AfterHook[];
@@ -42,6 +42,41 @@ export interface RegisterOptions<T> {
   schema?: StandardSchemaV1<unknown, T>;
 }
 
+/**
+ * Infers the output type from a Standard Schema instance.
+ *
+ * @typeParam TSchema - A Standard Schema type.
+ */
+export type InferSchemaOutput<TSchema> =
+  TSchema extends StandardSchemaV1<unknown, infer TOutput> ? TOutput : never;
+
+/**
+ * Route options where schema is required and handler payload is inferred.
+ *
+ * @typeParam TSchema - Schema used to infer handler payload type.
+ */
+export type SchemaRouteOptions<
+  TSchema extends StandardSchemaV1<unknown, unknown>,
+> = Omit<RegisterOptions<InferSchemaOutput<TSchema>>, "schema"> & {
+  schema: TSchema;
+};
+
+interface RouteLike {
+  after?: AfterHook | AfterHook[];
+  before?: BeforeHook | BeforeHook[];
+  handler: WebhookHandler<unknown>;
+  schema: StandardSchemaV1<unknown, unknown>;
+}
+
+/**
+ * Applies schema-driven payload inference to each route entry.
+ *
+ * @typeParam TRoutes - Route dictionary keyed by webhook path.
+ */
+export type SchemaRoutes<TRoutes extends Record<string, RouteLike>> = {
+  [P in keyof TRoutes]: SchemaRouteOptions<TRoutes[P]["schema"]>;
+};
+
 /** The webhook handler function, responsible for processing incoming webhook events. */
 export type WebhookHandler<TPayload = unknown> = (ctx: {
   req: NormalizedRequest;
@@ -49,28 +84,20 @@ export type WebhookHandler<TPayload = unknown> = (ctx: {
   ack: (res?: Partial<NormalizedResponse>) => Promise<NormalizedResponse>;
 }) => Promise<NormalizedResponse | undefined> | NormalizedResponse | undefined;
 
-/**
- * A map of webhook event types to their corresponding handler functions.
- *
- * @example
- * ```ts
- * const handlers: HandlerMap<{
- *   payment_succeeded: PaymentSucceededPayload;
- *   payment_failed: PaymentFailedPayload;
- * }> = {
- *   payment_succeeded: async ({ req, payload, ack }) => {
- *     // Handle payment succeeded event
- *     return ack({ status: 200, body: "Payment succeeded processed" });
- *   },
- *   payment_failed: async ({ req, payload, ack }) => {
- *     // Handle payment failed event
- *     return ack({ status: 200, body: "Payment failed processed" });
- *   },
- * };
- * ```
- */
+/** Maps route keys to their payload-specific webhook handlers. */
 export type HandlerMap<TMap extends Record<string, unknown>> = {
   [P in keyof TMap]: WebhookHandler<TMap[P]>;
+};
+
+/**
+ * Builds a webhook payload map from a schema-based route dictionary.
+ *
+ * @typeParam TRoutes - Route dictionary keyed by webhook path.
+ */
+export type InferWebhookMapFromRoutes<
+  TRoutes extends Record<string, RouteLike>,
+> = {
+  [P in keyof TRoutes]: InferSchemaOutput<TRoutes[P]["schema"]>;
 };
 
 /** Verification function for incoming requests */

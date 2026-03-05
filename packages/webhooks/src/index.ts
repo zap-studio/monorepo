@@ -4,66 +4,18 @@ import type {
   AfterHook,
   BeforeHook,
   ErrorHook,
-  HandlerMap,
+  InferSchemaOutput,
   NormalizedRequest,
   NormalizedResponse,
   RegisterOptions,
+  SchemaRouteOptions,
   WebhookHandler,
 } from "./types";
 
 /**
- * A router for handling webhooks with path-based routing and optional request verification.
+ * Schema-first webhook router with path dispatching, validation, and optional verification.
  *
- * @example
- * ```ts
- * import { z } from "zod";
- *
- * type PaymentPayload = {
- *   id: string;
- *   amount: number;
- *   currency: string;
- * };
- *
- * type SubscriptionPayload = {
- *   id: string;
- *   status: "active" | "canceled";
- * };
- *
- * type MyWebhookMap = {
- *   "payment": PaymentPayload;
- *   "subscription": SubscriptionPayload;
- * };
- *
- * const router = new WebhookRouter<MyWebhookMap>({
- *   prefix: "/webhooks/", // Optional, defaults to "/webhooks/"
- *   verify: async (req) => {
- *     // Custom verification logic (e.g., signature verification)
- *   },
- * });
- *
- * // Without schema validation
- * router.register("payment", async ({ req, payload, ack }) => {
- *   // Handle payment webhook
- *   return ack({ status: 200, body: "Payment received" });
- * });
- *
- * // With schema validation using any Standard Schema compatible library
- * const SubscriptionSchema = z.object({
- *   id: z.string(),
- *   status: z.enum(["active", "canceled"]),
- * });
- *
- * router.register("subscription", {
- *   schema: SubscriptionSchema,
- *   handler: async ({ req, payload, ack }) => {
- *     // payload is now validated and typed
- *     return ack({ status: 200, body: "Subscription updated" });
- *   },
- * });
- *
- * // In your server handler
- * const response = await router.handle(incomingRequest);
- * ```
+ * @typeParam TMap - Internal route payload map built incrementally via `register`.
  */
 
 interface HandlerEntry<TPayload = unknown> {
@@ -73,25 +25,35 @@ interface HandlerEntry<TPayload = unknown> {
   schema?: StandardSchemaV1<unknown, TPayload>;
 }
 
-type HandlerStore<TMap extends Record<string, unknown>> = {
-  [P in keyof TMap]?: HandlerEntry<TMap[P]>;
-};
+type HandlerStore = Record<string, HandlerEntry<unknown>>;
 
-export class WebhookRouter<TMap extends Record<string, unknown>> {
-  private readonly handlers: HandlerStore<TMap> = {};
+export interface WebhookRouterOptions {
+  /** Global hooks executed after successful route handler completion. */
+  after?: AfterHook | AfterHook[];
+  /** Global hooks executed before route-level hooks and verification. */
+  before?: BeforeHook | BeforeHook[];
+  /** Global error hook used to override the default `500` response. */
+  onError?: ErrorHook;
+  /** Required path prefix for all webhook routes. Defaults to `"/webhooks/"`. */
+  prefix?: string;
+  /** Optional request verification function (for signature checks, auth, etc.). */
+  verify?: (req: NormalizedRequest) => Promise<void> | void;
+}
+
+/**
+ * Main webhook router class.
+ *
+ * Register routes with typed schemas and call `handle` with a normalized request.
+ */
+export class WebhookRouter<TMap = unknown> {
+  private readonly handlers: HandlerStore = {};
   private readonly verify?: (req: NormalizedRequest) => Promise<void> | void;
   private readonly globalBeforeHooks: BeforeHook[] = [];
   private readonly globalAfterHooks: AfterHook[] = [];
   private readonly globalErrorHook?: ErrorHook;
   private readonly prefix: string;
 
-  constructor(opts?: {
-    verify?: (req: NormalizedRequest) => Promise<void> | void;
-    before?: BeforeHook | BeforeHook[];
-    after?: AfterHook | AfterHook[];
-    onError?: ErrorHook;
-    prefix?: string;
-  }) {
+  constructor(opts?: WebhookRouterOptions) {
     this.prefix = opts?.prefix ?? "/webhooks/";
 
     if (opts?.verify) {
@@ -115,43 +77,31 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
   /**
    * Register a webhook handler for a specific path.
    *
-   * @param path - The webhook path to handle
-   * @param handlerOrOptions - Either a handler function or options object with handler and optional schema
+   * When a schema is provided, `payload` is inferred from the schema output type.
    *
-   * @example
-   * ```ts
-   * // Simple handler without validation
-   * router.register("webhook", async ({ payload, ack }) => {
-   *   return ack({ status: 200 });
-   * });
-   *
-   * // Handler with any Standard Schema compatible library
-   * router.register("webhook", {
-   *   schema: z.object({ id: z.string() }),
-   *   handler: async ({ payload, ack }) => {
-   *     // payload.id is validated and typed as string
-   *     return ack({ status: 200 });
-   *   },
-   * });
-   *
-   * // Handler with lifecycle hooks
-   * router.register("webhook", {
-   *   before: [async (req) => {
-   *     console.log("Route-specific before hook");
-   *   }],
-   *   handler: async ({ payload, ack }) => {
-   *     return ack({ status: 200 });
-   *   },
-   *   after: [async (req, res) => {
-   *     console.log("Route-specific after hook");
-   *   }],
-   * });
-   * ```
+   * @param path - Route path relative to configured prefix.
+   * @param handlerOrOptions - Handler function or schema-based registration options.
+   * @returns The same router instance with an updated internal route type map.
    */
-  register<Path extends keyof TMap & string>(
+  register<
+    Path extends string,
+    TSchema extends StandardSchemaV1<unknown, unknown>,
+  >(
     path: Path,
-    handlerOrOptions: HandlerMap<TMap>[Path] | RegisterOptions<TMap[Path]>
-  ) {
+    handlerOrOptions: SchemaRouteOptions<TSchema>
+  ): WebhookRouter<TMap & Record<Path, InferSchemaOutput<TSchema>>>;
+  register<Path extends string, TPayload>(
+    path: Path,
+    handlerOrOptions: RegisterOptions<TPayload>
+  ): WebhookRouter<TMap & Record<Path, TPayload>>;
+  register<Path extends string>(
+    path: Path,
+    handlerOrOptions: WebhookHandler<unknown>
+  ): WebhookRouter<TMap & Record<Path, unknown>>;
+  register(
+    path: string,
+    handlerOrOptions: WebhookHandler<unknown> | RegisterOptions<unknown>
+  ): WebhookRouter<TMap> {
     if (typeof handlerOrOptions === "function") {
       this.handlers[path] = {
         handler: handlerOrOptions,
@@ -178,15 +128,15 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
         after: afterHooks,
       };
     }
+
+    return this;
   }
 
   /**
-   * Handle an incoming request.
+   * Handles a normalized incoming webhook request.
    *
-   * @example
-   * ```ts
-   * const response = await router.handle(incomingRequest);
-   * ```
+   * @param req - Normalized request object.
+   * @returns Normalized response for the adapter/framework layer.
    */
   async handle(req: NormalizedRequest): Promise<NormalizedResponse> {
     try {
@@ -196,8 +146,7 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
         return { status: 404, body: { error: "not found" } };
       }
 
-      const handlerEntry =
-        this.handlers[normalizedPath as Extract<keyof TMap, string>];
+      const handlerEntry = this.handlers[normalizedPath];
       if (!handlerEntry) {
         return { status: 404, body: { error: "not found" } };
       }
@@ -385,4 +334,16 @@ export class WebhookRouter<TMap extends Record<string, unknown>> {
       },
     };
   }
+}
+
+/**
+ * Factory helper for creating a webhook router instance.
+ *
+ * @param opts - Optional global router options.
+ * @returns A new webhook router.
+ */
+export function createWebhookRouter(
+  opts?: WebhookRouterOptions
+): WebhookRouter {
+  return new WebhookRouter(opts);
 }

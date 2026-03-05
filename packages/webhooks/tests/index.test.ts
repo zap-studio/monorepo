@@ -3,7 +3,7 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { WebhookRouter } from "../src/index";
+import { createWebhookRouter, WebhookRouter } from "../src/index";
 import type { NormalizedRequest } from "../src/types";
 
 describe("WebhookRouter", () => {
@@ -19,6 +19,23 @@ describe("WebhookRouter", () => {
   });
 
   describe("Basic routing", () => {
+    it("should support schema-first route registration at creation time", async () => {
+      const router = createWebhookRouter();
+      router.register("payment", {
+        schema: z.object({
+          amount: z.number(),
+        }),
+        handler: ({ payload, ack }) =>
+          ack({ status: 200, body: payload.amount }),
+      });
+
+      const response = await router.handle(
+        createMockRequest("/webhooks/payment", { amount: 100 })
+      );
+
+      expect(response).toEqual({ status: 200, body: 100 });
+    });
+
     it("should handle webhook without schema validation", async () => {
       interface WebhookMap {
         test: { id: string };
@@ -79,20 +96,26 @@ describe("WebhookRouter", () => {
 
       const router = new WebhookRouter<WebhookMap>();
 
-      router.register("payment", ({ payload, ack }) =>
-        ack({ status: 200, body: { received: payload.amount } })
-      );
+      router.register("payment", {
+        schema: z.object({ amount: z.number() }),
+        handler: ({ payload, ack }) =>
+          ack({ status: 200, body: { received: payload.amount } }),
+      });
 
-      router.register("user", ({ payload, ack }) =>
-        ack({
-          status: 200,
-          body: { greeting: `Hello ${payload.name}` },
-        })
-      );
+      router.register("user", {
+        schema: z.object({ name: z.string() }),
+        handler: ({ payload, ack }) =>
+          ack({
+            status: 200,
+            body: { greeting: `Hello ${payload.name}` },
+          }),
+      });
 
-      router.register("order", ({ payload, ack }) =>
-        ack({ status: 200, body: { orderId: payload.id } })
-      );
+      router.register("order", {
+        schema: z.object({ id: z.string() }),
+        handler: ({ payload, ack }) =>
+          ack({ status: 200, body: { orderId: payload.id } }),
+      });
 
       const paymentResponse = await router.handle(
         createMockRequest("/webhooks/payment", { amount: 100 })
@@ -1613,9 +1636,12 @@ describe("WebhookRouter", () => {
         prefix: "/api/hooks/",
       });
 
-      router.register("payment", ({ payload, ack }) => {
-        expect(payload.id).toBe("123");
-        return ack({ status: 200, body: "success" });
+      router.register("payment", {
+        schema: z.object({ id: z.string() }),
+        handler: ({ payload, ack }) => {
+          expect(payload.id).toBe("123");
+          return ack({ status: 200, body: "success" });
+        },
       });
 
       const response = await router.handle(
@@ -1695,9 +1721,12 @@ describe("WebhookRouter", () => {
         prefix: "/",
       });
 
-      router.register("payment", ({ payload, ack }) => {
-        expect(payload.id).toBe("123");
-        return ack({ status: 200, body: "success" });
+      router.register("payment", {
+        schema: z.object({ id: z.string() }),
+        handler: ({ payload, ack }) => {
+          expect(payload.id).toBe("123");
+          return ack({ status: 200, body: "success" });
+        },
       });
 
       const response = await router.handle(

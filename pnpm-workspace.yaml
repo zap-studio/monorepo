@@ -47,7 +47,6 @@ catalogs:
     turbo: ^2.8.13
   types:
     '@types/mdx': ^2.0.13
-    '@types/express': ^5.0.6
     "@types/node": ^25.0.2
     '@types/react': ^19.2.14
     '@types/react-dom': ^19.2.3

@@ -24,10 +24,6 @@
     "arktype",
     "signature verification",
     "lifecycle hooks",
-    "express",
-    "elysia",
-    "hono",
-    "nextjs",
     "payload validation"
   ],
   "publishConfig": {
@@ -49,28 +45,7 @@
     "@standard-schema/spec": "catalog:base",
     "@zap-studio/validation": "workspace:*"
   },
-  "peerDependencies": {
-    "elysia": ">=0.28.0",
-    "express": ">=4.0.0",
-    "hono": ">=3.0.0",
-    "next": ">=12.0.0"
-  },
-  "peerDependenciesMeta": {
-    "elysia": {
-      "optional": true
-    },
-    "express": {
-      "optional": true
-    },
-    "hono": {
-      "optional": true
-    },
-    "next": {
-      "optional": true
-    }
-  },
   "devDependencies": {
-    "@types/express": "catalog:types",
     "@types/node": "catalog:types",
     "@vitest/coverage-v8": "catalog:testing",
     "@zap-studio/tsdown-config": "workspace:*",

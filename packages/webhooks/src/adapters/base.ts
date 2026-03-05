@@ -1,52 +1,72 @@
 import type { NormalizedRequest, NormalizedResponse } from "../types";
 
-/** Adapter interface for framework-specific request/response handling */
+/**
+ * Minimal framework adapter contract.
+ *
+ * Implement this when integrating the webhook router with an HTTP framework.
+ */
 export interface Adapter {
   /**
-   * Create a framework-specific route handler for the webhook router
-   *
-   * @example
-   * ```ts
-   * import express from "express";
-   *
-   * const app = express();
-   * const router = new WebhookRouter<WebhookMap>();
-   *
-   * app.post("/webhook/*", express.raw({ type: "application/json" }), adapter.handleWebhook(router));
-   * ```
+   * Creates a framework handler that:
+   * 1. normalizes the incoming framework request
+   * 2. executes the webhook router
+   * 3. writes the normalized response back to the framework response
    */
   handleWebhook<TFrameworkReq = unknown, TFrameworkRes = unknown>(router: {
     handle(req: NormalizedRequest): Promise<NormalizedResponse>;
   }): (req: TFrameworkReq, res: TFrameworkRes) => Promise<void>;
 
   /**
-   * Convert NormalizedResponse to the framework response
+   * Maps a normalized router response to the framework response object.
    *
-   * @example
-   * ```ts
-   * const expressRes = await adapter.toFrameworkResponse(
-   *   res,
-   *   {
-   *     status: 200,
-   *     body: { success: true },
-   *     headers: { "Content-Type": "application/json" },
-   *   }
-   * );
-   * ```
+   * @param frameworkRes - Framework-specific response object (e.g. `res`)
+   * @param res - Normalized response returned by the webhook router
    */
   toFrameworkResponse<TFrameworkRes = unknown>(
     frameworkRes: TFrameworkRes,
     res: NormalizedResponse
   ): Promise<TFrameworkRes>;
-  /** Convert framework request to the NormalizedRequest (must include raw body)
-   * @example
-   * ```ts
-   * const req = {
-   *   body: { foo: "bar" },
-   *   headers: { "Content-Type": "application/json" },
-   * };
-   * const normalizedReq = await adapter.toNormalizedRequest(req);
-   * ```
+
+  /**
+   * Maps a framework request into the normalized request contract.
+   *
+   * The returned object must include `rawBody` to support signature verification.
+   *
+   * @param req - Framework-specific request object
    */
   toNormalizedRequest<TReq = unknown>(req: TReq): Promise<NormalizedRequest>;
+}
+
+/**
+ * Base adapter helper.
+ *
+ * Extend this class in consumers to keep framework integration boilerplate
+ * in one place while relying on the package router contract.
+ */
+export abstract class BaseAdapter implements Adapter {
+  /** @inheritdoc */
+  abstract toNormalizedRequest<TReq = unknown>(
+    req: TReq
+  ): Promise<NormalizedRequest>;
+  /** @inheritdoc */
+  abstract toFrameworkResponse<TFrameworkRes = unknown>(
+    frameworkRes: TFrameworkRes,
+    res: NormalizedResponse
+  ): Promise<TFrameworkRes>;
+
+  /**
+   * Shared adapter pipeline implementation.
+   *
+   * Most consumers only need to implement request/response mapping methods and
+   * can reuse this default orchestration.
+   */
+  handleWebhook<TFrameworkReq = unknown, TFrameworkRes = unknown>(router: {
+    handle(req: NormalizedRequest): Promise<NormalizedResponse>;
+  }): (req: TFrameworkReq, res: TFrameworkRes) => Promise<void> {
+    return async (req, res) => {
+      const normalizedReq = await this.toNormalizedRequest(req);
+      const normalizedRes = await router.handle(normalizedReq);
+      await this.toFrameworkResponse(res, normalizedRes);
+    };
+  }
 }

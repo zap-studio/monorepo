@@ -5,24 +5,37 @@ import { constantTimeEquals } from "./utils";
 const SIGNATURE_REGEX = /^sha256=/;
 
 /**
- * A factory function to create an HMAC verifier for incoming requests.
+ * Creates an HMAC-based request verification function.
  *
- * @note This function uses Node.js's built-in `crypto` module to compute the HMAC.
+ * The returned verifier reads the configured signature header, computes the
+ * expected HMAC from `req.rawBody`, and compares them in constant time.
+ *
+ * @note Uses Node.js `crypto` at runtime.
  *
  * @example
  * ```ts
- * import { createHmacVerifier } from "./verify";
+ * import { createWebhookRouter } from "@zap-studio/webhooks";
+ * import { createHmacVerifier } from "@zap-studio/webhooks/verify";
+ * import { z } from "zod";
  *
- * const verify = createHmacVerifier({
- *   headerName: "X-Hub-Signature-256",
- *   secret: "your-secret",
+ * const router = createWebhookRouter({
+ *   verify: createHmacVerifier({
+ *     headerName: "x-hub-signature-256",
+ *     secret: process.env.GITHUB_WEBHOOK_SECRET!,
+ *   }),
  * });
  *
- * // then use the `verify` function in your WebhookRouter
- * const router = new WebhookRouter<MyWebhookMap>({
- *   verify,
+ * router.register("github/push", {
+ *   schema: z.object({ ref: z.string() }),
+ *   handler: async ({ ack }) => ack(),
  * });
  * ```
+ *
+ * @param options - HMAC verifier options.
+ * @param options.headerName - Header containing provider signature.
+ * @param options.secret - HMAC secret key.
+ * @param options.algo - Hash algorithm used for HMAC generation.
+ * @returns A verifier function compatible with router `verify`.
  */
 export function createHmacVerifier({
   headerName,
