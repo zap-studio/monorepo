@@ -5,7 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "react-doctor": "pnpm dlx react-doctor@latest . --verbose --diff",
+    "react-doctor": "node ../../scripts/react-doctor.mjs docs .",
     "start": "next start",
     "typecheck": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx"

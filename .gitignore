@@ -85,3 +85,6 @@ fyai.txt
 
 # todo
 todo.json
+
+# react doctor reports
+.react-doctor/
