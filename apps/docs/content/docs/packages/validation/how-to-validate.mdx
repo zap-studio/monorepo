@@ -1,0 +1,90 @@
+---
+title: How to Validate
+description: Learn validation fundamentals and when to use standardValidate vs standardValidateSync.
+---
+
+This page explains how to validate data against a schema.
+
+`validation` provides:
+
+- an async helper that works with both async and sync schemas
+- a sync helper that only works with synchronous schemas
+
+If you are new to schema validation, read [Concepts](./concepts) first.
+
+## `standardValidate`
+
+Use `standardValidate` as the default choice.
+
+It works with:
+
+- synchronous schemas
+- asynchronous schemas
+
+So one API covers both cases.
+
+Both `throwOnError` modes exist so you can match different control-flow styles:
+
+- throw immediately in imperative flows where invalid input should stop execution
+- handle errors as data in functional or pipeline-based flows
+
+### Throwing on Error
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+
+const user = await standardValidate(userSchema, input, {
+  throwOnError: true,
+});
+```
+
+- returns parsed value on success
+- throws `ValidationError` on failure
+
+### Handle Errors Manually
+
+Use this mode when you want full control over branching, logging, and error mapping without exceptions.
+
+```ts
+const result = await standardValidate(userSchema, input, {
+  throwOnError: false,
+});
+
+if (result.issues) {
+  // handle issues
+} else {
+  // use result.value
+}
+```
+
+## `standardValidateSync`
+
+Use `standardValidateSync` only when validation must remain synchronous end-to-end.
+
+Typical cases include limited or constrained runtimes where you explicitly need sync-only execution paths.
+
+```ts
+import { standardValidateSync } from "@zap-studio/validation";
+
+const result = standardValidateSync(userSchema, input);
+```
+
+This is useful in sync-only code paths (e.g. deterministic in-memory checks).
+
+Important behavior:
+
+- if schema validation is async, `standardValidateSync` throws
+
+<Callout type="info" title="Tip">
+  Prefer the async helper (`standardValidate`) by default. It is the most compatible option because it supports both sync and async schemas.
+</Callout>
+
+## Which One Should I Use?
+
+| Helper                 | Supports sync schemas | Supports async schemas | Returns                | Best use case                          |
+| ---------------------- | --------------------- | ---------------------- | ---------------------- | -------------------------------------- |
+| `standardValidate`     | Yes                   | Yes                    | `Promise<...>`         | Default choice for most applications   |
+| `standardValidateSync` | Yes                   | No                     | direct value/result    | Strict sync-only runtime requirements  |
+
+- Use `standardValidate` by default for compatibility and simpler call sites.
+- Use `standardValidateSync` only when synchronous behavior is a hard requirement.

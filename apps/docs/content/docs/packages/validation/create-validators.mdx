@@ -1,0 +1,63 @@
+---
+title: Create Validators
+description: Use createStandardValidator and createSyncStandardValidator to build reusable validation functions.
+---
+
+When the same schema is reused many times, creating a validator function once makes code cleaner and easier to share.
+
+## Why Create Validator Functions?
+
+Use create helpers when you want:
+
+- a reusable validator for a specific schema
+- separation between schema setup and runtime calls
+- consistent behavior across multiple modules
+
+## `createStandardValidator`
+
+Creates an async validator that works with both sync and async schemas.
+
+```ts
+import { createStandardValidator } from "@zap-studio/validation";
+
+const validateUser = createStandardValidator(userSchema);
+
+const result = await validateUser(input);
+if (result.issues) {
+  // invalid
+} else {
+  // result.value
+}
+```
+
+Use it when:
+
+- your call sites are async
+- schema behavior might become async over time
+- you want one reusable validator instance
+
+## `createSyncStandardValidator`
+
+Creates a sync-only validator.
+
+```ts
+import { createSyncStandardValidator } from "@zap-studio/validation";
+
+const validateUser = createSyncStandardValidator(userSchema);
+const result = validateUser(input);
+```
+
+Use it when:
+
+- code must stay synchronous
+- schemas are guaranteed sync
+
+Important behavior:
+
+- throws if the schema validates asynchronously
+
+## Which Create Helper Should I Use?
+
+- Prefer `createStandardValidator` for default package/app code.
+- Use `createSyncStandardValidator` in strict sync contexts only.
+- Pair create helpers with `standardValidate`/`standardValidateSync` depending on whether you prefer reusable functions or direct one-shot validation calls.

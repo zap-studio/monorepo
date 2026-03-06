@@ -1,0 +1,77 @@
+---
+title: Handling Errors
+description: Why validation error handling matters and how ValidationError helps you catch failures reliably.
+---
+
+Validation errors are part of normal application behavior. API payloads can be malformed, form inputs can be incomplete, and external data can drift from expected formats.
+
+In most apps, handling these failures clearly is critical for reliability, UX, and observability.
+
+`validation` helps by exposing a shared `ValidationError` class. Instead of handling each schema library error shape differently, you can catch one predictable error type and access normalized Standard Schema `issues`.
+
+## Why We Created `ValidationError`
+
+Different validation libraries expose different error shapes. That makes shared package logic harder to standardize.
+
+`ValidationError` gives you:
+
+- one predictable error class to catch
+- direct access to Standard Schema `issues`
+- consistent behavior across libraries and packages
+
+## When Is It Thrown?
+
+It is thrown by:
+
+- `standardValidate(..., { throwOnError: true })`
+- `standardValidateSync(..., { throwOnError: true })`
+
+## How To Catch It?
+
+```ts
+import { standardValidate, ValidationError } from "@zap-studio/validation";
+
+try {
+  const user = await standardValidate(userSchema, input, {
+    throwOnError: true,
+  });
+
+  // use user
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.error("Validation failed", error.issues);
+    return;
+  }
+
+  throw error;
+}
+```
+
+## When To Use `ValidationError`?
+
+Use throwing mode + `ValidationError` when:
+
+- invalid input should interrupt control flow immediately
+- your layer already handles exceptions (API handlers, service boundaries)
+- you want centralized error handling
+
+Use non-throwing mode when:
+
+- validation failures are expected and part of normal logic
+- you want explicit branching on `issues` without exceptions
+
+For example, in form workflows you often return field errors instead of throwing:
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+
+const result = await standardValidate(emailSchema, formData, {
+  throwOnError: false,
+});
+
+if (result.issues) {
+  return { ok: false, fieldErrors: result.issues };
+}
+
+return { ok: true, value: result.value };
+```
