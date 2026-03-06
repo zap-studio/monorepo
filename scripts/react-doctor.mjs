@@ -48,11 +48,24 @@ child.stderr.on("data", (chunk) => {
   process.stderr.write(chunk);
 });
 
-const exitCode = await new Promise((resolve) => {
-  child.on("close", (code) => resolve(code ?? 1));
+const { exitCode, startupError } = await new Promise((resolve) => {
+  child.on("close", (code) =>
+    resolve({ exitCode: code ?? 1, startupError: null })
+  );
+  child.on("error", (error) => {
+    const errorText = `\n[react-doctor runner error]\n${error.stack ?? error.message}\n`;
+    outputChunks.push(Buffer.from(errorText, "utf8"));
+    console.error(error);
+    resolve({ exitCode: 1, startupError: error });
+  });
 });
 
 const report = Buffer.concat(outputChunks).toString("utf8");
 await writeFile(latestReportPath, report, "utf8");
+
+if (startupError) {
+  process.exitCode = 1;
+  process.exit();
+}
 
 process.exit(exitCode);
