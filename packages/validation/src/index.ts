@@ -2,12 +2,17 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { ValidationError } from "./errors";
 
 /**
- * Checks if a value is a Standard Schema.
+ * Checks whether a value implements the Standard Schema interface.
+ *
+ * @param value - The value to check.
+ * @returns `true` if the value is a Standard Schema, otherwise `false`.
  *
  * @example
+ * ```ts
  * if (isStandardSchema(value)) {
- *   console.log("Value is a Standard Schema and TypeScript knows it");
+ *   console.log("Value is a Standard Schema");
  * }
+ * ```
  */
 export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
   return (
@@ -18,17 +23,84 @@ export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
 }
 
 /**
+ * Creates an async Standard Schema validator.
+ *
+ * The returned function always resolves to a Standard Schema result, even when
+ * the underlying schema validates synchronously.
+ *
+ * @typeParam TSchema - The Standard Schema type.
+ * @param schema - The schema to validate against.
+ * @returns An async validator function.
+ *
+ * @example
+ * ```ts
+ * const validateUser = createStandardValidator(userSchema);
+ *
+ * const result = await validateUser({
+ *   name: "Ada",
+ *   age: 37,
+ * });
+ *
+ * if (result.issues) {
+ *   console.error("Validation failed", result.issues);
+ * } else {
+ *   console.log("Validation passed", result.value);
+ * }
+ * ```
+ */
+export function createStandardValidator<TSchema extends StandardSchemaV1>(
+  schema: TSchema
+): (
+  input: unknown
+) => Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>> {
+  return async (
+    input: unknown
+  ): Promise<
+    StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
+  > => {
+    let result = schema["~standard"].validate(input);
+    if (result instanceof Promise) {
+      result = await result;
+    }
+    return result;
+  };
+}
+
+/**
  * Creates a synchronous Standard Schema validator.
  *
  * This helper calls `schema["~standard"].validate` and throws if the schema
- * performs asynchronous validation (returns a Promise).
+ * performs asynchronous validation.
+ *
+ * @typeParam TSchema - The Standard Schema type.
+ * @param schema - The schema to validate against.
+ * @returns A synchronous validator function.
+ * @throws {Error} If the schema performs asynchronous validation.
+ *
+ * @example
+ * ```ts
+ * const validateUser = createSyncStandardValidator(userSchema);
+ *
+ * const result = validateUser({
+ *   name: "Ada",
+ *   age: 37,
+ * });
+ *
+ * if (result.issues) {
+ *   console.error("Validation failed", result.issues);
+ * } else {
+ *   console.log("Validation passed", result.value);
+ * }
+ * ```
  */
 export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
   schema: TSchema
 ): (
   input: unknown
 ) => StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>> {
-  return (input: unknown) => {
+  return (
+    input: unknown
+  ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>> => {
     const result = schema["~standard"].validate(input);
     if (result instanceof Promise) {
       throw new Error(
@@ -42,23 +114,35 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
 /**
  * Validates a value against a Standard Schema.
  *
- * @example
- * // Throwing
- * try {
- *   const result = await standardValidate(schema, data, true);
- * } catch (error) {
- *   if (error instanceof ValidationError) {
- *     console.error("Validation failed!", error.issues);
- *   }
- * }
+ * When `throwOnError` is `true`, this function returns the parsed value and
+ * throws a {@link ValidationError} if validation fails.
  *
- * // Without throwing
- * const result = await standardValidate(schema, data, false);
+ * When `throwOnError` is `false`, this function returns the raw Standard Schema
+ * result.
+ *
+ * @typeParam TSchema - The Standard Schema type.
+ * @param schema - The schema to validate against.
+ * @param input - The value to validate.
+ * @param throwOnError - Whether to throw on validation failure.
+ * @returns The parsed value or the raw validation result.
+ * @throws {ValidationError} If validation fails and `throwOnError` is `true`.
+ *
+ * @example
+ * ```ts
+ * const user = await standardValidate(userSchema, data, true);
+ * console.log(user.name);
+ * ```
+ *
+ * @example
+ * ```ts
+ * const result = await standardValidate(userSchema, data, false);
+ *
  * if (result.issues) {
- *   console.error("Validation failed!", result.issues);
+ *   console.error("Validation failed", result.issues);
  * } else {
- *   console.log("Validation passed!", result.value);
+ *   console.log("Validation passed", result.value);
  * }
+ * ```
  */
 export async function standardValidate<TSchema extends StandardSchemaV1>(
   schema: TSchema,
@@ -83,6 +167,77 @@ export async function standardValidate<TSchema extends StandardSchemaV1>(
   let result = schema["~standard"].validate(input);
   if (result instanceof Promise) {
     result = await result;
+  }
+
+  if (result.issues) {
+    if (throwOnError) {
+      throw new ValidationError([...result.issues]);
+    }
+    return result;
+  }
+
+  return throwOnError ? result.value : result;
+}
+
+/**
+ * Synchronously validates a value against a Standard Schema.
+ *
+ * When `throwOnError` is `true`, this function returns the parsed value and
+ * throws a {@link ValidationError} if validation fails.
+ *
+ * When `throwOnError` is `false`, this function returns the raw Standard Schema
+ * result.
+ *
+ * This function throws if the schema performs asynchronous validation.
+ *
+ * @typeParam TSchema - The Standard Schema type.
+ * @param schema - The schema to validate against.
+ * @param input - The value to validate.
+ * @param throwOnError - Whether to throw on validation failure.
+ * @returns The parsed value or the raw validation result.
+ * @throws {Error} If the schema performs asynchronous validation.
+ * @throws {ValidationError} If validation fails and `throwOnError` is `true`.
+ *
+ * @example
+ * ```ts
+ * const user = standardValidateSync(userSchema, data, true);
+ * console.log(user.name);
+ * ```
+ *
+ * @example
+ * ```ts
+ * const result = standardValidateSync(userSchema, data, false);
+ *
+ * if (result.issues) {
+ *   console.error("Validation failed", result.issues);
+ * } else {
+ *   console.log("Validation passed", result.value);
+ * }
+ * ```
+ */
+export function standardValidateSync<TSchema extends StandardSchemaV1>(
+  schema: TSchema,
+  input: unknown,
+  throwOnError: true
+): StandardSchemaV1.InferOutput<TSchema>;
+
+export function standardValidateSync<TSchema extends StandardSchemaV1>(
+  schema: TSchema,
+  input: unknown,
+  throwOnError: false
+): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
+
+export function standardValidateSync<TSchema extends StandardSchemaV1>(
+  schema: TSchema,
+  input: unknown,
+  throwOnError: boolean
+):
+  | StandardSchemaV1.InferOutput<TSchema>
+  | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>> {
+  const result = schema["~standard"].validate(input);
+
+  if (result instanceof Promise) {
+    throw new Error("Async schemas are not supported by standardValidateSync");
   }
 
   if (result.issues) {
