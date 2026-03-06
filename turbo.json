@@ -17,7 +17,7 @@
       ],
       "outputs": ["dist/**", ".next/**"]
     },
-    "check": {
+    "typecheck": {
       "dependsOn": ["^build", "topo"],
       "inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
       "outputs": ["*.tsbuildinfo"],
@@ -29,6 +29,9 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "react-doctor": {
+      "cache": false
     },
     "test": {
       "dependsOn": ["^build", "^test", "@zap-studio/vitest-config#build"],

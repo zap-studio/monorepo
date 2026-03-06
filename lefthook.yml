@@ -12,7 +12,7 @@ pre-commit:
         - "*.css"
       stage_fixed: true
 
-    - run: pnpm run check
+    - run: pnpm run typecheck
       glob:
         - "*.js"
         - "*.jsx"
