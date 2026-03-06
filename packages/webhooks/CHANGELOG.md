@@ -1,6 +1,10 @@
 # @zap-studio/webhooks
 
-All notable changes to this package are documented in this file.
+## 0.1.2
+
+### Patch Changes
+
+- c209a27: Fix payload schema validation internals to use the current async `standardValidate` options API (`{ throwOnError: false }`), restoring typecheck compatibility after the validation helper signature update.
 
 ## 0.1.1
 
