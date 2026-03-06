@@ -1,5 +1,5 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { createSyncStandardValidator } from "@zap-studio/validation";
+import { createStandardValidator } from "@zap-studio/validation";
 import { PolicyError } from "./errors";
 import type {
   Actions,
@@ -340,8 +340,8 @@ export function hasRole<
  *
  * // Check permissions
  * const post = { id: "1", authorId: "user-1", visibility: "public" as const };
- * policy.can(ctx, "read", "post", post); // true
- * policy.can(ctx, "write", "post", post); // depends on ctx.user.id
+ * await policy.can(ctx, "read", "post", post); // true
+ * await policy.can(ctx, "write", "post", post); // depends on ctx.user.id
  * ```
  */
 export function createPolicy<
@@ -354,19 +354,19 @@ export function createPolicy<
   const { rules, resources, actions } = config;
   const validators = new Map<
     keyof TResources,
-    (input: unknown) => StandardSchemaV1.Result<unknown>
+    (input: unknown) => Promise<StandardSchemaV1.Result<unknown>>
   >();
 
-  const getValidatedResource = <K extends keyof TResources>(
+  const getValidatedResource = async <K extends keyof TResources>(
     resourceType: K,
     resource: InferResource<TResources, K>
-  ): InferResource<TResources, K> | null => {
+  ): Promise<InferResource<TResources, K> | null> => {
     const validator = validators.get(resourceType);
     if (!validator) {
       return null;
     }
     try {
-      const result = validator(resource);
+      const result = await validator(resource);
       if (result.issues) {
         return null;
       }
@@ -384,17 +384,17 @@ export function createPolicy<
     if (!schema) {
       throw new PolicyError(`Missing schema for resource: ${String(key)}`);
     }
-    const validator = createSyncStandardValidator(schema);
-    validators.set(key, (input: unknown) => validator(input));
+    const validator = createStandardValidator(schema);
+    validators.set(key, async (input: unknown) => validator(input));
   }
 
   return {
-    can<K extends keyof TResources & keyof TActions>(
+    async can<K extends keyof TResources & keyof TActions>(
       context: TContext,
       action: InferAction<TActions, K>,
       resourceType: K,
       resource: InferResource<TResources, K>
-    ): boolean {
+    ): Promise<boolean> {
       const allowedActions = actions[resourceType];
       if (!allowedActions) {
         return false;
@@ -403,7 +403,10 @@ export function createPolicy<
         return false;
       }
 
-      const validatedResource = getValidatedResource(resourceType, resource);
+      const validatedResource = await getValidatedResource(
+        resourceType,
+        resource
+      );
       if (!validatedResource) {
         return false;
       }
@@ -452,17 +455,17 @@ export function mergePolicies<
   ...policies: Policy<TContext, TResources, TActions>[]
 ): Policy<TContext, TResources, TActions> {
   return {
-    can<K extends keyof TResources & keyof TActions>(
+    async can<K extends keyof TResources & keyof TActions>(
       context: TContext,
       action: InferAction<TActions, K>,
       resourceType: K,
       resource: InferResource<TResources, K>
-    ): boolean {
+    ): Promise<boolean> {
       if (!policies.length) {
         return false;
       }
       for (const policy of policies) {
-        if (!policy.can(context, action, resourceType, resource)) {
+        if (!(await policy.can(context, action, resourceType, resource))) {
           return false;
         }
       }
@@ -492,18 +495,21 @@ export function mergePoliciesAny<
   ...policies: Policy<TContext, TResources, TActions>[]
 ): Policy<TContext, TResources, TActions> {
   return {
-    can<K extends keyof TResources & keyof TActions>(
+    async can<K extends keyof TResources & keyof TActions>(
       context: TContext,
       action: InferAction<TActions, K>,
       resourceType: K,
       resource: InferResource<TResources, K>
-    ): boolean {
+    ): Promise<boolean> {
       if (!policies.length) {
         return false;
       }
-      return policies.some((policy) =>
-        policy.can(context, action, resourceType, resource)
-      );
+      for (const policy of policies) {
+        if (await policy.can(context, action, resourceType, resource)) {
+          return true;
+        }
+      }
+      return false;
     },
   };
 }

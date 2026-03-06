@@ -72,9 +72,9 @@ const policy = createPolicy<AppContext>({
 const ctx: AppContext = { user: { id: "user-1", role: "user" } };
 const post = { id: "1", authorId: "user-1", visibility: "public" as const };
 
-policy.can(ctx, "read", "post", post); // true
-policy.can(ctx, "write", "post", post); // true (user is author)
-policy.can(ctx, "delete", "post", post); // false (always denied)
+await policy.can(ctx, "read", "post", post); // true
+await policy.can(ctx, "write", "post", post); // true (user is author)
+await policy.can(ctx, "delete", "post", post); // false (always denied)
 ```
 
 ## API Reference

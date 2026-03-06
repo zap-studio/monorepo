@@ -170,7 +170,7 @@ export interface PermitConfig<
  *   rules: { ... },
  * });
  *
- * policy.can(ctx, "read", "post", postData); // true or false
+ * await policy.can(ctx, "read", "post", postData); // true or false
  * ```
  */
 export interface Policy<
@@ -186,5 +186,5 @@ export interface Policy<
     action: InferAction<TActions, K>,
     resourceType: K,
     resource: InferResource<TResources, K>
-  ): boolean;
+  ): Promise<boolean>;
 }
