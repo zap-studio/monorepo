@@ -1,145 +1,122 @@
 # @zap-studio/fetch
 
+All notable changes to this package are documented in this file.
+
 ## 0.4.5
 
-### Patch Changes
+### Dependencies
 
-- Updated dependencies [f75b984]
-  - @zap-studio/validation@0.3.0
+- f75b984: Updated dependency `@zap-studio/validation` to `0.3.0`.
 
 ## 0.4.4
 
-### Patch Changes
+### Fixed
 
-- 59a8d71: Fix request body handling for JSON payloads.
-
-  - Accept JSON values (including arrays) in `ExtendedRequestInit.body`
-  - Auto-stringify plain JSON body values regardless of whether a response schema is provided
-  - Set `Content-Type: application/json` only when auto-stringifying and no explicit content type is set
+- 59a8d71: Fixed JSON request body handling.
+  - Accept JSON values (including arrays) in `ExtendedRequestInit.body`.
+  - Auto-stringify plain JSON body values even when no response schema is provided.
+  - Set `Content-Type: application/json` only when auto-stringifying and no explicit content type is set.
 
 ## 0.4.3
 
-### Patch Changes
+### Changed
 
-- e4542bb: Refine `standardValidate` typings so the return type depends on the `throwOnError` flag, and update `@zap-studio/fetch` to integrate with the new overloads while preserving its boolean configuration API.
-- Updated dependencies [e4542bb]
-  - @zap-studio/validation@0.2.1
+- e4542bb: Refined `standardValidate` typings so return types depend on `throwOnError`, and updated `@zap-studio/fetch` integration while preserving the existing boolean configuration API.
+
+### Dependencies
+
+- e4542bb: Updated dependency `@zap-studio/validation` to `0.2.1`.
 
 ## 0.4.2
 
-### Patch Changes
+### Dependencies
 
-- Updated dependencies [2de8183]
-  - @zap-studio/validation@0.2.0
+- 2de8183: Updated dependency `@zap-studio/validation` to `0.2.0`.
 
 ## 0.4.1
 
-### Patch Changes
+### Changed
 
-- 447dbda: Extract shared Standard Schema validation utilities into `@zap-studio/validation` and update `@zap-studio/fetch` to depend on them.
-- Updated dependencies [447dbda]
-  - @zap-studio/validation@0.1.0
+- 447dbda: Switched shared Standard Schema validation utilities to `@zap-studio/validation`.
+
+### Dependencies
+
+- 447dbda: Updated dependency `@zap-studio/validation` to `0.1.0`.
 
 ## 0.4.0
 
-### Minor Changes
+### Added
 
-- 69057cd: Expose fetch defaults constants and utility helpers as public exports.
+- 69057cd: Exposed fetch defaults constants and utility helpers as public exports.
 
 ## 0.3.1
 
-### Patch Changes
+### Changed
 
-- 9919f63: Add discriminated return types based on `throwOnValidationError` option
-
-  The return type of `$fetch` and `api.*` methods now correctly narrows based on the `throwOnValidationError` option:
-
-  - When `throwOnValidationError: true` (default) or unspecified: returns `Promise<TSchema>` (the validated data directly)
-  - When `throwOnValidationError: false`: returns `Promise<StandardSchemaV1.Result<TSchema>>` (the result object with `value` or `issues`)
-
-  This improves type safety by eliminating the need for manual type narrowing when using the default behavior.
+- 9919f63: Added discriminated return types based on `throwOnValidationError`.
+  - `throwOnValidationError: true` (default) returns `Promise<TSchema>`.
+  - `throwOnValidationError: false` returns `Promise<StandardSchemaV1.Result<TSchema>>`.
+  - This improves type safety and removes manual narrowing in default usage.
 
 ## 0.3.0
 
-### Minor Changes
+### Added
 
-- 659621c: Add `searchParams` option to `createFetch` to allow factory-level default query/search parameters. Per-request `searchParams` continue to override factory defaults.
+- 659621c: Added `searchParams` support in `createFetch` for factory-level default query parameters.
+  - Per-request `searchParams` still override factory defaults.
 
 ## 0.2.2
 
-### Patch Changes
+### Changed
 
-- 5c3abbf: Prepare JSR publish and isolatedDeclarations support with new explicit types for `$Fetch` and `ApiMethods`
+- 5c3abbf: Prepared JSR publish and `isolatedDeclarations` support with explicit `$Fetch` and `ApiMethods` types.
 
 ## 0.2.1
 
-### Patch Changes
+### Changed
 
-- 82bac5c: Replace regex-based slash trimming with more efficient string manipulation functions for URL normalization
+- 82bac5c: Replaced regex-based slash trimming with more efficient string manipulation for URL normalization.
 
 ## 0.2.0
 
-### Minor Changes
+### Changed
 
-- 78afb76: ### Standard Schema Support
+- 78afb76: Migrated from Zod-only validation to Standard Schema v1 for broader validator compatibility.
+  - Supported libraries include Zod, Valibot, ArkType, and other Standard Schema-compliant validators.
 
-  Migrated from Zod-only validation to **Standard Schema v1** specification, enabling support for multiple validation libraries:
+### Added
 
-  - Zod
-  - Valibot
-  - ArkType
-  - Any Standard Schema compliant library
+- 78afb76: Added `createFetch()` factory pattern for pre-configured instances.
+- 78afb76: Added smart URL behavior so absolute URLs bypass `baseURL`.
+- 78afb76: Added automatic JSON body serialization and `Content-Type` handling for schema-based requests.
 
-  ### New Features
+### Breaking
 
-  - **Factory Pattern**: `createFetch()` for creating pre-configured fetch instances with `baseURL`, default `headers`, and error handling options
-  - **Smart URL Handling**: Absolute URLs bypass `baseURL` configuration
-  - **Auto JSON Body**: Automatic `JSON.stringify()` and `Content-Type` header when using schemas with request bodies
-
-  ### Breaking Changes
-
-  - Schema validation now requires Standard Schema compliant libraries (Zod 3.23+, Valibot 1.0+, ArkType 2.0+)
-  - Internal file structure reorganized (affects deep imports if any were used)
-  - `FetchError` constructor signature changed: now requires `(message, response)`
-
-  ### Migration Guide
-
-  ```typescript
-  // Before (Zod-only)
-  import { $fetch } from "@zap-studio/fetch";
-  import { z } from "zod";
-
-  // After (Standard Schema - works the same with Zod!)
-  import { $fetch } from "@zap-studio/fetch";
-  import { z } from "zod"; // Zod 3.23+ is Standard Schema compliant
-
-  // Or use other libraries
-  import * as v from "valibot";
-  import { type } from "arktype";
-  ```
+- 78afb76: Standard Schema-compliant validator libraries are now required (for example Zod 3.23+, Valibot 1.0+, ArkType 2.0+).
+- 78afb76: Internal file structure was reorganized (affects deep imports).
+- 78afb76: `FetchError` constructor now requires `(message, response)`.
 
 ## 0.1.2
 
-### Patch Changes
+### Changed
 
-- 69c2b21: Change `safeFetch` to `$fetch` syntax and make sure `safeFetch` can also be used for legacy
+- 69c2b21: Renamed `safeFetch` to `$fetch` while preserving `safeFetch` compatibility for legacy usage.
 
 ## 0.1.1
 
-### Patch Changes
+### Changed
 
-- 5f1812b: Change files field in package.json to distribute only necessary artifacts
+- 5f1812b: Updated `files` in `package.json` to publish only required artifacts.
 
 ## 0.1.0
 
-### Minor Changes
+### Added
 
-- 1644006: Comprehensive description of the initial release features including:
-
-  - Type-safe HTTP requests with Zod validation
-  - Automatic content-type handling
-  - Multiple response type support
-  - Convenient API methods (GET, POST, PUT, PATCH, DELETE)
-  - Flexible error handling
-  - Custom FetchError class
-  - Full TypeScript support
+- 1644006: Initial release of `@zap-studio/fetch`.
+  - Type-safe HTTP requests with Zod validation.
+  - Automatic content-type handling.
+  - Multiple response type support.
+  - API methods for GET, POST, PUT, PATCH, and DELETE.
+  - Flexible error handling.
+  - Custom `FetchError` class.
+  - Full TypeScript support.
