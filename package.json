@@ -10,8 +10,8 @@
     "dev": "turbo run dev",
     "fix": "pnpm dlx ultracite fix",
     "merge-coverage": "rimraf coverage/merged && mkdir -p coverage/merged && find packages apps -name 'coverage' -type d -exec sh -c 'test -f \"$1/coverage-final.json\" && echo \"$1\"' _ {} \\; | xargs -I {} sh -c 'cp {}/coverage-final.json coverage/merged/$(echo {} | tr / -).json' || true",
-    "prepublishOnly": "pnpm run build && pnpm run typecheck && pnpm run check && pnpm run test",
-    "publish-packages": "pnpm run build && pnpm run typecheck && pnpm run check && pnpm run test && changeset publish",
+    "prepublishOnly": "pnpm run validate",
+    "publish-packages": "pnpm run validate && changeset publish",
     "react-doctor": "turbo run react-doctor",
     "report-coverage": "nyc report --reporter=html --reporter=text --reporter=lcov --report-dir=coverage/report --temp-dir=coverage/merged",
     "test": "vitest run",
@@ -20,7 +20,7 @@
     "test:ui": "vitest --ui",
     "test:watch": "vitest --watch",
     "typecheck": "turbo run typecheck",
-    "validate": "pnpm run build && pnpm run typecheck && pnpm run check && pnpm run test"
+    "validate": "turbo run build typecheck test && pnpm run check"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:linting",
