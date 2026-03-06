@@ -1,0 +1,26 @@
+name: React Doctor
+
+on:
+  pull_request:
+    branches: ["**"]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  react-doctor-docs:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run React Doctor for docs
+        uses: millionco/react-doctor@main
+        with:
+          directory: apps/docs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          fail-on: error
+          verbose: "true"

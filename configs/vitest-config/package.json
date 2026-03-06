@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
-    "check": "tsc --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "vitest": "catalog:testing"

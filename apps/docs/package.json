@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "check": "pnpm run types:check",
     "dev": "next dev",
+    "react-doctor": "node ../../scripts/react-doctor.mjs docs .",
     "start": "next start",
-    "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
+    "typecheck": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
