@@ -61,7 +61,7 @@ const policy = createPolicy<AppContext>({
 app.delete("/posts/:id", async (req, res) => {
   const post = await getPost(req.params.id);
 
-  if (!policy.can(req.context, "delete", "post", post)) {
+  if (!(await policy.can(req.context, "delete", "post", post))) {
     return res.status(403).json({ error: "Forbidden" });
   }
 
@@ -167,7 +167,7 @@ const context: AppContext = {
 };
 
 // Check if the user can read this post
-if (policy.can(context, "read", "post", post)) {
+if (await policy.can(context, "read", "post", post)) {
   console.log("Access granted!");
 } else {
   console.log("Access denied.");

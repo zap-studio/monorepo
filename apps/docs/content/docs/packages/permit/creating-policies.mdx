@@ -163,10 +163,10 @@ const policy = createPolicy<AppContext>({
 
 ## Checking Permissions
 
-The policy object provides a `can()` method to check if an action is allowed. It takes the `context`, `action`, `resourceType`, and `resource` as parameters and returns a boolean indicating whether the action is allowed.
+The policy object provides a `can()` method to check if an action is allowed. It takes the `context`, `action`, `resourceType`, and `resource` as parameters and returns a `Promise<boolean>` indicating whether the action is allowed.
 
 ```typescript
-policy.can(context, action, resourceType, resource): boolean
+policy.can(context, action, resourceType, resource): Promise<boolean>
 ```
 
 ### Parameters
@@ -198,7 +198,7 @@ const post = {
 };
 
 // The user is the author, so this returns true according to the policy
-const canEdit = policy.can(context, "write", "post", post);
+const canEdit = await policy.can(context, "write", "post", post);
 console.log(canEdit); // true
 
 // A different user trying to edit
@@ -207,7 +207,7 @@ const otherContext: AppContext = {
   timestamp: new Date(),
 };
 
-const canOtherEdit = policy.can(otherContext, "write", "post", post);
+const canOtherEdit = await policy.can(otherContext, "write", "post", post);
 console.log(canOtherEdit); // false
 ```
 
@@ -325,8 +325,8 @@ const customerContext: StoreContext = {
   user: { id: "customer-456", role: "customer" },
 };
 
-console.log(storePolicy.can(customerContext, "read", "product", product));   // true
-console.log(storePolicy.can(customerContext, "update", "product", product)); // false
+console.log(await storePolicy.can(customerContext, "read", "product", product));   // true
+console.log(await storePolicy.can(customerContext, "update", "product", product)); // false
 ```
 
 ## Best Practices
