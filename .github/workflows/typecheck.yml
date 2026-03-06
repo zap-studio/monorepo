@@ -10,11 +10,11 @@ permissions:
   contents: read
 
 jobs:
-  check-monorepo:
+  typecheck-monorepo:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
