@@ -2,6 +2,18 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { ValidationError } from "./errors";
 
 /**
+ * Options for validation helpers.
+ */
+export interface StandardValidateOptions {
+  /**
+   * When `true`, a {@link ValidationError} will be thrown if validation fails.
+   *
+   * When `false` or omitted, the raw validation result is returned.
+   */
+  throwOnError?: boolean;
+}
+
+/**
  * Checks whether a value implements the Standard Schema interface.
  *
  * @param value - The value to check.
@@ -123,19 +135,21 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
  * @typeParam TSchema - The Standard Schema type.
  * @param schema - The schema to validate against.
  * @param input - The value to validate.
- * @param throwOnError - Whether to throw on validation failure.
+ * @param options - Options for validation behavior.
  * @returns The parsed value or the raw validation result.
  * @throws {ValidationError} If validation fails and `throwOnError` is `true`.
  *
  * @example
  * ```ts
- * const user = await standardValidate(userSchema, data, true);
+ * const user = await standardValidate(userSchema, data, { throwOnError: true });
  * console.log(user.name);
  * ```
  *
  * @example
  * ```ts
- * const result = await standardValidate(userSchema, data, false);
+ * const result = await standardValidate(userSchema, data, {
+ *   throwOnError: false,
+ * });
  *
  * if (result.issues) {
  *   console.error("Validation failed", result.issues);
@@ -147,19 +161,19 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
 export async function standardValidate<TSchema extends StandardSchemaV1>(
   schema: TSchema,
   input: unknown,
-  throwOnError: true
+  options: StandardValidateOptions & { throwOnError: true }
 ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
 export async function standardValidate<TSchema extends StandardSchemaV1>(
   schema: TSchema,
   input: unknown,
-  throwOnError: false
+  options?: StandardValidateOptions & { throwOnError?: false | undefined }
 ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
 export async function standardValidate<TSchema extends StandardSchemaV1>(
   schema: TSchema,
   input: unknown,
-  throwOnError: boolean
+  options: StandardValidateOptions = {}
 ): Promise<
   | StandardSchemaV1.InferOutput<TSchema>
   | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
@@ -170,13 +184,13 @@ export async function standardValidate<TSchema extends StandardSchemaV1>(
   }
 
   if (result.issues) {
-    if (throwOnError) {
+    if (options.throwOnError) {
       throw new ValidationError([...result.issues]);
     }
     return result;
   }
 
-  return throwOnError ? result.value : result;
+  return options.throwOnError ? result.value : result;
 }
 
 /**
@@ -193,20 +207,22 @@ export async function standardValidate<TSchema extends StandardSchemaV1>(
  * @typeParam TSchema - The Standard Schema type.
  * @param schema - The schema to validate against.
  * @param input - The value to validate.
- * @param throwOnError - Whether to throw on validation failure.
+ * @param options - Options for validation behavior.
  * @returns The parsed value or the raw validation result.
  * @throws {Error} If the schema performs asynchronous validation.
  * @throws {ValidationError} If validation fails and `throwOnError` is `true`.
  *
  * @example
  * ```ts
- * const user = standardValidateSync(userSchema, data, true);
+ * const user = standardValidateSync(userSchema, data, { throwOnError: true });
  * console.log(user.name);
  * ```
  *
  * @example
  * ```ts
- * const result = standardValidateSync(userSchema, data, false);
+ * const result = standardValidateSync(userSchema, data, {
+ *   throwOnError: false,
+ * });
  *
  * if (result.issues) {
  *   console.error("Validation failed", result.issues);
@@ -218,19 +234,19 @@ export async function standardValidate<TSchema extends StandardSchemaV1>(
 export function standardValidateSync<TSchema extends StandardSchemaV1>(
   schema: TSchema,
   input: unknown,
-  throwOnError: true
+  options: StandardValidateOptions & { throwOnError: true }
 ): StandardSchemaV1.InferOutput<TSchema>;
 
 export function standardValidateSync<TSchema extends StandardSchemaV1>(
   schema: TSchema,
   input: unknown,
-  throwOnError: false
+  options?: StandardValidateOptions & { throwOnError?: false | undefined }
 ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
 
 export function standardValidateSync<TSchema extends StandardSchemaV1>(
   schema: TSchema,
   input: unknown,
-  throwOnError: boolean
+  options: StandardValidateOptions = {}
 ):
   | StandardSchemaV1.InferOutput<TSchema>
   | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>> {
@@ -241,11 +257,11 @@ export function standardValidateSync<TSchema extends StandardSchemaV1>(
   }
 
   if (result.issues) {
-    if (throwOnError) {
+    if (options.throwOnError) {
       throw new ValidationError([...result.issues]);
     }
     return result;
   }
 
-  return throwOnError ? result.value : result;
+  return options.throwOnError ? result.value : result;
 }
