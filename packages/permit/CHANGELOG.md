@@ -1,8 +1,8 @@
 # @zap-studio/permit
 
-## 1.0.0
+## 0.2.0
 
-### Major Changes
+### Minor Changes
 
 - f0f503e: Make policy evaluation async by default.
 
