@@ -257,7 +257,9 @@ export class WebhookRouter<TMap = unknown> {
       return parsedJson as TPayload;
     }
 
-    const result = await standardValidate(schema, parsedJson, false);
+    const result = await standardValidate(schema, parsedJson, {
+      throwOnError: false,
+    });
 
     if (result.issues) {
       return {
