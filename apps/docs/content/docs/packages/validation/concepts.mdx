@@ -1,0 +1,94 @@
+---
+title: Concepts
+description: Beginner-friendly concepts for schema validation in validation.
+---
+
+Before using the helpers, this page gives you the foundation: what validation is, why modern apps need it, what schemas are, and why Standard Schema was created.
+
+## Why Validation Matters In Modern Apps
+
+Modern apps constantly process unknown input:
+
+- HTTP request bodies
+- query params
+- webhooks
+- environment variables
+- database payloads
+- third-party API responses
+
+TypeScript only checks types at build time. It does **not** protect runtime input by itself.
+
+Without runtime validation:
+
+- invalid data can silently enter your app
+- assumptions break deeper in business logic
+- bugs are harder to debug because failures happen far from the input boundary
+
+Validation fixes this by checking data at runtime, early, and explicitly.
+
+## What Is A Schema?
+
+A schema is a formal definition of what valid data should look like.
+
+Example contract for a user payload:
+
+- `id` must be a number
+- `email` must be a valid email string
+- `name` is required
+
+Think of a schema as the source of truth for input expectations.
+
+## What Is Validation, Exactly?
+
+Validation means comparing real input against that schema contract.
+
+The result is usually one of two outcomes:
+
+- input is valid -> you get parsed/validated data
+- input is invalid -> you get structured issues describing what failed
+
+This pattern makes error handling deterministic and easier to maintain.
+
+## A Bit Of History
+
+### Before Zod
+
+Before TypeScript-first schema libraries became popular, teams often used:
+
+- manual `if` checks
+- custom validator utilities
+- JSON Schema tooling (often separate from app types)
+
+These approaches worked, but many codebases suffered from duplication and drift between runtime validation and TypeScript types.
+
+### What Zod Solved
+
+Zod popularized a TypeScript-first workflow where:
+
+- schemas live in application code
+- runtime validation and type inference are connected
+- developer experience is much better
+
+That was a major productivity jump for many teams.
+
+### The New Problem After That
+
+As the ecosystem evolved, multiple strong schema libraries emerged (Zod, Valibot, ArkType, and others), often adopted differently across frameworks, teams, and packages.
+
+This created a new interoperability problem:
+
+- shared packages had to branch by library
+- return/error shapes differed
+- cross-team consistency got harder
+
+### Why Standard Schema Was Built
+
+Standard Schema provides a common validation interface across compatible libraries.
+
+Instead of hard-coding behavior for one validator, package code can target one shared contract.
+
+That is the key idea behind `validation`: one consistent helper surface over Standard Schema-compatible libraries.
+
+<Callout type="info" title="Note">
+  Standard Schema is a shared initiative across major validation libraries and ecosystem maintainers, including libraries like [Zod](https://zod.dev/), [Valibot](https://valibot.dev/), and [ArkType](https://arktype.io/).
+</Callout>

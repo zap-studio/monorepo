@@ -1,5 +1,12 @@
 # @zap-studio/fetch
 
+## 0.4.5
+
+### Patch Changes
+
+- Updated dependencies [f75b984]
+  - @zap-studio/validation@0.3.0
+
 ## 0.4.4
 
 ### Patch Changes

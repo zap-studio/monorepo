@@ -2,5 +2,12 @@
   "title": "validation",
   "icon": "BadgeCheck",
   "root": true,
-  "pages": ["index"]
+  "pages": [
+    "index",
+    "getting-started",
+    "concepts",
+    "how-to-validate",
+    "create-validators",
+    "handling-errors"
+  ]
 }

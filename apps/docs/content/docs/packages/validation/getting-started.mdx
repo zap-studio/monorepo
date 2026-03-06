@@ -1,0 +1,26 @@
+---
+title: Getting Started
+description: Install validation and validate your first payload in a few lines.
+---
+
+This page is a quick recap to install `validation` and get started as fast as possible. For deeper details and advanced usage, check the other pages in this section.
+
+## Install
+
+```npm
+npm install @zap-studio/validation
+```
+
+## Quick Start
+
+Use `standardValidate` to validate data against a Standard Schema-compatible schema.
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+
+const user = await standardValidate(userSchema, input, {
+  throwOnError: true,
+});
+```
+
+Next, we introduce the concepts so you build a solid understanding of what validation is, why modern applications need it, what schemas are, and how all of this fits together.

@@ -45,7 +45,7 @@ async function deletePost(postId: string, context: AppContext) {
   try {
     const post = await getPost(postId);
 
-    if (!policy.can(context, "delete", "post", post)) {
+    if (!(await policy.can(context, "delete", "post", post))) {
       throw new PolicyError("Not authorized to delete this post");
     }
 

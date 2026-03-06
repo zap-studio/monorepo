@@ -278,9 +278,9 @@ export async function fetchInternal(
   if (schema) {
     const raw = await response.json();
     if (throwOnValidationError) {
-      return standardValidate(schema, raw, true);
+      return standardValidate(schema, raw, { throwOnError: true });
     }
-    return standardValidate(schema, raw, false);
+    return standardValidate(schema, raw, { throwOnError: false });
   }
 
   // No validation, return raw response data

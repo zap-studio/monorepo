@@ -1,5 +1,22 @@
 # @zap-studio/permit
 
+## 0.2.0
+
+### Minor Changes
+
+- f0f503e: Make policy evaluation async by default.
+
+  `policy.can(...)` now returns a `Promise<boolean>` and must be awaited.
+
+  `createPolicy` now uses async-safe Standard Schema validation internally, so resource schemas with async validation are supported.
+
+  `mergePolicies` and `mergePoliciesAny` are also async through the shared `Policy` interface.
+
+### Patch Changes
+
+- Updated dependencies [f75b984]
+  - @zap-studio/validation@0.3.0
+
 ## 0.1.3
 
 ### Patch Changes

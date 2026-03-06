@@ -1,93 +1,67 @@
 ---
 title: Overview
-description: Standard Schema utilities and ValidationError helpers shared across Zap Studio packages.
+description: Understand Standard Schema, the interoperability problem it solves, and why Zap Studio built validation.
 ---
 
-Standard Schema utilities and `ValidationError` helpers.
+`validation` is a small package that makes validation workflows consistent across any [Standard Schema](https://standardschema.dev/schema) compatible library.
 
-## Why validation?
+## What Is Standard Schema?
 
-When working with Standard Schema-compatible libraries (Zod, Valibot, ArkType, etc.), you often want:
+Different teams choose different validators:
 
-- A **single error type** to represent validation failures.
-- A **simple way to detect** whether a value is a Standard Schema.
-- A **consistent helper** for validating data in both throwing and non-throwing modes.
+- [Zod](https://zod.dev/)
+- [ArkType](https://arktype.io/)
+- [Valibot](https://valibot.dev/)
 
-`validation` provides exactly that, and is used internally by `fetch` and other Zap Studio runtime packages.
+This is usually fine until you need shared infrastructure across teams and packages.
 
-## Installation
+Without a common contract, every library has different parsing APIs, return shapes, and error formats.
 
-```bash
-pnpm add @zap-studio/validation
-# or
-npm install @zap-studio/validation
-```
+**Standard Schema** defines a shared interface so those libraries can be consumed through one consistent protocol.
+That means your app or package logic can stay stable even when schema implementations differ.
 
-## Core Concepts
+## Why We Created `validation`?
 
-### ValidationError
+At Zap Studio, multiple packages need runtime validation (`fetch`, `permit`, and others).
+We wanted one internal validation flow that works with any Standard Schema-compatible library.
 
-`ValidationError` is a shared error type thrown when Standard Schema validation fails.
+So `validation` provides:
+
+- a single validation helper surface
+- sync and async-safe validation options
+- a shared `ValidationError` type
+- reusable validator factories
+
+This lets us keep package behavior consistent and avoid library-specific branching.
+
+### Before
+
+Without a shared API, you usually end up writing separate validation branches for each schema library used across teams or packages. That approach is easy to miss in edge cases, hard to keep exhaustive over time, and prone to inconsistent error handling.
 
 ```ts
-import { ValidationError } from "@zap-studio/validation/errors";
+if (validatorLib === "zod") {
+  const result = userSchema.safeParse(input);
+  if (!result.success) throw result.error;
+  return result.data;
+}
 
-try {
-  const value = await standardValidate(schema, data, true);
-  console.log("Validated:", value);
-} catch (error) {
-  if (error instanceof ValidationError) {
-    console.error("Validation failed:", error.issues);
-  }
+if (validatorLib === "valibot") {
+  const result = v.safeParse(userSchema, input);
+  if (!result.success) throw result.issues;
+  return result.output;
 }
 ```
 
-### isStandardSchema
+### After
 
-`isStandardSchema` is a type guard that tells you whether a value is a Standard Schema-compatible schema.
-
-```ts
-import { isStandardSchema } from "@zap-studio/validation";
-
-if (isStandardSchema(schema)) {
-  // TypeScript now knows `schema` is a StandardSchemaV1
-  const result = await standardValidate(schema, data, true);
-}
-```
-
-### standardValidate
-
-`standardValidate` normalizes sync and async Standard Schema validation, and supports both throwing and non-throwing flows.
+With `validation`, you call one helper regardless of the underlying Standard Schema-compatible library. The flow is simpler, easier to reason about, and much easier to keep consistent across packages.
 
 ```ts
 import { standardValidate } from "@zap-studio/validation";
 
-// Synchronous or asynchronous schema – handled transparently
-const value = await standardValidate(schema, data, true);
-
-// Non-throwing mode (sync or async schema)
-const result = await standardValidate(schema, data, false);
-if (result.issues) {
-  console.error("Validation failed:", result.issues);
-} else {
-  console.log("Validation passed:", result.value);
-}
+const user = await standardValidate(userSchema, input, {
+  throwOnError: true,
+});
 ```
 
-### createSyncStandardValidator
-
-`createSyncStandardValidator` builds a synchronous validator function from a Standard Schema schema. It calls `schema["~standard"].validate` and throws if the schema performs async validation (returns a Promise).
-
-```ts
-import { createSyncStandardValidator } from "@zap-studio/validation";
-
-// Build a sync-only validator for a Standard Schema-compatible schema
-const validateUser = createSyncStandardValidator(UserSchema);
-
-const result = validateUser(data);
-if (result.issues) {
-  console.error("Validation failed:", result.issues);
-} else {
-  console.log("Validation passed:", result.value);
-}
-```
+Let's now learn how to validate against schemas and handle errors with this package.

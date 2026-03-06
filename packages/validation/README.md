@@ -1,66 +1,80 @@
 # @zap-studio/validation
 
-Standard Schema utilities and helpers.
+Utilities for validating values using the [**Standard Schema**](https://standardschema.dev/schema) specification.
 
-## Why @zap-studio/validation?
+This package provides small, focused helpers for running validation against any schema that implements the Standard Schema interface. It adds conveniences like:
 
-When you validate data with different Standard Schema-compatible libraries (Zod, Valibot, ArkType, etc.), it is easy to end up with slightly different patterns for checking schemas and handling validation errors.
+- async-safe validation
+- synchronous validation
+- optional throwing behavior
+- reusable validator functions
 
-`@zap-studio/validation` provides a small, focused set of helpers that give you:
-
-- A single `ValidationError` type to represent schema validation failures.
-- A type-safe `isStandardSchema` guard to detect Standard Schema-compatible schemas.
-- A `standardValidate` helper that normalizes sync/async validation and error handling.
-- A `createSyncStandardValidator` helper for building synchronous validators from Standard Schema schemas.
+It works with any Standard Schema compatible library.
 
 ## Installation
 
 ```bash
-pnpm add @zap-studio/validation
-# or
 npm install @zap-studio/validation
 ```
 
-## Quick Start
+## Quick Example
 
 ```ts
-import { z } from "zod";
-import {
-  createSyncStandardValidator,
-  isStandardSchema,
-  standardValidate,
-} from "@zap-studio/validation";
-import { ValidationError } from "@zap-studio/validation/errors";
-
-const UserSchema = z.object({
-  id: z.number(),
-  email: z.string().email(),
-});
-
-// Type guard for Standard Schema-compatible schemas
-if (!isStandardSchema(UserSchema)) {
-  throw new Error("Schema is not Standard Schema-compatible");
-}
-
-// Create a sync-only validator (throws if schema is async)
-const validateUser = createSyncStandardValidator(UserSchema);
-const syncResult = validateUser(data);
-if (syncResult.issues) {
-  console.error("Sync validation failed:", syncResult.issues);
-}
+import { standardValidate } from "@zap-studio/validation";
 
 try {
-  // Throwing mode
-  const user = await standardValidate(UserSchema, data, true);
-  console.log(user.email);
+  const user = await standardValidate(userSchema, input, {
+    throwOnError: true,
+  });
+
+  console.log("Validation passed:", user);
 } catch (error) {
-  if (error instanceof ValidationError) {
-    console.error("Validation failed:", error.issues);
-  }
+  console.error("Validation failed:", error);
+}
+```
+
+## Before / After
+
+### Before
+
+Without a shared Standard Schema helper, validation logic often becomes library-specific:
+
+```ts
+if (validatorLib === "zod") {
+  const result = userSchema.safeParse(input);
+  if (!result.success) throw result.error;
+  return result.data;
 }
 
-// Non-throwing mode
-const result = await standardValidate(UserSchema, data, false);
+if (validatorLib === "valibot") {
+  const result = v.safeParse(userSchema, input);
+  if (!result.success) throw result.issues;
+  return result.output;
+}
+```
+
+### After
+
+With `@zap-studio/validation`, the calling code stays the same:
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+
+// `userSchema` can come from any Standard Schema-compatible library
+const user = await standardValidate(userSchema, input, {
+  throwOnError: true,
+});
+```
+
+## Non-throwing Validation
+
+If you prefer not to use exceptions, you can receive the raw validation result.
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+
+const result = await standardValidate(userSchema, input);
+
 if (result.issues) {
   console.error("Validation failed:", result.issues);
 } else {
@@ -68,4 +82,101 @@ if (result.issues) {
 }
 ```
 
+You can also explicitly disable throwing:
 
+```ts
+const result = await standardValidate(userSchema, input, {
+  throwOnError: false,
+});
+```
+
+## Synchronous Validation
+
+If you know the schema performs synchronous validation, you can use the sync helper.
+
+```ts
+import { standardValidateSync } from "@zap-studio/validation";
+
+const result = standardValidateSync(userSchema, input);
+
+if (result.issues) {
+  console.error(result.issues);
+} else {
+  console.log(result.value);
+}
+```
+
+If the schema performs async validation, this function will throw.
+
+## Reusable Validators
+
+If you validate many values against the same schema, you can create reusable validators.
+
+### Async validator
+
+```ts
+import { createStandardValidator } from "@zap-studio/validation";
+
+const validateUser = createStandardValidator(userSchema);
+const result = await validateUser(input);
+```
+
+### Sync validator
+
+```ts
+import { createSyncStandardValidator } from "@zap-studio/validation";
+
+const validateUser = createSyncStandardValidator(userSchema);
+const result = validateUser(input);
+```
+
+## Handling Validation Errors
+
+When using the throwing mode, validation failures produce a `ValidationError`.
+
+```ts
+import { standardValidate, ValidationError } from "@zap-studio/validation";
+
+try {
+  await standardValidate(userSchema, input, {
+    throwOnError: true,
+  });
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.error("Validation issues:", error.issues);
+  }
+}
+```
+
+## Choosing the Right Helper
+
+| Function                      | Use when                                                        |
+| ----------------------------- | --------------------------------------------------------------- |
+| `standardValidate`            | You want validation that works with both sync and async schemas |
+| `standardValidateSync`        | You know the schema is synchronous                              |
+| `createStandardValidator`     | You want a reusable async validator                             |
+| `createSyncStandardValidator` | You want a reusable sync validator                              |
+
+---
+
+## Standard Schema
+
+**Standard Schema** is a shared validation interface.
+
+In practice, teams often choose different validation libraries:
+
+- some teams use [Zod](https://zod.dev/)
+- others use [ArkType](https://arktype.io/)
+- others use [Valibot](https://valibot.dev/)
+
+When those libraries implement the Standard Schema spec, you can keep one validation flow in your app instead of writing library-specific code paths.
+
+`@zap-studio/validation` builds on that spec and gives you one consistent API for validation and error handling (`standardValidate`, `standardValidateSync`, `createStandardValidator`, `createSyncStandardValidator`, `ValidationError`).
+
+At Zap Studio, we use this package internally across other packages so they stay compatible with any validation library that supports the Standard Schema spec.
+
+Learn more: [https://github.com/standard-schema/standard-schema](https://github.com/standard-schema/standard-schema)
+
+## License
+
+MIT
