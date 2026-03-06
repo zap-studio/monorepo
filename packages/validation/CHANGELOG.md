@@ -1,5 +1,12 @@
 # @zap-studio/validation
 
+## 0.3.0
+
+### Minor Changes
+
+- 5acf43b: Add `createStandardValidator` for reusable async validation and `standardValidateSync` for synchronous validation with throwing/non-throwing overloads.
+- 4b3ce9f: Rework `standardValidate` to accept an options object (`{ throwOnError }`) instead of a boolean argument while preserving typed return behavior.
+
 ## 0.2.1
 
 ### Patch Changes

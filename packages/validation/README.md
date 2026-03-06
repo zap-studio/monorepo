@@ -15,7 +15,7 @@ It works with any Standard Schema compatible library.
 
 ```bash
 npm install @zap-studio/validation
-````
+```
 
 ## Quick Example
 
@@ -31,6 +31,39 @@ try {
 } catch (error) {
   console.error("Validation failed:", error);
 }
+```
+
+## Before / After
+
+### Before
+
+Without a shared Standard Schema helper, validation logic often becomes library-specific:
+
+```ts
+if (validatorLib === "zod") {
+  const result = userSchema.safeParse(input);
+  if (!result.success) throw result.error;
+  return result.data;
+}
+
+if (validatorLib === "valibot") {
+  const result = v.safeParse(userSchema, input);
+  if (!result.success) throw result.issues;
+  return result.output;
+}
+```
+
+### After
+
+With `@zap-studio/validation`, the calling code stays the same:
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+
+// `userSchema` can come from any Standard Schema-compatible library
+const user = await standardValidate(userSchema, input, {
+  throwOnError: true,
+});
 ```
 
 ## Non-throwing Validation
@@ -128,9 +161,19 @@ try {
 
 ## Standard Schema
 
-This package works with any library that implements the **Standard Schema** specification.
+**Standard Schema** is a shared validation interface.
 
-Standard Schema provides a common validation interface across multiple libraries.
+In practice, teams often choose different validation libraries:
+
+- some teams use [Zod](https://zod.dev/)
+- others use [ArkType](https://arktype.io/)
+- others use [Valibot](https://valibot.dev/)
+
+When those libraries implement the Standard Schema spec, you can keep one validation flow in your app instead of writing library-specific code paths.
+
+`@zap-studio/validation` builds on that spec and gives you one consistent API for validation and error handling (`standardValidate`, `standardValidateSync`, `createStandardValidator`, `createSyncStandardValidator`, `ValidationError`).
+
+At Zap Studio, we use this package internally across other packages so they stay compatible with any validation library that supports the Standard Schema spec.
 
 Learn more: [https://github.com/standard-schema/standard-schema](https://github.com/standard-schema/standard-schema)
 
