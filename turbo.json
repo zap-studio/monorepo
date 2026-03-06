@@ -30,6 +30,9 @@
       "cache": false,
       "persistent": true
     },
+    "react-doctor": {
+      "cache": false
+    },
     "test": {
       "dependsOn": ["^build", "^test", "@zap-studio/vitest-config#build"],
       "outputs": ["coverage/**"]

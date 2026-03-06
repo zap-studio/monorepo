@@ -6,6 +6,7 @@
     "build": "next build",
     "check": "pnpm run types:check",
     "dev": "next dev",
+    "react-doctor": "pnpm dlx react-doctor@latest . --verbose --diff",
     "start": "next start",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
