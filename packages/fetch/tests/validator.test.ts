@@ -91,7 +91,9 @@ describe("standardValidate", () => {
       const schema = createMockSchema((input) => ({
         value: input,
       }));
-      const result = await standardValidate(schema, "test", true);
+      const result = await standardValidate(schema, "test", {
+        throwOnError: true,
+      });
       expect(result).toBe("test");
     });
 
@@ -100,7 +102,9 @@ describe("standardValidate", () => {
         value: input,
       }));
       const data = { id: 42 };
-      const result = await standardValidate(schema, data, true);
+      const result = await standardValidate(schema, data, {
+        throwOnError: true,
+      });
       expect(result).toEqual({ id: 42 });
     });
 
@@ -108,7 +112,9 @@ describe("standardValidate", () => {
       const schema = createMockSchema((input) => ({
         value: input,
       }));
-      const result = await standardValidate(schema, "test", false);
+      const result = await standardValidate(schema, "test", {
+        throwOnError: false,
+      });
       expect(result).toEqual({ value: "test" });
     });
   });
@@ -118,7 +124,9 @@ describe("standardValidate", () => {
       const schema = createMockSchema(async (input) => ({
         value: input,
       }));
-      const result = await standardValidate(schema, "async-test", true);
+      const result = await standardValidate(schema, "async-test", {
+        throwOnError: true,
+      });
       expect(result).toBe("async-test");
     });
 
@@ -129,7 +137,9 @@ describe("standardValidate", () => {
             setTimeout(() => resolve({ value: input as number }), 10);
           })
       );
-      const result = await standardValidate(schema, 123, true);
+      const result = await standardValidate(schema, 123, {
+        throwOnError: true,
+      });
       expect(result).toBe(123);
     });
 
@@ -138,7 +148,9 @@ describe("standardValidate", () => {
         value: input,
       }));
       const data = { name: "async" };
-      const result = await standardValidate(schema, data, false);
+      const result = await standardValidate(schema, data, {
+        throwOnError: false,
+      });
       expect(result).toEqual({ value: { name: "async" } });
     });
   });
@@ -149,9 +161,9 @@ describe("standardValidate", () => {
         issues: [{ message: "Invalid value" }],
       }));
 
-      await expect(standardValidate(schema, "invalid", true)).rejects.toThrow(
-        ValidationError
-      );
+      await expect(
+        standardValidate(schema, "invalid", { throwOnError: true })
+      ).rejects.toThrow(ValidationError);
     });
 
     it("should include issues in thrown ValidationError", async () => {
@@ -162,7 +174,7 @@ describe("standardValidate", () => {
       const schema = createMockSchema(() => ({ issues }));
 
       try {
-        await standardValidate(schema, {}, true);
+        await standardValidate(schema, {}, { throwOnError: true });
         expect.fail("Should have thrown ValidationError");
       } catch (error) {
         expect(error).toBeInstanceOf(ValidationError);
@@ -176,7 +188,9 @@ describe("standardValidate", () => {
       ];
       const schema = createMockSchema(() => ({ issues }));
 
-      const result = await standardValidate(schema, "invalid", false);
+      const result = await standardValidate(schema, "invalid", {
+        throwOnError: false,
+      });
       expect(result).toEqual({ issues });
     });
 
@@ -186,7 +200,7 @@ describe("standardValidate", () => {
       }));
 
       await expect(
-        standardValidate(schema, "invalid", false)
+        standardValidate(schema, "invalid", { throwOnError: false })
       ).resolves.toBeDefined();
     });
 
@@ -195,9 +209,9 @@ describe("standardValidate", () => {
         issues: [{ message: "Async validation failed" }],
       }));
 
-      await expect(standardValidate(schema, "data", true)).rejects.toThrow(
-        ValidationError
-      );
+      await expect(
+        standardValidate(schema, "data", { throwOnError: true })
+      ).rejects.toThrow(ValidationError);
     });
 
     it("should handle async validation failure with throwOnError false", async () => {
@@ -206,7 +220,9 @@ describe("standardValidate", () => {
       ];
       const schema = createMockSchema(async () => ({ issues }));
 
-      const result = await standardValidate(schema, "data", false);
+      const result = await standardValidate(schema, "data", {
+        throwOnError: false,
+      });
       expect(result).toEqual({ issues });
     });
   });
@@ -214,7 +230,7 @@ describe("standardValidate", () => {
   describe("edge cases", () => {
     it("should handle empty objects", async () => {
       const schema = z.object({});
-      const result = await standardValidate(schema, {}, true);
+      const result = await standardValidate(schema, {}, { throwOnError: true });
       expect(result).toEqual({});
     });
 
@@ -237,14 +253,18 @@ describe("standardValidate", () => {
         },
       };
 
-      const result = await standardValidate(schema, data, true);
+      const result = await standardValidate(schema, data, {
+        throwOnError: true,
+      });
       expect(result).toEqual(data);
     });
 
     it("should handle array schemas", async () => {
       const schema = z.array(z.number());
       const data = [1, 2, 3, 4, 5];
-      const result = await standardValidate(schema, data, true);
+      const result = await standardValidate(schema, data, {
+        throwOnError: true,
+      });
       expect(result).toEqual(data);
     });
 
@@ -257,26 +277,36 @@ describe("standardValidate", () => {
       const dataWithOptional = { required: "value", optional: "present" };
       const dataWithoutOptional = { required: "value" };
 
-      const result1 = await standardValidate(schema, dataWithOptional, true);
+      const result1 = await standardValidate(schema, dataWithOptional, {
+        throwOnError: true,
+      });
       expect(result1).toEqual(dataWithOptional);
 
-      const result2 = await standardValidate(schema, dataWithoutOptional, true);
+      const result2 = await standardValidate(schema, dataWithoutOptional, {
+        throwOnError: true,
+      });
       expect(result2).toEqual(dataWithoutOptional);
     });
 
     it("should handle union types", async () => {
       const schema = z.union([z.string(), z.number()]);
 
-      const result1 = await standardValidate(schema, "string", true);
+      const result1 = await standardValidate(schema, "string", {
+        throwOnError: true,
+      });
       expect(result1).toBe("string");
 
-      const result2 = await standardValidate(schema, 42, true);
+      const result2 = await standardValidate(schema, 42, {
+        throwOnError: true,
+      });
       expect(result2).toBe(42);
     });
 
     it("should handle transformed values", async () => {
       const schema = z.string().transform((val) => val.toUpperCase());
-      const result = await standardValidate(schema, "hello", true);
+      const result = await standardValidate(schema, "hello", {
+        throwOnError: true,
+      });
       expect(result).toBe("HELLO");
     });
 
@@ -285,10 +315,18 @@ describe("standardValidate", () => {
         value: z.string().nullable(),
       });
 
-      const result1 = await standardValidate(schema, { value: "test" }, true);
+      const result1 = await standardValidate(
+        schema,
+        { value: "test" },
+        { throwOnError: true }
+      );
       expect(result1).toEqual({ value: "test" });
 
-      const result2 = await standardValidate(schema, { value: null }, true);
+      const result2 = await standardValidate(
+        schema,
+        { value: null },
+        { throwOnError: true }
+      );
       expect(result2).toEqual({ value: null });
     });
   });
