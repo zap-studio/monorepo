@@ -91,7 +91,7 @@ export async function SocialProofSection(): Promise<ReactNode> {
     },
     {
       icon: <PackageIcon className="size-4" />,
-      value: "3",
+      value: "4",
       label: "Packages",
     },
   ];

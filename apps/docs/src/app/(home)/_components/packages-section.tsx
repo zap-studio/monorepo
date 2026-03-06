@@ -137,8 +137,8 @@ function ComingSoonCard(): ReactNode {
       </p>
 
       <p className="mt-2.5 flex-1 text-fd-foreground/90 text-sm leading-6">
-        Realtime events, waitlist management, webhook handling, and more — all
-        type-safe and framework-agnostic.
+        Realtime events, waitlist management, and more — all type-safe and
+        framework-agnostic.
       </p>
 
       <div className="mt-6 flex flex-wrap gap-2">
