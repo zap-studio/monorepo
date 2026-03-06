@@ -12,8 +12,6 @@
 
   `mergePolicies` and `mergePoliciesAny` are also async through the shared `Policy` interface.
 
-## 0.1.4
-
 ### Patch Changes
 
 - Updated dependencies [f75b984]
