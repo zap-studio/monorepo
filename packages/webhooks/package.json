@@ -37,7 +37,7 @@
   ],
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
-    "check-types": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest --watch"
   },

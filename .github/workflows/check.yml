@@ -27,5 +27,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run check on the monorepo
-        run: pnpm run check
+      - name: Run typecheck on the monorepo
+        run: pnpm run typecheck
