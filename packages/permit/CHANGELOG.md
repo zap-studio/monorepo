@@ -7,9 +7,13 @@ All notable changes to this package are documented in this file.
 ### Changed
 
 - f0f503e: Made policy evaluation asynchronous by default.
-  - `policy.can(...)` now returns `Promise<boolean>` and must be awaited.
-  - `createPolicy` now uses async-safe Standard Schema validation, including support for async resource schemas.
-  - `mergePolicies` and `mergePoliciesAny` are now async via the shared `Policy` interface.
+
+### Breaking Changes
+
+- f0f503e: `policy.can(...)` now returns `Promise<boolean>`.
+- f0f503e: `createPolicy` now uses async-safe Standard Schema validation, including support for async resource schemas.
+- f0f503e: `mergePolicies` and `mergePoliciesAny` are now async via the shared `Policy` interface.
+- Action required: update call sites to `await policy.can(...)`, handle `mergePolicies`/`mergePoliciesAny` asynchronously, and accommodate async-safe `createPolicy`/`Policy` schema validation.
 
 ### Dependencies
 

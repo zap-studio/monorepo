@@ -16,7 +16,7 @@ export interface PackageChangelog {
   versions: ChangelogVersion[];
 }
 
-let changelogCache: Promise<PackageChangelog[]> | null = null;
+let changelogCache: Promise<PackageChangelog[]> | undefined;
 const execFileAsync = promisify(execFile);
 const commitDateCache = new Map<string, string | null>();
 const PACKAGE_SCOPE_PREFIX_REGEX = /^@zap-studio\//;
@@ -25,7 +25,10 @@ const VERSION_HEADER_REGEX = /^##\s+([^\n]+)$/gm;
 
 export function getReleasedPackageChangelogs(): Promise<PackageChangelog[]> {
   if (!changelogCache) {
-    changelogCache = loadReleasedPackageChangelogs();
+    changelogCache = loadReleasedPackageChangelogs().catch((error: unknown) => {
+      changelogCache = undefined;
+      throw error;
+    });
   }
 
   return changelogCache;

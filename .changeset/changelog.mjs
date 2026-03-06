@@ -35,10 +35,12 @@ function getDependencyReleaseLine(changesets, dependenciesUpdated) {
   }
 
   const shortCommits = [];
+  const shortCommitsSet = new Set();
 
   for (const changeset of changesets) {
     const shortCommit = requireShortCommit(changeset);
-    if (!shortCommits.includes(shortCommit)) {
+    if (!shortCommitsSet.has(shortCommit)) {
+      shortCommitsSet.add(shortCommit);
       shortCommits.push(shortCommit);
     }
   }

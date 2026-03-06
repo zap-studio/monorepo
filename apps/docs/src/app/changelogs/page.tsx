@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import type { ReactNode } from "react";
-import { ChangelogContent } from "@/app/changelogs/_components/changelog-content";
+import { notFound, redirect } from "next/navigation";
 import { getReleasedPackageChangelogs } from "@/lib/changelog";
 
 export const metadata: Metadata = {
@@ -10,7 +8,7 @@ export const metadata: Metadata = {
     "Browse changelogs for every released Zap Studio package in one place.",
 };
 
-export default async function ChangelogIndexPage(): Promise<ReactNode> {
+export default async function ChangelogIndexPage(): Promise<never> {
   const changelogs = await getReleasedPackageChangelogs();
   const firstPackage = changelogs[0];
 
@@ -18,5 +16,5 @@ export default async function ChangelogIndexPage(): Promise<ReactNode> {
     notFound();
   }
 
-  return <ChangelogContent allPackages={changelogs} current={firstPackage} />;
+  redirect(`/changelogs/${firstPackage.slug}`);
 }
