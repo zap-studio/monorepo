@@ -7,7 +7,7 @@ import {
   getReleasedPackageChangelogs,
 } from "@/lib/changelog";
 
-export default async function PackageChangelogPage({
+export default async function ChangelogPackagePage({
   params,
 }: PageProps<"/changelogs/[package]">): Promise<ReactNode> {
   const { package: packageSlug } = await params;
