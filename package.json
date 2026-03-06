@@ -29,6 +29,7 @@
     "@turbo/gen": "catalog:tooling",
     "@vitest/ui": "catalog:testing",
     "@zap-studio/vitest-config": "workspace:*",
+    "jsr": "catalog:tooling",
     "lefthook": "catalog:tooling",
     "nyc": "catalog:tooling",
     "rimraf": "catalog:tooling",

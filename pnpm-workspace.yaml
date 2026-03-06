@@ -41,6 +41,7 @@ catalogs:
   tooling:
     '@changesets/cli': ^2.30.0
     '@turbo/gen': ^2.8.14
+    jsr: ^0.14.3
     lefthook: ^2.1.2
     nyc: ^18.0.0
     rimraf: ^6.1.3
