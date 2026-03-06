@@ -1,14 +1,14 @@
 {
   "$schema": "https://jsr.io/schema/config-file.v1.json",
   "name": "@zap-studio/webhooks",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts"
   },
   "imports": {
     "@standard-schema/spec": "npm:@standard-schema/spec@1.1.0",
-    "@zap-studio/validation": "jsr:@zap-studio/validation@0.2.1"
+    "@zap-studio/validation": "jsr:@zap-studio/validation@0.3.0"
   },
   "publish": {
     "include": ["src", "CHANGELOG.md", "LICENSE", "README.md"]
