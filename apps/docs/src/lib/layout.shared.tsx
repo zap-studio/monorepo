@@ -15,6 +15,7 @@ import {
   LockIcon,
   MapIcon,
   PackageIcon,
+  ScrollTextIcon,
   WebhookIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -73,9 +74,15 @@ export function baseOptions(): BaseLayoutProps {
 }
 
 export function homeLinks(
-  options: { sponsorsActiveMode?: "url" | "nested-url" | "none" } = {}
+  options: {
+    changelogActiveMode?: "url" | "nested-url" | "none";
+    sponsorsActiveMode?: "url" | "nested-url" | "none";
+  } = {}
 ): BaseLayoutProps["links"] {
-  const { sponsorsActiveMode = "nested-url" } = options;
+  const {
+    sponsorsActiveMode = "nested-url",
+    changelogActiveMode = "nested-url",
+  } = options;
 
   return [
     ...(baseOptions().links ?? []),
@@ -164,6 +171,12 @@ export function homeLinks(
       url: "/sponsors",
       icon: <HeartIcon className="size-4" />,
       active: sponsorsActiveMode,
+    },
+    {
+      text: "Changelogs",
+      url: "/changelogs",
+      icon: <ScrollTextIcon className="size-4" />,
+      active: changelogActiveMode,
     },
     {
       type: "custom",
