@@ -1,57 +1,57 @@
 # @zap-studio/permit
 
+All notable changes to this package are documented in this file.
+
 ## 0.2.0
 
-### Minor Changes
+### Changed
 
-- f0f503e: Make policy evaluation async by default.
+- f0f503e: Made policy evaluation asynchronous by default.
 
-  `policy.can(...)` now returns a `Promise<boolean>` and must be awaited.
+### Breaking Changes
 
-  `createPolicy` now uses async-safe Standard Schema validation internally, so resource schemas with async validation are supported.
+- f0f503e: `policy.can(...)` now returns `Promise<boolean>`.
+- f0f503e: `createPolicy()` now uses async-safe Standard Schema validation for resource schemas (including async resource schemas); this is not a separate `Policy` schema API.
+- f0f503e: The `Policy` interface changed so `can()` is async, and `mergePolicies`/`mergePoliciesAny` are async accordingly.
+- Action required: callers must `await policy.can(...)` and handle `mergePolicies`/`mergePoliciesAny` as async operations; also account for async-safe resource schema validation in `createPolicy()`.
 
-  `mergePolicies` and `mergePoliciesAny` are also async through the shared `Policy` interface.
+### Dependencies
 
-### Patch Changes
-
-- Updated dependencies [f75b984]
-  - @zap-studio/validation@0.3.0
+- f75b984: Updated dependency `@zap-studio/validation` to `0.3.0`.
 
 ## 0.1.3
 
-### Patch Changes
+### Dependencies
 
-- Updated dependencies [e4542bb]
-  - @zap-studio/validation@0.2.1
+- e4542bb: Updated dependency `@zap-studio/validation` to `0.2.1`.
 
 ## 0.1.2
 
-### Patch Changes
+### Changed
 
-- 2de8183: Add a reusable synchronous Standard Schema validator helper in `@zap-studio/validation` and refactor `@zap-studio/permit` to use it for resource schema validation in `createPolicy`.
-- Updated dependencies [2de8183]
-  - @zap-studio/validation@0.2.0
+- 2de8183: Adopted shared synchronous Standard Schema validator utilities from `@zap-studio/validation` for resource schema validation in `createPolicy`.
+
+### Dependencies
+
+- 2de8183: Updated dependency `@zap-studio/validation` to `0.2.0`.
 
 ## 0.1.1
 
-### Patch Changes
+### Fixed
 
-- 907d903: Add runtime resource validation and fail-closed behavior, including denying access when merges are called with no policies.
+- 907d903: Added runtime resource validation and fail-closed behavior, including deny-by-default when merges are invoked with no policies.
 
 ## 0.1.0
 
-### Minor Changes
+### Added
 
-- 0627885: Initial release of @zap-studio/permit - a type-safe, declarative authorization library for TypeScript.
-
-  Features:
-
-  - Declarative policy creation with `createPolicy()`
-  - Policy rules: `allow()`, `deny()`, and `when()` for conditional access
-  - Condition combinators: `and()`, `or()`, `not()`, and `has()`
-  - Role-based access control with `hasRole()` and role hierarchies
-  - Policy merging with `mergePolicies()` (deny-overrides) and `mergePoliciesAny()` (allow-overrides)
-  - Standard Schema support (Zod, Valibot, ArkType, etc.)
-  - Full TypeScript support with type inference
-  - `PolicyError` class for authorization errors
-  - `assertNever()` helper for exhaustive type checking
+- 0627885: Initial release of `@zap-studio/permit`.
+  - Declarative policy creation with `createPolicy()`.
+  - Policy rules: `allow()`, `deny()`, and `when()` for conditional access.
+  - Condition combinators: `and()`, `or()`, `not()`, and `has()`.
+  - Role-based access control with `hasRole()` and role hierarchies.
+  - Policy merging with `mergePolicies()` (deny-overrides) and `mergePoliciesAny()` (allow-overrides).
+  - Standard Schema support (Zod, Valibot, ArkType, and more).
+  - Full TypeScript type inference support.
+  - `PolicyError` for authorization failures.
+  - `assertNever()` for exhaustive checks.

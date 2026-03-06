@@ -72,7 +72,7 @@ export function PackagesSection(): ReactNode {
       </FadeIn>
 
       <StaggerContainer
-        className="grid gap-5 sm:grid-cols-2 sm:gap-6"
+        className="grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3"
         delay={0.15}
         stagger={0.08}
       >
@@ -87,7 +87,7 @@ export function PackagesSection(): ReactNode {
           </StaggerItem>
         ))}
 
-        <StaggerItem>
+        <StaggerItem className="lg:col-span-2">
           <ComingSoonCard />
         </StaggerItem>
       </StaggerContainer>
