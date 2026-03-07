@@ -47,7 +47,7 @@ jobs:
 
           while IFS= read -r dir; do
             skill_roots+=("$dir")
-          done < <(find packages apps configs -type d -path "*/skills" 2>/dev/null | sort -u)
+          done < <(find packages apps configs -path "*/skills" -type d 2>/dev/null | sort -u)
 
           if [ ${#skill_roots[@]} -eq 0 ]; then
             echo "No skills/ directory found — skipping validation."
