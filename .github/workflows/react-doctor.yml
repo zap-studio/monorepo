@@ -4,11 +4,21 @@ on:
   pull_request:
     branches: ["**"]
     types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "apps/docs/**"
+      - "scripts/react-doctor.mjs"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/react-doctor.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
   pull-requests: write
+
+concurrency:
+  group: ci-react-doctor-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   react-doctor-docs:
