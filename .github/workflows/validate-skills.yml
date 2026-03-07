@@ -6,9 +6,9 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "skills/**"
-      - "packages/*/skills/**"
-      - "apps/*/skills/**"
-      - "configs/*/skills/**"
+      - "packages/**/skills/**"
+      - "apps/**/skills/**"
+      - "configs/**/skills/**"
       - ".github/workflows/validate-skills.yml"
       - ".github/actions/setup-node-pnpm/**"
       - "package.json"
@@ -47,7 +47,7 @@ jobs:
 
           while IFS= read -r dir; do
             skill_roots+=("$dir")
-          done < <(find packages apps configs -mindepth 2 -maxdepth 2 -type d -name skills 2>/dev/null | sort -u)
+          done < <(find packages apps configs -type d -path "*/skills" 2>/dev/null | sort -u)
 
           if [ ${#skill_roots[@]} -eq 0 ]; then
             echo "No skills/ directory found — skipping validation."
