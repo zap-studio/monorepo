@@ -44,7 +44,7 @@ jobs:
         id: stale
         run: |
           STDERR_FILE="$(mktemp)"
-          if ! OUTPUT=$(pnpm dlx @tanstack/intent stale --json 2>"$STDERR_FILE"); then
+          if ! OUTPUT=$(pnpm exec @tanstack/intent stale --json 2>"$STDERR_FILE"); then
             cat "$STDERR_FILE" >&2
             echo "Failed to run @tanstack/intent stale --json" >&2
             exit 1
@@ -132,7 +132,7 @@ jobs:
               '1. Read the current SKILL.md file',
               '2. Check what changed in the library since the skill was last updated',
               '3. Update the skill content to reflect current APIs and behavior',
-              '4. Run \`pnpm dlx @tanstack/intent validate\` to verify the updated skill',
+              '4. Run \`pnpm exec @tanstack/intent validate\` to verify the updated skill',
             ].join('\n');
 
             // Write outputs

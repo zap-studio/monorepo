@@ -60,6 +60,6 @@ jobs:
             skills_dir_name="$(basename "$dir")"
             (
               cd "$parent_dir"
-              pnpm dlx @tanstack/intent validate "$skills_dir_name"
+              pnpm exec @tanstack/intent validate "$skills_dir_name"
             )
           done

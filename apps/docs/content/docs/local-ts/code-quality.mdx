@@ -65,7 +65,7 @@ Local.ts uses Lefthook to run Ultracite on staged files before each commit:
 # lefthook.yml
 pre-commit:
   jobs:
-    - run: pnpm dlx ultracite fix
+    - run: pnpm exec ultracite fix
       glob:
         - "*.js"
         - "*.jsx"
