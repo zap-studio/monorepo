@@ -56,13 +56,36 @@ jobs:
           # Check if any skills need review
           NEEDS_REVIEW=$(echo "$OUTPUT" | node -e "
             const input = require('fs').readFileSync('/dev/stdin','utf8');
+            const trimmed = input.trim();
             let reports;
-            try {
-              reports = JSON.parse(input);
-            } catch (err) {
-              console.error('Invalid JSON from @tanstack/intent stale --json');
-              console.error(err?.message || err);
-              process.exit(1);
+
+            if (
+              trimmed.length === 0 ||
+              /No intent-enabled packages found\\.?/i.test(trimmed)
+            ) {
+              reports = [];
+            } else {
+              try {
+                reports = JSON.parse(trimmed);
+              } catch (err) {
+                // Some CLIs can emit extra log lines around JSON output.
+                const start = trimmed.indexOf('[');
+                const end = trimmed.lastIndexOf(']');
+                if (start !== -1 && end > start) {
+                  const candidate = trimmed.slice(start, end + 1);
+                  try {
+                    reports = JSON.parse(candidate);
+                  } catch {
+                    console.error('Invalid JSON from @tanstack/intent stale --json');
+                    console.error(err?.message || err);
+                    process.exit(1);
+                  }
+                } else {
+                  console.error('Invalid JSON from @tanstack/intent stale --json');
+                  console.error(err?.message || err);
+                  process.exit(1);
+                }
+              }
             }
 
             if (!Array.isArray(reports)) {
