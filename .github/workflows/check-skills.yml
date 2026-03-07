@@ -16,8 +16,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: intent-check-skills-${{ github.event.pull_request.number || github.ref }}
@@ -28,6 +27,10 @@ jobs:
     name: Check for stale skills
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'release' || github.event.pull_request.draft == false
+    outputs:
+      has_stale: ${{ steps.stale.outputs.has_stale }}
+      summary: ${{ steps.summary.outputs.summary }}
+      prompt: ${{ steps.summary.outputs.prompt }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -113,12 +116,25 @@ jobs:
             printf '%s\n' "$SUMMARY"
           } >> "$GITHUB_STEP_SUMMARY"
 
+  open-review-pr:
+    name: Open review PR
+    needs: check
+    if: needs.check.outputs.has_stale == 'true' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SUMMARY: ${{ needs.check.outputs.summary }}
+      PROMPT: ${{ needs.check.outputs.prompt }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
       - name: Open review PR
-        if: steps.stale.outputs.has_stale == 'true' && github.event_name != 'pull_request'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SUMMARY: ${{ steps.summary.outputs.summary }}
-          PROMPT: ${{ steps.summary.outputs.prompt }}
         run: |
           VERSION="${{ github.event.release.tag_name || 'manual' }}"
           SAFE_VERSION="$(echo "$VERSION" | sed 's/[^a-zA-Z0-9._-]/-/g')"
