@@ -146,6 +146,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: catalog:linting
         version: 20.4.3
+      '@tanstack/intent':
+        specifier: catalog:tooling
+        version: 0.0.13
       '@turbo/gen':
         specifier: catalog:tooling
         version: 2.8.14(@types/node@25.3.5)
@@ -277,9 +280,6 @@ importers:
         specifier: workspace:*
         version: link:../validation
     devDependencies:
-      '@tanstack/intent':
-        specifier: catalog:tooling
-        version: 0.0.13
       '@types/node':
         specifier: catalog:types
         version: 25.3.3
@@ -323,9 +323,6 @@ importers:
         specifier: workspace:*
         version: link:../validation
     devDependencies:
-      '@tanstack/intent':
-        specifier: catalog:tooling
-        version: 0.0.13
       '@types/node':
         specifier: catalog:types
         version: 25.3.3
@@ -357,9 +354,6 @@ importers:
         specifier: catalog:base
         version: 1.1.0
     devDependencies:
-      '@tanstack/intent':
-        specifier: catalog:tooling
-        version: 0.0.13
       '@types/node':
         specifier: catalog:types
         version: 25.3.3
@@ -394,9 +388,6 @@ importers:
         specifier: workspace:*
         version: link:../validation
     devDependencies:
-      '@tanstack/intent':
-        specifier: catalog:tooling
-        version: 0.0.13
       '@types/node':
         specifier: catalog:types
         version: 25.3.3

@@ -41,7 +41,6 @@
     "@standard-schema/spec": "catalog:base"
   },
   "devDependencies": {
-    "@tanstack/intent": "catalog:tooling",
     "@types/node": "catalog:types",
     "@vitest/coverage-v8": "catalog:testing",
     "@zap-studio/tsdown-config": "workspace:*",

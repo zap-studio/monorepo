@@ -27,6 +27,7 @@
     "@changesets/cli": "catalog:tooling",
     "@commitlint/cli": "catalog:linting",
     "@commitlint/config-conventional": "catalog:linting",
+    "@tanstack/intent": "catalog:tooling",
     "@turbo/gen": "catalog:tooling",
     "@vitest/ui": "catalog:testing",
     "@zap-studio/vitest-config": "workspace:*",
