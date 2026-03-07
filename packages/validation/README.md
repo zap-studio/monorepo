@@ -8,6 +8,7 @@ This package provides small, focused helpers for running validation against any 
 - synchronous validation
 - optional throwing behavior
 - reusable validator functions
+- runtime schema detection via `isStandardSchema`
 
 It works with any Standard Schema compatible library.
 
@@ -119,6 +120,8 @@ import { createStandardValidator } from "@zap-studio/validation";
 
 const validateUser = createStandardValidator(userSchema);
 const result = await validateUser(input);
+
+const user = await validateUser(input, { throwOnError: true });
 ```
 
 ### Sync validator
@@ -128,6 +131,21 @@ import { createSyncStandardValidator } from "@zap-studio/validation";
 
 const validateUser = createSyncStandardValidator(userSchema);
 const result = validateUser(input);
+
+const user = validateUser(input, { throwOnError: true });
+```
+
+## Runtime Schema Guard
+
+Use `isStandardSchema` when a value might be a schema and you need to check it before validating.
+
+```ts
+import { isStandardSchema, standardValidate } from "@zap-studio/validation";
+
+async function validateIfSchema(schemaLike: unknown, input: unknown) {
+  if (!isStandardSchema(schemaLike)) return null;
+  return standardValidate(schemaLike, input);
+}
 ```
 
 ## Handling Validation Errors
@@ -156,6 +174,7 @@ try {
 | `standardValidateSync`        | You know the schema is synchronous                              |
 | `createStandardValidator`     | You want a reusable async validator                             |
 | `createSyncStandardValidator` | You want a reusable sync validator                              |
+| `isStandardSchema`            | You need to safely detect schemas at runtime                    |
 
 ---
 
@@ -171,7 +190,7 @@ In practice, teams often choose different validation libraries:
 
 When those libraries implement the Standard Schema spec, you can keep one validation flow in your app instead of writing library-specific code paths.
 
-`@zap-studio/validation` builds on that spec and gives you one consistent API for validation and error handling (`standardValidate`, `standardValidateSync`, `createStandardValidator`, `createSyncStandardValidator`, `ValidationError`).
+`@zap-studio/validation` builds on that spec and gives you one consistent API for validation and error handling (`isStandardSchema`, `standardValidate`, `standardValidateSync`, `createStandardValidator`, `createSyncStandardValidator`, `ValidationError`).
 
 At Zap Studio, we use this package internally across other packages so they stay compatible with any validation library that supports the Standard Schema spec.
 

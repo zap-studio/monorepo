@@ -37,8 +37,8 @@ export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
 /**
  * Creates an async Standard Schema validator.
  *
- * The returned function always resolves to a Standard Schema result, even when
- * the underlying schema validates synchronously.
+ * The returned function supports the same options and return modes as
+ * {@link standardValidate}, including `throwOnError`.
  *
  * @typeParam TSchema - The Standard Schema type.
  * @param schema - The schema to validate against.
@@ -62,27 +62,55 @@ export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
  */
 export function createStandardValidator<TSchema extends StandardSchemaV1>(
   schema: TSchema
-): (
-  input: unknown
-) => Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>> {
-  return async (
-    input: unknown
+): {
+  (
+    input: unknown,
+    options: StandardValidateOptions & { throwOnError: true }
+  ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
+  (
+    input: unknown,
+    options?: StandardValidateOptions & { throwOnError?: false | undefined }
+  ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
+} {
+  async function validate(
+    input: unknown,
+    options: StandardValidateOptions & { throwOnError: true }
+  ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
+
+  async function validate(
+    input: unknown,
+    options?: StandardValidateOptions & { throwOnError?: false | undefined }
+  ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
+
+  async function validate(
+    input: unknown,
+    options: StandardValidateOptions = {}
   ): Promise<
-    StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
-  > => {
-    let result = schema["~standard"].validate(input);
-    if (result instanceof Promise) {
-      result = await result;
+    | StandardSchemaV1.InferOutput<TSchema>
+    | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
+  > {
+    if (options.throwOnError) {
+      return await standardValidate(schema, input, {
+        ...options,
+        throwOnError: true,
+      });
     }
-    return result;
-  };
+
+    return await standardValidate(
+      schema,
+      input,
+      options as StandardValidateOptions & { throwOnError?: false | undefined }
+    );
+  }
+
+  return validate;
 }
 
 /**
  * Creates a synchronous Standard Schema validator.
  *
- * This helper calls `schema["~standard"].validate` and throws if the schema
- * performs asynchronous validation.
+ * The returned function supports the same options and return modes as
+ * {@link standardValidateSync}, including `throwOnError`.
  *
  * @typeParam TSchema - The Standard Schema type.
  * @param schema - The schema to validate against.
@@ -107,20 +135,63 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
  */
 export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
   schema: TSchema
-): (
-  input: unknown
-) => StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>> {
-  return (
-    input: unknown
-  ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>> => {
-    const result = schema["~standard"].validate(input);
-    if (result instanceof Promise) {
-      throw new Error(
-        "Async schemas are not supported by createSyncStandardValidator"
+): {
+  (
+    input: unknown,
+    options: StandardValidateOptions & { throwOnError: true }
+  ): StandardSchemaV1.InferOutput<TSchema>;
+  (
+    input: unknown,
+    options?: StandardValidateOptions & { throwOnError?: false | undefined }
+  ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
+} {
+  function validate(
+    input: unknown,
+    options: StandardValidateOptions & { throwOnError: true }
+  ): StandardSchemaV1.InferOutput<TSchema>;
+
+  function validate(
+    input: unknown,
+    options?: StandardValidateOptions & { throwOnError?: false | undefined }
+  ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
+
+  function validate(
+    input: unknown,
+    options: StandardValidateOptions = {}
+  ):
+    | StandardSchemaV1.InferOutput<TSchema>
+    | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>> {
+    try {
+      if (options.throwOnError) {
+        return standardValidateSync(schema, input, {
+          ...options,
+          throwOnError: true,
+        });
+      }
+
+      return standardValidateSync(
+        schema,
+        input,
+        options as StandardValidateOptions & {
+          throwOnError?: false | undefined;
+        }
       );
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message ===
+          "Async schemas are not supported by standardValidateSync"
+      ) {
+        throw new Error(
+          "Async schemas are not supported by createSyncStandardValidator"
+        );
+      }
+
+      throw error;
     }
-    return result;
-  };
+  }
+
+  return validate;
 }
 
 /**

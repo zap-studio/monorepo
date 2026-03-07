@@ -8,6 +8,7 @@
     "concepts",
     "how-to-validate",
     "create-validators",
+    "is-standard-schema",
     "handling-errors"
   ]
 }

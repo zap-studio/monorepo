@@ -9,6 +9,7 @@ This page explains how to validate data against a schema.
 
 - an async helper that works with both async and sync schemas
 - a sync helper that only works with synchronous schemas
+- reusable validator factories that accept the same `throwOnError` options
 
 If you are new to schema validation, read [Concepts](./concepts) first.
 
@@ -88,3 +89,12 @@ Important behavior:
 
 - Use `standardValidate` by default for compatibility and simpler call sites.
 - Use `standardValidateSync` only when synchronous behavior is a hard requirement.
+
+## Reusable Validators
+
+If you reuse one schema across many calls, prefer:
+
+- `createStandardValidator`
+- `createSyncStandardValidator`
+
+The returned validator functions support the same `throwOnError` modes as `standardValidate` and `standardValidateSync`.

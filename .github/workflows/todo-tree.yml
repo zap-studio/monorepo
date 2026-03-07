@@ -1,0 +1,27 @@
+name: Todo Tree
+
+on:
+  pull_request:
+    branches: ["**"]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  scan-todos:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Scan TODOs in PR changes
+        uses: alexandretrotel/todo-tree-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          changed-only: true
+          new-only: true

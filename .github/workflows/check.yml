@@ -4,33 +4,26 @@ on:
   pull_request:
     branches: ["**"]
     types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - "apps/docs/content/**"
+      - ".changeset/**"
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check-monorepo:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v6
-
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v2
-        with:
-          version: latest
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "latest"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-pnpm
 
       - name: Run check on the monorepo
         run: pnpm run check

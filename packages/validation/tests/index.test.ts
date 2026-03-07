@@ -134,6 +134,39 @@ describe("createStandardValidator", () => {
 
     expect(result).toEqual({ issues });
   });
+
+  it("should return validated value when throwOnError is true", async () => {
+    const schema = createMockSchema((input) => ({
+      value: { id: String(input) },
+    }));
+
+    const validate = createStandardValidator(schema);
+    const result = await validate(42, { throwOnError: true });
+
+    expect(result).toEqual({ id: "42" });
+  });
+
+  it("should throw ValidationError when throwOnError is true", async () => {
+    const schema = createMockSchema(() => ({
+      issues: [{ message: "Invalid value" }],
+    }));
+
+    const validate = createStandardValidator(schema);
+
+    await expect(validate("bad", { throwOnError: true })).rejects.toThrow(
+      ValidationError
+    );
+  });
+
+  it("should return result object when throwOnError is false", async () => {
+    const issues: StandardSchemaV1.Issue[] = [{ message: "Invalid value" }];
+    const schema = createMockSchema(() => ({ issues }));
+
+    const validate = createStandardValidator(schema);
+    const result = await validate("bad", { throwOnError: false });
+
+    expect(result).toEqual({ issues });
+  });
 });
 
 describe("createSyncStandardValidator", () => {
@@ -160,6 +193,39 @@ describe("createSyncStandardValidator", () => {
 
     const validate = createSyncStandardValidator(schema);
     const result = validate("bad");
+
+    expect(result).toEqual({ issues });
+  });
+
+  it("should return validated value when throwOnError is true", () => {
+    const schema = createMockSchema((input) => ({
+      value: { id: String(input) },
+    }));
+
+    const validate = createSyncStandardValidator(schema);
+    const result = validate(42, { throwOnError: true });
+
+    expect(result).toEqual({ id: "42" });
+  });
+
+  it("should throw ValidationError when throwOnError is true", () => {
+    const schema = createMockSchema(() => ({
+      issues: [{ message: "Invalid value" }],
+    }));
+
+    const validate = createSyncStandardValidator(schema);
+
+    expect(() => validate("bad", { throwOnError: true })).toThrow(
+      ValidationError
+    );
+  });
+
+  it("should return result object when throwOnError is false", () => {
+    const issues: StandardSchemaV1.Issue[] = [{ message: "Invalid value" }];
+    const schema = createMockSchema(() => ({ issues }));
+
+    const validate = createSyncStandardValidator(schema);
+    const result = validate("bad", { throwOnError: false });
 
     expect(result).toEqual({ issues });
   });

@@ -1,5 +1,12 @@
 # @zap-studio/webhooks
 
+## 0.1.3
+
+### Patch Changes
+
+- 5ea3d3b: Updated dependencies.
+  - @zap-studio/validation@0.3.1
+
 ## 0.1.2
 
 ### Patch Changes
