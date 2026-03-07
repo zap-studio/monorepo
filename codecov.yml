@@ -1,0 +1,29 @@
+codecov:
+  require_ci_to_pass: true
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: false
+
+status:
+  project:
+    default:
+      target: auto
+      threshold: 1%
+  patch:
+    default:
+      target: 85%
+      threshold: 1%
+
+ignore:
+  - "apps/docs/**"
+  - "**/dist/**"
+  - "**/.turbo/**"
+  - "**/*.config.*"
+  - "**/vitest.config.*"
