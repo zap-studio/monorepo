@@ -104,17 +104,21 @@ jobs:
 
       - name: Publish summary
         if: steps.stale.outputs.has_stale == 'true'
+        env:
+          SUMMARY: ${{ steps.summary.outputs.summary }}
         run: |
           {
             echo "## Stale Skills Detected"
             echo ""
-            echo "${{ steps.summary.outputs.summary }}"
+            printf '%s\n' "$SUMMARY"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Open review PR
         if: steps.stale.outputs.has_stale == 'true' && github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUMMARY: ${{ steps.summary.outputs.summary }}
+          PROMPT: ${{ steps.summary.outputs.prompt }}
         run: |
           VERSION="${{ github.event.release.tag_name || 'manual' }}"
           SAFE_VERSION="$(echo "$VERSION" | sed 's/[^a-zA-Z0-9._-]/-/g')"
@@ -132,26 +136,27 @@ jobs:
           git commit --allow-empty -m "chore: review stale skills for ${VERSION}"
           git push origin "$BRANCH"
 
+          BODY_FILE="$(mktemp)"
+          {
+            echo "## Stale Skills Detected"
+            echo
+            echo "The following skills may need updates after the latest release:"
+            echo
+            printf '%s\n' "$SUMMARY"
+            echo
+            echo "---"
+            echo
+            echo "### Update Prompt"
+            echo
+            echo "Paste this into your coding agent (Claude Code, Cursor, etc.):"
+            echo
+            echo "~~~"
+            printf '%s\n' "$PROMPT"
+            echo "~~~"
+          } > "$BODY_FILE"
+
           gh pr create \
             --title "Review stale skills (${VERSION})" \
-            --body "$(cat <<'PREOF'
-          ## Stale Skills Detected
-
-          The following skills may need updates after the latest release:
-
-          ${{ steps.summary.outputs.summary }}
-
-          ---
-
-          ### Update Prompt
-
-          Paste this into your coding agent (Claude Code, Cursor, etc.):
-
-          ~~~
-          ${{ steps.summary.outputs.prompt }}
-          ~~~
-
-          PREOF
-          )" \
+            --body-file "$BODY_FILE" \
             --head "$BRANCH" \
             --base main
