@@ -1,0 +1,91 @@
+---
+title: Overview
+description: What Zap Studio is, what each package covers, and how we ship agent skills.
+---
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+Zap Studio is a collection of framework-agnostic TypeScript packages for core app capabilities: typed HTTP calls, authorization policy checks, schema validation, and webhook processing.
+
+Our goal is to provide composable building blocks that stay portable across stacks while remaining strict about type safety and runtime correctness.
+
+## Package Overview
+
+| Package | What it covers |
+| --- | --- |
+| `@zap-studio/fetch` | Type-safe HTTP requests with schema-validated responses |
+| `@zap-studio/permit` | Declarative authorization policies and permission checks |
+| `@zap-studio/validation` | Standard Schema utilities and consistent validation errors |
+| `@zap-studio/webhooks` | Webhook routing, signature verification, and payload validation |
+
+## Agent Skills
+
+We publish skills with AI-agent workflows in mind.
+
+- For manual installation, use the Vercel Skills CLI commands below.
+- We also use `@tanstack/intent` to ship `SKILL.md` files directly inside npm packages, so guidance stays versioned with each release.
+
+For official documentation, see [Vercel Skills](https://skills.sh/docs) and [TanStack Intent](https://tanstack.com/intent).
+
+<Tabs items={["npm", "pnpm", "yarn", "bun"]}>
+  <Tab value="npm">
+
+```bash
+npx skills add zap-studio/monorepo
+```
+
+  </Tab>
+  <Tab value="pnpm">
+
+```bash
+pnpm dlx skills add zap-studio/monorepo
+```
+
+  </Tab>
+  <Tab value="yarn">
+
+```bash
+yarn dlx skills add zap-studio/monorepo
+```
+
+  </Tab>
+  <Tab value="bun">
+
+```bash
+bunx skills add zap-studio/monorepo
+```
+
+  </Tab>
+</Tabs>
+
+For consumers mapping installed skills into agent config:
+
+<Tabs items={["npm", "pnpm", "yarn", "bun"]}>
+  <Tab value="npm">
+
+```bash
+npx @tanstack/intent install
+```
+
+  </Tab>
+  <Tab value="pnpm">
+
+```bash
+pnpm dlx @tanstack/intent install
+```
+
+  </Tab>
+  <Tab value="yarn">
+
+```bash
+yarn dlx @tanstack/intent install
+```
+
+  </Tab>
+  <Tab value="bun">
+
+```bash
+bunx @tanstack/intent install
+```
+
+  </Tab>
+</Tabs>

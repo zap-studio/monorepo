@@ -63,7 +63,7 @@ export function HeroSection(): ReactNode {
 
         <FadeIn delay={0.28} duration={0.5} y={12}>
           <ButtonGroup className="mt-6 sm:mt-8">
-            <PrimaryButton href="/docs/packages/fetch" size="hero" withArrow>
+            <PrimaryButton href="/docs/getting-started" size="hero" withArrow>
               Get Started
             </PrimaryButton>
             <SecondaryButton

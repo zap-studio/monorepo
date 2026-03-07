@@ -1,0 +1,6 @@
+{
+  "title": "Getting Started",
+  "icon": "Sparkles",
+  "root": true,
+  "pages": ["index"]
+}
