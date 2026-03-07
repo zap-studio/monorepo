@@ -18,8 +18,11 @@
 	"files": [
 	    "dist",
 	    "CHANGELOG.md",
-	    "LICENSE.md",
-	    "README.md"
+	    "LICENSE",
+	    "README.md",
+	    "skills",
+	    "bin",
+	    "!skills/_artifacts"
 	],
     "scripts": {
 	    "build": "tsdown --config tsdown.config.ts",
@@ -39,5 +42,8 @@
 	},
     "exports": {
         ".": "./src/index.ts"
+    },
+    "bin": {
+        "intent": "./bin/intent.js"
     }
 }

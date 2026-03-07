@@ -1,0 +1,65 @@
+name: Validate Skills
+
+on:
+  pull_request:
+    branches: ["**"]
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "skills/**"
+      - "packages/**/skills/**"
+      - "apps/**/skills/**"
+      - "configs/**/skills/**"
+      - ".github/workflows/validate-skills.yml"
+      - ".github/actions/setup-node-pnpm/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intent-validate-skills-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate skill files
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Find and validate skills
+        run: |
+          set -euo pipefail
+
+          declare -a skill_roots=()
+
+          if [ -d "skills" ]; then
+            skill_roots+=("skills")
+          fi
+
+          while IFS= read -r dir; do
+            skill_roots+=("$dir")
+          done < <(find packages apps configs -path "*/skills" -type d 2>/dev/null | sort -u)
+
+          if [ ${#skill_roots[@]} -eq 0 ]; then
+            echo "No skills/ directory found — skipping validation."
+            exit 0
+          fi
+
+          for dir in "${skill_roots[@]}"; do
+            echo "Validating ${dir}..."
+            parent_dir="$(dirname "$dir")"
+            skills_dir_name="$(basename "$dir")"
+            (
+              cd "$parent_dir"
+              pnpm dlx @tanstack/intent validate "$skills_dir_name"
+            )
+          done

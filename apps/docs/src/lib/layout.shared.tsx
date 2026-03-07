@@ -8,6 +8,7 @@ import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import {
   AppWindowIcon,
   BadgeCheckIcon,
+  BookOpenIcon,
   BotIcon,
   GlobeIcon,
   HeartIcon,
@@ -86,6 +87,12 @@ export function homeLinks(
 
   return [
     ...(baseOptions().links ?? []),
+    {
+      text: "Getting Started",
+      url: "/docs/getting-started",
+      icon: <BookOpenIcon className="size-4" />,
+      active: "nested-url",
+    },
     // ── Mobile-only links ───────────────────────────────────────────
     {
       text: "Templates",

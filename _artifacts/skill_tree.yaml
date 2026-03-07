@@ -1,0 +1,59 @@
+library:
+  name: '@zap-studio/monorepo'
+  version: 'workspace'
+  repository: 'https://github.com/zap-studio/monorepo.git'
+  description: 'Type-safe TypeScript utility packages for fetch, permit, validation, and webhooks.'
+generated_from:
+  domain_map: '_artifacts/domain_map.yaml'
+  skill_spec: '_artifacts/skill_spec.md'
+generated_at: '2026-03-07T00:00:00-05:00'
+
+skills:
+  - name: 'Typed fetch client setup'
+    slug: 'zap-fetch-typed-http'
+    type: 'core'
+    domain: 'typed-http-access'
+    path: 'packages/fetch/skills/zap-fetch-typed-http/SKILL.md'
+    package: 'packages/fetch'
+    description: 'Route when using $fetch/api/createFetch, fetch defaults, searchParams merging, and validation return modes.'
+    sources:
+      - 'zap-studio/monorepo:packages/fetch/README.md'
+      - 'zap-studio/monorepo:packages/fetch/src/index.ts'
+      - 'zap-studio/monorepo:packages/fetch/src/utils.ts'
+
+  - name: 'Permit policy authoring'
+    slug: 'zap-permit-policy-authoring'
+    type: 'core'
+    domain: 'authorization-policy-evaluation'
+    path: 'packages/permit/skills/zap-permit-policy-authoring/SKILL.md'
+    package: 'packages/permit'
+    description: 'Route when creating policy rules, role checks, and policy merge strategies in @zap-studio/permit.'
+    sources:
+      - 'zap-studio/monorepo:packages/permit/README.md'
+      - 'zap-studio/monorepo:packages/permit/src/index.ts'
+      - 'zap-studio/monorepo:packages/permit/src/types.ts'
+
+  - name: 'Standard Schema validation flows'
+    slug: 'zap-validation-standard-schema'
+    type: 'core'
+    domain: 'schema-driven-validation'
+    path: 'packages/validation/skills/zap-validation-standard-schema/SKILL.md'
+    package: 'packages/validation'
+    description: 'Route when using standardValidate, sync/async validator factories, and throwOnError result handling.'
+    sources:
+      - 'zap-studio/monorepo:packages/validation/README.md'
+      - 'zap-studio/monorepo:packages/validation/src/index.ts'
+      - 'zap-studio/monorepo:packages/validation/src/errors.ts'
+
+  - name: 'Webhook routing and signature verification'
+    slug: 'zap-webhooks-routing-and-verification'
+    type: 'core'
+    domain: 'webhook-ingestion-pipeline'
+    path: 'packages/webhooks/skills/zap-webhooks-routing-and-verification/SKILL.md'
+    package: 'packages/webhooks'
+    description: 'Route when wiring createWebhookRouter/register/handle, signature verification, and custom adapters.'
+    sources:
+      - 'zap-studio/monorepo:packages/webhooks/README.md'
+      - 'zap-studio/monorepo:packages/webhooks/src/index.ts'
+      - 'zap-studio/monorepo:packages/webhooks/src/verify.ts'
+      - 'zap-studio/monorepo:packages/webhooks/src/adapters/base.ts'
