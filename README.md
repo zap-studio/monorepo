@@ -1,5 +1,12 @@
 # Zap Studio
 
+[![Test](https://github.com/zap-studio/monorepo/actions/workflows/test.yml/badge.svg)](https://github.com/zap-studio/monorepo/actions/workflows/test.yml)
+[![Typecheck](https://github.com/zap-studio/monorepo/actions/workflows/typecheck.yml/badge.svg)](https://github.com/zap-studio/monorepo/actions/workflows/typecheck.yml)
+[![Build](https://github.com/zap-studio/monorepo/actions/workflows/build.yml/badge.svg)](https://github.com/zap-studio/monorepo/actions/workflows/build.yml)
+[![Coverage](https://github.com/zap-studio/monorepo/actions/workflows/coverage.yml/badge.svg)](https://github.com/zap-studio/monorepo/actions/workflows/coverage.yml)
+[![codecov](https://codecov.io/gh/zap-studio/monorepo/graph/badge.svg?branch=main)](https://codecov.io/gh/zap-studio/monorepo)
+[![License](https://img.shields.io/github/license/zap-studio/monorepo)](https://github.com/zap-studio/monorepo/blob/main/LICENSE.md)
+
 Type-safe, framework-agnostic TypeScript packages for building modern apps.
 
 Official documentation available here: [https://www.zapstudio.dev](https://www.zapstudio.dev)
