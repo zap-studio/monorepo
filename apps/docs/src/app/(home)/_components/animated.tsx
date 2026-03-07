@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { domAnimation, LazyMotion, m, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
 
 interface FadeInProps {
@@ -18,20 +18,24 @@ export function FadeIn({
   duration = 0.6,
   y = 24,
 }: FadeInProps): ReactNode {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <motion.div
-      className={className}
-      initial={{ opacity: 0, y }}
-      transition={{
-        duration,
-        delay,
-        ease: [0.25, 0.4, 0.25, 1],
-      }}
-      viewport={{ once: true, margin: "-80px" }}
-      whileInView={{ opacity: 1, y: 0 }}
-    >
-      {children}
-    </motion.div>
+    <LazyMotion features={domAnimation}>
+      <m.div
+        className={className}
+        initial={{ opacity: 0, y: reduceMotion ? 0 : y }}
+        transition={{
+          duration: reduceMotion ? 0 : duration,
+          delay: reduceMotion ? 0 : delay,
+          ease: [0.25, 0.4, 0.25, 1],
+        }}
+        viewport={{ once: true, margin: "-80px" }}
+        whileInView={{ opacity: 1, y: 0 }}
+      >
+        {children}
+      </m.div>
+    </LazyMotion>
   );
 }
 
@@ -48,24 +52,28 @@ export function StaggerContainer({
   delay = 0,
   stagger = 0.08,
 }: StaggerContainerProps): ReactNode {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <motion.div
-      className={className}
-      initial="hidden"
-      variants={{
-        hidden: {},
-        visible: {
-          transition: {
-            staggerChildren: stagger,
-            delayChildren: delay,
+    <LazyMotion features={domAnimation}>
+      <m.div
+        className={className}
+        initial="hidden"
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: reduceMotion ? 0 : stagger,
+              delayChildren: reduceMotion ? 0 : delay,
+            },
           },
-        },
-      }}
-      viewport={{ once: true, margin: "-60px" }}
-      whileInView="visible"
-    >
-      {children}
-    </motion.div>
+        }}
+        viewport={{ once: true, margin: "-60px" }}
+        whileInView="visible"
+      >
+        {children}
+      </m.div>
+    </LazyMotion>
   );
 }
 
@@ -80,23 +88,27 @@ export function StaggerItem({
   className,
   y = 20,
 }: StaggerItemProps): ReactNode {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <motion.div
-      className={className}
-      variants={{
-        hidden: { opacity: 0, y },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: {
-            duration: 0.5,
-            ease: [0.25, 0.4, 0.25, 1],
+    <LazyMotion features={domAnimation}>
+      <m.div
+        className={className}
+        variants={{
+          hidden: { opacity: 0, y: reduceMotion ? 0 : y },
+          visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+              duration: reduceMotion ? 0 : 0.5,
+              ease: [0.25, 0.4, 0.25, 1],
+            },
           },
-        },
-      }}
-    >
-      {children}
-    </motion.div>
+        }}
+      >
+        {children}
+      </m.div>
+    </LazyMotion>
   );
 }
 
@@ -115,22 +127,25 @@ export function SlideIn({
   direction = "left",
   duration = 0.6,
 }: SlideInProps): ReactNode {
+  const reduceMotion = useReducedMotion();
   const x = direction === "left" ? -32 : 32;
 
   return (
-    <motion.div
-      className={className}
-      initial={{ opacity: 0, x }}
-      transition={{
-        duration,
-        delay,
-        ease: [0.25, 0.4, 0.25, 1],
-      }}
-      viewport={{ once: true, margin: "-60px" }}
-      whileInView={{ opacity: 1, x: 0 }}
-    >
-      {children}
-    </motion.div>
+    <LazyMotion features={domAnimation}>
+      <m.div
+        className={className}
+        initial={{ opacity: 0, x: reduceMotion ? 0 : x }}
+        transition={{
+          duration: reduceMotion ? 0 : duration,
+          delay: reduceMotion ? 0 : delay,
+          ease: [0.25, 0.4, 0.25, 1],
+        }}
+        viewport={{ once: true, margin: "-60px" }}
+        whileInView={{ opacity: 1, x: 0 }}
+      >
+        {children}
+      </m.div>
+    </LazyMotion>
   );
 }
 
@@ -139,19 +154,27 @@ interface PulseGlowProps {
 }
 
 export function PulseGlow({ className }: PulseGlowProps): ReactNode {
+  const reduceMotion = useReducedMotion();
+
+  if (reduceMotion) {
+    return <div aria-hidden="true" className={className} />;
+  }
+
   return (
-    <motion.div
-      animate={{
-        opacity: [0.4, 0.7, 0.4],
-        scale: [1, 1.05, 1],
-      }}
-      aria-hidden="true"
-      className={className}
-      transition={{
-        duration: 6,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: "easeInOut",
-      }}
-    />
+    <LazyMotion features={domAnimation}>
+      <m.div
+        animate={{
+          opacity: [0.4, 0.7, 0.4],
+          scale: [1, 1.05, 1],
+        }}
+        aria-hidden="true"
+        className={className}
+        transition={{
+          duration: 6,
+          repeat: Number.POSITIVE_INFINITY,
+          ease: "easeInOut",
+        }}
+      />
+    </LazyMotion>
   );
 }
