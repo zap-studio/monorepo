@@ -46,17 +46,31 @@ const milestones: Milestone[] = [
     status: "in-progress",
   },
   {
-    icon: <BadgeCheckIcon className="size-5" />,
-    title: "Release waitlist",
-    description:
-      "Ship the waitlist package — a type-safe, framework-agnostic utility for managing early-access waitlists.",
-    status: "planned",
-  },
-  {
     icon: <WebhookIcon className="size-5" />,
     title: "Release webhooks",
     description:
       "Ship the webhooks package — handling inbound webhook verification and typed event dispatching.",
+    status: "done",
+  },
+  {
+    icon: <BookOpenIcon className="size-5" />,
+    title: "Release logging",
+    description:
+      "Ship the logging package — structured logs with type-safe context and transport-agnostic output handling.",
+    status: "planned",
+  },
+  {
+    icon: <RadioIcon className="size-5" />,
+    title: "Release events",
+    description:
+      "Ship the events package — typed event contracts and lightweight pub/sub primitives for app workflows.",
+    status: "planned",
+  },
+  {
+    icon: <BadgeCheckIcon className="size-5" />,
+    title: "Release waitlist",
+    description:
+      "Ship the waitlist package — a type-safe, framework-agnostic utility for managing early-access waitlists.",
     status: "planned",
   },
   {
@@ -94,10 +108,7 @@ const STATUS_DOT: Record<MilestoneStatus, string> = {
 };
 
 export default function RoadmapPage(): ReactNode {
-  const inProgress = milestones.filter((m) => m.status === "in-progress");
-  const planned = milestones.filter((m) => m.status === "planned");
-  const done = milestones.filter((m) => m.status === "done");
-  const ordered = [...inProgress, ...planned, ...done];
+  const ordered = milestones;
 
   return (
     <main className="flex flex-1 flex-col">

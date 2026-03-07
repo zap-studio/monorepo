@@ -137,12 +137,12 @@ function ComingSoonCard(): ReactNode {
       </p>
 
       <p className="mt-2.5 flex-1 text-fd-foreground/90 text-sm leading-6">
-        Realtime events, waitlist management, and more — all type-safe and
-        framework-agnostic.
+        Realtime, logging, events, waitlist management, and more - all type-safe
+        and framework-agnostic.
       </p>
 
       <div className="mt-6 flex flex-wrap gap-2">
-        {["realtime", "waitlist"].map((label) => (
+        {["realtime", "logging", "events", "waitlist"].map((label) => (
           <span
             className="rounded-full border border-fd-border/60 bg-fd-accent/50 px-2.5 py-1 font-mono text-[11px] text-fd-muted-foreground leading-4"
             key={label}
