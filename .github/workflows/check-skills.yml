@@ -135,8 +135,10 @@ jobs:
           fetch-depth: 0
 
       - name: Open review PR
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name || 'manual' }}
         run: |
-          VERSION="${{ github.event.release.tag_name || 'manual' }}"
+          VERSION="${TAG_NAME}"
           SAFE_VERSION="$(echo "$VERSION" | sed 's/[^a-zA-Z0-9._-]/-/g')"
           BRANCH="skills/review-${SAFE_VERSION}"
 
