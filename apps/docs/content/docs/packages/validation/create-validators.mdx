@@ -28,6 +28,8 @@ if (result.issues) {
 } else {
   // result.value
 }
+
+const user = await validateUser(input, { throwOnError: true });
 ```
 
 Use it when:
@@ -45,6 +47,7 @@ import { createSyncStandardValidator } from "@zap-studio/validation";
 
 const validateUser = createSyncStandardValidator(userSchema);
 const result = validateUser(input);
+const user = validateUser(input, { throwOnError: true });
 ```
 
 Use it when:

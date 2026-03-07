@@ -119,6 +119,8 @@ import { createStandardValidator } from "@zap-studio/validation";
 
 const validateUser = createStandardValidator(userSchema);
 const result = await validateUser(input);
+
+const user = await validateUser(input, { throwOnError: true });
 ```
 
 ### Sync validator
@@ -128,6 +130,8 @@ import { createSyncStandardValidator } from "@zap-studio/validation";
 
 const validateUser = createSyncStandardValidator(userSchema);
 const result = validateUser(input);
+
+const user = validateUser(input, { throwOnError: true });
 ```
 
 ## Handling Validation Errors
