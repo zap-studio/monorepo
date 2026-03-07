@@ -1,47 +1,26 @@
 # Zap Studio
 
-We're making the web better.
+Type-safe, framework-agnostic TypeScript packages for building modern apps.
 
-## The Problem
+Official documentation available here: [https://www.zapstudio.dev](https://www.zapstudio.dev)
 
-Every app needs the same core features: waitlists, authentication, payments, analytics.
+## Packages
 
-Yet developers waste weeks reinventing these from scratch—often building poorly, rushing to launch, creating technical debt that haunts them for years.
+| Package | Description |
+| --- | --- |
+| `@zap-studio/fetch` | Type-safe fetch wrapper with runtime schema validation |
+| `@zap-studio/permit` | Declarative authorization policies with Standard Schema support |
+| `@zap-studio/validation` | Standard Schema utilities and `ValidationError` helpers |
+| `@zap-studio/webhooks` | Type-safe webhook router with verification and lifecycle hooks |
 
-The alternative? Framework-specific solutions that lock you in. Want to migrate from Next.js to Remix? Rewrite everything.
+## AI agents
 
-## Our Solution
+If you use an AI agent, run:
 
-We're building **the higher layer above TanStack for modern apps**—agnostic core logic with adapters so you bring your own tools.
+```bash
+npx @tanstack/intent install
+```
 
-**The Zap Studio approach:**
-- **Core + Adapters** – Business logic is framework-agnostic, adapters connect to your stack
-- **Type-safe by default** – Full TypeScript support, no runtime surprises
-- **Zero lock-in** – Switch frameworks without rewriting your app logic
-- **Tested extensively** – Comprehensive test coverage ensures reliability
-- **Modern stack** – Built with current best practices to avoid technical debt
-- **Production-ready** – Not toy examples, real solutions used in production
+## License
 
-## Our Packages
-
-**[@zap-studio/fetch](./packages/fetch)**  
-Modern HTTP client with proper error handling. Because `fetch()` should have been better from day one.
-
-**[@zap-studio/permit](./packages/permit)**  
-Type-safe centralized & secure authorization with zero config.
-
-**[@zap-studio/validation](./packages/validation)**  
-Shared Standard Schema utilities and validation helpers.
-
-**[@zap-studio/realtime](./packages/realtime)**  
-Realtime events with SSE and WebSocket support.
-
-**[@zap-studio/waitlist](./packages/waitlist)**  
-Launch faster with built-in waitlist management, referral tracking, and analytics.
-
-**[@zap-studio/webhooks](./packages/webhooks)**  
-Lightweight, type-safe webhook router with schema-agnostic validation. Works with any validation library.
-
-## Documentation
-
-Full documentation for all packages and [Zap.ts](https://github.com/zap-studio/zap.ts) is available at [zapstudio.dev](https://www.zapstudio.dev).
+MIT. See [LICENSE](./LICENSE).
