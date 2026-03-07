@@ -10,7 +10,6 @@ import { PrinciplesSection } from "./_components/principles-section";
 import { SocialProofSection } from "./_components/social-proof-section";
 
 export const metadata: Metadata = {
-  title: "Zap Studio — The higher layer for modern apps",
   description:
     "Framework-agnostic TypeScript packages for the features every app needs. Type-safe, tested, zero lock-in.",
 };
