@@ -128,7 +128,8 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b "$BRANCH"
+          git fetch origin main
+          git checkout -B "$BRANCH" origin/main
           git commit --allow-empty -m "chore: review stale skills for ${VERSION}"
           git push origin "$BRANCH"
 

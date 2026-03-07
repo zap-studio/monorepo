@@ -9,6 +9,11 @@ on:
       - "packages/*/skills/**"
       - "apps/*/skills/**"
       - "configs/*/skills/**"
+      - ".github/workflows/validate-skills.yml"
+      - ".github/actions/setup-node-pnpm/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
   workflow_dispatch:
 
 permissions:
