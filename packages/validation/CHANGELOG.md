@@ -1,6 +1,14 @@
 # @zap-studio/validation
 
-All notable changes to this package are documented in this file.
+## 0.3.1
+
+### Patch Changes
+
+- 5ea3d3b: Refactor reusable validators to delegate to `standardValidate`/`standardValidateSync` and add per-call options support.
+  - `createStandardValidator` now supports `throwOnError` with the same return-type behavior as `standardValidate`.
+  - `createSyncStandardValidator` now supports `throwOnError` with the same return-type behavior as `standardValidateSync`.
+  - Updated docs and examples for reusable validator option handling.
+
 
 ## 0.3.0
 
