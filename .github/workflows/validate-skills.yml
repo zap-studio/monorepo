@@ -56,5 +56,10 @@ jobs:
 
           for dir in "${skill_roots[@]}"; do
             echo "Validating ${dir}..."
-            pnpm dlx @tanstack/intent validate "$dir"
+            parent_dir="$(dirname "$dir")"
+            skills_dir_name="$(basename "$dir")"
+            (
+              cd "$parent_dir"
+              pnpm dlx @tanstack/intent validate "$skills_dir_name"
+            )
           done

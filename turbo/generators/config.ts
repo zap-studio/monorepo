@@ -1,3 +1,4 @@
+import { chmodSync } from "node:fs";
 import type { PlopTypes } from "@turbo/gen";
 import { createGenerator } from "./utils";
 
@@ -44,6 +45,16 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         type: "add",
         path: `${packageBasePath}/bin/intent.js`,
         templateFile: `${packageTemplateBase}/bin/intent.js.hbs`,
+      },
+      (answers: Record<string, unknown>) => {
+        const name = answers?.name;
+        if (typeof name !== "string" || name.length === 0) {
+          return "Skipped chmod for bin/intent.js: missing package name";
+        }
+
+        const binPath = `packages/${name}/bin/intent.js`;
+        chmodSync(binPath, 0o755);
+        return `Made ${binPath} executable`;
       },
     ],
   });
