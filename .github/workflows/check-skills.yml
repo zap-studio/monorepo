@@ -1,0 +1,154 @@
+name: Check Skills
+
+on:
+  release:
+    types: [published]
+  pull_request:
+    branches: ["**"]
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "packages/*/src/**"
+      - "packages/*/skills/**"
+      - "docs/**"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: intent-check-skills-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check for stale skills
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'release' || github.event.pull_request.draft == false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Check staleness
+        id: stale
+        run: |
+          OUTPUT=$(pnpm dlx @tanstack/intent stale --json 2>&1) || true
+          echo "$OUTPUT"
+
+          # Check if any skills need review
+          NEEDS_REVIEW=$(echo "$OUTPUT" | node -e "
+            const input = require('fs').readFileSync('/dev/stdin','utf8');
+            try {
+              const reports = JSON.parse(input);
+              const stale = reports.flatMap(r =>
+                r.skills.filter(s => s.needsReview).map(s => ({ library: r.library, skill: s.name, reasons: s.reasons }))
+              );
+              if (stale.length > 0) {
+                console.log(JSON.stringify(stale));
+              }
+            } catch {}
+          ")
+
+          if [ -z "$NEEDS_REVIEW" ]; then
+            echo "has_stale=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_stale=true" >> "$GITHUB_OUTPUT"
+            # Escape for multiline GH output
+            EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+            echo "stale_json<<$EOF" >> "$GITHUB_OUTPUT"
+            echo "$NEEDS_REVIEW" >> "$GITHUB_OUTPUT"
+            echo "$EOF" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build summary
+        if: steps.stale.outputs.has_stale == 'true'
+        id: summary
+        run: |
+          node -e "
+            const stale = JSON.parse(process.env.STALE_JSON);
+            const lines = stale.map(s =>
+              '- **' + s.skill + '** (' + s.library + '): ' + s.reasons.join(', ')
+            );
+            const summary = lines.join('\n');
+
+            const prompt = [
+              'Review and update the following stale intent skills for @zap-studio/monorepo:',
+              '',
+              ...stale.map(s => '- ' + s.skill + ': ' + s.reasons.join(', ')),
+              '',
+              'For each stale skill:',
+              '1. Read the current SKILL.md file',
+              '2. Check what changed in the library since the skill was last updated',
+              '3. Update the skill content to reflect current APIs and behavior',
+              '4. Run \`pnpm dlx @tanstack/intent validate\` to verify the updated skill',
+            ].join('\n');
+
+            // Write outputs
+            const fs = require('fs');
+            const env = fs.readFileSync(process.env.GITHUB_OUTPUT, 'utf8');
+            const eof = require('crypto').randomBytes(15).toString('base64');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,
+              'summary<<' + eof + '\n' + summary + '\n' + eof + '\n' +
+              'prompt<<' + eof + '\n' + prompt + '\n' + eof + '\n'
+            );
+          "
+        env:
+          STALE_JSON: ${{ steps.stale.outputs.stale_json }}
+
+      - name: Publish summary
+        if: steps.stale.outputs.has_stale == 'true'
+        run: |
+          {
+            echo "## Stale Skills Detected"
+            echo ""
+            echo "${{ steps.summary.outputs.summary }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open review PR
+        if: steps.stale.outputs.has_stale == 'true' && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ github.event.release.tag_name || 'manual' }}"
+          SAFE_VERSION="$(echo "$VERSION" | sed 's/[^a-zA-Z0-9._-]/-/g')"
+          BRANCH="skills/review-${SAFE_VERSION}"
+
+          if gh pr list --head "$BRANCH" --json number --jq 'length > 0' | grep -q true; then
+            echo "PR already exists for branch: $BRANCH"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git commit --allow-empty -m "chore: review stale skills for ${VERSION}"
+          git push origin "$BRANCH"
+
+          gh pr create \
+            --title "Review stale skills (${VERSION})" \
+            --body "$(cat <<'PREOF'
+          ## Stale Skills Detected
+
+          The following skills may need updates after the latest release:
+
+          ${{ steps.summary.outputs.summary }}
+
+          ---
+
+          ### Update Prompt
+
+          Paste this into your coding agent (Claude Code, Cursor, etc.):
+
+          ~~~
+          ${{ steps.summary.outputs.prompt }}
+          ~~~
+
+          PREOF
+          )" \
+            --head "$BRANCH" \
+            --base main
