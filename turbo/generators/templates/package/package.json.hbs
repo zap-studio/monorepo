@@ -19,7 +19,10 @@
 	    "dist",
 	    "CHANGELOG.md",
 	    "LICENSE.md",
-	    "README.md"
+	    "README.md",
+	    "skills",
+	    "bin",
+	    "!skills/_artifacts"
 	],
     "scripts": {
 	    "build": "tsdown --config tsdown.config.ts",
@@ -28,6 +31,7 @@
 		"test:watch": "vitest --watch"
 	},
     "devDependencies": {
+	    "@tanstack/intent": "catalog:tooling",
 	    "@types/node": "catalog:types",
 		"@vitest/coverage-v8": "catalog:testing",
 		"@zap-studio/tsdown-config": "workspace:*",
@@ -39,5 +43,8 @@
 	},
     "exports": {
         ".": "./src/index.ts"
+    },
+    "bin": {
+        "intent": "./bin/intent.js"
     }
 }

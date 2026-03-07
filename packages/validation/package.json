@@ -26,7 +26,10 @@
     "dist",
     "CHANGELOG.md",
     "LICENSE.md",
-    "README.md"
+    "README.md",
+    "skills",
+    "bin",
+    "!skills/_artifacts"
   ],
   "scripts": {
     "build": "tsdown --config tsdown.config.ts",
@@ -38,6 +41,7 @@
     "@standard-schema/spec": "catalog:base"
   },
   "devDependencies": {
+    "@tanstack/intent": "catalog:tooling",
     "@types/node": "catalog:types",
     "@vitest/coverage-v8": "catalog:testing",
     "@zap-studio/tsdown-config": "workspace:*",
@@ -54,5 +58,8 @@
     ".": "./dist/index.mjs",
     "./errors": "./dist/errors.mjs",
     "./package.json": "./package.json"
+  },
+  "bin": {
+    "intent": "./bin/intent.js"
   }
 }

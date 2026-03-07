@@ -40,6 +40,11 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         path: `${packageBasePath}/tests/index.test.ts`,
         templateFile: `${packageTemplateBase}/tests/index.test.ts.hbs`,
       },
+      {
+        type: "add",
+        path: `${packageBasePath}/bin/intent.js`,
+        templateFile: `${packageTemplateBase}/bin/intent.js.hbs`,
+      },
     ],
   });
 
