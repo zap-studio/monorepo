@@ -8,10 +8,10 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "skills/**"
-      - "packages/*/src/**"
-      - "packages/*/skills/**"
-      - "apps/*/skills/**"
-      - "configs/*/skills/**"
+      - "packages/**/src/**"
+      - "packages/**/skills/**"
+      - "apps/**/skills/**"
+      - "configs/**/skills/**"
       - "docs/**"
   workflow_dispatch:
 
