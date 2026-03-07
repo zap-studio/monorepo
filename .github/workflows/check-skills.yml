@@ -43,24 +43,42 @@ jobs:
       - name: Check staleness
         id: stale
         run: |
-          OUTPUT=$(pnpm dlx @tanstack/intent stale --json 2>&1) || true
+          STDERR_FILE="$(mktemp)"
+          if ! OUTPUT=$(pnpm dlx @tanstack/intent stale --json 2>"$STDERR_FILE"); then
+            cat "$STDERR_FILE" >&2
+            echo "Failed to run @tanstack/intent stale --json" >&2
+            exit 1
+          fi
+
+          cat "$STDERR_FILE" >&2
           echo "$OUTPUT"
 
           # Check if any skills need review
           NEEDS_REVIEW=$(echo "$OUTPUT" | node -e "
             const input = require('fs').readFileSync('/dev/stdin','utf8');
+            let reports;
             try {
-              const reports = JSON.parse(input);
-              const stale = reports.flatMap(r =>
-                r.skills.filter(s => s.needsReview).map(s => ({ library: r.library, skill: s.name, reasons: s.reasons }))
-              );
-              if (stale.length > 0) {
-                console.log(JSON.stringify(stale));
-              }
-            } catch {}
+              reports = JSON.parse(input);
+            } catch (err) {
+              console.error('Invalid JSON from @tanstack/intent stale --json');
+              console.error(err?.message || err);
+              process.exit(1);
+            }
+
+            if (!Array.isArray(reports)) {
+              console.error('Unexpected payload: expected top-level array');
+              process.exit(1);
+            }
+
+            const stale = reports.flatMap(r =>
+              (r.skills || [])
+                .filter(s => s.needsReview)
+                .map(s => ({ library: r.library, skill: s.name, reasons: s.reasons }))
+            );
+            console.log(JSON.stringify(stale));
           ")
 
-          if [ -z "$NEEDS_REVIEW" ]; then
+          if [ "$NEEDS_REVIEW" = "[]" ]; then
             echo "has_stale=false" >> "$GITHUB_OUTPUT"
           else
             echo "has_stale=true" >> "$GITHUB_OUTPUT"

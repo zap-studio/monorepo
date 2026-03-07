@@ -51,6 +51,9 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         if (typeof name !== "string" || name.length === 0) {
           return "Skipped chmod for bin/intent.js: missing package name";
         }
+        if (/[^a-zA-Z0-9._-]/.test(name)) {
+          return `Skipped chmod for bin/intent.js: package name '${name}' contains invalid characters`;
+        }
 
         const binPath = `packages/${name}/bin/intent.js`;
         chmodSync(binPath, 0o755);
