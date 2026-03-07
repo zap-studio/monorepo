@@ -93,7 +93,6 @@ jobs:
 
             // Write outputs
             const fs = require('fs');
-            const env = fs.readFileSync(process.env.GITHUB_OUTPUT, 'utf8');
             const eof = require('crypto').randomBytes(15).toString('base64');
             fs.appendFileSync(process.env.GITHUB_OUTPUT,
               'summary<<' + eof + '\n' + summary + '\n' + eof + '\n' +
