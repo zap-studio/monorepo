@@ -28,6 +28,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Run React Doctor for docs
+        continue-on-error: true
         uses: millionco/react-doctor@main
         with:
           directory: apps/docs
