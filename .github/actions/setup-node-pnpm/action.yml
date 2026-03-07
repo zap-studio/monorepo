@@ -1,5 +1,5 @@
 name: Setup Node and pnpm
-description: Setup Node.js with pnpm cache, activate pnpm via Corepack, and install dependencies.
+description: Setup Node.js with pnpm cache, install pnpm, and install dependencies.
 
 inputs:
   node-version:
@@ -10,19 +10,17 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        package_json_file: package.json
+        run_install: false
+
     - name: Setup Node.js
       uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node-version }}
         cache: pnpm
-
-    - name: Enable Corepack
-      shell: bash
-      run: corepack enable
-
-    - name: Activate pnpm
-      shell: bash
-      run: corepack prepare --activate
 
     - name: Install dependencies
       shell: bash
