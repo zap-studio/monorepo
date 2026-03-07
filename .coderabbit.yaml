@@ -132,7 +132,7 @@ reviews:
 
   # Specify file patterns to include or exclude in a review using glob patterns (e.g., !dist/**, src/**). These patterns also apply to 'git sparse-checkout', including specified patterns and ignoring excluded ones (starting with '!') when cloning the repository.
   # Default: []
-  path_filters: ["!packages/shadcn/src/components/**", "!packages/shadcn/src/hooks/**", "!packages/shadcn/src/lib/**"]
+  path_filters: []
 
   # Path Instructions - Provide specific additional guidelines for code review based on file paths.
   # Default: []
