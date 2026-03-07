@@ -32,6 +32,6 @@ jobs:
         uses: ./.github/actions/setup-node-pnpm
 
       - name: Build monorepo
-        run: turbo run build --affected
+        run: pnpm exec turbo run build --affected
         env:
           SKIP_ENV_VALIDATION: true

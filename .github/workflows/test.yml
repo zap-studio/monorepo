@@ -31,4 +31,4 @@ jobs:
         uses: ./.github/actions/setup-node-pnpm
 
       - name: Run tests
-        run: turbo run test --affected
+        run: pnpm exec turbo run test --affected

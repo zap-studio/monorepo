@@ -31,4 +31,4 @@ jobs:
         uses: ./.github/actions/setup-node-pnpm
 
       - name: Run typecheck on the monorepo
-        run: turbo run typecheck --affected
+        run: pnpm exec turbo run typecheck --affected
