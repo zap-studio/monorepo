@@ -31,7 +31,8 @@ It is thrown by:
 ## How To Catch It?
 
 ```ts
-import { standardValidate, ValidationError } from "@zap-studio/validation";
+import { standardValidate } from "@zap-studio/validation";
+import { ValidationError } from "@zap-studio/validation/errors";
 
 try {
   const user = await standardValidate(userSchema, input, {

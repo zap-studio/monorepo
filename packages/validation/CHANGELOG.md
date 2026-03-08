@@ -1,5 +1,11 @@
 # @zap-studio/validation
 
+## 0.3.2
+
+### Patch Changes
+
+- e26293e: Re-export StandardSchemaV1 type from the Standard Schema specification package and add module docs
+
 ## 0.3.1
 
 ### Patch Changes
@@ -8,7 +14,6 @@
   - `createStandardValidator` now supports `throwOnError` with the same return-type behavior as `standardValidate`.
   - `createSyncStandardValidator` now supports `throwOnError` with the same return-type behavior as `standardValidateSync`.
   - Updated docs and examples for reusable validator option handling.
-
 
 ## 0.3.0
 

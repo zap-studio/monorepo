@@ -1,5 +1,12 @@
 # @zap-studio/webhooks
 
+## 0.1.4
+
+### Patch Changes
+
+- e26293e: Updated dependencies.
+  - @zap-studio/validation@0.3.2
+
 ## 0.1.3
 
 ### Patch Changes

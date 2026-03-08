@@ -65,4 +65,12 @@ const user = await standardValidate(userSchema, input, {
 });
 ```
 
+### StandardSchemaV1
+
+The Standard Schema specification is defined as the `StandardSchemaV1` namespace. `validation` re-exports this namespace so you can import it directly from `@zap-studio/validation`.
+
+```ts
+import { StandardSchemaV1 } from "@zap-studio/validation";
+```
+
 Let's now learn how to validate against schemas and handle errors with this package.
