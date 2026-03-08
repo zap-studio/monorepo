@@ -152,7 +152,8 @@ async function validateIfSchema(schemaLike: unknown, input: unknown) {
 When using the throwing mode, validation failures produce a `ValidationError`.
 
 ```ts
-import { standardValidate, ValidationError } from "@zap-studio/validation";
+import { standardValidate } from "@zap-studio/validation";
+import { ValidationError } from "@zap-studio/validation/errors";
 
 try {
   await standardValidate(userSchema, input, {

@@ -18,7 +18,8 @@ sources:
 ## Setup
 
 ```ts
-import { standardValidate, ValidationError } from '@zap-studio/validation';
+import { standardValidate } from '@zap-studio/validation';
+import { ValidationError } from '@zap-studio/validation/errors';
 import { z } from 'zod';
 
 const UserSchema = z.object({ id: z.string(), email: z.string().email() });
