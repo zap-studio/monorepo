@@ -1,3 +1,15 @@
+/**
+ * This module defines custom error types for the validation utilities.
+ *
+ * Main Export:
+ * - `ValidationError`: A specialized error class used to represent validation
+ *   failures when working with Standard Schema validation. It encapsulates
+ *   the validation issues and provides a detailed error message for debugging.
+ *
+ * This module is primarily used by the validation helpers in the `index.ts` file
+ * to throw meaningful errors when validation fails.
+ */
+
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 /**

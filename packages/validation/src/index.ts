@@ -1,5 +1,29 @@
+/**
+ * This module provides utilities for validating data against the Standard Schema specification.
+ *
+ * It includes functions for synchronous and asynchronous validation, as well as helpers for
+ * creating reusable validator functions. The module also defines types and options for
+ * customizing validation behavior.
+ *
+ * Main Exports:
+ * - `StandardSchemaV1`: Standard Schema specification.
+ * - `isStandardSchema`: Checks if a value conforms to the Standard Schema interface.
+ * - `createStandardValidator`: Creates an asynchronous validator for a given schema.
+ * - `createSyncStandardValidator`: Creates a synchronous validator for a given schema.
+ * - `standardValidate`: Validates data asynchronously against a schema.
+ * - `standardValidateSync`: Validates data synchronously against a schema.
+ *
+ * This module is designed to work with the `@standard-schema/spec` package and throws
+ * `ValidationError` for validation failures when configured to do so.
+ */
+
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { ValidationError } from "./errors";
+
+/**
+ * Standard Schema specification.
+ */
+export type { StandardSchemaV1 } from "@standard-schema/spec";
 
 /**
  * Options for validation helpers.
