@@ -9,6 +9,7 @@ This package provides small, focused helpers for running validation against any 
 - optional throwing behavior
 - reusable validator functions
 - runtime schema detection via `isStandardSchema`
+- type re-exports for Standard Schema: Use `StandardSchemaV1` directly from this package
 
 It works with any Standard Schema compatible library.
 
@@ -34,9 +35,7 @@ try {
 }
 ```
 
-## Before / After
-
-### Before
+## Before
 
 Without a shared Standard Schema helper, validation logic often becomes library-specific:
 
@@ -54,7 +53,7 @@ if (validatorLib === "valibot") {
 }
 ```
 
-### After
+## After
 
 With `@zap-studio/validation`, the calling code stays the same:
 
@@ -191,6 +190,14 @@ In practice, teams often choose different validation libraries:
 When those libraries implement the Standard Schema spec, you can keep one validation flow in your app instead of writing library-specific code paths.
 
 `@zap-studio/validation` builds on that spec and gives you one consistent API for validation and error handling (`isStandardSchema`, `standardValidate`, `standardValidateSync`, `createStandardValidator`, `createSyncStandardValidator`, `ValidationError`).
+
+In addition to providing validation utilities, the `@zap-studio/validation` package re-exports the `StandardSchemaV1` type from the `@standard-schema/spec` package. This allows you to use the Standard Schema type definitions directly without needing to install the `@standard-schema/spec` package separately.
+
+```ts
+import type { StandardSchemaV1 } from "@zap-studio/validation";
+```
+
+This is particularly useful when working with schemas that implement the Standard Schema specification.
 
 At Zap Studio, we use this package internally across other packages so they stay compatible with any validation library that supports the Standard Schema spec.
 
