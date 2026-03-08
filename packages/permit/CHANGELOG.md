@@ -1,12 +1,18 @@
 # @zap-studio/permit
 
+## 0.2.2
+
+### Patch Changes
+
+- e26293e: Updated dependencies.
+  - @zap-studio/validation@0.3.2
+
 ## 0.2.1
 
 ### Patch Changes
 
 - 5ea3d3b: Updated dependencies.
   - @zap-studio/validation@0.3.1
-
 
 ## 0.2.0
 
