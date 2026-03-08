@@ -8,6 +8,8 @@
  *
  * This module is primarily used by the validation helpers in the `index.ts` file
  * to throw meaningful errors when validation fails.
+ *
+ * @module
  */
 
 import type { StandardSchemaV1 } from "@standard-schema/spec";

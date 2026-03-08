@@ -15,6 +15,8 @@
  *
  * This module is designed to work with the `@standard-schema/spec` package and throws
  * `ValidationError` for validation failures when configured to do so.
+ *
+ * @module
  */
 
 import type { StandardSchemaV1 } from "@standard-schema/spec";
