@@ -1,4 +1,4 @@
-import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /** Framework-agnostic request shape consumed by the webhook router. */
 export interface NormalizedRequest {

@@ -47,7 +47,6 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "@standard-schema/spec": "catalog:base",
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {

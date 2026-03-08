@@ -1,4 +1,4 @@
-import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { $fetch } from "../src";
 import type { ExtendedRequestInit } from "../src/types";

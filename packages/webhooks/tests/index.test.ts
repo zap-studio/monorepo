@@ -1,6 +1,6 @@
 // biome-ignore-all lint/style/noMagicNumbers: This is a test file so magic numbers are acceptable here.
 
-import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import { createWebhookRouter, WebhookRouter } from "../src/index";

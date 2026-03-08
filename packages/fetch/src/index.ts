@@ -1,5 +1,7 @@
-import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { isStandardSchema } from "@zap-studio/validation";
+import {
+  isStandardSchema,
+  type StandardSchemaV1,
+} from "@zap-studio/validation";
 import { GLOBAL_DEFAULTS } from "./constants";
 import type {
   $Fetch,

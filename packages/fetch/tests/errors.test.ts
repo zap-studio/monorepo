@@ -1,4 +1,4 @@
-import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
 import { describe, expect, it } from "vitest";
 import { FetchError } from "../src/errors";

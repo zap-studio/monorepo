@@ -273,9 +273,6 @@ importers:
 
   packages/fetch:
     dependencies:
-      '@standard-schema/spec':
-        specifier: catalog:base
-        version: 1.1.0
       '@zap-studio/validation':
         specifier: workspace:*
         version: link:../validation
@@ -316,9 +313,6 @@ importers:
 
   packages/permit:
     dependencies:
-      '@standard-schema/spec':
-        specifier: catalog:base
-        version: 1.1.0
       '@zap-studio/validation':
         specifier: workspace:*
         version: link:../validation
@@ -381,9 +375,6 @@ importers:
 
   packages/webhooks:
     dependencies:
-      '@standard-schema/spec':
-        specifier: catalog:base
-        version: 1.1.0
       '@zap-studio/validation':
         specifier: workspace:*
         version: link:../validation

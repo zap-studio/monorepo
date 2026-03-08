@@ -1,4 +1,4 @@
-import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /**
  * Represents the possible outcomes of a policy decision.
