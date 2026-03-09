@@ -12,7 +12,7 @@ catalogs:
     valibot: ^1.2.0
     zod: ^4.2.0
   design:
-    motion: ^12.34.3
+    motion: ^12.35.2
   fumadocs:
     fumadocs-core: ^16.6.8
     fumadocs-mdx: ^14.2.9
