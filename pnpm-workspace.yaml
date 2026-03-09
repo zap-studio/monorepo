@@ -39,7 +39,7 @@ catalogs:
     '@vitest/ui': ^4.0.18
     vitest: ^4.0.18
   tooling:
-    '@tanstack/intent': ^0.0.13
+    '@tanstack/intent': ^0.0.14
     '@changesets/cli': ^2.30.0
     '@turbo/gen': ^2.8.14
     jsr: ^0.14.3

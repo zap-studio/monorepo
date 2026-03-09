@@ -96,8 +96,8 @@ catalogs:
       specifier: ^2.30.0
       version: 2.30.0
     '@tanstack/intent':
-      specifier: ^0.0.13
-      version: 0.0.13
+      specifier: ^0.0.14
+      version: 0.0.14
     '@turbo/gen':
       specifier: ^2.8.14
       version: 2.8.14
@@ -148,7 +148,7 @@ importers:
         version: 20.4.3
       '@tanstack/intent':
         specifier: catalog:tooling
-        version: 0.0.13
+        version: 0.0.14
       '@turbo/gen':
         specifier: catalog:tooling
         version: 2.8.14(@types/node@25.3.5)
@@ -2162,8 +2162,8 @@ packages:
   '@takumi-rs/wasm@0.69.5':
     resolution: {integrity: sha512-mUVYgJs235H3UDMhpiNCAZDOMc1yDoLYj6Mu7sUhWjJ1+p/W4fVFiB5F8ZQ7dZ+jZXquiQCIUdDnc2EjnoDo5g==}
 
-  '@tanstack/intent@0.0.13':
-    resolution: {integrity: sha512-J/geETt+AGQBMJpSVC7urEN/E1eAmgNHb6y/Z01LJfnmWXza17cMDReBOvT7LueYUeNV93PUBznMVPn5siJa3Q==}
+  '@tanstack/intent@0.0.14':
+    resolution: {integrity: sha512-83cjen+tYll6z0MIN0JC9GuMljUkfYfHFDOLhmROz4XMmbD/0ZjvKNOsFgpO7eq957XHB/qyK+hCO+3OS/D6HQ==}
     hasBin: true
 
   '@turbo/gen-darwin-64@2.8.14':
@@ -6335,7 +6335,7 @@ snapshots:
 
   '@takumi-rs/wasm@0.69.5': {}
 
-  '@tanstack/intent@0.0.13':
+  '@tanstack/intent@0.0.14':
     dependencies:
       yaml: 2.8.2
 
