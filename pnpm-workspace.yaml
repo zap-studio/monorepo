@@ -16,7 +16,7 @@ catalogs:
   fumadocs:
     fumadocs-core: ^16.6.8
     fumadocs-mdx: ^14.2.9
-    fumadocs-ui: ^16.6.13
+    fumadocs-ui: ^16.6.17
   linting:
     '@biomejs/biome': ^2.4.7
     '@commitlint/cli': ^20.5.0
