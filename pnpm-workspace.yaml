@@ -14,7 +14,7 @@ catalogs:
   design:
     motion: ^12.34.3
   fumadocs:
-    fumadocs-core: ^16.6.8
+    fumadocs-core: ^16.6.17
     fumadocs-mdx: ^14.2.9
     fumadocs-ui: ^16.6.13
   linting:
