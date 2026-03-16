@@ -35,7 +35,7 @@ catalogs:
     tailwind-merge: ^3.5.0
     tailwindcss: ^4.2.1
   testing:
-    '@vitest/coverage-v8': ^4.0.15
+    '@vitest/coverage-v8': ^4.1.0
     '@vitest/ui': ^4.1.0
     vitest: ^4.1.0
   tooling:
