@@ -24,7 +24,7 @@ catalogs:
     ultracite: ^7.3.1
   next:
     '@takumi-rs/image-response': ^0.69.5
-    next: ^16.1.6
+    next: ^16.1.7
   react:
     lucide-react: ^0.575.0
     react: ^19.2.4
