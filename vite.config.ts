@@ -7,15 +7,7 @@ export default defineConfig({
       typeCheck: true,
     },
   },
-  run: {
-    cache: {
-      scripts: true,
-    },
-  },
   staged: {
     "*.{js,jsx,ts,tsx,json,jsonc,css}": "vp check --fix",
-  },
-  test: {
-    projects: ["packages/*"],
   },
 });
