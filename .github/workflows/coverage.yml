@@ -38,11 +38,18 @@ jobs:
       - name: Run coverage
         run: vp run test:coverage
 
-      - name: Upload test results to Codecov
+      - name: Collect JUnit files
         if: ${{ always() }}
-        uses: codecov/test-results-action@v1
+        id: junit
+        run: |
+          files="$(find packages -path '*/coverage/junit.xml' -type f | sort | paste -sd, -)"
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+
+      - name: Upload test results to Codecov
+        if: ${{ always() && steps.junit.outputs.files != '' }}
+        uses: codecov/test-results-action@v5
         with:
-          files: ./packages/**/coverage/junit.xml
+          files: ${{ steps.junit.outputs.files }}
           fail_ci_if_error: false
           use_oidc: true
           verbose: true
