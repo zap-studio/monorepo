@@ -1,0 +1,36 @@
+name: Setup vp
+description: Install Vite+, restore dependency cache, and install workspace dependencies.
+
+inputs:
+  version:
+    description: Vite+ version to install
+    required: false
+    default: latest
+  node-version:
+    description: Node.js version to install with Vite+
+    required: false
+    default: "24"
+  run-install:
+    description: Whether to run vp install after setup
+    required: false
+    default: "true"
+  cache:
+    description: Whether to restore dependency cache
+    required: false
+    default: "true"
+  cache-dependency-path:
+    description: Lockfile path to use for cache key generation
+    required: false
+    default: pnpm-lock.yaml
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Vite+
+      uses: voidzero-dev/setup-vp@v1
+      with:
+        version: ${{ inputs.version }}
+        node-version: ${{ inputs.node-version }}
+        run-install: ${{ inputs.run-install }}
+        cache: ${{ inputs.cache }}
+        cache-dependency-path: ${{ inputs.cache-dependency-path }}
