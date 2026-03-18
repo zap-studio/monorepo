@@ -17,8 +17,7 @@
     "test:ci": "CI=1 vp run -r test",
     "test:coverage": "CI=1 vp run -r test -- --coverage && vp run merge-coverage && vp run report-coverage",
     "test:watch": "vp run -r test:watch",
-    "typecheck": "vp run -r typecheck",
-    "validate": "vp check && vp run -r build && vp run -r typecheck && vp run -r test"
+    "validate": "vp run -r build && vp check && vp run -r test"
   },
   "devDependencies": {
     "@changesets/cli": "catalog:",
