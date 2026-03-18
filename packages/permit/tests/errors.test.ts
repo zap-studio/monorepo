@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { PolicyError } from "../src/errors";
 
 describe("PolicyError", () => {
@@ -75,9 +75,7 @@ describe("PolicyError", () => {
       const error = new PolicyError("Test");
 
       expect(Object.getPrototypeOf(error)).toBe(PolicyError.prototype);
-      expect(Object.getPrototypeOf(PolicyError.prototype)).toBe(
-        Error.prototype
-      );
+      expect(Object.getPrototypeOf(PolicyError.prototype)).toBe(Error.prototype);
     });
   });
 

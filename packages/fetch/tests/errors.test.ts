@@ -1,6 +1,6 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { FetchError } from "../src/errors";
 
 describe("FetchError", () => {
@@ -61,19 +61,14 @@ describe("FetchError", () => {
     });
 
     it("should expose the full response object", () => {
-      const mockResponse = new Response(
-        JSON.stringify({ error: "Not Found" }),
-        {
-          status: 404,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
       const error = new FetchError("Not Found", mockResponse);
 
       expect(error.response).toBe(mockResponse);
-      expect(error.response.headers.get("Content-Type")).toBe(
-        "application/json"
-      );
+      expect(error.response.headers.get("Content-Type")).toBe("application/json");
     });
 
     it("should have correct message format", () => {

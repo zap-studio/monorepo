@@ -1,7 +1,7 @@
 import { isStandardSchema } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
 import { type } from "arktype";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { $fetch, api } from "../src";
 
 describe("ArkType Standard Schema compatibility", () => {
@@ -67,9 +67,7 @@ describe("$fetch with ArkType schemas", () => {
       json: async () => invalidData,
     });
 
-    await expect(
-      $fetch("https://api.example.com/user", schema)
-    ).rejects.toThrow(ValidationError);
+    await expect($fetch("https://api.example.com/user", schema)).rejects.toThrow(ValidationError);
   });
 
   it("should return validation result when throwOnValidationError is false with ArkType", async () => {

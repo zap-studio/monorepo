@@ -1,13 +1,11 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { z } from "zod";
 
 function createMockSchema<T>(
-  validateFn: (
-    input: unknown
-  ) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>
+  validateFn: (input: unknown) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>,
 ): StandardSchemaV1<unknown, T> {
   return {
     "~standard": {
@@ -19,9 +17,7 @@ function createMockSchema<T>(
 }
 
 function createMockSchemaFunction<T>(
-  validateFn: (
-    input: unknown
-  ) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>
+  validateFn: (input: unknown) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>,
 ): StandardSchemaV1<unknown, T> {
   const fn = (): void => {
     // noop
@@ -69,7 +65,7 @@ describe("isStandardSchema", () => {
         validate: (): void => {
           // noop
         },
-      })
+      }),
     ).toBe(false);
     expect(isStandardSchema({ version: 1 })).toBe(false);
   });
@@ -135,7 +131,7 @@ describe("standardValidate", () => {
         (input) =>
           new Promise<StandardSchemaV1.Result<number>>((resolve) => {
             setTimeout(() => resolve({ value: input as number }), 10);
-          })
+          }),
       );
       const result = await standardValidate(schema, 123, {
         throwOnError: true,
@@ -161,9 +157,9 @@ describe("standardValidate", () => {
         issues: [{ message: "Invalid value" }],
       }));
 
-      await expect(
-        standardValidate(schema, "invalid", { throwOnError: true })
-      ).rejects.toThrow(ValidationError);
+      await expect(standardValidate(schema, "invalid", { throwOnError: true })).rejects.toThrow(
+        ValidationError,
+      );
     });
 
     it("should include issues in thrown ValidationError", async () => {
@@ -183,9 +179,7 @@ describe("standardValidate", () => {
     });
 
     it("should return result object with issues when validation fails and throwOnError is false", async () => {
-      const issues: StandardSchemaV1.Issue[] = [
-        { message: "Validation failed" },
-      ];
+      const issues: StandardSchemaV1.Issue[] = [{ message: "Validation failed" }];
       const schema = createMockSchema(() => ({ issues }));
 
       const result = await standardValidate(schema, "invalid", {
@@ -200,7 +194,7 @@ describe("standardValidate", () => {
       }));
 
       await expect(
-        standardValidate(schema, "invalid", { throwOnError: false })
+        standardValidate(schema, "invalid", { throwOnError: false }),
       ).resolves.toBeDefined();
     });
 
@@ -209,15 +203,13 @@ describe("standardValidate", () => {
         issues: [{ message: "Async validation failed" }],
       }));
 
-      await expect(
-        standardValidate(schema, "data", { throwOnError: true })
-      ).rejects.toThrow(ValidationError);
+      await expect(standardValidate(schema, "data", { throwOnError: true })).rejects.toThrow(
+        ValidationError,
+      );
     });
 
     it("should handle async validation failure with throwOnError false", async () => {
-      const issues: StandardSchemaV1.Issue[] = [
-        { message: "Async validation failed" },
-      ];
+      const issues: StandardSchemaV1.Issue[] = [{ message: "Async validation failed" }];
       const schema = createMockSchema(async () => ({ issues }));
 
       const result = await standardValidate(schema, "data", {
@@ -315,18 +307,10 @@ describe("standardValidate", () => {
         value: z.string().nullable(),
       });
 
-      const result1 = await standardValidate(
-        schema,
-        { value: "test" },
-        { throwOnError: true }
-      );
+      const result1 = await standardValidate(schema, { value: "test" }, { throwOnError: true });
       expect(result1).toEqual({ value: "test" });
 
-      const result2 = await standardValidate(
-        schema,
-        { value: null },
-        { throwOnError: true }
-      );
+      const result2 = await standardValidate(schema, { value: null }, { throwOnError: true });
       expect(result2).toEqual({ value: null });
     });
   });

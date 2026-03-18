@@ -1,6 +1,6 @@
 import { ValidationError } from "@zap-studio/validation/errors";
 import { number, object, string } from "valibot";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { $fetch, api, createFetch } from "../src";
 import { FetchError } from "../src/errors";
 
@@ -25,10 +25,7 @@ describe("$fetch", () => {
 
       await $fetch("https://api.example.com/test");
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/test",
-        expect.any(Object)
-      );
+      expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/test", expect.any(Object));
     });
 
     it("should return raw Response when no schema is provided", async () => {
@@ -61,7 +58,7 @@ describe("$fetch", () => {
           method: "POST",
           credentials: "include",
           mode: "cors",
-        })
+        }),
       );
     });
 
@@ -78,7 +75,7 @@ describe("$fetch", () => {
 
         expect(fetchMock).toHaveBeenCalledWith(
           "https://api.example.com/test",
-          expect.objectContaining({ method })
+          expect.objectContaining({ method }),
         );
 
         fetchMock.mockClear();
@@ -125,9 +122,9 @@ describe("$fetch", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await expect(
-        $fetch("https://api.example.com/user", UserSchema)
-      ).rejects.toThrow(ValidationError);
+      await expect($fetch("https://api.example.com/user", UserSchema)).rejects.toThrow(
+        ValidationError,
+      );
     });
 
     it("should return result object with issues when validation fails and throwOnValidationError is false", async () => {
@@ -142,9 +139,7 @@ describe("$fetch", () => {
       });
 
       expect(result).toHaveProperty("issues");
-      expect(Array.isArray((result as { issues: unknown[] }).issues)).toBe(
-        true
-      );
+      expect(Array.isArray((result as { issues: unknown[] }).issues)).toBe(true);
     });
 
     it("should return result object with value when validation passes and throwOnValidationError is false", async () => {
@@ -178,28 +173,20 @@ describe("$fetch", () => {
 
   describe("error handling", () => {
     it("should throw FetchError on non-ok response when throwOnFetchError is true (default)", async () => {
-      const mockResponse = new Response(
-        JSON.stringify({ error: "Not Found" }),
-        {
-          status: 404,
-          statusText: "Not Found",
-        }
-      );
+      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+        status: 404,
+        statusText: "Not Found",
+      });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await expect($fetch("https://api.example.com/missing")).rejects.toThrow(
-        FetchError
-      );
+      await expect($fetch("https://api.example.com/missing")).rejects.toThrow(FetchError);
     });
 
     it("should return Response without throwing when throwOnFetchError is false", async () => {
-      const mockResponse = new Response(
-        JSON.stringify({ error: "Not Found" }),
-        {
-          status: 404,
-          statusText: "Not Found",
-        }
-      );
+      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+        status: 404,
+        statusText: "Not Found",
+      });
       fetchMock.mockResolvedValue(mockResponse);
 
       const result = await $fetch("https://api.example.com/missing", {
@@ -211,13 +198,10 @@ describe("$fetch", () => {
     });
 
     it("should include status and response in FetchError", async () => {
-      const mockResponse = new Response(
-        JSON.stringify({ error: "Server Error" }),
-        {
-          status: 500,
-          statusText: "Internal Server Error",
-        }
-      );
+      const mockResponse = new Response(JSON.stringify({ error: "Server Error" }), {
+        status: 500,
+        statusText: "Internal Server Error",
+      });
       fetchMock.mockResolvedValue(mockResponse);
 
       try {
@@ -231,13 +215,10 @@ describe("$fetch", () => {
     });
 
     it("should include status text in FetchError message", async () => {
-      const mockResponse = new Response(
-        JSON.stringify({ error: "Forbidden" }),
-        {
-          status: 403,
-          statusText: "Forbidden",
-        }
-      );
+      const mockResponse = new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        statusText: "Forbidden",
+      });
       fetchMock.mockResolvedValue(mockResponse);
 
       try {
@@ -307,9 +288,7 @@ describe("$fetch", () => {
       });
 
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Content-Type")).toBe(
-        "application/json; charset=utf-8"
-      );
+      expect(calledHeaders.get("Content-Type")).toBe("application/json; charset=utf-8");
     });
   });
 
@@ -426,7 +405,7 @@ describe("createFetch", () => {
       await instance1.$fetch("/endpoint");
       expect(fetchMock).toHaveBeenCalledWith(
         "https://api1.example.com/endpoint",
-        expect.any(Object)
+        expect.any(Object),
       );
 
       fetchMock.mockClear();
@@ -434,7 +413,7 @@ describe("createFetch", () => {
       await instance2.$fetch("/endpoint");
       expect(fetchMock).toHaveBeenCalledWith(
         "https://api2.example.com/endpoint",
-        expect.any(Object)
+        expect.any(Object),
       );
     });
   });
@@ -452,10 +431,7 @@ describe("createFetch", () => {
 
       await customFetch("users");
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users",
-        expect.any(Object)
-      );
+      expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", expect.any(Object));
     });
 
     it("should handle baseURL with trailing slash", async () => {
@@ -470,10 +446,7 @@ describe("createFetch", () => {
 
       await customFetch("users");
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users",
-        expect.any(Object)
-      );
+      expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", expect.any(Object));
     });
 
     it("should handle resource with leading slash", async () => {
@@ -488,10 +461,7 @@ describe("createFetch", () => {
 
       await customFetch("/users");
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users",
-        expect.any(Object)
-      );
+      expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", expect.any(Object));
     });
 
     it("should handle both baseURL with trailing and resource with leading slash", async () => {
@@ -506,10 +476,7 @@ describe("createFetch", () => {
 
       await customFetch("/users");
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users",
-        expect.any(Object)
-      );
+      expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", expect.any(Object));
     });
 
     it("should not modify absolute URLs", async () => {
@@ -526,7 +493,7 @@ describe("createFetch", () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         "https://other-api.example.com/users",
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -542,10 +509,7 @@ describe("createFetch", () => {
 
       await customFetch("//other-api.example.com/users");
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        "//other-api.example.com/users",
-        expect.any(Object)
-      );
+      expect(fetchMock).toHaveBeenCalledWith("//other-api.example.com/users", expect.any(Object));
     });
 
     it("should work without baseURL", async () => {
@@ -558,10 +522,7 @@ describe("createFetch", () => {
 
       await customFetch("https://api.example.com/users");
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users",
-        expect.any(Object)
-      );
+      expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", expect.any(Object));
     });
   });
 
@@ -636,13 +597,10 @@ describe("createFetch", () => {
 
   describe("default options", () => {
     it("should use throwOnFetchError default from factory options", async () => {
-      const mockResponse = new Response(
-        JSON.stringify({ error: "Not Found" }),
-        {
-          status: 404,
-          statusText: "Not Found",
-        }
-      );
+      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+        status: 404,
+        statusText: "Not Found",
+      });
       fetchMock.mockResolvedValue(mockResponse);
 
       const { $fetch: customFetch } = createFetch({
@@ -670,22 +628,16 @@ describe("createFetch", () => {
         throwOnValidationError: false,
       });
 
-      const result = await customFetch(
-        "https://api.example.com/user",
-        UserSchema
-      );
+      const result = await customFetch("https://api.example.com/user", UserSchema);
 
       expect(result).toHaveProperty("issues");
     });
 
     it("should allow per-request override of throwOnFetchError", async () => {
-      const mockResponse = new Response(
-        JSON.stringify({ error: "Not Found" }),
-        {
-          status: 404,
-          statusText: "Not Found",
-        }
-      );
+      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+        status: 404,
+        statusText: "Not Found",
+      });
       fetchMock.mockResolvedValue(mockResponse);
 
       const { $fetch: customFetch } = createFetch({
@@ -695,7 +647,7 @@ describe("createFetch", () => {
       await expect(
         customFetch("https://api.example.com/missing", {
           throwOnFetchError: true,
-        })
+        }),
       ).rejects.toThrow(FetchError);
     });
 
@@ -717,7 +669,7 @@ describe("createFetch", () => {
       await expect(
         customFetch("https://api.example.com/user", UserSchema, {
           throwOnValidationError: true,
-        })
+        }),
       ).rejects.toThrow(ValidationError);
     });
   });
@@ -778,18 +730,13 @@ describe("createFetch", () => {
       expect(fetchMock).toHaveBeenCalledTimes(2);
 
       const firstCallHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      const secondCallHeaders = fetchMock.mock.calls[1]?.[1]
-        ?.headers as Headers;
+      const secondCallHeaders = fetchMock.mock.calls[1]?.[1]?.headers as Headers;
 
       expect(firstCallHeaders.get("Authorization")).toBe("Bearer token");
       expect(secondCallHeaders.get("Authorization")).toBe("Bearer token");
 
-      expect(fetchMock.mock.calls[0]?.[0]).toBe(
-        "https://api.example.com/users"
-      );
-      expect(fetchMock.mock.calls[1]?.[0]).toBe(
-        "https://api.example.com/posts"
-      );
+      expect(fetchMock.mock.calls[0]?.[0]).toBe("https://api.example.com/users");
+      expect(fetchMock.mock.calls[1]?.[0]).toBe("https://api.example.com/posts");
     });
   });
 
@@ -834,7 +781,7 @@ describe("createFetch", () => {
         "https://api.example.com/users/1",
         expect.objectContaining({
           method: "GET",
-        })
+        }),
       );
 
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
@@ -872,7 +819,7 @@ describe("api convenience methods", () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         "https://api.example.com/users/1",
-        expect.objectContaining({ method: "GET" })
+        expect.objectContaining({ method: "GET" }),
       );
     });
 
@@ -883,10 +830,7 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await api.get(
-        "https://api.example.com/users/1",
-        UserSchema
-      );
+      const result = await api.get("https://api.example.com/users/1", UserSchema);
 
       expect(result).toEqual(userData);
     });
@@ -908,7 +852,7 @@ describe("api convenience methods", () => {
         expect.objectContaining({
           method: "GET",
           credentials: "include",
-        })
+        }),
       );
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
       expect(calledHeaders.get("Authorization")).toBe("Bearer token123");
@@ -927,7 +871,7 @@ describe("api convenience methods", () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         "https://api.example.com/users",
-        expect.objectContaining({ method: "POST" })
+        expect.objectContaining({ method: "POST" }),
       );
     });
 
@@ -938,10 +882,7 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await api.post(
-        "https://api.example.com/users",
-        UserSchema
-      );
+      const result = await api.post("https://api.example.com/users", UserSchema);
 
       expect(result).toEqual(userData);
     });
@@ -979,7 +920,7 @@ describe("api convenience methods", () => {
         expect.objectContaining({
           method: "POST",
           credentials: "same-origin",
-        })
+        }),
       );
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
       expect(calledHeaders.get("X-Custom-Header")).toBe("custom-value");
@@ -998,7 +939,7 @@ describe("api convenience methods", () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         "https://api.example.com/users/1",
-        expect.objectContaining({ method: "PUT" })
+        expect.objectContaining({ method: "PUT" }),
       );
     });
 
@@ -1009,10 +950,7 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await api.put(
-        "https://api.example.com/users/1",
-        UserSchema
-      );
+      const result = await api.put("https://api.example.com/users/1", UserSchema);
 
       expect(result).toEqual(userData);
     });
@@ -1050,7 +988,7 @@ describe("api convenience methods", () => {
         expect.objectContaining({
           method: "PUT",
           mode: "cors",
-        })
+        }),
       );
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
       expect(calledHeaders.get("Authorization")).toBe("Bearer token");
@@ -1069,7 +1007,7 @@ describe("api convenience methods", () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         "https://api.example.com/users/1",
-        expect.objectContaining({ method: "PATCH" })
+        expect.objectContaining({ method: "PATCH" }),
       );
     });
 
@@ -1080,10 +1018,7 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await api.patch(
-        "https://api.example.com/users/1",
-        UserSchema
-      );
+      const result = await api.patch("https://api.example.com/users/1", UserSchema);
 
       expect(result).toEqual(userData);
     });
@@ -1121,7 +1056,7 @@ describe("api convenience methods", () => {
         expect.objectContaining({
           method: "PATCH",
           cache: "no-store",
-        })
+        }),
       );
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
       expect(calledHeaders.get("X-Patch-Header")).toBe("patch-value");
@@ -1140,7 +1075,7 @@ describe("api convenience methods", () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         "https://api.example.com/users/1",
-        expect.objectContaining({ method: "DELETE" })
+        expect.objectContaining({ method: "DELETE" }),
       );
     });
 
@@ -1151,10 +1086,7 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await api.delete(
-        "https://api.example.com/users/1",
-        UserSchema
-      );
+      const result = await api.delete("https://api.example.com/users/1", UserSchema);
 
       expect(result).toEqual(userData);
     });
@@ -1176,7 +1108,7 @@ describe("api convenience methods", () => {
         expect.objectContaining({
           method: "DELETE",
           credentials: "include",
-        })
+        }),
       );
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
       expect(calledHeaders.get("Authorization")).toBe("Bearer token");
@@ -1193,10 +1125,7 @@ describe("api convenience methods", () => {
 
       // All api methods require a schema - testing with TypeScript compile-time check
       // The schema is always the second parameter
-      const result = await api.get(
-        "https://api.example.com/users/1",
-        UserSchema
-      );
+      const result = await api.get("https://api.example.com/users/1", UserSchema);
 
       expect(result).toEqual(userData);
     });
@@ -1208,24 +1137,21 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await expect(
-        api.get("https://api.example.com/users/1", UserSchema)
-      ).rejects.toThrow(ValidationError);
+      await expect(api.get("https://api.example.com/users/1", UserSchema)).rejects.toThrow(
+        ValidationError,
+      );
     });
 
     it("should throw FetchError on non-ok response (default)", async () => {
-      const mockResponse = new Response(
-        JSON.stringify({ error: "Not Found" }),
-        {
-          status: 404,
-          statusText: "Not Found",
-        }
-      );
+      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+        status: 404,
+        statusText: "Not Found",
+      });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await expect(
-        api.get("https://api.example.com/users/999", UserSchema)
-      ).rejects.toThrow(FetchError);
+      await expect(api.get("https://api.example.com/users/999", UserSchema)).rejects.toThrow(
+        FetchError,
+      );
     });
 
     it("should respect throwOnValidationError option", async () => {
@@ -1235,38 +1161,25 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await api.get(
-        "https://api.example.com/users/1",
-        UserSchema,
-        {
-          throwOnValidationError: false,
-        }
-      );
+      const result = await api.get("https://api.example.com/users/1", UserSchema, {
+        throwOnValidationError: false,
+      });
 
       expect(result).toHaveProperty("issues");
-      expect(Array.isArray((result as { issues: unknown[] }).issues)).toBe(
-        true
-      );
+      expect(Array.isArray((result as { issues: unknown[] }).issues)).toBe(true);
     });
 
     it("should respect throwOnFetchError option", async () => {
-      const mockResponse = new Response(
-        JSON.stringify({ error: "Not Found" }),
-        {
-          status: 404,
-          statusText: "Not Found",
-        }
-      );
+      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+        status: 404,
+        statusText: "Not Found",
+      });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await api.get(
-        "https://api.example.com/users/999",
-        UserSchema,
-        {
-          throwOnFetchError: false,
-          throwOnValidationError: false,
-        }
-      );
+      const result = await api.get("https://api.example.com/users/999", UserSchema, {
+        throwOnFetchError: false,
+        throwOnValidationError: false,
+      });
 
       expect(result).toHaveProperty("issues");
     });

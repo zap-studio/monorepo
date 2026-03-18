@@ -2,7 +2,7 @@ import { isStandardSchema } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
 // biome-ignore lint/performance/noNamespaceImport: We need to import all of Valibot
 import * as v from "valibot";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { $fetch, api } from "../src";
 
 describe("Valibot Standard Schema compatibility", () => {
@@ -68,9 +68,7 @@ describe("$fetch with Valibot schemas", () => {
       json: async () => invalidData,
     });
 
-    await expect(
-      $fetch("https://api.example.com/user", schema)
-    ).rejects.toThrow(ValidationError);
+    await expect($fetch("https://api.example.com/user", schema)).rejects.toThrow(ValidationError);
   });
 
   it("should return validation result when throwOnValidationError is false with Valibot", async () => {
@@ -132,7 +130,7 @@ describe("$fetch with Valibot schemas", () => {
       v.object({
         id: v.number(),
         name: v.string(),
-      })
+      }),
     );
 
     const mockData = [
