@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from "node:child_process";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
+const vitePlusBin = path.join(process.env.HOME ?? "", ".vite-plus", "bin", "vp");
 
 const [projectId, scanPathArg = "."] = process.argv.slice(2);
 
@@ -28,9 +29,80 @@ await mkdir(reportDir, { recursive: true });
 
 const outputChunks = [];
 
-const child = spawn("pnpm", ["dlx", "react-doctor@latest", ".", "--verbose", "--yes"], {
+function createChildEnv() {
+  const childEnv = { ...process.env };
+
+  for (const key of Object.keys(childEnv)) {
+    if (key.startsWith("npm_") || key.startsWith("PNPM_") || key.startsWith("VITE_PLUS_")) {
+      delete childEnv[key];
+    }
+  }
+
+  delete childEnv.INIT_CWD;
+
+  return childEnv;
+}
+
+function getCatalogVersion(workspaceYaml, dependencyName) {
+  const escapedName = dependencyName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = workspaceYaml.match(new RegExp(`^\\s{2}${escapedName}:\\s+(.+)$`, "m"));
+
+  return match?.[1]?.trim() ?? null;
+}
+
+async function prepareScanPackageJson() {
+  const packageJsonPath = path.join(scanPath, "package.json");
+  const originalPackageJson = await readFile(packageJsonPath, "utf8");
+
+  if (!originalPackageJson.includes('"catalog:"')) {
+    return async () => {};
+  }
+
+  const workspaceYaml = await readFile(path.join(repoRoot, "pnpm-workspace.yaml"), "utf8");
+  const packageJson = JSON.parse(originalPackageJson);
+  const catalogVersions = {
+    react: getCatalogVersion(workspaceYaml, "react"),
+    "react-dom": getCatalogVersion(workspaceYaml, "react-dom"),
+  };
+
+  let modified = false;
+
+  for (const field of [
+    "dependencies",
+    "devDependencies",
+    "peerDependencies",
+    "optionalDependencies",
+  ]) {
+    const dependencies = packageJson[field];
+
+    if (!dependencies || typeof dependencies !== "object") {
+      continue;
+    }
+
+    for (const [dependencyName, version] of Object.entries(catalogVersions)) {
+      if (dependencies[dependencyName] === "catalog:" && version) {
+        dependencies[dependencyName] = version;
+        modified = true;
+      }
+    }
+  }
+
+  if (!modified) {
+    return async () => {};
+  }
+
+  await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`, "utf8");
+
+  return async () => {
+    await writeFile(packageJsonPath, originalPackageJson, "utf8");
+  };
+}
+
+const restorePackageJson = await prepareScanPackageJson();
+
+const child = spawn(vitePlusBin, ["dlx", "react-doctor@latest", ".", "--verbose", "--yes"], {
   cwd: scanPath,
-  env: process.env,
+  env: createChildEnv(),
   stdio: ["ignore", "pipe", "pipe"],
 });
 
@@ -44,13 +116,24 @@ child.stderr.on("data", (chunk) => {
   process.stderr.write(chunk);
 });
 
-const { exitCode, startupError } = await new Promise((resolve) => {
-  child.on("close", (code) => resolve({ exitCode: code ?? 1, startupError: null }));
+const { exitCode, startupError, restoreError } = await new Promise((resolve) => {
+  const finish = async (result) => {
+    try {
+      await restorePackageJson();
+      resolve({ ...result, restoreError: null });
+    } catch (error) {
+      resolve({ ...result, restoreError: error });
+    }
+  };
+
+  child.on("close", (code) => {
+    void finish({ exitCode: code ?? 1, startupError: null });
+  });
   child.on("error", (error) => {
     const errorText = `\n[react-doctor runner error]\n${error.stack ?? error.message}\n`;
     outputChunks.push(Buffer.from(errorText, "utf8"));
     console.error(error);
-    resolve({ exitCode: 1, startupError: error });
+    void finish({ exitCode: 1, startupError: error });
   });
 });
 
@@ -58,6 +141,12 @@ const report = Buffer.concat(outputChunks).toString("utf8");
 await writeFile(latestReportPath, report, "utf8");
 
 if (startupError) {
+  process.exitCode = 1;
+  process.exit();
+}
+
+if (restoreError) {
+  console.error(restoreError);
   process.exitCode = 1;
   process.exit();
 }
