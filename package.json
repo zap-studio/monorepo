@@ -27,6 +27,7 @@
     "@commitlint/config-conventional": "catalog:linting",
     "@tanstack/intent": "catalog:tooling",
     "@turbo/gen": "catalog:tooling",
+    "@vitest/coverage-v8": "catalog:testing",
     "jsr": "catalog:tooling",
     "nyc": "catalog:tooling",
     "rimraf": "catalog:tooling",
