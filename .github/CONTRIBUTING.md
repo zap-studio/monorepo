@@ -28,7 +28,7 @@ Thank you for your interest in contributing to Zap Studio! We welcome all contri
 
 ## Running Tests
 
-- Run `vp run -r test` from the root to test all packages.
+- Run `vp run test` from the root to test all packages.
 - Run `vp run test:coverage` to generate coverage reports.
 
 ## Making Changes
