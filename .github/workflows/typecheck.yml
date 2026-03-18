@@ -28,5 +28,8 @@ jobs:
       - name: Setup Vite+
         uses: ./.github/actions/setup-vp
 
+      - name: Build monorepo
+        run: vp run -r build
+
       - name: Run typecheck on the monorepo
         run: vp run -r typecheck
