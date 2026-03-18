@@ -62,12 +62,12 @@
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "catalog:types",
+    "@types/node": "catalog:",
     "@zap-studio/typescript-config": "workspace:*",
-    "arktype": "catalog:base",
-    "typescript": "catalog:base",
-    "valibot": "catalog:base",
+    "arktype": "catalog:",
+    "typescript": "catalog:",
+    "valibot": "catalog:",
     "vite-plus": "catalog:",
-    "zod": "catalog:base"
+    "zod": "catalog:"
   }
 }
