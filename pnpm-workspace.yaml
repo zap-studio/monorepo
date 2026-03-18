@@ -21,7 +21,7 @@ catalogs:
     '@biomejs/biome': ^2.4.7
     '@commitlint/cli': ^20.5.0
     '@commitlint/config-conventional': ^20.5.0
-    ultracite: ^7.3.1
+    ultracite: ^7.3.2
   next:
     '@takumi-rs/image-response': ^0.69.5
     next: ^16.1.6
@@ -40,7 +40,7 @@ catalogs:
     vitest: ^4.1.0
   tooling:
     '@changesets/cli': ^2.30.0
-    '@tanstack/intent': ^0.0.21
+    '@tanstack/intent': ^0.0.23
     '@turbo/gen': ^2.8.17
     jsr: ^0.14.3
     lefthook: ^2.1.4
