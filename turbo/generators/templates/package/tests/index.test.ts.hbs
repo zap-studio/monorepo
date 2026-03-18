@@ -1,8 +1,2 @@
-import { describe, expect, it } from "vitest";
-import { greeting } from "../src";
-
-describe("{{ name }}", () => {
-  it("should export greeting", () => {
-    expect(greeting).toBe("Hello, world!");
-  });
-});
+import { describe, expect, it } from "vite-plus/test"; import { greeting } from "../src"; describe("{{name}}",
+() => { it("should export greeting", () => { expect(greeting).toBe("Hello, world!"); }); });

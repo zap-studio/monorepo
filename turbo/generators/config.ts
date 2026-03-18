@@ -32,13 +32,8 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
       },
       {
         type: "add",
-        path: `${packageBasePath}/tsdown.config.ts`,
-        templateFile: `${packageTemplateBase}/tsdown.config.ts.hbs`,
-      },
-      {
-        type: "add",
-        path: `${packageBasePath}/vitest.config.ts`,
-        templateFile: `${packageTemplateBase}/vitest.config.ts.hbs`,
+        path: `${packageBasePath}/vite.config.ts`,
+        templateFile: `${packageTemplateBase}/vite.config.ts.hbs`,
       },
       {
         type: "add",

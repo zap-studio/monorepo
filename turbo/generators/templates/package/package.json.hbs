@@ -1,49 +1,9 @@
-{
-    "name": "@zap-studio/{{ name }}",
-    "version": "0.0.0",
-    "type": "module",
-    "license": "MIT",
-    "private": false,
-    "homepage": "https://www.zapstudio.dev/packages/{{ name }}",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/zap-studio/monorepo.git",
-        "directory": "packages/{{ name }}"
-    },
-    "description": "",
-    "keywords": [],
-	"publishConfig": {
-	    "access": "public"
-    },
-	"files": [
-	    "dist",
-	    "CHANGELOG.md",
-	    "LICENSE",
-	    "README.md",
-	    "skills",
-	    "bin",
-	    "!skills/_artifacts"
-	],
-    "scripts": {
-	    "build": "tsdown --config tsdown.config.ts",
-		"typecheck": "tsc --noEmit",
-		"test": "vitest run",
-		"test:watch": "vitest --watch"
-	},
-    "devDependencies": {
-	    "@types/node": "catalog:types",
-		"@vitest/coverage-v8": "catalog:testing",
-		"@zap-studio/tsdown-config": "workspace:*",
-		"@zap-studio/typescript-config": "workspace:*",
-		"@zap-studio/vitest-config": "workspace:*",
-		"tsdown": "catalog:base",
-		"typescript": "catalog:base",
-		"vitest": "catalog:testing"
-	},
-    "exports": {
-        ".": "./src/index.ts"
-    },
-    "bin": {
-        "intent": "./bin/intent.js"
-    }
-}
+{ "name": "@zap-studio/{{name}}", "version": "0.0.0", "type": "module", "license": "MIT", "private":
+false, "homepage": "https://www.zapstudio.dev/packages/{{name}}", "repository": { "type": "git",
+"url": "https://github.com/zap-studio/monorepo.git", "directory": "packages/{{name}}" },
+"description": "", "keywords": [], "publishConfig": { "access": "public" }, "files": [ "dist",
+"CHANGELOG.md", "LICENSE", "README.md", "skills", "bin", "!skills/_artifacts" ], "scripts": {
+"build": "vp pack", "typecheck": "tsc --noEmit", "test": "vp test run", "test:watch": "vp test
+watch" }, "devDependencies": { "@types/node": "catalog:types", "@zap-studio/typescript-config":
+"workspace:*", "typescript": "catalog:base", "vite-plus": "catalog:" }, "exports": { ".":
+"./src/index.ts" }, "bin": { "intent": "./bin/intent.js" } }
