@@ -24,6 +24,5 @@ status:
 ignore:
   - "apps/docs/**"
   - "**/dist/**"
-  - "**/.turbo/**"
   - "**/*.config.*"
   - "**/vitest.config.*"
