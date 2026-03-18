@@ -42,7 +42,6 @@
   },
   "scripts": {
     "build": "vp pack",
-    "typecheck": "tsc --noEmit",
     "test": "vp test run",
     "test:watch": "vp test watch"
   },

@@ -23,7 +23,7 @@ describe("$fetch with Valibot schemas", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    global.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock as typeof fetch;
   });
 
   afterEach(() => {

@@ -22,7 +22,7 @@ describe("$fetch with Zod schemas", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    global.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock as typeof fetch;
   });
 
   afterEach(() => {
