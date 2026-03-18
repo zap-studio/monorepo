@@ -24,18 +24,19 @@ jobs:
   coverage-monorepo:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
-    env:
-      TURBO_TELEMETRY_DISABLED: 1
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Setup Node and pnpm
-        uses: ./.github/actions/setup-node-pnpm
+      - name: Setup Vite+
+        uses: ./.github/actions/setup-vp
+
+      - name: Build monorepo
+        run: vp run -r build
 
       - name: Run coverage
-        run: pnpm run test:coverage
+        run: vp run test:coverage
 
       - name: Upload test results to Codecov
         if: ${{ always() }}

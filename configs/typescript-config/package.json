@@ -3,13 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "license": "PROPRIETARY",
-  "type": "module",
   "files": [
     "base.json",
     "library.json",
     "nextjs.json",
     "react-library.json"
   ],
+  "type": "module",
   "exports": {
     "./base.json": "./base.json",
     "./library.json": "./library.json",

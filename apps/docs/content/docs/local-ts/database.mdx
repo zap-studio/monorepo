@@ -27,6 +27,7 @@ SQLite Database
 ```
 
 When your app starts:
+
 1. The database file is created in the app's data directory if it doesn't exist
 2. Pending migrations are run automatically
 3. A connection pool is initialized for efficient database access
@@ -35,17 +36,18 @@ When your app starts:
 A **connection pool** is a set of reusable database connections that helps your app handle multiple queries efficiently.
 
 Local.ts uses [r2d2](https://docs.rs/r2d2/latest/r2d2/) for pooling, which manages connections so you don't need to open and close them for every request.
+
 </Callout>
 
 ## Database Location
 
 The SQLite database file is stored in the platform-specific app data directory:
 
-| Platform | Location |
-|----------|----------|
-| macOS | `~/Library/Application Support/{bundleIdentifier}/local.db` |
-| Windows | `C:\Users\{User}\AppData\Roaming\{bundleIdentifier}\local.db` |
-| Linux | `~/.local/share/{bundleIdentifier}/local.db` |
+| Platform | Location                                                      |
+| -------- | ------------------------------------------------------------- |
+| macOS    | `~/Library/Application Support/{bundleIdentifier}/local.db`   |
+| Windows  | `C:\Users\{User}\AppData\Roaming\{bundleIdentifier}\local.db` |
+| Linux    | `~/.local/share/{bundleIdentifier}/local.db`                  |
 
 ## Creating a New Table
 
@@ -93,11 +95,12 @@ diesel migration run
 ```
 
 This:
+
 - Creates the `users` table in your database
 - Auto-generates the schema in `src-tauri/src/database/schema.rs`
 
 <Callout type="warn">
-Never edit `schema.rs` manually. It's regenerated automatically when you run migrations.
+  Never edit `schema.rs` manually. It's regenerated automatically when you run migrations.
 </Callout>
 
 ### 4. Create the Rust Model
@@ -232,7 +235,8 @@ In `src-tauri/src/lib.rs`:
 ```
 
 <Callout type="warn">
-If you don't register your commands with Tauri using `invoke_handler`, your frontend won't be able to call them. Always ensure new commands are added here.
+  If you don't register your commands with Tauri using `invoke_handler`, your frontend won't be able
+  to call them. Always ensure new commands are added here.
 </Callout>
 
 ### 8. Call from React
@@ -252,7 +256,7 @@ const users = await invoke<User[]>("list_users");
 
 // Create a new user
 const newUser = await invoke<User>("create_user", {
-  user: { name: "Alice", email: "alice@example.com" }
+  user: { name: "Alice", email: "alice@example.com" },
 });
 
 // Get a specific user

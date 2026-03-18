@@ -3,14 +3,9 @@ import type { ReactNode } from "react";
 import { FooterSection } from "@/app/(home)/_components/footer-section";
 import { baseOptions, homeLinks } from "@/lib/layout.shared";
 
-export default function Layout({
-  children,
-}: LayoutProps<"/sponsors">): ReactNode {
+export default function Layout({ children }: LayoutProps<"/sponsors">): ReactNode {
   return (
-    <HomeLayout
-      {...baseOptions()}
-      links={homeLinks({ sponsorsActiveMode: "url" })}
-    >
+    <HomeLayout {...baseOptions()} links={homeLinks({ sponsorsActiveMode: "url" })}>
       {children}
       <FooterSection />
     </HomeLayout>

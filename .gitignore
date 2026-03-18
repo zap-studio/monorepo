@@ -1,90 +1,62 @@
-# Node
+# Dependencies
 node_modules/
+**/node_modules/
+.pnpm-store/
+
+# Package manager and installer logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-
-# pnpm
-.pnpm-store/
 .pnpm-debug.log
 
-# TypeScript
+# Build, coverage, and task output
 dist/
 build/
-*.tsbuildinfo
-
-# Monorepo / Turbo / package managers
-**/node_modules/
-**/.turbo/
+coverage/
+.nyc_output/
+.react-doctor/
+.vite/
+**/dist/
+**/coverage/
 **/.next/
 **/.out/
-**/.parcel-cache/
-**/.vercel/
-**/.expo/
-packages/*/dist/
-apps/*/dist/
+**/.source/
+**/.turbo/
 
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Diagnostic reports (https://nodejs.org/en/docs/guides/diagnostic-report/)
-report.[0-9]*.[0-9]*.json
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Editor directories and files
-.vscode/
-.idea/
-*.sublime-workspace
-*.sublime-project
+# TypeScript
+*.tsbuildinfo
 
 # Environment files
 .env
 .env.*
 !.env.example
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
-# Optional npm cache directory
-.npm
+# Runtime and diagnostic files
+logs/
+*.log
+*.pid
+*.pid.lock
+*.seed
+report.[0-9]*.[0-9]*.json
+
+# Tool caches
+.cache/
 .eslintcache
+.parcel-cache/
+.vercel/
+.expo/
 
-# Mac specific
+# Editor and OS files
+.DS_Store
+Thumbs.db
 .Spotlight-V100
 .fseventsd
-
-# JetBrains
+.idea/
 *.iml
+*.sublime-workspace
+*.sublime-project
 
-# TypeScript cache
-.turbo/cache/
-
-# Misc
-coverage/
-.nyc_output/
-/.cache/
-
-# fyai
+# Repo-local artifacts
 fyai.txt
-
-# todo
 todo.json
-
-# react doctor reports
-.react-doctor/

@@ -1,11 +1,4 @@
-import {
-  BoxIcon,
-  CircleDotIcon,
-  HammerIcon,
-  PackageIcon,
-  StarIcon,
-  TagIcon,
-} from "lucide-react";
+import { BoxIcon, CircleDotIcon, HammerIcon, PackageIcon, StarIcon, TagIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { FadeIn, StaggerContainer, StaggerItem } from "./animated";
@@ -26,13 +19,10 @@ async function fetchGitHubStats(): Promise<GitHubStats> {
         next: { revalidate: 3600 },
         headers: { Accept: "application/vnd.github+json" },
       }),
-      fetch(
-        "https://api.github.com/repos/zap-studio/monorepo/releases?per_page=1",
-        {
-          next: { revalidate: 3600 },
-          headers: { Accept: "application/vnd.github+json" },
-        }
-      ),
+      fetch("https://api.github.com/repos/zap-studio/monorepo/releases?per_page=1", {
+        next: { revalidate: 3600 },
+        headers: { Accept: "application/vnd.github+json" },
+      }),
     ]);
 
     if (!(repoRes.ok && releasesRes.ok)) {
@@ -117,11 +107,7 @@ export async function SocialProofSection(): Promise<ReactNode> {
         >
           {stats.map((stat) => (
             <StaggerItem key={stat.label}>
-              <StatCard
-                icon={stat.icon}
-                label={stat.label}
-                value={stat.value}
-              />
+              <StatCard icon={stat.icon} label={stat.label} value={stat.value} />
             </StaggerItem>
           ))}
         </StaggerContainer>
@@ -132,16 +118,10 @@ export async function SocialProofSection(): Promise<ReactNode> {
 
         <FadeIn delay={0.5} duration={0.5} y={10}>
           <div className="flex flex-col items-center gap-4">
-            <p className="font-medium text-fd-muted-foreground/60 text-xs leading-5">
-              Built with
-            </p>
+            <p className="font-medium text-fd-muted-foreground/60 text-xs leading-5">Built with</p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               {technologies.map((tech) => (
-                <TechBadgeItem
-                  icon={tech.icon}
-                  key={tech.name}
-                  name={tech.name}
-                />
+                <TechBadgeItem icon={tech.icon} key={tech.name} name={tech.name} />
               ))}
             </div>
           </div>

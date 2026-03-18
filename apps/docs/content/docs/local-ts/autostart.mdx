@@ -11,11 +11,11 @@ This is useful for apps that should always be running, like status monitors, cha
 
 The autostart feature uses platform-specific mechanisms:
 
-| Platform | Method |
-|----------|--------|
-| macOS | LaunchAgent in `~/Library/LaunchAgents/` |
-| Windows | Registry entry in `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` |
-| Linux | Desktop entry in `~/.config/autostart/` |
+| Platform | Method                                                                 |
+| -------- | ---------------------------------------------------------------------- |
+| macOS    | LaunchAgent in `~/Library/LaunchAgents/`                               |
+| Windows  | Registry entry in `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` |
+| Linux    | Desktop entry in `~/.config/autostart/`                                |
 
 The Tauri autostart plugin handles all platform differences automatically.
 
@@ -91,4 +91,5 @@ If you don't need autostart functionality:
 Check whether other dependencies exist inside the `[target.'cfg(any(...)'.dependencies]` section.
 
 If `tauri-plugin-autostart` is the only entry, remove the entire target-specific `[target.'cfg(...)'.dependencies]` section; otherwise delete only the `tauri-plugin-autostart = "2"` line from that section.
+
 </Callout>

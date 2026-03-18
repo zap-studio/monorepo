@@ -5,12 +5,12 @@ description: >
   api.get/post/put/patch/delete, createFetch defaults, searchParams merging,
   and throwOnFetchError/throwOnValidationError return modes.
 type: core
-library: '@zap-studio/fetch'
-library_version: '0.4.6'
+library: "@zap-studio/fetch"
+library_version: "0.4.6"
 sources:
-  - 'zap-studio/monorepo:packages/fetch/README.md'
-  - 'zap-studio/monorepo:packages/fetch/src/index.ts'
-  - 'zap-studio/monorepo:packages/fetch/src/utils.ts'
+  - "zap-studio/monorepo:packages/fetch/README.md"
+  - "zap-studio/monorepo:packages/fetch/src/index.ts"
+  - "zap-studio/monorepo:packages/fetch/src/utils.ts"
 ---
 
 # @zap-studio/fetch — Typed HTTP Client
@@ -18,8 +18,8 @@ sources:
 ## Setup
 
 ```ts
-import { createFetch } from '@zap-studio/fetch';
-import { z } from 'zod';
+import { createFetch } from "@zap-studio/fetch";
+import { z } from "zod";
 
 const UserSchema = z.object({
   id: z.number(),
@@ -28,12 +28,12 @@ const UserSchema = z.object({
 });
 
 const { api } = createFetch({
-  baseURL: 'https://api.example.com',
-  headers: { Authorization: 'Bearer token' },
-  searchParams: { locale: 'en' },
+  baseURL: "https://api.example.com",
+  headers: { Authorization: "Bearer token" },
+  searchParams: { locale: "en" },
 });
 
-const user = await api.get('/users/1', UserSchema);
+const user = await api.get("/users/1", UserSchema);
 ```
 
 ## Core Patterns
@@ -41,36 +41,36 @@ const user = await api.get('/users/1', UserSchema);
 ### Return raw `Response` when no schema is provided
 
 ```ts
-import { $fetch } from '@zap-studio/fetch';
+import { $fetch } from "@zap-studio/fetch";
 
-const response = await $fetch('https://api.example.com/health');
+const response = await $fetch("https://api.example.com/health");
 const data = await response.json();
 ```
 
 ### Request validated payload via schema
 
 ```ts
-import { api } from '@zap-studio/fetch';
-import { z } from 'zod';
+import { api } from "@zap-studio/fetch";
+import { z } from "zod";
 
 const PostSchema = z.object({ id: z.number(), title: z.string() });
-const post = await api.get('https://api.example.com/posts/1', PostSchema);
+const post = await api.get("https://api.example.com/posts/1", PostSchema);
 ```
 
 ### Handle non-throw validation mode explicitly
 
 ```ts
-import { $fetch } from '@zap-studio/fetch';
-import { z } from 'zod';
+import { $fetch } from "@zap-studio/fetch";
+import { z } from "zod";
 
 const UserSchema = z.object({ id: z.number() });
 
-const result = await $fetch('/users/1', UserSchema, {
+const result = await $fetch("/users/1", UserSchema, {
   throwOnValidationError: false,
 });
 
 if (result.issues) {
-  throw new Error('Invalid response payload');
+  throw new Error("Invalid response payload");
 }
 
 console.log(result.value.id);
@@ -83,14 +83,14 @@ console.log(result.value.id);
 Wrong:
 
 ```ts
-const res = await api.get('/users/1', { headers: { Authorization: token } });
+const res = await api.get("/users/1", { headers: { Authorization: token } });
 const body = await res.json();
 ```
 
 Correct:
 
 ```ts
-const user = await api.get('/users/1', UserSchema, {
+const user = await api.get("/users/1", UserSchema, {
   headers: { Authorization: token },
 });
 console.log(user.id);
@@ -105,7 +105,7 @@ Source: zap-studio/monorepo:packages/fetch/src/index.ts
 Wrong:
 
 ```ts
-const user = await $fetch('/users/1', UserSchema, {
+const user = await $fetch("/users/1", UserSchema, {
   throwOnValidationError: false,
 });
 console.log(user.id);
@@ -114,11 +114,11 @@ console.log(user.id);
 Correct:
 
 ```ts
-const result = await $fetch('/users/1', UserSchema, {
+const result = await $fetch("/users/1", UserSchema, {
   throwOnValidationError: false,
 });
 
-if (result.issues) throw new Error('Invalid payload');
+if (result.issues) throw new Error("Invalid payload");
 console.log(result.value.id);
 ```
 
@@ -131,17 +131,17 @@ Source: zap-studio/monorepo:packages/fetch/src/index.ts
 Wrong:
 
 ```ts
-await api.post('/users', UserSchema, {
-  body: new URLSearchParams({ name: 'Ada' }),
+await api.post("/users", UserSchema, {
+  body: new URLSearchParams({ name: "Ada" }),
 });
 ```
 
 Correct:
 
 ```ts
-await api.post('/users', UserSchema, {
-  body: { name: 'Ada' },
-  headers: { 'Content-Type': 'application/json' },
+await api.post("/users", UserSchema, {
+  body: { name: "Ada" },
+  headers: { "Content-Type": "application/json" },
 });
 ```
 

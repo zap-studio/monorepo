@@ -11,12 +11,12 @@ Official documentation available here: [https://www.zapstudio.dev](https://www.z
 
 ## Packages
 
-| Package | Description |
-| --- | --- |
-| `@zap-studio/fetch` | Type-safe fetch wrapper with runtime schema validation |
-| `@zap-studio/permit` | Declarative authorization policies with Standard Schema support |
-| `@zap-studio/validation` | Standard Schema utilities and `ValidationError` helpers |
-| `@zap-studio/webhooks` | Type-safe webhook router with verification and lifecycle hooks |
+| Package                  | Description                                                     |
+| ------------------------ | --------------------------------------------------------------- |
+| `@zap-studio/fetch`      | Type-safe fetch wrapper with runtime schema validation          |
+| `@zap-studio/permit`     | Declarative authorization policies with Standard Schema support |
+| `@zap-studio/validation` | Standard Schema utilities and `ValidationError` helpers         |
+| `@zap-studio/webhooks`   | Type-safe webhook router with verification and lifecycle hooks  |
 
 ## AI agents
 

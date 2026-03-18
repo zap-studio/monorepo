@@ -52,6 +52,7 @@ Ultracite works with oxlint under the hood. The configuration is in `.oxlintrc.j
 ```
 
 The presets include rules for:
+
 - TypeScript best practices
 - React hooks and accessibility
 - Modern JavaScript patterns
@@ -147,7 +148,7 @@ Local.ts is structured as a pnpm workspace with two packages:
 ```yaml
 # pnpm-workspace.yaml
 packages:
-  - .           # Frontend (React/Vite)
+  - . # Frontend (React/Vite)
   - ./src-tauri # Backend (Rust/Tauri)
 ```
 
@@ -163,11 +164,7 @@ Tasks are defined in `turbo.json`:
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [
-        "dist/**",
-        "src-tauri/target/release/**",
-        "src-tauri/target/debug/**"
-      ]
+      "outputs": ["dist/**", "src-tauri/target/release/**", "src-tauri/target/debug/**"]
     },
     "check": {
       "dependsOn": ["^check"]
@@ -191,12 +188,12 @@ Tasks are defined in `turbo.json`:
 
 ### Key Concepts
 
-| Concept | Description |
-|---------|-------------|
-| `dependsOn` | Run dependencies first (e.g., `^build` runs build in all deps) |
-| `outputs` | Files to cache for faster subsequent runs |
-| `persistent` | Keep running (for dev servers) |
-| `cache` | Whether to cache task outputs |
+| Concept      | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `dependsOn`  | Run dependencies first (e.g., `^build` runs build in all deps) |
+| `outputs`    | Files to cache for faster subsequent runs                      |
+| `persistent` | Keep running (for dev servers)                                 |
+| `cache`      | Whether to cache task outputs                                  |
 
 ### Caching
 
@@ -210,18 +207,18 @@ This dramatically speeds up CI pipelines and repeated local builds.
 
 ### Available Commands
 
-| Command | Description |
-|---------|-------------|
-| `turbo dev` | Start Vite dev server |
-| `turbo tauri -- dev` | Start full Tauri app with hot reload |
-| `turbo tauri -- build` | Build production app |
-| `turbo build` | Build frontend |
-| `turbo check` | TypeScript type checking |
-| `turbo lint` | Run Ultracite linter |
-| `turbo format` | Format code with Ultracite |
-| `turbo test` | Run Vitest tests |
-| `turbo test:coverage` | Generate coverage report |
-| `turbo validate` | Run all checks (build, check, lint, test) |
+| Command                | Description                               |
+| ---------------------- | ----------------------------------------- |
+| `turbo dev`            | Start Vite dev server                     |
+| `turbo tauri -- dev`   | Start full Tauri app with hot reload      |
+| `turbo tauri -- build` | Build production app                      |
+| `turbo build`          | Build frontend                            |
+| `turbo check`          | TypeScript type checking                  |
+| `turbo lint`           | Run Ultracite linter                      |
+| `turbo format`         | Format code with Ultracite                |
+| `turbo test`           | Run Vitest tests                          |
+| `turbo test:coverage`  | Generate coverage report                  |
+| `turbo validate`       | Run all checks (build, check, lint, test) |
 
 ### The Validate Command
 
@@ -242,6 +239,7 @@ turbo validate
 ```
 
 This ensures your code:
+
 - Builds successfully
 - Passes TypeScript checks
 - Passes linting rules
@@ -255,13 +253,13 @@ The Rust toolchain provides native tools for formatting, linting, type checking,
 
 ### Available Cargo Commands
 
-| Command | Description |
-|---------|-------------|
-| `cargo fmt` | Format Rust code with rustfmt |
-| `cargo clippy` | Lint Rust code with Clippy |
-| `cargo check` | Type check without building |
-| `cargo test` | Run Rust unit and integration tests |
-| `cargo tarpaulin` | Generate code coverage reports |
+| Command           | Description                         |
+| ----------------- | ----------------------------------- |
+| `cargo fmt`       | Format Rust code with rustfmt       |
+| `cargo clippy`    | Lint Rust code with Clippy          |
+| `cargo check`     | Type check without building         |
+| `cargo test`      | Run Rust unit and integration tests |
+| `cargo tarpaulin` | Generate code coverage reports      |
 
 ### Turborepo Integration
 
@@ -339,16 +337,17 @@ Local.ts includes GitHub Actions workflows that run on every pull request to ens
 
 ### Existing Workflows
 
-| Workflow | File | Description |
-|----------|------|-------------|
+| Workflow  | File                                                                                      | Description                          |
+| --------- | ----------------------------------------------------------------------------------------- | ------------------------------------ |
 | **Check** | [check.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/check.yml) | Type checks TypeScript and Rust code |
-| **Lint** | [lint.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/lint.yml) | Runs oxlint linter on the monorepo |
-| **Test** | [test.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/test.yml) | Executes all test suites |
-| **Build** | [build.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/build.yml) | Builds the entire monorepo |
+| **Lint**  | [lint.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/lint.yml)   | Runs oxlint linter on the monorepo   |
+| **Test**  | [test.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/test.yml)   | Executes all test suites             |
+| **Build** | [build.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/build.yml) | Builds the entire monorepo           |
 
 ### Workflow Triggers
 
 All workflows:
+
 - Run on pull requests
 - Execute in parallel for faster feedback
 - Use pnpm for dependency management

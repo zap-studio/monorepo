@@ -1,11 +1,11 @@
-import {
-  configDefaults,
-  defineConfig,
-  mergeConfig,
-  type ViteUserConfig,
-} from "vitest/config";
+import { configDefaults, defineConfig } from "vite-plus";
 
-export const sharedConfig: ViteUserConfig = {
+export default defineConfig({
+  pack: {
+    dts: true,
+    entry: ["src/**/*", "!**/*.test.ts", "!**/*.spec.ts"],
+    exports: true,
+  },
   test: {
     coverage: {
       provider: "v8",
@@ -17,10 +17,6 @@ export const sharedConfig: ViteUserConfig = {
     reporters: process.env.CI ? ["dot", "junit"] : ["default"],
     outputFile: process.env.CI ? { junit: "./coverage/junit.xml" } : undefined,
     restoreMocks: true,
-    exclude: ["dist", "node_modules", ".turbo"],
+    exclude: ["dist", "node_modules"],
   },
-};
-
-export function createConfig(overrides?: ViteUserConfig) {
-  return defineConfig(mergeConfig(sharedConfig, overrides ?? {}));
-}
+});

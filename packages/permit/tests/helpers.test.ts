@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { assertNever } from "../src/helpers";
 
 describe("assertNever", () => {
@@ -88,9 +88,7 @@ describe("assertNever", () => {
   });
 
   describe("use case: discriminated union", () => {
-    type Shape =
-      | { kind: "circle"; radius: number }
-      | { kind: "square"; side: number };
+    type Shape = { kind: "circle"; radius: number } | { kind: "square"; side: number };
 
     function getArea(shape: Shape): number {
       switch (shape.kind) {

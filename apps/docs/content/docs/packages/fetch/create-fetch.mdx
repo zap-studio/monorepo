@@ -63,13 +63,13 @@ const newUser = await api.post("/users", UserSchema, {
 
 ## Factory Options
 
-| Option | Type | Default | Description |
-| ------ | ---- | ------- | ----------- |
-| `baseURL` | `string` | `""` | Base URL prepended to relative paths only |
-| `headers` | `HeadersInit` | - | Default headers included in all requests |
-| `searchParams` | `URLSearchParams \| Record<string, string>` | - | Default query params included in all requests |
-| `throwOnFetchError` | `boolean` | `true` | Throw `FetchError` on non-2xx responses |
-| `throwOnValidationError` | `boolean` | `true` | Throw `ValidationError` on schema validation failures |
+| Option                   | Type                                        | Default | Description                                           |
+| ------------------------ | ------------------------------------------- | ------- | ----------------------------------------------------- |
+| `baseURL`                | `string`                                    | `""`    | Base URL prepended to relative paths only             |
+| `headers`                | `HeadersInit`                               | -       | Default headers included in all requests              |
+| `searchParams`           | `URLSearchParams \| Record<string, string>` | -       | Default query params included in all requests         |
+| `throwOnFetchError`      | `boolean`                                   | `true`  | Throw `FetchError` on non-2xx responses               |
+| `throwOnValidationError` | `boolean`                                   | `true`  | Throw `ValidationError` on schema validation failures |
 
 ## URL Handling
 
@@ -143,6 +143,7 @@ const user = await api.get("/users", UserSchema, {
 ```
 
 Priority order:
+
 1. **Factory defaults** — lowest priority
 2. **URL params** — override factory defaults
 3. **Per-request params** — highest priority

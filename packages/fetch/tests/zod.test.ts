@@ -1,6 +1,6 @@
 import { isStandardSchema } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { z } from "zod";
 import { $fetch, api } from "../src";
 
@@ -67,9 +67,7 @@ describe("$fetch with Zod schemas", () => {
       json: async () => invalidData,
     });
 
-    await expect(
-      $fetch("https://api.example.com/user", schema)
-    ).rejects.toThrow(ValidationError);
+    await expect($fetch("https://api.example.com/user", schema)).rejects.toThrow(ValidationError);
   });
 
   it("should return validation result when throwOnValidationError is false with Zod", async () => {
@@ -131,7 +129,7 @@ describe("$fetch with Zod schemas", () => {
       z.object({
         id: z.number(),
         name: z.string(),
-      })
+      }),
     );
 
     const mockData = [

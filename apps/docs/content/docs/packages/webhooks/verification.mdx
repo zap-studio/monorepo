@@ -59,11 +59,7 @@ const router = createWebhookRouter({
       throw new Error("Missing Stripe signature");
     }
 
-    stripe.webhooks.constructEvent(
-      req.rawBody,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
+    stripe.webhooks.constructEvent(req.rawBody, signature, process.env.STRIPE_WEBHOOK_SECRET!);
   },
 });
 ```

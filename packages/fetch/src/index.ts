@@ -1,7 +1,4 @@
-import {
-  isStandardSchema,
-  type StandardSchemaV1,
-} from "@zap-studio/validation";
+import { isStandardSchema, type StandardSchemaV1 } from "@zap-studio/validation";
 import { GLOBAL_DEFAULTS } from "./constants";
 import type {
   $Fetch,
@@ -51,24 +48,21 @@ import { createMethod, fetchInternal } from "./utils";
 export async function $fetch<TSchema extends StandardSchemaV1>(
   resource: string,
   schema: TSchema,
-  options: ExtendedRequestInit<false>
+  options: ExtendedRequestInit<false>,
 ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
 export async function $fetch<TSchema extends StandardSchemaV1>(
   resource: string,
   schema: TSchema,
-  options?: ExtendedRequestInit<true | undefined>
+  options?: ExtendedRequestInit<true | undefined>,
 ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-export async function $fetch(
-  resource: string,
-  options?: ExtendedRequestInit
-): Promise<Response>;
+export async function $fetch(resource: string, options?: ExtendedRequestInit): Promise<Response>;
 
 export async function $fetch(
   resource: string,
   schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
-  optionsOrUndefined?: ExtendedRequestInit
+  optionsOrUndefined?: ExtendedRequestInit,
 ): Promise<unknown> {
   const [schema, options] = isStandardSchema(schemaOrOptions)
     ? [schemaOrOptions, optionsOrUndefined]
@@ -145,24 +139,21 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}): {
   async function customFetch<TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
-    options: ExtendedRequestInit<false>
+    options: ExtendedRequestInit<false>,
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   async function customFetch<TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
-    options?: ExtendedRequestInit<true | undefined>
+    options?: ExtendedRequestInit<true | undefined>,
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-  async function customFetch(
-    resource: string,
-    options?: ExtendedRequestInit
-  ): Promise<Response>;
+  async function customFetch(resource: string, options?: ExtendedRequestInit): Promise<Response>;
 
   async function customFetch(
     resource: string,
     schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
-    optionsOrUndefined?: ExtendedRequestInit
+    optionsOrUndefined?: ExtendedRequestInit,
   ): Promise<unknown> {
     const [schema, options] = isStandardSchema(schemaOrOptions)
       ? [schemaOrOptions, optionsOrUndefined]

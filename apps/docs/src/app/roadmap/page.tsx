@@ -9,11 +9,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import {
-  FadeIn,
-  StaggerContainer,
-  StaggerItem,
-} from "@/app/(home)/_components/animated";
+import { FadeIn, StaggerContainer, StaggerItem } from "@/app/(home)/_components/animated";
 
 export const metadata: Metadata = {
   title: "Roadmap — Zap Studio",
@@ -132,8 +128,8 @@ export default function RoadmapPage(): ReactNode {
             </h1>
 
             <p className="mx-auto mt-4 max-w-xl text-fd-muted-foreground text-sm leading-6 sm:mt-6 sm:text-base sm:leading-7 md:mt-8 md:text-lg md:leading-8">
-              A transparent look at what&apos;s coming. Priorities shift, but
-              this is where we&apos;re headed.
+              A transparent look at what&apos;s coming. Priorities shift, but this is where
+              we&apos;re headed.
             </p>
           </FadeIn>
         </div>
@@ -143,10 +139,7 @@ export default function RoadmapPage(): ReactNode {
         <StaggerContainer className="flex flex-col" delay={0.1} stagger={0.07}>
           {ordered.map((milestone, index) => (
             <StaggerItem key={milestone.title}>
-              <MilestoneRow
-                isLast={index === ordered.length - 1}
-                milestone={milestone}
-              />
+              <MilestoneRow isLast={index === ordered.length - 1} milestone={milestone} />
             </StaggerItem>
           ))}
         </StaggerContainer>
@@ -156,9 +149,7 @@ export default function RoadmapPage(): ReactNode {
         <div className="mx-auto max-w-3xl px-6 py-16 text-center sm:py-24">
           <FadeIn delay={0} duration={0.5} y={10}>
             <PackageIcon className="mx-auto mb-4 size-6 text-fd-primary" />
-            <h2 className="font-serif text-2xl leading-[1.12] sm:text-3xl">
-              Have an idea?
-            </h2>
+            <h2 className="font-serif text-2xl leading-[1.12] sm:text-3xl">Have an idea?</h2>
             <p className="mt-4 text-fd-muted-foreground text-sm leading-6 sm:text-base sm:leading-7">
               Open a discussion or issue on GitHub. We read everything.
             </p>
@@ -179,13 +170,7 @@ export default function RoadmapPage(): ReactNode {
   );
 }
 
-function MilestoneRow({
-  milestone,
-  isLast,
-}: {
-  milestone: Milestone;
-  isLast: boolean;
-}): ReactNode {
+function MilestoneRow({ milestone, isLast }: { milestone: Milestone; isLast: boolean }): ReactNode {
   return (
     <div className="flex gap-5">
       <div className="flex flex-col items-center">
@@ -197,21 +182,15 @@ function MilestoneRow({
 
       <div className={`min-w-0 flex-1 ${isLast ? "pb-0" : "pb-10"}`}>
         <div className="flex flex-wrap items-center gap-2.5 pt-1.5">
-          <h3 className="font-serif text-lg leading-none sm:text-xl">
-            {milestone.title}
-          </h3>
+          <h3 className="font-serif text-lg leading-none sm:text-xl">{milestone.title}</h3>
           <span
             className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-[11px] leading-none ${STATUS_STYLES[milestone.status]}`}
           >
-            <span
-              className={`size-1.5 shrink-0 rounded-full ${STATUS_DOT[milestone.status]}`}
-            />
+            <span className={`size-1.5 shrink-0 rounded-full ${STATUS_DOT[milestone.status]}`} />
             {STATUS_LABELS[milestone.status]}
           </span>
         </div>
-        <p className="mt-2.5 text-fd-muted-foreground text-sm leading-6">
-          {milestone.description}
-        </p>
+        <p className="mt-2.5 text-fd-muted-foreground text-sm leading-6">{milestone.description}</p>
       </div>
     </div>
   );

@@ -56,10 +56,7 @@ export function createHmacVerifier({
 
     // compute HMAC of rawBody (it uses Node.js crypto module, so it works only in Node.js environment)
     const crypto = await import("node:crypto");
-    const expected = crypto
-      .createHmac(algo, secret)
-      .update(req.rawBody)
-      .digest("hex");
+    const expected = crypto.createHmac(algo, secret).update(req.rawBody).digest("hex");
 
     if (!constantTimeEquals(expected, sig.replace(SIGNATURE_REGEX, ""))) {
       throw Object.assign(new Error("invalid signature"), {

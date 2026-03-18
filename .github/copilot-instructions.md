@@ -120,7 +120,7 @@ alwaysApply: true
 - Don't use expressions where the operation doesn't change the value.
 - Don't destructure props inside JSX components in Solid projects.
 - Make sure Promise-like statements are handled appropriately.
-- Don't use __dirname and __filename in the global scope.
+- Don't use **dirname and **filename in the global scope.
 - Prevent import cycles.
 - Don't define React components inside other components.
 - Don't use event handlers on non-interactive elements.
@@ -219,7 +219,7 @@ alwaysApply: true
 - Don't use control characters and escape sequences that match control characters in regular expression literals.
 - Don't use debugger.
 - Don't assign directly to document.cookie.
-- Don't import next/document outside of pages/_document.jsx in Next.js projects.
+- Don't import next/document outside of pages/\_document.jsx in Next.js projects.
 - Use `===` and `!==`.
 - Don't use duplicate case labels.
 - Don't use duplicate class members.
@@ -240,7 +240,7 @@ alwaysApply: true
 - Don't allow assignments to native objects and read-only global variables.
 - Use Number.isFinite instead of global isFinite.
 - Use Number.isNaN instead of global isNaN.
-- Don't use the next/head module in pages/_document.js on Next.js projects.
+- Don't use the next/head module in pages/\_document.js on Next.js projects.
 - Don't use implicit any type on variable declarations.
 - Don't assign to imported bindings.
 - Don't use irregular whitespace characters.

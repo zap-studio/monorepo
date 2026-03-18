@@ -22,13 +22,14 @@ AI is fundamentally changing how software gets built. With coding assistants and
 
 This shift will lead to a rise in homemade tools:
 
-| Trend | Implication |
-|-------|-------------|
+| Trend                      | Implication                                                    |
+| -------------------------- | -------------------------------------------------------------- |
 | **Lower barrier to entry** | More people building personal tools instead of relying on SaaS |
-| **Data ownership** | Users want control over their data, not rental agreements |
-| **Custom workflows** | Generic tools can't match purpose-built solutions |
+| **Data ownership**         | Users want control over their data, not rental agreements      |
+| **Custom workflows**       | Generic tools can't match purpose-built solutions              |
 
 When everyone can build their own tools, why trust your data to companies that might:
+
 - Sell your information
 - Get breached
 - Shut down and lose your data
@@ -51,13 +52,13 @@ Local.ts makes it easy to build these kinds of tools. Combined with AI assistant
 
 Local.ts embraces a local-first architecture where your app's data lives on the user's device:
 
-| Benefit | Description |
-|---------|-------------|
-| **Privacy** | User data never leaves their machine unless they choose to sync |
-| **Offline-ready** | Works without internet connection |
-| **Performance** | No network latency — everything is instant |
-| **No server costs** | Ship apps without backend infrastructure |
-| **Reliability** | No dependencies on external services |
+| Benefit             | Description                                                     |
+| ------------------- | --------------------------------------------------------------- |
+| **Privacy**         | User data never leaves their machine unless they choose to sync |
+| **Offline-ready**   | Works without internet connection                               |
+| **Performance**     | No network latency — everything is instant                      |
+| **No server costs** | Ship apps without backend infrastructure                        |
+| **Reliability**     | No dependencies on external services                            |
 
 Local-first doesn't mean "never online." You can add sync, cloud backups, or API integrations when needed. But starting local-first gives you a solid foundation.
 
@@ -98,24 +99,28 @@ Every technology in Local.ts was chosen for a reason:
 This isn't a minimal starter. It's a production-ready foundation:
 
 ### Core Features
+
 - **Settings system** — Persistent preferences with React integration
 - **Theming** — Light, dark, and system themes with CSS variables
 - **Database layer** — SQLite with migrations, models, services, and commands
 - **Logging** — Structured logs to files and console
 
 ### Desktop Integration
+
 - **System tray** — Background operation with menu actions
 - **Notifications** — Native OS notifications
 - **Autostart** — Launch at login option
 - **Window state** — Remembers size and position
 
 ### Developer Experience
+
 - **Turborepo** — Orchestrated builds across TypeScript and Rust
 - **Ultracite** — Fast linting and formatting (oxlint + oxfmt)
 - **Vitest** — Modern testing with coverage
 - **Pre-commit hooks** — Automated quality checks
 
 ### Architecture
+
 - **Layered design** — Clear separation between frontend, commands, services, and models
 - **Type safety** — End-to-end types from Rust to React
 - **Extensible patterns** — Add features following established conventions

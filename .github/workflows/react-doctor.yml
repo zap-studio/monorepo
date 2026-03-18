@@ -6,9 +6,10 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "apps/docs/**"
-      - "scripts/react-doctor.mjs"
       - "package.json"
       - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/actions/setup-vp/**"
       - ".github/workflows/react-doctor.yml"
   workflow_dispatch:
 
@@ -27,11 +28,22 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Setup Vite+
+        uses: ./.github/actions/setup-vp
+
       - name: Run React Doctor for docs
         continue-on-error: true
-        uses: millionco/react-doctor@main
-        with:
-          directory: apps/docs
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          fail-on: error
-          verbose: "true"
+        run: vp run docs#react-doctor
+
+      - name: Publish React Doctor summary
+        if: ${{ always() }}
+        run: |
+          {
+            echo "## React Doctor"
+            echo ""
+            if [ -f .react-doctor/docs/latest.txt ]; then
+              cat .react-doctor/docs/latest.txt
+            else
+              echo "No React Doctor report was produced."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -56,8 +56,8 @@ export function HeroSection(): ReactNode {
 
         <FadeIn delay={0.15} duration={0.6} y={16}>
           <p className="mx-auto mt-4 max-w-xl text-fd-muted-foreground text-sm leading-6 sm:mt-6 sm:text-base sm:leading-7 md:mt-8 md:text-xl md:leading-8">
-            Framework-agnostic TypeScript packages for the features every app
-            needs. Type-safe, tested, zero lock-in.
+            Framework-agnostic TypeScript packages for the features every app needs. Type-safe,
+            tested, zero lock-in.
           </p>
         </FadeIn>
 
@@ -66,10 +66,7 @@ export function HeroSection(): ReactNode {
             <PrimaryButton href="/docs/getting-started" size="hero" withArrow>
               Get Started
             </PrimaryButton>
-            <SecondaryButton
-              href="https://github.com/zap-studio/monorepo"
-              size="hero"
-            >
+            <SecondaryButton href="https://github.com/zap-studio/monorepo" size="hero">
               <GitHubIcon className="size-4" />
               Star on GitHub
             </SecondaryButton>

@@ -5,31 +5,31 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "react-doctor": "node ../../scripts/react-doctor.mjs docs .",
+    "react-doctor": "node ./scripts/react-doctor.mjs",
     "start": "next start",
     "typecheck": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
-    "@takumi-rs/image-response": "catalog:next",
-    "fumadocs-core": "catalog:fumadocs",
-    "fumadocs-mdx": "catalog:fumadocs",
-    "fumadocs-ui": "catalog:fumadocs",
-    "lucide-react": "catalog:react",
-    "motion": "catalog:design",
-    "next": "catalog:next",
-    "react": "catalog:react",
-    "react-dom": "catalog:react",
-    "tailwind-merge": "catalog:styling"
+    "@takumi-rs/image-response": "catalog:",
+    "fumadocs-core": "catalog:",
+    "fumadocs-mdx": "catalog:",
+    "fumadocs-ui": "catalog:",
+    "lucide-react": "catalog:",
+    "motion": "catalog:",
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "tailwind-merge": "catalog:"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "catalog:styling",
-    "@types/mdx": "catalog:types",
-    "@types/node": "catalog:types",
-    "@types/react": "catalog:types",
-    "@types/react-dom": "catalog:types",
-    "postcss": "catalog:styling",
-    "tailwindcss": "catalog:styling",
-    "typescript": "catalog:base"
+    "@tailwindcss/postcss": "catalog:",
+    "@types/mdx": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "postcss": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:"
   }
 }

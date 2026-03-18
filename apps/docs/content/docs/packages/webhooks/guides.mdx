@@ -53,11 +53,7 @@ const router = createWebhookRouter({
     const signature = req.headers.get("stripe-signature");
     if (!signature) throw new Error("Missing Stripe signature");
 
-    stripe.webhooks.constructEvent(
-      req.rawBody,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
+    stripe.webhooks.constructEvent(req.rawBody, signature, process.env.STRIPE_WEBHOOK_SECRET!);
   },
 });
 

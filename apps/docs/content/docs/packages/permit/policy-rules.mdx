@@ -96,7 +96,7 @@ The `when()` function creates a conditional rule. It takes a condition function 
 ```typescript
 import { when } from "@zap-studio/permit";
 
-when((context, action, resource) => boolean)
+when((context, action, resource) => boolean);
 ```
 
 ### Condition Function
@@ -110,6 +110,7 @@ The condition function receives:
 | `resource` | `TResource` | The resource being accessed  |
 
 It must return a `boolean`:
+
 - `true` → action is allowed
 - `false` → action is denied
 

@@ -72,9 +72,7 @@ export async function CodeShowcaseSection(): Promise<ReactNode> {
           <div className="rounded-xl bg-fd-card/70 px-3 py-3 sm:px-4 sm:py-4 dark:bg-fd-card/70">
             <div className="mb-3 flex items-center gap-2 text-fd-muted-foreground">
               <BracesIcon className="size-3.5" />
-              <span className="font-mono text-xs leading-5 tracking-wide">
-                example.ts
-              </span>
+              <span className="font-mono text-xs leading-5 tracking-wide">example.ts</span>
             </div>
             <div>{highlighted}</div>
           </div>

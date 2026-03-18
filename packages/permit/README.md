@@ -126,7 +126,7 @@ Returns a condition that is true only if all conditions are true.
 ```ts
 const isOwnerAndPublished = and(
   (ctx, action, resource) => ctx.user.id === resource.authorId,
-  (ctx, action, resource) => resource.status === "published"
+  (ctx, action, resource) => resource.status === "published",
 );
 ```
 
@@ -137,7 +137,7 @@ Returns a condition that is true if any condition is true.
 ```ts
 const isOwnerOrAdmin = or(
   (ctx, action, resource) => ctx.user.id === resource.authorId,
-  (ctx, action, resource) => ctx.user.role === "admin"
+  (ctx, action, resource) => ctx.user.role === "admin",
 );
 ```
 

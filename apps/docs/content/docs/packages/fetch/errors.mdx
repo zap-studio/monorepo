@@ -41,12 +41,12 @@ Thrown when the HTTP response status is not ok (non-2xx status codes) and `throw
 
 ### Properties
 
-| Property | Type | Description |
-| -------- | ---- | ----------- |
-| `name` | `string` | Always `"FetchError"` |
-| `message` | `string` | Error message with status info |
-| `status` | `number` | HTTP status code |
-| `response` | `Response` | The full Response object |
+| Property   | Type       | Description                    |
+| ---------- | ---------- | ------------------------------ |
+| `name`     | `string`   | Always `"FetchError"`          |
+| `message`  | `string`   | Error message with status info |
+| `status`   | `number`   | HTTP status code               |
+| `response` | `Response` | The full Response object       |
 
 ### Basic Example
 
@@ -80,11 +80,11 @@ Thrown when schema validation fails and `throwOnValidationError` is `true` (defa
 
 ### Properties
 
-| Property | Type | Description |
-| -------- | ---- | ----------- |
-| `name` | `string` | Always `"ValidationError"` |
-| `message` | `string` | JSON-formatted validation issues |
-| `issues` | `StandardSchemaV1.Issue[]` | Array of validation issues |
+| Property  | Type                       | Description                      |
+| --------- | -------------------------- | -------------------------------- |
+| `name`    | `string`                   | Always `"ValidationError"`       |
+| `message` | `string`                   | JSON-formatted validation issues |
+| `issues`  | `StandardSchemaV1.Issue[]` | Array of validation issues       |
 
 ### Issue Structure
 
@@ -92,7 +92,7 @@ Each issue follows the Standard Schema format:
 
 ```typescript
 interface Issue {
-  message: string;      // Human-readable error message
+  message: string; // Human-readable error message
   path?: PropertyKey[]; // Path to the invalid field
 }
 ```
@@ -132,9 +132,7 @@ const UserSchema = z.object({
   email: z.string().email(),
 });
 
-type FetchResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: string; code: string };
+type FetchResult<T> = { success: true; data: T } | { success: false; error: string; code: string };
 
 async function safeGetUser(id: string): Promise<FetchResult<z.infer<typeof UserSchema>>> {
   try {
@@ -213,9 +211,7 @@ if (result.issues) {
 When `throwOnValidationError` is `false`, the return type is a Standard Schema Result:
 
 ```typescript
-type Result<T> =
-  | { value: T; issues?: undefined }
-  | { value?: undefined; issues: Issue[] };
+type Result<T> = { value: T; issues?: undefined } | { value?: undefined; issues: Issue[] };
 ```
 
 ## Best Practices

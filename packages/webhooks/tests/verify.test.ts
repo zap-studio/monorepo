@@ -1,7 +1,7 @@
 // biome-ignore-all lint/style/noMagicNumbers: This is a test file so magic numbers are acceptable here.
 
 import { createHmac } from "node:crypto";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import type { NormalizedRequest } from "../src/types";
 import { createHmacVerifier } from "../src/verify";
 
@@ -9,13 +9,11 @@ describe("createHmacVerifier", () => {
   const createMockRequest = (
     body: string,
     signature?: string,
-    headerName = "x-hub-signature-256"
+    headerName = "x-hub-signature-256",
   ): NormalizedRequest => ({
     method: "POST",
     path: "/webhook",
-    headers: new Headers(
-      signature ? { [headerName.toLowerCase()]: signature } : {}
-    ),
+    headers: new Headers(signature ? { [headerName.toLowerCase()]: signature } : {}),
     rawBody: Buffer.from(body),
   });
 
@@ -283,9 +281,7 @@ describe("createHmacVerifier", () => {
     it("should reject signature when algorithm mismatch", async () => {
       const secret = "my-secret";
       const body = "test body";
-      const sha1Signature = createHmac("sha1", secret)
-        .update(body)
-        .digest("hex");
+      const sha1Signature = createHmac("sha1", secret).update(body).digest("hex");
 
       // Configure for sha256 but provide sha1 signature
       const verify = createHmacVerifier({
@@ -374,9 +370,7 @@ describe("createHmacVerifier", () => {
     it("should handle binary data correctly", async () => {
       const secret = "my-secret";
       const binaryData = Buffer.from([0x00, 0x01, 0x02, 0xff, 0xfe, 0xfd]);
-      const signature = createHmac("sha256", secret)
-        .update(binaryData)
-        .digest("hex");
+      const signature = createHmac("sha256", secret).update(binaryData).digest("hex");
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -427,8 +421,7 @@ describe("createHmacVerifier", () => {
 
       // Try with one character different
       const almostCorrect =
-        correctSignature.slice(0, -1) +
-        (correctSignature.at(-1) === "a" ? "b" : "a");
+        correctSignature.slice(0, -1) + (correctSignature.at(-1) === "a" ? "b" : "a");
       const req2 = createMockRequest(body, almostCorrect);
       await expect(verify(req2)).rejects.toThrow("invalid signature");
     });
@@ -513,11 +506,7 @@ describe("createHmacVerifier", () => {
         secret,
       });
 
-      const req = createMockRequest(
-        payload,
-        signature,
-        "x-shopify-hmac-sha256"
-      );
+      const req = createMockRequest(payload, signature, "x-shopify-hmac-sha256");
 
       await expect(verify(req)).resolves.toBeUndefined();
     });

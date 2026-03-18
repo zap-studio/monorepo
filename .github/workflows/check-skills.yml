@@ -37,14 +37,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node and pnpm
-        uses: ./.github/actions/setup-node-pnpm
+      - name: Setup Vite+
+        uses: ./.github/actions/setup-vp
 
       - name: Check staleness
         id: stale
         run: |
           STDERR_FILE="$(mktemp)"
-          if ! OUTPUT=$(pnpm dlx @tanstack/intent@0.0.13 stale --json 2>"$STDERR_FILE"); then
+          if ! OUTPUT=$(vp dlx @tanstack/intent@0.0.13 stale --json 2>"$STDERR_FILE"); then
             cat "$STDERR_FILE" >&2
             echo "Failed to run intent stale --json" >&2
             exit 1
@@ -132,7 +132,7 @@ jobs:
               '1. Read the current SKILL.md file',
               '2. Check what changed in the library since the skill was last updated',
               '3. Update the skill content to reflect current APIs and behavior',
-              '4. Run \`pnpm dlx @tanstack/intent validate\` to verify the updated skill',
+              '4. Run \`vp dlx @tanstack/intent validate\` to verify the updated skill',
             ].join('\n');
 
             // Write outputs

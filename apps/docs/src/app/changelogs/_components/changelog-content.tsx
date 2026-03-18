@@ -27,10 +27,7 @@ export function ChangelogContent({
         <h1 className="font-serif text-3xl text-fd-foreground leading-none sm:text-4xl">
           {current.packageName}
         </h1>
-        <nav
-          aria-label="Package changelogs"
-          className="flex flex-wrap items-center gap-2"
-        >
+        <nav aria-label="Package changelogs" className="flex flex-wrap items-center gap-2">
           {allPackages.map((entry) => (
             <Link
               aria-current={entry.slug === current.slug ? "page" : undefined}
@@ -107,11 +104,7 @@ function MarkdownContent({ markdown }: { markdown: string }): ReactNode {
       index = nextIndex;
 
       blocks.push(
-        <HighlightedCodeBlock
-          code={code}
-          key={`code-${blocks.length + 1}`}
-          language={language}
-        />
+        <HighlightedCodeBlock code={code} key={`code-${blocks.length + 1}`} language={language} />,
       );
       continue;
     }
@@ -123,7 +116,7 @@ function MarkdownContent({ markdown }: { markdown: string }): ReactNode {
           key={`h3-${blocks.length + 1}`}
         >
           {trimmedLine.replace(SECTION_HEADING_PREFIX_REGEX, "")}
-        </h3>
+        </h3>,
       );
       index += 1;
       continue;
@@ -131,15 +124,9 @@ function MarkdownContent({ markdown }: { markdown: string }): ReactNode {
 
     const bulletMatch = currentLine.match(BULLET_LINE_REGEX);
     if (bulletMatch) {
-      const [listItems, nextIndex] = parseList(
-        lines,
-        index,
-        bulletMatch[1].length
-      );
+      const [listItems, nextIndex] = parseList(lines, index, bulletMatch[1].length);
       index = nextIndex;
-      blocks.push(
-        <ListBlock items={listItems} key={`ul-${blocks.length + 1}`} />
-      );
+      blocks.push(<ListBlock items={listItems} key={`ul-${blocks.length + 1}`} />);
       continue;
     }
 
@@ -161,7 +148,7 @@ function MarkdownContent({ markdown }: { markdown: string }): ReactNode {
         key={`p-${blocks.length + 1}`}
       >
         <InlineMarkdown text={paragraphLines.join(" ")} />
-      </p>
+      </p>,
     );
   }
 
@@ -182,7 +169,7 @@ interface ParsedListItem {
 function parseList(
   lines: string[],
   startIndex: number,
-  indent: number
+  indent: number,
 ): [ParsedListItem[], number] {
   const items: ParsedListItem[] = [];
   let index = startIndex;
@@ -210,7 +197,7 @@ function parseListItem(
   lines: string[],
   startIndex: number,
   indent: number,
-  firstText: string
+  firstText: string,
 ): [ParsedListItem, number] {
   let text = firstText.trim();
   const subItems: ParsedListItem[] = [];
@@ -293,26 +280,18 @@ function ListBlock({
       text: item.text,
       codeBlocks: item.codeBlocks,
       subItemCount: item.subItems.length,
-    })
+    }),
   );
 
   return (
-    <ul
-      className={
-        nested
-          ? "mt-2 space-y-1.5 text-sm leading-7"
-          : "space-y-2 text-sm leading-7"
-      }
-    >
+    <ul className={nested ? "mt-2 space-y-1.5 text-sm leading-7" : "space-y-2 text-sm leading-7"}>
       {keyedItems.map(({ key, value: item }) => (
         <li className="pl-5" key={key}>
-          <span className="mr-2 -ml-5 inline-block text-fd-muted-foreground">
-            -
-          </span>
+          <span className="mr-2 -ml-5 inline-block text-fd-muted-foreground">-</span>
           <InlineMarkdown text={item.text} />
           {toKeyedEntries(
             item.codeBlocks,
-            (codeBlock) => `${codeBlock.language ?? "text"}:${codeBlock.code}`
+            (codeBlock) => `${codeBlock.language ?? "text"}:${codeBlock.code}`,
           ).map(({ key: codeKey, value: codeBlock }) => (
             <HighlightedCodeBlock
               code={codeBlock.code}
@@ -321,9 +300,7 @@ function ListBlock({
               nested
             />
           ))}
-          {item.subItems.length > 0 ? (
-            <ListBlock items={item.subItems} nested />
-          ) : null}
+          {item.subItems.length > 0 ? <ListBlock items={item.subItems} nested /> : null}
         </li>
       ))}
     </ul>
@@ -396,51 +373,44 @@ function normalizeLanguage(language: string | null): string {
 function InlineMarkdown({ text }: { text: string }): ReactNode {
   const codeParts = text.split(INLINE_CODE_SPLIT_REGEX).filter(Boolean);
 
-  return toKeyedEntries(codeParts, (part) => part).map(
-    ({ key, value: part }) => {
-      if (INLINE_CODE_REGEX.test(part)) {
-        return (
-          <code
-            className="rounded bg-fd-accent px-1.5 py-0.5 font-mono text-[0.9em]"
-            key={key}
-          >
-            {part.slice(1, -1)}
-          </code>
-        );
-      }
-
-      const tokens = part.split(COMMIT_HASH_SPLIT_REGEX).filter(Boolean);
-
+  return toKeyedEntries(codeParts, (part) => part).map(({ key, value: part }) => {
+    if (INLINE_CODE_REGEX.test(part)) {
       return (
-        <Fragment key={key}>
-          {toKeyedEntries(tokens, (token) => token).map(
-            ({ key: tokenKey, value: token }) => {
-              if (COMMIT_HASH_REGEX.test(token)) {
-                return (
-                  <Link
-                    className="font-mono text-fd-primary underline underline-offset-2 hover:opacity-80"
-                    href={`https://github.com/${gitConfig.user}/${gitConfig.repo}/commit/${token}`}
-                    key={`hash-${tokenKey}`}
-                    rel="noreferrer noopener"
-                    target="_blank"
-                  >
-                    {token}
-                  </Link>
-                );
-              }
-
-              return <Fragment key={`token-${tokenKey}`}>{token}</Fragment>;
-            }
-          )}
-        </Fragment>
+        <code className="rounded bg-fd-accent px-1.5 py-0.5 font-mono text-[0.9em]" key={key}>
+          {part.slice(1, -1)}
+        </code>
       );
     }
-  );
+
+    const tokens = part.split(COMMIT_HASH_SPLIT_REGEX).filter(Boolean);
+
+    return (
+      <Fragment key={key}>
+        {toKeyedEntries(tokens, (token) => token).map(({ key: tokenKey, value: token }) => {
+          if (COMMIT_HASH_REGEX.test(token)) {
+            return (
+              <Link
+                className="font-mono text-fd-primary underline underline-offset-2 hover:opacity-80"
+                href={`https://github.com/${gitConfig.user}/${gitConfig.repo}/commit/${token}`}
+                key={`hash-${tokenKey}`}
+                rel="noreferrer noopener"
+                target="_blank"
+              >
+                {token}
+              </Link>
+            );
+          }
+
+          return <Fragment key={`token-${tokenKey}`}>{token}</Fragment>;
+        })}
+      </Fragment>
+    );
+  });
 }
 
 function toKeyedEntries<T>(
   values: T[],
-  getBaseKey: (value: T) => string
+  getBaseKey: (value: T) => string,
 ): Array<{ key: string; value: T }> {
   const counts = new Map<string, number>();
 

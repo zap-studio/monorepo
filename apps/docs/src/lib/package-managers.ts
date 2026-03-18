@@ -2,10 +2,7 @@ const WHITESPACE_REGEX = /\s+/;
 
 type InstallPackageManager = "yarn" | "pnpm" | "bun";
 
-function convertInstallCommand(
-  command: string,
-  pm: InstallPackageManager
-): string | undefined {
+function convertInstallCommand(command: string, pm: InstallPackageManager): string | undefined {
   if (command.startsWith("npm install ")) {
     const pkg = command.slice("npm install ".length);
     if (pm === "yarn") {
@@ -36,10 +33,7 @@ function convertToDeno(command: string): string | undefined {
     return undefined;
   }
 
-  const packages = command
-    .slice("npm install ".length)
-    .trim()
-    .split(WHITESPACE_REGEX);
+  const packages = command.slice("npm install ".length).trim().split(WHITESPACE_REGEX);
   if (!packages.length) {
     return undefined;
   }

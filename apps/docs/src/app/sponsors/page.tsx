@@ -33,11 +33,7 @@ const tiers: Tier[] = [
     name: "Silver",
     emoji: "🥈",
     price: "$20/mo",
-    perks: [
-      "Everything in Bronze",
-      "Small logo on sponsors page",
-      "Shout-out on Discord",
-    ],
+    perks: ["Everything in Bronze", "Small logo on sponsors page", "Shout-out on Discord"],
     slots: 6,
   },
   {
@@ -76,8 +72,8 @@ export default function SponsorsPage(): ReactNode {
           </h1>
 
           <p className="mx-auto mt-4 max-w-xl text-fd-muted-foreground text-sm leading-6 sm:mt-6 sm:text-base sm:leading-7 md:mt-8 md:text-lg md:leading-8">
-            Zap Studio is free and open source, licensed under MIT. Sponsors
-            help keep the project sustainable, actively maintained, and growing.
+            Zap Studio is free and open source, licensed under MIT. Sponsors help keep the project
+            sustainable, actively maintained, and growing.
           </p>
 
           <div className="mt-6 flex justify-center sm:mt-8">
@@ -118,12 +114,10 @@ export default function SponsorsPage(): ReactNode {
         />
 
         <div className="mx-auto max-w-3xl px-6 py-16 text-center sm:py-24">
-          <h2 className="font-serif text-2xl leading-[1.12] sm:text-3xl">
-            Not ready to sponsor?
-          </h2>
+          <h2 className="font-serif text-2xl leading-[1.12] sm:text-3xl">Not ready to sponsor?</h2>
           <p className="mt-4 text-fd-muted-foreground text-sm leading-6 sm:text-base sm:leading-7">
-            You can still help by starring the repo, reporting issues, or
-            spreading the word. Every bit of support counts.
+            You can still help by starring the repo, reporting issues, or spreading the word. Every
+            bit of support counts.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:mt-8">
@@ -158,9 +152,7 @@ function TierCard({ tier }: { tier: Tier }): ReactNode {
     <div className="flex flex-col rounded-2xl border border-fd-border bg-fd-card/60 p-6 transition-all duration-300 hover:border-fd-primary/20 hover:shadow-fd-primary/3 hover:shadow-lg sm:p-8">
       <div className="mb-3 flex items-center gap-2.5">
         <span className="text-xl">{tier.emoji}</span>
-        <h3 className="font-serif text-lg leading-none sm:text-xl">
-          {tier.name}
-        </h3>
+        <h3 className="font-serif text-lg leading-none sm:text-xl">{tier.name}</h3>
       </div>
 
       <p className="mb-5 font-mono text-base text-fd-primary leading-none tracking-tight">
@@ -186,7 +178,7 @@ function TierCard({ tier }: { tier: Tier }): ReactNode {
         <div className="flex flex-wrap gap-2">
           {Array.from(
             { length: tier.slots },
-            (_, slotNumber) => `${tier.name}-slot-${slotNumber + 1}`
+            (_, slotNumber) => `${tier.name}-slot-${slotNumber + 1}`,
           ).map((slotId) => (
             <PlaceholderAvatar key={slotId} />
           ))}
