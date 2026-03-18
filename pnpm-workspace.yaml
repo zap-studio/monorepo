@@ -3,59 +3,52 @@ packages:
   - configs/*
   - packages/*
 
-catalogs:
-  base:
-    '@standard-schema/spec': ^1.1.0
-    arktype: ^2.2.0
-    tsdown: ^0.18.0
-    typescript: ^5.9.3
-    valibot: ^1.2.0
-    zod: ^4.2.0
-  design:
-    motion: ^12.34.3
-  fumadocs:
-    fumadocs-core: ^16.6.8
-    fumadocs-mdx: ^14.2.9
-    fumadocs-ui: ^16.6.13
-  linting:
-    '@biomejs/biome': ^2.4.7
-    '@commitlint/cli': ^20.5.0
-    '@commitlint/config-conventional': ^20.5.0
-    ultracite: ^7.3.2
-  next:
-    '@takumi-rs/image-response': ^0.69.5
-    next: ^16.1.6
-  react:
-    lucide-react: ^0.575.0
-    react: ^19.2.4
-    react-dom: ^19.2.4
-  styling:
-    '@tailwindcss/postcss': ^4.2.1
-    postcss: ^8.5.6
-    tailwind-merge: ^3.5.0
-    tailwindcss: ^4.2.1
-  testing:
-    '@vitest/coverage-v8': ^4.0.15
-    '@vitest/ui': ^4.1.0
-    vitest: ^4.1.0
-  tooling:
-    '@changesets/cli': ^2.30.0
-    '@tanstack/intent': ^0.0.23
-    '@turbo/gen': ^2.8.17
-    jsr: ^0.14.3
-    lefthook: ^2.1.4
-    nyc: ^18.0.0
-    rimraf: ^6.1.3
-    turbo: ^2.8.17
-  types:
-    '@types/mdx': ^2.0.13
-    '@types/node': ^25.0.2
-    '@types/react': ^19.2.14
-    '@types/react-dom': ^19.2.3
+catalog:
+  "@changesets/cli": ^2.30.0
+  "@commitlint/cli": ^20.5.0
+  "@commitlint/config-conventional": ^20.5.0
+  "@standard-schema/spec": ^1.1.0
+  "@tailwindcss/postcss": ^4.2.1
+  "@tanstack/intent": ^0.0.23
+  "@types/mdx": ^2.0.13
+  "@types/node": ^25.0.2
+  "@types/react": ^19.2.14
+  "@types/react-dom": ^19.2.3
+  "@vitest/coverage-v8": ^4.0.18
+  "@takumi-rs/image-response": ^0.69.5
+  arktype: ^2.2.0
+  fumadocs-core: ^16.6.8
+  fumadocs-mdx: ^14.2.9
+  fumadocs-ui: ^16.6.13
+  jsr: ^0.14.3
+  lucide-react: ^0.575.0
+  motion: ^12.34.3
+  next: ^16.1.6
+  nyc: ^18.0.0
+  postcss: ^8.5.6
+  react: ^19.2.4
+  react-dom: ^19.2.4
+  rimraf: ^6.1.3
+  tailwind-merge: ^3.5.0
+  tailwindcss: ^4.2.1
+  typescript: ^5.9.3
+  valibot: ^1.2.0
+  vite: npm:@voidzero-dev/vite-plus-core@0.1.12
+  vite-plus: 0.1.12
+  vitest: npm:@voidzero-dev/vite-plus-test@0.1.12
+  zod: ^4.2.0
 
 onlyBuiltDependencies:
-  - '@swc/core'
+  - "@swc/core"
   - core-js-pure
   - esbuild
-  - lefthook
   - sharp
+
+overrides:
+  vite: "catalog:"
+  vitest: "catalog:"
+
+peerDependencyRules:
+  allowAny:
+    - vite
+    - vitest
