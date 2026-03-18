@@ -10,7 +10,7 @@ on:
       - "apps/**/skills/**"
       - "configs/**/skills/**"
       - ".github/workflows/validate-skills.yml"
-      - ".github/actions/setup-node-pnpm/**"
+      - ".github/actions/setup-vp/**"
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
@@ -32,8 +32,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Node and pnpm
-        uses: ./.github/actions/setup-node-pnpm
+      - name: Setup Vite+
+        uses: ./.github/actions/setup-vp
 
       - name: Find and validate skills
         run: |
@@ -60,6 +60,6 @@ jobs:
             skills_dir_name="$(basename "$dir")"
             (
               cd "$parent_dir"
-              pnpm dlx @tanstack/intent validate "$skills_dir_name"
+              vp dlx @tanstack/intent validate "$skills_dir_name"
             )
           done

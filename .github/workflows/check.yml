@@ -22,8 +22,8 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v6
-      - name: Setup Node and pnpm
-        uses: ./.github/actions/setup-node-pnpm
+      - name: Setup Vite+
+        uses: ./.github/actions/setup-vp
 
       - name: Run check on the monorepo
-        run: pnpm run check
+        run: vp check

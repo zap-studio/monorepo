@@ -21,17 +21,15 @@ jobs:
   build-monorepo:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
-    env:
-      TURBO_TELEMETRY_DISABLED: 1
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Setup Node and pnpm
-        uses: ./.github/actions/setup-node-pnpm
+      - name: Setup Vite+
+        uses: ./.github/actions/setup-vp
 
       - name: Build monorepo
-        run: pnpm exec turbo run build --affected
+        run: vp run -r build
         env:
           SKIP_ENV_VALIDATION: true
