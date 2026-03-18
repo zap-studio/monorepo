@@ -4,26 +4,12 @@ import { spawn } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
-import { fileURLToPath } from "node:url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "..");
-const vitePlusBin = path.join(process.env.HOME ?? "", ".vite-plus", "bin", "vp");
-
-const [projectId, scanPathArg = "."] = process.argv.slice(2);
-
-if (!projectId) {
-  console.error(
-    "Usage: node scripts/react-doctor.mjs <project-id> [scan-path]\n" +
-      "Example: node scripts/react-doctor.mjs docs .",
-  );
-  process.exit(1);
-}
-
-const scanPath = path.resolve(process.cwd(), scanPathArg);
-const reportDir = path.join(repoRoot, ".react-doctor", projectId);
+const scanPath = process.cwd();
+const repoRoot = path.resolve(scanPath, "../..");
+const reportDir = path.join(repoRoot, ".react-doctor", "docs");
 const latestReportPath = path.join(reportDir, "latest.txt");
+const vitePlusBin = path.join(process.env.HOME ?? "", ".vite-plus", "bin", "vp");
 
 await mkdir(reportDir, { recursive: true });
 
@@ -116,19 +102,20 @@ child.stderr.on("data", (chunk) => {
   process.stderr.write(chunk);
 });
 
-const { exitCode, startupError, restoreError } = await new Promise((resolve) => {
-  const finish = async (result) => {
+const result = await new Promise((resolve) => {
+  const finish = async (payload) => {
     try {
       await restorePackageJson();
-      resolve({ ...result, restoreError: null });
+      resolve({ ...payload, restoreError: null });
     } catch (error) {
-      resolve({ ...result, restoreError: error });
+      resolve({ ...payload, restoreError: error });
     }
   };
 
   child.on("close", (code) => {
     void finish({ exitCode: code ?? 1, startupError: null });
   });
+
   child.on("error", (error) => {
     const errorText = `\n[react-doctor runner error]\n${error.stack ?? error.message}\n`;
     outputChunks.push(Buffer.from(errorText, "utf8"));
@@ -140,15 +127,8 @@ const { exitCode, startupError, restoreError } = await new Promise((resolve) => 
 const report = Buffer.concat(outputChunks).toString("utf8");
 await writeFile(latestReportPath, report, "utf8");
 
-if (startupError) {
-  process.exitCode = 1;
-  process.exit();
+if (result.startupError || result.restoreError) {
+  process.exit(1);
 }
 
-if (restoreError) {
-  console.error(restoreError);
-  process.exitCode = 1;
-  process.exit();
-}
-
-process.exit(exitCode);
+process.exit(result.exitCode);

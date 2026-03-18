@@ -6,7 +6,6 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "apps/docs/**"
-      - "scripts/react-doctor.mjs"
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
