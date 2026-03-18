@@ -9,7 +9,7 @@ describe("$fetch", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    global.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock as typeof fetch;
   });
 
   afterEach(() => {
@@ -376,7 +376,7 @@ describe("createFetch", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    global.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock as typeof fetch;
   });
 
   afterEach(() => {
@@ -800,7 +800,7 @@ describe("api convenience methods", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    global.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock as typeof fetch;
   });
 
   afterEach(() => {

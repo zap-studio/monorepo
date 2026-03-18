@@ -94,7 +94,7 @@ describe("fetchInternal", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    global.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock as typeof fetch;
   });
 
   afterEach(() => {
@@ -510,7 +510,7 @@ describe("createMethod", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    global.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock as typeof fetch;
   });
 
   afterEach(() => {
@@ -797,7 +797,7 @@ describe("searchParams merging", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    global.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock as typeof fetch;
   });
 
   afterEach(() => {
@@ -1022,7 +1022,7 @@ describe("URL parsing with hash and special characters", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    global.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock as typeof fetch;
   });
 
   afterEach(() => {
