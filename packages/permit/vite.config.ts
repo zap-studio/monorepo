@@ -17,6 +17,6 @@ export default defineConfig({
     reporters: process.env.CI ? ["dot", "junit"] : ["default"],
     outputFile: process.env.CI ? { junit: "./coverage/junit.xml" } : undefined,
     restoreMocks: true,
-    exclude: ["dist", "node_modules", ".turbo"],
+    exclude: ["dist", "node_modules"],
   },
 });
