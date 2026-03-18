@@ -52,7 +52,6 @@ report.[0-9]*.[0-9]*.json
 Thumbs.db
 .Spotlight-V100
 .fseventsd
-.vscode/
 .idea/
 *.iml
 *.sublime-workspace
