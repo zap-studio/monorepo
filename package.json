@@ -5,7 +5,7 @@
   "scripts": {
     "build": "vp run -r build",
     "check": "vp check",
-		"clean": "rimraf node_modules coverage .vite \"packages/*/dist\" \"configs/*/dist\" apps/docs/.next",
+    "clean": "rimraf node_modules coverage .vite \"packages/*/dist\" \"configs/*/dist\" apps/docs/.next",
     "dev": "vp run docs#dev",
     "fix": "vp check --fix",
     "merge-coverage": "rimraf coverage/merged && mkdir -p coverage/merged && find packages apps -name 'coverage' -type d -exec sh -c 'test -f \"$1/coverage-final.json\" && echo \"$1\"' _ {} \\; | xargs -I {} sh -c 'cp {}/coverage-final.json coverage/merged/$(echo {} | tr / -).json' || true",
