@@ -221,23 +221,25 @@ Coverage reports help identify untested code paths in your Rust backend.
 
 ## CI Integration
 
-Local.ts includes a streamlined CI workflow for the frontend toolchain plus a separate publish workflow for native release bundles.
+Local.ts includes separate CI workflows for the frontend toolchain and the native Tauri layer, plus a separate publish workflow for release bundles.
 
 ### Existing Workflows
 
-| Workflow    | File                                                                                          | Description                                |
-| ----------- | --------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| **CI**      | [ci.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/ci.yml)           | Runs `vp check`, `vp test`, and `vp build` |
-| **Publish** | [publish.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/publish.yml) | Builds and drafts Tauri release bundles    |
+| Workflow           | File                                                                                                  | Description                                               |
+| ------------------ | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| **Frontend CI**    | [frontend-ci.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/frontend-ci.yml) | Runs `vp check`, `vp test`, and `vp build`                |
+| **Cargo Tauri CI** | [tauri-ci.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/tauri-ci.yml)       | Runs `cargo check`, `cargo test`, and a debug Tauri build |
+| **Publish**        | [publish.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/publish.yml)         | Builds and drafts Tauri release bundles                   |
 
 ### Workflow Triggers
 
-- `ci.yml` runs on pull requests and pushes to `main`
+- `frontend-ci.yml` runs on pull requests and pushes to `main`
+- `tauri-ci.yml` runs on pull requests and pushes to `main`
 - `publish.yml` runs on manual dispatch and pushes to the `release` branch
 
-### CI Setup
+### Frontend CI Setup
 
-The CI workflow uses a local composite action to install Vite+, restore dependency cache, and install dependencies before running each job:
+The frontend workflow uses a local composite action to install Vite+, restore dependency cache, and install dependencies before running each job:
 
 ```yaml
 - name: Setup vp
@@ -250,4 +252,12 @@ Each CI job then runs one focused command:
 - `vp test`
 - `vp build`
 
-Native packaging is intentionally kept in the publish workflow, where the Tauri action installs platform-specific dependencies and builds release artifacts.
+### Tauri CI Setup
+
+The native workflow installs Linux system dependencies, restores the Rust cache, and runs three checks:
+
+- `cargo check --manifest-path src-tauri/Cargo.toml`
+- `cargo test --manifest-path src-tauri/Cargo.toml`
+- `vp exec tauri build --debug --no-bundle --ci`
+
+This keeps frontend validation and native validation independent while still verifying that the Tauri shell can compile on CI.
