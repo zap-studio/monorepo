@@ -1,0 +1,135 @@
+name: CI
+
+on:
+  pull_request:
+    branches: ["**"]
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - "**/*.md"
+      - "apps/docs/content/**"
+      - ".changeset/**"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Vite+
+        uses: ./.github/actions/setup-vp
+
+      - name: Build monorepo
+        run: vp run -r build
+
+      - name: Upload build outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-outputs
+          path: |
+            packages/*/dist
+            apps/docs/.next/types
+            apps/docs/.next/dev/types
+          if-no-files-found: error
+
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Vite+
+        uses: ./.github/actions/setup-vp
+
+      - name: Download build outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: build-outputs
+          path: .
+
+      - name: Run check on the monorepo
+        run: vp check
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Vite+
+        uses: ./.github/actions/setup-vp
+
+      - name: Download build outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: build-outputs
+          path: .
+
+      - name: Run tests
+        run: vp run -r test
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Vite+
+        uses: ./.github/actions/setup-vp
+
+      - name: Download build outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: build-outputs
+          path: .
+
+      - name: Run coverage
+        run: vp run test:coverage
+
+      - name: Collect JUnit files
+        if: ${{ always() }}
+        id: junit
+        run: |
+          files="$(find packages -path '*/coverage/junit.xml' -type f | sort | paste -sd, -)"
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+
+      - name: Upload test results to Codecov
+        if: ${{ always() && steps.junit.outputs.files != '' }}
+        uses: codecov/test-results-action@v1
+        with:
+          files: ${{ steps.junit.outputs.files }}
+          fail_ci_if_error: false
+          use_oidc: true
+          verbose: true
+
+      - name: Upload coverage to Codecov
+        if: ${{ always() }}
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage/report/lcov.info
+          fail_ci_if_error: false
+          use_oidc: true
+          verbose: true

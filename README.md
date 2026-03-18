@@ -1,7 +1,6 @@
 # Zap Studio
 
-[![Test](https://github.com/zap-studio/monorepo/actions/workflows/test.yml/badge.svg)](https://github.com/zap-studio/monorepo/actions/workflows/test.yml)
-[![Check](https://github.com/zap-studio/monorepo/actions/workflows/check.yml/badge.svg)](https://github.com/zap-studio/monorepo/actions/workflows/check.yml)
+[![CI](https://github.com/zap-studio/monorepo/actions/workflows/ci.yml/badge.svg)](https://github.com/zap-studio/monorepo/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/zap-studio/monorepo/graph/badge.svg?branch=main)](https://codecov.io/gh/zap-studio/monorepo)
 [![License](https://img.shields.io/github/license/zap-studio/monorepo)](https://github.com/zap-studio/monorepo/blob/main/LICENSE.md)
 
