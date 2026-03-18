@@ -57,8 +57,7 @@ export function PrinciplesSection(): ReactNode {
             </h2>
 
             <p className="mt-4 max-w-sm text-base text-fd-muted-foreground leading-7 sm:text-lg md:mt-5 md:text-xl md:leading-8">
-              Developer tools should adapt to your stack — not the other way
-              around.
+              Developer tools should adapt to your stack — not the other way around.
             </p>
 
             <div
@@ -68,11 +67,7 @@ export function PrinciplesSection(): ReactNode {
           </div>
         </SlideIn>
 
-        <StaggerContainer
-          className="flex flex-col gap-8"
-          delay={0.2}
-          stagger={0.12}
-        >
+        <StaggerContainer className="flex flex-col gap-8" delay={0.2} stagger={0.12}>
           {principles.map((principle) => (
             <StaggerItem key={principle.title} y={16}>
               <PrincipleItem
@@ -93,11 +88,7 @@ export function PrinciplesSection(): ReactNode {
   );
 }
 
-function PrincipleItem({
-  icon,
-  title,
-  description,
-}: PrincipleProps): ReactNode {
+function PrincipleItem({ icon, title, description }: PrincipleProps): ReactNode {
   return (
     <div className="flex gap-5">
       <div className="group flex size-12 shrink-0 items-center justify-center rounded-xl bg-fd-accent text-fd-primary transition-colors duration-300 hover:bg-fd-primary/15">
@@ -108,9 +99,7 @@ function PrincipleItem({
         <h3 className="font-semibold text-base text-fd-foreground leading-6 tracking-tight">
           {title}
         </h3>
-        <p className="mt-1.5 text-fd-muted-foreground text-sm leading-6">
-          {description}
-        </p>
+        <p className="mt-1.5 text-fd-muted-foreground text-sm leading-6">{description}</p>
       </div>
     </div>
   );

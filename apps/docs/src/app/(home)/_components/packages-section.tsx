@@ -95,12 +95,7 @@ export function PackagesSection(): ReactNode {
   );
 }
 
-function PackageCard({
-  icon,
-  name,
-  description,
-  href,
-}: PackageCardProps): ReactNode {
+function PackageCard({ icon, name, description, href }: PackageCardProps): ReactNode {
   return (
     <Link className="group block h-full" href={href}>
       <div className="flex h-full flex-col rounded-2xl border border-fd-border bg-fd-card p-6 transition-all duration-300 group-hover:border-fd-primary/30 group-hover:shadow-fd-primary/4 group-hover:shadow-lg sm:p-8">
@@ -108,13 +103,9 @@ function PackageCard({
           {icon}
         </div>
 
-        <p className="font-mono text-fd-muted-foreground text-xs leading-5 tracking-wide">
-          {name}
-        </p>
+        <p className="font-mono text-fd-muted-foreground text-xs leading-5 tracking-wide">{name}</p>
 
-        <p className="mt-2.5 flex-1 text-fd-foreground/90 text-sm leading-6">
-          {description}
-        </p>
+        <p className="mt-2.5 flex-1 text-fd-foreground/90 text-sm leading-6">{description}</p>
 
         <div className="mt-6 inline-flex items-center gap-1.5 font-medium text-fd-primary text-sm leading-6 transition-all duration-300 group-hover:gap-2.5">
           Learn more
@@ -137,8 +128,8 @@ function ComingSoonCard(): ReactNode {
       </p>
 
       <p className="mt-2.5 flex-1 text-fd-foreground/90 text-sm leading-6">
-        Realtime, logging, events, waitlist management, and more - all type-safe
-        and framework-agnostic.
+        Realtime, logging, events, waitlist management, and more - all type-safe and
+        framework-agnostic.
       </p>
 
       <div className="mt-6 flex flex-wrap gap-2">

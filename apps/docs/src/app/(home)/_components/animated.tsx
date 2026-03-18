@@ -83,11 +83,7 @@ interface StaggerItemProps {
   y?: number;
 }
 
-export function StaggerItem({
-  children,
-  className,
-  y = 20,
-}: StaggerItemProps): ReactNode {
+export function StaggerItem({ children, className, y = 20 }: StaggerItemProps): ReactNode {
   const reduceMotion = useReducedMotion();
 
   return (

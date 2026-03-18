@@ -3,9 +3,7 @@ import type { ReactNode } from "react";
 import { FooterSection } from "@/app/(home)/_components/footer-section";
 import { baseOptions, homeLinks } from "@/lib/layout.shared";
 
-export default function Layout({
-  children,
-}: LayoutProps<"/roadmap">): ReactNode {
+export default function Layout({ children }: LayoutProps<"/roadmap">): ReactNode {
   return (
     <HomeLayout {...baseOptions()} links={homeLinks()}>
       {children}

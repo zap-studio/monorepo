@@ -3,8 +3,7 @@ name: Bug report
 about: Create a report to help us improve
 title: "[BUG]"
 labels: bug
-assignees: ''
-
+assignees: ""
 ---
 
 **Affected Package(s):**
@@ -31,10 +30,10 @@ What actually happened, including any error messages or unexpected outcomes.
 
 **Environment:**
 
-* **Package Version:** e.g., @zap-studio/fetch@0.3.1
-* **Node.js Version:** e.g., v20.x or v22.x
-* **Operating System:** e.g., macOS 15.x
-* **Package Manager:** e.g., pnpm v10.24.0
+- **Package Version:** e.g., @zap-studio/fetch@0.3.1
+- **Node.js Version:** e.g., v20.x or v22.x
+- **Operating System:** e.g., macOS 15.x
+- **Package Manager:** e.g., pnpm v10.24.0
 
 **Additional Context:**
 Any other information that might be helpful, such as related issues, logs, or screenshots.

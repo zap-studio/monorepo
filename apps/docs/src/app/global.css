@@ -4,8 +4,7 @@
 
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-serif:
-    var(--font-instrument-serif), "Georgia", "Times New Roman", serif;
+  --font-serif: var(--font-instrument-serif), "Georgia", "Times New Roman", serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", monospace;
 }
 

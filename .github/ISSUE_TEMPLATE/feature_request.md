@@ -3,11 +3,11 @@ name: Feature request
 about: Suggest an idea
 title: "[FEATURE]"
 labels: enhancement
-assignees: ''
-
+assignees: ""
 ---
 
 **Package/Scope:**
+
 - [ ] `@zap-studio/fetch`
 - [ ] `@zap-studio/waitlist`
 - [ ] `@zap-studio/webhooks`
@@ -19,8 +19,8 @@ A detailed explanation of the feature, including its purpose and how it would en
 
 **Use Cases:**
 
-* Describe specific scenarios where this feature would be beneficial.
-* Include examples of how it would improve user experience or development workflow.
+- Describe specific scenarios where this feature would be beneficial.
+- Include examples of how it would improve user experience or development workflow.
 
 **Proposed Solution:**
 Outline a potential approach for implementing the feature, including any relevant technical details or considerations.

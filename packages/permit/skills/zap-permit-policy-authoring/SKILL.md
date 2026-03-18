@@ -5,12 +5,12 @@ description: >
   createPolicy, allow/deny/when, condition combinators, has/hasRole,
   and mergePolicies vs mergePoliciesAny decision strategies.
 type: core
-library: '@zap-studio/permit'
-library_version: '0.2.1'
+library: "@zap-studio/permit"
+library_version: "0.2.1"
 sources:
-  - 'zap-studio/monorepo:packages/permit/README.md'
-  - 'zap-studio/monorepo:packages/permit/src/index.ts'
-  - 'zap-studio/monorepo:packages/permit/src/types.ts'
+  - "zap-studio/monorepo:packages/permit/README.md"
+  - "zap-studio/monorepo:packages/permit/src/index.ts"
+  - "zap-studio/monorepo:packages/permit/src/types.ts"
 ---
 
 # @zap-studio/permit — Policy Authoring
@@ -18,19 +18,19 @@ sources:
 ## Setup
 
 ```ts
-import { z } from 'zod';
-import { createPolicy, allow, when } from '@zap-studio/permit';
-import type { Resources, Actions } from '@zap-studio/permit/types';
+import { z } from "zod";
+import { createPolicy, allow, when } from "@zap-studio/permit";
+import type { Resources, Actions } from "@zap-studio/permit/types";
 
 const resources = {
   post: z.object({ id: z.string(), authorId: z.string() }),
 } satisfies Resources;
 
 const actions = {
-  post: ['read', 'write'],
+  post: ["read", "write"],
 } as const satisfies Actions<typeof resources>;
 
-type AppContext = { user: { id: string; role: 'user' | 'admin' } };
+type AppContext = { user: { id: string; role: "user" | "admin" } };
 
 const policy = createPolicy<AppContext>({
   resources,
@@ -49,7 +49,7 @@ const policy = createPolicy<AppContext>({
 ### Compose conditions with `and`, `or`, and `not`
 
 ```ts
-import { when, and, or, not } from '@zap-studio/permit';
+import { when, and, or, not } from "@zap-studio/permit";
 
 const canEdit = when(
   and(
@@ -60,7 +60,7 @@ const canEdit = when(
 
 const canRead = when(
   or(
-    (_ctx, _action, post) => post.visibility === 'public',
+    (_ctx, _action, post) => post.visibility === "public",
     (ctx, _action, post) => ctx.user.id === post.authorId,
   ),
 );
@@ -69,21 +69,21 @@ const canRead = when(
 ### Add role inheritance checks with `hasRole`
 
 ```ts
-import { when, hasRole } from '@zap-studio/permit';
+import { when, hasRole } from "@zap-studio/permit";
 
 const hierarchy = {
   guest: [],
-  user: ['guest'],
-  admin: ['user'],
+  user: ["guest"],
+  admin: ["user"],
 } as const;
 
-const adminOnly = when(hasRole('admin', hierarchy));
+const adminOnly = when(hasRole("admin", hierarchy));
 ```
 
 ### Choose merge strategy explicitly
 
 ```ts
-import { mergePolicies, mergePoliciesAny } from '@zap-studio/permit';
+import { mergePolicies, mergePoliciesAny } from "@zap-studio/permit";
 
 const strict = mergePolicies(basePolicy, tenantPolicy); // all must allow
 const permissive = mergePoliciesAny(basePolicy, temporaryOverridePolicy); // any can allow
@@ -96,17 +96,17 @@ const permissive = mergePoliciesAny(basePolicy, temporaryOverridePolicy); // any
 Wrong:
 
 ```ts
-await policy.can(ctx, 'publish', 'post', post);
+await policy.can(ctx, "publish", "post", post);
 ```
 
 Correct:
 
 ```ts
 const actions = {
-  post: ['read', 'write', 'publish'],
+  post: ["read", "write", "publish"],
 } as const;
 
-await policy.can(ctx, 'publish', 'post', post);
+await policy.can(ctx, "publish", "post", post);
 ```
 
 `can()` first checks `actions[resourceType]`; missing actions always resolve to `false`.
@@ -118,14 +118,14 @@ Source: zap-studio/monorepo:packages/permit/src/index.ts
 Wrong:
 
 ```ts
-await policy.can(ctx, 'write', 'post', { id: 123 } as any);
+await policy.can(ctx, "write", "post", { id: 123 } as any);
 ```
 
 Correct:
 
 ```ts
-await policy.can(ctx, 'write', 'post', {
-  id: '123',
+await policy.can(ctx, "write", "post", {
+  id: "123",
   authorId: ctx.user.id,
 });
 ```

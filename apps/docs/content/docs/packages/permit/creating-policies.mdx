@@ -20,7 +20,8 @@ A policy consists of three parts:
 3. **Rules** — The logic that determines if an action is allowed
 
 <Callout type="info">
-We recommend defining resources and actions in a centralized location to ensure consistency and type safety.
+  We recommend defining resources and actions in a centralized location to ensure consistency and
+  type safety.
 </Callout>
 
 ## Defining Resources
@@ -86,7 +87,9 @@ const resources = {
 ```
 
 <Callout type="warn">
-You should use `satisfies` to ensure type safety and consistency. Learn more about the [TypeScript `satisfies` operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator).
+  You should use `satisfies` to ensure type safety and consistency. Learn more about the [TypeScript
+  `satisfies`
+  operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator).
 </Callout>
 
 ## Defining Actions
@@ -104,7 +107,9 @@ const actions = {
 ```
 
 <Callout type="warn">
-Use `as const` to ensure TypeScript infers literal types for actions. This enables autocomplete and type checking when writing rules. Learn more about the [TypeScript `as const` operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions).
+  Use `as const` to ensure TypeScript infers literal types for actions. This enables autocomplete
+  and type checking when writing rules. Learn more about the [TypeScript `as const`
+  operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions).
 </Callout>
 
 ## Understanding Context
@@ -130,7 +135,9 @@ type AppContext = {
 Context is passed to `policy.can()` at runtime and is available in all your rule functions.
 
 <Callout type="info">
-Context is just a type that represents the runtime information available when checking permissions. It can be anything relevant to your application's authorization needs. Providing context will make your experience way better. Believe me, it's worth it!
+  Context is just a type that represents the runtime information available when checking
+  permissions. It can be anything relevant to your application's authorization needs. Providing
+  context will make your experience way better. Believe me, it's worth it!
 </Callout>
 
 ## Creating a Policy
@@ -171,12 +178,12 @@ policy.can(context, action, resourceType, resource): Promise<boolean>
 
 ### Parameters
 
-| Parameter      | Type       | Description                                          |
-| -------------- | ---------- | ---------------------------------------------------- |
-| `context`      | `TContext` | The current context (user, request, etc.)            |
-| `action`       | `string`   | The action to check (e.g., "read", "write")          |
-| `resourceType` | `string`   | The type of resource (e.g., "post", "comment")       |
-| `resource`     | `object`   | The actual resource being accessed                   |
+| Parameter      | Type       | Description                                    |
+| -------------- | ---------- | ---------------------------------------------- |
+| `context`      | `TContext` | The current context (user, request, etc.)      |
+| `action`       | `string`   | The action to check (e.g., "read", "write")    |
+| `resourceType` | `string`   | The type of resource (e.g., "post", "comment") |
+| `resource`     | `object`   | The actual resource being accessed             |
 
 ### Example: Blog Post Authorization
 
@@ -266,15 +273,13 @@ const storePolicy = createPolicy<StoreContext>({
       create: when((ctx) => ctx.user?.role === "seller"),
       // Sellers can update their own products
       update: when(
-        (ctx, _, product) =>
-          ctx.user?.role === "seller" && ctx.user.id === product.sellerId
+        (ctx, _, product) => ctx.user?.role === "seller" && ctx.user.id === product.sellerId,
       ),
       // Only admins can delete products
       delete: when((ctx) => ctx.user?.role === "admin"),
       // Sellers can publish their own products
       publish: when(
-        (ctx, _, product) =>
-          ctx.user?.role === "seller" && ctx.user.id === product.sellerId
+        (ctx, _, product) => ctx.user?.role === "seller" && ctx.user.id === product.sellerId,
       ),
     },
     order: {
@@ -282,8 +287,8 @@ const storePolicy = createPolicy<StoreContext>({
       read: when(
         or(
           (ctx, _, order) => ctx.user?.id === order.customerId,
-          (ctx, _, order) => ctx.user?.id === order.sellerId
-        )
+          (ctx, _, order) => ctx.user?.id === order.sellerId,
+        ),
       ),
       // Only authenticated customers can create orders
       create: when((ctx) => ctx.user?.role === "customer"),
@@ -291,8 +296,7 @@ const storePolicy = createPolicy<StoreContext>({
       update: when((ctx, _, order) => ctx.user?.id === order.sellerId),
       // Customers can cancel pending orders
       cancel: when(
-        (ctx, _, order) =>
-          ctx.user?.id === order.customerId && order.status === "pending"
+        (ctx, _, order) => ctx.user?.id === order.customerId && order.status === "pending",
       ),
     },
     review: {
@@ -306,8 +310,8 @@ const storePolicy = createPolicy<StoreContext>({
       delete: when(
         or(
           (ctx, _, review) => ctx.user?.id === review.customerId,
-          (ctx) => ctx.user?.role === "admin"
-        )
+          (ctx) => ctx.user?.role === "admin",
+        ),
       ),
     },
   },
@@ -325,7 +329,7 @@ const customerContext: StoreContext = {
   user: { id: "customer-456", role: "customer" },
 };
 
-console.log(await storePolicy.can(customerContext, "read", "product", product));   // true
+console.log(await storePolicy.can(customerContext, "read", "product", product)); // true
 console.log(await storePolicy.can(customerContext, "update", "product", product)); // false
 ```
 

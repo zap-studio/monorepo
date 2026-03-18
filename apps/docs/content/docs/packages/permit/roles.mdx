@@ -22,12 +22,13 @@ The `hasRole()` function checks if the current user has a specific role:
 ```typescript
 import { hasRole } from "@zap-studio/permit";
 
-hasRole(role)
+hasRole(role);
 ```
 
 ### Context Requirements
 
 Your context must include a `role` property that can be:
+
 - A single role: `{ role: "admin" }`
 - An array of roles: `{ role: ["user", "moderator"] }`
 
@@ -68,49 +69,31 @@ const policy = createPolicy<AppContext>({
   rules: {
     post: {
       // Guests can read published posts
-      read: when((ctx, _, post) =>
-        post.status === "published" || ctx.role === "user"
-      ),
+      read: when((ctx, _, post) => post.status === "published" || ctx.role === "user"),
       // Users can write their own posts
-      write: when((ctx, _, post) =>
-        ctx.role === "user" && ctx.user?.id === post.authorId
-      ),
+      write: when((ctx, _, post) => ctx.role === "user" && ctx.user?.id === post.authorId),
       // Moderators and admins can delete any post
-      delete: when(
-        or(
-          hasRole("moderator"),
-          hasRole("admin")
-        )
-      ),
+      delete: when(or(hasRole("moderator"), hasRole("admin"))),
       // Only admins can publish
       publish: when(hasRole("admin")),
     },
     user: {
       // Users can read their own profile, admins can read any
-      read: when(
-        or(
-          (ctx, _, user) => ctx.user?.id === user.id,
-          hasRole("admin")
-        )
-      ),
+      read: when(or((ctx, _, user) => ctx.user?.id === user.id, hasRole("admin"))),
       // Users can update their own profile
       update: when((ctx, _, user) => ctx.user?.id === user.id),
       // Only admins can delete users
       delete: when(hasRole("admin")),
       // Moderators and admins can ban users
-      ban: when(
-        or(
-          hasRole("moderator"),
-          hasRole("admin")
-        )
-      ),
+      ban: when(or(hasRole("moderator"), hasRole("admin"))),
     },
   },
 });
 ```
 
 <Callout type="warn">
-For now, `hasRole()` returns a `ConditionFn`, which can be used in `when()` conditions. Thus, it doesn't return a boolean value directly. Prefer using `role` directly in conditions.
+  For now, `hasRole()` returns a `ConditionFn`, which can be used in `when()` conditions. Thus, it
+  doesn't return a boolean value directly. Prefer using `role` directly in conditions.
 </Callout>
 
 ## Role Hierarchies
@@ -127,10 +110,10 @@ import type { RoleHierarchy } from "@zap-studio/permit/types";
 type Role = "guest" | "user" | "moderator" | "admin";
 
 const roleHierarchy: RoleHierarchy<Role> = {
-  guest: [],                 // No inherited roles
-  user: ["guest"],           // Users inherit guest permissions
-  moderator: ["user"],       // Moderators inherit user permissions
-  admin: ["moderator"],      // Admins inherit moderator permissions
+  guest: [], // No inherited roles
+  user: ["guest"], // Users inherit guest permissions
+  moderator: ["user"], // Moderators inherit user permissions
+  admin: ["moderator"], // Admins inherit moderator permissions
 };
 
 // Permission inheritance chain:
@@ -145,10 +128,10 @@ Pass the hierarchy as the second argument to `hasRole()`:
 import { hasRole } from "@zap-studio/permit";
 
 // Without hierarchy: only matches exact role
-hasRole("user")  // Only true if role === "user"
+hasRole("user"); // Only true if role === "user"
 
 // With hierarchy: matches role or any role that inherits from it
-hasRole("user", roleHierarchy)  // True for "user", "moderator", or "admin"
+hasRole("user", roleHierarchy); // True for "user", "moderator", or "admin"
 ```
 
 ## Multiple Roles
@@ -158,12 +141,12 @@ Users can have multiple roles. The context can include an array of roles:
 ```typescript
 type AppContext = {
   user: { id: string } | null;
-  role: Role[];  // Array of roles
+  role: Role[]; // Array of roles
 };
 
 const context: AppContext = {
   user: { id: "user-1" },
-  role: ["user", "beta-tester"],  // User has both roles
+  role: ["user", "beta-tester"], // User has both roles
 };
 ```
 
@@ -222,10 +205,7 @@ const multiRolePolicy = createPolicy<MultiRoleContext>({
 
       // Only premium users or support agents can escalate
       escalate: when(
-        or(
-          hasRole("premium", roleHierarchy),
-          hasRole("support-agent", roleHierarchy)
-        )
+        or(hasRole("premium", roleHierarchy), hasRole("support-agent", roleHierarchy)),
       ),
     },
   },
@@ -251,7 +231,7 @@ The `collectInheritedRoles()` function returns all roles a user has, including i
 ```typescript
 import { collectInheritedRoles } from "@zap-studio/permit";
 
-collectInheritedRoles(roles, hierarchy)
+collectInheritedRoles(roles, hierarchy);
 ```
 
 ### Example: Role Inspection

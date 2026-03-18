@@ -15,7 +15,7 @@ const [projectId, scanPathArg = "."] = process.argv.slice(2);
 if (!projectId) {
   console.error(
     "Usage: node scripts/react-doctor.mjs <project-id> [scan-path]\n" +
-      "Example: node scripts/react-doctor.mjs docs ."
+      "Example: node scripts/react-doctor.mjs docs .",
   );
   process.exit(1);
 }
@@ -28,15 +28,11 @@ await mkdir(reportDir, { recursive: true });
 
 const outputChunks = [];
 
-const child = spawn(
-  "pnpm",
-  ["dlx", "react-doctor@latest", ".", "--verbose", "--yes"],
-  {
-    cwd: scanPath,
-    env: process.env,
-    stdio: ["ignore", "pipe", "pipe"],
-  }
-);
+const child = spawn("pnpm", ["dlx", "react-doctor@latest", ".", "--verbose", "--yes"], {
+  cwd: scanPath,
+  env: process.env,
+  stdio: ["ignore", "pipe", "pipe"],
+});
 
 child.stdout.on("data", (chunk) => {
   outputChunks.push(chunk);
@@ -49,9 +45,7 @@ child.stderr.on("data", (chunk) => {
 });
 
 const { exitCode, startupError } = await new Promise((resolve) => {
-  child.on("close", (code) =>
-    resolve({ exitCode: code ?? 1, startupError: null })
-  );
+  child.on("close", (code) => resolve({ exitCode: code ?? 1, startupError: null }));
   child.on("error", (error) => {
     const errorText = `\n[react-doctor runner error]\n${error.stack ?? error.message}\n`;
     outputChunks.push(Buffer.from(errorText, "utf8"));

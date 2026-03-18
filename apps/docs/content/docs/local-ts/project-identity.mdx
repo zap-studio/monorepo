@@ -7,14 +7,14 @@ After cloning Local.ts, you'll want to update several files to match your projec
 
 ## Files to Update
 
-| File | Fields to Update |
-|------|------------------|
-| `package.json` | `name`, `version`, `description` |
-| `index.html` | `title` |
-| `src/constants/index.ts` | `APP_TITLE` |
-| `src-tauri/Cargo.toml` | `name`, `version`, `description`, `authors` |
-| `src-tauri/tauri.conf.json` | `productName`, `version`, `identifier` |
-| `splash.html` | App name and description text |
+| File                        | Fields to Update                            |
+| --------------------------- | ------------------------------------------- |
+| `package.json`              | `name`, `version`, `description`            |
+| `index.html`                | `title`                                     |
+| `src/constants/index.ts`    | `APP_TITLE`                                 |
+| `src-tauri/Cargo.toml`      | `name`, `version`, `description`, `authors` |
+| `src-tauri/tauri.conf.json` | `productName`, `version`, `identifier`      |
+| `splash.html`               | App name and description text               |
 
 ## Step-by-Step Guide
 
@@ -69,6 +69,7 @@ In `src-tauri/tauri.conf.json`:
 ```
 
 The `identifier` should be a unique reverse-domain identifier for your app. This is used for:
+
 - macOS bundle identifier
 - Windows application ID
 - Linux desktop file
@@ -86,13 +87,14 @@ In `splash.html`, update the visible text:
 
 The bundle identifier in `tauri.conf.json` is important for:
 
-| Platform | Usage |
-|----------|-------|
-| macOS | Bundle ID, code signing, App Store |
-| Windows | Application User Model ID |
-| Linux | Desktop entry file name |
+| Platform | Usage                              |
+| -------- | ---------------------------------- |
+| macOS    | Bundle ID, code signing, App Store |
+| Windows  | Application User Model ID          |
+| Linux    | Desktop entry file name            |
 
 Choose a unique identifier following reverse-domain notation. Here are some examples:
+
 - `com.yourcompany.appname` — For company apps
 - `dev.yourname.appname` — For personal projects
 - `io.github.username.appname` — For open source projects
@@ -106,5 +108,6 @@ Keep versions synchronized across all configuration files. When releasing a new 
 3. `src-tauri/tauri.conf.json`
 
 <Callout type="info">
-Consider using a tool like [changesets](https://github.com/changesets/changesets) to manage versioning across the monorepo.
+  Consider using a tool like [changesets](https://github.com/changesets/changesets) to manage
+  versioning across the monorepo.
 </Callout>

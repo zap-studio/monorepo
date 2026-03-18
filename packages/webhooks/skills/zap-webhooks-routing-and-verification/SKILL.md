@@ -5,13 +5,13 @@ description: >
   register path keys, prefix normalization, schema validation, lifecycle hooks,
   createHmacVerifier, and BaseAdapter request/response mapping.
 type: core
-library: '@zap-studio/webhooks'
-library_version: '0.1.3'
+library: "@zap-studio/webhooks"
+library_version: "0.1.3"
 sources:
-  - 'zap-studio/monorepo:packages/webhooks/README.md'
-  - 'zap-studio/monorepo:packages/webhooks/src/index.ts'
-  - 'zap-studio/monorepo:packages/webhooks/src/verify.ts'
-  - 'zap-studio/monorepo:packages/webhooks/src/adapters/base.ts'
+  - "zap-studio/monorepo:packages/webhooks/README.md"
+  - "zap-studio/monorepo:packages/webhooks/src/index.ts"
+  - "zap-studio/monorepo:packages/webhooks/src/verify.ts"
+  - "zap-studio/monorepo:packages/webhooks/src/adapters/base.ts"
 ---
 
 # @zap-studio/webhooks — Routing and Verification
@@ -19,23 +19,23 @@ sources:
 ## Setup
 
 ```ts
-import { createWebhookRouter } from '@zap-studio/webhooks';
-import { createHmacVerifier } from '@zap-studio/webhooks/verify';
-import { z } from 'zod';
+import { createWebhookRouter } from "@zap-studio/webhooks";
+import { createHmacVerifier } from "@zap-studio/webhooks/verify";
+import { z } from "zod";
 
 const router = createWebhookRouter({
-  prefix: '/webhooks/',
+  prefix: "/webhooks/",
   verify: createHmacVerifier({
-    headerName: 'x-hub-signature-256',
+    headerName: "x-hub-signature-256",
     secret: process.env.WEBHOOK_SECRET!,
   }),
 });
 
-router.register('github/push', {
+router.register("github/push", {
   schema: z.object({ ref: z.string() }),
   handler: async ({ payload, ack }) => {
     console.log(payload.ref);
-    return ack({ status: 200, body: 'ok' });
+    return ack({ status: 200, body: "ok" });
   },
 });
 ```
@@ -47,10 +47,10 @@ router.register('github/push', {
 ```ts
 const router = createWebhookRouter({
   before: (req) => {
-    console.log('incoming', req.path);
+    console.log("incoming", req.path);
   },
   after: (_req, res) => {
-    console.log('status', res.status);
+    console.log("status", res.status);
   },
   onError: (error) => ({
     status: 500,
@@ -62,13 +62,13 @@ const router = createWebhookRouter({
 ### Register route-specific hooks
 
 ```ts
-router.register('payments/succeeded', {
+router.register("payments/succeeded", {
   schema: PaymentSchema,
   before: (req) => {
-    req.headers.set('x-processed', '1');
+    req.headers.set("x-processed", "1");
   },
   after: (_req, res) => {
-    console.log('finished', res.status);
+    console.log("finished", res.status);
   },
   handler: async ({ payload, ack }) => ack({ body: { id: payload.id } }),
 });
@@ -77,7 +77,7 @@ router.register('payments/succeeded', {
 ### Implement an adapter with `BaseAdapter`
 
 ```ts
-import { BaseAdapter } from '@zap-studio/webhooks/adapters/base';
+import { BaseAdapter } from "@zap-studio/webhooks/adapters/base";
 
 class MyAdapter extends BaseAdapter {
   async toNormalizedRequest(req: Request) {
@@ -105,7 +105,7 @@ class MyAdapter extends BaseAdapter {
 Wrong:
 
 ```ts
-router.register('/github/push', {
+router.register("/github/push", {
   schema: PushSchema,
   handler,
 });
@@ -114,7 +114,7 @@ router.register('/github/push', {
 Correct:
 
 ```ts
-router.register('github/push', {
+router.register("github/push", {
   schema: PushSchema,
   handler,
 });
@@ -150,7 +150,7 @@ Wrong:
 
 ```ts
 const verify = createHmacVerifier({
-  headerName: 'x-signature',
+  headerName: "x-signature",
   secret: env.WEBHOOK_SECRET,
 });
 // used in edge runtime

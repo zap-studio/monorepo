@@ -16,10 +16,10 @@ When the theme is `system`, the app listens for OS theme changes and updates aut
 
 ## Theme Values
 
-| Value | Description |
-|-------|-------------|
-| `light` | Always use light mode |
-| `dark` | Always use dark mode |
+| Value    | Description                           |
+| -------- | ------------------------------------- |
+| `light`  | Always use light mode                 |
+| `dark`   | Always use dark mode                  |
 | `system` | Match the operating system preference |
 
 ## Reading the Theme
@@ -91,9 +91,7 @@ The theme store applies themes by adding or removing the `dark` class on the doc
 ```typescript
 function getSystemTheme(): "light" | "dark" {
   if (typeof window === "undefined") return "light";
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
 function applyThemeToDOM(theme: Theme): "light" | "dark" {
@@ -125,9 +123,7 @@ This works with Tailwind CSS's dark mode variant. Style dark mode with the `dark
 Or with Tailwind utilities:
 
 ```html
-<div class="bg-white dark:bg-gray-900">
-  Content
-</div>
+<div class="bg-white dark:bg-gray-900">Content</div>
 ```
 
 The following line has already been included in your `styles/globals.css`:

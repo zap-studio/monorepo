@@ -64,9 +64,7 @@ const basePolicy = createPolicy<AppContext>({
   actions,
   rules: {
     document: {
-      read: when((ctx, _, doc) =>
-        doc.classification === "public" || ctx.user?.id === doc.ownerId
-      ),
+      read: when((ctx, _, doc) => doc.classification === "public" || ctx.user?.id === doc.ownerId),
       write: when((ctx, _, doc) => ctx.user?.id === doc.ownerId),
       delete: when((ctx, _, doc) => ctx.user?.id === doc.ownerId),
     },
@@ -141,12 +139,12 @@ Think of it as an OR operation: `policy1 OR policy2 OR policy3`
 
 ### Behavior
 
-| Policy 1 | Policy 2 | Result      |
-| -------- | -------- | ----------- |
-| allow    | allow    | allow       |
-| allow    | deny     | **allow**   |
-| deny     | allow    | **allow**   |
-| deny     | deny     | deny        |
+| Policy 1 | Policy 2 | Result    |
+| -------- | -------- | --------- |
+| allow    | allow    | allow     |
+| allow    | deny     | **allow** |
+| deny     | allow    | **allow** |
+| deny     | deny     | deny      |
 
 ### Example: Multiple Access Paths
 
@@ -218,11 +216,13 @@ const teamPolicy = createPolicy<FileContext>({
   actions,
   rules: {
     file: {
-      read: when((ctx, _, file) =>
-        file.teamId !== null && (ctx.user?.teamIds.includes(file.teamId) ?? false)
+      read: when(
+        (ctx, _, file) =>
+          file.teamId !== null && (ctx.user?.teamIds.includes(file.teamId) ?? false),
       ),
-      write: when((ctx, _, file) =>
-        file.teamId !== null && (ctx.user?.teamIds.includes(file.teamId) ?? false)
+      write: when(
+        (ctx, _, file) =>
+          file.teamId !== null && (ctx.user?.teamIds.includes(file.teamId) ?? false),
       ),
       delete: when(() => false),
     },
@@ -244,8 +244,8 @@ const file = {
 const sharedUser: FileContext = {
   user: { id: "user-shared", teamIds: [] },
 };
-console.log(await filePolicy.can(sharedUser, "read", "file", file));   // true (via sharedPolicy)
-console.log(await filePolicy.can(sharedUser, "write", "file", file));  // true (via sharedPolicy)
+console.log(await filePolicy.can(sharedUser, "read", "file", file)); // true (via sharedPolicy)
+console.log(await filePolicy.can(sharedUser, "write", "file", file)); // true (via sharedPolicy)
 console.log(await filePolicy.can(sharedUser, "delete", "file", file)); // false (no policy allows)
 ```
 
@@ -290,7 +290,7 @@ const finalPolicy = mergePolicies(accessPolicy, securedPolicy);
 - Calling `mergePoliciesAny()` without any policies also returns `false` (denies by default).
 
 ```typescript
-const emptyAnd = mergePolicies();    // Always denies
+const emptyAnd = mergePolicies(); // Always denies
 const emptyOr = mergePoliciesAny(); // Always denies
 ```
 

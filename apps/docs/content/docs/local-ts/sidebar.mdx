@@ -17,9 +17,7 @@ The sidebar navigation is configured in `src/constants/sidebar.ts`. This file ex
 import { Home, Settings } from "lucide-react";
 import type { SidebarItem } from "@/components/ui/sidebar/sidebar-nav-item";
 
-export const SIDEBAR_TOP_ITEMS: SidebarItem[] = [
-  { icon: Home, label: "Home", href: "/" },
-];
+export const SIDEBAR_TOP_ITEMS: SidebarItem[] = [{ icon: Home, label: "Home", href: "/" }];
 
 export const SIDEBAR_BOTTOM_ITEMS: SidebarItem[] = [
   { icon: Settings, label: "Settings", href: "/settings" },
@@ -28,11 +26,11 @@ export const SIDEBAR_BOTTOM_ITEMS: SidebarItem[] = [
 
 Each `SidebarItem` has three properties:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `icon` | `LucideIcon` | A Lucide React icon component |
-| `label` | `string` | Display name shown in the sidebar |
-| `href` | `string` | Route path (must match a route in `src/routes/`) |
+| Property | Type         | Description                                      |
+| -------- | ------------ | ------------------------------------------------ |
+| `icon`   | `LucideIcon` | A Lucide React icon component                    |
+| `label`  | `string`     | Display name shown in the sidebar                |
+| `href`   | `string`     | Route path (must match a route in `src/routes/`) |
 
 ## Adding New Links
 
@@ -66,7 +64,7 @@ src/routes/dashboard.tsx
 ```
 
 <Callout type="info">
-The sidebar automatically highlights the active route based on the current URL.
+  The sidebar automatically highlights the active route based on the current URL.
 </Callout>
 
 ## Ordering Items
@@ -96,7 +94,8 @@ The sidebar component itself is located at `src/components/sidebar.tsx`. You can
 - **Structure** — Reorganize or add new sections
 
 <Callout type="info">
-The sidebar is just a React component. You're free to completely rewrite it or use a different navigation pattern if needed.
+  The sidebar is just a React component. You're free to completely rewrite it or use a different
+  navigation pattern if needed.
 </Callout>
 
 ## Removing Items
@@ -119,7 +118,7 @@ export interface SidebarItem {
   icon: LucideIcon;
   label: string;
   href: string;
-  badge?: number;     // Optional badge count
+  badge?: number; // Optional badge count
   disabled?: boolean; // Optional disabled state
 }
 ```

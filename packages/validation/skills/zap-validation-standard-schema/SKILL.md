@@ -5,12 +5,12 @@ description: >
   standardValidate/standardValidateSync, createStandardValidator,
   createSyncStandardValidator, and throwOnError result/exception modes.
 type: core
-library: '@zap-studio/validation'
-library_version: '0.3.1'
+library: "@zap-studio/validation"
+library_version: "0.3.1"
 sources:
-  - 'zap-studio/monorepo:packages/validation/README.md'
-  - 'zap-studio/monorepo:packages/validation/src/index.ts'
-  - 'zap-studio/monorepo:packages/validation/src/errors.ts'
+  - "zap-studio/monorepo:packages/validation/README.md"
+  - "zap-studio/monorepo:packages/validation/src/index.ts"
+  - "zap-studio/monorepo:packages/validation/src/errors.ts"
 ---
 
 # @zap-studio/validation — Standard Schema Validation
@@ -18,16 +18,20 @@ sources:
 ## Setup
 
 ```ts
-import { standardValidate } from '@zap-studio/validation';
-import { ValidationError } from '@zap-studio/validation/errors';
-import { z } from 'zod';
+import { standardValidate } from "@zap-studio/validation";
+import { ValidationError } from "@zap-studio/validation/errors";
+import { z } from "zod";
 
 const UserSchema = z.object({ id: z.string(), email: z.string().email() });
 
 try {
-  const user = await standardValidate(UserSchema, { id: '1', email: 'a@b.com' }, {
-    throwOnError: true,
-  });
+  const user = await standardValidate(
+    UserSchema,
+    { id: "1", email: "a@b.com" },
+    {
+      throwOnError: true,
+    },
+  );
   console.log(user.id);
 } catch (error) {
   if (error instanceof ValidationError) {
@@ -41,7 +45,7 @@ try {
 ### Use non-throw mode for explicit branching
 
 ```ts
-import { standardValidate } from '@zap-studio/validation';
+import { standardValidate } from "@zap-studio/validation";
 
 const result = await standardValidate(UserSchema, payload);
 if (result.issues) {
@@ -54,7 +58,7 @@ return { ok: true, value: result.value };
 ### Build reusable validators
 
 ```ts
-import { createStandardValidator } from '@zap-studio/validation';
+import { createStandardValidator } from "@zap-studio/validation";
 
 const validateUser = createStandardValidator(UserSchema);
 const output = await validateUser(payload, { throwOnError: true });
@@ -63,11 +67,11 @@ const output = await validateUser(payload, { throwOnError: true });
 ### Guard unknown schema-like values
 
 ```ts
-import { isStandardSchema, standardValidate } from '@zap-studio/validation';
+import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 
 async function validateMaybeSchema(schemaLike: unknown, input: unknown) {
   if (!isStandardSchema(schemaLike)) {
-    throw new Error('Unsupported schema');
+    throw new Error("Unsupported schema");
   }
   return standardValidate(schemaLike, input);
 }
@@ -108,7 +112,7 @@ Correct:
 
 ```ts
 const result = await standardValidate(UserSchema, payload);
-if (result.issues) throw new Error('invalid payload');
+if (result.issues) throw new Error("invalid payload");
 console.log(result.value.id);
 ```
 
@@ -127,7 +131,7 @@ await standardValidate(schemaLike as any, payload);
 Correct:
 
 ```ts
-if (!isStandardSchema(schemaLike)) throw new Error('Unsupported schema');
+if (!isStandardSchema(schemaLike)) throw new Error("Unsupported schema");
 await standardValidate(schemaLike, payload);
 ```
 

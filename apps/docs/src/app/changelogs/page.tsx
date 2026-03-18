@@ -6,8 +6,7 @@ import { getReleasedPackageChangelogs } from "@/lib/changelog";
 
 export const metadata: Metadata = {
   title: "Changelogs — Zap Studio",
-  description:
-    "Browse changelogs for every released Zap Studio package in one place.",
+  description: "Browse changelogs for every released Zap Studio package in one place.",
 };
 
 export default async function ChangelogLandingPage(): Promise<ReactNode> {

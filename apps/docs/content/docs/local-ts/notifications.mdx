@@ -30,10 +30,13 @@ async function sendNotification() {
   const settings = useSettings.getState().settings;
   if (!settings) return;
 
-  const sent = await notify({
-    title: "Task Complete",
-    body: "Your export has finished successfully.",
-  }, settings);
+  const sent = await notify(
+    {
+      title: "Task Complete",
+      body: "Your export has finished successfully.",
+    },
+    settings,
+  );
 
   if (sent) {
     console.log("Notification delivered");
@@ -59,7 +62,7 @@ async function sendCriticalAlert() {
 ```
 
 <Callout type="warn">
-Use `notifyForced` sparingly. Overusing it will frustrate users who have disabled notifications.
+  Use `notifyForced` sparingly. Overusing it will frustrate users who have disabled notifications.
 </Callout>
 
 ## Notification Options
@@ -68,24 +71,29 @@ Both `notify` and `notifyForced` accept the same options:
 
 ```typescript
 interface NotificationOptions {
-  title: string;      // Required: notification title
-  body?: string;      // Optional: notification body text
-  icon?: string;      // Optional: path to icon file
+  title: string; // Required: notification title
+  body?: string; // Optional: notification body text
+  icon?: string; // Optional: path to icon file
 }
 ```
 
 Example with all options:
 
 ```typescript
-await notify({
-  title: "New Message",
-  body: "You have a new message from Alice",
-  icon: "icons/message.png",
-}, settings);
+await notify(
+  {
+    title: "New Message",
+    body: "You have a new message from Alice",
+    icon: "icons/message.png",
+  },
+  settings,
+);
 ```
 
 <Callout type="info">
-You can change this `NotificationOptions` interface however you want and modify the `notify` and `notifyForced` helpers to add more fields according to the [Tauri notification plugin options](https://v2.tauri.app/reference/javascript/notification/#sendnotification).
+  You can change this `NotificationOptions` interface however you want and modify the `notify` and
+  `notifyForced` helpers to add more fields according to the [Tauri notification plugin
+  options](https://v2.tauri.app/reference/javascript/notification/#sendnotification).
 </Callout>
 
 ## Checking Permissions
@@ -93,10 +101,7 @@ You can change this `NotificationOptions` interface however you want and modify 
 Before showing notifications, ensure you have permission:
 
 ```typescript
-import {
-  isPermissionGranted,
-  requestPermission,
-} from "@tauri-apps/plugin-notification";
+import { isPermissionGranted, requestPermission } from "@tauri-apps/plugin-notification";
 
 // Check current permission status
 const hasPermission = await isPermissionGranted();
@@ -112,10 +117,7 @@ You can use the following convenient helper to ensure notification permission is
 
 ```typescript
 // src/lib/tauri/notifications/permissions.ts
-import {
-  isPermissionGranted,
-  requestPermission,
-} from "@tauri-apps/plugin-notification";
+import { isPermissionGranted, requestPermission } from "@tauri-apps/plugin-notification";
 
 /**
  * Ensure notification permission is granted.
@@ -154,10 +156,7 @@ const handleNotificationChange = async (enabled: boolean) => {
 The `notify` function implements this logic:
 
 ```typescript
-export async function notify(
-  options: NotificationOptions,
-  settings: Settings
-): Promise<boolean> {
+export async function notify(options: NotificationOptions, settings: Settings): Promise<boolean> {
   // 1. Check user preferences
   if (!settings.enableNotifications) {
     return false;

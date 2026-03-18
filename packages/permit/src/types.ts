@@ -185,6 +185,6 @@ export interface Policy<
     context: TContext,
     action: InferAction<TActions, K>,
     resourceType: K,
-    resource: InferResource<TResources, K>
+    resource: InferResource<TResources, K>,
   ): Promise<boolean>;
 }

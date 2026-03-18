@@ -24,7 +24,7 @@ export interface Adapter {
    */
   toFrameworkResponse<TFrameworkRes = unknown>(
     frameworkRes: TFrameworkRes,
-    res: NormalizedResponse
+    res: NormalizedResponse,
   ): Promise<TFrameworkRes>;
 
   /**
@@ -45,13 +45,11 @@ export interface Adapter {
  */
 export abstract class BaseAdapter implements Adapter {
   /** @inheritdoc */
-  abstract toNormalizedRequest<TReq = unknown>(
-    req: TReq
-  ): Promise<NormalizedRequest>;
+  abstract toNormalizedRequest<TReq = unknown>(req: TReq): Promise<NormalizedRequest>;
   /** @inheritdoc */
   abstract toFrameworkResponse<TFrameworkRes = unknown>(
     frameworkRes: TFrameworkRes,
-    res: NormalizedResponse
+    res: NormalizedResponse,
   ): Promise<TFrameworkRes>;
 
   /**

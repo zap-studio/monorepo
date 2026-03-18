@@ -103,9 +103,7 @@ export function FooterSection(): ReactNode {
             style={{ paddingBottom: "clamp(88px, 14vw, 192px)" }}
           >
             <div className="flex flex-col items-center gap-1 sm:items-start">
-              <p className="text-fd-muted-foreground text-sm leading-6">
-                Making the web better.
-              </p>
+              <p className="text-fd-muted-foreground text-sm leading-6">Making the web better.</p>
               <p className="text-fd-muted-foreground/40 text-xs leading-5">
                 &copy; {new Date().getFullYear()} Alexandre Trotel.
               </p>

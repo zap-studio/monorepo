@@ -75,7 +75,7 @@ import { api } from "@zap-studio/fetch";
 // Fetch a single user - fully typed and validated
 const user = await api.get("https://api.example.com/users/1", UserSchema);
 
-console.log(user.name);      // TypeScript knows this is a string
+console.log(user.name); // TypeScript knows this is a string
 console.log(user.createdAt); // TypeScript knows this is a Date
 ```
 

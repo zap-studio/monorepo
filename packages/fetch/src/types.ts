@@ -6,11 +6,7 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
  * Can be a URLSearchParams object, a record of string pairs,
  * a query string, or an array of tuples.
  */
-export type SearchParams =
-  | URLSearchParams
-  | Record<string, string>
-  | string
-  | [string, string][];
+export type SearchParams = URLSearchParams | Record<string, string> | string | [string, string][];
 
 /**
  * JSON-serializable value used for request bodies.
@@ -111,7 +107,7 @@ export interface $Fetch {
   <TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
-    options: ExtendedRequestInit<false>
+    options: ExtendedRequestInit<false>,
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   /**
@@ -124,7 +120,7 @@ export interface $Fetch {
   <TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
-    options?: ExtendedRequestInit<true | undefined>
+    options?: ExtendedRequestInit<true | undefined>,
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   /**

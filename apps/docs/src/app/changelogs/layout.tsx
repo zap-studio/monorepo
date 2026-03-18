@@ -3,14 +3,9 @@ import type { ReactNode } from "react";
 import { FooterSection } from "@/app/(home)/_components/footer-section";
 import { baseOptions, homeLinks } from "@/lib/layout.shared";
 
-export default function Layout({
-  children,
-}: LayoutProps<"/changelogs">): ReactNode {
+export default function Layout({ children }: LayoutProps<"/changelogs">): ReactNode {
   return (
-    <HomeLayout
-      {...baseOptions()}
-      links={homeLinks({ changelogActiveMode: "nested-url" })}
-    >
+    <HomeLayout {...baseOptions()} links={homeLinks({ changelogActiveMode: "nested-url" })}>
       {children}
       <FooterSection />
     </HomeLayout>

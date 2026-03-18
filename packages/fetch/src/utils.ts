@@ -1,12 +1,7 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 import { FetchError } from "./errors";
-import type {
-  $Fetch,
-  ExtendedRequestInit,
-  FetchDefaults,
-  SearchParams,
-} from "./types";
+import type { $Fetch, ExtendedRequestInit, FetchDefaults, SearchParams } from "./types";
 
 /**
  * Merges two HeadersInit objects, with the second one taking precedence
@@ -26,7 +21,7 @@ import type {
  */
 export function mergeHeaders(
   base: HeadersInit | undefined,
-  override: HeadersInit | undefined
+  override: HeadersInit | undefined,
 ): Headers | undefined {
   if (!(base || override)) {
     return;
@@ -76,9 +71,7 @@ function isAbsoluteURL(url: string): boolean {
 /**
  * Normalizes search parameters into a URLSearchParams object.
  */
-function normalizeSearchParams(
-  input: SearchParams | undefined
-): URLSearchParams {
+function normalizeSearchParams(input: SearchParams | undefined): URLSearchParams {
   if (input === undefined || input === null) {
     return new URLSearchParams();
   }
@@ -118,9 +111,7 @@ function parseUrlComponents(url: string): {
       const parsed = new URL(url);
       const pathOnly = `${parsed.origin}${parsed.pathname}`;
       // parsed.search includes the leading "?", so strip it
-      const existingQuery = parsed.search.startsWith("?")
-        ? parsed.search.slice(1)
-        : parsed.search;
+      const existingQuery = parsed.search.startsWith("?") ? parsed.search.slice(1) : parsed.search;
       // URL constructor normalizes away empty hash, if original URL had # at end, preserve it
       let hash = parsed.hash;
       if (hash === "" && url.endsWith("#")) {
@@ -170,7 +161,7 @@ function parseUrlComponents(url: string): {
 function buildUrlWithMergedSearchParams(
   url: string,
   factorySearch: FetchDefaults["searchParams"] | undefined,
-  requestSearch: ExtendedRequestInit["searchParams"] | undefined
+  requestSearch: ExtendedRequestInit["searchParams"] | undefined,
 ): string {
   const { pathOnly, existingQuery, hash } = parseUrlComponents(url);
 
@@ -213,7 +204,7 @@ export async function fetchInternal(
   resource: string,
   schema: StandardSchemaV1 | undefined,
   options: ExtendedRequestInit | undefined,
-  defaults: FetchDefaults
+  defaults: FetchDefaults,
 ): Promise<unknown> {
   const {
     throwOnValidationError = defaults.throwOnValidationError,
@@ -259,19 +250,12 @@ export async function fetchInternal(
   }
 
   // Merge query/search params
-  url = buildUrlWithMergedSearchParams(
-    url,
-    defaults.searchParams,
-    requestSearchParams
-  );
+  url = buildUrlWithMergedSearchParams(url, defaults.searchParams, requestSearchParams);
 
   const response = await fetch(url, init);
 
   if (throwOnFetchError && !response.ok) {
-    throw new FetchError(
-      `HTTP ${response.status}: ${response.statusText}`,
-      response
-    );
+    throw new FetchError(`HTTP ${response.status}: ${response.statusText}`, response);
   }
 
   // For json with schema, validate
@@ -290,41 +274,37 @@ export async function fetchInternal(
 /**
  * Creates an HTTP method helper bound to a fetch function
  */
-export function createMethod<TFetch extends $Fetch>(
-  fetchFn: TFetch,
-  method: string
-): $Fetch {
+export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: string): $Fetch {
   function methodFetch<TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
-    options: Omit<ExtendedRequestInit<false>, "method">
+    options: Omit<ExtendedRequestInit<false>, "method">,
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   function methodFetch<TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
-    options?: Omit<ExtendedRequestInit<true | undefined>, "method">
+    options?: Omit<ExtendedRequestInit<true | undefined>, "method">,
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   function methodFetch(
     resource: string,
-    options?: Omit<ExtendedRequestInit, "method">
+    options?: Omit<ExtendedRequestInit, "method">,
   ): Promise<Response>;
 
   function methodFetch(
     resource: string,
     schemaOrOptions?: StandardSchemaV1 | Omit<ExtendedRequestInit, "method">,
-    optionsOrUndefined?: Omit<ExtendedRequestInit, "method">
+    optionsOrUndefined?: Omit<ExtendedRequestInit, "method">,
   ): Promise<unknown> {
     const [schema, options] = isStandardSchema(schemaOrOptions)
       ? [schemaOrOptions, optionsOrUndefined]
       : [undefined, schemaOrOptions];
 
-    return (fetchFn as (...args: unknown[]) => Promise<unknown>)(
-      resource,
-      schema,
-      { ...options, method }
-    );
+    return (fetchFn as (...args: unknown[]) => Promise<unknown>)(resource, schema, {
+      ...options,
+      method,
+    });
   }
 
   return methodFetch;

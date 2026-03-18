@@ -11,7 +11,7 @@ APIs change. Without runtime validation, you might get data that doesn't match y
 
 ```typescript
 // Without validation
-const user = await fetch("/api/users/1").then((r) => r.json()) as User;
+const user = (await fetch("/api/users/1").then((r) => r.json())) as User;
 // What if the API returns { id: "123" } instead of { id: 123 }?
 // TypeScript thinks id is a number, but it's actually a string!
 user.id + 1; // "1231" instead of 124 😱

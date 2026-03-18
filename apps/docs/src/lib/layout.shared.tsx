@@ -78,12 +78,9 @@ export function homeLinks(
   options: {
     changelogActiveMode?: "url" | "nested-url" | "none";
     sponsorsActiveMode?: "url" | "nested-url" | "none";
-  } = {}
+  } = {},
 ): BaseLayoutProps["links"] {
-  const {
-    sponsorsActiveMode = "nested-url",
-    changelogActiveMode = "nested-url",
-  } = options;
+  const { sponsorsActiveMode = "nested-url", changelogActiveMode = "nested-url" } = options;
 
   return [
     ...(baseOptions().links ?? []),

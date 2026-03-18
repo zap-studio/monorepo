@@ -77,15 +77,16 @@ Important behavior:
 - if schema validation is async, `standardValidateSync` throws
 
 <Callout type="info" title="Tip">
-  Prefer the async helper (`standardValidate`) by default. It is the most compatible option because it supports both sync and async schemas.
+  Prefer the async helper (`standardValidate`) by default. It is the most compatible option because
+  it supports both sync and async schemas.
 </Callout>
 
 ## Which One Should I Use?
 
-| Helper                 | Supports sync schemas | Supports async schemas | Returns                | Best use case                          |
-| ---------------------- | --------------------- | ---------------------- | ---------------------- | -------------------------------------- |
-| `standardValidate`     | Yes                   | Yes                    | `Promise<...>`         | Default choice for most applications   |
-| `standardValidateSync` | Yes                   | No                     | direct value/result    | Strict sync-only runtime requirements  |
+| Helper                 | Supports sync schemas | Supports async schemas | Returns             | Best use case                         |
+| ---------------------- | --------------------- | ---------------------- | ------------------- | ------------------------------------- |
+| `standardValidate`     | Yes                   | Yes                    | `Promise<...>`      | Default choice for most applications  |
+| `standardValidateSync` | Yes                   | No                     | direct value/result | Strict sync-only runtime requirements |
 
 - Use `standardValidate` by default for compatibility and simpler call sites.
 - Use `standardValidateSync` only when synchronous behavior is a hard requirement.

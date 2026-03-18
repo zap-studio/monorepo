@@ -59,7 +59,7 @@ const validatePackageName = (input: string): string | true => {
 const createStandardActions = (
   directory: string,
   templateDir: string,
-  additionalActions: PlopTypes.ActionType[] = []
+  additionalActions: PlopTypes.ActionType[] = [],
 ): PlopTypes.ActionType[] => {
   const basePath = `${directory}/{{ path }}`;
   const standardActions: PlopTypes.ActionType[] = [
@@ -93,7 +93,7 @@ interface GeneratorConfig {
 export const createGenerator = (
   plop: PlopTypes.NodePlopAPI,
   name: string,
-  config: GeneratorConfig
+  config: GeneratorConfig,
 ): void => {
   plop.setGenerator(name, {
     description: config.description,
@@ -123,11 +123,7 @@ export const createGenerator = (
       data.path = nameInput; // Full path (e.g., "package/package-core" or "my-package")
       data.packageName = packageName; // Last segment (e.g., "package-core" or "my-package")
 
-      return createStandardActions(
-        config.directory,
-        name,
-        config.additionalActions
-      );
+      return createStandardActions(config.directory, name, config.additionalActions);
     },
   });
 };

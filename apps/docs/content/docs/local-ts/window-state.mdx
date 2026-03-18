@@ -11,12 +11,12 @@ This creates a polished desktop experience where users don't have to resize thei
 
 The window state plugin tracks:
 
-| Property | Description |
-|----------|-------------|
-| Size | Window width and height |
-| Position | Window X and Y coordinates |
-| Maximized | Whether the window is maximized |
-| Fullscreen | Whether the window is in fullscreen |
+| Property    | Description                            |
+| ----------- | -------------------------------------- |
+| Size        | Window width and height                |
+| Position    | Window X and Y coordinates             |
+| Maximized   | Whether the window is maximized        |
+| Fullscreen  | Whether the window is in fullscreen    |
 | Decorations | Whether window decorations are visible |
 
 ## How It Works
@@ -94,15 +94,15 @@ pub fn on_close_requested<R: Runtime>(window: &Window<R>) {
 
 Available flags:
 
-| Flag | What It Saves |
-|------|---------------|
-| `StateFlags::SIZE` | Window dimensions |
-| `StateFlags::POSITION` | Window location |
-| `StateFlags::MAXIMIZED` | Maximized state |
-| `StateFlags::VISIBLE` | Visibility state |
+| Flag                      | What It Saves      |
+| ------------------------- | ------------------ |
+| `StateFlags::SIZE`        | Window dimensions  |
+| `StateFlags::POSITION`    | Window location    |
+| `StateFlags::MAXIMIZED`   | Maximized state    |
+| `StateFlags::VISIBLE`     | Visibility state   |
 | `StateFlags::DECORATIONS` | Window decorations |
-| `StateFlags::FULLSCREEN` | Fullscreen state |
-| `StateFlags::all()` | All of the above |
+| `StateFlags::FULLSCREEN`  | Fullscreen state   |
+| `StateFlags::all()`       | All of the above   |
 
 ## Default Window Size
 
@@ -110,14 +110,16 @@ Set default dimensions in `src-tauri/tauri.conf.json` for first launch before an
 
 ```json
 {
-  "windows": [{
-    "title": "Local.ts",
-    "label": "main",
-    "visible": false,
-    "width": 1280,
-    "height": 720,
-    "center": true
-  }]
+  "windows": [
+    {
+      "title": "Local.ts",
+      "label": "main",
+      "visible": false,
+      "width": 1280,
+      "height": 720,
+      "center": true
+    }
+  ]
 }
 ```
 
@@ -172,7 +174,9 @@ Then call it from your setup:
 This protects against state loss if the app crashes.
 
 <Callout type="info">
-The spawned thread runs for the application's entire lifetime — it will only exit when the application terminates, so make sure any resources accessed from that thread are safe to use for the duration of the process.
+  The spawned thread runs for the application's entire lifetime — it will only exit when the
+  application terminates, so make sure any resources accessed from that thread are safe to use for
+  the duration of the process.
 </Callout>
 
 ## Removing Window State

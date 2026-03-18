@@ -34,9 +34,7 @@ export function getReleasedPackageChangelogs(): Promise<PackageChangelog[]> {
   return changelogCache;
 }
 
-export async function getPackageChangelogBySlug(
-  slug: string
-): Promise<PackageChangelog | null> {
+export async function getPackageChangelogBySlug(slug: string): Promise<PackageChangelog | null> {
   const changelogs = await getReleasedPackageChangelogs();
 
   return changelogs.find((entry) => entry.slug === slug) ?? null;
@@ -57,11 +55,7 @@ async function loadReleasedPackageChangelogs(): Promise<PackageChangelog[]> {
     const packageJsonPath = path.join(packageDir, "package.json");
     const changelogPath = path.join(packageDir, "CHANGELOG.md");
 
-    if (
-      !(
-        (await pathExists(packageJsonPath)) && (await pathExists(changelogPath))
-      )
-    ) {
+    if (!((await pathExists(packageJsonPath)) && (await pathExists(changelogPath)))) {
       continue;
     }
 
@@ -87,7 +81,7 @@ async function loadReleasedPackageChangelogs(): Promise<PackageChangelog[]> {
   return changelogs.sort((a, b) =>
     a.packageName.localeCompare(b.packageName, "en", {
       sensitivity: "base",
-    })
+    }),
   );
 }
 
@@ -165,12 +159,7 @@ async function getCommitDate(commitHash: string): Promise<string | null> {
   }
 
   try {
-    const { stdout } = await execFileAsync("git", [
-      "show",
-      "-s",
-      "--format=%cI",
-      commitHash,
-    ]);
+    const { stdout } = await execFileAsync("git", ["show", "-s", "--format=%cI", commitHash]);
     const isoDate = stdout.trim();
     const value = isoDate.length > 0 ? isoDate : null;
     commitDateCache.set(commitHash, value);

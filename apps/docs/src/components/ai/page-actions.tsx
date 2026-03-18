@@ -1,18 +1,8 @@
 "use client";
 import { buttonVariants } from "fumadocs-ui/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "fumadocs-ui/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "fumadocs-ui/components/ui/popover";
 import { useCopyButton } from "fumadocs-ui/utils/use-copy-button";
-import {
-  Check,
-  ChevronDown,
-  Copy,
-  ExternalLinkIcon,
-  TextIcon,
-} from "lucide-react";
+import { Check, ChevronDown, Copy, ExternalLinkIcon, TextIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/cn";
 
@@ -58,7 +48,7 @@ export function LLMCopyButton({
           color: "secondary",
           size: "sm",
           className: "gap-2 [&_svg]:size-3.5 [&_svg]:text-fd-muted-foreground",
-        })
+        }),
       )}
       disabled={isLoading}
       onClick={onClick}
@@ -85,8 +75,7 @@ export function ViewOptions({
   githubUrl: string;
 }) {
   const items = useMemo(() => {
-    const pageUrl =
-      typeof window === "undefined" ? "loading" : window.location.href;
+    const pageUrl = typeof window === "undefined" ? "loading" : window.location.href;
     const q = `Read ${pageUrl}, I want to ask questions about it.`;
 
     return [
@@ -232,7 +221,7 @@ export function ViewOptions({
             color: "secondary",
             size: "sm",
             className: "gap-2",
-          })
+          }),
         )}
       >
         Open

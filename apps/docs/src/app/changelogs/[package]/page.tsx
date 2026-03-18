@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { ChangelogContent } from "@/app/changelogs/_components/changelog-content";
-import {
-  getPackageChangelogBySlug,
-  getReleasedPackageChangelogs,
-} from "@/lib/changelog";
+import { getPackageChangelogBySlug, getReleasedPackageChangelogs } from "@/lib/changelog";
 
 export default async function ChangelogPackagePage({
   params,
