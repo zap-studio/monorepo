@@ -22,15 +22,15 @@
     "validate": "vp check && vp run -r build && vp run -r test"
   },
   "devDependencies": {
-    "@changesets/cli": "catalog:tooling",
-    "@commitlint/cli": "catalog:linting",
-    "@commitlint/config-conventional": "catalog:linting",
-    "@tanstack/intent": "catalog:tooling",
-    "@turbo/gen": "catalog:tooling",
-    "@vitest/coverage-v8": "catalog:testing",
-    "jsr": "catalog:tooling",
-    "nyc": "catalog:tooling",
-    "rimraf": "catalog:tooling",
+    "@changesets/cli": "catalog:",
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:",
+    "@tanstack/intent": "catalog:",
+    "@turbo/gen": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "jsr": "catalog:",
+    "nyc": "catalog:",
+    "rimraf": "catalog:",
     "vite-plus": "catalog:"
   },
   "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be"
