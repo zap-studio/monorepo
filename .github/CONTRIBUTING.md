@@ -16,9 +16,7 @@ Thank you for your interest in contributing to Zap Studio! We welcome all contri
 ## Setting Up the Monorepo
 
 1. **Install dependencies**
-   - Run `pnpm install` from the root directory to install all packages.
-
-> If Lefthook blocks your commit, you may use `git commit --no-verify` and/or `git push --no-verify`, but this is discouraged and may reduce the chance of your PR being merged.
+   - Run `vp install` from the root directory to install all packages.
 
 ## Project Structure
 
@@ -26,12 +24,12 @@ Thank you for your interest in contributing to Zap Studio! We welcome all contri
 - **`packages/waitlist`** - Waitlist management (`@zap-studio/waitlist`)
 - **`packages/webhooks`** - Webhook handling (`@zap-studio/webhooks`)
 - **`apps/docs`** - Documentation site (Fumadocs)
-- **`configs/`** - Shared configurations (TypeScript, tsdown, vitest)
+- **`configs/`** - Shared configurations
 
 ## Running Tests
 
-- Run `pnpm run test` from the root to test all packages.
-- Run `pnpm run test:coverage` to generate coverage reports.
+- Run `vp run -r test` from the root to test all packages.
+- Run `vp run test:coverage` to generate coverage reports.
 
 ## Making Changes
 
@@ -54,9 +52,7 @@ Thank you for your interest in contributing to Zap Studio! We welcome all contri
 
 ## Quality and DX tools
 
-- **[Lefthook](https://github.com/evilmartians/lefthook)**: Manages Git hooks (pre-commit, pre-push) defined in `lefthook.yml` at the repository root.
-- **[Ultracite](https://www.ultracite.ai)**: Ensures accessibility and code style rules.
-- **[Turbo](https://turborepo.com/)**: Used for fast monorepo builds, caching, and running tasks efficiently across packages.
+- **[Vite+](https://viteplus.dev/)**: Handles installs, checks, tests, formatting, and monorepo task running.
 
 ## Additional Resources
 
