@@ -17,13 +17,13 @@ The logging system outputs to three targets simultaneously:
 
 ## Log Levels
 
-| Level | Description | Use Case |
-|-------|-------------|----------|
-| `error` | Critical failures | Database errors, crashes |
-| `warn` | Potential issues | Deprecated usage, recoverable errors |
-| `info` | General information | App started, user actions |
-| `debug` | Detailed debugging | Function calls, state changes |
-| `trace` | Very verbose | Request/response data, loops |
+| Level   | Description         | Use Case                             |
+| ------- | ------------------- | ------------------------------------ |
+| `error` | Critical failures   | Database errors, crashes             |
+| `warn`  | Potential issues    | Deprecated usage, recoverable errors |
+| `info`  | General information | App started, user actions            |
+| `debug` | Detailed debugging  | Function calls, state changes        |
+| `trace` | Very verbose        | Request/response data, loops         |
 
 ## Logging from Rust
 
@@ -53,11 +53,11 @@ await error("Failed to fetch data");
 
 Log files are stored in the platform-specific log directory:
 
-| Platform | Location |
-|----------|----------|
-| macOS | `~/Library/Logs/{bundleIdentifier}/logs.log` |
-| Windows | `C:\Users\{User}\AppData\Local\{bundleIdentifier}\logs\logs.log` |
-| Linux | `~/.local/share/{bundleIdentifier}/logs/logs.log` |
+| Platform | Location                                                         |
+| -------- | ---------------------------------------------------------------- |
+| macOS    | `~/Library/Logs/{bundleIdentifier}/logs.log`                     |
+| Windows  | `C:\Users\{User}\AppData\Local\{bundleIdentifier}\logs\logs.log` |
+| Linux    | `~/.local/share/{bundleIdentifier}/logs/logs.log`                |
 
 Files rotate automatically at 50KB to prevent unbounded growth.
 

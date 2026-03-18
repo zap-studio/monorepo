@@ -20,6 +20,7 @@ For database migrations, optionally install Diesel CLI:
 ```bash
 cargo install diesel_cli
 ```
+
 </Callout>
 
 ## Installation
@@ -65,17 +66,18 @@ After cloning, update your app's name, version, and branding. See the [Project I
 
 Local.ts includes several scripts to streamline your development workflow.
 
-| Command | Description |
-|---------|-------------|
-| `turbo dev` | Start Vite dev server (frontend only) |
-| `turbo tauri -- dev` | Start full app with hot reload |
-| `turbo tauri -- build` | Build for production |
-| `turbo check` | TypeScript type checking |
-| `turbo lint` | Run linter |
-| `turbo format` | Format code |
-| `turbo test` | Run tests |
-| `turbo validate` | Run build, check, lint, and test to validate everything passes |
+| Command                | Description                                                    |
+| ---------------------- | -------------------------------------------------------------- |
+| `turbo dev`            | Start Vite dev server (frontend only)                          |
+| `turbo tauri -- dev`   | Start full app with hot reload                                 |
+| `turbo tauri -- build` | Build for production                                           |
+| `turbo check`          | TypeScript type checking                                       |
+| `turbo lint`           | Run linter                                                     |
+| `turbo format`         | Format code                                                    |
+| `turbo test`           | Run tests                                                      |
+| `turbo validate`       | Run build, check, lint, and test to validate everything passes |
 
 <Callout type="info" title="Tip">
-The `validate` script is useful before committing or deploying — it ensures your code builds correctly and passes all quality checks in one command.
+  The `validate` script is useful before committing or deploying — it ensures your code builds
+  correctly and passes all quality checks in one command.
 </Callout>
