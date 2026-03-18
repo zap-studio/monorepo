@@ -2,10 +2,7 @@
   "servers": {
     "vite-plus": {
       "command": "npx",
-      "args": [
-        "vp",
-        "mcp"
-      ],
+      "args": ["vp", "mcp"],
       "type": "stdio"
     }
   }
