@@ -9,10 +9,10 @@ This guide walks you through setting up Local.ts and running your first build.
 
 Before you begin, make sure you have the following installed:
 
+- **Vite+** (`vp`) — [viteplus.dev](https://viteplus.dev/)
 - **Node.js** (v18 or later) — [nodejs.org](https://nodejs.org/)
 - **Rust** — [rust-lang.org](https://www.rust-lang.org/tools/install)
-- **pnpm** (recommended) — [pnpm.io](https://pnpm.io/)
-- **Turbo** — [turborepo.com](https://turborepo.com/)
+- **pnpm** — [pnpm.io](https://pnpm.io/)
 
 <Callout type="info" title="Optional: Diesel CLI">
 For database migrations, optionally install Diesel CLI:
@@ -35,25 +35,25 @@ cd my-app
 ### 2. Install Dependencies
 
 ```bash
-pnpm install
+vp install
 ```
 
-This installs npm packages.
+This installs the JavaScript dependencies defined by the repository's lockfile.
 
 ### 3. Run in Development Mode
 
 ```bash
-turbo tauri -- dev
+vp run tauri dev
 ```
 
-This starts the Vite development server with hot reload and opens your app in a native window. Changes to your React code will update instantly.
+This starts the Vite+ powered frontend workflow and opens your app in a native window. Changes to your React code will update instantly.
 
 ## Building for Production
 
 Create a production build for your current platform:
 
 ```bash
-turbo tauri -- build
+vp run tauri build
 ```
 
 The output will be in `src-tauri/target/release/bundle/` with platform-specific installers.
@@ -66,18 +66,21 @@ After cloning, update your app's name, version, and branding. See the [Project I
 
 Local.ts includes several scripts to streamline your development workflow.
 
-| Command                | Description                                                    |
-| ---------------------- | -------------------------------------------------------------- |
-| `turbo dev`            | Start Vite dev server (frontend only)                          |
-| `turbo tauri -- dev`   | Start full app with hot reload                                 |
-| `turbo tauri -- build` | Build for production                                           |
-| `turbo check`          | TypeScript type checking                                       |
-| `turbo lint`           | Run linter                                                     |
-| `turbo format`         | Format code                                                    |
-| `turbo test`           | Run tests                                                      |
-| `turbo validate`       | Run build, check, lint, and test to validate everything passes |
+| Command                | Description                                           |
+| ---------------------- | ----------------------------------------------------- |
+| `vp install`           | Install project dependencies                          |
+| `vp run dev`           | Start the frontend dev workflow with route generation |
+| `vp run tauri dev`     | Start the full app with hot reload                    |
+| `vp run build`         | Build frontend assets and generated routes            |
+| `vp run tauri build`   | Build the native app for production                   |
+| `vp run check`         | Run type-aware checks                                 |
+| `vp run fix`           | Apply automatic fixes from the checker                |
+| `vp run test`          | Run tests once                                        |
+| `vp run test:watch`    | Re-run tests in watch mode                            |
+| `vp run test:coverage` | Generate a coverage report                            |
+| `vp run validate`      | Run the cached validation workflow                    |
 
 <Callout type="info" title="Tip">
-  The `validate` script is useful before committing or deploying — it ensures your code builds
-  correctly and passes all quality checks in one command.
+  `vp run validate` is useful before committing or deploying. It runs the template's build, test,
+  and check workflow in one command.
 </Callout>

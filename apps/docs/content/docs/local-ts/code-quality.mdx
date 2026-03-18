@@ -1,108 +1,71 @@
 ---
 title: Code Quality
-description: Linting, formatting, testing, and monorepo task orchestration in Local.ts.
+description: Checks, testing, and Vite+ task workflows in Local.ts.
 ---
 
-Local.ts comes with a complete code quality setup using modern, fast tooling. This guide covers linting, formatting, testing, and the monorepo task runner.
+Local.ts uses Vite+ as the main workflow layer for checks, cached tasks, staged-file fixes, and test execution. Rust-specific quality checks remain in Cargo and Tauri.
 
-## Ultracite
+## Vite+ Checks
 
-[Ultracite](https://www.ultracite.ai/) is a zero-configuration linter and formatter preset designed to enforce high code quality standards.
+The root `vite.config.ts` enables type-aware checking and staged-file fixes directly in Vite+:
 
-It can unify linting and formatting using different engines, such as Biome, Prettier with ESLint, or the oxlint and oxfmt tools.
+```ts
+export default defineConfig({
+  lint: {
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
+  },
+  staged: {
+    "*.{js,jsx,ts,tsx,json,jsonc,css,html}": "vp check --fix",
+  },
+});
+```
 
-In this project, we use the oxlint + oxfmt combo for fast, modern linting and formatting.
-
-### Why Ultracite?
+### Why this setup?
 
 - **Fast** — Rust-based engine runs in milliseconds
-- **Zero-config** — Sensible defaults out of the box
-- **Unified** — Linting and formatting in one tool
-- **Auto-fix** — Most issues are automatically fixable
+- **Type-aware** — TypeScript checking is part of the default workflow
+- **Unified** — One command surface for checks, tasks, and tests
+- **Auto-fix** — The same checker can apply safe fixes when requested
 
 ### Commands
 
 ```bash
-# Format and fix all issues
-pnpm dlx ultracite fix
+# Run checks
+vp check
 
-# Check for issues without fixing
-pnpm dlx ultracite check
+# Apply automatic fixes
+vp check --fix
 
-# Diagnose setup issues
-pnpm dlx ultracite doctor
+# Run the package scripts exposed by Local.ts
+vp run check
+vp run fix
 ```
 
-Or using Turborepo:
-
-```bash
-turbo format   # Fix issues
-turbo lint     # Check issues
-```
-
-### Configuration
-
-Ultracite works with oxlint under the hood. The configuration is in `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "extends": ["ultracite/oxlint/core", "ultracite/oxlint/react"]
-}
-```
-
-The presets include rules for:
-
-- TypeScript best practices
-- React hooks and accessibility
-- Modern JavaScript patterns
-- Security and performance
-
-### Pre-commit Hooks
-
-Local.ts uses Lefthook to run Ultracite on staged files before each commit:
-
-```yaml
-# lefthook.yml
-pre-commit:
-  jobs:
-    - run: pnpm exec ultracite fix
-      glob:
-        - "*.js"
-        - "*.jsx"
-        - "*.ts"
-        - "*.tsx"
-        - "*.json"
-        - "*.jsonc"
-        - "*.css"
-      stage_fixed: true
-```
-
-This ensures all committed code passes linting and formatting checks.
+This keeps the workflow simple: run `vp check` to validate the project, and use `vp check --fix` when you want Vite+ to rewrite fixable issues.
 
 ## Testing with Vitest
 
-Local.ts uses [Vitest](https://vitest.dev/) for testing. Vitest is a fast, Vite-native test runner with a Jest-compatible API.
+Local.ts uses a Vitest-compatible test runner through Vite+. You still get the familiar Vitest API, but the project runs it through `vp test` and exposes that through package scripts.
 
 ### Running Tests
 
 ```bash
 # Run tests once
-turbo test
+vp test
 
 # Watch mode for development
-turbo test:watch
+vp test watch
 
 # Generate coverage report
-turbo test:coverage
-
-# Open the UI test runner
-turbo test:ui
+vp test run --coverage
 ```
 
 ### Configuration
 
-Testing is configured in `vite.config.ts`:
+Coverage is configured in `vite.config.ts`:
 
 ```typescript
 export default defineConfig({
@@ -121,7 +84,7 @@ export default defineConfig({
 Create test files with the `.test.ts` or `.test.tsx` extension:
 
 ```typescript
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 
 describe("myFunction", () => {
   it("should return the correct value", () => {
@@ -137,112 +100,70 @@ Coverage reports are generated in the `coverage/` directory:
 - `coverage/index.html` — Interactive HTML report
 - Terminal output shows summary
 
-## Turborepo
+## Vite+ Tasks
 
-[Turborepo](https://turborepo.com/) orchestrates tasks across the monorepo, handling both the frontend (Vite) and backend (Tauri/Rust) with unified commands and intelligent caching.
+The repository no longer uses a separate monorepo task runner. Instead, Local.ts defines the small number of cached workflows it needs directly in `vite.config.ts`:
 
-### Monorepo Structure
-
-Local.ts is structured as a pnpm workspace with two packages:
-
-```yaml
-# pnpm-workspace.yaml
-packages:
-  - . # Frontend (React/Vite)
-  - ./src-tauri # Backend (Rust/Tauri)
+```ts
+export default defineConfig({
+  run: {
+    cache: {
+      scripts: false,
+      tasks: true,
+    },
+    tasks: {
+      routes: {
+        command: "vp exec tsr generate",
+      },
+      "app:build": {
+        command: "vp build",
+        dependsOn: ["routes"],
+      },
+      "app:validate": {
+        command: "vp test && vp check",
+        dependsOn: ["app:build"],
+        cache: false,
+      },
+    },
+  },
+});
 ```
 
-This allows Turborepo to run tasks across both packages with a single command.
+This keeps the workflow local to the app:
 
-### Task Configuration
-
-Tasks are defined in `turbo.json`:
-
-```json
-{
-  "$schema": "https://turborepo.com/schema.json",
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", "src-tauri/target/release/**", "src-tauri/target/debug/**"]
-    },
-    "check": {
-      "dependsOn": ["^check"]
-    },
-    "dev": {
-      "persistent": true,
-      "cache": false
-    },
-    "lint": {
-      "dependsOn": ["^lint"]
-    },
-    "test": {
-      "dependsOn": ["^build"]
-    },
-    "validate": {
-      "dependsOn": ["build", "check", "lint", "test"]
-    }
-  }
-}
-```
-
-### Key Concepts
-
-| Concept      | Description                                                    |
-| ------------ | -------------------------------------------------------------- |
-| `dependsOn`  | Run dependencies first (e.g., `^build` runs build in all deps) |
-| `outputs`    | Files to cache for faster subsequent runs                      |
-| `persistent` | Keep running (for dev servers)                                 |
-| `cache`      | Whether to cache task outputs                                  |
-
-### Caching
-
-Turborepo caches task outputs based on file inputs. When you run a task:
-
-1. Turborepo hashes relevant source files
-2. If the hash matches a previous run, it replays cached output
-3. If not, it runs the task and caches the result
-
-This dramatically speeds up CI pipelines and repeated local builds.
+- `routes` regenerates TanStack Router files
+- `app:build` builds the frontend after route generation
+- `app:validate` runs the build, then executes tests and checks
 
 ### Available Commands
 
-| Command                | Description                               |
-| ---------------------- | ----------------------------------------- |
-| `turbo dev`            | Start Vite dev server                     |
-| `turbo tauri -- dev`   | Start full Tauri app with hot reload      |
-| `turbo tauri -- build` | Build production app                      |
-| `turbo build`          | Build frontend                            |
-| `turbo check`          | TypeScript type checking                  |
-| `turbo lint`           | Run Ultracite linter                      |
-| `turbo format`         | Format code with Ultracite                |
-| `turbo test`           | Run Vitest tests                          |
-| `turbo test:coverage`  | Generate coverage report                  |
-| `turbo validate`       | Run all checks (build, check, lint, test) |
+| Command                  | Description                              |
+| ------------------------ | ---------------------------------------- |
+| `vp run dev`             | Start the frontend dev workflow          |
+| `vp run tauri dev`       | Start the full Tauri app with hot reload |
+| `vp run tauri build`     | Build native production bundles          |
+| `vp run build`           | Run the cached frontend build workflow   |
+| `vp run check`           | Run project checks                       |
+| `vp run fix`             | Apply checker fixes                      |
+| `vp run test`            | Run tests once                           |
+| `vp run test:coverage`   | Generate coverage report                 |
+| `vp run validate`        | Run the validation workflow              |
+| `vp run generate-routes` | Generate TanStack Router route files     |
 
 ### The Validate Command
 
-The `validate` task runs all quality checks in the correct order:
-
-```json
-{
-  "validate": {
-    "dependsOn": ["build", "check", "lint", "test"]
-  }
-}
-```
+The `validate` script maps to `vp run app:validate`, which depends on the cached build workflow before running tests and checks.
 
 Use it before committing or in CI:
 
 ```bash
-turbo validate
+vp run validate
 ```
 
 This ensures your code:
 
-- Builds successfully
-- Passes TypeScript checks
-- Passes linting rules
+- Builds the frontend successfully
+- Passes type-aware and lint checks
 - Passes all tests
 
 ## Cargo
@@ -260,39 +181,6 @@ The Rust toolchain provides native tools for formatting, linting, type checking,
 | `cargo check`     | Type check without building         |
 | `cargo test`      | Run Rust unit and integration tests |
 | `cargo tarpaulin` | Generate code coverage reports      |
-
-### Turborepo Integration
-
-The `src-tauri/` directory includes a `package.json` that bridges Cargo commands to the Turborepo workflow. This allows unified commands across both TypeScript and Rust codebases.
-
-Here is a simplified example:
-
-```json
-{
-  "scripts": {
-    "format": "cargo fmt",
-    "lint": "cargo clippy",
-    "check": "cargo check",
-    "test": "cargo test"
-  }
-}
-```
-
-Now you can run Cargo commands through Turborepo alongside your TypeScript tasks:
-
-```bash
-# Format both TypeScript and Rust code
-turbo format
-
-# Lint both codebases
-turbo lint
-
-# Type check TypeScript and Rust
-turbo check
-
-# Run tests for both frontend and backend
-turbo test
-```
 
 ### Cargo-specific Workflows
 
@@ -333,45 +221,33 @@ Coverage reports help identify untested code paths in your Rust backend.
 
 ## CI Integration
 
-Local.ts includes GitHub Actions workflows that run on every pull request to ensure code quality across the monorepo.
+Local.ts includes a streamlined CI workflow for the frontend toolchain plus a separate publish workflow for native release bundles.
 
 ### Existing Workflows
 
-| Workflow  | File                                                                                      | Description                          |
-| --------- | ----------------------------------------------------------------------------------------- | ------------------------------------ |
-| **Check** | [check.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/check.yml) | Type checks TypeScript and Rust code |
-| **Lint**  | [lint.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/lint.yml)   | Runs oxlint linter on the monorepo   |
-| **Test**  | [test.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/test.yml)   | Executes all test suites             |
-| **Build** | [build.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/build.yml) | Builds the entire monorepo           |
+| Workflow    | File                                                                                          | Description                                |
+| ----------- | --------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| **CI**      | [ci.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/ci.yml)           | Runs `vp check`, `vp test`, and `vp build` |
+| **Publish** | [publish.yml](https://github.com/zap-studio/local.ts/blob/main/.github/workflows/publish.yml) | Builds and drafts Tauri release bundles    |
 
 ### Workflow Triggers
 
-All workflows:
+- `ci.yml` runs on pull requests and pushes to `main`
+- `publish.yml` runs on manual dispatch and pushes to the `release` branch
 
-- Run on pull requests
-- Execute in parallel for faster feedback
-- Use pnpm for dependency management
+### CI Setup
 
-### Leveraging Turborepo in CI
-
-Turborepo caches build artifacts between runs, significantly reducing CI times after the first build:
+The CI workflow uses a local composite action to install Vite+, restore dependency cache, and install dependencies before running each job:
 
 ```yaml
-# Your CI pipeline benefits from Turborepo's cache
-- name: Install dependencies
-  run: pnpm install --frozen-lockfile
-
-- name: Validate
-  run: pnpm turbo run validate
+- name: Setup vp
+  uses: ./.github/actions/setup-vp
 ```
 
-### Remote Caching
+Each CI job then runs one focused command:
 
-For team environments, enable [Turborepo Remote Caching](https://turborepo.com/repo/docs/core-concepts/remote-caching) to share cache across machines:
+- `vp check`
+- `vp test`
+- `vp build`
 
-```bash
-turbo login
-turbo link
-```
-
-This allows team members and CI runners to benefit from each other's cached builds, dramatically speeding up workflows.
+Native packaging is intentionally kept in the publish workflow, where the Tauri action installs platform-specific dependencies and builds release artifacts.
