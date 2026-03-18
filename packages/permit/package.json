@@ -1,31 +1,30 @@
 {
   "name": "@zap-studio/permit",
   "version": "0.2.2",
-  "type": "module",
-  "license": "MIT",
   "private": false,
+  "description": "A type-safe, declarative authorization library for TypeScript with Standard Schema support",
+  "keywords": [
+    "abac",
+    "access-control",
+    "arktype",
+    "authorization",
+    "permissions",
+    "policy",
+    "rbac",
+    "standard-schema",
+    "typescript",
+    "valibot",
+    "zod"
+  ],
   "homepage": "https://www.zapstudio.dev/packages/permit",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/zap-studio/monorepo.git",
     "directory": "packages/permit"
   },
-  "description": "A type-safe, declarative authorization library for TypeScript with Standard Schema support",
-  "keywords": [
-    "authorization",
-    "permissions",
-    "access-control",
-    "rbac",
-    "abac",
-    "policy",
-    "typescript",
-    "standard-schema",
-    "zod",
-    "valibot",
-    "arktype"
-  ],
-  "publishConfig": {
-    "access": "public"
+  "bin": {
+    "intent": "./bin/intent.js"
   },
   "files": [
     "dist",
@@ -36,25 +35,8 @@
     "bin",
     "!skills/_artifacts"
   ],
-  "scripts": {
-    "build": "tsdown --config tsdown.config.ts",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest --watch"
-  },
-  "dependencies": {
-    "@zap-studio/validation": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/node": "catalog:types",
-    "@vitest/coverage-v8": "catalog:testing",
-    "@zap-studio/tsdown-config": "workspace:*",
-    "@zap-studio/typescript-config": "workspace:*",
-    "@zap-studio/vitest-config": "workspace:*",
-    "tsdown": "catalog:base",
-    "typescript": "catalog:base",
-    "vitest": "catalog:testing"
-  },
+  "type": "module",
+  "types": "./dist/index.d.mts",
   "exports": {
     ".": "./dist/index.mjs",
     "./errors": "./dist/errors.mjs",
@@ -62,10 +44,22 @@
     "./types": "./dist/types.mjs",
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
-  "bin": {
-    "intent": "./bin/intent.js"
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "typecheck": "tsc --noEmit",
+    "test": "vp test run",
+    "test:watch": "vp test watch"
+  },
+  "dependencies": {
+    "@zap-studio/validation": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:types",
+    "@zap-studio/typescript-config": "workspace:*",
+    "typescript": "catalog:base",
+    "vite-plus": "catalog:"
   }
 }

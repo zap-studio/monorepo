@@ -1,11 +1,11 @@
-import {
-  configDefaults,
-  defineConfig,
-  mergeConfig,
-  type ViteUserConfig,
-} from "vitest/config";
+import { configDefaults, defineConfig } from "vite-plus";
 
-export const sharedConfig: ViteUserConfig = {
+export default defineConfig({
+  pack: {
+    dts: true,
+    entry: ["src/**/*", "!**/*.test.ts", "!**/*.spec.ts"],
+    exports: true,
+  },
   test: {
     coverage: {
       provider: "v8",
@@ -19,8 +19,4 @@ export const sharedConfig: ViteUserConfig = {
     restoreMocks: true,
     exclude: ["dist", "node_modules", ".turbo"],
   },
-};
-
-export function createConfig(overrides?: ViteUserConfig) {
-  return defineConfig(mergeConfig(sharedConfig, overrides ?? {}));
-}
+});

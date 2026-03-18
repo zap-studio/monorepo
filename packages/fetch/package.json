@@ -1,35 +1,34 @@
 {
   "name": "@zap-studio/fetch",
   "version": "0.4.7",
-  "type": "module",
-  "license": "MIT",
   "private": false,
+  "description": "A type-safe fetch wrapper for HTTP requests with runtime schema validation.",
+  "keywords": [
+    "api",
+    "arktype",
+    "error handling",
+    "fetch",
+    "http",
+    "request",
+    "response",
+    "runtime validation",
+    "schema",
+    "standard schema",
+    "type-safe",
+    "typescript",
+    "valibot",
+    "validation",
+    "zod"
+  ],
   "homepage": "https://www.zapstudio.dev/packages/fetch",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/zap-studio/monorepo.git",
     "directory": "packages/fetch"
   },
-  "description": "A type-safe fetch wrapper for HTTP requests with runtime schema validation.",
-  "keywords": [
-    "fetch",
-    "type-safe",
-    "validation",
-    "schema",
-    "typescript",
-    "http",
-    "api",
-    "zod",
-    "valibot",
-    "arktype",
-    "runtime validation",
-    "error handling",
-    "standard schema",
-    "request",
-    "response"
-  ],
-  "publishConfig": {
-    "access": "public"
+  "bin": {
+    "intent": "./bin/intent.js"
   },
   "files": [
     "dist",
@@ -40,28 +39,8 @@
     "bin",
     "!skills/_artifacts"
   ],
-  "scripts": {
-    "build": "tsdown --config tsdown.config.ts",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest --watch"
-  },
-  "dependencies": {
-    "@zap-studio/validation": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/node": "catalog:types",
-    "@vitest/coverage-v8": "catalog:testing",
-    "@zap-studio/tsdown-config": "workspace:*",
-    "@zap-studio/typescript-config": "workspace:*",
-    "@zap-studio/vitest-config": "workspace:*",
-    "arktype": "catalog:base",
-    "tsdown": "catalog:base",
-    "typescript": "catalog:base",
-    "valibot": "catalog:base",
-    "vitest": "catalog:testing",
-    "zod": "catalog:base"
-  },
+  "type": "module",
+  "types": "./dist/index.d.mts",
   "exports": {
     ".": "./dist/index.mjs",
     "./constants": "./dist/constants.mjs",
@@ -70,10 +49,25 @@
     "./utils": "./dist/utils.mjs",
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
-  "bin": {
-    "intent": "./bin/intent.js"
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "typecheck": "tsc --noEmit",
+    "test": "vp test run",
+    "test:watch": "vp test watch"
+  },
+  "dependencies": {
+    "@zap-studio/validation": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:types",
+    "@zap-studio/typescript-config": "workspace:*",
+    "arktype": "catalog:base",
+    "typescript": "catalog:base",
+    "valibot": "catalog:base",
+    "vite-plus": "catalog:",
+    "zod": "catalog:base"
   }
 }
