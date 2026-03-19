@@ -39,8 +39,12 @@ export default defineConfig({
       reporter: ["html", "json", "lcov", "text"],
       exclude: [...configDefaults.exclude, "**/dist/**"],
     },
-    reporters: process.env.CI ? ["dot", "junit"] : ["default"],
+    environment: "node",
+    exclude: ["dist", "node_modules"],
+    globals: true,
     outputFile: process.env.CI ? { junit: "./coverage/junit.xml" } : undefined,
     projects: ["packages/*"],
+    reporters: process.env.CI ? ["dot", "junit"] : ["default"],
+    restoreMocks: true,
   },
 });

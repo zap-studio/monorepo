@@ -6,10 +6,4 @@ export default defineConfig({
     entry: ["src/**/*", "!**/*.test.ts", "!**/*.spec.ts"],
     exports: true,
   },
-  test: {
-    environment: "node",
-    globals: true,
-    restoreMocks: true,
-    exclude: ["dist", "node_modules"],
-  },
 });
