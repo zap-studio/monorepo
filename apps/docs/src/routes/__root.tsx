@@ -8,7 +8,6 @@ import {
 } from "@/lib/fonts";
 import { siteDescription, siteKeywords, siteTitle, siteUrl } from "@/lib/site";
 import { NotFoundComponent } from "@/components/not-found";
-import SearchDialog from "@/components/search";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -69,7 +68,7 @@ function RootComponent() {
         <HeadContent />
       </head>
       <body className="flex min-h-screen flex-col font-sans antialiased">
-        <RootProvider search={{ SearchDialog }}>
+        <RootProvider>
           <Outlet />
         </RootProvider>
         <Scripts />
