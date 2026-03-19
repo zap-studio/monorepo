@@ -1,4 +1,4 @@
-import { Link as RouterLink } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ArrowRightIcon } from "lucide-react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
@@ -113,7 +113,7 @@ function ButtonLink({ href, ...props }: ButtonLinkProps): ReactNode {
     return <a href={href} {...props} />;
   }
 
-  return <RouterLink to={href} {...props} />;
+  return <Link to={href} {...props} />;
 }
 
 function isExternalHref(href: string) {

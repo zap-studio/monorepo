@@ -1,4 +1,4 @@
-import { Link as RouterLink } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   ArrowRightIcon,
   GlobeIcon,
@@ -97,7 +97,7 @@ export function PackagesSection(): ReactNode {
 
 function PackageCard({ icon, name, description, href }: PackageCardProps): ReactNode {
   return (
-    <RouterLink className="group block h-full" to={href}>
+    <Link className="group block h-full" to={href}>
       <div className="flex h-full flex-col rounded-2xl border border-fd-border bg-fd-card p-6 transition-all duration-300 group-hover:border-fd-primary/30 group-hover:shadow-fd-primary/4 group-hover:shadow-lg sm:p-8">
         <div className="mb-4 flex size-10 items-center justify-center rounded-xl bg-fd-accent text-fd-primary transition-colors duration-300 group-hover:bg-fd-primary/15 sm:mb-6 sm:size-12">
           {icon}
@@ -112,7 +112,7 @@ function PackageCard({ icon, name, description, href }: PackageCardProps): React
           <ArrowRightIcon className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
         </div>
       </div>
-    </RouterLink>
+    </Link>
   );
 }
 

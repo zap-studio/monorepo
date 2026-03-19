@@ -1,4 +1,4 @@
-import { Link as RouterLink } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
 import { FadeIn } from "./animated";
@@ -174,12 +174,12 @@ function FooterLinkItem({ href, label, external }: FooterLink): ReactNode {
 
   return (
     <li>
-      <RouterLink
+      <Link
         className="block truncate text-fd-muted-foreground text-xs leading-7 transition-colors duration-200 hover:text-fd-foreground md:text-sm"
         to={href}
       >
         {label}
-      </RouterLink>
+      </Link>
     </li>
   );
 }

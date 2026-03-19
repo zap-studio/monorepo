@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CodeShowcaseSection } from "@/routes/_marketing/-components/code-showcase-section";
 import { CTASection } from "@/routes/_marketing/-components/cta-section";
 import { HeroSection } from "@/routes/_marketing/-components/hero-section";
 import { PackagesSection } from "@/routes/_marketing/-components/packages-section";
@@ -28,7 +27,6 @@ function IndexRoute() {
       <SocialProofSection stats={stats} />
       <PackagesSection />
       <PrinciplesSection />
-      <CodeShowcaseSection />
       <CTASection />
     </main>
   );
