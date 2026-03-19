@@ -19,13 +19,13 @@ export function getPageImage(page: InferPageType<typeof source>) {
 }
 
 export function getMarkdownUrl(page: InferPageType<typeof source>) {
-  return `/llms.mdx${page.url}/index.mdx`;
+  return `/llms.mdx${page.url}`;
 }
 
 export async function getLLMText(page: InferPageType<typeof source>) {
   const processed = await page.data.getText("processed");
 
-  return `# ${page.data.title} (${page.url})
+  return `# ${page.data.title}
 
 ${processed}`;
 }
