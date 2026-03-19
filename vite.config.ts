@@ -34,4 +34,7 @@ export default defineConfig({
   staged: {
     "*.{js,jsx,ts,tsx,json,jsonc,css}": "vp check --fix",
   },
+  test: {
+    projects: ["packages/*"],
+  },
 });
