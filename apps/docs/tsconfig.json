@@ -17,20 +17,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "fumadocs-mdx:collections/*": ["./.source/*"]
-    },
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
-  ],
+  "include": ["**/*.d.ts", "**/*.ts", "**/*.tsx", "vite.config.ts"],
   "exclude": ["node_modules"]
 }

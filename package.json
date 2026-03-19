@@ -5,7 +5,7 @@
   "scripts": {
     "build": "vp run repo:build",
     "check": "vp check",
-    "clean": "rimraf node_modules coverage .vite \"packages/*/dist\" \"configs/*/dist\" apps/docs/.next",
+    "clean": "rimraf node_modules coverage .vite \"packages/*/dist\" \"configs/*/dist\" apps/docs/.output apps/docs/.tanstack",
     "dev": "vp run docs#dev",
     "fix": "vp check --fix",
     "prepublishOnly": "vp run repo:validate",

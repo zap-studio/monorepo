@@ -2,33 +2,39 @@
   "name": "docs",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "next build",
-    "dev": "next dev",
+    "build": "vite build",
+    "dev": "vite dev",
     "react-doctor": "node ./scripts/react-doctor.mjs",
-    "start": "next start",
+    "start": "node .output/server/index.mjs",
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "catalog:",
+    "@fontsource-variable/jetbrains-mono": "catalog:",
+    "@fontsource/instrument-serif": "catalog:",
     "@takumi-rs/image-response": "catalog:",
+    "@tanstack/react-router": "catalog:",
+    "@tanstack/react-start": "catalog:",
     "fumadocs-core": "catalog:",
     "fumadocs-mdx": "catalog:",
     "fumadocs-ui": "catalog:",
     "lucide-react": "catalog:",
     "motion": "catalog:",
-    "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "tailwind-merge": "catalog:"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "catalog:",
+    "@tailwindcss/vite": "catalog:",
     "@types/mdx": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "postcss": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
     "tailwindcss": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.12"
   }
 }
