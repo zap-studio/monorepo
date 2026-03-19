@@ -1,5 +1,3 @@
-"use client";
-
 import { domAnimation, LazyMotion, m, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
 

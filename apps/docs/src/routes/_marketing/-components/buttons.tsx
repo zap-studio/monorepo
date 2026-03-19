@@ -1,5 +1,3 @@
-"use client";
-
 import { Link as RouterLink } from "@tanstack/react-router";
 import { ArrowRightIcon } from "lucide-react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
