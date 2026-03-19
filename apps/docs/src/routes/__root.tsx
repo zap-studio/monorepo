@@ -1,12 +1,12 @@
 import { HeadContent, Link, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { RootProvider } from "fumadocs-ui/provider/tanstack";
-import appCss from "@/app/global.css?url";
+import appCss from "@/styles/global.css?url";
 import {
   interLatinWghtNormalUrl,
   instrumentSerifLatinItalicUrl,
   instrumentSerifLatinNormalUrl,
-} from "@/app/fonts";
+} from "@/lib/fonts";
 import { siteDescription, siteKeywords, siteTitle, siteUrl } from "@/lib/site";
 
 export const Route = createRootRoute({
