@@ -19,10 +19,12 @@ import { baseOptions, gitConfig } from "@/lib/layout/layout.shared";
 import { pageMeta } from "@/lib/site";
 import { useMDXComponents } from "@/components/mdx";
 
+type SerializedPageTree = Awaited<ReturnType<typeof source.serializePageTree>>;
+
 interface DocsLoaderData {
   markdownUrl: string;
   path: string;
-  pageTree: unknown;
+  pageTree: SerializedPageTree;
   slugs: string[];
 }
 
