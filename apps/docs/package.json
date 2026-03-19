@@ -5,10 +5,10 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "build": "vite build",
-    "dev": "vite dev",
+    "build": "vp build",
+    "dev": "vp dev",
     "start": "serve .output/public --config ../../serve.json",
-    "preview": "vite preview",
+    "preview": "vp preview",
     "react-doctor": "node ./scripts/react-doctor.mjs",
     "types:check": "fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
