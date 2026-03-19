@@ -7,7 +7,7 @@ A production-ready template for building cross-platform desktop applications wit
 
 Your data stays on the user's device, always available offline, with native performance and a small bundle size.
 
-Built with **React**, **TypeScript**, **Tauri**, and **Rust**, Local.ts provides everything you need to ship a polished desktop app: persistent settings, system tray integration, notifications, database storage, and more.
+Built with **React**, **TypeScript**, **Vite+**, **Tauri**, and **Rust**, Local.ts provides everything you need to ship a polished desktop app: persistent settings, system tray integration, notifications, database storage, and more.
 
 <Callout type="info">
   Since Local.ts relies heavily on Tauri, we highly recommend checking the [Tauri
@@ -48,16 +48,26 @@ cd my-app
 ### 2. Install Dependencies
 
 ```bash
-pnpm install
+vp install
 ```
 
-### 3. Run the Development Server
+### 3. Start the Frontend Workflow
 
 ```bash
-pnpm tauri dev
+vp run dev
+```
+
+### 4. Open the Native App
+
+```bash
+vp run tauri dev
 ```
 
 Your app will open in a native window with hot reload enabled.
+
+## Tooling Layout
+
+The frontend workflow lives at the repository root and is managed with Vite+. The native shell and Rust backend live in `src-tauri/`, where Cargo and the Tauri CLI handle platform-specific work.
 
 ## Project Structure
 

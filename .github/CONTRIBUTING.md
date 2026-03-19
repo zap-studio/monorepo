@@ -16,7 +16,7 @@ Thank you for your interest in contributing to Zap Studio! We welcome all contri
 ## Setting Up the Monorepo
 
 1. **Install dependencies**
-   - Run `vp install` from the root directory to install all packages.
+   - Run `vp install` from the workspace root.
 
 ## Project Structure
 
@@ -28,13 +28,15 @@ Thank you for your interest in contributing to Zap Studio! We welcome all contri
 
 ## Running Tests
 
-- Run `vp run test` from the root to test all packages.
-- Run `vp run test:coverage` to generate coverage reports.
+- Run `vp run test` from the root to execute the package test suites.
+- Run `vp run test:coverage` to generate and merge package coverage reports.
+- Run `vp run build` to build packages and the docs app.
+- Run `vp run validate` before opening a PR to run the root check plus the build and package test flow.
 
 ## Making Changes
 
 - Make your changes in a dedicated branch.
-- Ensure your code passes all checks and tests.
+- Ensure your code passes `vp run validate`.
 
 ## Opening a Pull Request
 
@@ -52,7 +54,7 @@ Thank you for your interest in contributing to Zap Studio! We welcome all contri
 
 ## Quality and DX tools
 
-- **[Vite+](https://viteplus.dev/)**: Handles installs, checks, tests, formatting, and monorepo task running.
+- **[Vite+](https://viteplus.dev/)**: Handles installs, checks, staged fixes, package/docs task orchestration, and test workflows.
 
 ## Additional Resources
 
