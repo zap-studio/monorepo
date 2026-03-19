@@ -3,6 +3,8 @@ packages:
   - configs/*
   - packages/*
 
+catalogMode: prefer
+
 catalog:
   "@changesets/cli": ^2.30.0
   "@commitlint/cli": ^20.5.0
@@ -52,3 +54,6 @@ peerDependencyRules:
   allowAny:
     - vite
     - vitest
+  allowedVersions:
+    vite: "*"
+    vitest: "*"
