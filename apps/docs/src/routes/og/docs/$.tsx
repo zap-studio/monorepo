@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { ImageResponse } from "@takumi-rs/image-response";
 import { generate as DefaultImage } from "fumadocs-ui/og/takumi";
-import { source } from "@/lib/source";
+import { source } from "@/lib/content/source";
 
 export const Route = createFileRoute("/og/docs/$")({
   server: {
