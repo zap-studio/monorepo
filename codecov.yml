@@ -25,4 +25,3 @@ ignore:
   - "apps/docs/**"
   - "**/dist/**"
   - "**/*.config.*"
-  - "**/vitest.config.*"
