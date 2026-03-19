@@ -29,7 +29,7 @@ Thank you for your interest in contributing to Zap Studio! We welcome all contri
 ## Running Tests
 
 - Run `vp run test` from the root to execute the package test suites.
-- Run `vp run test:coverage` to generate and merge package coverage reports.
+- Run `vp run test:coverage` to generate a root Vitest coverage report.
 - Run `vp run build` to build packages and the docs app.
 - Run `vp run validate` before opening a PR to run the root check plus the build and package test flow.
 
