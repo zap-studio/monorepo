@@ -1,6 +1,4 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { ImageResponse } from "@takumi-rs/image-response";
-import { generate as DefaultImage } from "fumadocs-ui/og/takumi";
 import { source } from "@/lib/content/source";
 
 export const Route = createFileRoute("/og/docs/$")({
@@ -14,6 +12,11 @@ export const Route = createFileRoute("/og/docs/$")({
           throw notFound();
         }
 
+        const [{ ImageResponse }, { generate: DefaultImage }] = await Promise.all([
+          import("@takumi-rs/image-response"),
+          import("fumadocs-ui/og/takumi"),
+        ]);
+
         return new ImageResponse(
           <DefaultImage
             description={page.data.description}
@@ -24,6 +27,9 @@ export const Route = createFileRoute("/og/docs/$")({
             width: 1200,
             height: 630,
             format: "webp",
+            headers: {
+              "cache-control": "public, max-age=0, s-maxage=86400",
+            },
           },
         );
       },
