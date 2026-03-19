@@ -1,6 +1,5 @@
-import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { staticFunctionMiddleware } from "@tanstack/start-static-server-functions";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import {
   DocsBody,
@@ -34,9 +33,7 @@ export const Route = createFileRoute("/docs/$")({
   }),
   loader: async ({ params }) => {
     const data = (await loadDocsPageFn({
-      data: {
-        slugs: getSlug(params._splat) ?? [],
-      },
+      data: params._splat?.split("/") ?? [],
     })) as DocsLoaderData;
 
     await docsClientLoader.preload(data.path);
@@ -69,7 +66,6 @@ function DocsRoute() {
       }}
       tree={pageTree}
     >
-      <Link hidden to={markdownUrl} />
       <Suspense>
         {docsClientLoader.useContent(path, {
           githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/apps/docs/content/docs/${path}`,
@@ -81,10 +77,9 @@ function DocsRoute() {
 }
 
 const loadDocsPageFn = createServerFn({ method: "GET" })
-  .inputValidator((data: { slugs: string[] }) => data)
-  .middleware([staticFunctionMiddleware])
-  .handler(async ({ data }) => {
-    const page = source.getPage(data.slugs);
+  .inputValidator((slugs: string[]) => slugs)
+  .handler(async ({ data: slugs }) => {
+    const page = source.getPage(slugs);
     if (!page) {
       throw notFound();
     }
@@ -134,12 +129,3 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
     );
   },
 });
-
-function getSlug(splat?: string) {
-  if (!splat) {
-    return undefined;
-  }
-
-  const segments = splat.split("/").filter(Boolean);
-  return segments.length > 0 ? segments : undefined;
-}

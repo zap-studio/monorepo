@@ -5,7 +5,8 @@ export const Route = createFileRoute("/llms.mdx/docs/$")({
   server: {
     handlers: {
       GET: async ({ params }) => {
-        const page = source.getPage(getSlug(params._splat));
+        const slugs = params._splat?.split("/") ?? [];
+        const page = source.getPage(slugs);
         if (!page) {
           throw notFound();
         }
@@ -19,17 +20,3 @@ export const Route = createFileRoute("/llms.mdx/docs/$")({
     },
   },
 });
-
-function getSlug(splat?: string) {
-  if (!splat) {
-    return undefined;
-  }
-
-  const segments = splat.split("/").filter(Boolean);
-  const lastSegment = segments.at(-1);
-  if (lastSegment === "index.mdx") {
-    segments.pop();
-  }
-
-  return segments.length > 0 ? segments : undefined;
-}
