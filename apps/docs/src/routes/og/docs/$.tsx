@@ -1,6 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { source } from "@/lib/content/source";
-import { createDocsOgImageResponse } from "@/lib/og/docs-image.server";
 
 export const Route = createFileRoute("/og/docs/$")({
   server: {
@@ -15,6 +14,8 @@ export const Route = createFileRoute("/og/docs/$")({
         if (!page) {
           throw notFound();
         }
+
+        const { createDocsOgImageResponse } = await import("@/lib/og/docs-image.server");
 
         return createDocsOgImageResponse({
           title: page.data.title,
