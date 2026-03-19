@@ -94,7 +94,7 @@ catalogs:
       specifier: ^1.2.0
       version: 1.2.0
     vite-plus:
-      specifier: 0.1.12
+      specifier: latest
       version: 0.1.12
     zod:
       specifier: ^4.2.0
