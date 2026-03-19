@@ -9,46 +9,36 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SponsorsRouteImport } from './routes/sponsors'
-import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as LocalTsRouteImport } from './routes/local-ts'
-import { Route as ChangelogsRouteImport } from './routes/changelogs'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
+import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
 import { Route as PackagesValidationRouteImport } from './routes/packages/validation'
 import { Route as PackagesPermitRouteImport } from './routes/packages/permit'
 import { Route as PackagesFetchRouteImport } from './routes/packages/fetch'
 import { Route as DocsSplatRouteImport } from './routes/docs/$'
-import { Route as ChangelogsPackageRouteImport } from './routes/changelogs/$package'
 import { Route as ApiSearchRouteImport } from './routes/api/search'
+import { Route as MarketingSponsorsRouteImport } from './routes/_marketing/sponsors'
+import { Route as MarketingRoadmapRouteImport } from './routes/_marketing/roadmap'
+import { Route as MarketingChangelogsRouteImport } from './routes/_marketing/changelogs'
 import { Route as Char91llmsTxtChar93IndexRouteImport } from './routes/[llms.txt]/index'
 import { Route as Char91llmsFullTxtChar93IndexRouteImport } from './routes/[llms-full.txt]/index'
 import { Route as OgDocsSplatRouteImport } from './routes/og/docs/$'
+import { Route as MarketingChangelogsPackageRouteImport } from './routes/_marketing/changelogs/$package'
 import { Route as Char91llmsMdxChar93DocsSplatRouteImport } from './routes/[llms.mdx]/docs/$'
 
-const SponsorsRoute = SponsorsRouteImport.update({
-  id: '/sponsors',
-  path: '/sponsors',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RoadmapRoute = RoadmapRouteImport.update({
-  id: '/roadmap',
-  path: '/roadmap',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LocalTsRoute = LocalTsRouteImport.update({
   id: '/local-ts',
   path: '/local-ts',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ChangelogsRoute = ChangelogsRouteImport.update({
-  id: '/changelogs',
-  path: '/changelogs',
+const MarketingRouteRoute = MarketingRouteRouteImport.update({
+  id: '/_marketing',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const MarketingIndexRoute = MarketingIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => MarketingRouteRoute,
 } as any)
 const PackagesValidationRoute = PackagesValidationRouteImport.update({
   id: '/packages/validation',
@@ -70,15 +60,25 @@ const DocsSplatRoute = DocsSplatRouteImport.update({
   path: '/docs/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ChangelogsPackageRoute = ChangelogsPackageRouteImport.update({
-  id: '/$package',
-  path: '/$package',
-  getParentRoute: () => ChangelogsRoute,
-} as any)
 const ApiSearchRoute = ApiSearchRouteImport.update({
   id: '/api/search',
   path: '/api/search',
   getParentRoute: () => rootRouteImport,
+} as any)
+const MarketingSponsorsRoute = MarketingSponsorsRouteImport.update({
+  id: '/sponsors',
+  path: '/sponsors',
+  getParentRoute: () => MarketingRouteRoute,
+} as any)
+const MarketingRoadmapRoute = MarketingRoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
+  getParentRoute: () => MarketingRouteRoute,
+} as any)
+const MarketingChangelogsRoute = MarketingChangelogsRouteImport.update({
+  id: '/changelogs',
+  path: '/changelogs',
+  getParentRoute: () => MarketingRouteRoute,
 } as any)
 const Char91llmsTxtChar93IndexRoute =
   Char91llmsTxtChar93IndexRouteImport.update({
@@ -97,6 +97,12 @@ const OgDocsSplatRoute = OgDocsSplatRouteImport.update({
   path: '/og/docs/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketingChangelogsPackageRoute =
+  MarketingChangelogsPackageRouteImport.update({
+    id: '/$package',
+    path: '/$package',
+    getParentRoute: () => MarketingChangelogsRoute,
+  } as any)
 const Char91llmsMdxChar93DocsSplatRoute =
   Char91llmsMdxChar93DocsSplatRouteImport.update({
     id: '/[llms/mdx]/docs/$',
@@ -105,34 +111,34 @@ const Char91llmsMdxChar93DocsSplatRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/changelogs': typeof ChangelogsRouteWithChildren
+  '/': typeof MarketingIndexRoute
   '/local-ts': typeof LocalTsRoute
-  '/roadmap': typeof RoadmapRoute
-  '/sponsors': typeof SponsorsRoute
+  '/changelogs': typeof MarketingChangelogsRouteWithChildren
+  '/roadmap': typeof MarketingRoadmapRoute
+  '/sponsors': typeof MarketingSponsorsRoute
   '/api/search': typeof ApiSearchRoute
-  '/changelogs/$package': typeof ChangelogsPackageRoute
   '/docs/$': typeof DocsSplatRoute
   '/packages/fetch': typeof PackagesFetchRoute
   '/packages/permit': typeof PackagesPermitRoute
   '/packages/validation': typeof PackagesValidationRoute
+  '/changelogs/$package': typeof MarketingChangelogsPackageRoute
   '/og/docs/$': typeof OgDocsSplatRoute
   '/[llms-full/txt]/': typeof Char91llmsFullTxtChar93IndexRoute
   '/[llms/txt]/': typeof Char91llmsTxtChar93IndexRoute
   '/[llms/mdx]/docs/$': typeof Char91llmsMdxChar93DocsSplatRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/changelogs': typeof ChangelogsRouteWithChildren
   '/local-ts': typeof LocalTsRoute
-  '/roadmap': typeof RoadmapRoute
-  '/sponsors': typeof SponsorsRoute
+  '/changelogs': typeof MarketingChangelogsRouteWithChildren
+  '/roadmap': typeof MarketingRoadmapRoute
+  '/sponsors': typeof MarketingSponsorsRoute
   '/api/search': typeof ApiSearchRoute
-  '/changelogs/$package': typeof ChangelogsPackageRoute
   '/docs/$': typeof DocsSplatRoute
   '/packages/fetch': typeof PackagesFetchRoute
   '/packages/permit': typeof PackagesPermitRoute
   '/packages/validation': typeof PackagesValidationRoute
+  '/': typeof MarketingIndexRoute
+  '/changelogs/$package': typeof MarketingChangelogsPackageRoute
   '/og/docs/$': typeof OgDocsSplatRoute
   '/[llms-full/txt]': typeof Char91llmsFullTxtChar93IndexRoute
   '/[llms/txt]': typeof Char91llmsTxtChar93IndexRoute
@@ -140,17 +146,18 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/changelogs': typeof ChangelogsRouteWithChildren
+  '/_marketing': typeof MarketingRouteRouteWithChildren
   '/local-ts': typeof LocalTsRoute
-  '/roadmap': typeof RoadmapRoute
-  '/sponsors': typeof SponsorsRoute
+  '/_marketing/changelogs': typeof MarketingChangelogsRouteWithChildren
+  '/_marketing/roadmap': typeof MarketingRoadmapRoute
+  '/_marketing/sponsors': typeof MarketingSponsorsRoute
   '/api/search': typeof ApiSearchRoute
-  '/changelogs/$package': typeof ChangelogsPackageRoute
   '/docs/$': typeof DocsSplatRoute
   '/packages/fetch': typeof PackagesFetchRoute
   '/packages/permit': typeof PackagesPermitRoute
   '/packages/validation': typeof PackagesValidationRoute
+  '/_marketing/': typeof MarketingIndexRoute
+  '/_marketing/changelogs/$package': typeof MarketingChangelogsPackageRoute
   '/og/docs/$': typeof OgDocsSplatRoute
   '/[llms-full/txt]/': typeof Char91llmsFullTxtChar93IndexRoute
   '/[llms/txt]/': typeof Char91llmsTxtChar93IndexRoute
@@ -160,50 +167,51 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/changelogs'
     | '/local-ts'
+    | '/changelogs'
     | '/roadmap'
     | '/sponsors'
     | '/api/search'
-    | '/changelogs/$package'
     | '/docs/$'
     | '/packages/fetch'
     | '/packages/permit'
     | '/packages/validation'
+    | '/changelogs/$package'
     | '/og/docs/$'
     | '/[llms-full/txt]/'
     | '/[llms/txt]/'
     | '/[llms/mdx]/docs/$'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
-    | '/changelogs'
     | '/local-ts'
+    | '/changelogs'
     | '/roadmap'
     | '/sponsors'
     | '/api/search'
-    | '/changelogs/$package'
     | '/docs/$'
     | '/packages/fetch'
     | '/packages/permit'
     | '/packages/validation'
+    | '/'
+    | '/changelogs/$package'
     | '/og/docs/$'
     | '/[llms-full/txt]'
     | '/[llms/txt]'
     | '/[llms/mdx]/docs/$'
   id:
     | '__root__'
-    | '/'
-    | '/changelogs'
+    | '/_marketing'
     | '/local-ts'
-    | '/roadmap'
-    | '/sponsors'
+    | '/_marketing/changelogs'
+    | '/_marketing/roadmap'
+    | '/_marketing/sponsors'
     | '/api/search'
-    | '/changelogs/$package'
     | '/docs/$'
     | '/packages/fetch'
     | '/packages/permit'
     | '/packages/validation'
+    | '/_marketing/'
+    | '/_marketing/changelogs/$package'
     | '/og/docs/$'
     | '/[llms-full/txt]/'
     | '/[llms/txt]/'
@@ -211,11 +219,8 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ChangelogsRoute: typeof ChangelogsRouteWithChildren
+  MarketingRouteRoute: typeof MarketingRouteRouteWithChildren
   LocalTsRoute: typeof LocalTsRoute
-  RoadmapRoute: typeof RoadmapRoute
-  SponsorsRoute: typeof SponsorsRoute
   ApiSearchRoute: typeof ApiSearchRoute
   DocsSplatRoute: typeof DocsSplatRoute
   PackagesFetchRoute: typeof PackagesFetchRoute
@@ -229,20 +234,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sponsors': {
-      id: '/sponsors'
-      path: '/sponsors'
-      fullPath: '/sponsors'
-      preLoaderRoute: typeof SponsorsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/roadmap': {
-      id: '/roadmap'
-      path: '/roadmap'
-      fullPath: '/roadmap'
-      preLoaderRoute: typeof RoadmapRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/local-ts': {
       id: '/local-ts'
       path: '/local-ts'
@@ -250,19 +241,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocalTsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/changelogs': {
-      id: '/changelogs'
-      path: '/changelogs'
-      fullPath: '/changelogs'
-      preLoaderRoute: typeof ChangelogsRouteImport
+    '/_marketing': {
+      id: '/_marketing'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof MarketingRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_marketing/': {
+      id: '/_marketing/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof MarketingIndexRouteImport
+      parentRoute: typeof MarketingRouteRoute
     }
     '/packages/validation': {
       id: '/packages/validation'
@@ -292,19 +283,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/changelogs/$package': {
-      id: '/changelogs/$package'
-      path: '/$package'
-      fullPath: '/changelogs/$package'
-      preLoaderRoute: typeof ChangelogsPackageRouteImport
-      parentRoute: typeof ChangelogsRoute
-    }
     '/api/search': {
       id: '/api/search'
       path: '/api/search'
       fullPath: '/api/search'
       preLoaderRoute: typeof ApiSearchRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_marketing/sponsors': {
+      id: '/_marketing/sponsors'
+      path: '/sponsors'
+      fullPath: '/sponsors'
+      preLoaderRoute: typeof MarketingSponsorsRouteImport
+      parentRoute: typeof MarketingRouteRoute
+    }
+    '/_marketing/roadmap': {
+      id: '/_marketing/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof MarketingRoadmapRouteImport
+      parentRoute: typeof MarketingRouteRoute
+    }
+    '/_marketing/changelogs': {
+      id: '/_marketing/changelogs'
+      path: '/changelogs'
+      fullPath: '/changelogs'
+      preLoaderRoute: typeof MarketingChangelogsRouteImport
+      parentRoute: typeof MarketingRouteRoute
     }
     '/[llms/txt]/': {
       id: '/[llms/txt]/'
@@ -327,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OgDocsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_marketing/changelogs/$package': {
+      id: '/_marketing/changelogs/$package'
+      path: '/$package'
+      fullPath: '/changelogs/$package'
+      preLoaderRoute: typeof MarketingChangelogsPackageRouteImport
+      parentRoute: typeof MarketingChangelogsRoute
+    }
     '/[llms/mdx]/docs/$': {
       id: '/[llms/mdx]/docs/$'
       path: '/[llms/mdx]/docs/$'
@@ -337,24 +349,38 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface ChangelogsRouteChildren {
-  ChangelogsPackageRoute: typeof ChangelogsPackageRoute
+interface MarketingChangelogsRouteChildren {
+  MarketingChangelogsPackageRoute: typeof MarketingChangelogsPackageRoute
 }
 
-const ChangelogsRouteChildren: ChangelogsRouteChildren = {
-  ChangelogsPackageRoute: ChangelogsPackageRoute,
+const MarketingChangelogsRouteChildren: MarketingChangelogsRouteChildren = {
+  MarketingChangelogsPackageRoute: MarketingChangelogsPackageRoute,
 }
 
-const ChangelogsRouteWithChildren = ChangelogsRoute._addFileChildren(
-  ChangelogsRouteChildren,
+const MarketingChangelogsRouteWithChildren =
+  MarketingChangelogsRoute._addFileChildren(MarketingChangelogsRouteChildren)
+
+interface MarketingRouteRouteChildren {
+  MarketingChangelogsRoute: typeof MarketingChangelogsRouteWithChildren
+  MarketingRoadmapRoute: typeof MarketingRoadmapRoute
+  MarketingSponsorsRoute: typeof MarketingSponsorsRoute
+  MarketingIndexRoute: typeof MarketingIndexRoute
+}
+
+const MarketingRouteRouteChildren: MarketingRouteRouteChildren = {
+  MarketingChangelogsRoute: MarketingChangelogsRouteWithChildren,
+  MarketingRoadmapRoute: MarketingRoadmapRoute,
+  MarketingSponsorsRoute: MarketingSponsorsRoute,
+  MarketingIndexRoute: MarketingIndexRoute,
+}
+
+const MarketingRouteRouteWithChildren = MarketingRouteRoute._addFileChildren(
+  MarketingRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ChangelogsRoute: ChangelogsRouteWithChildren,
+  MarketingRouteRoute: MarketingRouteRouteWithChildren,
   LocalTsRoute: LocalTsRoute,
-  RoadmapRoute: RoadmapRoute,
-  SponsorsRoute: SponsorsRoute,
   ApiSearchRoute: ApiSearchRoute,
   DocsSplatRoute: DocsSplatRoute,
   PackagesFetchRoute: PackagesFetchRoute,
