@@ -1,6 +1,6 @@
 import { Fragment, type ReactNode } from "react";
-import type { PackageChangelog } from "@/lib/changelog";
-import { gitConfig } from "@/lib/layout.shared";
+import type { PackageChangelog } from "@/lib/changelog/changelog";
+import { gitConfig } from "@/lib/layout/layout.shared";
 
 const SECTION_HEADING_PREFIX_REGEX = /^###\s+/;
 const BULLET_LINE_REGEX = /^(\s*)-\s+(.*)$/;
