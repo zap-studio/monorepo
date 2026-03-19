@@ -20,16 +20,16 @@ export default defineConfig(async () => ({
 
       pages: [
         {
-          path: "/docs",
+          path: "/docs/getting-started",
         },
         {
           path: "/api/search",
         },
         {
-          path: "llms-full.txt",
+          path: "/llms-full.txt",
         },
         {
-          path: "llms.txt",
+          path: "/llms.txt",
         },
       ],
     }),
