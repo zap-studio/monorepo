@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LocalTsRouteImport } from './routes/local-ts'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
+import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
 import { Route as PackagesValidationRouteImport } from './routes/packages/validation'
@@ -20,14 +22,22 @@ import { Route as ApiSearchRouteImport } from './routes/api/search'
 import { Route as MarketingSponsorsRouteImport } from './routes/_marketing/sponsors'
 import { Route as MarketingRoadmapRouteImport } from './routes/_marketing/roadmap'
 import { Route as MarketingChangelogsRouteImport } from './routes/_marketing/changelogs'
-import { Route as Char91llmsTxtChar93IndexRouteImport } from './routes/[llms.txt]/index'
-import { Route as Char91llmsFullTxtChar93IndexRouteImport } from './routes/[llms-full.txt]/index'
+import { Route as LlmsDotmdxDocsSplatRouteImport } from './routes/llms[.]mdx.docs.$'
 import { Route as MarketingChangelogsPackageRouteImport } from './routes/_marketing/changelogs/$package'
-import { Route as Char91llmsMdxChar93DocsSplatRouteImport } from './routes/[llms.mdx]/docs/$'
 
 const LocalTsRoute = LocalTsRouteImport.update({
   id: '/local-ts',
   path: '/local-ts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsFullDottxtRoute = LlmsFullDottxtRouteImport.update({
+  id: '/llms-full.txt',
+  path: '/llms-full.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketingRouteRoute = MarketingRouteRouteImport.update({
@@ -79,33 +89,22 @@ const MarketingChangelogsRoute = MarketingChangelogsRouteImport.update({
   path: '/changelogs',
   getParentRoute: () => MarketingRouteRoute,
 } as any)
-const Char91llmsTxtChar93IndexRoute =
-  Char91llmsTxtChar93IndexRouteImport.update({
-    id: '/[llms/txt]/',
-    path: '/[llms/txt]/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char91llmsFullTxtChar93IndexRoute =
-  Char91llmsFullTxtChar93IndexRouteImport.update({
-    id: '/[llms-full/txt]/',
-    path: '/[llms-full/txt]/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const LlmsDotmdxDocsSplatRoute = LlmsDotmdxDocsSplatRouteImport.update({
+  id: '/llms.mdx/docs/$',
+  path: '/llms.mdx/docs/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketingChangelogsPackageRoute =
   MarketingChangelogsPackageRouteImport.update({
     id: '/$package',
     path: '/$package',
     getParentRoute: () => MarketingChangelogsRoute,
   } as any)
-const Char91llmsMdxChar93DocsSplatRoute =
-  Char91llmsMdxChar93DocsSplatRouteImport.update({
-    id: '/[llms/mdx]/docs/$',
-    path: '/[llms/mdx]/docs/$',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof MarketingIndexRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/local-ts': typeof LocalTsRoute
   '/changelogs': typeof MarketingChangelogsRouteWithChildren
   '/roadmap': typeof MarketingRoadmapRoute
@@ -116,11 +115,11 @@ export interface FileRoutesByFullPath {
   '/packages/permit': typeof PackagesPermitRoute
   '/packages/validation': typeof PackagesValidationRoute
   '/changelogs/$package': typeof MarketingChangelogsPackageRoute
-  '/[llms-full/txt]/': typeof Char91llmsFullTxtChar93IndexRoute
-  '/[llms/txt]/': typeof Char91llmsTxtChar93IndexRoute
-  '/[llms/mdx]/docs/$': typeof Char91llmsMdxChar93DocsSplatRoute
+  '/llms.mdx/docs/$': typeof LlmsDotmdxDocsSplatRoute
 }
 export interface FileRoutesByTo {
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/local-ts': typeof LocalTsRoute
   '/changelogs': typeof MarketingChangelogsRouteWithChildren
   '/roadmap': typeof MarketingRoadmapRoute
@@ -132,13 +131,13 @@ export interface FileRoutesByTo {
   '/packages/validation': typeof PackagesValidationRoute
   '/': typeof MarketingIndexRoute
   '/changelogs/$package': typeof MarketingChangelogsPackageRoute
-  '/[llms-full/txt]': typeof Char91llmsFullTxtChar93IndexRoute
-  '/[llms/txt]': typeof Char91llmsTxtChar93IndexRoute
-  '/[llms/mdx]/docs/$': typeof Char91llmsMdxChar93DocsSplatRoute
+  '/llms.mdx/docs/$': typeof LlmsDotmdxDocsSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_marketing': typeof MarketingRouteRouteWithChildren
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/local-ts': typeof LocalTsRoute
   '/_marketing/changelogs': typeof MarketingChangelogsRouteWithChildren
   '/_marketing/roadmap': typeof MarketingRoadmapRoute
@@ -150,14 +149,14 @@ export interface FileRoutesById {
   '/packages/validation': typeof PackagesValidationRoute
   '/_marketing/': typeof MarketingIndexRoute
   '/_marketing/changelogs/$package': typeof MarketingChangelogsPackageRoute
-  '/[llms-full/txt]/': typeof Char91llmsFullTxtChar93IndexRoute
-  '/[llms/txt]/': typeof Char91llmsTxtChar93IndexRoute
-  '/[llms/mdx]/docs/$': typeof Char91llmsMdxChar93DocsSplatRoute
+  '/llms.mdx/docs/$': typeof LlmsDotmdxDocsSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/llms-full.txt'
+    | '/llms.txt'
     | '/local-ts'
     | '/changelogs'
     | '/roadmap'
@@ -168,11 +167,11 @@ export interface FileRouteTypes {
     | '/packages/permit'
     | '/packages/validation'
     | '/changelogs/$package'
-    | '/[llms-full/txt]/'
-    | '/[llms/txt]/'
-    | '/[llms/mdx]/docs/$'
+    | '/llms.mdx/docs/$'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/llms-full.txt'
+    | '/llms.txt'
     | '/local-ts'
     | '/changelogs'
     | '/roadmap'
@@ -184,12 +183,12 @@ export interface FileRouteTypes {
     | '/packages/validation'
     | '/'
     | '/changelogs/$package'
-    | '/[llms-full/txt]'
-    | '/[llms/txt]'
-    | '/[llms/mdx]/docs/$'
+    | '/llms.mdx/docs/$'
   id:
     | '__root__'
     | '/_marketing'
+    | '/llms-full.txt'
+    | '/llms.txt'
     | '/local-ts'
     | '/_marketing/changelogs'
     | '/_marketing/roadmap'
@@ -201,22 +200,20 @@ export interface FileRouteTypes {
     | '/packages/validation'
     | '/_marketing/'
     | '/_marketing/changelogs/$package'
-    | '/[llms-full/txt]/'
-    | '/[llms/txt]/'
-    | '/[llms/mdx]/docs/$'
+    | '/llms.mdx/docs/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   MarketingRouteRoute: typeof MarketingRouteRouteWithChildren
+  LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
+  LlmsDottxtRoute: typeof LlmsDottxtRoute
   LocalTsRoute: typeof LocalTsRoute
   ApiSearchRoute: typeof ApiSearchRoute
   DocsSplatRoute: typeof DocsSplatRoute
   PackagesFetchRoute: typeof PackagesFetchRoute
   PackagesPermitRoute: typeof PackagesPermitRoute
   PackagesValidationRoute: typeof PackagesValidationRoute
-  Char91llmsFullTxtChar93IndexRoute: typeof Char91llmsFullTxtChar93IndexRoute
-  Char91llmsTxtChar93IndexRoute: typeof Char91llmsTxtChar93IndexRoute
-  Char91llmsMdxChar93DocsSplatRoute: typeof Char91llmsMdxChar93DocsSplatRoute
+  LlmsDotmdxDocsSplatRoute: typeof LlmsDotmdxDocsSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -226,6 +223,20 @@ declare module '@tanstack/react-router' {
       path: '/local-ts'
       fullPath: '/local-ts'
       preLoaderRoute: typeof LocalTsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms-full.txt': {
+      id: '/llms-full.txt'
+      path: '/llms-full.txt'
+      fullPath: '/llms-full.txt'
+      preLoaderRoute: typeof LlmsFullDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_marketing': {
@@ -298,18 +309,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketingChangelogsRouteImport
       parentRoute: typeof MarketingRouteRoute
     }
-    '/[llms/txt]/': {
-      id: '/[llms/txt]/'
-      path: '/[llms/txt]'
-      fullPath: '/[llms/txt]/'
-      preLoaderRoute: typeof Char91llmsTxtChar93IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/[llms-full/txt]/': {
-      id: '/[llms-full/txt]/'
-      path: '/[llms-full/txt]'
-      fullPath: '/[llms-full/txt]/'
-      preLoaderRoute: typeof Char91llmsFullTxtChar93IndexRouteImport
+    '/llms.mdx/docs/$': {
+      id: '/llms.mdx/docs/$'
+      path: '/llms.mdx/docs/$'
+      fullPath: '/llms.mdx/docs/$'
+      preLoaderRoute: typeof LlmsDotmdxDocsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_marketing/changelogs/$package': {
@@ -318,13 +322,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/changelogs/$package'
       preLoaderRoute: typeof MarketingChangelogsPackageRouteImport
       parentRoute: typeof MarketingChangelogsRoute
-    }
-    '/[llms/mdx]/docs/$': {
-      id: '/[llms/mdx]/docs/$'
-      path: '/[llms/mdx]/docs/$'
-      fullPath: '/[llms/mdx]/docs/$'
-      preLoaderRoute: typeof Char91llmsMdxChar93DocsSplatRouteImport
-      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -360,15 +357,15 @@ const MarketingRouteRouteWithChildren = MarketingRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   MarketingRouteRoute: MarketingRouteRouteWithChildren,
+  LlmsFullDottxtRoute: LlmsFullDottxtRoute,
+  LlmsDottxtRoute: LlmsDottxtRoute,
   LocalTsRoute: LocalTsRoute,
   ApiSearchRoute: ApiSearchRoute,
   DocsSplatRoute: DocsSplatRoute,
   PackagesFetchRoute: PackagesFetchRoute,
   PackagesPermitRoute: PackagesPermitRoute,
   PackagesValidationRoute: PackagesValidationRoute,
-  Char91llmsFullTxtChar93IndexRoute: Char91llmsFullTxtChar93IndexRoute,
-  Char91llmsTxtChar93IndexRoute: Char91llmsTxtChar93IndexRoute,
-  Char91llmsMdxChar93DocsSplatRoute: Char91llmsMdxChar93DocsSplatRoute,
+  LlmsDotmdxDocsSplatRoute: LlmsDotmdxDocsSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
