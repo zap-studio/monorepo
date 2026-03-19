@@ -1,5 +1,6 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import { staticFunctionMiddleware } from "@tanstack/start-static-server-functions";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import {
   DocsBody,
@@ -8,25 +9,21 @@ import {
   DocsTitle,
   PageLastUpdate,
 } from "fumadocs-ui/layouts/docs/page";
+import { useFumadocsLoader } from "fumadocs-core/source/client";
 import { PencilIcon } from "lucide-react";
-import { icons } from "lucide-react";
 import browserCollections from "fumadocs-mdx:collections/browser";
-import type * as PageTree from "fumadocs-core/page-tree";
-import { createElement, type ReactNode, useMemo } from "react";
+import { Suspense } from "react";
 import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
-import { getMarkdownUrl, getPageImage, source } from "@/lib/content/source";
+import { getMarkdownUrl, source } from "@/lib/content/source";
 import { baseOptions, gitConfig } from "@/lib/layout/layout.shared";
-import { pageMeta, siteDescription } from "@/lib/site";
-import { getMDXComponents } from "@/mdx-components";
+import { pageMeta } from "@/lib/site";
+import { useMDXComponents } from "@/components/mdx";
 
 interface DocsLoaderData {
-  description: string;
-  githubUrl: string;
-  imageUrl: string;
   markdownUrl: string;
   path: string;
-  title: string;
-  tree: unknown;
+  pageTree: unknown;
+  slugs: string[];
 }
 
 export const Route = createFileRoute("/docs/$")({
@@ -48,10 +45,8 @@ export const Route = createFileRoute("/docs/$")({
 
 function DocsRoute() {
   const loaderData = Route.useLoaderData() as DocsLoaderData;
-  const tree = useMemo(
-    () => restorePageTreeIcons(loaderData.tree as PageTree.Root),
-    [loaderData.tree],
-  );
+  const { pageTree, path } = useFumadocsLoader(loaderData);
+  const { markdownUrl } = loaderData;
 
   return (
     <DocsLayout
@@ -70,35 +65,33 @@ function DocsRoute() {
           }),
         },
       }}
-      tree={tree}
+      tree={pageTree}
     >
-      {docsClientLoader.useContent(loaderData.path, {
-        githubUrl: loaderData.githubUrl,
-        markdownUrl: loaderData.markdownUrl,
-      })}
+      <Link hidden to={markdownUrl} />
+      <Suspense>
+        {docsClientLoader.useContent(path, {
+          githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/apps/docs/content/docs/${path}`,
+          markdownUrl,
+        })}
+      </Suspense>
     </DocsLayout>
   );
 }
 
 const loadDocsPageFn = createServerFn({ method: "GET" })
   .inputValidator((data: { slugs: string[] }) => data)
-  .handler(({ data }) => {
+  .middleware([staticFunctionMiddleware])
+  .handler(async ({ data }) => {
     const page = source.getPage(data.slugs);
     if (!page) {
       throw notFound();
     }
 
-    const markdownUrl = getMarkdownUrl(page);
-    const githubUrl = `https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/apps/docs/content/docs/${page.path}`;
-
     return {
-      description: page.data.description ?? siteDescription,
-      githubUrl,
-      imageUrl: getPageImage(page).url,
-      markdownUrl,
+      markdownUrl: getMarkdownUrl(page),
       path: page.path,
-      title: page.data.title,
-      tree: JSON.parse(JSON.stringify(source.getPageTree())),
+      pageTree: await source.serializePageTree(source.getPageTree()),
+      slugs: page.slugs,
     };
   });
 
@@ -121,7 +114,7 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
           <ViewOptions githubUrl={props.githubUrl} markdownUrl={props.markdownUrl} />
         </div>
         <DocsBody>
-          <MDX components={getMDXComponents()} />
+          <MDX components={useMDXComponents()} />
           <div className="mt-8 flex flex-row flex-wrap items-center justify-between gap-4 border-t pt-4">
             <a
               className="inline-flex items-center gap-1.5 text-fd-muted-foreground text-sm transition-colors hover:text-fd-foreground"
@@ -147,49 +140,4 @@ function getSlug(splat?: string) {
 
   const segments = splat.split("/").filter(Boolean);
   return segments.length > 0 ? segments : undefined;
-}
-
-function restorePageTreeIcons(root: PageTree.Root): PageTree.Root {
-  return {
-    ...root,
-    children: root.children.map(restoreNodeIcons),
-    fallback: root.fallback ? restorePageTreeIcons(root.fallback) : undefined,
-  };
-}
-
-function restoreNodeIcons(node: PageTree.Node): PageTree.Node {
-  if (node.type === "folder") {
-    return {
-      ...node,
-      icon: resolveLucideIcon(node.icon),
-      index: node.index
-        ? {
-            ...node.index,
-            icon: resolveLucideIcon(node.index.icon),
-          }
-        : undefined,
-      children: node.children.map(restoreNodeIcons),
-    };
-  }
-
-  if (node.type === "page") {
-    return {
-      ...node,
-      icon: resolveLucideIcon(node.icon),
-    };
-  }
-
-  return {
-    ...node,
-    icon: resolveLucideIcon(node.icon),
-  };
-}
-
-function resolveLucideIcon(icon: unknown) {
-  if (typeof icon !== "string") {
-    return icon as ReactNode;
-  }
-
-  const Icon = icons[icon as keyof typeof icons];
-  return Icon ? createElement(Icon) : undefined;
 }
