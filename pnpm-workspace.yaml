@@ -36,6 +36,8 @@ catalog:
   react: ^19.2.4
   react-dom: ^19.2.4
   rimraf: ^6.1.3
+  serve: ^14.2.6
+  srvx: ^0.11.9
   tailwind-merge: ^3.5.0
   tailwindcss: ^4.2.2
   typescript: ^5.9.3

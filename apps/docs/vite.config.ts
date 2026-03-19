@@ -4,25 +4,42 @@ import react from "@vitejs/plugin-react";
 import mdx from "fumadocs-mdx/vite";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite-plus";
-import * as MdxConfig from "./source.config";
 
 export default defineConfig(async () => ({
-  resolve: {
-    tsconfigPaths: true,
-  },
-  server: {
-    port: 3000,
-  },
   plugins: [
-    await mdx(MdxConfig),
+    await mdx(await import("./source.config")),
     tailwindcss(),
     tanstackStart({
-      srcDirectory: "src",
-      router: {
-        routesDirectory: "routes",
+      spa: {
+        enabled: true,
+        prerender: {
+          enabled: true,
+          crawlLinks: true,
+        },
       },
+
+      pages: [
+        {
+          path: "/docs",
+        },
+        {
+          path: "/api/search",
+        },
+        {
+          path: "llms-full.txt",
+        },
+        {
+          path: "llms.txt",
+        },
+      ],
     }),
-    nitro(),
     react(),
+    nitro(),
   ],
+  resolve: {
+    tsconfigPaths: true,
+    alias: {
+      tslib: "tslib/tslib.es6.js",
+    },
+  },
 }));
