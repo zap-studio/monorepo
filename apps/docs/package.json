@@ -14,12 +14,14 @@
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
+    "@orama/orama": "catalog:",
     "@fontsource-variable/inter": "catalog:",
     "@fontsource-variable/jetbrains-mono": "catalog:",
     "@fontsource/instrument-serif": "catalog:",
     "@takumi-rs/image-response": "catalog:",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-start": "catalog:",
+    "@tanstack/start-static-server-functions": "catalog:",
     "fumadocs-core": "catalog:",
     "fumadocs-mdx": "catalog:",
     "fumadocs-ui": "catalog:",

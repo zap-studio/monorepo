@@ -4,6 +4,7 @@ packages:
   - packages/*
 
 catalog:
+  "@orama/orama": ^3.1.18
   "@changesets/cli": ^2.30.0
   "@commitlint/cli": ^20.5.0
   "@commitlint/config-conventional": ^20.5.0
@@ -17,6 +18,7 @@ catalog:
   "@tanstack/intent": ^0.0.23
   "@tanstack/react-router": ^1.167.5
   "@tanstack/react-start": ^1.166.17
+  "@tanstack/start-static-server-functions": ^1.166.9
   "@types/mdx": ^2.0.13
   "@types/node": ^25.5.0
   "@types/react": ^19.2.14
