@@ -13,8 +13,10 @@ export const siteKeywords = [
   "open source",
   "zap studio",
 ];
-export const siteUrl =
-  process.env.SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.zapstudio.dev";
+const serverSiteUrl = typeof process !== "undefined" ? process.env.SITE_URL : undefined;
+const clientSiteUrl = import.meta.env.VITE_SITE_URL;
+
+export const siteUrl = serverSiteUrl ?? clientSiteUrl ?? "https://www.zapstudio.dev";
 
 export function pageTitle(title?: string) {
   return title ? `${title} | ${siteName}` : siteTitle;

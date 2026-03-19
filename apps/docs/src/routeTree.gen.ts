@@ -22,6 +22,7 @@ import { Route as ApiSearchRouteImport } from './routes/api/search'
 import { Route as MarketingSponsorsRouteImport } from './routes/_marketing/sponsors'
 import { Route as MarketingRoadmapRouteImport } from './routes/_marketing/roadmap'
 import { Route as MarketingChangelogsRouteImport } from './routes/_marketing/changelogs'
+import { Route as OgDocsSplatRouteImport } from './routes/og/docs/$'
 import { Route as LlmsDotmdxDocsSplatRouteImport } from './routes/llms[.]mdx.docs.$'
 import { Route as MarketingChangelogsPackageRouteImport } from './routes/_marketing/changelogs/$package'
 
@@ -89,6 +90,11 @@ const MarketingChangelogsRoute = MarketingChangelogsRouteImport.update({
   path: '/changelogs',
   getParentRoute: () => MarketingRouteRoute,
 } as any)
+const OgDocsSplatRoute = OgDocsSplatRouteImport.update({
+  id: '/og/docs/$',
+  path: '/og/docs/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LlmsDotmdxDocsSplatRoute = LlmsDotmdxDocsSplatRouteImport.update({
   id: '/llms.mdx/docs/$',
   path: '/llms.mdx/docs/$',
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/packages/validation': typeof PackagesValidationRoute
   '/changelogs/$package': typeof MarketingChangelogsPackageRoute
   '/llms.mdx/docs/$': typeof LlmsDotmdxDocsSplatRoute
+  '/og/docs/$': typeof OgDocsSplatRoute
 }
 export interface FileRoutesByTo {
   '/llms-full.txt': typeof LlmsFullDottxtRoute
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
   '/changelogs/$package': typeof MarketingChangelogsPackageRoute
   '/llms.mdx/docs/$': typeof LlmsDotmdxDocsSplatRoute
+  '/og/docs/$': typeof OgDocsSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/_marketing/': typeof MarketingIndexRoute
   '/_marketing/changelogs/$package': typeof MarketingChangelogsPackageRoute
   '/llms.mdx/docs/$': typeof LlmsDotmdxDocsSplatRoute
+  '/og/docs/$': typeof OgDocsSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -168,6 +177,7 @@ export interface FileRouteTypes {
     | '/packages/validation'
     | '/changelogs/$package'
     | '/llms.mdx/docs/$'
+    | '/og/docs/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/llms-full.txt'
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/'
     | '/changelogs/$package'
     | '/llms.mdx/docs/$'
+    | '/og/docs/$'
   id:
     | '__root__'
     | '/_marketing'
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/_marketing/'
     | '/_marketing/changelogs/$package'
     | '/llms.mdx/docs/$'
+    | '/og/docs/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -214,6 +226,7 @@ export interface RootRouteChildren {
   PackagesPermitRoute: typeof PackagesPermitRoute
   PackagesValidationRoute: typeof PackagesValidationRoute
   LlmsDotmdxDocsSplatRoute: typeof LlmsDotmdxDocsSplatRoute
+  OgDocsSplatRoute: typeof OgDocsSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -309,6 +322,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketingChangelogsRouteImport
       parentRoute: typeof MarketingRouteRoute
     }
+    '/og/docs/$': {
+      id: '/og/docs/$'
+      path: '/og/docs/$'
+      fullPath: '/og/docs/$'
+      preLoaderRoute: typeof OgDocsSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/llms.mdx/docs/$': {
       id: '/llms.mdx/docs/$'
       path: '/llms.mdx/docs/$'
@@ -366,6 +386,7 @@ const rootRouteChildren: RootRouteChildren = {
   PackagesPermitRoute: PackagesPermitRoute,
   PackagesValidationRoute: PackagesValidationRoute,
   LlmsDotmdxDocsSplatRoute: LlmsDotmdxDocsSplatRoute,
+  OgDocsSplatRoute: OgDocsSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
