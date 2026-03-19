@@ -26,5 +26,10 @@ function getSlug(splat?: string) {
   }
 
   const segments = splat.split("/").filter(Boolean);
+  const lastSegment = segments.at(-1);
+  if (lastSegment === "index.mdx") {
+    segments.pop();
+  }
+
   return segments.length > 0 ? segments : undefined;
 }
