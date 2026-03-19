@@ -21,6 +21,7 @@ coverage/
 **/coverage/
 **/.next/
 **/.out/
+**/.output/
 **/.source/
 **/.turbo/
 
