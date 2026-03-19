@@ -41,10 +41,7 @@ function getOgSegments(request: Request) {
     return null;
   }
 
-  const segments = pathname
-    .slice(prefix.length)
-    .split("/")
-    .filter(Boolean);
+  const segments = pathname.slice(prefix.length).split("/").filter(Boolean);
 
   const lastSegment = segments.at(-1);
   if (lastSegment?.startsWith("image.")) {
