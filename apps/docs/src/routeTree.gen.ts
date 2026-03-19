@@ -22,7 +22,6 @@ import { Route as MarketingRoadmapRouteImport } from './routes/_marketing/roadma
 import { Route as MarketingChangelogsRouteImport } from './routes/_marketing/changelogs'
 import { Route as Char91llmsTxtChar93IndexRouteImport } from './routes/[llms.txt]/index'
 import { Route as Char91llmsFullTxtChar93IndexRouteImport } from './routes/[llms-full.txt]/index'
-import { Route as OgDocsSplatRouteImport } from './routes/og/docs/$'
 import { Route as MarketingChangelogsPackageRouteImport } from './routes/_marketing/changelogs/$package'
 import { Route as Char91llmsMdxChar93DocsSplatRouteImport } from './routes/[llms.mdx]/docs/$'
 
@@ -92,11 +91,6 @@ const Char91llmsFullTxtChar93IndexRoute =
     path: '/[llms-full/txt]/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const OgDocsSplatRoute = OgDocsSplatRouteImport.update({
-  id: '/og/docs/$',
-  path: '/og/docs/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MarketingChangelogsPackageRoute =
   MarketingChangelogsPackageRouteImport.update({
     id: '/$package',
@@ -122,7 +116,6 @@ export interface FileRoutesByFullPath {
   '/packages/permit': typeof PackagesPermitRoute
   '/packages/validation': typeof PackagesValidationRoute
   '/changelogs/$package': typeof MarketingChangelogsPackageRoute
-  '/og/docs/$': typeof OgDocsSplatRoute
   '/[llms-full/txt]/': typeof Char91llmsFullTxtChar93IndexRoute
   '/[llms/txt]/': typeof Char91llmsTxtChar93IndexRoute
   '/[llms/mdx]/docs/$': typeof Char91llmsMdxChar93DocsSplatRoute
@@ -139,7 +132,6 @@ export interface FileRoutesByTo {
   '/packages/validation': typeof PackagesValidationRoute
   '/': typeof MarketingIndexRoute
   '/changelogs/$package': typeof MarketingChangelogsPackageRoute
-  '/og/docs/$': typeof OgDocsSplatRoute
   '/[llms-full/txt]': typeof Char91llmsFullTxtChar93IndexRoute
   '/[llms/txt]': typeof Char91llmsTxtChar93IndexRoute
   '/[llms/mdx]/docs/$': typeof Char91llmsMdxChar93DocsSplatRoute
@@ -158,7 +150,6 @@ export interface FileRoutesById {
   '/packages/validation': typeof PackagesValidationRoute
   '/_marketing/': typeof MarketingIndexRoute
   '/_marketing/changelogs/$package': typeof MarketingChangelogsPackageRoute
-  '/og/docs/$': typeof OgDocsSplatRoute
   '/[llms-full/txt]/': typeof Char91llmsFullTxtChar93IndexRoute
   '/[llms/txt]/': typeof Char91llmsTxtChar93IndexRoute
   '/[llms/mdx]/docs/$': typeof Char91llmsMdxChar93DocsSplatRoute
@@ -177,7 +168,6 @@ export interface FileRouteTypes {
     | '/packages/permit'
     | '/packages/validation'
     | '/changelogs/$package'
-    | '/og/docs/$'
     | '/[llms-full/txt]/'
     | '/[llms/txt]/'
     | '/[llms/mdx]/docs/$'
@@ -194,7 +184,6 @@ export interface FileRouteTypes {
     | '/packages/validation'
     | '/'
     | '/changelogs/$package'
-    | '/og/docs/$'
     | '/[llms-full/txt]'
     | '/[llms/txt]'
     | '/[llms/mdx]/docs/$'
@@ -212,7 +201,6 @@ export interface FileRouteTypes {
     | '/packages/validation'
     | '/_marketing/'
     | '/_marketing/changelogs/$package'
-    | '/og/docs/$'
     | '/[llms-full/txt]/'
     | '/[llms/txt]/'
     | '/[llms/mdx]/docs/$'
@@ -226,7 +214,6 @@ export interface RootRouteChildren {
   PackagesFetchRoute: typeof PackagesFetchRoute
   PackagesPermitRoute: typeof PackagesPermitRoute
   PackagesValidationRoute: typeof PackagesValidationRoute
-  OgDocsSplatRoute: typeof OgDocsSplatRoute
   Char91llmsFullTxtChar93IndexRoute: typeof Char91llmsFullTxtChar93IndexRoute
   Char91llmsTxtChar93IndexRoute: typeof Char91llmsTxtChar93IndexRoute
   Char91llmsMdxChar93DocsSplatRoute: typeof Char91llmsMdxChar93DocsSplatRoute
@@ -325,13 +312,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91llmsFullTxtChar93IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/og/docs/$': {
-      id: '/og/docs/$'
-      path: '/og/docs/$'
-      fullPath: '/og/docs/$'
-      preLoaderRoute: typeof OgDocsSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_marketing/changelogs/$package': {
       id: '/_marketing/changelogs/$package'
       path: '/$package'
@@ -386,7 +366,6 @@ const rootRouteChildren: RootRouteChildren = {
   PackagesFetchRoute: PackagesFetchRoute,
   PackagesPermitRoute: PackagesPermitRoute,
   PackagesValidationRoute: PackagesValidationRoute,
-  OgDocsSplatRoute: OgDocsSplatRoute,
   Char91llmsFullTxtChar93IndexRoute: Char91llmsFullTxtChar93IndexRoute,
   Char91llmsTxtChar93IndexRoute: Char91llmsTxtChar93IndexRoute,
   Char91llmsMdxChar93DocsSplatRoute: Char91llmsMdxChar93DocsSplatRoute,
