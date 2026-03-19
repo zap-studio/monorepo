@@ -7,6 +7,9 @@ export default defineConfig({
       typeCheck: true,
     },
   },
+  fmt: {
+    ignorePatterns: ["**/routeTree.gen.ts"],
+  },
   run: {
     tasks: {
       "repo:build": {
