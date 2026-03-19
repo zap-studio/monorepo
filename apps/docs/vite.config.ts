@@ -6,35 +6,21 @@ import { nitro } from "nitro/vite";
 import { defineConfig } from "vite-plus";
 
 export default defineConfig(async () => ({
+  server: {
+    port: 3000,
+  },
   plugins: [
     await mdx(await import("./source.config")),
     tailwindcss(),
     tanstackStart({
-      spa: {
+      prerender: {
         enabled: true,
-        prerender: {
-          enabled: true,
-          crawlLinks: true,
-        },
       },
-
-      pages: [
-        {
-          path: "/docs/getting-started",
-        },
-        {
-          path: "/api/search",
-        },
-        {
-          path: "/llms-full.txt",
-        },
-        {
-          path: "/llms.txt",
-        },
-      ],
     }),
     react(),
-    nitro(),
+    nitro({
+      preset: "vercel",
+    }),
   ],
   resolve: {
     tsconfigPaths: true,
