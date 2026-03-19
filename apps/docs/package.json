@@ -7,7 +7,6 @@
   "scripts": {
     "build": "vp build",
     "dev": "vp dev",
-    "start": "node .output/server/index.mjs",
     "preview": "vp preview",
     "react-doctor": "node ./scripts/react-doctor.mjs",
     "types:check": "fumadocs-mdx && tsc --noEmit",
