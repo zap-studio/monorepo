@@ -5,20 +5,20 @@ import mdx from "fumadocs-mdx/vite";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite-plus";
 
-export default defineConfig(async () => ({
+export default defineConfig({
   server: {
     port: 3000,
   },
   plugins: [
     await mdx(await import("./source.config")),
     tailwindcss(),
-    tanstackStart({
+    ...tanstackStart({
       prerender: {
         enabled: true,
       },
     }),
     react(),
-    nitro({
+    ...nitro({
       preset: "vercel",
     }),
   ],
@@ -28,4 +28,4 @@ export default defineConfig(async () => ({
       tslib: "tslib/tslib.es6.js",
     },
   },
-}));
+});
