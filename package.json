@@ -4,7 +4,7 @@
   "author": "Alexandre Trotel",
   "scripts": {
     "dev": "vp run docs#dev",
-    "prepublishOnly": "vp check && vp test && vp run -r prepublishOnly",
+    "publish:check": "vp check && vp test && vp run --filter './packages/*' prepublishOnly",
     "react-doctor": "vp run docs#react-doctor"
   },
   "devDependencies": {
