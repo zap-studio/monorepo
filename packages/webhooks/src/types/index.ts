@@ -45,7 +45,7 @@ export interface RegisterOptions<T> {
 /**
  * Infers the output type from a Standard Schema instance.
  *
- * @typeParam TSchema - A Standard Schema type.
+ * @template TSchema - A Standard Schema type.
  */
 export type InferSchemaOutput<TSchema> =
   TSchema extends StandardSchemaV1<unknown, infer TOutput> ? TOutput : never;
@@ -53,7 +53,7 @@ export type InferSchemaOutput<TSchema> =
 /**
  * Route options where schema is required and handler payload is inferred.
  *
- * @typeParam TSchema - Schema used to infer handler payload type.
+ * @template TSchema - Schema used to infer handler payload type.
  */
 export type SchemaRouteOptions<TSchema extends StandardSchemaV1<unknown, unknown>> = Omit<
   RegisterOptions<InferSchemaOutput<TSchema>>,
@@ -72,7 +72,7 @@ interface RouteLike {
 /**
  * Applies schema-driven payload inference to each route entry.
  *
- * @typeParam TRoutes - Route dictionary keyed by webhook path.
+ * @template TRoutes - Route dictionary keyed by webhook path.
  */
 export type SchemaRoutes<TRoutes extends Record<string, RouteLike>> = {
   [P in keyof TRoutes]: SchemaRouteOptions<TRoutes[P]["schema"]>;
@@ -93,7 +93,7 @@ export type HandlerMap<TMap extends Record<string, unknown>> = {
 /**
  * Builds a webhook payload map from a schema-based route dictionary.
  *
- * @typeParam TRoutes - Route dictionary keyed by webhook path.
+ * @template TRoutes - Route dictionary keyed by webhook path.
  */
 export type InferWebhookMapFromRoutes<TRoutes extends Record<string, RouteLike>> = {
   [P in keyof TRoutes]: InferSchemaOutput<TRoutes[P]["schema"]>;

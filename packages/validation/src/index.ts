@@ -64,7 +64,7 @@ export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
  * The returned function supports the same options and return modes as
  * {@link standardValidate}, including `throwOnError`.
  *
- * @typeParam TSchema - The Standard Schema type.
+ * @template TSchema - The Standard Schema type.
  * @param schema - The schema to validate against.
  * @returns An async validator function.
  *
@@ -136,7 +136,7 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
  * The returned function supports the same options and return modes as
  * {@link standardValidateSync}, including `throwOnError`.
  *
- * @typeParam TSchema - The Standard Schema type.
+ * @template TSchema - The Standard Schema type.
  * @param schema - The schema to validate against.
  * @returns A synchronous validator function.
  * @throws {Error} If the schema performs asynchronous validation.
@@ -224,7 +224,7 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
  * When `throwOnError` is `false`, this function returns the raw Standard Schema
  * result.
  *
- * @typeParam TSchema - The Standard Schema type.
+ * @template TSchema - The Standard Schema type.
  * @param schema - The schema to validate against.
  * @param input - The value to validate.
  * @param options - Options for validation behavior.
@@ -296,7 +296,7 @@ export async function standardValidate<TSchema extends StandardSchemaV1>(
  *
  * This function throws if the schema performs asynchronous validation.
  *
- * @typeParam TSchema - The Standard Schema type.
+ * @template TSchema - The Standard Schema type.
  * @param schema - The schema to validate against.
  * @param input - The value to validate.
  * @param options - Options for validation behavior.

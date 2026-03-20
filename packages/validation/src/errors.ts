@@ -21,7 +21,6 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
  * The `message` property is a JSON string representation of the issues for
  * easier debugging and logging.
  *
- * @remarks
  * This error is thrown by helpers such as `standardValidate` and
  * `standardValidateSync` when `throwOnError` is enabled.
  *

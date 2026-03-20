@@ -108,12 +108,20 @@ export function ButtonGroup({ children, className = "" }: ButtonGroupProps): Rea
   );
 }
 
-function ButtonLink({ href, ...props }: ButtonLinkProps): ReactNode {
+function ButtonLink({ children, href, ...props }: ButtonLinkProps): ReactNode {
   if (isExternalHref(href)) {
-    return <a href={href} {...props} />;
+    return (
+      <a href={href} {...props}>
+        {children}
+      </a>
+    );
   }
 
-  return <Link to={href} {...props} />;
+  return (
+    <Link to={href} {...props}>
+      {children}
+    </Link>
+  );
 }
 
 function isExternalHref(href: string) {

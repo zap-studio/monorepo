@@ -15,9 +15,8 @@ import type {
 /**
  * Schema-first webhook router with path dispatching, validation, and optional verification.
  *
- * @typeParam TMap - Internal route payload map built incrementally via `register`.
+ * @template TMap - Internal route payload map built incrementally via `register`.
  */
-
 interface HandlerEntry<TPayload = unknown> {
   after?: AfterHook[];
   before?: BeforeHook[];
