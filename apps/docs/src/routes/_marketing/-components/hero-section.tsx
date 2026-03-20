@@ -6,12 +6,12 @@ import { GitHubIcon } from "./icons";
 
 export function HeroSection(): ReactNode {
   return (
-    <section className="relative flex flex-col overflow-hidden border-fd-border border-b min-h-[calc(100svh-3.5rem)]">
-      <PulseGlow className="pointer-events-none absolute top-[-50%] left-1/2 size-200 -translate-x-1/2 rounded-full bg-fd-primary/4 blur-[120px] md:size-250" />
+    <section className="border-fd-border relative flex min-h-[calc(100svh-3.5rem)] flex-col overflow-hidden border-b">
+      <PulseGlow className="bg-fd-primary/4 pointer-events-none absolute top-[-50%] left-1/2 size-200 -translate-x-1/2 rounded-full blur-[120px] md:size-250" />
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-[10%] right-[-10%] size-125 rounded-full bg-fd-primary/2 blur-[100px]"
+        className="bg-fd-primary/2 pointer-events-none absolute top-[10%] right-[-10%] size-125 rounded-full blur-[100px]"
       />
 
       <div
@@ -39,7 +39,7 @@ export function HeroSection(): ReactNode {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-fd-background to-transparent"
+        className="from-fd-background pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b to-transparent"
       />
 
       <div className="relative mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center px-6 py-16 text-center sm:py-24 md:py-40">
@@ -48,14 +48,14 @@ export function HeroSection(): ReactNode {
             The higher layer
             <br />
             for{" "}
-            <span className="bg-linear-to-r from-fd-primary to-fd-primary/60 bg-clip-text text-transparent italic">
+            <span className="from-fd-primary to-fd-primary/60 bg-linear-to-r bg-clip-text text-transparent italic">
               modern apps
             </span>
           </h1>
         </FadeIn>
 
         <FadeIn delay={0.15} duration={0.6} y={16}>
-          <p className="mx-auto mt-4 max-w-xl text-fd-muted-foreground text-sm leading-6 sm:mt-6 sm:text-base sm:leading-7 md:mt-8 md:text-xl md:leading-8">
+          <p className="text-fd-muted-foreground mx-auto mt-4 max-w-xl text-sm leading-6 sm:mt-6 sm:text-base sm:leading-7 md:mt-8 md:text-xl md:leading-8">
             Framework-agnostic TypeScript packages for the features every app needs. Type-safe,
             tested, zero lock-in.
           </p>
@@ -76,7 +76,7 @@ export function HeroSection(): ReactNode {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-fd-background to-transparent"
+        className="from-fd-background pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t to-transparent"
       />
     </section>
   );

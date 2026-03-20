@@ -2,6 +2,7 @@ import { isStandardSchema } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import { $fetch, api } from "../src/index.js";
 
 describe("Valibot Standard Schema compatibility", () => {

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HeroSection } from "@/routes/_marketing/-components/hero-section";
+
 import { pageMeta } from "@/lib/site";
+import { HeroSection } from "@/routes/_marketing/-components/hero-section";
 
 const homeDescription =
   "Framework-agnostic TypeScript packages for the features every app needs. Type-safe, tested, zero lock-in.";

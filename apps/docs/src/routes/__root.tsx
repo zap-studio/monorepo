@@ -1,13 +1,15 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { RootProvider } from "fumadocs-ui/provider/tanstack";
-import appCss from "@/styles/app.css?url";
+
+import { NotFoundComponent } from "@/components/not-found";
 import {
   interLatinWghtNormalUrl,
   instrumentSerifLatinItalicUrl,
   instrumentSerifLatinNormalUrl,
 } from "@/lib/fonts";
 import { siteDescription, siteKeywords, siteTitle, siteUrl } from "@/lib/site";
-import { NotFoundComponent } from "@/components/not-found";
+
+import appCss from "@/styles/app.css?url";
 
 export const Route = createRootRoute({
   head: () => ({

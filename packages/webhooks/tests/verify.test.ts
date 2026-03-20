@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
+
 import { VerificationError } from "../src/errors.js";
 import type { NormalizedRequest } from "../src/types/index.js";
 import { createHmacVerifier } from "../src/verify.js";

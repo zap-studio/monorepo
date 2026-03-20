@@ -1,6 +1,7 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it } from "vite-plus/test";
 import { z } from "zod";
+
 import { VerificationError } from "../src/errors.js";
 import { createWebhookRouter, WebhookRouter } from "../src/index.js";
 import type { NormalizedRequest } from "../src/types/index.js";

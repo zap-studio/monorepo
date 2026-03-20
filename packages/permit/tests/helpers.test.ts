@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
+
 import { assertNever } from "../src/helpers.js";
 
 describe("assertNever", () => {

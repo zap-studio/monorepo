@@ -1,6 +1,7 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
 import { describe, expect, it } from "vite-plus/test";
+
 import { FetchError } from "../src/errors.js";
 
 describe("FetchError", () => {

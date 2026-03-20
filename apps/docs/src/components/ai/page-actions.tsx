@@ -3,6 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "fumadocs-ui/components/
 import { useCopyButton } from "fumadocs-ui/utils/use-copy-button";
 import { Check, ChevronDown, Copy, ExternalLinkIcon, TextIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+
 import { cn } from "@/lib/cn";
 
 const cache = new Map<string, string>();
@@ -224,12 +225,12 @@ export function ViewOptions({
         )}
       >
         Open
-        <ChevronDown className="size-3.5 text-fd-muted-foreground" />
+        <ChevronDown className="text-fd-muted-foreground size-3.5" />
       </PopoverTrigger>
       <PopoverContent className="flex flex-col">
         {items.map((item) => (
           <a
-            className="inline-flex items-center gap-2 rounded-lg p-2 text-sm hover:bg-fd-accent hover:text-fd-accent-foreground [&_svg]:size-4"
+            className="hover:bg-fd-accent hover:text-fd-accent-foreground inline-flex items-center gap-2 rounded-lg p-2 text-sm [&_svg]:size-4"
             href={item.href}
             key={item.href}
             rel="noreferrer noopener"
@@ -237,7 +238,7 @@ export function ViewOptions({
           >
             {item.icon}
             {item.title}
-            <ExternalLinkIcon className="ms-auto size-3.5 text-fd-muted-foreground" />
+            <ExternalLinkIcon className="text-fd-muted-foreground ms-auto size-3.5" />
           </a>
         ))}
       </PopoverContent>

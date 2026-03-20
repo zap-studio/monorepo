@@ -1,5 +1,7 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { describe, expect, it } from "vite-plus/test";
+
+import { ValidationError } from "../src/errors.js";
 import {
   createStandardValidator,
   createSyncStandardValidator,
@@ -7,7 +9,6 @@ import {
   standardValidate,
   standardValidateSync,
 } from "../src/index.js";
-import { ValidationError } from "../src/errors.js";
 
 function createMockSchema<T>(
   validateFn: (input: unknown) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>,

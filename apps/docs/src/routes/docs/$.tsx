@@ -1,5 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import { useFumadocsLoader } from "fumadocs-core/source/client";
+import browserCollections from "fumadocs-mdx:collections/browser";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import {
   DocsBody,
@@ -8,15 +10,14 @@ import {
   DocsTitle,
   PageLastUpdate,
 } from "fumadocs-ui/layouts/docs/page";
-import { useFumadocsLoader } from "fumadocs-core/source/client";
 import { PencilIcon } from "lucide-react";
-import browserCollections from "fumadocs-mdx:collections/browser";
 import { Suspense } from "react";
+
 import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
+import { useMDXComponents } from "@/components/mdx";
 import { getMarkdownUrl, source } from "@/lib/content/source";
 import { baseOptions, gitConfig } from "@/lib/layout/layout.shared";
 import { pageMeta } from "@/lib/site";
-import { useMDXComponents } from "@/components/mdx";
 
 type SerializedPageTree = Awaited<ReturnType<typeof source.serializePageTree>>;
 
@@ -56,7 +57,7 @@ function DocsRoute() {
           transform: (option, node) => ({
             ...option,
             icon: node.icon ? (
-              <span className="flex size-full items-center justify-center text-fd-primary [&_svg]:size-5 md:[&_svg]:size-4">
+              <span className="text-fd-primary flex size-full items-center justify-center [&_svg]:size-5 md:[&_svg]:size-4">
                 {node.icon}
               </span>
             ) : undefined,
@@ -114,7 +115,7 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
           <MDX components={useMDXComponents()} />
           <div className="mt-8 flex flex-row flex-wrap items-center justify-between gap-4 border-t pt-4">
             <a
-              className="inline-flex items-center gap-1.5 text-fd-muted-foreground text-sm transition-colors hover:text-fd-foreground"
+              className="text-fd-muted-foreground hover:text-fd-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
               href={props.githubUrl}
               rel="noreferrer noopener"
               target="_blank"

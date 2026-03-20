@@ -1,5 +1,6 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
+
 import { FetchError } from "./errors.js";
 import type { $Fetch, ExtendedRequestInit, FetchDefaults, SearchParams } from "./types.js";
 

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
+
 import { PolicyError } from "../src/errors.js";
 
 describe("PolicyError", () => {

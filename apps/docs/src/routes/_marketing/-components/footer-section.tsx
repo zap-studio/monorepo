@@ -57,18 +57,18 @@ const footerColumns: FooterColumn[] = [
 
 export function FooterSection(): ReactNode {
   return (
-    <footer className="relative overflow-hidden border-fd-border border-t">
+    <footer className="border-fd-border relative overflow-hidden border-t">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-fd-primary/15 to-transparent"
+        className="via-fd-primary/15 pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent to-transparent"
       />
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 select-none overflow-hidden"
+        className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden select-none"
       >
         <p
-          className="translate-y-[22%] whitespace-nowrap text-center font-bold font-serif text-fd-foreground/10 leading-none dark:text-fd-foreground/15"
+          className="text-fd-foreground/10 dark:text-fd-foreground/15 translate-y-[22%] text-center font-serif leading-none font-bold whitespace-nowrap"
           style={{ fontSize: "clamp(48px, 14vw, 200px)" }}
         >
           Zap Studio
@@ -93,7 +93,7 @@ export function FooterSection(): ReactNode {
 
         <FadeIn delay={0.1} duration={0.4} y={8}>
           <div
-            className="mt-8 flex flex-col items-center justify-between gap-4 border-fd-border border-t pt-8 sm:flex-row sm:gap-6"
+            className="border-fd-border mt-8 flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row sm:gap-6"
             style={{ paddingBottom: "clamp(88px, 14vw, 192px)" }}
           >
             <div className="flex flex-col items-center gap-1 sm:items-start">
@@ -106,7 +106,7 @@ export function FooterSection(): ReactNode {
             <div className="flex items-center gap-5">
               <a
                 aria-label="View Zap Studio on GitHub"
-                className="text-fd-muted-foreground transition-colors duration-200 hover:text-fd-foreground"
+                className="text-fd-muted-foreground hover:text-fd-foreground transition-colors duration-200"
                 href="https://github.com/zap-studio/monorepo"
                 rel="noopener"
                 target="_blank"
@@ -115,7 +115,7 @@ export function FooterSection(): ReactNode {
               </a>
               <a
                 aria-label="Join Zap Studio on Discord"
-                className="text-fd-muted-foreground transition-colors duration-200 hover:text-fd-foreground"
+                className="text-fd-muted-foreground hover:text-fd-foreground transition-colors duration-200"
                 href="https://discord.gg/8Ke3VCjjMf"
                 rel="noopener"
                 target="_blank"
@@ -133,7 +133,7 @@ export function FooterSection(): ReactNode {
 function FooterColumnGroup({ heading, links }: FooterColumn): ReactNode {
   return (
     <div>
-      <p className="mb-2 font-serif text-fd-foreground/70 text-xs uppercase leading-5 tracking-widest md:mb-4">
+      <p className="text-fd-foreground/70 mb-2 font-serif text-xs leading-5 tracking-widest uppercase md:mb-4">
         {heading}
       </p>
       <ul className="flex flex-col md:gap-1">
@@ -155,7 +155,7 @@ function FooterLinkItem({ href, label, external }: FooterLink): ReactNode {
     return (
       <li>
         <a
-          className="block truncate text-fd-muted-foreground text-xs leading-7 transition-colors duration-200 hover:text-fd-foreground md:text-sm"
+          className="text-fd-muted-foreground hover:text-fd-foreground block truncate text-xs leading-7 transition-colors duration-200 md:text-sm"
           href={href}
           rel="noopener"
           target="_blank"
@@ -169,7 +169,7 @@ function FooterLinkItem({ href, label, external }: FooterLink): ReactNode {
   return (
     <li>
       <Link
-        className="block truncate text-fd-muted-foreground text-xs leading-7 transition-colors duration-200 hover:text-fd-foreground md:text-sm"
+        className="text-fd-muted-foreground hover:text-fd-foreground block truncate text-xs leading-7 transition-colors duration-200 md:text-sm"
         to={href}
       >
         {label}

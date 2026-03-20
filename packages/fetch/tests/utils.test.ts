@@ -1,5 +1,6 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import type { $fetch } from "../src/index.js";
 import type { ExtendedRequestInit } from "../src/types.js";
 import { createMethod, fetchInternal, mergeHeaders } from "../src/utils.js";

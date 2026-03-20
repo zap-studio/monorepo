@@ -1,5 +1,7 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it } from "vite-plus/test";
+
+import { PolicyError } from "../src/errors.js";
 import {
   allow,
   and,
@@ -14,7 +16,6 @@ import {
   or,
   when,
 } from "../src/index.js";
-import { PolicyError } from "../src/errors.js";
 import type { Actions, Resources, RoleHierarchy } from "../src/types.js";
 
 // Helper to create a mock Standard Schema

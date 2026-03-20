@@ -33,9 +33,9 @@ function NavbarMenuItemContent({
 }): ReactNode {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 shrink-0 text-fd-primary">{icon}</span>
+      <span className="text-fd-primary mt-0.5 shrink-0">{icon}</span>
       <div className="flex flex-col gap-0.5">
-        <p className="font-medium text-sm">{text}</p>
+        <p className="text-sm font-medium">{text}</p>
         <p className="text-fd-muted-foreground text-xs">{description}</p>
       </div>
     </div>

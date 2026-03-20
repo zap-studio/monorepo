@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
+
 import { constantTimeEquals } from "../../src/utils/index.js";
 
 describe("constantTimeEquals", () => {
