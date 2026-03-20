@@ -5,7 +5,6 @@
   "scripts": {
     "build": "vp run repo:build",
     "check": "vp check",
-    "clean": "rimraf node_modules coverage .vite \"packages/*/dist\" \"configs/*/dist\" apps/docs/.output apps/docs/.vercel/output apps/docs/dist apps/docs/.tanstack",
     "dev": "vp run docs#dev",
     "fix": "vp check --fix",
     "prepublishOnly": "vp run repo:validate",
@@ -24,7 +23,6 @@
     "@tanstack/intent": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "jsr": "catalog:",
-    "rimraf": "catalog:",
     "vite-plus": "catalog:"
   },
   "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be"
