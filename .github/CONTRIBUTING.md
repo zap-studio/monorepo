@@ -33,7 +33,8 @@ vp install
 Run these from the repo root:
 
 ```bash
-vp run validate
+vp check
+vp test
 vp run build
 ```
 

@@ -4,16 +4,9 @@
   "author": "Alexandre Trotel",
   "scripts": {
     "build": "vp run repo:build",
-    "check": "vp check",
     "dev": "vp run docs#dev",
-    "fix": "vp check --fix",
     "prepublishOnly": "vp run repo:validate",
-    "react-doctor": "vp run docs#react-doctor",
-    "test": "vp run repo:test",
-    "test:ci": "vp run repo:test:ci",
-    "test:coverage": "vp run repo:test:coverage",
-    "test:watch": "vp run -r test:watch",
-    "validate": "vp run repo:validate"
+    "react-doctor": "vp run docs#react-doctor"
   },
   "devDependencies": {
     "@changesets/cli": "catalog:",

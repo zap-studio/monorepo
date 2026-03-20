@@ -15,17 +15,6 @@ export default defineConfig({
       "repo:build": {
         command: "vp run --filter ./packages/* --filter ./apps/docs build",
       },
-      "repo:test": {
-        command: "vp test",
-      },
-      "repo:test:ci": {
-        command: "CI=1 vp test",
-        cache: false,
-      },
-      "repo:test:coverage": {
-        command: "CI=1 vp test run --coverage",
-        cache: false,
-      },
       "repo:validate": {
         command: "vp check && vp test",
         dependsOn: ["repo:build"],
