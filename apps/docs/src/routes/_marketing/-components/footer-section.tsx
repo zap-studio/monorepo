@@ -34,7 +34,7 @@ const footerColumns: FooterColumn[] = [
   {
     heading: "Resources",
     links: [
-      { label: "Documentation", href: "/docs/packages/fetch" },
+      { label: "Documentation", href: "/docs/getting-started" },
       { label: "llms.txt", href: "/llms.txt" },
       { label: "llms-full.txt", href: "/llms-full.txt" },
     ],
