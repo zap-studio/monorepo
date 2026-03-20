@@ -15,7 +15,7 @@ export interface NormalizedRequest {
   /** The query parameters of the request */
   query?: Record<string, string | string[]>;
   /** The raw body of the request (for signature) */
-  rawBody: Buffer;
+  rawBody: Uint8Array<ArrayBufferLike>;
   /** The parsed text body of the request if applicable */
   text?: string;
 }

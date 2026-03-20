@@ -220,7 +220,7 @@ export class WebhookRouter<TMap = unknown> {
 
   private parseRequestBody<TParsed = unknown>(req: NormalizedRequest): TParsed | undefined {
     try {
-      const parsed = JSON.parse(req.rawBody.toString());
+      const parsed = JSON.parse(new TextDecoder().decode(req.rawBody));
       req.json = parsed;
       return parsed as TParsed;
     } catch {

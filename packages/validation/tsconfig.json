@@ -3,7 +3,8 @@
   "include": ["."],
   "exclude": ["dist", "node_modules", "vite.config.ts"],
   "compilerOptions": {
+    "lib": ["ES2022", "DOM"],
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": []
   }
 }

@@ -38,6 +38,7 @@
     "!skills/_artifacts"
   ],
   "type": "module",
+  "sideEffects": false,
   "types": "./dist/index.d.mts",
   "exports": {
     ".": "./dist/index.mjs",
