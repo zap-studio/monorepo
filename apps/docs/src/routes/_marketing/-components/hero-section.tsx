@@ -6,7 +6,7 @@ import { GitHubIcon } from "./icons";
 
 export function HeroSection(): ReactNode {
   return (
-    <section className="relative flex flex-col overflow-hidden border-fd-border border-b sm:min-h-[calc(100svh-var(--fd-nav-height,4rem))]">
+    <section className="relative flex flex-col overflow-hidden border-fd-border border-b min-h-[calc(100svh-3.5rem)]">
       <PulseGlow className="pointer-events-none absolute top-[-50%] left-1/2 size-200 -translate-x-1/2 rounded-full bg-fd-primary/4 blur-[120px] md:size-250" />
 
       <div

@@ -11,12 +11,9 @@ import {
   BookOpenIcon,
   BotIcon,
   GlobeIcon,
-  HeartIcon,
   LayoutTemplateIcon,
   LockIcon,
-  MapIcon,
   PackageIcon,
-  ScrollTextIcon,
   WebhookIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -74,14 +71,7 @@ export function baseOptions(): BaseLayoutProps {
   };
 }
 
-export function homeLinks(
-  options: {
-    changelogActiveMode?: "url" | "nested-url" | "none";
-    sponsorsActiveMode?: "url" | "nested-url" | "none";
-  } = {},
-): BaseLayoutProps["links"] {
-  const { sponsorsActiveMode = "nested-url", changelogActiveMode = "nested-url" } = options;
-
+export function homeLinks(): BaseLayoutProps["links"] {
   return [
     ...(baseOptions().links ?? []),
     {
@@ -164,24 +154,6 @@ export function homeLinks(
       ),
     },
     // ── Shared links (both desktop and mobile) ──────────────────────
-    {
-      text: "Roadmap",
-      url: "/roadmap",
-      icon: <MapIcon className="size-4" />,
-      active: "nested-url",
-    },
-    {
-      text: "Sponsors",
-      url: "/sponsors",
-      icon: <HeartIcon className="size-4" />,
-      active: sponsorsActiveMode,
-    },
-    {
-      text: "Changelogs",
-      url: "/changelogs",
-      icon: <ScrollTextIcon className="size-4" />,
-      active: changelogActiveMode,
-    },
     {
       type: "custom",
       on: "nav",

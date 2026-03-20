@@ -34,8 +34,6 @@ const footerColumns: FooterColumn[] = [
     links: [
       { label: "Getting Started", href: "/docs/getting-started" },
       { label: "Documentation", href: "/docs/packages/fetch" },
-      { label: "Roadmap", href: "/roadmap" },
-      { label: "Changelogs", href: "/changelogs" },
       { label: "llms.txt", href: "/llms.txt" },
       { label: "llms-full.txt", href: "/llms-full.txt" },
     ],
@@ -52,10 +50,6 @@ const footerColumns: FooterColumn[] = [
         label: "Discord",
         href: "https://discord.gg/8Ke3VCjjMf",
         external: true,
-      },
-      {
-        label: "Sponsors",
-        href: "/sponsors",
       },
     ],
   },
