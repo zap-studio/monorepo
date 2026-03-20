@@ -19,6 +19,10 @@ interface FooterColumn {
 
 const footerColumns: FooterColumn[] = [
   {
+    heading: "Templates",
+    links: [{ label: "Local.ts", href: "/docs/local-ts" }],
+  },
+  {
     heading: "Packages",
     links: [
       { label: "fetch", href: "/docs/packages/fetch" },
@@ -28,13 +32,8 @@ const footerColumns: FooterColumn[] = [
     ],
   },
   {
-    heading: "Templates",
-    links: [{ label: "Local.ts", href: "/docs/local-ts" }],
-  },
-  {
     heading: "Resources",
     links: [
-      { label: "Getting Started", href: "/docs/getting-started" },
       { label: "Documentation", href: "/docs/packages/fetch" },
       { label: "llms.txt", href: "/llms.txt" },
       { label: "llms-full.txt", href: "/llms-full.txt" },
