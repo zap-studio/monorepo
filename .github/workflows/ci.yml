@@ -4,9 +4,6 @@ on:
   pull_request:
     branches: ["**"]
     types: [opened, synchronize, reopened, ready_for_review]
-    paths-ignore:
-      - "**/*.md"
-      - ".changeset/**"
   push:
     branches: [main]
   workflow_dispatch:
@@ -18,45 +15,14 @@ concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  PACKAGE_FILTER: ./packages/*
+
 jobs:
-  changes:
-    name: Changes
-    runs-on: ubuntu-latest
-    outputs:
-      docs: ${{ steps.filter.outputs.docs }}
-      packages: ${{ steps.filter.outputs.packages }}
-      shared: ${{ steps.filter.outputs.shared }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Detect changed workspaces
-        id: filter
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            docs:
-              - "apps/docs/**"
-            packages:
-              - "packages/**"
-            shared:
-              - ".github/actions/setup-vp/**"
-              - ".github/workflows/ci.yml"
-              - ".npmrc"
-              - "configs/**"
-              - "package.json"
-              - "pnpm-lock.yaml"
-              - "pnpm-workspace.yaml"
-              - "vite.config.ts"
-
   build-packages:
     name: Build Packages
     runs-on: ubuntu-latest
-    needs: changes
-    if: >
-      (github.event_name != 'pull_request' || github.event.pull_request.draft == false) &&
-      (github.event_name != 'pull_request' || needs.changes.outputs.packages == 'true' || needs.changes.outputs.shared == 'true')
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v6
         with:
@@ -66,23 +32,19 @@ jobs:
         uses: ./.github/actions/setup-vp
 
       - name: Build packages
-        run: vp run --filter ./packages/* build
+        run: vp run --filter "$PACKAGE_FILTER" build
 
       - name: Upload package build outputs
         uses: actions/upload-artifact@v4
         with:
           name: package-build-outputs
-          path: |
-            packages/*/dist
+          path: packages/*/dist
           if-no-files-found: error
 
   build-docs:
     name: Build Docs
     runs-on: ubuntu-latest
-    needs: changes
-    if: >
-      (github.event_name != 'pull_request' || github.event.pull_request.draft == false) &&
-      (github.event_name != 'pull_request' || needs.changes.outputs.docs == 'true' || needs.changes.outputs.shared == 'true')
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v6
         with:
@@ -97,12 +59,6 @@ jobs:
   check:
     name: Check
     runs-on: ubuntu-latest
-    needs: changes
-    if: >
-      github.event_name != 'pull_request' ||
-      needs.changes.outputs.docs == 'true' ||
-      needs.changes.outputs.packages == 'true' ||
-      needs.changes.outputs.shared == 'true'
     steps:
       - uses: actions/checkout@v6
 
@@ -115,11 +71,6 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    needs: changes
-    if: >
-      github.event_name != 'pull_request' ||
-      needs.changes.outputs.packages == 'true' ||
-      needs.changes.outputs.shared == 'true'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -134,11 +85,6 @@ jobs:
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
-    needs: changes
-    if: >
-      github.event_name != 'pull_request' ||
-      needs.changes.outputs.packages == 'true' ||
-      needs.changes.outputs.shared == 'true'
     permissions:
       contents: read
       id-token: write
@@ -177,13 +123,8 @@ jobs:
   publish-check:
     name: Publish Check
     runs-on: ubuntu-latest
-    needs:
-      - changes
-      - build-packages
-    if: >
-      github.event_name != 'pull_request' ||
-      needs.changes.outputs.packages == 'true' ||
-      needs.changes.outputs.shared == 'true'
+    needs: build-packages
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v6
         with:
@@ -199,4 +140,4 @@ jobs:
           path: .
 
       - name: Run publish checks
-        run: vp run --filter ./packages/* prepublishOnly
+        run: vp run --filter "$PACKAGE_FILTER" prepublishOnly
