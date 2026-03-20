@@ -1,5 +1,3 @@
-// biome-ignore-all lint/style/noMagicNumbers: This is a test file so magic numbers are acceptable here.
-
 import { describe, expect, it } from "vite-plus/test";
 import type { NormalizedRequest } from "../src/types/index.js";
 import { createHmacVerifier } from "../src/verify.js";

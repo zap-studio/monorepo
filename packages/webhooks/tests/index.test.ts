@@ -1,5 +1,3 @@
-// biome-ignore-all lint/style/noMagicNumbers: This is a test file so magic numbers are acceptable here.
-
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it } from "vite-plus/test";
 import { z } from "zod";
