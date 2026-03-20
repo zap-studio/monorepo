@@ -34,7 +34,6 @@ Run these from the repo root:
 
 ```bash
 vp run validate
-vp run test
 vp run build
 ```
 
