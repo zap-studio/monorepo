@@ -1,5 +1,4 @@
 /node_modules
-/.next
 /.output
 /.source
 /.turbo
@@ -7,4 +6,3 @@
 /.vercel
 /coverage
 *.tsbuildinfo
-next-env.d.ts

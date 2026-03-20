@@ -41,8 +41,6 @@ jobs:
           name: build-outputs
           path: |
             packages/*/dist
-            apps/docs/.next/types
-            apps/docs/.next/dev/types
           if-no-files-found: error
 
   check:

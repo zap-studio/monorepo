@@ -19,7 +19,6 @@ coverage/
 .vite/
 **/dist/
 **/coverage/
-**/.next/
 **/.out/
 **/.output/
 **/.source/
