@@ -57,7 +57,6 @@
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
     "@zap-studio/typescript": "workspace:*",
     "typescript": "catalog:",
     "vite-plus": "catalog:"

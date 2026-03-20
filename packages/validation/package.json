@@ -50,7 +50,6 @@
     "@standard-schema/spec": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
     "@zap-studio/typescript": "workspace:*",
     "typescript": "catalog:",
     "vite-plus": "catalog:"

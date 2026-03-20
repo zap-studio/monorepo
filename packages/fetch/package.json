@@ -62,7 +62,6 @@
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
     "@zap-studio/typescript": "workspace:*",
     "arktype": "catalog:",
     "typescript": "catalog:",
