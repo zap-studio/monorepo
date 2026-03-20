@@ -1,63 +1,86 @@
-# Contributing to Zap Studio
+# Contributing
 
-Thank you for your interest in contributing to Zap Studio! We welcome all contributions, whether you're fixing bugs, improving documentation, or adding new features.
+Thanks for contributing to Zap Studio.
 
-## Getting Started
+## Before you start
 
-1. **Fork the repository**
-   - Click the "Fork" button on GitHub to create your own copy.
-2. **Clone your fork**
-   - `git clone https://github.com/<your-username>/monorepo.git`
-   - `cd monorepo`
-   - `git remote add upstream https://github.com/zap-studio/monorepo.git`
-3. **Create a new branch**
-   - `git checkout -b my-feature-branch`
+- Use the issue forms for reproducible bugs and concrete feature requests.
+- Use GitHub Discussions or Discord for questions and general support.
+- For larger API or architecture changes, open an issue or discussion first so
+  the direction is clear before implementation.
 
-## Setting Up the Monorepo
+## Setup
 
-1. **Install dependencies**
-   - Run `vp install` from the workspace root.
+1. Fork the repository.
+2. Clone your fork.
+3. Install dependencies from the repository root:
 
-## Project Structure
+```bash
+vp install
+```
 
-- **`packages/fetch`** - Modern HTTP client (`@zap-studio/fetch`)
-- **`packages/waitlist`** - Waitlist management (`@zap-studio/waitlist`)
-- **`packages/webhooks`** - Webhook handling (`@zap-studio/webhooks`)
-- **`apps/docs`** - Documentation site (Fumadocs)
-- **`configs/`** - Shared configurations
+## Repository layout
 
-## Running Tests
+- `packages/fetch`
+- `packages/permit`
+- `packages/validation`
+- `packages/webhooks`
+- `apps/docs`
+- `configs/`
 
-- Run `vp run test` from the root to execute the package test suites.
-- Run `vp run test:coverage` to generate a root Vitest coverage report.
-- Run `vp run build` to build packages and the docs app.
-- Run `vp run validate` before opening a PR to run the root check plus the build and package test flow.
+## Local checks
 
-## Making Changes
+Run these from the repo root:
 
-- Make your changes in a dedicated branch.
-- Ensure your code passes `vp run validate`.
+```bash
+vp run validate
+vp run test
+vp run build
+```
 
-## Opening a Pull Request
+If you are changing one package, prefer the relevant package or app target via
+`vp run`.
 
-1. **Push your branch**
-   - `git push origin my-feature-branch`
-2. **Open a PR**
-   - Go to your fork on GitHub and click "Compare & pull request".
-   - Fill out the PR template and describe your changes.
+## Issues
 
-## Review Process
+Useful issues are specific and reproducible.
 
-- Your PR will be reviewed by maintainers.
-- Address any requested changes.
-- Once approved, your PR will be merged.
+- For bugs, include the affected package, version, runtime, steps to reproduce,
+  and the expected versus actual behavior.
+- For feature requests, describe the problem first, then the proposed solution.
+- Do not use public issues for security vulnerabilities. Follow `SECURITY.md`.
 
-## Quality and DX tools
+## Change expectations
 
-- **[Vite+](https://viteplus.dev/)**: Handles installs, checks, staged fixes, package/docs task orchestration, and test workflows.
+- Keep changes focused and reviewable.
+- Update docs when user-facing behavior or APIs change.
+- Add or update tests when behavior changes.
+- Do not include unrelated refactors in the same PR unless they are necessary.
 
-## Additional Resources
+## Releases
 
-If needed, open an issue. You can also join the [GitHub discussions](https://github.com/zap-studio/monorepo/discussions) or the [Discord](https://discord.gg/24hXMC3eAa).
+If your change affects a published package, add a changeset:
 
-Thanks for helping make Zap Studio better!
+```bash
+vp exec changeset
+```
+
+Write the changeset from the user or package-consumer perspective.
+
+## Pull requests
+
+PRs should clearly state:
+
+- what changed
+- why it changed
+- how it was validated
+- whether it is breaking
+
+Link related issues or discussions when relevant.
+
+If your change affects a published package API or behavior, include docs and
+changeset updates in the same PR.
+
+## Security
+
+Do not report vulnerabilities through public issues or pull requests. Follow [SECURITY.md](./SECURITY.md) instead.
