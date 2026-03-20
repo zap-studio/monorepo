@@ -55,16 +55,20 @@ export function createHmacVerifier({
 }): VerifyFn {
   const normalizedAlgorithm = normalizeAlgorithm(algo);
   validateCryptoKey(secret, normalizedAlgorithm);
+  const normalizedHeaderName = headerName.toLowerCase();
+  const subtle = getSubtleCrypto();
+  const keyPromise = resolveCryptoKey(secret, normalizedAlgorithm, subtle);
 
   return async (req) => {
-    const sig = req.headers.get(headerName.toLowerCase()) || "";
+    const sig = req.headers.get(normalizedHeaderName) || "";
     if (!sig) {
       throw Object.assign(new Error("missing signature"), {
         name: "SignatureError",
       });
     }
 
-    const expected = await createHmacHex(req.rawBody, secret, normalizedAlgorithm);
+    const key = await keyPromise;
+    const expected = await createHmacHex(req.rawBody, key, subtle);
     const actual = normalizeSignature(sig);
 
     if (!constantTimeEquals(expected, actual)) {
@@ -87,21 +91,24 @@ function normalizeAlgorithm(algo: string): SupportedHmacAlgorithm {
 
 async function createHmacHex(
   payload: Uint8Array<ArrayBufferLike>,
-  secret: PortableSecret,
-  algo: SupportedHmacAlgorithm,
+  key: CryptoKey,
+  subtle: SubtleCrypto,
 ): Promise<string> {
-  const subtle = globalThis.crypto?.subtle;
-  if (!subtle) {
-    throw new Error("Web Crypto API is unavailable in this runtime");
-  }
-
-  const key = await toCryptoKey(secret, algo, subtle);
   const signature = await subtle.sign("HMAC", key, toWebCryptoBytes(payload));
 
   return bytesToHex(new Uint8Array(signature));
 }
 
-async function toCryptoKey(
+function getSubtleCrypto(): SubtleCrypto {
+  const subtle = globalThis.crypto?.subtle;
+  if (!subtle) {
+    throw new Error("Web Crypto API is unavailable in this runtime");
+  }
+
+  return subtle;
+}
+
+async function resolveCryptoKey(
   secret: PortableSecret,
   algo: SupportedHmacAlgorithm,
   subtle: SubtleCrypto,
