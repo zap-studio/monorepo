@@ -30,16 +30,10 @@ Manual install with Vercel Skills:
 
 ```bash
 npx skills add zap-studio/monorepo
-pnpm dlx skills add zap-studio/monorepo
-yarn dlx skills add zap-studio/monorepo
-bunx skills add zap-studio/monorepo
 ```
 
 Install bundled skills from your installed dependencies with TanStack Intent:
 
 ```bash
 npx @tanstack/intent install
-pnpm dlx @tanstack/intent install
-yarn dlx @tanstack/intent install
-bunx @tanstack/intent install
 ```
