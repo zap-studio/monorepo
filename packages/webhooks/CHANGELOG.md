@@ -1,5 +1,12 @@
 # @zap-studio/webhooks
 
+## 0.2.0
+
+### Minor Changes
+
+- Switched `createHmacVerifier` from Node `crypto` to Web Crypto, making the verifier portable across runtimes that expose `globalThis.crypto.subtle`.
+- Changed verifier secrets to portable inputs (`string`, `BufferSource`, or `CryptoKey`) and removed support for Node-specific `crypto` key types.
+
 ## 0.1.4
 
 ### Patch Changes

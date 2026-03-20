@@ -7,6 +7,8 @@ import { createWebhookRouter, WebhookRouter } from "../src/index.js";
 import type { NormalizedRequest } from "../src/types/index.js";
 
 describe("WebhookRouter", () => {
+  const encoder = new TextEncoder();
+
   const createMockRequest = (
     path: string,
     body: unknown,
@@ -15,7 +17,7 @@ describe("WebhookRouter", () => {
     method,
     path,
     headers: new Headers(),
-    rawBody: Buffer.from(JSON.stringify(body)),
+    rawBody: encoder.encode(JSON.stringify(body)),
   });
 
   describe("Basic routing", () => {
@@ -154,7 +156,7 @@ describe("WebhookRouter", () => {
         expect(req.method).toBe("POST");
         expect(req.path).toBe("/metadata");
         expect(req.headers).toBeInstanceOf(Headers);
-        expect(req.rawBody).toBeInstanceOf(Buffer);
+        expect(req.rawBody).toBeInstanceOf(Uint8Array);
         expect(req.json).toBeDefined();
         return ack({ status: 200 });
       });
@@ -656,7 +658,7 @@ describe("WebhookRouter", () => {
         method: "POST",
         path: "/webhooks/json",
         headers: new Headers(),
-        rawBody: Buffer.from("not valid json{"),
+        rawBody: encoder.encode("not valid json{"),
       };
 
       const response = await router.handle(malformedRequest);
@@ -679,7 +681,7 @@ describe("WebhookRouter", () => {
         method: "POST",
         path: "/webhooks/empty",
         headers: new Headers(),
-        rawBody: Buffer.from(""),
+        rawBody: encoder.encode(""),
       };
 
       const response = await router.handle(emptyRequest);

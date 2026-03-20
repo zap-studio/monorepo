@@ -137,6 +137,7 @@ const router = createWebhookRouter({
 - reads a signature from the header you choose
 - computes an HMAC from `req.rawBody`
 - compares signatures in constant time
+- uses the Web Crypto API, so the runtime must provide `globalThis.crypto.subtle`
 
 ```ts
 import { createHmacVerifier } from "@zap-studio/webhooks/verify";

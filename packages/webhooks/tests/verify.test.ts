@@ -1,11 +1,12 @@
 // biome-ignore-all lint/style/noMagicNumbers: This is a test file so magic numbers are acceptable here.
 
-import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vite-plus/test";
 import type { NormalizedRequest } from "../src/types/index.js";
 import { createHmacVerifier } from "../src/verify.js";
 
 describe("createHmacVerifier", () => {
+  const encoder = new TextEncoder();
+
   const createMockRequest = (
     body: string,
     signature?: string,
@@ -14,17 +15,38 @@ describe("createHmacVerifier", () => {
     method: "POST",
     path: "/webhook",
     headers: new Headers(signature ? { [headerName.toLowerCase()]: signature } : {}),
-    rawBody: Buffer.from(body),
+    rawBody: encoder.encode(body),
   });
 
-  const generateValidSignature = (body: string, secret: string): string =>
-    createHmac("sha256", secret).update(body).digest("hex");
+  const generateValidSignature = async (
+    body: string | Uint8Array,
+    secret: string,
+    algo = "sha256",
+  ): Promise<string> => {
+    const key = await crypto.subtle.importKey(
+      "raw",
+      toWebCryptoBytes(encoder.encode(secret)),
+      {
+        name: "HMAC",
+        hash: normalizeHashName(algo),
+      },
+      false,
+      ["sign"],
+    );
+
+    const data = typeof body === "string" ? encoder.encode(body) : body;
+    const signature = await crypto.subtle.sign("HMAC", key, toWebCryptoBytes(data));
+
+    return Array.from(new Uint8Array(signature), (byte) => byte.toString(16).padStart(2, "0")).join(
+      "",
+    );
+  };
 
   describe("basic functionality", () => {
     it("should successfully verify a valid HMAC signature", async () => {
       const secret = "my-secret-key";
       const body = JSON.stringify({ event: "test", data: "value" });
-      const signature = generateValidSignature(body, secret);
+      const signature = await generateValidSignature(body, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -75,7 +97,7 @@ describe("createHmacVerifier", () => {
       const secret = "my-secret-key";
       const body1 = JSON.stringify({ event: "test1" });
       const body2 = JSON.stringify({ event: "test2" });
-      const signature = generateValidSignature(body1, secret);
+      const signature = await generateValidSignature(body1, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -94,7 +116,7 @@ describe("createHmacVerifier", () => {
       const correctSecret = "correct-secret";
       const wrongSecret = "wrong-secret";
       const body = JSON.stringify({ event: "test" });
-      const signature = generateValidSignature(body, correctSecret);
+      const signature = await generateValidSignature(body, correctSecret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -114,7 +136,7 @@ describe("createHmacVerifier", () => {
     it("should work with custom header name", async () => {
       const secret = "my-secret";
       const body = "test body";
-      const signature = generateValidSignature(body, secret);
+      const signature = await generateValidSignature(body, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Custom-Signature",
@@ -129,7 +151,7 @@ describe("createHmacVerifier", () => {
     it("should be case-insensitive for header names", async () => {
       const secret = "my-secret";
       const body = "test body";
-      const signature = generateValidSignature(body, secret);
+      const signature = await generateValidSignature(body, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -150,7 +172,7 @@ describe("createHmacVerifier", () => {
     it("should handle GitHub-style signatures", async () => {
       const secret = "github-webhook-secret";
       const body = '{"action":"opened","number":1}';
-      const signature = generateValidSignature(body, secret);
+      const signature = await generateValidSignature(body, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -165,7 +187,7 @@ describe("createHmacVerifier", () => {
     it("should handle Stripe-style signatures", async () => {
       const secret = "stripe-webhook-secret";
       const body = '{"id":"evt_test","type":"payment_intent.succeeded"}';
-      const signature = generateValidSignature(body, secret);
+      const signature = await generateValidSignature(body, secret);
 
       const verify = createHmacVerifier({
         headerName: "Stripe-Signature",
@@ -182,7 +204,7 @@ describe("createHmacVerifier", () => {
     it("should handle signatures with sha256= prefix", async () => {
       const secret = "my-secret";
       const body = "test body";
-      const rawSignature = generateValidSignature(body, secret);
+      const rawSignature = await generateValidSignature(body, secret);
       const prefixedSignature = `sha256=${rawSignature}`;
 
       const verify = createHmacVerifier({
@@ -198,7 +220,7 @@ describe("createHmacVerifier", () => {
     it("should handle signatures without prefix", async () => {
       const secret = "my-secret";
       const body = "test body";
-      const signature = generateValidSignature(body, secret);
+      const signature = await generateValidSignature(body, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -213,7 +235,7 @@ describe("createHmacVerifier", () => {
     it("should strip sha256= prefix when comparing", async () => {
       const secret = "my-secret";
       const body = "test body";
-      const rawSignature = generateValidSignature(body, secret);
+      const rawSignature = await generateValidSignature(body, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -234,7 +256,7 @@ describe("createHmacVerifier", () => {
     it("should default to sha256 algorithm", async () => {
       const secret = "my-secret";
       const body = "test body";
-      const signature = createHmac("sha256", secret).update(body).digest("hex");
+      const signature = await generateValidSignature(body, secret, "sha256");
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -249,7 +271,7 @@ describe("createHmacVerifier", () => {
     it("should support sha1 algorithm", async () => {
       const secret = "my-secret";
       const body = "test body";
-      const signature = createHmac("sha1", secret).update(body).digest("hex");
+      const signature = await generateValidSignature(body, secret, "sha1");
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature",
@@ -265,7 +287,7 @@ describe("createHmacVerifier", () => {
     it("should support sha512 algorithm", async () => {
       const secret = "my-secret";
       const body = "test body";
-      const signature = createHmac("sha512", secret).update(body).digest("hex");
+      const signature = await generateValidSignature(body, secret, "sha512");
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-512",
@@ -281,7 +303,7 @@ describe("createHmacVerifier", () => {
     it("should reject signature when algorithm mismatch", async () => {
       const secret = "my-secret";
       const body = "test body";
-      const sha1Signature = createHmac("sha1", secret).update(body).digest("hex");
+      const sha1Signature = await generateValidSignature(body, secret, "sha1");
 
       // Configure for sha256 but provide sha1 signature
       const verify = createHmacVerifier({
@@ -300,7 +322,7 @@ describe("createHmacVerifier", () => {
     it("should verify empty body correctly", async () => {
       const secret = "my-secret";
       const body = "";
-      const signature = generateValidSignature(body, secret);
+      const signature = await generateValidSignature(body, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -318,7 +340,7 @@ describe("createHmacVerifier", () => {
         event: "user.created",
         data: { id: 123, email: "test@example.com" },
       });
-      const signature = generateValidSignature(body, secret);
+      const signature = await generateValidSignature(body, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -335,7 +357,7 @@ describe("createHmacVerifier", () => {
       const body = JSON.stringify({
         data: "x".repeat(10_000),
       });
-      const signature = generateValidSignature(body, secret);
+      const signature = await generateValidSignature(body, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -351,7 +373,7 @@ describe("createHmacVerifier", () => {
       const secret = "my-secret";
       const body1 = '{"key":"value"}';
       const body2 = '{"key": "value"}'; // Extra space
-      const signature = generateValidSignature(body1, secret);
+      const signature = await generateValidSignature(body1, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -369,8 +391,8 @@ describe("createHmacVerifier", () => {
 
     it("should handle binary data correctly", async () => {
       const secret = "my-secret";
-      const binaryData = Buffer.from([0x00, 0x01, 0x02, 0xff, 0xfe, 0xfd]);
-      const signature = createHmac("sha256", secret).update(binaryData).digest("hex");
+      const binaryData = new Uint8Array([0x00, 0x01, 0x02, 0xff, 0xfe, 0xfd]);
+      const signature = await generateValidSignature(binaryData, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -390,7 +412,7 @@ describe("createHmacVerifier", () => {
     it("should handle unicode content correctly", async () => {
       const secret = "my-secret";
       const body = JSON.stringify({ message: "Hello 世界 🌍" });
-      const signature = generateValidSignature(body, secret);
+      const signature = await generateValidSignature(body, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -407,7 +429,7 @@ describe("createHmacVerifier", () => {
     it("should use constant-time comparison to prevent timing attacks", async () => {
       const secret = "my-secret";
       const body = "test body";
-      const correctSignature = generateValidSignature(body, secret);
+      const correctSignature = await generateValidSignature(body, secret);
       const incorrectSignature = "a".repeat(correctSignature.length);
 
       const verify = createHmacVerifier({
@@ -429,7 +451,7 @@ describe("createHmacVerifier", () => {
     it("should prevent replay attacks by verifying exact content", async () => {
       const secret = "my-secret";
       const originalBody = JSON.stringify({ id: 1, timestamp: 1_234_567_890 });
-      const signature = generateValidSignature(originalBody, secret);
+      const signature = await generateValidSignature(originalBody, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -480,7 +502,7 @@ describe("createHmacVerifier", () => {
           title: "Update README",
         },
       });
-      const signature = `sha256=${generateValidSignature(payload, secret)}`;
+      const signature = `sha256=${await generateValidSignature(payload, secret)}`;
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -499,7 +521,7 @@ describe("createHmacVerifier", () => {
         email: "customer@example.com",
         created_at: "2024-01-01T00:00:00Z",
       });
-      const signature = generateValidSignature(payload, secret);
+      const signature = await generateValidSignature(payload, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Shopify-Hmac-SHA256",
@@ -520,13 +542,13 @@ describe("createHmacVerifier", () => {
 
       // First webhook
       const body1 = JSON.stringify({ event: "user.created", id: 1 });
-      const sig1 = generateValidSignature(body1, secret);
+      const sig1 = await generateValidSignature(body1, secret);
       const req1 = createMockRequest(body1, sig1);
       await expect(verify(req1)).resolves.toBeUndefined();
 
       // Second webhook
       const body2 = JSON.stringify({ event: "user.updated", id: 2 });
-      const sig2 = generateValidSignature(body2, secret);
+      const sig2 = await generateValidSignature(body2, secret);
       const req2 = createMockRequest(body2, sig2);
       await expect(verify(req2)).resolves.toBeUndefined();
 
@@ -579,7 +601,7 @@ describe("createHmacVerifier", () => {
     it("should return a Promise that resolves for valid signatures", async () => {
       const secret = "my-secret";
       const body = "test body";
-      const signature = generateValidSignature(body, secret);
+      const signature = await generateValidSignature(body, secret);
 
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -607,3 +629,32 @@ describe("createHmacVerifier", () => {
     });
   });
 });
+
+function normalizeHashName(algo: string): string {
+  const normalized = algo.toLowerCase().replaceAll("-", "");
+
+  switch (normalized) {
+    case "sha1":
+      return "SHA-1";
+    case "sha256":
+      return "SHA-256";
+    case "sha384":
+      return "SHA-384";
+    case "sha512":
+      return "SHA-512";
+    default:
+      throw new Error(`Unsupported test HMAC algorithm: ${algo}`);
+  }
+}
+
+function toWebCryptoBytes(input: Uint8Array): Uint8Array<ArrayBuffer> {
+  if (input.buffer instanceof ArrayBuffer) {
+    return new Uint8Array(
+      input.buffer.slice(input.byteOffset, input.byteOffset + input.byteLength),
+    );
+  }
+
+  const copy = new Uint8Array(input.byteLength);
+  copy.set(input);
+  return copy;
+}
