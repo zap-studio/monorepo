@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/webhooks",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "private": false,
   "description": "A lightweight, type-safe webhook router with Standard Schema validation, signature verification, and lifecycle hooks.",
   "keywords": [
