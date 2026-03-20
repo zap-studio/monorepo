@@ -1,29 +1,29 @@
 import type { VerifyFn } from "./types/index.js";
 import { constantTimeEquals } from "./utils/index.js";
 
-const ALGORITHM_NAME_MAP = {
+const HMAC_HASH = {
   sha1: "SHA-1",
   sha256: "SHA-256",
   sha384: "SHA-384",
   sha512: "SHA-512",
 } as const;
 
-type SupportedHmacAlgorithm = keyof typeof ALGORITHM_NAME_MAP;
-type PortableSecret = string | BufferSource | CryptoKey;
+type HmacAlgorithm = keyof typeof HMAC_HASH;
 
 /**
- * Creates an HMAC-based request verification function.
+ * Creates a webhook verifier that validates an HMAC signature from a request header.
  *
- * The returned verifier reads the configured signature header, computes the
- * expected HMAC from `req.rawBody`, and compares them in constant time.
+ * The verifier imports the provided string secret once, computes an HMAC from
+ * `req.rawBody`, normalizes the incoming header value, and compares both
+ * signatures in constant time.
  *
- * @note Requires a runtime with Web Crypto support (`globalThis.crypto.subtle`).
+ * Header values like `sha256=<hex>` are supported so common provider formats
+ * such as GitHub work without extra parsing.
  *
  * @example
  * ```ts
  * import { createWebhookRouter } from "@zap-studio/webhooks";
  * import { createHmacVerifier } from "@zap-studio/webhooks/verify";
- * import { z } from "zod";
  *
  * const router = createWebhookRouter({
  *   verify: createHmacVerifier({
@@ -31,18 +31,16 @@ type PortableSecret = string | BufferSource | CryptoKey;
  *     secret: process.env.GITHUB_WEBHOOK_SECRET!,
  *   }),
  * });
- *
- * router.register("github/push", {
- *   schema: z.object({ ref: z.string() }),
- *   handler: async ({ ack }) => ack(),
- * });
  * ```
  *
- * @param options - HMAC verifier options.
- * @param options.headerName - Header containing provider signature.
- * @param options.secret - HMAC secret key.
- * @param options.algo - Hash algorithm used for HMAC generation.
- * @returns A verifier function compatible with router `verify`.
+ * @param options - Verifier configuration.
+ * @param options.headerName - Header containing the provider signature.
+ * @param options.secret - Shared HMAC secret as a string.
+ * @param options.algo - HMAC hash algorithm. Defaults to `"sha256"`.
+ * @returns A router-compatible request verifier.
+ *
+ * @throws {Error}
+ * Thrown when Web Crypto is unavailable or the algorithm is unsupported.
  */
 export function createHmacVerifier({
   headerName,
@@ -50,137 +48,44 @@ export function createHmacVerifier({
   algo = "sha256",
 }: {
   headerName: string;
-  secret: PortableSecret;
-  algo?: string;
+  secret: string;
+  algo?: HmacAlgorithm;
 }): VerifyFn {
-  const normalizedAlgorithm = normalizeAlgorithm(algo);
-  validateCryptoKey(secret, normalizedAlgorithm);
-  const normalizedHeaderName = headerName.toLowerCase();
-  const subtle = getSubtleCrypto();
-  const keyPromise = resolveCryptoKey(secret, normalizedAlgorithm, subtle);
-
-  return async (req) => {
-    const sig = req.headers.get(normalizedHeaderName) || "";
-    if (!sig) {
-      throw Object.assign(new Error("missing signature"), {
-        name: "SignatureError",
-      });
-    }
-
-    const key = await keyPromise;
-    const expected = await createHmacHex(req.rawBody, key, subtle);
-    const actual = normalizeSignature(sig);
-
-    if (!constantTimeEquals(expected, actual)) {
-      throw Object.assign(new Error("invalid signature"), {
-        name: "SignatureError",
-      });
-    }
-  };
-}
-
-function normalizeAlgorithm(algo: string): SupportedHmacAlgorithm {
-  const normalized = algo.toLowerCase().replaceAll("-", "") as SupportedHmacAlgorithm;
-
-  if (normalized in ALGORITHM_NAME_MAP) {
-    return normalized;
-  }
-
-  throw new Error(`Unsupported HMAC algorithm: ${algo}`);
-}
-
-async function createHmacHex(
-  payload: Uint8Array<ArrayBufferLike>,
-  key: CryptoKey,
-  subtle: SubtleCrypto,
-): Promise<string> {
-  const signature = await subtle.sign("HMAC", key, toWebCryptoBytes(payload));
-
-  return bytesToHex(new Uint8Array(signature));
-}
-
-function getSubtleCrypto(): SubtleCrypto {
   const subtle = globalThis.crypto?.subtle;
   if (!subtle) {
     throw new Error("Web Crypto API is unavailable in this runtime");
   }
 
-  return subtle;
-}
-
-async function resolveCryptoKey(
-  secret: PortableSecret,
-  algo: SupportedHmacAlgorithm,
-  subtle: SubtleCrypto,
-): Promise<CryptoKey> {
-  if (isCryptoKey(secret)) {
-    return secret;
+  const hash = HMAC_HASH[algo];
+  if (!hash) {
+    throw new Error(`Unsupported HMAC algorithm: ${algo}`);
   }
 
-  return subtle.importKey(
+  const keyPromise = subtle.importKey(
     "raw",
-    toWebCryptoBytes(secret),
-    {
-      name: "HMAC",
-      hash: ALGORITHM_NAME_MAP[algo],
-    },
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash },
     false,
     ["sign"],
   );
+
+  return async (req) => {
+    const actual = req.headers.get(headerName);
+    if (!actual) {
+      throw new Error(`Missing signature header: ${headerName}`);
+    }
+
+    const key = await keyPromise;
+    const signature = await subtle.sign("HMAC", key, req.rawBody as BufferSource);
+    const expected = toHex(new Uint8Array(signature));
+
+    if (!constantTimeEquals(expected, normalizeSignature(actual))) {
+      throw new Error(`Invalid signature for header: ${headerName}`);
+    }
+  };
 }
 
-function isCryptoKey(value: PortableSecret): value is CryptoKey {
-  return typeof CryptoKey !== "undefined" && value instanceof CryptoKey;
-}
-
-function validateCryptoKey(secret: PortableSecret, algo: SupportedHmacAlgorithm): void {
-  if (!isCryptoKey(secret)) {
-    return;
-  }
-
-  if (secret.algorithm.name !== "HMAC") {
-    throw new Error("CryptoKey must use HMAC");
-  }
-
-  const keyHash = (secret.algorithm as HmacKeyAlgorithm).hash?.name;
-  const expectedHash = ALGORITHM_NAME_MAP[algo];
-
-  if (keyHash && keyHash !== expectedHash) {
-    throw new Error(
-      `CryptoKey algorithm mismatch: key uses ${keyHash}, verifier expects ${expectedHash}`,
-    );
-  }
-}
-
-function toUint8Array(input: string | BufferSource | Uint8Array<ArrayBufferLike>): Uint8Array {
-  if (typeof input === "string") {
-    return new TextEncoder().encode(input);
-  }
-
-  if (input instanceof ArrayBuffer) {
-    return new Uint8Array(input);
-  }
-
-  return new Uint8Array(input.buffer, input.byteOffset, input.byteLength);
-}
-
-function toWebCryptoBytes(
-  input: string | BufferSource | Uint8Array<ArrayBufferLike>,
-): Uint8Array<ArrayBuffer> {
-  const bytes = toUint8Array(input);
-
-  if (bytes.buffer instanceof ArrayBuffer) {
-    return new Uint8Array(
-      bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
-    );
-  }
-
-  const copy = new Uint8Array(bytes.byteLength);
-  copy.set(bytes);
-  return copy;
-}
-
-function bytesToHex(bytes: Uint8Array): string {
+function toHex(bytes: Uint8Array): string {
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 

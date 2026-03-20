@@ -141,6 +141,7 @@ It does not depend on Node APIs. The verifier uses the Web Crypto API, so it wor
 - compares signatures in constant time
 - uses the Web Crypto API instead of Node `crypto`
 - works across runtimes that provide `globalThis.crypto.subtle`
+- expects a string secret
 
 ```ts
 import { createHmacVerifier } from "@zap-studio/webhooks/verify";

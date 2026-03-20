@@ -38,6 +38,7 @@ const router = createWebhookRouter({
 - computes HMAC from `req.rawBody`
 - compares signatures in constant time
 - depends on Web Crypto, not Node-specific APIs
+- expects a string secret
 
 Why constant-time comparison:
 
