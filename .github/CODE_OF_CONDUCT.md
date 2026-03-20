@@ -58,9 +58,8 @@ spaces, and other public interactions connected to this repository.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the maintainers responsible for enforcement at
-`alexandretrotel.freelance@gmail.com`. All complaints will be reviewed and
-investigated promptly and fairly.
+reported to the maintainers responsible for enforcement through a private
+channel. All complaints will be reviewed and investigated promptly and fairly.
 
 All maintainers are obligated to respect the privacy and security of the
 reporter of any incident.

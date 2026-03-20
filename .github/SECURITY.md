@@ -18,10 +18,9 @@ If you rely on Zap Studio in production, stay current with the latest package re
 Please report vulnerabilities privately. Do not open a public issue,
 discussion, or pull request.
 
-Preferred reporting paths:
+Preferred reporting path:
 
 1. GitHub Security Advisories / private vulnerability reporting, if available in the repository Security tab
-2. Email: `zapstudio.oos8l@aleeas.com`
 
 Please include:
 
