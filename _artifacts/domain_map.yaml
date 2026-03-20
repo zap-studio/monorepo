@@ -243,15 +243,14 @@ skills:
         priority: "CRITICAL"
         status: "active"
         version_context: "Current behavior in v0.1.3."
-      - mistake: "Using createHmacVerifier in non-Node runtime"
-        mechanism: "Verifier imports node:crypto and requires Node-compatible runtime."
+      - mistake: "Assuming createHmacVerifier is Node-only"
+        mechanism: "Verifier uses the Web Crypto API and works in runtimes that expose globalThis.crypto.subtle."
         wrong_pattern: |
-          const verify = createHmacVerifier({ headerName: 'x-signature', secret });
-          // used in edge runtime
-        correct_pattern: |
           const verify = async (req) => {
-            // implement provider verification with Web Crypto for edge runtimes
+            // reimplement HMAC verification because the runtime is not Node
           };
+        correct_pattern: |
+          const verify = createHmacVerifier({ headerName: 'x-signature', secret });
         source: "zap-studio/monorepo:packages/webhooks/src/verify.ts"
         priority: "HIGH"
         status: "active"

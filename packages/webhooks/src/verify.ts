@@ -1,22 +1,30 @@
-import type { BinaryLike, KeyObject } from "node:crypto";
-import type { VerifyFn } from "./types";
-import { constantTimeEquals } from "./utils";
+import { VerificationError } from "./errors.js";
+import type { VerifyFn } from "./types/index.js";
+import { constantTimeEquals } from "./utils/index.js";
 
-const SIGNATURE_REGEX = /^sha256=/;
+const HMAC_HASH = {
+  sha1: "SHA-1",
+  sha256: "SHA-256",
+  sha384: "SHA-384",
+  sha512: "SHA-512",
+} as const;
+
+type HmacAlgorithm = keyof typeof HMAC_HASH;
 
 /**
- * Creates an HMAC-based request verification function.
+ * Creates a webhook verifier that validates an HMAC signature from a request header.
  *
- * The returned verifier reads the configured signature header, computes the
- * expected HMAC from `req.rawBody`, and compares them in constant time.
+ * The verifier imports the provided string secret once, computes an HMAC from
+ * `req.rawBody`, normalizes the incoming header value, and compares both
+ * signatures in constant time.
  *
- * @note Uses Node.js `crypto` at runtime.
+ * Header values like `sha256=<hex>` are supported so common provider formats
+ * such as GitHub work without extra parsing.
  *
  * @example
  * ```ts
  * import { createWebhookRouter } from "@zap-studio/webhooks";
  * import { createHmacVerifier } from "@zap-studio/webhooks/verify";
- * import { z } from "zod";
  *
  * const router = createWebhookRouter({
  *   verify: createHmacVerifier({
@@ -24,18 +32,16 @@ const SIGNATURE_REGEX = /^sha256=/;
  *     secret: process.env.GITHUB_WEBHOOK_SECRET!,
  *   }),
  * });
- *
- * router.register("github/push", {
- *   schema: z.object({ ref: z.string() }),
- *   handler: async ({ ack }) => ack(),
- * });
  * ```
  *
- * @param options - HMAC verifier options.
- * @param options.headerName - Header containing provider signature.
- * @param options.secret - HMAC secret key.
- * @param options.algo - Hash algorithm used for HMAC generation.
- * @returns A verifier function compatible with router `verify`.
+ * @param options - Verifier configuration.
+ * @param options.headerName - Header containing the provider signature.
+ * @param options.secret - Shared HMAC secret as a string.
+ * @param options.algo - HMAC hash algorithm. Defaults to `"sha256"`.
+ * @returns A router-compatible request verifier.
+ *
+ * @throws {VerificationError}
+ * Thrown when verifier setup fails or request verification does not pass.
  */
 export function createHmacVerifier({
   headerName,
@@ -43,25 +49,50 @@ export function createHmacVerifier({
   algo = "sha256",
 }: {
   headerName: string;
-  secret: BinaryLike | KeyObject;
-  algo?: string;
+  secret: string;
+  algo?: HmacAlgorithm;
 }): VerifyFn {
+  const subtle = globalThis.crypto?.subtle;
+  if (!subtle) {
+    throw new VerificationError("Web Crypto API is unavailable in this runtime");
+  }
+
+  const hash = HMAC_HASH[algo];
+  if (!hash) {
+    throw new VerificationError(`Unsupported HMAC algorithm: ${algo}`);
+  }
+
+  const keyPromise = subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash },
+    false,
+    ["sign"],
+  );
+
   return async (req) => {
-    const sig = req.headers.get(headerName.toLowerCase()) || "";
-    if (!sig) {
-      throw Object.assign(new Error("missing signature"), {
-        name: "SignatureError",
-      });
+    const actual = req.headers.get(headerName);
+    if (!actual) {
+      throw new VerificationError(`Missing signature header: ${headerName}`);
     }
 
-    // compute HMAC of rawBody (it uses Node.js crypto module, so it works only in Node.js environment)
-    const crypto = await import("node:crypto");
-    const expected = crypto.createHmac(algo, secret).update(req.rawBody).digest("hex");
+    const key = await keyPromise;
+    const signature = await subtle.sign("HMAC", key, req.rawBody as BufferSource);
+    const expected = toHex(new Uint8Array(signature));
 
-    if (!constantTimeEquals(expected, sig.replace(SIGNATURE_REGEX, ""))) {
-      throw Object.assign(new Error("invalid signature"), {
-        name: "SignatureError",
-      });
+    if (!constantTimeEquals(expected, normalizeSignature(actual))) {
+      throw new VerificationError(`Invalid signature for header: ${headerName}`);
     }
   };
+}
+
+function toHex(bytes: Uint8Array): string {
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function normalizeSignature(signature: string): string {
+  return signature
+    .replace(/^[a-z0-9-]+=/i, "")
+    .trim()
+    .toLowerCase();
 }

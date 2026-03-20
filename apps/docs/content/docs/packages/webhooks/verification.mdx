@@ -17,7 +17,7 @@ Why:
 
 ## HMAC helper
 
-The package exports `createHmacVerifier` from `@zap-studio/webhooks/verify`.
+The package exports `createHmacVerifier` from `@zap-studio/webhooks/verify`. It is runtime-agnostic: the helper uses the Web Crypto API rather than Node `crypto`, so it works anywhere `globalThis.crypto.subtle` is available.
 
 ```ts
 import { createWebhookRouter } from "@zap-studio/webhooks";
@@ -37,6 +37,27 @@ const router = createWebhookRouter({
 - reads the signature from the configured header
 - computes HMAC from `req.rawBody`
 - compares signatures in constant time
+- depends on Web Crypto, not Node-specific APIs
+- expects a string secret
+- throws `VerificationError` on verifier setup or signature failures
+
+```ts
+import { createHmacVerifier } from "@zap-studio/webhooks/verify";
+import { VerificationError } from "@zap-studio/webhooks/errors";
+
+const verify = createHmacVerifier({
+  headerName: "x-hub-signature-256",
+  secret: process.env.GITHUB_WEBHOOK_SECRET!,
+});
+
+try {
+  await verify(req);
+} catch (error) {
+  if (error instanceof VerificationError) {
+    console.error("verification failed", error.message);
+  }
+}
+```
 
 Why constant-time comparison:
 

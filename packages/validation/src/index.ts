@@ -20,7 +20,7 @@
  */
 
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { ValidationError } from "./errors";
+import { ValidationError } from "./errors.js";
 
 /**
  * Standard Schema specification.

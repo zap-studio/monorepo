@@ -1,13 +1,13 @@
 import { isStandardSchema, type StandardSchemaV1 } from "@zap-studio/validation";
-import { GLOBAL_DEFAULTS } from "./constants";
+import { GLOBAL_DEFAULTS } from "./constants.js";
 import type {
   $Fetch,
   ApiMethods,
   CreateFetchOptions,
   ExtendedRequestInit,
   FetchDefaults,
-} from "./types";
-import { createMethod, fetchInternal } from "./utils";
+} from "./types.js";
+import { createMethod, fetchInternal } from "./utils.js";
 
 /**
  * Type-safe fetch wrapper with Standard Schema validation.
@@ -130,10 +130,10 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}): {
 } {
   const defaults: FetchDefaults = {
     baseURL: factoryOptions.baseURL ?? "",
-    headers: factoryOptions.headers,
-    searchParams: factoryOptions.searchParams,
     throwOnFetchError: factoryOptions.throwOnFetchError ?? true,
     throwOnValidationError: factoryOptions.throwOnValidationError ?? true,
+    headers: factoryOptions.headers,
+    searchParams: factoryOptions.searchParams,
   };
 
   async function customFetch<TSchema extends StandardSchemaV1>(

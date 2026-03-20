@@ -1,9 +1,9 @@
 {
-  "extends": "@zap-studio/typescript-config/base.json",
-  "include": ["."],
+  "extends": "@zap-studio/typescript/library.json",
+  "include": ["src/**/*.ts"],
   "exclude": ["dist", "node_modules", "vite.config.ts"],
   "compilerOptions": {
-    "strictNullChecks": true,
-    "types": ["node"]
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": []
   }
 }

@@ -1,8 +1,8 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
-import type { $fetch } from "../src";
-import type { ExtendedRequestInit } from "../src/types";
-import { createMethod, fetchInternal, mergeHeaders } from "../src/utils";
+import type { $fetch } from "../src/index.js";
+import type { ExtendedRequestInit } from "../src/types.js";
+import { createMethod, fetchInternal, mergeHeaders } from "../src/utils.js";
 
 const RE_HTTP_500 = /HTTP 500: Server Error/;
 const RE_HTTP_400 = /HTTP 400: Bad Request/;

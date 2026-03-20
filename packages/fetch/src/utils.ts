@@ -1,7 +1,7 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
-import { FetchError } from "./errors";
-import type { $Fetch, ExtendedRequestInit, FetchDefaults, SearchParams } from "./types";
+import { FetchError } from "./errors.js";
+import type { $Fetch, ExtendedRequestInit, FetchDefaults, SearchParams } from "./types.js";
 
 /**
  * Merges two HeadersInit objects, with the second one taking precedence

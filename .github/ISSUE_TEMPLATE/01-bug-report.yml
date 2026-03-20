@@ -1,0 +1,96 @@
+name: Bug report
+description: Report a reproducible bug in a package, docs, or repo tooling.
+title: "[bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this. Please include a minimal reproduction when possible.
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      description: Which package or area is affected?
+      options:
+        - "@zap-studio/fetch"
+        - "@zap-studio/permit"
+        - "@zap-studio/validation"
+        - "@zap-studio/webhooks"
+        - "docs"
+        - "repo / tooling"
+        - "other"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Affected version
+      description: Package version, commit, or branch.
+      placeholder: "@zap-studio/fetch@0.4.7"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Runtime
+      description: Which runtime shows the issue?
+      options:
+        - Node.js
+        - Bun
+        - Deno
+        - Cloudflare Workers
+        - Browser
+        - Other / unknown
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, package manager, and any relevant versions.
+      placeholder: "macOS 15, pnpm 10, Node 22"
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug clearly and include the expected result.
+      placeholder: "Expected X, but got Y."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include commands, code, links, or a minimal repro repo.
+      placeholder: |
+        1. Install ...
+        2. Run ...
+        3. Observe ...
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or screenshots
+      description: Paste the exact error output or add screenshots if useful.
+      render: text
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched existing issues first.
+          required: true
+        - label: I included enough detail for someone else to reproduce this.
+          required: true

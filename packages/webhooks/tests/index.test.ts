@@ -1,12 +1,14 @@
-// biome-ignore-all lint/style/noMagicNumbers: This is a test file so magic numbers are acceptable here.
-
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it } from "vite-plus/test";
 import { z } from "zod";
-import { createWebhookRouter, WebhookRouter } from "../src/index";
-import type { NormalizedRequest } from "../src/types";
+import { VerificationError } from "../src/errors.js";
+import { createWebhookRouter, WebhookRouter } from "../src/index.js";
+import type { NormalizedRequest } from "../src/types/index.js";
+import { createHmacVerifier } from "../src/verify.js";
 
 describe("WebhookRouter", () => {
+  const encoder = new TextEncoder();
+
   const createMockRequest = (
     path: string,
     body: unknown,
@@ -15,7 +17,7 @@ describe("WebhookRouter", () => {
     method,
     path,
     headers: new Headers(),
-    rawBody: Buffer.from(JSON.stringify(body)),
+    rawBody: encoder.encode(JSON.stringify(body)),
   });
 
   describe("Basic routing", () => {
@@ -154,7 +156,7 @@ describe("WebhookRouter", () => {
         expect(req.method).toBe("POST");
         expect(req.path).toBe("/metadata");
         expect(req.headers).toBeInstanceOf(Headers);
-        expect(req.rawBody).toBeInstanceOf(Buffer);
+        expect(req.rawBody).toBeInstanceOf(Uint8Array);
         expect(req.json).toBeDefined();
         return ack({ status: 200 });
       });
@@ -656,7 +658,7 @@ describe("WebhookRouter", () => {
         method: "POST",
         path: "/webhooks/json",
         headers: new Headers(),
-        rawBody: Buffer.from("not valid json{"),
+        rawBody: encoder.encode("not valid json{"),
       };
 
       const response = await router.handle(malformedRequest);
@@ -679,7 +681,7 @@ describe("WebhookRouter", () => {
         method: "POST",
         path: "/webhooks/empty",
         headers: new Headers(),
-        rawBody: Buffer.from(""),
+        rawBody: encoder.encode(""),
       };
 
       const response = await router.handle(emptyRequest);
@@ -957,6 +959,44 @@ describe("WebhookRouter", () => {
 
         expect(errorHookCalled).toBe(true);
         expect(response.status).toBe(401);
+      });
+
+      it("should expose VerificationError to onError when hmac verification fails", async () => {
+        interface WebhookMap {
+          test: { value: string };
+        }
+
+        let receivedError: Error | undefined;
+
+        const router = new WebhookRouter<WebhookMap>({
+          verify: createHmacVerifier({
+            headerName: "x-hub-signature-256",
+            secret: "my-secret",
+          }),
+          onError: (error) => {
+            receivedError = error;
+            return { status: 401, body: { error: error.message } };
+          },
+        });
+
+        router.register("test", ({ ack }) => ack({ status: 200 }));
+
+        const response = await router.handle({
+          method: "POST",
+          path: "/webhooks/test",
+          headers: new Headers({ "x-hub-signature-256": "invalid" }),
+          rawBody: encoder.encode(JSON.stringify({ value: "test" })),
+        });
+
+        expect(receivedError).toBeInstanceOf(VerificationError);
+        expect(receivedError).toMatchObject({
+          name: "VerificationError",
+          message: "Invalid signature for header: x-hub-signature-256",
+        });
+        expect(response).toEqual({
+          status: 401,
+          body: { error: "Invalid signature for header: x-hub-signature-256" },
+        });
       });
 
       it("should execute onError hook when before hook throws", async () => {

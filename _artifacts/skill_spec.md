@@ -48,11 +48,11 @@ This monorepo publishes framework-agnostic TypeScript packages for typed HTTP ac
 
 ### zap-webhooks-routing-and-verification (3 failure modes)
 
-| #   | Mistake                                      | Priority | Source                          | Cross-skill? |
-| --- | -------------------------------------------- | -------- | ------------------------------- | ------------ |
-| 1   | Registering route with leading slash         | HIGH     | packages/webhooks/src/index.ts  | —            |
-| 2   | Parsing JSON before signature verification   | CRITICAL | packages/webhooks/src/verify.ts | —            |
-| 3   | Using createHmacVerifier in non-Node runtime | HIGH     | packages/webhooks/src/verify.ts | —            |
+| #   | Mistake                                    | Priority | Source                          | Cross-skill? |
+| --- | ------------------------------------------ | -------- | ------------------------------- | ------------ |
+| 1   | Registering route with leading slash       | HIGH     | packages/webhooks/src/index.ts  | —            |
+| 2   | Parsing JSON before signature verification | CRITICAL | packages/webhooks/src/verify.ts | —            |
+| 3   | Assuming createHmacVerifier is Node-only   | HIGH     | packages/webhooks/src/verify.ts | —            |
 
 ## Tensions
 

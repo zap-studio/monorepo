@@ -6,8 +6,8 @@ import {
   isStandardSchema,
   standardValidate,
   standardValidateSync,
-} from "../src";
-import { ValidationError } from "../src/errors";
+} from "../src/index.js";
+import { ValidationError } from "../src/errors.js";
 
 function createMockSchema<T>(
   validateFn: (input: unknown) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>,

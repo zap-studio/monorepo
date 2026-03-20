@@ -31,6 +31,7 @@
     "!skills/_artifacts"
   ],
   "type": "module",
+  "sideEffects": false,
   "types": "./dist/index.d.mts",
   "exports": {
     ".": "./dist/index.mjs",
@@ -50,7 +51,7 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "@zap-studio/typescript-config": "workspace:*",
+    "@zap-studio/typescript": "workspace:*",
     "typescript": "catalog:",
     "vite-plus": "catalog:"
   }

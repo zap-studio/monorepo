@@ -144,7 +144,7 @@ Signature checks must run on exact raw bytes; any parse/serialize transformation
 
 Source: zap-studio/monorepo:packages/webhooks/src/verify.ts
 
-### HIGH Using Node HMAC verifier in non-Node runtime
+### HIGH Assuming `createHmacVerifier` is Node-only
 
 Wrong:
 
@@ -159,12 +159,13 @@ const verify = createHmacVerifier({
 Correct:
 
 ```ts
-const verify = async (req) => {
-  // implement provider verification with Web Crypto in edge runtimes
-};
+const verify = createHmacVerifier({
+  headerName: "x-signature",
+  secret: env.WEBHOOK_SECRET,
+});
 ```
 
-`createHmacVerifier` imports `node:crypto` and is intended for Node-compatible runtimes.
+`createHmacVerifier` uses the Web Crypto API and works across runtimes that expose `globalThis.crypto.subtle`.
 
 Source: zap-studio/monorepo:packages/webhooks/src/verify.ts
 

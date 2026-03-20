@@ -1,7 +1,5 @@
-// biome-ignore-all lint/style/noMagicNumbers: This is a test file so magic numbers are acceptable here.
-
 import { describe, expect, it } from "vite-plus/test";
-import { constantTimeEquals } from "../../src/utils";
+import { constantTimeEquals } from "../../src/utils/index.js";
 
 describe("constantTimeEquals", () => {
   describe("equal strings", () => {

@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and usage help
+    url: https://github.com/zap-studio/monorepo/discussions
+    about: Use GitHub Discussions for questions, troubleshooting, and general support.
+  - name: Security reports
+    url: https://github.com/zap-studio/monorepo/security/policy
+    about: Please report security vulnerabilities using the security policy, not public issues.
+  - name: Community chat
+    url: https://discord.gg/24hXMC3eAa
+    about: Use Discord for quick feedback and community discussion.

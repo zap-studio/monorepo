@@ -31,17 +31,17 @@ type BaseExtendedRequestInit = Omit<RequestInit, "body"> & {
   /**
    * Request body - can be a BodyInit value or an object that will be JSON-stringified
    */
-  body?: RequestBody;
+  body?: RequestBody | undefined;
   /**
    * Per-request query/search params
    * @default undefined
    */
-  searchParams?: SearchParams;
+  searchParams?: SearchParams | undefined;
   /**
    * Whether to throw a FetchError on HTTP errors (non-2xx responses)
    * @default true
    */
-  throwOnFetchError?: boolean;
+  throwOnFetchError?: boolean | undefined;
 };
 
 /**
@@ -54,7 +54,7 @@ export type ExtendedRequestInit<
    * Whether to throw a ValidationError on validation errors
    * @default true
    */
-  throwOnValidationError?: TThrowOnValidationError;
+  throwOnValidationError?: TThrowOnValidationError | undefined;
 };
 
 /**
@@ -70,12 +70,12 @@ export interface FetchDefaults {
    * Default headers to include in all requests (can be overridden per request)
    * @default undefined
    */
-  headers?: HeadersInit;
+  headers?: HeadersInit | undefined;
   /**
    * Default query/search params applied to every request (can be overridden per request)
    * @default undefined
    */
-  searchParams?: SearchParams;
+  searchParams?: SearchParams | undefined;
   /**
    * Whether to throw a `FetchError` on HTTP errors (non-2xx responses)
    * @default true

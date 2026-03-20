@@ -13,9 +13,9 @@ import {
   not,
   or,
   when,
-} from "../src";
-import { PolicyError } from "../src/errors";
-import type { Actions, Resources, RoleHierarchy } from "../src/types";
+} from "../src/index.js";
+import { PolicyError } from "../src/errors.js";
+import type { Actions, Resources, RoleHierarchy } from "../src/types.js";
 
 // Helper to create a mock Standard Schema
 function createSchema<T>(): StandardSchemaV1<T, T> {

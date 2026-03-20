@@ -2,7 +2,7 @@ import { isStandardSchema } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
 import { type } from "arktype";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
-import { $fetch, api } from "../src";
+import { $fetch, api } from "../src/index.js";
 
 describe("ArkType Standard Schema compatibility", () => {
   it("should expose ~standard property", () => {
