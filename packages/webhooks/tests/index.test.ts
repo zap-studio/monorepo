@@ -3,8 +3,8 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it } from "vite-plus/test";
 import { z } from "zod";
-import { createWebhookRouter, WebhookRouter } from "../src/index";
-import type { NormalizedRequest } from "../src/types";
+import { createWebhookRouter, WebhookRouter } from "../src/index.js";
+import type { NormalizedRequest } from "../src/types/index.js";
 
 describe("WebhookRouter", () => {
   const createMockRequest = (

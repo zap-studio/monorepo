@@ -1,4 +1,4 @@
-import type { NormalizedRequest, NormalizedResponse } from "../types";
+import type { NormalizedRequest, NormalizedResponse } from "../types/index.js";
 
 /**
  * Minimal framework adapter contract.

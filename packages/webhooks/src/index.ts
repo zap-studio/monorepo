@@ -10,7 +10,7 @@ import type {
   RegisterOptions,
   SchemaRouteOptions,
   WebhookHandler,
-} from "./types";
+} from "./types/index.js";
 
 /**
  * Schema-first webhook router with path dispatching, validation, and optional verification.
@@ -114,12 +114,21 @@ export class WebhookRouter<TMap = unknown> {
           : [handlerOrOptions.after];
       }
 
-      this.handlers[path] = {
+      const entry: HandlerEntry<unknown> = {
         handler: handlerOrOptions.handler,
-        schema: handlerOrOptions.schema,
-        before: beforeHooks,
-        after: afterHooks,
       };
+
+      if (handlerOrOptions.schema !== undefined) {
+        entry.schema = handlerOrOptions.schema;
+      }
+      if (beforeHooks !== undefined) {
+        entry.before = beforeHooks;
+      }
+      if (afterHooks !== undefined) {
+        entry.after = afterHooks;
+      }
+
+      this.handlers[path] = entry;
     }
 
     return this;
@@ -266,11 +275,18 @@ export class WebhookRouter<TMap = unknown> {
     const responded = await handler({
       req,
       payload: validatedPayload,
-      ack: async (r?: Partial<NormalizedResponse>) => ({
-        status: r?.status ?? 200,
-        body: r?.body ?? "ok",
-        headers: r?.headers,
-      }),
+      ack: async (r?: Partial<NormalizedResponse>) => {
+        const response: NormalizedResponse = {
+          status: r?.status ?? 200,
+          body: r?.body ?? "ok",
+        };
+
+        if (r?.headers !== undefined) {
+          response.headers = r.headers;
+        }
+
+        return response;
+      },
     });
 
     return responded ?? { status: 200, body: "ok" };

@@ -1,11 +1,10 @@
-import type { FetchDefaults } from "./types";
+import type { FetchDefaults } from "./types.js";
 
 /**
  * Default options for the global $fetch
  */
 export const GLOBAL_DEFAULTS: FetchDefaults = {
   baseURL: "",
-  headers: undefined,
   throwOnFetchError: true,
   throwOnValidationError: true,
 };

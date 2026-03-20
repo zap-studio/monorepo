@@ -2,8 +2,8 @@
 
 import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vite-plus/test";
-import type { NormalizedRequest } from "../src/types";
-import { createHmacVerifier } from "../src/verify";
+import type { NormalizedRequest } from "../src/types/index.js";
+import { createHmacVerifier } from "../src/verify.js";
 
 describe("createHmacVerifier", () => {
   const createMockRequest = (

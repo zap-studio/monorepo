@@ -1,6 +1,6 @@
 import type { BinaryLike, KeyObject } from "node:crypto";
-import type { VerifyFn } from "./types";
-import { constantTimeEquals } from "./utils";
+import type { VerifyFn } from "./types/index.js";
+import { constantTimeEquals } from "./utils/index.js";
 
 const SIGNATURE_REGEX = /^sha256=/;
 
