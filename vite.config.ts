@@ -23,6 +23,9 @@ export default defineConfig({
   },
   fmt: {
     ignorePatterns: ["**/routeTree.gen.ts"],
+    sortImports: {},
+    sortPackageJson: true,
+    sortTailwindcss: {},
   },
   staged: {
     "*": "vp check --fix",
