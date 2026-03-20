@@ -15,7 +15,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zap-studio/monorepo.git",
+    "url": "git+https://github.com/zap-studio/monorepo.git",
     "directory": "packages/validation"
   },
   "bin": {
@@ -43,6 +43,7 @@
   },
   "scripts": {
     "build": "vp pack",
+    "publish:check": "publint --strict --pack pnpm && attw --profile esm-only --pack .",
     "test": "vp test run",
     "test:watch": "vp test watch"
   },
@@ -53,5 +54,8 @@
     "@zap-studio/typescript": "workspace:*",
     "typescript": "catalog:",
     "vite-plus": "catalog:"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
