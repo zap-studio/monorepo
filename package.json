@@ -8,7 +8,6 @@
     "dev": "vp run docs#dev",
     "fix": "vp check --fix",
     "prepublishOnly": "vp run repo:validate",
-    "publish-packages": "vp run repo:validate && changeset publish",
     "react-doctor": "vp run docs#react-doctor",
     "test": "vp run repo:test",
     "test:ci": "vp run repo:test:ci",
