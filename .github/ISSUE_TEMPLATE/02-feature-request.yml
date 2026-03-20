@@ -1,0 +1,72 @@
+name: Feature request
+description: Propose a new capability or API improvement.
+title: "[feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please focus on the problem first, then the proposed solution.
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      description: Which package or area is this for?
+      options:
+        - "@zap-studio/fetch"
+        - "@zap-studio/permit"
+        - "@zap-studio/validation"
+        - "@zap-studio/webhooks"
+        - "docs"
+        - "repo / tooling"
+        - "other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What pain point or missing capability are you trying to solve?
+      placeholder: "It is hard to ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use cases
+      description: Concrete examples help evaluate scope and API shape.
+      placeholder: |
+        - When ...
+        - In app / package ...
+        - This would help because ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Share an API sketch or implementation direction if you have one.
+      placeholder: |
+        Example:
+        createThing({
+          ...
+        })
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What are you doing today, and why is it not enough?
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched existing issues and discussions first.
+          required: true
