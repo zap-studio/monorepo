@@ -105,7 +105,7 @@ export function homeLinks(): BaseLayoutProps["links"] {
           <NavbarMenuContent>
             <NavbarMenuLink href="/docs/local-ts">
               <NavbarMenuItemContent
-                description="Desktop app template built on Tauri + Next.js."
+                description="Desktop app template built on Tauri + Vite."
                 icon={<AppWindowIcon className="size-4" />}
                 text="Local.ts"
               />
