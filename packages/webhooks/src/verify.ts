@@ -54,6 +54,7 @@ export function createHmacVerifier({
   algo?: string;
 }): VerifyFn {
   const normalizedAlgorithm = normalizeAlgorithm(algo);
+  validateCryptoKey(secret, normalizedAlgorithm);
 
   return async (req) => {
     const sig = req.headers.get(headerName.toLowerCase()) || "";
@@ -123,6 +124,25 @@ async function toCryptoKey(
 
 function isCryptoKey(value: PortableSecret): value is CryptoKey {
   return typeof CryptoKey !== "undefined" && value instanceof CryptoKey;
+}
+
+function validateCryptoKey(secret: PortableSecret, algo: SupportedHmacAlgorithm): void {
+  if (!isCryptoKey(secret)) {
+    return;
+  }
+
+  if (secret.algorithm.name !== "HMAC") {
+    throw new Error("CryptoKey must use HMAC");
+  }
+
+  const keyHash = (secret.algorithm as HmacKeyAlgorithm).hash?.name;
+  const expectedHash = ALGORITHM_NAME_MAP[algo];
+
+  if (keyHash && keyHash !== expectedHash) {
+    throw new Error(
+      `CryptoKey algorithm mismatch: key uses ${keyHash}, verifier expects ${expectedHash}`,
+    );
+  }
 }
 
 function toUint8Array(input: string | BufferSource | Uint8Array<ArrayBufferLike>): Uint8Array {

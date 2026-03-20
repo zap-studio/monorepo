@@ -316,6 +316,27 @@ describe("createHmacVerifier", () => {
 
       await expect(verify(req)).rejects.toThrow("invalid signature");
     });
+
+    it("should reject CryptoKey secrets with a mismatched hash algorithm", async () => {
+      const key = await crypto.subtle.importKey(
+        "raw",
+        toWebCryptoBytes(encoder.encode("my-secret")),
+        {
+          name: "HMAC",
+          hash: "SHA-1",
+        },
+        false,
+        ["sign"],
+      );
+
+      expect(() =>
+        createHmacVerifier({
+          headerName: "X-Hub-Signature-256",
+          secret: key,
+          algo: "sha256",
+        }),
+      ).toThrow("CryptoKey algorithm mismatch: key uses SHA-1, verifier expects SHA-256");
+    });
   });
 
   describe("content handling", () => {
