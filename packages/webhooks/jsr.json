@@ -4,7 +4,12 @@
   "version": "0.1.4",
   "license": "MIT",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./adapters/base": "./src/adapters/base.ts",
+    "./errors": "./src/errors.ts",
+    "./types": "./src/types/index.ts",
+    "./utils": "./src/utils/index.ts",
+    "./verify": "./src/verify.ts"
   },
   "imports": {
     "@zap-studio/validation": "jsr:@zap-studio/validation@0.3.0"

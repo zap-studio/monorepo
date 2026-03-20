@@ -43,6 +43,7 @@
   "exports": {
     ".": "./dist/index.mjs",
     "./adapters/base": "./dist/adapters/base.mjs",
+    "./errors": "./dist/errors.mjs",
     "./types": "./dist/types/index.mjs",
     "./utils": "./dist/utils/index.mjs",
     "./verify": "./dist/verify.mjs",

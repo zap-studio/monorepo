@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
+import { VerificationError } from "../src/errors.js";
 import type { NormalizedRequest } from "../src/types/index.js";
 import { createHmacVerifier } from "../src/verify.js";
 
@@ -37,6 +38,15 @@ describe("createHmacVerifier", () => {
     return toHex(new Uint8Array(signature));
   };
 
+  const captureThrownError = async (run: () => void | Promise<void>): Promise<unknown> => {
+    try {
+      await run();
+      expect.fail("Expected function to throw");
+    } catch (error) {
+      return error;
+    }
+  };
+
   it("verifies a valid signature", async () => {
     const body = JSON.stringify({ event: "test", data: "value" });
     const secret = "my-secret";
@@ -55,9 +65,12 @@ describe("createHmacVerifier", () => {
       secret: "my-secret",
     });
 
-    await expect(verify(createMockRequest("body"))).rejects.toMatchObject({
-      name: "SignatureError",
-      message: "missing signature",
+    const error = await captureThrownError(() => verify(createMockRequest("body")));
+
+    expect(error).toBeInstanceOf(VerificationError);
+    expect(error).toMatchObject({
+      name: "VerificationError",
+      message: "Missing signature header: X-Hub-Signature-256",
     });
   });
 
@@ -67,9 +80,12 @@ describe("createHmacVerifier", () => {
       secret: "my-secret",
     });
 
-    await expect(verify(createMockRequest("body", "invalid"))).rejects.toMatchObject({
-      name: "SignatureError",
-      message: "invalid signature",
+    const error = await captureThrownError(() => verify(createMockRequest("body", "invalid")));
+
+    expect(error).toBeInstanceOf(VerificationError);
+    expect(error).toMatchObject({
+      name: "VerificationError",
+      message: "Invalid signature for header: X-Hub-Signature-256",
     });
   });
 
@@ -115,13 +131,20 @@ describe("createHmacVerifier", () => {
   });
 
   it("rejects unsupported algorithms", () => {
-    expect(() =>
+    try {
       createHmacVerifier({
         headerName: "X-Hub-Signature-256",
         secret: "my-secret",
         algo: "md5" as HmacAlgorithm,
-      }),
-    ).toThrow("Unsupported HMAC algorithm: md5");
+      });
+      expect.fail("Expected createHmacVerifier to throw");
+    } catch (error) {
+      expect(error).toBeInstanceOf(VerificationError);
+      expect(error).toMatchObject({
+        name: "VerificationError",
+        message: "Unsupported HMAC algorithm: md5",
+      });
+    }
   });
 
   it("verifies exact raw bytes", async () => {
@@ -135,9 +158,14 @@ describe("createHmacVerifier", () => {
     });
 
     await expect(verify(createMockRequest(body, signature))).resolves.toBeUndefined();
-    await expect(verify(createMockRequest(modifiedBody, signature))).rejects.toMatchObject({
-      name: "SignatureError",
-      message: "invalid signature",
+    const error = await captureThrownError(() =>
+      verify(createMockRequest(modifiedBody, signature)),
+    );
+
+    expect(error).toBeInstanceOf(VerificationError);
+    expect(error).toMatchObject({
+      name: "VerificationError",
+      message: "Invalid signature for header: X-Hub-Signature-256",
     });
   });
 
@@ -162,12 +190,17 @@ describe("createHmacVerifier", () => {
     });
 
     try {
-      expect(() =>
-        createHmacVerifier({
-          headerName: "X-Hub-Signature-256",
-          secret: "my-secret",
-        }),
-      ).toThrow("Web Crypto API is unavailable in this runtime");
+      createHmacVerifier({
+        headerName: "X-Hub-Signature-256",
+        secret: "my-secret",
+      });
+      expect.fail("Expected createHmacVerifier to throw");
+    } catch (error) {
+      expect(error).toBeInstanceOf(VerificationError);
+      expect(error).toMatchObject({
+        name: "VerificationError",
+        message: "Web Crypto API is unavailable in this runtime",
+      });
     } finally {
       if (originalDescriptor) {
         Object.defineProperty(globalThis, "crypto", originalDescriptor);

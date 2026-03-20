@@ -1,8 +1,10 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it } from "vite-plus/test";
 import { z } from "zod";
+import { VerificationError } from "../src/errors.js";
 import { createWebhookRouter, WebhookRouter } from "../src/index.js";
 import type { NormalizedRequest } from "../src/types/index.js";
+import { createHmacVerifier } from "../src/verify.js";
 
 describe("WebhookRouter", () => {
   const encoder = new TextEncoder();
@@ -957,6 +959,44 @@ describe("WebhookRouter", () => {
 
         expect(errorHookCalled).toBe(true);
         expect(response.status).toBe(401);
+      });
+
+      it("should expose VerificationError to onError when hmac verification fails", async () => {
+        interface WebhookMap {
+          test: { value: string };
+        }
+
+        let receivedError: Error | undefined;
+
+        const router = new WebhookRouter<WebhookMap>({
+          verify: createHmacVerifier({
+            headerName: "x-hub-signature-256",
+            secret: "my-secret",
+          }),
+          onError: (error) => {
+            receivedError = error;
+            return { status: 401, body: { error: error.message } };
+          },
+        });
+
+        router.register("test", ({ ack }) => ack({ status: 200 }));
+
+        const response = await router.handle({
+          method: "POST",
+          path: "/webhooks/test",
+          headers: new Headers({ "x-hub-signature-256": "invalid" }),
+          rawBody: encoder.encode(JSON.stringify({ value: "test" })),
+        });
+
+        expect(receivedError).toBeInstanceOf(VerificationError);
+        expect(receivedError).toMatchObject({
+          name: "VerificationError",
+          message: "Invalid signature for header: x-hub-signature-256",
+        });
+        expect(response).toEqual({
+          status: 401,
+          body: { error: "Invalid signature for header: x-hub-signature-256" },
+        });
       });
 
       it("should execute onError hook when before hook throws", async () => {

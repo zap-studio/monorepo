@@ -6,6 +6,7 @@
 
 - Switched `createHmacVerifier` from Node `crypto` to Web Crypto, making the verifier portable across runtimes that expose `globalThis.crypto.subtle`.
 - Simplified verifier secrets to string inputs and removed support for Node-specific `crypto` key types.
+- Added public `VerificationError` in `@zap-studio/webhooks/errors`; verifier setup and signature failures now throw this error.
 
 ## 0.1.4
 

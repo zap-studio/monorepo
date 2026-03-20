@@ -1,3 +1,4 @@
+import { VerificationError } from "./errors.js";
 import type { VerifyFn } from "./types/index.js";
 import { constantTimeEquals } from "./utils/index.js";
 
@@ -39,8 +40,8 @@ type HmacAlgorithm = keyof typeof HMAC_HASH;
  * @param options.algo - HMAC hash algorithm. Defaults to `"sha256"`.
  * @returns A router-compatible request verifier.
  *
- * @throws {Error}
- * Thrown when Web Crypto is unavailable or the algorithm is unsupported.
+ * @throws {VerificationError}
+ * Thrown when verifier setup fails or request verification does not pass.
  */
 export function createHmacVerifier({
   headerName,
@@ -53,12 +54,12 @@ export function createHmacVerifier({
 }): VerifyFn {
   const subtle = globalThis.crypto?.subtle;
   if (!subtle) {
-    throw new Error("Web Crypto API is unavailable in this runtime");
+    throw new VerificationError("Web Crypto API is unavailable in this runtime");
   }
 
   const hash = HMAC_HASH[algo];
   if (!hash) {
-    throw new Error(`Unsupported HMAC algorithm: ${algo}`);
+    throw new VerificationError(`Unsupported HMAC algorithm: ${algo}`);
   }
 
   const keyPromise = subtle.importKey(
@@ -72,7 +73,7 @@ export function createHmacVerifier({
   return async (req) => {
     const actual = req.headers.get(headerName);
     if (!actual) {
-      throw new Error(`Missing signature header: ${headerName}`);
+      throw new VerificationError(`Missing signature header: ${headerName}`);
     }
 
     const key = await keyPromise;
@@ -80,7 +81,7 @@ export function createHmacVerifier({
     const expected = toHex(new Uint8Array(signature));
 
     if (!constantTimeEquals(expected, normalizeSignature(actual))) {
-      throw new Error(`Invalid signature for header: ${headerName}`);
+      throw new VerificationError(`Invalid signature for header: ${headerName}`);
     }
   };
 }
