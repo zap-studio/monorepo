@@ -5,6 +5,7 @@ import { Check, ChevronDown, Copy, ExternalLinkIcon, TextIcon } from "lucide-rea
 import { useMemo, useState } from "react";
 
 import { cn } from "@/lib/cn";
+import { getExternalLinkProps } from "@/lib/utils/links";
 
 const cache = new Map<string, string>();
 
@@ -233,8 +234,7 @@ export function ViewOptions({
             className="hover:bg-fd-accent hover:text-fd-accent-foreground inline-flex items-center gap-2 rounded-lg p-2 text-sm [&_svg]:size-4"
             href={item.href}
             key={item.href}
-            rel="noreferrer noopener"
-            target="_blank"
+            {...getExternalLinkProps(item.href)}
           >
             {item.icon}
             {item.title}

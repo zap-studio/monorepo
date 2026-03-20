@@ -1,9 +1,17 @@
 import defaultMdxComponents from "fumadocs-ui/mdx";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import type { MDXComponents } from "mdx/types";
 
+import { getExternalLinkProps } from "@/lib/utils/links";
+
 export function getMDXComponents(components?: MDXComponents) {
+  const DefaultLink = defaultMdxComponents.a ?? "a";
+
   return {
     ...defaultMdxComponents,
+    a: (props: ComponentPropsWithoutRef<"a">): ReactNode => (
+      <DefaultLink {...props} {...getExternalLinkProps(props.href)} />
+    ),
     ...components,
   } satisfies MDXComponents;
 }

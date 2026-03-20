@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRightIcon } from "lucide-react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
+import { getExternalLinkProps, isExternalHref } from "@/lib/utils/links";
+
 const BASE =
   "group inline-flex items-center justify-center gap-2 rounded-md font-medium leading-none select-none " +
   "transition-all duration-150 " +
@@ -111,7 +113,7 @@ export function ButtonGroup({ children, className = "" }: ButtonGroupProps): Rea
 function ButtonLink({ children, href, ...props }: ButtonLinkProps): ReactNode {
   if (isExternalHref(href)) {
     return (
-      <a href={href} {...props}>
+      <a href={href} {...getExternalLinkProps(href)} {...props}>
         {children}
       </a>
     );
@@ -122,8 +124,4 @@ function ButtonLink({ children, href, ...props }: ButtonLinkProps): ReactNode {
       {children}
     </Link>
   );
-}
-
-function isExternalHref(href: string) {
-  return /^(?:[a-z]+:)?\/\//i.test(href);
 }

@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
+import { getExternalLinkProps } from "@/lib/utils/links";
+
 import { FadeIn } from "./animated";
 import { DiscordIcon, GitHubIcon } from "./icons";
 
@@ -108,8 +110,7 @@ export function FooterSection(): ReactNode {
                 aria-label="View Zap Studio on GitHub"
                 className="text-fd-muted-foreground hover:text-fd-foreground transition-colors duration-200"
                 href="https://github.com/zap-studio/monorepo"
-                rel="noopener"
-                target="_blank"
+                {...getExternalLinkProps("https://github.com/zap-studio/monorepo")}
               >
                 <GitHubIcon className="size-4" />
               </a>
@@ -117,8 +118,7 @@ export function FooterSection(): ReactNode {
                 aria-label="Join Zap Studio on Discord"
                 className="text-fd-muted-foreground hover:text-fd-foreground transition-colors duration-200"
                 href="https://discord.gg/8Ke3VCjjMf"
-                rel="noopener"
-                target="_blank"
+                {...getExternalLinkProps("https://discord.gg/8Ke3VCjjMf")}
               >
                 <DiscordIcon className="size-4" />
               </a>
@@ -157,8 +157,7 @@ function FooterLinkItem({ href, label, external }: FooterLink): ReactNode {
         <a
           className="text-fd-muted-foreground hover:text-fd-foreground block truncate text-xs leading-7 transition-colors duration-200 md:text-sm"
           href={href}
-          rel="noopener"
-          target="_blank"
+          {...getExternalLinkProps(href)}
         >
           {label}
         </a>

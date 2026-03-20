@@ -14,10 +14,11 @@ import { PencilIcon } from "lucide-react";
 import { Suspense } from "react";
 
 import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
-import { useMDXComponents } from "@/components/mdx";
+import { getMDXComponents } from "@/components/mdx";
 import { getMarkdownUrl, source } from "@/lib/content/source";
 import { baseOptions, gitConfig } from "@/lib/layout/layout.shared";
 import { pageMeta } from "@/lib/site";
+import { getExternalLinkProps } from "@/lib/utils/links";
 
 type SerializedPageTree = Awaited<ReturnType<typeof source.serializePageTree>>;
 
@@ -112,13 +113,12 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
           <ViewOptions githubUrl={props.githubUrl} markdownUrl={props.markdownUrl} />
         </div>
         <DocsBody>
-          <MDX components={useMDXComponents()} />
+          <MDX components={getMDXComponents()} />
           <div className="mt-8 flex flex-row flex-wrap items-center justify-between gap-4 border-t pt-4">
             <a
               className="text-fd-muted-foreground hover:text-fd-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
               href={props.githubUrl}
-              rel="noreferrer noopener"
-              target="_blank"
+              {...getExternalLinkProps(props.githubUrl)}
             >
               <PencilIcon className="size-3" />
               Edit on GitHub
