@@ -1,6 +1,6 @@
 # @zap-studio/webhooks
 
-Schema-first, type-safe webhook routing with signature verification support.
+Schema-first, type-safe webhook routing with runtime-agnostic signature verification support.
 
 Works with any validation library that implements [Standard Schema](https://github.com/standard-schema/standard-schema), including Zod, Valibot, and ArkType.
 
@@ -134,10 +134,13 @@ const router = createWebhookRouter({
 
 `@zap-studio/webhooks/verify` exports `createHmacVerifier`, a small helper that builds a `verify` function for HMAC-signed webhook providers.
 
+It does not depend on Node APIs. The verifier uses the Web Crypto API, so it works in any runtime that provides `globalThis.crypto.subtle`.
+
 - reads a signature from the header you choose
 - computes an HMAC from `req.rawBody`
 - compares signatures in constant time
-- uses the Web Crypto API, so the runtime must provide `globalThis.crypto.subtle`
+- uses the Web Crypto API instead of Node `crypto`
+- works across runtimes that provide `globalThis.crypto.subtle`
 
 ```ts
 import { createHmacVerifier } from "@zap-studio/webhooks/verify";
