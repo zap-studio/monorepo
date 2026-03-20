@@ -14,6 +14,7 @@
     "forceConsistentCasingInFileNames": true,
 
     "strict": true,
+    "strictNullChecks": true,
     "exactOptionalPropertyTypes": true,
     "noUncheckedIndexedAccess": true,
     "noUncheckedSideEffectImports": true,
