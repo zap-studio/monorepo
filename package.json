@@ -3,9 +3,9 @@
   "private": true,
   "author": "Alexandre Trotel",
   "scripts": {
-    "build": "vp run repo:build",
+    "build": "vp run -r build",
     "dev": "vp run docs#dev",
-    "prepublishOnly": "vp run repo:validate",
+    "prepublishOnly": "vp check && vp test",
     "react-doctor": "vp run docs#react-doctor"
   },
   "devDependencies": {

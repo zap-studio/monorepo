@@ -10,18 +10,6 @@ export default defineConfig({
   fmt: {
     ignorePatterns: ["**/routeTree.gen.ts"],
   },
-  run: {
-    tasks: {
-      "repo:build": {
-        command: "vp run --filter ./packages/* --filter ./apps/docs build",
-      },
-      "repo:validate": {
-        command: "vp check && vp test",
-        dependsOn: ["repo:build"],
-        cache: false,
-      },
-    },
-  },
   staged: {
     "*": "vp check --fix",
   },
