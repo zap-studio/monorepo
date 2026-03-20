@@ -3,19 +3,25 @@
   "private": true,
   "author": "Alexandre Trotel",
   "scripts": {
-    "build": "vp run -r build",
     "dev": "vp run docs#dev",
     "prepublishOnly": "vp check && vp test",
     "react-doctor": "vp run docs#react-doctor"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "catalog:",
     "@changesets/cli": "catalog:",
     "@commitlint/cli": "catalog:",
     "@commitlint/config-conventional": "catalog:",
     "@tanstack/intent": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "jsr": "catalog:",
-    "vite-plus": "catalog:"
+    "publint": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=10.32.1"
   },
   "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be"
 }

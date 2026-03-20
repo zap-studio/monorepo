@@ -43,7 +43,7 @@
   },
   "scripts": {
     "build": "vp pack",
-    "publish:check": "publint --strict --pack pnpm && attw --profile esm-only --pack .",
+    "prepublishOnly": "publint --strict --pack pnpm && attw --profile esm-only --pack .",
     "test": "vp test run",
     "test:watch": "vp test watch"
   },
