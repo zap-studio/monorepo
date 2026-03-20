@@ -6,7 +6,6 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
       - "**/*.md"
-      - "apps/docs/content/**"
       - ".changeset/**"
   push:
     branches: [main]
@@ -20,10 +19,44 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build
+  changes:
+    name: Changes
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    outputs:
+      docs: ${{ steps.filter.outputs.docs }}
+      packages: ${{ steps.filter.outputs.packages }}
+      shared: ${{ steps.filter.outputs.shared }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed workspaces
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            docs:
+              - "apps/docs/**"
+            packages:
+              - "packages/**"
+            shared:
+              - ".github/actions/setup-vp/**"
+              - ".github/workflows/ci.yml"
+              - ".npmrc"
+              - "configs/**"
+              - "package.json"
+              - "pnpm-lock.yaml"
+              - "pnpm-workspace.yaml"
+              - "vite.config.ts"
+
+  build-packages:
+    name: Build Packages
+    runs-on: ubuntu-latest
+    needs: changes
+    if: >
+      (github.event_name != 'pull_request' || github.event.pull_request.draft == false) &&
+      (github.event_name != 'pull_request' || needs.changes.outputs.packages == 'true' || needs.changes.outputs.shared == 'true')
     steps:
       - uses: actions/checkout@v6
         with:
@@ -32,32 +65,49 @@ jobs:
       - name: Setup Vite+
         uses: ./.github/actions/setup-vp
 
-      - name: Build monorepo
-        run: vp run -r build
+      - name: Build packages
+        run: vp run --filter ./packages/* build
 
-      - name: Upload build outputs
+      - name: Upload package build outputs
         uses: actions/upload-artifact@v4
         with:
-          name: build-outputs
+          name: package-build-outputs
           path: |
             packages/*/dist
           if-no-files-found: error
 
+  build-docs:
+    name: Build Docs
+    runs-on: ubuntu-latest
+    needs: changes
+    if: >
+      (github.event_name != 'pull_request' || github.event.pull_request.draft == false) &&
+      (github.event_name != 'pull_request' || needs.changes.outputs.docs == 'true' || needs.changes.outputs.shared == 'true')
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Vite+
+        uses: ./.github/actions/setup-vp
+
+      - name: Build docs
+        run: vp run docs#build
+
   check:
     name: Check
     runs-on: ubuntu-latest
-    needs: build
+    needs: changes
+    if: >
+      github.event_name != 'pull_request' ||
+      needs.changes.outputs.docs == 'true' ||
+      needs.changes.outputs.packages == 'true' ||
+      needs.changes.outputs.shared == 'true'
     steps:
       - uses: actions/checkout@v6
 
       - name: Setup Vite+
         uses: ./.github/actions/setup-vp
-
-      - name: Download build outputs
-        uses: actions/download-artifact@v4
-        with:
-          name: build-outputs
-          path: .
 
       - name: Run check on the monorepo
         run: vp check
@@ -65,7 +115,11 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    needs: build
+    needs: changes
+    if: >
+      github.event_name != 'pull_request' ||
+      needs.changes.outputs.packages == 'true' ||
+      needs.changes.outputs.shared == 'true'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -74,19 +128,17 @@ jobs:
       - name: Setup Vite+
         uses: ./.github/actions/setup-vp
 
-      - name: Download build outputs
-        uses: actions/download-artifact@v4
-        with:
-          name: build-outputs
-          path: .
-
       - name: Run tests
-        run: vp run -r test
+        run: vp test
 
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
-    needs: build
+    needs: changes
+    if: >
+      github.event_name != 'pull_request' ||
+      needs.changes.outputs.packages == 'true' ||
+      needs.changes.outputs.shared == 'true'
     permissions:
       contents: read
       id-token: write
@@ -98,14 +150,8 @@ jobs:
       - name: Setup Vite+
         uses: ./.github/actions/setup-vp
 
-      - name: Download build outputs
-        uses: actions/download-artifact@v4
-        with:
-          name: build-outputs
-          path: .
-
       - name: Run coverage
-        run: vp run test:coverage
+        run: CI=1 vp test run --coverage
 
       - name: Upload test results to Codecov
         if: ${{ always() }}
@@ -127,3 +173,30 @@ jobs:
           fail_ci_if_error: false
           use_oidc: true
           verbose: true
+
+  publish-check:
+    name: Publish Check
+    runs-on: ubuntu-latest
+    needs:
+      - changes
+      - build-packages
+    if: >
+      github.event_name != 'pull_request' ||
+      needs.changes.outputs.packages == 'true' ||
+      needs.changes.outputs.shared == 'true'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Vite+
+        uses: ./.github/actions/setup-vp
+
+      - name: Download build outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: package-build-outputs
+          path: .
+
+      - name: Run publish checks
+        run: vp run --filter ./packages/* prepublishOnly
