@@ -18,19 +18,22 @@ describe("createHmacVerifier", () => {
 
   const generateValidSignature = async (
     body: string | Uint8Array,
-    secret: string,
+    secret: string | BufferSource | CryptoKey,
     algo = "sha256",
   ): Promise<string> => {
-    const key = await crypto.subtle.importKey(
-      "raw",
-      toWebCryptoBytes(encoder.encode(secret)),
-      {
-        name: "HMAC",
-        hash: normalizeHashName(algo),
-      },
-      false,
-      ["sign"],
-    );
+    const key =
+      secret instanceof CryptoKey
+        ? secret
+        : await crypto.subtle.importKey(
+            "raw",
+            toWebCryptoBytes(toUint8Array(secret)),
+            {
+              name: "HMAC",
+              hash: normalizeHashName(algo),
+            },
+            false,
+            ["sign"],
+          );
 
     const data = typeof body === "string" ? encoder.encode(body) : body;
     const signature = await crypto.subtle.sign("HMAC", key, toWebCryptoBytes(data));
@@ -335,6 +338,74 @@ describe("createHmacVerifier", () => {
         }),
       ).toThrow("CryptoKey algorithm mismatch: key uses SHA-1, verifier expects SHA-256");
     });
+
+    it("should support matching CryptoKey secrets", async () => {
+      const body = "test body";
+      const key = await crypto.subtle.importKey(
+        "raw",
+        toWebCryptoBytes(encoder.encode("my-secret")),
+        {
+          name: "HMAC",
+          hash: "SHA-256",
+        },
+        false,
+        ["sign"],
+      );
+      const signature = await generateValidSignature(body, key);
+
+      const verify = createHmacVerifier({
+        headerName: "X-Hub-Signature-256",
+        secret: key,
+      });
+
+      const req = createMockRequest(body, signature);
+
+      await expect(verify(req)).resolves.toBeUndefined();
+    });
+
+    it("should reject CryptoKey secrets that are not HMAC keys", async () => {
+      const key = await crypto.subtle.generateKey(
+        {
+          name: "AES-GCM",
+          length: 256,
+        },
+        false,
+        ["encrypt", "decrypt"],
+      );
+
+      expect(() =>
+        createHmacVerifier({
+          headerName: "X-Hub-Signature-256",
+          secret: key,
+        }),
+      ).toThrow("CryptoKey must use HMAC");
+    });
+
+    it("should support uppercase dashed algorithm names", async () => {
+      const secret = "my-secret";
+      const body = "test body";
+      const signature = await generateValidSignature(body, secret, "SHA-384");
+
+      const verify = createHmacVerifier({
+        headerName: "X-Hub-Signature-384",
+        secret,
+        algo: "SHA-384",
+      });
+
+      const req = createMockRequest(body, signature, "x-hub-signature-384");
+
+      await expect(verify(req)).resolves.toBeUndefined();
+    });
+
+    it("should reject unsupported algorithms", () => {
+      expect(() =>
+        createHmacVerifier({
+          headerName: "X-Hub-Signature-256",
+          secret: "my-secret",
+          algo: "md5",
+        }),
+      ).toThrow("Unsupported HMAC algorithm: md5");
+    });
   });
 
   describe("content handling", () => {
@@ -424,6 +495,44 @@ describe("createHmacVerifier", () => {
         headers: new Headers({ "x-hub-signature-256": signature }),
         rawBody: binaryData,
       };
+
+      await expect(verify(req)).resolves.toBeUndefined();
+    });
+
+    it("should handle ArrayBuffer secrets correctly", async () => {
+      const body = "test body";
+      const secretBytes = encoder.encode("my-secret");
+      const secret = secretBytes.buffer.slice(
+        secretBytes.byteOffset,
+        secretBytes.byteOffset + secretBytes.byteLength,
+      );
+      const signature = await generateValidSignature(body, secret);
+
+      const verify = createHmacVerifier({
+        headerName: "X-Hub-Signature-256",
+        secret,
+      });
+
+      const req = createMockRequest(body, signature);
+
+      await expect(verify(req)).resolves.toBeUndefined();
+    });
+
+    it("should handle SharedArrayBuffer-backed secrets correctly", async () => {
+      const body = "test body";
+      const source = encoder.encode("my-secret");
+      const sharedBuffer = new SharedArrayBuffer(source.byteLength);
+      const secret = new Uint8Array(sharedBuffer);
+      const sharedSecret = secret as unknown as BufferSource;
+      secret.set(source);
+      const signature = await generateValidSignature(body, sharedSecret);
+
+      const verify = createHmacVerifier({
+        headerName: "X-Hub-Signature-256",
+        secret: sharedSecret,
+      });
+
+      const req = createMockRequest(body, signature);
 
       await expect(verify(req)).resolves.toBeUndefined();
     });
@@ -579,6 +688,28 @@ describe("createHmacVerifier", () => {
   });
 
   describe("error messages", () => {
+    it("should throw when Web Crypto is unavailable", () => {
+      const originalDescriptor = Object.getOwnPropertyDescriptor(globalThis, "crypto");
+
+      Object.defineProperty(globalThis, "crypto", {
+        configurable: true,
+        value: undefined,
+      });
+
+      try {
+        expect(() =>
+          createHmacVerifier({
+            headerName: "X-Hub-Signature-256",
+            secret: "secret",
+          }),
+        ).toThrow("Web Crypto API is unavailable in this runtime");
+      } finally {
+        if (originalDescriptor) {
+          Object.defineProperty(globalThis, "crypto", originalDescriptor);
+        }
+      }
+    });
+
     it("should throw error with name SignatureError for missing signature", async () => {
       const verify = createHmacVerifier({
         headerName: "X-Hub-Signature-256",
@@ -664,6 +795,20 @@ function normalizeHashName(algo: string): string {
     default:
       throw new Error(`Unsupported test HMAC algorithm: ${algo}`);
   }
+}
+
+function toUint8Array(
+  input: string | BufferSource | Uint8Array<ArrayBufferLike>,
+): Uint8Array<ArrayBufferLike> {
+  if (typeof input === "string") {
+    return new TextEncoder().encode(input);
+  }
+
+  if (input instanceof ArrayBuffer) {
+    return new Uint8Array(input);
+  }
+
+  return new Uint8Array(input.buffer, input.byteOffset, input.byteLength);
 }
 
 function toWebCryptoBytes(input: Uint8Array): Uint8Array<ArrayBuffer> {
