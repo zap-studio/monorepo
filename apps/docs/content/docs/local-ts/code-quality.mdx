@@ -1,9 +1,9 @@
 ---
 title: Code Quality
-description: Checks, testing, and Vite+ task workflows in Local.ts.
+description: Checks, testing, and direct Vite+ workflows in Local.ts.
 ---
 
-Local.ts uses Vite+ as the main workflow layer for checks, cached tasks, staged-file fixes, and test execution. Rust-specific quality checks remain in Cargo and Tauri.
+Local.ts uses Vite+ directly for checks, dev/build, and test execution. Rust-specific quality checks remain in Cargo and Tauri.
 
 ## Vite+ Checks
 
@@ -18,7 +18,7 @@ export default defineConfig({
     },
   },
   staged: {
-    "*.{js,jsx,ts,tsx,json,jsonc,css,html}": "vp check --fix",
+    "*": "vp check --fix",
   },
 });
 ```
@@ -38,17 +38,13 @@ vp check
 
 # Apply automatic fixes
 vp check --fix
-
-# Run the package scripts exposed by Local.ts
-vp run check
-vp run fix
 ```
 
 This keeps the workflow simple: run `vp check` to validate the project, and use `vp check --fix` when you want Vite+ to rewrite fixable issues.
 
 ## Testing with Vitest
 
-Local.ts uses a Vitest-compatible test runner through Vite+. You still get the familiar Vitest API, but the project runs it through `vp test` and exposes that through package scripts.
+Local.ts uses a Vitest-compatible test runner through Vite+. You still get the familiar Vitest API, and the default workflow runs through direct `vp test` commands instead of package scripts.
 
 ### Running Tests
 
@@ -100,71 +96,17 @@ Coverage reports are generated in the `coverage/` directory:
 - `coverage/index.html` — Interactive HTML report
 - Terminal output shows summary
 
-## Vite+ Tasks
+## Direct Commands
 
-The repository no longer uses a separate monorepo task runner. Instead, Local.ts defines the small number of cached workflows it needs directly in `vite.config.ts`:
+Use Vite+ commands directly and refer to the Vite+ docs for the current command reference:
 
-```ts
-export default defineConfig({
-  run: {
-    cache: {
-      scripts: false,
-      tasks: true,
-    },
-    tasks: {
-      routes: {
-        command: "vp exec tsr generate",
-      },
-      "app:build": {
-        command: "vp build",
-        dependsOn: ["routes"],
-      },
-      "app:validate": {
-        command: "vp test && vp check",
-        dependsOn: ["app:build"],
-        cache: false,
-      },
-    },
-  },
-});
-```
+- [Vite+ overview](https://viteplus.dev/guide/)
+- [Development server](https://viteplus.dev/guide/dev)
+- [Checks](https://viteplus.dev/guide/check)
+- [Testing](https://viteplus.dev/guide/test)
+- [Production builds](https://viteplus.dev/guide/build)
 
-This keeps the workflow local to the app:
-
-- `routes` regenerates TanStack Router files
-- `app:build` builds the frontend after route generation
-- `app:validate` runs the build, then executes tests and checks
-
-### Available Commands
-
-| Command                  | Description                              |
-| ------------------------ | ---------------------------------------- |
-| `vp run dev`             | Start the frontend dev workflow          |
-| `vp run tauri dev`       | Start the full Tauri app with hot reload |
-| `vp run tauri build`     | Build native production bundles          |
-| `vp run build`           | Run the cached frontend build workflow   |
-| `vp run check`           | Run project checks                       |
-| `vp run fix`             | Apply checker fixes                      |
-| `vp run test`            | Run tests once                           |
-| `vp run test:coverage`   | Generate coverage report                 |
-| `vp run validate`        | Run the validation workflow              |
-| `vp run generate-routes` | Generate TanStack Router route files     |
-
-### The Validate Command
-
-The `validate` script maps to `vp run app:validate`, which depends on the cached build workflow before running tests and checks.
-
-Use it before committing or in CI:
-
-```bash
-vp run validate
-```
-
-This ensures your code:
-
-- Builds the frontend successfully
-- Passes type-aware and lint checks
-- Passes all tests
+For Local.ts specifically, use `vp exec tauri dev` and `vp exec tauri build` for native Tauri workflows. `src-tauri/tauri.conf.json` points `beforeDevCommand` to `vp dev` and `beforeBuildCommand` to `vp build`.
 
 ## Cargo
 
