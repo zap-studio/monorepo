@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "@zap-studio/typescript-config": "workspace:*",
+    "@zap-studio/typescript": "workspace:*",
     "typescript": "catalog:",
     "vite-plus": "catalog:"
   }
