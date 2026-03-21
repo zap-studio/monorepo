@@ -38,7 +38,7 @@
     "nitro": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.13"
   },
   "engines": {
     "node": ">=20.0.0"
