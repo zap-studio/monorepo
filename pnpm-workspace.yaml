@@ -29,7 +29,7 @@ catalog:
   fumadocs-mdx: ^14.2.11
   fumadocs-ui: ^16.7.3
   jsr: ^0.14.3
-  lucide-react: ^0.577.0
+  lucide-react: ^1.0.1
   motion: ^12.38.0
   nitro: 3.0.260311-beta
   postcss: ^8.5.6
