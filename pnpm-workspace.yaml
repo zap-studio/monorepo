@@ -41,7 +41,7 @@ catalog:
   typescript: ^5.9.3
   valibot: ^1.2.0
   vite: npm:@voidzero-dev/vite-plus-core@0.1.13
-  vite-plus: ^0.1.13
+  vite-plus: ^0.1.14
   vitest: npm:@voidzero-dev/vite-plus-test@0.1.13
   zod: ^4.2.0
 
