@@ -17,7 +17,7 @@ catalog:
   "@takumi-rs/image-response": ^0.73.1
   "@tanstack/intent": ^0.0.23
   "@tanstack/react-router": ^1.168.1
-  "@tanstack/react-start": ^1.167.2
+  "@tanstack/react-start": ^1.167.14
   "@types/mdx": ^2.0.13
   "@types/node": ^25.5.0
   "@types/react": ^19.2.14
