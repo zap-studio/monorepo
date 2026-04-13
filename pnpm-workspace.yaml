@@ -27,7 +27,7 @@ catalog:
   arktype: ^2.2.0
   fumadocs-core: ^16.7.7
   fumadocs-mdx: ^14.2.11
-  fumadocs-ui: ^16.7.7
+  fumadocs-ui: ^16.7.14
   jsr: ^0.14.3
   lucide-react: ^1.7.0
   motion: ^12.38.0
