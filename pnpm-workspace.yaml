@@ -25,7 +25,7 @@ catalog:
   "@vitejs/plugin-react": ^6.0.1
   "@vitest/coverage-v8": ^4.1.4
   arktype: ^2.2.0
-  fumadocs-core: ^16.7.16
+  fumadocs-core: ^16.8.1
   fumadocs-mdx: ^14.3.0
   fumadocs-ui: ^16.7.16
   jsr: ^0.14.3
