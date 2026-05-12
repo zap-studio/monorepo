@@ -15,7 +15,7 @@ catalog:
   "@fontsource/instrument-serif": ^5.2.8
   "@standard-schema/spec": ^1.1.0
   "@tailwindcss/postcss": ^4.2.1
-  "@tailwindcss/vite": ^4.2.4
+  "@tailwindcss/vite": ^4.3.0
   "@takumi-rs/image-response": ^1.1.2
   "@tanstack/react-router": ^1.169.2
   "@tanstack/react-start": ^1.167.65
