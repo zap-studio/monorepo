@@ -36,7 +36,7 @@ catalog:
   exponential-backoff: ^3.1.3
   fumadocs-core: ^16.9.1
   fumadocs-mdx: ^15.0.9
-  fumadocs-ui: ^16.9.1
+  fumadocs-ui: ^16.9.3
   ky: ^2.0.2
   lefthook: ^2.1.8
   lucide-react: ^1.16.0
