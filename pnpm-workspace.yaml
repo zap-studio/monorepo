@@ -25,7 +25,7 @@ catalog:
   "@types/mdx": ^2.0.13
   "@types/node": ^24.12.4
   "@types/promise-retry": ^1.1.6
-  "@types/react": ^19.2.15
+  "@types/react": ^19.2.16
   "@types/react-dom": ^19.2.3
   "@vitejs/plugin-react": ^6.0.2
   "@vitest/browser-playwright": ^4.1.7
@@ -50,7 +50,7 @@ catalog:
   playwright: ^1.60.0
   promise-retry: ^2.0.1
   publint: ^0.3.21
-  react: ^19.2.6
+  react: ^19.2.7
   react-dom: ^19.2.6
   tailwind-merge: ^3.6.0
   tailwindcss: ^4.3.0
