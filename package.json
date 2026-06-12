@@ -8,7 +8,6 @@
     "bench:watch": "vitest bench --watch",
     "build": "pnpm --filter './packages/*' run build",
     "publish:check": "pnpm run format:check && pnpm run lint && pnpm run test && pnpm --filter './packages/*' run prepublishOnly",
-    "react-doctor": "pnpm --filter docs run react-doctor",
     "format": "pnpx ultracite fix",
     "format:check": "pnpx ultracite check",
     "lint": "pnpx ultracite check",
