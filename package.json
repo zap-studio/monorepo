@@ -28,6 +28,7 @@
     "playwright": "catalog:",
     "publint": "catalog:",
     "tsdown": "catalog:",
+    "ultracite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {
