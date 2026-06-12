@@ -1,12 +1,5 @@
 pre-commit:
-  parallel: true
   jobs:
-    - name: format
-      run: pnpm exec oxfmt --no-error-on-unmatched-pattern {staged_files}
-      glob: "*"
-      stage_fixed: true
-
-    - name: lint
-      run: pnpm exec oxlint --no-error-on-unmatched-pattern --type-aware --type-check --fix {staged_files}
-      glob: "*"
+    - name: fix
+      run: pnpx ultracite fix
       stage_fixed: true
