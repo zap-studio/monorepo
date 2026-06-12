@@ -1,5 +1,4 @@
 pre-commit:
   jobs:
     - name: fix
-      run: pnpx ultracite fix
-      stage_fixed: true
+      run: pnpm exec ultracite fix
