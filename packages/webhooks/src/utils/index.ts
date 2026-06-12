@@ -12,15 +12,16 @@
  * const isEqual = constantTimeEquals("string1", "string2"); // returns false
  * ```
  */
-export function constantTimeEquals(a: string, b: string): boolean {
+export const constantTimeEquals = (a: string, b: string): boolean => {
   if (a.length !== b.length) {
     return false;
   }
 
   let result = 0;
   for (let i = 0; i < a.length; i += 1) {
-    result |= a.codePointAt(i) ^ b.codePointAt(i);
+    // oxlint-disable-next-line no-bitwise -- XOR accumulation is the constant-time comparison primitive.
+    result |= (a.codePointAt(i) ?? 0) ^ (b.codePointAt(i) ?? 0);
   }
 
   return result === 0;
-}
+};

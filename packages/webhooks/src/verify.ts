@@ -17,6 +17,15 @@ const HMAC_HASH = {
 
 type HmacAlgorithm = keyof typeof HMAC_HASH;
 
+const toHex = (bytes: Uint8Array): string =>
+  Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+
+const normalizeSignature = (signature: string): string =>
+  signature
+    .replace(/^[a-z0-9-]+=/iu, "")
+    .trim()
+    .toLowerCase();
+
 /**
  * Creates a webhook verifier that validates an HMAC signature from a request header.
  *
@@ -49,7 +58,7 @@ type HmacAlgorithm = keyof typeof HMAC_HASH;
  * @throws {VerificationError}
  * Thrown when verifier setup fails or request verification does not pass.
  */
-export function createHmacVerifier({
+export const createHmacVerifier = ({
   headerName,
   secret,
   algo = "sha256",
@@ -57,13 +66,8 @@ export function createHmacVerifier({
   headerName: string;
   secret: string;
   algo?: HmacAlgorithm;
-}): VerifyFn {
-  const subtle = globalThis.crypto?.subtle;
-  if (!subtle) {
-    throw new VerificationError(
-      "Web Crypto API is unavailable in this runtime"
-    );
-  }
+}): VerifyFn => {
+  const { subtle } = globalThis.crypto;
 
   const hash = HMAC_HASH[algo];
   if (!hash) {
@@ -80,7 +84,7 @@ export function createHmacVerifier({
 
   return async (req) => {
     const actual = req.headers.get(headerName);
-    if (!actual) {
+    if (actual === null || actual.length === 0) {
       throw new VerificationError(`Missing signature header: ${headerName}`);
     }
 
@@ -88,6 +92,7 @@ export function createHmacVerifier({
     const signature = await subtle.sign(
       "HMAC",
       key,
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Body bytes are passed to Web Crypto as BufferSource.
       req.rawBody as BufferSource
     );
     const expected = toHex(new Uint8Array(signature));
@@ -98,17 +103,4 @@ export function createHmacVerifier({
       );
     }
   };
-}
-
-function toHex(bytes: Uint8Array): string {
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join(
-    ""
-  );
-}
-
-function normalizeSignature(signature: string): string {
-  return signature
-    .replace(/^[a-z0-9-]+=/i, "")
-    .trim()
-    .toLowerCase();
-}
+};
