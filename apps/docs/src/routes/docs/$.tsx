@@ -12,6 +12,7 @@ import {
 } from "fumadocs-ui/layouts/docs/page";
 import { PencilIcon } from "lucide-react";
 import { Suspense } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 
 import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
 import { getMDXComponents } from "@/components/mdx";
@@ -29,60 +30,12 @@ interface DocsLoaderData {
   slugs: string[];
 }
 
-export const Route = createFileRoute("/docs/$")({
-  component: DocsRoute,
-  loader: async ({ params }) => {
-    const data = (await loadDocsPageFn({
-      data: params._splat?.split("/") ?? [],
-    })) as DocsLoaderData;
-
-    await docsClientLoader.preload(data.path);
-    return data;
-  },
-  head: () => ({
-    meta: pageMeta("Documentation", "Browse the Zap Studio documentation."),
-  }),
-});
-
-function DocsRoute() {
-  const loaderData = Route.useLoaderData();
-  const { pageTree, path } = useFumadocsLoader(loaderData);
-  const { markdownUrl } = loaderData;
-
-  return (
-    <DocsLayout
-      {...baseOptions()}
-      links={[]}
-      sidebar={{
-        tabs: {
-          transform: (option, node) => ({
-            ...option,
-            description: undefined,
-            icon: node.icon ? (
-              <span className="flex size-full items-center justify-center text-fd-primary [&_svg]:size-5 md:[&_svg]:size-4">
-                {node.icon}
-              </span>
-            ) : undefined,
-          }),
-        },
-      }}
-      tree={pageTree}
-    >
-      <Suspense>
-        {docsClientLoader.useContent(path, {
-          githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/apps/docs/content/docs/${path}`,
-          markdownUrl,
-        })}
-      </Suspense>
-    </DocsLayout>
-  );
-}
-
 const loadDocsPageFn = createServerFn({ method: "GET" })
   .inputValidator((slugs: string[]) => slugs)
   .handler(async ({ data: slugs }) => {
     const page = source.getPage(slugs);
     if (!page) {
+      // oxlint-disable-next-line only-throw-error -- TanStack Router expects its notFound sentinel to be thrown.
       throw notFound();
     }
 
@@ -93,6 +46,25 @@ const loadDocsPageFn = createServerFn({ method: "GET" })
       slugs: page.slugs,
     };
   });
+
+type DocsSidebar = NonNullable<
+  ComponentPropsWithoutRef<typeof DocsLayout>["sidebar"]
+>;
+
+const docsSidebar = {
+  tabs: {
+    transform: (option, node) => ({
+      ...option,
+      description: undefined,
+      icon:
+        node.icon === null || node.icon === undefined ? undefined : (
+          <span className="flex size-full items-center justify-center text-fd-primary [&_svg]:size-5 md:[&_svg]:size-4">
+            {node.icon}
+          </span>
+        ),
+    }),
+  },
+} satisfies DocsSidebar;
 
 const docsClientLoader = browserCollections.docs.createClientLoader<{
   githubUrl: string;
@@ -119,7 +91,10 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
         </div>
         <DocsBody>
           <MDX components={getMDXComponents()} />
-          <div className="mt-8 flex flex-row flex-wrap items-center justify-between gap-4 border-t pt-4" suppressHydrationWarning>
+          <div
+            className="mt-8 flex flex-row flex-wrap items-center justify-between gap-4 border-t pt-4"
+            suppressHydrationWarning
+          >
             <a
               className="inline-flex items-center gap-1.5 text-sm text-fd-muted-foreground transition-colors hover:text-fd-foreground"
               href={props.githubUrl}
@@ -137,3 +112,44 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
     );
   },
 });
+
+// oxfmt-ignore
+// oxlint-disable-next-line sort-keys -- TanStack Router type inference and React Doctor require loader before head.
+export const Route = createFileRoute("/docs/$")({
+  // oxlint-disable-next-line no-use-before-define -- Route component uses Route.useLoaderData().
+  component: DocsRoute,
+  loader: async ({ params }) => {
+    const data = (await loadDocsPageFn({
+      data: params._splat?.split("/") ?? [],
+    })) as DocsLoaderData;
+
+    await docsClientLoader.preload(data.path);
+    return data;
+  },
+  head: () => ({
+    meta: pageMeta("Documentation", "Browse the Zap Studio documentation."),
+  }),
+});
+
+// oxlint-disable-next-line func-style -- TanStack route object references this hoisted component.
+function DocsRoute() {
+  const loaderData = Route.useLoaderData();
+  const { pageTree, path } = useFumadocsLoader(loaderData);
+  const { markdownUrl } = loaderData;
+
+  return (
+    <DocsLayout
+      {...baseOptions()}
+      links={[]}
+      sidebar={docsSidebar}
+      tree={pageTree}
+    >
+      <Suspense>
+        {docsClientLoader.useContent(path, {
+          githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/apps/docs/content/docs/${path}`,
+          markdownUrl,
+        })}
+      </Suspense>
+    </DocsLayout>
+  );
+}
