@@ -26,9 +26,9 @@ import type {
  * @throws {RetryError} When retries are exhausted and `onExhausted` returns
  *   the terminal error.
  * @throws {AbortError} When `signal` is already aborted or aborts while waiting.
- * @throws Any error thrown by `next`, `onExhausted`, or `sleep`.
+ * @throws {Error} Any error thrown by `next`, `onExhausted`, or `sleep`.
  */
-export async function runThrowMode<T, TError, TData>(
+export const runThrowMode = async <T, TError, TData>(
   policy: {
     next: (input: RetryDecisionInput<TError, TData>) => RetryDecision;
     onExhausted: (input: RetryExhaustedInput<TError, TData>) => RetryError;
@@ -36,17 +36,19 @@ export async function runThrowMode<T, TError, TData>(
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
   signal?: AbortSignal
-): Promise<T> {
+): Promise<T> => {
   let attempt = 1;
 
   while (true) {
     throwIfAborted(signal);
 
     try {
+      // oxlint-disable-next-line no-await-in-loop -- Retry attempts must run sequentially.
       return await execute(attempt);
     } catch (error) {
       throwIfAborted(signal);
 
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Policy error generic represents the caller's thrown error domain.
       const typedError = error as TError;
       const decision = policy.next({
         attempt,
@@ -61,14 +63,13 @@ export async function runThrowMode<T, TError, TData>(
       }
 
       if (decision.delayMs > 0) {
-        if (signal) {
-          await sleepWithAbortSignal(sleep, decision.delayMs, signal);
-        } else {
-          await sleep(decision.delayMs);
-        }
+        // oxlint-disable-next-line no-await-in-loop -- Delay belongs between sequential retry attempts.
+        await (signal === undefined
+          ? sleep(decision.delayMs)
+          : sleepWithAbortSignal(sleep, decision.delayMs, signal));
       }
 
       attempt += 1;
     }
   }
-}
+};

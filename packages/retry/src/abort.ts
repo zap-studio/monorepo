@@ -12,21 +12,7 @@ import { AbortError } from "./errors.js";
  * @param signal - Optional abort signal to inspect.
  * @throws {AbortError} When the signal is aborted.
  */
-export function throwIfAborted(signal?: AbortSignal): void {
-  if (!signal?.aborted) {
-    return;
-  }
-
-  throw toAbortError(signal.reason);
-}
-
-/**
- * Converts an abort reason into a normalized `AbortError`.
- *
- * @param reason - Arbitrary abort reason value.
- * @returns Normalized abort error instance.
- */
-export function toAbortError(reason: unknown): AbortError {
+export const toAbortError = (reason: unknown): AbortError => {
   if (reason instanceof AbortError) {
     return reason;
   }
@@ -48,7 +34,21 @@ export function toAbortError(reason: unknown): AbortError {
   } catch {
     return new AbortError("Retry aborted.");
   }
-}
+};
+
+/**
+ * Throws when the provided abort signal is already aborted.
+ *
+ * @param signal - Optional abort signal to inspect.
+ * @throws {AbortError} When the signal is aborted.
+ */
+export const throwIfAborted = (signal?: AbortSignal): void => {
+  if (signal?.aborted !== true) {
+    return;
+  }
+
+  throw toAbortError(signal.reason);
+};
 
 /**
  * Waits for delay sleep while observing cancellation through an abort signal.
@@ -59,11 +59,11 @@ export function toAbortError(reason: unknown): AbortError {
  * @returns Promise that resolves when delay finishes.
  * @throws {AbortError} When the signal aborts before or during wait.
  */
-export async function sleepWithAbortSignal(
+export const sleepWithAbortSignal = async (
   sleep: (delayMs: number) => Promise<void>,
   delayMs: number,
   signal: AbortSignal
-): Promise<void> {
+): Promise<void> => {
   if (signal.aborted) {
     throw toAbortError(signal.reason);
   }
@@ -73,7 +73,8 @@ export async function sleepWithAbortSignal(
   try {
     await Promise.race([
       sleep(delayMs),
-      new Promise<never>((_, reject) => {
+      // oxlint-disable-next-line promise/avoid-new -- AbortSignal callback is adapted into the race promise.
+      new Promise<never>((_resolve, reject) => {
         onAbort = (): void => {
           reject(toAbortError(signal.reason));
         };
@@ -86,4 +87,4 @@ export async function sleepWithAbortSignal(
       signal.removeEventListener("abort", onAbort);
     }
   }
-}
+};

@@ -1,3 +1,5 @@
+// oxlint-disable max-classes-per-file -- Public retry error types are intentionally colocated.
+
 /**
  * Terminal error types used by retry policies and runners.
  *

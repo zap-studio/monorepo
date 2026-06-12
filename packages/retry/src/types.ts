@@ -19,15 +19,15 @@ export interface RetryPolicy<TError = unknown, TData = unknown> {
   /**
    * Returns the retry decision for a failed attempt.
    *
-   * @throws Any error thrown by the policy implementation.
+   * @throws {Error} Any error thrown by the policy implementation.
    */
-  next(input: RetryDecisionInput<TError, TData>): RetryDecision;
+  next: (input: RetryDecisionInput<TError, TData>) => RetryDecision;
   /**
    * Builds the terminal error used when retries are exhausted.
    *
-   * @throws Any error thrown by the policy implementation.
+   * @throws {Error} Any error thrown by the policy implementation.
    */
-  onExhausted(input: RetryExhaustedInput<TError, TData>): RetryError;
+  onExhausted: (input: RetryExhaustedInput<TError, TData>) => RetryError;
 }
 
 /**
@@ -99,7 +99,7 @@ export interface RetryRunOptions {
   /**
    * Delay function used between retry attempts.
    *
-   * @throws Any error thrown or rejected by the custom delay implementation.
+   * @throws {Error} Any error thrown or rejected by the custom delay implementation.
    */
   readonly sleep?: (delayMs: number) => Promise<void>;
   /**
