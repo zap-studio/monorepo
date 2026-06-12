@@ -93,7 +93,7 @@ export function FooterSection(): ReactNode {
               <p className="text-sm leading-6 text-fd-muted-foreground">
                 Making the web better.
               </p>
-              <p className="text-xs leading-5 text-fd-muted-foreground/40">
+              <p className="text-xs leading-5 text-fd-muted-foreground/40" suppressHydrationWarning>
                 &copy; {new Date().getFullYear()} Alexandre Trotel.
               </p>
             </div>

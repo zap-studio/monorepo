@@ -31,9 +31,6 @@ interface DocsLoaderData {
 
 export const Route = createFileRoute("/docs/$")({
   component: DocsRoute,
-  head: () => ({
-    meta: pageMeta("Documentation", "Browse the Zap Studio documentation."),
-  }),
   loader: async ({ params }) => {
     const data = (await loadDocsPageFn({
       data: params._splat?.split("/") ?? [],
@@ -42,6 +39,9 @@ export const Route = createFileRoute("/docs/$")({
     await docsClientLoader.preload(data.path);
     return data;
   },
+  head: () => ({
+    meta: pageMeta("Documentation", "Browse the Zap Studio documentation."),
+  }),
 });
 
 function DocsRoute() {
@@ -119,7 +119,7 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
         </div>
         <DocsBody>
           <MDX components={getMDXComponents()} />
-          <div className="mt-8 flex flex-row flex-wrap items-center justify-between gap-4 border-t pt-4">
+          <div className="mt-8 flex flex-row flex-wrap items-center justify-between gap-4 border-t pt-4" suppressHydrationWarning>
             <a
               className="inline-flex items-center gap-1.5 text-sm text-fd-muted-foreground transition-colors hover:text-fd-foreground"
               href={props.githubUrl}
