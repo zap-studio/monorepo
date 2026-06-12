@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "duplicates": {
+    "ignore": ["**/tests/**", "**/*.bench.ts"]
+  },
+  "dynamicallyLoaded": ["apps/docs/content/docs/**/*.mdx"],
+  "ignoreDependencies": [
+    "@zap-studio/fetch",
+    "@zap-studio/permit",
+    "@zap-studio/retry",
+    "@zap-studio/validation",
+    "@zap-studio/webhooks"
+  ],
+  "ignoreExports": [
+    {
+      "file": "apps/docs/source.config.ts",
+      "exports": ["docs", "default"]
+    },
+    {
+      "file": "apps/docs/src/components/mdx.tsx",
+      "exports": ["useMDXComponents"]
+    },
+    {
+      "file": "oxfmt.config.ts",
+      "exports": ["default"]
+    }
+  ]
+}
