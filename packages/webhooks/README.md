@@ -90,7 +90,11 @@ const router = createWebhookRouter({
       throw new Error("Missing Stripe signature");
     }
 
-    stripe.webhooks.constructEvent(req.rawBody, signature, process.env.STRIPE_WEBHOOK_SECRET!);
+    stripe.webhooks.constructEvent(
+      req.rawBody,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
   },
 });
 
@@ -177,7 +181,10 @@ This package is framework-agnostic by design. It does not include Express/Next/H
 
 ```ts
 import { BaseAdapter } from "@zap-studio/webhooks/adapters/base";
-import type { NormalizedRequest, NormalizedResponse } from "@zap-studio/webhooks/types";
+import type {
+  NormalizedRequest,
+  NormalizedResponse,
+} from "@zap-studio/webhooks/types";
 
 class MyHttpAdapter extends BaseAdapter {
   async toNormalizedRequest(req: any): Promise<NormalizedRequest> {
@@ -189,10 +196,15 @@ class MyHttpAdapter extends BaseAdapter {
     };
   }
 
-  async toFrameworkResponse(res: any, normalized: NormalizedResponse): Promise<any> {
+  async toFrameworkResponse(
+    res: any,
+    normalized: NormalizedResponse
+  ): Promise<any> {
     res.statusCode = normalized.status;
     res.end(
-      typeof normalized.body === "string" ? normalized.body : JSON.stringify(normalized.body),
+      typeof normalized.body === "string"
+        ? normalized.body
+        : JSON.stringify(normalized.body)
     );
     return res;
   }

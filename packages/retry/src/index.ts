@@ -24,10 +24,10 @@ import type {
  * behavior, then call {@link BaseRetryPolicy.run} to execute operations with that
  * policy.
  */
-export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> implements RetryPolicy<
-  TError,
-  TData
-> {
+export abstract class BaseRetryPolicy<
+  TError = unknown,
+  TData = unknown,
+> implements RetryPolicy<TError, TData> {
   /**
    * Returns the retry decision for a failed attempt.
    *
@@ -48,8 +48,8 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
   public onExhausted(input: RetryExhaustedInput<TError, TData>): RetryError {
     return new RetryError("Retry policy exhausted all attempts.", {
       attempts: input.attempts,
-      lastError: input.error,
       lastData: input.data,
+      lastError: input.error,
     });
   }
 
@@ -63,7 +63,7 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    */
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
-    options: RetryRunOptions & { throwOnExhausted: false },
+    options: RetryRunOptions & { throwOnExhausted: false }
   ): Promise<RetryRunResult<T>>;
 
   /**
@@ -81,7 +81,7 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    */
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
-    options?: RetryRunOptions & { throwOnExhausted?: true },
+    options?: RetryRunOptions & { throwOnExhausted?: true }
   ): Promise<T>;
 
   /**
@@ -104,14 +104,14 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    */
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
-    options: RetryRunOptions = {},
+    options: RetryRunOptions = {}
   ): Promise<T | RetryRunResult<T>> {
     const sleep = options.sleep ?? defaultSleep;
-    const signal = options.signal;
+    const {signal} = options;
     if (options.throwOnExhausted === false) {
-      return runResultMode(this, execute, sleep, signal);
+      return await runResultMode(this, execute, sleep, signal);
     }
 
-    return runThrowMode(this, execute, sleep, signal);
+    return await runThrowMode(this, execute, sleep, signal);
   }
 }

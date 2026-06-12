@@ -4,9 +4,13 @@ import { configDefaults, defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
+      exclude: [
+        ...configDefaults.exclude,
+        "**/dist/**",
+        "**/sequence-policy.ts",
+      ],
       provider: "v8",
       reporter: ["html", "json", "lcov", "text"],
-      exclude: [...configDefaults.exclude, "**/dist/**", "**/sequence-policy.ts"],
     },
     exclude: [...configDefaults.exclude, "**/dist/**", "**/node_modules/**"],
     globals: true,

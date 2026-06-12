@@ -43,7 +43,11 @@ export async function validateIfPossible(schemaLike: unknown, input: unknown) {
   });
 
   if (result.issues) {
-    return { ok: false as const, reason: "invalid-input" as const, issues: result.issues };
+    return {
+      ok: false as const,
+      reason: "invalid-input" as const,
+      issues: result.issues,
+    };
   }
 
   return { ok: true as const, value: result.value };

@@ -4,22 +4,28 @@ import { CustomTerminalPolicy, SequencePolicy } from "./sequence-policy.js";
 
 describe("throw mode (BaseRetryPolicy.run default)", () => {
   it("returns successful execution result without retrying", async () => {
-    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 0, reason: "retry" }]);
-    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+    const policy = new SequencePolicy([
+      { delayMs: 0, reason: "retry", shouldRetry: true },
+    ]);
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockResolvedValue("ok");
 
     const result = await policy.run(execute);
 
     expect(result).toBe("ok");
     expect(execute).toHaveBeenCalledWith(1);
-    expect(policy.seen).toEqual([]);
+    expect(policy.seen).toStrictEqual([]);
   });
 
   it("retries with provided sleep implementation until success", async () => {
     const policy = new SequencePolicy([
-      { shouldRetry: true, delayMs: 10, reason: "retry" },
-      { shouldRetry: true, delayMs: 20, reason: "retry" },
+      { delayMs: 10, reason: "retry", shouldRetry: true },
+      { delayMs: 20, reason: "retry", shouldRetry: true },
     ]);
-    const sleep = vi.fn<(delayMs: number) => Promise<void>>().mockResolvedValue();
+    const sleep = vi
+      .fn<(delayMs: number) => Promise<void>>()
+      .mockResolvedValue();
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValueOnce(new Error("fail-1"));
     execute.mockRejectedValueOnce(new Error("fail-2"));
@@ -38,16 +44,16 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
 
   it("throws RetryError from default onExhausted when retries stop", async () => {
     const policy = new SequencePolicy([
-      { shouldRetry: true, delayMs: 0, reason: "retry" },
-      { shouldRetry: false, delayMs: 0, reason: "max-attempts-reached" },
+      { delayMs: 0, reason: "retry", shouldRetry: true },
+      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
     ]);
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValueOnce(new Error("fail-1"));
     execute.mockRejectedValueOnce(new Error("fail-2"));
 
     await expect(policy.run(execute)).rejects.toMatchObject({
-      name: "RetryError",
       attempts: 2,
+      name: "RetryError",
     });
   });
 
@@ -62,7 +68,9 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
 
   it("uses default sleep when delay is positive and no custom sleep is provided", async () => {
     vi.useFakeTimers();
-    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 25, reason: "retry" }]);
+    const policy = new SequencePolicy([
+      { delayMs: 25, reason: "retry", shouldRetry: true },
+    ]);
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValueOnce(new Error("fail"));
     execute.mockResolvedValueOnce("ok");
@@ -74,19 +82,25 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
   });
 
   it("throws immediately when signal is already aborted", async () => {
-    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 0, reason: "retry" }]);
-    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+    const policy = new SequencePolicy([
+      { delayMs: 0, reason: "retry", shouldRetry: true },
+    ]);
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockResolvedValue("ok");
     const controller = new AbortController();
     controller.abort(new Error("aborted-before-start"));
 
-    await expect(policy.run(execute, { signal: controller.signal })).rejects.toThrow(
-      "aborted-before-start",
-    );
+    await expect(
+      policy.run(execute, { signal: controller.signal })
+    ).rejects.toThrow("aborted-before-start");
     expect(execute).not.toHaveBeenCalled();
   });
 
   it("throws when signal aborts while waiting between retries", async () => {
-    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 50, reason: "retry" }]);
+    const policy = new SequencePolicy([
+      { delayMs: 50, reason: "retry", shouldRetry: true },
+    ]);
     const controller = new AbortController();
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
@@ -100,7 +114,9 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
   });
 
   it("covers immediate abort check during abort-aware sleep", async () => {
-    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 10, reason: "retry" }]);
+    const policy = new SequencePolicy([
+      { delayMs: 10, reason: "retry", shouldRetry: true },
+    ]);
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
       .mockRejectedValue(new Error("fail"));
@@ -111,30 +127,38 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
         readCount += 1;
         return readCount >= 3;
       },
-      reason: "abort-immediate-sleep-check",
       addEventListener:
-        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
+        vi.fn<
+          (type: string, listener: EventListenerOrEventListenerObject) => void
+        >(),
+      reason: "abort-immediate-sleep-check",
       removeEventListener:
-        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
+        vi.fn<
+          (type: string, listener: EventListenerOrEventListenerObject) => void
+        >(),
     } as unknown as AbortSignal;
 
     await expect(policy.run(execute, { signal: fakeSignal })).rejects.toThrow(
-      "abort-immediate-sleep-check",
+      "abort-immediate-sleep-check"
     );
   });
 
   it("propagates sync sleep failure before abort listener registration", async () => {
-    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 10, reason: "retry" }]);
+    const policy = new SequencePolicy([
+      { delayMs: 10, reason: "retry", shouldRetry: true },
+    ]);
     const controller = new AbortController();
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
       .mockRejectedValue(new Error("fail"));
-    const sleep = vi.fn<(delayMs: number) => Promise<void>>().mockImplementation(() => {
-      throw new Error("sleep-sync-fail");
-    });
+    const sleep = vi
+      .fn<(delayMs: number) => Promise<void>>()
+      .mockImplementation(() => {
+        throw new Error("sleep-sync-fail");
+      });
 
-    await expect(policy.run(execute, { signal: controller.signal, sleep })).rejects.toThrow(
-      "sleep-sync-fail",
-    );
+    await expect(
+      policy.run(execute, { signal: controller.signal, sleep })
+    ).rejects.toThrow("sleep-sync-fail");
   });
 });

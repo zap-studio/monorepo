@@ -16,8 +16,8 @@ describe("types", () => {
     const invalid: ExtendedRequestInit = { body: "raw", json: { name: "Zap" } };
 
     expect(requestBody.body).toBe("raw");
-    expect("json" in jsonBody).toBe(true);
-    expect(defaults.throwOnFetchError).toBe(true);
+    expect("json" in jsonBody).toBeTruthy();
+    expect(defaults.throwOnFetchError).toBeTruthy();
     void invalid;
   });
 });

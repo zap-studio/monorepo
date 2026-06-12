@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { PolicyError } from "../src/errors.js";
 
-describe("PolicyError", () => {
+describe(PolicyError, () => {
   describe("constructor", () => {
     it("should create an error with the provided message", () => {
       const error = new PolicyError("Policy evaluation failed");
@@ -69,14 +69,16 @@ describe("PolicyError", () => {
       const error = new PolicyError("Test");
 
       expect(error.stack).toBeDefined();
-      expect(typeof error.stack).toBe("string");
+      expect(error.stack).toBeTypeOf("string");
     });
 
     it("should preserve Error prototype chain", () => {
       const error = new PolicyError("Test");
 
       expect(Object.getPrototypeOf(error)).toBe(PolicyError.prototype);
-      expect(Object.getPrototypeOf(PolicyError.prototype)).toBe(Error.prototype);
+      expect(Object.getPrototypeOf(PolicyError.prototype)).toBe(
+        Error.prototype
+      );
     });
   });
 
@@ -86,9 +88,9 @@ describe("PolicyError", () => {
 
       try {
         throw new PolicyError("Access denied");
-      } catch (e) {
-        if (e instanceof PolicyError) {
-          caught = e;
+      } catch (error) {
+        if (error instanceof PolicyError) {
+          caught = error;
         }
       }
 
@@ -107,8 +109,8 @@ describe("PolicyError", () => {
       const policyError = new PolicyError("Policy error");
       const regularError = new Error("Regular error");
 
-      expect(policyError instanceof PolicyError).toBe(true);
-      expect(regularError instanceof PolicyError).toBe(false);
+      expect(policyError instanceof PolicyError).toBeTruthy();
+      expect(regularError instanceof PolicyError).toBeFalsy();
     });
   });
 });

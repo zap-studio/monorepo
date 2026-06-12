@@ -6,13 +6,13 @@ import { SequencePolicy } from "./sequence-policy.js";
 describe("BaseRetryPolicy", () => {
   it("creates RetryError with data from default onExhausted", () => {
     const policy = new SequencePolicy([
-      { shouldRetry: false, delayMs: 0, reason: "policy-declined" },
+      { delayMs: 0, reason: "policy-declined", shouldRetry: false },
     ]);
 
     const error = policy.onExhausted({
       attempts: 3,
-      error: new Error("boom"),
       data: "payload",
+      error: new Error("boom"),
     });
 
     expect(error).toBeInstanceOf(RetryError);

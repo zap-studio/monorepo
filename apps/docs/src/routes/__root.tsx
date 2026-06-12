@@ -1,4 +1,9 @@
-import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import {
+  HeadContent,
+  Outlet,
+  Scripts,
+  createRootRoute,
+} from "@tanstack/react-router";
 import { RootProvider } from "fumadocs-ui/provider/tanstack";
 
 import { NotFoundComponent } from "@/components/not-found";
@@ -12,6 +17,7 @@ import { siteDescription, siteKeywords, siteTitle, siteUrl } from "@/lib/site";
 import appCss from "@/styles/app.css?url";
 
 export const Route = createRootRoute({
+  component: RootComponent,
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -19,8 +25,16 @@ export const Route = createRootRoute({
       { title: siteTitle },
       { name: "description", content: siteDescription },
       { name: "keywords", content: siteKeywords.join(", ") },
-      { name: "theme-color", media: "(prefers-color-scheme: light)", content: "#ffffff" },
-      { name: "theme-color", media: "(prefers-color-scheme: dark)", content: "#0a0a0a" },
+      {
+        name: "theme-color",
+        media: "(prefers-color-scheme: light)",
+        content: "#ffffff",
+      },
+      {
+        name: "theme-color",
+        media: "(prefers-color-scheme: dark)",
+        content: "#0a0a0a",
+      },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Zap Studio" },
       { property: "og:url", content: siteUrl },
@@ -59,7 +73,6 @@ export const Route = createRootRoute({
       { rel: "apple-touch-icon", href: "/web-app-manifest-192x192.png" },
     ],
   }),
-  component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });
 

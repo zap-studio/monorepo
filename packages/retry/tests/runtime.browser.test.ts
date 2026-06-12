@@ -16,8 +16,8 @@ describe("@zap-studio/retry browser runtime", () => {
         },
         {
           signal: controller.signal,
-        },
-      ),
+        }
+      )
     ).rejects.toBeInstanceOf(AbortError);
   });
 
@@ -33,10 +33,10 @@ describe("@zap-studio/retry browser runtime", () => {
       {
         signal: controller.signal,
         throwOnExhausted: false,
-      },
+      }
     );
 
-    expect(result.ok).toBe(false);
+    expect(result.ok).toBeFalsy();
     if (!result.ok) {
       expect(result.error).toBeInstanceOf(AbortError);
       expect(result.attempts).toBe(1);

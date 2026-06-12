@@ -14,12 +14,12 @@ export function createDocsOgImageResponse({
   return new ImageResponse(
     <DefaultImage description={description} site="Zap Studio" title={title} />,
     {
-      width: 1200,
-      height: 630,
       format: "webp",
       headers: {
         "cache-control": "public, max-age=0, s-maxage=86400",
       },
-    },
+      height: 630,
+      width: 1200,
+    }
   );
 }

@@ -11,10 +11,10 @@ const BASE =
   "disabled:pointer-events-none disabled:opacity-50";
 
 const SIZES = {
-  sm: "h-9 px-3.5 text-xs",
-  md: "h-10 px-4 text-sm",
-  lg: "h-11 px-5 text-sm",
   hero: "h-9 px-3.5 text-xs sm:h-10 sm:px-4 sm:text-sm md:h-11 md:px-5",
+  lg: "h-11 px-5 text-sm",
+  md: "h-10 px-4 text-sm",
+  sm: "h-9 px-3.5 text-xs",
 } as const;
 
 type Size = keyof typeof SIZES;
@@ -51,7 +51,8 @@ export function PrimaryButton({
       ].join(" ")}
       href={href}
       style={{
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.18)",
+        boxShadow:
+          "inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.18)",
       }}
       {...props}
     >
@@ -88,7 +89,8 @@ export function SecondaryButton({
       ].join(" ")}
       href={href}
       style={{
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.06)",
+        boxShadow:
+          "inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.06)",
       }}
       {...props}
     >
@@ -102,9 +104,14 @@ interface ButtonGroupProps {
   className?: string;
 }
 
-export function ButtonGroup({ children, className = "" }: ButtonGroupProps): ReactNode {
+export function ButtonGroup({
+  children,
+  className = "",
+}: ButtonGroupProps): ReactNode {
   return (
-    <div className={`flex w-full flex-row items-center gap-3 sm:w-auto sm:gap-3 ${className}`}>
+    <div
+      className={`flex w-full flex-row items-center gap-3 sm:w-auto sm:gap-3 ${className}`}
+    >
       {children}
     </div>
   );

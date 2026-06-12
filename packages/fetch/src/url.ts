@@ -29,7 +29,7 @@ import type { ExtendedRequestInit, FetchDefaults } from "./types.js";
 export function resolveRequestUrl(
   resourceUrl: string,
   defaults: FetchDefaults,
-  searchParams: ExtendedRequestInit["searchParams"] | undefined,
+  searchParams: ExtendedRequestInit["searchParams"] | undefined
 ): string {
   const url = defaults.baseURL
     ? new URL(resourceUrl, ensureTrailingSlash(defaults.baseURL)).toString()
@@ -44,19 +44,21 @@ export function resolveRequestUrl(
 function resolveSearchParams(
   url: string,
   defaultSearchParams: FetchDefaults["searchParams"] | undefined,
-  searchParams: ExtendedRequestInit["searchParams"] | undefined,
+  searchParams: ExtendedRequestInit["searchParams"] | undefined
 ): string {
   if (!defaultSearchParams && searchParams === undefined) {
     return url;
   }
 
   const hashIndex = url.indexOf("#");
-  const hasFragment = hashIndex >= 0;
+  const hasFragment = hashIndex !== -1;
   const urlWithoutHash = hasFragment ? url.slice(0, hashIndex) : url;
   const hash = hasFragment ? url.slice(hashIndex + 1) : "";
   const queryIndex = urlWithoutHash.indexOf("?");
-  const pathname = queryIndex >= 0 ? urlWithoutHash.slice(0, queryIndex) : urlWithoutHash;
-  const urlSearchParams = queryIndex >= 0 ? urlWithoutHash.slice(queryIndex + 1) : undefined;
+  const pathname =
+    queryIndex !== -1 ? urlWithoutHash.slice(0, queryIndex) : urlWithoutHash;
+  const urlSearchParams =
+    queryIndex !== -1 ? urlWithoutHash.slice(queryIndex + 1) : undefined;
   const resolvedSearchParams = new URLSearchParams();
 
   mergeSearchParams(resolvedSearchParams, defaultSearchParams);
@@ -85,7 +87,7 @@ function ensureTrailingSlash(url: string): string {
  */
 function mergeSearchParams(
   target: URLSearchParams,
-  source: ExtendedRequestInit["searchParams"] | undefined,
+  source: ExtendedRequestInit["searchParams"] | undefined
 ): void {
   for (const [key, value] of new URLSearchParams(source)) {
     target.set(key, value);

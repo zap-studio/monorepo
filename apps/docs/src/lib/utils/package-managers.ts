@@ -14,7 +14,10 @@ const executeCommands = {
   yarn: "yarn dlx",
 } satisfies Record<InstallPackageManager, string>;
 
-function convertInstallCommand(command: string, pm: InstallPackageManager): string | undefined {
+function convertInstallCommand(
+  command: string,
+  pm: InstallPackageManager
+): string | undefined {
   if (command.startsWith("npm install ")) {
     return `${installCommands[pm]} ${command.slice("npm install ".length)}`;
   }
@@ -31,7 +34,10 @@ function convertToDeno(command: string): string | undefined {
     return undefined;
   }
 
-  const packages = command.slice("npm install ".length).trim().split(WHITESPACE_REGEX);
+  const packages = command
+    .slice("npm install ".length)
+    .trim()
+    .split(WHITESPACE_REGEX);
   if (!packages.length) {
     return undefined;
   }
@@ -55,23 +61,23 @@ function convertToNpm(command: string): string | undefined {
 
 export const remarkNpmPackageManagers = [
   {
-    name: "npm",
     command: convertToNpm,
+    name: "npm",
   },
   {
-    name: "yarn",
     command: (command: string) => convertInstallCommand(command, "yarn"),
+    name: "yarn",
   },
   {
-    name: "pnpm",
     command: (command: string) => convertInstallCommand(command, "pnpm"),
+    name: "pnpm",
   },
   {
-    name: "bun",
     command: (command: string) => convertInstallCommand(command, "bun"),
+    name: "bun",
   },
   {
-    name: "deno",
     command: convertToDeno,
+    name: "deno",
   },
 ];

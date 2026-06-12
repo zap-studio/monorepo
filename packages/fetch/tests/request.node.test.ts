@@ -2,28 +2,28 @@ import { describe, expect, it } from "vitest";
 
 import { normalizeRequest } from "../src/request.js";
 
-describe("normalizeRequest", () => {
+describe(normalizeRequest, () => {
   it("keeps URL strings simple", () => {
     const options = { headers: { A: "1" }, method: "POST" };
 
-    expect(normalizeRequest("https://api.example.com/users", options)).toEqual({
-      url: "https://api.example.com/users",
+    expect(normalizeRequest("https://api.example.com/users", options)).toStrictEqual({
       options,
+      url: "https://api.example.com/users",
     });
   });
 
   it("uses an empty options object when none is provided", () => {
-    expect(normalizeRequest("/users")).toEqual({
-      url: "/users",
+    expect(normalizeRequest("/users")).toStrictEqual({
       options: {},
+      url: "/users",
     });
   });
 
   it("serializes URL objects to a string url", () => {
     const input = new URL("/users", "https://api.example.com");
-    expect(normalizeRequest(input)).toEqual({
-      url: "https://api.example.com/users",
+    expect(normalizeRequest(input)).toStrictEqual({
       options: {},
+      url: "https://api.example.com/users",
     });
   });
 

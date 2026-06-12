@@ -34,13 +34,13 @@ export async function runResultMode<T, TError, TData>(
   },
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ): Promise<RetryRunResult<T>> {
   let attempt = 1;
 
   while (true) {
     const abortResult = buildAbortResult(signal, Math.max(0, attempt - 1));
-    if (abortResult) return abortResult;
+    if (abortResult) {return abortResult;}
 
     const execution = await runAttempt(execute, attempt);
     if (execution.ok) {
@@ -50,10 +50,10 @@ export async function runResultMode<T, TError, TData>(
     const failure = await handleFailure(policy, {
       attempt,
       error: execution.error as TError,
-      sleep,
       signal,
+      sleep,
     });
-    if (failure) return failure;
+    if (failure) {return failure;}
 
     attempt += 1;
   }
@@ -69,7 +69,7 @@ export async function runResultMode<T, TError, TData>(
  */
 async function runAttempt<T>(
   execute: (attempt: number) => Promise<T>,
-  attempt: number,
+  attempt: number
 ): Promise<{ ok: true; value: T } | { ok: false; error: unknown }> {
   try {
     return {
@@ -78,8 +78,8 @@ async function runAttempt<T>(
     };
   } catch (error) {
     return {
-      ok: false,
       error,
+      ok: false,
     };
   }
 }
@@ -110,11 +110,11 @@ async function handleFailure<TError, TData>(
     error: TError;
     sleep: (delayMs: number) => Promise<void>;
     signal: AbortSignal | undefined;
-  },
+  }
 ): Promise<RetryRunResult<never> | undefined> {
   const { attempt, error, sleep, signal } = params;
   const abortResult = buildAbortResult(signal, attempt);
-  if (abortResult) return abortResult;
+  if (abortResult) {return abortResult;}
 
   const decision = policy.next({
     attempt,
@@ -128,15 +128,20 @@ async function handleFailure<TError, TData>(
     });
 
     return {
-      ok: false,
-      error: terminalError,
       attempts: attempt,
+      error: terminalError,
+      ok: false,
     };
   }
 
   if (decision.delayMs > 0) {
-    const abortResult = await waitForDelay(sleep, decision.delayMs, signal, attempt);
-    if (abortResult) return abortResult;
+    const abortResult = await waitForDelay(
+      sleep,
+      decision.delayMs,
+      signal,
+      attempt
+    );
+    if (abortResult) {return abortResult;}
   }
 
   return;
@@ -152,16 +157,16 @@ async function handleFailure<TError, TData>(
  */
 function buildAbortResult(
   signal: AbortSignal | undefined,
-  attempts: number,
+  attempts: number
 ): RetryRunResult<never> | undefined {
   if (!signal?.aborted) {
     return;
   }
 
   return {
-    ok: false,
-    error: toAbortError(signal.reason),
     attempts,
+    error: toAbortError(signal.reason),
+    ok: false,
   };
 }
 
@@ -181,7 +186,7 @@ async function waitForDelay(
   sleep: (delayMs: number) => Promise<void>,
   delayMs: number,
   signal: AbortSignal | undefined,
-  attempts: number,
+  attempts: number
 ): Promise<RetryRunResult<never> | undefined> {
   if (!signal) {
     await sleep(delayMs);

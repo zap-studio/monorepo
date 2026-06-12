@@ -24,11 +24,11 @@ export function FadeIn({
         className={className}
         initial={{ opacity: 0, y: reduceMotion ? 0 : y }}
         transition={{
-          duration: reduceMotion ? 0 : duration,
           delay: reduceMotion ? 0 : delay,
+          duration: reduceMotion ? 0 : duration,
           ease: [0.25, 0.4, 0.25, 1],
         }}
-        viewport={{ once: true, margin: "-80px" }}
+        viewport={{ margin: "-80px", once: true }}
         whileInView={{ opacity: 1, y: 0 }}
       >
         {children}
@@ -59,8 +59,8 @@ export function PulseGlow({ className }: PulseGlowProps): ReactNode {
         className={className}
         transition={{
           duration: 6,
-          repeat: Number.POSITIVE_INFINITY,
           ease: "easeInOut",
+          repeat: Number.POSITIVE_INFINITY,
         }}
       />
     </LazyMotion>

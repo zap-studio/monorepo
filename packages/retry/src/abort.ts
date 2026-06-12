@@ -62,7 +62,7 @@ export function toAbortError(reason: unknown): AbortError {
 export async function sleepWithAbortSignal(
   sleep: (delayMs: number) => Promise<void>,
   delayMs: number,
-  signal: AbortSignal,
+  signal: AbortSignal
 ): Promise<void> {
   if (signal.aborted) {
     throw toAbortError(signal.reason);

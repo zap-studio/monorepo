@@ -20,7 +20,10 @@ describe("@zap-studio/retry | ecosystem | abort | immediate", () => {
     const controller = new AbortController();
     controller.abort(new Error("bench-abort"));
     try {
-      await runZapExponentialWithSignal(createAlwaysFailTask(), controller.signal);
+      await runZapExponentialWithSignal(
+        createAlwaysFailTask(),
+        controller.signal
+      );
     } catch {}
   });
 

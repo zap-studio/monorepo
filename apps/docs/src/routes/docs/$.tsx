@@ -30,6 +30,7 @@ interface DocsLoaderData {
 }
 
 export const Route = createFileRoute("/docs/$")({
+  component: DocsRoute,
   head: () => ({
     meta: pageMeta("Documentation", "Browse the Zap Studio documentation."),
   }),
@@ -41,11 +42,10 @@ export const Route = createFileRoute("/docs/$")({
     await docsClientLoader.preload(data.path);
     return data;
   },
-  component: DocsRoute,
 });
 
 function DocsRoute() {
-  const loaderData = Route.useLoaderData() as DocsLoaderData;
+  const loaderData = Route.useLoaderData();
   const { pageTree, path } = useFumadocsLoader(loaderData);
   const { markdownUrl } = loaderData;
 
@@ -57,12 +57,12 @@ function DocsRoute() {
         tabs: {
           transform: (option, node) => ({
             ...option,
+            description: undefined,
             icon: node.icon ? (
               <span className="flex size-full items-center justify-center text-fd-primary [&_svg]:size-5 md:[&_svg]:size-4">
                 {node.icon}
               </span>
             ) : undefined,
-            description: undefined,
           }),
         },
       }}
@@ -88,8 +88,8 @@ const loadDocsPageFn = createServerFn({ method: "GET" })
 
     return {
       markdownUrl: getMarkdownUrl(page),
-      path: page.path,
       pageTree: await source.serializePageTree(source.getPageTree()),
+      path: page.path,
       slugs: page.slugs,
     };
   });
@@ -107,10 +107,15 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
         toc={toc}
       >
         <DocsTitle>{frontmatter.title}</DocsTitle>
-        <DocsDescription className="mb-0">{frontmatter.description}</DocsDescription>
+        <DocsDescription className="mb-0">
+          {frontmatter.description}
+        </DocsDescription>
         <div className="flex flex-row items-center gap-2 border-b pb-6">
           <LLMCopyButton markdownUrl={props.markdownUrl} />
-          <ViewOptions githubUrl={props.githubUrl} markdownUrl={props.markdownUrl} />
+          <ViewOptions
+            githubUrl={props.githubUrl}
+            markdownUrl={props.markdownUrl}
+          />
         </div>
         <DocsBody>
           <MDX components={getMDXComponents()} />
@@ -123,7 +128,9 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
               <PencilIcon className="size-3" />
               Edit on GitHub
             </a>
-            {lastModified ? <PageLastUpdate date={new Date(lastModified)} /> : null}
+            {lastModified ? (
+              <PageLastUpdate date={new Date(lastModified)} />
+            ) : null}
           </div>
         </DocsBody>
       </DocsPage>

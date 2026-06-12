@@ -7,10 +7,10 @@ const homeDescription =
   "Framework-agnostic TypeScript packages for the features every app needs. Type-safe, tested, zero lock-in.";
 
 export const Route = createFileRoute("/_marketing/")({
+  component: IndexRoute,
   head: () => ({
     meta: pageMeta(undefined, homeDescription),
   }),
-  component: IndexRoute,
 });
 
 function IndexRoute() {

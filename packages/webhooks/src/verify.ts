@@ -60,7 +60,9 @@ export function createHmacVerifier({
 }): VerifyFn {
   const subtle = globalThis.crypto?.subtle;
   if (!subtle) {
-    throw new VerificationError("Web Crypto API is unavailable in this runtime");
+    throw new VerificationError(
+      "Web Crypto API is unavailable in this runtime"
+    );
   }
 
   const hash = HMAC_HASH[algo];
@@ -71,9 +73,9 @@ export function createHmacVerifier({
   const keyPromise = subtle.importKey(
     "raw",
     new TextEncoder().encode(secret),
-    { name: "HMAC", hash },
+    { hash, name: "HMAC" },
     false,
-    ["sign"],
+    ["sign"]
   );
 
   return async (req) => {
@@ -83,17 +85,25 @@ export function createHmacVerifier({
     }
 
     const key = await keyPromise;
-    const signature = await subtle.sign("HMAC", key, req.rawBody as BufferSource);
+    const signature = await subtle.sign(
+      "HMAC",
+      key,
+      req.rawBody as BufferSource
+    );
     const expected = toHex(new Uint8Array(signature));
 
     if (!constantTimeEquals(expected, normalizeSignature(actual))) {
-      throw new VerificationError(`Invalid signature for header: ${headerName}`);
+      throw new VerificationError(
+        `Invalid signature for header: ${headerName}`
+      );
     }
   };
 }
 
 function toHex(bytes: Uint8Array): string {
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join(
+    ""
+  );
 }
 
 function normalizeSignature(signature: string): string {

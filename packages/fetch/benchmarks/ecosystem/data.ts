@@ -1,21 +1,21 @@
 import { z } from "zod";
 
 export const responseSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  email: z.email(),
   active: z.boolean(),
-  tags: z.array(z.string()),
+  email: z.email(),
+  id: z.number(),
   metadata: z.object({
     locale: z.string(),
     score: z.number(),
   }),
+  name: z.string(),
+  tags: z.array(z.string()),
 });
 
 export const payloadTiers = [
   {
-    name: "small",
     body: { hello: "world" },
+    name: "small",
     response: {
       active: true,
       email: "ada@example.com",
@@ -26,12 +26,12 @@ export const payloadTiers = [
     },
   },
   {
-    name: "medium",
     body: {
       flags: { beta: true, staff: false },
       hello: "world",
       profile: { city: "Montreal", country: "CA", postalCode: "H2X" },
     },
+    name: "medium",
     response: {
       active: true,
       email: "grace@example.com",
@@ -42,7 +42,6 @@ export const payloadTiers = [
     },
   },
   {
-    name: "large",
     body: {
       hello: "world",
       history: Array.from({ length: 30 }, (_, index) => ({
@@ -63,6 +62,7 @@ export const payloadTiers = [
         },
       },
     },
+    name: "large",
     response: {
       active: true,
       email: "linus@example.com",

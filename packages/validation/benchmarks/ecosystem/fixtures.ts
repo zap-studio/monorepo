@@ -14,11 +14,22 @@ const baseInvalidInput = {
 
 export const inputTiers = [
   {
+    invalid: baseInvalidInput,
     name: "small",
     valid: baseValidInput,
-    invalid: baseInvalidInput,
   },
   {
+    invalid: {
+      ...baseInvalidInput,
+      metadata: {
+        createdAt: "not-a-date",
+        tags: [1, 2, 3],
+      },
+      profile: {
+        bio: "",
+        city: 42,
+      },
+    },
     name: "medium",
     valid: {
       ...baseValidInput,
@@ -31,19 +42,21 @@ export const inputTiers = [
         city: "Montreal",
       },
     },
-    invalid: {
-      ...baseInvalidInput,
-      metadata: {
-        createdAt: "not-a-date",
-        tags: [1, 2, 3],
-      },
-      profile: {
-        bio: "",
-        city: 42,
-      },
-    },
   },
   {
+    invalid: {
+      ...baseInvalidInput,
+      history: Array.from({ length: 50 }, (_, index) => ({
+        index: `bad-${index}`,
+        ok: "maybe",
+        value: index,
+      })),
+      metadata: {
+        createdAt: "invalid",
+        notes: 42,
+        tags: Array.from({ length: 25 }, () => 999),
+      },
+    },
     name: "large",
     valid: {
       ...baseValidInput,
@@ -56,19 +69,6 @@ export const inputTiers = [
         createdAt: "2026-04-24T00:00:00.000Z",
         notes: "A longer metadata object for benchmark payload size.",
         tags: Array.from({ length: 25 }, (_, index) => `tag-${index}`),
-      },
-    },
-    invalid: {
-      ...baseInvalidInput,
-      history: Array.from({ length: 50 }, (_, index) => ({
-        index: `bad-${index}`,
-        ok: "maybe",
-        value: index,
-      })),
-      metadata: {
-        createdAt: "invalid",
-        notes: 42,
-        tags: Array.from({ length: 25 }, () => 999),
       },
     },
   },

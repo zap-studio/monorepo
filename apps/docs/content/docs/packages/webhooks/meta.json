@@ -2,5 +2,12 @@
   "title": "webhooks",
   "icon": "Webhook",
   "root": true,
-  "pages": ["index", "getting-started", "guides", "verification", "lifecycle-hooks", "adapters"]
+  "pages": [
+    "index",
+    "getting-started",
+    "guides",
+    "verification",
+    "lifecycle-hooks",
+    "adapters"
+  ]
 }

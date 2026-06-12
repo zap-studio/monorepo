@@ -41,17 +41,17 @@ function NavbarMenuItemContent({
 }
 
 export const gitConfig = {
-  user: "zap-studio",
-  repo: "monorepo",
   branch: "main",
+  repo: "monorepo",
+  user: "zap-studio",
 };
 
 export function baseOptions(): BaseLayoutProps {
   return {
+    githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
     nav: {
       title: <NavTitle />,
     },
-    githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
   };
 }
 
@@ -60,16 +60,14 @@ export function homeLinks(): BaseLayoutProps["links"] {
     ...(baseOptions().links ?? []),
     // ── Mobile-only links ───────────────────────────────────────────
     {
+      active: "nested-url",
+      icon: <PackageIcon className="size-4" />,
+      on: "menu",
       text: "Packages",
       url: "/docs/packages/fetch",
-      icon: <PackageIcon className="size-4" />,
-      active: "nested-url",
-      on: "menu",
     },
     // ── Desktop-only animated menus ─────────────────────────────────
     {
-      type: "custom",
-      on: "nav",
       children: (
         <NavbarMenu>
           <NavbarMenuTrigger>Packages</NavbarMenuTrigger>
@@ -112,11 +110,11 @@ export function homeLinks(): BaseLayoutProps["links"] {
           </NavbarMenuContent>
         </NavbarMenu>
       ),
+      on: "nav",
+      type: "custom",
     },
     // ── Shared links (both desktop and mobile) ──────────────────────
     {
-      type: "custom",
-      on: "nav",
       children: (
         <NavbarMenu>
           <NavbarMenuTrigger>llms.txt</NavbarMenuTrigger>
@@ -138,13 +136,15 @@ export function homeLinks(): BaseLayoutProps["links"] {
           </NavbarMenuContent>
         </NavbarMenu>
       ),
+      on: "nav",
+      type: "custom",
     },
     // ── Mobile-only llms.txt (last) ─────────────────────────────────
     {
-      text: "llms.txt",
-      url: "/llms.txt",
       icon: <BotIcon className="size-4" />,
       on: "menu",
+      text: "llms.txt",
+      url: "/llms.txt",
     },
   ];
 }

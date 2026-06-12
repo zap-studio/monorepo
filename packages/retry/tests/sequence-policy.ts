@@ -1,6 +1,7 @@
 import { expect } from "vitest";
 
-import { AbortError, RetryError } from "../src/errors.js";
+import type { AbortError} from "../src/errors.js";
+import { RetryError } from "../src/errors.js";
 import { BaseRetryPolicy } from "../src/index.js";
 import type {
   RetryDecision,
@@ -19,15 +20,18 @@ export class SequencePolicy extends BaseRetryPolicy<Error, string> {
 
   public next(input: RetryDecisionInput<Error, string>): RetryDecision {
     this.seen.push(input);
-    const decision = this.decisions[Math.min(this.index, this.decisions.length - 1)];
+    const decision =
+      this.decisions[Math.min(this.index, this.decisions.length - 1)];
     this.index += 1;
-    return decision ?? { shouldRetry: false, delayMs: 0, reason: "policy-declined" };
+    return (
+      decision ?? { delayMs: 0, reason: "policy-declined", shouldRetry: false }
+    );
   }
 }
 
 export class CustomTerminalPolicy extends BaseRetryPolicy<Error> {
   public next(): RetryDecision {
-    return { shouldRetry: false, delayMs: 0, reason: "policy-declined" };
+    return { delayMs: 0, reason: "policy-declined", shouldRetry: false };
   }
 
   public override onExhausted(input: RetryExhaustedInput<Error>): RetryError {

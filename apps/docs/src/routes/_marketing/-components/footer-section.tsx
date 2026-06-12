@@ -21,28 +21,28 @@ const footerColumns: FooterColumn[] = [
   {
     heading: "Packages",
     links: [
-      { label: "fetch", href: "/docs/packages/fetch" },
-      { label: "permit", href: "/docs/packages/permit" },
-      { label: "retry", href: "/docs/packages/retry" },
-      { label: "validation", href: "/docs/packages/validation" },
-      { label: "webhooks", href: "/docs/packages/webhooks" },
+      { href: "/docs/packages/fetch", label: "fetch" },
+      { href: "/docs/packages/permit", label: "permit" },
+      { href: "/docs/packages/retry", label: "retry" },
+      { href: "/docs/packages/validation", label: "validation" },
+      { href: "/docs/packages/webhooks", label: "webhooks" },
     ],
   },
   {
     heading: "Resources",
     links: [
-      { label: "Documentation", href: "/docs/getting-started" },
-      { label: "llms.txt", href: "/llms.txt" },
-      { label: "llms-full.txt", href: "/llms-full.txt" },
+      { href: "/docs/getting-started", label: "Documentation" },
+      { href: "/llms.txt", label: "llms.txt" },
+      { href: "/llms-full.txt", label: "llms-full.txt" },
     ],
   },
   {
     heading: "Community",
     links: [
       {
-        label: "GitHub",
-        href: "https://github.com/zap-studio/monorepo",
         external: true,
+        href: "https://github.com/zap-studio/monorepo",
+        label: "GitHub",
       },
     ],
   },
@@ -90,7 +90,9 @@ export function FooterSection(): ReactNode {
             style={{ paddingBottom: "clamp(88px, 14vw, 192px)" }}
           >
             <div className="flex flex-col items-center gap-1 sm:items-start">
-              <p className="text-sm leading-6 text-fd-muted-foreground">Making the web better.</p>
+              <p className="text-sm leading-6 text-fd-muted-foreground">
+                Making the web better.
+              </p>
               <p className="text-xs leading-5 text-fd-muted-foreground/40">
                 &copy; {new Date().getFullYear()} Alexandre Trotel.
               </p>
@@ -101,7 +103,9 @@ export function FooterSection(): ReactNode {
                 aria-label="View Zap Studio on GitHub"
                 className="text-fd-muted-foreground transition-colors duration-200 hover:text-fd-foreground"
                 href="https://github.com/zap-studio/monorepo"
-                {...getExternalLinkProps("https://github.com/zap-studio/monorepo")}
+                {...getExternalLinkProps(
+                  "https://github.com/zap-studio/monorepo"
+                )}
               >
                 <GitHubIcon className="size-4" />
               </a>

@@ -21,7 +21,7 @@ export interface NormalizedRequest {
   /** The query parameters of the request */
   query?: Record<string, string | string[]>;
   /** The raw body of the request (for signature) */
-  rawBody: Uint8Array<ArrayBufferLike>;
+  rawBody: Uint8Array;
   /** The parsed text body of the request if applicable */
   text?: string;
 }
@@ -61,17 +61,16 @@ export type InferSchemaOutput<TSchema> =
  *
  * @template TSchema - Schema used to infer handler payload type.
  */
-export type SchemaRouteOptions<TSchema extends StandardSchemaV1<unknown, unknown>> = Omit<
-  RegisterOptions<InferSchemaOutput<TSchema>>,
-  "schema"
-> & {
+export type SchemaRouteOptions<
+  TSchema extends StandardSchemaV1<unknown, unknown>,
+> = Omit<RegisterOptions<InferSchemaOutput<TSchema>>, "schema"> & {
   schema: TSchema;
 };
 
 interface RouteLike {
   after?: AfterHook | AfterHook[];
   before?: BeforeHook | BeforeHook[];
-  handler: WebhookHandler<unknown>;
+  handler: WebhookHandler;
   schema: StandardSchemaV1<unknown, unknown>;
 }
 
@@ -101,7 +100,9 @@ export type HandlerMap<TMap extends Record<string, unknown>> = {
  *
  * @template TRoutes - Route dictionary keyed by webhook path.
  */
-export type InferWebhookMapFromRoutes<TRoutes extends Record<string, RouteLike>> = {
+export type InferWebhookMapFromRoutes<
+  TRoutes extends Record<string, RouteLike>,
+> = {
   [P in keyof TRoutes]: InferSchemaOutput<TRoutes[P]["schema"]>;
 };
 
@@ -112,10 +113,13 @@ export type VerifyFn = (req: NormalizedRequest) => Promise<void> | void;
 export type BeforeHook = (req: NormalizedRequest) => Promise<void> | void;
 
 /** Hook function that runs after successful request processing */
-export type AfterHook = (req: NormalizedRequest, res: NormalizedResponse) => Promise<void> | void;
+export type AfterHook = (
+  req: NormalizedRequest,
+  res: NormalizedResponse
+) => Promise<void> | void;
 
 /** Hook function that runs when an error occurs */
 export type ErrorHook = (
   error: Error,
-  req: NormalizedRequest,
+  req: NormalizedRequest
 ) => Promise<NormalizedResponse | undefined> | NormalizedResponse | undefined;

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { defaultSleep } from "../src/sleep.js";
 
-describe("defaultSleep", () => {
+describe(defaultSleep, () => {
   it("resolves immediately when delay is non-positive", async () => {
     await expect(defaultSleep(0)).resolves.toBeUndefined();
   });
@@ -16,10 +16,10 @@ describe("defaultSleep", () => {
       settled = true;
     });
     await Promise.resolve();
-    expect(settled).toBe(false);
+    expect(settled).toBeFalsy();
     await vi.advanceTimersByTimeAsync(1);
     await done;
-    expect(settled).toBe(true);
+    expect(settled).toBeTruthy();
     vi.useRealTimers();
   });
 });

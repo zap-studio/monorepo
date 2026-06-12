@@ -22,7 +22,7 @@ describe("@zap-studio/webhooks browser runtime", () => {
         method: "POST",
         path: "/webhooks/github",
         rawBody: body,
-      }),
+      })
     ).resolves.toBeUndefined();
   });
 
@@ -53,12 +53,12 @@ async function signBody(body: Uint8Array, secret: string): Promise<string> {
   const key = await crypto.subtle.importKey(
     "raw",
     encoder.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
+    { hash: "SHA-256", name: "HMAC" },
     false,
-    ["sign"],
+    ["sign"]
   );
   const signature = await crypto.subtle.sign("HMAC", key, body as BufferSource);
-  return Array.from(new Uint8Array(signature), (byte) => byte.toString(16).padStart(2, "0")).join(
-    "",
-  );
+  return Array.from(new Uint8Array(signature), (byte) =>
+    byte.toString(16).padStart(2, "0")
+  ).join("");
 }

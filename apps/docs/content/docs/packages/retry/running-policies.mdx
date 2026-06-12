@@ -35,7 +35,7 @@ const result = await policy.run(
     sleep: async (_ms) => {
       // no delay in tests
     },
-  },
+  }
 );
 ```
 
@@ -61,7 +61,7 @@ const result = await policy.run(
   async () => {
     return await doWork();
   },
-  { throwOnExhausted: false },
+  { throwOnExhausted: false }
 );
 
 if (!result.ok) {

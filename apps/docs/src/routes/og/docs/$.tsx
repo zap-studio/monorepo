@@ -16,11 +16,12 @@ export const Route = createFileRoute("/og/docs/$")({
           throw notFound();
         }
 
-        const { createDocsOgImageResponse } = await import("@/lib/og/docs-image.server");
+        const { createDocsOgImageResponse } =
+          await import("@/lib/og/docs-image.server");
 
         return createDocsOgImageResponse({
-          title: page.data.title,
           description: page.data.description,
+          title: page.data.title,
         });
       },
     },

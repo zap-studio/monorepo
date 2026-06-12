@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { assertNever } from "../src/helpers.js";
 
-describe("assertNever", () => {
+describe(assertNever, () => {
   describe("runtime behavior", () => {
     it("should throw an error when called", () => {
       expect(() => {
@@ -65,12 +65,15 @@ describe("assertNever", () => {
 
     function performAction(action: Action): string {
       switch (action) {
-        case "read":
+        case "read": {
           return "Reading...";
-        case "write":
+        }
+        case "write": {
           return "Writing...";
-        default:
+        }
+        default: {
           return assertNever(action);
+        }
       }
     }
 
@@ -89,16 +92,21 @@ describe("assertNever", () => {
   });
 
   describe("use case: discriminated union", () => {
-    type Shape = { kind: "circle"; radius: number } | { kind: "square"; side: number };
+    type Shape =
+      | { kind: "circle"; radius: number }
+      | { kind: "square"; side: number };
 
     function getArea(shape: Shape): number {
       switch (shape.kind) {
-        case "circle":
+        case "circle": {
           return Math.PI * shape.radius ** 2;
-        case "square":
+        }
+        case "square": {
           return shape.side ** 2;
-        default:
+        }
+        default: {
           return assertNever(shape);
+        }
       }
     }
 
@@ -109,7 +117,7 @@ describe("assertNever", () => {
 
     it("should throw for unhandled discriminant values", () => {
       // @ts-expect-error we expect this to fail at compile time
-      const triangle = { kind: "triangle", base: 3, height: 4 } as Shape;
+      const triangle = { base: 3, height: 4, kind: "triangle" } as Shape;
 
       expect(() => {
         getArea(triangle);
@@ -123,9 +131,9 @@ describe("assertNever", () => {
 
       try {
         assertNever("test" as never);
-      } catch (e) {
-        if (e instanceof Error) {
-          thrownError = e;
+      } catch (error) {
+        if (error instanceof Error) {
+          thrownError = error;
         }
       }
 
@@ -141,7 +149,7 @@ describe("assertNever", () => {
         caught = true;
       }
 
-      expect(caught).toBe(true);
+      expect(caught).toBeTruthy();
     });
   });
 });

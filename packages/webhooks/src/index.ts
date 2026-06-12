@@ -31,7 +31,7 @@ interface HandlerEntry<TPayload = unknown> {
   schema?: StandardSchemaV1<unknown, TPayload>;
 }
 
-type HandlerStore = Record<string, HandlerEntry<unknown>>;
+type HandlerStore = Record<string, HandlerEntry>;
 
 export interface WebhookRouterOptions {
   /** Global hooks executed after successful route handler completion. */
@@ -61,7 +61,9 @@ function toArray<T>(value: T | T[] | undefined): T[] {
  */
 export class WebhookRouter<TMap = unknown> {
   private readonly handlers: HandlerStore = {};
-  private readonly verify: ((req: NormalizedRequest) => Promise<void> | void) | undefined;
+  private readonly verify:
+    | ((req: NormalizedRequest) => Promise<void> | void)
+    | undefined;
   private readonly globalBeforeHooks: BeforeHook[] = [];
   private readonly globalAfterHooks: AfterHook[] = [];
   private readonly globalErrorHook: ErrorHook | undefined;
@@ -89,22 +91,25 @@ export class WebhookRouter<TMap = unknown> {
    * @param handlerOrOptions - Handler function or schema-based registration options.
    * @returns The same router instance with an updated internal route type map.
    */
-  register<Path extends string, TSchema extends StandardSchemaV1<unknown, unknown>>(
+  register<
+    Path extends string,
+    TSchema extends StandardSchemaV1<unknown, unknown>,
+  >(
     path: Path,
-    handlerOrOptions: SchemaRouteOptions<TSchema>,
+    handlerOrOptions: SchemaRouteOptions<TSchema>
   ): WebhookRouter<TMap & Record<Path, InferSchemaOutput<TSchema>>>;
   register<Path extends string, TPayload>(
     path: Path,
-    handlerOrOptions: RegisterOptions<TPayload>,
+    handlerOrOptions: RegisterOptions<TPayload>
   ): WebhookRouter<TMap & Record<Path, TPayload>>;
   register<Path extends string>(
     path: Path,
-    handlerOrOptions: WebhookHandler<unknown>,
+    handlerOrOptions: WebhookHandler
   ): WebhookRouter<TMap & Record<Path, unknown>>;
   register(
     path: string,
-    handlerOrOptions: WebhookHandler<unknown> | RegisterOptions<unknown>,
-  ): WebhookRouter<TMap> {
+    handlerOrOptions: WebhookHandler | RegisterOptions<unknown>
+  ): this {
     if (typeof handlerOrOptions === "function") {
       this.handlers[path] = { handler: handlerOrOptions };
     } else {
@@ -125,12 +130,12 @@ export class WebhookRouter<TMap = unknown> {
       const normalizedPath = this.normalizePath(req);
 
       if (normalizedPath === null) {
-        return { status: 404, body: { error: "not found" } };
+        return { body: { error: "not found" }, status: 404 };
       }
 
       const handlerEntry = this.handlers[normalizedPath];
       if (!handlerEntry) {
-        return { status: 404, body: { error: "not found" } };
+        return { body: { error: "not found" }, status: 404 };
       }
 
       await this.runGlobalBeforeHooks(req);
@@ -141,20 +146,27 @@ export class WebhookRouter<TMap = unknown> {
       }
 
       const parsedJson = this.parseRequestBody(req);
-      const validationResult = await this.validatePayload(parsedJson, handlerEntry.schema);
+      const validationResult = await this.validatePayload(
+        parsedJson,
+        handlerEntry.schema
+      );
 
       if (this.isErrorResponse(validationResult)) {
         return validationResult;
       }
 
-      const response = await this.executeHandler(handlerEntry.handler, req, validationResult);
+      const response = await this.executeHandler(
+        handlerEntry.handler,
+        req,
+        validationResult
+      );
 
       await this.runRouteAfterHooks(req, response, handlerEntry.after);
       await this.runGlobalAfterHooks(req, response);
 
       return response;
     } catch (error) {
-      return this.handleError(error, req);
+      return await this.handleError(error, req);
     }
   }
 
@@ -163,7 +175,7 @@ export class WebhookRouter<TMap = unknown> {
     try {
       // Try to parse as URL (e.g. handles full URLs like https://example.com/webhooks/path -> /webhooks/path)
       const url = new URL(req.path);
-      pathname = url.pathname;
+      ({ pathname } = url);
     } catch {
       // Not a full URL, use the path as-is
     }
@@ -179,7 +191,9 @@ export class WebhookRouter<TMap = unknown> {
     req.path = pathname;
 
     // Normalize path by removing leading slash for handler matching (e.g. /path -> path)
-    const normalizedPath = pathname.startsWith("/") ? pathname.slice(1) : pathname;
+    const normalizedPath = pathname.startsWith("/")
+      ? pathname.slice(1)
+      : pathname;
 
     return normalizedPath;
   }
@@ -190,8 +204,10 @@ export class WebhookRouter<TMap = unknown> {
     }
   }
 
-  private createHandlerEntry(options: RegisterOptions<unknown>): HandlerEntry<unknown> {
-    const entry: HandlerEntry<unknown> = {
+  private createHandlerEntry(
+    options: RegisterOptions<unknown>
+  ): HandlerEntry {
+    const entry: HandlerEntry = {
       handler: options.handler,
     };
 
@@ -200,17 +216,24 @@ export class WebhookRouter<TMap = unknown> {
     }
 
     if (options.before !== undefined) {
-      entry.before = Array.isArray(options.before) ? options.before : [options.before];
+      entry.before = Array.isArray(options.before)
+        ? options.before
+        : [options.before];
     }
 
     if (options.after !== undefined) {
-      entry.after = Array.isArray(options.after) ? options.after : [options.after];
+      entry.after = Array.isArray(options.after)
+        ? options.after
+        : [options.after];
     }
 
     return entry;
   }
 
-  private async runRouteBeforeHooks(req: NormalizedRequest, before?: BeforeHook[]): Promise<void> {
+  private async runRouteBeforeHooks(
+    req: NormalizedRequest,
+    before?: BeforeHook[]
+  ): Promise<void> {
     if (before) {
       for (const hook of before) {
         await hook(req);
@@ -218,7 +241,9 @@ export class WebhookRouter<TMap = unknown> {
     }
   }
 
-  private parseRequestBody<TParsed = unknown>(req: NormalizedRequest): TParsed | undefined {
+  private parseRequestBody<TParsed = unknown>(
+    req: NormalizedRequest
+  ): TParsed | undefined {
     try {
       const parsed = JSON.parse(new TextDecoder().decode(req.rawBody));
       req.json = parsed;
@@ -239,7 +264,7 @@ export class WebhookRouter<TMap = unknown> {
 
   private async validatePayload<TPayload>(
     parsedJson: unknown,
-    schema?: StandardSchemaV1<unknown, TPayload>,
+    schema?: StandardSchemaV1<unknown, TPayload>
   ): Promise<TPayload | NormalizedResponse> {
     if (!schema) {
       return parsedJson as TPayload;
@@ -251,30 +276,28 @@ export class WebhookRouter<TMap = unknown> {
 
     if (result.issues) {
       return {
-        status: 400,
         body: {
           error: "validation failed",
           issues: result.issues.map((issue) => ({
             path: issue.path?.map((p) =>
-              typeof p === "object" && "key" in p ? String(p.key) : String(p),
+              typeof p === "object" && "key" in p ? String(p.key) : String(p)
             ),
             message: issue.message,
           })),
         },
+        status: 400,
       };
     }
 
-    return result.value as TPayload;
+    return result.value;
   }
 
   private async executeHandler<TPayload = unknown>(
     handler: WebhookHandler<TPayload>,
     req: NormalizedRequest,
-    validatedPayload: TPayload,
+    validatedPayload: TPayload
   ): Promise<NormalizedResponse> {
     const responded = await handler({
-      req,
-      payload: validatedPayload,
       ack: async (r?: Partial<NormalizedResponse>) => {
         const response: NormalizedResponse = {
           status: r?.status ?? 200,
@@ -287,15 +310,17 @@ export class WebhookRouter<TMap = unknown> {
 
         return response;
       },
+      payload: validatedPayload,
+      req,
     });
 
-    return responded ?? { status: 200, body: "ok" };
+    return responded ?? { body: "ok", status: 200 };
   }
 
   private async runRouteAfterHooks(
     req: NormalizedRequest,
     response: NormalizedResponse,
-    after?: AfterHook[],
+    after?: AfterHook[]
   ): Promise<void> {
     if (after) {
       for (const hook of after) {
@@ -306,7 +331,7 @@ export class WebhookRouter<TMap = unknown> {
 
   private async runGlobalAfterHooks(
     req: NormalizedRequest,
-    response: NormalizedResponse,
+    response: NormalizedResponse
   ): Promise<void> {
     for (const hook of this.globalAfterHooks) {
       await hook(req, response);
@@ -315,7 +340,7 @@ export class WebhookRouter<TMap = unknown> {
 
   private async handleError<TError = unknown>(
     error: TError,
-    req: NormalizedRequest,
+    req: NormalizedRequest
   ): Promise<NormalizedResponse> {
     if (this.globalErrorHook) {
       const errorResponse = await this.globalErrorHook(error as Error, req);
@@ -325,10 +350,10 @@ export class WebhookRouter<TMap = unknown> {
     }
 
     return {
-      status: 500,
       body: {
         error: error instanceof Error ? error.message : "Internal server error",
       },
+      status: 500,
     };
   }
 }
@@ -339,6 +364,8 @@ export class WebhookRouter<TMap = unknown> {
  * @param opts - Optional global router options.
  * @returns A new webhook router.
  */
-export function createWebhookRouter(opts?: WebhookRouterOptions): WebhookRouter {
+export function createWebhookRouter(
+  opts?: WebhookRouterOptions
+): WebhookRouter {
   return new WebhookRouter(opts);
 }

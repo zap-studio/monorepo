@@ -61,7 +61,10 @@ const result = await policy.run(doWork, { throwOnExhausted: false });
 if (!result.ok) {
   return {
     attempts: result.attempts,
-    cause: result.error instanceof RetryError ? result.error.lastError : result.error,
+    cause:
+      result.error instanceof RetryError
+        ? result.error.lastError
+        : result.error,
   };
 }
 

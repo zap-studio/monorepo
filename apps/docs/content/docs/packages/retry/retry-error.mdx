@@ -72,7 +72,7 @@ const result = await policy.run(
   async () => {
     return await doWork();
   },
-  { throwOnExhausted: false },
+  { throwOnExhausted: false }
 );
 
 if (!result.ok) {

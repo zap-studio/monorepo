@@ -6,8 +6,12 @@
  */
 
 import { sleepWithAbortSignal, throwIfAborted } from "./abort.js";
-import { RetryError } from "./errors.js";
-import type { RetryDecision, RetryDecisionInput, RetryExhaustedInput } from "./types.js";
+import type { RetryError } from "./errors.js";
+import type {
+  RetryDecision,
+  RetryDecisionInput,
+  RetryExhaustedInput,
+} from "./types.js";
 
 /**
  * Runs the throw-mode retry loop: throws `RetryError` on exhaustion and
@@ -31,7 +35,7 @@ export async function runThrowMode<T, TError, TData>(
   },
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ): Promise<T> {
   let attempt = 1;
 

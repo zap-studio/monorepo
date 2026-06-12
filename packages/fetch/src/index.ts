@@ -9,7 +9,8 @@
  * @module @zap-studio/fetch
  */
 
-import { isStandardSchema, type StandardSchemaV1 } from "@zap-studio/validation";
+import { isStandardSchema } from '@zap-studio/validation';
+import type { StandardSchemaV1 } from '@zap-studio/validation';
 
 import { GLOBAL_DEFAULTS } from "./constants.js";
 import { fetchInternal } from "./internal.js";
@@ -71,21 +72,24 @@ import type {
 export async function $fetch<TSchema extends StandardSchemaV1>(
   input: FetchInput,
   schema: TSchema,
-  options: ExtendedRequestInit & { throwOnValidationError: false },
+  options: ExtendedRequestInit & { throwOnValidationError: false }
 ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
 export async function $fetch<TSchema extends StandardSchemaV1>(
   input: FetchInput,
   schema: TSchema,
-  options?: ExtendedRequestInit & { throwOnValidationError?: true },
+  options?: ExtendedRequestInit & { throwOnValidationError?: true }
 ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-export async function $fetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
+export async function $fetch(
+  input: FetchInput,
+  options?: ExtendedRequestInit
+): Promise<Response>;
 
 export async function $fetch(
   input: FetchInput,
   schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
-  optionsOrUndefined?: ExtendedRequestInit,
+  optionsOrUndefined?: ExtendedRequestInit
 ): Promise<unknown> {
   const [schema, options] = isStandardSchema(schemaOrOptions)
     ? [schemaOrOptions, optionsOrUndefined]
@@ -118,11 +122,11 @@ export async function $fetch(
  * }
  */
 export const api: ApiMethods = {
+  delete: createMethod($fetch, "DELETE"),
   get: createMethod($fetch, "GET"),
+  patch: createMethod($fetch, "PATCH"),
   post: createMethod($fetch, "POST"),
   put: createMethod($fetch, "PUT"),
-  patch: createMethod($fetch, "PATCH"),
-  delete: createMethod($fetch, "DELETE"),
 };
 
 /**
@@ -160,15 +164,17 @@ export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
     ...GLOBAL_DEFAULTS,
     ...factoryOptions,
     baseURL: factoryOptions.baseURL ?? GLOBAL_DEFAULTS.baseURL,
-    throwOnFetchError: factoryOptions.throwOnFetchError ?? GLOBAL_DEFAULTS.throwOnFetchError,
+    throwOnFetchError:
+      factoryOptions.throwOnFetchError ?? GLOBAL_DEFAULTS.throwOnFetchError,
     throwOnValidationError:
-      factoryOptions.throwOnValidationError ?? GLOBAL_DEFAULTS.throwOnValidationError,
+      factoryOptions.throwOnValidationError ??
+      GLOBAL_DEFAULTS.throwOnValidationError,
   };
 
   async function customFetch<TSchema extends StandardSchemaV1>(
     input: FetchInput,
     schema: TSchema,
-    options: ExtendedRequestInit & { throwOnValidationError: false },
+    options: ExtendedRequestInit & { throwOnValidationError: false }
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   async function customFetch<TSchema extends StandardSchemaV1>(
@@ -176,15 +182,18 @@ export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
     schema: TSchema,
     options?: ExtendedRequestInit & {
       throwOnValidationError?: true;
-    },
+    }
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-  async function customFetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
+  async function customFetch(
+    input: FetchInput,
+    options?: ExtendedRequestInit
+  ): Promise<Response>;
 
   async function customFetch(
     input: FetchInput,
     schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
-    optionsOrUndefined?: ExtendedRequestInit,
+    optionsOrUndefined?: ExtendedRequestInit
   ): Promise<unknown> {
     const [schema, options] = isStandardSchema(schemaOrOptions)
       ? [schemaOrOptions, optionsOrUndefined]
@@ -194,11 +203,11 @@ export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
   }
 
   const customApi = {
+    delete: createMethod(customFetch, "DELETE"),
     get: createMethod(customFetch, "GET"),
+    patch: createMethod(customFetch, "PATCH"),
     post: createMethod(customFetch, "POST"),
     put: createMethod(customFetch, "PUT"),
-    patch: createMethod(customFetch, "PATCH"),
-    delete: createMethod(customFetch, "DELETE"),
   };
 
   return {

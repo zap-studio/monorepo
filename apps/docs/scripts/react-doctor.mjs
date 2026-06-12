@@ -24,7 +24,7 @@ const outputChunks = [];
 
 function createChildEnv() {
   const childEnv = Object.fromEntries(
-    Object.entries(process.env).filter(([key]) => shouldKeepEnvironmentKey(key)),
+    Object.entries(process.env).filter(([key]) => shouldKeepEnvironmentKey(key))
   );
 
   return childEnv;
@@ -32,29 +32,38 @@ function createChildEnv() {
 
 function shouldKeepEnvironmentKey(key) {
   return (
-    key !== "INIT_CWD" && !environmentPrefixesToRemove.some((prefix) => key.startsWith(prefix))
+    key !== "INIT_CWD" &&
+    !environmentPrefixesToRemove.some((prefix) => key.startsWith(prefix))
   );
 }
 
 function getCatalogVersion(workspaceYaml, dependencyName) {
-  const escapedName = dependencyName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const match = workspaceYaml.match(new RegExp(`^\\s{2}${escapedName}:\\s+(.+)$`, "m"));
+  const escapedName = dependencyName.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = workspaceYaml.match(
+    new RegExp(`^\\s{2}${escapedName}:\\s+(.+)$`, "m")
+  );
 
   return match?.[1]?.trim() ?? null;
 }
 
 async function prepareScanPackageJson() {
   const packageJsonPath = path.join(scanPath, "package.json");
-  const originalPackageJson = await readFile(packageJsonPath, "utf8");
+  const originalPackageJson = await readFile(packageJsonPath, "utf-8");
 
   if (!originalPackageJson.includes('"catalog:"')) {
     return async () => {};
   }
 
-  const workspaceYaml = await readFile(path.join(repoRoot, "pnpm-workspace.yaml"), "utf8");
+  const workspaceYaml = await readFile(
+    path.join(repoRoot, "pnpm-workspace.yaml"),
+    "utf-8"
+  );
   const packageJson = JSON.parse(originalPackageJson);
   const catalogVersions = Object.fromEntries(
-    catalogDependencyNames.map((name) => [name, getCatalogVersion(workspaceYaml, name)]),
+    catalogDependencyNames.map((name) => [
+      name,
+      getCatalogVersion(workspaceYaml, name),
+    ])
   );
   const modified = replaceCatalogVersions(packageJson, catalogVersions);
 
@@ -62,10 +71,14 @@ async function prepareScanPackageJson() {
     return async () => {};
   }
 
-  await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`, "utf8");
+  await writeFile(
+    packageJsonPath,
+    `${JSON.stringify(packageJson, null, 2)}\n`,
+    "utf-8"
+  );
 
   return async () => {
-    await writeFile(packageJsonPath, originalPackageJson, "utf8");
+    await writeFile(packageJsonPath, originalPackageJson, "utf-8");
   };
 }
 
@@ -82,8 +95,15 @@ function replaceCatalogVersions(packageJson, catalogVersions) {
 function getCatalogReplacements(packageJson, catalogVersions) {
   return getDependencySections(packageJson).flatMap((dependencies) =>
     Object.entries(catalogVersions)
-      .filter(([dependencyName, version]) => dependencies[dependencyName] === "catalog:" && version)
-      .map(([dependencyName, version]) => ({ dependencies, dependencyName, version })),
+      .filter(
+        ([dependencyName, version]) =>
+          dependencies[dependencyName] === "catalog:" && version
+      )
+      .map(([dependencyName, version]) => ({
+        dependencies,
+        dependencyName,
+        version,
+      }))
   );
 }
 
@@ -95,11 +115,15 @@ function getDependencySections(packageJson) {
 
 const restorePackageJson = await prepareScanPackageJson();
 
-const child = spawn("pnpm", ["dlx", "react-doctor@latest", ".", "--verbose", "--yes"], {
-  cwd: scanPath,
-  env: createChildEnv(),
-  stdio: ["ignore", "pipe", "pipe"],
-});
+const child = spawn(
+  "pnpm",
+  ["dlx", "react-doctor@latest", ".", "--verbose", "--yes"],
+  {
+    cwd: scanPath,
+    env: createChildEnv(),
+    stdio: ["ignore", "pipe", "pipe"],
+  }
+);
 
 child.stdout.on("data", (chunk) => {
   outputChunks.push(chunk);
@@ -127,14 +151,14 @@ const result = await new Promise((resolve) => {
 
   child.on("error", (error) => {
     const errorText = `\n[react-doctor runner error]\n${error.stack ?? error.message}\n`;
-    outputChunks.push(Buffer.from(errorText, "utf8"));
+    outputChunks.push(Buffer.from(errorText, "utf-8"));
     console.error(error);
     void finish({ exitCode: 1, startupError: error });
   });
 });
 
-const report = Buffer.concat(outputChunks).toString("utf8");
-await writeFile(latestReportPath, report, "utf8");
+const report = Buffer.concat(outputChunks).toString("utf-8");
+await writeFile(latestReportPath, report, "utf-8");
 
 if (result.startupError || result.restoreError) {
   process.exit(1);

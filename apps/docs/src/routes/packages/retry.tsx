@@ -2,6 +2,6 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/packages/retry")({
   beforeLoad: () => {
-    throw redirect({ to: "/docs/$", params: { _splat: "packages/retry" } });
+    throw redirect({ params: { _splat: "packages/retry" }, to: "/docs/$" });
   },
 });

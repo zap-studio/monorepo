@@ -48,7 +48,7 @@ describe("@zap-studio/fetch browser runtime", () => {
   });
 
   it("merges native Headers, object headers, and tuple headers", () => {
-    const fromHeaders = mergeHeaders(new Headers({ A: "1" }), undefined);
+    const fromHeaders = mergeHeaders(new Headers({ A: "1" }));
     const fromObject = mergeHeaders({ A: "1" }, { B: "2" });
     const fromTuples = mergeHeaders([["A", "1"]], [["A", "2"]]);
 
@@ -65,12 +65,16 @@ describe("@zap-studio/fetch browser runtime", () => {
         { ...DEFAULTS, baseURL: "https://api.example.com" },
         {
           q: "zap",
-        },
-      ),
+        }
+      )
     ).toBe("https://api.example.com/users?q=zap#team");
 
     expect(
-      resolveRequestUrl("/docs/guide#intro", DEFAULTS, new URLSearchParams({ page: "1" })),
+      resolveRequestUrl(
+        "/docs/guide#intro",
+        DEFAULTS,
+        new URLSearchParams({ page: "1" })
+      )
     ).toBe("/docs/guide?page=1#intro");
   });
 
@@ -91,7 +95,7 @@ describe("@zap-studio/fetch browser runtime", () => {
       "https://api.example.com/users",
       expect.objectContaining({
         headers: expect.any(Headers),
-      }),
+      })
     );
   });
 
@@ -105,7 +109,7 @@ describe("@zap-studio/fetch browser runtime", () => {
       }),
       {
         headers: { B: "2" },
-      },
+      }
     );
 
     const [request, init] = fetchMock.mock.calls[0];
@@ -126,7 +130,7 @@ describe("@zap-studio/fetch browser runtime", () => {
     const [, init] = fetchMock.mock.calls[0];
     expect((init as RequestInit).body).toBe(JSON.stringify({ name: "Zap" }));
     expect(new Headers((init as RequestInit).headers).get("content-type")).toBe(
-      "application/vnd.api+json",
+      "application/vnd.api+json"
     );
   });
 

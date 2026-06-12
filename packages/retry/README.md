@@ -69,7 +69,7 @@ const result = await exponential.run(
     });
     return await response.json();
   },
-  { throwOnExhausted: false },
+  { throwOnExhausted: false }
 );
 
 if (!result.ok) {
@@ -102,7 +102,7 @@ const promise = exponential.run(
     });
     return await response.json();
   },
-  { signal: controller.signal },
+  { signal: controller.signal }
 );
 
 controller.abort(new Error("Request canceled"));
@@ -126,7 +126,7 @@ const result = await exponential.run(
   {
     signal: controller.signal,
     throwOnExhausted: false,
-  },
+  }
 );
 
 if (!result.ok) {
@@ -165,12 +165,15 @@ you need a different terminal error).
 
 ```ts
 import { BaseRetryPolicy } from "@zap-studio/retry";
-import type { RetryDecision, RetryDecisionInput } from "@zap-studio/retry/types";
+import type {
+  RetryDecision,
+  RetryDecisionInput,
+} from "@zap-studio/retry/types";
 
 class LinearBackoff extends BaseRetryPolicy {
   constructor(
     private readonly maxAttempts: number,
-    private readonly stepMs: number,
+    private readonly stepMs: number
   ) {
     super();
   }

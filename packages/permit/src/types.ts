@@ -104,8 +104,12 @@ export type InferAction<
  * // "post:read" | "post:write" | "comment:read"
  * ```
  */
-export type InferPermission<TResources extends Resources, TActions extends Actions<TResources>> = {
-  [K in keyof TResources & keyof TActions]: `${K & string}:${InferAction<TActions, K> & string}`;
+export type InferPermission<
+  TResources extends Resources,
+  TActions extends Actions<TResources>,
+> = {
+  [K in keyof TResources &
+    keyof TActions]: `${K & string}:${InferAction<TActions, K> & string}`;
 }[keyof TResources & keyof TActions];
 
 /**
@@ -203,6 +207,6 @@ export interface Policy<
   can<K extends keyof TResources & keyof TActions>(
     context: TContext,
     permission: `${K & string}:${InferAction<TActions, K> & string}`,
-    resource: InferResource<TResources, K>,
+    resource: InferResource<TResources, K>
   ): Promise<boolean>;
 }

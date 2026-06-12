@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { FetchError } from "../src/errors.js";
 
-describe("FetchError", () => {
+describe(FetchError, () => {
   describe("constructor", () => {
     it("should create an error with the provided message", () => {
       const mockResponse = new Response(null, { status: 404 });
@@ -62,14 +62,19 @@ describe("FetchError", () => {
     });
 
     it("should expose the full response object", () => {
-      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      const mockResponse = new Response(
+        JSON.stringify({ error: "Not Found" }),
+        {
+          headers: { "Content-Type": "application/json" },
+          status: 404,
+        }
+      );
       const error = new FetchError("Not Found", mockResponse);
 
       expect(error.response).toBe(mockResponse);
-      expect(error.response.headers.get("Content-Type")).toBe("application/json");
+      expect(error.response.headers.get("Content-Type")).toBe(
+        "application/json"
+      );
     });
 
     it("should have correct message format", () => {
@@ -82,7 +87,7 @@ describe("FetchError", () => {
   });
 });
 
-describe("ValidationError", () => {
+describe(ValidationError, () => {
   describe("constructor", () => {
     it("should create an error with issues as JSON message", () => {
       const issues: StandardSchemaV1.Issue[] = [
@@ -157,7 +162,7 @@ describe("ValidationError", () => {
       ];
       const error = new ValidationError(issues);
 
-      expect(error.issues).toEqual(issues);
+      expect(error.issues).toStrictEqual(issues);
       expect(error.issues).toHaveLength(2);
     });
 
@@ -172,7 +177,7 @@ describe("ValidationError", () => {
 
       expect(error.issues).toHaveLength(1);
       expect(error.issues[0]?.message).toBe("Required field");
-      expect(error.issues[0]?.path).toEqual(["username"]);
+      expect(error.issues[0]?.path).toStrictEqual(["username"]);
     });
 
     it("should handle multiple issues", () => {
@@ -202,7 +207,7 @@ describe("ValidationError", () => {
       const issues: StandardSchemaV1.Issue[] = [];
       const error = new ValidationError(issues);
 
-      expect(error.issues).toEqual([]);
+      expect(error.issues).toStrictEqual([]);
       expect(error.issues).toHaveLength(0);
     });
   });

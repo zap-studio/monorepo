@@ -9,10 +9,10 @@ import { remarkNpmPackageManagers } from "./src/lib/utils/package-managers";
 export const docs = defineDocs({
   dir: "content/docs",
   docs: {
-    schema: pageSchema,
     postprocess: {
       includeProcessedMarkdown: true,
     },
+    schema: pageSchema,
   },
   meta: {
     schema: metaSchema,

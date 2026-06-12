@@ -2,7 +2,10 @@ import { type } from "arktype";
 import * as v from "valibot";
 import { z } from "zod";
 
-import { createStandardValidator, createSyncStandardValidator } from "../../src/index.js";
+import {
+  createStandardValidator,
+  createSyncStandardValidator,
+} from "../../src/index.js";
 
 export const nativeZodSyncSchema = z.object({
   active: z.boolean(),
@@ -11,7 +14,9 @@ export const nativeZodSyncSchema = z.object({
   name: z.string().min(1),
 });
 
-export const nativeZodAsyncSchema = nativeZodSyncSchema.refine(async () => true);
+export const nativeZodAsyncSchema = nativeZodSyncSchema.refine(
+  async () => true
+);
 
 export const nativeArktypeSyncSchema = type({
   active: "boolean",
@@ -27,16 +32,29 @@ export const nativeValibotSyncSchema = v.object({
   name: v.pipe(v.string(), v.minLength(1)),
 });
 
-export const zapZodSyncValidator = createSyncStandardValidator(nativeZodSyncSchema);
-export const zapArktypeSyncValidator = createSyncStandardValidator(nativeArktypeSyncSchema);
-export const zapValibotSyncValidator = createSyncStandardValidator(nativeValibotSyncSchema);
+export const zapZodSyncValidator =
+  createSyncStandardValidator(nativeZodSyncSchema);
+export const zapArktypeSyncValidator = createSyncStandardValidator(
+  nativeArktypeSyncSchema
+);
+export const zapValibotSyncValidator = createSyncStandardValidator(
+  nativeValibotSyncSchema
+);
 
-export const zapZodAsyncValidator = createStandardValidator(nativeZodAsyncSchema);
-export const zapValibotAsyncValidator = createStandardValidator(nativeValibotSyncSchema);
+export const zapZodAsyncValidator =
+  createStandardValidator(nativeZodAsyncSchema);
+export const zapValibotAsyncValidator = createStandardValidator(
+  nativeValibotSyncSchema
+);
 
-export const nativeZodSyncStandardValidate = nativeZodSyncSchema["~standard"].validate;
-export const nativeArktypeSyncStandardValidate = nativeArktypeSyncSchema["~standard"].validate;
-export const nativeValibotSyncStandardValidate = nativeValibotSyncSchema["~standard"].validate;
+export const nativeZodSyncStandardValidate =
+  nativeZodSyncSchema["~standard"].validate;
+export const nativeArktypeSyncStandardValidate =
+  nativeArktypeSyncSchema["~standard"].validate;
+export const nativeValibotSyncStandardValidate =
+  nativeValibotSyncSchema["~standard"].validate;
 
-export const nativeZodAsyncStandardValidate = nativeZodAsyncSchema["~standard"].validate;
-export const nativeValibotAsyncStandardValidate = nativeValibotSyncSchema["~standard"].validate;
+export const nativeZodAsyncStandardValidate =
+  nativeZodAsyncSchema["~standard"].validate;
+export const nativeValibotAsyncStandardValidate =
+  nativeValibotSyncSchema["~standard"].validate;

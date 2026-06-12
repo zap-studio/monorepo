@@ -20,7 +20,10 @@
  *
  * console.log(headers?.get("Authorization")); // Bearer token
  */
-export function mergeHeaders(base?: HeadersInit, override?: HeadersInit): Headers | undefined {
+export function mergeHeaders(
+  base?: HeadersInit,
+  override?: HeadersInit
+): Headers | undefined {
   if (!(base || override)) {
     return;
   }

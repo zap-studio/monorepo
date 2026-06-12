@@ -15,12 +15,15 @@ You implement `next(...)` only; the base class provides `onExhausted` with a def
 
 ```ts
 import { BaseRetryPolicy } from "@zap-studio/retry";
-import type { RetryDecision, RetryDecisionInput } from "@zap-studio/retry/types";
+import type {
+  RetryDecision,
+  RetryDecisionInput,
+} from "@zap-studio/retry/types";
 
 class LinearBackoff extends BaseRetryPolicy {
   constructor(
     private readonly maxAttempts: number,
-    private readonly stepMs: number,
+    private readonly stepMs: number
   ) {
     super();
   }
@@ -61,7 +64,7 @@ import type { RetryExhaustedInput } from "@zap-studio/retry/types";
 class UpstreamRetryError extends RetryError {
   constructor(
     public readonly attempts: number,
-    public readonly cause: unknown,
+    public readonly cause: unknown
   ) {
     super("Upstream retries exhausted.", {
       attempts,

@@ -6,9 +6,6 @@ import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  server: {
-    port: 3000,
-  },
   plugins: [
     await mdx(await import("./source.config")),
     tailwindcss(),
@@ -23,9 +20,12 @@ export default defineConfig({
     }),
   ],
   resolve: {
-    tsconfigPaths: true,
     alias: {
       tslib: "tslib/tslib.es6.js",
     },
+    tsconfigPaths: true,
+  },
+  server: {
+    port: 3000,
   },
 });

@@ -2,18 +2,18 @@ import { describe, expect, it } from "vitest";
 
 import { mergeHeaders } from "../src/headers.js";
 
-describe("mergeHeaders", () => {
+describe(mergeHeaders, () => {
   it("returns undefined when no headers are provided", () => {
-    expect(mergeHeaders(undefined, undefined)).toBeUndefined();
+    expect(mergeHeaders()).toBeUndefined();
   });
 
   it("accepts object, Headers, and tuple inputs", () => {
     const base = new Headers({ A: "1" });
     const tuples: [string, string][] = [["B", "2"]];
 
-    const fromObject = mergeHeaders({ A: "1" }, undefined);
-    const fromHeaders = mergeHeaders(base, undefined);
-    const fromTuples = mergeHeaders(tuples, undefined);
+    const fromObject = mergeHeaders({ A: "1" });
+    const fromHeaders = mergeHeaders(base);
+    const fromTuples = mergeHeaders(tuples);
 
     expect(fromObject?.get("A")).toBe("1");
     expect(fromHeaders?.get("A")).toBe("1");

@@ -10,7 +10,11 @@ import { standardValidate } from "@zap-studio/validation";
 import { FetchError } from "./errors.js";
 import { mergeHeaders } from "./headers.js";
 import { normalizeRequest } from "./request.js";
-import type { ExtendedRequestInit, FetchDefaults, FetchInput } from "./types.js";
+import type {
+  ExtendedRequestInit,
+  FetchDefaults,
+  FetchInput,
+} from "./types.js";
 import { resolveRequestUrl } from "./url.js";
 
 /**
@@ -42,20 +46,21 @@ export async function fetchInternal(
   input: FetchInput,
   schema: StandardSchemaV1 | undefined,
   options: ExtendedRequestInit | undefined,
-  defaults: FetchDefaults,
+  defaults: FetchDefaults
 ): Promise<unknown> {
   const request = normalizeRequest(input, options);
-  const { init, searchParams, throwOnFetchError, throwOnValidationError } = prepareRequestInit(
-    request.options,
-    defaults,
-  );
+  const { init, searchParams, throwOnFetchError, throwOnValidationError } =
+    prepareRequestInit(request.options, defaults);
   const url = resolveRequestUrl(request.url, defaults, searchParams);
   const response = request.request
     ? await fetch(new Request(url, request.request), init)
     : await fetch(url, init);
 
   if (throwOnFetchError && !response.ok) {
-    throw new FetchError(`HTTP ${response.status}: ${response.statusText}`, response);
+    throw new FetchError(
+      `HTTP ${response.status}: ${response.statusText}`,
+      response
+    );
   }
 
   if (!schema) {
@@ -64,9 +69,9 @@ export async function fetchInternal(
 
   const raw = await response.json();
   if (throwOnValidationError) {
-    return standardValidate(schema, raw, { throwOnError: true });
+    return await standardValidate(schema, raw, { throwOnError: true });
   }
-  return standardValidate(schema, raw, { throwOnError: false });
+  return await standardValidate(schema, raw, { throwOnError: false });
 }
 
 /**
@@ -78,7 +83,7 @@ export async function fetchInternal(
  */
 function prepareRequestInit(
   options: ExtendedRequestInit,
-  defaults: FetchDefaults,
+  defaults: FetchDefaults
 ): {
   init: RequestInit;
   searchParams: ExtendedRequestInit["searchParams"] | undefined;

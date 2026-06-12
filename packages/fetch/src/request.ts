@@ -36,13 +36,13 @@ export interface NormalizedRequest {
  */
 export function normalizeRequest(
   input: FetchInput,
-  options?: ExtendedRequestInit,
+  options?: ExtendedRequestInit
 ): NormalizedRequest {
   if (!(input instanceof Request)) {
     const url = input instanceof URL ? input.href : input;
     return {
-      url,
       options: options ?? EMPTY_OPTIONS,
+      url,
     };
   }
 
@@ -56,8 +56,8 @@ export function normalizeRequest(
   }
 
   return {
-    url: request.url,
-    request,
     options: normalizedOptions,
+    request,
+    url: request.url,
   };
 }
