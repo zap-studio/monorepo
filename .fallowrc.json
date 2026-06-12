@@ -20,10 +20,6 @@
     {
       "file": "apps/docs/src/components/mdx.tsx",
       "exports": ["useMDXComponents"]
-    },
-    {
-      "file": "oxfmt.config.ts",
-      "exports": ["default"]
     }
   ]
 }
