@@ -9,23 +9,24 @@ interface FadeInProps {
   y?: number;
 }
 
-export function FadeIn({
+export const FadeIn = ({
   children,
   className,
   delay = 0,
   duration = 0.6,
   y = 24,
-}: FadeInProps): ReactNode {
+}: FadeInProps): ReactNode => {
   const reduceMotion = useReducedMotion();
+  const shouldReduceMotion = reduceMotion === true;
 
   return (
     <LazyMotion features={domAnimation}>
       <m.div
         className={className}
-        initial={{ opacity: 0, y: reduceMotion ? 0 : y }}
+        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : y }}
         transition={{
-          delay: reduceMotion ? 0 : delay,
-          duration: reduceMotion ? 0 : duration,
+          delay: shouldReduceMotion ? 0 : delay,
+          duration: shouldReduceMotion ? 0 : duration,
           ease: [0.25, 0.4, 0.25, 1],
         }}
         viewport={{ margin: "-80px", once: true }}
@@ -35,16 +36,16 @@ export function FadeIn({
       </m.div>
     </LazyMotion>
   );
-}
+};
 
 interface PulseGlowProps {
   className?: string;
 }
 
-export function PulseGlow({ className }: PulseGlowProps): ReactNode {
+export const PulseGlow = ({ className }: PulseGlowProps): ReactNode => {
   const reduceMotion = useReducedMotion();
 
-  if (reduceMotion) {
+  if (reduceMotion === true) {
     return <div aria-hidden="true" className={className} />;
   }
 
@@ -65,4 +66,4 @@ export function PulseGlow({ className }: PulseGlowProps): ReactNode {
       />
     </LazyMotion>
   );
-}
+};
