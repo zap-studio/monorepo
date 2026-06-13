@@ -7,11 +7,11 @@ interface DocsOgImageOptions {
   title: string;
 }
 
-export function createDocsOgImageResponse({
+export const createDocsOgImageResponse = ({
   description,
   title,
-}: DocsOgImageOptions): ImageResponse {
-  return new ImageResponse(
+}: DocsOgImageOptions): ImageResponse =>
+  new ImageResponse(
     <DefaultImage description={description} site="Zap Studio" title={title} />,
     {
       format: "webp",
@@ -22,4 +22,3 @@ export function createDocsOgImageResponse({
       width: 1200,
     }
   );
-}

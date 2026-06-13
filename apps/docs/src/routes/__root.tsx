@@ -16,78 +16,76 @@ import { siteDescription, siteKeywords, siteTitle, siteUrl } from "@/lib/site";
 
 import appCss from "@/styles/app.css?url";
 
+const RootComponent = () => (
+  <html lang="en">
+    <head>
+      <HeadContent />
+    </head>
+    <body className="flex min-h-screen flex-col font-sans antialiased">
+      <RootProvider>
+        <Outlet />
+      </RootProvider>
+      <Scripts />
+    </body>
+  </html>
+);
+
 export const Route = createRootRoute({
   component: RootComponent,
   head: () => ({
+    links: [
+      { href: appCss, rel: "stylesheet" },
+      {
+        as: "font",
+        crossOrigin: "anonymous",
+        href: interLatinWghtNormalUrl,
+        rel: "preload",
+        type: "font/woff2",
+      },
+      {
+        as: "font",
+        crossOrigin: "anonymous",
+        href: instrumentSerifLatinNormalUrl,
+        rel: "preload",
+        type: "font/woff2",
+      },
+      {
+        as: "font",
+        crossOrigin: "anonymous",
+        href: instrumentSerifLatinItalicUrl,
+        rel: "preload",
+        type: "font/woff2",
+      },
+      { href: "/site.webmanifest", rel: "manifest" },
+      { href: "/web-app-manifest-192x192.png", rel: "icon", type: "image/png" },
+      { href: "/web-app-manifest-192x192.png", rel: "apple-touch-icon" },
+    ],
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { content: "width=device-width, initial-scale=1", name: "viewport" },
       { title: siteTitle },
-      { name: "description", content: siteDescription },
-      { name: "keywords", content: siteKeywords.join(", ") },
+      { content: siteDescription, name: "description" },
+      { content: siteKeywords.join(", "), name: "keywords" },
       {
-        name: "theme-color",
-        media: "(prefers-color-scheme: light)",
         content: "#ffffff",
-      },
-      {
+        media: "(prefers-color-scheme: light)",
         name: "theme-color",
-        media: "(prefers-color-scheme: dark)",
+      },
+      {
         content: "#0a0a0a",
+        media: "(prefers-color-scheme: dark)",
+        name: "theme-color",
       },
-      { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "Zap Studio" },
-      { property: "og:url", content: siteUrl },
-      { property: "og:title", content: siteTitle },
-      { property: "og:description", content: siteDescription },
-      { property: "twitter:card", content: "summary_large_image" },
-      { property: "twitter:title", content: siteTitle },
-      { property: "twitter:description", content: siteDescription },
-      { property: "twitter:creator", content: "@zapstudio" },
-    ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-      {
-        rel: "preload",
-        href: interLatinWghtNormalUrl,
-        as: "font",
-        type: "font/woff2",
-        crossOrigin: "anonymous",
-      },
-      {
-        rel: "preload",
-        href: instrumentSerifLatinNormalUrl,
-        as: "font",
-        type: "font/woff2",
-        crossOrigin: "anonymous",
-      },
-      {
-        rel: "preload",
-        href: instrumentSerifLatinItalicUrl,
-        as: "font",
-        type: "font/woff2",
-        crossOrigin: "anonymous",
-      },
-      { rel: "manifest", href: "/site.webmanifest" },
-      { rel: "icon", href: "/web-app-manifest-192x192.png", type: "image/png" },
-      { rel: "apple-touch-icon", href: "/web-app-manifest-192x192.png" },
+      { content: "website", property: "og:type" },
+      { content: "Zap Studio", property: "og:site_name" },
+      { content: siteUrl, property: "og:url" },
+      { content: siteTitle, property: "og:title" },
+      { content: siteDescription, property: "og:description" },
+      { content: "summary_large_image", property: "twitter:card" },
+      { content: siteTitle, property: "twitter:title" },
+      { content: siteDescription, property: "twitter:description" },
+      { content: "@zapstudio", property: "twitter:creator" },
     ],
   }),
   notFoundComponent: NotFoundComponent,
 });
-
-function RootComponent() {
-  return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body className="flex min-h-screen flex-col font-sans antialiased">
-        <RootProvider>
-          <Outlet />
-        </RootProvider>
-        <Scripts />
-      </body>
-    </html>
-  );
-}
