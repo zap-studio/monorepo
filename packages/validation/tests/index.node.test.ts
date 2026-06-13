@@ -1,5 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { describe, expect, it } from "vitest";
+// oxlint-disable func-style, require-await, promise/avoid-new, unicorn/consistent-function-scoping -- Test helpers intentionally exercise function-shaped and async Standard Schema contracts.
 
 import { ValidationError } from "../src/errors.js";
 import {
@@ -338,9 +339,11 @@ describe(standardValidate, () => {
 
     it("should await Promise-based validation", async () => {
       const schema = createMockSchema(
-         async (input) =>
-          new Promise<StandardSchemaV1.Result<number>>((resolve) => {
-            setTimeout(() =>{  resolve({ value: input as number }); }, 10);
+        async (input) =>
+          await new Promise<StandardSchemaV1.Result<number>>((resolve) => {
+            setTimeout(() => {
+              resolve({ value: input as number });
+            }, 10);
           })
       );
 
@@ -385,8 +388,8 @@ describe(standardValidate, () => {
 
       const schema = createMockSchema(() => ({ issues }));
 
-      const error = await captureRejectedError( async () =>
-        standardValidate(schema, {}, { throwOnError: true })
+      const error = await captureRejectedError(
+        async () => await standardValidate(schema, {}, { throwOnError: true })
       );
 
       expect(error).toBeInstanceOf(ValidationError);

@@ -23,6 +23,8 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 import { ValidationError } from "./errors.js";
 
+// oxlint-disable func-style, no-use-before-define -- Public overloads and returned overloaded validators require function declarations.
+
 /**
  * Standard Schema specification.
  */
@@ -53,9 +55,10 @@ export interface StandardValidateOptions {
  * }
  * ```
  */
-export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
+export function isStandardSchema(value?: unknown): value is StandardSchemaV1 {
   return (
-    !!value &&
+    value !== null &&
+    value !== undefined &&
     (typeof value === "object" || typeof value === "function") &&
     "~standard" in value
   );
@@ -74,7 +77,7 @@ export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
  *   `throwOnError: true` and validation returns issues.
  * @throws {TypeError} When the returned validator is called and the provided value does not
  *   expose a callable Standard Schema `~standard.validate` implementation at runtime.
- * @throws Any error thrown or rejected by the schema's Standard Schema
+ * @throws {unknown} Any error thrown or rejected by the schema's Standard Schema
  *   `validate` function when the returned validator is called.
  *
  * @example
@@ -126,11 +129,9 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
       return await standardValidate(schema, input, { throwOnError: true });
     }
 
-    return await standardValidate(
-      schema,
-      input,
-      options as StandardValidateOptions & { throwOnError?: false }
-    );
+    return await standardValidate(schema, input, {
+      throwOnError: false,
+    });
   }
 
   return validate;
@@ -151,7 +152,7 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
  *   `throwOnError: true` and validation returns issues.
  * @throws {TypeError} When the returned validator is called and the provided value does not
  *   expose a callable Standard Schema `~standard.validate` implementation at runtime.
- * @throws Any error thrown by the schema's Standard Schema `validate` function
+ * @throws {unknown} Any error thrown by the schema's Standard Schema `validate` function
  *   when the returned validator is called.
  *
  * @example
@@ -203,11 +204,9 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
         return standardValidateSync(schema, input, { throwOnError: true });
       }
 
-      return standardValidateSync(
-        schema,
-        input,
-        options as StandardValidateOptions & { throwOnError?: false }
-      );
+      return standardValidateSync(schema, input, {
+        throwOnError: false,
+      });
     } catch (error) {
       if (
         error instanceof Error &&
@@ -215,7 +214,8 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
           "Async schemas are not supported by standardValidateSync"
       ) {
         throw new Error(
-          "Async schemas are not supported by createSyncStandardValidator", { cause: error }
+          "Async schemas are not supported by createSyncStandardValidator",
+          { cause: error }
         );
       }
 
@@ -243,7 +243,7 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
  * @throws {ValidationError} If validation fails and `throwOnError` is `true`.
  * @throws {TypeError} If the provided value does not expose a callable Standard Schema
  *   `~standard.validate` implementation at runtime.
- * @throws Any error thrown or rejected by the schema's Standard Schema
+ * @throws {unknown} Any error thrown or rejected by the schema's Standard Schema
  *   `validate` function.
  *
  * @example
@@ -331,7 +331,7 @@ export async function standardValidate<TSchema extends StandardSchemaV1>(
  * @throws {ValidationError} If validation fails and `throwOnError` is `true`.
  * @throws {TypeError} If the provided value does not expose a callable Standard Schema
  *   `~standard.validate` implementation at runtime.
- * @throws Any error thrown by the schema's Standard Schema `validate` function.
+ * @throws {unknown} Any error thrown by the schema's Standard Schema `validate` function.
  *
  * @example
  * ```ts
@@ -384,7 +384,9 @@ export function standardValidateSync<TSchema extends StandardSchemaV1>(
   const result = schema["~standard"].validate(input);
 
   if (result instanceof Promise) {
-    throw new TypeError("Async schemas are not supported by standardValidateSync");
+    throw new TypeError(
+      "Async schemas are not supported by standardValidateSync"
+    );
   }
 
   if (result.issues) {

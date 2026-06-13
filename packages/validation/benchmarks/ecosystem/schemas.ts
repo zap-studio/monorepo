@@ -14,9 +14,10 @@ export const nativeZodSyncSchema = z.object({
   name: z.string().min(1),
 });
 
-export const nativeZodAsyncSchema = nativeZodSyncSchema.refine(
-  async () => true
-);
+export const nativeZodAsyncSchema = nativeZodSyncSchema.refine(async () => {
+  await Promise.resolve();
+  return true;
+});
 
 export const nativeArktypeSyncSchema = type({
   active: "boolean",

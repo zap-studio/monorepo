@@ -20,9 +20,12 @@ const syncSchema: StandardSchemaV1<unknown, string> = {
 
 const asyncSchema: StandardSchemaV1<unknown, string> = {
   "~standard": {
-    validate: async (input: unknown) => ({
-      value: String(input),
-    }),
+    validate: async (input: unknown) => {
+      await Promise.resolve();
+      return {
+        value: String(input),
+      };
+    },
     vendor: "benchmark",
     version: 1,
   },
