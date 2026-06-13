@@ -9,8 +9,8 @@
  * @module @zap-studio/fetch
  */
 
-import { isStandardSchema } from '@zap-studio/validation';
-import type { StandardSchemaV1 } from '@zap-studio/validation';
+import { isStandardSchema } from "@zap-studio/validation";
+import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 import { GLOBAL_DEFAULTS } from "./constants.js";
 import { fetchInternal } from "./internal.js";
@@ -22,6 +22,8 @@ import type {
   FetchDefaults,
   FetchInput,
 } from "./types.js";
+
+// oxlint-disable func-style -- Public overloaded fetch signatures require function declarations.
 
 /**
  * Type-safe fetch wrapper with Standard Schema validation.
@@ -43,7 +45,7 @@ import type {
  *   as an `AbortError` DOMException.
  * @throws {SyntaxError} When a schema is provided and `response.json()` cannot parse the
  *   response body.
- * @throws Any error thrown or rejected by the provided Standard Schema validator.
+ * @throws {unknown} Any error thrown or rejected by the provided Standard Schema validator.
  *
  * @example
  * import { z } from "zod";
@@ -156,10 +158,12 @@ export const api: ApiMethods = {
  * // Or use $fetch directly
  * const response = await $fetch("/users", UserSchema, { method: "POST", json: { name: "John" } });
  */
-export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
+export const createFetch = (
+  factoryOptions: Partial<FetchDefaults> = {}
+): {
   $fetch: $Fetch;
   api: ApiMethods;
-} {
+} => {
   const defaults: FetchDefaults = {
     ...GLOBAL_DEFAULTS,
     ...factoryOptions,
@@ -214,4 +218,4 @@ export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
     $fetch: customFetch,
     api: customApi,
   };
-}
+};

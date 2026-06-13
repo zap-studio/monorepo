@@ -17,6 +17,8 @@ import type {
 } from "./types.js";
 import { resolveRequestUrl } from "./url.js";
 
+// oxlint-disable func-style, no-use-before-define -- Internal fetch helpers use declarations for readability around the main execution path.
+
 /**
  * Internal fetch implementation used by both $fetch and createFetch.
  *
@@ -40,7 +42,7 @@ import { resolveRequestUrl } from "./url.js";
  *   as an `AbortError` DOMException.
  * @throws {SyntaxError} When a schema is provided and `response.json()` cannot parse the
  *   response body.
- * @throws Any error thrown or rejected by the provided Standard Schema validator.
+ * @throws {unknown} Any error thrown or rejected by the provided Standard Schema validator.
  */
 export async function fetchInternal(
   input: FetchInput,
@@ -63,11 +65,11 @@ export async function fetchInternal(
     );
   }
 
-  if (!schema) {
+  if (schema === undefined) {
     return response;
   }
 
-  const raw = await response.json();
+  const raw: unknown = await response.json();
   if (throwOnValidationError) {
     return await standardValidate(schema, raw, { throwOnError: true });
   }
@@ -99,25 +101,28 @@ function prepareRequestInit(
     ...rest
   } = options;
 
-  const init = {
-    ...rest,
-    headers: mergeHeaders(defaults.headers, headers),
-  } as RequestInit;
+  const init: RequestInit = { ...rest };
+  const mergedHeaders = mergeHeaders(defaults.headers, headers);
+  if (mergedHeaders !== undefined) {
+    init.headers = mergedHeaders;
+  }
 
   if (json !== undefined) {
-    if (init.body != null) {
+    if (init.body !== undefined && init.body !== null) {
       throw new TypeError("Cannot provide both `body` and `json`.");
     }
 
     init.body = JSON.stringify(json);
-    if (!init.headers) {
+    if (init.headers === undefined) {
       init.headers = new Headers({ "Content-Type": "application/json" });
     } else {
-      const headers = new Headers(init.headers);
-      if (!headers.has("Content-Type")) {
-        headers.set("Content-Type", "application/json");
+      const requestHeaders = new Headers(init.headers);
+      if (requestHeaders.has("Content-Type")) {
+        init.headers = requestHeaders;
+      } else {
+        requestHeaders.set("Content-Type", "application/json");
+        init.headers = requestHeaders;
       }
-      init.headers = headers;
     }
   }
 

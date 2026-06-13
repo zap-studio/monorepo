@@ -6,6 +6,8 @@
 
 import type { ExtendedRequestInit, FetchDefaults } from "./types.js";
 
+// oxlint-disable no-use-before-define, no-negated-condition -- Helpers are ordered by public API and URL fragment parsing is clearer with paired ternaries.
+
 /**
  * Resolves final request URL by applying baseURL and layered search params.
  *
@@ -26,27 +28,27 @@ import type { ExtendedRequestInit, FetchDefaults } from "./types.js";
  *   `URL`, or when default/per-request search params cannot be converted by
  *   `URLSearchParams`.
  */
-export function resolveRequestUrl(
+export const resolveRequestUrl = (
   resourceUrl: string,
   defaults: FetchDefaults,
   searchParams: ExtendedRequestInit["searchParams"] | undefined
-): string {
+): string => {
   const url = defaults.baseURL
     ? new URL(resourceUrl, ensureTrailingSlash(defaults.baseURL)).toString()
     : resourceUrl;
 
   return resolveSearchParams(url, defaults.searchParams, searchParams);
-}
+};
 
 /**
  * Resolves search params by applying default params, URL params, then request params.
  */
-function resolveSearchParams(
+const resolveSearchParams = (
   url: string,
   defaultSearchParams: FetchDefaults["searchParams"] | undefined,
   searchParams: ExtendedRequestInit["searchParams"] | undefined
-): string {
-  if (!defaultSearchParams && searchParams === undefined) {
+): string => {
+  if (defaultSearchParams === undefined && searchParams === undefined) {
     return url;
   }
 
@@ -68,28 +70,27 @@ function resolveSearchParams(
   const resolvedSearch = resolvedSearchParams.toString();
   const fragmentSuffix = hasFragment ? `#${hash}` : "";
 
-  if (!resolvedSearch) {
+  if (resolvedSearch.length === 0) {
     return `${pathname}${fragmentSuffix}`;
   }
 
   return `${pathname}?${resolvedSearch}${fragmentSuffix}`;
-}
+};
 
 /**
  * Ensures a URL has a trailing slash for relative URL resolution.
  */
-function ensureTrailingSlash(url: string): string {
-  return url.endsWith("/") ? url : `${url}/`;
-}
+const ensureTrailingSlash = (url: string): string =>
+  url.endsWith("/") ? url : `${url}/`;
 
 /**
  * Copies search params into target, overriding duplicate keys.
  */
-function mergeSearchParams(
+const mergeSearchParams = (
   target: URLSearchParams,
   source: ExtendedRequestInit["searchParams"] | undefined
-): void {
+): void => {
   for (const [key, value] of new URLSearchParams(source)) {
     target.set(key, value);
   }
-}
+};

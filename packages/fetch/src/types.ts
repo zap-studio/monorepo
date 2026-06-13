@@ -112,7 +112,7 @@ export interface $Fetch {
    * @throws {DOMException} When native `fetch` or `response.json()` rejects an aborted
    *   request/body read as an `AbortError` DOMException.
    * @throws {SyntaxError} When `response.json()` cannot parse the response body.
-   * @throws Any error thrown or rejected by the provided Standard Schema validator.
+   * @throws {unknown} Any error thrown or rejected by the provided Standard Schema validator.
    */
   <TSchema extends StandardSchemaV1>(
     input: FetchInput,
@@ -134,7 +134,7 @@ export interface $Fetch {
    * @throws {DOMException} When native `fetch` or `response.json()` rejects an aborted
    *   request/body read as an `AbortError` DOMException.
    * @throws {SyntaxError} When `response.json()` cannot parse the response body.
-   * @throws Any error thrown or rejected by the provided Standard Schema validator.
+   * @throws {unknown} Any error thrown or rejected by the provided Standard Schema validator.
    */
   <TSchema extends StandardSchemaV1>(
     input: FetchInput,
