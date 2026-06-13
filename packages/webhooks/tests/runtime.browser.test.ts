@@ -6,6 +6,20 @@ import { createHmacVerifier } from "../src/verify.js";
 
 const encoder = new TextEncoder();
 
+const signBody = async (body: Uint8Array, secret: string): Promise<string> => {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { hash: "SHA-256", name: "HMAC" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign("HMAC", key, body as BufferSource);
+  return Array.from(new Uint8Array(signature), (byte) =>
+    byte.toString(16).padStart(2, "0")
+  ).join("");
+};
+
 describe("@zap-studio/webhooks browser runtime", () => {
   it("verifies HMAC signatures with browser Web Crypto and Headers", async () => {
     const body = encoder.encode(JSON.stringify({ event: "push" }));
@@ -48,17 +62,3 @@ describe("@zap-studio/webhooks browser runtime", () => {
     expect(request.path).toBe("/github");
   });
 });
-
-async function signBody(body: Uint8Array, secret: string): Promise<string> {
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    { hash: "SHA-256", name: "HMAC" },
-    false,
-    ["sign"]
-  );
-  const signature = await crypto.subtle.sign("HMAC", key, body as BufferSource);
-  return Array.from(new Uint8Array(signature), (byte) =>
-    byte.toString(16).padStart(2, "0")
-  ).join("");
-}

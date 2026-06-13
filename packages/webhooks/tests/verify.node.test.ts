@@ -8,13 +8,50 @@ const encoder = new TextEncoder();
 
 type HmacAlgorithm = "sha1" | "sha256" | "sha384" | "sha512";
 
+const normalizeHashName = (algo: HmacAlgorithm): string => {
+  switch (algo) {
+    case "sha1": {
+      return "SHA-1";
+    }
+    case "sha256": {
+      return "SHA-256";
+    }
+    case "sha384": {
+      return "SHA-384";
+    }
+    case "sha512": {
+      return "SHA-512";
+    }
+    default: {
+      return algo;
+    }
+  }
+};
+
+const toHex = (bytes: Uint8Array): string =>
+  Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+
+const captureThrownError = async <T>(
+  run: () => T | Promise<T>
+): Promise<unknown> => {
+  try {
+    await run();
+    expect.fail("Expected function to throw");
+  } catch (error) {
+    return error;
+  }
+  return undefined;
+};
+
 describe(createHmacVerifier, () => {
   const createMockRequest = (
     body: string | Uint8Array,
     signature?: string,
     headerName = "x-hub-signature-256"
   ): NormalizedRequest => ({
-    headers: new Headers(signature ? { [headerName]: signature } : {}),
+    headers: new Headers(
+      signature === undefined ? {} : { [headerName]: signature }
+    ),
     method: "POST",
     path: "/webhook",
     rawBody: typeof body === "string" ? encoder.encode(body) : body,
@@ -41,17 +78,6 @@ describe(createHmacVerifier, () => {
     );
 
     return toHex(new Uint8Array(signature));
-  };
-
-  const captureThrownError = async <T>(
-    run: () => T | Promise<T>
-  ): Promise<unknown> => {
-    try {
-      await run();
-      expect.fail("Expected function to throw");
-    } catch (error) {
-      return error;
-    }
   };
 
   it("verifies a valid signature", async () => {
@@ -231,26 +257,3 @@ describe(createHmacVerifier, () => {
     });
   });
 });
-
-function normalizeHashName(algo: HmacAlgorithm): string {
-  switch (algo) {
-    case "sha1": {
-      return "SHA-1";
-    }
-    case "sha256": {
-      return "SHA-256";
-    }
-    case "sha384": {
-      return "SHA-384";
-    }
-    case "sha512": {
-      return "SHA-512";
-    }
-  }
-}
-
-function toHex(bytes: Uint8Array): string {
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join(
-    ""
-  );
-}

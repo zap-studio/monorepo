@@ -102,7 +102,9 @@ describe(constantTimeEquals, () => {
       // We can't directly test timing, but we can ensure the logic is consistent
       const str1 = "aaaaaaaaaa";
       const str2a = "aaaaaaaaaa";
+      // First char is different.
       const str2b = "baaaaaaaaa";
+      // Last char is different.
       const str2c = "aaaaaaaaab";
 
       // All should return in similar time (conceptually)
@@ -114,8 +116,10 @@ describe(constantTimeEquals, () => {
     it("should not short-circuit on first difference", () => {
       // The function should continue processing even after finding a difference
       const str1 = "abcdefghij";
-      const str2 = "xbcdefghij"; // First char is different
-      const str3 = "abcdefghix"; // Last char is different
+      // First char is different.
+      const str2 = "xbcdefghij";
+      // Last char is different.
+      const str3 = "abcdefghix";
 
       // Both should return false without early exit
       expect(constantTimeEquals(str1, str2)).toBeFalsy();
