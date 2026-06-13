@@ -12,11 +12,13 @@ describe(RetryError, () => {
     });
 
     expect(error).toBeInstanceOf(Error);
-    expect(error.name).toBe("RetryError");
-    expect(error.message).toBe("Retry exhausted");
-    expect(error.attempts).toBe(3);
-    expect(error.lastError).toBe(lastError);
-    expect(error.lastData).toStrictEqual({ id: 1 });
+    expect(error).toMatchObject({
+      attempts: 3,
+      lastData: { id: 1 },
+      lastError,
+      message: "Retry exhausted",
+      name: "RetryError",
+    });
   });
 
   it("supports missing optional context values", () => {
@@ -33,9 +35,11 @@ describe(AbortError, () => {
     const error = new AbortError("Retry aborted", { cause });
 
     expect(error).toBeInstanceOf(Error);
-    expect(error.name).toBe("AbortError");
-    expect(error.message).toBe("Retry aborted");
-    expect(error.cause).toBe(cause);
+    expect(error).toMatchObject({
+      cause,
+      message: "Retry aborted",
+      name: "AbortError",
+    });
   });
 
   it("supports missing optional context values", () => {

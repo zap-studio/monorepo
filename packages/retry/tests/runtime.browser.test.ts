@@ -11,7 +11,7 @@ describe("@zap-studio/retry browser runtime", () => {
 
     await expect(
       policy.run(
-        async () => {
+        () => {
           throw new Error("should not run");
         },
         {
@@ -27,6 +27,7 @@ describe("@zap-studio/retry browser runtime", () => {
 
     const result = await policy.run(
       async () => {
+        await Promise.resolve();
         controller.abort(new Error("cancelled"));
         throw new Error("fail");
       },
@@ -36,10 +37,10 @@ describe("@zap-studio/retry browser runtime", () => {
       }
     );
 
-    expect(result.ok).toBeFalsy();
-    if (!result.ok) {
-      expect(result.error).toBeInstanceOf(AbortError);
-      expect(result.attempts).toBe(1);
-    }
+    expect(result).toMatchObject({
+      attempts: 1,
+      error: expect.any(AbortError),
+      ok: false,
+    });
   });
 });

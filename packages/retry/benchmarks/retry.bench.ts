@@ -9,7 +9,9 @@ import {
   maxAttempts,
 } from "./ecosystem/fixtures.js";
 
-const noSleep = async (): Promise<void> => {};
+const noSleep = async (): Promise<void> => {
+  await Promise.resolve();
+};
 
 describe("@zap-studio/retry | core | run", () => {
   bench("zap | fixed-delay | success-first-attempt", async () => {
@@ -49,7 +51,9 @@ describe("@zap-studio/retry | core | run", () => {
     const task = createAlwaysFailTask();
     try {
       await policy.run(async () => await task(), { sleep: noSleep });
-    } catch {}
+    } catch {
+      // Expected exhausted benchmark path.
+    }
   });
 
   bench("zap | exponential-backoff | exhausted | throw", async () => {
@@ -61,7 +65,9 @@ describe("@zap-studio/retry | core | run", () => {
     const task = createAlwaysFailTask();
     try {
       await policy.run(async () => await task(), { sleep: noSleep });
-    } catch {}
+    } catch {
+      // Expected exhausted benchmark path.
+    }
   });
 
   bench("zap | fixed-delay | exhausted | result", async () => {

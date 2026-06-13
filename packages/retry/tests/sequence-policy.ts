@@ -1,6 +1,7 @@
 import { expect } from "vitest";
+// oxlint-disable class-methods-use-this, max-classes-per-file -- Test fixtures define small policy classes to exercise base-class behavior.
 
-import type { AbortError} from "../src/errors.js";
+import type { AbortError } from "../src/errors.js";
 import { RetryError } from "../src/errors.js";
 import { BaseRetryPolicy } from "../src/index.js";
 import type {
@@ -13,9 +14,11 @@ import type {
 export class SequencePolicy extends BaseRetryPolicy<Error, string> {
   public readonly seen: RetryDecisionInput<Error, string>[] = [];
   private index = 0;
+  private readonly decisions: RetryDecision[];
 
-  constructor(private readonly decisions: RetryDecision[]) {
+  constructor(decisions: RetryDecision[]) {
     super();
+    this.decisions = decisions;
   }
 
   public next(input: RetryDecisionInput<Error, string>): RetryDecision {
@@ -42,15 +45,17 @@ export class CustomTerminalPolicy extends BaseRetryPolicy<Error> {
   }
 }
 
-export function expectFailureResult(result: RetryRunResult<string>): {
+export const expectFailureResult = (
+  result: RetryRunResult<string>
+): {
   ok: false;
   attempts: number;
   error: AbortError | RetryError;
-} {
+} => {
   expect(result).toMatchObject({ ok: false });
   if (result.ok) {
     throw new Error("Expected failure result");
   }
 
   return result;
-}
+};

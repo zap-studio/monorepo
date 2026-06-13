@@ -7,7 +7,7 @@ describe(ExponentialBackoff, () => {
     const policy = new ExponentialBackoff({
       baseDelayMs: 100,
       maxAttempts: 5,
-      maxDelayMs: 1_000,
+      maxDelayMs: 1000,
     });
 
     expect(policy.next({ attempt: 1 })).toStrictEqual({
@@ -21,7 +21,7 @@ describe(ExponentialBackoff, () => {
     const policy = new ExponentialBackoff({
       baseDelayMs: 100,
       maxAttempts: 5,
-      maxDelayMs: 1_000,
+      maxDelayMs: 1000,
     });
 
     expect(policy.next({ attempt: 2 }).delayMs).toBe(200);
@@ -46,7 +46,7 @@ describe(ExponentialBackoff, () => {
     const policy = new ExponentialBackoff({
       baseDelayMs: 100,
       maxAttempts: 3,
-      maxDelayMs: 1_000,
+      maxDelayMs: 1000,
     });
 
     expect(policy.next({ attempt: 3 })).toStrictEqual({
