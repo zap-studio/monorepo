@@ -2,12 +2,12 @@ import {
   betterFetch,
   createFetch as createBetterFetch,
 } from "@better-fetch/fetch";
-import axios from "axios";
 import type {
   AxiosAdapter,
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
+import { create as createAxios } from "axios";
 import ky from "ky";
 import { ofetch } from "ofetch";
 
@@ -21,7 +21,9 @@ import { responseSchema } from "./data.js";
 import { installMockFetch } from "./mock-fetch.js";
 import type { ClientSet } from "./types.js";
 
-export function createClientSet(payload: unknown): ClientSet {
+// oxlint-disable typescript/no-unsafe-assignment, typescript/no-unsafe-return, typescript/no-unsafe-type-assertion, unicorn/no-await-expression-member -- Benchmarks intentionally normalize loosely typed third-party client results.
+
+export const createClientSet = (payload: unknown): ClientSet => {
   const mockFetch = installMockFetch(payload);
   const betterFetchDefaulted = createBetterFetch({
     baseURL: BASE_URL,
@@ -73,11 +75,11 @@ export function createClientSet(payload: unknown): ClientSet {
     };
   };
 
-  const axiosBase = axios.create({
+  const axiosBase = createAxios({
     adapter: axiosAdapter,
   });
 
-  const axiosDefaulted = axios.create({
+  const axiosDefaulted = createAxios({
     adapter: axiosAdapter,
     baseURL: BASE_URL,
     headers: { Authorization: "Bearer token" },
@@ -111,16 +113,16 @@ export function createClientSet(payload: unknown): ClientSet {
         }),
       postBodyObject: async (body) =>
         await betterFetch(USERS_URL, {
+          body,
           customFetchImpl: mockFetch,
           method: "POST",
-          body,
           throw: true,
         }),
       postRawBody: async (body) =>
         await betterFetch(USERS_URL, {
+          body,
           customFetchImpl: mockFetch,
           method: "POST",
-          body,
           throw: true,
         }),
       withDefaultsGetJson: async () =>
@@ -141,26 +143,26 @@ export function createClientSet(payload: unknown): ClientSet {
       postJsonRaw: async (body) =>
         await (
           await fetch(USERS_URL, {
-            method: "POST",
             body: JSON.stringify(body),
             headers: { "Content-Type": "application/json" },
+            method: "POST",
           })
         ).json(),
       postRawBody: async (body) =>
-        await (await fetch(USERS_URL, { method: "POST", body })).json(),
+        await (await fetch(USERS_URL, { body, method: "POST" })).json(),
     },
     ofetch: {
       getJson: async () => await ofetchBase("/users/1"),
       postJson: async (body) =>
         await ofetchBase("/users", {
-          method: "POST",
           body: body as Record<string, unknown>,
+          method: "POST",
         }),
       postRawBody: async (body) =>
         await ofetchBase("/users", {
-          method: "POST",
           body,
           headers: { "Content-Type": "text/plain" },
+          method: "POST",
         }),
       withDefaultsGetJson: async () => await ofetchDefaulted("/users/1"),
     },
@@ -178,14 +180,14 @@ export function createClientSet(payload: unknown): ClientSet {
       primitivePostJson: async (body) =>
         await (
           await zapFetch(USERS_URL, {
-            method: "POST",
             json: body,
+            method: "POST",
           })
         ).json(),
       primitivePostRawBody: async (body) =>
-        await (await zapFetch(USERS_URL, { method: "POST", body })).json(),
+        await (await zapFetch(USERS_URL, { body, method: "POST" })).json(),
       schemaOnlyValidate: async () =>
         await responseSchema.parseAsync(await (await fetch(USER_URL)).json()),
     },
   };
-}
+};
