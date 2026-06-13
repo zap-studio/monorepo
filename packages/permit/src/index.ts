@@ -22,6 +22,8 @@ import type {
   RoleHierarchy,
 } from "./types.js";
 
+// oxlint-disable func-style, no-use-before-define, no-await-in-loop -- Public generic helpers use declarations and merged policies must evaluate sequentially for short-circuit semantics.
+
 /**
  * Returns a policy function that always allows the action.
  *
@@ -219,15 +221,21 @@ export function collectInheritedRoles<TRole extends Role = Role>(
 ): Set<TRole> {
   const inherited = new Set<TRole>();
 
-  function add(role: TRole) {
-    if (!inherited.has(role)) {
-      inherited.add(role);
-      const parents = hierarchy[role] ?? [];
-      parents.forEach(add); // recursively add parent roles
+  const add = (role: TRole): void => {
+    if (inherited.has(role)) {
+      return;
     }
-  }
 
-  roles.forEach(add);
+    inherited.add(role);
+    const parents = hierarchy[role] ?? [];
+    for (const parent of parents) {
+      add(parent);
+    }
+  };
+
+  for (const role of roles) {
+    add(role);
+  }
   return inherited;
 }
 
@@ -287,7 +295,7 @@ export function hasRole<
       ? context.role
       : [context.role];
 
-    if (!hierarchy) {
+    if (hierarchy === undefined) {
       return userRoles.includes(role);
     }
 
@@ -369,7 +377,7 @@ export function createPolicy<
     resource: InferResource<TResources, K>
   ): Promise<InferResource<TResources, K> | null> => {
     const validator = validators.get(resourceType);
-    if (!validator) {
+    if (validator === undefined) {
       return null;
     }
     try {
@@ -390,12 +398,20 @@ export function createPolicy<
     permission: `${K & string}:${InferAction<TActions, K> & string}`
   ): { action: InferAction<TActions, K>; resourceType: K } | null => {
     const [resourceTypeValue, actionValue, ...rest] = permission.split(":");
-    if (!resourceTypeValue || !actionValue || rest.length > 0) {
+    if (
+      resourceTypeValue === undefined ||
+      resourceTypeValue.length === 0 ||
+      actionValue === undefined ||
+      actionValue.length === 0 ||
+      rest.length > 0
+    ) {
       return null;
     }
 
     return {
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Parsed permission strings are constrained by the typed permission template.
       action: actionValue as InferAction<TActions, K>,
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Parsed permission strings are constrained by the typed permission template.
       resourceType: resourceTypeValue as K,
     };
   };
@@ -412,7 +428,7 @@ export function createPolicy<
     resource: InferResource<TResources, K>
   ): boolean => {
     const policyFn = rules[resourceType]?.[action];
-    if (!policyFn) {
+    if (policyFn === undefined) {
       return false;
     }
 
@@ -420,7 +436,7 @@ export function createPolicy<
       return policyFn(context, action, resource) === "allow";
     } catch (error) {
       console.warn(
-        `Policy evaluation error for ${String(resourceType)}.${String(action)}: ${String(error)}`
+        `Policy evaluation error for ${String(resourceType)}.${action}: ${String(error)}`
       );
       return false;
     }
@@ -428,7 +444,7 @@ export function createPolicy<
 
   for (const key of Object.keys(resources) as (keyof TResources)[]) {
     const schema = resources[key];
-    if (!schema) {
+    if (schema === undefined) {
       throw new PolicyError(`Missing schema for resource: ${String(key)}`);
     }
     const validator = createStandardValidator(schema);
@@ -442,7 +458,7 @@ export function createPolicy<
       resource: InferResource<TResources, K>
     ): Promise<boolean> {
       const parsedPermission = parsePermission(permission);
-      if (!parsedPermission) {
+      if (parsedPermission === null) {
         return false;
       }
 
@@ -455,7 +471,7 @@ export function createPolicy<
         resourceType,
         resource
       );
-      if (!validatedResource) {
+      if (validatedResource === null) {
         return false;
       }
 
@@ -524,7 +540,7 @@ function mergePoliciesWithStrategy<
       permission: `${K & string}:${InferAction<TActions, K> & string}`,
       resource: InferResource<TResources, K>
     ): Promise<boolean> {
-      if (!policies.length) {
+      if (policies.length === 0) {
         return false;
       }
       for (const policy of policies) {
