@@ -19,19 +19,20 @@ import { getExternalLinkProps } from "@/lib/utils/links";
 
 const cache = new Map<string, string>();
 
-export function LLMCopyButton({
+export const LLMCopyButton = ({
   /**
    * A URL to fetch the raw Markdown/MDX content of page
    */
   markdownUrl,
 }: {
   markdownUrl: string;
-}) {
+}) => {
   const [isLoading, setLoading] = useState(false);
   const [checked, onClick] = useCopyButton(async () => {
     const cached = cache.get(markdownUrl);
-    if (cached) {
-      return await navigator.clipboard.writeText(cached);
+    if (cached !== undefined) {
+      await navigator.clipboard.writeText(cached);
+      return;
     }
 
     setLoading(true);
@@ -69,9 +70,9 @@ export function LLMCopyButton({
       Copy Markdown
     </button>
   );
-}
+};
 
-export function ViewOptions({
+export const ViewOptions = ({
   markdownUrl,
   githubUrl,
 }: {
@@ -84,7 +85,7 @@ export function ViewOptions({
    * Source file URL on GitHub
    */
   githubUrl: string;
-}) {
+}) => {
   const items = useMemo(() => {
     const pageUrl =
       typeof window === "undefined" ? "loading" : window.location.href;
@@ -94,7 +95,7 @@ export function ViewOptions({
       {
         href: githubUrl,
         icon: (
-          <svg fill="currentColor" role="img" viewBox="0 0 24 24">
+          <svg fill="currentColor" viewBox="0 0 24 24">
             <title>GitHub</title>
             <path d="M12 0.3c-6.63 0-12 5.37-12 12 0 5.3 3.44 9.8 8.21 11.38.6.11.82-0.26.82-0.58 0-0.28-.01-1.04-0.01-2.04-3.34.72-4.04-1.61-4.04-1.61C4.42 18.07 3.63 17.7 3.63 17.7c-1.09-0.74.08-0.73.08-0.73 1.21.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.6.11-0.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.46-2.38 1.24-3.22-0.14-0.3-.54-1.52.1-3.18 0 0 1-0.32 3.3 1.23.96-0.27 1.98-0.4 3-0.41 1.2.01 2.4.14 3 0.41 2.28-1.55 3.29-1.23 3.29-1.23.64 1.65.24 2.87.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.47 5.92.42.36.81 1.1.81 2.22 0 1.61-0.01 2.9-0.01 3.29 0 0.32.21.69.83.57C20.57 22.09 24 17.59 24 12.3c0-6.63-5.37-12-12-12" />
           </svg>
@@ -178,7 +179,6 @@ export function ViewOptions({
         icon: (
           <svg
             fill="currentColor"
-            role="img"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
@@ -195,7 +195,6 @@ export function ViewOptions({
         icon: (
           <svg
             fill="currentColor"
-            role="img"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
@@ -212,7 +211,6 @@ export function ViewOptions({
         icon: (
           <svg
             fill="currentColor"
-            role="img"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
@@ -255,4 +253,4 @@ export function ViewOptions({
       </PopoverContent>
     </Popover>
   );
-}
+};

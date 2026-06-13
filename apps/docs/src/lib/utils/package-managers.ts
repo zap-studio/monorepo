@@ -1,4 +1,4 @@
-const WHITESPACE_REGEX = /\s+/;
+const WHITESPACE_REGEX = /\s+/u;
 
 type InstallPackageManager = "yarn" | "pnpm" | "bun";
 
@@ -14,10 +14,10 @@ const executeCommands = {
   yarn: "yarn dlx",
 } satisfies Record<InstallPackageManager, string>;
 
-function convertInstallCommand(
+const convertInstallCommand = (
   command: string,
   pm: InstallPackageManager
-): string | undefined {
+): string | undefined => {
   if (command.startsWith("npm install ")) {
     return `${installCommands[pm]} ${command.slice("npm install ".length)}`;
   }
@@ -27,9 +27,9 @@ function convertInstallCommand(
   }
 
   return undefined;
-}
+};
 
-function convertToDeno(command: string): string | undefined {
+const convertToDeno = (command: string): string | undefined => {
   if (!command.startsWith("npm install ")) {
     return undefined;
   }
@@ -50,14 +50,14 @@ function convertToDeno(command: string): string | undefined {
   });
 
   return `deno add ${converted.join(" ")}`;
-}
+};
 
-function convertToNpm(command: string): string | undefined {
+const convertToNpm = (command: string): string | undefined => {
   if (command.startsWith("npm ") || command.startsWith("npx ")) {
     return command;
   }
   return undefined;
-}
+};
 
 export const remarkNpmPackageManagers = [
   {

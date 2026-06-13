@@ -13,6 +13,7 @@ export const Route = createFileRoute("/og/docs/$")({
 
         const page = source.getPage(slugs);
         if (!page) {
+          // oxlint-disable-next-line typescript/only-throw-error -- TanStack Router uses thrown notFound responses for control flow.
           throw notFound();
         }
 

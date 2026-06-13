@@ -14,7 +14,10 @@ export default defineConfig({
     },
     exclude: [...configDefaults.exclude, "**/dist/**", "**/node_modules/**"],
     globals: true,
-    outputFile: process.env.CI ? { junit: "./coverage/junit.xml" } : undefined,
+    outputFile:
+      process.env.CI === undefined
+        ? undefined
+        : { junit: "./coverage/junit.xml" },
     projects: [
       {
         extends: true,
@@ -44,7 +47,7 @@ export default defineConfig({
         },
       },
     ],
-    reporters: process.env.CI ? ["dot", "junit"] : ["default"],
+    reporters: process.env.CI === undefined ? ["default"] : ["dot", "junit"],
     restoreMocks: true,
   },
 });
