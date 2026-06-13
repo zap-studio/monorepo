@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { $fetch, api } from "../src/index.js";
 
+// oxlint-disable require-await -- Mocked `Response.json` methods intentionally match the async Fetch API shape.
+
 describe("Valibot Standard Schema compatibility", () => {
   it("should expose ~standard property", () => {
     const schema = v.object({ id: v.number() });

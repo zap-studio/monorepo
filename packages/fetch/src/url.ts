@@ -31,7 +31,7 @@ import type { ExtendedRequestInit, FetchDefaults } from "./types.js";
 export const resolveRequestUrl = (
   resourceUrl: string,
   defaults: FetchDefaults,
-  searchParams: ExtendedRequestInit["searchParams"] | undefined
+  searchParams?: ExtendedRequestInit["searchParams"]
 ): string => {
   const url = defaults.baseURL
     ? new URL(resourceUrl, ensureTrailingSlash(defaults.baseURL)).toString()

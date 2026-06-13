@@ -5,6 +5,8 @@ import { $fetch, createFetch } from "../src/index.js";
 import { normalizeRequest } from "../src/request.js";
 import { resolveRequestUrl } from "../src/url.js";
 
+// oxlint-disable vitest/max-expects -- Browser runtime tests assert related request-normalization details together.
+
 const DEFAULTS = {
   baseURL: "",
   throwOnFetchError: true,
@@ -112,7 +114,8 @@ describe("@zap-studio/fetch browser runtime", () => {
       }
     );
 
-    const [request, init] = fetchMock.mock.calls[0];
+    const firstCall = fetchMock.mock.calls[0];
+    const [request, init] = firstCall;
     expect(request).toBeInstanceOf(Request);
     expect((request as Request).url).toBe("https://api.example.com/users");
     expect(new Headers((init as RequestInit).headers).get("B")).toBe("2");
@@ -127,7 +130,8 @@ describe("@zap-studio/fetch browser runtime", () => {
       method: "POST",
     });
 
-    const [, init] = fetchMock.mock.calls[0];
+    const firstCall = fetchMock.mock.calls[0];
+    const [, init] = firstCall;
     expect((init as RequestInit).body).toBe(JSON.stringify({ name: "Zap" }));
     expect(new Headers((init as RequestInit).headers).get("content-type")).toBe(
       "application/vnd.api+json"
@@ -146,7 +150,8 @@ describe("@zap-studio/fetch browser runtime", () => {
       searchParams: { page: "1" },
     });
 
-    const [url, init] = fetchMock.mock.calls[0];
+    const firstCall = fetchMock.mock.calls[0];
+    const [url, init] = firstCall;
     const headers = new Headers((init as RequestInit).headers);
     expect(url).toBe("https://api.example.com/users?page=1");
     expect(headers.get("authorization")).toBe("Bearer token");

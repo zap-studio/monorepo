@@ -5,6 +5,8 @@ import { z } from "zod";
 
 import { $fetch, api } from "../src/index.js";
 
+// oxlint-disable require-await -- Mocked `Response.json` methods intentionally match the async Fetch API shape.
+
 describe("Zod Standard Schema compatibility", () => {
   it("should expose ~standard property", () => {
     const schema = z.object({ id: z.number() });

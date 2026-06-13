@@ -1,6 +1,7 @@
 import { ValidationError } from "@zap-studio/validation/errors";
 import { number, object, string } from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+// oxlint-disable vitest/max-expects -- API shape tests intentionally assert all generated method names together.
 
 import { FetchError } from "../src/errors.js";
 import { $fetch, api, createFetch } from "../src/index.js";
@@ -155,7 +156,9 @@ describe($fetch, () => {
       });
 
       expect(result).toHaveProperty("issues");
-      expect(Array.isArray((result as { issues: unknown[] }).issues)).toBeTruthy();
+      expect(
+        Array.isArray((result as { issues: unknown[] }).issues)
+      ).toBeTruthy();
     });
 
     it("should return result object with value when validation passes and throwOnValidationError is false", async () => {
@@ -218,7 +221,7 @@ describe($fetch, () => {
       });
 
       expect(result).toBeInstanceOf(Response);
-      expect((result).status).toBe(404);
+      expect(result.status).toBe(404);
     });
 
     it("should include status and response in FetchError", async () => {
@@ -231,8 +234,8 @@ describe($fetch, () => {
       );
       fetchMock.mockResolvedValue(mockResponse);
 
-      const error = await captureRejectedError( async () =>
-        $fetch("https://api.example.com/error")
+      const error = await captureRejectedError(
+        async () => await $fetch("https://api.example.com/error")
       );
 
       expect(error).toBeInstanceOf(FetchError);
@@ -250,8 +253,8 @@ describe($fetch, () => {
       );
       fetchMock.mockResolvedValue(mockResponse);
 
-      const error = await captureRejectedError( async () =>
-        $fetch("https://api.example.com/forbidden")
+      const error = await captureRejectedError(
+        async () => await $fetch("https://api.example.com/forbidden")
       );
 
       expect(error).toBeInstanceOf(FetchError);
@@ -1274,7 +1277,9 @@ describe("api convenience methods", () => {
       );
 
       expect(result).toHaveProperty("issues");
-      expect(Array.isArray((result as { issues: unknown[] }).issues)).toBeTruthy();
+      expect(
+        Array.isArray((result as { issues: unknown[] }).issues)
+      ).toBeTruthy();
     });
 
     it("should respect throwOnFetchError option", async () => {

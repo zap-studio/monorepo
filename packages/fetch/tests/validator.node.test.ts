@@ -4,6 +4,8 @@ import { ValidationError } from "@zap-studio/validation/errors";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
+// oxlint-disable require-await, promise/avoid-new -- These fixtures intentionally model async Standard Schema validators.
+
 function createMockSchema<T>(
   validateFn: (
     input: unknown
@@ -144,9 +146,11 @@ describe(standardValidate, () => {
 
     it("should await Promise-based validation and return validated value", async () => {
       const schema = createMockSchema(
-         async (input) =>
-          new Promise<StandardSchemaV1.Result<number>>((resolve) => {
-            setTimeout(() =>{  resolve({ value: input as number }); }, 10);
+        async (input) =>
+          await new Promise<StandardSchemaV1.Result<number>>((resolve) => {
+            setTimeout(() => {
+              resolve({ value: input as number });
+            }, 10);
           })
       );
       const result = await standardValidate(schema, 123, {
@@ -185,8 +189,8 @@ describe(standardValidate, () => {
       ];
       const schema = createMockSchema(() => ({ issues }));
 
-      const error = await captureRejectedError( async () =>
-        standardValidate(schema, {}, { throwOnError: true })
+      const error = await captureRejectedError(
+        async () => await standardValidate(schema, {}, { throwOnError: true })
       );
 
       expect(error).toBeInstanceOf(ValidationError);

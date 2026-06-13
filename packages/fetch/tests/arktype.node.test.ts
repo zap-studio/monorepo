@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { $fetch, api } from "../src/index.js";
 
+// oxlint-disable require-await -- Mocked `Response.json` methods intentionally match the async Fetch API shape.
+
 describe("ArkType Standard Schema compatibility", () => {
   it("should expose ~standard property", () => {
     const schema = type({ id: "number" });

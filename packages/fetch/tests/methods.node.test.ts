@@ -15,11 +15,11 @@ const schema = {
 type FetchMock = (...args: unknown[]) => Promise<unknown>;
 type MockedFetch = $Fetch & ReturnType<typeof vi.fn<FetchMock>>;
 
-function createFetchMock(
-  implementation: FetchMock = async () => {}
-): MockedFetch {
-  return vi.fn<FetchMock>(implementation) as unknown as MockedFetch;
-}
+const createFetchMock = (
+  implementation: FetchMock = async () => {
+    await Promise.resolve();
+  }
+): MockedFetch => vi.fn<FetchMock>(implementation) as unknown as MockedFetch;
 
 describe(createMethod, () => {
   it("creates a method helper", () => {

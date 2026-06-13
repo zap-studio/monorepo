@@ -12,40 +12,34 @@ const DEFAULTS: FetchDefaults = {
 describe(resolveRequestUrl, () => {
   it("joins baseURL and relative resources", () => {
     expect(
-      resolveRequestUrl(
-        "users",
-        { ...DEFAULTS, baseURL: "https://api.example.com" }
-      )
+      resolveRequestUrl("users", {
+        ...DEFAULTS,
+        baseURL: "https://api.example.com",
+      })
     ).toBe("https://api.example.com/users");
     expect(
-      resolveRequestUrl(
-        "/users",
-        { ...DEFAULTS, baseURL: "https://api.example.com/" }
-      )
+      resolveRequestUrl("/users", {
+        ...DEFAULTS,
+        baseURL: "https://api.example.com/",
+      })
     ).toBe("https://api.example.com/users");
   });
 
   it("ignores baseURL for absolute resources", () => {
     expect(
-      resolveRequestUrl(
-        "https://other.example.com/users",
-        {
-          ...DEFAULTS,
-          baseURL: "https://api.example.com",
-        }
-      )
+      resolveRequestUrl("https://other.example.com/users", {
+        ...DEFAULTS,
+        baseURL: "https://api.example.com",
+      })
     ).toBe("https://other.example.com/users");
   });
 
   it("uses the base protocol for protocol-relative resources", () => {
     expect(
-      resolveRequestUrl(
-        "//other.example.com/users",
-        {
-          ...DEFAULTS,
-          baseURL: "https://api.example.com",
-        }
-      )
+      resolveRequestUrl("//other.example.com/users", {
+        ...DEFAULTS,
+        baseURL: "https://api.example.com",
+      })
     ).toBe("https://other.example.com/users");
   });
 
@@ -108,9 +102,9 @@ describe(resolveRequestUrl, () => {
   });
 
   it("preserves an explicit empty fragment", () => {
-    expect(
-      resolveRequestUrl("https://api.example.com/users#", DEFAULTS)
-    ).toBe("https://api.example.com/users#");
+    expect(resolveRequestUrl("https://api.example.com/users#", DEFAULTS)).toBe(
+      "https://api.example.com/users#"
+    );
   });
 
   it("preserves an explicit empty fragment when adding search params", () => {
@@ -126,10 +120,10 @@ describe(resolveRequestUrl, () => {
       "/docs/guide#intro"
     );
     expect(
-      resolveRequestUrl(
-        "guide#intro",
-        { ...DEFAULTS, baseURL: "https://api.example.com/docs/" }
-      )
+      resolveRequestUrl("guide#intro", {
+        ...DEFAULTS,
+        baseURL: "https://api.example.com/docs/",
+      })
     ).toBe("https://api.example.com/docs/guide#intro");
   });
 
