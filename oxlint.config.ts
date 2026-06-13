@@ -13,8 +13,17 @@ export default defineConfig({
   },
   overrides: [
     {
-      files: ["**/*.{test,spec}.{ts,tsx}", "**/__tests__/**/*.{ts,tsx}"],
+      files: [
+        "**/*.test.{ts,tsx}",
+        "**/*.spec.{ts,tsx}",
+        "**/*.node.test.{ts,tsx}",
+        "**/*.browser.test.{ts,tsx}",
+        "**/__tests__/**/*.{ts,tsx}",
+      ],
       rules: {
+        "func-style": "off",
+        "no-await-in-loop": "off",
+        "prefer-destructuring": "off",
         "typescript/no-unsafe-argument": "off",
         "typescript/no-unsafe-assignment": "off",
         "typescript/no-unsafe-member-access": "off",
@@ -23,6 +32,7 @@ export default defineConfig({
         "typescript/promise-function-async": "off",
         "typescript/strict-void-return": "off",
         "typescript/unbound-method": "off",
+        "unicorn/consistent-function-scoping": "off",
         "unicorn/prefer-response-static-json": "off",
         "vitest/max-expects": "off",
       },
