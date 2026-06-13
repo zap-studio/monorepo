@@ -6,7 +6,9 @@ describe(normalizeRequest, () => {
   it("keeps URL strings simple", () => {
     const options = { headers: { A: "1" }, method: "POST" };
 
-    expect(normalizeRequest("https://api.example.com/users", options)).toStrictEqual({
+    expect(
+      normalizeRequest("https://api.example.com/users", options)
+    ).toStrictEqual({
       options,
       url: "https://api.example.com/users",
     });

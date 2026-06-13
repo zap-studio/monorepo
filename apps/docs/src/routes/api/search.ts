@@ -10,7 +10,7 @@ const { GET: searchGet } = createFromSource(source, {
 export const Route = createFileRoute("/api/search")({
   server: {
     handlers: {
-      GET:  async ({ request }) => searchGet(request),
+      GET: async ({ request }) => await searchGet(request),
     },
   },
 });
