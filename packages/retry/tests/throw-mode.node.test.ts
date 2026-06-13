@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+// oxlint-disable vitest/max-expects -- Retry flow tests assert each step in a single scenario.
 
 import { CustomTerminalPolicy, SequencePolicy } from "./sequence-policy.js";
 

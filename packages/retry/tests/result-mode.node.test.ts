@@ -1,6 +1,5 @@
-import { strict as assert } from "node:assert";
-
 import { describe, expect, it, vi } from "vitest";
+// oxlint-disable require-await -- Mock policy functions intentionally match async policy contracts.
 
 import { AbortError, RetryError } from "../src/errors.js";
 import { expectFailureResult, SequencePolicy } from "./sequence-policy.js";
@@ -16,12 +15,12 @@ describe("result mode (throwOnExhausted: false)", () => {
 
     const result = await policy.run(execute, { throwOnExhausted: false });
 
-    expect(result).toMatchObject({
+    const failure = expectFailureResult(result);
+    expect(failure).toMatchObject({
       attempts: 1,
       ok: false,
     });
-    assert.ok(!result.ok);
-    expect(result.error).toBeInstanceOf(RetryError);
+    expect(failure.error).toBeInstanceOf(RetryError);
   });
 
   it("returns success result object on first success", async () => {
