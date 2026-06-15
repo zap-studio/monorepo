@@ -113,7 +113,6 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
   },
 });
 
-// oxfmt-ignore
 // oxlint-disable-next-line sort-keys -- TanStack Router type inference and React Doctor require loader before head.
 export const Route = createFileRoute("/docs/$")({
   // oxlint-disable-next-line no-use-before-define -- Route component uses Route.useLoaderData().
