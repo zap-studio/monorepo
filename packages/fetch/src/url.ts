@@ -6,7 +6,7 @@
 
 import type { ExtendedRequestInit, FetchDefaults } from "./types.js";
 
-// oxlint-disable no-use-before-define, no-negated-condition -- Helpers are ordered by public API and URL fragment parsing is clearer with paired ternaries.
+// oxlint-disable no-use-before-define -- Helpers are ordered by public API.
 
 /**
  * Resolves final request URL by applying baseURL and layered search params.
@@ -58,9 +58,9 @@ const resolveSearchParams = (
   const hash = hasFragment ? url.slice(hashIndex + 1) : "";
   const queryIndex = urlWithoutHash.indexOf("?");
   const pathname =
-    queryIndex !== -1 ? urlWithoutHash.slice(0, queryIndex) : urlWithoutHash;
+    queryIndex === -1 ? urlWithoutHash : urlWithoutHash.slice(0, queryIndex);
   const urlSearchParams =
-    queryIndex !== -1 ? urlWithoutHash.slice(queryIndex + 1) : undefined;
+    queryIndex === -1 ? undefined : urlWithoutHash.slice(queryIndex + 1);
   const resolvedSearchParams = new URLSearchParams();
 
   mergeSearchParams(resolvedSearchParams, defaultSearchParams);

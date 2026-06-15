@@ -4,7 +4,7 @@
  * @module @zap-studio/webhooks
  */
 
-// oxlint-disable class-methods-use-this, no-await-in-loop -- Webhook hooks execute sequentially and private helpers are instance-level extension points.
+// oxlint-disable no-await-in-loop -- Webhook hooks execute sequentially.
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { standardValidate } from "@zap-studio/validation";
@@ -115,7 +115,7 @@ export class WebhookRouter<TMap = unknown> {
     this.handlers[path] =
       typeof handlerOrOptions === "function"
         ? { handler: handlerOrOptions }
-        : this.createHandlerEntry(handlerOrOptions);
+        : WebhookRouter.createHandlerEntry(handlerOrOptions);
 
     return this;
   }
@@ -140,29 +140,29 @@ export class WebhookRouter<TMap = unknown> {
       }
 
       await this.runGlobalBeforeHooks(req);
-      await this.runRouteBeforeHooks(req, handlerEntry.before);
+      await WebhookRouter.runRouteBeforeHooks(req, handlerEntry.before);
 
       if (this.verify) {
         await this.verify(req);
       }
 
-      const parsedJson = this.parseRequestBody(req);
-      const validationResult = await this.validatePayload(
+      const parsedJson = WebhookRouter.parseRequestBody(req);
+      const validationResult = await WebhookRouter.validatePayload(
         parsedJson,
         handlerEntry.schema
       );
 
-      if (this.isErrorResponse(validationResult)) {
+      if (WebhookRouter.isErrorResponse(validationResult)) {
         return validationResult;
       }
 
-      const response = await this.executeHandler(
+      const response = await WebhookRouter.executeHandler(
         handlerEntry.handler,
         req,
         validationResult
       );
 
-      await this.runRouteAfterHooks(req, response, handlerEntry.after);
+      await WebhookRouter.runRouteAfterHooks(req, response, handlerEntry.after);
       await this.runGlobalAfterHooks(req, response);
 
       return response;
@@ -204,7 +204,9 @@ export class WebhookRouter<TMap = unknown> {
     }
   }
 
-  private createHandlerEntry(options: RegisterOptions<unknown>): HandlerEntry {
+  private static createHandlerEntry(
+    options: RegisterOptions<unknown>
+  ): HandlerEntry {
     const entry: HandlerEntry = {
       handler: options.handler,
     };
@@ -228,7 +230,7 @@ export class WebhookRouter<TMap = unknown> {
     return entry;
   }
 
-  private async runRouteBeforeHooks(
+  private static async runRouteBeforeHooks(
     req: NormalizedRequest,
     before?: BeforeHook[]
   ): Promise<void> {
@@ -239,7 +241,7 @@ export class WebhookRouter<TMap = unknown> {
     }
   }
 
-  private parseRequestBody(req: NormalizedRequest): unknown {
+  private static parseRequestBody(req: NormalizedRequest): unknown {
     try {
       const parsed = JSON.parse(
         new TextDecoder().decode(req.rawBody)
@@ -251,7 +253,7 @@ export class WebhookRouter<TMap = unknown> {
     }
   }
 
-  private isErrorResponse(value: unknown): value is NormalizedResponse {
+  private static isErrorResponse(value: unknown): value is NormalizedResponse {
     return (
       typeof value === "object" &&
       value !== null &&
@@ -260,7 +262,7 @@ export class WebhookRouter<TMap = unknown> {
     );
   }
 
-  private async validatePayload<TPayload>(
+  private static async validatePayload<TPayload>(
     parsedJson: unknown,
     schema?: StandardSchemaV1<unknown, TPayload>
   ): Promise<TPayload | NormalizedResponse> {
@@ -291,7 +293,7 @@ export class WebhookRouter<TMap = unknown> {
     return result.value;
   }
 
-  private async executeHandler<TPayload = unknown>(
+  private static async executeHandler<TPayload = unknown>(
     handler: WebhookHandler<TPayload>,
     req: NormalizedRequest,
     validatedPayload: TPayload
@@ -317,7 +319,7 @@ export class WebhookRouter<TMap = unknown> {
     return responded ?? { body: "ok", status: 200 };
   }
 
-  private async runRouteAfterHooks(
+  private static async runRouteAfterHooks(
     req: NormalizedRequest,
     response: NormalizedResponse,
     after?: AfterHook[]
