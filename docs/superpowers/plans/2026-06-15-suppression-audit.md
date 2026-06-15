@@ -433,3 +433,60 @@ Expected: commit only if the plan gained result notes.
 - Spec coverage: plan finds all suppression comments, includes broader regex than draft, checks whether each should stay or go, runs `fallow --summary`, runs `react-doctor --verbose --scope full`, and defers contradictory tool requirements to the final conflict-resolution task.
 - Placeholder scan: no `TBD`, `TODO`, or deferred implementation placeholders.
 - Type consistency: commands use repo scripts from `package.json`; file paths match current search output.
+
+## Final Results
+
+Implemented commits:
+
+```text
+5058df29 docs: plan suppression audit
+5c5a05dd chore: audit source suppressions
+8a7ee603 chore: audit docs route suppressions
+1117c1e7 chore: audit test suppressions
+747359ac chore: remove redundant max-expects suppressions
+```
+
+Comparable inventory using `git grep` against the plan commit and `HEAD`:
+
+```text
+5058df29: 53 matching lines across 39 files
+HEAD:     49 matching lines across 36 files
+```
+
+Suppressions removed or narrowed:
+
+```text
+packages/fetch/src/url.ts: removed no-negated-condition from combined oxlint suppression.
+packages/webhooks/src/index.ts: removed class-methods-use-this by converting private stateless helpers to static methods.
+apps/docs/src/routes/docs/$.tsx: removed oxfmt-ignore.
+packages/validation/tests/index.node.test.ts: removed func-style and unicorn/consistent-function-scoping from combined oxlint suppression.
+packages/fetch/tests/index.node.test.ts: removed vitest/max-expects suppression.
+packages/fetch/tests/runtime.browser.test.ts: removed vitest/max-expects suppression.
+packages/permit/tests/index.node.test.ts: removed vitest/max-expects from combined oxlint suppression; kept require-await.
+packages/retry/tests/throw-mode.node.test.ts: removed vitest/max-expects suppression.
+```
+
+Final verification:
+
+```text
+pnpm run check: PASS
+pnpm run build: PASS
+fallow --summary: PASS; reports no dead code and 0.9% duplication advisory.
+react-doctor --verbose --scope full: PASS; reports no issues, with score API unreachable / not-installed notices.
+pnpm run test: FAIL; 3 baseline test failures remain plus sandbox browser listen EPERM.
+```
+
+Known test failures left unchanged because they are outside the suppression audit:
+
+```text
+packages/fetch/tests/url.node.test.ts: query param order expectation mismatch.
+packages/webhooks/tests/index.node.test.ts: default ack response expects headers: undefined but implementation omits the key.
+packages/webhooks/tests/verify.node.test.ts: missing Web Crypto path throws TypeError instead of VerificationError.
+Vitest browser runner in sandbox: listen EPERM on ::1.
+```
+
+Tool conflicts:
+
+```text
+No actionable tool conflicts recorded. Fallow and React Doctor notices were non-failing environment/tooling notices, not code-shape contradictions.
+```
