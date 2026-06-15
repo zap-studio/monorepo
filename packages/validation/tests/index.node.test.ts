@@ -1,6 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { describe, expect, it } from "vitest";
-// oxlint-disable func-style, require-await, promise/avoid-new, unicorn/consistent-function-scoping -- Test helpers intentionally exercise function-shaped and async Standard Schema contracts.
+// oxlint-disable require-await, promise/avoid-new -- Test helpers intentionally exercise async Standard Schema contracts.
 
 import { ValidationError } from "../src/errors.js";
 import {
