@@ -1,7 +1,6 @@
 import { ValidationError } from "@zap-studio/validation/errors";
 import { number, object, string } from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-// oxlint-disable vitest/max-expects -- API shape tests intentionally assert all generated method names together.
 
 import { FetchError } from "../src/errors.js";
 import { $fetch, api, createFetch } from "../src/index.js";
@@ -830,16 +829,13 @@ describe(createFetch, () => {
     it("should return api object with get, post, put, patch, delete methods", () => {
       const { api: customApi } = createFetch();
 
-      expect(customApi).toHaveProperty("get");
-      expect(customApi).toHaveProperty("post");
-      expect(customApi).toHaveProperty("put");
-      expect(customApi).toHaveProperty("patch");
-      expect(customApi).toHaveProperty("delete");
-      expect(customApi.get).toBeTypeOf("function");
-      expect(customApi.post).toBeTypeOf("function");
-      expect(customApi.put).toBeTypeOf("function");
-      expect(customApi.patch).toBeTypeOf("function");
-      expect(customApi.delete).toBeTypeOf("function");
+      expect(customApi).toMatchObject({
+        delete: expect.any(Function),
+        get: expect.any(Function),
+        patch: expect.any(Function),
+        post: expect.any(Function),
+        put: expect.any(Function),
+      });
     });
 
     it("should apply factory defaults to api method requests", async () => {

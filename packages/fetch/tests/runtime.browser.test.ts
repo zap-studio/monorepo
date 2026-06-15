@@ -5,8 +5,6 @@ import { $fetch, createFetch } from "../src/index.js";
 import { normalizeRequest } from "../src/request.js";
 import { resolveRequestUrl } from "../src/url.js";
 
-// oxlint-disable vitest/max-expects -- Browser runtime tests assert related request-normalization details together.
-
 const DEFAULTS = {
   baseURL: "",
   throwOnFetchError: true,
@@ -40,13 +38,17 @@ describe("@zap-studio/fetch browser runtime", () => {
     });
     const headers = new Headers(normalized.options.headers);
 
-    expect(normalized.url).toBe("https://api.example.com/users");
+    expect(normalized).toMatchObject({
+      options: { method: "PATCH" },
+      url: "https://api.example.com/users",
+    });
     expect(normalized.request).toBeInstanceOf(Request);
     expect(normalized.request).not.toBe(request);
-    expect(normalized.options.method).toBe("PATCH");
-    expect(headers.get("A")).toBe("1");
-    expect(headers.get("B")).toBe("20");
-    expect(headers.get("C")).toBe("3");
+    expect([
+      headers.get("A"),
+      headers.get("B"),
+      headers.get("C"),
+    ]).toStrictEqual(["1", "20", "3"]);
   });
 
   it("merges native Headers, object headers, and tuple headers", () => {

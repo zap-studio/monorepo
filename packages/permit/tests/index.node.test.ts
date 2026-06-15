@@ -1,6 +1,6 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it, vi } from "vitest";
-// oxlint-disable require-await, vitest/max-expects -- Policy matrix tests intentionally group related permission assertions and async contract fixtures.
+// oxlint-disable require-await -- Async contract fixtures intentionally match policy APIs.
 
 import { PolicyError } from "../src/errors.js";
 import {
@@ -1019,40 +1019,30 @@ describe(createPolicy, () => {
       visibility: "private" as const,
     };
 
-    // Admin can read anything
     await expect(
-      policy.can(admin, "post:read", publicPost)
-    ).resolves.toBeTruthy();
-    await expect(
-      policy.can(admin, "post:read", privatePost)
-    ).resolves.toBeTruthy();
-
-    // User can read public or own posts
-    await expect(
-      policy.can(user, "post:read", publicPost)
-    ).resolves.toBeTruthy();
-    await expect(
-      policy.can(user, "post:read", privatePost)
-    ).resolves.toBeTruthy();
-
-    // Owner can delete private posts only
-    await expect(
-      policy.can(user, "post:delete", privatePost)
-    ).resolves.toBeTruthy();
-    await expect(
-      policy.can(user, "post:delete", {
-        ...privatePost,
-        visibility: "public" as const,
-      })
-    ).resolves.toBeFalsy();
-
-    // Only admin can publish
-    await expect(
-      policy.can(admin, "post:publish", publicPost)
-    ).resolves.toBeTruthy();
-    await expect(
-      policy.can(user, "post:publish", publicPost)
-    ).resolves.toBeFalsy();
+      Promise.all([
+        policy.can(admin, "post:read", publicPost),
+        policy.can(admin, "post:read", privatePost),
+        policy.can(user, "post:read", publicPost),
+        policy.can(user, "post:read", privatePost),
+        policy.can(user, "post:delete", privatePost),
+        policy.can(user, "post:delete", {
+          ...privatePost,
+          visibility: "public" as const,
+        }),
+        policy.can(admin, "post:publish", publicPost),
+        policy.can(user, "post:publish", publicPost),
+      ])
+    ).resolves.toStrictEqual([
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      false,
+    ]);
   });
 
   it("should deny when actions for a resource are missing at runtime", async () => {
@@ -1349,20 +1339,29 @@ describe(createPolicy, () => {
       visibility: "public" as const,
     };
 
-    // Guest can only read
-    await expect(policy.can(guest, "post:read", post)).resolves.toBeTruthy();
-    await expect(policy.can(guest, "post:write", post)).resolves.toBeFalsy();
-    await expect(policy.can(guest, "post:delete", post)).resolves.toBeFalsy();
-
-    // User inherits guest and can write
-    await expect(policy.can(user, "post:read", post)).resolves.toBeTruthy();
-    await expect(policy.can(user, "post:write", post)).resolves.toBeTruthy();
-    await expect(policy.can(user, "post:delete", post)).resolves.toBeFalsy();
-
-    // Admin can do everything
-    await expect(policy.can(admin, "post:read", post)).resolves.toBeTruthy();
-    await expect(policy.can(admin, "post:write", post)).resolves.toBeTruthy();
-    await expect(policy.can(admin, "post:delete", post)).resolves.toBeTruthy();
+    await expect(
+      Promise.all([
+        policy.can(guest, "post:read", post),
+        policy.can(guest, "post:write", post),
+        policy.can(guest, "post:delete", post),
+        policy.can(user, "post:read", post),
+        policy.can(user, "post:write", post),
+        policy.can(user, "post:delete", post),
+        policy.can(admin, "post:read", post),
+        policy.can(admin, "post:write", post),
+        policy.can(admin, "post:delete", post),
+      ])
+    ).resolves.toStrictEqual([
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      true,
+      true,
+    ]);
   });
 });
 

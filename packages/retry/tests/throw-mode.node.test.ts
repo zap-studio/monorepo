@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from "vitest";
-// oxlint-disable vitest/max-expects -- Retry flow tests assert each step in a single scenario.
 
 import { CustomTerminalPolicy, SequencePolicy } from "./sequence-policy.js";
 
@@ -35,11 +34,8 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
     const result = await policy.run(execute, { sleep });
 
     expect(result).toBe("ok");
-    expect(execute).toHaveBeenNthCalledWith(1, 1);
-    expect(execute).toHaveBeenNthCalledWith(2, 2);
-    expect(execute).toHaveBeenNthCalledWith(3, 3);
-    expect(sleep).toHaveBeenNthCalledWith(1, 10);
-    expect(sleep).toHaveBeenNthCalledWith(2, 20);
+    expect(execute.mock.calls).toStrictEqual([[1], [2], [3]]);
+    expect(sleep.mock.calls).toStrictEqual([[10], [20]]);
     expect(policy.seen).toHaveLength(2);
   });
 
