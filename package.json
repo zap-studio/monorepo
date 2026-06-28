@@ -8,8 +8,8 @@
     "bench:watch": "vitest bench --watch",
     "build": "pnpm --filter './packages/*' run build",
     "publish:check": "pnpm run check && pnpm run test && pnpm --filter './packages/*' run prepublishOnly",
-    "fix": "pnpm exec ultracite fix",
-    "check": "pnpm exec ultracite check",
+    "fix": "pnpm exec ultracite fix --type-aware --type-check",
+    "check": "pnpm exec ultracite check --type-aware --type-check",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "prepare": "lefthook install"
