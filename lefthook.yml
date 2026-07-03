@@ -1,4 +1,7 @@
 pre-commit:
+  parallel: true
   jobs:
-    - name: fix
-      run: pnpm exec ultracite fix
+    - name: ultracite
+      glob: "*.{js,jsx,ts,tsx,json,css}"
+      run: pnpm exec ultracite fix {staged_files}
+      stage_fixed: true
