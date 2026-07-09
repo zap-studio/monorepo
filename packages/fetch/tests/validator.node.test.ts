@@ -1,5 +1,3 @@
-import { setTimeout as sleep } from "node:timers/promises";
-
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
@@ -146,7 +144,7 @@ describe(standardValidate, () => {
 
     it("should await Promise-based validation and return validated value", async () => {
       const schema = createMockSchema(async (input) => {
-        await sleep(10);
+        await Promise.resolve();
         return { value: input as number };
       });
       const result = await standardValidate(schema, 123, {
