@@ -21,17 +21,8 @@ import { baseOptions, gitConfig } from "@/lib/layout/layout.shared";
 import { pageMeta } from "@/lib/site";
 import { getExternalLinkProps } from "@/lib/utils/links";
 
-type SerializedPageTree = Awaited<ReturnType<typeof source.serializePageTree>>;
-
-interface DocsLoaderData {
-  markdownUrl: string;
-  path: string;
-  pageTree: SerializedPageTree;
-  slugs: string[];
-}
-
 const loadDocsPageFn = createServerFn({ method: "GET" })
-  .inputValidator((slugs: string[]) => slugs)
+  .validator((slugs: string[]) => slugs)
   .handler(async ({ data: slugs }) => {
     const page = source.getPage(slugs);
     if (!page) {
@@ -47,30 +38,29 @@ const loadDocsPageFn = createServerFn({ method: "GET" })
     };
   });
 
-type DocsSidebar = NonNullable<
-  ComponentPropsWithoutRef<typeof DocsLayout>["sidebar"]
+type DocsTabs = Extract<
+  NonNullable<ComponentPropsWithoutRef<typeof DocsLayout>["tabs"]>,
+  { transform?: unknown }
 >;
 
-const docsSidebar = {
-  tabs: {
-    transform: (option, node) => ({
-      ...option,
-      description: undefined,
-      icon:
-        node.icon === null || node.icon === undefined ? undefined : (
-          <span className="flex size-full items-center justify-center text-fd-primary [&_svg]:size-5 md:[&_svg]:size-4">
-            {node.icon}
-          </span>
-        ),
-    }),
-  },
-} satisfies DocsSidebar;
+const docsTabs = {
+  transform: (option, node) => ({
+    ...option,
+    description: undefined,
+    icon:
+      node.icon === null || node.icon === undefined ? undefined : (
+        <span className="flex size-full items-center justify-center text-fd-primary [&_svg]:size-5 md:[&_svg]:size-4">
+          {node.icon}
+        </span>
+      ),
+  }),
+} satisfies DocsTabs;
 
 const docsClientLoader = browserCollections.docs.createClientLoader<{
   githubUrl: string;
   markdownUrl: string;
 }>({
-  component({ default: MDX, frontmatter, lastModified, toc }, props) {
+  component({ default: Mdx, frontmatter, lastModified, toc }, props) {
     return (
       <DocsPage
         full={frontmatter.full}
@@ -90,7 +80,7 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
           />
         </div>
         <DocsBody>
-          <MDX components={getMDXComponents()} />
+          <Mdx components={getMDXComponents()} />
           <div
             className="mt-8 flex flex-row flex-wrap items-center justify-between gap-4 border-t pt-4"
             suppressHydrationWarning
@@ -118,9 +108,9 @@ export const Route = createFileRoute("/docs/$")({
   // oxlint-disable-next-line no-use-before-define -- Route component uses Route.useLoaderData().
   component: DocsRoute,
   loader: async ({ params }) => {
-    const data = (await loadDocsPageFn({
+    const data = await loadDocsPageFn({
       data: params._splat?.split("/") ?? [],
-    })) as DocsLoaderData;
+    });
 
     await docsClientLoader.preload(data.path);
     return data;
@@ -137,12 +127,7 @@ function DocsRoute() {
   const { markdownUrl } = loaderData;
 
   return (
-    <DocsLayout
-      {...baseOptions()}
-      links={[]}
-      sidebar={docsSidebar}
-      tree={pageTree}
-    >
+    <DocsLayout {...baseOptions()} links={[]} tabs={docsTabs} tree={pageTree}>
       <Suspense>
         {docsClientLoader.useContent(path, {
           githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/apps/docs/content/docs/${path}`,

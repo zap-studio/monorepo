@@ -27,7 +27,7 @@ export const LLMCopyButton = ({
 }: {
   markdownUrl: string;
 }) => {
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [checked, onClick] = useCopyButton(async () => {
     const cached = cache.get(markdownUrl);
     if (cached !== undefined) {
@@ -35,7 +35,7 @@ export const LLMCopyButton = ({
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
 
     try {
       await navigator.clipboard.write([
@@ -49,7 +49,7 @@ export const LLMCopyButton = ({
         }),
       ]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   });
 

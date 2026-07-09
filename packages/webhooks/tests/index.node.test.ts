@@ -376,7 +376,7 @@ describe(WebhookRouter, () => {
       const router = new WebhookRouter<WebhookMap>();
 
       const schema = z.object({
-        value: z.string().transform((val) => Number.parseInt(val, 10)),
+        value: z.string().transform((val) => Math.trunc(Number(val))),
       });
 
       router.register("data", {

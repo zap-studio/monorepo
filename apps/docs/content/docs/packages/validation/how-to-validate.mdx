@@ -83,10 +83,10 @@ Important behavior:
 
 ## Which One Should I Use?
 
-| Helper                 | Supports sync schemas | Supports async schemas | Returns             | Best use case                         |
-| ---------------------- | --------------------- | ---------------------- | ------------------- | ------------------------------------- |
-| `standardValidate`     | Yes                   | Yes                    | `Promise<...>`      | Default choice for most applications  |
-| `standardValidateSync` | Yes                   | No                     | direct value/result | Strict sync-only runtime requirements |
+| Helper | Supports sync schemas | Supports async schemas | Returns | Best use case |
+| --- | --- | --- | --- | --- |
+| `standardValidate` | Yes | Yes | `Promise<...>` | Default choice for most applications |
+| `standardValidateSync` | Yes | No | direct value/result | Strict sync-only runtime requirements |
 
 - Use `standardValidate` by default for compatibility and simpler call sites.
 - Use `standardValidateSync` only when synchronous behavior is a hard requirement.

@@ -87,8 +87,7 @@ router.register("payments/succeeded", {
 
 ## 4. Handle request
 
-Your framework layer should convert incoming requests into `NormalizedRequest`
-and call:
+Your framework layer should convert incoming requests into `NormalizedRequest` and call:
 
 ```ts
 const response = await router.handle(normalizedReq);

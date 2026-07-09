@@ -17,13 +17,11 @@ This is usually fine until you need shared infrastructure across teams and packa
 
 Without a common contract, every library has different parsing APIs, return shapes, and error formats.
 
-**Standard Schema** defines a shared interface so those libraries can be consumed through one consistent protocol.
-That means your app or package logic can stay stable even when schema implementations differ.
+**Standard Schema** defines a shared interface so those libraries can be consumed through one consistent protocol. That means your app or package logic can stay stable even when schema implementations differ.
 
 ## Why We Created `validation`?
 
-At Zap Studio, multiple packages need runtime validation ([`fetch`](/docs/packages/fetch), [`permit`](/docs/packages/permit), and others).
-We wanted one internal validation flow that works with any Standard Schema-compatible library.
+At Zap Studio, multiple packages need runtime validation ([`fetch`](/docs/packages/fetch), [`permit`](/docs/packages/permit), and others). We wanted one internal validation flow that works with any Standard Schema-compatible library.
 
 So `validation` provides:
 

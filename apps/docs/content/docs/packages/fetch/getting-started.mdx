@@ -77,8 +77,7 @@ const created = await api.post("/api/users", UserSchema, {
 });
 ```
 
-In this example, `UserSchema` validates the response from `/api/users`.
-The `json` object is the outgoing request body; it is not validated by `UserSchema`.
+In this example, `UserSchema` validates the response from `/api/users`. The `json` object is the outgoing request body; it is not validated by `UserSchema`.
 
 `json` and native `body` are mutually exclusive.
 

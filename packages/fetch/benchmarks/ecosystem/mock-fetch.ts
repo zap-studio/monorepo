@@ -8,6 +8,6 @@ export const installMockFetch = (payload: unknown): BenchmarkFetch => {
     });
   };
 
-  globalThis.fetch = mockFetch as typeof fetch;
+  globalThis.fetch = mockFetch;
   return mockFetch;
 };

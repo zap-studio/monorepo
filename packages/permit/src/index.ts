@@ -385,7 +385,7 @@ export function createPolicy<
       if (result.issues) {
         return null;
       }
-      return result.value as InferResource<TResources, K>;
+      return result.value;
     } catch (error) {
       console.warn(
         `Resource validation failed for ${String(resourceType)}: ${String(error)}`
@@ -394,6 +394,7 @@ export function createPolicy<
     }
   };
 
+  // oxlint-disable-next-line unicorn/consistent-function-scoping -- Generic over the enclosing policy's TResources/TActions; those type params cannot be inferred at the call site if hoisted.
   const parsePermission = <K extends keyof TResources & keyof TActions>(
     permission: `${K & string}:${InferAction<TActions, K> & string}`
   ): { action: InferAction<TActions, K>; resourceType: K } | null => {
@@ -410,7 +411,7 @@ export function createPolicy<
 
     return {
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Parsed permission strings are constrained by the typed permission template.
-      action: actionValue as InferAction<TActions, K>,
+      action: actionValue,
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Parsed permission strings are constrained by the typed permission template.
       resourceType: resourceTypeValue as K,
     };

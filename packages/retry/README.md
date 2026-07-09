@@ -33,8 +33,7 @@ const data = await exponential.run(async () => {
 
 `run(...)` throws when retries are exhausted.
 
-By default, policies extending `BaseRetryPolicy` throw `RetryError` on exhaustion
-and `AbortError` on cancellation.
+By default, policies extending `BaseRetryPolicy` throw `RetryError` on exhaustion and `AbortError` on cancellation.
 
 ```ts
 import { AbortError, RetryError } from "@zap-studio/retry/errors";
@@ -110,8 +109,7 @@ controller.abort(new Error("Request canceled"));
 await promise;
 ```
 
-In non-throw mode, abort is returned as `{ ok: false }` with `AbortError` on
-`result.error`:
+In non-throw mode, abort is returned as `{ ok: false }` with `AbortError` on `result.error`:
 
 ```ts
 const controller = new AbortController();
@@ -159,9 +157,7 @@ const predictableIntervalPolicy = new FixedDelay({
 
 Extend `BaseRetryPolicy` when the built-in policies do not match your retry rules.
 
-You implement `next(...)` only; the base class supplies `onExhausted` with a default
-`RetryError` and keeps the shared `run(...)` orchestration (override `onExhausted` when
-you need a different terminal error).
+You implement `next(...)` only; the base class supplies `onExhausted` with a default `RetryError` and keeps the shared `run(...)` orchestration (override `onExhausted` when you need a different terminal error).
 
 ```ts
 import { BaseRetryPolicy } from "@zap-studio/retry";

@@ -182,11 +182,11 @@ policy.can(context, permission, resource): Promise<boolean>
 
 ### Parameters
 
-| Parameter    | Type       | Description                                                      |
-| ------------ | ---------- | ---------------------------------------------------------------- |
-| `context`    | `TContext` | The current context (user, request, etc.)                        |
-| `permission` | `string`   | The permission to check (e.g., `"post:read"`, `"comment:write"`) |
-| `resource`   | `object`   | The actual resource being accessed                               |
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `context` | `TContext` | The current context (user, request, etc.) |
+| `permission` | `string` | The permission to check (e.g., `"post:read"`, `"comment:write"`) |
+| `resource` | `object` | The actual resource being accessed |
 
 ### Example: Blog Post Authorization
 

@@ -1084,7 +1084,7 @@ describe(createPolicy, () => {
       post: {
         "~standard": {
           validate: () => ({
-            issues: [{ message: "invalid" } as StandardSchemaV1.Issue],
+            issues: [{ message: "invalid" }],
           }),
           vendor: "test",
           version: 1,
@@ -1262,7 +1262,7 @@ describe(createPolicy, () => {
             read: allow(),
           },
         } as const),
-      } as never,
+      },
     });
 
     const ctx: TestContext = { user: { id: "user-1", role: "user" } };

@@ -117,12 +117,10 @@ function prepareRequestInit(
       init.headers = new Headers({ "Content-Type": "application/json" });
     } else {
       const requestHeaders = new Headers(init.headers);
-      if (requestHeaders.has("Content-Type")) {
-        init.headers = requestHeaders;
-      } else {
+      if (!requestHeaders.has("Content-Type")) {
         requestHeaders.set("Content-Type", "application/json");
-        init.headers = requestHeaders;
       }
+      init.headers = requestHeaders;
     }
   }
 

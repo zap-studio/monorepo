@@ -6,8 +6,7 @@ Thanks for contributing to Zap Studio.
 
 - Use the issue forms for reproducible bugs and concrete feature requests.
 - Use GitHub Discussions for questions and general support.
-- For larger API or architecture changes, open an issue or discussion first so
-  the direction is clear before implementation.
+- For larger API or architecture changes, open an issue or discussion first so the direction is clear before implementation.
 
 ## Setup
 
@@ -39,15 +38,13 @@ pnpm run test
 pnpm --filter './packages/*' run build
 ```
 
-If you are changing one package, prefer the relevant package or app target via
-`pnpm --filter`.
+If you are changing one package, prefer the relevant package or app target via `pnpm --filter`.
 
 ## Issues
 
 Useful issues are specific and reproducible.
 
-- For bugs, include the affected package, version, runtime, steps to reproduce,
-  and the expected versus actual behavior.
+- For bugs, include the affected package, version, runtime, steps to reproduce, and the expected versus actual behavior.
 - For feature requests, describe the problem first, then the proposed solution.
 - Do not use public issues for security vulnerabilities. Follow `SECURITY.md`.
 

@@ -44,8 +44,7 @@ const router = createWebhookRouter({
 });
 ```
 
-For providers with custom signing formats, pass a custom `verify(req)` function. Throw to
-reject; `handle` converts thrown errors through `onError` or the default `500` response.
+For providers with custom signing formats, pass a custom `verify(req)` function. Throw to reject; `handle` converts thrown errors through `onError` or the default `500` response.
 
 ## Adapter Rules
 
@@ -73,8 +72,7 @@ class MyAdapter extends BaseAdapter<Request, Response> {
 - `register("github/push", ...)` matches `/webhooks/github/push` when prefix is `/webhooks/`.
 - Invalid JSON becomes `undefined`; schema validation then returns a `400` response.
 - Schema validation uses non-throw mode and maps issues into `{ status: 400, body }`.
-- Hook order is global before, route before, verify, parse/validate, handler, route after,
-  global after.
+- Hook order is global before, route before, verify, parse/validate, handler, route after, global after.
 - Preserve `rawBody` exactly; do not reserialize JSON before verifying signatures.
 
 ## References

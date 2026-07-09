@@ -7,7 +7,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [
-    await mdx(await import("./source.config")),
+    mdx(await import("./source.config")),
     tailwindcss(),
     ...tanstackStart({
       prerender: {
