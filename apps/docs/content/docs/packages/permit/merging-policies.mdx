@@ -64,7 +64,10 @@ const basePolicy = createPolicy<AppContext>({
   actions,
   rules: {
     document: {
-      read: when((ctx, _, doc) => doc.classification === "public" || ctx.user?.id === doc.ownerId),
+      read: when(
+        (ctx, _, doc) =>
+          doc.classification === "public" || ctx.user?.id === doc.ownerId
+      ),
       write: when((ctx, _, doc) => ctx.user?.id === doc.ownerId),
       delete: when((ctx, _, doc) => ctx.user?.id === doc.ownerId),
     },
@@ -116,13 +119,17 @@ const confidentialDoc = {
 const lowClearanceOwner: AppContext = {
   user: { id: "user-123", clearanceLevel: 1 },
 };
-console.log(await policy.can(lowClearanceOwner, "document:read", confidentialDoc)); // false
+console.log(
+  await policy.can(lowClearanceOwner, "document:read", confidentialDoc)
+); // false
 
 // Owner with high clearance: both allow → ALLOWED
 const highClearanceOwner: AppContext = {
   user: { id: "user-123", clearanceLevel: 3 },
 };
-console.log(await policy.can(highClearanceOwner, "document:read", confidentialDoc)); // true
+console.log(
+  await policy.can(highClearanceOwner, "document:read", confidentialDoc)
+); // true
 ```
 
 ## mergePoliciesAny() — Allow-Overrides Strategy
@@ -203,8 +210,12 @@ const sharedPolicy = createPolicy<FileContext>({
   actions,
   rules: {
     file: {
-      read: when((ctx, _, file) => file.sharedWith.includes(ctx.user?.id ?? "")),
-      write: when((ctx, _, file) => file.sharedWith.includes(ctx.user?.id ?? "")),
+      read: when((ctx, _, file) =>
+        file.sharedWith.includes(ctx.user?.id ?? "")
+      ),
+      write: when((ctx, _, file) =>
+        file.sharedWith.includes(ctx.user?.id ?? "")
+      ),
       delete: when(() => false),
     },
   },
@@ -218,11 +229,13 @@ const teamPolicy = createPolicy<FileContext>({
     file: {
       read: when(
         (ctx, _, file) =>
-          file.teamId !== null && (ctx.user?.teamIds.includes(file.teamId) ?? false),
+          file.teamId !== null &&
+          (ctx.user?.teamIds.includes(file.teamId) ?? false)
       ),
       write: when(
         (ctx, _, file) =>
-          file.teamId !== null && (ctx.user?.teamIds.includes(file.teamId) ?? false),
+          file.teamId !== null &&
+          (ctx.user?.teamIds.includes(file.teamId) ?? false)
       ),
       delete: when(() => false),
     },
@@ -230,7 +243,12 @@ const teamPolicy = createPolicy<FileContext>({
 });
 
 // Any of these policies can grant access
-const filePolicy = mergePoliciesAny(ownerPolicy, publicPolicy, sharedPolicy, teamPolicy);
+const filePolicy = mergePoliciesAny(
+  ownerPolicy,
+  publicPolicy,
+  sharedPolicy,
+  teamPolicy
+);
 
 // Usage
 const file = {

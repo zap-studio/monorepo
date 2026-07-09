@@ -34,30 +34,30 @@ export interface NormalizedRequest {
  * const normalized = normalizeRequest("/users", { method: "GET" });
  * console.log(normalized.url); // "/users"
  */
-export function normalizeRequest(
+export const normalizeRequest = (
   input: FetchInput,
-  options?: ExtendedRequestInit,
-): NormalizedRequest {
+  options?: ExtendedRequestInit
+): NormalizedRequest => {
   if (!(input instanceof Request)) {
     const url = input instanceof URL ? input.href : input;
     return {
-      url,
       options: options ?? EMPTY_OPTIONS,
+      url,
     };
   }
 
   const request = new Request(input);
-  const { headers, ...rest } = options || {};
+  const { headers, ...rest } = options ?? {};
   const mergedHeaders = mergeHeaders(request.headers, headers);
   const normalizedOptions = { ...rest } as ExtendedRequestInit;
 
-  if (mergedHeaders) {
+  if (mergedHeaders !== undefined) {
     normalizedOptions.headers = mergedHeaders;
   }
 
   return {
-    url: request.url,
-    request,
     options: normalizedOptions,
+    request,
+    url: request.url,
   };
-}
+};

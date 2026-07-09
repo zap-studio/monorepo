@@ -5,8 +5,7 @@ description: Production-oriented provider guides for GitHub and Stripe webhooks.
 
 This page shows provider-specific patterns you can adapt directly.
 
-The important idea: verification and payload validation are separate concerns.
-Verification checks authenticity. Schema checks shape.
+The important idea: verification and payload validation are separate concerns. Verification checks authenticity. Schema checks shape.
 
 ## GitHub (HMAC signature)
 
@@ -38,8 +37,7 @@ router.register("github/push", {
 
 ## Stripe (provider-specific verification)
 
-Stripe uses its own signed payload format, so verification should use the Stripe SDK.
-This is why the package accepts a custom `verify` function.
+Stripe uses its own signed payload format, so verification should use the Stripe SDK. This is why the package accepts a custom `verify` function.
 
 ```ts
 import Stripe from "stripe";
@@ -53,7 +51,11 @@ const router = createWebhookRouter({
     const signature = req.headers.get("stripe-signature");
     if (!signature) throw new Error("Missing Stripe signature");
 
-    stripe.webhooks.constructEvent(req.rawBody, signature, process.env.STRIPE_WEBHOOK_SECRET!);
+    stripe.webhooks.constructEvent(
+      req.rawBody,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
   },
 });
 

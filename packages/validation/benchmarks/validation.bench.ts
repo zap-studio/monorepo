@@ -10,21 +10,24 @@ import {
 
 const syncSchema: StandardSchemaV1<unknown, string> = {
   "~standard": {
-    version: 1,
-    vendor: "benchmark",
     validate: (input: unknown) => ({
       value: String(input),
     }),
+    vendor: "benchmark",
+    version: 1,
   },
 };
 
 const asyncSchema: StandardSchemaV1<unknown, string> = {
   "~standard": {
-    version: 1,
+    validate: async (input: unknown) => {
+      await Promise.resolve();
+      return {
+        value: String(input),
+      };
+    },
     vendor: "benchmark",
-    validate: async (input: unknown) => ({
-      value: String(input),
-    }),
+    version: 1,
   },
 };
 

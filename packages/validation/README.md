@@ -110,9 +110,7 @@ If the schema performs async validation, this function will throw.
 
 ## Reusable Validators
 
-If you validate many values against the same schema, you can create reusable validators.
-In performance-sensitive code paths, prefer `createStandardValidator` and `createSyncStandardValidator`
-over calling `standardValidate` and `standardValidateSync` repeatedly.
+If you validate many values against the same schema, you can create reusable validators. In performance-sensitive code paths, prefer `createStandardValidator` and `createSyncStandardValidator` over calling `standardValidate` and `standardValidateSync` repeatedly.
 
 ### Async validator
 
@@ -178,13 +176,13 @@ try {
 
 ## Choosing the Right Helper
 
-| Function                      | Use when                                                        |
-| ----------------------------- | --------------------------------------------------------------- |
-| `standardValidate`            | You want validation that works with both sync and async schemas |
-| `standardValidateSync`        | You know the schema is synchronous                              |
-| `createStandardValidator`     | You want a reusable async validator                             |
-| `createSyncStandardValidator` | You want a reusable sync validator                              |
-| `isStandardSchema`            | You need to safely detect schemas at runtime                    |
+| Function | Use when |
+| --- | --- |
+| `standardValidate` | You want validation that works with both sync and async schemas |
+| `standardValidateSync` | You know the schema is synchronous |
+| `createStandardValidator` | You want a reusable async validator |
+| `createSyncStandardValidator` | You want a reusable sync validator |
+| `isStandardSchema` | You need to safely detect schemas at runtime |
 
 ---
 

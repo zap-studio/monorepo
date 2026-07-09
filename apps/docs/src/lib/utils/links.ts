@@ -1,9 +1,8 @@
-export function isExternalHref(href: string): boolean {
-  return /^(?:[a-z]+:)?\/\//i.test(href);
-}
+export const isExternalHref = (href: string): boolean =>
+  /^(?:[a-z]+:)?\/\//iu.test(href);
 
-export function getExternalLinkProps(href?: string) {
-  if (!href || !isExternalHref(href)) {
+export const getExternalLinkProps = (href?: string) => {
+  if (href === undefined || href.length === 0 || !isExternalHref(href)) {
     return {};
   }
 
@@ -11,4 +10,4 @@ export function getExternalLinkProps(href?: string) {
     rel: "noreferrer noopener",
     target: "_blank",
   } as const;
-}
+};

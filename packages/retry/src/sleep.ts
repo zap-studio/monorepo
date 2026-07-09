@@ -11,10 +11,13 @@
  * @param delayMs - Milliseconds to wait before resolving.
  * @returns Promise that resolves when the delay completes.
  */
-export async function defaultSleep(delayMs: number): Promise<void> {
+export const defaultSleep = async (delayMs: number): Promise<void> => {
   if (delayMs <= 0) {
     return;
   }
 
-  await new Promise((resolve) => setTimeout(resolve, delayMs));
-}
+  // oxlint-disable-next-line promise/avoid-new -- Timer sleep requires adapting callback API to a promise.
+  await new Promise<void>((resolve) => {
+    setTimeout(resolve, delayMs);
+  });
+};

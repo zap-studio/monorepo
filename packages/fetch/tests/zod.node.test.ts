@@ -8,13 +8,13 @@ import { $fetch, api } from "../src/index.js";
 describe("Zod Standard Schema compatibility", () => {
   it("should expose ~standard property", () => {
     const schema = z.object({ id: z.number() });
-    expect("~standard" in schema).toBe(true);
+    expect("~standard" in schema).toBeTruthy();
     expect(schema["~standard"]).toBeDefined();
   });
 
   it("should be recognized by isStandardSchema", () => {
     const schema = z.object({ id: z.number() });
-    expect(isStandardSchema(schema)).toBe(true);
+    expect(isStandardSchema(schema)).toBeTruthy();
   });
 });
 
@@ -32,59 +32,61 @@ describe("$fetch with Zod schemas", () => {
 
   it("should validate with Zod object schema", async () => {
     const schema = z.object({
+      email: z.email(),
       id: z.number(),
       name: z.string(),
-      email: z.email(),
     });
 
-    const mockData = { id: 1, name: "Test User", email: "test@example.com" };
+    const mockData = { email: "test@example.com", id: 1, name: "Test User" };
 
     fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
       ok: true,
       status: 200,
       statusText: "OK",
-      headers: new Headers({ "content-type": "application/json" }),
-      json: async () => mockData,
     });
 
     const result = await $fetch("https://api.example.com/user", schema);
 
-    expect(result).toEqual(mockData);
+    expect(result).toStrictEqual(mockData);
   });
 
   it("should throw ValidationError on invalid data with Zod", async () => {
     const schema = z.object({
-      id: z.number(),
       email: z.email(),
+      id: z.number(),
     });
 
-    const invalidData = { id: 1, email: "not-an-email" };
+    const invalidData = { email: "not-an-email", id: 1 };
 
     fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => invalidData,
       ok: true,
       status: 200,
       statusText: "OK",
-      headers: new Headers({ "content-type": "application/json" }),
-      json: async () => invalidData,
     });
 
-    await expect($fetch("https://api.example.com/user", schema)).rejects.toThrow(ValidationError);
+    await expect(
+      $fetch("https://api.example.com/user", schema)
+    ).rejects.toThrow(ValidationError);
   });
 
   it("should return validation result when throwOnValidationError is false with Zod", async () => {
     const schema = z.object({
-      id: z.number(),
       email: z.email(),
+      id: z.number(),
     });
 
-    const invalidData = { id: 1, email: "not-an-email" };
+    const invalidData = { email: "not-an-email", id: 1 };
 
     fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => invalidData,
       ok: true,
       status: 200,
       statusText: "OK",
-      headers: new Headers({ "content-type": "application/json" }),
-      json: async () => invalidData,
     });
 
     const result = await $fetch("https://api.example.com/user", schema, {
@@ -92,23 +94,23 @@ describe("$fetch with Zod schemas", () => {
     });
 
     expect(result).toHaveProperty("issues");
-    expect(Array.isArray((result as { issues?: unknown }).issues)).toBe(true);
+    expect(Array.isArray((result as { issues?: unknown }).issues)).toBeTruthy();
   });
 
   it("should return successful validation result when data is valid and throwOnValidationError is false", async () => {
     const schema = z.object({
-      id: z.number(),
       email: z.email(),
+      id: z.number(),
     });
 
-    const validData = { id: 1, email: "test@example.com" };
+    const validData = { email: "test@example.com", id: 1 };
 
     fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => validData,
       ok: true,
       status: 200,
       statusText: "OK",
-      headers: new Headers({ "content-type": "application/json" }),
-      json: async () => validData,
     });
 
     const result = await $fetch("https://api.example.com/user", schema, {
@@ -116,7 +118,7 @@ describe("$fetch with Zod schemas", () => {
     });
 
     expect(result).toHaveProperty("value");
-    expect((result as { value?: unknown }).value).toEqual(validData);
+    expect((result as { value?: unknown }).value).toStrictEqual(validData);
     expect((result as { issues?: unknown }).issues).toBeUndefined();
   });
 
@@ -125,7 +127,7 @@ describe("$fetch with Zod schemas", () => {
       z.object({
         id: z.number(),
         name: z.string(),
-      }),
+      })
     );
 
     const mockData = [
@@ -134,16 +136,16 @@ describe("$fetch with Zod schemas", () => {
     ];
 
     fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
       ok: true,
       status: 200,
       statusText: "OK",
-      headers: new Headers({ "content-type": "application/json" }),
-      json: async () => mockData,
     });
 
     const result = await $fetch("https://api.example.com/users", schema);
 
-    expect(result).toEqual(mockData);
+    expect(result).toStrictEqual(mockData);
   });
 
   it("should work with api.get using Zod", async () => {
@@ -151,35 +153,35 @@ describe("$fetch with Zod schemas", () => {
     const mockData = { success: true };
 
     fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
       ok: true,
       status: 200,
       statusText: "OK",
-      headers: new Headers({ "content-type": "application/json" }),
-      json: async () => mockData,
     });
 
     const result = await api.get("https://api.example.com/status", schema);
 
-    expect(result).toEqual(mockData);
+    expect(result).toStrictEqual(mockData);
   });
 
   it("should work with api.post using Zod", async () => {
-    const schema = z.object({ id: z.number(), created: z.boolean() });
-    const mockData = { id: 123, created: true };
+    const schema = z.object({ created: z.boolean(), id: z.number() });
+    const mockData = { created: true, id: 123 };
     const body = { name: "New Item" };
 
     fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
       ok: true,
       status: 201,
       statusText: "Created",
-      headers: new Headers({ "content-type": "application/json" }),
-      json: async () => mockData,
     });
 
     const result = await api.post("https://api.example.com/items", schema, {
       body: JSON.stringify(body),
     });
 
-    expect(result).toEqual(mockData);
+    expect(result).toStrictEqual(mockData);
   });
 });

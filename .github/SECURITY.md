@@ -2,8 +2,7 @@
 
 ## Supported versions
 
-Zap Studio packages follow semantic versioning. Security fixes are provided for
-the latest published release line of each package.
+Zap Studio packages follow semantic versioning. Security fixes are provided for the latest published release line of each package.
 
 | Version                   | Supported     |
 | ------------------------- | ------------- |
@@ -15,8 +14,7 @@ If you rely on Zap Studio in production, stay current with the latest package re
 
 ## Reporting a vulnerability
 
-Please report vulnerabilities privately. Do not open a public issue,
-discussion, or pull request.
+Please report vulnerabilities privately. Do not open a public issue, discussion, or pull request.
 
 Preferred reporting path:
 
@@ -30,8 +28,7 @@ Please include:
 - impact and severity, if known
 - any mitigation or fix ideas, if available
 
-If you already have a patch or proof of concept, include it privately with the
-report.
+If you already have a patch or proof of concept, include it privately with the report.
 
 ## Scope
 
@@ -50,5 +47,4 @@ This policy does not cover:
 
 ## Response
 
-We will review reports as promptly as practical, confirm whether the issue is
-in scope, and coordinate a fix and disclosure process when needed.
+We will review reports as promptly as practical, confirm whether the issue is in scope, and coordinate a fix and disclosure process when needed.

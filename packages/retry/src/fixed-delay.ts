@@ -54,9 +54,9 @@ export class FixedDelay extends BaseRetryPolicy {
    */
   public next(input: RetryDecisionInput): RetryDecision {
     if (input.attempt >= this.maxAttempts) {
-      return { shouldRetry: false, delayMs: 0, reason: "max-attempts-reached" };
+      return { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false };
     }
 
-    return { shouldRetry: true, delayMs: this.delayMs, reason: "retry" };
+    return { delayMs: this.delayMs, reason: "retry", shouldRetry: true };
   }
 }

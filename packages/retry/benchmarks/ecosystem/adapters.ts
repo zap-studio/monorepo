@@ -8,74 +8,79 @@ import { FixedDelay } from "../../src/fixed-delay.js";
 import type { BenchmarkTask } from "./fixtures.js";
 import { maxAttempts } from "./fixtures.js";
 
-const noSleep = async (): Promise<void> => {};
+const noSleep = async (): Promise<void> => {
+  await Promise.resolve();
+};
 
-export async function runZapFixed(task: BenchmarkTask): Promise<void> {
-  const policy = new FixedDelay({ maxAttempts, delayMs: 0 });
-  await policy.run(async () => task(), { sleep: noSleep });
-}
+export const runZapFixed = async (task: BenchmarkTask): Promise<void> => {
+  const policy = new FixedDelay({ delayMs: 0, maxAttempts });
+  await policy.run(async () => await task(), { sleep: noSleep });
+};
 
-export async function runZapExponential(task: BenchmarkTask): Promise<void> {
+export const runZapExponential = async (task: BenchmarkTask): Promise<void> => {
   const policy = new ExponentialBackoff({
-    maxAttempts,
     baseDelayMs: 0,
+    maxAttempts,
     maxDelayMs: 0,
   });
-  await policy.run(async () => task(), { sleep: noSleep });
-}
+  await policy.run(async () => await task(), { sleep: noSleep });
+};
 
-export async function runPRetry(task: BenchmarkTask): Promise<void> {
-  await pRetry(async () => task(), {
-    retries: maxAttempts - 1,
+export const runPRetry = async (task: BenchmarkTask): Promise<void> => {
+  await pRetry(async () => await task(), {
     factor: 1,
-    minTimeout: 0,
     maxTimeout: 0,
+    minTimeout: 0,
     randomize: false,
+    retries: maxAttempts - 1,
   });
-}
+};
 
-export async function runZapFixedWithSignal(
+export const runZapFixedWithSignal = async (
   task: BenchmarkTask,
-  signal: AbortSignal,
-): Promise<void> {
-  const policy = new FixedDelay({ maxAttempts, delayMs: 0 });
-  await policy.run(async () => task(), { sleep: noSleep, signal });
-}
+  signal: AbortSignal
+): Promise<void> => {
+  const policy = new FixedDelay({ delayMs: 0, maxAttempts });
+  await policy.run(async () => await task(), { signal, sleep: noSleep });
+};
 
-export async function runZapExponentialWithSignal(
+export const runZapExponentialWithSignal = async (
   task: BenchmarkTask,
-  signal: AbortSignal,
-): Promise<void> {
+  signal: AbortSignal
+): Promise<void> => {
   const policy = new ExponentialBackoff({
-    maxAttempts,
     baseDelayMs: 0,
+    maxAttempts,
     maxDelayMs: 0,
   });
-  await policy.run(async () => task(), { sleep: noSleep, signal });
-}
+  await policy.run(async () => await task(), { signal, sleep: noSleep });
+};
 
-export async function runPRetryWithSignal(task: BenchmarkTask, signal: AbortSignal): Promise<void> {
-  await pRetry(async () => task(), {
-    retries: maxAttempts - 1,
+export const runPRetryWithSignal = async (
+  task: BenchmarkTask,
+  signal: AbortSignal
+): Promise<void> => {
+  await pRetry(async () => await task(), {
     factor: 1,
-    minTimeout: 0,
     maxTimeout: 0,
+    minTimeout: 0,
     randomize: false,
+    retries: maxAttempts - 1,
     signal,
   });
-}
+};
 
-export async function runAsyncRetry(task: BenchmarkTask): Promise<void> {
-  await asyncRetry(async () => task(), {
-    retries: maxAttempts - 1,
+export const runAsyncRetry = async (task: BenchmarkTask): Promise<void> => {
+  await asyncRetry(async () => await task(), {
     factor: 1,
-    minTimeout: 0,
     maxTimeout: 0,
+    minTimeout: 0,
     randomize: false,
+    retries: maxAttempts - 1,
   });
-}
+};
 
-export async function runPromiseRetry(task: BenchmarkTask): Promise<void> {
+export const runPromiseRetry = async (task: BenchmarkTask): Promise<void> => {
   await promiseRetry(
     async (retry) => {
       try {
@@ -87,57 +92,69 @@ export async function runPromiseRetry(task: BenchmarkTask): Promise<void> {
       throw new Error("unreachable");
     },
     {
-      retries: maxAttempts - 1,
       factor: 1,
-      minTimeout: 0,
       maxTimeout: 0,
+      minTimeout: 0,
       randomize: false,
-    },
+      retries: maxAttempts - 1,
+    }
   );
-}
+};
 
-export async function runExponentialBackoff(task: BenchmarkTask): Promise<void> {
-  await backOff(async () => task(), {
+export const runExponentialBackoff = async (
+  task: BenchmarkTask
+): Promise<void> => {
+  await backOff(async () => await task(), {
+    jitter: "none",
+    maxDelay: 0,
     numOfAttempts: maxAttempts,
+    retry: () => true,
     startingDelay: 0,
     timeMultiple: 1,
-    maxDelay: 0,
-    jitter: "none",
-    retry: async () => true,
   });
-}
+};
 
-export async function runZapFixedRealWorld(task: BenchmarkTask): Promise<void> {
-  const policy = new FixedDelay({ maxAttempts, delayMs: 0 });
-  await policy.run(async () => task());
-}
+export const runZapFixedRealWorld = async (
+  task: BenchmarkTask
+): Promise<void> => {
+  const policy = new FixedDelay({ delayMs: 0, maxAttempts });
+  await policy.run(async () => await task());
+};
 
-export async function runZapExponentialRealWorld(task: BenchmarkTask): Promise<void> {
+export const runZapExponentialRealWorld = async (
+  task: BenchmarkTask
+): Promise<void> => {
   const policy = new ExponentialBackoff({
-    maxAttempts,
     baseDelayMs: 0,
+    maxAttempts,
     maxDelayMs: 0,
   });
-  await policy.run(async () => task());
-}
+  await policy.run(async () => await task());
+};
 
-export async function runPRetryRealWorld(task: BenchmarkTask): Promise<void> {
-  await pRetry(async () => task(), {
-    retries: maxAttempts - 1,
-    minTimeout: 0,
+export const runPRetryRealWorld = async (
+  task: BenchmarkTask
+): Promise<void> => {
+  await pRetry(async () => await task(), {
     maxTimeout: 0,
-  });
-}
-
-export async function runAsyncRetryRealWorld(task: BenchmarkTask): Promise<void> {
-  await asyncRetry(async () => task(), {
-    retries: maxAttempts - 1,
     minTimeout: 0,
-    maxTimeout: 0,
+    retries: maxAttempts - 1,
   });
-}
+};
 
-export async function runPromiseRetryRealWorld(task: BenchmarkTask): Promise<void> {
+export const runAsyncRetryRealWorld = async (
+  task: BenchmarkTask
+): Promise<void> => {
+  await asyncRetry(async () => await task(), {
+    maxTimeout: 0,
+    minTimeout: 0,
+    retries: maxAttempts - 1,
+  });
+};
+
+export const runPromiseRetryRealWorld = async (
+  task: BenchmarkTask
+): Promise<void> => {
   await promiseRetry(
     async (retry) => {
       try {
@@ -149,17 +166,19 @@ export async function runPromiseRetryRealWorld(task: BenchmarkTask): Promise<voi
       throw new Error("unreachable");
     },
     {
-      retries: maxAttempts - 1,
-      minTimeout: 0,
       maxTimeout: 0,
-    },
+      minTimeout: 0,
+      retries: maxAttempts - 1,
+    }
   );
-}
+};
 
-export async function runExponentialBackoffRealWorld(task: BenchmarkTask): Promise<void> {
-  await backOff(async () => task(), {
+export const runExponentialBackoffRealWorld = async (
+  task: BenchmarkTask
+): Promise<void> => {
+  await backOff(async () => await task(), {
+    maxDelay: 0,
     numOfAttempts: maxAttempts,
     startingDelay: 0,
-    maxDelay: 0,
   });
-}
+};

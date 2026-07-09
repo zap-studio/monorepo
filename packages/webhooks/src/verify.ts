@@ -17,6 +17,15 @@ const HMAC_HASH = {
 
 type HmacAlgorithm = keyof typeof HMAC_HASH;
 
+const toHex = (bytes: Uint8Array): string =>
+  Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+
+const normalizeSignature = (signature: string): string =>
+  signature
+    .replace(/^[a-z0-9-]+=/iu, "")
+    .trim()
+    .toLowerCase();
+
 /**
  * Creates a webhook verifier that validates an HMAC signature from a request header.
  *
@@ -49,7 +58,7 @@ type HmacAlgorithm = keyof typeof HMAC_HASH;
  * @throws {VerificationError}
  * Thrown when verifier setup fails or request verification does not pass.
  */
-export function createHmacVerifier({
+export const createHmacVerifier = ({
   headerName,
   secret,
   algo = "sha256",
@@ -57,11 +66,14 @@ export function createHmacVerifier({
   headerName: string;
   secret: string;
   algo?: HmacAlgorithm;
-}): VerifyFn {
-  const subtle = globalThis.crypto?.subtle;
-  if (!subtle) {
-    throw new VerificationError("Web Crypto API is unavailable in this runtime");
+}): VerifyFn => {
+  if (globalThis.crypto?.subtle === undefined) {
+    throw new VerificationError(
+      "Web Crypto API is unavailable in this runtime"
+    );
   }
+
+  const { subtle } = globalThis.crypto;
 
   const hash = HMAC_HASH[algo];
   if (!hash) {
@@ -71,34 +83,29 @@ export function createHmacVerifier({
   const keyPromise = subtle.importKey(
     "raw",
     new TextEncoder().encode(secret),
-    { name: "HMAC", hash },
+    { hash, name: "HMAC" },
     false,
-    ["sign"],
+    ["sign"]
   );
 
   return async (req) => {
     const actual = req.headers.get(headerName);
-    if (!actual) {
+    if (actual === null || actual.length === 0) {
       throw new VerificationError(`Missing signature header: ${headerName}`);
     }
 
     const key = await keyPromise;
-    const signature = await subtle.sign("HMAC", key, req.rawBody as BufferSource);
+    const signature = await subtle.sign(
+      "HMAC",
+      key,
+      new Uint8Array(req.rawBody)
+    );
     const expected = toHex(new Uint8Array(signature));
 
     if (!constantTimeEquals(expected, normalizeSignature(actual))) {
-      throw new VerificationError(`Invalid signature for header: ${headerName}`);
+      throw new VerificationError(
+        `Invalid signature for header: ${headerName}`
+      );
     }
   };
-}
-
-function toHex(bytes: Uint8Array): string {
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
-function normalizeSignature(signature: string): string {
-  return signature
-    .replace(/^[a-z0-9-]+=/i, "")
-    .trim()
-    .toLowerCase();
-}
+};

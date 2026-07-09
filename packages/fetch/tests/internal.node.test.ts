@@ -13,21 +13,21 @@ const DEFAULTS: FetchDefaults = {
 
 const passSchema = {
   "~standard": {
-    version: 1,
-    vendor: "test",
     validate: (input: unknown) => ({ value: input }),
+    vendor: "test",
+    version: 1,
   },
 } satisfies StandardSchemaV1;
 
 const failSchema = {
   "~standard": {
-    version: 1,
-    vendor: "test",
     validate: () => ({ issues: [{ message: "Invalid value" }] }),
+    vendor: "test",
+    version: 1,
   },
 } satisfies StandardSchemaV1;
 
-describe("fetchInternal", () => {
+describe(fetchInternal, () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
@@ -43,7 +43,9 @@ describe("fetchInternal", () => {
     const response = new Response(JSON.stringify({ ok: true }));
     fetchMock.mockResolvedValue(response);
 
-    await expect(fetchInternal("users", undefined, undefined, DEFAULTS)).resolves.toBe(response);
+    await expect(
+      fetchInternal("users", undefined, undefined, DEFAULTS)
+    ).resolves.toBe(response);
     expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", {});
   });
 
@@ -54,9 +56,9 @@ describe("fetchInternal", () => {
     });
     fetchMock.mockResolvedValue(response);
 
-    await expect(fetchInternal("users", undefined, undefined, DEFAULTS)).rejects.toThrow(
-      FetchError,
-    );
+    await expect(
+      fetchInternal("users", undefined, undefined, DEFAULTS)
+    ).rejects.toThrow(FetchError);
   });
 
   it("can return non-ok responses when fetch errors are disabled", async () => {
@@ -67,14 +69,16 @@ describe("fetchInternal", () => {
     fetchMock.mockResolvedValue(response);
 
     await expect(
-      fetchInternal("users", undefined, { throwOnFetchError: false }, DEFAULTS),
+      fetchInternal("users", undefined, { throwOnFetchError: false }, DEFAULTS)
     ).resolves.toBe(response);
   });
 
   it("validates JSON responses when a schema is provided", async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ id: 1 })));
 
-    await expect(fetchInternal("users/1", passSchema, undefined, DEFAULTS)).resolves.toEqual({
+    await expect(
+      fetchInternal("users/1", passSchema, undefined, DEFAULTS)
+    ).resolves.toStrictEqual({
       id: 1,
     });
   });
@@ -83,8 +87,13 @@ describe("fetchInternal", () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ id: "bad" })));
 
     await expect(
-      fetchInternal("users/1", failSchema, { throwOnValidationError: false }, DEFAULTS),
-    ).resolves.toEqual({ issues: [{ message: "Invalid value" }] });
+      fetchInternal(
+        "users/1",
+        failSchema,
+        { throwOnValidationError: false },
+        DEFAULTS
+      )
+    ).resolves.toStrictEqual({ issues: [{ message: "Invalid value" }] });
   });
 
   it("uses default validation error behavior when options do not override it", async () => {
@@ -94,8 +103,8 @@ describe("fetchInternal", () => {
       fetchInternal("users/1", failSchema, undefined, {
         ...DEFAULTS,
         throwOnValidationError: false,
-      }),
-    ).resolves.toEqual({ issues: [{ message: "Invalid value" }] });
+      })
+    ).resolves.toStrictEqual({ issues: [{ message: "Invalid value" }] });
   });
 
   it("merges default and request headers", async () => {
@@ -105,7 +114,7 @@ describe("fetchInternal", () => {
       "users",
       undefined,
       { headers: { B: "2" } },
-      { ...DEFAULTS, headers: { A: "1" } },
+      { ...DEFAULTS, headers: { A: "1" } }
     );
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
     const headers = new Headers(init.headers);
@@ -118,11 +127,13 @@ describe("fetchInternal", () => {
     const json = { name: "Zap" };
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
 
-    await fetchInternal("users", undefined, { method: "POST", json }, DEFAULTS);
+    await fetchInternal("users", undefined, { json, method: "POST" }, DEFAULTS);
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
 
     expect(init.body).toBe(JSON.stringify(json));
-    expect(new Headers(init.headers).get("Content-Type")).toBe("application/json");
+    expect(new Headers(init.headers).get("Content-Type")).toBe(
+      "application/json"
+    );
   });
 
   it("does not override an explicit JSON content type", async () => {
@@ -136,11 +147,13 @@ describe("fetchInternal", () => {
         json: { name: "Zap" },
         method: "POST",
       },
-      DEFAULTS,
+      DEFAULTS
     );
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
 
-    expect(new Headers(init.headers).get("Content-Type")).toBe("application/vnd.api+json");
+    expect(new Headers(init.headers).get("Content-Type")).toBe(
+      "application/vnd.api+json"
+    );
   });
 
   it("adds JSON content type when default headers exist without one", async () => {
@@ -150,7 +163,7 @@ describe("fetchInternal", () => {
       "users",
       undefined,
       { json: { name: "Zap" }, method: "POST" },
-      { ...DEFAULTS, headers: { Authorization: "Bearer token" } },
+      { ...DEFAULTS, headers: { Authorization: "Bearer token" } }
     );
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
     const headers = new Headers(init.headers);
@@ -163,7 +176,12 @@ describe("fetchInternal", () => {
     const body = new FormData();
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
 
-    await fetchInternal("upload", undefined, { body, method: "POST" }, DEFAULTS);
+    await fetchInternal(
+      "upload",
+      undefined,
+      { body, method: "POST" },
+      DEFAULTS
+    );
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
 
     expect(init.body).toBe(body);
@@ -177,7 +195,9 @@ describe("fetchInternal", () => {
       method: "POST",
     };
 
-    await expect(fetchInternal("users", undefined, options, DEFAULTS)).rejects.toThrow(TypeError);
+    await expect(
+      fetchInternal("users", undefined, options, DEFAULTS)
+    ).rejects.toThrow(TypeError);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 

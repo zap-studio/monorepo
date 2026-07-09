@@ -8,48 +8,80 @@ const encoder = new TextEncoder();
 
 type HmacAlgorithm = "sha1" | "sha256" | "sha384" | "sha512";
 
-describe("createHmacVerifier", () => {
+const normalizeHashName = (algo: HmacAlgorithm): string => {
+  switch (algo) {
+    case "sha1": {
+      return "SHA-1";
+    }
+    case "sha256": {
+      return "SHA-256";
+    }
+    case "sha384": {
+      return "SHA-384";
+    }
+    case "sha512": {
+      return "SHA-512";
+    }
+    default: {
+      return algo;
+    }
+  }
+};
+
+const toHex = (bytes: Uint8Array): string =>
+  Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+
+const captureThrownError = async <T>(
+  run: () => T | Promise<T>
+): Promise<unknown> => {
+  try {
+    await run();
+    expect.fail("Expected function to throw");
+  } catch (error) {
+    return error;
+  }
+  return undefined;
+};
+
+describe(createHmacVerifier, () => {
   const createMockRequest = (
     body: string | Uint8Array,
     signature?: string,
-    headerName = "x-hub-signature-256",
+    headerName = "x-hub-signature-256"
   ): NormalizedRequest => ({
+    headers: new Headers(
+      signature === undefined ? {} : { [headerName]: signature }
+    ),
     method: "POST",
     path: "/webhook",
-    headers: new Headers(signature ? { [headerName]: signature } : {}),
     rawBody: typeof body === "string" ? encoder.encode(body) : body,
   });
 
   const generateValidSignature = async (
     body: string | Uint8Array,
     secret: string,
-    algo: HmacAlgorithm = "sha256",
+    algo: HmacAlgorithm = "sha256"
   ): Promise<string> => {
     const key = await crypto.subtle.importKey(
       "raw",
       encoder.encode(secret),
-      { name: "HMAC", hash: normalizeHashName(algo) },
+      { hash: normalizeHashName(algo), name: "HMAC" },
       false,
-      ["sign"],
+      ["sign"]
     );
 
     const data = typeof body === "string" ? encoder.encode(body) : body;
-    const signature = await crypto.subtle.sign("HMAC", key, data as BufferSource);
+    const signature = await crypto.subtle.sign(
+      "HMAC",
+      key,
+      data as BufferSource
+    );
 
     return toHex(new Uint8Array(signature));
   };
 
-  const captureThrownError = async <T>(run: () => T | Promise<T>): Promise<unknown> => {
-    try {
-      await run();
-      expect.fail("Expected function to throw");
-    } catch (error) {
-      return error;
-    }
-  };
-
   it("verifies a valid signature", async () => {
-    const body = JSON.stringify({ event: "test", data: "value" });
+    const body = JSON.stringify({ data: "value", event: "test" });
     const secret = "my-secret";
     const signature = await generateValidSignature(body, secret);
     const verify = createHmacVerifier({
@@ -57,7 +89,9 @@ describe("createHmacVerifier", () => {
       secret,
     });
 
-    await expect(verify(createMockRequest(body, signature))).resolves.toBeUndefined();
+    await expect(
+      verify(createMockRequest(body, signature))
+    ).resolves.toBeUndefined();
   });
 
   it("fails when the signature header is missing", async () => {
@@ -66,12 +100,14 @@ describe("createHmacVerifier", () => {
       secret: "my-secret",
     });
 
-    const error = await captureThrownError(() => verify(createMockRequest("body")));
+    const error = await captureThrownError(() =>
+      verify(createMockRequest("body"))
+    );
 
     expect(error).toBeInstanceOf(VerificationError);
     expect(error).toMatchObject({
-      name: "VerificationError",
       message: "Missing signature header: X-Hub-Signature-256",
+      name: "VerificationError",
     });
   });
 
@@ -81,12 +117,14 @@ describe("createHmacVerifier", () => {
       secret: "my-secret",
     });
 
-    const error = await captureThrownError(() => verify(createMockRequest("body", "invalid")));
+    const error = await captureThrownError(() =>
+      verify(createMockRequest("body", "invalid"))
+    );
 
     expect(error).toBeInstanceOf(VerificationError);
     expect(error).toMatchObject({
-      name: "VerificationError",
       message: "Invalid signature for header: X-Hub-Signature-256",
+      name: "VerificationError",
     });
   });
 
@@ -99,7 +137,9 @@ describe("createHmacVerifier", () => {
       secret,
     });
 
-    await expect(verify(createMockRequest(body, `sha256=${signature}`))).resolves.toBeUndefined();
+    await expect(
+      verify(createMockRequest(body, `sha256=${signature}`))
+    ).resolves.toBeUndefined();
   });
 
   it("matches header names case-insensitively through Headers", async () => {
@@ -112,7 +152,7 @@ describe("createHmacVerifier", () => {
     });
 
     await expect(
-      verify(createMockRequest(body, signature, "x-hub-signature-256")),
+      verify(createMockRequest(body, signature, "x-hub-signature-256"))
     ).resolves.toBeUndefined();
   });
 
@@ -121,29 +161,29 @@ describe("createHmacVerifier", () => {
     const secret = "my-secret";
     const signature = await generateValidSignature(body, secret, "sha512");
     const verify = createHmacVerifier({
+      algo: "sha512",
       headerName: "X-Hub-Signature-512",
       secret,
-      algo: "sha512",
     });
 
     await expect(
-      verify(createMockRequest(body, signature, "x-hub-signature-512")),
+      verify(createMockRequest(body, signature, "x-hub-signature-512"))
     ).resolves.toBeUndefined();
   });
 
   it("rejects unsupported algorithms", async () => {
     const error = await captureThrownError(() =>
       createHmacVerifier({
+        algo: "md5" as HmacAlgorithm,
         headerName: "X-Hub-Signature-256",
         secret: "my-secret",
-        algo: "md5" as HmacAlgorithm,
-      }),
+      })
     );
 
     expect(error).toBeInstanceOf(VerificationError);
     expect(error).toMatchObject({
-      name: "VerificationError",
       message: "Unsupported HMAC algorithm: md5",
+      name: "VerificationError",
     });
   });
 
@@ -157,15 +197,17 @@ describe("createHmacVerifier", () => {
       secret,
     });
 
-    await expect(verify(createMockRequest(body, signature))).resolves.toBeUndefined();
+    await expect(
+      verify(createMockRequest(body, signature))
+    ).resolves.toBeUndefined();
     const error = await captureThrownError(() =>
-      verify(createMockRequest(modifiedBody, signature)),
+      verify(createMockRequest(modifiedBody, signature))
     );
 
     expect(error).toBeInstanceOf(VerificationError);
     expect(error).toMatchObject({
-      name: "VerificationError",
       message: "Invalid signature for header: X-Hub-Signature-256",
+      name: "VerificationError",
     });
   });
 
@@ -178,11 +220,16 @@ describe("createHmacVerifier", () => {
       secret,
     });
 
-    await expect(verify(createMockRequest(body, signature))).resolves.toBeUndefined();
+    await expect(
+      verify(createMockRequest(body, signature))
+    ).resolves.toBeUndefined();
   });
 
   it("throws when Web Crypto is unavailable", async () => {
-    const originalDescriptor = Object.getOwnPropertyDescriptor(globalThis, "crypto");
+    const originalDescriptor = Object.getOwnPropertyDescriptor(
+      globalThis,
+      "crypto"
+    );
 
     Object.defineProperty(globalThis, "crypto", {
       configurable: true,
@@ -195,7 +242,7 @@ describe("createHmacVerifier", () => {
         createHmacVerifier({
           headerName: "X-Hub-Signature-256",
           secret: "my-secret",
-        }),
+        })
       );
     } finally {
       if (originalDescriptor) {
@@ -205,25 +252,8 @@ describe("createHmacVerifier", () => {
 
     expect(error).toBeInstanceOf(VerificationError);
     expect(error).toMatchObject({
-      name: "VerificationError",
       message: "Web Crypto API is unavailable in this runtime",
+      name: "VerificationError",
     });
   });
 });
-
-function normalizeHashName(algo: HmacAlgorithm): string {
-  switch (algo) {
-    case "sha1":
-      return "SHA-1";
-    case "sha256":
-      return "SHA-256";
-    case "sha384":
-      return "SHA-384";
-    case "sha512":
-      return "SHA-512";
-  }
-}
-
-function toHex(bytes: Uint8Array): string {
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
-}

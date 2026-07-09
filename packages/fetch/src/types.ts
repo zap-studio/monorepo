@@ -26,7 +26,7 @@ type JsonBodyInit = Omit<RequestInit, "body"> & {
   body?: never;
 };
 
-type CustomRequestInit = {
+interface CustomRequestInit {
   /**
    * Per-request query/search params
    * @default undefined
@@ -42,7 +42,7 @@ type CustomRequestInit = {
    * @default true
    */
   throwOnValidationError?: boolean;
-};
+}
 
 /**
  * Extended RequestInit type to include custom fetch options
@@ -54,7 +54,8 @@ type CustomRequestInit = {
  *   throwOnFetchError: true,
  * };
  */
-export type ExtendedRequestInit = (RequestBodyInit | JsonBodyInit) & CustomRequestInit;
+export type ExtendedRequestInit = (RequestBodyInit | JsonBodyInit) &
+  CustomRequestInit;
 
 /**
  * Internal defaults used by fetchInternal
@@ -111,12 +112,12 @@ export interface $Fetch {
    * @throws {DOMException} When native `fetch` or `response.json()` rejects an aborted
    *   request/body read as an `AbortError` DOMException.
    * @throws {SyntaxError} When `response.json()` cannot parse the response body.
-   * @throws Any error thrown or rejected by the provided Standard Schema validator.
+   * @throws {unknown} Any error thrown or rejected by the provided Standard Schema validator.
    */
   <TSchema extends StandardSchemaV1>(
     input: FetchInput,
     schema: TSchema,
-    options: ExtendedRequestInit & { throwOnValidationError: false },
+    options: ExtendedRequestInit & { throwOnValidationError: false }
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   /**
@@ -133,14 +134,14 @@ export interface $Fetch {
    * @throws {DOMException} When native `fetch` or `response.json()` rejects an aborted
    *   request/body read as an `AbortError` DOMException.
    * @throws {SyntaxError} When `response.json()` cannot parse the response body.
-   * @throws Any error thrown or rejected by the provided Standard Schema validator.
+   * @throws {unknown} Any error thrown or rejected by the provided Standard Schema validator.
    */
   <TSchema extends StandardSchemaV1>(
     input: FetchInput,
     schema: TSchema,
     options?: ExtendedRequestInit & {
       throwOnValidationError?: true;
-    },
+    }
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   /**

@@ -3,8 +3,7 @@ title: RetryError
 description: Terminal error classes thrown for retry exhaustion and cancellation.
 ---
 
-`RetryError` represents exhausted retry attempts with structured context.
-`AbortError` represents cancellation through `AbortSignal`.
+`RetryError` represents exhausted retry attempts with structured context. `AbortError` represents cancellation through `AbortSignal`.
 
 ## Import
 
@@ -72,7 +71,7 @@ const result = await policy.run(
   async () => {
     return await doWork();
   },
-  { throwOnExhausted: false },
+  { throwOnExhausted: false }
 );
 
 if (!result.ok) {

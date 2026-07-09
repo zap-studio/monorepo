@@ -2,6 +2,10 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/packages/validation")({
   beforeLoad: () => {
-    throw redirect({ to: "/docs/$", params: { _splat: "packages/validation" } });
+    // oxlint-disable-next-line typescript/only-throw-error -- TanStack Router uses thrown redirects for control flow.
+    throw redirect({
+      params: { _splat: "packages/validation" },
+      to: "/docs/$",
+    });
   },
 });

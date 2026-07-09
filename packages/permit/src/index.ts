@@ -38,13 +38,14 @@ import type {
  * });
  * ```
  */
-export function allow<
-  TContext extends Context,
-  TAction extends string = string,
-  TResource = unknown,
->(): PolicyFn<TContext, TAction, TResource> {
-  return () => "allow";
-}
+export const allow =
+  <
+    TContext extends Context,
+    TAction extends string = string,
+    TResource = unknown,
+  >(): PolicyFn<TContext, TAction, TResource> =>
+  () =>
+    "allow";
 
 /**
  * Returns a policy function that always denies the action.
@@ -62,13 +63,14 @@ export function allow<
  * });
  * ```
  */
-export function deny<
-  TContext extends Context,
-  TAction extends string = string,
-  TResource = unknown,
->(): PolicyFn<TContext, TAction, TResource> {
-  return () => "deny";
-}
+export const deny =
+  <
+    TContext extends Context,
+    TAction extends string = string,
+    TResource = unknown,
+  >(): PolicyFn<TContext, TAction, TResource> =>
+  () =>
+    "deny";
 
 /**
  * Returns a policy function that allows or denies based on a condition.
@@ -86,13 +88,16 @@ export function deny<
  * });
  * ```
  */
-export function when<
-  TContext extends Context,
-  TAction extends string = string,
-  TResource = unknown,
->(condition: ConditionFn<TContext, TAction, TResource>): PolicyFn<TContext, TAction, TResource> {
-  return (context, action, resource) => (condition(context, action, resource) ? "allow" : "deny");
-}
+export const when =
+  <
+    TContext extends Context,
+    TAction extends string = string,
+    TResource = unknown,
+  >(
+    condition: ConditionFn<TContext, TAction, TResource>
+  ): PolicyFn<TContext, TAction, TResource> =>
+  (context, action, resource) =>
+    condition(context, action, resource) ? "allow" : "deny";
 
 /**
  * Returns a condition function that returns `true` if all conditions are met.
@@ -111,12 +116,16 @@ export function when<
  * }
  * ```
  */
-export function and<TContext extends Context, TAction extends string = string, TResource = unknown>(
-  ...conditions: ConditionFn<TContext, TAction, TResource>[]
-): ConditionFn<TContext, TAction, TResource> {
-  return (context, action, resource) =>
+export const and =
+  <
+    TContext extends Context,
+    TAction extends string = string,
+    TResource = unknown,
+  >(
+    ...conditions: ConditionFn<TContext, TAction, TResource>[]
+  ): ConditionFn<TContext, TAction, TResource> =>
+  (context, action, resource) =>
     conditions.every((condition) => condition(context, action, resource));
-}
 
 /**
  * Returns a condition function that returns `true` if any condition is met.
@@ -135,12 +144,16 @@ export function and<TContext extends Context, TAction extends string = string, T
  * }
  * ```
  */
-export function or<TContext extends Context, TAction extends string = string, TResource = unknown>(
-  ...conditions: ConditionFn<TContext, TAction, TResource>[]
-): ConditionFn<TContext, TAction, TResource> {
-  return (context, action, resource) =>
+export const or =
+  <
+    TContext extends Context,
+    TAction extends string = string,
+    TResource = unknown,
+  >(
+    ...conditions: ConditionFn<TContext, TAction, TResource>[]
+  ): ConditionFn<TContext, TAction, TResource> =>
+  (context, action, resource) =>
     conditions.some((condition) => condition(context, action, resource));
-}
 
 /**
  * Returns a condition function that negates another condition.
@@ -156,11 +169,16 @@ export function or<TContext extends Context, TAction extends string = string, TR
  * }
  * ```
  */
-export function not<TContext extends Context, TAction extends string = string, TResource = unknown>(
-  condition: ConditionFn<TContext, TAction, TResource>,
-): ConditionFn<TContext, TAction, TResource> {
-  return (context, action, resource) => !condition(context, action, resource);
-}
+export const not =
+  <
+    TContext extends Context,
+    TAction extends string = string,
+    TResource = unknown,
+  >(
+    condition: ConditionFn<TContext, TAction, TResource>
+  ): ConditionFn<TContext, TAction, TResource> =>
+  (context, action, resource) =>
+    !condition(context, action, resource);
 
 /**
  * Returns a condition function that checks if a context property equals a value.
@@ -174,12 +192,13 @@ export function not<TContext extends Context, TAction extends string = string, T
  * }
  * ```
  */
-export function has<TContext extends Context, K extends keyof TContext>(
-  key: K,
-  value: TContext[K],
-): ConditionFn<TContext> {
-  return (context) => context[key] === value;
-}
+export const has =
+  <TContext extends Context, K extends keyof TContext>(
+    key: K,
+    value: TContext[K]
+  ): ConditionFn<TContext> =>
+  (context) =>
+    context[key] === value;
 
 /**
  * Collects all roles including inherited ones from a role hierarchy.
@@ -198,22 +217,50 @@ export function has<TContext extends Context, K extends keyof TContext>(
  * // Returns: Set { "admin", "user", "guest" }
  * ```
  */
-export function collectInheritedRoles<TRole extends Role = Role>(
+export const collectInheritedRoles = <TRole extends Role = Role>(
   roles: TRole[],
-  hierarchy: RoleHierarchy<TRole>,
-): Set<TRole> {
+  hierarchy: RoleHierarchy<TRole>
+): Set<TRole> => {
   const inherited = new Set<TRole>();
 
-  function add(role: TRole) {
-    if (!inherited.has(role)) {
-      inherited.add(role);
-      const parents = hierarchy[role] ?? [];
-      parents.forEach(add); // recursively add parent roles
+  const add = (role: TRole): void => {
+    if (inherited.has(role)) {
+      return;
     }
-  }
 
-  roles.forEach(add);
+    inherited.add(role);
+    const parents = hierarchy[role] ?? [];
+    for (const parent of parents) {
+      add(parent);
+    }
+  };
+
+  for (const role of roles) {
+    add(role);
+  }
   return inherited;
+};
+
+/**
+ * Call signatures for {@link hasRole}, preserving the with/without hierarchy overloads.
+ */
+interface HasRoleFn {
+  <
+    TContext extends { role: Role | Role[] },
+    TAction extends string = string,
+    TResource = unknown,
+  >(
+    role: Role
+  ): ConditionFn<TContext, TAction, TResource>;
+  <
+    TContext extends { role: TRole | TRole[] },
+    TAction extends string = string,
+    TResource = unknown,
+    TRole extends Role = Role,
+  >(
+    role: TRole,
+    hierarchy: RoleHierarchy<TRole>
+  ): ConditionFn<TContext, TAction, TResource>;
 }
 
 /**
@@ -243,35 +290,52 @@ export function collectInheritedRoles<TRole extends Role = Role>(
  * }
  * ```
  */
-export function hasRole<
-  TContext extends { role: Role | Role[] },
-  TAction extends string = string,
-  TResource = unknown,
->(role: Role): ConditionFn<TContext, TAction, TResource>;
+export const hasRole: HasRoleFn =
+  (
+    role: Role,
+    hierarchy?: RoleHierarchy
+  ): ConditionFn<{ role: Role | Role[] }> =>
+  (context) => {
+    const userRoles = Array.isArray(context.role)
+      ? context.role
+      : [context.role];
 
-export function hasRole<
-  TContext extends { role: TRole | TRole[] },
-  TAction extends string = string,
-  TResource = unknown,
-  TRole extends Role = Role,
->(role: TRole, hierarchy: RoleHierarchy<TRole>): ConditionFn<TContext, TAction, TResource>;
-
-export function hasRole<
-  TContext extends { role: Role | Role[] },
-  TAction extends string = string,
-  TResource = unknown,
->(role: Role, hierarchy?: RoleHierarchy<Role>): ConditionFn<TContext, TAction, TResource> {
-  return (context) => {
-    const userRoles = Array.isArray(context.role) ? context.role : [context.role];
-
-    if (!hierarchy) {
+    if (hierarchy === undefined) {
       return userRoles.includes(role);
     }
 
     const inherited = collectInheritedRoles(userRoles, hierarchy);
     return inherited.has(role);
   };
-}
+
+/**
+ * Splits a typed `resource:action` permission string into its parts.
+ * Returns `null` when the string is malformed (missing/empty part or extra segments).
+ */
+const parsePermission = <
+  TResources extends Resources,
+  TActions extends Actions<TResources>,
+  K extends keyof TResources & keyof TActions,
+>(
+  permission: `${K & string}:${InferAction<TActions, K> & string}`
+): { action: InferAction<TActions, K>; resourceType: K } | null => {
+  const [resourceTypeValue, actionValue, ...rest] = permission.split(":");
+  if (
+    resourceTypeValue === undefined ||
+    resourceTypeValue.length === 0 ||
+    actionValue === undefined ||
+    actionValue.length === 0 ||
+    rest.length > 0
+  ) {
+    return null;
+  }
+
+  return {
+    action: actionValue,
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Parsed permission strings are constrained by the typed permission template.
+    resourceType: resourceTypeValue as K,
+  };
+};
 
 /**
  * Creates a type-safe policy from resource schemas, actions, and rules.
@@ -328,11 +392,13 @@ export function hasRole<
  * await policy.can(ctx, "post:write", post); // depends on ctx.user.id
  * ```
  */
-export function createPolicy<
+export const createPolicy = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
->(config: PermitConfig<TContext, TResources, TActions>): Policy<TContext, TResources, TActions> {
+>(
+  config: PermitConfig<TContext, TResources, TActions>
+): Policy<TContext, TResources, TActions> => {
   const { rules, resources, actions } = config;
   const validators = new Map<
     keyof TResources,
@@ -341,10 +407,10 @@ export function createPolicy<
 
   const getValidatedResource = async <K extends keyof TResources>(
     resourceType: K,
-    resource: InferResource<TResources, K>,
+    resource: InferResource<TResources, K>
   ): Promise<InferResource<TResources, K> | null> => {
     const validator = validators.get(resourceType);
-    if (!validator) {
+    if (validator === undefined) {
       return null;
     }
     try {
@@ -352,40 +418,28 @@ export function createPolicy<
       if (result.issues) {
         return null;
       }
-      return result.value as InferResource<TResources, K>;
+      return result.value;
     } catch (error) {
-      console.warn(`Resource validation failed for ${String(resourceType)}: ${String(error)}`);
+      console.warn(
+        `Resource validation failed for ${String(resourceType)}: ${String(error)}`
+      );
       return null;
     }
-  };
-
-  const parsePermission = <K extends keyof TResources & keyof TActions>(
-    permission: `${K & string}:${InferAction<TActions, K> & string}`,
-  ): { action: InferAction<TActions, K>; resourceType: K } | null => {
-    const [resourceTypeValue, actionValue, ...rest] = permission.split(":");
-    if (!resourceTypeValue || !actionValue || rest.length > 0) {
-      return null;
-    }
-
-    return {
-      action: actionValue as InferAction<TActions, K>,
-      resourceType: resourceTypeValue as K,
-    };
   };
 
   const hasAllowedAction = <K extends keyof TResources & keyof TActions>(
     resourceType: K,
-    action: InferAction<TActions, K>,
+    action: InferAction<TActions, K>
   ): boolean => actions[resourceType]?.includes(action) ?? false;
 
   const evaluatePolicy = <K extends keyof TResources & keyof TActions>(
     context: TContext,
     resourceType: K,
     action: InferAction<TActions, K>,
-    resource: InferResource<TResources, K>,
+    resource: InferResource<TResources, K>
   ): boolean => {
     const policyFn = rules[resourceType]?.[action];
-    if (!policyFn) {
+    if (policyFn === undefined) {
       return false;
     }
 
@@ -393,29 +447,31 @@ export function createPolicy<
       return policyFn(context, action, resource) === "allow";
     } catch (error) {
       console.warn(
-        `Policy evaluation error for ${String(resourceType)}.${String(action)}: ${String(error)}`,
+        `Policy evaluation error for ${String(resourceType)}.${action}: ${String(error)}`
       );
       return false;
     }
   };
 
-  for (const key of Object.keys(resources) as Array<keyof TResources>) {
+  for (const key of Object.keys(resources) as (keyof TResources)[]) {
     const schema = resources[key];
-    if (!schema) {
+    if (schema === undefined) {
       throw new PolicyError(`Missing schema for resource: ${String(key)}`);
     }
     const validator = createStandardValidator(schema);
-    validators.set(key, async (input: unknown) => validator(input));
+    validators.set(key, async (input: unknown) => await validator(input));
   }
 
   return {
     async can<K extends keyof TResources & keyof TActions>(
       context: TContext,
       permission: `${K & string}:${InferAction<TActions, K> & string}`,
-      resource: InferResource<TResources, K>,
+      resource: InferResource<TResources, K>
     ): Promise<boolean> {
-      const parsedPermission = parsePermission(permission);
-      if (!parsedPermission) {
+      const parsedPermission = parsePermission<TResources, TActions, K>(
+        permission
+      );
+      if (parsedPermission === null) {
         return false;
       }
 
@@ -424,15 +480,49 @@ export function createPolicy<
         return false;
       }
 
-      const validatedResource = await getValidatedResource(resourceType, resource);
-      if (!validatedResource) {
+      const validatedResource = await getValidatedResource(
+        resourceType,
+        resource
+      );
+      if (validatedResource === null) {
         return false;
       }
 
       return evaluatePolicy(context, resourceType, action, validatedResource);
     },
   };
-}
+};
+
+const mergePoliciesWithStrategy = <
+  TContext extends Context,
+  TResources extends Resources = Resources,
+  TActions extends Actions<TResources> = Actions<TResources>,
+>(
+  policies: Policy<TContext, TResources, TActions>[],
+  strategy: "allow-overrides" | "deny-overrides"
+): Policy<TContext, TResources, TActions> => ({
+  async can<K extends keyof TResources & keyof TActions>(
+    context: TContext,
+    permission: `${K & string}:${InferAction<TActions, K> & string}`,
+    resource: InferResource<TResources, K>
+  ): Promise<boolean> {
+    if (policies.length === 0) {
+      return false;
+    }
+    for (const policy of policies) {
+      // oxlint-disable-next-line no-await-in-loop -- Policies must evaluate sequentially to preserve short-circuit semantics.
+      const allowed = await policy.can(context, permission, resource);
+
+      if (strategy === "allow-overrides" && allowed) {
+        return true;
+      }
+      if (strategy === "deny-overrides" && !allowed) {
+        return false;
+      }
+    }
+    return strategy === "deny-overrides";
+  },
+});
 
 /**
  * Merges multiple policies into one using "deny-overrides" strategy.
@@ -447,13 +537,14 @@ export function createPolicy<
  * // Both policies must allow for the action to be permitted
  * ```
  */
-export function mergePolicies<
+export const mergePolicies = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
->(...policies: Policy<TContext, TResources, TActions>[]): Policy<TContext, TResources, TActions> {
-  return mergePoliciesWithStrategy(policies, "deny-overrides");
-}
+>(
+  ...policies: Policy<TContext, TResources, TActions>[]
+): Policy<TContext, TResources, TActions> =>
+  mergePoliciesWithStrategy(policies, "deny-overrides");
 
 /**
  * Merges multiple policies into one using "allow-overrides" strategy.
@@ -468,42 +559,11 @@ export function mergePolicies<
  * // If either policy allows, the action is permitted
  * ```
  */
-export function mergePoliciesAny<
-  TContext extends Context,
-  TResources extends Resources = Resources,
-  TActions extends Actions<TResources> = Actions<TResources>,
->(...policies: Policy<TContext, TResources, TActions>[]): Policy<TContext, TResources, TActions> {
-  return mergePoliciesWithStrategy(policies, "allow-overrides");
-}
-
-function mergePoliciesWithStrategy<
+export const mergePoliciesAny = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
-  policies: Policy<TContext, TResources, TActions>[],
-  strategy: "allow-overrides" | "deny-overrides",
-): Policy<TContext, TResources, TActions> {
-  return {
-    async can<K extends keyof TResources & keyof TActions>(
-      context: TContext,
-      permission: `${K & string}:${InferAction<TActions, K> & string}`,
-      resource: InferResource<TResources, K>,
-    ): Promise<boolean> {
-      if (!policies.length) {
-        return false;
-      }
-      for (const policy of policies) {
-        const allowed = await policy.can(context, permission, resource);
-
-        if (strategy === "allow-overrides" && allowed) {
-          return true;
-        }
-        if (strategy === "deny-overrides" && !allowed) {
-          return false;
-        }
-      }
-      return strategy === "deny-overrides";
-    },
-  };
-}
+  ...policies: Policy<TContext, TResources, TActions>[]
+): Policy<TContext, TResources, TActions> =>
+  mergePoliciesWithStrategy(policies, "allow-overrides");

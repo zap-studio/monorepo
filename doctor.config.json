@@ -1,0 +1,15 @@
+{
+  "$schema": "https://react.doctor/schema/config.json",
+  "ignore": {
+    "overrides": [
+      {
+        "files": ["src/lib/layout/layout.shared.tsx"],
+        "rules": ["react-doctor/only-export-components"]
+      },
+      {
+        "files": ["src/components/mdx.tsx"],
+        "rules": ["deslop/unused-export"]
+      }
+    ]
+  }
+}

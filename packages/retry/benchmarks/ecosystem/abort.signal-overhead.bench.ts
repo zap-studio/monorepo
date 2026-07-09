@@ -26,7 +26,10 @@ describe("@zap-studio/retry | ecosystem | abort | signal-overhead", () => {
 
   bench("zap | exponential-backoff | with-signal", async () => {
     const controller = new AbortController();
-    await runZapExponentialWithSignal(createSuccessFirstTask(), controller.signal);
+    await runZapExponentialWithSignal(
+      createSuccessFirstTask(),
+      controller.signal
+    );
   });
 
   bench("ecosystem | p-retry | no-signal", async () => {

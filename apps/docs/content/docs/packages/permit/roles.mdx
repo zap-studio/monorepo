@@ -69,9 +69,13 @@ const policy = createPolicy<AppContext>({
   rules: {
     post: {
       // Guests can read published posts
-      read: when((ctx, _, post) => post.status === "published" || ctx.role === "user"),
+      read: when(
+        (ctx, _, post) => post.status === "published" || ctx.role === "user"
+      ),
       // Users can write their own posts
-      write: when((ctx, _, post) => ctx.role === "user" && ctx.user?.id === post.authorId),
+      write: when(
+        (ctx, _, post) => ctx.role === "user" && ctx.user?.id === post.authorId
+      ),
       // Moderators and admins can delete any post
       delete: when(or(hasRole("moderator"), hasRole("admin"))),
       // Only admins can publish
@@ -79,7 +83,9 @@ const policy = createPolicy<AppContext>({
     },
     user: {
       // Users can read their own profile, admins can read any
-      read: when(or((ctx, _, user) => ctx.user?.id === user.id, hasRole("admin"))),
+      read: when(
+        or((ctx, _, user) => ctx.user?.id === user.id, hasRole("admin"))
+      ),
       // Users can update their own profile
       update: when((ctx, _, user) => ctx.user?.id === user.id),
       // Only admins can delete users
@@ -92,8 +98,9 @@ const policy = createPolicy<AppContext>({
 ```
 
 <Callout type="warn">
-  For now, `hasRole()` returns a `ConditionFn`, which can be used in `when()` conditions. Thus, it
-  doesn't return a boolean value directly. Prefer using `role` directly in conditions.
+  For now, `hasRole()` returns a `ConditionFn`, which can be used in `when()`
+  conditions. Thus, it doesn't return a boolean value directly. Prefer using
+  `role` directly in conditions.
 </Callout>
 
 ## Role Hierarchies
@@ -157,7 +164,11 @@ const context: AppContext = {
 ```typescript
 import { z } from "zod";
 import { createPolicy, when, hasRole, or } from "@zap-studio/permit";
-import type { Resources, Actions, RoleHierarchy } from "@zap-studio/permit/types";
+import type {
+  Resources,
+  Actions,
+  RoleHierarchy,
+} from "@zap-studio/permit/types";
 
 const resources = {
   betaFeature: z.object({
@@ -205,7 +216,10 @@ const multiRolePolicy = createPolicy<MultiRoleContext>({
 
       // Only premium users or support agents can escalate
       escalate: when(
-        or(hasRole("premium", roleHierarchy), hasRole("support-agent", roleHierarchy)),
+        or(
+          hasRole("premium", roleHierarchy),
+          hasRole("support-agent", roleHierarchy)
+        )
       ),
     },
   },
@@ -220,8 +234,12 @@ const betaPremiumUser: MultiRoleContext = {
 const ticket = { id: "t1", userId: "u1", priority: "normal" as const };
 const feature = { id: "f1", name: "New Dashboard" };
 
-console.log(await multiRolePolicy.can(betaPremiumUser, "betaFeature:access", feature)); // true (has beta-tester)
-console.log(await multiRolePolicy.can(betaPremiumUser, "supportTicket:escalate", ticket)); // true (has premium)
+console.log(
+  await multiRolePolicy.can(betaPremiumUser, "betaFeature:access", feature)
+); // true (has beta-tester)
+console.log(
+  await multiRolePolicy.can(betaPremiumUser, "supportTicket:escalate", ticket)
+); // true (has premium)
 ```
 
 ## Collecting Inherited Roles

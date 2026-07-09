@@ -14,36 +14,48 @@ describe("@zap-studio/retry | ecosystem | exhausted-after-max-attempts", () => {
   bench("zap | fixed-delay", async () => {
     try {
       await runZapFixed(createAlwaysFailTask());
-    } catch {}
+    } catch {
+      // Expected exhausted benchmark failure.
+    }
   });
 
   bench("zap | exponential-backoff", async () => {
     try {
       await runZapExponential(createAlwaysFailTask());
-    } catch {}
+    } catch {
+      // Expected exhausted benchmark failure.
+    }
   });
 
   bench("ecosystem | p-retry", async () => {
     try {
       await runPRetry(createAlwaysFailTask());
-    } catch {}
+    } catch {
+      // Expected exhausted benchmark failure.
+    }
   });
 
   bench("ecosystem | async-retry", async () => {
     try {
       await runAsyncRetry(createAlwaysFailTask());
-    } catch {}
+    } catch {
+      // Expected exhausted benchmark failure.
+    }
   });
 
   bench("ecosystem | promise-retry", async () => {
     try {
       await runPromiseRetry(createAlwaysFailTask());
-    } catch {}
+    } catch {
+      // Expected exhausted benchmark failure.
+    }
   });
 
   bench("ecosystem | exponential-backoff", async () => {
     try {
       await runExponentialBackoff(createAlwaysFailTask());
-    } catch {}
+    } catch {
+      // Expected exhausted benchmark failure.
+    }
   });
 });

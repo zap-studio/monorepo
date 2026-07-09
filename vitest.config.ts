@@ -4,13 +4,20 @@ import { configDefaults, defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
+      exclude: [
+        ...configDefaults.exclude,
+        "**/dist/**",
+        "**/sequence-policy.ts",
+      ],
       provider: "v8",
       reporter: ["html", "json", "lcov", "text"],
-      exclude: [...configDefaults.exclude, "**/dist/**", "**/sequence-policy.ts"],
     },
     exclude: [...configDefaults.exclude, "**/dist/**", "**/node_modules/**"],
     globals: true,
-    outputFile: process.env.CI ? { junit: "./coverage/junit.xml" } : undefined,
+    outputFile:
+      process.env.CI === undefined
+        ? undefined
+        : { junit: "./coverage/junit.xml" },
     projects: [
       {
         extends: true,
@@ -40,7 +47,7 @@ export default defineConfig({
         },
       },
     ],
-    reporters: process.env.CI ? ["dot", "junit"] : ["default"],
+    reporters: process.env.CI === undefined ? ["default"] : ["dot", "junit"],
     restoreMocks: true,
   },
 });

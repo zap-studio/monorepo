@@ -104,8 +104,12 @@ export type InferAction<
  * // "post:read" | "post:write" | "comment:read"
  * ```
  */
-export type InferPermission<TResources extends Resources, TActions extends Actions<TResources>> = {
-  [K in keyof TResources & keyof TActions]: `${K & string}:${InferAction<TActions, K> & string}`;
+export type InferPermission<
+  TResources extends Resources,
+  TActions extends Actions<TResources>,
+> = {
+  [K in keyof TResources &
+    keyof TActions]: `${K & string}:${InferAction<TActions, K> & string}`;
 }[keyof TResources & keyof TActions];
 
 /**
@@ -200,9 +204,9 @@ export interface Policy<
   /**
    * Determines if the specified action is permitted on the resource in the given context.
    */
-  can<K extends keyof TResources & keyof TActions>(
+  can: <K extends keyof TResources & keyof TActions>(
     context: TContext,
     permission: `${K & string}:${InferAction<TActions, K> & string}`,
-    resource: InferResource<TResources, K>,
-  ): Promise<boolean>;
+    resource: InferResource<TResources, K>
+  ) => Promise<boolean>;
 }

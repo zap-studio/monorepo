@@ -13,15 +13,22 @@ describe("@zap-studio/retry | ecosystem | abort | immediate", () => {
     controller.abort(new Error("bench-abort"));
     try {
       await runZapFixedWithSignal(createAlwaysFailTask(), controller.signal);
-    } catch {}
+    } catch {
+      // Expected abort benchmark failure.
+    }
   });
 
   bench("zap | exponential-backoff | already-aborted", async () => {
     const controller = new AbortController();
     controller.abort(new Error("bench-abort"));
     try {
-      await runZapExponentialWithSignal(createAlwaysFailTask(), controller.signal);
-    } catch {}
+      await runZapExponentialWithSignal(
+        createAlwaysFailTask(),
+        controller.signal
+      );
+    } catch {
+      // Expected abort benchmark failure.
+    }
   });
 
   bench("ecosystem | p-retry | already-aborted", async () => {
@@ -29,6 +36,8 @@ describe("@zap-studio/retry | ecosystem | abort | immediate", () => {
     controller.abort(new Error("bench-abort"));
     try {
       await runPRetryWithSignal(createAlwaysFailTask(), controller.signal);
-    } catch {}
+    } catch {
+      // Expected abort benchmark failure.
+    }
   });
 });

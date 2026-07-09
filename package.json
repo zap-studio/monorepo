@@ -2,17 +2,15 @@
   "name": "@zap-studio/monorepo",
   "private": true,
   "author": "Alexandre Trotel",
+  "type": "module",
   "scripts": {
     "dev": "pnpm --filter docs run dev",
     "bench": "vitest bench --run",
     "bench:watch": "vitest bench --watch",
     "build": "pnpm --filter './packages/*' run build",
-    "publish:check": "pnpm run format:check && pnpm run lint && pnpm run test && pnpm --filter './packages/*' run prepublishOnly",
-    "react-doctor": "pnpm --filter docs run react-doctor",
-    "format": "oxfmt .",
-    "format:check": "oxfmt --check .",
-    "lint": "oxlint --type-aware --type-check .",
-    "lint:fix": "oxlint --type-aware --type-check --fix .",
+    "publish:check": "pnpm run check && pnpm run test && pnpm --filter './packages/*' run prepublishOnly",
+    "fix": "pnpm exec ultracite fix --type-aware --type-check",
+    "check": "pnpm exec ultracite check --type-aware --type-check",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "prepare": "lefthook install"
@@ -28,11 +26,12 @@
     "playwright": "catalog:",
     "publint": "catalog:",
     "tsdown": "catalog:",
+    "ultracite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=10.32.1"
   },
-  "packageManager": "pnpm@11.4.0+sha512.f0febc7e37552ab485494a914241b338e0b3580b93d54ce31f00933015880863129038a1b4ae4e414a0ee63ac35bf21197e990172c4a68256450b5636310968f"
+  "packageManager": "pnpm@11.10.0+sha512.0b7f8b98060031904c017e3a41eb187a16d40eeb829b95c4f8cb03681761fc4ab53dd219115b9b447f4dce1a05a214764461e7d3703392a9f32f9511ce8c86c8"
 }

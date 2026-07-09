@@ -22,9 +22,9 @@ import type { Actions, Resources, RoleHierarchy } from "../src/types.js";
 function createSchema<T>(): StandardSchemaV1<T, T> {
   return {
     "~standard": {
-      version: 1,
-      vendor: "test",
       validate: (value: unknown) => ({ value: value as T }),
+      vendor: "test",
+      version: 1,
     },
   };
 }
@@ -45,14 +45,14 @@ interface Comment {
 
 // Test resources using mock Standard Schema
 const resources = {
-  post: createSchema<Post>(),
   comment: createSchema<Comment>(),
+  post: createSchema<Post>(),
 } satisfies Resources;
 
 // Test actions
 const actions = {
-  post: ["read", "write", "delete", "publish"],
   comment: ["read", "write", "delete"],
+  post: ["read", "write", "delete", "publish"],
 } as const satisfies Actions<typeof resources>;
 
 // Test context type
@@ -63,7 +63,7 @@ interface TestContext {
   };
 }
 
-describe("allow", () => {
+describe(allow, () => {
   it("should return a function that always returns 'allow'", async () => {
     await Promise.resolve();
     const policyFn = allow();
@@ -73,10 +73,14 @@ describe("allow", () => {
 
   it("should ignore context, action, and resource", async () => {
     await Promise.resolve();
-    const policyFn = allow<TestContext, string, unknown>();
+    const policyFn = allow<TestContext>();
 
-    expect(policyFn({ user: { id: "1", role: "guest" } }, "write", { id: "1" })).toBe("allow");
-    expect(policyFn({ user: { id: "2", role: "admin" } }, "delete", { id: "2" })).toBe("allow");
+    expect(
+      policyFn({ user: { id: "1", role: "guest" } }, "write", { id: "1" })
+    ).toBe("allow");
+    expect(
+      policyFn({ user: { id: "2", role: "admin" } }, "delete", { id: "2" })
+    ).toBe("allow");
   });
 
   it("should work with any context type", async () => {
@@ -87,7 +91,7 @@ describe("allow", () => {
   });
 });
 
-describe("deny", () => {
+describe(deny, () => {
   it("should return a function that always returns 'deny'", async () => {
     await Promise.resolve();
     const policyFn = deny();
@@ -97,10 +101,14 @@ describe("deny", () => {
 
   it("should ignore context, action, and resource", async () => {
     await Promise.resolve();
-    const policyFn = deny<TestContext, string, unknown>();
+    const policyFn = deny<TestContext>();
 
-    expect(policyFn({ user: { id: "1", role: "admin" } }, "read", { id: "1" })).toBe("deny");
-    expect(policyFn({ user: { id: "2", role: "guest" } }, "write", { id: "2" })).toBe("deny");
+    expect(
+      policyFn({ user: { id: "1", role: "admin" } }, "read", { id: "1" })
+    ).toBe("deny");
+    expect(
+      policyFn({ user: { id: "2", role: "guest" } }, "write", { id: "2" })
+    ).toBe("deny");
   });
 
   it("should work with any context type", async () => {
@@ -111,7 +119,7 @@ describe("deny", () => {
   });
 });
 
-describe("when", () => {
+describe(when, () => {
   it("should return 'allow' when condition returns true", async () => {
     await Promise.resolve();
     const policyFn = when(() => true);
@@ -130,16 +138,26 @@ describe("when", () => {
     await Promise.resolve();
     const policyFn = when<TestContext>((ctx) => ctx.user.role === "admin");
 
-    expect(policyFn({ user: { id: "1", role: "admin" } }, "read", {})).toBe("allow");
-    expect(policyFn({ user: { id: "1", role: "guest" } }, "read", {})).toBe("deny");
+    expect(policyFn({ user: { id: "1", role: "admin" } }, "read", {})).toBe(
+      "allow"
+    );
+    expect(policyFn({ user: { id: "1", role: "guest" } }, "read", {})).toBe(
+      "deny"
+    );
   });
 
   it("should pass action to the condition", async () => {
     await Promise.resolve();
-    const policyFn = when<TestContext, "read" | "write">((_ctx, action) => action === "read");
+    const policyFn = when<TestContext, "read" | "write">(
+      (_ctx, action) => action === "read"
+    );
 
-    expect(policyFn({ user: { id: "1", role: "user" } }, "read", {})).toBe("allow");
-    expect(policyFn({ user: { id: "1", role: "user" } }, "write", {})).toBe("deny");
+    expect(policyFn({ user: { id: "1", role: "user" } }, "read", {})).toBe(
+      "allow"
+    );
+    expect(policyFn({ user: { id: "1", role: "user" } }, "write", {})).toBe(
+      "deny"
+    );
   });
 
   it("should pass resource to the condition", async () => {
@@ -148,32 +166,32 @@ describe("when", () => {
       authorId: string;
     }
     const policyFn = when<TestContext, string, AuthoredPost>(
-      (ctx, _action, resource) => ctx.user.id === resource.authorId,
+      (ctx, _action, resource) => ctx.user.id === resource.authorId
     );
 
     expect(
       policyFn({ user: { id: "user-1", role: "user" } }, "write", {
         authorId: "user-1",
-      }),
+      })
     ).toBe("allow");
     expect(
       policyFn({ user: { id: "user-1", role: "user" } }, "write", {
         authorId: "user-2",
-      }),
+      })
     ).toBe("deny");
   });
 });
 
-describe("and", () => {
+describe(and, () => {
   it("should return true when all conditions are true", async () => {
     await Promise.resolve();
     const condition = and(
       () => true,
       () => true,
-      () => true,
+      () => true
     );
 
-    expect(condition({}, "read", {})).toBe(true);
+    expect(condition({}, "read", {})).toBeTruthy();
   });
 
   it("should return false when any condition is false", async () => {
@@ -181,27 +199,27 @@ describe("and", () => {
     const condition = and(
       () => true,
       () => false,
-      () => true,
+      () => true
     );
 
-    expect(condition({}, "read", {})).toBe(false);
+    expect(condition({}, "read", {})).toBeFalsy();
   });
 
   it("should return false when all conditions are false", async () => {
     await Promise.resolve();
     const condition = and(
       () => false,
-      () => false,
+      () => false
     );
 
-    expect(condition({}, "read", {})).toBe(false);
+    expect(condition({}, "read", {})).toBeFalsy();
   });
 
   it("should return true with empty conditions", async () => {
     await Promise.resolve();
     const condition = and();
 
-    expect(condition({}, "read", {})).toBe(true);
+    expect(condition({}, "read", {})).toBeTruthy();
   });
 
   it("should short-circuit on first false", async () => {
@@ -212,11 +230,11 @@ describe("and", () => {
       () => {
         secondCalled = true;
         return true;
-      },
+      }
     );
 
     condition({}, "read", {});
-    expect(secondCalled).toBe(false);
+    expect(secondCalled).toBeFalsy();
   });
 
   it("should pass context, action, and resource to all conditions", async () => {
@@ -227,32 +245,32 @@ describe("and", () => {
     const condition = and<TestContext, string, AuthoredPost>(
       (ctx) => ctx.user.role === "admin",
       (_ctx, action) => action === "delete",
-      (_ctx, _action, resource) => resource.authorId === "user-1",
+      (_ctx, _action, resource) => resource.authorId === "user-1"
     );
 
     expect(
       condition({ user: { id: "1", role: "admin" } }, "delete", {
         authorId: "user-1",
-      }),
-    ).toBe(true);
+      })
+    ).toBeTruthy();
     expect(
       condition({ user: { id: "1", role: "admin" } }, "delete", {
         authorId: "user-2",
-      }),
-    ).toBe(false);
+      })
+    ).toBeFalsy();
   });
 });
 
-describe("or", () => {
+describe(or, () => {
   it("should return true when any condition is true", async () => {
     await Promise.resolve();
     const condition = or(
       () => false,
       () => true,
-      () => false,
+      () => false
     );
 
-    expect(condition({}, "read", {})).toBe(true);
+    expect(condition({}, "read", {})).toBeTruthy();
   });
 
   it("should return false when all conditions are false", async () => {
@@ -260,27 +278,27 @@ describe("or", () => {
     const condition = or(
       () => false,
       () => false,
-      () => false,
+      () => false
     );
 
-    expect(condition({}, "read", {})).toBe(false);
+    expect(condition({}, "read", {})).toBeFalsy();
   });
 
   it("should return true when all conditions are true", async () => {
     await Promise.resolve();
     const condition = or(
       () => true,
-      () => true,
+      () => true
     );
 
-    expect(condition({}, "read", {})).toBe(true);
+    expect(condition({}, "read", {})).toBeTruthy();
   });
 
   it("should return false with empty conditions", async () => {
     await Promise.resolve();
     const condition = or();
 
-    expect(condition({}, "read", {})).toBe(false);
+    expect(condition({}, "read", {})).toBeFalsy();
   });
 
   it("should short-circuit on first true", async () => {
@@ -291,11 +309,11 @@ describe("or", () => {
       () => {
         secondCalled = true;
         return false;
-      },
+      }
     );
 
     condition({}, "read", {});
-    expect(secondCalled).toBe(false);
+    expect(secondCalled).toBeFalsy();
   });
 
   it("should pass context, action, and resource to conditions", async () => {
@@ -305,76 +323,84 @@ describe("or", () => {
     }
     const condition = or<TestContext, string, VisiblePost>(
       (ctx) => ctx.user.role === "admin",
-      (_ctx, _action, resource) => resource.visibility === "public",
+      (_ctx, _action, resource) => resource.visibility === "public"
     );
 
     expect(
       condition({ user: { id: "1", role: "guest" } }, "read", {
         visibility: "public",
-      }),
-    ).toBe(true);
+      })
+    ).toBeTruthy();
     expect(
       condition({ user: { id: "1", role: "admin" } }, "read", {
         visibility: "private",
-      }),
-    ).toBe(true);
+      })
+    ).toBeTruthy();
     expect(
       condition({ user: { id: "1", role: "guest" } }, "read", {
         visibility: "private",
-      }),
-    ).toBe(false);
+      })
+    ).toBeFalsy();
   });
 });
 
-describe("mergePolicies", () => {
+describe(mergePolicies, () => {
   it("should deny when called with no policies", async () => {
     await Promise.resolve();
-    const policy = mergePolicies<TestContext, typeof resources, typeof actions>();
+    const policy = mergePolicies<
+      TestContext,
+      typeof resources,
+      typeof actions
+    >();
     const ctx: TestContext = {
       user: { id: "1", role: "user" },
     };
     const post: Post = {
-      id: "1",
       authorId: "1",
-      visibility: "public",
+      id: "1",
       status: "published",
+      visibility: "public",
     };
 
-    await expect(policy.can(ctx, "post:read", post)).resolves.toBe(false);
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
   });
 });
 
-describe("mergePoliciesAny", () => {
+describe(mergePoliciesAny, () => {
   it("should deny when called with no policies", async () => {
     await Promise.resolve();
-    const policy = mergePoliciesAny<TestContext, typeof resources, typeof actions>();
+    const policy = mergePoliciesAny<
+      TestContext,
+      typeof resources,
+      typeof actions
+    >();
     const ctx: TestContext = {
       user: { id: "1", role: "user" },
     };
     const post: Post = {
-      id: "1",
       authorId: "1",
-      visibility: "public",
+      id: "1",
       status: "published",
+      visibility: "public",
     };
 
-    await expect(policy.can(ctx, "post:read", post)).resolves.toBe(false);
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
   });
 });
 
-describe("not", () => {
+describe(not, () => {
   it("should negate a true condition", async () => {
     await Promise.resolve();
     const condition = not(() => true);
 
-    expect(condition({}, "read", {})).toBe(false);
+    expect(condition({}, "read", {})).toBeFalsy();
   });
 
   it("should negate a false condition", async () => {
     await Promise.resolve();
     const condition = not(() => false);
 
-    expect(condition({}, "read", {})).toBe(true);
+    expect(condition({}, "read", {})).toBeTruthy();
   });
 
   it("should pass context, action, and resource to the condition", async () => {
@@ -382,20 +408,23 @@ describe("not", () => {
     interface AuthoredPost {
       authorId: string;
     }
-    const isOwner = (ctx: TestContext, _action: string, resource: AuthoredPost) =>
-      ctx.user.id === resource.authorId;
+    const isOwner = (
+      ctx: TestContext,
+      _action: string,
+      resource: AuthoredPost
+    ) => ctx.user.id === resource.authorId;
     const isNotOwner = not(isOwner);
 
     expect(
       isNotOwner({ user: { id: "user-1", role: "user" } }, "like", {
         authorId: "user-1",
-      }),
-    ).toBe(false);
+      })
+    ).toBeFalsy();
     expect(
       isNotOwner({ user: { id: "user-1", role: "user" } }, "like", {
         authorId: "user-2",
-      }),
-    ).toBe(true);
+      })
+    ).toBeTruthy();
   });
 
   it("should work with complex conditions", async () => {
@@ -403,77 +432,77 @@ describe("not", () => {
     const condition = not(
       and(
         () => true,
-        () => true,
-      ),
+        () => true
+      )
     );
 
-    expect(condition({}, "read", {})).toBe(false);
+    expect(condition({}, "read", {})).toBeFalsy();
   });
 });
 
-describe("has", () => {
+describe(has, () => {
   it("should return true when context property equals value", async () => {
     await Promise.resolve();
     const condition = has<TestContext["user"], "role">("role", "admin");
 
-    expect(condition({ id: "1", role: "admin" }, "read", {})).toBe(true);
+    expect(condition({ id: "1", role: "admin" }, "read", {})).toBeTruthy();
   });
 
   it("should return false when context property does not equal value", async () => {
     await Promise.resolve();
     const condition = has<TestContext["user"], "role">("role", "admin");
 
-    expect(condition({ id: "1", role: "guest" }, "read", {})).toBe(false);
+    expect(condition({ id: "1", role: "guest" }, "read", {})).toBeFalsy();
   });
 
   it("should work with string properties", async () => {
     await Promise.resolve();
     const condition = has<{ name: string }, "name">("name", "John");
 
-    expect(condition({ name: "John" }, "read", {})).toBe(true);
-    expect(condition({ name: "Jane" }, "read", {})).toBe(false);
+    expect(condition({ name: "John" }, "read", {})).toBeTruthy();
+    expect(condition({ name: "Jane" }, "read", {})).toBeFalsy();
   });
 
   it("should work with number properties", async () => {
     await Promise.resolve();
     const condition = has<{ level: number }, "level">("level", 5);
 
-    expect(condition({ level: 5 }, "read", {})).toBe(true);
-    expect(condition({ level: 3 }, "read", {})).toBe(false);
+    expect(condition({ level: 5 }, "read", {})).toBeTruthy();
+    expect(condition({ level: 3 }, "read", {})).toBeFalsy();
   });
 
   it("should work with boolean properties", async () => {
     await Promise.resolve();
     const condition = has<{ active: boolean }, "active">("active", true);
 
-    expect(condition({ active: true }, "read", {})).toBe(true);
-    expect(condition({ active: false }, "read", {})).toBe(false);
+    expect(condition({ active: true }, "read", {})).toBeTruthy();
+    expect(condition({ active: false }, "read", {})).toBeFalsy();
   });
 
   it("should use strict equality", async () => {
     await Promise.resolve();
     const condition = has<{ value: number | string }, "value">("value", "5");
 
-    expect(condition({ value: "5" }, "read", {})).toBe(true);
-    expect(condition({ value: 5 }, "read", {})).toBe(false);
+    expect(condition({ value: "5" }, "read", {})).toBeTruthy();
+    expect(condition({ value: 5 }, "read", {})).toBeFalsy();
   });
 });
 
-describe("collectInheritedRoles", () => {
+describe(collectInheritedRoles, () => {
   type Role = "guest" | "user" | "moderator" | "admin";
 
   const hierarchy: RoleHierarchy<Role> = {
-    guest: [],
-    user: ["guest"],
-    moderator: ["user"],
     admin: ["moderator"],
+    guest: [],
+    moderator: ["user"],
+    user: ["guest"],
   };
 
   it("should return the role itself", async () => {
     await Promise.resolve();
     const roles = collectInheritedRoles(["guest"], hierarchy);
 
-    expect(roles.has("guest")).toBe(true);
+    expect(roles.has("guest")).toBeTruthy();
     expect(roles.size).toBe(1);
   });
 
@@ -481,8 +510,8 @@ describe("collectInheritedRoles", () => {
     await Promise.resolve();
     const roles = collectInheritedRoles(["user"], hierarchy);
 
-    expect(roles.has("user")).toBe(true);
-    expect(roles.has("guest")).toBe(true);
+    expect(roles.has("user")).toBeTruthy();
+    expect(roles.has("guest")).toBeTruthy();
     expect(roles.size).toBe(2);
   });
 
@@ -490,10 +519,10 @@ describe("collectInheritedRoles", () => {
     await Promise.resolve();
     const roles = collectInheritedRoles(["admin"], hierarchy);
 
-    expect(roles.has("admin")).toBe(true);
-    expect(roles.has("moderator")).toBe(true);
-    expect(roles.has("user")).toBe(true);
-    expect(roles.has("guest")).toBe(true);
+    expect(roles.has("admin")).toBeTruthy();
+    expect(roles.has("moderator")).toBeTruthy();
+    expect(roles.has("user")).toBeTruthy();
+    expect(roles.has("guest")).toBeTruthy();
     expect(roles.size).toBe(4);
   });
 
@@ -501,9 +530,9 @@ describe("collectInheritedRoles", () => {
     await Promise.resolve();
     const roles = collectInheritedRoles(["user", "moderator"], hierarchy);
 
-    expect(roles.has("user")).toBe(true);
-    expect(roles.has("moderator")).toBe(true);
-    expect(roles.has("guest")).toBe(true);
+    expect(roles.has("user")).toBeTruthy();
+    expect(roles.has("moderator")).toBeTruthy();
+    expect(roles.has("guest")).toBeTruthy();
     expect(roles.size).toBe(3);
   });
 
@@ -519,10 +548,10 @@ describe("collectInheritedRoles", () => {
 
     const roles = collectInheritedRoles(["d"], diamondHierarchy);
 
-    expect(roles.has("a")).toBe(true);
-    expect(roles.has("b")).toBe(true);
-    expect(roles.has("c")).toBe(true);
-    expect(roles.has("d")).toBe(true);
+    expect(roles.has("a")).toBeTruthy();
+    expect(roles.has("b")).toBeTruthy();
+    expect(roles.has("c")).toBeTruthy();
+    expect(roles.has("d")).toBeTruthy();
     expect(roles.size).toBe(4);
   });
 
@@ -537,18 +566,18 @@ describe("collectInheritedRoles", () => {
     await Promise.resolve();
     const roles = collectInheritedRoles(["unknown" as Role], hierarchy);
 
-    expect(roles.has("unknown" as Role)).toBe(true);
+    expect(roles.has("unknown" as Role)).toBeTruthy();
     expect(roles.size).toBe(1);
   });
 });
 
-describe("hasRole", () => {
+describe(hasRole, () => {
   type Role = "guest" | "user" | "admin";
 
   const hierarchy: RoleHierarchy<Role> = {
+    admin: ["user"],
     guest: [],
     user: ["guest"],
-    admin: ["user"],
   };
 
   describe("without hierarchy", () => {
@@ -559,7 +588,7 @@ describe("hasRole", () => {
       }
       const condition = hasRole<Ctx>("admin");
 
-      expect(condition({ role: "admin" }, "read", {})).toBe(true);
+      expect(condition({ role: "admin" }, "read", {})).toBeTruthy();
     });
 
     it("should return false when user does not have the role (single role)", async () => {
@@ -569,7 +598,7 @@ describe("hasRole", () => {
       }
       const condition = hasRole<Ctx>("admin");
 
-      expect(condition({ role: "user" }, "read", {})).toBe(false);
+      expect(condition({ role: "user" }, "read", {})).toBeFalsy();
     });
 
     it("should return true when user has the role in array", async () => {
@@ -579,7 +608,7 @@ describe("hasRole", () => {
       }
       const condition = hasRole<Ctx>("admin");
 
-      expect(condition({ role: ["user", "admin"] }, "read", {})).toBe(true);
+      expect(condition({ role: ["user", "admin"] }, "read", {})).toBeTruthy();
     });
 
     it("should return false when user does not have the role in array", async () => {
@@ -589,7 +618,7 @@ describe("hasRole", () => {
       }
       const condition = hasRole<Ctx>("admin");
 
-      expect(condition({ role: ["guest", "user"] }, "read", {})).toBe(false);
+      expect(condition({ role: ["guest", "user"] }, "read", {})).toBeFalsy();
     });
 
     it("should handle empty role array", async () => {
@@ -599,7 +628,7 @@ describe("hasRole", () => {
       }
       const condition = hasRole<Ctx>("admin");
 
-      expect(condition({ role: [] }, "read", {})).toBe(false);
+      expect(condition({ role: [] }, "read", {})).toBeFalsy();
     });
   });
 
@@ -611,7 +640,7 @@ describe("hasRole", () => {
       }
       const condition = hasRole<Ctx, string, unknown, Role>("user", hierarchy);
 
-      expect(condition({ role: "user" }, "read", {})).toBe(true);
+      expect(condition({ role: "user" }, "read", {})).toBeTruthy();
     });
 
     it("should return true when user inherits the role", async () => {
@@ -621,8 +650,8 @@ describe("hasRole", () => {
       }
       const condition = hasRole<Ctx, string, unknown, Role>("guest", hierarchy);
 
-      expect(condition({ role: "admin" }, "read", {})).toBe(true);
-      expect(condition({ role: "user" }, "read", {})).toBe(true);
+      expect(condition({ role: "admin" }, "read", {})).toBeTruthy();
+      expect(condition({ role: "user" }, "read", {})).toBeTruthy();
     });
 
     it("should return false when user does not have or inherit the role", async () => {
@@ -632,8 +661,8 @@ describe("hasRole", () => {
       }
       const condition = hasRole<Ctx, string, unknown, Role>("admin", hierarchy);
 
-      expect(condition({ role: "user" }, "read", {})).toBe(false);
-      expect(condition({ role: "guest" }, "read", {})).toBe(false);
+      expect(condition({ role: "user" }, "read", {})).toBeFalsy();
+      expect(condition({ role: "guest" }, "read", {})).toBeFalsy();
     });
 
     it("should work with role arrays and hierarchy", async () => {
@@ -643,8 +672,8 @@ describe("hasRole", () => {
       }
       const condition = hasRole<Ctx, string, unknown, Role>("guest", hierarchy);
 
-      expect(condition({ role: ["user"] }, "read", {})).toBe(true);
-      expect(condition({ role: ["admin"] }, "read", {})).toBe(true);
+      expect(condition({ role: ["user"] }, "read", {})).toBeTruthy();
+      expect(condition({ role: ["admin"] }, "read", {})).toBeTruthy();
     });
 
     it("should handle diamond inheritance in hasRole", async () => {
@@ -655,119 +684,122 @@ describe("hasRole", () => {
       }
 
       const diamondHierarchy: RoleHierarchy<DiamondRole> = {
-        viewer: [],
-        editor: ["viewer"],
         commenter: ["viewer"],
+        editor: ["viewer"],
         owner: ["editor", "commenter"],
+        viewer: [],
       };
 
-      const condition = hasRole<Ctx, string, unknown, DiamondRole>("viewer", diamondHierarchy);
+      const condition = hasRole<Ctx, string, unknown, DiamondRole>(
+        "viewer",
+        diamondHierarchy
+      );
 
-      expect(condition({ role: "owner" }, "read", {})).toBe(true);
-      expect(condition({ role: "editor" }, "read", {})).toBe(true);
-      expect(condition({ role: "commenter" }, "read", {})).toBe(true);
-      expect(condition({ role: "viewer" }, "read", {})).toBe(true);
+      expect(condition({ role: "owner" }, "read", {})).toBeTruthy();
+      expect(condition({ role: "editor" }, "read", {})).toBeTruthy();
+      expect(condition({ role: "commenter" }, "read", {})).toBeTruthy();
+      expect(condition({ role: "viewer" }, "read", {})).toBeTruthy();
     });
   });
 });
 
-describe("createPolicy", () => {
+describe(createPolicy, () => {
   it("should create a policy with can method", async () => {
     await Promise.resolve();
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
       actions,
+      resources,
       rules: {
-        post: {
+        comment: {
+          delete: deny(),
           read: allow(),
           write: deny(),
+        },
+        post: {
           delete: deny(),
           publish: deny(),
-        },
-        comment: {
           read: allow(),
           write: deny(),
-          delete: deny(),
         },
       },
     });
 
     expect(policy).toHaveProperty("can");
-    expect(typeof policy.can).toBe("function");
+    expect(policy.can).toBeTypeOf("function");
   });
 
   it("should allow actions with allow() rule", async () => {
     await Promise.resolve();
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
       actions,
+      resources,
       rules: {
-        post: {
+        comment: {
+          delete: deny(),
           read: allow(),
           write: deny(),
+        },
+        post: {
           delete: deny(),
           publish: deny(),
-        },
-        comment: {
           read: allow(),
           write: deny(),
-          delete: deny(),
         },
       },
     });
 
     const ctx: TestContext = { user: { id: "user-1", role: "guest" } };
     const post = {
-      id: "1",
       authorId: "user-2",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
-    await expect(policy.can(ctx, "post:read", post)).resolves.toBe(true);
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBeTruthy();
   });
 
   it("should deny actions with deny() rule", async () => {
     await Promise.resolve();
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
       actions,
+      resources,
       rules: {
-        post: {
+        comment: {
+          delete: deny(),
           read: allow(),
           write: deny(),
+        },
+        post: {
           delete: deny(),
           publish: deny(),
-        },
-        comment: {
           read: allow(),
           write: deny(),
-          delete: deny(),
         },
       },
     });
 
     const ctx: TestContext = { user: { id: "user-1", role: "admin" } };
     const post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
-    await expect(policy.can(ctx, "post:write", post)).resolves.toBe(false);
+    await expect(policy.can(ctx, "post:write", post)).resolves.toBeFalsy();
   });
 
   it("should deny malformed permission strings", async () => {
     await Promise.resolve();
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
       actions,
+      resources,
       rules: {
-        post: {
+        comment: {
           read: allow(),
         },
-        comment: {
+        post: {
           read: allow(),
         },
       },
@@ -775,26 +807,30 @@ describe("createPolicy", () => {
 
     const ctx: TestContext = { user: { id: "user-1", role: "guest" } };
     const post: Post = {
-      id: "1",
       authorId: "user-2",
-      visibility: "public",
+      id: "1",
       status: "published",
+      visibility: "public",
     };
 
-    await expect(policy.can(ctx, "post" as "post:read", post)).resolves.toBe(false);
-    await expect(policy.can(ctx, "post:read:extra" as "post:read", post)).resolves.toBe(false);
+    await expect(
+      policy.can(ctx, "post" as "post:read", post)
+    ).resolves.toBeFalsy();
+    await expect(
+      policy.can(ctx, "post:read:extra" as "post:read", post)
+    ).resolves.toBeFalsy();
   });
 
   it("should deny unknown resource or action pairs", async () => {
     await Promise.resolve();
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
       actions,
+      resources,
       rules: {
-        post: {
+        comment: {
           read: allow(),
         },
-        comment: {
+        post: {
           read: allow(),
         },
       },
@@ -802,95 +838,110 @@ describe("createPolicy", () => {
 
     const ctx: TestContext = { user: { id: "user-1", role: "guest" } };
     const post: Post = {
-      id: "1",
       authorId: "user-2",
-      visibility: "public",
+      id: "1",
       status: "published",
+      visibility: "public",
     };
 
-    await expect(policy.can(ctx, "article:read" as "post:read", post)).resolves.toBe(false);
-    await expect(policy.can(ctx, "post:archive" as "post:read", post)).resolves.toBe(false);
+    await expect(
+      policy.can(ctx, "article:read" as "post:read", post)
+    ).resolves.toBeFalsy();
+    await expect(
+      policy.can(ctx, "post:archive" as "post:read", post)
+    ).resolves.toBeFalsy();
   });
 
   it("should evaluate when() conditions", async () => {
     await Promise.resolve();
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
       actions,
+      resources,
       rules: {
-        post: {
-          read: when(
-            (_ctx, _action, resource) =>
-              resource.visibility === "public" || _ctx.user.id === resource.authorId,
+        comment: {
+          delete: when((_ctx) => _ctx.user.role === "admin"),
+          read: allow(),
+          write: when(
+            (_ctx, _action, resource) => _ctx.user.id === resource.authorId
           ),
-          write: when((_ctx, _action, resource) => _ctx.user.id === resource.authorId),
+        },
+        post: {
           delete: when((_ctx) => _ctx.user.role === "admin"),
           publish: deny(),
-        },
-        comment: {
-          read: allow(),
-          write: when((_ctx, _action, resource) => _ctx.user.id === resource.authorId),
-          delete: when((_ctx) => _ctx.user.role === "admin"),
+          read: when(
+            (_ctx, _action, resource) =>
+              resource.visibility === "public" ||
+              _ctx.user.id === resource.authorId
+          ),
+          write: when(
+            (_ctx, _action, resource) => _ctx.user.id === resource.authorId
+          ),
         },
       },
     });
 
     const ctx: TestContext = { user: { id: "user-1", role: "user" } };
     const publicPost = {
-      id: "1",
       authorId: "user-2",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
     const privatePost = {
-      id: "2",
       authorId: "user-2",
-      visibility: "private" as const,
+      id: "2",
       status: "published" as const,
+      visibility: "private" as const,
     };
     const ownPost = {
-      id: "3",
       authorId: "user-1",
-      visibility: "private" as const,
+      id: "3",
       status: "draft" as const,
+      visibility: "private" as const,
     };
 
-    await expect(policy.can(ctx, "post:read", publicPost)).resolves.toBe(true);
-    await expect(policy.can(ctx, "post:read", privatePost)).resolves.toBe(false);
-    await expect(policy.can(ctx, "post:read", ownPost)).resolves.toBe(true);
-    await expect(policy.can(ctx, "post:write", ownPost)).resolves.toBe(true);
-    await expect(policy.can(ctx, "post:write", publicPost)).resolves.toBe(false);
+    await expect(
+      policy.can(ctx, "post:read", publicPost)
+    ).resolves.toBeTruthy();
+    await expect(
+      policy.can(ctx, "post:read", privatePost)
+    ).resolves.toBeFalsy();
+    await expect(policy.can(ctx, "post:read", ownPost)).resolves.toBeTruthy();
+    await expect(policy.can(ctx, "post:write", ownPost)).resolves.toBeTruthy();
+    await expect(
+      policy.can(ctx, "post:write", publicPost)
+    ).resolves.toBeFalsy();
   });
 
   it("should deny when resource type has no rules", async () => {
     await Promise.resolve();
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
       actions,
+      resources,
       rules: {
+        comment: {},
         post: {
           read: allow(),
         },
-        comment: {},
       },
     });
 
     const ctx: TestContext = { user: { id: "user-1", role: "admin" } };
-    const comment = { id: "1", postId: "post-1", authorId: "user-1" };
+    const comment = { authorId: "user-1", id: "1", postId: "post-1" };
 
-    await expect(policy.can(ctx, "comment:read", comment)).resolves.toBe(false);
+    await expect(policy.can(ctx, "comment:read", comment)).resolves.toBeFalsy();
   });
 
   it("should deny when action has no rule defined", async () => {
     await Promise.resolve();
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
       actions,
+      resources,
       rules: {
-        post: {
+        comment: {
           read: allow(),
         },
-        comment: {
+        post: {
           read: allow(),
         },
       },
@@ -898,13 +949,13 @@ describe("createPolicy", () => {
 
     const ctx: TestContext = { user: { id: "user-1", role: "admin" } };
     const post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
-    await expect(policy.can(ctx, "post:write", post)).resolves.toBe(false);
+    await expect(policy.can(ctx, "post:write", post)).resolves.toBeFalsy();
   });
 
   it("should work with complex conditions using and/or/not", async () => {
@@ -917,28 +968,37 @@ describe("createPolicy", () => {
       authorId: string;
     }
 
-    const isPostOwner = (ctx: TestContext, _action: string, resource: PostResource) =>
-      ctx.user.id === resource.authorId;
-    const isCommentOwner = (ctx: TestContext, _action: string, resource: CommentResource) =>
-      ctx.user.id === resource.authorId;
+    const isPostOwner = (
+      ctx: TestContext,
+      _action: string,
+      resource: PostResource
+    ) => ctx.user.id === resource.authorId;
+    const isCommentOwner = (
+      ctx: TestContext,
+      _action: string,
+      resource: CommentResource
+    ) => ctx.user.id === resource.authorId;
     const isAdmin = (ctx: TestContext) => ctx.user.role === "admin";
-    const isPublic = (_ctx: TestContext, _action: string, resource: PostResource) =>
-      resource.visibility === "public";
+    const isPublic = (
+      _ctx: TestContext,
+      _action: string,
+      resource: PostResource
+    ) => resource.visibility === "public";
 
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
       actions,
+      resources,
       rules: {
-        post: {
-          read: when(or(isPublic, isPostOwner, isAdmin)),
-          write: when(or(isPostOwner, isAdmin)),
-          delete: when(and(isPostOwner, not(isPublic))),
-          publish: when(isAdmin),
-        },
         comment: {
+          delete: when(or(isCommentOwner, isAdmin)),
           read: allow(),
           write: when(isCommentOwner),
-          delete: when(or(isCommentOwner, isAdmin)),
+        },
+        post: {
+          delete: when(and(isPostOwner, not(isPublic))),
+          publish: when(isAdmin),
+          read: when(or(isPublic, isPostOwner, isAdmin)),
+          write: when(or(isPostOwner, isAdmin)),
         },
       },
     });
@@ -946,38 +1006,42 @@ describe("createPolicy", () => {
     const admin: TestContext = { user: { id: "admin-1", role: "admin" } };
     const user: TestContext = { user: { id: "user-1", role: "user" } };
     const publicPost = {
-      id: "1",
       authorId: "user-2",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
     const privatePost = {
-      id: "2",
       authorId: "user-1",
-      visibility: "private" as const,
+      id: "2",
       status: "draft" as const,
+      visibility: "private" as const,
     };
 
-    // Admin can read anything
-    await expect(policy.can(admin, "post:read", publicPost)).resolves.toBe(true);
-    await expect(policy.can(admin, "post:read", privatePost)).resolves.toBe(true);
-
-    // User can read public or own posts
-    await expect(policy.can(user, "post:read", publicPost)).resolves.toBe(true);
-    await expect(policy.can(user, "post:read", privatePost)).resolves.toBe(true);
-
-    // Owner can delete private posts only
-    await expect(policy.can(user, "post:delete", privatePost)).resolves.toBe(true);
     await expect(
-      policy.can(user, "post:delete", {
-        ...privatePost,
-        visibility: "public" as const,
-      }),
-    ).resolves.toBe(false);
-
-    // Only admin can publish
-    await expect(policy.can(admin, "post:publish", publicPost)).resolves.toBe(true);
-    await expect(policy.can(user, "post:publish", publicPost)).resolves.toBe(false);
+      Promise.all([
+        policy.can(admin, "post:read", publicPost),
+        policy.can(admin, "post:read", privatePost),
+        policy.can(user, "post:read", publicPost),
+        policy.can(user, "post:read", privatePost),
+        policy.can(user, "post:delete", privatePost),
+        policy.can(user, "post:delete", {
+          ...privatePost,
+          visibility: "public" as const,
+        }),
+        policy.can(admin, "post:publish", publicPost),
+        policy.can(user, "post:publish", publicPost),
+      ])
+    ).resolves.toStrictEqual([
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      false,
+    ]);
   });
 
   it("should deny when actions for a resource are missing at runtime", async () => {
@@ -986,14 +1050,18 @@ describe("createPolicy", () => {
       post: actions.post,
     } as unknown as Actions<typeof resources>;
 
-    const policy = createPolicy<TestContext, typeof resources, typeof badActions>({
-      resources,
+    const policy = createPolicy<
+      TestContext,
+      typeof resources,
+      typeof badActions
+    >({
       actions: badActions,
+      resources,
       rules: {
-        post: {
+        comment: {
           read: allow(),
         },
-        comment: {
+        post: {
           read: allow(),
         },
       },
@@ -1001,12 +1069,12 @@ describe("createPolicy", () => {
 
     const ctx: TestContext = { user: { id: "user-1", role: "user" } };
     const comment: Comment = {
+      authorId: "user-1",
       id: "1",
       postId: "post-1",
-      authorId: "user-1",
     };
 
-    await expect(policy.can(ctx, "comment:read", comment)).resolves.toBe(false);
+    await expect(policy.can(ctx, "comment:read", comment)).resolves.toBeFalsy();
   });
 
   it("should deny when resource validation reports issues", async () => {
@@ -1014,11 +1082,11 @@ describe("createPolicy", () => {
     const failingResources = {
       post: {
         "~standard": {
-          version: 1,
-          vendor: "test",
           validate: () => ({
-            issues: [{ message: "invalid" } as StandardSchemaV1.Issue],
+            issues: [{ message: "invalid" }],
           }),
+          vendor: "test",
+          version: 1,
         },
       } as StandardSchemaV1,
     } satisfies Resources<"post">;
@@ -1027,9 +1095,13 @@ describe("createPolicy", () => {
       post: ["read"],
     } as const satisfies Actions<typeof failingResources>;
 
-    const policy = createPolicy<TestContext, typeof failingResources, typeof failingActions>({
-      resources: failingResources,
+    const policy = createPolicy<
+      TestContext,
+      typeof failingResources,
+      typeof failingActions
+    >({
       actions: failingActions,
+      resources: failingResources,
       rules: {
         post: {
           read: allow(),
@@ -1039,13 +1111,13 @@ describe("createPolicy", () => {
 
     const ctx: TestContext = { user: { id: "user-1", role: "user" } };
     const post: Post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public",
+      id: "1",
       status: "published",
+      visibility: "public",
     };
 
-    await expect(policy.can(ctx, "post:read", post)).resolves.toBe(false);
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
   });
 
   it("should deny and warn when resource validation throws", async () => {
@@ -1054,11 +1126,11 @@ describe("createPolicy", () => {
     const throwingResources = {
       post: {
         "~standard": {
-          version: 1,
-          vendor: "test",
           validate: () => {
             throw new Error("validator exploded");
           },
+          vendor: "test",
+          version: 1,
         },
       } as StandardSchemaV1,
     } satisfies Resources<"post">;
@@ -1067,9 +1139,13 @@ describe("createPolicy", () => {
       post: ["read"],
     } as const satisfies Actions<typeof throwingResources>;
 
-    const policy = createPolicy<TestContext, typeof throwingResources, typeof throwingActions>({
-      resources: throwingResources,
+    const policy = createPolicy<
+      TestContext,
+      typeof throwingResources,
+      typeof throwingActions
+    >({
       actions: throwingActions,
+      resources: throwingResources,
       rules: {
         post: {
           read: allow(),
@@ -1079,15 +1155,15 @@ describe("createPolicy", () => {
 
     const ctx: TestContext = { user: { id: "user-1", role: "user" } };
     const post: Post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public",
+      id: "1",
       status: "published",
+      visibility: "public",
     };
 
-    await expect(policy.can(ctx, "post:read", post)).resolves.toBe(false);
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
     expect(warnSpy).toHaveBeenCalledWith(
-      "Resource validation failed for post: Error: validator exploded",
+      "Resource validation failed for post: Error: validator exploded"
     );
   });
 
@@ -1103,14 +1179,14 @@ describe("createPolicy", () => {
 
     expect(() =>
       createPolicy<TestContext, typeof brokenResources, typeof brokenActions>({
-        resources: brokenResources,
         actions: brokenActions,
+        resources: brokenResources,
         rules: {
           post: {
             read: allow(),
           },
         },
-      }),
+      })
     ).toThrow(PolicyError);
   });
 
@@ -1119,9 +1195,9 @@ describe("createPolicy", () => {
     const asyncResources = {
       post: {
         "~standard": {
-          version: 1,
+          validate: () => Promise.resolve({ value: {} }),
           vendor: "test",
-          validate: async () => ({ value: {} }),
+          version: 1,
         },
       } as StandardSchemaV1,
     } satisfies Resources<"post">;
@@ -1132,15 +1208,19 @@ describe("createPolicy", () => {
 
     const ctx: TestContext = { user: { id: "user-1", role: "user" } };
     const post: Post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public",
+      id: "1",
       status: "published",
+      visibility: "public",
     };
 
-    const policy = createPolicy<TestContext, typeof asyncResources, typeof asyncActions>({
-      resources: asyncResources,
+    const policy = createPolicy<
+      TestContext,
+      typeof asyncResources,
+      typeof asyncActions
+    >({
       actions: asyncActions,
+      resources: asyncResources,
       rules: {
         post: {
           read: allow(),
@@ -1148,7 +1228,7 @@ describe("createPolicy", () => {
       },
     });
 
-    await expect(policy.can(ctx, "post:read", post)).resolves.toBe(true);
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBeTruthy();
   });
 
   it("should deny when an allowed action has no validator entry at runtime", async () => {
@@ -1162,59 +1242,59 @@ describe("createPolicy", () => {
     } as unknown as typeof actions;
 
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources: runtimeResources,
       actions: runtimeActions,
+      resources: runtimeResources,
       rules: {
         ...({
-          post: {
-            read: allow(),
-            write: deny(),
-            delete: deny(),
-            publish: deny(),
-          },
           comment: {
+            delete: deny(),
             read: deny(),
             write: deny(),
+          },
+          post: {
             delete: deny(),
+            publish: deny(),
+            read: allow(),
+            write: deny(),
           },
           profile: {
             read: allow(),
           },
         } as const),
-      } as never,
+      },
     });
 
     const ctx: TestContext = { user: { id: "user-1", role: "user" } };
 
-    await expect(policy.can(ctx, "profile:read" as never, { id: "1" } as never)).resolves.toBe(
-      false,
-    );
+    await expect(
+      policy.can(ctx, "profile:read" as never, { id: "1" } as never)
+    ).resolves.toBeFalsy();
   });
 
   it("should deny when a policy function throws", async () => {
     await Promise.resolve();
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
       actions,
+      resources,
       rules: {
+        comment: {},
         post: {
           read: () => {
             throw new Error("boom");
           },
         },
-        comment: {},
       },
     });
 
     const ctx: TestContext = { user: { id: "user-1", role: "user" } };
     const post: Post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public",
+      id: "1",
       status: "published",
+      visibility: "public",
     };
 
-    await expect(policy.can(ctx, "post:read", post)).resolves.toBe(false);
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
   });
 
   it("should work with role-based access using hasRole", async () => {
@@ -1225,505 +1305,580 @@ describe("createPolicy", () => {
     }
 
     const hierarchy: RoleHierarchy<"guest" | "user" | "admin"> = {
+      admin: ["user"],
       guest: [],
       user: ["guest"],
-      admin: ["user"],
     };
 
     const policy = createPolicy<RoleContext, typeof resources, typeof actions>({
-      resources,
       actions,
+      resources,
       rules: {
-        post: {
+        comment: {
+          delete: when(hasRole("admin")),
           read: when(hasRole("guest", hierarchy)),
           write: when(hasRole("user", hierarchy)),
+        },
+        post: {
           delete: when(hasRole("admin")),
           publish: when(hasRole("admin")),
-        },
-        comment: {
           read: when(hasRole("guest", hierarchy)),
           write: when(hasRole("user", hierarchy)),
-          delete: when(hasRole("admin")),
         },
       },
     });
 
-    const guest: RoleContext = { user: { id: "1" }, role: "guest" };
-    const user: RoleContext = { user: { id: "2" }, role: "user" };
-    const admin: RoleContext = { user: { id: "3" }, role: "admin" };
+    const guest: RoleContext = { role: "guest", user: { id: "1" } };
+    const user: RoleContext = { role: "user", user: { id: "2" } };
+    const admin: RoleContext = { role: "admin", user: { id: "3" } };
     const post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
-    // Guest can only read
-    await expect(policy.can(guest, "post:read", post)).resolves.toBe(true);
-    await expect(policy.can(guest, "post:write", post)).resolves.toBe(false);
-    await expect(policy.can(guest, "post:delete", post)).resolves.toBe(false);
-
-    // User inherits guest and can write
-    await expect(policy.can(user, "post:read", post)).resolves.toBe(true);
-    await expect(policy.can(user, "post:write", post)).resolves.toBe(true);
-    await expect(policy.can(user, "post:delete", post)).resolves.toBe(false);
-
-    // Admin can do everything
-    await expect(policy.can(admin, "post:read", post)).resolves.toBe(true);
-    await expect(policy.can(admin, "post:write", post)).resolves.toBe(true);
-    await expect(policy.can(admin, "post:delete", post)).resolves.toBe(true);
+    await expect(
+      Promise.all([
+        policy.can(guest, "post:read", post),
+        policy.can(guest, "post:write", post),
+        policy.can(guest, "post:delete", post),
+        policy.can(user, "post:read", post),
+        policy.can(user, "post:write", post),
+        policy.can(user, "post:delete", post),
+        policy.can(admin, "post:read", post),
+        policy.can(admin, "post:write", post),
+        policy.can(admin, "post:delete", post),
+      ])
+    ).resolves.toStrictEqual([
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      true,
+      true,
+    ]);
   });
 });
 
-describe("mergePolicies", () => {
+describe(mergePolicies, () => {
   it("should return a policy with can method", async () => {
     await Promise.resolve();
-    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: { read: allow() },
-        comment: { read: allow() },
-      },
-    });
+    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>(
+      {
+        actions,
+        resources,
+        rules: {
+          comment: { read: allow() },
+          post: { read: allow() },
+        },
+      }
+    );
 
     const merged = mergePolicies(policy1);
 
     expect(merged).toHaveProperty("can");
-    expect(typeof merged.can).toBe("function");
+    expect(merged.can).toBeTypeOf("function");
   });
 
   it("should allow when all policies allow (deny-overrides)", async () => {
     await Promise.resolve();
-    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: {
-          read: allow(),
-          write: allow(),
-          delete: allow(),
-          publish: allow(),
+    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>(
+      {
+        actions,
+        resources,
+        rules: {
+          comment: { delete: allow(), read: allow(), write: allow() },
+          post: {
+            delete: allow(),
+            publish: allow(),
+            read: allow(),
+            write: allow(),
+          },
         },
-        comment: { read: allow(), write: allow(), delete: allow() },
-      },
-    });
+      }
+    );
 
-    const policy2 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: {
-          read: allow(),
-          write: allow(),
-          delete: allow(),
-          publish: allow(),
+    const policy2 = createPolicy<TestContext, typeof resources, typeof actions>(
+      {
+        actions,
+        resources,
+        rules: {
+          comment: { delete: allow(), read: allow(), write: allow() },
+          post: {
+            delete: allow(),
+            publish: allow(),
+            read: allow(),
+            write: allow(),
+          },
         },
-        comment: { read: allow(), write: allow(), delete: allow() },
-      },
-    });
+      }
+    );
 
     const merged = mergePolicies(policy1, policy2);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
-    await expect(merged.can(ctx, "post:read", post)).resolves.toBe(true);
+    await expect(merged.can(ctx, "post:read", post)).resolves.toBeTruthy();
   });
 
   it("should deny when any policy denies (deny-overrides)", async () => {
     await Promise.resolve();
-    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: {
-          read: allow(),
-          write: allow(),
-          delete: allow(),
-          publish: allow(),
+    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>(
+      {
+        actions,
+        resources,
+        rules: {
+          comment: { delete: allow(), read: allow(), write: allow() },
+          post: {
+            delete: allow(),
+            publish: allow(),
+            read: allow(),
+            write: allow(),
+          },
         },
-        comment: { read: allow(), write: allow(), delete: allow() },
-      },
-    });
+      }
+    );
 
-    const policy2 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: {
-          read: deny(),
-          write: deny(),
-          delete: deny(),
-          publish: deny(),
+    const policy2 = createPolicy<TestContext, typeof resources, typeof actions>(
+      {
+        actions,
+        resources,
+        rules: {
+          comment: { delete: deny(), read: deny(), write: deny() },
+          post: {
+            delete: deny(),
+            publish: deny(),
+            read: deny(),
+            write: deny(),
+          },
         },
-        comment: { read: deny(), write: deny(), delete: deny() },
-      },
-    });
+      }
+    );
 
     const merged = mergePolicies(policy1, policy2);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
-    await expect(merged.can(ctx, "post:read", post)).resolves.toBe(false);
+    await expect(merged.can(ctx, "post:read", post)).resolves.toBeFalsy();
   });
 
   it("should work with single policy", async () => {
     await Promise.resolve();
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
       actions,
+      resources,
       rules: {
-        post: { read: allow(), write: deny(), delete: deny(), publish: deny() },
-        comment: { read: allow(), write: deny(), delete: deny() },
+        comment: { delete: deny(), read: allow(), write: deny() },
+        post: { delete: deny(), publish: deny(), read: allow(), write: deny() },
       },
     });
 
     const merged = mergePolicies(policy);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
-    await expect(merged.can(ctx, "post:read", post)).resolves.toBe(true);
-    await expect(merged.can(ctx, "post:write", post)).resolves.toBe(false);
+    await expect(merged.can(ctx, "post:read", post)).resolves.toBeTruthy();
+    await expect(merged.can(ctx, "post:write", post)).resolves.toBeFalsy();
   });
 
   it("should work with empty policies array", async () => {
     await Promise.resolve();
-    const merged = mergePolicies<TestContext, typeof resources, typeof actions>();
+    const merged = mergePolicies<
+      TestContext,
+      typeof resources,
+      typeof actions
+    >();
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
     // With no policies, should deny (no policy allows)
-    await expect(merged.can(ctx, "post:read", post)).resolves.toBe(false);
+    await expect(merged.can(ctx, "post:read", post)).resolves.toBeFalsy();
   });
 
   it("should short-circuit on first deny", async () => {
     await Promise.resolve();
     let policy2Called = false;
 
-    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: {
-          read: deny(),
-          write: deny(),
-          delete: deny(),
-          publish: deny(),
-        },
-        comment: { read: deny(), write: deny(), delete: deny() },
-      },
-    });
-
-    const policy2: ReturnType<typeof createPolicy<TestContext, typeof resources, typeof actions>> =
+    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>(
       {
-        can: async () => {
-          await Promise.resolve();
-          policy2Called = true;
-          return true;
+        actions,
+        resources,
+        rules: {
+          comment: { delete: deny(), read: deny(), write: deny() },
+          post: {
+            delete: deny(),
+            publish: deny(),
+            read: deny(),
+            write: deny(),
+          },
         },
-      };
+      }
+    );
+
+    const policy2: ReturnType<
+      typeof createPolicy<TestContext, typeof resources, typeof actions>
+    > = {
+      can: async () => {
+        await Promise.resolve();
+        policy2Called = true;
+        return true;
+      },
+    };
 
     const merged = mergePolicies(policy1, policy2);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
     await merged.can(ctx, "post:read", post);
-    expect(policy2Called).toBe(false);
+    expect(policy2Called).toBeFalsy();
   });
 
   it("should evaluate conditional rules across policies", async () => {
     await Promise.resolve();
-    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: {
-          read: when((ctx) => ctx.user.role !== "guest"),
-          write: allow(),
-          delete: allow(),
-          publish: allow(),
+    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>(
+      {
+        actions,
+        resources,
+        rules: {
+          comment: { delete: allow(), read: allow(), write: allow() },
+          post: {
+            delete: allow(),
+            publish: allow(),
+            read: when((ctx) => ctx.user.role !== "guest"),
+            write: allow(),
+          },
         },
-        comment: { read: allow(), write: allow(), delete: allow() },
-      },
-    });
+      }
+    );
 
-    const policy2 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: {
-          read: when((_ctx, _action, resource) => resource.visibility === "public"),
-          write: allow(),
-          delete: allow(),
-          publish: allow(),
+    const policy2 = createPolicy<TestContext, typeof resources, typeof actions>(
+      {
+        actions,
+        resources,
+        rules: {
+          comment: { delete: allow(), read: allow(), write: allow() },
+          post: {
+            delete: allow(),
+            publish: allow(),
+            read: when(
+              (_ctx, _action, resource) => resource.visibility === "public"
+            ),
+            write: allow(),
+          },
         },
-        comment: { read: allow(), write: allow(), delete: allow() },
-      },
-    });
+      }
+    );
 
     const merged = mergePolicies(policy1, policy2);
     const user: TestContext = { user: { id: "1", role: "user" } };
     const guest: TestContext = { user: { id: "2", role: "guest" } };
     const publicPost = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
     const privatePost = {
-      id: "2",
       authorId: "user-1",
-      visibility: "private" as const,
+      id: "2",
       status: "draft" as const,
+      visibility: "private" as const,
     };
 
     // User reading public post - both policies allow
-    await expect(merged.can(user, "post:read", publicPost)).resolves.toBe(true);
+    await expect(
+      merged.can(user, "post:read", publicPost)
+    ).resolves.toBeTruthy();
     // User reading private post - policy2 denies
-    await expect(merged.can(user, "post:read", privatePost)).resolves.toBe(false);
+    await expect(
+      merged.can(user, "post:read", privatePost)
+    ).resolves.toBeFalsy();
     // Guest reading public post - policy1 denies
-    await expect(merged.can(guest, "post:read", publicPost)).resolves.toBe(false);
+    await expect(
+      merged.can(guest, "post:read", publicPost)
+    ).resolves.toBeFalsy();
   });
 });
 
-describe("mergePoliciesAny", () => {
+describe(mergePoliciesAny, () => {
   it("should return a policy with can method", async () => {
     await Promise.resolve();
-    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: { read: allow() },
-        comment: { read: allow() },
-      },
-    });
+    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>(
+      {
+        actions,
+        resources,
+        rules: {
+          comment: { read: allow() },
+          post: { read: allow() },
+        },
+      }
+    );
 
     const merged = mergePoliciesAny(policy1);
 
     expect(merged).toHaveProperty("can");
-    expect(typeof merged.can).toBe("function");
+    expect(merged.can).toBeTypeOf("function");
   });
 
   it("should allow when any policy allows (allow-overrides)", async () => {
     await Promise.resolve();
-    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: {
-          read: deny(),
-          write: deny(),
-          delete: deny(),
-          publish: deny(),
+    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>(
+      {
+        actions,
+        resources,
+        rules: {
+          comment: { delete: deny(), read: deny(), write: deny() },
+          post: {
+            delete: deny(),
+            publish: deny(),
+            read: deny(),
+            write: deny(),
+          },
         },
-        comment: { read: deny(), write: deny(), delete: deny() },
-      },
-    });
+      }
+    );
 
-    const policy2 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: {
-          read: allow(),
-          write: allow(),
-          delete: allow(),
-          publish: allow(),
+    const policy2 = createPolicy<TestContext, typeof resources, typeof actions>(
+      {
+        actions,
+        resources,
+        rules: {
+          comment: { delete: allow(), read: allow(), write: allow() },
+          post: {
+            delete: allow(),
+            publish: allow(),
+            read: allow(),
+            write: allow(),
+          },
         },
-        comment: { read: allow(), write: allow(), delete: allow() },
-      },
-    });
+      }
+    );
 
     const merged = mergePoliciesAny(policy1, policy2);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
-    await expect(merged.can(ctx, "post:read", post)).resolves.toBe(true);
+    await expect(merged.can(ctx, "post:read", post)).resolves.toBeTruthy();
   });
 
   it("should deny when all policies deny (allow-overrides)", async () => {
     await Promise.resolve();
-    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: {
-          read: deny(),
-          write: deny(),
-          delete: deny(),
-          publish: deny(),
+    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>(
+      {
+        actions,
+        resources,
+        rules: {
+          comment: { delete: deny(), read: deny(), write: deny() },
+          post: {
+            delete: deny(),
+            publish: deny(),
+            read: deny(),
+            write: deny(),
+          },
         },
-        comment: { read: deny(), write: deny(), delete: deny() },
-      },
-    });
+      }
+    );
 
-    const policy2 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: {
-          read: deny(),
-          write: deny(),
-          delete: deny(),
-          publish: deny(),
+    const policy2 = createPolicy<TestContext, typeof resources, typeof actions>(
+      {
+        actions,
+        resources,
+        rules: {
+          comment: { delete: deny(), read: deny(), write: deny() },
+          post: {
+            delete: deny(),
+            publish: deny(),
+            read: deny(),
+            write: deny(),
+          },
         },
-        comment: { read: deny(), write: deny(), delete: deny() },
-      },
-    });
+      }
+    );
 
     const merged = mergePoliciesAny(policy1, policy2);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
-    await expect(merged.can(ctx, "post:read", post)).resolves.toBe(false);
+    await expect(merged.can(ctx, "post:read", post)).resolves.toBeFalsy();
   });
 
   it("should work with single policy", async () => {
     await Promise.resolve();
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
       actions,
+      resources,
       rules: {
-        post: { read: allow(), write: deny(), delete: deny(), publish: deny() },
-        comment: { read: allow(), write: deny(), delete: deny() },
+        comment: { delete: deny(), read: allow(), write: deny() },
+        post: { delete: deny(), publish: deny(), read: allow(), write: deny() },
       },
     });
 
     const merged = mergePoliciesAny(policy);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
-    await expect(merged.can(ctx, "post:read", post)).resolves.toBe(true);
-    await expect(merged.can(ctx, "post:write", post)).resolves.toBe(false);
+    await expect(merged.can(ctx, "post:read", post)).resolves.toBeTruthy();
+    await expect(merged.can(ctx, "post:write", post)).resolves.toBeFalsy();
   });
 
   it("should work with empty policies array", async () => {
     await Promise.resolve();
-    const merged = mergePoliciesAny<TestContext, typeof resources, typeof actions>();
+    const merged = mergePoliciesAny<
+      TestContext,
+      typeof resources,
+      typeof actions
+    >();
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
     // With no policies, should deny (no policy allows)
-    await expect(merged.can(ctx, "post:read", post)).resolves.toBe(false);
+    await expect(merged.can(ctx, "post:read", post)).resolves.toBeFalsy();
   });
 
   it("should short-circuit on first allow", async () => {
     await Promise.resolve();
     let policy2Called = false;
 
-    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
-      actions,
-      rules: {
-        post: {
-          read: allow(),
-          write: allow(),
-          delete: allow(),
-          publish: allow(),
-        },
-        comment: { read: allow(), write: allow(), delete: allow() },
-      },
-    });
-
-    const policy2: ReturnType<typeof createPolicy<TestContext, typeof resources, typeof actions>> =
+    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>(
       {
-        can: async () => {
-          await Promise.resolve();
-          policy2Called = true;
-          return false;
+        actions,
+        resources,
+        rules: {
+          comment: { delete: allow(), read: allow(), write: allow() },
+          post: {
+            delete: allow(),
+            publish: allow(),
+            read: allow(),
+            write: allow(),
+          },
         },
-      };
+      }
+    );
+
+    const policy2: ReturnType<
+      typeof createPolicy<TestContext, typeof resources, typeof actions>
+    > = {
+      can: async () => {
+        await Promise.resolve();
+        policy2Called = true;
+        return false;
+      },
+    };
 
     const merged = mergePoliciesAny(policy1, policy2);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
-      id: "1",
       authorId: "user-1",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
 
     await merged.can(ctx, "post:read", post);
-    expect(policy2Called).toBe(false);
+    expect(policy2Called).toBeFalsy();
   });
 
   it("should support layered permissions pattern", async () => {
     await Promise.resolve();
     // Base policy: public access
-    const publicPolicy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
+    const publicPolicy = createPolicy<
+      TestContext,
+      typeof resources,
+      typeof actions
+    >({
       actions,
+      resources,
       rules: {
+        comment: { delete: deny(), read: allow(), write: deny() },
         post: {
-          read: when((_ctx, _action, resource) => resource.visibility === "public"),
-          write: deny(),
           delete: deny(),
           publish: deny(),
+          read: when(
+            (_ctx, _action, resource) => resource.visibility === "public"
+          ),
+          write: deny(),
         },
-        comment: { read: allow(), write: deny(), delete: deny() },
       },
     });
 
     // Owner policy: owner access
-    const ownerPolicy = createPolicy<TestContext, typeof resources, typeof actions>({
-      resources,
+    const ownerPolicy = createPolicy<
+      TestContext,
+      typeof resources,
+      typeof actions
+    >({
       actions,
+      resources,
       rules: {
-        post: {
-          read: when((ctx, _action, resource) => ctx.user.id === resource.authorId),
-          write: when((ctx, _action, resource) => ctx.user.id === resource.authorId),
-          delete: when((ctx, _action, resource) => ctx.user.id === resource.authorId),
-          publish: deny(),
-        },
         comment: {
+          delete: when(
+            (ctx, _action, resource) => ctx.user.id === resource.authorId
+          ),
           read: allow(),
-          write: when((ctx, _action, resource) => ctx.user.id === resource.authorId),
-          delete: when((ctx, _action, resource) => ctx.user.id === resource.authorId),
+          write: when(
+            (ctx, _action, resource) => ctx.user.id === resource.authorId
+          ),
+        },
+        post: {
+          delete: when(
+            (ctx, _action, resource) => ctx.user.id === resource.authorId
+          ),
+          publish: deny(),
+          read: when(
+            (ctx, _action, resource) => ctx.user.id === resource.authorId
+          ),
+          write: when(
+            (ctx, _action, resource) => ctx.user.id === resource.authorId
+          ),
         },
       },
     });
@@ -1731,33 +1886,43 @@ describe("mergePoliciesAny", () => {
     const merged = mergePoliciesAny(publicPolicy, ownerPolicy);
     const user: TestContext = { user: { id: "user-1", role: "user" } };
     const publicPost = {
-      id: "1",
       authorId: "user-2",
-      visibility: "public" as const,
+      id: "1",
       status: "published" as const,
+      visibility: "public" as const,
     };
     const privateOwnPost = {
-      id: "2",
       authorId: "user-1",
-      visibility: "private" as const,
+      id: "2",
       status: "draft" as const,
+      visibility: "private" as const,
     };
     const privateOtherPost = {
-      id: "3",
       authorId: "user-2",
-      visibility: "private" as const,
+      id: "3",
       status: "draft" as const,
+      visibility: "private" as const,
     };
 
     // Can read public post (public policy allows)
-    await expect(merged.can(user, "post:read", publicPost)).resolves.toBe(true);
+    await expect(
+      merged.can(user, "post:read", publicPost)
+    ).resolves.toBeTruthy();
     // Can read own private post (owner policy allows)
-    await expect(merged.can(user, "post:read", privateOwnPost)).resolves.toBe(true);
+    await expect(
+      merged.can(user, "post:read", privateOwnPost)
+    ).resolves.toBeTruthy();
     // Cannot read other's private post (neither policy allows)
-    await expect(merged.can(user, "post:read", privateOtherPost)).resolves.toBe(false);
+    await expect(
+      merged.can(user, "post:read", privateOtherPost)
+    ).resolves.toBeFalsy();
     // Can write own post (owner policy allows)
-    await expect(merged.can(user, "post:write", privateOwnPost)).resolves.toBe(true);
+    await expect(
+      merged.can(user, "post:write", privateOwnPost)
+    ).resolves.toBeTruthy();
     // Cannot write other's post (neither policy allows)
-    await expect(merged.can(user, "post:write", publicPost)).resolves.toBe(false);
+    await expect(
+      merged.can(user, "post:write", publicPost)
+    ).resolves.toBeFalsy();
   });
 });

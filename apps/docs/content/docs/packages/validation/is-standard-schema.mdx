@@ -9,8 +9,7 @@ Use it when schema values are dynamic, external, or typed as `unknown`.
 
 ## Why It Exists
 
-In static code, TypeScript types usually ensure you pass a schema to validation helpers.
-At runtime, you may still receive unknown values from plugins, shared registries, or configuration.
+In static code, TypeScript types usually ensure you pass a schema to validation helpers. At runtime, you may still receive unknown values from plugins, shared registries, or configuration.
 
 `isStandardSchema` helps you:
 
@@ -43,7 +42,11 @@ export async function validateIfPossible(schemaLike: unknown, input: unknown) {
   });
 
   if (result.issues) {
-    return { ok: false as const, reason: "invalid-input" as const, issues: result.issues };
+    return {
+      ok: false as const,
+      reason: "invalid-input" as const,
+      issues: result.issues,
+    };
   }
 
   return { ok: true as const, value: result.value };

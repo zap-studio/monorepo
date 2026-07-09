@@ -24,15 +24,15 @@ import type {
  * behavior, then call {@link BaseRetryPolicy.run} to execute operations with that
  * policy.
  */
-export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> implements RetryPolicy<
-  TError,
-  TData
-> {
+export abstract class BaseRetryPolicy<
+  TError = unknown,
+  TData = unknown,
+> implements RetryPolicy<TError, TData> {
   /**
    * Returns the retry decision for a failed attempt.
    *
    * @param input - Attempt context used to compute retry behavior.
-   * @throws Any error thrown by a concrete retry policy implementation.
+   * @throws {Error} Any error thrown by a concrete retry policy implementation.
    */
   public abstract next(input: RetryDecisionInput<TError, TData>): RetryDecision;
 
@@ -43,13 +43,14 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    *
    * @param input - Exhaustion context.
    * @returns `RetryError` by default.
-   * @throws Any error thrown by an overriding policy implementation.
+   * @throws {Error} Any error thrown by an overriding policy implementation.
    */
+  // oxlint-disable-next-line class-methods-use-this -- RetryPolicy requires an instance hook that subclasses may override.
   public onExhausted(input: RetryExhaustedInput<TError, TData>): RetryError {
     return new RetryError("Retry policy exhausted all attempts.", {
       attempts: input.attempts,
-      lastError: input.error,
       lastData: input.data,
+      lastError: input.error,
     });
   }
 
@@ -59,11 +60,11 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    * @param execute - Async function to execute per attempt.
    * @param options - Runner settings with `throwOnExhausted: false`.
    * @returns A discriminated result union containing success value or terminal error.
-   * @throws Any error thrown by `next`, `onExhausted`, or a custom `sleep`.
+   * @throws {Error} Any error thrown by `next`, `onExhausted`, or a custom `sleep`.
    */
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
-    options: RetryRunOptions & { throwOnExhausted: false },
+    options: RetryRunOptions & { throwOnExhausted: false }
   ): Promise<RetryRunResult<T>>;
 
   /**
@@ -76,12 +77,12 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    *   terminal retry error. The default implementation returns `RetryError` with the last
    *   execution failure available on `RetryError.lastError`.
    * @throws {AbortError} When `options.signal` is already aborted or aborts while retrying.
-   * @throws Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
+   * @throws {Error} Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
    *   function.
    */
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
-    options?: RetryRunOptions & { throwOnExhausted?: true },
+    options?: RetryRunOptions & { throwOnExhausted?: true }
   ): Promise<T>;
 
   /**
@@ -92,7 +93,7 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    * @param execute - Async function to execute per attempt.
    * @param options - Runner settings.
    * @returns Success value or terminal result object based on option mode.
-   * @throws Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
+   * @throws {Error} Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
    *   function. When `throwOnExhausted` is `false`, exhaustion itself is returned
    *   as `{ ok: false }` instead of thrown.
    *   Cancellation is returned as `{ ok: false, error: AbortError }` in non-throw
@@ -104,14 +105,14 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    */
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
-    options: RetryRunOptions = {},
+    options: RetryRunOptions = {}
   ): Promise<T | RetryRunResult<T>> {
     const sleep = options.sleep ?? defaultSleep;
-    const signal = options.signal;
+    const { signal } = options;
     if (options.throwOnExhausted === false) {
-      return runResultMode(this, execute, sleep, signal);
+      return await runResultMode(this, execute, sleep, signal);
     }
 
-    return runThrowMode(this, execute, sleep, signal);
+    return await runThrowMode(this, execute, sleep, signal);
   }
 }

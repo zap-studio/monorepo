@@ -49,7 +49,9 @@ const policy = createPolicy<AppContext>({
   actions,
   rules: {
     post: {
-      delete: when(or(hasRole("admin"), (ctx, _, post) => ctx.user.id === post.authorId)),
+      delete: when(
+        or(hasRole("admin"), (ctx, _, post) => ctx.user.id === post.authorId)
+      ),
     },
   },
 });
@@ -166,8 +168,8 @@ const policy = createPolicy<AppContext>({
       read: when(
         or(
           (_ctx, _action, post) => post.visibility === "public",
-          (ctx, _action, post) => ctx.user?.id === post.authorId,
-        ),
+          (ctx, _action, post) => ctx.user?.id === post.authorId
+        )
       ),
       // Only authors can write their posts
       write: when((ctx, _, post) => ctx.user?.id === post.authorId),

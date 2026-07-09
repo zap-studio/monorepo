@@ -22,7 +22,7 @@ const promise = policy.run(
   async () => {
     return await doWork();
   },
-  { signal: controller.signal },
+  { signal: controller.signal }
 );
 
 controller.abort(new Error("Request canceled by user"));
@@ -44,7 +44,7 @@ try {
     async () => {
       return await doWork();
     },
-    { signal: controller.signal },
+    { signal: controller.signal }
   );
 } catch (error) {
   if (error instanceof AbortError) {
@@ -69,7 +69,7 @@ const result = await policy.run(
   {
     signal: controller.signal,
     throwOnExhausted: false,
-  },
+  }
 );
 
 if (!result.ok) {

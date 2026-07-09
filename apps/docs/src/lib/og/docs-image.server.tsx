@@ -7,19 +7,18 @@ interface DocsOgImageOptions {
   title: string;
 }
 
-export function createDocsOgImageResponse({
+export const createDocsOgImageResponse = ({
   description,
   title,
-}: DocsOgImageOptions): ImageResponse {
-  return new ImageResponse(
+}: DocsOgImageOptions): ImageResponse =>
+  new ImageResponse(
     <DefaultImage description={description} site="Zap Studio" title={title} />,
     {
-      width: 1200,
-      height: 630,
       format: "webp",
       headers: {
         "cache-control": "public, max-age=0, s-maxage=86400",
       },
-    },
+      height: 630,
+      width: 1200,
+    }
   );
-}

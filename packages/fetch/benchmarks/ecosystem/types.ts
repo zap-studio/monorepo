@@ -1,10 +1,13 @@
-export type BenchmarkFetch = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+export type BenchmarkFetch = (
+  input: RequestInfo | URL,
+  init?: RequestInit
+) => Promise<Response>;
 
 type BenchmarkTask = () => Promise<unknown>;
 type BenchmarkTaskWithBody = (body: unknown) => Promise<unknown>;
 type BenchmarkTaskWithRawBody = (body: string) => Promise<unknown>;
 
-export type ClientSet = {
+export interface ClientSet {
   native: {
     getJson: BenchmarkTask;
     postJsonRaw: BenchmarkTaskWithBody;
@@ -44,4 +47,4 @@ export type ClientSet = {
     createFetchPrimitiveGetJson: BenchmarkTask;
     schemaOnlyValidate: BenchmarkTask;
   };
-};
+}

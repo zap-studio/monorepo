@@ -1,6 +1,7 @@
 import { expect } from "vitest";
 
-import { AbortError, RetryError } from "../src/errors.js";
+import type { AbortError } from "../src/errors.js";
+import { RetryError } from "../src/errors.js";
 import { BaseRetryPolicy } from "../src/index.js";
 import type {
   RetryDecision,
@@ -12,22 +13,27 @@ import type {
 export class SequencePolicy extends BaseRetryPolicy<Error, string> {
   public readonly seen: RetryDecisionInput<Error, string>[] = [];
   private index = 0;
+  private readonly decisions: RetryDecision[];
 
-  constructor(private readonly decisions: RetryDecision[]) {
+  constructor(decisions: RetryDecision[]) {
     super();
+    this.decisions = decisions;
   }
 
   public next(input: RetryDecisionInput<Error, string>): RetryDecision {
     this.seen.push(input);
-    const decision = this.decisions[Math.min(this.index, this.decisions.length - 1)];
+    const decision =
+      this.decisions[Math.min(this.index, this.decisions.length - 1)];
     this.index += 1;
-    return decision ?? { shouldRetry: false, delayMs: 0, reason: "policy-declined" };
+    return (
+      decision ?? { delayMs: 0, reason: "policy-declined", shouldRetry: false }
+    );
   }
 }
 
 export class CustomTerminalPolicy extends BaseRetryPolicy<Error> {
   public next(): RetryDecision {
-    return { shouldRetry: false, delayMs: 0, reason: "policy-declined" };
+    return { delayMs: 0, reason: "policy-declined", shouldRetry: false };
   }
 
   public override onExhausted(input: RetryExhaustedInput<Error>): RetryError {
@@ -38,15 +44,17 @@ export class CustomTerminalPolicy extends BaseRetryPolicy<Error> {
   }
 }
 
-export function expectFailureResult(result: RetryRunResult<string>): {
+export const expectFailureResult = (
+  result: RetryRunResult<string>
+): {
   ok: false;
   attempts: number;
   error: AbortError | RetryError;
-} {
+} => {
   expect(result).toMatchObject({ ok: false });
   if (result.ok) {
     throw new Error("Expected failure result");
   }
 
   return result;
-}
+};

@@ -1,12 +1,13 @@
 import type { BenchmarkFetch } from "./types.js";
 
-export function installMockFetch(payload: unknown): BenchmarkFetch {
-  const mockFetch: BenchmarkFetch = async () =>
-    new Response(JSON.stringify(payload), {
-      headers: { "Content-Type": "application/json" },
+export const installMockFetch = (payload: unknown): BenchmarkFetch => {
+  const mockFetch: BenchmarkFetch = async () => {
+    await Promise.resolve();
+    return Response.json(payload, {
       status: 200,
     });
+  };
 
-  globalThis.fetch = mockFetch as typeof fetch;
+  globalThis.fetch = mockFetch;
   return mockFetch;
-}
+};

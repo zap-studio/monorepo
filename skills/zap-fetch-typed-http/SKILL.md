@@ -82,21 +82,14 @@ try {
 }
 ```
 
-`$fetch` can reject with `FetchError`, `ValidationError`, native `TypeError`,
-`DOMException` for aborts, `SyntaxError` from `response.json()`, and any error thrown or
-rejected by the provided Standard Schema validator. `TypeError` includes body/json
-conflicts, JSON request serialization failures, invalid request/header/search-param setup,
-network-level fetch failures, and response body read failures.
+`$fetch` can reject with `FetchError`, `ValidationError`, native `TypeError`, `DOMException` for aborts, `SyntaxError` from `response.json()`, and any error thrown or rejected by the provided Standard Schema validator. `TypeError` includes body/json conflicts, JSON request serialization failures, invalid request/header/search-param setup, network-level fetch failures, and response body read failures.
 
 ## Gotchas
 
 - `api.*` helpers are schema-first convenience methods; use `$fetch` for raw `Response`.
-- `json` and native `body` are mutually exclusive. `json` stringifies and sets
-  `Content-Type: application/json` when missing.
-- Query param precedence is client defaults, existing URL params, then per-request
-  `searchParams`.
-- `throwOnFetchError: false` returns the non-ok `Response`; validation still runs if a
-  schema is provided.
+- `json` and native `body` are mutually exclusive. `json` stringifies and sets `Content-Type: application/json` when missing.
+- Query param precedence is client defaults, existing URL params, then per-request `searchParams`.
+- `throwOnFetchError: false` returns the non-ok `Response`; validation still runs if a schema is provided.
 - Prefer `createFetch` for app-level API clients instead of repeating base URLs and auth headers.
 
 ## References

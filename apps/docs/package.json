@@ -8,7 +8,6 @@
     "build": "vite build",
     "dev": "vite dev",
     "preview": "vite preview",
-    "react-doctor": "node ./scripts/react-doctor.mjs",
     "types:check": "fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },
@@ -38,7 +37,7 @@
     "nitro": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vite": "^8.0.14"
+    "vite": "^8.1.3"
   },
   "engines": {
     "node": ">=20.0.0"

@@ -64,12 +64,12 @@ export class ExponentialBackoff extends BaseRetryPolicy {
    */
   public next(input: RetryDecisionInput): RetryDecision {
     if (input.attempt >= this.maxAttempts) {
-      return { shouldRetry: false, delayMs: 0, reason: "max-attempts-reached" };
+      return { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false };
     }
 
     const exponent = Math.max(0, input.attempt - 1);
     const delayMs = Math.min(this.maxDelayMs, this.baseDelayMs * 2 ** exponent);
 
-    return { shouldRetry: true, delayMs, reason: "retry" };
+    return { delayMs, reason: "retry", shouldRetry: true };
   }
 }

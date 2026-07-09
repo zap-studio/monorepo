@@ -9,13 +9,13 @@ Use this skill when consuming `@zap-studio/validation`.
 
 ## Choose the Right Helper
 
-| Helper                        | Use when                                            |
-| ----------------------------- | --------------------------------------------------- |
-| `standardValidate`            | Schema may validate sync or async; caller can await |
-| `standardValidateSync`        | Schema is known to be synchronous                   |
-| `createStandardValidator`     | Reusing one async validator many times              |
-| `createSyncStandardValidator` | Reusing one sync validator many times               |
-| `isStandardSchema`            | Guarding unknown schema-like inputs                 |
+| Helper | Use when |
+| --- | --- |
+| `standardValidate` | Schema may validate sync or async; caller can await |
+| `standardValidateSync` | Schema is known to be synchronous |
+| `createStandardValidator` | Reusing one async validator many times |
+| `createSyncStandardValidator` | Reusing one sync validator many times |
+| `isStandardSchema` | Guarding unknown schema-like inputs |
 
 ## Return Modes
 
@@ -64,10 +64,8 @@ If a sync helper receives an async schema result, it throws:
 ## Usage Guidance
 
 - Preserve overloads that distinguish `throwOnError: true` from false/omitted mode.
-- Runtime-invalid schema objects can throw `TypeError` when `~standard.validate` is missing
-  or not callable.
-- `ValidationError.message` is the pretty JSON representation of issues; use `issues` for
-  structured handling.
+- Runtime-invalid schema objects can throw `TypeError` when `~standard.validate` is missing or not callable.
+- `ValidationError.message` is the pretty JSON representation of issues; use `issues` for structured handling.
 - Use `isStandardSchema` before validating schema-like user/plugin inputs.
 - Use async helpers by default unless the schema is guaranteed synchronous.
 

@@ -38,17 +38,21 @@ describe("@zap-studio/fetch browser runtime", () => {
     });
     const headers = new Headers(normalized.options.headers);
 
-    expect(normalized.url).toBe("https://api.example.com/users");
+    expect(normalized).toMatchObject({
+      options: { method: "PATCH" },
+      url: "https://api.example.com/users",
+    });
     expect(normalized.request).toBeInstanceOf(Request);
     expect(normalized.request).not.toBe(request);
-    expect(normalized.options.method).toBe("PATCH");
-    expect(headers.get("A")).toBe("1");
-    expect(headers.get("B")).toBe("20");
-    expect(headers.get("C")).toBe("3");
+    expect([
+      headers.get("A"),
+      headers.get("B"),
+      headers.get("C"),
+    ]).toStrictEqual(["1", "20", "3"]);
   });
 
   it("merges native Headers, object headers, and tuple headers", () => {
-    const fromHeaders = mergeHeaders(new Headers({ A: "1" }), undefined);
+    const fromHeaders = mergeHeaders(new Headers({ A: "1" }));
     const fromObject = mergeHeaders({ A: "1" }, { B: "2" });
     const fromTuples = mergeHeaders([["A", "1"]], [["A", "2"]]);
 
@@ -65,12 +69,16 @@ describe("@zap-studio/fetch browser runtime", () => {
         { ...DEFAULTS, baseURL: "https://api.example.com" },
         {
           q: "zap",
-        },
-      ),
+        }
+      )
     ).toBe("https://api.example.com/users?q=zap#team");
 
     expect(
-      resolveRequestUrl("/docs/guide#intro", DEFAULTS, new URLSearchParams({ page: "1" })),
+      resolveRequestUrl(
+        "/docs/guide#intro",
+        DEFAULTS,
+        new URLSearchParams({ page: "1" })
+      )
     ).toBe("/docs/guide?page=1#intro");
   });
 
@@ -91,7 +99,7 @@ describe("@zap-studio/fetch browser runtime", () => {
       "https://api.example.com/users",
       expect.objectContaining({
         headers: expect.any(Headers),
-      }),
+      })
     );
   });
 
@@ -105,10 +113,11 @@ describe("@zap-studio/fetch browser runtime", () => {
       }),
       {
         headers: { B: "2" },
-      },
+      }
     );
 
-    const [request, init] = fetchMock.mock.calls[0];
+    const firstCall = fetchMock.mock.calls[0];
+    const [request, init] = firstCall;
     expect(request).toBeInstanceOf(Request);
     expect((request as Request).url).toBe("https://api.example.com/users");
     expect(new Headers((init as RequestInit).headers).get("B")).toBe("2");
@@ -123,10 +132,11 @@ describe("@zap-studio/fetch browser runtime", () => {
       method: "POST",
     });
 
-    const [, init] = fetchMock.mock.calls[0];
+    const firstCall = fetchMock.mock.calls[0];
+    const [, init] = firstCall;
     expect((init as RequestInit).body).toBe(JSON.stringify({ name: "Zap" }));
     expect(new Headers((init as RequestInit).headers).get("content-type")).toBe(
-      "application/vnd.api+json",
+      "application/vnd.api+json"
     );
   });
 
@@ -142,7 +152,8 @@ describe("@zap-studio/fetch browser runtime", () => {
       searchParams: { page: "1" },
     });
 
-    const [url, init] = fetchMock.mock.calls[0];
+    const firstCall = fetchMock.mock.calls[0];
+    const [url, init] = firstCall;
     const headers = new Headers((init as RequestInit).headers);
     expect(url).toBe("https://api.example.com/users?page=1");
     expect(headers.get("authorization")).toBe("Bearer token");

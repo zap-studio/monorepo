@@ -61,22 +61,22 @@ const result = await policy.run(doWork, { throwOnExhausted: false });
 if (!result.ok) {
   return {
     attempts: result.attempts,
-    cause: result.error instanceof RetryError ? result.error.lastError : result.error,
+    cause:
+      result.error instanceof RetryError
+        ? result.error.lastError
+        : result.error,
   };
 }
 
 return result.value;
 ```
 
-For exhaustion, `result.error` is a `RetryError` and the underlying failure is
-`result.error.lastError`. For cancellation, `result.error` is an `AbortError`.
+For exhaustion, `result.error` is a `RetryError` and the underlying failure is `result.error.lastError`. For cancellation, `result.error` is an `AbortError`.
 
 ## Gotchas
 
-- Exhausted operation failures are stored as `RetryError.lastError`; the original error is
-  not rethrown by the default terminal path.
-- `throwOnExhausted: false` only converts exhaustion to `{ ok: false }`; errors thrown by
-  `next`, `onExhausted`, or custom `sleep` still propagate.
+- Exhausted operation failures are stored as `RetryError.lastError`; the original error is not rethrown by the default terminal path.
+- `throwOnExhausted: false` only converts exhaustion to `{ ok: false }`; errors thrown by `next`, `onExhausted`, or custom `sleep` still propagate.
 - Use custom `sleep` in application tests to avoid real timers.
 - Do not treat attempt numbers as zero-based.
 

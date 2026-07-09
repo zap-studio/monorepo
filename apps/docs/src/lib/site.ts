@@ -13,28 +13,36 @@ export const siteKeywords = [
   "open source",
   "zap studio",
 ];
-const serverSiteUrl = typeof process !== "undefined" ? process.env.SITE_URL : undefined;
-const clientSiteUrl = import.meta.env.VITE_SITE_URL;
+const serverSiteUrl =
+  typeof process !== "undefined" && typeof process.env.SITE_URL === "string"
+    ? process.env.SITE_URL
+    : undefined;
+const clientSiteUrl =
+  typeof import.meta.env.VITE_SITE_URL === "string"
+    ? import.meta.env.VITE_SITE_URL
+    : undefined;
 
-export const siteUrl = serverSiteUrl ?? clientSiteUrl ?? "https://www.zapstudio.dev";
+export const siteUrl =
+  serverSiteUrl ?? clientSiteUrl ?? "https://www.zapstudio.dev";
 
-function pageTitle(title?: string) {
-  return title ? `${title} | ${siteName}` : siteTitle;
-}
+const pageTitle = (title?: string) =>
+  title === undefined ? siteTitle : `${title} | ${siteName}`;
 
-export function pageMeta(title: string | undefined, description: string, image?: string) {
-  return [
-    { title: pageTitle(title) },
-    { name: "description", content: description },
-    { property: "og:title", content: pageTitle(title) },
-    { property: "og:description", content: description },
-    { property: "twitter:title", content: pageTitle(title) },
-    { property: "twitter:description", content: description },
-    ...(image
-      ? [
-          { property: "og:image", content: image },
-          { property: "twitter:image", content: image },
-        ]
-      : []),
-  ];
-}
+export const pageMeta = (
+  title: string | undefined,
+  description: string,
+  image?: string
+) => [
+  { title: pageTitle(title) },
+  { content: description, name: "description" },
+  { content: pageTitle(title), property: "og:title" },
+  { content: description, property: "og:description" },
+  { content: pageTitle(title), property: "twitter:title" },
+  { content: description, property: "twitter:description" },
+  ...(image === undefined
+    ? []
+    : [
+        { content: image, property: "og:image" },
+        { content: image, property: "twitter:image" },
+      ]),
+];

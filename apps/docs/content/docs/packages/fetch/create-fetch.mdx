@@ -35,8 +35,7 @@ Each call uses the same overloads and error behavior as the top-level `api` and 
 
 ## Base URL
 
-Relative URLs are resolved against `baseURL`.
-Absolute URLs keep their original origin.
+Relative URLs are resolved against `baseURL`. Absolute URLs keep their original origin.
 
 ```ts
 const { api } = createFetch({
@@ -49,8 +48,7 @@ await api.get("https://status.example.com/health", StatusSchema);
 
 ## Headers
 
-Default headers are merged with request headers.
-Request headers win when the same header is provided twice.
+Default headers are merged with request headers. Request headers win when the same header is provided twice.
 
 ```ts
 const { api } = createFetch({
@@ -68,8 +66,7 @@ await api.get("/users/1", UserSchema, {
 
 ## Search Params
 
-Factory query params, URL query params, and request query params are merged in that order.
-Later values win.
+Factory query params, URL query params, and request query params are merged in that order. Later values win.
 
 ```ts
 const { api } = createFetch({

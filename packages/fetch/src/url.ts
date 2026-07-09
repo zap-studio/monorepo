@@ -7,6 +7,61 @@
 import type { ExtendedRequestInit, FetchDefaults } from "./types.js";
 
 /**
+ * Copies search params into target, overriding duplicate keys.
+ */
+const mergeSearchParams = (
+  target: URLSearchParams,
+  source: ExtendedRequestInit["searchParams"] | undefined
+): void => {
+  for (const [key, value] of new URLSearchParams(source)) {
+    target.set(key, value);
+  }
+};
+
+/**
+ * Ensures a URL has a trailing slash for relative URL resolution.
+ */
+const ensureTrailingSlash = (url: string): string =>
+  url.endsWith("/") ? url : `${url}/`;
+
+/**
+ * Resolves search params by applying default params, URL params, then request params.
+ */
+const resolveSearchParams = (
+  url: string,
+  defaultSearchParams: FetchDefaults["searchParams"] | undefined,
+  searchParams: ExtendedRequestInit["searchParams"] | undefined
+): string => {
+  if (defaultSearchParams === undefined && searchParams === undefined) {
+    return url;
+  }
+
+  const hashIndex = url.indexOf("#");
+  const hasFragment = hashIndex !== -1;
+  const urlWithoutHash = hasFragment ? url.slice(0, hashIndex) : url;
+  const hash = hasFragment ? url.slice(hashIndex + 1) : "";
+  const queryIndex = urlWithoutHash.indexOf("?");
+  const pathname =
+    queryIndex === -1 ? urlWithoutHash : urlWithoutHash.slice(0, queryIndex);
+  const urlSearchParams =
+    queryIndex === -1 ? undefined : urlWithoutHash.slice(queryIndex + 1);
+  const resolvedSearchParams = new URLSearchParams();
+
+  mergeSearchParams(resolvedSearchParams, defaultSearchParams);
+  mergeSearchParams(resolvedSearchParams, urlSearchParams);
+  mergeSearchParams(resolvedSearchParams, searchParams);
+
+  const resolvedSearch = resolvedSearchParams.toString();
+  const fragmentSuffix = hasFragment ? `#${hash}` : "";
+
+  if (resolvedSearch.length === 0) {
+    return `${pathname}${fragmentSuffix}`;
+  }
+
+  return `${pathname}?${resolvedSearch}${fragmentSuffix}`;
+};
+
+/**
  * Resolves final request URL by applying baseURL and layered search params.
  *
  * Search param precedence:
@@ -26,68 +81,14 @@ import type { ExtendedRequestInit, FetchDefaults } from "./types.js";
  *   `URL`, or when default/per-request search params cannot be converted by
  *   `URLSearchParams`.
  */
-export function resolveRequestUrl(
+export const resolveRequestUrl = (
   resourceUrl: string,
   defaults: FetchDefaults,
-  searchParams: ExtendedRequestInit["searchParams"] | undefined,
-): string {
+  searchParams?: ExtendedRequestInit["searchParams"]
+): string => {
   const url = defaults.baseURL
     ? new URL(resourceUrl, ensureTrailingSlash(defaults.baseURL)).toString()
     : resourceUrl;
 
   return resolveSearchParams(url, defaults.searchParams, searchParams);
-}
-
-/**
- * Resolves search params by applying default params, URL params, then request params.
- */
-function resolveSearchParams(
-  url: string,
-  defaultSearchParams: FetchDefaults["searchParams"] | undefined,
-  searchParams: ExtendedRequestInit["searchParams"] | undefined,
-): string {
-  if (!defaultSearchParams && searchParams === undefined) {
-    return url;
-  }
-
-  const hashIndex = url.indexOf("#");
-  const hasFragment = hashIndex >= 0;
-  const urlWithoutHash = hasFragment ? url.slice(0, hashIndex) : url;
-  const hash = hasFragment ? url.slice(hashIndex + 1) : "";
-  const queryIndex = urlWithoutHash.indexOf("?");
-  const pathname = queryIndex >= 0 ? urlWithoutHash.slice(0, queryIndex) : urlWithoutHash;
-  const urlSearchParams = queryIndex >= 0 ? urlWithoutHash.slice(queryIndex + 1) : undefined;
-  const resolvedSearchParams = new URLSearchParams();
-
-  mergeSearchParams(resolvedSearchParams, defaultSearchParams);
-  mergeSearchParams(resolvedSearchParams, urlSearchParams);
-  mergeSearchParams(resolvedSearchParams, searchParams);
-
-  const resolvedSearch = resolvedSearchParams.toString();
-  const fragmentSuffix = hasFragment ? `#${hash}` : "";
-
-  if (!resolvedSearch) {
-    return `${pathname}${fragmentSuffix}`;
-  }
-
-  return `${pathname}?${resolvedSearch}${fragmentSuffix}`;
-}
-
-/**
- * Ensures a URL has a trailing slash for relative URL resolution.
- */
-function ensureTrailingSlash(url: string): string {
-  return url.endsWith("/") ? url : `${url}/`;
-}
-
-/**
- * Copies search params into target, overriding duplicate keys.
- */
-function mergeSearchParams(
-  target: URLSearchParams,
-  source: ExtendedRequestInit["searchParams"] | undefined,
-): void {
-  for (const [key, value] of new URLSearchParams(source)) {
-    target.set(key, value);
-  }
-}
+};

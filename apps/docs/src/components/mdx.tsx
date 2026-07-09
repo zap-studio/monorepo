@@ -4,7 +4,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 import { getExternalLinkProps } from "@/lib/utils/links";
 
-export function getMDXComponents(components?: MDXComponents) {
+export const getMDXComponents = (components?: MDXComponents) => {
   const DefaultLink = defaultMdxComponents.a ?? "a";
 
   return {
@@ -14,7 +14,7 @@ export function getMDXComponents(components?: MDXComponents) {
     ),
     ...components,
   } satisfies MDXComponents;
-}
+};
 
 export const useMDXComponents = getMDXComponents;
 

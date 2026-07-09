@@ -107,8 +107,7 @@ const created = await api.post("/api/users", UserSchema, {
 });
 ```
 
-In this example, `UserSchema` validates the response from `/api/users`.
-The `json` value is the outgoing request body and is not validated by `UserSchema`.
+In this example, `UserSchema` validates the response from `/api/users`. The `json` value is the outgoing request body and is not validated by `UserSchema`.
 
 These helpers set the HTTP method for you. For raw responses without validation, use `$fetch`.
 
@@ -124,8 +123,7 @@ await api.post("/api/users", UserSchema, {
 });
 ```
 
-The schema argument still validates the response. Validate request bodies separately before
-passing them to `json` if your application needs outgoing payload validation.
+The schema argument still validates the response. Validate request bodies separately before passing them to `json` if your application needs outgoing payload validation.
 
 This sets:
 

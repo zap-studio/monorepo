@@ -1,15 +1,13 @@
 export const maxAttempts = 3;
 
-export type BenchmarkTask = () => Promise<"ok">;
+export type BenchmarkTask = () => "ok" | Promise<"ok">;
 
-export function createSuccessFirstTask(): BenchmarkTask {
-  return async () => "ok";
-}
+export const createSuccessFirstTask = (): BenchmarkTask => () => "ok";
 
-export function createSuccessAfterTwoRetriesTask(): BenchmarkTask {
+export const createSuccessAfterTwoRetriesTask = (): BenchmarkTask => {
   let failures = 0;
 
-  return async () => {
+  return () => {
     if (failures < 2) {
       failures += 1;
       throw new Error("benchmark-failure");
@@ -17,10 +15,8 @@ export function createSuccessAfterTwoRetriesTask(): BenchmarkTask {
 
     return "ok";
   };
-}
+};
 
-export function createAlwaysFailTask(): BenchmarkTask {
-  return async () => {
-    throw new Error("benchmark-failure");
-  };
-}
+export const createAlwaysFailTask = (): BenchmarkTask => () => {
+  throw new Error("benchmark-failure");
+};

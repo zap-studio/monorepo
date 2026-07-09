@@ -13,15 +13,17 @@ describe("types", () => {
   it("supports generic RetryPolicy contracts", () => {
     const policy: RetryPolicy<TypeError, { status: number }> = {
       next: (input: RetryDecisionInput<TypeError, { status: number }>) => ({
-        shouldRetry: input.attempt < 3,
         delayMs: 100,
         reason: "retry",
+        shouldRetry: input.attempt < 3,
       }),
-      onExhausted: (input: RetryExhaustedInput<TypeError, { status: number }>) =>
+      onExhausted: (
+        input: RetryExhaustedInput<TypeError, { status: number }>
+      ) =>
         new RetryError("exhausted", {
           attempts: input.attempts,
-          lastError: input.error,
           lastData: input.data,
+          lastError: input.error,
         }),
     };
 
@@ -36,7 +38,7 @@ describe("types", () => {
       error: new TypeError("network"),
     });
 
-    expect(decision.shouldRetry).toBe(true);
+    expect(decision.shouldRetry).toBeTruthy();
     expect(decision.delayMs).toBe(100);
     expect(error).toBeInstanceOf(RetryError);
   });
@@ -48,7 +50,7 @@ describe("types", () => {
       value: "ok",
     };
 
-    expect(options).toEqual({ throwOnExhausted: false });
-    expect(result).toEqual({ ok: true, value: "ok" });
+    expect(options).toStrictEqual({ throwOnExhausted: false });
+    expect(result).toStrictEqual({ ok: true, value: "ok" });
   });
 });
