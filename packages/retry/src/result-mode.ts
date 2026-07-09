@@ -5,58 +5,30 @@
  * @module @zap-studio/retry/result-mode
  */
 
-// oxlint-disable no-use-before-define -- Public loop stays first; private helpers follow below.
-
 import { sleepWithAbortSignal, toAbortError } from "./abort.js";
 import type { RetryPolicy, RetryRunResult } from "./types.js";
 
 /**
- * Runs the non-throw retry loop, returning
- * `RetryRunResult`.
+ * When `signal` is already aborted, builds the terminal `{ ok: false }` object
+ * with a normalized `AbortError` on `error`.
  *
- * @param policy - Object providing `next` and `onExhausted` (same contract as
- *   `BaseRetryPolicy`).
- * @param execute - Async work callback per attempt.
- * @param sleep - Delay function between retries.
- * @param signal - Optional cancel signal.
- * @returns Terminal success or failure object.
- * @throws {Error} Any error thrown by `next`, `onExhausted`, or a non-abort `sleep`
- *   failure.
+ * @param signal - Optional abort signal; only acts when `aborted` is set.
+ * @param attempts - Number of finished attempts to report in the result.
+ * @returns Failure result or `undefined` if not aborted.
  */
-export const runResultMode = async <T, TError, TData>(
-  policy: RetryPolicy<TError, TData>,
-  execute: (attempt: number) => Promise<T>,
-  sleep: (delayMs: number) => Promise<void>,
-  signal?: AbortSignal
-): Promise<RetryRunResult<T>> => {
-  let attempt = 1;
-
-  while (true) {
-    const abortResult = buildAbortResult(signal, Math.max(0, attempt - 1));
-    if (abortResult !== undefined) {
-      return abortResult;
-    }
-
-    // oxlint-disable-next-line no-await-in-loop -- Retry attempts must run sequentially.
-    const execution = await runAttempt(execute, attempt);
-    if (execution.ok) {
-      return { ok: true, value: execution.value };
-    }
-
-    // oxlint-disable-next-line no-await-in-loop -- Failure handling belongs to the current sequential attempt.
-    const failure = await handleFailure(policy, {
-      attempt,
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Policy error generic represents the caller's thrown error domain.
-      error: execution.error as TError,
-      signal,
-      sleep,
-    });
-    if (failure !== undefined) {
-      return failure;
-    }
-
-    attempt += 1;
+const buildAbortResult = (
+  signal: AbortSignal | undefined,
+  attempts: number
+): RetryRunResult<never> | undefined => {
+  if (signal?.aborted !== true) {
+    return undefined;
   }
+
+  return {
+    attempts,
+    error: toAbortError(signal.reason),
+    ok: false,
+  };
 };
 
 /**
@@ -81,6 +53,41 @@ const runAttempt = async <T>(
       error,
       ok: false,
     };
+  }
+};
+
+/**
+ * Awaits inter-attempt delay in result mode, mapping an abort during wait to
+ * a terminal result instead of throwing when `throwOnExhausted` is false.
+ *
+ * @param sleep - Custom or default sleep implementation.
+ * @param delayMs - Milliseconds to wait.
+ * @param signal - If set, `sleep` is raced with the abort signal.
+ * @param attempts - Attempt count to attach if the wait ends in abort.
+ * @returns A terminal result when canceled during the wait, otherwise
+ *   `undefined`.
+ * @throws {Error} The underlying `sleep` rejection when it is not an abort.
+ */
+const waitForDelay = async (
+  sleep: (delayMs: number) => Promise<void>,
+  delayMs: number,
+  signal: AbortSignal | undefined,
+  attempts: number
+): Promise<RetryRunResult<never> | undefined> => {
+  if (signal === undefined) {
+    await sleep(delayMs);
+    return undefined;
+  }
+
+  try {
+    await sleepWithAbortSignal(sleep, delayMs, signal);
+    return undefined;
+  } catch (error) {
+    const aborted = buildAbortResult(signal, attempts);
+    if (aborted !== undefined) {
+      return aborted;
+    }
+    throw error;
   }
 };
 
@@ -149,59 +156,50 @@ const handleFailure = async <TError, TData>(
 };
 
 /**
- * When `signal` is already aborted, builds the terminal `{ ok: false }` object
- * with a normalized `AbortError` on `error`.
+ * Runs the non-throw retry loop, returning
+ * `RetryRunResult`.
  *
- * @param signal - Optional abort signal; only acts when `aborted` is set.
- * @param attempts - Number of finished attempts to report in the result.
- * @returns Failure result or `undefined` if not aborted.
+ * @param policy - Object providing `next` and `onExhausted` (same contract as
+ *   `BaseRetryPolicy`).
+ * @param execute - Async work callback per attempt.
+ * @param sleep - Delay function between retries.
+ * @param signal - Optional cancel signal.
+ * @returns Terminal success or failure object.
+ * @throws {Error} Any error thrown by `next`, `onExhausted`, or a non-abort `sleep`
+ *   failure.
  */
-const buildAbortResult = (
-  signal: AbortSignal | undefined,
-  attempts: number
-): RetryRunResult<never> | undefined => {
-  if (signal?.aborted !== true) {
-    return undefined;
-  }
-
-  return {
-    attempts,
-    error: toAbortError(signal.reason),
-    ok: false,
-  };
-};
-
-/**
- * Awaits inter-attempt delay in result mode, mapping an abort during wait to
- * a terminal result instead of throwing when `throwOnExhausted` is false.
- *
- * @param sleep - Custom or default sleep implementation.
- * @param delayMs - Milliseconds to wait.
- * @param signal - If set, `sleep` is raced with the abort signal.
- * @param attempts - Attempt count to attach if the wait ends in abort.
- * @returns A terminal result when canceled during the wait, otherwise
- *   `undefined`.
- * @throws {Error} The underlying `sleep` rejection when it is not an abort.
- */
-const waitForDelay = async (
+export const runResultMode = async <T, TError, TData>(
+  policy: RetryPolicy<TError, TData>,
+  execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
-  delayMs: number,
-  signal: AbortSignal | undefined,
-  attempts: number
-): Promise<RetryRunResult<never> | undefined> => {
-  if (signal === undefined) {
-    await sleep(delayMs);
-    return undefined;
-  }
+  signal?: AbortSignal
+): Promise<RetryRunResult<T>> => {
+  let attempt = 1;
 
-  try {
-    await sleepWithAbortSignal(sleep, delayMs, signal);
-    return undefined;
-  } catch (error) {
-    const aborted = buildAbortResult(signal, attempts);
-    if (aborted !== undefined) {
-      return aborted;
+  while (true) {
+    const abortResult = buildAbortResult(signal, Math.max(0, attempt - 1));
+    if (abortResult !== undefined) {
+      return abortResult;
     }
-    throw error;
+
+    // oxlint-disable-next-line no-await-in-loop -- Retry attempts must run sequentially.
+    const execution = await runAttempt(execute, attempt);
+    if (execution.ok) {
+      return { ok: true, value: execution.value };
+    }
+
+    // oxlint-disable-next-line no-await-in-loop -- Failure handling belongs to the current sequential attempt.
+    const failure = await handleFailure(policy, {
+      attempt,
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Policy error generic represents the caller's thrown error domain.
+      error: execution.error as TError,
+      signal,
+      sleep,
+    });
+    if (failure !== undefined) {
+      return failure;
+    }
+
+    attempt += 1;
   }
 };
