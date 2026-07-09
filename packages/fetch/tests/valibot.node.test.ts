@@ -5,8 +5,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { $fetch, api } from "../src/index.js";
 
-// oxlint-disable require-await -- Mocked `Response.json` methods intentionally match the async Fetch API shape.
-
 describe("Valibot Standard Schema compatibility", () => {
   it("should expose ~standard property", () => {
     const schema = v.object({ id: v.number() });
@@ -43,7 +41,7 @@ describe("$fetch with Valibot schemas", () => {
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
-      json: async () => mockData,
+      json: () => mockData,
       ok: true,
       status: 200,
       statusText: "OK",
@@ -64,7 +62,7 @@ describe("$fetch with Valibot schemas", () => {
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
-      json: async () => invalidData,
+      json: () => invalidData,
       ok: true,
       status: 200,
       statusText: "OK",
@@ -85,7 +83,7 @@ describe("$fetch with Valibot schemas", () => {
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
-      json: async () => invalidData,
+      json: () => invalidData,
       ok: true,
       status: 200,
       statusText: "OK",
@@ -109,7 +107,7 @@ describe("$fetch with Valibot schemas", () => {
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
-      json: async () => validData,
+      json: () => validData,
       ok: true,
       status: 200,
       statusText: "OK",
@@ -139,7 +137,7 @@ describe("$fetch with Valibot schemas", () => {
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
-      json: async () => mockData,
+      json: () => mockData,
       ok: true,
       status: 200,
       statusText: "OK",
@@ -156,7 +154,7 @@ describe("$fetch with Valibot schemas", () => {
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
-      json: async () => mockData,
+      json: () => mockData,
       ok: true,
       status: 200,
       statusText: "OK",
@@ -174,7 +172,7 @@ describe("$fetch with Valibot schemas", () => {
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
-      json: async () => mockData,
+      json: () => mockData,
       ok: true,
       status: 201,
       statusText: "Created",
@@ -198,7 +196,7 @@ describe("$fetch with Valibot schemas", () => {
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
-      json: async () => mockData,
+      json: () => mockData,
       ok: true,
       status: 200,
       statusText: "OK",

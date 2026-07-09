@@ -1,10 +1,10 @@
+import { setTimeout as sleep } from "node:timers/promises";
+
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-
-// oxlint-disable require-await, promise/avoid-new -- These fixtures intentionally model async Standard Schema validators.
 
 function createMockSchema<T>(
   validateFn: (
@@ -135,7 +135,7 @@ describe(standardValidate, () => {
 
   describe("asynchronous validation", () => {
     it("should validate data against an asynchronous schema", async () => {
-      const schema = createMockSchema(async (input) => ({
+      const schema = createMockSchema((input) => ({
         value: input,
       }));
       const result = await standardValidate(schema, "async-test", {
@@ -145,14 +145,10 @@ describe(standardValidate, () => {
     });
 
     it("should await Promise-based validation and return validated value", async () => {
-      const schema = createMockSchema(
-        async (input) =>
-          await new Promise<StandardSchemaV1.Result<number>>((resolve) => {
-            setTimeout(() => {
-              resolve({ value: input as number });
-            }, 10);
-          })
-      );
+      const schema = createMockSchema(async (input) => {
+        await sleep(10);
+        return { value: input as number };
+      });
       const result = await standardValidate(schema, 123, {
         throwOnError: true,
       });
@@ -160,7 +156,7 @@ describe(standardValidate, () => {
     });
 
     it("should await Promise-based validation and return result object when throwOnError is false", async () => {
-      const schema = createMockSchema(async (input) => ({
+      const schema = createMockSchema((input) => ({
         value: input,
       }));
       const data = { name: "async" };
@@ -220,7 +216,7 @@ describe(standardValidate, () => {
     });
 
     it("should handle async validation failure with throwOnError true", async () => {
-      const schema = createMockSchema(async () => ({
+      const schema = createMockSchema(() => ({
         issues: [{ message: "Async validation failed" }],
       }));
 
@@ -233,7 +229,7 @@ describe(standardValidate, () => {
       const issues: StandardSchemaV1.Issue[] = [
         { message: "Async validation failed" },
       ];
-      const schema = createMockSchema(async () => ({ issues }));
+      const schema = createMockSchema(() => ({ issues }));
 
       const result = await standardValidate(schema, "data", {
         throwOnError: false,
