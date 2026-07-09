@@ -2,6 +2,7 @@
   "name": "@zap-studio/monorepo",
   "private": true,
   "author": "Alexandre Trotel",
+  "type": "module",
   "scripts": {
     "dev": "pnpm --filter docs run dev",
     "bench": "vitest bench --run",
