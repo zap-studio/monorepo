@@ -61,8 +61,8 @@ jobs:
       - name: Build packages
         run: pnpm --filter "$PACKAGE_FILTER" run build
 
-      - name: Run lint
-        run: pnpm run lint
+      - name: Run check
+        run: pnpm run check
 
   test:
     name: Test
