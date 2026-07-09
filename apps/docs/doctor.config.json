@@ -9,6 +9,10 @@
       {
         "files": ["src/components/mdx.tsx"],
         "rules": ["deslop/unused-export"]
+      },
+      {
+        "files": ["src/routes/docs/$.tsx"],
+        "rules": ["react-doctor/tanstack-start-loader-parallel-fetch"]
       }
     ]
   }
