@@ -21,8 +21,6 @@ import { responseSchema } from "./data.js";
 import { installMockFetch } from "./mock-fetch.js";
 import type { ClientSet } from "./types.js";
 
-// oxlint-disable typescript/no-unsafe-assignment, typescript/no-unsafe-return, typescript/no-unsafe-type-assertion, unicorn/no-await-expression-member -- Benchmarks intentionally normalize loosely typed third-party client results.
-
 export const createClientSet = (payload: unknown): ClientSet => {
   const mockFetch = installMockFetch(payload);
   const betterFetchDefaulted = createBetterFetch({

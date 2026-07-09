@@ -13,6 +13,15 @@ export default defineConfig({
   },
   overrides: [
     {
+      files: ["**/benchmarks/**/*.{ts,tsx}"],
+      rules: {
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-return": "off",
+        "typescript/no-unsafe-type-assertion": "off",
+        "unicorn/no-await-expression-member": "off",
+      },
+    },
+    {
       files: [
         "**/*.test.{ts,tsx}",
         "**/*.spec.{ts,tsx}",
