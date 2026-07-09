@@ -1,6 +1,5 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it, vi } from "vitest";
-// oxlint-disable require-await -- Async contract fixtures intentionally match policy APIs.
 
 import { PolicyError } from "../src/errors.js";
 import {
@@ -1196,7 +1195,7 @@ describe(createPolicy, () => {
     const asyncResources = {
       post: {
         "~standard": {
-          validate: async () => ({ value: {} }),
+          validate: () => Promise.resolve({ value: {} }),
           vendor: "test",
           version: 1,
         },
