@@ -147,4 +147,4 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Run publish checks
-        run: pnpm run format:check && pnpm run lint && pnpm run test && pnpm --filter "$PACKAGE_FILTER" run prepublishOnly
+        run: pnpm run check && pnpm run test && pnpm --filter "$PACKAGE_FILTER" run prepublishOnly
