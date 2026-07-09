@@ -1173,6 +1173,37 @@ describe(WebhookRouter, () => {
         expect(response.body).toStrictEqual({ error: "Internal server error" });
       });
 
+      it("should normalize a non-Error into an Error before calling onError", async () => {
+        interface WebhookMap {
+          test: { value: string };
+        }
+
+        class NonErrorThrown {
+          message = "not-an-error-instance";
+        }
+
+        let receivedError: Error | undefined;
+        const router = new WebhookRouter<WebhookMap>({
+          onError: (error) => {
+            receivedError = error;
+            return { body: { error: "handled" }, status: 500 };
+          },
+        });
+
+        router.register("test", () => {
+          throw new NonErrorThrown();
+        });
+
+        const response = await router.handle(
+          createMockRequest("/webhooks/test", { value: "test" })
+        );
+
+        expect(receivedError).toBeInstanceOf(Error);
+        expect(receivedError?.message).toBe("Internal server error");
+        expect(response.status).toBe(500);
+        expect(response.body).toStrictEqual({ error: "handled" });
+      });
+
       it("should handle different error types", async () => {
         interface WebhookMap {
           test: { value: string };
