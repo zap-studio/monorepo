@@ -6,8 +6,6 @@
 
 import type { NormalizedRequest, NormalizedResponse } from "../types/index.js";
 
-/* oxlint-disable typescript/no-unnecessary-type-parameters -- Adapter generics describe framework-specific request/response contracts for implementers. */
-
 interface RouterHandler {
   handle: (req: NormalizedRequest) => Promise<NormalizedResponse>;
 }
@@ -16,17 +14,20 @@ interface RouterHandler {
  * Minimal framework adapter contract.
  *
  * Implement this when integrating the webhook router with an HTTP framework.
+ *
+ * @template TReq - Framework-specific request type (e.g. `express.Request`).
+ * @template TRes - Framework-specific response type (e.g. `express.Response`).
  */
-export interface Adapter {
+export interface Adapter<TReq = unknown, TRes = unknown> {
   /**
    * Creates a framework handler that:
    * 1. normalizes the incoming framework request
    * 2. executes the webhook router
    * 3. writes the normalized response back to the framework response
    */
-  handleWebhook: <TFrameworkReq = unknown, TFrameworkRes = unknown>(
+  handleWebhook: (
     router: RouterHandler
-  ) => (req: TFrameworkReq, res: TFrameworkRes) => Promise<void>;
+  ) => (req: TReq, res: TRes) => Promise<void>;
 
   /**
    * Maps a normalized router response to the framework response object.
@@ -34,10 +35,10 @@ export interface Adapter {
    * @param frameworkRes - Framework-specific response object (e.g. `res`)
    * @param res - Normalized response returned by the webhook router
    */
-  toFrameworkResponse: <TFrameworkRes = unknown>(
-    frameworkRes: TFrameworkRes,
+  toFrameworkResponse: (
+    frameworkRes: TRes,
     res: NormalizedResponse
-  ) => Promise<TFrameworkRes>;
+  ) => Promise<TRes>;
 
   /**
    * Maps a framework request into the normalized request contract.
@@ -46,9 +47,7 @@ export interface Adapter {
    *
    * @param req - Framework-specific request object
    */
-  toNormalizedRequest: <TReq = unknown>(
-    req: TReq
-  ) => Promise<NormalizedRequest>;
+  toNormalizedRequest: (req: TReq) => Promise<NormalizedRequest>;
 }
 
 /**
@@ -57,16 +56,17 @@ export interface Adapter {
  * Extend this class in consumers to keep framework integration boilerplate
  * in one place while relying on the package router contract.
  */
-export abstract class BaseAdapter implements Adapter {
+export abstract class BaseAdapter<
+  TReq = unknown,
+  TRes = unknown,
+> implements Adapter<TReq, TRes> {
   /** @inheritdoc */
-  abstract toNormalizedRequest: <TReq = unknown>(
-    req: TReq
-  ) => Promise<NormalizedRequest>;
+  abstract toNormalizedRequest: (req: TReq) => Promise<NormalizedRequest>;
   /** @inheritdoc */
-  abstract toFrameworkResponse: <TFrameworkRes = unknown>(
-    frameworkRes: TFrameworkRes,
+  abstract toFrameworkResponse: (
+    frameworkRes: TRes,
     res: NormalizedResponse
-  ) => Promise<TFrameworkRes>;
+  ) => Promise<TRes>;
 
   /**
    * Shared adapter pipeline implementation.
@@ -75,9 +75,7 @@ export abstract class BaseAdapter implements Adapter {
    * can reuse this default orchestration.
    */
   handleWebhook =
-    <TFrameworkReq = unknown, TFrameworkRes = unknown>(
-      router: RouterHandler
-    ): ((req: TFrameworkReq, res: TFrameworkRes) => Promise<void>) =>
+    (router: RouterHandler): ((req: TReq, res: TRes) => Promise<void>) =>
     async (req, res) => {
       const normalizedReq = await this.toNormalizedRequest(req);
       const normalizedRes = await router.handle(normalizedReq);
