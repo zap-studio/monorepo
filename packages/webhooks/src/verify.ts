@@ -92,8 +92,7 @@ export const createHmacVerifier = ({
     const signature = await subtle.sign(
       "HMAC",
       key,
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Body bytes are passed to Web Crypto as BufferSource.
-      req.rawBody as BufferSource
+      new Uint8Array(req.rawBody)
     );
     const expected = toHex(new Uint8Array(signature));
 
