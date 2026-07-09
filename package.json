@@ -25,6 +25,7 @@
     "oxlint-tsgolint": "catalog:",
     "playwright": "catalog:",
     "publint": "catalog:",
+    "tegami": "catalog:",
     "tsdown": "catalog:",
     "ultracite": "catalog:",
     "vitest": "catalog:"

@@ -135,6 +135,9 @@ catalogs:
     tailwindcss:
       specifier: ^4.3.2
       version: 4.3.2
+    tegami:
+      specifier: ^1.2.4
+      version: 1.2.4
     tsdown:
       specifier: ^0.22.4
       version: 0.22.4
@@ -188,6 +191,9 @@ importers:
       publint:
         specifier: 'catalog:'
         version: 0.3.21
+      tegami:
+        specifier: 'catalog:'
+        version: 1.2.4
       tsdown:
         specifier: 'catalog:'
         version: 0.22.4(@arethetypeswrong/core@0.18.4)(publint@0.3.21)(typescript@7.0.2)
@@ -1483,6 +1489,9 @@ packages:
 
   '@radix-ui/rect@1.1.2':
     resolution: {integrity: sha512-xnXE7wG13PI+cxieVssYXlQJuYVRhH9NBoxt3KNwzghDIA69GMm7d4wXRouHIYjE+KvS6U/MsMO73NdS2MH9ZA==}
+
+  '@rainbowatcher/toml-edit-js@0.6.5':
+    resolution: {integrity: sha512-EdALJyTDcp2yOxeVw1OJevOF7NZrlWAbVEnOnQBV7YqycVCI0OcpDy6oLUa8vqSvv2F1RmXW7kz1kgYv2A5h/w==}
 
   '@rolldown/binding-android-arm64@1.1.5':
     resolution: {integrity: sha512-lZg8fqIv2v7FF237bwMgzGZEJvGL79/s5knJ/i6FmsGF4XXlzccZ4jb+TrFIxtSSxFtIpdsgrPZeMk1I9AFcyQ==}
@@ -4118,6 +4127,9 @@ packages:
     resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
     engines: {node: '>=6'}
 
+  tegami@1.2.4:
+    resolution: {integrity: sha512-JNyOtAKu4zgLyr1/czNsSPl12YHnMIcdJGIDGDkVDqsHf/cXfNXYSZXxHmRbgt1ZRX7VTzON5DlA8Owe8AZ6lQ==}
+
   thenify-all@1.6.0:
     resolution: {integrity: sha512-RNxQH/qI8/t3thXJDwcstUO4zeqo64+Uy/+sNVRBx4Xn2OX+OZ9oP+iJnNFqplFra2ZUVeKCSa2oVWi3T4uVmA==}
     engines: {node: '>=0.8'}
@@ -5505,6 +5517,8 @@ snapshots:
       '@types/react-dom': 19.2.3(@types/react@19.2.17)
 
   '@radix-ui/rect@1.1.2': {}
+
+  '@rainbowatcher/toml-edit-js@0.6.5': {}
 
   '@rolldown/binding-android-arm64@1.1.5':
     optional: true
@@ -8344,6 +8358,15 @@ snapshots:
       - react-dom
 
   tapable@2.3.3: {}
+
+  tegami@1.2.4:
+    dependencies:
+      '@clack/prompts': 1.7.0
+      '@rainbowatcher/toml-edit-js': 0.6.5
+      semver: 7.8.5
+      tinyexec: 1.2.4
+      tinyglobby: 0.2.17
+      yaml: 2.9.0
 
   thenify-all@1.6.0:
     dependencies:
