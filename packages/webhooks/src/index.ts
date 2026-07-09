@@ -4,8 +4,6 @@
  * @module @zap-studio/webhooks
  */
 
-// oxlint-disable no-await-in-loop -- Webhook hooks execute sequentially.
-
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { standardValidate } from "@zap-studio/validation";
 
@@ -198,10 +196,20 @@ export class WebhookRouter<TMap = unknown> {
     return normalizedPath;
   }
 
-  private async runGlobalBeforeHooks(req: NormalizedRequest): Promise<void> {
-    for (const hook of this.globalBeforeHooks) {
-      await hook(req);
+  private static async runHooks<T>(
+    hooks: T[],
+    run: (hook: T) => void | Promise<void>
+  ): Promise<void> {
+    for (const hook of hooks) {
+      // oxlint-disable-next-line no-await-in-loop -- hooks run sequentially; order + short-circuit matter.
+      await run(hook);
     }
+  }
+
+  private async runGlobalBeforeHooks(req: NormalizedRequest): Promise<void> {
+    await WebhookRouter.runHooks(this.globalBeforeHooks, async (hook) => {
+      await hook(req);
+    });
   }
 
   private static createHandlerEntry(
@@ -235,9 +243,9 @@ export class WebhookRouter<TMap = unknown> {
     before?: BeforeHook[]
   ): Promise<void> {
     if (before) {
-      for (const hook of before) {
+      await WebhookRouter.runHooks(before, async (hook) => {
         await hook(req);
-      }
+      });
     }
   }
 
@@ -325,9 +333,9 @@ export class WebhookRouter<TMap = unknown> {
     after?: AfterHook[]
   ): Promise<void> {
     if (after) {
-      for (const hook of after) {
+      await WebhookRouter.runHooks(after, async (hook) => {
         await hook(req, response);
-      }
+      });
     }
   }
 
@@ -335,9 +343,9 @@ export class WebhookRouter<TMap = unknown> {
     req: NormalizedRequest,
     response: NormalizedResponse
   ): Promise<void> {
-    for (const hook of this.globalAfterHooks) {
+    await WebhookRouter.runHooks(this.globalAfterHooks, async (hook) => {
       await hook(req, response);
-    }
+    });
   }
 
   private async handleError(
