@@ -19,8 +19,8 @@ export const constantTimeEquals = (a: string, b: string): boolean => {
 
   let result = 0;
   for (let i = 0; i < a.length; i += 1) {
-    // oxlint-disable-next-line no-bitwise -- XOR accumulation is the constant-time comparison primitive.
-    result |= (a.codePointAt(i) ?? 0) ^ (b.codePointAt(i) ?? 0);
+    // oxlint-disable-next-line no-bitwise, unicorn/prefer-code-point -- XOR accumulation is the constant-time comparison primitive; charCodeAt gives uniform per-index cost (inputs are ASCII hex digests, no surrogate pairs).
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
   }
 
   return result === 0;
