@@ -8,13 +8,7 @@
 // oxlint-disable no-use-before-define -- Public loop stays first; private helpers follow below.
 
 import { sleepWithAbortSignal, toAbortError } from "./abort.js";
-import type { RetryError } from "./errors.js";
-import type {
-  RetryDecision,
-  RetryDecisionInput,
-  RetryExhaustedInput,
-  RetryRunResult,
-} from "./types.js";
+import type { RetryPolicy, RetryRunResult } from "./types.js";
 
 /**
  * Runs the non-throw retry loop, returning
@@ -30,10 +24,7 @@ import type {
  *   failure.
  */
 export const runResultMode = async <T, TError, TData>(
-  policy: {
-    next: (input: RetryDecisionInput<TError, TData>) => RetryDecision;
-    onExhausted: (input: RetryExhaustedInput<TError, TData>) => RetryError;
-  },
+  policy: RetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
   signal?: AbortSignal
@@ -110,10 +101,7 @@ const runAttempt = async <T>(
  *   the error is not an abort.
  */
 const handleFailure = async <TError, TData>(
-  policy: {
-    next: (input: RetryDecisionInput<TError, TData>) => RetryDecision;
-    onExhausted: (input: RetryExhaustedInput<TError, TData>) => RetryError;
-  },
+  policy: RetryPolicy<TError, TData>,
   params: {
     attempt: number;
     error: TError;
