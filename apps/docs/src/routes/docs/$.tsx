@@ -122,11 +122,8 @@ const DocsRoute = () => {
   );
 };
 
+// oxlint-disable sort-keys -- TanStack route property order feeds type inference (loader must precede head/component); keep this order over alphabetical.
 export const Route = createFileRoute("/docs/$")({
-  component: DocsRoute,
-  head: () => ({
-    meta: pageMeta("Documentation", "Browse the Zap Studio documentation."),
-  }),
   loader: async ({ params }) => {
     const data = await loadDocsPageFn({
       data: params._splat?.split("/") ?? [],
@@ -135,4 +132,9 @@ export const Route = createFileRoute("/docs/$")({
     await docsClientLoader.preload(data.path);
     return data;
   },
+  head: () => ({
+    meta: pageMeta("Documentation", "Browse the Zap Studio documentation."),
+  }),
+  component: DocsRoute,
 });
+// oxlint-enable sort-keys
