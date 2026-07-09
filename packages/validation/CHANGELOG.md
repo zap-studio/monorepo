@@ -1,3 +1,9 @@
+## @zap-studio/validation@0.3.5
+
+### Migrate to ultracite lint/format
+
+Internal formatting and lint cleanup with no public API change. `isStandardSchema` now accepts an optional argument, and `standardValidateSync` throws a `TypeError` (still an `Error`) for async schemas.
+
 # @zap-studio/validation
 
 ## 0.3.4

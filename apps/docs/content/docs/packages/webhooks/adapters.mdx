@@ -30,6 +30,8 @@ Conceptually:
 
 ## Example
 
+`BaseAdapter<TReq, TRes>` is generic over your framework's request and response types — pass them as type arguments for stronger typing, or omit them to fall back to `unknown`. The mapping members are defined as arrow properties, so override them with property syntax (not method syntax).
+
 ```ts
 import { BaseAdapter } from "@zap-studio/webhooks/adapters/base";
 import type {
@@ -38,19 +40,17 @@ import type {
 } from "@zap-studio/webhooks/types";
 
 class MyHttpAdapter extends BaseAdapter {
-  async toNormalizedRequest(req: any): Promise<NormalizedRequest> {
-    return {
-      method: req.method,
-      path: req.url,
-      headers: new Headers(req.headers),
-      rawBody: req.rawBody,
-    };
-  }
+  toNormalizedRequest = async (req: any): Promise<NormalizedRequest> => ({
+    method: req.method,
+    path: req.url,
+    headers: new Headers(req.headers),
+    rawBody: req.rawBody,
+  });
 
-  async toFrameworkResponse(
+  toFrameworkResponse = async (
     res: any,
     normalized: NormalizedResponse
-  ): Promise<any> {
+  ): Promise<any> => {
     res.statusCode = normalized.status;
     res.end(
       typeof normalized.body === "string"
@@ -58,7 +58,7 @@ class MyHttpAdapter extends BaseAdapter {
         : JSON.stringify(normalized.body)
     );
     return res;
-  }
+  };
 }
 ```
 

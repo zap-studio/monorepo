@@ -186,20 +186,20 @@ import type {
   NormalizedResponse,
 } from "@zap-studio/webhooks/types";
 
+// `BaseAdapter<TReq, TRes>` is generic over your framework request/response
+// types. Override the mapping members with arrow-property syntax.
 class MyHttpAdapter extends BaseAdapter {
-  async toNormalizedRequest(req: any): Promise<NormalizedRequest> {
-    return {
-      method: req.method,
-      path: req.url,
-      headers: new Headers(req.headers),
-      rawBody: req.rawBody,
-    };
-  }
+  toNormalizedRequest = async (req: any): Promise<NormalizedRequest> => ({
+    method: req.method,
+    path: req.url,
+    headers: new Headers(req.headers),
+    rawBody: req.rawBody,
+  });
 
-  async toFrameworkResponse(
+  toFrameworkResponse = async (
     res: any,
     normalized: NormalizedResponse
-  ): Promise<any> {
+  ): Promise<any> => {
     res.statusCode = normalized.status;
     res.end(
       typeof normalized.body === "string"
@@ -207,7 +207,7 @@ class MyHttpAdapter extends BaseAdapter {
         : JSON.stringify(normalized.body)
     );
     return res;
-  }
+  };
 }
 ```
 

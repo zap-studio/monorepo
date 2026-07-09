@@ -1,3 +1,11 @@
+## @zap-studio/webhooks@0.3.0
+
+### Migrate to ultracite lint/format; make the adapter contract generic
+
+`Adapter` and `BaseAdapter` are now generic over the framework request/response types (`Adapter<TReq, TRes>`, `BaseAdapter<TReq, TRes>`), replacing the previous per-method generics. The mapping members (`toNormalizedRequest`, `toFrameworkResponse`, `handleWebhook`) are now arrow properties, so custom adapters must override them with property syntax rather than method syntax.
+
+Also: `register()` now returns `this`, error hooks always receive a real `Error` instance, and `rawBody` is typed as `Uint8Array`.
+
 # @zap-studio/webhooks
 
 ## 0.2.2

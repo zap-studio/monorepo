@@ -1,3 +1,9 @@
+## @zap-studio/retry@0.3.1
+
+### Migrate to ultracite lint/format
+
+Internal formatting and lint cleanup only. No public API or behavior change.
+
 # @zap-studio/retry
 
 ## 0.3.0

@@ -1,0 +1,60 @@
+core:changelogs:
+  - content:
+      "---\npackages:\n  \"@zap-studio/fetch\":\n    type: patch\n---\n\n## Migrate to ultracite lint/format\n\nInternal formatting and lint cleanup only. No public API or behavior change.\n"
+    filename: fetch-lint-format.md
+    v: 0.0.0
+  - content:
+      "---\npackages:\n  \"@zap-studio/retry\":\n    type: patch\n---\n\n## Migrate to ultracite lint/format\n\nInternal formatting and lint cleanup only. No public API or behavior change.\n"
+    filename: retry-lint-format.md
+    v: 0.0.0
+  - content:
+      "---\npackages:\n  \"@zap-studio/validation\":\n    type: patch\n---\n\n## Migrate to ultracite lint/format\n\nInternal formatting and lint cleanup with no public API change. `isStandardSchema`\nnow accepts an optional argument, and `standardValidateSync` throws a `TypeError`\n(still an `Error`) for async schemas.\n"
+    filename: validation-lint-format.md
+    v: 0.0.0
+  - content:
+      "---\npackages:\n  \"@zap-studio/webhooks\":\n    type: minor\n---\n\n## Migrate to ultracite lint/format; make the adapter contract generic\n\n`Adapter` and `BaseAdapter` are now generic over the framework request/response\ntypes (`Adapter<TReq, TRes>`, `BaseAdapter<TReq, TRes>`), replacing the previous\nper-method generics. The mapping members (`toNormalizedRequest`,\n`toFrameworkResponse`, `handleWebhook`) are now arrow properties, so custom\nadapters must override them with property syntax rather than method syntax.\n\nAlso: `register()` now returns `this`, error hooks always receive a real `Error`\ninstance, and `rawBody` is typed as `Uint8Array`.\n"
+    filename: webhooks-adapter-generics.md
+    v: 0.0.0
+  - content:
+      "---\npackages:\n  \"@zap-studio/permit\":\n    type: patch\n---\n\n## Migrate to ultracite lint/format\n\nInternal formatting and lint cleanup only. No public API or behavior change.\n"
+    filename: permit-lint-format.md
+    v: 0.0.0
+core:packages:
+  - id: npm:@zap-studio/monorepo
+    updated: false
+  - id: npm:docs
+    updated: false
+  - id: npm:@zap-studio/tsdown
+    updated: false
+  - id: npm:@zap-studio/typescript
+    updated: false
+  - changelogIds:
+      - fetch-lint-format.md
+    id: npm:@zap-studio/fetch
+    updated: true
+  - changelogIds:
+      - retry-lint-format.md
+    id: npm:@zap-studio/retry
+    updated: true
+  - changelogIds:
+      - validation-lint-format.md
+    id: npm:@zap-studio/validation
+    updated: true
+  - changelogIds:
+      - webhooks-adapter-generics.md
+    id: npm:@zap-studio/webhooks
+    updated: true
+  - changelogIds:
+      - permit-lint-format.md
+    id: npm:@zap-studio/permit
+    updated: true
+npm:packages:
+  - id: npm:@zap-studio/monorepo
+  - id: npm:docs
+  - id: npm:@zap-studio/tsdown
+  - id: npm:@zap-studio/typescript
+  - id: npm:@zap-studio/fetch
+  - id: npm:@zap-studio/retry
+  - id: npm:@zap-studio/validation
+  - id: npm:@zap-studio/webhooks
+  - id: npm:@zap-studio/permit

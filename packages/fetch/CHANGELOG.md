@@ -1,3 +1,9 @@
+## @zap-studio/fetch@0.5.5
+
+### Migrate to ultracite lint/format
+
+Internal formatting and lint cleanup only. No public API or behavior change.
+
 # @zap-studio/fetch
 
 ## 0.5.4
