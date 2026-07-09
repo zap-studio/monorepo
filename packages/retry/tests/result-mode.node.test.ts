@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from "vitest";
-// oxlint-disable require-await -- Mock policy functions intentionally match async policy contracts.
 
 import { AbortError, RetryError } from "../src/errors.js";
 import { expectFailureResult, SequencePolicy } from "./sequence-policy.js";
@@ -119,9 +118,9 @@ describe("result mode (throwOnExhausted: false)", () => {
 
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
-      .mockImplementation(async () => {
+      .mockImplementation(() => {
         controller.abort("aborted-during-execute");
-        throw new Error("failed");
+        return Promise.reject(new Error("failed"));
       });
 
     const result = await policy.run(execute, {
