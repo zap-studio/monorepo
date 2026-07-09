@@ -6,39 +6,23 @@
 
 import type { ExtendedRequestInit, FetchDefaults } from "./types.js";
 
-// oxlint-disable no-use-before-define -- Helpers are ordered by public API.
+/**
+ * Copies search params into target, overriding duplicate keys.
+ */
+const mergeSearchParams = (
+  target: URLSearchParams,
+  source: ExtendedRequestInit["searchParams"] | undefined
+): void => {
+  for (const [key, value] of new URLSearchParams(source)) {
+    target.set(key, value);
+  }
+};
 
 /**
- * Resolves final request URL by applying baseURL and layered search params.
- *
- * Search param precedence:
- * 1. `defaults.searchParams`
- * 2. search params already present in `resourceUrl`
- * 3. per-request `searchParams`
- *
- * @example
- * const finalUrl = resolveRequestUrl(
- *   "/users?page=2",
- *   { ...defaults, baseURL: "https://api.example.com", searchParams: { locale: "en" } },
- *   { page: "3" },
- * );
- * // https://api.example.com/users?locale=en&page=3
- *
- * @throws {TypeError} When `baseURL` and `resourceUrl` cannot be resolved by
- *   `URL`, or when default/per-request search params cannot be converted by
- *   `URLSearchParams`.
+ * Ensures a URL has a trailing slash for relative URL resolution.
  */
-export const resolveRequestUrl = (
-  resourceUrl: string,
-  defaults: FetchDefaults,
-  searchParams?: ExtendedRequestInit["searchParams"]
-): string => {
-  const url = defaults.baseURL
-    ? new URL(resourceUrl, ensureTrailingSlash(defaults.baseURL)).toString()
-    : resourceUrl;
-
-  return resolveSearchParams(url, defaults.searchParams, searchParams);
-};
+const ensureTrailingSlash = (url: string): string =>
+  url.endsWith("/") ? url : `${url}/`;
 
 /**
  * Resolves search params by applying default params, URL params, then request params.
@@ -78,19 +62,33 @@ const resolveSearchParams = (
 };
 
 /**
- * Ensures a URL has a trailing slash for relative URL resolution.
+ * Resolves final request URL by applying baseURL and layered search params.
+ *
+ * Search param precedence:
+ * 1. `defaults.searchParams`
+ * 2. search params already present in `resourceUrl`
+ * 3. per-request `searchParams`
+ *
+ * @example
+ * const finalUrl = resolveRequestUrl(
+ *   "/users?page=2",
+ *   { ...defaults, baseURL: "https://api.example.com", searchParams: { locale: "en" } },
+ *   { page: "3" },
+ * );
+ * // https://api.example.com/users?locale=en&page=3
+ *
+ * @throws {TypeError} When `baseURL` and `resourceUrl` cannot be resolved by
+ *   `URL`, or when default/per-request search params cannot be converted by
+ *   `URLSearchParams`.
  */
-const ensureTrailingSlash = (url: string): string =>
-  url.endsWith("/") ? url : `${url}/`;
+export const resolveRequestUrl = (
+  resourceUrl: string,
+  defaults: FetchDefaults,
+  searchParams?: ExtendedRequestInit["searchParams"]
+): string => {
+  const url = defaults.baseURL
+    ? new URL(resourceUrl, ensureTrailingSlash(defaults.baseURL)).toString()
+    : resourceUrl;
 
-/**
- * Copies search params into target, overriding duplicate keys.
- */
-const mergeSearchParams = (
-  target: URLSearchParams,
-  source: ExtendedRequestInit["searchParams"] | undefined
-): void => {
-  for (const [key, value] of new URLSearchParams(source)) {
-    target.set(key, value);
-  }
+  return resolveSearchParams(url, defaults.searchParams, searchParams);
 };
