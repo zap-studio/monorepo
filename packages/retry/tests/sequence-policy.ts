@@ -1,5 +1,4 @@
 import { expect } from "vitest";
-// oxlint-disable class-methods-use-this, max-classes-per-file -- Test fixtures define small policy classes to exercise base-class behavior.
 
 import type { AbortError } from "../src/errors.js";
 import { RetryError } from "../src/errors.js";

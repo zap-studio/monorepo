@@ -15,6 +15,7 @@ export default defineConfig({
     {
       files: [
         "**/benchmarks/**/*.{ts,tsx}",
+        "**/tests/**/*.{ts,tsx}",
         "**/*.test.{ts,tsx}",
         "**/*.spec.{ts,tsx}",
         "**/*.node.test.{ts,tsx}",
@@ -22,7 +23,9 @@ export default defineConfig({
         "**/__tests__/**/*.{ts,tsx}",
       ],
       rules: {
+        "class-methods-use-this": "off",
         "func-style": "off",
+        "max-classes-per-file": "off",
         "no-await-in-loop": "off",
         "prefer-destructuring": "off",
         "typescript/no-unsafe-argument": "off",
