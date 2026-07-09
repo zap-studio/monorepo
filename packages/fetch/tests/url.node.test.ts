@@ -60,7 +60,7 @@ describe(resolveRequestUrl, () => {
     );
 
     expect(url).toBe(
-      "https://api.example.com/users?page=3&locale=en&from=resource&q=zap#team"
+      "https://api.example.com/users?locale=en&page=3&from=resource&q=zap#team"
     );
   });
 

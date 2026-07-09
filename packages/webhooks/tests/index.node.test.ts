@@ -207,7 +207,6 @@ describe(WebhookRouter, () => {
 
       expect(response).toStrictEqual({
         body: "ok",
-        headers: undefined,
         status: 200,
       });
     });

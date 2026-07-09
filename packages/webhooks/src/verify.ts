@@ -67,6 +67,12 @@ export const createHmacVerifier = ({
   secret: string;
   algo?: HmacAlgorithm;
 }): VerifyFn => {
+  if (globalThis.crypto?.subtle === undefined) {
+    throw new VerificationError(
+      "Web Crypto API is unavailable in this runtime"
+    );
+  }
+
   const { subtle } = globalThis.crypto;
 
   const hash = HMAC_HASH[algo];
