@@ -309,6 +309,35 @@ export const hasRole: HasRoleFn =
   };
 
 /**
+ * Splits a typed `resource:action` permission string into its parts.
+ * Returns `null` when the string is malformed (missing/empty part or extra segments).
+ */
+const parsePermission = <
+  TResources extends Resources,
+  TActions extends Actions<TResources>,
+  K extends keyof TResources & keyof TActions,
+>(
+  permission: `${K & string}:${InferAction<TActions, K> & string}`
+): { action: InferAction<TActions, K>; resourceType: K } | null => {
+  const [resourceTypeValue, actionValue, ...rest] = permission.split(":");
+  if (
+    resourceTypeValue === undefined ||
+    resourceTypeValue.length === 0 ||
+    actionValue === undefined ||
+    actionValue.length === 0 ||
+    rest.length > 0
+  ) {
+    return null;
+  }
+
+  return {
+    action: actionValue,
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Parsed permission strings are constrained by the typed permission template.
+    resourceType: resourceTypeValue as K,
+  };
+};
+
+/**
  * Creates a type-safe policy from resource schemas, actions, and rules.
  *
  * @example
@@ -398,28 +427,6 @@ export const createPolicy = <
     }
   };
 
-  // oxlint-disable-next-line unicorn/consistent-function-scoping -- Generic over the enclosing policy's TResources/TActions; those type params cannot be inferred at the call site if hoisted.
-  const parsePermission = <K extends keyof TResources & keyof TActions>(
-    permission: `${K & string}:${InferAction<TActions, K> & string}`
-  ): { action: InferAction<TActions, K>; resourceType: K } | null => {
-    const [resourceTypeValue, actionValue, ...rest] = permission.split(":");
-    if (
-      resourceTypeValue === undefined ||
-      resourceTypeValue.length === 0 ||
-      actionValue === undefined ||
-      actionValue.length === 0 ||
-      rest.length > 0
-    ) {
-      return null;
-    }
-
-    return {
-      action: actionValue,
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Parsed permission strings are constrained by the typed permission template.
-      resourceType: resourceTypeValue as K,
-    };
-  };
-
   const hasAllowedAction = <K extends keyof TResources & keyof TActions>(
     resourceType: K,
     action: InferAction<TActions, K>
@@ -461,7 +468,9 @@ export const createPolicy = <
       permission: `${K & string}:${InferAction<TActions, K> & string}`,
       resource: InferResource<TResources, K>
     ): Promise<boolean> {
-      const parsedPermission = parsePermission(permission);
+      const parsedPermission = parsePermission<TResources, TActions, K>(
+        permission
+      );
       if (parsedPermission === null) {
         return false;
       }
