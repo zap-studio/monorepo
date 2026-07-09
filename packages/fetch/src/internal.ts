@@ -17,65 +17,6 @@ import type {
 } from "./types.js";
 import { resolveRequestUrl } from "./url.js";
 
-// oxlint-disable func-style, no-use-before-define -- Internal fetch helpers use declarations for readability around the main execution path.
-
-/**
- * Internal fetch implementation used by both $fetch and createFetch.
- *
- * This function normalizes request input, resolves final URL + query params,
- * executes `fetch`, optionally throws `FetchError`, and optionally validates
- * JSON response payloads using Standard Schema.
- *
- * @param input - Request URL, path, or Request object.
- * @param schema - Optional Standard Schema for response validation.
- * @param options - Optional request options and package-specific flags.
- * @param defaults - Effective client defaults.
- * @returns Raw `Response` when no schema is provided; otherwise validated output.
- * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
- * @throws {ValidationError} When a schema is provided, validation returns issues, and
- *   `throwOnValidationError` is `true`.
- * @throws {TypeError} When both `body` and `json` are provided, when JSON request
- *   serialization fails, when request construction fails, when headers/search params are
- *   invalid, when `response.json()` cannot read the body, or when the runtime `fetch`
- *   implementation rejects network-level failures as `TypeError`.
- * @throws {DOMException} When the runtime rejects an aborted request or response body read
- *   as an `AbortError` DOMException.
- * @throws {SyntaxError} When a schema is provided and `response.json()` cannot parse the
- *   response body.
- * @throws {unknown} Any error thrown or rejected by the provided Standard Schema validator.
- */
-export async function fetchInternal(
-  input: FetchInput,
-  schema: StandardSchemaV1 | undefined,
-  options: ExtendedRequestInit | undefined,
-  defaults: FetchDefaults
-): Promise<unknown> {
-  const request = normalizeRequest(input, options);
-  const { init, searchParams, throwOnFetchError, throwOnValidationError } =
-    prepareRequestInit(request.options, defaults);
-  const url = resolveRequestUrl(request.url, defaults, searchParams);
-  const response = request.request
-    ? await fetch(new Request(url, request.request), init)
-    : await fetch(url, init);
-
-  if (throwOnFetchError && !response.ok) {
-    throw new FetchError(
-      `HTTP ${response.status}: ${response.statusText}`,
-      response
-    );
-  }
-
-  if (schema === undefined) {
-    return response;
-  }
-
-  const raw: unknown = await response.json();
-  if (throwOnValidationError) {
-    return await standardValidate(schema, raw, { throwOnError: true });
-  }
-  return await standardValidate(schema, raw, { throwOnError: false });
-}
-
 /**
  * Normalizes request-level options into a final RequestInit payload and runtime flags.
  *
@@ -83,7 +24,7 @@ export async function fetchInternal(
  * @param defaults - Client-level defaults.
  * @returns Fully merged request init payload and effective runtime flags.
  */
-function prepareRequestInit(
+const prepareRequestInit = (
   options: ExtendedRequestInit,
   defaults: FetchDefaults
 ): {
@@ -91,7 +32,7 @@ function prepareRequestInit(
   searchParams: ExtendedRequestInit["searchParams"] | undefined;
   throwOnFetchError: boolean;
   throwOnValidationError: boolean;
-} {
+} => {
   const {
     headers,
     json,
@@ -130,4 +71,61 @@ function prepareRequestInit(
     throwOnFetchError,
     throwOnValidationError,
   };
-}
+};
+
+/**
+ * Internal fetch implementation used by both $fetch and createFetch.
+ *
+ * This function normalizes request input, resolves final URL + query params,
+ * executes `fetch`, optionally throws `FetchError`, and optionally validates
+ * JSON response payloads using Standard Schema.
+ *
+ * @param input - Request URL, path, or Request object.
+ * @param schema - Optional Standard Schema for response validation.
+ * @param options - Optional request options and package-specific flags.
+ * @param defaults - Effective client defaults.
+ * @returns Raw `Response` when no schema is provided; otherwise validated output.
+ * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
+ * @throws {ValidationError} When a schema is provided, validation returns issues, and
+ *   `throwOnValidationError` is `true`.
+ * @throws {TypeError} When both `body` and `json` are provided, when JSON request
+ *   serialization fails, when request construction fails, when headers/search params are
+ *   invalid, when `response.json()` cannot read the body, or when the runtime `fetch`
+ *   implementation rejects network-level failures as `TypeError`.
+ * @throws {DOMException} When the runtime rejects an aborted request or response body read
+ *   as an `AbortError` DOMException.
+ * @throws {SyntaxError} When a schema is provided and `response.json()` cannot parse the
+ *   response body.
+ * @throws {unknown} Any error thrown or rejected by the provided Standard Schema validator.
+ */
+export const fetchInternal = async (
+  input: FetchInput,
+  schema: StandardSchemaV1 | undefined,
+  options: ExtendedRequestInit | undefined,
+  defaults: FetchDefaults
+): Promise<unknown> => {
+  const request = normalizeRequest(input, options);
+  const { init, searchParams, throwOnFetchError, throwOnValidationError } =
+    prepareRequestInit(request.options, defaults);
+  const url = resolveRequestUrl(request.url, defaults, searchParams);
+  const response = request.request
+    ? await fetch(new Request(url, request.request), init)
+    : await fetch(url, init);
+
+  if (throwOnFetchError && !response.ok) {
+    throw new FetchError(
+      `HTTP ${response.status}: ${response.statusText}`,
+      response
+    );
+  }
+
+  if (schema === undefined) {
+    return response;
+  }
+
+  const raw: unknown = await response.json();
+  if (throwOnValidationError) {
+    return await standardValidate(schema, raw, { throwOnError: true });
+  }
+  return await standardValidate(schema, raw, { throwOnError: false });
+};
