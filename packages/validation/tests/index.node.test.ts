@@ -1,6 +1,5 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { describe, expect, it } from "vitest";
-// oxlint-disable require-await, promise/avoid-new -- Test helpers intentionally exercise async Standard Schema contracts.
 
 import { ValidationError } from "../src/errors.js";
 import {
@@ -139,9 +138,9 @@ describe(createStandardValidator, () => {
   });
 
   it("should return a reusable async validator for asynchronous schemas", async () => {
-    const schema = createMockSchema(async (input) => ({
-      value: { wrapped: input },
-    }));
+    const schema = createMockSchema((input) =>
+      Promise.resolve({ value: { wrapped: input } })
+    );
 
     const validate = createStandardValidator(schema);
     const result = await validate("test");
@@ -257,9 +256,7 @@ describe(createSyncStandardValidator, () => {
   it("should throw when the schema validate function returns a Promise", () => {
     const schema: StandardSchemaV1<unknown, string> = {
       "~standard": {
-        validate: async (input: unknown) => ({
-          value: String(input),
-        }),
+        validate: (input: unknown) => Promise.resolve({ value: String(input) }),
         vendor: "test",
         version: 1,
       },
@@ -326,9 +323,9 @@ describe(standardValidate, () => {
 
   describe("asynchronous validation", () => {
     it("should validate data against an asynchronous schema", async () => {
-      const schema = createMockSchema(async (input) => ({
-        value: input,
-      }));
+      const schema = createMockSchema((input) =>
+        Promise.resolve({ value: input })
+      );
 
       const result = await standardValidate(schema, "async-test", {
         throwOnError: true,
@@ -338,14 +335,10 @@ describe(standardValidate, () => {
     });
 
     it("should await Promise-based validation", async () => {
-      const schema = createMockSchema(
-        async (input) =>
-          await new Promise<StandardSchemaV1.Result<number>>((resolve) => {
-            setTimeout(() => {
-              resolve({ value: input as number });
-            }, 10);
-          })
-      );
+      const schema = createMockSchema(async (input) => {
+        await Promise.resolve();
+        return { value: input as number };
+      });
 
       const result = await standardValidate(schema, 123, {
         throwOnError: true,
@@ -355,9 +348,9 @@ describe(standardValidate, () => {
     });
 
     it("should return result object when throwOnError is false", async () => {
-      const schema = createMockSchema(async (input) => ({
-        value: input,
-      }));
+      const schema = createMockSchema((input) =>
+        Promise.resolve({ value: input })
+      );
 
       const data = { name: "async" };
 
@@ -432,9 +425,9 @@ describe(standardValidate, () => {
     });
 
     it("should handle async validation failure with throwOnError true", async () => {
-      const schema = createMockSchema(async () => ({
-        issues: [{ message: "Async validation failed" }],
-      }));
+      const schema = createMockSchema(() =>
+        Promise.resolve({ issues: [{ message: "Async validation failed" }] })
+      );
 
       await expect(
         standardValidate(schema, "data", { throwOnError: true })
@@ -446,7 +439,7 @@ describe(standardValidate, () => {
         { message: "Async validation failed" },
       ];
 
-      const schema = createMockSchema(async () => ({ issues }));
+      const schema = createMockSchema(() => Promise.resolve({ issues }));
 
       const result = await standardValidate(schema, "data", {
         throwOnError: false,
@@ -572,9 +565,9 @@ describe(standardValidateSync, () => {
   });
 
   it("should throw if the schema performs asynchronous validation", () => {
-    const schema = createMockSchema(async (input) => ({
-      value: input,
-    }));
+    const schema = createMockSchema((input) =>
+      Promise.resolve({ value: input })
+    );
 
     expect(() => standardValidateSync(schema, "test")).toThrow(
       "Async schemas are not supported by standardValidateSync"
