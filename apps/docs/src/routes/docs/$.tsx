@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, getRouteApi, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { useFumadocsLoader } from "fumadocs-core/source/client";
 import browserCollections from "fumadocs-mdx:collections/browser";
@@ -103,25 +103,10 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
   },
 });
 
-export const Route = createFileRoute("/docs/$")({
-  // oxlint-disable-next-line no-use-before-define -- Route component uses Route.useLoaderData().
-  component: DocsRoute,
-  head: () => ({
-    meta: pageMeta("Documentation", "Browse the Zap Studio documentation."),
-  }),
-  loader: async ({ params }) => {
-    const data = await loadDocsPageFn({
-      data: params._splat?.split("/") ?? [],
-    });
+const docsRouteApi = getRouteApi("/docs/$");
 
-    await docsClientLoader.preload(data.path);
-    return data;
-  },
-});
-
-// oxlint-disable-next-line func-style -- TanStack route object references this hoisted component.
-function DocsRoute() {
-  const loaderData = Route.useLoaderData();
+const DocsRoute = () => {
+  const loaderData = docsRouteApi.useLoaderData();
   const { pageTree, path } = useFumadocsLoader(loaderData);
   const { markdownUrl } = loaderData;
 
@@ -135,4 +120,19 @@ function DocsRoute() {
       </Suspense>
     </DocsLayout>
   );
-}
+};
+
+export const Route = createFileRoute("/docs/$")({
+  component: DocsRoute,
+  head: () => ({
+    meta: pageMeta("Documentation", "Browse the Zap Studio documentation."),
+  }),
+  loader: async ({ params }) => {
+    const data = await loadDocsPageFn({
+      data: params._splat?.split("/") ?? [],
+    });
+
+    await docsClientLoader.preload(data.path);
+    return data;
+  },
+});
