@@ -103,10 +103,12 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
   },
 });
 
-// oxlint-disable-next-line sort-keys -- TanStack Router type inference and React Doctor require loader before head.
 export const Route = createFileRoute("/docs/$")({
   // oxlint-disable-next-line no-use-before-define -- Route component uses Route.useLoaderData().
   component: DocsRoute,
+  head: () => ({
+    meta: pageMeta("Documentation", "Browse the Zap Studio documentation."),
+  }),
   loader: async ({ params }) => {
     const data = await loadDocsPageFn({
       data: params._splat?.split("/") ?? [],
@@ -115,9 +117,6 @@ export const Route = createFileRoute("/docs/$")({
     await docsClientLoader.preload(data.path);
     return data;
   },
-  head: () => ({
-    meta: pageMeta("Documentation", "Browse the Zap Studio documentation."),
-  }),
 });
 
 // oxlint-disable-next-line func-style -- TanStack route object references this hoisted component.
