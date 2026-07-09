@@ -1,0 +1,9 @@
+{
+  "workspace": [
+    "./packages/validation",
+    "./packages/fetch",
+    "./packages/permit",
+    "./packages/retry",
+    "./packages/webhooks"
+  ]
+}
