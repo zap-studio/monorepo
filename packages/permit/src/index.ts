@@ -410,7 +410,6 @@ export function createPolicy<
     }
 
     return {
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Parsed permission strings are constrained by the typed permission template.
       action: actionValue,
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Parsed permission strings are constrained by the typed permission template.
       resourceType: resourceTypeValue as K,

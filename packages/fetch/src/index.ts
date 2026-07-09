@@ -23,8 +23,6 @@ import type {
   FetchInput,
 } from "./types.js";
 
-// oxlint-disable func-style -- Public overloaded fetch signatures require function declarations.
-
 /**
  * Type-safe fetch wrapper with Standard Schema validation.
  *
