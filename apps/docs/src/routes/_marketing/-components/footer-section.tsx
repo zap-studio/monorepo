@@ -141,7 +141,7 @@ export const FooterSection = (): ReactNode => (
               className="text-xs leading-5 text-fd-muted-foreground/40"
               suppressHydrationWarning
             >
-              &copy; {new Date().getFullYear()} Alexandre Trotel.
+              &copy; {new Date().getFullYear()} atrtde.
             </p>
           </div>
 
