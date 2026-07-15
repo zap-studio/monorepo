@@ -3,4 +3,12 @@ pre-commit:
   jobs:
     - name: ultracite
       run: pnpm exec ultracite fix
+      glob:
+        - "**/*.js"
+        - "**/*.jsx"
+        - "**/*.ts"
+        - "**/*.tsx"
+        - "**/*.json"
+        - "**/*.jsonc"
+        - "**/*.css"
       stage_fixed: true
