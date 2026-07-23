@@ -18,7 +18,7 @@ catalog:
   "@fontsource/instrument-serif": ^5.3.0
   "@standard-schema/spec": ^1.1.0
   "@tailwindcss/vite": ^4.3.3
-  "@takumi-rs/image-response": ^2.3.2
+  "@takumi-rs/image-response": ^2.4.1
   "@tanstack/react-router": ^1.170.18
   "@tanstack/react-start": ^1.168.32
   "@types/async-retry": ^1.4.9
@@ -27,7 +27,7 @@ catalog:
   "@types/promise-retry": ^1.1.6
   "@types/react": ^19.2.17
   "@types/react-dom": ^19.2.3
-  "@vitejs/plugin-react": ^6.0.3
+  "@vitejs/plugin-react": ^6.0.4
   "@vitest/browser-playwright": ^4.1.10
   "@vitest/coverage-v8": ^4.1.10
   arktype: ^2.2.3
@@ -43,23 +43,23 @@ catalog:
   motion: ^12.42.2
   nitro: 3.0.260610-beta
   ofetch: ^1.5.1
-  oxfmt: ^0.59.0
-  oxlint: ^1.74.0
-  oxlint-tsgolint: ^0.25.0
+  oxfmt: ^0.60.0
+  oxlint: ^1.75.0
+  oxlint-tsgolint: ^7.0.2001
   ultracite: ^7.9.4
   p-retry: ^8.0.0
   playwright: ^1.61.1
   promise-retry: ^2.0.1
   publint: ^0.3.21
-  react: ^19.2.7
-  react-dom: ^19.2.7
+  react: ^19.2.8
+  react-dom: ^19.2.8
   tailwind-merge: ^3.6.0
   tailwindcss: ^4.3.3
-  tsdown: ^0.22.11
+  tsdown: ^0.22.13
   typescript: ^7.0.2
   valibot: ^1.4.2
   vitest: ^4.1.10
   zod: ^4.4.3
-  tegami: ^1.2.5
+  tegami: ^1.2.6
 
 catalogMode: prefer
