@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Scan TODOs in PR changes
-        uses: atrtde/todo-tree-action@v1
+        uses: alexandretrotel/todo-tree-action@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           changed-only: true

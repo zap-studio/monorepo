@@ -1,7 +1,7 @@
 {
   "name": "@zap-studio/monorepo",
   "private": true,
-  "author": "atrtde",
+  "author": "alexandretrotel",
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter docs run dev",
