@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
-  "ignorePatterns": ["oxfmt.config.ts", "oxlint.config.ts", "scripts/**"],
+  "ignorePatterns": ["oxfmt.config.ts", "oxlint.config.ts"],
   "duplicates": {
     "ignore": ["**/tests/**"]
   },
@@ -10,8 +10,7 @@
     "@zap-studio/permit",
     "@zap-studio/retry",
     "@zap-studio/validation",
-    "@zap-studio/webhooks",
-    "tegami"
+    "@zap-studio/webhooks"
   ],
   "ignoreExports": [
     {

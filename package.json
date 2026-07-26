@@ -7,7 +7,6 @@
     "dev": "pnpm --filter docs run dev",
     "build": "pnpm --filter './packages/*' run build",
     "publish:check": "pnpm run check && pnpm run test && pnpm --filter './packages/*' run prepublishOnly",
-    "tegami": "node scripts/tegami.mts",
     "fix": "pnpm exec ultracite fix --type-aware --type-check",
     "check": "pnpm exec ultracite check --type-aware --type-check",
     "test": "vitest run",
@@ -24,7 +23,6 @@
     "oxlint-tsgolint": "catalog:",
     "playwright": "catalog:",
     "publint": "catalog:",
-    "tegami": "catalog:",
     "tsdown": "catalog:",
     "ultracite": "catalog:",
     "vitest": "catalog:"
