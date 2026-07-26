@@ -9,23 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
-import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
+import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
-import { Route as PackagesWebhooksRouteImport } from './routes/packages/webhooks'
-import { Route as PackagesValidationRouteImport } from './routes/packages/validation'
-import { Route as PackagesRetryRouteImport } from './routes/packages/retry'
-import { Route as PackagesPermitRouteImport } from './routes/packages/permit'
-import { Route as PackagesFetchRouteImport } from './routes/packages/fetch'
-import { Route as DocsSplatRouteImport } from './routes/docs/$'
 import { Route as ApiSearchRouteImport } from './routes/api/search'
-import { Route as OgDocsSplatRouteImport } from './routes/og/docs/$'
+import { Route as DocsSplatRouteImport } from './routes/docs/$'
+import { Route as PackagesFetchRouteImport } from './routes/packages/fetch'
+import { Route as PackagesPermitRouteImport } from './routes/packages/permit'
+import { Route as PackagesRetryRouteImport } from './routes/packages/retry'
+import { Route as PackagesValidationRouteImport } from './routes/packages/validation'
+import { Route as PackagesWebhooksRouteImport } from './routes/packages/webhooks'
 import { Route as LlmsDotmdxDocsSplatRouteImport } from './routes/llms[.]mdx.docs.$'
+import { Route as OgDocsSplatRouteImport } from './routes/og/docs/$'
 
-const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
-  id: '/llms.txt',
-  path: '/llms.txt',
+const MarketingRouteRoute = MarketingRouteRouteImport.update({
+  id: '/_marketing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LlmsFullDottxtRoute = LlmsFullDottxtRouteImport.update({
@@ -33,8 +32,9 @@ const LlmsFullDottxtRoute = LlmsFullDottxtRouteImport.update({
   path: '/llms-full.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MarketingRouteRoute = MarketingRouteRouteImport.update({
-  id: '/_marketing',
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketingIndexRoute = MarketingIndexRouteImport.update({
@@ -42,29 +42,9 @@ const MarketingIndexRoute = MarketingIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MarketingRouteRoute,
 } as any)
-const PackagesWebhooksRoute = PackagesWebhooksRouteImport.update({
-  id: '/packages/webhooks',
-  path: '/packages/webhooks',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PackagesValidationRoute = PackagesValidationRouteImport.update({
-  id: '/packages/validation',
-  path: '/packages/validation',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PackagesRetryRoute = PackagesRetryRouteImport.update({
-  id: '/packages/retry',
-  path: '/packages/retry',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PackagesPermitRoute = PackagesPermitRouteImport.update({
-  id: '/packages/permit',
-  path: '/packages/permit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PackagesFetchRoute = PackagesFetchRouteImport.update({
-  id: '/packages/fetch',
-  path: '/packages/fetch',
+const ApiSearchRoute = ApiSearchRouteImport.update({
+  id: '/api/search',
+  path: '/api/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsSplatRoute = DocsSplatRouteImport.update({
@@ -72,19 +52,39 @@ const DocsSplatRoute = DocsSplatRouteImport.update({
   path: '/docs/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiSearchRoute = ApiSearchRouteImport.update({
-  id: '/api/search',
-  path: '/api/search',
+const PackagesFetchRoute = PackagesFetchRouteImport.update({
+  id: '/packages/fetch',
+  path: '/packages/fetch',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OgDocsSplatRoute = OgDocsSplatRouteImport.update({
-  id: '/og/docs/$',
-  path: '/og/docs/$',
+const PackagesPermitRoute = PackagesPermitRouteImport.update({
+  id: '/packages/permit',
+  path: '/packages/permit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PackagesRetryRoute = PackagesRetryRouteImport.update({
+  id: '/packages/retry',
+  path: '/packages/retry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PackagesValidationRoute = PackagesValidationRouteImport.update({
+  id: '/packages/validation',
+  path: '/packages/validation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PackagesWebhooksRoute = PackagesWebhooksRouteImport.update({
+  id: '/packages/webhooks',
+  path: '/packages/webhooks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LlmsDotmdxDocsSplatRoute = LlmsDotmdxDocsSplatRouteImport.update({
   id: '/llms.mdx/docs/$',
   path: '/llms.mdx/docs/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OgDocsSplatRoute = OgDocsSplatRouteImport.update({
+  id: '/og/docs/$',
+  path: '/og/docs/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -195,11 +195,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/llms.txt': {
-      id: '/llms.txt'
-      path: '/llms.txt'
-      fullPath: '/llms.txt'
-      preLoaderRoute: typeof LlmsDottxtRouteImport
+    '/_marketing': {
+      id: '/_marketing'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof MarketingRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/llms-full.txt': {
@@ -209,11 +209,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LlmsFullDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_marketing': {
-      id: '/_marketing'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof MarketingRouteRouteImport
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_marketing/': {
@@ -223,39 +223,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketingIndexRouteImport
       parentRoute: typeof MarketingRouteRoute
     }
-    '/packages/webhooks': {
-      id: '/packages/webhooks'
-      path: '/packages/webhooks'
-      fullPath: '/packages/webhooks'
-      preLoaderRoute: typeof PackagesWebhooksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/packages/validation': {
-      id: '/packages/validation'
-      path: '/packages/validation'
-      fullPath: '/packages/validation'
-      preLoaderRoute: typeof PackagesValidationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/packages/retry': {
-      id: '/packages/retry'
-      path: '/packages/retry'
-      fullPath: '/packages/retry'
-      preLoaderRoute: typeof PackagesRetryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/packages/permit': {
-      id: '/packages/permit'
-      path: '/packages/permit'
-      fullPath: '/packages/permit'
-      preLoaderRoute: typeof PackagesPermitRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/packages/fetch': {
-      id: '/packages/fetch'
-      path: '/packages/fetch'
-      fullPath: '/packages/fetch'
-      preLoaderRoute: typeof PackagesFetchRouteImport
+    '/api/search': {
+      id: '/api/search'
+      path: '/api/search'
+      fullPath: '/api/search'
+      preLoaderRoute: typeof ApiSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs/$': {
@@ -265,18 +237,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/search': {
-      id: '/api/search'
-      path: '/api/search'
-      fullPath: '/api/search'
-      preLoaderRoute: typeof ApiSearchRouteImport
+    '/packages/fetch': {
+      id: '/packages/fetch'
+      path: '/packages/fetch'
+      fullPath: '/packages/fetch'
+      preLoaderRoute: typeof PackagesFetchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/og/docs/$': {
-      id: '/og/docs/$'
-      path: '/og/docs/$'
-      fullPath: '/og/docs/$'
-      preLoaderRoute: typeof OgDocsSplatRouteImport
+    '/packages/permit': {
+      id: '/packages/permit'
+      path: '/packages/permit'
+      fullPath: '/packages/permit'
+      preLoaderRoute: typeof PackagesPermitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/packages/retry': {
+      id: '/packages/retry'
+      path: '/packages/retry'
+      fullPath: '/packages/retry'
+      preLoaderRoute: typeof PackagesRetryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/packages/validation': {
+      id: '/packages/validation'
+      path: '/packages/validation'
+      fullPath: '/packages/validation'
+      preLoaderRoute: typeof PackagesValidationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/packages/webhooks': {
+      id: '/packages/webhooks'
+      path: '/packages/webhooks'
+      fullPath: '/packages/webhooks'
+      preLoaderRoute: typeof PackagesWebhooksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/llms.mdx/docs/$': {
@@ -284,6 +277,13 @@ declare module '@tanstack/react-router' {
       path: '/llms.mdx/docs/$'
       fullPath: '/llms.mdx/docs/$'
       preLoaderRoute: typeof LlmsDotmdxDocsSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/og/docs/$': {
+      id: '/og/docs/$'
+      path: '/og/docs/$'
+      fullPath: '/og/docs/$'
+      preLoaderRoute: typeof OgDocsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
