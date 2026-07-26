@@ -48,13 +48,7 @@
     "prepublishOnly": "pnpm exec publint --strict && pnpm exec attw --profile esm-only --pack ."
   },
   "devDependencies": {
-    "@types/async-retry": "catalog:",
-    "@types/promise-retry": "catalog:",
     "@zap-studio/typescript": "workspace:*",
-    "async-retry": "catalog:",
-    "exponential-backoff": "catalog:",
-    "p-retry": "catalog:",
-    "promise-retry": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

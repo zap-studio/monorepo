@@ -59,12 +59,8 @@
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
-    "@better-fetch/fetch": "catalog:",
     "@zap-studio/typescript": "workspace:*",
     "arktype": "catalog:",
-    "axios": "catalog:",
-    "ky": "catalog:",
-    "ofetch": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "valibot": "catalog:",

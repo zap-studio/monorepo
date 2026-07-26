@@ -14,7 +14,6 @@ export default defineConfig({
   overrides: [
     {
       files: [
-        "**/benchmarks/**/*.{ts,tsx}",
         "**/tests/**/*.{ts,tsx}",
         "**/*.test.{ts,tsx}",
         "**/*.spec.{ts,tsx}",

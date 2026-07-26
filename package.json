@@ -5,8 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter docs run dev",
-    "bench": "vitest bench --run",
-    "bench:watch": "vitest bench --watch",
     "build": "pnpm --filter './packages/*' run build",
     "publish:check": "pnpm run check && pnpm run test && pnpm --filter './packages/*' run prepublishOnly",
     "tegami": "node scripts/tegami.mts",

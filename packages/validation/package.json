@@ -44,12 +44,9 @@
   },
   "devDependencies": {
     "@zap-studio/typescript": "workspace:*",
-    "arktype": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
-    "valibot": "catalog:",
-    "vitest": "catalog:",
-    "zod": "catalog:"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=18.0.0"
