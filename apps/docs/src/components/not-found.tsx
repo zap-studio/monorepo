@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
 export const NotFoundComponent = (): ReactNode => (
-  <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+  <main className="mx-auto flex min-h-dvh w-full max-w-3xl flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
     <p className="font-mono text-xs tracking-[0.2em] text-fd-muted-foreground uppercase">
       404
     </p>

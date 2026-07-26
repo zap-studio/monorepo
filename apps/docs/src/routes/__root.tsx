@@ -21,7 +21,7 @@ const RootComponent = () => (
     <head>
       <HeadContent />
     </head>
-    <body className="flex min-h-screen flex-col font-sans antialiased">
+    <body className="flex min-h-dvh flex-col font-sans antialiased">
       <RootProvider>
         <Outlet />
       </RootProvider>
