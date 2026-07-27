@@ -21,7 +21,7 @@ catalog:
   "@tanstack/react-router": ^1.170.18
   "@tanstack/react-start": ^1.168.32
   "@types/mdx": ^2.0.14
-  "@types/node": ^24.13.3
+  "@types/node": ^26.1.2
   "@types/react": ^19.2.17
   "@types/react-dom": ^19.2.3
   "@vitejs/plugin-react": ^6.0.4
