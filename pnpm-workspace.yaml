@@ -30,7 +30,7 @@ catalog:
   arktype: ^2.2.3
   fumadocs-core: ^16.12.1
   fumadocs-mdx: ^15.2.0
-  fumadocs-ui: ^16.12.1
+  fumadocs-ui: ^16.13.0
   lefthook: ^2.1.10
   lucide-react: ^1.26.0
   motion: ^12.42.2
