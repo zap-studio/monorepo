@@ -28,7 +28,7 @@ catalog:
   "@vitest/browser-playwright": ^4.1.10
   "@vitest/coverage-v8": ^4.1.10
   arktype: ^2.2.3
-  fumadocs-core: ^16.12.1
+  fumadocs-core: ^16.13.0
   fumadocs-mdx: ^15.2.0
   fumadocs-ui: ^16.12.1
   lefthook: ^2.1.10
