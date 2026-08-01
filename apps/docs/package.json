@@ -5,39 +5,22 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "build": "vite build",
-    "dev": "vite dev",
-    "preview": "vite preview",
-    "types:check": "fumadocs-mdx && tsc --noEmit",
-    "postinstall": "fumadocs-mdx"
+    "build": "vocs build",
+    "dev": "vocs dev",
+    "preview": "vocs preview",
+    "types:check": "tsc --noEmit"
   },
   "dependencies": {
-    "@fontsource-variable/inter": "catalog:",
-    "@fontsource-variable/jetbrains-mono": "catalog:",
-    "@fontsource/instrument-serif": "catalog:",
-    "@takumi-rs/image-response": "catalog:",
-    "@tanstack/react-router": "catalog:",
-    "@tanstack/react-start": "catalog:",
-    "fumadocs-core": "catalog:",
-    "fumadocs-mdx": "catalog:",
-    "fumadocs-ui": "catalog:",
-    "lucide-react": "catalog:",
-    "motion": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "tailwind-merge": "catalog:"
+    "vocs": "catalog:",
+    "waku": "catalog:"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "catalog:",
-    "@types/mdx": "catalog:",
-    "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vitejs/plugin-react": "catalog:",
-    "nitro": "catalog:",
-    "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vite": "^8.1.5"
+    "vite": "catalog:"
   },
   "engines": {
     "node": ">=20.0.0"

@@ -4,7 +4,7 @@
   "duplicates": {
     "ignore": ["**/tests/**"]
   },
-  "dynamicallyLoaded": ["apps/docs/content/docs/**/*.mdx"],
+  "dynamicallyLoaded": ["apps/docs/src/pages/**/*.mdx"],
   "ignoreDependencies": [
     "@zap-studio/fetch",
     "@zap-studio/permit",
@@ -14,12 +14,8 @@
   ],
   "ignoreExports": [
     {
-      "file": "apps/docs/source.config.ts",
-      "exports": ["docs", "default"]
-    },
-    {
-      "file": "apps/docs/src/components/mdx.tsx",
-      "exports": ["useMDXComponents"]
+      "file": "apps/docs/vocs.config.ts",
+      "exports": ["default"]
     }
   ]
 }

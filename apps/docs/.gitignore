@@ -1,7 +1,6 @@
 /node_modules
-/.output
-/.source
 /dist
 /.vercel
 /coverage
 *.tsbuildinfo
+/src/pages.gen.ts

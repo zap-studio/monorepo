@@ -1,0 +1,112 @@
+---
+title: Validation
+description: Validate fetch responses with Standard Schema-compatible validators.
+---
+
+[`fetch`](/fetch) validates responses through [`@zap-studio/validation`](/validation), so any Standard Schema-compatible validator can be used.
+
+Schemas passed to `$fetch` or `api.*` validate response bodies only. They do not validate outgoing request `json` or `body` payloads.
+
+## Validation Flow
+
+When a schema is provided:
+
+1. The HTTP request is executed.
+2. The response body is read with `response.json()`.
+3. The parsed value is validated with the provided Standard Schema.
+4. The validated value is returned, or validation issues are surfaced.
+
+```ts
+const user = await api.get("/api/users/1", UserSchema);
+```
+
+For request-body validation, validate the payload yourself before passing it to `json`.
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+
+const input = await standardValidate(CreateUserInputSchema, formData, {
+  throwOnError: true,
+});
+
+const user = await api.post("/api/users", UserSchema, {
+  json: input,
+});
+```
+
+## Supported Validators
+
+Any validator that implements Standard Schema works.
+
+```ts
+import { z } from "zod";
+
+const UserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+```
+
+```ts
+import * as v from "valibot";
+
+const UserSchema = v.object({
+  id: v.number(),
+  name: v.string(),
+});
+```
+
+```ts
+import { type } from "arktype";
+
+const UserSchema = type({
+  id: "number",
+  name: "string",
+});
+```
+
+## Throwing Mode
+
+Validation throws `ValidationError` by default when the response does not match the schema.
+
+```ts
+import { ValidationError } from "@zap-studio/validation/errors";
+
+try {
+  const user = await api.get("/api/users/1", UserSchema);
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.error(error.issues);
+  } else {
+    throw error;
+  }
+}
+```
+
+## Result Mode
+
+Set `throwOnValidationError: false` to receive the Standard Schema result object.
+
+```ts
+const result = await api.get("/api/users/1", UserSchema, {
+  throwOnValidationError: false,
+});
+
+if (result.issues) {
+  console.error(result.issues);
+} else {
+  console.log(result.value);
+}
+```
+
+## Standalone Validation
+
+For validation outside HTTP requests, use [`@zap-studio/validation`](/validation) directly.
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+
+const user = await standardValidate(UserSchema, input, {
+  throwOnError: true,
+});
+```

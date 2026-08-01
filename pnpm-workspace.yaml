@@ -4,51 +4,38 @@ packages:
   - packages/*
 
 allowBuilds:
+  es5-ext: true
   esbuild: true
   lefthook: true
+  vue-demi: true
 
 overrides:
   fflate: 0.8.2
 
 catalog:
   "@arethetypeswrong/cli": ^0.18.5
-  "@fontsource-variable/inter": ^5.3.0
-  "@fontsource-variable/jetbrains-mono": ^5.3.0
-  "@fontsource/instrument-serif": ^5.3.0
   "@standard-schema/spec": ^1.1.0
-  "@tailwindcss/vite": ^4.3.3
-  "@takumi-rs/image-response": ^2.4.2
-  "@tanstack/react-router": ^1.170.18
-  "@tanstack/react-start": ^1.168.32
-  "@types/mdx": ^2.0.14
-  "@types/node": ^24.13.3
-  "@types/react": ^19.2.17
-  "@types/react-dom": ^19.2.3
-  "@vitejs/plugin-react": ^6.0.4
+  "@types/react": ^19.2.18
+  "@types/react-dom": ^19.2.4
   "@vitest/browser-playwright": ^4.1.10
   "@vitest/coverage-v8": ^4.1.10
   arktype: ^2.2.3
-  fumadocs-core: ^16.12.1
-  fumadocs-mdx: ^15.2.0
-  fumadocs-ui: ^16.12.1
   lefthook: ^2.1.10
-  lucide-react: ^1.26.0
-  motion: ^12.42.2
-  nitro: 3.0.260610-beta
-  oxfmt: ^0.60.0
-  oxlint: ^1.75.0
+  oxfmt: ^0.61.0
+  oxlint: ^1.76.0
   oxlint-tsgolint: ^7.0.2001
   ultracite: ^7.9.4
-  playwright: ^1.62.0
+  playwright: ^1.62.1
   publint: ^0.3.22
   react: ^19.2.8
   react-dom: ^19.2.8
-  tailwind-merge: ^3.6.0
-  tailwindcss: ^4.3.3
   tsdown: ^0.22.14
   typescript: ^7.0.2
   valibot: ^1.4.2
+  vite: ^8.2.0
   vitest: ^4.1.10
+  vocs: ^2.8.0
+  waku: 1.0.0-beta.8
   zod: ^4.4.3
 
 catalogMode: prefer

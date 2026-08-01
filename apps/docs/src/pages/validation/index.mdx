@@ -1,0 +1,74 @@
+---
+title: Overview
+description: Understand Standard Schema, the interoperability problem it solves, and why Zap Studio built validation.
+---
+
+`validation` is a small package that makes validation workflows consistent across any [Standard Schema](https://standardschema.dev/schema) compatible library.
+
+## What Is Standard Schema?
+
+Different teams choose different validators:
+
+- [Zod](https://zod.dev/)
+- [ArkType](https://arktype.io/)
+- [Valibot](https://valibot.dev/)
+
+This is usually fine until you need shared infrastructure across teams and packages.
+
+Without a common contract, every library has different parsing APIs, return shapes, and error formats.
+
+**Standard Schema** defines a shared interface so those libraries can be consumed through one consistent protocol. That means your app or package logic can stay stable even when schema implementations differ.
+
+## Why We Created `validation`?
+
+At Zap Studio, multiple packages need runtime validation ([`fetch`](/fetch), [`permit`](/permit), and others). We wanted one internal validation flow that works with any Standard Schema-compatible library.
+
+So `validation` provides:
+
+- a single validation helper surface
+- an `isStandardSchema` guard for unknown values
+- sync and async-safe validation options
+- a shared `ValidationError` type
+- reusable validator factories
+
+This lets us keep package behavior consistent and avoid library-specific branching.
+
+### Before
+
+Without a shared API, you usually end up writing separate validation branches for each schema library used across teams or packages. That approach is easy to miss in edge cases, hard to keep exhaustive over time, and prone to inconsistent error handling.
+
+```ts
+if (validatorLib === "zod") {
+  const result = userSchema.safeParse(input);
+  if (!result.success) throw result.error;
+  return result.data;
+}
+
+if (validatorLib === "valibot") {
+  const result = v.safeParse(userSchema, input);
+  if (!result.success) throw result.issues;
+  return result.output;
+}
+```
+
+### After
+
+With `validation`, you call one helper regardless of the underlying Standard Schema-compatible library. The flow is simpler, easier to reason about, and much easier to keep consistent across packages.
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+
+const user = await standardValidate(userSchema, input, {
+  throwOnError: true,
+});
+```
+
+### StandardSchemaV1
+
+The Standard Schema specification is defined as the `StandardSchemaV1` namespace. `validation` re-exports this namespace so you can import it directly from `@zap-studio/validation`.
+
+```ts
+import { StandardSchemaV1 } from "@zap-studio/validation";
+```
+
+Let's now learn how to validate against schemas and handle errors with this package.
