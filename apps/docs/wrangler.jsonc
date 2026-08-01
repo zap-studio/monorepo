@@ -4,7 +4,7 @@
   "compatibility_date": "2026-08-01",
   "assets": {
     "directory": "./dist/public",
-    "html_handling": "auto-trailing-slash",
+    "html_handling": "drop-trailing-slash",
     "not_found_handling": "404-page",
   },
 }

@@ -1,6 +1,7 @@
 /node_modules
 /dist
 /.vercel
+/.wrangler
 /coverage
 *.tsbuildinfo
 /src/pages.gen.ts
