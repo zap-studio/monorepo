@@ -1,21 +1,37 @@
 ---
 title: Schema Guard
-description: Understand the role of isStandardSchema and how to safely validate unknown schema inputs.
+description: Reference for isStandardSchema, the runtime guard that detects Standard Schema values.
 ---
 
-`isStandardSchema` is a runtime guard that checks whether a value implements the Standard Schema interface.
+# Schema Guard
 
-Use it when schema values are dynamic, external, or typed as `unknown`.
+`isStandardSchema` is a runtime type guard that checks whether a value implements the [Standard Schema](https://standardschema.dev) interface.
 
-## Why It Exists
+## Signature
 
-In static code, TypeScript types usually ensure you pass a schema to validation helpers. At runtime, you may still receive unknown values from plugins, shared registries, or configuration.
+```ts
+function isStandardSchema(value?: unknown): value is StandardSchemaV1;
+```
 
-`isStandardSchema` helps you:
+### Parameters
 
-- prevent invalid values from being passed to validation helpers
-- branch safely before validation
-- keep runtime behavior predictable in dynamic systems
+| Name    | Type                 | Description         |
+| ------- | -------------------- | ------------------- |
+| `value` | `unknown` (optional) | The value to check. |
+
+### Returns
+
+`boolean` — `true` if the value is a Standard Schema, otherwise `false`. When it returns `true`, TypeScript narrows `value` to `StandardSchemaV1`.
+
+### Behavior
+
+The guard returns `true` when the value is:
+
+- not `null` or `undefined`, and
+- an object or a function, and
+- has a `~standard` property.
+
+It checks for the presence of the `~standard` property only; it does not verify that `~standard.validate` is callable. If a malformed value passes the guard, the validation helpers throw a `TypeError` at call time.
 
 ## Basic Usage
 
@@ -29,6 +45,8 @@ if (isStandardSchema(schemaLike)) {
 
 ## Guard Before Validation
 
+Use the guard when schema values are dynamic, external, or typed as `unknown` — for example when they come from plugins, shared registries, or configuration.
+
 ```ts
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 
@@ -37,9 +55,7 @@ export async function validateIfPossible(schemaLike: unknown, input: unknown) {
     return { ok: false as const, reason: "not-a-schema" as const };
   }
 
-  const result = await standardValidate(schemaLike, input, {
-    throwOnError: false,
-  });
+  const result = await standardValidate(schemaLike, input);
 
   if (result.issues) {
     return {
@@ -53,10 +69,10 @@ export async function validateIfPossible(schemaLike: unknown, input: unknown) {
 }
 ```
 
-## When To Use It
+## When to Use It
 
 - schema objects come from external modules or user configuration
 - your API accepts flexible `unknown` inputs
-- you build framework/package boundaries and want explicit runtime checks
+- you build framework or package boundaries and want explicit runtime checks
 
 If schema values are always strongly typed as `StandardSchemaV1`, you usually do not need this guard.

@@ -1,9 +1,11 @@
 ---
 title: RetryError
-description: Terminal error classes thrown for retry exhaustion and cancellation.
+description: Reference for RetryError and AbortError, the terminal errors for exhaustion and cancellation.
 ---
 
-`RetryError` represents exhausted retry attempts with structured context. `AbortError` represents cancellation through `AbortSignal`.
+# RetryError
+
+`RetryError` represents exhausted retry attempts with structured context. `AbortError` represents cancellation through `AbortSignal`. Both extend `Error`.
 
 ## Import
 
@@ -11,7 +13,21 @@ description: Terminal error classes thrown for retry exhaustion and cancellation
 import { AbortError, RetryError } from "@zap-studio/retry/errors";
 ```
 
-## Properties
+## RetryError
+
+### Constructor
+
+```ts
+new RetryError(message: string, context: RetryErrorContext)
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `context.attempts` | `number` | — | Count of completed attempts at exhaustion. Required. |
+| `context.lastError` | `unknown` | — | Last error raised by a failed `execute` attempt. |
+| `context.lastData` | `unknown` | — | Optional data captured from the last attempt. |
+
+### Properties
 
 | Property    | Type      | Description                     |
 | ----------- | --------- | ------------------------------- |
@@ -21,31 +37,42 @@ import { AbortError, RetryError } from "@zap-studio/retry/errors";
 | `lastError` | `unknown` | Last captured error             |
 | `lastData`  | `unknown` | Last captured data value        |
 
-`AbortError` properties:
+## AbortError
 
-| Property  | Type      | Description                          |
-| --------- | --------- | ------------------------------------ |
-| `name`    | `string`  | Always `"AbortError"`                |
-| `message` | `string`  | Human-readable abort message         |
-| `cause`   | `unknown` | Original abort reason when available |
+### Constructor
+
+```ts
+new AbortError(message: string, context?: AbortErrorContext)
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `context.cause` | `unknown` | — | Wrapped cause when the abort reason was an `Error`. |
+
+### Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `name` | `string` | Always `"AbortError"` |
+| `message` | `string` | Human-readable abort message |
+| `cause` | `unknown` | Original abort reason when it was an `Error`, else `undefined` |
 
 ## Default Behavior
 
-`BaseRetryPolicy.onExhausted(...)` returns a `RetryError` by default.
+`BaseRetryPolicy.onExhausted(...)` returns a `RetryError` with the message `"Retry policy exhausted all attempts."` — the built-in `FixedDelay` and `ExponentialBackoff` policies inherit this. When retries are exhausted in the default throw mode, `run(...)` throws that error.
+
+## Catching Terminal Errors
 
 ```ts
+import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+import { AbortError, RetryError } from "@zap-studio/retry/errors";
+
 const policy = new ExponentialBackoff({
   maxAttempts: 3,
   baseDelayMs: 100,
   maxDelayMs: 500,
 });
-```
 
-When retries are exhausted, `policy.run(...)` throws the value returned by `onExhausted(...)`.
-
-## Catching RetryError
-
-```ts
 try {
   await policy.run(async () => {
     return await doWork();
@@ -62,11 +89,13 @@ try {
 }
 ```
 
-If you run with `throwOnExhausted: false`, exhausted runs return a result object instead of throwing.
+## Non-Throw Mode
 
-## Graceful Error Handling
+With `throwOnExhausted: false`, the terminal error is returned on `result.error` instead of thrown. Its type is `RetryError | AbortError`, so narrow with `instanceof` before reading `RetryError`-specific properties.
 
 ```ts
+import { RetryError } from "@zap-studio/retry/errors";
+
 const result = await policy.run(
   async () => {
     return await doWork();
@@ -75,8 +104,10 @@ const result = await policy.run(
 );
 
 if (!result.ok) {
-  console.error("Exhausted after attempts:", result.attempts);
-  console.error("Last error:", result.error.lastError);
+  console.error("Failed after", result.attempts, "attempts");
+  if (result.error instanceof RetryError) {
+    console.error("Last error:", result.error.lastError);
+  }
 } else {
   console.log(result.value);
 }
@@ -84,4 +115,4 @@ if (!result.ok) {
 
 ## Custom Terminal Errors
 
-You can override `onExhausted(...)` in a custom policy to throw your own error type while keeping the same retry orchestration flow.
+Override `onExhausted(...)` in a [custom policy](/retry/custom-policies) to return your own `RetryError` subclass while keeping the same retry orchestration flow.

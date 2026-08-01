@@ -3,21 +3,15 @@ title: Verification
 description: Verify webhook authenticity with createHmacVerifier or a custom verify function.
 ---
 
-`verify` is the authenticity gate for incoming requests.
+# Verification
 
-Concept:
+The router's `verify` option is the authenticity gate for incoming requests: it runs after `before` hooks but before payload validation and the route handler, and if it throws, request handling stops. This prevents forged payloads from ever reaching your business logic.
 
-- `verify` runs before schema validation and before the route handler.
-- If `verify` throws, request handling stops.
+:::warning Always verify signatures against the **raw request body** (`req.rawBody`), exactly as received. If your framework parses and re-serializes the body first, the bytes change and every signature check fails — or worse, appears to pass against attacker-controlled content. Adapters must capture the raw bytes before any body parsing. :::
 
-Why:
+## Verify HMAC Signatures
 
-- prevents untrusted payloads from reaching business logic
-- avoids spending resources validating/processing forged requests
-
-## HMAC helper
-
-[`@zap-studio/webhooks`](/webhooks) exports `createHmacVerifier` from `@zap-studio/webhooks/verify`. It is runtime-agnostic: the helper uses the Web Crypto API rather than Node `crypto`, so it works anywhere `globalThis.crypto.subtle` is available.
+Use `createHmacVerifier` from `@zap-studio/webhooks/verify` for providers that sign requests with a shared-secret HMAC (GitHub, and many others). It uses the Web Crypto API rather than Node `crypto`, so it works in any runtime that provides `globalThis.crypto.subtle`.
 
 ```ts
 import { createWebhookRouter } from "@zap-studio/webhooks";
@@ -27,45 +21,52 @@ const router = createWebhookRouter({
   verify: createHmacVerifier({
     headerName: "x-hub-signature-256",
     secret: process.env.GITHUB_WEBHOOK_SECRET!,
-    algo: "sha256", // optional
+    algo: "sha256", // optional, defaults to "sha256"
   }),
 });
 ```
 
-`createHmacVerifier`:
+Options:
 
-- reads the signature from the configured header
-- computes HMAC from `req.rawBody`
-- compares signatures in constant time
-- depends on Web Crypto, not Node-specific APIs
-- expects a string secret
-- throws `VerificationError` on verifier setup or signature failures
+- `headerName` — the request header containing the provider's signature
+- `secret` — the shared HMAC secret, as a string
+- `algo` — one of `"sha1"`, `"sha256"`, `"sha384"`, `"sha512"`; defaults to `"sha256"`
+
+The verifier:
+
+- imports the secret once at creation time, then reuses the key for every request
+- computes the HMAC from `req.rawBody`
+- normalizes the header value by stripping an algorithm prefix such as `sha256=`, so provider formats like GitHub's work without extra parsing
+- compares the expected and received signatures in **constant time**, which prevents timing attacks that recover a signature byte by byte from response-time differences
+
+`createHmacVerifier` throws `VerificationError` immediately at creation time if the Web Crypto API is unavailable or the algorithm is unsupported, and per request when the signature header is missing or the signature does not match.
+
+## Handle Verification Failures
+
+Import `VerificationError` from `@zap-studio/webhooks/errors` to distinguish verification failures from other errors — for example, in an `onError` hook that maps them to a `401` instead of the default `500`.
 
 ```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
 import { createHmacVerifier } from "@zap-studio/webhooks/verify";
 import { VerificationError } from "@zap-studio/webhooks/errors";
 
-const verify = createHmacVerifier({
-  headerName: "x-hub-signature-256",
-  secret: process.env.GITHUB_WEBHOOK_SECRET!,
+const router = createWebhookRouter({
+  verify: createHmacVerifier({
+    headerName: "x-hub-signature-256",
+    secret: process.env.GITHUB_WEBHOOK_SECRET!,
+  }),
+  onError: (error) => {
+    if (error instanceof VerificationError) {
+      return { status: 401, body: { error: "invalid signature" } };
+    }
+    return undefined; // fall back to the default 500 response
+  },
 });
-
-try {
-  await verify(req);
-} catch (error) {
-  if (error instanceof VerificationError) {
-    console.error("verification failed", error.message);
-  }
-}
 ```
 
-Why constant-time comparison:
+## Write a Custom Verifier
 
-- avoids timing side channels when comparing signatures
-
-## Custom verification
-
-For providers with custom signing, pass your own `verify` function.
+For providers with their own signing scheme, pass any function matching `VerifyFn` — `(req: NormalizedRequest) => Promise<void> | void` — that throws on failure. Stripe, for example, signs a timestamped payload, so verification should use the Stripe SDK.
 
 ```ts
 import Stripe from "stripe";
@@ -74,14 +75,14 @@ import { createWebhookRouter } from "@zap-studio/webhooks";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const router = createWebhookRouter({
-  verify: async (req) => {
+  verify: (req) => {
     const signature = req.headers.get("stripe-signature");
     if (!signature) {
       throw new Error("Missing Stripe signature");
     }
 
     stripe.webhooks.constructEvent(
-      req.rawBody,
+      Buffer.from(req.rawBody),
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
@@ -89,8 +90,18 @@ const router = createWebhookRouter({
 });
 ```
 
-Use custom verification when a provider:
+Write a custom verifier when a provider:
 
 - uses a non-HMAC signature format
 - requires SDK-specific verification logic
 - includes timestamp or replay-protection checks
+
+If your custom verifier compares signature strings itself, use `constantTimeEquals` from `@zap-studio/webhooks/utils` instead of `===`.
+
+```ts
+import { constantTimeEquals } from "@zap-studio/webhooks/utils";
+
+const isValid = constantTimeEquals(expectedSignature, receivedSignature);
+```
+
+:::warning[Replay protection] An HMAC signature proves who sent a request, not when. An attacker who captures a valid delivery can replay it later and it will still verify. If your provider includes a signed timestamp (as Stripe does), reject requests older than a few minutes; otherwise, track processed event IDs and make your handlers idempotent. :::

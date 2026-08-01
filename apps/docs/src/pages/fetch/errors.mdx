@@ -1,28 +1,44 @@
 ---
 title: Error Handling
-description: Handle HTTP, validation, parsing, abort, and runtime fetch failures.
+description: Catch FetchError and ValidationError, and handle parsing, abort, and network failures from fetch calls.
 ---
 
-[`fetch`](/fetch) exposes package-specific errors for expected HTTP and validation failures. Other platform and schema errors can still propagate from native `fetch`, body parsing, request construction, or the validator itself.
+# Error Handling
 
-## Package Errors
+`@zap-studio/fetch` throws two package-specific errors for expected failures. Platform and schema errors can still propagate from native `fetch`, body parsing, request construction, or the validator itself.
+
+| Error | Import path | Thrown when |
+| --- | --- | --- |
+| `FetchError` | `@zap-studio/fetch/errors` | The response is not ok and `throwOnFetchError` is `true` (default). |
+| `ValidationError` | `@zap-studio/validation/errors` | A schema is provided, validation returns issues, and `throwOnValidationError` is `true` (default). |
 
 ```ts
 import { FetchError } from "@zap-studio/fetch/errors";
 import { ValidationError } from "@zap-studio/validation/errors";
 ```
 
-### FetchError
+## FetchError
 
-`FetchError` is thrown when a response is not ok and `throwOnFetchError` is `true`.
+Thrown for non-2xx responses before the body is parsed or validated. Its message has the form `HTTP <status>: <statusText>`.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `status` | `number` | HTTP status code from the failing response. |
+| `response` | `Response` | Full response object for further inspection (headers, body, ...). |
 
 ```ts
+import { api } from "@zap-studio/fetch";
+import { FetchError } from "@zap-studio/fetch/errors";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), name: z.string() });
+
 try {
-  await api.get("/api/users/missing", UserSchema);
+  await api.get("https://api.example.com/users/missing", UserSchema);
 } catch (error) {
   if (error instanceof FetchError) {
     console.error(error.status);
-    console.error(error.response);
+    console.error(await error.response.text());
   } else {
     throw error;
   }
@@ -32,7 +48,9 @@ try {
 Set `throwOnFetchError: false` to handle the response manually.
 
 ```ts
-const response = await $fetch("/api/users/missing", {
+import { $fetch } from "@zap-studio/fetch";
+
+const response = await $fetch("https://api.example.com/users/missing", {
   throwOnFetchError: false,
 });
 
@@ -41,13 +59,25 @@ if (!response.ok) {
 }
 ```
 
-### ValidationError
+:::note With `throwOnFetchError: false` and a schema provided, the error response body is still parsed and validated — which usually produces a `ValidationError` or `SyntaxError` for non-JSON error pages. Prefer schema-less `$fetch` when you need to inspect error responses. :::
 
-`ValidationError` is thrown when validation returns issues and `throwOnValidationError` is `true`.
+## ValidationError
+
+Thrown when the response body does not match the provided schema. Its message is a JSON string of the issues.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `issues` | `readonly StandardSchemaV1.Issue[]` | Validation issues reported by the schema. |
 
 ```ts
+import { api } from "@zap-studio/fetch";
+import { ValidationError } from "@zap-studio/validation/errors";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), name: z.string() });
+
 try {
-  await api.get("/api/users/1", UserSchema);
+  await api.get("https://api.example.com/users/1", UserSchema);
 } catch (error) {
   if (error instanceof ValidationError) {
     console.error(error.issues);
@@ -57,10 +87,15 @@ try {
 }
 ```
 
-Set `throwOnValidationError: false` to receive the Standard Schema result object.
+Set `throwOnValidationError: false` to receive the Standard Schema result object instead.
 
 ```ts
-const result = await api.get("/api/users/1", UserSchema, {
+import { api } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), name: z.string() });
+
+const result = await api.get("https://api.example.com/users/1", UserSchema, {
   throwOnValidationError: false,
 });
 
@@ -69,13 +104,15 @@ if (result.issues) {
 }
 ```
 
+See [Validation](/fetch/validation) for the full validation flow.
+
 ## Other Throwable Errors
 
 Calls can also reject with:
 
-- `TypeError` from invalid request setup, invalid headers/search params, JSON request serialization, network failures, or response body read failures.
-- `DOMException` for aborted requests or aborted response body reads.
-- `SyntaxError` when a schema is provided and `response.json()` cannot parse the body.
+- `TypeError` — both `body` and `json` provided, invalid headers or search params, request construction failure, JSON request serialization failure, network failure, or a response body read failure.
+- `SyntaxError` — a schema is provided and `response.json()` cannot parse the body.
+- `DOMException` — the request or response body read is aborted (`AbortError`).
 - Any error thrown or rejected by the provided Standard Schema validator.
 
 ## Exhaustive Handling
@@ -83,17 +120,30 @@ Calls can also reject with:
 Catch package-specific errors first, then rethrow unknown failures.
 
 ```ts
-try {
-  return await api.get("/api/users/1", UserSchema);
-} catch (error) {
-  if (error instanceof FetchError) {
-    return { ok: false, reason: "http", status: error.status };
-  }
+import { api } from "@zap-studio/fetch";
+import { FetchError } from "@zap-studio/fetch/errors";
+import { ValidationError } from "@zap-studio/validation/errors";
+import { z } from "zod";
 
-  if (error instanceof ValidationError) {
-    return { ok: false, reason: "validation", issues: error.issues };
-  }
+const UserSchema = z.object({ id: z.number(), name: z.string() });
 
-  throw error;
+async function loadUser(id: string) {
+  try {
+    const user = await api.get(
+      `https://api.example.com/users/${id}`,
+      UserSchema
+    );
+    return { ok: true as const, user };
+  } catch (error) {
+    if (error instanceof FetchError) {
+      return { ok: false as const, reason: "http", status: error.status };
+    }
+
+    if (error instanceof ValidationError) {
+      return { ok: false as const, reason: "validation", issues: error.issues };
+    }
+
+    throw error;
+  }
 }
 ```

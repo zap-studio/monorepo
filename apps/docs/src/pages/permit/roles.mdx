@@ -3,6 +3,8 @@ title: Role-Based Access Control
 description: Implement RBAC with role hierarchies and multi-role support using hasRole() in permit.
 ---
 
+# Role-Based Access Control
+
 Role-Based Access Control (RBAC) is a common authorization pattern where permissions are assigned to roles, and users are assigned roles. `permit` provides utilities for implementing RBAC with support for role hierarchies.
 
 ## Understanding RBAC
@@ -19,22 +21,25 @@ This simplifies permission management — when you need to change what admins ca
 
 The `hasRole()` function checks if the current user has a specific role:
 
-```typescript
+```ts
 import { hasRole } from "@zap-studio/permit";
 
 hasRole(role);
+hasRole(role, hierarchy);
 ```
+
+:::note `hasRole()` returns a `ConditionFn` for use inside `when()` (or combinators like `or()`). It does not return a boolean directly. :::
 
 ### Context Requirements
 
-Your context must include a `role` property that can be:
+Your context must include a top-level `role` property that can be:
 
 - A single role: `{ role: "admin" }`
 - An array of roles: `{ role: ["user", "moderator"] }`
 
 ### Example: Basic RBAC
 
-```typescript
+```ts
 import { z } from "zod";
 import { createPolicy, when, hasRole, or } from "@zap-studio/permit";
 import type { Resources, Actions } from "@zap-studio/permit/types";
@@ -97,8 +102,6 @@ const policy = createPolicy<AppContext>({
 });
 ```
 
-:::warning For now, `hasRole()` returns a `ConditionFn`, which can be used in `when()` conditions. Thus, it doesn't return a boolean value directly. Prefer using `role` directly in conditions. :::
-
 ## Role Hierarchies
 
 Often, higher-level roles inherit permissions from lower-level roles. For example, an admin should have all permissions that a user has, plus admin-specific ones.
@@ -107,7 +110,7 @@ Often, higher-level roles inherit permissions from lower-level roles. For exampl
 
 A role hierarchy maps each role to an array of roles it inherits from:
 
-```typescript
+```ts
 import type { RoleHierarchy } from "@zap-studio/permit/types";
 
 type Role = "guest" | "user" | "moderator" | "admin";
@@ -127,7 +130,7 @@ const roleHierarchy: RoleHierarchy<Role> = {
 
 Pass the hierarchy as the second argument to `hasRole()`:
 
-```typescript
+```ts
 import { hasRole } from "@zap-studio/permit";
 
 // Without hierarchy: only matches exact role
@@ -141,7 +144,7 @@ hasRole("user", roleHierarchy); // True for "user", "moderator", or "admin"
 
 Users can have multiple roles. The context can include an array of roles:
 
-```typescript
+```ts
 type AppContext = {
   user: { id: string } | null;
   role: Role[]; // Array of roles
@@ -157,7 +160,7 @@ const context: AppContext = {
 
 ### Example: Multiple Roles
 
-```typescript
+```ts
 import { z } from "zod";
 import { createPolicy, when, hasRole, or } from "@zap-studio/permit";
 import type {
@@ -240,9 +243,9 @@ console.log(
 
 ## Collecting Inherited Roles
 
-The `collectInheritedRoles()` function returns all roles a user has, including inherited ones:
+The `collectInheritedRoles()` function returns the full set of roles a user has, including inherited ones. It handles repeated roles safely and returns a `Set`.
 
-```typescript
+```ts
 import { collectInheritedRoles } from "@zap-studio/permit";
 
 collectInheritedRoles(roles, hierarchy);
@@ -250,17 +253,18 @@ collectInheritedRoles(roles, hierarchy);
 
 ### Example: Role Inspection
 
-```typescript
+```ts
 import { collectInheritedRoles } from "@zap-studio/permit";
 import type { RoleHierarchy } from "@zap-studio/permit/types";
 
-type Role = "guest" | "user" | "moderator" | "admin";
+type Role = "guest" | "user" | "moderator" | "admin" | "beta-tester";
 
 const hierarchy: RoleHierarchy<Role> = {
   guest: [],
   user: ["guest"],
   moderator: ["user"],
   admin: ["moderator"],
+  "beta-tester": [],
 };
 
 // Get all roles for an admin
@@ -272,10 +276,7 @@ const modRoles = collectInheritedRoles(["moderator"], hierarchy);
 console.log(modRoles); // Set { "moderator", "user", "guest" }
 
 // Multiple input roles
-const mixedRoles = collectInheritedRoles(["user", "beta-tester"], {
-  ...hierarchy,
-  "beta-tester": [],
-});
+const mixedRoles = collectInheritedRoles(["user", "beta-tester"], hierarchy);
 console.log(mixedRoles); // Set { "user", "guest", "beta-tester" }
 ```
 

@@ -1,48 +1,89 @@
 ---
 title: Overview
-description: Schema-first webhook routing with a clear path from setup to production usage.
+description: Schema-first, type-safe webhook router with Standard Schema validation, signature verification, and lifecycle hooks.
 ---
 
-[`@zap-studio/webhooks`](/webhooks) is a schema-first router for inbound webhooks.
+# @zap-studio/webhooks
 
-It centralizes the parts of webhook handling that are easy to get wrong:
+`@zap-studio/webhooks` is a lightweight, schema-first router for inbound webhooks. It works with any validation library that implements [Standard Schema](https://standardschema.dev) — Zod, Valibot, ArkType, and others — and runs in any JavaScript runtime.
 
-- path matching
-- payload validation
-- signature verification
-- lifecycle hooks
-- normalized responses
+## Why This Package Exists
 
-## Why schema-first
+Webhook endpoints usually repeat the same plumbing, and each step is easy to get wrong:
 
-Your schema is the single source of truth for:
+- verifying request authenticity (signatures, timing-safe comparison)
+- parsing and validating payloads
+- routing by event path
+- normalizing success and error responses
 
-- runtime validation
-- inferred payload types in handlers
+`@zap-studio/webhooks` isolates that plumbing so your handlers stay focused on business logic. Your schema is the single source of truth: it drives runtime validation and the inferred payload type inside each handler, so TypeScript types and actual payload checks never drift apart.
 
-This package behaves this way to remove drift between “TypeScript types” and “actual payload checks”. If a provider payload changes, validation fails early instead of silently breaking business logic.
+## Features
 
-## Matching behavior
+- **Type-safe routing** — handler payload types are inferred from the route schema
+- **Standard Schema validation** — bring Zod, Valibot, ArkType, or any compatible library
+- **Signature verification** — built-in HMAC verifier with constant-time comparison, or plug in your own `verify` function
+- **Lifecycle hooks** — global and route-level `before`, `after`, and `onError` hooks
+- **Framework-agnostic** — a normalized request/response contract plus a `BaseAdapter` helper for any HTTP framework
+- **Runtime-agnostic** — uses the Web Crypto API, not Node-specific APIs
 
-### Concept
+## Install
 
-A route key is matched from the request path after normalization.
+:::code-group
 
-Path matching is exact after normalization:
+```bash [npm]
+npm install @zap-studio/webhooks
+```
 
-1. Parse pathname from full URL if needed.
-2. Require configured prefix (default `/webhooks/`).
-3. Strip prefix.
-4. Match exact route key.
+```bash [yarn]
+yarn add @zap-studio/webhooks
+```
 
-### Why this behavior
+```bash [pnpm]
+pnpm add @zap-studio/webhooks
+```
 
-- Exact matching keeps routing predictable and avoids surprising wildcard collisions.
-- Prefix requirement prevents webhook routes from colliding with normal app routes.
-- URL parsing allows adapters to pass either full URLs or plain paths consistently.
+```bash [bun]
+bun add @zap-studio/webhooks
+```
 
-Example:
+```bash [deno]
+deno add jsr:@zap-studio/webhooks
+```
 
-- registered key: `"github/push"`
-- request path: `"/webhooks/github/push"`
-- normalized key: `"github/push"`
+:::
+
+## Quick Example
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+import { z } from "zod";
+
+const router = createWebhookRouter();
+
+router.register("payments/succeeded", {
+  schema: z.object({
+    id: z.string(),
+    amount: z.number().positive(),
+    currency: z.string().length(3),
+  }),
+  handler: async ({ payload, ack }) => {
+    // payload is inferred from the schema
+    return ack({ status: 200, body: `processed ${payload.id}` });
+  },
+});
+
+// In your framework layer, convert the incoming request to a
+// NormalizedRequest and dispatch it:
+// const response = await router.handle(normalizedRequest);
+```
+
+A request to `/webhooks/payments/succeeded` is matched against the registered key `payments/succeeded`: the router parses the pathname, requires the configured prefix (default `/webhooks/`), strips it, and matches the remainder exactly. Exact matching keeps routing predictable, and the prefix requirement keeps webhook routes from colliding with normal app routes.
+
+## Next Steps
+
+- [Getting Started](/webhooks/getting-started) — install the package and build your first router step by step
+- [Verification](/webhooks/verification) — authenticate requests with `createHmacVerifier` or a custom verifier
+- [Lifecycle Hooks](/webhooks/lifecycle-hooks) — add logging, metrics, and centralized error handling
+- [Guides](/webhooks/guides) — provider-specific patterns for GitHub and Stripe
+- [Adapters](/webhooks/adapters) — integrate the router with your HTTP framework

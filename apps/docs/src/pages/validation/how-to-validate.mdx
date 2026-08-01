@@ -1,35 +1,44 @@
 ---
 title: How to Validate
-description: Learn validation fundamentals and when to use standardValidate vs standardValidateSync.
+description: Validate data with standardValidate and standardValidateSync, and choose the right helper for each situation.
 ---
 
-This page explains how to validate data against a schema.
+# How to Validate
 
-`validation` provides:
+This page shows how to validate data against a Standard Schema. If you are new to schema validation, read [Concepts](/validation/concepts) first.
 
-- an async helper that works with both async and sync schemas
-- a sync helper that only works with synchronous schemas
-- reusable validator factories that accept the same `throwOnError` options
+All examples use this schema, but any [Standard Schema](https://standardschema.dev)-compatible library works:
 
-If you are new to schema validation, read [Concepts](/validation/concepts) first.
+```ts
+import { z } from "zod";
 
-## `standardValidate`
+const userSchema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
+```
 
-Use `standardValidate` as the default choice.
+## Validate Asynchronously
 
-It works with:
+Use `standardValidate` as the default choice. It works with both synchronous and asynchronous schemas, so one API covers both cases.
 
-- synchronous schemas
-- asynchronous schemas
+By default it does not throw. It returns the raw Standard Schema result: an object with either `value` (success) or `issues` (failure).
 
-So one API covers both cases.
+```ts
+import { standardValidate } from "@zap-studio/validation";
 
-Both `throwOnError` modes exist so you can match different control-flow styles:
+const result = await standardValidate(userSchema, input);
 
-- throw immediately in imperative flows where invalid input should stop execution
-- handle errors as data in functional or pipeline-based flows
+if (result.issues) {
+  console.error("Validation failed", result.issues);
+} else {
+  console.log("Validation passed", result.value);
+}
+```
 
-### Throwing on Error
+## Throw on Error
+
+Pass `throwOnError: true` when invalid input should stop execution. The helper then returns the parsed value directly and throws a `ValidationError` on failure.
 
 ```ts
 import { standardValidate } from "@zap-studio/validation";
@@ -37,62 +46,50 @@ import { standardValidate } from "@zap-studio/validation";
 const user = await standardValidate(userSchema, input, {
   throwOnError: true,
 });
+
+console.log(user.name); // typed as the schema's output
 ```
 
-- returns parsed value on success
-- throws `ValidationError` on failure
+See [Handling Errors](/validation/handling-errors) for how to catch and inspect the error.
 
-### Handle Errors Manually
+## Validate Synchronously
 
-Use this mode when you want full control over branching, logging, and error mapping without exceptions.
-
-```ts
-const result = await standardValidate(userSchema, input, {
-  throwOnError: false,
-});
-
-if (result.issues) {
-  // handle issues
-} else {
-  // use result.value
-}
-```
-
-## `standardValidateSync`
-
-Use `standardValidateSync` only when validation must remain synchronous end-to-end.
-
-Typical cases include limited or constrained runtimes where you explicitly need sync-only execution paths.
+Use `standardValidateSync` only when validation must remain synchronous end-to-end, for example in sync-only code paths or constrained runtimes.
 
 ```ts
 import { standardValidateSync } from "@zap-studio/validation";
 
 const result = standardValidateSync(userSchema, input);
+
+if (result.issues) {
+  console.error("Validation failed", result.issues);
+} else {
+  console.log("Validation passed", result.value);
+}
 ```
 
-This is useful in sync-only code paths (e.g. deterministic in-memory checks).
+It supports the same `throwOnError` option:
 
-Important behavior:
+```ts
+const user = standardValidateSync(userSchema, input, {
+  throwOnError: true,
+});
+```
 
-- if schema validation is async, `standardValidateSync` throws
+:::warning[Async Schemas] If the schema validates asynchronously, `standardValidateSync` throws a `TypeError` with the message `Async schemas are not supported by standardValidateSync`. :::
 
-:::info[Tip] Prefer the async helper (`standardValidate`) by default. It is the most compatible option because it supports both sync and async schemas. :::
+:::tip Prefer `standardValidate` by default. It is the most compatible option because it supports both sync and async schemas. :::
 
-## Which One Should I Use?
+## Choose the Right Helper
 
-| Helper | Supports sync schemas | Supports async schemas | Returns | Best use case |
+| Helper | Sync schemas | Async schemas | Returns | Best use case |
 | --- | --- | --- | --- | --- |
-| `standardValidate` | Yes | Yes | `Promise<...>` | Default choice for most applications |
-| `standardValidateSync` | Yes | No | direct value/result | Strict sync-only runtime requirements |
+| `standardValidate` | Yes | Yes | `Promise` of result or parsed value | Default choice for most applications |
+| `standardValidateSync` | Yes | No | Result or parsed value directly | Strict sync-only requirements |
 
 - Use `standardValidate` by default for compatibility and simpler call sites.
 - Use `standardValidateSync` only when synchronous behavior is a hard requirement.
 
-## Reusable Validators
+## Reuse a Validator
 
-If you reuse one schema across many calls, prefer:
-
-- `createStandardValidator`
-- `createSyncStandardValidator`
-
-The returned validator functions support the same `throwOnError` modes as `standardValidate` and `standardValidateSync`.
+If you validate many values against the same schema, prefer `createStandardValidator` or `createSyncStandardValidator`. The returned validator functions support the same `throwOnError` modes. See [Create Validators](/validation/create-validators).

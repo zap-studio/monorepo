@@ -1,32 +1,32 @@
 ---
 title: Overview
-description: A type-safe, declarative authorization library with Standard Schema support and composable conditions.
+description: A type-safe, declarative authorization library for TypeScript with Standard Schema validation and composable conditions.
 ---
 
-Authorization logic often ends up scattered across your codebase — buried in route handlers, middleware, and components.
+# @zap-studio/permit
 
-This makes it hard to maintain, test, and audit. Every application needs to answer one question: **"Can this user do this action on this resource?"**
+`@zap-studio/permit` is a type-safe, declarative authorization library for TypeScript. You define all your rules in one policy, then answer the question every application must answer: **"Can this user do this action on this resource?"**
 
-Most developers handle this with scattered `if` statements — checking roles in route handlers, ownership in services, and permissions in components. This approach creates problems:
+Most codebases answer it with scattered `if` statements — checking roles in route handlers, ownership in services, and permissions in components. That approach creates problems:
 
 - **Duplicated logic** — The same checks written in multiple places
 - **Hard to audit** — No single source of truth for "who can do what"
 - **Easy to forget** — New endpoints might miss authorization entirely
 - **Difficult to test** — Authorization is tangled with business logic
 
-`permit` solves this by letting you define all your authorization rules in one place, with full type safety and composable building blocks.
+`permit` solves this by letting you define authorization rules in one place, with full type safety and composable building blocks.
 
 ## Why permit?
 
 **Before:**
 
-```typescript
+```ts
 // Authorization logic scattered everywhere
 app.delete("/posts/:id", async (req, res) => {
   const post = await getPost(req.params.id);
   const user = req.user;
 
-  // 😱 Logic duplicated across routes
+  // Logic duplicated across routes
   if (user.role !== "admin" && post.authorId !== user.id) {
     return res.status(403).json({ error: "Forbidden" });
   }
@@ -38,10 +38,10 @@ app.delete("/posts/:id", async (req, res) => {
 
 **After:**
 
-```typescript
+```ts
 import { createPolicy, when, or, hasRole } from "@zap-studio/permit";
 
-// ✨ Centralized, declarative authorization
+// Centralized, declarative authorization
 const policy = createPolicy<AppContext>({
   resources,
   actions,
@@ -69,13 +69,13 @@ app.delete("/posts/:id", async (req, res) => {
 
 ## Features
 
-- **Declarative policies** — Define authorization rules in one place
-- **Type-safe** — Full TypeScript inference for resources, actions, and context
-- **Standard Schema validation** — Validates resources at runtime using your schemas
-- **Composable conditions** — Build complex rules with `and()`, `or()`, `not()`
-- **Role hierarchies** — Support inherited permissions with `hasRole()`
-- **Policy merging** — Combine multiple policies with different strategies
-- **Framework agnostic** — Works with Express, Hono, Elysia, Fastify, Next.js, TanStack Start or any framework
+- **Declarative policies** — Define authorization rules in one place with `createPolicy()`
+- **Type-safe** — Full TypeScript inference for resources, actions, permissions, and context
+- **Standard Schema validation** — Resources are validated at runtime with your Zod, Valibot, or ArkType schemas
+- **Composable conditions** — Build complex rules with `and()`, `or()`, `not()`, and `has()`
+- **Role hierarchies** — Support inherited permissions with `hasRole()` and `collectInheritedRoles()`
+- **Policy merging** — Combine policies with `mergePolicies()` (deny-overrides) or `mergePoliciesAny()` (allow-overrides)
+- **Framework agnostic** — Works with Express, Hono, Elysia, Fastify, Next.js, TanStack Start, or any framework
 
 ## Installation
 
@@ -105,13 +105,13 @@ deno add jsr:@zap-studio/permit
 
 ## Quick Start
 
-Let's build authorization for a simple blog where users can read public posts, but only authors can edit their own posts.
+Build authorization for a simple blog where anyone can read public posts, but only authors can edit their own.
 
 ### 1. Define Your Resources
 
-First, define the shape of your resources using any Standard Schema library. You can re-use existing schemas or create new ones.
+Define the shape of your resources with any [Standard Schema](https://standardschema.dev/) library. You can reuse existing schemas or create new ones.
 
-```typescript
+```ts
 import { z } from "zod";
 import type { Resources, Actions } from "@zap-studio/permit/types";
 
@@ -128,16 +128,14 @@ const actions = {
 } as const satisfies Actions<typeof resources>;
 ```
 
-For instance, in the above example, we define a `post` resource that includes an `id`, `authorId`, and `visibility`.
-
-The associated actions for this resource are `read`, `write`, or `delete`. Indeed, all resources should be defined with a set of actions that are relevant to the resource.
+Each resource is paired with the set of actions that make sense for it — here `read`, `write`, and `delete` for `post`.
 
 ### 2. Create Your Policy
 
-Then, we can define the authorization rules for each resource and action. For that, we need to provide a `context` object that contains information about the current user and their role.
+Define the rules for each resource and action. Rules receive a `context` object describing the current user, plus the action and the resource being accessed.
 
-```typescript
-import { createPolicy, allow, when, or } from "@zap-studio/permit";
+```ts
+import { createPolicy, when, or } from "@zap-studio/permit";
 
 type AppContext = {
   user: { id: string; role: "guest" | "user" | "admin" } | null;
@@ -164,13 +162,11 @@ const policy = createPolicy<AppContext>({
 });
 ```
 
-The above policy defines the authorization rules for the `post` resource. It allows anyone to read public posts and authors to read their private posts. Only authors can write or delete their posts.
-
 ### 3. Check Permissions
 
-Finally, you can use `policy.can()` to check if an action is allowed:
+Call `policy.can()` with the context, a `"resource:action"` permission string, and the resource. It resolves to `true` or `false`.
 
-```typescript
+```ts
 const post = {
   id: "post-1",
   authorId: "user-123",
@@ -181,7 +177,6 @@ const context: AppContext = {
   user: { id: "user-456", role: "user" },
 };
 
-// Check if the user can read this post
 if (await policy.can(context, "post:read", post)) {
   console.log("Access granted!");
 } else {
@@ -189,4 +184,13 @@ if (await policy.can(context, "post:read", post)) {
 }
 ```
 
-Using this approach, you get an awesome way to manage access control in your application. Everything is type-safe, easy to understand, and centralized.
+Everything is type-safe, centralized, and easy to test.
+
+## Next Steps
+
+- [Creating Policies](/permit/creating-policies) — Define resources, actions, context, and rules
+- [Policy Rules](/permit/policy-rules) — Build rules with `allow()`, `deny()`, and `when()`
+- [Conditions](/permit/conditions) — Compose conditions with `and()`, `or()`, `not()`, and `has()`
+- [Role-Based Access Control](/permit/roles) — Implement RBAC and role hierarchies with `hasRole()`
+- [Merging Policies](/permit/merging-policies) — Combine policies with deny-overrides or allow-overrides
+- [Error Handling](/permit/errors) — Work with `PolicyError` and `assertNever()`

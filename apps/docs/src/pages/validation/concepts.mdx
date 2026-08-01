@@ -1,11 +1,13 @@
 ---
 title: Concepts
-description: Beginner-friendly concepts for schema validation in validation.
+description: What runtime validation is, what schemas are, and why Standard Schema exists.
 ---
 
-Before using the helpers, this page gives you the foundation: what validation is, why modern apps need it, what schemas are, and why Standard Schema was created.
+# Concepts
 
-## Why Validation Matters In Modern Apps
+Before using the helpers, this page gives you the foundation: what validation is, why modern apps need it, what schemas are, and why [Standard Schema](https://standardschema.dev) was created.
+
+## Why Validation Matters in Modern Apps
 
 Modern apps constantly process unknown input:
 
@@ -26,7 +28,7 @@ Without runtime validation:
 
 Validation fixes this by checking data at runtime, early, and explicitly.
 
-## What Is A Schema?
+## What Is a Schema?
 
 A schema is a formal definition of what valid data should look like.
 
@@ -42,14 +44,14 @@ Think of a schema as the source of truth for input expectations.
 
 Validation means comparing real input against that schema contract.
 
-The result is usually one of two outcomes:
+The result is one of two outcomes:
 
-- input is valid -> you get parsed/validated data
-- input is invalid -> you get structured issues describing what failed
+- input is valid — you get parsed, validated data
+- input is invalid — you get structured issues describing what failed
 
 This pattern makes error handling deterministic and easier to maintain.
 
-## A Bit Of History
+## A Bit of History
 
 ### Before Zod
 
@@ -78,15 +80,24 @@ As the ecosystem evolved, multiple strong schema libraries emerged (Zod, Valibot
 This created a new interoperability problem:
 
 - shared packages had to branch by library
-- return/error shapes differed
+- return and error shapes differed
 - cross-team consistency got harder
 
 ### Why Standard Schema Was Built
 
-Standard Schema provides a common validation interface across compatible libraries.
+[Standard Schema](https://standardschema.dev) defines a common validation interface across compatible libraries. A schema conforms to the spec by exposing a `~standard` property with a `validate` function that returns either `{ value }` on success or `{ issues }` on failure.
 
-Instead of hard-coding behavior for one validator, package code can target one shared contract.
+Instead of hard-coding behavior for one validator, package code can target that one shared contract.
 
-That is the key idea behind `validation`: one consistent helper surface over Standard Schema-compatible libraries.
+:::info[Note] Standard Schema is a shared initiative across major validation libraries and ecosystem maintainers, including [Zod](https://zod.dev/), [Valibot](https://valibot.dev/), and [ArkType](https://arktype.io/). :::
 
-:::info[Note] Standard Schema is a shared initiative across major validation libraries and ecosystem maintainers, including libraries like [Zod](https://zod.dev/), [Valibot](https://valibot.dev/), and [ArkType](https://arktype.io/). :::
+## The Mental Model for This Package
+
+`@zap-studio/validation` is a thin, consistent helper surface over the Standard Schema contract:
+
+- The **validate helpers** (`standardValidate`, `standardValidateSync`) call a schema's `~standard.validate` function for you and normalize the sync/async difference.
+- The **factories** (`createStandardValidator`, `createSyncStandardValidator`) bind a schema once and return a reusable validator function.
+- The **`throwOnError` option** switches between two return modes: raw result (`{ value }` or `{ issues }`) or parsed value with a thrown `ValidationError` on failure.
+- The **guard** (`isStandardSchema`) detects at runtime whether an unknown value implements the Standard Schema interface.
+
+You bring the schema library; the package gives you one predictable way to run it and handle its failures. Continue with [How to Validate](/validation/how-to-validate) to see the helpers in action.

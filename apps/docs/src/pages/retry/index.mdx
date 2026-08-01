@@ -1,37 +1,94 @@
 ---
 title: Overview
-description: A composable retry package with policy classes, a built-in runner, and structured terminal errors.
+description: Composable retry policies with a built-in runner, structured terminal errors, and AbortSignal cancellation.
 ---
 
-`retry` gives you reusable retry policies and a built-in runner so you can add resilient retries without rewriting orchestration loops.
+# @zap-studio/retry
+
+`@zap-studio/retry` gives you reusable retry policies and a built-in runner so you can add resilient retries to async operations without rewriting orchestration loops.
 
 ## Why retry?
 
-Most retry implementations end up duplicating the same logic:
+Most hand-rolled retry implementations duplicate the same logic:
 
-- track attempts
+- track attempt counts
 - catch errors
-- calculate delay
-- sleep
+- calculate the next delay
+- sleep between attempts
 - throw a final terminal error
 
-[`@zap-studio/retry`](/retry) centralizes that flow in policy classes like `ExponentialBackoff` and `FixedDelay`.
+`@zap-studio/retry` centralizes that flow in policy classes. You pick (or write) a policy and pass your work to `policy.run(...)`.
 
-## What You Get
+## Features
 
-- **Built-in policies** with fixed and exponential delay strategies.
-- **A shared runner** via `BaseRetryPolicy.run(...)`.
-- **Structured terminal errors** through `RetryError`.
-- **Non-throw mode** for callers that prefer result objects.
-- **Custom policy contracts** when the built-in policies are not enough.
+- **Built-in policies**: [`FixedDelay`](/retry/fixed-delay) and [`ExponentialBackoff`](/retry/exponential-backoff).
+- **A shared runner** via `BaseRetryPolicy.run(...)` with attempt-aware callbacks and custom sleep injection.
+- **Structured terminal errors** through [`RetryError` and `AbortError`](/retry/retry-error).
+- **Non-throw mode** (`throwOnExhausted: false`) for callers that prefer result objects over exceptions.
+- **Cancellation** through [`AbortSignal`](/retry/abort-signal), checked before, between, and during retries.
+- **Custom policy contracts** via [`BaseRetryPolicy` and the `RetryPolicy` type](/retry/custom-policies).
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm install @zap-studio/retry
+```
+
+```bash [yarn]
+yarn add @zap-studio/retry
+```
+
+```bash [pnpm]
+pnpm add @zap-studio/retry
+```
+
+```bash [bun]
+bun add @zap-studio/retry
+```
+
+```bash [deno]
+deno add jsr:@zap-studio/retry
+```
+
+:::
+
+## Quick Example
+
+```ts
+import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+
+const policy = new ExponentialBackoff({
+  maxAttempts: 5,
+  baseDelayMs: 100,
+  maxDelayMs: 2_000,
+});
+
+const users = await policy.run(async () => {
+  const response = await fetch("https://api.example.com/users");
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+  return await response.json();
+});
+```
+
+If all five attempts fail, `run(...)` throws a `RetryError` carrying the attempt count and the last error.
 
 ## Core Concepts
 
-- **Policy** decides _if_ and _when_ to retry with `next(...)`.
-- **Runner** executes attempts, catches failures, sleeps, and stops.
-- **Terminal error** is shaped by `onExhausted(...)`.
+- A **policy** decides _if_ and _when_ to retry through `next(...)`.
+- The **runner** (`run(...)`) executes attempts, catches failures, sleeps, and stops.
+- The **terminal error** is built by `onExhausted(...)` — a `RetryError` by default.
 
-## Built-in Policies
+## Next Steps
 
-- Use **FixedDelay** when every retry should wait the same amount of time.
-- Use **ExponentialBackoff** when retries target shared services or transient network failures.
+- [Getting Started](/retry/getting-started) — install the package and run your first policy.
+- [FixedDelay](/retry/fixed-delay) — retry with a constant interval.
+- [ExponentialBackoff](/retry/exponential-backoff) — retry with capped exponential delays.
+- [Running Policies](/retry/running-policies) — runner options, custom sleep, and result mode.
+- [Abort Signal](/retry/abort-signal) — cancel retries with `AbortSignal`.
+- [Custom Policies](/retry/custom-policies) — build your own retry rules.
+- [RetryError](/retry/retry-error) — terminal error reference.
+- [Types](/retry/types) — full type reference.

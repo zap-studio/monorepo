@@ -1,34 +1,51 @@
 ---
 title: Create Validators
-description: Use createStandardValidator and createSyncStandardValidator to build reusable validation functions.
+description: Build reusable validation functions with createStandardValidator and createSyncStandardValidator.
 ---
 
-When the same schema is reused many times, creating a validator function once makes code cleaner and easier to share.
+# Create Validators
+
+When the same schema is reused across many calls, bind it once with a factory and share the resulting validator function.
 
 ## Why Create Validator Functions?
 
-Use create helpers when you want:
+Use the factories when you want:
 
 - a reusable validator for a specific schema
 - separation between schema setup and runtime calls
 - consistent behavior across multiple modules
+- to avoid passing the schema at every call site in performance-sensitive paths
 
-## `createStandardValidator`
+All examples use this schema:
 
-Creates an async validator that works with both sync and async schemas.
+```ts
+import { z } from "zod";
+
+const userSchema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
+```
+
+## Create an Async Validator
+
+`createStandardValidator(schema)` returns an async validator that works with both sync and async schemas. It supports the same options and return modes as `standardValidate`.
 
 ```ts
 import { createStandardValidator } from "@zap-studio/validation";
 
 const validateUser = createStandardValidator(userSchema);
 
-const result = await validateUser(input);
+// Non-throwing mode (default): raw result with `value` or `issues`
+const result = await validateUser({ name: "Ada", age: 37 });
+
 if (result.issues) {
-  // invalid
+  console.error("Validation failed", result.issues);
 } else {
-  // result.value
+  console.log("Validation passed", result.value);
 }
 
+// Throwing mode: parsed value, throws ValidationError on failure
 const user = await validateUser(input, { throwOnError: true });
 ```
 
@@ -38,15 +55,23 @@ Use it when:
 - schema behavior might become async over time
 - you want one reusable validator instance
 
-## `createSyncStandardValidator`
+## Create a Sync Validator
 
-Creates a sync-only validator.
+`createSyncStandardValidator(schema)` returns a synchronous validator. It supports the same options and return modes as `standardValidateSync`.
 
 ```ts
 import { createSyncStandardValidator } from "@zap-studio/validation";
 
 const validateUser = createSyncStandardValidator(userSchema);
-const result = validateUser(input);
+
+const result = validateUser({ name: "Ada", age: 37 });
+
+if (result.issues) {
+  console.error("Validation failed", result.issues);
+} else {
+  console.log("Validation passed", result.value);
+}
+
 const user = validateUser(input, { throwOnError: true });
 ```
 
@@ -55,12 +80,10 @@ Use it when:
 - code must stay synchronous
 - schemas are guaranteed sync
 
-Important behavior:
+:::warning[Async Schemas] If the schema validates asynchronously, the returned validator throws an `Error` with the message `Async schemas are not supported by createSyncStandardValidator`. The underlying `TypeError` is attached as the error's `cause`. :::
 
-- throws if the schema validates asynchronously
+## Which Factory Should I Use?
 
-## Which Create Helper Should I Use?
-
-- Prefer `createStandardValidator` for default package/app code.
+- Prefer `createStandardValidator` for default package and app code.
 - Use `createSyncStandardValidator` in strict sync contexts only.
-- Pair create helpers with `standardValidate`/`standardValidateSync` depending on whether you prefer reusable functions or direct one-shot validation calls.
+- For one-shot validation without a reusable function, call [`standardValidate` or `standardValidateSync`](/validation/how-to-validate) directly.

@@ -3,22 +3,26 @@ title: Merging Policies
 description: Combine multiple policies with deny-overrides or allow-overrides strategies in permit.
 ---
 
-As your application grows, you may want to organize authorization logic into separate policies. `permit` provides two strategies for merging policies: deny-overrides and allow-overrides.
+# Merging Policies
+
+As your application grows, you may want to organize authorization logic into separate policies. `permit` provides two merge strategies: deny-overrides and allow-overrides.
 
 ## Why Merge Policies?
 
-Merging policies is useful when:
+Merging policies is useful for:
 
 - **Separation of concerns** — Keep domain-specific rules in separate files
 - **Layered security** — Apply base rules that can be tightened or relaxed
 - **Feature flags** — Enable/disable features by adding or removing policies
 - **Multi-tenancy** — Combine organization policies with application policies
 
+:::note Merged policies evaluate sequentially and short-circuit: `mergePolicies()` stops at the first deny, `mergePoliciesAny()` stops at the first allow. :::
+
 ## mergePolicies() — Deny-Overrides Strategy
 
 The `mergePolicies()` function combines policies using a deny-overrides strategy. An action is allowed only if **all** policies allow it.
 
-```typescript
+```ts
 import { mergePolicies } from "@zap-studio/permit";
 
 const mergedPolicy = mergePolicies(policy1, policy2, policy3);
@@ -37,7 +41,7 @@ Think of it as an AND operation: `policy1 AND policy2 AND policy3`
 
 ### Example: Base + Restrictive Policy
 
-```typescript
+```ts
 import { z } from "zod";
 import { createPolicy, when, mergePolicies } from "@zap-studio/permit";
 import type { Resources, Actions } from "@zap-studio/permit/types";
@@ -136,7 +140,7 @@ console.log(
 
 The `mergePoliciesAny()` function combines policies using an allow-overrides strategy. An action is allowed if **any** policy allows it.
 
-```typescript
+```ts
 import { mergePoliciesAny } from "@zap-studio/permit";
 
 const mergedPolicy = mergePoliciesAny(policy1, policy2, policy3);
@@ -155,7 +159,7 @@ Think of it as an OR operation: `policy1 OR policy2 OR policy3`
 
 ### Example: Multiple Access Paths
 
-```typescript
+```ts
 import { z } from "zod";
 import { createPolicy, when, mergePoliciesAny } from "@zap-studio/permit";
 import type { Resources, Actions } from "@zap-studio/permit/types";
@@ -269,9 +273,9 @@ console.log(await filePolicy.can(sharedUser, "file:delete", file)); // false (no
 
 ## Combining Both Strategies
 
-You can combine `mergePolicies` and `mergePoliciesAny` for complex scenarios:
+You can combine `mergePolicies()` and `mergePoliciesAny()` for complex scenarios:
 
-```typescript
+```ts
 import { mergePolicies, mergePoliciesAny } from "@zap-studio/permit";
 
 // Access layer: multiple paths to access
@@ -302,14 +306,13 @@ const finalPolicy = mergePolicies(accessPolicy, securedPolicy);
  owner   shared   public     audit  compliance rate
 ```
 
-## Empty Policy Arrays
+## Empty Policy Lists
 
-- Calling `mergePolicies()` without any policies returns `false` (denies by default).
-- Calling `mergePoliciesAny()` without any policies also returns `false` (denies by default).
+Merging zero policies always denies, with either strategy:
 
-```typescript
-const emptyAnd = mergePolicies(); // Always denies
-const emptyOr = mergePoliciesAny(); // Always denies
+```ts
+const emptyAnd = mergePolicies(); // can() always resolves to false
+const emptyOr = mergePoliciesAny(); // can() always resolves to false
 ```
 
 ## Best Practices
@@ -318,4 +321,4 @@ const emptyOr = mergePoliciesAny(); // Always denies
 2. **Keep policies focused** — Each policy should handle one concern
 3. **Document merge order** — Explain why policies are merged in a specific order
 4. **Test merged policies** — Ensure the combined behavior is correct
-5. **Consider performance** — Fewer policies means fewer checks
+5. **Order for short-circuiting** — Put policies that deny (or allow) most often first

@@ -1,38 +1,38 @@
 ---
 title: Handling Errors
-description: Why validation error handling matters and how ValidationError helps you catch failures reliably.
+description: Catch ValidationError, inspect Standard Schema issues, and choose between throwing and non-throwing modes.
 ---
 
-Validation errors are part of normal application behavior. API payloads can be malformed, form inputs can be incomplete, and external data can drift from expected formats.
+# Handling Errors
 
-In most apps, handling these failures clearly is critical for reliability, UX, and observability.
+Validation failures are part of normal application behavior: API payloads can be malformed, form inputs can be incomplete, and external data can drift. This page shows how to handle those failures with `@zap-studio/validation`.
 
-`validation` helps by exposing a shared `ValidationError` class. Instead of handling each schema library error shape differently, you can catch one predictable error type and access normalized Standard Schema `issues`.
+Instead of dealing with each schema library's error shape, you catch one predictable error class — `ValidationError` — and access normalized [Standard Schema](https://standardschema.dev) `issues`.
 
-## Why We Created `ValidationError`
+## Know When ValidationError Is Thrown
 
-Different validation libraries expose different error shapes. That makes shared package logic harder to standardize.
+`ValidationError` is thrown only in throwing mode, by:
 
-`ValidationError` gives you:
+- `standardValidate(schema, input, { throwOnError: true })`
+- `standardValidateSync(schema, input, { throwOnError: true })`
+- validators from `createStandardValidator(schema)` called with `{ throwOnError: true }`
+- validators from `createSyncStandardValidator(schema)` called with `{ throwOnError: true }`
 
-- one predictable error class to catch
-- direct access to Standard Schema `issues`
-- consistent behavior across libraries and packages
+When `throwOnError` is `false` or omitted, the helpers never throw for invalid input — they return the raw result with `issues` instead.
 
-## When Is It Thrown?
+## Catch ValidationError
 
-It is thrown by:
-
-- `standardValidate(..., { throwOnError: true })`
-- `standardValidateSync(..., { throwOnError: true })`
-- `createStandardValidator(schema)(..., { throwOnError: true })`
-- `createSyncStandardValidator(schema)(..., { throwOnError: true })`
-
-## How To Catch It?
+Import `ValidationError` from the `@zap-studio/validation/errors` subpath and check with `instanceof`.
 
 ```ts
 import { standardValidate } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
+import { z } from "zod";
+
+const userSchema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
 
 try {
   const user = await standardValidate(userSchema, input, {
@@ -50,27 +50,37 @@ try {
 }
 ```
 
-## When To Use `ValidationError`?
+## Inspect the Error
 
-Use throwing mode + `ValidationError` when:
+`ValidationError` extends `Error` and exposes:
 
-- invalid input should interrupt control flow immediately
-- your layer already handles exceptions (API handlers, service boundaries)
-- you want centralized error handling
+| Property | Type | Description |
+| --- | --- | --- |
+| `name` | `string` | Always `"ValidationError"`. |
+| `issues` | `readonly StandardSchemaV1.Issue[]` | The validation issues reported by the schema. Each issue has a `message` and an optional `path`. |
+| `message` | `string` | A JSON string representation of `issues`, useful for logging. |
 
-Use non-throwing mode when:
+```ts
+if (error instanceof ValidationError) {
+  for (const issue of error.issues) {
+    console.error(issue.path, issue.message);
+  }
+}
+```
 
-- validation failures are expected and part of normal logic
-- you want explicit branching on `issues` without exceptions
+## Handle Failures Without Exceptions
 
-For example, in form workflows you often return field errors instead of throwing:
+Use non-throwing mode when validation failures are expected and part of normal logic, such as form workflows where you return field errors instead of throwing.
 
 ```ts
 import { standardValidate } from "@zap-studio/validation";
+import { z } from "zod";
 
-const result = await standardValidate(emailSchema, formData, {
-  throwOnError: false,
+const emailSchema = z.object({
+  email: z.string().email(),
 });
+
+const result = await standardValidate(emailSchema, formData);
 
 if (result.issues) {
   return { ok: false, fieldErrors: result.issues };
@@ -78,3 +88,17 @@ if (result.issues) {
 
 return { ok: true, value: result.value };
 ```
+
+As a rule of thumb:
+
+- Use throwing mode when invalid input should interrupt control flow immediately, or when your layer already handles exceptions (API handlers, service boundaries).
+- Use non-throwing mode when you want explicit branching on `issues` without exceptions.
+
+## Handle Async Schema Errors
+
+The sync helpers reject asynchronous schemas with errors that are **not** `ValidationError`:
+
+- `standardValidateSync` throws a `TypeError` with the message `Async schemas are not supported by standardValidateSync`.
+- Validators from `createSyncStandardValidator` throw an `Error` with the message `Async schemas are not supported by createSyncStandardValidator`, with the underlying `TypeError` as its `cause`.
+
+These indicate a programming error (wrong helper for the schema), so let them propagate rather than catching them alongside validation failures. Switch to [`standardValidate`](/validation/how-to-validate) if the schema may validate asynchronously.

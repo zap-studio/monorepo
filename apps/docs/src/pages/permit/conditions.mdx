@@ -3,13 +3,15 @@ title: Conditions
 description: Build complex authorization rules using and(), or(), not(), and has() condition combinators in permit.
 ---
 
+# Conditions
+
 Conditions are the building blocks for creating complex authorization rules. `permit` provides combinators to compose simple conditions into powerful, readable policies.
 
 ## Understanding Conditions
 
 A condition is a function that evaluates to `true` or `false`:
 
-```typescript
+```ts
 type ConditionFn<TContext, TAction, TResource> = (
   context: TContext,
   action: TAction,
@@ -19,8 +21,42 @@ type ConditionFn<TContext, TAction, TResource> = (
 
 Conditions are used with `when()` to create policy rules:
 
-```typescript
+```ts
 when((ctx, action, resource) => /* condition logic */)
+```
+
+## Setup
+
+The examples on this page use these definitions:
+
+```ts
+import { z } from "zod";
+import type { Resources, Actions } from "@zap-studio/permit/types";
+
+const resources = {
+  post: z.object({
+    id: z.string(),
+    authorId: z.string(),
+    status: z.enum(["draft", "published", "archived"]),
+    reportedBy: z.array(z.string()),
+  }),
+  document: z.object({
+    id: z.string(),
+    ownerId: z.string(),
+    status: z.enum(["active", "archived"]),
+    isLocked: z.boolean(),
+    sharedWith: z.array(z.string()),
+  }),
+} satisfies Resources;
+
+const actions = {
+  post: ["edit", "like", "comment", "report"],
+  document: ["read", "edit"],
+} as const satisfies Actions<typeof resources>;
+
+type AppContext = {
+  user: { id: string; role: "guest" | "user" | "admin" } | null;
+};
 ```
 
 ## Condition Combinators
@@ -29,7 +65,7 @@ when((ctx, action, resource) => /* condition logic */)
 
 The `and()` combinator creates a condition that passes only when **all** conditions are true. It short-circuits on the first `false` value.
 
-```typescript
+```ts
 import { and } from "@zap-studio/permit";
 
 and(...conditions);
@@ -37,7 +73,7 @@ and(...conditions);
 
 #### Example: Multiple Requirements
 
-```typescript
+```ts
 import { createPolicy, when, and } from "@zap-studio/permit";
 
 // User must be authenticated AND be the owner AND post must be published
@@ -62,7 +98,7 @@ const policy = createPolicy<AppContext>({
 
 The `or()` combinator creates a condition that passes when **any** condition is true. It short-circuits on the first `true` value.
 
-```typescript
+```ts
 import { or } from "@zap-studio/permit";
 
 or(...conditions);
@@ -70,7 +106,7 @@ or(...conditions);
 
 #### Example: Multiple Access Paths
 
-```typescript
+```ts
 import { createPolicy, when, or } from "@zap-studio/permit";
 
 // User can access if they're the owner OR an admin OR explicitly shared
@@ -95,7 +131,7 @@ const policy = createPolicy<AppContext>({
 
 The `not()` combinator negates a condition.
 
-```typescript
+```ts
 import { not } from "@zap-studio/permit";
 
 not(condition);
@@ -103,7 +139,7 @@ not(condition);
 
 #### Example: Exclusion Rules
 
-```typescript
+```ts
 import { createPolicy, when, not, and } from "@zap-studio/permit";
 
 // Cannot interact with your own content
@@ -139,9 +175,9 @@ const policy = createPolicy<AppContext>({
 
 ### has()
 
-The `has()` helper creates a condition that checks if a context property equals a specific value.
+The `has()` helper creates a condition that checks if a context property equals a specific value. It compares with strict equality (`===`).
 
-```typescript
+```ts
 import { has } from "@zap-studio/permit";
 
 has(key, value);
@@ -149,8 +185,22 @@ has(key, value);
 
 #### Example: Simple Property Checks
 
-```typescript
+```ts
+import { z } from "zod";
 import { createPolicy, when, has, or } from "@zap-studio/permit";
+import type { Resources, Actions } from "@zap-studio/permit/types";
+
+const resources = {
+  settings: z.object({ id: z.string() }),
+  billing: z.object({ id: z.string() }),
+  export: z.object({ id: z.string() }),
+} satisfies Resources;
+
+const actions = {
+  settings: ["read"],
+  billing: ["read"],
+  export: ["use"],
+} as const satisfies Actions<typeof resources>;
 
 type AppContext = {
   role: "guest" | "user" | "admin";
@@ -178,11 +228,13 @@ const policy = createPolicy<AppContext>({
 });
 ```
 
+:::note `has()` only checks top-level context properties. For nested values like `ctx.user.role`, write the condition inline: `when((ctx) => ctx.user?.role === "admin")`. :::
+
 ## Combining Combinators
 
 Combinators can be nested to create complex conditions:
 
-```typescript
+```ts
 import { createPolicy, when, and, or, not } from "@zap-studio/permit";
 
 const policy = createPolicy<AppContext>({
@@ -214,8 +266,8 @@ const policy = createPolicy<AppContext>({
 
 For cleaner code, extract conditions into named functions:
 
-```typescript
-import { and, or, not } from "@zap-studio/permit";
+```ts
+import { createPolicy, when, and, or, not } from "@zap-studio/permit";
 import type { ConditionFn } from "@zap-studio/permit/types";
 
 type DocContext = {

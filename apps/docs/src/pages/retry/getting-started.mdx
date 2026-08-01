@@ -1,7 +1,9 @@
 ---
 title: Getting Started
-description: Install retry and run your first retry policy.
+description: Install @zap-studio/retry and build your first retry policy step by step.
 ---
+
+# Getting Started
 
 ## Installation
 
@@ -29,9 +31,23 @@ deno add jsr:@zap-studio/retry
 
 :::
 
-## Quick Start
+## Create a Policy
 
-Use a built-in policy and run work through `policy.run(...)`.
+Import a built-in policy from its subpath export and configure it. `ExponentialBackoff` doubles the delay after each failure, up to a cap.
+
+```ts
+import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+
+const policy = new ExponentialBackoff({
+  maxAttempts: 5, // total attempts, including the first
+  baseDelayMs: 100, // first retry waits 100 ms
+  maxDelayMs: 2_000, // later retries never wait longer than 2 s
+});
+```
+
+## Run Your Work
+
+Pass an async function to `policy.run(...)`. The runner calls it once per attempt, catches failures, waits, and retries until it succeeds or the policy stops.
 
 ```ts
 import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
@@ -43,7 +59,7 @@ const policy = new ExponentialBackoff({
   maxDelayMs: 2_000,
 });
 
-const result = await policy.run(async () => {
+const users = await policy.run(async () => {
   const response = await $fetch("https://api.example.com/users", {
     throwOnFetchError: true,
   });
@@ -51,19 +67,51 @@ const result = await policy.run(async () => {
 });
 ```
 
-By default, exhaustion throws `RetryError`.
+:::note The example uses [`@zap-studio/fetch`](/fetch), but any function that returns a promise works — the runner retries whenever the function throws or rejects. :::
 
-Use `throwOnExhausted: false` when the caller should receive a result object instead:
+## Handle Exhaustion
+
+By default, `run(...)` throws a `RetryError` when every attempt fails.
 
 ```ts
+import { RetryError } from "@zap-studio/retry/errors";
+
+try {
+  const users = await policy.run(fetchUsers);
+  console.log(users);
+} catch (error) {
+  if (error instanceof RetryError) {
+    console.error("Retries exhausted after", error.attempts, "attempts");
+    console.error("Last error:", error.lastError);
+  } else {
+    throw error;
+  }
+}
+```
+
+Prefer result objects over exceptions? Pass `throwOnExhausted: false` to receive a discriminated union instead:
+
+```ts
+import { RetryError } from "@zap-studio/retry/errors";
+
 const result = await policy.run(fetchUsers, {
   throwOnExhausted: false,
 });
 
-if (!result.ok) {
-  console.error(result.attempts);
-  console.error(result.error.lastError);
-} else {
+if (result.ok) {
   console.log(result.value);
+} else {
+  console.error("Failed after", result.attempts, "attempts");
+  if (result.error instanceof RetryError) {
+    console.error("Last error:", result.error.lastError);
+  }
 }
 ```
+
+## Next Steps
+
+- [FixedDelay](/retry/fixed-delay) — retry with a constant interval.
+- [ExponentialBackoff](/retry/exponential-backoff) — how the delay model works.
+- [Running Policies](/retry/running-policies) — custom sleep, attempt awareness, and result mode.
+- [Abort Signal](/retry/abort-signal) — cancel retries with `AbortSignal`.
+- [Custom Policies](/retry/custom-policies) — write your own retry rules.

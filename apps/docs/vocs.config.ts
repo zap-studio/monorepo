@@ -9,7 +9,7 @@ export default defineConfig({
     text: "Edit on GitHub",
   },
   sidebar: [
-    { link: "/getting-started", text: "Getting Started" },
+    { link: "/", text: "Getting Started" },
     {
       items: [
         {
@@ -88,10 +88,12 @@ export default defineConfig({
   socials: [{ icon: "github", link: "https://github.com/zap-studio/monorepo" }],
   title: "Zap Studio",
   topNav: [
-    {
-      link: "/getting-started",
-      match: (path) => typeof path === "string" && path !== "" && path !== "/",
-      text: "Docs",
-    },
+    { link: "/fetch", text: "fetch" },
+    { link: "/permit", text: "permit" },
+    { link: "/retry", text: "retry" },
+    { link: "/validation", text: "validation" },
+    { link: "/webhooks", text: "webhooks" },
+    { link: "/llms.txt", text: "llms.txt" },
+    { link: "https://github.com/zap-studio/monorepo", text: "GitHub" },
   ],
 });

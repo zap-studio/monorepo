@@ -3,6 +3,8 @@ title: Creating Policies
 description: Define resources, actions, context, and rules to build your first authorization policy with permit.
 ---
 
+# Creating Policies
+
 A policy is the core building block of `permit`. It defines what actions users can perform on your application's resources based on the current context.
 
 ## Understanding Policies
@@ -19,7 +21,7 @@ A policy consists of three parts:
 2. **Actions** — What can be done with resources (read, write, delete)
 3. **Rules** — The logic that determines if an action is allowed
 
-:::info We recommend defining resources and actions in a centralized location to ensure consistency and type safety. :::
+:::info Define resources and actions in a centralized location to ensure consistency and type safety across your application. :::
 
 ## Defining Resources
 
@@ -27,7 +29,7 @@ Resources are defined using [Standard Schema](https://standardschema.dev/), whic
 
 ### Using Zod
 
-```typescript
+```ts
 import { z } from "zod";
 import type { Resources } from "@zap-studio/permit/types";
 
@@ -55,7 +57,7 @@ const resources = {
 
 ### Using Valibot
 
-```typescript
+```ts
 import * as v from "valibot";
 import type { Resources } from "@zap-studio/permit/types";
 
@@ -70,7 +72,7 @@ const resources = {
 
 ### Using ArkType
 
-```typescript
+```ts
 import { type } from "arktype";
 import type { Resources } from "@zap-studio/permit/types";
 
@@ -83,13 +85,13 @@ const resources = {
 } satisfies Resources;
 ```
 
-:::warning You should use `satisfies` to ensure type safety and consistency. Learn more about the [TypeScript `satisfies` operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator). :::
+:::warning Use `satisfies` to ensure type safety and consistency. Learn more about the [TypeScript `satisfies` operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator). :::
 
 ## Defining Actions
 
 Actions specify what operations are allowed on each resource. Define them as readonly arrays:
 
-```typescript
+```ts
 import type { Actions } from "@zap-studio/permit/types";
 
 const actions = {
@@ -99,13 +101,13 @@ const actions = {
 } as const satisfies Actions<typeof resources>;
 ```
 
-:::warning Use `as const` to ensure TypeScript infers literal types for actions. This enables autocomplete and type checking when writing rules. Learn more about the [TypeScript `as const` operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions). :::
+:::warning Use `as const` so TypeScript infers literal types for actions. This enables autocomplete and type checking when writing rules and permission strings. Learn more about [`const` assertions](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions). :::
 
 ## Understanding Context
 
 Context represents the runtime information available when checking permissions. This typically includes the current user, but can contain anything relevant to authorization:
 
-```typescript
+```ts
 type AppContext = {
   user: {
     id: string;
@@ -123,15 +125,13 @@ type AppContext = {
 
 Context is passed to `policy.can()` at runtime and is available in all your rule functions.
 
-:::info Context is just a type that represents the runtime information available when checking permissions. It can be anything relevant to your application's authorization needs. Providing context will make your experience way better. Believe me, it's worth it! :::
+:::info Context is just a type — it can be anything relevant to your application's authorization needs. Include all the data your rules need so they never have to fetch anything. :::
 
 ## Creating a Policy
 
-Finally, a policy defines the rules that govern access to resources for each action. It uses the resources and actions defined earlier.
+Use `createPolicy()` to combine your resources, actions, and rules into a policy:
 
-Use `createPolicy()` to create a policy:
-
-```typescript
+```ts
 import { createPolicy, allow, deny, when } from "@zap-studio/permit";
 
 const policy = createPolicy<AppContext>({
@@ -155,11 +155,13 @@ const policy = createPolicy<AppContext>({
 });
 ```
 
+:::note `createPolicy()` throws a [`PolicyError`](/permit/errors) at creation time if a resource key is missing its schema. Rules for individual actions are optional — an action without a rule is always denied. :::
+
 ## Checking Permissions
 
-The policy object provides a `can()` method to check if an action is allowed. It takes the `context`, a `"resource:action"` permission string, and the `resource`, then returns a `Promise<boolean>` indicating whether the action is allowed.
+The policy object provides a `can()` method. It takes the `context`, a `"resource:action"` permission string, and the `resource`, then returns a `Promise<boolean>`:
 
-```typescript
+```ts
 policy.can(context, permission, resource): Promise<boolean>
 ```
 
@@ -171,11 +173,18 @@ policy.can(context, permission, resource): Promise<boolean>
 | `permission` | `string` | The permission to check (e.g., `"post:read"`, `"comment:write"`) |
 | `resource` | `object` | The actual resource being accessed |
 
+### How can() Decides
+
+`can()` never throws — it resolves to `false` whenever a check fails:
+
+1. **Parse the permission** — Malformed strings (missing or extra `:` segments) return `false`.
+2. **Check the action** — Actions not listed for the resource in `actions` return `false`.
+3. **Validate the resource** — The resource is validated against its Standard Schema; invalid resources return `false`.
+4. **Evaluate the rule** — No rule defined for the action returns `false`. If the rule throws, the error is logged with `console.warn` and `can()` returns `false`.
+
 ### Example: Blog Post Authorization
 
-Here is a complete example for a blog application:
-
-```typescript
+```ts
 // Scenario: User trying to edit a blog post
 const context: AppContext = {
   user: {
@@ -216,11 +225,11 @@ console.log(canOtherEdit); // false
 
 ## Real-World Example: E-commerce Store
 
-Here's another complete example for an e-commerce application:
+Here's a complete example for an e-commerce application:
 
-```typescript
+```ts
 import { z } from "zod";
-import { createPolicy, allow, deny, when, or } from "@zap-studio/permit";
+import { createPolicy, allow, when, or } from "@zap-studio/permit";
 import type { Resources, Actions } from "@zap-studio/permit/types";
 
 // Define resources
@@ -337,5 +346,10 @@ console.log(await storePolicy.can(customerContext, "product:update", product)); 
 1. **Keep resources focused** — Each resource should represent a single domain entity
 2. **Use descriptive action names** — "publish" is clearer than "update-status"
 3. **Include all relevant data in context** — Don't fetch additional data inside rules
-4. **Start with `deny()` by default** — Be explicit about what's allowed
+4. **Be explicit about what's allowed** — Actions without a rule are denied by default
 5. **Test your policies** — Write unit tests for critical authorization rules
+
+## Next Steps
+
+- [Policy Rules](/permit/policy-rules) — Learn the `allow()`, `deny()`, and `when()` rule builders
+- [Conditions](/permit/conditions) — Compose rules with `and()`, `or()`, `not()`, and `has()`

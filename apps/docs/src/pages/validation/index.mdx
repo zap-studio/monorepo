@@ -1,41 +1,17 @@
 ---
 title: Overview
-description: Understand Standard Schema, the interoperability problem it solves, and why Zap Studio built validation.
+description: Standard Schema utilities and ValidationError helpers for one consistent validation flow across schema libraries.
 ---
 
-`validation` is a small package that makes validation workflows consistent across any [Standard Schema](https://standardschema.dev/schema) compatible library.
+# @zap-studio/validation
 
-## What Is Standard Schema?
+`@zap-studio/validation` provides small, focused helpers for validating data against any [Standard Schema](https://standardschema.dev)-compatible schema library, such as Zod, Valibot, or ArkType.
 
-Different teams choose different validators:
+## Why This Package?
 
-- [Zod](https://zod.dev/)
-- [ArkType](https://arktype.io/)
-- [Valibot](https://valibot.dev/)
+Different teams choose different validators. That is usually fine until you need shared infrastructure across teams and packages: every library has different parsing APIs, return shapes, and error formats.
 
-This is usually fine until you need shared infrastructure across teams and packages.
-
-Without a common contract, every library has different parsing APIs, return shapes, and error formats.
-
-**Standard Schema** defines a shared interface so those libraries can be consumed through one consistent protocol. That means your app or package logic can stay stable even when schema implementations differ.
-
-## Why We Created `validation`?
-
-At Zap Studio, multiple packages need runtime validation ([`fetch`](/fetch), [`permit`](/permit), and others). We wanted one internal validation flow that works with any Standard Schema-compatible library.
-
-So `validation` provides:
-
-- a single validation helper surface
-- an `isStandardSchema` guard for unknown values
-- sync and async-safe validation options
-- a shared `ValidationError` type
-- reusable validator factories
-
-This lets us keep package behavior consistent and avoid library-specific branching.
-
-### Before
-
-Without a shared API, you usually end up writing separate validation branches for each schema library used across teams or packages. That approach is easy to miss in edge cases, hard to keep exhaustive over time, and prone to inconsistent error handling.
+Without a shared API, you end up writing separate validation branches for each schema library:
 
 ```ts
 if (validatorLib === "zod") {
@@ -51,9 +27,7 @@ if (validatorLib === "valibot") {
 }
 ```
 
-### After
-
-With `validation`, you call one helper regardless of the underlying Standard Schema-compatible library. The flow is simpler, easier to reason about, and much easier to keep consistent across packages.
+With `@zap-studio/validation`, you call one helper regardless of the underlying library:
 
 ```ts
 import { standardValidate } from "@zap-studio/validation";
@@ -63,12 +37,78 @@ const user = await standardValidate(userSchema, input, {
 });
 ```
 
-### StandardSchemaV1
+At Zap Studio, multiple packages need runtime validation ([`fetch`](/fetch), [`permit`](/permit), and others). This package keeps their validation flow consistent and avoids library-specific branching.
 
-The Standard Schema specification is defined as the `StandardSchemaV1` namespace. `validation` re-exports this namespace so you can import it directly from `@zap-studio/validation`.
+## Features
 
-```ts
-import { StandardSchemaV1 } from "@zap-studio/validation";
+- `standardValidate` and `standardValidateSync` for one-shot async and sync validation
+- `createStandardValidator` and `createSyncStandardValidator` for reusable validator functions
+- Optional throwing behavior via `throwOnError`, backed by a shared `ValidationError` class
+- `isStandardSchema` runtime guard for unknown values
+- Re-exported `StandardSchemaV1` type, so you do not need to install `@standard-schema/spec` yourself
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm install @zap-studio/validation
 ```
 
-Let's now learn how to validate against schemas and handle errors with this package.
+```bash [yarn]
+yarn add @zap-studio/validation
+```
+
+```bash [pnpm]
+pnpm add @zap-studio/validation
+```
+
+```bash [bun]
+bun add @zap-studio/validation
+```
+
+```bash [deno]
+deno add jsr:@zap-studio/validation
+```
+
+:::
+
+## Quick Example
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+import { z } from "zod";
+
+// Any Standard Schema-compatible schema works here
+const userSchema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
+
+const user = await standardValidate(
+  userSchema,
+  { name: "Ada", age: 37 },
+  {
+    throwOnError: true,
+  }
+);
+
+console.log(user.name); // "Ada"
+```
+
+## Types
+
+The package re-exports the `StandardSchemaV1` type from `@standard-schema/spec`, so you can reference the specification's types directly:
+
+```ts
+import type { StandardSchemaV1 } from "@zap-studio/validation";
+```
+
+## Next Steps
+
+- [Getting Started](/validation/getting-started) — install the package and validate your first payload.
+- [Concepts](/validation/concepts) — understand Standard Schema and why this package exists.
+- [How to Validate](/validation/how-to-validate) — choose between async and sync helpers.
+- [Create Validators](/validation/create-validators) — build reusable validator functions.
+- [Schema Guard](/validation/is-standard-schema) — detect Standard Schemas at runtime.
+- [Handling Errors](/validation/handling-errors) — catch and inspect `ValidationError`.
