@@ -108,4 +108,3 @@ The router responds with:
 - `500` and `{ error: message }` when a hook, verifier, or handler throws (customizable with `onError`)
 
 :::note `rawBody` must be the exact bytes the provider sent. Signature verification recomputes the HMAC from `rawBody`, so any re-serialization (for example `JSON.stringify(JSON.parse(...))`) breaks verification. :::
-

@@ -79,4 +79,3 @@ router.register("payments/succeeded", {
 ```
 
 A request to `/webhooks/payments/succeeded` is matched against the registered key `payments/succeeded`: the router parses the pathname, requires the configured prefix (default `/webhooks/`), strips it, and matches the remainder exactly. Exact matching keeps routing predictable, and the prefix requirement keeps webhook routes from colliding with normal app routes.
-

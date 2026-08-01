@@ -81,4 +81,3 @@ If all five attempts fail, `run(...)` throws a `RetryError` carrying the attempt
 - A **policy** decides _if_ and _when_ to retry through `next(...)`.
 - The **runner** (`run(...)`) executes attempts, catches failures, sleeps, and stops.
 - The **terminal error** is built by `onExhausted(...)` — a `RetryError` by default.
-
