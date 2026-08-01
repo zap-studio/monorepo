@@ -8,6 +8,7 @@
     "build": "vocs build",
     "dev": "vocs dev",
     "preview": "vocs preview",
+    "deploy": "vocs build && wrangler deploy",
     "types:check": "tsc --noEmit"
   },
   "dependencies": {
@@ -20,7 +21,8 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "wrangler": "catalog:"
   },
   "engines": {
     "node": ">=20.0.0"

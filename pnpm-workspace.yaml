@@ -8,6 +8,7 @@ allowBuilds:
   esbuild: true
   lefthook: true
   vue-demi: true
+  workerd: true
 
 overrides:
   fflate: 0.8.2
@@ -36,6 +37,7 @@ catalog:
   vitest: ^4.1.10
   vocs: ^2.8.0
   waku: 1.0.0-beta.8
+  wrangler: ^4.118.0
   zod: ^4.4.3
 
 catalogMode: prefer
