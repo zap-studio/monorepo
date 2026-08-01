@@ -1,0 +1,111 @@
+---
+title: Running Policies
+description: Run work through BaseRetryPolicy.run with custom sleep, attempt awareness, and result mode.
+---
+
+# Running Policies
+
+Every policy that extends `BaseRetryPolicy` shares the same runner: `run(execute, options?)`. The runner calls `execute` once per attempt, consults the policy after each failure, sleeps, and stops on success, exhaustion, or abort.
+
+## Basic Usage
+
+Pass an async function; the runner resolves with its first successful return value.
+
+```ts
+import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+
+const policy = new ExponentialBackoff({
+  maxAttempts: 5,
+  baseDelayMs: 100,
+  maxDelayMs: 2_000,
+});
+
+const value = await policy.run(async () => {
+  return await doWork();
+});
+```
+
+## Attempt Awareness
+
+The `execute` callback receives the one-based attempt number, useful for logging or per-attempt behavior.
+
+```ts
+const value = await policy.run(async (attempt) => {
+  console.log("Attempt:", attempt);
+  return await doWork();
+});
+```
+
+## Custom Sleep
+
+By default, delays use `defaultSleep` (a `setTimeout`-based helper exported from `@zap-studio/retry/sleep`). Inject your own `sleep` for deterministic tests or custom timing.
+
+```ts
+const value = await policy.run(
+  async () => {
+    return await doWork();
+  },
+  {
+    sleep: async (_delayMs) => {
+      // no delay in tests
+    },
+  }
+);
+```
+
+:::note The runner only calls `sleep` when the policy's decision has `delayMs > 0`, and `defaultSleep` itself resolves immediately for non-positive delays. :::
+
+## Result Mode
+
+By default, exhaustion throws. Set `throwOnExhausted: false` to receive a `RetryRunResult<T>` discriminated union instead.
+
+```ts
+const result = await policy.run(
+  async () => {
+    return await doWork();
+  },
+  { throwOnExhausted: false }
+);
+
+if (result.ok) {
+  console.log(result.value);
+} else {
+  console.error("Failed after", result.attempts, "attempts:", result.error);
+}
+```
+
+On failure, `result.error` is a `RetryError` (retries exhausted) or an `AbortError` (run canceled). See [Types](/retry/types) for the full shape.
+
+## Handling Terminal Errors
+
+In the default throw mode, `run(...)` throws the error returned by the policy's `onExhausted(...)` — a [`RetryError`](/retry/retry-error) unless the policy overrides it — and an `AbortError` when the run is [canceled](/retry/abort-signal).
+
+```ts
+import { AbortError, RetryError } from "@zap-studio/retry/errors";
+
+try {
+  const value = await policy.run(async () => {
+    return await doWork();
+  });
+  console.log(value);
+} catch (error) {
+  if (error instanceof RetryError) {
+    console.error("Exhausted after", error.attempts, "attempts");
+    console.error("Last error:", error.lastError);
+  } else if (error instanceof AbortError) {
+    console.error("Retry aborted:", error.message);
+  } else {
+    throw error;
+  }
+}
+```
+
+## Run Options
+
+All options are optional. See [`RetryRunOptions`](/retry/types) for the type definition.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `sleep` | `(delayMs: number) => Promise<void>` | `defaultSleep` | Delay function used between retry attempts. |
+| `signal` | `AbortSignal` | — | Cancels retry orchestration when aborted. See [Abort Signal](/retry/abort-signal). |
+| `throwOnExhausted` | `boolean` | `true` | `true` throws on exhaustion; `false` returns a `RetryRunResult<T>` union. |

@@ -1,0 +1,81 @@
+---
+title: Overview
+description: Schema-first, type-safe webhook router with Standard Schema validation, signature verification, and lifecycle hooks.
+---
+
+# @zap-studio/webhooks
+
+`@zap-studio/webhooks` is a lightweight, schema-first router for inbound webhooks. It works with any validation library that implements [Standard Schema](https://standardschema.dev) — Zod, Valibot, ArkType, and others — and runs in any JavaScript runtime.
+
+## Why webhooks?
+
+Webhook endpoints usually repeat the same plumbing, and each step is easy to get wrong:
+
+- verifying request authenticity (signatures, timing-safe comparison)
+- parsing and validating payloads
+- routing by event path
+- normalizing success and error responses
+
+`@zap-studio/webhooks` isolates that plumbing so your handlers stay focused on business logic. Your schema is the single source of truth: it drives runtime validation and the inferred payload type inside each handler, so TypeScript types and actual payload checks never drift apart.
+
+## Features
+
+- **Type-safe routing** — handler payload types are inferred from the route schema
+- **Standard Schema validation** — bring Zod, Valibot, ArkType, or any compatible library
+- **Signature verification** — built-in HMAC verifier with constant-time comparison, or plug in your own `verify` function
+- **Lifecycle hooks** — global and route-level `before`, `after`, and `onError` hooks
+- **Framework-agnostic** — a normalized request/response contract plus a `BaseAdapter` helper for any HTTP framework
+- **Runtime-agnostic** — uses the Web Crypto API, not Node-specific APIs
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm install @zap-studio/webhooks
+```
+
+```bash [yarn]
+yarn add @zap-studio/webhooks
+```
+
+```bash [pnpm]
+pnpm add @zap-studio/webhooks
+```
+
+```bash [bun]
+bun add @zap-studio/webhooks
+```
+
+```bash [deno]
+deno add jsr:@zap-studio/webhooks
+```
+
+:::
+
+## Quick Example
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+import { z } from "zod";
+
+const router = createWebhookRouter();
+
+router.register("payments/succeeded", {
+  schema: z.object({
+    id: z.string(),
+    amount: z.number().positive(),
+    currency: z.string().length(3),
+  }),
+  handler: async ({ payload, ack }) => {
+    // payload is inferred from the schema
+    return ack({ status: 200, body: `processed ${payload.id}` });
+  },
+});
+
+// In your framework layer, convert the incoming request to a
+// NormalizedRequest and dispatch it:
+// const response = await router.handle(normalizedRequest);
+```
+
+A request to `/webhooks/payments/succeeded` is matched against the registered key `payments/succeeded`: the router parses the pathname, requires the configured prefix (default `/webhooks/`), strips it, and matches the remainder exactly. Exact matching keeps routing predictable, and the prefix requirement keeps webhook routes from colliding with normal app routes.

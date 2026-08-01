@@ -1,0 +1,95 @@
+---
+title: Adapters
+description: Integrate the webhook router with any HTTP framework using BaseAdapter and the normalized request/response contract.
+---
+
+# Adapters
+
+[`@zap-studio/webhooks`](/webhooks) is framework-agnostic by design. It ships no Express, Next.js, Hono, or Elysia adapters — instead it exposes a small adapter contract so you write the framework integration once and reuse it across all webhook routes.
+
+Why this design:
+
+- no framework lock-in
+- smaller package surface
+- you control the runtime details that matter for webhooks, especially raw body capture
+
+Conceptually: the adapter is the transport layer, the router is the webhook application layer.
+
+## The Adapter Contract
+
+`@zap-studio/webhooks/adapters/base` exports an `Adapter<TReq, TRes>` interface with three members:
+
+- `toNormalizedRequest(req)` — maps a framework request to a `NormalizedRequest`
+- `toFrameworkResponse(frameworkRes, res)` — writes a `NormalizedResponse` back to the framework response
+- `handleWebhook(router)` — returns a `(req, res) => Promise<void>` handler that chains the two around `router.handle`
+
+## Extend BaseAdapter
+
+`BaseAdapter<TReq, TRes>` implements `handleWebhook` for you — normalize, dispatch, write back — so you only implement the two mapping members. It is generic over your framework's request and response types; pass them as type arguments, or omit them to fall back to `unknown`.
+
+The mapping members are declared as arrow-function properties, so override them with property syntax (`toNormalizedRequest = async (req) => ...`), not method syntax.
+
+```ts
+import type { IncomingMessage, ServerResponse } from "node:http";
+import { BaseAdapter } from "@zap-studio/webhooks/adapters/base";
+import type {
+  NormalizedRequest,
+  NormalizedResponse,
+} from "@zap-studio/webhooks/types";
+
+class NodeHttpAdapter extends BaseAdapter<IncomingMessage, ServerResponse> {
+  toNormalizedRequest = async (
+    req: IncomingMessage
+  ): Promise<NormalizedRequest> => {
+    const chunks: Buffer[] = [];
+    for await (const chunk of req) {
+      chunks.push(chunk as Buffer);
+    }
+
+    return {
+      method: req.method ?? "POST",
+      path: req.url ?? "/",
+      headers: new Headers(req.headers as Record<string, string>),
+      rawBody: new Uint8Array(Buffer.concat(chunks)),
+    };
+  };
+
+  toFrameworkResponse = async (
+    frameworkRes: ServerResponse,
+    res: NormalizedResponse
+  ): Promise<ServerResponse> => {
+    frameworkRes.statusCode = res.status;
+    res.headers?.forEach((value, key) => {
+      frameworkRes.setHeader(key, value);
+    });
+    frameworkRes.end(
+      typeof res.body === "string" ? res.body : JSON.stringify(res.body)
+    );
+    return frameworkRes;
+  };
+}
+```
+
+:::warning `toNormalizedRequest` must set `rawBody` to the exact bytes received, before any body-parsing middleware touches the request. Signature verification recomputes the HMAC from `rawBody` — a re-serialized body will never verify. :::
+
+## Use the Adapter
+
+`handleWebhook` accepts anything with a `handle(req: NormalizedRequest): Promise<NormalizedResponse>` method — your `WebhookRouter` instance.
+
+```ts
+import { createServer } from "node:http";
+import { createWebhookRouter } from "@zap-studio/webhooks";
+
+const router = createWebhookRouter();
+
+router.register("ping", async ({ ack }) => ack());
+
+const adapter = new NodeHttpAdapter();
+const handleWebhook = adapter.handleWebhook(router);
+
+createServer((req, res) => {
+  void handleWebhook(req, res);
+}).listen(3000);
+```
+
+Pass the framework's request path (or full URL) through as-is — the router parses the pathname, requires the configured prefix (default `/webhooks/`), and matches routes on the remainder.

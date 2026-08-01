@@ -1,0 +1,93 @@
+---
+title: Lifecycle Hooks
+description: Use before, after, and onError hooks for logging, metrics, and centralized error handling.
+---
+
+# Lifecycle Hooks
+
+Hooks are shared interception points around route execution. They keep handlers focused on business logic while logging, metrics, and error policy live in one place.
+
+## Add Global Hooks
+
+Configure hooks once in `createWebhookRouter` — they apply to every route. Each of `before` and `after` accepts a single hook or an array; hooks run sequentially in registration order.
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+
+const router = createWebhookRouter({
+  before: (req) => {
+    console.log("incoming", req.path);
+  },
+  after: (_req, res) => {
+    console.log("status", res.status);
+  },
+  onError: (error) => ({
+    status: 500,
+    body: { error: error.message },
+  }),
+});
+```
+
+Hook signatures (exported from `@zap-studio/webhooks/types`):
+
+- `BeforeHook` — `(req: NormalizedRequest) => Promise<void> | void`
+- `AfterHook` — `(req: NormalizedRequest, res: NormalizedResponse) => Promise<void> | void`
+- `ErrorHook` — `(error: Error, req: NormalizedRequest) => NormalizedResponse | undefined`, sync or async
+
+## Add Route-Level Hooks
+
+Register `before` and `after` on a single route when one endpoint needs extra behavior beyond the global hooks.
+
+```ts
+import { z } from "zod";
+
+router.register("github/push", {
+  schema: z.object({ ref: z.string() }),
+  before: (req) => {
+    console.log("route-before", req.path);
+  },
+  handler: async ({ ack }) => ack({ status: 200 }),
+  after: (_req, res) => {
+    console.log("route-after", res.status);
+  },
+});
+```
+
+## Understand Execution Order
+
+For a successful request, the router runs:
+
+1. global `before` hooks
+2. route `before` hooks
+3. `verify`
+4. body parsing and schema validation
+5. handler
+6. route `after` hooks
+7. global `after` hooks
+
+`after` hooks only run when the handler completes successfully. If any step throws, execution stops and error handling takes over.
+
+:::note `before` hooks run **before** verification, so they see requests that have not been authenticated yet. Keep side effects out of `before` hooks — use them for logging, tracing, or rate limiting, and treat the request as untrusted until `verify` has passed. :::
+
+## Centralize Error Handling
+
+When any hook, the verifier, or the handler throws, the router calls `onError` with the error and the request. Return a `NormalizedResponse` to override the default response, or return `undefined` to fall back to the default `500` with `{ error: message }`.
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+import { VerificationError } from "@zap-studio/webhooks/errors";
+
+const router = createWebhookRouter({
+  onError: (error, req) => {
+    console.error("webhook failed", req.path, error.message);
+
+    if (error instanceof VerificationError) {
+      return { status: 401, body: { error: "invalid signature" } };
+    }
+
+    return undefined; // default 500 response
+  },
+});
+```
+
+`onError` gives you one place to standardize error shape and status codes, and to map provider or framework errors consistently. Validation failures do not reach `onError` — the router returns a `400` with the validation issues directly.

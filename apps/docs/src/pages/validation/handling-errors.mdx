@@ -1,0 +1,104 @@
+---
+title: Handling Errors
+description: Catch ValidationError, inspect Standard Schema issues, and choose between throwing and non-throwing modes.
+---
+
+# Handling Errors
+
+Validation failures are part of normal application behavior: API payloads can be malformed, form inputs can be incomplete, and external data can drift. This page shows how to handle those failures with `@zap-studio/validation`.
+
+Instead of dealing with each schema library's error shape, you catch one predictable error class — `ValidationError` — and access normalized [Standard Schema](https://standardschema.dev) `issues`.
+
+## Know When ValidationError Is Thrown
+
+`ValidationError` is thrown only in throwing mode, by:
+
+- `standardValidate(schema, input, { throwOnError: true })`
+- `standardValidateSync(schema, input, { throwOnError: true })`
+- validators from `createStandardValidator(schema)` called with `{ throwOnError: true }`
+- validators from `createSyncStandardValidator(schema)` called with `{ throwOnError: true }`
+
+When `throwOnError` is `false` or omitted, the helpers never throw for invalid input — they return the raw result with `issues` instead.
+
+## Catch ValidationError
+
+Import `ValidationError` from the `@zap-studio/validation/errors` subpath and check with `instanceof`.
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+import { ValidationError } from "@zap-studio/validation/errors";
+import { z } from "zod";
+
+const userSchema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
+
+try {
+  const user = await standardValidate(userSchema, input, {
+    throwOnError: true,
+  });
+
+  // use user
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.error("Validation failed", error.issues);
+    return;
+  }
+
+  throw error;
+}
+```
+
+## Inspect the Error
+
+`ValidationError` extends `Error` and exposes:
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `name` | `string` | Always `"ValidationError"`. |
+| `issues` | `readonly StandardSchemaV1.Issue[]` | The validation issues reported by the schema. Each issue has a `message` and an optional `path`. |
+| `message` | `string` | A JSON string representation of `issues`, useful for logging. |
+
+```ts
+if (error instanceof ValidationError) {
+  for (const issue of error.issues) {
+    console.error(issue.path, issue.message);
+  }
+}
+```
+
+## Handle Failures Without Exceptions
+
+Use non-throwing mode when validation failures are expected and part of normal logic, such as form workflows where you return field errors instead of throwing.
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+import { z } from "zod";
+
+const emailSchema = z.object({
+  email: z.string().email(),
+});
+
+const result = await standardValidate(emailSchema, formData);
+
+if (result.issues) {
+  return { ok: false, fieldErrors: result.issues };
+}
+
+return { ok: true, value: result.value };
+```
+
+As a rule of thumb:
+
+- Use throwing mode when invalid input should interrupt control flow immediately, or when your layer already handles exceptions (API handlers, service boundaries).
+- Use non-throwing mode when you want explicit branching on `issues` without exceptions.
+
+## Handle Async Schema Errors
+
+The sync helpers reject asynchronous schemas with errors that are **not** `ValidationError`:
+
+- `standardValidateSync` throws a `TypeError` with the message `Async schemas are not supported by standardValidateSync`.
+- Validators from `createSyncStandardValidator` throw an `Error` with the message `Async schemas are not supported by createSyncStandardValidator`, with the underlying `TypeError` as its `cause`.
+
+These indicate a programming error (wrong helper for the schema), so let them propagate rather than catching them alongside validation failures. Switch to [`standardValidate`](/validation/how-to-validate) if the schema may validate asynchronously.

@@ -1,0 +1,85 @@
+---
+title: ExponentialBackoff
+description: Retry with exponentially growing delays, capped at an upper bound.
+---
+
+# ExponentialBackoff
+
+`ExponentialBackoff` doubles the delay after each failure, up to a hard cap, reducing pressure on unstable upstream services.
+
+## Import
+
+```ts
+import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+```
+
+## Configuration
+
+```ts
+import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+
+const policy = new ExponentialBackoff({
+  maxAttempts: 6,
+  baseDelayMs: 100,
+  maxDelayMs: 5_000,
+});
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `maxAttempts` | `number` | — | Maximum number of attempts (including the first) before giving up. |
+| `baseDelayMs` | `number` | — | Initial delay in milliseconds, doubled after each retry. |
+| `maxDelayMs` | `number` | — | Hard upper bound in milliseconds for the computed delay. |
+
+All options are required.
+
+## Delay Model
+
+The delay before the next retry is computed from the failed attempt number:
+
+```ts
+delayMs = Math.min(maxDelayMs, baseDelayMs * 2 ** (attempt - 1));
+```
+
+With `baseDelayMs: 100` and `maxDelayMs: 2_000`:
+
+- after attempt 1 → wait `100` ms
+- after attempt 2 → wait `200` ms
+- after attempt 3 → wait `400` ms
+- after attempt 4 → wait `800` ms
+- after attempt 5 → wait `1_600` ms
+- after attempt 6 → wait `2_000` ms (capped)
+
+The policy stops retrying when `attempt >= maxAttempts`, returning a decision with `reason: "max-attempts-reached"`.
+
+:::note Delays are deterministic — the policy does not add jitter. If you need jitter, [write a custom policy](/retry/custom-policies). :::
+
+## When to Use
+
+Use `ExponentialBackoff` when:
+
+- retries target shared or networked services
+- transient failures are common
+- aggressive immediate retries could amplify outages
+
+For predictable, constant intervals, use [`FixedDelay`](/retry/fixed-delay) instead.
+
+## Example
+
+```ts
+import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+import { $fetch } from "@zap-studio/fetch";
+
+const policy = new ExponentialBackoff({
+  maxAttempts: 5,
+  baseDelayMs: 100,
+  maxDelayMs: 2_000,
+});
+
+const user = await policy.run(async () => {
+  const response = await $fetch("https://api.example.com/users/1", {
+    throwOnFetchError: true,
+  });
+  return await response.json();
+});
+```

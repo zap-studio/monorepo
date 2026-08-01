@@ -1,0 +1,78 @@
+---
+title: Schema Guard
+description: Reference for isStandardSchema, the runtime guard that detects Standard Schema values.
+---
+
+# Schema Guard
+
+`isStandardSchema` is a runtime type guard that checks whether a value implements the [Standard Schema](https://standardschema.dev) interface.
+
+## Signature
+
+```ts
+function isStandardSchema(value?: unknown): value is StandardSchemaV1;
+```
+
+### Parameters
+
+| Name    | Type                 | Description         |
+| ------- | -------------------- | ------------------- |
+| `value` | `unknown` (optional) | The value to check. |
+
+### Returns
+
+`boolean` — `true` if the value is a Standard Schema, otherwise `false`. When it returns `true`, TypeScript narrows `value` to `StandardSchemaV1`.
+
+### Behavior
+
+The guard returns `true` when the value is:
+
+- not `null` or `undefined`, and
+- an object or a function, and
+- has a `~standard` property.
+
+It checks for the presence of the `~standard` property only; it does not verify that `~standard.validate` is callable. If a malformed value passes the guard, the validation helpers throw a `TypeError` at call time.
+
+## Basic Usage
+
+```ts
+import { isStandardSchema } from "@zap-studio/validation";
+
+if (isStandardSchema(schemaLike)) {
+  // schemaLike is now typed as StandardSchemaV1
+}
+```
+
+## Guard Before Validation
+
+Use the guard when schema values are dynamic, external, or typed as `unknown` — for example when they come from plugins, shared registries, or configuration.
+
+```ts
+import { isStandardSchema, standardValidate } from "@zap-studio/validation";
+
+export async function validateIfPossible(schemaLike: unknown, input: unknown) {
+  if (!isStandardSchema(schemaLike)) {
+    return { ok: false as const, reason: "not-a-schema" as const };
+  }
+
+  const result = await standardValidate(schemaLike, input);
+
+  if (result.issues) {
+    return {
+      ok: false as const,
+      reason: "invalid-input" as const,
+      issues: result.issues,
+    };
+  }
+
+  return { ok: true as const, value: result.value };
+}
+```
+
+## When to Use It
+
+- schema objects come from external modules or user configuration
+- your API accepts flexible `unknown` inputs
+- you build framework or package boundaries and want explicit runtime checks
+
+If schema values are always strongly typed as `StandardSchemaV1`, you usually do not need this guard.

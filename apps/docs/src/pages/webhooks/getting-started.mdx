@@ -1,0 +1,110 @@
+---
+title: Getting Started
+description: Install @zap-studio/webhooks and build your first schema-validated webhook router step by step.
+---
+
+# Getting Started
+
+This page walks you through installing the package and building a working webhook router.
+
+## Install
+
+Install the router package. You also need a Standard Schema-compatible validator — this guide uses [Zod](https://zod.dev), but Valibot, ArkType, or any other compatible library works the same way.
+
+:::code-group
+
+```bash [npm]
+npm install @zap-studio/webhooks zod
+```
+
+```bash [yarn]
+yarn add @zap-studio/webhooks zod
+```
+
+```bash [pnpm]
+pnpm add @zap-studio/webhooks zod
+```
+
+```bash [bun]
+bun add @zap-studio/webhooks zod
+```
+
+```bash [deno]
+deno add jsr:@zap-studio/webhooks npm:zod
+```
+
+:::
+
+## Create a Router
+
+`createWebhookRouter` configures global behavior once: the required path prefix, request verification, and lifecycle hooks.
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+
+const router = createWebhookRouter({
+  prefix: "/webhooks/", // default
+});
+```
+
+## Register a Route
+
+Each route binds a route key, an optional validation schema, and a handler. When you provide a schema, the handler's `payload` type is inferred from the schema output — no manual type annotations needed.
+
+```ts
+import { z } from "zod";
+
+router.register("payments/succeeded", {
+  schema: z.object({
+    id: z.string(),
+    amount: z.number().positive(),
+    currency: z.string().length(3),
+  }),
+  handler: async ({ payload, ack }) => {
+    // payload: { id: string; amount: number; currency: string }
+    return ack({ status: 200, body: `processed ${payload.id}` });
+  },
+});
+```
+
+The handler receives a context object with:
+
+- `payload` — the validated payload, typed from the schema
+- `req` — the `NormalizedRequest` (headers, raw body, path, and more)
+- `ack` — a helper that builds a response; `ack()` with no arguments returns `{ status: 200, body: "ok" }`
+
+Returning nothing from the handler also responds with `{ status: 200, body: "ok" }`.
+
+You can also register a plain handler without a schema. The payload is then the parsed JSON body, typed as `unknown` unless you declare a payload type yourself.
+
+```ts
+router.register("ping", async ({ ack }) => ack());
+```
+
+## Handle a Request
+
+The router is framework-agnostic: your framework layer converts each incoming request into a `NormalizedRequest` and calls `handle`, which returns a `NormalizedResponse` to write back.
+
+```ts
+import type { NormalizedRequest } from "@zap-studio/webhooks/types";
+
+const normalizedRequest: NormalizedRequest = {
+  method: "POST",
+  path: "/webhooks/payments/succeeded",
+  headers: new Headers({ "content-type": "application/json" }),
+  rawBody: new TextEncoder().encode(
+    JSON.stringify({ id: "pay_123", amount: 42, currency: "USD" })
+  ),
+};
+
+const response = await router.handle(normalizedRequest);
+// { status: 200, body: "processed pay_123" }
+```
+
+The router responds with:
+
+- `404` and `{ error: "not found" }` when the path is missing the prefix or no route matches
+- `400` and `{ error: "validation failed", issues: [...] }` when schema validation fails
+- `500` and `{ error: message }` when a hook, verifier, or handler throws (customizable with `onError`)
+
+:::note `rawBody` must be the exact bytes the provider sent. Signature verification recomputes the HMAC from `rawBody`, so any re-serialization (for example `JSON.stringify(JSON.parse(...))`) breaks verification. :::

@@ -1,0 +1,151 @@
+---
+title: Validation
+description: Validate response bodies with Zod, Valibot, ArkType, or any other Standard Schema-compatible validator.
+---
+
+# Validation
+
+`@zap-studio/fetch` validates responses through [`@zap-studio/validation`](/validation), so any [Standard Schema](https://standardschema.dev/schema)-compatible validator can be used.
+
+:::note Schemas passed to `$fetch` or `api.*` validate **response bodies only**. They do not validate outgoing request `json` or `body` payloads. :::
+
+## Validation Flow
+
+When a schema is provided:
+
+1. The HTTP request is executed.
+2. If the response is not ok and `throwOnFetchError` is `true` (the default), a `FetchError` is thrown before any parsing.
+3. The response body is read with `response.json()`.
+4. The parsed value is validated against the provided Standard Schema.
+5. The validated value is returned, or validation issues are surfaced.
+
+```ts
+import { api } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), name: z.string() });
+
+const user = await api.get("https://api.example.com/users/1", UserSchema);
+```
+
+## Supported Validators
+
+Any validator that implements Standard Schema works — the schema is passed straight through, so transforms, defaults, and refinements behave exactly as the library defines them.
+
+:::code-group
+
+```ts [Zod]
+import { z } from "zod";
+
+const UserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+```
+
+```ts [Valibot]
+import * as v from "valibot";
+
+const UserSchema = v.object({
+  id: v.number(),
+  name: v.string(),
+});
+```
+
+```ts [ArkType]
+import { type } from "arktype";
+
+const UserSchema = type({
+  id: "number",
+  name: "string",
+});
+```
+
+:::
+
+## Throwing Mode
+
+By default (`throwOnValidationError: true`), a `ValidationError` is thrown when the response does not match the schema. Import it from `@zap-studio/validation/errors`.
+
+```ts
+import { api } from "@zap-studio/fetch";
+import { ValidationError } from "@zap-studio/validation/errors";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), name: z.string() });
+
+try {
+  const user = await api.get("https://api.example.com/users/1", UserSchema);
+  console.log(user);
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.error(error.issues);
+  } else {
+    throw error;
+  }
+}
+```
+
+`@zap-studio/validation` is a runtime dependency of `@zap-studio/fetch`, but install it explicitly if you import from it directly.
+
+## Result Mode
+
+Set `throwOnValidationError: false` to receive the Standard Schema result object — `{ value }` on success, `{ issues }` on failure.
+
+```ts
+import { api } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), name: z.string() });
+
+const result = await api.get("https://api.example.com/users/1", UserSchema, {
+  throwOnValidationError: false,
+});
+
+if (result.issues) {
+  console.error(result.issues);
+} else {
+  console.log(result.value);
+}
+```
+
+## Validating Request Bodies
+
+For request-body validation, validate the payload yourself before passing it to `json`.
+
+```ts
+import { api } from "@zap-studio/fetch";
+import { standardValidate } from "@zap-studio/validation";
+import { z } from "zod";
+
+const CreateUserInputSchema = z.object({ name: z.string() });
+const UserSchema = z.object({ id: z.number(), name: z.string() });
+
+const rawInput: unknown = { name: "Ada" };
+
+const input = await standardValidate(CreateUserInputSchema, rawInput, {
+  throwOnError: true,
+});
+
+const user = await api.post("https://api.example.com/users", UserSchema, {
+  json: input,
+});
+```
+
+## Standalone Validation
+
+For validation outside HTTP requests, use [`@zap-studio/validation`](/validation) directly. It also exports the `StandardSchemaV1` type when you need to type schema parameters yourself.
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+import type { StandardSchemaV1 } from "@zap-studio/validation";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), name: z.string() });
+
+const input: unknown = { id: 1, name: "Ada" };
+
+const user = await standardValidate(UserSchema, input, {
+  throwOnError: true,
+});
+```

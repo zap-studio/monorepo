@@ -1,0 +1,118 @@
+---
+title: RetryError
+description: Reference for RetryError and AbortError, the terminal errors for exhaustion and cancellation.
+---
+
+# RetryError
+
+`RetryError` represents exhausted retry attempts with structured context. `AbortError` represents cancellation through `AbortSignal`. Both extend `Error`.
+
+## Import
+
+```ts
+import { AbortError, RetryError } from "@zap-studio/retry/errors";
+```
+
+## RetryError
+
+### Constructor
+
+```ts
+new RetryError(message: string, context: RetryErrorContext)
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `context.attempts` | `number` | — | Count of completed attempts at exhaustion. Required. |
+| `context.lastError` | `unknown` | — | Last error raised by a failed `execute` attempt. |
+| `context.lastData` | `unknown` | — | Optional data captured from the last attempt. |
+
+### Properties
+
+| Property    | Type      | Description                     |
+| ----------- | --------- | ------------------------------- |
+| `name`      | `string`  | Always `"RetryError"`           |
+| `message`   | `string`  | Human-readable terminal message |
+| `attempts`  | `number`  | Total attempts performed        |
+| `lastError` | `unknown` | Last captured error             |
+| `lastData`  | `unknown` | Last captured data value        |
+
+## AbortError
+
+### Constructor
+
+```ts
+new AbortError(message: string, context?: AbortErrorContext)
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `context.cause` | `unknown` | — | Wrapped cause when the abort reason was an `Error`. |
+
+### Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `name` | `string` | Always `"AbortError"` |
+| `message` | `string` | Human-readable abort message |
+| `cause` | `unknown` | Original abort reason when it was an `Error`, else `undefined` |
+
+## Default Behavior
+
+`BaseRetryPolicy.onExhausted(...)` returns a `RetryError` with the message `"Retry policy exhausted all attempts."` — the built-in `FixedDelay` and `ExponentialBackoff` policies inherit this. When retries are exhausted in the default throw mode, `run(...)` throws that error.
+
+## Catching Terminal Errors
+
+```ts
+import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+import { AbortError, RetryError } from "@zap-studio/retry/errors";
+
+const policy = new ExponentialBackoff({
+  maxAttempts: 3,
+  baseDelayMs: 100,
+  maxDelayMs: 500,
+});
+
+try {
+  await policy.run(async () => {
+    return await doWork();
+  });
+} catch (error) {
+  if (error instanceof RetryError) {
+    console.error("Attempts:", error.attempts);
+    console.error("Last error:", error.lastError);
+  } else if (error instanceof AbortError) {
+    console.error("Aborted:", error.message);
+  } else {
+    throw error;
+  }
+}
+```
+
+## Non-Throw Mode
+
+With `throwOnExhausted: false`, the terminal error is returned on `result.error` instead of thrown. Its type is `RetryError | AbortError`, so narrow with `instanceof` before reading `RetryError`-specific properties.
+
+```ts
+import { RetryError } from "@zap-studio/retry/errors";
+
+const result = await policy.run(
+  async () => {
+    return await doWork();
+  },
+  { throwOnExhausted: false }
+);
+
+if (!result.ok) {
+  console.error("Failed after", result.attempts, "attempts");
+  if (result.error instanceof RetryError) {
+    console.error("Last error:", result.error.lastError);
+  }
+} else {
+  console.log(result.value);
+}
+```
+
+## Custom Terminal Errors
+
+Override `onExhausted(...)` in a [custom policy](/retry/custom-policies) to return your own `RetryError` subclass while keeping the same retry orchestration flow.

@@ -1,0 +1,117 @@
+---
+title: Types
+description: Reference for retry policy contracts, decision inputs, runner options, and result unions.
+---
+
+# Types
+
+All retry contracts are exported from `@zap-studio/retry/types`.
+
+```ts
+import type {
+  RetryDecision,
+  RetryDecisionInput,
+  RetryExhaustedInput,
+  RetryPolicy,
+  RetryRunOptions,
+  RetryRunResult,
+} from "@zap-studio/retry/types";
+```
+
+## Generic Contracts
+
+The package is transport-agnostic and generic over error and data shapes. Both type parameters default to `unknown`:
+
+- `RetryPolicy<TError, TData>`
+- `RetryDecisionInput<TError, TData>`
+- `RetryExhaustedInput<TError, TData>`
+
+```ts
+import type { RetryPolicy } from "@zap-studio/retry/types";
+
+type HttpPolicy = RetryPolicy<TypeError, Response>;
+```
+
+## RetryPolicy
+
+The contract implemented by `BaseRetryPolicy` and by hand-written policies.
+
+| Member | Type | Description |
+| --- | --- | --- |
+| `next` | `(input: RetryDecisionInput<TError, TData>) => RetryDecision` | Returns the retry decision for a failed attempt. |
+| `onExhausted` | `(input: RetryExhaustedInput<TError, TData>) => RetryError` | Builds the terminal error used when retries are exhausted. |
+
+## RetryDecision
+
+The decision a policy returns for a specific attempt.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `shouldRetry` | `boolean` | When `true`, the runner may schedule another attempt. |
+| `delayMs` | `number` | Milliseconds to wait before the next attempt when `shouldRetry` is `true`. Required — use `0` for terminal decisions. |
+| `reason` | `"retry" \| "max-attempts-reached" \| "policy-declined"` | Optional machine-readable reason for the decision. |
+
+## RetryDecisionInput
+
+The input passed to `RetryPolicy.next(...)` for each failed attempt.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `attempt` | `number` | One-based attempt number for the current failure. |
+| `error` | `TError` | Optional. Error raised by the most recent `execute(attempt)` call. |
+| `data` | `TData` | Optional. Data captured alongside the failure, when a policy populates it. |
+| `maxAttempts` | `number` | Optional. Policy-level maximum attempts, when a policy passes it through. |
+
+:::note The built-in runner populates `attempt` and `error` only. `data` and `maxAttempts` are available for custom orchestration layers. :::
+
+## RetryExhaustedInput
+
+The input passed to `RetryPolicy.onExhausted(...)` when retries stop.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `attempts` | `number` | Count of completed attempts that led to stopping. |
+| `error` | `TError` | Optional. Last execution error, when available. |
+| `data` | `TData` | Optional. Last captured data, when a policy supplies it. |
+
+## RetryRunOptions
+
+Options accepted by `BaseRetryPolicy.run(...)`. See [Running Policies](/retry/running-policies) for usage.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `sleep` | `(delayMs: number) => Promise<void>` | `defaultSleep` | Delay function used between retry attempts. |
+| `signal` | `AbortSignal` | — | Cancels retry orchestration when aborted. See [Abort Signal](/retry/abort-signal). |
+| `throwOnExhausted` | `boolean` | `true` | `true` throws on exhaustion; `false` returns a `RetryRunResult<T>` union. |
+
+```ts
+import type { RetryRunOptions } from "@zap-studio/retry/types";
+
+const options: RetryRunOptions = {
+  throwOnExhausted: false,
+  sleep: async (delayMs) => {
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  },
+};
+```
+
+## RetryRunResult
+
+The discriminated union returned by `run(...)` when `throwOnExhausted` is `false`.
+
+Success variant (`ok: true`):
+
+| Property | Type   | Description                                     |
+| -------- | ------ | ----------------------------------------------- |
+| `ok`     | `true` | Discriminator for a successful run.             |
+| `value`  | `T`    | Successful return value from the final attempt. |
+
+Failure variant (`ok: false`):
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `ok` | `false` | Discriminator for a failed or aborted run. |
+| `error` | `RetryError \| AbortError` | `RetryError` when retries are exhausted, `AbortError` when the run is canceled. |
+| `attempts` | `number` | Number of attempts that completed before the terminal outcome. |
+
+Narrow `error` with `instanceof` before reading `RetryError`-specific properties like `lastError`. See [RetryError](/retry/retry-error) for the error class reference.

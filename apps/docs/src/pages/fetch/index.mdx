@@ -1,0 +1,81 @@
+---
+title: Overview
+description: A type-safe fetch wrapper that validates JSON responses at runtime with any Standard Schema validator.
+---
+
+# @zap-studio/fetch
+
+A small, type-safe wrapper around native `fetch` that validates JSON responses at runtime using any [Standard Schema](https://standardschema.dev/schema)-compatible validator, such as Zod, Valibot, or ArkType.
+
+## Why fetch?
+
+TypeScript can describe the data you expect from an API, but it cannot prove the API actually returned that shape. Without runtime validation, fetch code often ends with unchecked assertions:
+
+```ts
+type User = {
+  id: number;
+  name: string;
+};
+
+const response = await fetch("/api/users/1");
+const data = await response.json();
+
+const user = data as User;
+```
+
+The compiler trusts the assertion even if the server returns `{ id: "1" }`. With `@zap-studio/fetch`, the response is parsed and validated before it is returned, and the return type is inferred from the schema.
+
+## Features
+
+- **Raw fetch mode** through `$fetch(input, options)` — behaves like native `fetch` and returns the `Response`.
+- **Validated fetch mode** through `$fetch(input, schema, options)` — parses and validates the JSON response.
+- **HTTP method helpers** through `api.get`, `api.post`, `api.put`, `api.patch`, and `api.delete`.
+- **Configured clients** through `createFetch(...)` with shared `baseURL`, headers, query params, and error defaults.
+- **JSON convenience** through the `json` option, which serializes the request body and sets `Content-Type`.
+- **Structured errors** with `FetchError` for HTTP failures and `ValidationError` for schema failures.
+- **Validator-agnostic** — works with any library that implements Standard Schema.
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm install @zap-studio/fetch
+```
+
+```bash [yarn]
+yarn add @zap-studio/fetch
+```
+
+```bash [pnpm]
+pnpm add @zap-studio/fetch
+```
+
+```bash [bun]
+bun add @zap-studio/fetch
+```
+
+```bash [deno]
+deno add jsr:@zap-studio/fetch
+```
+
+:::
+
+## Quick Example
+
+```ts
+import { api } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.string().email(),
+});
+
+const user = await api.get("https://api.example.com/users/1", UserSchema);
+
+console.log(user.name); // typed as string
+```
+
+The schema validates the response body. If the server returns a shape that does not match, a `ValidationError` is thrown instead of handing you bad data.

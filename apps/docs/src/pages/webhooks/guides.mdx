@@ -1,0 +1,87 @@
+---
+title: Guides
+description: Provider-specific webhook patterns for GitHub and Stripe, plus a production checklist.
+---
+
+# Guides
+
+This page shows provider-specific patterns you can adapt directly. The important idea: verification and payload validation are separate concerns — verification checks authenticity, the schema checks shape.
+
+## Handle GitHub Webhooks
+
+GitHub signs deliveries with an HMAC-SHA256 signature in the `x-hub-signature-256` header, using the `sha256=<hex>` format that `createHmacVerifier` normalizes automatically.
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+import { createHmacVerifier } from "@zap-studio/webhooks/verify";
+import { z } from "zod";
+
+const router = createWebhookRouter({
+  verify: createHmacVerifier({
+    headerName: "x-hub-signature-256",
+    secret: process.env.GITHUB_WEBHOOK_SECRET!,
+  }),
+});
+
+router.register("github/push", {
+  schema: z.object({
+    ref: z.string(),
+    repository: z.object({ full_name: z.string() }),
+  }),
+  handler: async ({ payload, ack }) => {
+    console.log(payload.repository.full_name, payload.ref);
+    return ack();
+  },
+});
+```
+
+## Handle Stripe Webhooks
+
+Stripe signs a timestamped payload with its own format, so verification should go through the Stripe SDK — this is exactly why the router accepts a custom `verify` function. `constructEvent` also enforces a timestamp tolerance, which gives you replay protection for free.
+
+```ts
+import Stripe from "stripe";
+import { createWebhookRouter } from "@zap-studio/webhooks";
+import { z } from "zod";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+const router = createWebhookRouter({
+  verify: (req) => {
+    const signature = req.headers.get("stripe-signature");
+    if (!signature) {
+      throw new Error("Missing Stripe signature");
+    }
+
+    stripe.webhooks.constructEvent(
+      Buffer.from(req.rawBody),
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
+  },
+});
+
+router.register("stripe/payment_intent.succeeded", {
+  schema: z.object({
+    id: z.string(),
+    object: z.literal("event"),
+    type: z.literal("payment_intent.succeeded"),
+  }),
+  handler: async ({ payload, ack }) => {
+    console.log("Stripe event:", payload.id);
+    return ack({ status: 200 });
+  },
+});
+```
+
+:::note `req.rawBody` is a `Uint8Array`; `constructEvent` expects a string or `Buffer`, so wrap it with `Buffer.from(req.rawBody)` in Node. :::
+
+## Production Checklist
+
+- keep `rawBody` untouched before verification — signature checks recompute the HMAC from the exact bytes received
+- fail closed: throw when the signature header is missing instead of skipping verification
+- validate the payload schema even after the signature passes — authenticity does not guarantee shape
+- keep handlers idempotent — providers retry deliveries on failure, so the same event can arrive more than once
+- respond quickly and defer heavy work to a queue — providers time out slow endpoints and retry
+
+:::warning Never register a webhook route without verification in production. Anyone who can reach your endpoint can send a well-formed payload that passes schema validation. :::

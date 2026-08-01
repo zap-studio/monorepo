@@ -1,0 +1,113 @@
+---
+title: Abort Signal
+description: Cancel retry orchestration with AbortSignal before, between, or during retries.
+---
+
+# Abort Signal
+
+`BaseRetryPolicy.run(...)` accepts an `AbortSignal` through the `signal` option. Use it to stop retrying on user navigation, request timeouts, shutdown, or parent workflow cancellation.
+
+## Basic Usage
+
+Pass `controller.signal` to `run(...)`; aborting the controller stops the run with an `AbortError`.
+
+```ts
+import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+import { AbortError } from "@zap-studio/retry/errors";
+
+const controller = new AbortController();
+
+const policy = new ExponentialBackoff({
+  maxAttempts: 5,
+  baseDelayMs: 100,
+  maxDelayMs: 2_000,
+});
+
+const promise = policy.run(
+  async () => {
+    return await doWork();
+  },
+  { signal: controller.signal }
+);
+
+controller.abort(new Error("Request canceled by user"));
+
+try {
+  await promise;
+} catch (error) {
+  if (error instanceof AbortError) {
+    console.error("Retry aborted:", error.message);
+  }
+}
+```
+
+## Throw Mode
+
+In the default throw mode, an aborted run rejects with `AbortError`.
+
+```ts
+import { AbortError } from "@zap-studio/retry/errors";
+
+const controller = new AbortController();
+
+try {
+  await policy.run(
+    async () => {
+      return await doWork();
+    },
+    { signal: controller.signal }
+  );
+} catch (error) {
+  if (error instanceof AbortError) {
+    console.error("Retry aborted:", error.message);
+  } else {
+    throw error;
+  }
+}
+```
+
+## Non-Throw Mode
+
+With `throwOnExhausted: false`, an abort resolves to `{ ok: false }` with the `AbortError` on `result.error` instead of throwing.
+
+```ts
+const controller = new AbortController();
+
+const result = await policy.run(
+  async () => {
+    return await doWork();
+  },
+  {
+    signal: controller.signal,
+    throwOnExhausted: false,
+  }
+);
+
+if (result.ok) {
+  console.log(result.value);
+} else {
+  console.error("Retry stopped:", result.error);
+}
+```
+
+## Cancellation Timing
+
+The runner checks the signal:
+
+- before each attempt starts
+- after a failed attempt, before consulting the policy
+- while waiting between retries (the delay is raced against the signal)
+
+This keeps cancellation responsive without custom orchestration code.
+
+:::warning The runner does not cancel an `execute` call that is already in flight. Forward the same signal to the underlying operation (for example, `fetch(url, { signal })`) if the work itself should be interruptible. :::
+
+## Abort Reasons
+
+The abort `reason` you pass to `controller.abort(...)` is normalized into the `AbortError`:
+
+- an `Error` reason becomes the `AbortError` message, with the original error on `cause`
+- a non-empty string reason becomes the message
+- no reason produces the message `"Retry aborted."`
+
+See [RetryError](/retry/retry-error) for the full `AbortError` reference.

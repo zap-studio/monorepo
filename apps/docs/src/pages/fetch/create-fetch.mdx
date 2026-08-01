@@ -1,0 +1,149 @@
+---
+title: createFetch
+description: Create configured fetch clients with a shared base URL, headers, query params, and error defaults.
+---
+
+# createFetch
+
+Use `createFetch` to configure shared defaults once and reuse them across requests. It returns an independent `$fetch` function and `api` method set bound to those defaults.
+
+## Basic Usage
+
+```ts
+import { createFetch } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), name: z.string() });
+
+const { api, $fetch } = createFetch({
+  baseURL: "https://api.example.com",
+  headers: {
+    Authorization: `Bearer ${process.env.API_TOKEN}`,
+  },
+});
+
+const user = await api.get("/users/1", UserSchema);
+const health = await $fetch("/health");
+```
+
+The returned `$fetch` and `api` have the same overloads, options, and error behavior as the top-level exports. Each `createFetch` instance is independent.
+
+## Options
+
+All options are optional; unset options fall back to the global defaults.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `baseURL` | `string` | `""` | Base URL that relative request URLs are resolved against. |
+| `headers` | `HeadersInit` | `undefined` | Default headers merged into every request. Per-request headers win. |
+| `searchParams` | `URLSearchParams` init | `undefined` | Default query params applied to every request. |
+| `throwOnFetchError` | `boolean` | `true` | Default for throwing `FetchError` on non-2xx responses. |
+| `throwOnValidationError` | `boolean` | `true` | Default for throwing `ValidationError` on validation issues. |
+
+## Base URL
+
+Relative URLs are resolved against `baseURL` using standard `URL` resolution. Absolute URLs keep their original origin.
+
+```ts
+import { createFetch } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), name: z.string() });
+const StatusSchema = z.object({ ok: z.boolean() });
+
+const { api } = createFetch({
+  baseURL: "https://api.example.com",
+});
+
+await api.get("/users/1", UserSchema);
+await api.get("https://status.example.com/health", StatusSchema);
+```
+
+:::note A trailing slash is added to `baseURL` before resolution, so paths without a leading slash append to the base path, while paths with a leading slash resolve from the origin root. With `baseURL: "https://api.example.com/v1"`, the path `"users"` resolves to `https://api.example.com/v1/users`, but `"/users"` resolves to `https://api.example.com/users`. :::
+
+## Headers
+
+Default headers are merged with per-request headers. Per-request headers win when the same header is set in both places.
+
+```ts
+import { createFetch } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), name: z.string() });
+
+const defaultToken = process.env.API_TOKEN;
+const overrideToken = process.env.ADMIN_TOKEN;
+
+const { api } = createFetch({
+  baseURL: "https://api.example.com",
+  headers: {
+    Authorization: `Bearer ${defaultToken}`,
+  },
+});
+
+await api.get("/users/1", UserSchema, {
+  headers: {
+    Authorization: `Bearer ${overrideToken}`,
+  },
+});
+```
+
+## Search Params
+
+Query params merge in this order, with later values winning for duplicate keys:
+
+1. `createFetch({ searchParams })` defaults
+2. query params already present in the request URL
+3. per-request `searchParams`
+
+```ts
+import { createFetch } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserListSchema = z.array(z.object({ id: z.number(), name: z.string() }));
+
+const { api } = createFetch({
+  baseURL: "https://api.example.com",
+  searchParams: {
+    locale: "en",
+    page: "1",
+  },
+});
+
+await api.get("/users?page=2", UserListSchema, {
+  searchParams: {
+    q: "ada",
+  },
+});
+// Final URL: https://api.example.com/users?locale=en&page=2&q=ada
+```
+
+## Default Throw Behavior
+
+Set throw behavior once for a client and override it per request when needed.
+
+```ts
+import { createFetch } from "@zap-studio/fetch";
+
+const { $fetch } = createFetch({
+  throwOnFetchError: false,
+});
+
+const response = await $fetch("https://api.example.com/users/missing");
+
+console.log(response.status); // e.g. 404, no FetchError thrown
+```
+
+:::warning[Type inference and throwOnValidationError] Return types are inferred from **per-call** options only — TypeScript cannot see client defaults. If you set `throwOnValidationError: false` as a client default, calls without the flag return the Standard Schema result object at runtime, but their inferred type is the validated data. To keep types and runtime in sync, pass `throwOnValidationError: false` explicitly at the call site:
+
+```ts
+const result = await api.get("/users/1", UserSchema, {
+  throwOnValidationError: false,
+});
+
+if (result.issues) {
+  console.error(result.issues);
+}
+```
+
+:::
