@@ -7,7 +7,7 @@ description: Standard Schema utilities and ValidationError helpers for one consi
 
 `@zap-studio/validation` provides small, focused helpers for validating data against any [Standard Schema](https://standardschema.dev)-compatible schema library, such as Zod, Valibot, or ArkType.
 
-## Why This Package?
+## Why validation?
 
 Different teams choose different validators. That is usually fine until you need shared infrastructure across teams and packages: every library has different parsing APIs, return shapes, and error formats.
 
@@ -104,11 +104,3 @@ The package re-exports the `StandardSchemaV1` type from `@standard-schema/spec`,
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 ```
 
-## Next Steps
-
-- [Getting Started](/validation/getting-started) — install the package and validate your first payload.
-- [Concepts](/validation/concepts) — understand Standard Schema and why this package exists.
-- [How to Validate](/validation/how-to-validate) — choose between async and sync helpers.
-- [Create Validators](/validation/create-validators) — build reusable validator functions.
-- [Schema Guard](/validation/is-standard-schema) — detect Standard Schemas at runtime.
-- [Handling Errors](/validation/handling-errors) — catch and inspect `ValidationError`.

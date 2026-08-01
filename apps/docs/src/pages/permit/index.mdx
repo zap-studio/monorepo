@@ -103,7 +103,7 @@ deno add jsr:@zap-studio/permit
 
 :::
 
-## Quick Start
+## Quick Example
 
 Build authorization for a simple blog where anyone can read public posts, but only authors can edit their own.
 
@@ -186,11 +186,3 @@ if (await policy.can(context, "post:read", post)) {
 
 Everything is type-safe, centralized, and easy to test.
 
-## Next Steps
-
-- [Creating Policies](/permit/creating-policies) — Define resources, actions, context, and rules
-- [Policy Rules](/permit/policy-rules) — Build rules with `allow()`, `deny()`, and `when()`
-- [Conditions](/permit/conditions) — Compose conditions with `and()`, `or()`, `not()`, and `has()`
-- [Role-Based Access Control](/permit/roles) — Implement RBAC and role hierarchies with `hasRole()`
-- [Merging Policies](/permit/merging-policies) — Combine policies with deny-overrides or allow-overrides
-- [Error Handling](/permit/errors) — Work with `PolicyError` and `assertNever()`

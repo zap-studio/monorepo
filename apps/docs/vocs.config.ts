@@ -8,6 +8,7 @@ export default defineConfig({
     link: "https://github.com/zap-studio/monorepo/edit/main/apps/docs/src/pages/:path",
     text: "Edit on GitHub",
   },
+  renderStrategy: "full-static",
   sidebar: [
     { link: "/", text: "Getting Started" },
     {

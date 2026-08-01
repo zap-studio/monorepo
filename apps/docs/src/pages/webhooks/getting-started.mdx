@@ -109,9 +109,3 @@ The router responds with:
 
 :::note `rawBody` must be the exact bytes the provider sent. Signature verification recomputes the HMAC from `rawBody`, so any re-serialization (for example `JSON.stringify(JSON.parse(...))`) breaks verification. :::
 
-## Next Steps
-
-- [Verification](/webhooks/verification) — reject forged requests before they reach your handlers
-- [Lifecycle Hooks](/webhooks/lifecycle-hooks) — add logging, metrics, and error handling
-- [Adapters](/webhooks/adapters) — build a reusable framework integration with `BaseAdapter`
-- [Guides](/webhooks/guides) — complete GitHub and Stripe examples

@@ -82,13 +82,3 @@ If all five attempts fail, `run(...)` throws a `RetryError` carrying the attempt
 - The **runner** (`run(...)`) executes attempts, catches failures, sleeps, and stops.
 - The **terminal error** is built by `onExhausted(...)` — a `RetryError` by default.
 
-## Next Steps
-
-- [Getting Started](/retry/getting-started) — install the package and run your first policy.
-- [FixedDelay](/retry/fixed-delay) — retry with a constant interval.
-- [ExponentialBackoff](/retry/exponential-backoff) — retry with capped exponential delays.
-- [Running Policies](/retry/running-policies) — runner options, custom sleep, and result mode.
-- [Abort Signal](/retry/abort-signal) — cancel retries with `AbortSignal`.
-- [Custom Policies](/retry/custom-policies) — build your own retry rules.
-- [RetryError](/retry/retry-error) — terminal error reference.
-- [Types](/retry/types) — full type reference.

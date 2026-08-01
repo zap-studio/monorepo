@@ -7,7 +7,7 @@ description: Schema-first, type-safe webhook router with Standard Schema validat
 
 `@zap-studio/webhooks` is a lightweight, schema-first router for inbound webhooks. It works with any validation library that implements [Standard Schema](https://standardschema.dev) — Zod, Valibot, ArkType, and others — and runs in any JavaScript runtime.
 
-## Why This Package Exists
+## Why webhooks?
 
 Webhook endpoints usually repeat the same plumbing, and each step is easy to get wrong:
 
@@ -27,7 +27,7 @@ Webhook endpoints usually repeat the same plumbing, and each step is easy to get
 - **Framework-agnostic** — a normalized request/response contract plus a `BaseAdapter` helper for any HTTP framework
 - **Runtime-agnostic** — uses the Web Crypto API, not Node-specific APIs
 
-## Install
+## Installation
 
 :::code-group
 
@@ -80,10 +80,3 @@ router.register("payments/succeeded", {
 
 A request to `/webhooks/payments/succeeded` is matched against the registered key `payments/succeeded`: the router parses the pathname, requires the configured prefix (default `/webhooks/`), strips it, and matches the remainder exactly. Exact matching keeps routing predictable, and the prefix requirement keeps webhook routes from colliding with normal app routes.
 
-## Next Steps
-
-- [Getting Started](/webhooks/getting-started) — install the package and build your first router step by step
-- [Verification](/webhooks/verification) — authenticate requests with `createHmacVerifier` or a custom verifier
-- [Lifecycle Hooks](/webhooks/lifecycle-hooks) — add logging, metrics, and centralized error handling
-- [Guides](/webhooks/guides) — provider-specific patterns for GitHub and Stripe
-- [Adapters](/webhooks/adapters) — integrate the router with your HTTP framework
