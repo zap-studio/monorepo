@@ -94,7 +94,6 @@ export default defineConfig({
     { link: "/retry", text: "retry" },
     { link: "/validation", text: "validation" },
     { link: "/webhooks", text: "webhooks" },
-    { link: "/llms.txt", text: "llms.txt" },
     { link: "https://github.com/zap-studio/monorepo", text: "GitHub" },
   ],
 });
