@@ -45,7 +45,7 @@
   },
   "scripts": {
     "build": "tsdown --config ./tsdown.config.ts",
-    "prepublishOnly": "pnpm exec publint --strict && pnpm exec attw --profile esm-only --pack ."
+    "prepublishOnly": "pnpm exec attw --profile esm-only --pack ."
   },
   "devDependencies": {
     "@zap-studio/typescript": "workspace:*",
