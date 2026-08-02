@@ -70,9 +70,7 @@ console.log(user.email);
 - The response body is parsed with `response.json()` and validated at runtime. A mismatched response throws a `ValidationError`.
 - A non-2xx response throws a `FetchError` before validation runs.
 
-:::note
-The schema validates the **response** body returned by the server. It never validates outgoing request payloads.
-:::
+:::note The schema validates the **response** body returned by the server. It never validates outgoing request payloads. :::
 
 ## Send JSON
 

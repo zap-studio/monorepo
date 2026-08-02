@@ -107,6 +107,4 @@ The router responds with:
 - `400` and `{ error: "validation failed", issues: [...] }` when schema validation fails
 - `500` and `{ error: message }` when a hook, verifier, or handler throws (customizable with `onError`)
 
-:::note
-`rawBody` must be the exact bytes the provider sent. Signature verification recomputes the HMAC from `rawBody`, so any re-serialization (for example `JSON.stringify(JSON.parse(...))`) breaks verification.
-:::
+:::note `rawBody` must be the exact bytes the provider sent. Signature verification recomputes the HMAC from `rawBody`, so any re-serialization (for example `JSON.stringify(JSON.parse(...))`) breaks verification. :::

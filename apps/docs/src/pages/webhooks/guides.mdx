@@ -74,9 +74,7 @@ router.register("stripe/payment_intent.succeeded", {
 });
 ```
 
-:::note
-`req.rawBody` is a `Uint8Array`; `constructEvent` expects a string or `Buffer`, so wrap it with `Buffer.from(req.rawBody)` in Node.
-:::
+:::note `req.rawBody` is a `Uint8Array`; `constructEvent` expects a string or `Buffer`, so wrap it with `Buffer.from(req.rawBody)` in Node. :::
 
 ## Production Checklist
 
@@ -86,6 +84,4 @@ router.register("stripe/payment_intent.succeeded", {
 - keep handlers idempotent — providers retry deliveries on failure, so the same event can arrive more than once
 - respond quickly and defer heavy work to a queue — providers time out slow endpoints and retry
 
-:::warning
-Never register a webhook route without verification in production. Anyone who can reach your endpoint can send a well-formed payload that passes schema validation.
-:::
+:::warning Never register a webhook route without verification in production. Anyone who can reach your endpoint can send a well-formed payload that passes schema validation. :::

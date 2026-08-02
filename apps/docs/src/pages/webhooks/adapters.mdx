@@ -70,9 +70,7 @@ class NodeHttpAdapter extends BaseAdapter<IncomingMessage, ServerResponse> {
 }
 ```
 
-:::warning
-`toNormalizedRequest` must set `rawBody` to the exact bytes received, before any body-parsing middleware touches the request. Signature verification recomputes the HMAC from `rawBody` — a re-serialized body will never verify.
-:::
+:::warning `toNormalizedRequest` must set `rawBody` to the exact bytes received, before any body-parsing middleware touches the request. Signature verification recomputes the HMAC from `rawBody` — a re-serialized body will never verify. :::
 
 ## Use the Adapter
 

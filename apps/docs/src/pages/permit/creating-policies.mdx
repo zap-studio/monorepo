@@ -21,9 +21,7 @@ A policy consists of three parts:
 2. **Actions** — What can be done with resources (read, write, delete)
 3. **Rules** — The logic that determines if an action is allowed
 
-:::info
-Define resources and actions in a centralized location to ensure consistency and type safety across your application.
-:::
+:::info Define resources and actions in a centralized location to ensure consistency and type safety across your application. :::
 
 ## Defining Resources
 
@@ -87,9 +85,7 @@ const resources = {
 } satisfies Resources;
 ```
 
-:::warning
-Use `satisfies` to ensure type safety and consistency. Learn more about the [TypeScript `satisfies` operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator).
-:::
+:::warning Use `satisfies` to ensure type safety and consistency. Learn more about the [TypeScript `satisfies` operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator). :::
 
 ## Defining Actions
 
@@ -105,9 +101,7 @@ const actions = {
 } as const satisfies Actions<typeof resources>;
 ```
 
-:::warning
-Use `as const` so TypeScript infers literal types for actions. This enables autocomplete and type checking when writing rules and permission strings. Learn more about [`const` assertions](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions).
-:::
+:::warning Use `as const` so TypeScript infers literal types for actions. This enables autocomplete and type checking when writing rules and permission strings. Learn more about [`const` assertions](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions). :::
 
 ## Understanding Context
 
@@ -131,9 +125,7 @@ type AppContext = {
 
 Context is passed to `policy.can()` at runtime and is available in all your rule functions.
 
-:::info
-Context is just a type — it can be anything relevant to your application's authorization needs. Include all the data your rules need so they never have to fetch anything.
-:::
+:::info Context is just a type — it can be anything relevant to your application's authorization needs. Include all the data your rules need so they never have to fetch anything. :::
 
 ## Creating a Policy
 
@@ -163,9 +155,7 @@ const policy = createPolicy<AppContext>({
 });
 ```
 
-:::note
-`createPolicy()` throws a [`PolicyError`](/permit/errors) at creation time if a resource key is missing its schema. Rules for individual actions are optional — an action without a rule is always denied.
-:::
+:::note `createPolicy()` throws a [`PolicyError`](/permit/errors) at creation time if a resource key is missing its schema. Rules for individual actions are optional — an action without a rule is always denied. :::
 
 ## Checking Permissions
 
