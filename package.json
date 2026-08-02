@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm --filter './packages/*' run build",
-    "publish:check": "pnpm run check && pnpm run test && pnpm --filter './packages/*' run prepublishOnly",
+    "publish:check": "pnpm run check && pnpm run test && pnpm run build",
     "fix": "pnpm exec ultracite fix --type-aware --type-check",
     "check": "pnpm exec ultracite check --type-aware --type-check",
     "test": "vitest run",
@@ -13,7 +13,7 @@
     "prepare": "lefthook install"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "catalog:",
+    "@arethetypeswrong/core": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "lefthook": "catalog:",
