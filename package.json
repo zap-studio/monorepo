@@ -67,6 +67,11 @@
       "name": "nub",
       "version": "^0.6.0",
       "onFail": "warn"
+    },
+    "runtime": {
+      "name": "node",
+      "version": "lts",
+      "onFail": "warn"
     }
   },
   "engines": {

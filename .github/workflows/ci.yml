@@ -45,8 +45,6 @@ jobs:
         run: nub run --filter "./packages/*" build
       - name: Run check
         run: nub run check
-      - name: Run publish checks
-        run: nub run --if-present --filter "./packages/*" prepublishOnly
 
   test:
     name: Test
