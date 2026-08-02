@@ -31,12 +31,12 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "types": "./dist/index.d.mts",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.mjs",
-    "./errors": "./dist/errors.mjs",
-    "./helpers": "./dist/helpers.mjs",
-    "./types": "./dist/types.mjs",
+    ".": "./dist/index.js",
+    "./errors": "./dist/errors.js",
+    "./helpers": "./dist/helpers.js",
+    "./types": "./dist/types.js",
     "./package.json": "./package.json"
   },
   "publishConfig": {

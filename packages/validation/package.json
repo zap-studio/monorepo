@@ -26,10 +26,10 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "types": "./dist/index.d.mts",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.mjs",
-    "./errors": "./dist/errors.mjs",
+    ".": "./dist/index.js",
+    "./errors": "./dist/errors.js",
     "./package.json": "./package.json"
   },
   "publishConfig": {

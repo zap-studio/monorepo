@@ -33,14 +33,14 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "types": "./dist/index.d.mts",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.mjs",
-    "./adapters/base": "./dist/adapters/base.mjs",
-    "./errors": "./dist/errors.mjs",
-    "./types": "./dist/types/index.mjs",
-    "./utils": "./dist/utils/index.mjs",
-    "./verify": "./dist/verify.mjs",
+    ".": "./dist/index.js",
+    "./adapters/base": "./dist/adapters/base.js",
+    "./errors": "./dist/errors.js",
+    "./types": "./dist/types/index.js",
+    "./utils": "./dist/utils/index.js",
+    "./verify": "./dist/verify.js",
     "./package.json": "./package.json"
   },
   "publishConfig": {
