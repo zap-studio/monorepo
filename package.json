@@ -2,12 +2,47 @@
   "name": "@zap-studio/monorepo",
   "private": true,
   "author": "alexandretrotel",
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "configs/*",
+      "packages/*"
+    ],
+    "catalog": {
+      "@arethetypeswrong/core": "^0.18.5",
+      "@standard-schema/spec": "^1.1.0",
+      "@types/react": "^19.2.18",
+      "@types/react-dom": "^19.2.4",
+      "@vitest/browser-playwright": "^4.1.10",
+      "@vitest/coverage-v8": "^4.1.10",
+      "arktype": "^2.2.3",
+      "lefthook": "^2.1.10",
+      "oxfmt": "^0.61.0",
+      "oxlint": "^1.76.0",
+      "oxlint-tsgolint": "^7.0.2001",
+      "ultracite": "^7.9.4",
+      "playwright": "^1.62.1",
+      "publint": "^0.3.22",
+      "react": "^19.2.8",
+      "react-dom": "^19.2.8",
+      "tsdown": "^0.22.14",
+      "typescript": "^7.0.2",
+      "valibot": "^1.4.2",
+      "vite": "^8.2.0",
+      "vitest": "^4.1.10",
+      "vocs": "^2.8.0",
+      "waku": "1.0.0-beta.8",
+      "wrangler": "^4.118.0",
+      "zod": "^4.4.3",
+      "unplugin-unused": "^0.6.0"
+    }
+  },
   "type": "module",
   "scripts": {
-    "build": "pnpm --filter './packages/*' run build",
-    "publish:check": "pnpm run check && pnpm run test && pnpm run build",
-    "fix": "pnpm exec ultracite fix --type-aware --type-check",
-    "check": "pnpm exec ultracite check --type-aware --type-check",
+    "build": "nub run --filter './packages/*' build",
+    "publish:check": "nub run check && nub run test && nub run build",
+    "fix": "nub exec ultracite fix --type-aware --type-check",
+    "check": "nub exec ultracite check --type-aware --type-check",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "prepare": "lefthook install"
@@ -27,9 +62,21 @@
     "unplugin-unused": "catalog:",
     "vitest": "catalog:"
   },
-  "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=10.32.1"
+  "devEngines": {
+    "packageManager": {
+      "name": "nub",
+      "version": "^0.6.0",
+      "onFail": "warn"
+    }
   },
-  "packageManager": "pnpm@11.19.0+sha512.7881f3ed590d472c4a955e2b88b2121791116066dcc88cbca3849ec9b60f1bbaa6d2ccb221fa91da4e1c65bef2bcbe379365aea7ac539c7bf86dedc3a1b22dce"
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "allowBuilds": {
+    "es5-ext": true,
+    "esbuild": true,
+    "lefthook": true,
+    "vue-demi": true,
+    "workerd": true
+  }
 }

@@ -2,7 +2,7 @@ pre-commit:
   parallel: true
   jobs:
     - name: ultracite
-      run: pnpm exec ultracite fix
+      run: nub exec ultracite fix
       glob:
         - "**/*.js"
         - "**/*.jsx"

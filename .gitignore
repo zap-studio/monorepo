@@ -1,14 +1,11 @@
 # Dependencies
 node_modules/
 **/node_modules/
-.pnpm-store/
 
 # Package manager and installer logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-.pnpm-debug.log
 
 # Build, coverage, and task output
 dist/

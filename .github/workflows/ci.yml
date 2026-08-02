@@ -17,10 +17,10 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
+      - name: Setup nub
+        uses: ./.github/actions/setup-nub
       - name: Build packages
-        run: pnpm --filter "./packages/*" run build
+        run: nub run --filter "./packages/*" build
 
   build-docs:
     name: Build Docs
@@ -29,24 +29,24 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
+      - name: Setup nub
+        uses: ./.github/actions/setup-nub
       - name: Build docs
-        run: pnpm --filter docs run build
+        run: nub run --filter docs build
 
   check:
     name: Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
+      - name: Setup nub
+        uses: ./.github/actions/setup-nub
       - name: Build packages
-        run: pnpm --filter "./packages/*" run build
+        run: nub run --filter "./packages/*" build
       - name: Run check
-        run: pnpm run check
+        run: nub run check
       - name: Run publish checks
-        run: pnpm --filter "./packages/*" run prepublishOnly
+        run: nub run --if-present --filter "./packages/*" prepublishOnly
 
   test:
     name: Test
@@ -55,14 +55,14 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
+      - name: Setup nub
+        uses: ./.github/actions/setup-nub
       - name: Build packages
-        run: pnpm --filter "./packages/*" run build
+        run: nub run --filter "./packages/*" build
       - name: Install browser
-        run: pnpm exec playwright install --with-deps chromium
+        run: nub exec playwright install --with-deps chromium
       - name: Run tests
-        run: pnpm run test
+        run: nub run test
 
   coverage:
     name: Coverage
@@ -74,14 +74,14 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
+      - name: Setup nub
+        uses: ./.github/actions/setup-nub
       - name: Build packages
-        run: pnpm --filter "./packages/*" run build
+        run: nub run --filter "./packages/*" build
       - name: Install browser
-        run: pnpm exec playwright install --with-deps chromium
+        run: nub exec playwright install --with-deps chromium
       - name: Run coverage
-        run: CI=1 pnpm run test:coverage
+        run: CI=1 nub run test:coverage
       - name: Upload test results to Codecov
         if: ${{ always() }}
         uses: codecov/codecov-action@v7
