@@ -1,11 +1,17 @@
 {
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
-  "ignorePatterns": ["oxfmt.config.ts", "oxlint.config.ts"],
+  "ignorePatterns": [
+    "oxfmt.config.ts",
+    "oxlint.config.ts",
+    "apps/docs/vocs.config.ts"
+  ],
   "duplicates": {
     "ignore": ["**/tests/**"]
   },
   "dynamicallyLoaded": ["apps/docs/src/pages/**/*.mdx"],
   "ignoreDependencies": [
+    "react",
+    "waku",
     "@zap-studio/fetch",
     "@zap-studio/permit",
     "@zap-studio/retry",
