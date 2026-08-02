@@ -9,10 +9,6 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: ci-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 env:
   PACKAGE_FILTER: ./packages/*
 
@@ -20,7 +16,6 @@ jobs:
   build-packages:
     name: Build Packages
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v7
         with:
@@ -35,7 +30,6 @@ jobs:
   build-docs:
     name: Build Docs
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v7
         with:
@@ -129,7 +123,6 @@ jobs:
   publish-check:
     name: Publish Check
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v7
         with:
