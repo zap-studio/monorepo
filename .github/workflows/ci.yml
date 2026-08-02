@@ -45,6 +45,8 @@ jobs:
         run: pnpm --filter "./packages/*" run build
       - name: Run check
         run: pnpm run check
+      - name: Run publish checks
+        run: pnpm --filter "./packages/*" run prepublishOnly
 
   test:
     name: Test
@@ -100,18 +102,3 @@ jobs:
           use_oidc: true
           verbose: true
 
-  publish-check:
-    name: Publish Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
-      - name: Build packages
-        run: pnpm --filter "./packages/*" run build
-      - name: Install browser
-        run: pnpm exec playwright install --with-deps chromium
-      - name: Run publish checks
-        run: pnpm run check && pnpm run test && pnpm --filter "./packages/*" run prepublishOnly
