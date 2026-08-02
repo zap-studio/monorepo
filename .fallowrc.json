@@ -10,13 +10,16 @@
   },
   "dynamicallyLoaded": ["apps/docs/src/pages/**/*.mdx"],
   "ignoreDependencies": [
-    "react",
-    "waku",
+    "@arethetypeswrong/core",
     "@zap-studio/fetch",
     "@zap-studio/permit",
     "@zap-studio/retry",
     "@zap-studio/validation",
-    "@zap-studio/webhooks"
+    "@zap-studio/webhooks",
+    "publint",
+    "react",
+    "unplugin-unused",
+    "waku"
   ],
   "ignoreExports": [
     {
