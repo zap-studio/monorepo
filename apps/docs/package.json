@@ -8,7 +8,7 @@
     "build": "vocs build",
     "dev": "vocs dev",
     "preview": "vocs preview",
-    "deploy": "vocs build && wrangler deploy",
+    "deploy": "nubx wrangler deploy",
     "types:check": "tsc --noEmit"
   },
   "dependencies": {

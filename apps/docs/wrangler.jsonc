@@ -2,6 +2,9 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "zap-studio-docs",
   "compatibility_date": "2026-08-01",
+  "build": {
+    "command": "nub run build",
+  },
   "assets": {
     "directory": "./dist/public",
     "html_handling": "drop-trailing-slash",
