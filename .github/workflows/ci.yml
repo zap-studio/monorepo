@@ -9,9 +9,6 @@ on:
 permissions:
   contents: read
 
-env:
-  PACKAGE_FILTER: ./packages/*
-
 jobs:
   build-packages:
     name: Build Packages
@@ -20,12 +17,10 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
-
       - name: Build packages
-        run: pnpm --filter "$PACKAGE_FILTER" run build
+        run: pnpm --filter "./packages/*" run build
 
   build-docs:
     name: Build Docs
@@ -34,10 +29,8 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
-
       - name: Build docs
         run: pnpm --filter docs run build
 
@@ -46,13 +39,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
-
       - name: Build packages
-        run: pnpm --filter "$PACKAGE_FILTER" run build
-
+        run: pnpm --filter "./packages/*" run build
       - name: Run check
         run: pnpm run check
 
@@ -63,16 +53,12 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
-
       - name: Build packages
-        run: pnpm --filter "$PACKAGE_FILTER" run build
-
+        run: pnpm --filter "./packages/*" run build
       - name: Install browser
         run: pnpm exec playwright install --with-deps chromium
-
       - name: Run tests
         run: pnpm run test
 
@@ -86,19 +72,14 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
-
       - name: Build packages
-        run: pnpm --filter "$PACKAGE_FILTER" run build
-
+        run: pnpm --filter "./packages/*" run build
       - name: Install browser
         run: pnpm exec playwright install --with-deps chromium
-
       - name: Run coverage
         run: CI=1 pnpm run test:coverage
-
       - name: Upload test results to Codecov
         if: ${{ always() }}
         uses: codecov/codecov-action@v7
@@ -109,7 +90,6 @@ jobs:
           report_type: test_results
           use_oidc: true
           verbose: true
-
       - name: Upload coverage to Codecov
         if: ${{ always() }}
         uses: codecov/codecov-action@v7
@@ -127,15 +107,11 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
-
       - name: Build packages
-        run: pnpm --filter "$PACKAGE_FILTER" run build
-
+        run: pnpm --filter "./packages/*" run build
       - name: Install browser
         run: pnpm exec playwright install --with-deps chromium
-
       - name: Run publish checks
-        run: pnpm run check && pnpm run test && pnpm --filter "$PACKAGE_FILTER" run prepublishOnly
+        run: pnpm run check && pnpm run test && pnpm --filter "./packages/*" run prepublishOnly
