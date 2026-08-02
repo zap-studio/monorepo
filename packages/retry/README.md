@@ -5,7 +5,11 @@ Composable retry policy primitives for HTTP clients and async workflows.
 ## Installation
 
 ```bash
+nub add @zap-studio/retry
+# or
 npm install @zap-studio/retry
+# or
+pnpm add @zap-studio/retry
 ```
 
 ## Usage

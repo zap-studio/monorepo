@@ -5,7 +5,11 @@ A small fetch wrapper with [**Standard Schema**](https://standardschema.dev/sche
 ## Installation
 
 ```bash
+nub add @zap-studio/fetch
+# or
 npm install @zap-studio/fetch
+# or
+pnpm add @zap-studio/fetch
 ```
 
 ## Quick Example

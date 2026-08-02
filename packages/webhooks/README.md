@@ -20,6 +20,10 @@ Schemas are the source of truth, and payload types are inferred from them.
 ## Install
 
 ```bash
+nub add @zap-studio/webhooks
+# or
+npm install @zap-studio/webhooks
+# or
 pnpm add @zap-studio/webhooks
 ```
 
