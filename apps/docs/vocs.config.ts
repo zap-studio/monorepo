@@ -9,6 +9,7 @@ export default defineConfig({
     text: "Edit on GitHub",
   },
   iconUrl: "/icon.svg",
+  logoUrl: { dark: "/logo-dark.svg", light: "/logo-light.svg" },
   renderStrategy: "full-static",
   sidebar: [
     { link: "/", text: "Getting Started" },
