@@ -30,7 +30,9 @@ export default defineConfig({
             enabled: true,
             headless: true,
             instances: [{ browser: "chromium" }],
-            provider: playwright(),
+            provider: playwright({
+              launchOptions: { channel: "chrome" },
+            }),
           },
           include: ["packages/**/*.browser.test.ts"],
           name: { color: "cyan", label: "browser" },

@@ -20,11 +20,8 @@ pnpm install
 
 ## Repository layout
 
-- `packages/fetch`
-- `packages/permit`
-- `packages/validation`
-- `packages/webhooks`
-- `apps/docs`
+- `apps/`
+- `packages/`
 - `configs/`
 
 ## Local checks
@@ -32,8 +29,7 @@ pnpm install
 Run these from the repo root:
 
 ```bash
-pnpm run format:check
-pnpm run lint
+pnpm run check
 pnpm run test
 pnpm --filter './packages/*' run build
 ```
@@ -46,7 +42,6 @@ Useful issues are specific and reproducible.
 
 - For bugs, include the affected package, version, runtime, steps to reproduce, and the expected versus actual behavior.
 - For feature requests, describe the problem first, then the proposed solution.
-- Do not use public issues for security vulnerabilities. Follow `SECURITY.md`.
 
 ## Change expectations
 

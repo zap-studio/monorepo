@@ -2,8 +2,6 @@ name: Todo Tree
 
 on:
   pull_request:
-    branches: ["**"]
-    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
 permissions:
@@ -13,7 +11,6 @@ permissions:
 jobs:
   scan-todos:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v7
         with:
