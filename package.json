@@ -4,7 +4,6 @@
   "author": "alexandretrotel",
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter docs run dev",
     "build": "pnpm --filter './packages/*' run build",
     "publish:check": "pnpm run check && pnpm run test && pnpm --filter './packages/*' run prepublishOnly",
     "fix": "pnpm exec ultracite fix --type-aware --type-check",

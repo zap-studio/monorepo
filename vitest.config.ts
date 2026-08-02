@@ -1,33 +1,26 @@
 import { playwright } from "@vitest/browser-playwright";
 import { configDefaults, defineConfig } from "vitest/config";
 
+const isCI = process.env.CI !== undefined;
+const exclude = [...configDefaults.exclude, "**/dist/**"];
+
 export default defineConfig({
   test: {
     coverage: {
-      exclude: [
-        ...configDefaults.exclude,
-        "**/dist/**",
-        "**/sequence-policy.ts",
-      ],
+      exclude: [...exclude],
       provider: "v8",
       reporter: ["html", "json", "lcov", "text"],
     },
-    exclude: [...configDefaults.exclude, "**/dist/**", "**/node_modules/**"],
+    exclude,
     globals: true,
-    outputFile:
-      process.env.CI === undefined
-        ? undefined
-        : { junit: "./coverage/junit.xml" },
+    outputFile: isCI ? { junit: "./coverage/junit.xml" } : undefined,
     projects: [
       {
         extends: true,
         test: {
           environment: "node",
           include: ["packages/**/*.node.test.ts"],
-          name: {
-            color: "green",
-            label: "node",
-          },
+          name: { color: "green", label: "node" },
         },
       },
       {
@@ -40,14 +33,11 @@ export default defineConfig({
             provider: playwright(),
           },
           include: ["packages/**/*.browser.test.ts"],
-          name: {
-            color: "cyan",
-            label: "browser",
-          },
+          name: { color: "cyan", label: "browser" },
         },
       },
     ],
-    reporters: process.env.CI === undefined ? ["default"] : ["dot", "junit"],
+    reporters: isCI ? ["dot", "junit"] : ["default"],
     restoreMocks: true,
   },
 });

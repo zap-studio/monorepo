@@ -10,9 +10,6 @@ allowBuilds:
   vue-demi: true
   workerd: true
 
-overrides:
-  fflate: 0.8.2
-
 catalog:
   "@arethetypeswrong/cli": ^0.18.5
   "@standard-schema/spec": ^1.1.0
