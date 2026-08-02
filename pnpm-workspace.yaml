@@ -36,5 +36,6 @@ catalog:
   waku: 1.0.0-beta.8
   wrangler: ^4.118.0
   zod: ^4.4.3
+  unplugin-unused: ^0.6.0
 
 catalogMode: prefer

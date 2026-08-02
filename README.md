@@ -15,13 +15,3 @@ Documentation: [zapstudio.dev](https://www.zapstudio.dev)
 | `@zap-studio/retry` | Composable retry policies with fixed and exponential backoff | [![npm](https://img.shields.io/npm/v/%40zap-studio%2Fretry?label=npm)](https://www.npmjs.com/package/@zap-studio/retry) [![jsr](https://img.shields.io/jsr/v/%40zap-studio%2Fretry?label=jsr)](https://jsr.io/@zap-studio/retry) [![downloads](https://img.shields.io/npm/dm/%40zap-studio%2Fretry?label=downloads)](https://www.npmjs.com/package/@zap-studio/retry) [![bundle size](https://img.shields.io/bundlephobia/minzip/%40zap-studio%2Fretry?label=size)](https://bundlephobia.com/package/@zap-studio/retry) |
 | `@zap-studio/validation` | Standard Schema utilities and `ValidationError` helpers | [![npm](https://img.shields.io/npm/v/%40zap-studio%2Fvalidation?label=npm)](https://www.npmjs.com/package/@zap-studio/validation) [![jsr](https://img.shields.io/jsr/v/%40zap-studio%2Fvalidation?label=jsr)](https://jsr.io/@zap-studio/validation) [![downloads](https://img.shields.io/npm/dm/%40zap-studio%2Fvalidation?label=downloads)](https://www.npmjs.com/package/@zap-studio/validation) [![bundle size](https://img.shields.io/bundlephobia/minzip/%40zap-studio%2Fvalidation?label=size)](https://bundlephobia.com/package/@zap-studio/validation) |
 | `@zap-studio/webhooks` | Type-safe webhook router with verification and lifecycle hooks | [![npm](https://img.shields.io/npm/v/%40zap-studio%2Fwebhooks?label=npm)](https://www.npmjs.com/package/@zap-studio/webhooks) [![jsr](https://img.shields.io/jsr/v/%40zap-studio%2Fwebhooks?label=jsr)](https://jsr.io/@zap-studio/webhooks) [![downloads](https://img.shields.io/npm/dm/%40zap-studio%2Fwebhooks?label=downloads)](https://www.npmjs.com/package/@zap-studio/webhooks) [![bundle size](https://img.shields.io/bundlephobia/minzip/%40zap-studio%2Fwebhooks?label=size)](https://bundlephobia.com/package/@zap-studio/webhooks) |
-
-## Agent Skills
-
-Skills are focused by workflow and package so AI agents can load only the relevant guidance.
-
-Install them with the following command:
-
-```bash
-npx skills add zap-studio/monorepo
-```

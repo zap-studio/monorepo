@@ -24,6 +24,7 @@
     "publint": "catalog:",
     "tsdown": "catalog:",
     "ultracite": "catalog:",
+    "unplugin-unused": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {
