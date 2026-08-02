@@ -34,10 +34,7 @@ If you already have a patch or proof of concept, include it privately with the r
 
 This policy applies to:
 
-- `@zap-studio/fetch`
-- `@zap-studio/permit`
-- `@zap-studio/validation`
-- `@zap-studio/webhooks`
+- all packages published under the `@zap-studio` npm scope from this monorepo
 - the documentation and repository-maintained tooling in this monorepo
 
 This policy does not cover:
