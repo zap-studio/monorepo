@@ -70,7 +70,7 @@
     },
     "runtime": {
       "name": "node",
-      "version": "lts",
+      "version": "24.18.1",
       "onFail": "warn"
     }
   },
