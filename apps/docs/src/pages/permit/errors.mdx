@@ -12,7 +12,9 @@ description: Handle authorization errors with PolicyError and ensure exhaustive 
 - `createPolicy()` **throws** a `PolicyError` at creation time if a resource key has no schema (`"Missing schema for resource: <name>"`).
 - `policy.can()` **never throws**. Malformed permission strings, unlisted actions, resources that fail schema validation, missing rules, and rules that throw all resolve to `false`. Rule and validation errors are logged with `console.warn`.
 
-:::info Because `can()` fails closed, you decide how to surface denials — return a 403, throw your own `PolicyError`, or redirect. :::
+:::info
+Because `can()` fails closed, you decide how to surface denials — return a 403, throw your own `PolicyError`, or redirect.
+:::
 
 ## PolicyError
 
@@ -22,7 +24,9 @@ The `PolicyError` class is a custom error type for policy-related failures. The 
 import { PolicyError } from "@zap-studio/permit/errors";
 ```
 
-:::note `PolicyError` is exported from the `@zap-studio/permit/errors` subpath, not from the package root. :::
+:::note
+`PolicyError` is exported from the `@zap-studio/permit/errors` subpath, not from the package root.
+:::
 
 ### Constructor
 

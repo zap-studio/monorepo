@@ -7,7 +7,9 @@ description: Validate response bodies with Zod, Valibot, ArkType, or any other S
 
 `@zap-studio/fetch` validates responses through [`@zap-studio/validation`](/validation), so any [Standard Schema](https://standardschema.dev/schema)-compatible validator can be used.
 
-:::note Schemas passed to `$fetch` or `api.*` validate **response bodies only**. They do not validate outgoing request `json` or `body` payloads. :::
+:::note
+Schemas passed to `$fetch` or `api.*` validate **response bodies only**. They do not validate outgoing request `json` or `body` payloads.
+:::
 
 ## Validation Flow
 

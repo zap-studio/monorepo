@@ -62,7 +62,9 @@ The input passed to `RetryPolicy.next(...)` for each failed attempt.
 | `data` | `TData` | Optional. Data captured alongside the failure, when a policy populates it. |
 | `maxAttempts` | `number` | Optional. Policy-level maximum attempts, when a policy passes it through. |
 
-:::note The built-in runner populates `attempt` and `error` only. `data` and `maxAttempts` are available for custom orchestration layers. :::
+:::note
+The built-in runner populates `attempt` and `error` only. `data` and `maxAttempts` are available for custom orchestration layers.
+:::
 
 ## RetryExhaustedInput
 

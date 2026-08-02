@@ -67,7 +67,9 @@ For a successful request, the router runs:
 
 `after` hooks only run when the handler completes successfully. If any step throws, execution stops and error handling takes over.
 
-:::note `before` hooks run **before** verification, so they see requests that have not been authenticated yet. Keep side effects out of `before` hooks — use them for logging, tracing, or rate limiting, and treat the request as untrusted until `verify` has passed. :::
+:::note
+`before` hooks run **before** verification, so they see requests that have not been authenticated yet. Keep side effects out of `before` hooks — use them for logging, tracing, or rate limiting, and treat the request as untrusted until `verify` has passed.
+:::
 
 ## Centralize Error Handling
 

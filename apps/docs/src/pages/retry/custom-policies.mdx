@@ -50,7 +50,9 @@ const value = await policy.run(async () => {
 });
 ```
 
-:::note The built-in runner calls `next(...)` with the one-based `attempt` number and the `error` thrown by the failed attempt. The optional `data` and `maxAttempts` fields of `RetryDecisionInput` are only populated by custom orchestration layers that choose to supply them. :::
+:::note
+The built-in runner calls `next(...)` with the one-based `attempt` number and the `error` thrown by the failed attempt. The optional `data` and `maxAttempts` fields of `RetryDecisionInput` are only populated by custom orchestration layers that choose to supply them.
+:::
 
 ## Retry Conditionally
 

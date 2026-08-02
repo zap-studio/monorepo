@@ -100,7 +100,9 @@ The runner checks the signal:
 
 This keeps cancellation responsive without custom orchestration code.
 
-:::warning The runner does not cancel an `execute` call that is already in flight. Forward the same signal to the underlying operation (for example, `fetch(url, { signal })`) if the work itself should be interruptible. :::
+:::warning
+The runner does not cancel an `execute` call that is already in flight. Forward the same signal to the underlying operation (for example, `fetch(url, { signal })`) if the work itself should be interruptible.
+:::
 
 ## Abort Reasons
 

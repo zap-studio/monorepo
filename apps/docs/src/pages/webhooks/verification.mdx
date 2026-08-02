@@ -7,7 +7,9 @@ description: Verify webhook authenticity with createHmacVerifier or a custom ver
 
 The router's `verify` option is the authenticity gate for incoming requests: it runs after `before` hooks but before payload validation and the route handler, and if it throws, request handling stops. This prevents forged payloads from ever reaching your business logic.
 
-:::warning Always verify signatures against the **raw request body** (`req.rawBody`), exactly as received. If your framework parses and re-serializes the body first, the bytes change and every signature check fails — or worse, appears to pass against attacker-controlled content. Adapters must capture the raw bytes before any body parsing. :::
+:::warning
+Always verify signatures against the **raw request body** (`req.rawBody`), exactly as received. If your framework parses and re-serializes the body first, the bytes change and every signature check fails — or worse, appears to pass against attacker-controlled content. Adapters must capture the raw bytes before any body parsing.
+:::
 
 ## Verify HMAC Signatures
 
@@ -104,4 +106,6 @@ import { constantTimeEquals } from "@zap-studio/webhooks/utils";
 const isValid = constantTimeEquals(expectedSignature, receivedSignature);
 ```
 
-:::warning[Replay protection] An HMAC signature proves who sent a request, not when. An attacker who captures a valid delivery can replay it later and it will still verify. If your provider includes a signed timestamp (as Stripe does), reject requests older than a few minutes; otherwise, track processed event IDs and make your handlers idempotent. :::
+:::warning[Replay protection]
+An HMAC signature proves who sent a request, not when. An attacker who captures a valid delivery can replay it later and it will still verify. If your provider includes a signed timestamp (as Stripe does), reject requests older than a few minutes; otherwise, track processed event IDs and make your handlers idempotent.
+:::

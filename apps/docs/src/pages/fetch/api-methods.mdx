@@ -23,7 +23,9 @@ import { api } from "@zap-studio/fetch";
 
 Each helper has the same overloads, options, and error behavior as [`$fetch`](/fetch/fetch-function), but injects its HTTP method for you. The injected method always wins — a `method` passed in `options` is overridden.
 
-:::note The schema argument always validates the **response** body. It does not validate `json` or `body` request payloads. :::
+:::note
+The schema argument always validates the **response** body. It does not validate `json` or `body` request payloads.
+:::
 
 ## Read Data
 
