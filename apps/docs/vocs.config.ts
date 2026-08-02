@@ -1,15 +1,29 @@
 import { defineConfig } from "vocs/config";
 
+const baseUrl = "https://www.zapstudio.dev";
+const ogImageUrl = `${baseUrl}/og.png`;
+
 export default defineConfig({
   accentColor: "light-dark(hsl(38, 92%, 40%), hsl(43, 96%, 56%))",
+  baseUrl,
   description:
-    "Framework-agnostic TypeScript packages for typed HTTP, authorization, retries, validation, and webhooks.",
+    "Type safe, framework agnostic and composable TypeScript libraries for the web.",
   editLink: {
     link: "https://github.com/zap-studio/monorepo/edit/main/apps/docs/src/pages/:path",
     text: "Edit on GitHub",
   },
+  head: {
+    meta: {
+      ogImageAlt:
+        "Zap Studio — type safe, framework agnostic and composable TypeScript libraries for the web.",
+      ogImageHeight: 630,
+      ogImageType: "image/png",
+      ogImageWidth: 1200,
+    },
+  },
   iconUrl: "/icon.svg",
   logoUrl: { dark: "/logo-dark.svg", light: "/logo-light.svg" },
+  ogImageUrl,
   renderStrategy: "full-static",
   sidebar: [
     { link: "/", text: "Getting Started" },
