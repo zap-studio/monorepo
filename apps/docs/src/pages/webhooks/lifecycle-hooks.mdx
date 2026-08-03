@@ -27,7 +27,7 @@ const router = createWebhookRouter({
 
 Every hook receives the webhook context — `{ request, rawBody, path }` — where `request` is the incoming Web API `Request` (body already consumed by the router), `rawBody` holds the exact body bytes, and `path` is the matched route key.
 
-Hook signatures (exported from `@zap-studio/webhooks/types`):
+Hook signatures (exported from `@zap-studio/webhooks`):
 
 - `BeforeHook` — `(ctx: WebhookContext) => Promise<void> | void`
 - `AfterHook` — `(ctx: WebhookContext, response: Response) => Promise<void> | void`
@@ -86,8 +86,7 @@ For a successful request, the router runs:
 When any hook, the verifier, or the handler throws, the router calls `onError` with the error and the webhook context. Return a `Response` to override the default response, or return `undefined` to fall back to the default `500` with `{ error: message }`.
 
 ```ts
-import { createWebhookRouter } from "@zap-studio/webhooks";
-import { VerificationError } from "@zap-studio/webhooks/errors";
+import { createWebhookRouter, VerificationError } from "@zap-studio/webhooks";
 
 const router = createWebhookRouter({
   onError: (error, ctx) => {

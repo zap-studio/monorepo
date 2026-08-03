@@ -5,7 +5,7 @@ description: Reference for retry policy contracts, decision inputs, runner optio
 
 # Types
 
-All retry contracts are exported from `@zap-studio/retry/types`.
+All retry contracts are exported from `@zap-studio/retry`.
 
 ```ts
 import type {
@@ -15,7 +15,7 @@ import type {
   RetryPolicy,
   RetryRunOptions,
   RetryRunResult,
-} from "@zap-studio/retry/types";
+} from "@zap-studio/retry";
 ```
 
 ## Generic Contracts
@@ -27,7 +27,7 @@ The package is transport-agnostic and generic over error and data shapes. Both t
 - `RetryExhaustedInput<TError, TData>`
 
 ```ts
-import type { RetryPolicy } from "@zap-studio/retry/types";
+import type { RetryPolicy } from "@zap-studio/retry";
 
 type HttpPolicy = RetryPolicy<TypeError, Response>;
 ```
@@ -85,7 +85,7 @@ Options accepted by `BaseRetryPolicy.run(...)`. See [Running Policies](/retry/ru
 | `throwOnExhausted` | `boolean` | `true` | `true` throws on exhaustion; `false` returns a `RetryRunResult<T>` union. |
 
 ```ts
-import type { RetryRunOptions } from "@zap-studio/retry/types";
+import type { RetryRunOptions } from "@zap-studio/retry";
 
 const options: RetryRunOptions = {
   throwOnExhausted: false,

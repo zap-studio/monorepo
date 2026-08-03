@@ -35,7 +35,7 @@ function $fetch<TSchema extends StandardSchemaV1>(
 - `schema` — any object implementing Standard Schema (Zod, Valibot, ArkType, ...).
 - `options` — native `RequestInit` plus the extra options listed below.
 
-The `FetchInput` and `ExtendedRequestInit` types are exported from `@zap-studio/fetch/types`; `StandardSchemaV1` is exported from `@zap-studio/validation`.
+The `FetchInput` and `ExtendedRequestInit` types are exported from `@zap-studio/fetch`; `StandardSchemaV1` is exported from `@zap-studio/validation`.
 
 ## Raw Response Mode
 
@@ -72,11 +72,11 @@ The return type is inferred from the schema. The schema validates the response b
 
 ## Request Inputs
 
-The `input` argument accepts a `string`, `URL`, or `Request` — the same type as global `fetch`. The `FetchInput` type is available from `@zap-studio/fetch/types`.
+The `input` argument accepts a `string`, `URL`, or `Request` — the same type as global `fetch`. The `FetchInput` type is available from `@zap-studio/fetch`.
 
 ```ts
 import { $fetch } from "@zap-studio/fetch";
-import type { FetchInput } from "@zap-studio/fetch/types";
+import type { FetchInput } from "@zap-studio/fetch";
 
 const input: FetchInput = new URL("https://api.example.com/users/1");
 const response = await $fetch(input);

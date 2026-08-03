@@ -19,10 +19,10 @@ description: Handle authorization errors with PolicyError and ensure exhaustive 
 The `PolicyError` class is a custom error type for policy-related failures. The library uses it for configuration errors, and you can throw it yourself to distinguish authorization errors from other application errors.
 
 ```ts
-import { PolicyError } from "@zap-studio/permit/errors";
+import { PolicyError } from "@zap-studio/permit";
 ```
 
-:::note `PolicyError` is exported from the `@zap-studio/permit/errors` subpath, not from the package root. :::
+:::note `PolicyError` is exported from the package root, and also from the `@zap-studio/permit/errors` subpath for granular imports. :::
 
 ### Constructor
 
@@ -43,7 +43,7 @@ new PolicyError(message: string)
 ### Throwing Policy Errors
 
 ```ts
-import { PolicyError } from "@zap-studio/permit/errors";
+import { PolicyError } from "@zap-studio/permit";
 
 // Throw when an authorization check fails
 throw new PolicyError("User is not authorized to delete this resource");
@@ -58,7 +58,7 @@ throw new PolicyError("User context is required for this action");
 ### Catching Policy Errors
 
 ```ts
-import { PolicyError } from "@zap-studio/permit/errors";
+import { PolicyError } from "@zap-studio/permit";
 
 async function deletePost(postId: string, context: AppContext) {
   try {
@@ -87,7 +87,7 @@ async function deletePost(postId: string, context: AppContext) {
 The `assertNever()` helper ensures exhaustive type checking in TypeScript. It causes a compile-time error if a switch statement or if-else chain doesn't handle all possible cases.
 
 ```ts
-import { assertNever } from "@zap-studio/permit/helpers";
+import { assertNever } from "@zap-studio/permit";
 
 assertNever(value: never): never
 ```
@@ -99,7 +99,7 @@ assertNever(value: never): never
 ### Example: Exhaustive Action Handling
 
 ```ts
-import { assertNever } from "@zap-studio/permit/helpers";
+import { assertNever } from "@zap-studio/permit";
 
 type Action = "read" | "write" | "delete";
 
@@ -143,7 +143,7 @@ function getPermissionLevel(action: Action): number {
 If `assertNever()` is reached at runtime (e.g., due to type assertions or plain JavaScript callers), it throws a plain `Error` — not a `PolicyError`:
 
 ```ts
-import { assertNever } from "@zap-studio/permit/helpers";
+import { assertNever } from "@zap-studio/permit";
 
 // This would throw: Error: Unexpected value: unknown
 const badValue = "unknown" as never;

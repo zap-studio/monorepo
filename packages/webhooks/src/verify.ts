@@ -5,8 +5,8 @@
  */
 
 import { VerificationError } from "./errors.js";
-import type { VerifyFn } from "./types/index.js";
-import { constantTimeEquals } from "./utils/index.js";
+import type { VerifyFn } from "./types.js";
+import { constantTimeEquals } from "./utils.js";
 
 const HMAC_HASH = {
   sha1: "SHA-1",

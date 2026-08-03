@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { constantTimeEquals } from "../../src/utils/index.js";
+import { constantTimeEquals } from "../src/utils.js";
 
 describe(constantTimeEquals, () => {
   describe("equal strings", () => {

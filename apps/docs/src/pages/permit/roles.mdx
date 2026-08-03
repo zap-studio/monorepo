@@ -42,7 +42,7 @@ Your context must include a top-level `role` property that can be:
 ```ts
 import { z } from "zod";
 import { createPolicy, when, hasRole, or } from "@zap-studio/permit";
-import type { Resources, Actions } from "@zap-studio/permit/types";
+import type { Resources, Actions } from "@zap-studio/permit";
 
 const resources = {
   post: z.object({
@@ -111,7 +111,7 @@ Often, higher-level roles inherit permissions from lower-level roles. For exampl
 A role hierarchy maps each role to an array of roles it inherits from:
 
 ```ts
-import type { RoleHierarchy } from "@zap-studio/permit/types";
+import type { RoleHierarchy } from "@zap-studio/permit";
 
 type Role = "guest" | "user" | "moderator" | "admin";
 
@@ -163,11 +163,7 @@ const context: AppContext = {
 ```ts
 import { z } from "zod";
 import { createPolicy, when, hasRole, or } from "@zap-studio/permit";
-import type {
-  Resources,
-  Actions,
-  RoleHierarchy,
-} from "@zap-studio/permit/types";
+import type { Resources, Actions, RoleHierarchy } from "@zap-studio/permit";
 
 const resources = {
   betaFeature: z.object({
@@ -255,7 +251,7 @@ collectInheritedRoles(roles, hierarchy);
 
 ```ts
 import { collectInheritedRoles } from "@zap-studio/permit";
-import type { RoleHierarchy } from "@zap-studio/permit/types";
+import type { RoleHierarchy } from "@zap-studio/permit";
 
 type Role = "guest" | "user" | "moderator" | "admin" | "beta-tester";
 

@@ -6,7 +6,7 @@
  *   failures when working with Standard Schema validation. It encapsulates
  *   the validation issues and provides a detailed error message for debugging.
  *
- * This module is primarily used by the validation helpers in the `index.ts` file
+ * This module is primarily used by the validation helpers in `validate.ts`
  * to throw meaningful errors when validation fails.
  *
  * @module @zap-studio/validation/errors

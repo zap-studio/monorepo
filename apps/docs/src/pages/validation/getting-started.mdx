@@ -71,8 +71,7 @@ if (result.issues) {
 Pass `throwOnError: true` to get the parsed value directly. On failure, the helper throws a `ValidationError` instead of returning issues.
 
 ```ts
-import { standardValidate } from "@zap-studio/validation";
-import { ValidationError } from "@zap-studio/validation/errors";
+import { standardValidate, ValidationError } from "@zap-studio/validation";
 
 try {
   const user = await standardValidate(userSchema, input, {

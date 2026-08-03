@@ -30,6 +30,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./errors": "./dist/errors.js",
+    "./validate": "./dist/validate.js",
     "./package.json": "./package.json"
   },
   "publishConfig": {

@@ -23,13 +23,13 @@ pnpm add @zap-studio/permit
 
 ## Runtime Support
 
-| Runtime | Minimum version |
-| --- | --- |
-| Node.js | 18.0.0 |
-| Bun | 1.0.0 |
-| Deno | 1.42 |
-| Cloudflare Workers | Any current release |
-| Browsers | Latest evergreen (Chrome, Edge, Firefox, Safari) |
+| Runtime            | Minimum version                                  |
+| ------------------ | ------------------------------------------------ |
+| Node.js            | 18.0.0                                           |
+| Bun                | 1.0.0                                            |
+| Deno               | 1.42                                             |
+| Cloudflare Workers | Any current release                              |
+| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
 
 The package ships standard ESM only and uses no runtime-specific APIs. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/permit`).
 
@@ -38,7 +38,7 @@ The package ships standard ESM only and uses no runtime-specific APIs. Deno 1.42
 ```ts
 import { z } from "zod";
 import { createPolicy, allow, deny, when } from "@zap-studio/permit";
-import type { Resources, Actions } from "@zap-studio/permit/types";
+import type { Resources, Actions } from "@zap-studio/permit";
 
 // 1. Define your resource schemas
 const resources = {

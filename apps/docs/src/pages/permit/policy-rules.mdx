@@ -23,7 +23,7 @@ The examples on this page use these definitions:
 
 ```ts
 import { z } from "zod";
-import type { Resources, Actions } from "@zap-studio/permit/types";
+import type { Resources, Actions } from "@zap-studio/permit";
 
 const resources = {
   post: z.object({
@@ -163,7 +163,7 @@ The `action` parameter becomes useful when you create reusable condition functio
 
 ```ts
 import { createPolicy, when } from "@zap-studio/permit";
-import type { ConditionFn } from "@zap-studio/permit/types";
+import type { ConditionFn } from "@zap-studio/permit";
 
 type PostAction = "read" | "write" | "delete";
 type Post = { id: string; authorId: string; visibility: "public" | "private" };

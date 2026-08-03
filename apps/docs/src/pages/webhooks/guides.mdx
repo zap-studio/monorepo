@@ -12,8 +12,7 @@ This page shows provider-specific patterns you can adapt directly. The important
 GitHub signs deliveries with an HMAC-SHA256 signature in the `x-hub-signature-256` header, using the `sha256=<hex>` format that `createHmacVerifier` normalizes automatically.
 
 ```ts
-import { createWebhookRouter } from "@zap-studio/webhooks";
-import { createHmacVerifier } from "@zap-studio/webhooks/verify";
+import { createHmacVerifier, createWebhookRouter } from "@zap-studio/webhooks";
 import { z } from "zod";
 
 const router = createWebhookRouter({

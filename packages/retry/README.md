@@ -14,21 +14,20 @@ pnpm add @zap-studio/retry
 
 ## Runtime Support
 
-| Runtime | Minimum version |
-| --- | --- |
-| Node.js | 18.0.0 |
-| Bun | 1.0.0 |
-| Deno | 1.42 |
-| Cloudflare Workers | Any current release |
-| Browsers | Chrome/Edge 98, Firefox 97, Safari 15.4 |
+| Runtime            | Minimum version                         |
+| ------------------ | --------------------------------------- |
+| Node.js            | 18.0.0                                  |
+| Bun                | 1.0.0                                   |
+| Deno               | 1.42                                    |
+| Cloudflare Workers | Any current release                     |
+| Browsers           | Chrome/Edge 98, Firefox 97, Safari 15.4 |
 
 Cancellation relies on `AbortSignal.reason`, which sets the browser minimums above. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/retry`).
 
 ## Usage
 
 ```ts
-import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
-import { FixedDelay } from "@zap-studio/retry/fixed-delay";
+import { ExponentialBackoff, FixedDelay } from "@zap-studio/retry";
 import { $fetch } from "@zap-studio/fetch";
 
 const exponential = new ExponentialBackoff({
@@ -52,7 +51,7 @@ const data = await exponential.run(async () => {
 By default, policies extending `BaseRetryPolicy` throw `RetryError` on exhaustion and `AbortError` on cancellation.
 
 ```ts
-import { AbortError, RetryError } from "@zap-studio/retry/errors";
+import { AbortError, RetryError } from "@zap-studio/retry";
 
 try {
   const data = await exponential.run(async () => {
@@ -99,7 +98,7 @@ if (!result.ok) {
 
 `BaseRetryPolicy.run` automatically applies a delay between retry attempts when no custom `sleep` function is provided in the options.
 
-That default is the `defaultSleep` helper, exported from `@zap-studio/retry/sleep`.
+That default is the `defaultSleep` helper, exported from `@zap-studio/retry`.
 
 By default, this delay mechanism relies on the native JavaScript `setTimeout`, meaning retries are scheduled using the standard event loop timing rather than any custom or blocking implementation.
 
@@ -177,10 +176,7 @@ You implement `next(...)` only; the base class supplies `onExhausted` with a def
 
 ```ts
 import { BaseRetryPolicy } from "@zap-studio/retry";
-import type {
-  RetryDecision,
-  RetryDecisionInput,
-} from "@zap-studio/retry/types";
+import type { RetryDecision, RetryDecisionInput } from "@zap-studio/retry";
 
 class LinearBackoff extends BaseRetryPolicy {
   constructor(
@@ -216,7 +212,7 @@ const value = await policy.run(doWork);
 Use `RetryError` when an orchestrator exhausts retries and needs to surface final context.
 
 ```ts
-import { RetryError } from "@zap-studio/retry/errors";
+import { RetryError } from "@zap-studio/retry";
 
 throw new RetryError("Retry policy exhausted all attempts.", {
   attempts: attempt,

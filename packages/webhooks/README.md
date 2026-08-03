@@ -29,13 +29,13 @@ pnpm add @zap-studio/webhooks
 
 ## Runtime Support
 
-| Runtime | Minimum version |
-| --- | --- |
-| Node.js | 18.0.0 (router), 19.0.0 (verification helper) |
-| Bun | 1.0.0 |
-| Deno | 1.42 |
-| Cloudflare Workers | Any current release |
-| Browsers | Latest evergreen (Chrome, Edge, Firefox, Safari) |
+| Runtime            | Minimum version                                  |
+| ------------------ | ------------------------------------------------ |
+| Node.js            | 18.0.0 (router), 19.0.0 (verification helper)    |
+| Bun                | 1.0.0                                            |
+| Deno               | 1.42                                             |
+| Cloudflare Workers | Any current release                              |
+| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
 
 The router only needs the standard `Request`/`Response` APIs, available globally since Node.js 18. The verification helper additionally needs `globalThis.crypto.subtle`, which is global by default from Node.js 19 (on Node.js 18, pass the `--experimental-global-webcrypto` flag). In browsers, Web Crypto requires a secure context (HTTPS). Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/webhooks`).
 
@@ -109,8 +109,7 @@ Handlers additionally receive `payload`, the schema-validated body.
 ## GitHub webhook example
 
 ```ts
-import { createWebhookRouter } from "@zap-studio/webhooks";
-import { createHmacVerifier } from "@zap-studio/webhooks/verify";
+import { createHmacVerifier, createWebhookRouter } from "@zap-studio/webhooks";
 import { z } from "zod";
 
 const router = createWebhookRouter({
@@ -204,7 +203,7 @@ const router = createWebhookRouter({
 
 ## Verification helper
 
-`@zap-studio/webhooks/verify` exports `createHmacVerifier`, a small helper that builds a `verify` function for HMAC-signed webhook providers.
+`@zap-studio/webhooks` exports `createHmacVerifier`, a small helper that builds a `verify` function for HMAC-signed webhook providers.
 
 It does not depend on Node APIs. The verifier uses the Web Crypto API, so it works in any runtime that provides `globalThis.crypto.subtle`.
 
@@ -217,8 +216,7 @@ It does not depend on Node APIs. The verifier uses the Web Crypto API, so it wor
 - throws `VerificationError` on verifier setup or signature failures
 
 ```ts
-import { createHmacVerifier } from "@zap-studio/webhooks/verify";
-import { VerificationError } from "@zap-studio/webhooks/errors";
+import { createHmacVerifier, VerificationError } from "@zap-studio/webhooks";
 
 const verify = createHmacVerifier({
   headerName: "x-hub-signature-256",

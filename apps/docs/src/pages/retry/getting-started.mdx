@@ -37,10 +37,10 @@ deno add jsr:@zap-studio/retry
 
 ## Create a Policy
 
-Import a built-in policy from its subpath export and configure it. `ExponentialBackoff` doubles the delay after each failure, up to a cap.
+Import a built-in policy and configure it. `ExponentialBackoff` doubles the delay after each failure, up to a cap.
 
 ```ts
-import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+import { ExponentialBackoff } from "@zap-studio/retry";
 
 const policy = new ExponentialBackoff({
   maxAttempts: 5, // total attempts, including the first
@@ -54,7 +54,7 @@ const policy = new ExponentialBackoff({
 Pass an async function to `policy.run(...)`. The runner calls it once per attempt, catches failures, waits, and retries until it succeeds or the policy stops.
 
 ```ts
-import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+import { ExponentialBackoff } from "@zap-studio/retry";
 import { $fetch } from "@zap-studio/fetch";
 
 const policy = new ExponentialBackoff({
@@ -78,7 +78,7 @@ const users = await policy.run(async () => {
 By default, `run(...)` throws a `RetryError` when every attempt fails.
 
 ```ts
-import { RetryError } from "@zap-studio/retry/errors";
+import { RetryError } from "@zap-studio/retry";
 
 try {
   const users = await policy.run(fetchUsers);
@@ -96,7 +96,7 @@ try {
 Prefer result objects over exceptions? Pass `throwOnExhausted: false` to receive a discriminated union instead:
 
 ```ts
-import { RetryError } from "@zap-studio/retry/errors";
+import { RetryError } from "@zap-studio/retry";
 
 const result = await policy.run(fetchUsers, {
   throwOnExhausted: false,

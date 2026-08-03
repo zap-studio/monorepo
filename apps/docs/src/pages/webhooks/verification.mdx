@@ -11,11 +11,10 @@ The router's `verify` option is the authenticity gate for incoming requests: it 
 
 ## Verify HMAC Signatures
 
-Use `createHmacVerifier` from `@zap-studio/webhooks/verify` for providers that sign requests with a shared-secret HMAC (GitHub, and many others). It uses the Web Crypto API rather than Node `crypto`, so it works in any runtime that provides `globalThis.crypto.subtle`.
+Use `createHmacVerifier` from `@zap-studio/webhooks` for providers that sign requests with a shared-secret HMAC (GitHub, and many others). It uses the Web Crypto API rather than Node `crypto`, so it works in any runtime that provides `globalThis.crypto.subtle`.
 
 ```ts
-import { createWebhookRouter } from "@zap-studio/webhooks";
-import { createHmacVerifier } from "@zap-studio/webhooks/verify";
+import { createHmacVerifier, createWebhookRouter } from "@zap-studio/webhooks";
 
 const router = createWebhookRouter({
   verify: createHmacVerifier({
@@ -43,12 +42,14 @@ The verifier:
 
 ## Handle Verification Failures
 
-Import `VerificationError` from `@zap-studio/webhooks/errors` to distinguish verification failures from other errors — for example, in an `onError` hook that maps them to a `401` instead of the default `500`.
+Import `VerificationError` from `@zap-studio/webhooks` to distinguish verification failures from other errors — for example, in an `onError` hook that maps them to a `401` instead of the default `500`.
 
 ```ts
-import { createWebhookRouter } from "@zap-studio/webhooks";
-import { createHmacVerifier } from "@zap-studio/webhooks/verify";
-import { VerificationError } from "@zap-studio/webhooks/errors";
+import {
+  createHmacVerifier,
+  createWebhookRouter,
+  VerificationError,
+} from "@zap-studio/webhooks";
 
 const router = createWebhookRouter({
   verify: createHmacVerifier({
@@ -96,10 +97,10 @@ Write a custom verifier when a provider:
 - requires SDK-specific verification logic
 - includes timestamp or replay-protection checks
 
-If your custom verifier compares signature strings itself, use `constantTimeEquals` from `@zap-studio/webhooks/utils` instead of `===`.
+If your custom verifier compares signature strings itself, use `constantTimeEquals` from `@zap-studio/webhooks` instead of `===`.
 
 ```ts
-import { constantTimeEquals } from "@zap-studio/webhooks/utils";
+import { constantTimeEquals } from "@zap-studio/webhooks";
 
 const isValid = constantTimeEquals(expectedSignature, receivedSignature);
 ```

@@ -14,13 +14,13 @@ pnpm add @zap-studio/fetch
 
 ## Runtime Support
 
-| Runtime | Minimum version |
-| --- | --- |
-| Node.js | 18.0.0 (ships native `fetch`) |
-| Bun | 1.0.0 |
-| Deno | 1.42 |
-| Cloudflare Workers | Any current release |
-| Browsers | Latest evergreen (Chrome, Edge, Firefox, Safari) |
+| Runtime            | Minimum version                                  |
+| ------------------ | ------------------------------------------------ |
+| Node.js            | 18.0.0 (ships native `fetch`)                    |
+| Bun                | 1.0.0                                            |
+| Deno               | 1.42                                             |
+| Cloudflare Workers | Any current release                              |
+| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
 
 The package relies on the global `fetch` API and ships standard ESM only. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/fetch`).
 
@@ -244,7 +244,7 @@ if (result.issues) {
 By default, non-ok responses throw a `FetchError`.
 
 ```ts
-import { FetchError } from "@zap-studio/fetch/errors";
+import { FetchError } from "@zap-studio/fetch";
 
 try {
   await api.get("/api/users/404", UserSchema);

@@ -13,10 +13,7 @@ Extending `BaseRetryPolicy` is the recommended path. You implement `next(...)` o
 
 ```ts
 import { BaseRetryPolicy } from "@zap-studio/retry";
-import type {
-  RetryDecision,
-  RetryDecisionInput,
-} from "@zap-studio/retry/types";
+import type { RetryDecision, RetryDecisionInput } from "@zap-studio/retry";
 
 class LinearBackoff extends BaseRetryPolicy {
   constructor(
@@ -58,10 +55,7 @@ Because `next(...)` receives the thrown error, a policy can stop early for failu
 
 ```ts
 import { BaseRetryPolicy } from "@zap-studio/retry";
-import type {
-  RetryDecision,
-  RetryDecisionInput,
-} from "@zap-studio/retry/types";
+import type { RetryDecision, RetryDecisionInput } from "@zap-studio/retry";
 
 class RetryOnNetworkError extends BaseRetryPolicy {
   public next(input: RetryDecisionInput): RetryDecision {
@@ -84,13 +78,12 @@ class RetryOnNetworkError extends BaseRetryPolicy {
 Override `onExhausted(...)` when callers need a custom terminal error. The return type must extend `RetryError`.
 
 ```ts
-import { BaseRetryPolicy } from "@zap-studio/retry";
-import { RetryError } from "@zap-studio/retry/errors";
+import { BaseRetryPolicy, RetryError } from "@zap-studio/retry";
 import type {
   RetryDecision,
   RetryDecisionInput,
   RetryExhaustedInput,
-} from "@zap-studio/retry/types";
+} from "@zap-studio/retry";
 
 class UpstreamRetryError extends RetryError {
   constructor(attempts: number, lastError: unknown) {
@@ -121,8 +114,8 @@ class UpstreamPolicy extends BaseRetryPolicy {
 Use the lower-level `RetryPolicy` interface when you need to build your own orchestration layer instead of using `BaseRetryPolicy.run(...)`.
 
 ```ts
-import { RetryError } from "@zap-studio/retry/errors";
-import type { RetryPolicy } from "@zap-studio/retry/types";
+import { RetryError } from "@zap-studio/retry";
+import type { RetryPolicy } from "@zap-studio/retry";
 
 const policy: RetryPolicy = {
   next: ({ attempt }) => ({

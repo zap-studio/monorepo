@@ -12,8 +12,7 @@ description: Cancel retry orchestration with AbortSignal before, between, or dur
 Pass `controller.signal` to `run(...)`; aborting the controller stops the run with an `AbortError`.
 
 ```ts
-import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
-import { AbortError } from "@zap-studio/retry/errors";
+import { AbortError, ExponentialBackoff } from "@zap-studio/retry";
 
 const controller = new AbortController();
 
@@ -46,7 +45,7 @@ try {
 In the default throw mode, an aborted run rejects with `AbortError`.
 
 ```ts
-import { AbortError } from "@zap-studio/retry/errors";
+import { AbortError } from "@zap-studio/retry";
 
 const controller = new AbortController();
 
