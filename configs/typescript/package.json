@@ -5,13 +5,11 @@
   "license": "PROPRIETARY",
   "files": [
     "base.json",
-    "library.json",
-    "react-library.json"
+    "library.json"
   ],
   "type": "module",
   "exports": {
     "./base.json": "./base.json",
-    "./library.json": "./library.json",
-    "./react-library.json": "./react-library.json"
+    "./library.json": "./library.json"
   }
 }
