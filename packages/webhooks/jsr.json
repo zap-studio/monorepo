@@ -1,11 +1,10 @@
 {
   "$schema": "https://jsr.io/schema/config-file.v1.json",
   "name": "@zap-studio/webhooks",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
-    "./adapters/base": "./src/adapters/base.ts",
     "./errors": "./src/errors.ts",
     "./types": "./src/types/index.ts",
     "./utils": "./src/utils/index.ts",
