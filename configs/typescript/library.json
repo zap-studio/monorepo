@@ -6,8 +6,6 @@
     "lib": ["ESNext"],
     "declaration": true,
     "declarationMap": true,
-    "emitDeclarationOnly": true,
-    "isolatedDeclarations": true,
-    "noEmit": false
+    "isolatedDeclarations": true
   }
 }
