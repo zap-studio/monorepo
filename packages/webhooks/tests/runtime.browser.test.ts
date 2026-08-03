@@ -31,7 +31,7 @@ describe("@zap-studio/webhooks browser runtime", () => {
 
     await expect(
       verify({
-        path: "github",
+        path: "/github",
         rawBody: body,
         request: new Request("https://example.com/webhooks/github", {
           headers: {
@@ -44,8 +44,8 @@ describe("@zap-studio/webhooks browser runtime", () => {
   });
 
   it("routes browser Request objects and preserves response headers", async () => {
-    const router = createWebhookRouter().register("github", ({ path }) => {
-      expect(path).toBe("github");
+    const router = createWebhookRouter().register("/github", ({ path }) => {
+      expect(path).toBe("/github");
       return Response.json(
         { ok: true },
         {

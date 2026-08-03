@@ -23,7 +23,7 @@ describe(WebhookRouter, () => {
   describe("Basic routing", () => {
     it("should support schema-first route registration at creation time", async () => {
       const router = createWebhookRouter();
-      router.register("payment", {
+      router.register("/payment", {
         handler: ({ payload }) => Response.json(payload.amount),
         schema: z.object({
           amount: z.number(),
@@ -40,12 +40,12 @@ describe(WebhookRouter, () => {
 
     it("should handle webhook without schema validation", async () => {
       interface WebhookMap {
-        test: { id: string };
+        "/test": { id: string };
       }
 
       const router = new WebhookRouter<WebhookMap>();
 
-      router.register("test", ({ payload }) => {
+      router.register("/test", ({ payload }) => {
         expect(payload).toStrictEqual({ id: "123" });
         return Response.json("success");
       });
@@ -71,10 +71,10 @@ describe(WebhookRouter, () => {
       });
     });
 
-    it("should return 404 for paths without /webhooks/ prefix", async () => {
+    it("should return 404 for paths without /webhooks prefix", async () => {
       const router = createWebhookRouter();
 
-      router.register("test", () => Response.json("success"));
+      router.register("/test", () => Response.json("success"));
 
       const response = await router.handle(
         createRequest("/test", { id: "123" })
@@ -99,12 +99,12 @@ describe(WebhookRouter, () => {
     it("should handle multiple registered paths", async () => {
       const router = createWebhookRouter();
 
-      router.register("payment", {
+      router.register("/payment", {
         handler: ({ payload }) => Response.json({ received: payload.amount }),
         schema: z.object({ amount: z.number() }),
       });
 
-      router.register("user", {
+      router.register("/user", {
         handler: ({ payload }) => Response.json({ hello: payload.name }),
         schema: z.object({ name: z.string() }),
       });
@@ -127,7 +127,7 @@ describe(WebhookRouter, () => {
     it("should return default response when handler returns undefined", async () => {
       const router = createWebhookRouter();
 
-      router.register("test", () => undefined);
+      router.register("/test", () => undefined);
 
       const response = await router.handle(
         createRequest("/webhooks/test", { id: "123" })
@@ -147,7 +147,7 @@ describe(WebhookRouter, () => {
         signature: string | null;
       } | null = null;
 
-      router.register("meta", ({ request, rawBody, path }) => {
+      router.register("/meta", ({ request, rawBody, path }) => {
         observed = {
           method: request.method,
           path,
@@ -166,7 +166,7 @@ describe(WebhookRouter, () => {
 
       expect(observed).not.toBeNull();
       expect(observed?.method).toBe("POST");
-      expect(observed?.path).toBe("meta");
+      expect(observed?.path).toBe("/meta");
       expect(observed?.signature).toBe("sig");
       expect(observed?.rawBody).toStrictEqual(
         encoder.encode(JSON.stringify(body))
@@ -178,7 +178,7 @@ describe(WebhookRouter, () => {
     it("should validate payload with Zod schema", async () => {
       const router = createWebhookRouter();
 
-      router.register("payment", {
+      router.register("/payment", {
         handler: ({ payload }) => Response.json(payload),
         schema: z.object({
           amount: z.number(),
@@ -200,7 +200,7 @@ describe(WebhookRouter, () => {
     it("should reject invalid payload when schema is provided", async () => {
       const router = createWebhookRouter();
 
-      router.register("payment", {
+      router.register("/payment", {
         handler: () => Response.json("should not run"),
         schema: z.object({ amount: z.number() }),
       });
@@ -222,7 +222,7 @@ describe(WebhookRouter, () => {
     it("should reject payload with missing required fields", async () => {
       const router = createWebhookRouter();
 
-      router.register("payment", {
+      router.register("/payment", {
         handler: () => Response.json("should not run"),
         schema: z.object({
           amount: z.number(),
@@ -242,7 +242,7 @@ describe(WebhookRouter, () => {
     it("should validate complex nested schemas", async () => {
       const router = createWebhookRouter();
 
-      router.register("order", {
+      router.register("/order", {
         handler: ({ payload }) => Response.json(payload.items.length),
         schema: z.object({
           customer: z.object({
@@ -276,7 +276,7 @@ describe(WebhookRouter, () => {
     it("should transform data with Zod transforms", async () => {
       const router = createWebhookRouter();
 
-      router.register("transform", {
+      router.register("/transform", {
         handler: ({ payload }) => Response.json(payload),
         schema: z.object({
           value: z.string().transform((v) => v.toUpperCase()),
@@ -318,7 +318,7 @@ describe(WebhookRouter, () => {
       });
 
       const router = createWebhookRouter();
-      router.register("custom", {
+      router.register("/custom", {
         handler: ({ payload }) => Response.json(payload.id),
         schema,
       });
@@ -357,7 +357,7 @@ describe(WebhookRouter, () => {
       };
 
       const router = createWebhookRouter();
-      router.register("async", {
+      router.register("/async", {
         handler: ({ payload }) => Response.json(payload.id),
         schema: asyncSchema,
       });
@@ -380,7 +380,7 @@ describe(WebhookRouter, () => {
       }));
 
       const router = createWebhookRouter();
-      router.register("paths", {
+      router.register("/paths", {
         handler: () => Response.json("should not run"),
         schema,
       });
@@ -407,7 +407,7 @@ describe(WebhookRouter, () => {
         },
       });
 
-      router.register("secure", () => Response.json("verified"));
+      router.register("/secure", () => Response.json("verified"));
 
       const okResponse = await router.handle(
         createRequest(
@@ -447,7 +447,7 @@ describe(WebhookRouter, () => {
         },
       });
 
-      router.register("ordered", {
+      router.register("/ordered", {
         handler: () => {
           order.push("handler");
           return undefined;
@@ -470,7 +470,7 @@ describe(WebhookRouter, () => {
         },
       });
 
-      router.register("async-verify", () => Response.json("ok"));
+      router.register("/async-verify", () => Response.json("ok"));
 
       const response = await router.handle(
         createRequest("/webhooks/async-verify", { id: "1" })
@@ -484,7 +484,7 @@ describe(WebhookRouter, () => {
     it("should support custom status codes", async () => {
       const router = createWebhookRouter();
 
-      router.register("accepted", () =>
+      router.register("/accepted", () =>
         Response.json({ queued: true }, { status: 202 })
       );
 
@@ -499,7 +499,7 @@ describe(WebhookRouter, () => {
     it("should support custom headers", async () => {
       const router = createWebhookRouter();
 
-      router.register("headers", () =>
+      router.register("/headers", () =>
         Response.json("ok", {
           headers: { "x-custom": "value" },
         })
@@ -515,9 +515,9 @@ describe(WebhookRouter, () => {
     it("should handle different body types", async () => {
       const router = createWebhookRouter();
 
-      router.register("text", () => new Response("plain text"));
-      router.register("json", () => Response.json({ a: 1 }));
-      router.register("empty", () => new Response(null, { status: 204 }));
+      router.register("/text", () => new Response("plain text"));
+      router.register("/json", () => Response.json({ a: 1 }));
+      router.register("/empty", () => new Response(null, { status: 204 }));
 
       const textResponse = await router.handle(
         createRequest("/webhooks/text", {})
@@ -541,7 +541,7 @@ describe(WebhookRouter, () => {
     it("should handle malformed JSON gracefully", async () => {
       const router = createWebhookRouter();
 
-      router.register("raw", ({ payload }) => {
+      router.register("/raw", ({ payload }) => {
         expect(payload).toBeUndefined();
         return Response.json("handled");
       });
@@ -560,7 +560,7 @@ describe(WebhookRouter, () => {
     it("should reject malformed JSON when a schema is provided", async () => {
       const router = createWebhookRouter();
 
-      router.register("strict", {
+      router.register("/strict", {
         handler: () => Response.json("should not run"),
         schema: z.object({ id: z.string() }),
       });
@@ -578,7 +578,7 @@ describe(WebhookRouter, () => {
     it("should handle empty request body", async () => {
       const router = createWebhookRouter();
 
-      router.register("empty", ({ payload, rawBody }) => {
+      router.register("/empty", ({ payload, rawBody }) => {
         expect(payload).toBeUndefined();
         expect(rawBody).toStrictEqual(new Uint8Array(0));
         return Response.json("handled empty");
@@ -604,7 +604,7 @@ describe(WebhookRouter, () => {
           },
         });
 
-        router.register("test", () => {
+        router.register("/test", () => {
           order.push("handler");
           return undefined;
         });
@@ -628,7 +628,7 @@ describe(WebhookRouter, () => {
           ],
         });
 
-        router.register("test", () => {
+        router.register("/test", () => {
           order.push("handler");
           return undefined;
         });
@@ -649,11 +649,11 @@ describe(WebhookRouter, () => {
           },
         });
 
-        router.register("ctx", () => undefined);
+        router.register("/ctx", () => undefined);
 
         await router.handle(createRequest("/webhooks/ctx", { id: "1" }));
 
-        expect(observedPath).toBe("ctx");
+        expect(observedPath).toBe("/ctx");
         expect(observedBytes).toBeGreaterThan(0);
       });
 
@@ -666,7 +666,7 @@ describe(WebhookRouter, () => {
           },
         });
 
-        router.register("test", () => {
+        router.register("/test", () => {
           handlerRan = true;
           return undefined;
         });
@@ -693,7 +693,7 @@ describe(WebhookRouter, () => {
           },
         });
 
-        router.register("test", () => {
+        router.register("/test", () => {
           order.push("handler");
           return undefined;
         });
@@ -717,7 +717,7 @@ describe(WebhookRouter, () => {
           ],
         });
 
-        router.register("test", () => undefined);
+        router.register("/test", () => undefined);
 
         await router.handle(createRequest("/webhooks/test", { id: "1" }));
 
@@ -735,7 +735,7 @@ describe(WebhookRouter, () => {
           },
         });
 
-        router.register("test", () =>
+        router.register("/test", () =>
           Response.json({ done: true }, { status: 201 })
         );
 
@@ -758,7 +758,7 @@ describe(WebhookRouter, () => {
           },
         });
 
-        router.register("test", () => {
+        router.register("/test", () => {
           throw new Error("handler failed");
         });
 
@@ -778,7 +778,7 @@ describe(WebhookRouter, () => {
             Response.json({ custom: error.message }, { status: 503 }),
         });
 
-        router.register("test", () => {
+        router.register("/test", () => {
           throw new Error("boom");
         });
 
@@ -805,7 +805,7 @@ describe(WebhookRouter, () => {
           },
         });
 
-        router.register("test", () => undefined);
+        router.register("/test", () => undefined);
 
         const response = await router.handle(
           createRequest("/webhooks/test", { id: "1" })
@@ -829,7 +829,7 @@ describe(WebhookRouter, () => {
           }),
         });
 
-        router.register("test", () => undefined);
+        router.register("/test", () => undefined);
 
         const response = await router.handle(
           createRequest("/webhooks/test", { id: "1" })
@@ -848,7 +848,7 @@ describe(WebhookRouter, () => {
             Response.json({ from: "onError", message: error.message }),
         });
 
-        router.register("test", () => undefined);
+        router.register("/test", () => undefined);
 
         const response = await router.handle(
           createRequest("/webhooks/test", { id: "1" })
@@ -865,7 +865,7 @@ describe(WebhookRouter, () => {
           onError: () => undefined,
         });
 
-        router.register("test", () => {
+        router.register("/test", () => {
           throw new Error("boom");
         });
 
@@ -882,7 +882,7 @@ describe(WebhookRouter, () => {
       it("should return internal server error when a non-Error is thrown", async () => {
         const router = createWebhookRouter();
 
-        router.register("test", () => {
+        router.register("/test", () => {
           // oxlint-disable-next-line no-throw-literal -- Testing non-Error throw handling.
           throw "string error";
         });
@@ -907,7 +907,7 @@ describe(WebhookRouter, () => {
           },
         });
 
-        router.register("test", () => {
+        router.register("/test", () => {
           // oxlint-disable-next-line no-throw-literal -- Testing non-Error throw handling.
           throw { reason: "object" };
         });
@@ -921,10 +921,10 @@ describe(WebhookRouter, () => {
       it("should handle different error types", async () => {
         const router = createWebhookRouter();
 
-        router.register("type-error", () => {
+        router.register("/type-error", () => {
           throw new TypeError("type issue");
         });
-        router.register("range-error", () => {
+        router.register("/range-error", () => {
           throw new RangeError("range issue");
         });
 
@@ -954,7 +954,7 @@ describe(WebhookRouter, () => {
           },
         });
 
-        router.register("test", {
+        router.register("/test", {
           before: () => {
             order.push("route-before");
           },
@@ -982,7 +982,7 @@ describe(WebhookRouter, () => {
           },
         });
 
-        router.register("test", {
+        router.register("/test", {
           after: () => {
             order.push("route-after");
           },
@@ -1002,7 +1002,7 @@ describe(WebhookRouter, () => {
 
         const router = createWebhookRouter();
 
-        router.register("test", {
+        router.register("/test", {
           after: [
             () => {
               order.push("after-1");
@@ -1041,7 +1041,7 @@ describe(WebhookRouter, () => {
 
         const router = createWebhookRouter();
 
-        router.register("single", {
+        router.register("/single", {
           after: () => {
             order.push("single-after");
           },
@@ -1084,7 +1084,7 @@ describe(WebhookRouter, () => {
           },
         });
 
-        router.register("full", {
+        router.register("/full", {
           after: () => {
             order.push("route-after");
           },
@@ -1117,7 +1117,7 @@ describe(WebhookRouter, () => {
     it("should route requests with query parameters", async () => {
       const router = createWebhookRouter();
 
-      router.register("query", () => Response.json("query received"));
+      router.register("/query", () => Response.json("query received"));
 
       const response = await router.handle(
         createRequest("/webhooks/query?param=value&other=1", {})
@@ -1130,7 +1130,7 @@ describe(WebhookRouter, () => {
     it("should route requests with port numbers in the URL", async () => {
       const router = createWebhookRouter();
 
-      router.register("withport", () => Response.json("ok"));
+      router.register("/withport", () => Response.json("ok"));
 
       const response = await router.handle(
         new Request("https://example.com:8080/webhooks/withport", {
@@ -1145,7 +1145,7 @@ describe(WebhookRouter, () => {
     it("should match nested paths after the prefix", async () => {
       const router = createWebhookRouter();
 
-      router.register("api/v1/events", () => Response.json("nested"));
+      router.register("/api/v1/events", () => Response.json("nested"));
 
       const response = await router.handle(
         createRequest("/webhooks/api/v1/events", {})
@@ -1158,7 +1158,7 @@ describe(WebhookRouter, () => {
     it("should match paths with /webhooks/ in the middle", async () => {
       const router = createWebhookRouter();
 
-      router.register("api/webhooks/event", () => Response.json("middle"));
+      router.register("/api/webhooks/event", () => Response.json("middle"));
 
       const response = await router.handle(
         createRequest("/webhooks/api/webhooks/event", {})
@@ -1171,7 +1171,7 @@ describe(WebhookRouter, () => {
     it("should match the root route for the bare prefix path", async () => {
       const router = createWebhookRouter();
 
-      router.register("", () => Response.json("root"));
+      router.register("/", () => Response.json("root"));
 
       const response = await router.handle(createRequest("/webhooks/", {}));
 
@@ -1182,7 +1182,7 @@ describe(WebhookRouter, () => {
     it("should match percent-encoded paths against encoded route keys", async () => {
       const router = createWebhookRouter();
 
-      router.register("with%20spaces", () => Response.json("encoded"));
+      router.register("/with%20spaces", () => Response.json("encoded"));
 
       const response = await router.handle(
         createRequest("/webhooks/with%20spaces", {})
@@ -1197,7 +1197,7 @@ describe(WebhookRouter, () => {
     it("should use custom prefix when provided", async () => {
       const router = createWebhookRouter({ prefix: "/api/hooks/" });
 
-      router.register("payment", {
+      router.register("/payment", {
         handler: ({ payload }) => {
           expect(payload.id).toBe("123");
           return Response.json("success");
@@ -1216,7 +1216,7 @@ describe(WebhookRouter, () => {
     it("should return 404 for paths not matching custom prefix", async () => {
       const router = createWebhookRouter({ prefix: "/api/hooks/" });
 
-      router.register("payment", () => undefined);
+      router.register("/payment", () => undefined);
 
       const wrongPrefix = await router.handle(
         createRequest("/webhooks/payment", { id: "123" })
@@ -1229,10 +1229,10 @@ describe(WebhookRouter, () => {
       expect(noPrefix.status).toBe(404);
     });
 
-    it("should default to /webhooks/ prefix when not provided", async () => {
+    it("should default to /webhooks prefix when not provided", async () => {
       const router = createWebhookRouter();
 
-      router.register("test", () => Response.json("success"));
+      router.register("/test", () => Response.json("success"));
 
       const response = await router.handle(
         createRequest("/webhooks/test", { id: "123" })
@@ -1245,7 +1245,7 @@ describe(WebhookRouter, () => {
     it("should handle root prefix", async () => {
       const router = createWebhookRouter({ prefix: "/" });
 
-      router.register("payment", {
+      router.register("/payment", {
         handler: ({ payload }) => {
           expect(payload.id).toBe("123");
           return Response.json("success");
@@ -1267,12 +1267,12 @@ describe(WebhookRouter, () => {
       let stripeRan = false;
       let githubRan = false;
 
-      router.register("stripe/events", () => {
+      router.register("/stripe/events", () => {
         stripeRan = true;
         return undefined;
       });
 
-      router.register("github/push", () => {
+      router.register("/github/push", () => {
         githubRan = true;
         return undefined;
       });
@@ -1293,7 +1293,7 @@ describe(WebhookRouter, () => {
     it("should handle custom prefix with query parameters", async () => {
       const router = createWebhookRouter({ prefix: "/notifications/" });
 
-      router.register("notify", () => Response.json("notified"));
+      router.register("/notify", () => Response.json("notified"));
 
       const response = await router.handle(
         createRequest("/notifications/notify?priority=high&channel=email", {})
@@ -1306,8 +1306,8 @@ describe(WebhookRouter, () => {
     it("should normalize a prefix without a trailing slash", async () => {
       const router = createWebhookRouter({ prefix: "/api" });
 
-      router.register("hello", ({ path }) => {
-        expect(path).toBe("hello");
+      router.register("/hello", ({ path }) => {
+        expect(path).toBe("/hello");
         return Response.json("ok");
       });
 
@@ -1322,8 +1322,8 @@ describe(WebhookRouter, () => {
     it("should only match the prefix on a path boundary", async () => {
       const router = createWebhookRouter({ prefix: "/api" });
 
-      router.register("hello", () => Response.json("ok"));
-      router.register("ihello", () => Response.json("ok"));
+      router.register("/hello", () => Response.json("ok"));
+      router.register("/ihello", () => Response.json("ok"));
 
       const response = await router.handle(
         createRequest("/apihello", { value: "test" })

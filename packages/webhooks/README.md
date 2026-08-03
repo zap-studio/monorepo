@@ -34,10 +34,10 @@ import { createWebhookRouter } from "@zap-studio/webhooks";
 import { z } from "zod";
 
 const router = createWebhookRouter({
-  prefix: "/webhooks/",
+  prefix: "/webhooks", // default
 });
 
-router.register("payments/succeeded", {
+router.register("/payments/succeeded", {
   schema: z.object({
     id: z.string(),
     amount: z.number().positive(),
@@ -58,6 +58,10 @@ export default {
 `router.handle` takes a standard `Request` and returns a standard `Response`, so the router plugs directly into any fetch-native runtime — no adapter layer needed.
 
 Handlers can return a `Response`, or `undefined` to let the router reply with its default `200` acknowledgement.
+
+### Paths and the prefix
+
+Routes are registered with a leading slash (`"/payments/succeeded"`) and matched relative to the router's `prefix` (default `"/webhooks"`, no trailing slash) — so the example above answers on `/webhooks/payments/succeeded`. Paths are normalized internally: missing leading slashes are added, trailing slashes stripped, and duplicate slashes collapsed, on both registered routes and incoming request URLs. Set `prefix: ""` (or `"/"`) to mount routes at the root.
 
 ## Runtime integration
 
@@ -84,7 +88,7 @@ Hooks, verifiers, and handlers all receive a context object instead of the raw r
 interface WebhookContext {
   request: Request; // headers, method, url — body already consumed
   rawBody: Uint8Array; // exact request body bytes
-  path: string; // matched route key, e.g. "payments/succeeded"
+  path: string; // matched route key, e.g. "/payments/succeeded"
 }
 ```
 
@@ -104,7 +108,7 @@ const router = createWebhookRouter({
   }),
 });
 
-router.register("github/push", {
+router.register("/github/push", {
   schema: z.object({
     ref: z.string(),
     repository: z.object({
@@ -142,7 +146,7 @@ const router = createWebhookRouter({
   },
 });
 
-router.register("stripe/payment_intent.succeeded", {
+router.register("/stripe/payment_intent.succeeded", {
   schema: z.object({
     id: z.string(),
     object: z.literal("event"),
@@ -220,15 +224,6 @@ try {
 ```
 
 Use this when your provider uses standard HMAC signatures. For providers with custom signing formats, pass your own `verify` function.
-
-## Migrating from 0.3.x
-
-Version 0.4.0 replaces the custom `NormalizedRequest`/`NormalizedResponse` shapes with standard `Request`/`Response`:
-
-- `router.handle(normalizedRequest)` → `router.handle(request)` with a Web API `Request`; it now returns a `Response`.
-- Handlers receive `{ request, rawBody, path, payload }` and return a `Response` (or `undefined` for the default `200`). The `ack` helper is gone — use `Response.json(body, init)`.
-- Hooks and `verify` receive the webhook context instead of a normalized request.
-- The `BaseAdapter`/`Adapter` layer and the `./adapters/base` export are removed — fetch-native runtimes need no adapter, and Node `http` servers can use a fetch bridge (see Runtime integration).
 
 ## License
 

@@ -53,7 +53,7 @@ Register `before` and `after` on a single route when one endpoint needs extra be
 ```ts
 import { z } from "zod";
 
-router.register("github/push", {
+router.register("/github/push", {
   schema: z.object({ ref: z.string() }),
   before: (ctx) => {
     console.log("route-before", ctx.path);

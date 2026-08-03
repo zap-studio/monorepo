@@ -47,18 +47,20 @@ deno add jsr:@zap-studio/webhooks npm:zod
 import { createWebhookRouter } from "@zap-studio/webhooks";
 
 const router = createWebhookRouter({
-  prefix: "/webhooks/", // default
+  prefix: "/webhooks", // default
 });
 ```
 
+The prefix starts with a slash and has no trailing slash. The router normalizes what you pass in — missing leading slashes are added, trailing slashes stripped, duplicate slashes collapsed — and `""` (or `"/"`) mounts routes at the root.
+
 ## Register a Route
 
-Each route binds a route key, an optional validation schema, and a handler. When you provide a schema, the handler's `payload` type is inferred from the schema output — no manual type annotations needed.
+Each route binds a route key, an optional validation schema, and a handler. Route keys start with a slash and are relative to the prefix, so the route below answers on `/webhooks/payments/succeeded`. When you provide a schema, the handler's `payload` type is inferred from the schema output — no manual type annotations needed.
 
 ```ts
 import { z } from "zod";
 
-router.register("payments/succeeded", {
+router.register("/payments/succeeded", {
   schema: z.object({
     id: z.string(),
     amount: z.number().positive(),
@@ -76,14 +78,14 @@ The handler receives a context object with:
 - `payload` — the validated payload, typed from the schema
 - `request` — the incoming Web API `Request` (headers, method, URL — the body stream is already consumed by the router)
 - `rawBody` — the exact request body bytes as a `Uint8Array`
-- `path` — the matched route key (for example `payments/succeeded`)
+- `path` — the matched route key (for example `/payments/succeeded`)
 
 Return a `Response` to control the reply, or return nothing to respond with the default `200` acknowledgement (`Response.json("ok")`).
 
 You can also register a plain handler without a schema. The payload is then the parsed JSON body, typed as `unknown` unless you declare a payload type yourself.
 
 ```ts
-router.register("ping", () => Response.json("pong"));
+router.register("/ping", () => Response.json("pong"));
 ```
 
 ## Handle a Request

@@ -65,7 +65,7 @@ import { z } from "zod";
 
 const router = createWebhookRouter();
 
-router.register("payments/succeeded", {
+router.register("/payments/succeeded", {
   schema: z.object({
     id: z.string(),
     amount: z.number().positive(),
@@ -83,4 +83,4 @@ export default {
 };
 ```
 
-A request to `/webhooks/payments/succeeded` is matched against the registered key `payments/succeeded`: the router parses the request URL's pathname, requires the configured prefix (default `/webhooks/`), strips it, and matches the remainder exactly. Exact matching keeps routing predictable, and the prefix requirement keeps webhook routes from colliding with normal app routes.
+A request to `/webhooks/payments/succeeded` is matched against the registered key `/payments/succeeded`: the router parses the request URL's pathname, requires the configured prefix (default `/webhooks`) on a segment boundary, strips it, and matches the remainder exactly. Registered routes, the prefix, and incoming pathnames are all normalized to the same canonical form (leading slash, no trailing slash, duplicate slashes collapsed), so stray slashes never cause a mismatch. Exact matching keeps routing predictable, and the prefix requirement keeps webhook routes from colliding with normal app routes.

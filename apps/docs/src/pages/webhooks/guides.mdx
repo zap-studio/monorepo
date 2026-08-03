@@ -23,7 +23,7 @@ const router = createWebhookRouter({
   }),
 });
 
-router.register("github/push", {
+router.register("/github/push", {
   schema: z.object({
     ref: z.string(),
     repository: z.object({ full_name: z.string() }),
@@ -61,7 +61,7 @@ const router = createWebhookRouter({
   },
 });
 
-router.register("stripe/payment_intent.succeeded", {
+router.register("/stripe/payment_intent.succeeded", {
   schema: z.object({
     id: z.string(),
     object: z.literal("event"),

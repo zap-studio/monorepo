@@ -40,7 +40,12 @@ export interface WebhookRouterOptions {
   before?: BeforeHook | BeforeHook[];
   /** Global error hook used to override the default `500` response. */
   onError?: ErrorHook;
-  /** Required path prefix for all webhook routes. Defaults to `"/webhooks/"`. */
+  /**
+   * Required path prefix for all webhook routes. Defaults to `"/webhooks"`.
+   *
+   * Normalized internally: leading slash added, trailing slash stripped,
+   * duplicate slashes collapsed. Use `""` or `"/"` to mount at the root.
+   */
   prefix?: string;
   /** Optional request verification function (for signature checks, auth, etc.). */
   verify?: VerifyFn;
@@ -56,6 +61,19 @@ const toArray = <T>(value: T | T[] | undefined): T[] => {
 
 const notFoundResponse = (): Response =>
   Response.json({ error: "not found" }, { status: 404 });
+
+/**
+ * Normalizes a path to its canonical form: leading slash, no trailing slash,
+ * duplicate slashes collapsed. The root path is `"/"`.
+ */
+const normalizePath = (path: string): string => {
+  const withLeadingSlash = path.startsWith("/") ? path : `/${path}`;
+  const collapsed = withLeadingSlash.replaceAll(/\/{2,}/gu, "/");
+
+  return collapsed.length > 1 && collapsed.endsWith("/")
+    ? collapsed.slice(0, -1)
+    : collapsed;
+};
 
 /**
  * Main webhook router class.
@@ -76,8 +94,7 @@ export class WebhookRouter<TMap = unknown> {
    * @param opts - Router-level options.
    */
   constructor(opts: WebhookRouterOptions = {}) {
-    const prefix = opts.prefix ?? "/webhooks/";
-    this.prefix = prefix.endsWith("/") ? prefix : `${prefix}/`;
+    this.prefix = normalizePath(opts.prefix ?? "/webhooks");
     this.verify = opts.verify;
     this.globalBeforeHooks = toArray(opts.before);
     this.globalAfterHooks = toArray(opts.after);
@@ -89,22 +106,22 @@ export class WebhookRouter<TMap = unknown> {
    *
    * When a schema is provided, `payload` is inferred from the schema output type.
    *
-   * @param path - Route path relative to configured prefix.
+   * @param path - Route path relative to configured prefix, starting with `/` (e.g. `"/stripe"`).
    * @param handlerOrOptions - Handler function or schema-based registration options.
    * @returns The same router instance with an updated internal route type map.
    */
   register<
-    Path extends string,
+    Path extends `/${string}`,
     TSchema extends StandardSchemaV1<unknown, unknown>,
   >(
     path: Path,
     handlerOrOptions: SchemaRouteOptions<TSchema>
   ): WebhookRouter<TMap & Record<Path, InferSchemaOutput<TSchema>>>;
-  register<Path extends string, TPayload>(
+  register<Path extends `/${string}`, TPayload>(
     path: Path,
     handlerOrOptions: RegisterOptions<TPayload>
   ): WebhookRouter<TMap & Record<Path, TPayload>>;
-  register<Path extends string>(
+  register<Path extends `/${string}`>(
     path: Path,
     handlerOrOptions: WebhookHandler
   ): WebhookRouter<TMap & Record<Path, unknown>>;
@@ -112,7 +129,7 @@ export class WebhookRouter<TMap = unknown> {
     path: string,
     handlerOrOptions: WebhookHandler | RegisterOptions<unknown>
   ): this {
-    this.handlers[path] =
+    this.handlers[normalizePath(path)] =
       typeof handlerOrOptions === "function"
         ? { handler: handlerOrOptions }
         : WebhookRouter.createHandlerEntry(handlerOrOptions);
@@ -182,10 +199,20 @@ export class WebhookRouter<TMap = unknown> {
   }
 
   private matchPath(request: Request): string | null {
-    const { pathname } = new URL(request.url);
+    const pathname = normalizePath(new URL(request.url).pathname);
 
-    // Require prefix, then match handlers on the remainder (e.g. /webhooks/path -> path)
-    if (!pathname.startsWith(this.prefix)) {
+    // Root mount: the whole pathname is the route path.
+    if (this.prefix === "/") {
+      return pathname;
+    }
+
+    if (pathname === this.prefix) {
+      return "/";
+    }
+
+    // Require prefix followed by a segment boundary, then match handlers on
+    // the remainder (e.g. /webhooks/stripe -> /stripe).
+    if (!pathname.startsWith(`${this.prefix}/`)) {
       return null;
     }
 
