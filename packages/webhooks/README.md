@@ -17,12 +17,6 @@ Webhook handlers usually repeat the same plumbing:
 
 Schemas are the source of truth, and payload types are inferred from them.
 
-## Install
-
-```bash
-npm install @zap-studio/webhooks
-```
-
 ## Quickstart
 
 ```ts

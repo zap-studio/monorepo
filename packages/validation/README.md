@@ -13,12 +13,6 @@ This package provides small, focused helpers for running validation against any 
 
 It works with any Standard Schema compatible library.
 
-## Installation
-
-```bash
-npm install @zap-studio/validation
-```
-
 ## Quick Example
 
 ```ts

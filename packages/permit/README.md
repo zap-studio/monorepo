@@ -11,12 +11,6 @@ A type-safe, declarative authorization library for TypeScript with [Standard Sch
 - Composable conditions (`and`, `or`, `not`)
 - Policy merging strategies
 
-## Installation
-
-```bash
-npm install @zap-studio/permit
-```
-
 ## Quick Start
 
 ```ts

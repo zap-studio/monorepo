@@ -2,12 +2,6 @@
 
 A small fetch wrapper with [**Standard Schema**](https://standardschema.dev/schema) response validation.
 
-## Installation
-
-```bash
-npm install @zap-studio/fetch
-```
-
 ## Quick Example
 
 ```ts

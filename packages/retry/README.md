@@ -2,12 +2,6 @@
 
 Composable retry policy primitives for HTTP clients and async workflows.
 
-## Installation
-
-```bash
-npm install @zap-studio/retry
-```
-
 ## Usage
 
 ```ts
