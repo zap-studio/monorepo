@@ -20,7 +20,7 @@ jobs:
       - name: Setup nub
         uses: ./.github/actions/setup-nub
       - name: Build packages
-        run: nub run --filter "./packages/*" build
+        run: nub run build
 
   build-docs:
     name: Build Docs
@@ -42,7 +42,7 @@ jobs:
       - name: Setup nub
         uses: ./.github/actions/setup-nub
       - name: Build packages
-        run: nub run --filter "./packages/*" build
+        run: nub run build
       - name: Run check
         run: nub run check
 
@@ -56,7 +56,7 @@ jobs:
       - name: Setup nub
         uses: ./.github/actions/setup-nub
       - name: Build packages
-        run: nub run --filter "./packages/*" build
+        run: nub run build
       - name: Install browser
         run: nub exec playwright install --with-deps chromium
       - name: Run tests
@@ -75,7 +75,7 @@ jobs:
       - name: Setup nub
         uses: ./.github/actions/setup-nub
       - name: Build packages
-        run: nub run --filter "./packages/*" build
+        run: nub run build
       - name: Install browser
         run: nub exec playwright install --with-deps chromium
       - name: Run coverage
