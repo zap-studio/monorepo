@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import { createWebhookRouter } from "../src/index.js";
-import type { NormalizedRequest } from "../src/types/index.js";
 import { createHmacVerifier } from "../src/verify.js";
 
 const encoder = new TextEncoder();
@@ -32,33 +31,39 @@ describe("@zap-studio/webhooks browser runtime", () => {
 
     await expect(
       verify({
-        headers: new Headers({ "x-hub-signature-256": `sha256=${signature}` }),
-        method: "POST",
-        path: "/webhooks/github",
+        path: "github",
         rawBody: body,
+        request: new Request("https://example.com/webhooks/github", {
+          headers: {
+            "x-hub-signature-256": `sha256=${signature}`,
+          },
+          method: "POST",
+        }),
       })
     ).resolves.toBeUndefined();
   });
 
-  it("routes full browser URL strings and preserves response Headers", async () => {
-    const customHeaders = new Headers({ "x-runtime": "browser" });
-    const router = createWebhookRouter().register("github", () => ({
-      body: { ok: true },
-      headers: customHeaders,
-      status: 202,
-    }));
-    const request: NormalizedRequest = {
-      headers: new Headers(),
-      method: "POST",
-      path: "https://example.com/webhooks/github?delivery=1",
-      rawBody: encoder.encode(JSON.stringify({ ok: true })),
-    };
+  it("routes browser Request objects and preserves response headers", async () => {
+    const router = createWebhookRouter().register("github", ({ path }) => {
+      expect(path).toBe("github");
+      return Response.json(
+        { ok: true },
+        {
+          headers: { "x-runtime": "browser" },
+          status: 202,
+        }
+      );
+    });
 
-    const response = await router.handle(request);
+    const response = await router.handle(
+      new Request("https://example.com/webhooks/github?delivery=1", {
+        body: JSON.stringify({ ok: true }),
+        method: "POST",
+      })
+    );
 
     expect(response.status).toBe(202);
-    expect(response.headers).toBe(customHeaders);
-    expect(response.headers?.get("x-runtime")).toBe("browser");
-    expect(request.path).toBe("/github");
+    expect(response.headers.get("x-runtime")).toBe("browser");
+    await expect(response.json()).resolves.toStrictEqual({ ok: true });
   });
 });
