@@ -2,7 +2,7 @@
  * Result-mode execution path for `BaseRetryPolicy.run` when
  * `throwOnExhausted: false` is set.
  *
- * @module @zap-studio/retry/result-mode
+ * @module @zap-studio/retry/_result-mode (private)
  */
 
 import { sleepWithAbortSignal, toAbortError } from "./abort.js";

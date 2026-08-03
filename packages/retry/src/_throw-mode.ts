@@ -2,7 +2,7 @@
  * Throw-mode execution path for `BaseRetryPolicy.run` (default when
  * `throwOnExhausted` is not `false`).
  *
- * @module @zap-studio/retry/throw-mode
+ * @module @zap-studio/retry/_throw-mode (private)
  */
 
 import { sleepWithAbortSignal, throwIfAborted } from "./abort.js";

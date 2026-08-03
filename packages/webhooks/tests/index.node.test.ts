@@ -4,620 +4,476 @@ import { z } from "zod";
 
 import { VerificationError } from "../src/errors.js";
 import { createWebhookRouter, WebhookRouter } from "../src/index.js";
-import type {
-  NormalizedRequest,
-  NormalizedResponse,
-} from "../src/types/index.js";
 import { createHmacVerifier } from "../src/verify.js";
 
 describe(WebhookRouter, () => {
   const encoder = new TextEncoder();
 
-  const createMockRequest = (
+  const createRequest = (
     path: string,
-    body: unknown,
-    method: "POST" | "GET" = "POST"
-  ): NormalizedRequest => ({
-    headers: new Headers(),
-    method,
-    path,
-    rawBody: encoder.encode(JSON.stringify(body)),
-  });
+    body?: unknown,
+    init?: { headers?: HeadersInit; method?: string }
+  ): Request =>
+    new Request(new URL(path, "https://example.com"), {
+      body: body === undefined ? null : JSON.stringify(body),
+      headers: init?.headers,
+      method: init?.method ?? "POST",
+    });
 
   describe("Basic routing", () => {
     it("should support schema-first route registration at creation time", async () => {
       const router = createWebhookRouter();
-      router.register("payment", {
-        handler: async ({ payload, ack }) =>
-          await ack({ body: payload.amount, status: 200 }),
+      router.register("/payment", {
+        handler: ({ payload }) => Response.json(payload.amount),
         schema: z.object({
           amount: z.number(),
         }),
       });
 
       const response = await router.handle(
-        createMockRequest("/webhooks/payment", { amount: 100 })
+        createRequest("/webhooks/payment", { amount: 100 })
       );
 
-      expect(response).toStrictEqual({ body: 100, status: 200 });
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe(100);
     });
 
     it("should handle webhook without schema validation", async () => {
       interface WebhookMap {
-        test: { id: string };
+        "/test": { id: string };
       }
 
       const router = new WebhookRouter<WebhookMap>();
 
-      router.register("test", async ({ payload, ack }) => {
+      router.register("/test", ({ payload }) => {
         expect(payload).toStrictEqual({ id: "123" });
-        return await ack({ body: "success", status: 200 });
+        return Response.json("success");
       });
 
       const response = await router.handle(
-        createMockRequest("/webhooks/test", { id: "123" })
+        createRequest("/webhooks/test", { id: "123" })
       );
 
-      expect(response).toStrictEqual({ body: "success", status: 200 });
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe("success");
     });
 
     it("should return 404 for unregistered paths", async () => {
-      interface WebhookMap {
-        test: { id: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
+      const router = createWebhookRouter();
 
       const response = await router.handle(
-        createMockRequest("/webhooks/unknown", { id: "123" })
+        createRequest("/webhooks/unknown", { id: "123" })
       );
 
-      expect(response).toStrictEqual({
-        body: { error: "not found" },
-        status: 404,
+      expect(response.status).toBe(404);
+      await expect(response.json()).resolves.toStrictEqual({
+        error: "not found",
       });
     });
 
-    it("should return 404 for paths without /webhooks/ prefix", async () => {
-      interface WebhookMap {
-        test: { id: string };
-      }
+    it("should return 404 for paths without /webhooks prefix", async () => {
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register(
-        "test",
-        async ({ ack }) => await ack({ body: "success", status: 200 })
-      );
+      router.register("/test", () => Response.json("success"));
 
       const response = await router.handle(
-        createMockRequest("/test", { id: "123" })
+        createRequest("/test", { id: "123" })
       );
 
-      expect(response).toStrictEqual({
-        body: { error: "not found" },
-        status: 404,
+      expect(response.status).toBe(404);
+      await expect(response.json()).resolves.toStrictEqual({
+        error: "not found",
       });
+    });
+
+    it("should not read the request body when the route is unknown", async () => {
+      const router = createWebhookRouter();
+      const request = createRequest("/webhooks/unknown", { id: "123" });
+
+      const response = await router.handle(request);
+
+      expect(response.status).toBe(404);
+      expect(request.bodyUsed).toBe(false);
     });
 
     it("should handle multiple registered paths", async () => {
-      interface WebhookMap {
-        order: { id: string };
-        payment: { amount: number };
-        user: { name: string };
-      }
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("payment", {
-        handler: async ({ payload, ack }) =>
-          await ack({ body: { received: payload.amount }, status: 200 }),
+      router.register("/payment", {
+        handler: ({ payload }) => Response.json({ received: payload.amount }),
         schema: z.object({ amount: z.number() }),
       });
 
-      router.register("user", {
-        handler: async ({ payload, ack }) =>
-          await ack({
-            body: { greeting: `Hello ${payload.name}` },
-            status: 200,
-          }),
+      router.register("/user", {
+        handler: ({ payload }) => Response.json({ hello: payload.name }),
         schema: z.object({ name: z.string() }),
       });
 
-      router.register("order", {
-        handler: async ({ payload, ack }) =>
-          await ack({ body: { orderId: payload.id }, status: 200 }),
-        schema: z.object({ id: z.string() }),
-      });
-
       const paymentResponse = await router.handle(
-        createMockRequest("/webhooks/payment", { amount: 100 })
+        createRequest("/webhooks/payment", { amount: 42 })
       );
-      expect(paymentResponse).toStrictEqual({
-        body: { received: 100 },
-        status: 200,
-      });
-
       const userResponse = await router.handle(
-        createMockRequest("/webhooks/user", { name: "Alice" })
+        createRequest("/webhooks/user", { name: "ada" })
       );
-      expect(userResponse).toStrictEqual({
-        body: { greeting: "Hello Alice" },
-        status: 200,
+
+      await expect(paymentResponse.json()).resolves.toStrictEqual({
+        received: 42,
       });
-
-      const orderResponse = await router.handle(
-        createMockRequest("/webhooks/order", { id: "order_123" })
-      );
-      expect(orderResponse).toStrictEqual({
-        body: { orderId: "order_123" },
-        status: 200,
-      });
-    });
-
-    it("should handle request without explicit response", async () => {
-      interface WebhookMap {
-        silent: { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("silent", () => ({ body: "ok", status: 200 }));
-
-      const response = await router.handle(
-        createMockRequest("/webhooks/silent", { data: "test" })
-      );
-
-      expect(response).toStrictEqual({ body: "ok", status: 200 });
-    });
-
-    it("should preserve request metadata in handler", async () => {
-      interface WebhookMap {
-        metadata: { value: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("metadata", async ({ req, ack }) => {
-        expect(req.method).toBe("POST");
-        expect(req.path).toBe("/metadata");
-        expect(req.headers).toBeInstanceOf(Headers);
-        expect(req.rawBody).toBeInstanceOf(Uint8Array);
-        expect(req.json).toBeDefined();
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("/webhooks/metadata", { value: "test" })
-      );
-    });
-
-    it("should use default ack response values when ack is called without args", async () => {
-      interface WebhookMap {
-        default: { value: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("default", async ({ ack }) => await ack());
-
-      const response = await router.handle(
-        createMockRequest("/webhooks/default", { value: "test" })
-      );
-
-      expect(response).toStrictEqual({
-        body: "ok",
-        status: 200,
+      await expect(userResponse.json()).resolves.toStrictEqual({
+        hello: "ada",
       });
     });
 
     it("should return default response when handler returns undefined", async () => {
-      interface WebhookMap {
-        empty: { value: string };
-      }
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("empty", async () => {
-        await Promise.resolve();
-        const result: { response?: NormalizedResponse } = {};
-        return result.response;
-      });
+      router.register("/test", () => undefined);
 
       const response = await router.handle(
-        createMockRequest("/webhooks/empty", { value: "test" })
+        createRequest("/webhooks/test", { id: "123" })
       );
 
-      expect(response).toStrictEqual({ body: "ok", status: 200 });
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe("ok");
+    });
+
+    it("should expose request metadata and raw body in handler context", async () => {
+      const router = createWebhookRouter();
+
+      let observed: {
+        method: string;
+        path: string;
+        rawBody: Uint8Array;
+        signature: string | null;
+      } | null = null;
+
+      router.register("/meta", ({ request, rawBody, path }) => {
+        observed = {
+          method: request.method,
+          path,
+          rawBody,
+          signature: request.headers.get("x-signature"),
+        };
+        return undefined;
+      });
+
+      const body = { id: "123" };
+      await router.handle(
+        createRequest("/webhooks/meta", body, {
+          headers: { "x-signature": "sig" },
+        })
+      );
+
+      expect(observed).not.toBeNull();
+      expect(observed?.method).toBe("POST");
+      expect(observed?.path).toBe("/meta");
+      expect(observed?.signature).toBe("sig");
+      expect(observed?.rawBody).toStrictEqual(
+        encoder.encode(JSON.stringify(body))
+      );
     });
   });
 
   describe("Schema validation with Zod", () => {
     it("should validate payload with Zod schema", async () => {
-      interface WebhookMap {
-        payment: { id: string; amount: number };
-      }
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      const paymentSchema = z.object({
-        amount: z.number().positive(),
-        id: z.string(),
-      });
-
-      router.register("payment", {
-        handler: async ({ payload, ack }) => {
-          expect(payload).toStrictEqual({ amount: 100, id: "pay_123" });
-          return await ack({ body: "payment processed", status: 200 });
-        },
-        schema: paymentSchema,
+      router.register("/payment", {
+        handler: ({ payload }) => Response.json(payload),
+        schema: z.object({
+          amount: z.number(),
+          currency: z.string(),
+        }),
       });
 
       const response = await router.handle(
-        createMockRequest("/webhooks/payment", { amount: 100, id: "pay_123" })
+        createRequest("/webhooks/payment", { amount: 10, currency: "usd" })
       );
 
-      expect(response).toStrictEqual({
-        body: "payment processed",
-        status: 200,
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toStrictEqual({
+        amount: 10,
+        currency: "usd",
       });
     });
 
     it("should reject invalid payload when schema is provided", async () => {
-      interface WebhookMap {
-        payment: { id: string; amount: number };
-      }
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      const paymentSchema = z.object({
-        amount: z.number().positive(),
-        id: z.string(),
-      });
-
-      router.register("payment", {
-        handler: async ({ ack }) => await ack({ status: 200 }),
-        schema: paymentSchema,
+      router.register("/payment", {
+        handler: () => Response.json("should not run"),
+        schema: z.object({ amount: z.number() }),
       });
 
       const response = await router.handle(
-        createMockRequest("/webhooks/payment", { amount: -100, id: "pay_123" })
+        createRequest("/webhooks/payment", { amount: "not a number" })
       );
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("error", "validation failed");
-      expect(response.body).toHaveProperty("issues");
+      const body = (await response.json()) as {
+        error: string;
+        issues: { message: string; path?: string[] }[];
+      };
+      expect(body.error).toBe("validation failed");
+      expect(body.issues.length).toBeGreaterThan(0);
+      expect(body.issues[0]?.path).toStrictEqual(["amount"]);
     });
 
     it("should reject payload with missing required fields", async () => {
-      interface WebhookMap {
-        user: { id: string; email: string };
-      }
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      const userSchema = z.object({
-        email: z.email(),
-        id: z.string(),
-      });
-
-      router.register("user", {
-        handler: async ({ ack }) => await ack({ status: 200 }),
-        schema: userSchema,
+      router.register("/payment", {
+        handler: () => Response.json("should not run"),
+        schema: z.object({
+          amount: z.number(),
+          currency: z.string(),
+        }),
       });
 
       const response = await router.handle(
-        createMockRequest("/webhooks/user", { id: "123" })
+        createRequest("/webhooks/payment", { amount: 10 })
       );
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("error", "validation failed");
+      const body = (await response.json()) as { error: string };
+      expect(body.error).toBe("validation failed");
     });
 
     it("should validate complex nested schemas", async () => {
-      interface WebhookMap {
-        order: {
-          id: string;
-          items: { sku: string; quantity: number }[];
-          customer: { email: string; name: string };
-        };
-      }
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      const orderSchema = z.object({
-        customer: z.object({
-          email: z.email(),
-          name: z.string().min(1),
+      router.register("/order", {
+        handler: ({ payload }) => Response.json(payload.items.length),
+        schema: z.object({
+          customer: z.object({
+            email: z.string(),
+            name: z.string(),
+          }),
+          items: z.array(
+            z.object({
+              price: z.number(),
+              quantity: z.number(),
+              sku: z.string(),
+            })
+          ),
         }),
-        id: z.string(),
-        items: z.array(
-          z.object({
-            quantity: z.number().int().positive(),
-            sku: z.string(),
-          })
-        ),
       });
-
-      router.register("order", {
-        handler: async ({ payload, ack }) => {
-          expect(payload.items).toHaveLength(2);
-          expect(payload.customer.email).toBe("test@example.com");
-          return await ack({ status: 200 });
-        },
-        schema: orderSchema,
-      });
-
-      const validOrder = {
-        customer: {
-          email: "test@example.com",
-          name: "John Doe",
-        },
-        id: "order_123",
-        items: [
-          { quantity: 2, sku: "WIDGET-1" },
-          { quantity: 1, sku: "GADGET-5" },
-        ],
-      };
 
       const response = await router.handle(
-        createMockRequest("/webhooks/order", validOrder)
+        createRequest("/webhooks/order", {
+          customer: { email: "a@b.c", name: "Ada" },
+          items: [
+            { price: 10, quantity: 2, sku: "sku-1" },
+            { price: 5, quantity: 1, sku: "sku-2" },
+          ],
+        })
       );
 
       expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe(2);
     });
 
     it("should transform data with Zod transforms", async () => {
-      interface WebhookMap {
-        data: { value: number };
-      }
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      const schema = z.object({
-        value: z.string().transform((val) => Math.trunc(Number(val))),
-      });
-
-      router.register("data", {
-        handler: async ({ payload, ack }) => {
-          expect(payload.value).toBeTypeOf("number");
-          expect(payload.value).toBe(42);
-          return await ack({ status: 200 });
-        },
-        schema,
+      router.register("/transform", {
+        handler: ({ payload }) => Response.json(payload),
+        schema: z.object({
+          value: z.string().transform((v) => v.toUpperCase()),
+        }),
       });
 
       const response = await router.handle(
-        createMockRequest("/webhooks/data", { value: "42" })
+        createRequest("/webhooks/transform", { value: "hello" })
       );
 
-      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toStrictEqual({
+        value: "HELLO",
+      });
     });
   });
 
   describe("Custom schema validator", () => {
+    const createCustomSchema = <T>(
+      validate: (value: unknown) => StandardSchemaV1.Result<T>
+    ): StandardSchemaV1<unknown, T> => ({
+      "~standard": {
+        validate,
+        vendor: "test",
+        version: 1,
+      },
+    });
+
     it("should work with custom Standard Schema validator", async () => {
-      interface WebhookMap {
-        custom: { value: number };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      // Custom Standard Schema validator that ensures value is between 1 and 100
-      const customValidator: StandardSchemaV1<unknown, { value: number }> = {
-        "~standard": {
-          validate: (data: unknown) => {
-            const obj = data as { value?: unknown };
-            if (
-              typeof obj.value !== "number" ||
-              obj.value < 1 ||
-              obj.value > 100
-            ) {
-              return {
-                issues: [
-                  {
-                    message: "Value must be a number between 1 and 100",
-                    path: ["value"],
-                  },
-                ],
-              };
-            }
-            return {
-              value: { value: obj.value },
-            };
-          },
-          vendor: "custom",
-          version: 1,
-        },
-      };
-
-      router.register("custom", {
-        handler: async ({ payload, ack }) => {
-          expect(payload.value).toBe(50);
-          return await ack({ status: 200 });
-        },
-        schema: customValidator,
+      const schema = createCustomSchema<{ id: string }>((value) => {
+        if (
+          typeof value === "object" &&
+          value !== null &&
+          "id" in value &&
+          typeof value.id === "string"
+        ) {
+          return { value: { id: value.id } };
+        }
+        return { issues: [{ message: "id must be a string" }] };
       });
 
-      const validResponse = await router.handle(
-        createMockRequest("/webhooks/custom", { value: 50 })
-      );
-      expect(validResponse.status).toBe(200);
+      const router = createWebhookRouter();
+      router.register("/custom", {
+        handler: ({ payload }) => Response.json(payload.id),
+        schema,
+      });
 
-      const invalidResponse = await router.handle(
-        createMockRequest("/webhooks/custom", { value: 150 })
+      const okResponse = await router.handle(
+        createRequest("/webhooks/custom", { id: "abc" })
       );
-      expect(invalidResponse.status).toBe(400);
-      expect(invalidResponse.body).toHaveProperty("error", "validation failed");
+      await expect(okResponse.json()).resolves.toBe("abc");
+
+      const badResponse = await router.handle(
+        createRequest("/webhooks/custom", { id: 1 })
+      );
+      expect(badResponse.status).toBe(400);
     });
 
     it("should support async validators", async () => {
-      interface WebhookMap {
-        async: { id: string };
-      }
+      const schema = createCustomSchema<{ id: string }>((value) => {
+        if (
+          typeof value === "object" &&
+          value !== null &&
+          "id" in value &&
+          typeof value.id === "string"
+        ) {
+          return { value: { id: value.id } };
+        }
+        return { issues: [{ message: "invalid" }] };
+      });
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      // Async Standard Schema validator that simulates database check
-      const asyncValidator: StandardSchemaV1<unknown, { id: string }> = {
+      const asyncSchema: StandardSchemaV1<unknown, { id: string }> = {
         "~standard": {
-          validate: async (data: unknown) => {
-            const obj = data as { id?: unknown };
-
-            await Promise.resolve();
-
-            if (typeof obj.id !== "string" || !obj.id.startsWith("valid_")) {
-              return {
-                issues: [
-                  {
-                    message: "ID must start with 'valid_'",
-                    path: ["id"],
-                  },
-                ],
-              };
-            }
-
-            return {
-              value: { id: obj.id },
-            };
-          },
-          vendor: "custom",
+          validate: (value) =>
+            Promise.resolve(schema["~standard"].validate(value)),
+          vendor: "test",
           version: 1,
         },
       };
 
-      router.register("async", {
-        handler: async ({ payload, ack }) => {
-          expect(payload.id).toBe("valid_123");
-          return await ack({ status: 200 });
-        },
-        schema: asyncValidator,
-      });
-
-      const validResponse = await router.handle(
-        createMockRequest("/webhooks/async", { id: "valid_123" })
-      );
-      expect(validResponse.status).toBe(200);
-
-      const invalidResponse = await router.handle(
-        createMockRequest("/webhooks/async", { id: "invalid_123" })
-      );
-      expect(invalidResponse.status).toBe(400);
-    });
-
-    it("should map object path segments from schema issues", async () => {
-      interface WebhookMap {
-        keyed: { value: number };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      const objectPathValidator: StandardSchemaV1<unknown, { value: number }> =
-        {
-          "~standard": {
-            validate: () => ({
-              issues: [
-                {
-                  message: "Invalid nested value",
-                  path: [{ key: "nested" }],
-                },
-              ],
-            }),
-            vendor: "custom",
-            version: 1,
-          },
-        };
-
-      router.register("keyed", {
-        handler: async ({ ack }) => await ack({ status: 200 }),
-        schema: objectPathValidator,
+      const router = createWebhookRouter();
+      router.register("/async", {
+        handler: ({ payload }) => Response.json(payload.id),
+        schema: asyncSchema,
       });
 
       const response = await router.handle(
-        createMockRequest("/webhooks/keyed", { value: 1 })
+        createRequest("/webhooks/async", { id: "async-id" })
+      );
+
+      await expect(response.json()).resolves.toBe("async-id");
+    });
+
+    it("should map object path segments from schema issues", async () => {
+      const schema = createCustomSchema<never>(() => ({
+        issues: [
+          {
+            message: "bad key",
+            path: [{ key: "nested" }, { key: "field" }],
+          },
+        ],
+      }));
+
+      const router = createWebhookRouter();
+      router.register("/paths", {
+        handler: () => Response.json("should not run"),
+        schema,
+      });
+
+      const response = await router.handle(
+        createRequest("/webhooks/paths", { nested: { field: 1 } })
       );
 
       expect(response.status).toBe(400);
-      expect(response.body).toStrictEqual({
-        error: "validation failed",
-        issues: [{ message: "Invalid nested value", path: ["nested"] }],
-      });
+      const body = (await response.json()) as {
+        issues: { message: string; path?: string[] }[];
+      };
+      expect(body.issues[0]?.path).toStrictEqual(["nested", "field"]);
     });
   });
 
   describe("Request verification", () => {
     it("should work with custom verify function", async () => {
-      interface WebhookMap {
-        secure: { data: string };
-      }
-
-      let verifyWasCalled = false;
-
-      const router = new WebhookRouter<WebhookMap>({
-        verify: (req) => {
-          verifyWasCalled = true;
-          expect(req.path).toBe("/secure");
+      const router = createWebhookRouter({
+        verify: (ctx) => {
+          if (ctx.request.headers.get("x-api-key") !== "secret") {
+            throw new Error("Unauthorized");
+          }
         },
       });
 
-      router.register("secure", async ({ ack }) => await ack({ status: 200 }));
+      router.register("/secure", () => Response.json("verified"));
 
-      await router.handle(
-        createMockRequest("/webhooks/secure", { data: "test" })
+      const okResponse = await router.handle(
+        createRequest(
+          "/webhooks/secure",
+          { id: "1" },
+          { headers: { "x-api-key": "secret" } }
+        )
       );
+      await expect(okResponse.json()).resolves.toBe("verified");
 
-      expect(verifyWasCalled).toBeTruthy();
+      const badResponse = await router.handle(
+        createRequest("/webhooks/secure", { id: "1" })
+      );
+      expect(badResponse.status).toBe(500);
+      await expect(badResponse.json()).resolves.toStrictEqual({
+        error: "Unauthorized",
+      });
     });
 
     it("should run verify before schema validation", async () => {
-      interface WebhookMap {
-        verified: { value: number };
-      }
+      const order: string[] = [];
 
-      const callOrder: string[] = [];
+      const schema: StandardSchemaV1<unknown, { id: string }> = {
+        "~standard": {
+          validate: (value) => {
+            order.push("validate");
+            return { value: value as { id: string } };
+          },
+          vendor: "test",
+          version: 1,
+        },
+      };
 
-      const router = new WebhookRouter<WebhookMap>({
+      const router = createWebhookRouter({
         verify: () => {
-          callOrder.push("verify");
+          order.push("verify");
         },
       });
 
-      const schema = z.object({ value: z.number() });
-
-      router.register("verified", {
-        handler: async ({ ack }) => {
-          callOrder.push("handler");
-          return await ack({ status: 200 });
+      router.register("/ordered", {
+        handler: () => {
+          order.push("handler");
+          return undefined;
         },
         schema,
       });
 
-      await router.handle(
-        createMockRequest("/webhooks/verified", { value: 42 })
-      );
+      await router.handle(createRequest("/webhooks/ordered", { id: "1" }));
 
-      expect(callOrder).toStrictEqual(["verify", "handler"]);
+      expect(order).toStrictEqual(["verify", "validate", "handler"]);
     });
 
     it("should support async verify functions", async () => {
-      interface WebhookMap {
-        "async-verify": { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>({
-        verify: async (req) => {
+      const router = createWebhookRouter({
+        verify: async (ctx) => {
           await Promise.resolve();
-          expect(req.path).toBe("/async-verify");
+          if (ctx.rawBody.length === 0) {
+            throw new Error("empty body");
+          }
         },
       });
 
-      router.register(
-        "async-verify",
-        async ({ ack }) => await ack({ status: 200 })
-      );
+      router.register("/async-verify", () => Response.json("ok"));
 
       const response = await router.handle(
-        createMockRequest("/webhooks/async-verify", { data: "test" })
+        createRequest("/webhooks/async-verify", { id: "1" })
       );
 
       expect(response.status).toBe(200);
@@ -626,643 +482,491 @@ describe(WebhookRouter, () => {
 
   describe("Response handling", () => {
     it("should support custom status codes", async () => {
-      interface WebhookMap {
-        created: { name: string };
-      }
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register(
-        "created",
-        async ({ ack }) => await ack({ body: { created: true }, status: 201 })
+      router.register("/accepted", () =>
+        Response.json({ queued: true }, { status: 202 })
       );
 
       const response = await router.handle(
-        createMockRequest("/webhooks/created", { name: "test" })
+        createRequest("/webhooks/accepted", { id: "1" })
       );
 
-      expect(response.status).toBe(201);
-      expect(response.body).toStrictEqual({ created: true });
+      expect(response.status).toBe(202);
+      await expect(response.json()).resolves.toStrictEqual({ queued: true });
     });
 
     it("should support custom headers", async () => {
-      interface WebhookMap {
-        headers: { data: string };
-      }
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      const customHeaders = new Headers();
-      customHeaders.set("X-Custom-Header", "test-value");
-
-      router.register(
-        "headers",
-        async ({ ack }) =>
-          await ack({
-            body: "ok",
-            headers: customHeaders,
-            status: 200,
-          })
+      router.register("/headers", () =>
+        Response.json("ok", {
+          headers: { "x-custom": "value" },
+        })
       );
 
       const response = await router.handle(
-        createMockRequest("/webhooks/headers", { data: "test" })
+        createRequest("/webhooks/headers", { id: "1" })
       );
 
-      expect(response.status).toBe(200);
-      expect(response.headers).toBe(customHeaders);
+      expect(response.headers.get("x-custom")).toBe("value");
     });
 
     it("should handle different body types", async () => {
-      interface WebhookMap {
-        number: { data: string };
-        object: { data: string };
-        string: { data: string };
-      }
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
+      router.register("/text", () => new Response("plain text"));
+      router.register("/json", () => Response.json({ a: 1 }));
+      router.register("/empty", () => new Response(null, { status: 204 }));
 
-      router.register(
-        "string",
-        async ({ ack }) => await ack({ body: "plain text", status: 200 })
+      const textResponse = await router.handle(
+        createRequest("/webhooks/text", {})
       );
+      await expect(textResponse.text()).resolves.toBe("plain text");
 
-      router.register(
-        "object",
-        async ({ ack }) => await ack({ body: { key: "value" }, status: 200 })
+      const jsonResponse = await router.handle(
+        createRequest("/webhooks/json", {})
       );
+      await expect(jsonResponse.json()).resolves.toStrictEqual({ a: 1 });
 
-      router.register(
-        "number",
-        async ({ ack }) => await ack({ body: 42, status: 200 })
+      const emptyResponse = await router.handle(
+        createRequest("/webhooks/empty", {})
       );
-
-      const stringResponse = await router.handle(
-        createMockRequest("/webhooks/string", { data: "test" })
-      );
-      expect(stringResponse.body).toBe("plain text");
-
-      const objectResponse = await router.handle(
-        createMockRequest("/webhooks/object", { data: "test" })
-      );
-      expect(objectResponse.body).toStrictEqual({ key: "value" });
-
-      const numberResponse = await router.handle(
-        createMockRequest("/webhooks/number", { data: "test" })
-      );
-      expect(numberResponse.body).toBe(42);
+      expect(emptyResponse.status).toBe(204);
+      expect(emptyResponse.body).toBeNull();
     });
   });
 
   describe("Error handling", () => {
     it("should handle malformed JSON gracefully", async () => {
-      interface WebhookMap {
-        json: { data: string };
-      }
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("json", async ({ payload, ack }) => {
+      router.register("/raw", ({ payload }) => {
         expect(payload).toBeUndefined();
-        return await ack({ status: 200 });
+        return Response.json("handled");
       });
 
-      const malformedRequest: NormalizedRequest = {
-        headers: new Headers(),
-        method: "POST",
-        path: "/webhooks/json",
-        rawBody: encoder.encode("not valid json{"),
-      };
+      const response = await router.handle(
+        new Request("https://example.com/webhooks/raw", {
+          body: "not json {",
+          method: "POST",
+        })
+      );
 
-      const response = await router.handle(malformedRequest);
       expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe("handled");
+    });
+
+    it("should reject malformed JSON when a schema is provided", async () => {
+      const router = createWebhookRouter();
+
+      router.register("/strict", {
+        handler: () => Response.json("should not run"),
+        schema: z.object({ id: z.string() }),
+      });
+
+      const response = await router.handle(
+        new Request("https://example.com/webhooks/strict", {
+          body: "not json {",
+          method: "POST",
+        })
+      );
+
+      expect(response.status).toBe(400);
     });
 
     it("should handle empty request body", async () => {
-      interface WebhookMap {
-        empty: { data?: string };
-      }
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("empty", async ({ payload, ack }) => {
+      router.register("/empty", ({ payload, rawBody }) => {
         expect(payload).toBeUndefined();
-        return await ack({ status: 200 });
+        expect(rawBody).toStrictEqual(new Uint8Array(0));
+        return Response.json("handled empty");
       });
 
-      const emptyRequest: NormalizedRequest = {
-        headers: new Headers(),
-        method: "POST",
-        path: "/webhooks/empty",
-        rawBody: encoder.encode(""),
-      };
+      const response = await router.handle(
+        new Request("https://example.com/webhooks/empty", { method: "POST" })
+      );
 
-      const response = await router.handle(emptyRequest);
       expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe("handled empty");
     });
   });
 
   describe("Lifecycle hooks", () => {
     describe("Global before hooks", () => {
       it("should execute before hooks before handler", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        const order: string[] = [];
 
-        const callOrder: string[] = [];
-
-        const router = new WebhookRouter<WebhookMap>({
-          before: (req) => {
-            callOrder.push("before");
-            expect(req.path).toBe("/test");
+        const router = createWebhookRouter({
+          before: () => {
+            order.push("before");
           },
         });
 
-        router.register("test", async ({ ack }) => {
-          callOrder.push("handler");
-          return await ack({ status: 200 });
+        router.register("/test", () => {
+          order.push("handler");
+          return undefined;
         });
 
-        await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
-        );
+        await router.handle(createRequest("/webhooks/test", { id: "1" }));
 
-        expect(callOrder).toStrictEqual(["before", "handler"]);
+        expect(order).toStrictEqual(["before", "handler"]);
       });
 
       it("should execute multiple before hooks in order", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        const order: string[] = [];
 
-        const callOrder: string[] = [];
-
-        const router = new WebhookRouter<WebhookMap>({
+        const router = createWebhookRouter({
           before: [
             () => {
-              callOrder.push("before-1");
+              order.push("first");
             },
             () => {
-              callOrder.push("before-2");
-            },
-            () => {
-              callOrder.push("before-3");
+              order.push("second");
             },
           ],
         });
 
-        router.register("test", async ({ ack }) => {
-          callOrder.push("handler");
-          return await ack({ status: 200 });
+        router.register("/test", () => {
+          order.push("handler");
+          return undefined;
         });
 
-        await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
-        );
+        await router.handle(createRequest("/webhooks/test", { id: "1" }));
 
-        expect(callOrder).toStrictEqual([
-          "before-1",
-          "before-2",
-          "before-3",
-          "handler",
-        ]);
+        expect(order).toStrictEqual(["first", "second", "handler"]);
       });
 
-      it("should allow before hooks to enrich request", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+      it("should give before hooks access to the webhook context", async () => {
+        let observedPath: string | null = null;
+        let observedBytes = -1;
 
-        const router = new WebhookRouter<WebhookMap>({
-          before: (req) => {
-            (req as { metadata?: { timestamp: number } }).metadata = {
-              timestamp: Date.now(),
-            };
+        const router = createWebhookRouter({
+          before: (ctx) => {
+            observedPath = ctx.path;
+            observedBytes = ctx.rawBody.length;
           },
         });
 
-        router.register("test", async ({ req, ack }) => {
-          expect(
-            (req as { metadata?: { timestamp: number } }).metadata
-          ).toBeDefined();
-          expect(
-            (req as { metadata?: { timestamp: number } }).metadata?.timestamp
-          ).toBeTypeOf("number");
-          return await ack({ status: 200 });
-        });
+        router.register("/ctx", () => undefined);
 
-        await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
-        );
+        await router.handle(createRequest("/webhooks/ctx", { id: "1" }));
+
+        expect(observedPath).toBe("/ctx");
+        expect(observedBytes).toBeGreaterThan(0);
       });
 
       it("should stop execution if before hook throws", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        let handlerRan = false;
 
-        let handlerCalled = false;
-
-        const router = new WebhookRouter<WebhookMap>({
+        const router = createWebhookRouter({
           before: () => {
-            throw new Error("Before hook error");
+            throw new Error("before failed");
           },
-          onError: (error) => ({
-            body: { error: error.message },
-            status: 400,
-          }),
         });
 
-        router.register("test", async ({ ack }) => {
-          handlerCalled = true;
-          return await ack({ status: 200 });
+        router.register("/test", () => {
+          handlerRan = true;
+          return undefined;
         });
 
         const response = await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
+          createRequest("/webhooks/test", { id: "1" })
         );
 
-        expect(handlerCalled).toBeFalsy();
-        expect(response.status).toBe(400);
-        expect(response.body).toStrictEqual({ error: "Before hook error" });
+        expect(handlerRan).toBe(false);
+        expect(response.status).toBe(500);
+        await expect(response.json()).resolves.toStrictEqual({
+          error: "before failed",
+        });
       });
     });
 
     describe("Global after hooks", () => {
       it("should execute after hooks after handler", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        const order: string[] = [];
 
-        const callOrder: string[] = [];
-
-        const router = new WebhookRouter<WebhookMap>({
-          after: (req, res) => {
-            callOrder.push("after");
-            expect(req.path).toBe("/test");
-            expect(res.status).toBe(200);
+        const router = createWebhookRouter({
+          after: () => {
+            order.push("after");
           },
         });
 
-        router.register("test", async ({ ack }) => {
-          callOrder.push("handler");
-          return await ack({ status: 200 });
+        router.register("/test", () => {
+          order.push("handler");
+          return undefined;
         });
 
-        await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
-        );
+        await router.handle(createRequest("/webhooks/test", { id: "1" }));
 
-        expect(callOrder).toStrictEqual(["handler", "after"]);
+        expect(order).toStrictEqual(["handler", "after"]);
       });
 
       it("should execute multiple after hooks in order", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        const order: string[] = [];
 
-        const callOrder: string[] = [];
-
-        const router = new WebhookRouter<WebhookMap>({
+        const router = createWebhookRouter({
           after: [
             () => {
-              callOrder.push("after-1");
+              order.push("first");
             },
             () => {
-              callOrder.push("after-2");
-            },
-            () => {
-              callOrder.push("after-3");
+              order.push("second");
             },
           ],
         });
 
-        router.register("test", async ({ ack }) => {
-          callOrder.push("handler");
-          return await ack({ status: 200 });
-        });
+        router.register("/test", () => undefined);
 
-        await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
-        );
+        await router.handle(createRequest("/webhooks/test", { id: "1" }));
 
-        expect(callOrder).toStrictEqual([
-          "handler",
-          "after-1",
-          "after-2",
-          "after-3",
-        ]);
+        expect(order).toStrictEqual(["first", "second"]);
       });
 
       it("should receive response in after hooks", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        let observedStatus = -1;
+        let observedBody: unknown = null;
 
-        const router = new WebhookRouter<WebhookMap>({
-          after: (_req, res) => {
-            expect(res.status).toBe(201);
-            expect(res.body).toStrictEqual({ result: "success" });
+        const router = createWebhookRouter({
+          after: async (_ctx, response) => {
+            observedStatus = response.status;
+            observedBody = await response.clone().json();
           },
         });
 
-        router.register(
-          "test",
-          async ({ ack }) =>
-            await ack({ body: { result: "success" }, status: 201 })
+        router.register("/test", () =>
+          Response.json({ done: true }, { status: 201 })
         );
 
-        await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
+        const response = await router.handle(
+          createRequest("/webhooks/test", { id: "1" })
         );
+
+        expect(observedStatus).toBe(201);
+        expect(observedBody).toStrictEqual({ done: true });
+        // The client response body must remain readable after the hook.
+        await expect(response.json()).resolves.toStrictEqual({ done: true });
       });
 
       it("should not execute after hooks if handler throws", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        let afterRan = false;
 
-        let afterCalled = false;
-
-        const router = new WebhookRouter<WebhookMap>({
+        const router = createWebhookRouter({
           after: () => {
-            afterCalled = true;
+            afterRan = true;
           },
-          onError: () => ({
-            body: { error: "Handler error" },
-            status: 500,
-          }),
         });
 
-        router.register("test", () => {
-          throw new Error("Handler error");
+        router.register("/test", () => {
+          throw new Error("handler failed");
         });
 
-        await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
+        const response = await router.handle(
+          createRequest("/webhooks/test", { id: "1" })
         );
 
-        expect(afterCalled).toBeFalsy();
+        expect(afterRan).toBe(false);
+        expect(response.status).toBe(500);
       });
     });
 
     describe("Global onError hook", () => {
       it("should execute onError hook when handler throws", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
-
-        let errorHookCalled = false;
-
-        const router = new WebhookRouter<WebhookMap>({
-          onError: (error, req) => {
-            errorHookCalled = true;
-            expect(error.message).toBe("Test error");
-            expect(req.path).toBe("/test");
-            return { body: { error: error.message }, status: 500 };
-          },
+        const router = createWebhookRouter({
+          onError: (error) =>
+            Response.json({ custom: error.message }, { status: 503 }),
         });
 
-        router.register("test", () => {
-          throw new Error("Test error");
+        router.register("/test", () => {
+          throw new Error("boom");
         });
 
         const response = await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
+          createRequest("/webhooks/test", { id: "1" })
         );
 
-        expect(errorHookCalled).toBeTruthy();
-        expect(response.status).toBe(500);
-        expect(response.body).toStrictEqual({ error: "Test error" });
+        expect(response.status).toBe(503);
+        await expect(response.json()).resolves.toStrictEqual({
+          custom: "boom",
+        });
       });
 
       it("should execute onError hook when verify throws", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        let observedMessage: string | null = null;
 
-        let errorHookCalled = false;
-
-        const router = new WebhookRouter<WebhookMap>({
+        const router = createWebhookRouter({
           onError: (error) => {
-            errorHookCalled = true;
-            expect(error.message).toBe("Verification failed");
-            return { body: { error: "Unauthorized" }, status: 401 };
+            observedMessage = error.message;
+            return Response.json({ error: "denied" }, { status: 401 });
           },
           verify: () => {
-            throw new Error("Verification failed");
+            throw new Error("bad signature");
           },
         });
 
-        router.register("test", async ({ ack }) => await ack({ status: 200 }));
+        router.register("/test", () => undefined);
 
         const response = await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
+          createRequest("/webhooks/test", { id: "1" })
         );
 
-        expect(errorHookCalled).toBeTruthy();
+        expect(observedMessage).toBe("bad signature");
         expect(response.status).toBe(401);
       });
 
       it("should expose VerificationError to onError when hmac verification fails", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        let observedError: Error | null = null;
 
-        let receivedError: Error | undefined;
-
-        const router = new WebhookRouter<WebhookMap>({
+        const router = createWebhookRouter({
           onError: (error) => {
-            receivedError = error;
-            return { body: { error: error.message }, status: 401 };
+            observedError = error;
+            return undefined;
           },
           verify: createHmacVerifier({
-            headerName: "x-hub-signature-256",
-            secret: "my-secret",
+            headerName: "x-signature",
+            secret: "secret",
           }),
         });
 
-        router.register("test", async ({ ack }) => await ack({ status: 200 }));
+        router.register("/test", () => undefined);
 
-        const response = await router.handle({
-          headers: new Headers({ "x-hub-signature-256": "invalid" }),
-          method: "POST",
-          path: "/webhooks/test",
-          rawBody: encoder.encode(JSON.stringify({ value: "test" })),
-        });
+        const response = await router.handle(
+          createRequest("/webhooks/test", { id: "1" })
+        );
 
-        expect(receivedError).toBeInstanceOf(VerificationError);
-        expect(receivedError).toMatchObject({
-          message: "Invalid signature for header: x-hub-signature-256",
-          name: "VerificationError",
-        });
-        expect(response).toStrictEqual({
-          body: { error: "Invalid signature for header: x-hub-signature-256" },
-          status: 401,
-        });
+        expect(observedError).toBeInstanceOf(VerificationError);
+        expect(response.status).toBe(500);
       });
 
       it("should execute onError hook when before hook throws", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
-
-        let errorHookCalled = false;
-
-        const router = new WebhookRouter<WebhookMap>({
+        const router = createWebhookRouter({
           before: () => {
-            throw new Error("Before hook error");
+            throw new Error("before broke");
           },
-          onError: (error) => {
-            errorHookCalled = true;
-            return { body: { error: error.message }, status: 400 };
-          },
+          onError: (error) =>
+            Response.json({ from: "onError", message: error.message }),
         });
 
-        router.register("test", async ({ ack }) => await ack({ status: 200 }));
+        router.register("/test", () => undefined);
 
         const response = await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
+          createRequest("/webhooks/test", { id: "1" })
         );
 
-        expect(errorHookCalled).toBeTruthy();
-        expect(response.status).toBe(400);
+        await expect(response.json()).resolves.toStrictEqual({
+          from: "onError",
+          message: "before broke",
+        });
       });
 
       it("should use default error response if onError returns undefined", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
-
-        const router = new WebhookRouter<WebhookMap>({
-          onError: () => {},
+        const router = createWebhookRouter({
+          onError: () => undefined,
         });
 
-        router.register("test", () => {
-          throw new Error("Custom error");
+        router.register("/test", () => {
+          throw new Error("boom");
         });
 
         const response = await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
+          createRequest("/webhooks/test", { id: "1" })
         );
 
         expect(response.status).toBe(500);
-        expect(response.body).toStrictEqual({ error: "Custom error" });
+        await expect(response.json()).resolves.toStrictEqual({
+          error: "boom",
+        });
       });
 
       it("should return internal server error when a non-Error is thrown", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        const router = createWebhookRouter();
 
-        class NonErrorThrown {
-          message = "not-an-error-instance";
-        }
-
-        const router = new WebhookRouter<WebhookMap>();
-
-        router.register("test", () => {
-          throw new NonErrorThrown();
+        router.register("/test", () => {
+          // oxlint-disable-next-line no-throw-literal -- Testing non-Error throw handling.
+          throw "string error";
         });
 
         const response = await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
+          createRequest("/webhooks/test", { id: "1" })
         );
 
         expect(response.status).toBe(500);
-        expect(response.body).toStrictEqual({ error: "Internal server error" });
+        await expect(response.json()).resolves.toStrictEqual({
+          error: "Internal server error",
+        });
       });
 
       it("should normalize a non-Error into an Error before calling onError", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        let observedError: unknown = null;
 
-        class NonErrorThrown {
-          message = "not-an-error-instance";
-        }
-
-        let receivedError: Error | undefined;
-        const router = new WebhookRouter<WebhookMap>({
+        const router = createWebhookRouter({
           onError: (error) => {
-            receivedError = error;
-            return { body: { error: "handled" }, status: 500 };
+            observedError = error;
+            return undefined;
           },
         });
 
-        router.register("test", () => {
-          throw new NonErrorThrown();
+        router.register("/test", () => {
+          // oxlint-disable-next-line no-throw-literal -- Testing non-Error throw handling.
+          throw { reason: "object" };
         });
 
-        const response = await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
-        );
+        await router.handle(createRequest("/webhooks/test", { id: "1" }));
 
-        expect(receivedError).toBeInstanceOf(Error);
-        expect(receivedError?.message).toBe("Internal server error");
-        expect(response.status).toBe(500);
-        expect(response.body).toStrictEqual({ error: "handled" });
+        expect(observedError).toBeInstanceOf(Error);
+        expect((observedError as Error).message).toBe("Internal server error");
       });
 
       it("should handle different error types", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        const router = createWebhookRouter();
 
-        const router = new WebhookRouter<WebhookMap>({
-          onError: (error) => {
-            if (error.message === "Rate limit exceeded") {
-              return { body: { error: "Too many requests" }, status: 429 };
-            }
-            if (error.message === "Unauthorized") {
-              return { body: { error: "Forbidden" }, status: 403 };
-            }
-            return { body: { error: "Internal error" }, status: 500 };
-          },
+        router.register("/type-error", () => {
+          throw new TypeError("type issue");
+        });
+        router.register("/range-error", () => {
+          throw new RangeError("range issue");
         });
 
-        router.register("test", () => {
-          throw new Error("Rate limit exceeded");
-        });
-
-        const response = await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
+        const typeResponse = await router.handle(
+          createRequest("/webhooks/type-error", {})
         );
+        await expect(typeResponse.json()).resolves.toStrictEqual({
+          error: "type issue",
+        });
 
-        expect(response.status).toBe(429);
-        expect(response.body).toStrictEqual({ error: "Too many requests" });
+        const rangeResponse = await router.handle(
+          createRequest("/webhooks/range-error", {})
+        );
+        await expect(rangeResponse.json()).resolves.toStrictEqual({
+          error: "range issue",
+        });
       });
     });
 
     describe("Route-level hooks", () => {
       it("should execute route-level before hooks after global before hooks", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        const order: string[] = [];
 
-        const callOrder: string[] = [];
-
-        const router = new WebhookRouter<WebhookMap>({
+        const router = createWebhookRouter({
           before: () => {
-            callOrder.push("global-before");
+            order.push("global-before");
           },
         });
 
-        router.register("test", {
+        router.register("/test", {
           before: () => {
-            callOrder.push("route-before");
+            order.push("route-before");
           },
-          handler: async ({ ack }) => {
-            callOrder.push("handler");
-            return await ack({ status: 200 });
+          handler: () => {
+            order.push("handler");
+            return undefined;
           },
         });
 
-        await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
-        );
+        await router.handle(createRequest("/webhooks/test", { id: "1" }));
 
-        expect(callOrder).toStrictEqual([
+        expect(order).toStrictEqual([
           "global-before",
           "route-before",
           "handler",
@@ -1270,772 +974,362 @@ describe(WebhookRouter, () => {
       });
 
       it("should execute route-level after hooks before global after hooks", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        const order: string[] = [];
 
-        const callOrder: string[] = [];
-
-        const router = new WebhookRouter<WebhookMap>({
+        const router = createWebhookRouter({
           after: () => {
-            callOrder.push("global-after");
+            order.push("global-after");
           },
         });
 
-        router.register("test", {
+        router.register("/test", {
           after: () => {
-            callOrder.push("route-after");
+            order.push("route-after");
           },
-          handler: async ({ ack }) => {
-            callOrder.push("handler");
-            return await ack({ status: 200 });
+          handler: () => {
+            order.push("handler");
+            return undefined;
           },
         });
 
-        await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
-        );
+        await router.handle(createRequest("/webhooks/test", { id: "1" }));
 
-        expect(callOrder).toStrictEqual([
-          "handler",
-          "route-after",
-          "global-after",
-        ]);
+        expect(order).toStrictEqual(["handler", "route-after", "global-after"]);
       });
 
       it("should support multiple route-level hooks", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        const order: string[] = [];
 
-        const callOrder: string[] = [];
+        const router = createWebhookRouter();
 
-        const router = new WebhookRouter<WebhookMap>();
-
-        router.register("test", {
+        router.register("/test", {
           after: [
             () => {
-              callOrder.push("route-after-1");
+              order.push("after-1");
             },
             () => {
-              callOrder.push("route-after-2");
+              order.push("after-2");
             },
           ],
           before: [
             () => {
-              callOrder.push("route-before-1");
+              order.push("before-1");
             },
             () => {
-              callOrder.push("route-before-2");
+              order.push("before-2");
             },
           ],
-          handler: async ({ ack }) => {
-            callOrder.push("handler");
-            return await ack({ status: 200 });
+          handler: () => {
+            order.push("handler");
+            return undefined;
           },
         });
 
-        await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
-        );
+        await router.handle(createRequest("/webhooks/test", { id: "1" }));
 
-        expect(callOrder).toStrictEqual([
-          "route-before-1",
-          "route-before-2",
+        expect(order).toStrictEqual([
+          "before-1",
+          "before-2",
           "handler",
-          "route-after-1",
-          "route-after-2",
+          "after-1",
+          "after-2",
         ]);
       });
 
       it("should handle single hook or array of hooks", async () => {
-        interface WebhookMap {
-          array: { value: string };
-          single: { value: string };
-        }
+        const order: string[] = [];
 
-        const callOrder: string[] = [];
+        const router = createWebhookRouter();
 
-        const router = new WebhookRouter<WebhookMap>();
-
-        router.register("single", {
+        router.register("/single", {
           after: () => {
-            callOrder.push("single-after");
+            order.push("single-after");
           },
           before: () => {
-            callOrder.push("single-before");
+            order.push("single-before");
           },
-          handler: async ({ ack }) => await ack({ status: 200 }),
+          handler: () => undefined,
         });
 
-        router.register("array", {
-          after: [
-            () => {
-              callOrder.push("array-after-1");
-            },
-            () => {
-              callOrder.push("array-after-2");
-            },
-          ],
-          before: [
-            () => {
-              callOrder.push("array-before-1");
-            },
-            () => {
-              callOrder.push("array-before-2");
-            },
-          ],
-          handler: async ({ ack }) => await ack({ status: 200 }),
-        });
+        await router.handle(createRequest("/webhooks/single", { id: "1" }));
 
-        await router.handle(
-          createMockRequest("/webhooks/single", { value: "test" })
-        );
-        await router.handle(
-          createMockRequest("/webhooks/array", { value: "test" })
-        );
-
-        expect(callOrder).toStrictEqual([
-          "single-before",
-          "single-after",
-          "array-before-1",
-          "array-before-2",
-          "array-after-1",
-          "array-after-2",
-        ]);
+        expect(order).toStrictEqual(["single-before", "single-after"]);
       });
     });
 
     describe("Complete hook execution order", () => {
       it("should execute all hooks in correct order", async () => {
-        interface WebhookMap {
-          test: { value: string };
-        }
+        const order: string[] = [];
 
-        const callOrder: string[] = [];
+        const schema: StandardSchemaV1<unknown, { id: string }> = {
+          "~standard": {
+            validate: (value) => {
+              order.push("validate");
+              return { value: value as { id: string } };
+            },
+            vendor: "test",
+            version: 1,
+          },
+        };
 
-        const router = new WebhookRouter<WebhookMap>({
-          after: [
-            () => {
-              callOrder.push("global-after-1");
-            },
-            () => {
-              callOrder.push("global-after-2");
-            },
-          ],
-          before: [
-            () => {
-              callOrder.push("global-before-1");
-            },
-            () => {
-              callOrder.push("global-before-2");
-            },
-          ],
+        const router = createWebhookRouter({
+          after: () => {
+            order.push("global-after");
+          },
+          before: () => {
+            order.push("global-before");
+          },
           verify: () => {
-            callOrder.push("verify");
+            order.push("verify");
           },
         });
 
-        const schema = z.object({ value: z.string() });
-
-        router.register("test", {
-          after: [
-            () => {
-              callOrder.push("route-after-1");
-            },
-            () => {
-              callOrder.push("route-after-2");
-            },
-          ],
-          before: [
-            () => {
-              callOrder.push("route-before-1");
-            },
-            () => {
-              callOrder.push("route-before-2");
-            },
-          ],
-          handler: async ({ ack }) => {
-            callOrder.push("handler");
-            return await ack({ status: 200 });
+        router.register("/full", {
+          after: () => {
+            order.push("route-after");
+          },
+          before: () => {
+            order.push("route-before");
+          },
+          handler: () => {
+            order.push("handler");
+            return undefined;
           },
           schema,
         });
 
-        await router.handle(
-          createMockRequest("/webhooks/test", { value: "test" })
-        );
+        await router.handle(createRequest("/webhooks/full", { id: "1" }));
 
-        expect(callOrder).toStrictEqual([
-          "global-before-1",
-          "global-before-2",
-          "route-before-1",
-          "route-before-2",
+        expect(order).toStrictEqual([
+          "global-before",
+          "route-before",
           "verify",
+          "validate",
           "handler",
-          "route-after-1",
-          "route-after-2",
-          "global-after-1",
-          "global-after-2",
+          "route-after",
+          "global-after",
         ]);
       });
     });
   });
 
-  describe("Routing with full URLs", () => {
-    it("should route correctly with full URL paths", async () => {
-      interface WebhookMap {
-        fullurl: { data: string };
-      }
+  describe("Path matching", () => {
+    it("should route requests with query parameters", async () => {
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register(
-        "fullurl",
-        async ({ ack }) => await ack({ body: "ok", status: 200 })
-      );
+      router.register("/query", () => Response.json("query received"));
 
       const response = await router.handle(
-        createMockRequest("https://example.com/webhooks/fullurl", {
-          data: "test",
+        createRequest("/webhooks/query?param=value&other=1", {})
+      );
+
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe("query received");
+    });
+
+    it("should route requests with port numbers in the URL", async () => {
+      const router = createWebhookRouter();
+
+      router.register("/withport", () => Response.json("ok"));
+
+      const response = await router.handle(
+        new Request("https://example.com:8080/webhooks/withport", {
+          body: "{}",
+          method: "POST",
         })
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toBe("ok");
     });
 
-    it("should handle URLs with query parameters", async () => {
-      interface WebhookMap {
-        query: { data: string };
-      }
+    it("should match nested paths after the prefix", async () => {
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register(
-        "query",
-        async ({ ack }) => await ack({ body: "query received", status: 200 })
-      );
+      router.register("/api/v1/events", () => Response.json("nested"));
 
       const response = await router.handle(
-        createMockRequest("https://example.com/webhooks/query?param=value", {
-          data: "test",
-        })
+        createRequest("/webhooks/api/v1/events", {})
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toBe("query received");
+      await expect(response.json()).resolves.toBe("nested");
     });
 
-    it("should return 404 for unknown full URL paths", async () => {
-      interface WebhookMap {
-        known: { data: string };
-      }
+    it("should match paths with /webhooks/ in the middle", async () => {
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register(
-        "known",
-        async ({ ack }) => await ack({ body: "known route", status: 200 })
-      );
+      router.register("/api/webhooks/event", () => Response.json("middle"));
 
       const response = await router.handle(
-        createMockRequest("https://example.com/webhooks/unknown", {
-          data: "test",
-        })
+        createRequest("/webhooks/api/webhooks/event", {})
       );
 
-      expect(response.status).toBe(404);
-      expect(response.body).toStrictEqual({ error: "not found" });
-    });
-
-    it("should preserve full URL in request metadata", async () => {
-      interface WebhookMap {
-        metadata: { value: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("metadata", async ({ req, ack }) => {
-        expect(req.path).toBe("/metadata");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("https://example.com/webhooks/metadata", {
-          value: "test",
-        })
-      );
-    });
-  });
-
-  describe("Path normalization (normalizePath)", () => {
-    it("should normalize simple relative paths", async () => {
-      interface WebhookMap {
-        simple: { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("simple", async ({ req, ack }) => {
-        expect(req.path).toBe("/simple");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("/webhooks/simple", { data: "test" })
-      );
-    });
-
-    it("should normalize paths without leading slash", async () => {
-      interface WebhookMap {
-        noslash: { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("noslash", async ({ req, ack }) => {
-        expect(req.path).toBe("noslash");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(createMockRequest("noslash", { data: "test" }));
-    });
-
-    it("should extract pathname from full URL", async () => {
-      interface WebhookMap {
-        extracted: { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("extracted", async ({ req, ack }) => {
-        expect(req.path).toBe("/extracted");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("https://example.com/extracted", { data: "test" })
-      );
-    });
-
-    it("should strip /webhooks/ prefix from pathname", async () => {
-      interface WebhookMap {
-        stripped: { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("stripped", async ({ req, ack }) => {
-        expect(req.path).toBe("/stripped");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("/webhooks/stripped", { data: "test" })
-      );
-    });
-
-    it("should strip /webhooks/ prefix from full URL pathname", async () => {
-      interface WebhookMap {
-        fullstrip: { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("fullstrip", async ({ req, ack }) => {
-        expect(req.path).toBe("/fullstrip");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("https://example.com/webhooks/fullstrip", {
-          data: "test",
-        })
-      );
-    });
-
-    it("should handle paths with /webhooks/ in the middle", async () => {
-      interface WebhookMap {
-        "api/webhooks/event": { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("api/webhooks/event", async ({ req, ack }) => {
-        expect(req.path).toBe("/api/webhooks/event");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("/webhooks/api/webhooks/event", { data: "test" })
-      );
-    });
-
-    it("should preserve query parameters in full URL", async () => {
-      interface WebhookMap {
-        withquery: { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("withquery", async ({ req, ack }) => {
-        expect(req.path).toBe("/withquery");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest(
-          "https://example.com/webhooks/withquery?foo=bar&baz=qux",
-          {
-            data: "test",
-          }
-        )
-      );
-    });
-
-    it("should handle URL with hash fragment", async () => {
-      interface WebhookMap {
-        withhash: { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("withhash", async ({ req, ack }) => {
-        expect(req.path).toBe("/withhash");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("https://example.com/webhooks/withhash#section", {
-          data: "test",
-        })
-      );
-    });
-
-    it("should handle nested paths after /webhooks/ prefix", async () => {
-      interface WebhookMap {
-        "api/v1/events": { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("api/v1/events", async ({ req, ack }) => {
-        expect(req.path).toBe("/api/v1/events");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("/webhooks/api/v1/events", { data: "test" })
-      );
-    });
-
-    it("should handle URL with port number", async () => {
-      interface WebhookMap {
-        withport: { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("withport", async ({ req, ack }) => {
-        expect(req.path).toBe("/withport");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("https://example.com:8080/webhooks/withport", {
-          data: "test",
-        })
-      );
-    });
-
-    it("should handle URL with authentication", async () => {
-      interface WebhookMap {
-        withauth: { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("withauth", async ({ req, ack }) => {
-        expect(req.path).toBe("/withauth");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("https://user:pass@example.com/webhooks/withauth", {
-          data: "test",
-        })
-      );
-    });
-
-    it("should not strip /webhooks/ if it doesn't start with it", async () => {
-      interface WebhookMap {
-        "api/webhooks": { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("api/webhooks", async ({ req, ack }) => {
-        expect(req.path).toBe("/api/webhooks");
-        return await ack({ status: 200 });
-      });
-
-      const response = await router.handle(
-        createMockRequest("/webhooks/api/webhooks", { data: "test" })
-      );
-
-      // Should match since path starts with /webhooks/ and handler matches "api/webhooks"
       expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe("middle");
     });
 
-    it("should handle root path", async () => {
-      interface WebhookMap {
-        "": { data: string };
-      }
+    it("should match the root route for the bare prefix path", async () => {
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>();
+      router.register("/", () => Response.json("root"));
 
-      router.register("", async ({ req, ack }) => {
-        expect(req.path).toBe("/");
-        return await ack({ status: 200 });
-      });
+      const response = await router.handle(createRequest("/webhooks/", {}));
+
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe("root");
+    });
+
+    it("should match percent-encoded paths against encoded route keys", async () => {
+      const router = createWebhookRouter();
+
+      router.register("/with%20spaces", () => Response.json("encoded"));
 
       const response = await router.handle(
-        createMockRequest("/webhooks/", { data: "test" })
+        createRequest("/webhooks/with%20spaces", {})
       );
 
-      // Should match the root handler
       expect(response.status).toBe(200);
-    });
-
-    it("should handle /webhooks/ as root webhook path", async () => {
-      interface WebhookMap {
-        "": { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("", async ({ req, ack }) => {
-        expect(req.path).toBe("/");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(createMockRequest("/webhooks/", { data: "test" }));
-    });
-
-    it("should handle encoded URL paths", async () => {
-      interface WebhookMap {
-        "with spaces": { data: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register("with spaces", async ({ req, ack }) => {
-        expect(req.path).toBe("/with%20spaces");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("https://example.com/webhooks/with%20spaces", {
-          data: "test",
-        })
-      );
+      await expect(response.json()).resolves.toBe("encoded");
     });
   });
 
   describe("Configurable prefix", () => {
     it("should use custom prefix when provided", async () => {
-      interface WebhookMap {
-        payment: { id: string };
-      }
+      const router = createWebhookRouter({ prefix: "/api/hooks/" });
 
-      const router = new WebhookRouter<WebhookMap>({
-        prefix: "/api/hooks/",
-      });
-
-      router.register("payment", {
-        handler: async ({ payload, ack }) => {
+      router.register("/payment", {
+        handler: ({ payload }) => {
           expect(payload.id).toBe("123");
-          return await ack({ body: "success", status: 200 });
+          return Response.json("success");
         },
         schema: z.object({ id: z.string() }),
       });
 
       const response = await router.handle(
-        createMockRequest("/api/hooks/payment", { id: "123" })
+        createRequest("/api/hooks/payment", { id: "123" })
       );
 
-      expect(response).toStrictEqual({ body: "success", status: 200 });
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe("success");
     });
 
     it("should return 404 for paths not matching custom prefix", async () => {
-      interface WebhookMap {
-        payment: { id: string };
-      }
+      const router = createWebhookRouter({ prefix: "/api/hooks/" });
 
-      const router = new WebhookRouter<WebhookMap>({
-        prefix: "/api/hooks/",
-      });
+      router.register("/payment", () => undefined);
 
-      router.register("payment", async ({ ack }) => await ack({ status: 200 }));
-
-      // Wrong prefix
-      const response1 = await router.handle(
-        createMockRequest("/webhooks/payment", { id: "123" })
+      const wrongPrefix = await router.handle(
+        createRequest("/webhooks/payment", { id: "123" })
       );
-      expect(response1).toStrictEqual({
-        body: { error: "not found" },
-        status: 404,
-      });
+      expect(wrongPrefix.status).toBe(404);
 
-      // No prefix
-      const response2 = await router.handle(
-        createMockRequest("/payment", { id: "123" })
+      const noPrefix = await router.handle(
+        createRequest("/payment", { id: "123" })
       );
-      expect(response2).toStrictEqual({
-        body: { error: "not found" },
-        status: 404,
-      });
+      expect(noPrefix.status).toBe(404);
     });
 
-    it("should handle custom prefix with full URLs", async () => {
-      interface WebhookMap {
-        event: { data: string };
-      }
+    it("should default to /webhooks prefix when not provided", async () => {
+      const router = createWebhookRouter();
 
-      const router = new WebhookRouter<WebhookMap>({
-        prefix: "/custom/",
-      });
-
-      router.register("event", async ({ req, ack }) => {
-        expect(req.path).toBe("/event");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("https://example.com/custom/event", { data: "test" })
-      );
-    });
-
-    it("should default to /webhooks/ prefix when not provided", async () => {
-      interface WebhookMap {
-        test: { id: string };
-      }
-
-      const router = new WebhookRouter<WebhookMap>();
-
-      router.register(
-        "test",
-        async ({ ack }) => await ack({ body: "success", status: 200 })
-      );
+      router.register("/test", () => Response.json("success"));
 
       const response = await router.handle(
-        createMockRequest("/webhooks/test", { id: "123" })
+        createRequest("/webhooks/test", { id: "123" })
       );
 
-      expect(response).toStrictEqual({ body: "success", status: 200 });
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe("success");
     });
 
-    it("should handle empty string prefix", async () => {
-      interface WebhookMap {
-        payment: { id: string };
-      }
+    it("should handle root prefix", async () => {
+      const router = createWebhookRouter({ prefix: "/" });
 
-      const router = new WebhookRouter<WebhookMap>({
-        prefix: "/",
-      });
-
-      router.register("payment", {
-        handler: async ({ payload, ack }) => {
+      router.register("/payment", {
+        handler: ({ payload }) => {
           expect(payload.id).toBe("123");
-          return await ack({ body: "success", status: 200 });
+          return Response.json("success");
         },
         schema: z.object({ id: z.string() }),
       });
 
       const response = await router.handle(
-        createMockRequest("/payment", { id: "123" })
+        createRequest("/payment", { id: "123" })
       );
 
-      expect(response).toStrictEqual({ body: "success", status: 200 });
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe("success");
     });
 
     it("should handle nested paths with custom prefix", async () => {
-      interface WebhookMap {
-        "github/push": { ref: string };
-        "stripe/events": { type: string };
-      }
+      const router = createWebhookRouter({ prefix: "/api/v1/webhooks/" });
 
-      const router = new WebhookRouter<WebhookMap>({
-        prefix: "/api/v1/webhooks/",
+      let stripeRan = false;
+      let githubRan = false;
+
+      router.register("/stripe/events", () => {
+        stripeRan = true;
+        return undefined;
       });
 
-      router.register("stripe/events", async ({ req, ack }) => {
-        expect(req.path).toBe("/stripe/events");
-        return await ack({ status: 200 });
+      router.register("/github/push", () => {
+        githubRan = true;
+        return undefined;
       });
 
-      router.register("github/push", async ({ req, ack }) => {
-        expect(req.path).toBe("/github/push");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest("/webhooks/api/v1/webhooks/stripe/events", {
-          type: "payment",
-        })
+      const stripeResponse = await router.handle(
+        createRequest("/api/v1/webhooks/stripe/events", { type: "payment" })
+      );
+      const githubResponse = await router.handle(
+        createRequest("/api/v1/webhooks/github/push", { ref: "main" })
       );
 
-      await router.handle(
-        createMockRequest("/webhooks/api/v1/webhooks/github/push", {
-          ref: "main",
-        })
-      );
+      expect(stripeRan).toBe(true);
+      expect(githubRan).toBe(true);
+      expect(stripeResponse.status).toBe(200);
+      expect(githubResponse.status).toBe(200);
     });
 
     it("should handle custom prefix with query parameters", async () => {
-      interface WebhookMap {
-        notify: { message: string };
-      }
+      const router = createWebhookRouter({ prefix: "/notifications/" });
 
-      const router = new WebhookRouter<WebhookMap>({
-        prefix: "/notifications/",
-      });
+      router.register("/notify", () => Response.json("notified"));
 
-      router.register("notify", async ({ req, ack }) => {
-        expect(req.path).toBe("/notify");
-        return await ack({ status: 200 });
-      });
-
-      await router.handle(
-        createMockRequest(
-          "/webhooks/notifications/notify?priority=high&channel=email",
-          {
-            message: "test",
-          }
-        )
+      const response = await router.handle(
+        createRequest("/notifications/notify?priority=high&channel=email", {})
       );
+
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe("notified");
     });
 
-    it("should normalize paths without a leading slash after prefix stripping", async () => {
-      interface WebhookMap {
-        ihello: { value: string };
-      }
+    it("should normalize a prefix without a trailing slash", async () => {
+      const router = createWebhookRouter({ prefix: "/api" });
 
-      const router = new WebhookRouter<WebhookMap>({
-        prefix: "/api",
-      });
-
-      router.register("ihello", async ({ req, ack }) => {
-        expect(req.path).toBe("ihello");
-        return await ack({ body: "ok", status: 200 });
+      router.register("/hello", ({ path }) => {
+        expect(path).toBe("/hello");
+        return Response.json("ok");
       });
 
       const response = await router.handle(
-        createMockRequest("/apihello", { value: "test" })
+        createRequest("/api/hello", { value: "test" })
       );
 
-      expect(response).toStrictEqual({ body: "ok", status: 200 });
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe("ok");
+    });
+
+    it("should only match the prefix on a path boundary", async () => {
+      const router = createWebhookRouter({ prefix: "/api" });
+
+      router.register("/hello", () => Response.json("ok"));
+      router.register("/ihello", () => Response.json("ok"));
+
+      const response = await router.handle(
+        createRequest("/apihello", { value: "test" })
+      );
+
+      expect(response.status).toBe(404);
     });
   });
 });

@@ -31,7 +31,7 @@ The examples on this page use these definitions:
 
 ```ts
 import { z } from "zod";
-import type { Resources, Actions } from "@zap-studio/permit/types";
+import type { Resources, Actions } from "@zap-studio/permit";
 
 const resources = {
   post: z.object({
@@ -188,7 +188,7 @@ has(key, value);
 ```ts
 import { z } from "zod";
 import { createPolicy, when, has, or } from "@zap-studio/permit";
-import type { Resources, Actions } from "@zap-studio/permit/types";
+import type { Resources, Actions } from "@zap-studio/permit";
 
 const resources = {
   settings: z.object({ id: z.string() }),
@@ -268,7 +268,7 @@ For cleaner code, extract conditions into named functions:
 
 ```ts
 import { createPolicy, when, and, or, not } from "@zap-studio/permit";
-import type { ConditionFn } from "@zap-studio/permit/types";
+import type { ConditionFn } from "@zap-studio/permit";
 
 type DocContext = {
   user: { id: string; role: string } | null;

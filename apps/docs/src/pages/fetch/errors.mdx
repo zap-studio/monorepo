@@ -9,12 +9,12 @@ description: Catch FetchError and ValidationError, and handle parsing, abort, an
 
 | Error | Import path | Thrown when |
 | --- | --- | --- |
-| `FetchError` | `@zap-studio/fetch/errors` | The response is not ok and `throwOnFetchError` is `true` (default). |
-| `ValidationError` | `@zap-studio/validation/errors` | A schema is provided, validation returns issues, and `throwOnValidationError` is `true` (default). |
+| `FetchError` | `@zap-studio/fetch` | The response is not ok and `throwOnFetchError` is `true` (default). |
+| `ValidationError` | `@zap-studio/validation` | A schema is provided, validation returns issues, and `throwOnValidationError` is `true` (default). |
 
 ```ts
-import { FetchError } from "@zap-studio/fetch/errors";
-import { ValidationError } from "@zap-studio/validation/errors";
+import { FetchError } from "@zap-studio/fetch";
+import { ValidationError } from "@zap-studio/validation";
 ```
 
 ## FetchError
@@ -27,8 +27,7 @@ Thrown for non-2xx responses before the body is parsed or validated. Its message
 | `response` | `Response` | Full response object for further inspection (headers, body, ...). |
 
 ```ts
-import { api } from "@zap-studio/fetch";
-import { FetchError } from "@zap-studio/fetch/errors";
+import { api, FetchError } from "@zap-studio/fetch";
 import { z } from "zod";
 
 const UserSchema = z.object({ id: z.number(), name: z.string() });
@@ -71,7 +70,7 @@ Thrown when the response body does not match the provided schema. Its message is
 
 ```ts
 import { api } from "@zap-studio/fetch";
-import { ValidationError } from "@zap-studio/validation/errors";
+import { ValidationError } from "@zap-studio/validation";
 import { z } from "zod";
 
 const UserSchema = z.object({ id: z.number(), name: z.string() });
@@ -120,9 +119,8 @@ Calls can also reject with:
 Catch package-specific errors first, then rethrow unknown failures.
 
 ```ts
-import { api } from "@zap-studio/fetch";
-import { FetchError } from "@zap-studio/fetch/errors";
-import { ValidationError } from "@zap-studio/validation/errors";
+import { api, FetchError } from "@zap-studio/fetch";
+import { ValidationError } from "@zap-studio/validation";
 import { z } from "zod";
 
 const UserSchema = z.object({ id: z.number(), name: z.string() });

@@ -39,7 +39,7 @@
   },
   "type": "module",
   "scripts": {
-    "build": "nub run --filter './packages/*' build",
+    "build": "tsdown --config ./configs/tsdown/tsdown.config.ts",
     "publish:check": "nub run check && nub run test && nub run build",
     "fix": "nub exec ultracite fix --type-aware --type-check",
     "check": "nub exec ultracite check --type-aware --type-check",

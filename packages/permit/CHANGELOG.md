@@ -1,3 +1,11 @@
+## @zap-studio/permit@0.3.4
+
+### Tree-shakeable root re-exports
+
+The package root now re-exports the full public API, so everything can be imported from `@zap-studio/permit` directly, including `PolicyError`, `assertNever`, and all public types. All exports are side-effect free and tree-shakeable; granular subpath imports keep working.
+
+- The implementation moved out of the entrypoint into two new subpaths: `./conditions` (`allow`, `deny`, `when`, `and`, `or`, `not`, `has`, `hasRole`, `collectInheritedRoles`) and `./policy` (`createPolicy`, `mergePolicies`, `mergePoliciesAny`).
+
 ## @zap-studio/permit@0.3.3
 
 ### Migrate to ultracite lint/format

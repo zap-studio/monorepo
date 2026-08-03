@@ -94,7 +94,10 @@ export default defineConfig({
             { link: "/webhooks/guides", text: "Guides" },
             { link: "/webhooks/verification", text: "Verification" },
             { link: "/webhooks/lifecycle-hooks", text: "Lifecycle Hooks" },
-            { link: "/webhooks/adapters", text: "Adapters" },
+            {
+              link: "/webhooks/runtime-integration",
+              text: "Runtime Integration",
+            },
           ],
           text: "webhooks",
         },

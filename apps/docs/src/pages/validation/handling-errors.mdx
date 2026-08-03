@@ -22,11 +22,10 @@ When `throwOnError` is `false` or omitted, the helpers never throw for invalid i
 
 ## Catch ValidationError
 
-Import `ValidationError` from the `@zap-studio/validation/errors` subpath and check with `instanceof`.
+Import `ValidationError` from `@zap-studio/validation` and check with `instanceof`.
 
 ```ts
-import { standardValidate } from "@zap-studio/validation";
-import { ValidationError } from "@zap-studio/validation/errors";
+import { standardValidate, ValidationError } from "@zap-studio/validation";
 import { z } from "zod";
 
 const userSchema = z.object({

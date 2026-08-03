@@ -44,7 +44,7 @@ Think of it as an AND operation: `policy1 AND policy2 AND policy3`
 ```ts
 import { z } from "zod";
 import { createPolicy, when, mergePolicies } from "@zap-studio/permit";
-import type { Resources, Actions } from "@zap-studio/permit/types";
+import type { Resources, Actions } from "@zap-studio/permit";
 
 const resources = {
   document: z.object({
@@ -162,7 +162,7 @@ Think of it as an OR operation: `policy1 OR policy2 OR policy3`
 ```ts
 import { z } from "zod";
 import { createPolicy, when, mergePoliciesAny } from "@zap-studio/permit";
-import type { Resources, Actions } from "@zap-studio/permit/types";
+import type { Resources, Actions } from "@zap-studio/permit";
 
 const resources = {
   file: z.object({

@@ -4,7 +4,7 @@
  * @module @zap-studio/retry/fixed-delay
  */
 
-import { BaseRetryPolicy } from "./index.js";
+import { BaseRetryPolicy } from "./base-policy.js";
 import type { RetryDecision, RetryDecisionInput } from "./types.js";
 
 /**

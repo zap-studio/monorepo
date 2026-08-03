@@ -1,11 +1,11 @@
 ---
 title: Overview
-description: Schema-first, type-safe webhook router with Standard Schema validation, signature verification, and lifecycle hooks.
+description: Schema-first, type-safe webhook router built on Web API Request and Response, with Standard Schema validation, signature verification, and lifecycle hooks.
 ---
 
 # @zap-studio/webhooks
 
-`@zap-studio/webhooks` is a lightweight, schema-first router for inbound webhooks. It works with any validation library that implements [Standard Schema](https://standardschema.dev) — Zod, Valibot, ArkType, and others — and runs in any JavaScript runtime.
+`@zap-studio/webhooks` is a lightweight, schema-first router for inbound webhooks, built on the standard Web API [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) primitives. It works with any validation library that implements [Standard Schema](https://standardschema.dev) — Zod, Valibot, ArkType, and others — and runs in any JavaScript runtime.
 
 ## Why webhooks?
 
@@ -20,11 +20,11 @@ Webhook endpoints usually repeat the same plumbing, and each step is easy to get
 
 ## Features
 
+- **Web API native** — `handle(request: Request)` returns a `Response`, so the router plugs directly into Bun, Deno, Cloudflare Workers, Next.js route handlers, Hono, and any other fetch-compatible runtime
 - **Type-safe routing** — handler payload types are inferred from the route schema
 - **Standard Schema validation** — bring Zod, Valibot, ArkType, or any compatible library
 - **Signature verification** — built-in HMAC verifier with constant-time comparison, or plug in your own `verify` function
 - **Lifecycle hooks** — global and route-level `before`, `after`, and `onError` hooks
-- **Framework-agnostic** — a normalized request/response contract plus a `BaseAdapter` helper for any HTTP framework
 - **Runtime-agnostic** — uses the Web Crypto API, not Node-specific APIs
 
 ## Installation
@@ -57,6 +57,18 @@ deno add jsr:@zap-studio/webhooks
 
 :::
 
+## Runtime Support
+
+| Runtime            | Minimum version                                  |
+| ------------------ | ------------------------------------------------ |
+| Node.js            | 18.0.0 (router), 19.0.0 (verification helper)    |
+| Bun                | 1.0.0                                            |
+| Deno               | 1.42                                             |
+| Cloudflare Workers | Any current release                              |
+| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
+
+The router only needs the standard `Request`/`Response` APIs, available globally since Node.js 18. The verification helper additionally needs `globalThis.crypto.subtle`, which is global by default from Node.js 19 (on Node.js 18, pass the `--experimental-global-webcrypto` flag). In browsers, Web Crypto requires a secure context (HTTPS). Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/webhooks`).
+
 ## Quick Example
 
 ```ts
@@ -65,21 +77,22 @@ import { z } from "zod";
 
 const router = createWebhookRouter();
 
-router.register("payments/succeeded", {
+router.register("/payments/succeeded", {
   schema: z.object({
     id: z.string(),
     amount: z.number().positive(),
     currency: z.string().length(3),
   }),
-  handler: async ({ payload, ack }) => {
+  handler: ({ payload }) => {
     // payload is inferred from the schema
-    return ack({ status: 200, body: `processed ${payload.id}` });
+    return Response.json(`processed ${payload.id}`);
   },
 });
 
-// In your framework layer, convert the incoming request to a
-// NormalizedRequest and dispatch it:
-// const response = await router.handle(normalizedRequest);
+// Any fetch-compatible runtime: Bun, Deno, Cloudflare Workers, ...
+export default {
+  fetch: (request: Request) => router.handle(request),
+};
 ```
 
-A request to `/webhooks/payments/succeeded` is matched against the registered key `payments/succeeded`: the router parses the pathname, requires the configured prefix (default `/webhooks/`), strips it, and matches the remainder exactly. Exact matching keeps routing predictable, and the prefix requirement keeps webhook routes from colliding with normal app routes.
+A request to `/webhooks/payments/succeeded` is matched against the registered key `/payments/succeeded`: the router parses the request URL's pathname, requires the configured prefix (default `/webhooks`) on a segment boundary, strips it, and matches the remainder exactly. Registered routes, the prefix, and incoming pathnames are all normalized to the same canonical form (leading slash, no trailing slash, duplicate slashes collapsed), so stray slashes never cause a mismatch. Exact matching keeps routing predictable, and the prefix requirement keeps webhook routes from colliding with normal app routes.

@@ -1,39 +1,34 @@
 /**
- * Public webhook request, response, and handler type contracts.
+ * Public webhook context, handler, and hook type contracts.
  *
  * @module @zap-studio/webhooks/types
  */
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
-/** Framework-agnostic request shape consumed by the webhook router. */
-export interface NormalizedRequest {
-  /** The headers of the request (e.g. { "Authorization": "Bearer token" }) */
-  headers: Headers;
-  /** The parsed JSON body of the request if applicable */
-  json?: unknown;
-  /** The HTTP method of the request */
-  method: Request["method"];
-  /** The route parameters of the request */
-  params?: Record<string, string>;
-  /** The path of the request you registered in the router (e.g. "payment", "subscription") */
+/**
+ * Context shared by hooks, verifiers, and handlers for a single webhook request.
+ *
+ * The router consumes the request body exactly once, so `request.body` is
+ * already used by the time hooks or handlers run — read `rawBody` instead.
+ */
+export interface WebhookContext {
+  /** The matched route key registered on the router (e.g. "stripe") */
   path: string;
-  /** The query parameters of the request */
-  query?: Record<string, string | string[]>;
-  /** The raw body of the request (for signature) */
+  /** The exact request body bytes (for signature verification) */
   rawBody: Uint8Array;
-  /** The parsed text body of the request if applicable */
-  text?: string;
+  /** The incoming Web API request (body already consumed by the router) */
+  request: Request;
 }
 
-/** Framework-agnostic response shape returned by the webhook router. */
-export interface NormalizedResponse<TBody = unknown> {
-  /** The body of the response */
-  body?: TBody;
-  /** The headers of the response */
-  headers?: Headers;
-  /** The HTTP status code of the response */
-  status: number;
+/**
+ * Handler context extending the shared webhook context with the validated payload.
+ *
+ * @template TPayload - Validated payload type for the matched route.
+ */
+export interface HandlerContext<TPayload = unknown> extends WebhookContext {
+  /** The validated webhook payload */
+  payload: TPayload;
 }
 
 /** Route registration options for a webhook handler. */
@@ -83,12 +78,15 @@ export type SchemaRoutes<TRoutes extends Record<string, RouteLike>> = {
   [P in keyof TRoutes]: SchemaRouteOptions<TRoutes[P]["schema"]>;
 };
 
-/** The webhook handler function, responsible for processing incoming webhook events. */
-export type WebhookHandler<TPayload = unknown> = (ctx: {
-  req: NormalizedRequest;
-  payload: TPayload;
-  ack: (res?: Partial<NormalizedResponse>) => Promise<NormalizedResponse>;
-}) => Promise<NormalizedResponse | undefined> | NormalizedResponse | undefined;
+/**
+ * The webhook handler function, responsible for processing incoming webhook events.
+ *
+ * Return a `Response` to control the reply, or `undefined` to let the router
+ * respond with its default `200` acknowledgement.
+ */
+export type WebhookHandler<TPayload = unknown> = (
+  ctx: HandlerContext<TPayload>
+) => Promise<Response | undefined> | Response | undefined;
 
 /** Maps route keys to their payload-specific webhook handlers. */
 export type HandlerMap<TMap extends Record<string, unknown>> = {
@@ -106,20 +104,25 @@ export type InferWebhookMapFromRoutes<
   [P in keyof TRoutes]: InferSchemaOutput<TRoutes[P]["schema"]>;
 };
 
-/** Verification function for incoming requests */
-export type VerifyFn = (req: NormalizedRequest) => Promise<void> | void;
+/** Verification function for incoming requests. Throws to reject the request. */
+export type VerifyFn = (ctx: WebhookContext) => Promise<void> | void;
 
 /** Hook function that runs before request processing */
-export type BeforeHook = (req: NormalizedRequest) => Promise<void> | void;
+export type BeforeHook = (ctx: WebhookContext) => Promise<void> | void;
 
-/** Hook function that runs after successful request processing */
+/**
+ * Hook function that runs after successful request processing.
+ *
+ * The hook receives the outgoing response as-is; call `response.clone()`
+ * before reading its body to avoid consuming the stream sent to the client.
+ */
 export type AfterHook = (
-  req: NormalizedRequest,
-  res: NormalizedResponse
+  ctx: WebhookContext,
+  response: Response
 ) => Promise<void> | void;
 
 /** Hook function that runs when an error occurs */
 export type ErrorHook = (
   error: Error,
-  req: NormalizedRequest
-) => Promise<NormalizedResponse | undefined> | NormalizedResponse | undefined;
+  ctx: WebhookContext
+) => Promise<Response | undefined> | Response | undefined;

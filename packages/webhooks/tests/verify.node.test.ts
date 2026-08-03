@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { VerificationError } from "../src/errors.js";
-import type { NormalizedRequest } from "../src/types/index.js";
+import type { WebhookContext } from "../src/types.js";
 import { createHmacVerifier } from "../src/verify.js";
 
 const encoder = new TextEncoder();
@@ -44,17 +44,17 @@ const captureThrownError = async <T>(
 };
 
 describe(createHmacVerifier, () => {
-  const createMockRequest = (
+  const createMockContext = (
     body: string | Uint8Array,
     signature?: string,
     headerName = "x-hub-signature-256"
-  ): NormalizedRequest => ({
-    headers: new Headers(
-      signature === undefined ? {} : { [headerName]: signature }
-    ),
-    method: "POST",
-    path: "/webhook",
+  ): WebhookContext => ({
+    path: "webhook",
     rawBody: typeof body === "string" ? encoder.encode(body) : body,
+    request: new Request("https://example.com/webhooks/webhook", {
+      headers: signature === undefined ? {} : { [headerName]: signature },
+      method: "POST",
+    }),
   });
 
   const generateValidSignature = async (
@@ -90,7 +90,7 @@ describe(createHmacVerifier, () => {
     });
 
     await expect(
-      verify(createMockRequest(body, signature))
+      verify(createMockContext(body, signature))
     ).resolves.toBeUndefined();
   });
 
@@ -101,7 +101,7 @@ describe(createHmacVerifier, () => {
     });
 
     const error = await captureThrownError(() =>
-      verify(createMockRequest("body"))
+      verify(createMockContext("body"))
     );
 
     expect(error).toBeInstanceOf(VerificationError);
@@ -118,7 +118,7 @@ describe(createHmacVerifier, () => {
     });
 
     const error = await captureThrownError(() =>
-      verify(createMockRequest("body", "invalid"))
+      verify(createMockContext("body", "invalid"))
     );
 
     expect(error).toBeInstanceOf(VerificationError);
@@ -138,7 +138,7 @@ describe(createHmacVerifier, () => {
     });
 
     await expect(
-      verify(createMockRequest(body, `sha256=${signature}`))
+      verify(createMockContext(body, `sha256=${signature}`))
     ).resolves.toBeUndefined();
   });
 
@@ -152,7 +152,7 @@ describe(createHmacVerifier, () => {
     });
 
     await expect(
-      verify(createMockRequest(body, signature, "x-hub-signature-256"))
+      verify(createMockContext(body, signature, "x-hub-signature-256"))
     ).resolves.toBeUndefined();
   });
 
@@ -167,7 +167,7 @@ describe(createHmacVerifier, () => {
     });
 
     await expect(
-      verify(createMockRequest(body, signature, "x-hub-signature-512"))
+      verify(createMockContext(body, signature, "x-hub-signature-512"))
     ).resolves.toBeUndefined();
   });
 
@@ -198,10 +198,10 @@ describe(createHmacVerifier, () => {
     });
 
     await expect(
-      verify(createMockRequest(body, signature))
+      verify(createMockContext(body, signature))
     ).resolves.toBeUndefined();
     const error = await captureThrownError(() =>
-      verify(createMockRequest(modifiedBody, signature))
+      verify(createMockContext(modifiedBody, signature))
     );
 
     expect(error).toBeInstanceOf(VerificationError);
@@ -221,7 +221,7 @@ describe(createHmacVerifier, () => {
     });
 
     await expect(
-      verify(createMockRequest(body, signature))
+      verify(createMockContext(body, signature))
     ).resolves.toBeUndefined();
   });
 

@@ -10,7 +10,7 @@ description: Reference for RetryError and AbortError, the terminal errors for ex
 ## Import
 
 ```ts
-import { AbortError, RetryError } from "@zap-studio/retry/errors";
+import { AbortError, RetryError } from "@zap-studio/retry";
 ```
 
 ## RetryError
@@ -64,8 +64,7 @@ new AbortError(message: string, context?: AbortErrorContext)
 ## Catching Terminal Errors
 
 ```ts
-import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
-import { AbortError, RetryError } from "@zap-studio/retry/errors";
+import { AbortError, ExponentialBackoff, RetryError } from "@zap-studio/retry";
 
 const policy = new ExponentialBackoff({
   maxAttempts: 3,
@@ -94,7 +93,7 @@ try {
 With `throwOnExhausted: false`, the terminal error is returned on `result.error` instead of thrown. Its type is `RetryError | AbortError`, so narrow with `instanceof` before reading `RetryError`-specific properties.
 
 ```ts
-import { RetryError } from "@zap-studio/retry/errors";
+import { RetryError } from "@zap-studio/retry";
 
 const result = await policy.run(
   async () => {

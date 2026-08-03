@@ -1,3 +1,12 @@
+## @zap-studio/retry@0.3.2
+
+### Tree-shakeable root re-exports
+
+The package root now re-exports the full public API, so everything can be imported from `@zap-studio/retry` directly (`BaseRetryPolicy`, `ExponentialBackoff`, `FixedDelay`, `RetryError`, `AbortError`, abort helpers, `defaultSleep`, and all public types). All exports are side-effect free and tree-shakeable; granular subpath imports keep working.
+
+- `BaseRetryPolicy` moved from the entrypoint into its own module, available as the new `./base-policy` subpath.
+- Removed the `./result-mode` and `./throw-mode` subpath exports. Both were orchestration internals (`runResultMode`, `runThrowMode`) and are no longer part of the public API.
+
 ## @zap-studio/retry@0.3.1
 
 ### Migrate to ultracite lint/format

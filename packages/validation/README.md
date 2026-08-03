@@ -23,6 +23,18 @@ npm install @zap-studio/validation
 pnpm add @zap-studio/validation
 ```
 
+## Runtime Support
+
+| Runtime            | Minimum version                                  |
+| ------------------ | ------------------------------------------------ |
+| Node.js            | 18.0.0                                           |
+| Bun                | 1.0.0                                            |
+| Deno               | 1.42                                             |
+| Cloudflare Workers | Any current release                              |
+| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
+
+The package ships standard ESM only and uses no runtime-specific APIs. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/validation`).
+
 ## Quick Example
 
 ```ts
@@ -164,8 +176,7 @@ async function validateIfSchema(schemaLike: unknown, input: unknown) {
 When using the throwing mode, validation failures produce a `ValidationError`.
 
 ```ts
-import { standardValidate } from "@zap-studio/validation";
-import { ValidationError } from "@zap-studio/validation/errors";
+import { standardValidate, ValidationError } from "@zap-studio/validation";
 
 try {
   await standardValidate(userSchema, input, {

@@ -10,13 +10,13 @@ description: Retry with exponentially growing delays, capped at an upper bound.
 ## Import
 
 ```ts
-import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+import { ExponentialBackoff } from "@zap-studio/retry";
 ```
 
 ## Configuration
 
 ```ts
-import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+import { ExponentialBackoff } from "@zap-studio/retry";
 
 const policy = new ExponentialBackoff({
   maxAttempts: 6,
@@ -67,7 +67,7 @@ For predictable, constant intervals, use [`FixedDelay`](/retry/fixed-delay) inst
 ## Example
 
 ```ts
-import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+import { ExponentialBackoff } from "@zap-studio/retry";
 import { $fetch } from "@zap-studio/fetch";
 
 const policy = new ExponentialBackoff({

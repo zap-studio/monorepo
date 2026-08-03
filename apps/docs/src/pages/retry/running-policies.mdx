@@ -12,7 +12,7 @@ Every policy that extends `BaseRetryPolicy` shares the same runner: `run(execute
 Pass an async function; the runner resolves with its first successful return value.
 
 ```ts
-import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+import { ExponentialBackoff } from "@zap-studio/retry";
 
 const policy = new ExponentialBackoff({
   maxAttempts: 5,
@@ -38,7 +38,7 @@ const value = await policy.run(async (attempt) => {
 
 ## Custom Sleep
 
-By default, delays use `defaultSleep` (a `setTimeout`-based helper exported from `@zap-studio/retry/sleep`). Inject your own `sleep` for deterministic tests or custom timing.
+By default, delays use `defaultSleep` (a `setTimeout`-based helper exported from `@zap-studio/retry`). Inject your own `sleep` for deterministic tests or custom timing.
 
 ```ts
 const value = await policy.run(
@@ -81,7 +81,7 @@ On failure, `result.error` is a `RetryError` (retries exhausted) or an `AbortErr
 In the default throw mode, `run(...)` throws the error returned by the policy's `onExhausted(...)` — a [`RetryError`](/retry/retry-error) unless the policy overrides it — and an `AbortError` when the run is [canceled](/retry/abort-signal).
 
 ```ts
-import { AbortError, RetryError } from "@zap-studio/retry/errors";
+import { AbortError, RetryError } from "@zap-studio/retry";
 
 try {
   const value = await policy.run(async () => {

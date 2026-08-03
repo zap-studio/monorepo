@@ -36,6 +36,10 @@ logs/
 *.seed
 report.[0-9]*.[0-9]*.json
 
+# Test artifacts
+.vitest-attachments/
+**/__screenshots__/
+
 # Tool caches
 .cache/
 .fallow/

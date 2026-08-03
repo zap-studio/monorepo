@@ -15,24 +15,36 @@ Configure hooks once in `createWebhookRouter` — they apply to every route. Eac
 import { createWebhookRouter } from "@zap-studio/webhooks";
 
 const router = createWebhookRouter({
-  before: (req) => {
-    console.log("incoming", req.path);
+  before: (ctx) => {
+    console.log("incoming", ctx.path);
   },
-  after: (_req, res) => {
-    console.log("status", res.status);
+  after: (_ctx, response) => {
+    console.log("status", response.status);
   },
-  onError: (error) => ({
-    status: 500,
-    body: { error: error.message },
-  }),
+  onError: (error) => Response.json({ error: error.message }, { status: 500 }),
 });
 ```
 
-Hook signatures (exported from `@zap-studio/webhooks/types`):
+Every hook receives the webhook context — `{ request, rawBody, path }` — where `request` is the incoming Web API `Request` (body already consumed by the router), `rawBody` holds the exact body bytes, and `path` is the matched route key.
 
-- `BeforeHook` — `(req: NormalizedRequest) => Promise<void> | void`
-- `AfterHook` — `(req: NormalizedRequest, res: NormalizedResponse) => Promise<void> | void`
-- `ErrorHook` — `(error: Error, req: NormalizedRequest) => NormalizedResponse | undefined`, sync or async
+Hook signatures (exported from `@zap-studio/webhooks`):
+
+- `BeforeHook` — `(ctx: WebhookContext) => Promise<void> | void`
+- `AfterHook` — `(ctx: WebhookContext, response: Response) => Promise<void> | void`
+- `ErrorHook` — `(error: Error, ctx: WebhookContext) => Response | undefined`, sync or async
+
+:::note `after` hooks receive the outgoing `Response` as-is. Reading its body would consume the stream sent to the client, so call `response.clone()` first:
+
+```ts
+const router = createWebhookRouter({
+  after: async (_ctx, response) => {
+    const body = await response.clone().json();
+    console.log("responded with", body);
+  },
+});
+```
+
+:::
 
 ## Add Route-Level Hooks
 
@@ -41,14 +53,14 @@ Register `before` and `after` on a single route when one endpoint needs extra be
 ```ts
 import { z } from "zod";
 
-router.register("github/push", {
+router.register("/github/push", {
   schema: z.object({ ref: z.string() }),
-  before: (req) => {
-    console.log("route-before", req.path);
+  before: (ctx) => {
+    console.log("route-before", ctx.path);
   },
-  handler: async ({ ack }) => ack({ status: 200 }),
-  after: (_req, res) => {
-    console.log("route-after", res.status);
+  handler: () => Response.json("ok"),
+  after: (_ctx, response) => {
+    console.log("route-after", response.status);
   },
 });
 ```
@@ -71,18 +83,17 @@ For a successful request, the router runs:
 
 ## Centralize Error Handling
 
-When any hook, the verifier, or the handler throws, the router calls `onError` with the error and the request. Return a `NormalizedResponse` to override the default response, or return `undefined` to fall back to the default `500` with `{ error: message }`.
+When any hook, the verifier, or the handler throws, the router calls `onError` with the error and the webhook context. Return a `Response` to override the default response, or return `undefined` to fall back to the default `500` with `{ error: message }`.
 
 ```ts
-import { createWebhookRouter } from "@zap-studio/webhooks";
-import { VerificationError } from "@zap-studio/webhooks/errors";
+import { createWebhookRouter, VerificationError } from "@zap-studio/webhooks";
 
 const router = createWebhookRouter({
-  onError: (error, req) => {
-    console.error("webhook failed", req.path, error.message);
+  onError: (error, ctx) => {
+    console.error("webhook failed", ctx.path, error.message);
 
     if (error instanceof VerificationError) {
-      return { status: 401, body: { error: "invalid signature" } };
+      return Response.json({ error: "invalid signature" }, { status: 401 });
     }
 
     return undefined; // default 500 response

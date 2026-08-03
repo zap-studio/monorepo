@@ -10,13 +10,13 @@ description: Retry with a constant delay between attempts until max attempts is 
 ## Import
 
 ```ts
-import { FixedDelay } from "@zap-studio/retry/fixed-delay";
+import { FixedDelay } from "@zap-studio/retry";
 ```
 
 ## Configuration
 
 ```ts
-import { FixedDelay } from "@zap-studio/retry/fixed-delay";
+import { FixedDelay } from "@zap-studio/retry";
 
 const policy = new FixedDelay({
   maxAttempts: 4,
@@ -50,7 +50,7 @@ For shared or unstable upstream services, prefer [`ExponentialBackoff`](/retry/e
 ## Example
 
 ```ts
-import { FixedDelay } from "@zap-studio/retry/fixed-delay";
+import { FixedDelay } from "@zap-studio/retry";
 
 const policy = new FixedDelay({
   maxAttempts: 3,

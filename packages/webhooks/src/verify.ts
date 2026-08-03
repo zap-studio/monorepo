@@ -5,8 +5,8 @@
  */
 
 import { VerificationError } from "./errors.js";
-import type { VerifyFn } from "./types/index.js";
-import { constantTimeEquals } from "./utils/index.js";
+import type { VerifyFn } from "./types.js";
+import { constantTimeEquals } from "./utils.js";
 
 const HMAC_HASH = {
   sha1: "SHA-1",
@@ -30,7 +30,7 @@ const normalizeSignature = (signature: string): string =>
  * Creates a webhook verifier that validates an HMAC signature from a request header.
  *
  * The verifier imports the provided string secret once, computes an HMAC from
- * `req.rawBody`, normalizes the incoming header value, and compares both
+ * `ctx.rawBody`, normalizes the incoming header value, and compares both
  * signatures in constant time.
  *
  * Header values like `sha256=<hex>` are supported so common provider formats
@@ -88,8 +88,8 @@ export const createHmacVerifier = ({
     ["sign"]
   );
 
-  return async (req) => {
-    const actual = req.headers.get(headerName);
+  return async (ctx) => {
+    const actual = ctx.request.headers.get(headerName);
     if (actual === null || actual.length === 0) {
       throw new VerificationError(`Missing signature header: ${headerName}`);
     }
@@ -98,7 +98,7 @@ export const createHmacVerifier = ({
     const signature = await subtle.sign(
       "HMAC",
       key,
-      new Uint8Array(req.rawBody)
+      new Uint8Array(ctx.rawBody)
     );
     const expected = toHex(new Uint8Array(signature));
 

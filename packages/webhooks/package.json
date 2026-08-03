@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/webhooks",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": false,
   "description": "A lightweight, type-safe webhook router with Standard Schema validation, signature verification, and lifecycle hooks.",
   "keywords": [
@@ -36,18 +36,15 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
-    "./adapters/base": "./dist/adapters/base.js",
     "./errors": "./dist/errors.js",
-    "./types": "./dist/types/index.js",
-    "./utils": "./dist/utils/index.js",
+    "./router": "./dist/router.js",
+    "./types": "./dist/types.js",
+    "./utils": "./dist/utils.js",
     "./verify": "./dist/verify.js",
     "./package.json": "./package.json"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "scripts": {
-    "build": "tsdown --config ./tsdown.config.ts"
   },
   "dependencies": {
     "@zap-studio/validation": "workspace:*"

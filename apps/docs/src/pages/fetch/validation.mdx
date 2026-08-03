@@ -65,11 +65,11 @@ const UserSchema = type({
 
 ## Throwing Mode
 
-By default (`throwOnValidationError: true`), a `ValidationError` is thrown when the response does not match the schema. Import it from `@zap-studio/validation/errors`.
+By default (`throwOnValidationError: true`), a `ValidationError` is thrown when the response does not match the schema. Import it from `@zap-studio/validation`.
 
 ```ts
 import { api } from "@zap-studio/fetch";
-import { ValidationError } from "@zap-studio/validation/errors";
+import { ValidationError } from "@zap-studio/validation";
 import { z } from "zod";
 
 const UserSchema = z.object({ id: z.number(), name: z.string() });
