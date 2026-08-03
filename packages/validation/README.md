@@ -16,11 +16,7 @@ It works with any Standard Schema compatible library.
 ## Installation
 
 ```bash
-nub add @zap-studio/validation
-# or
 npm install @zap-studio/validation
-# or
-pnpm add @zap-studio/validation
 ```
 
 ## Quick Example

@@ -14,11 +14,7 @@ A type-safe, declarative authorization library for TypeScript with [Standard Sch
 ## Installation
 
 ```bash
-nub add @zap-studio/permit
-# or
 npm install @zap-studio/permit
-# or
-pnpm add @zap-studio/permit
 ```
 
 ## Quick Start
