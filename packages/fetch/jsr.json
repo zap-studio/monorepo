@@ -7,9 +7,8 @@
     ".": "./src/index.ts",
     "./constants": "./src/constants.ts",
     "./errors": "./src/errors.ts",
+    "./fetch": "./src/fetch.ts",
     "./headers": "./src/headers.ts",
-    "./internal": "./src/internal.ts",
-    "./methods": "./src/methods.ts",
     "./request": "./src/request.ts",
     "./types": "./src/types.ts",
     "./url": "./src/url.ts"

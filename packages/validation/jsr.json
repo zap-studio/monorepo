@@ -5,10 +5,11 @@
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
-    "./errors": "./src/errors.ts"
+    "./errors": "./src/errors.ts",
+    "./validate": "./src/validate.ts"
   },
   "imports": {
-    "@standard-schema/spec": "npm:@standard-schema/spec@1.1.0"
+    "@standard-schema/spec": "npm:@standard-schema/spec@^1.1.0"
   },
   "publish": {
     "include": ["src", "CHANGELOG.md", "LICENSE", "README.md"]

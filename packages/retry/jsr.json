@@ -1,14 +1,16 @@
 {
   "$schema": "https://jsr.io/schema/config-file.v1.json",
   "name": "@zap-studio/retry",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
+    "./abort": "./src/abort.ts",
+    "./base-policy": "./src/base-policy.ts",
     "./errors": "./src/errors.ts",
-    "./sleep": "./src/sleep.ts",
     "./exponential-backoff": "./src/exponential-backoff.ts",
     "./fixed-delay": "./src/fixed-delay.ts",
+    "./sleep": "./src/sleep.ts",
     "./types": "./src/types.ts"
   },
   "publish": {

@@ -1,16 +1,20 @@
 {
   "$schema": "https://jsr.io/schema/config-file.v1.json",
   "name": "@zap-studio/permit",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
-    "./helpers": "./src/helpers.ts",
+    "./conditions": "./src/conditions.ts",
     "./errors": "./src/errors.ts",
+    "./helpers": "./src/helpers.ts",
+    "./policy": "./src/policy.ts",
     "./types": "./src/types.ts"
   },
   "imports": {
-    "@zap-studio/validation": "jsr:@zap-studio/validation@^0.3.5"
+    "@zap-studio/validation": "jsr:@zap-studio/validation@^0.3.6"
   },
-  "publish": { "include": ["src", "CHANGELOG.md", "LICENSE", "README.md"] }
+  "publish": {
+    "include": ["src", "CHANGELOG.md", "LICENSE", "README.md"]
+  }
 }
