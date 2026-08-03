@@ -59,7 +59,7 @@ catalogs:
       version: 7.0.2
     ultracite:
       specifier: ^7.9.4
-      version: 7.9.4
+      version: 7.10.0
     unplugin-unused:
       specifier: ^0.6.0
       version: 0.6.0
@@ -121,7 +121,7 @@ importers:
         version: 0.22.14(@arethetypeswrong/core@0.18.5)(publint@0.3.22)(tsx@4.23.1)(typescript@7.0.2)
       ultracite:
         specifier: 'catalog:'
-        version: 7.9.4(eslint@10.8.0)(oxfmt@0.61.0)(oxlint@1.76.0(oxlint-tsgolint@7.0.2001))(typescript@6.0.3)
+        version: 7.10.0(eslint@10.8.0)(oxfmt@0.61.0)(oxlint@1.76.0(oxlint-tsgolint@7.0.2001))(typescript@6.0.3)
       unplugin-unused:
         specifier: 'catalog:'
         version: 0.6.0(esbuild@0.28.1)(vite@8.2.0(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
@@ -1762,8 +1762,8 @@ packages:
     resolution: {integrity: sha512-P1Cz1dWaFfR4IR+U13mqqiGsLFf1KbayybWwdd2vfctdV6hDpUkgCY0nKOLLTMSoRd/jJNjtbqzf13K8DCCXQw==}
     engines: {node: '>=18'}
 
-  '@speed-highlight/core@1.2.20':
-    resolution: {integrity: sha512-biXn20UJkNJ9cB35lPXJKfgUl1NQfhbApt78oePVjC0gB4+hlJyjkUz1hoLHLk7dEl+mSbW0VtX4C2IlRIDoHA==}
+  '@speed-highlight/core@1.2.23':
+    resolution: {integrity: sha512-iRoq6i6JDJP6Mt2A5JaPvzw0pgYHH6k92ij+yXiTrB7T2y9N789aWE3EHWj/5ztlJBokcCBja3iYLVdu5wgnkg==}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -4839,8 +4839,8 @@ packages:
   ufo@1.6.4:
     resolution: {integrity: sha512-JFNbkD1Svwe0KvGi8GOeLcP4kAWQ609twvCdcHxq1oSL8svv39ZuSvajcD8B+5D0eL4+s1Is2D/O6KN3qcTeRA==}
 
-  ultracite@7.9.4:
-    resolution: {integrity: sha512-efAEbQJoii3wH0aZ+jwbcGXQYBwC1E6TvC4//EIV3ei84RDGHDo9fSB6h/TBTNk/+/psQVGm56trVvA+2VwRbg==}
+  ultracite@7.10.0:
+    resolution: {integrity: sha512-K/3608ZtjZZf2hZRTIVh8/cLluPQydfDhbS+T/Rco62AZK0ADSzbj5zSVTqoLIvDVV6YG2czvy4s3m4Y8tNZMw==}
     hasBin: true
     peerDependencies:
       oxfmt: '>=0.1.0'
@@ -6756,7 +6756,7 @@ snapshots:
 
   '@sindresorhus/is@7.2.0': {}
 
-  '@speed-highlight/core@1.2.20': {}
+  '@speed-highlight/core@1.2.23': {}
 
   '@standard-schema/spec@1.1.0': {}
 
@@ -8659,14 +8659,11 @@ snapshots:
 
   lines-and-columns@1.2.4: {}
 
-  local-pkg@1.2.1(typescript@7.0.2):
+  local-pkg@1.2.1:
     dependencies:
-      '@svgr/core': 8.1.0(typescript@7.0.2)
       mlly: 1.8.2
       pkg-types: 2.3.1
       quansync: 0.2.11
-    transitivePeerDependencies:
-      - supports-color
 
   locate-path@6.0.0:
     dependencies:
@@ -10191,7 +10188,7 @@ snapshots:
 
   ufo@1.6.4: {}
 
-  ultracite@7.9.4(eslint@10.8.0)(oxfmt@0.61.0)(oxlint@1.76.0(oxlint-tsgolint@7.0.2001))(typescript@6.0.3):
+  ultracite@7.10.0(eslint@10.8.0)(oxfmt@0.61.0)(oxlint@1.76.0(oxlint-tsgolint@7.0.2001))(typescript@6.0.3):
     dependencies:
       '@clack/prompts': 1.7.0
       '@typescript-eslint/utils': 8.65.0(eslint@10.8.0)(typescript@6.0.3)
@@ -10295,7 +10292,7 @@ snapshots:
       '@iconify/utils': 3.1.4
       '@svgr/core': 8.1.0(typescript@7.0.2)
       debug: 4.4.3
-      local-pkg: 1.2.1(typescript@7.0.2)
+      local-pkg: 1.2.1
       unplugin: 2.3.11
     transitivePeerDependencies:
       - supports-color
@@ -10692,7 +10689,7 @@ snapshots:
     dependencies:
       '@poppinss/colors': 4.1.6
       '@poppinss/dumper': 0.6.5
-      '@speed-highlight/core': 1.2.20
+      '@speed-highlight/core': 1.2.23
       cookie: 1.1.1
       youch-core: 0.3.3
 
