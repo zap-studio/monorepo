@@ -51,9 +51,8 @@ export const expectFailureResult = (
   attempts: number;
   error: AbortError | RetryError;
 } => {
-  expect(result).toMatchObject({ ok: false });
   if (result.ok) {
-    throw new Error("Expected failure result");
+    expect.fail("Expected failure result");
   }
 
   return result;
