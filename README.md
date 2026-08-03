@@ -18,4 +18,4 @@ Documentation: [zapstudio.dev](https://www.zapstudio.dev)
 
 ## Runtime Support
 
-All packages ship standard ESM and target Node.js >= 18, Bun >= 1.0, Deno >= 1.42, Cloudflare Workers, and the latest evergreen browsers. See each package's README or the [documentation](https://www.zapstudio.dev) for package-specific details.
+All packages ship standard ESM and target Node.js >= 18, Bun >= 1.0, Deno >= 1.42, Cloudflare Workers, and the latest evergreen browsers. See the [documentation](https://www.zapstudio.dev) for package-specific details.
