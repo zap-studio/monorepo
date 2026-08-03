@@ -10,6 +10,7 @@ Breaking changes:
 - Handlers receive `{ request, rawBody, path, payload }` (a `WebhookContext` plus the validated `payload`) and return a `Response` or `undefined` (default `200` `"ok"`). The `ack` helper is removed — use `Response.json(body, init)`.
 - Hooks and `verify` are retyped against the context: `BeforeHook(ctx)`, `AfterHook(ctx, response)`, `ErrorHook(error, ctx)`, `VerifyFn(ctx)`. After hooks must `clone()` the response before reading its body.
 - `Adapter`, `BaseAdapter`, and the `./adapters/base` export are removed. Node `http` users can bridge with `srvx` or `@hono/node-server`.
+- The prefix is normalized to a trailing slash and only matches on a path boundary: `prefix: "/api"` now behaves as `/api/`, so `/apihello` no longer matches a route (previously it matched `ihello`).
 
 Behavior kept: hook execution order, prefix semantics (default `/webhooks/`), exact-match routing, HMAC verification, and the `404`/`400`/`500` error body shapes. Unknown routes now return `404` without reading the request body.
 
