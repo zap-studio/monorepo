@@ -12,18 +12,6 @@ npm install @zap-studio/fetch
 pnpm add @zap-studio/fetch
 ```
 
-## Runtime Support
-
-| Runtime            | Minimum version                                  |
-| ------------------ | ------------------------------------------------ |
-| Node.js            | 18.0.0 (ships native `fetch`)                    |
-| Bun                | 1.0.0                                            |
-| Deno               | 1.42                                             |
-| Cloudflare Workers | Any current release                              |
-| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
-
-The package relies on the global `fetch` API and ships standard ESM only. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/fetch`).
-
 ## Quick Example
 
 ```ts
@@ -309,6 +297,18 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 | `api.patch`   | You want a validated PATCH request                |
 | `api.delete`  | You want a validated DELETE request               |
 | `createFetch` | You want shared defaults like base URL or headers |
+
+## Runtime Support
+
+| Runtime            | Minimum version                                  |
+| ------------------ | ------------------------------------------------ |
+| Node.js            | 18.0.0 (ships native `fetch`)                    |
+| Bun                | 1.0.0                                            |
+| Deno               | 1.42                                             |
+| Cloudflare Workers | Any current release                              |
+| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
+
+The package relies on the global `fetch` API and ships standard ESM only. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/fetch`).
 
 ## License
 

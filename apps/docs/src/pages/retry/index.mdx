@@ -58,18 +58,6 @@ deno add jsr:@zap-studio/retry
 
 :::
 
-## Runtime Support
-
-| Runtime            | Minimum version                         |
-| ------------------ | --------------------------------------- |
-| Node.js            | 18.0.0                                  |
-| Bun                | 1.0.0                                   |
-| Deno               | 1.42                                    |
-| Cloudflare Workers | Any current release                     |
-| Browsers           | Chrome/Edge 98, Firefox 97, Safari 15.4 |
-
-Cancellation relies on `AbortSignal.reason`, which sets the browser minimums above. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/retry`).
-
 ## Quick Example
 
 ```ts
@@ -97,3 +85,15 @@ If all five attempts fail, `run(...)` throws a `RetryError` carrying the attempt
 - A **policy** decides _if_ and _when_ to retry through `next(...)`.
 - The **runner** (`run(...)`) executes attempts, catches failures, sleeps, and stops.
 - The **terminal error** is built by `onExhausted(...)` — a `RetryError` by default.
+
+## Runtime Support
+
+| Runtime            | Minimum version                         |
+| ------------------ | --------------------------------------- |
+| Node.js            | 18.0.0                                  |
+| Bun                | 1.0.0                                   |
+| Deno               | 1.42                                    |
+| Cloudflare Workers | Any current release                     |
+| Browsers           | Chrome/Edge 98, Firefox 97, Safari 15.4 |
+
+Cancellation relies on `AbortSignal.reason`, which sets the browser minimums above. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/retry`).

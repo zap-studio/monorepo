@@ -27,18 +27,6 @@ npm install @zap-studio/webhooks
 pnpm add @zap-studio/webhooks
 ```
 
-## Runtime Support
-
-| Runtime            | Minimum version                                  |
-| ------------------ | ------------------------------------------------ |
-| Node.js            | 18.0.0 (router), 19.0.0 (verification helper)    |
-| Bun                | 1.0.0                                            |
-| Deno               | 1.42                                             |
-| Cloudflare Workers | Any current release                              |
-| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
-
-The router only needs the standard `Request`/`Response` APIs, available globally since Node.js 18. The verification helper additionally needs `globalThis.crypto.subtle`, which is global by default from Node.js 19 (on Node.js 18, pass the `--experimental-global-webcrypto` flag). In browsers, Web Crypto requires a secure context (HTTPS). Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/webhooks`).
-
 ## Quickstart
 
 ```ts
@@ -234,6 +222,18 @@ try {
 ```
 
 Use this when your provider uses standard HMAC signatures. For providers with custom signing formats, pass your own `verify` function.
+
+## Runtime Support
+
+| Runtime            | Minimum version                                  |
+| ------------------ | ------------------------------------------------ |
+| Node.js            | 18.0.0 (router), 19.0.0 (verification helper)    |
+| Bun                | 1.0.0                                            |
+| Deno               | 1.42                                             |
+| Cloudflare Workers | Any current release                              |
+| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
+
+The router only needs the standard `Request`/`Response` APIs, available globally since Node.js 18. The verification helper additionally needs `globalThis.crypto.subtle`, which is global by default from Node.js 19 (on Node.js 18, pass the `--experimental-global-webcrypto` flag). In browsers, Web Crypto requires a secure context (HTTPS). Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/webhooks`).
 
 ## License
 

@@ -23,18 +23,6 @@ npm install @zap-studio/validation
 pnpm add @zap-studio/validation
 ```
 
-## Runtime Support
-
-| Runtime            | Minimum version                                  |
-| ------------------ | ------------------------------------------------ |
-| Node.js            | 18.0.0                                           |
-| Bun                | 1.0.0                                            |
-| Deno               | 1.42                                             |
-| Cloudflare Workers | Any current release                              |
-| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
-
-The package ships standard ESM only and uses no runtime-specific APIs. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/validation`).
-
 ## Quick Example
 
 ```ts
@@ -226,6 +214,18 @@ This is particularly useful when working with schemas that implement the Standar
 At Zap Studio, we use this package internally across other packages so they stay compatible with any validation library that supports the Standard Schema spec.
 
 Learn more: [https://github.com/standard-schema/standard-schema](https://github.com/standard-schema/standard-schema)
+
+## Runtime Support
+
+| Runtime            | Minimum version                                  |
+| ------------------ | ------------------------------------------------ |
+| Node.js            | 18.0.0                                           |
+| Bun                | 1.0.0                                            |
+| Deno               | 1.42                                             |
+| Cloudflare Workers | Any current release                              |
+| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
+
+The package ships standard ESM only and uses no runtime-specific APIs. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/validation`).
 
 ## License
 
