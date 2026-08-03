@@ -31,8 +31,6 @@ interface HandlerEntry<TPayload = unknown> {
   schema?: StandardSchemaV1<unknown, TPayload>;
 }
 
-type HandlerStore = Record<string, HandlerEntry>;
-
 export interface WebhookRouterOptions {
   /** Global hooks executed after successful route handler completion. */
   after?: AfterHook | AfterHook[];
@@ -62,13 +60,17 @@ const toArray = <T>(value: T | T[] | undefined): T[] => {
 const notFoundResponse = (): Response =>
   Response.json({ error: "not found" }, { status: 404 });
 
+const bodyDecoder = new TextDecoder();
+
 /**
  * Normalizes a path to its canonical form: leading slash, no trailing slash,
  * duplicate slashes collapsed. The root path is `"/"`.
  */
 const normalizePath = (path: string): string => {
   const withLeadingSlash = path.startsWith("/") ? path : `/${path}`;
-  const collapsed = withLeadingSlash.replaceAll(/\/{2,}/gu, "/");
+  const collapsed = withLeadingSlash.includes("//")
+    ? withLeadingSlash.replaceAll(/\/{2,}/gu, "/")
+    : withLeadingSlash;
 
   return collapsed.length > 1 && collapsed.endsWith("/")
     ? collapsed.slice(0, -1)
@@ -81,12 +83,13 @@ const normalizePath = (path: string): string => {
  * Register routes with typed schemas and call `handle` with a Web API `Request`.
  */
 export class WebhookRouter<TMap = unknown> {
-  private readonly handlers: HandlerStore = {};
+  private readonly handlers = new Map<string, HandlerEntry>();
   private readonly verify: VerifyFn | undefined;
   private readonly globalBeforeHooks: BeforeHook[] = [];
   private readonly globalAfterHooks: AfterHook[] = [];
   private readonly globalErrorHook: ErrorHook | undefined;
   private readonly prefix: string;
+  private readonly prefixWithSlash: string;
 
   /**
    * Creates a webhook router with optional global hooks and verification behavior.
@@ -95,6 +98,7 @@ export class WebhookRouter<TMap = unknown> {
    */
   constructor(opts: WebhookRouterOptions = {}) {
     this.prefix = normalizePath(opts.prefix ?? "/webhooks");
+    this.prefixWithSlash = `${this.prefix}/`;
     this.verify = opts.verify;
     this.globalBeforeHooks = toArray(opts.before);
     this.globalAfterHooks = toArray(opts.after);
@@ -129,10 +133,12 @@ export class WebhookRouter<TMap = unknown> {
     path: string,
     handlerOrOptions: WebhookHandler | RegisterOptions<unknown>
   ): this {
-    this.handlers[normalizePath(path)] =
+    this.handlers.set(
+      normalizePath(path),
       typeof handlerOrOptions === "function"
         ? { handler: handlerOrOptions }
-        : WebhookRouter.createHandlerEntry(handlerOrOptions);
+        : WebhookRouter.createHandlerEntry(handlerOrOptions)
+    );
 
     return this;
   }
@@ -152,7 +158,7 @@ export class WebhookRouter<TMap = unknown> {
       return notFoundResponse();
     }
 
-    const handlerEntry = this.handlers[path];
+    const handlerEntry = this.handlers.get(path);
     if (!handlerEntry) {
       return notFoundResponse();
     }
@@ -166,8 +172,8 @@ export class WebhookRouter<TMap = unknown> {
     try {
       ctx.rawBody = new Uint8Array(await request.arrayBuffer());
 
-      await this.runGlobalBeforeHooks(ctx);
-      await WebhookRouter.runRouteBeforeHooks(ctx, handlerEntry.before);
+      await WebhookRouter.runBeforeHooks(ctx, this.globalBeforeHooks);
+      await WebhookRouter.runBeforeHooks(ctx, handlerEntry.before);
 
       if (this.verify) {
         await this.verify(ctx);
@@ -189,8 +195,8 @@ export class WebhookRouter<TMap = unknown> {
         validationResult
       );
 
-      await WebhookRouter.runRouteAfterHooks(ctx, response, handlerEntry.after);
-      await this.runGlobalAfterHooks(ctx, response);
+      await WebhookRouter.runAfterHooks(ctx, response, handlerEntry.after);
+      await WebhookRouter.runAfterHooks(ctx, response, this.globalAfterHooks);
 
       return response;
     } catch (error) {
@@ -212,27 +218,40 @@ export class WebhookRouter<TMap = unknown> {
 
     // Require prefix followed by a segment boundary, then match handlers on
     // the remainder (e.g. /webhooks/stripe -> /stripe).
-    if (!pathname.startsWith(`${this.prefix}/`)) {
+    if (!pathname.startsWith(this.prefixWithSlash)) {
       return null;
     }
 
     return pathname.slice(this.prefix.length);
   }
 
-  private static async runHooks<T>(
-    hooks: T[],
-    run: (hook: T) => void | Promise<void>
+  private static async runBeforeHooks(
+    ctx: WebhookContext,
+    hooks?: BeforeHook[]
   ): Promise<void> {
+    if (!hooks || hooks.length === 0) {
+      return;
+    }
+
     for (const hook of hooks) {
       // oxlint-disable-next-line no-await-in-loop -- hooks run sequentially; order + short-circuit matter.
-      await run(hook);
+      await hook(ctx);
     }
   }
 
-  private async runGlobalBeforeHooks(ctx: WebhookContext): Promise<void> {
-    await WebhookRouter.runHooks(this.globalBeforeHooks, async (hook) => {
-      await hook(ctx);
-    });
+  private static async runAfterHooks(
+    ctx: WebhookContext,
+    response: Response,
+    hooks?: AfterHook[]
+  ): Promise<void> {
+    if (!hooks || hooks.length === 0) {
+      return;
+    }
+
+    for (const hook of hooks) {
+      // oxlint-disable-next-line no-await-in-loop -- hooks run sequentially; order + short-circuit matter.
+      await hook(ctx, response);
+    }
   }
 
   private static createHandlerEntry(
@@ -261,20 +280,9 @@ export class WebhookRouter<TMap = unknown> {
     return entry;
   }
 
-  private static async runRouteBeforeHooks(
-    ctx: WebhookContext,
-    before?: BeforeHook[]
-  ): Promise<void> {
-    if (before) {
-      await WebhookRouter.runHooks(before, async (hook) => {
-        await hook(ctx);
-      });
-    }
-  }
-
   private static parseRequestBody(ctx: WebhookContext): unknown {
     try {
-      return JSON.parse(new TextDecoder().decode(ctx.rawBody)) as unknown;
+      return JSON.parse(bodyDecoder.decode(ctx.rawBody)) as unknown;
     } catch {
       return undefined;
     }
@@ -322,27 +330,6 @@ export class WebhookRouter<TMap = unknown> {
     });
 
     return responded ?? Response.json("ok");
-  }
-
-  private static async runRouteAfterHooks(
-    ctx: WebhookContext,
-    response: Response,
-    after?: AfterHook[]
-  ): Promise<void> {
-    if (after) {
-      await WebhookRouter.runHooks(after, async (hook) => {
-        await hook(ctx, response);
-      });
-    }
-  }
-
-  private async runGlobalAfterHooks(
-    ctx: WebhookContext,
-    response: Response
-  ): Promise<void> {
-    await WebhookRouter.runHooks(this.globalAfterHooks, async (hook) => {
-      await hook(ctx, response);
-    });
   }
 
   private async handleError(
