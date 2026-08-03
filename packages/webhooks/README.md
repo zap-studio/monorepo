@@ -1,6 +1,6 @@
 # @zap-studio/webhooks
 
-Schema-first, type-safe webhook routing with runtime-agnostic signature verification support.
+Schema-first, type-safe webhook routing built on the standard Web API [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) primitives, with runtime-agnostic signature verification support.
 
 Works with any validation library that implements [Standard Schema](https://github.com/standard-schema/standard-schema), including Zod, Valibot, and ArkType.
 
@@ -43,12 +43,52 @@ router.register("payments/succeeded", {
     amount: z.number().positive(),
     currency: z.string().length(3),
   }),
-  handler: async ({ payload, ack }) => {
+  handler: ({ payload }) => {
     // payload is inferred from schema
-    return ack({ status: 200, body: `processed ${payload.id}` });
+    return Response.json(`processed ${payload.id}`);
   },
 });
+
+// Any fetch-compatible runtime: Bun, Deno, Cloudflare Workers, ...
+export default {
+  fetch: (request: Request) => router.handle(request),
+};
 ```
+
+`router.handle` takes a standard `Request` and returns a standard `Response`, so the router plugs directly into any fetch-native runtime — no adapter layer needed.
+
+Handlers can return a `Response`, or `undefined` to let the router reply with its default `200` acknowledgement.
+
+## Runtime integration
+
+Because `handle(request)` speaks fetch, integration is one line in most environments:
+
+```ts
+// Bun / Deno / Cloudflare Workers
+export default { fetch: (request: Request) => router.handle(request) };
+
+// Next.js route handler (app/webhooks/[...path]/route.ts)
+export const POST = (request: Request) => router.handle(request);
+
+// Hono
+app.all("/webhooks/*", (c) => router.handle(c.req.raw));
+```
+
+For raw Node `http` servers, use a fetch-to-Node bridge such as [`srvx`](https://srvx.h3.dev) or [`@hono/node-server`](https://github.com/honojs/node-server).
+
+## The webhook context
+
+Hooks, verifiers, and handlers all receive a context object instead of the raw request stream. The router reads the request body exactly once, so the exact bytes stay available for signature verification:
+
+```ts
+interface WebhookContext {
+  request: Request; // headers, method, url — body already consumed
+  rawBody: Uint8Array; // exact request body bytes
+  path: string; // matched route key, e.g. "payments/succeeded"
+}
+```
+
+Handlers additionally receive `payload`, the schema-validated body.
 
 ## GitHub webhook example
 
@@ -71,9 +111,9 @@ router.register("github/push", {
       full_name: z.string(),
     }),
   }),
-  handler: async ({ payload, ack }) => {
+  handler: ({ payload }) => {
     console.log(`[github] ${payload.repository.full_name} ${payload.ref}`);
-    return ack();
+    return undefined; // default 200 "ok"
   },
 });
 ```
@@ -88,14 +128,14 @@ import { z } from "zod";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const router = createWebhookRouter({
-  verify: async (req) => {
-    const signature = req.headers.get("stripe-signature");
+  verify: ({ request, rawBody }) => {
+    const signature = request.headers.get("stripe-signature");
     if (!signature) {
       throw new Error("Missing Stripe signature");
     }
 
     stripe.webhooks.constructEvent(
-      req.rawBody,
+      Buffer.from(rawBody),
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
@@ -108,9 +148,9 @@ router.register("stripe/payment_intent.succeeded", {
     object: z.literal("event"),
     type: z.literal("payment_intent.succeeded"),
   }),
-  handler: async ({ payload, ack }) => {
+  handler: ({ payload }) => {
     console.log(`[stripe] event ${payload.id} (${payload.type})`);
-    return ack({ status: 200 });
+    return Response.json("received");
   },
 });
 ```
@@ -125,16 +165,24 @@ Lifecycle hooks let you apply cross-cutting behavior without duplicating code in
 
 ```ts
 const router = createWebhookRouter({
-  before: (req) => {
-    console.log("incoming", req.path);
+  before: (ctx) => {
+    console.log("incoming", ctx.path);
   },
-  after: (_req, res) => {
-    console.log("status", res.status);
+  after: (_ctx, response) => {
+    console.log("status", response.status);
   },
-  onError: (error) => ({
-    status: 500,
-    body: { error: error.message },
-  }),
+  onError: (error) => Response.json({ error: error.message }, { status: 500 }),
+});
+```
+
+After-hooks receive the outgoing `Response` as-is. If a hook needs to read the body, call `response.clone()` first so the stream sent to the client stays readable:
+
+```ts
+const router = createWebhookRouter({
+  after: async (_ctx, response) => {
+    const body = await response.clone().json();
+    console.log("responded with", body);
+  },
 });
 ```
 
@@ -145,7 +193,7 @@ const router = createWebhookRouter({
 It does not depend on Node APIs. The verifier uses the Web Crypto API, so it works in any runtime that provides `globalThis.crypto.subtle`.
 
 - reads a signature from the header you choose
-- computes an HMAC from `req.rawBody`
+- computes an HMAC from `ctx.rawBody`
 - compares signatures in constant time
 - uses the Web Crypto API instead of Node `crypto`
 - works across runtimes that provide `globalThis.crypto.subtle`
@@ -163,7 +211,7 @@ const verify = createHmacVerifier({
 });
 
 try {
-  await verify(req);
+  await verify(ctx);
 } catch (error) {
   if (error instanceof VerificationError) {
     console.error("webhook verification failed", error.message);
@@ -173,47 +221,14 @@ try {
 
 Use this when your provider uses standard HMAC signatures. For providers with custom signing formats, pass your own `verify` function.
 
-## Why `BaseAdapter` exists
+## Migrating from 0.3.x
 
-This package is framework-agnostic by design. It does not include Express/Next/Hono/Elysia adapters.
+Version 0.4.0 replaces the custom `NormalizedRequest`/`NormalizedResponse` shapes with standard `Request`/`Response`:
 
-`BaseAdapter` exists to help consumers implement adapters consistently:
-
-- you only implement `toNormalizedRequest` and `toFrameworkResponse`
-- `BaseAdapter` handles the common `handleWebhook()` flow
-- teams can reuse one adapter implementation across all webhook routes
-
-```ts
-import { BaseAdapter } from "@zap-studio/webhooks/adapters/base";
-import type {
-  NormalizedRequest,
-  NormalizedResponse,
-} from "@zap-studio/webhooks/types";
-
-// `BaseAdapter<TReq, TRes>` is generic over your framework request/response
-// types. Override the mapping members with arrow-property syntax.
-class MyHttpAdapter extends BaseAdapter {
-  toNormalizedRequest = async (req: any): Promise<NormalizedRequest> => ({
-    method: req.method,
-    path: req.url,
-    headers: new Headers(req.headers),
-    rawBody: req.rawBody,
-  });
-
-  toFrameworkResponse = async (
-    res: any,
-    normalized: NormalizedResponse
-  ): Promise<any> => {
-    res.statusCode = normalized.status;
-    res.end(
-      typeof normalized.body === "string"
-        ? normalized.body
-        : JSON.stringify(normalized.body)
-    );
-    return res;
-  };
-}
-```
+- `router.handle(normalizedRequest)` → `router.handle(request)` with a Web API `Request`; it now returns a `Response`.
+- Handlers receive `{ request, rawBody, path, payload }` and return a `Response` (or `undefined` for the default `200`). The `ack` helper is gone — use `Response.json(body, init)`.
+- Hooks and `verify` receive the webhook context instead of a normalized request.
+- The `BaseAdapter`/`Adapter` layer and the `./adapters/base` export are removed — fetch-native runtimes need no adapter, and Node `http` servers can use a fetch bridge (see Runtime integration).
 
 ## License
 

@@ -1,3 +1,18 @@
+## @zap-studio/webhooks@0.4.0
+
+### Rework the package on Web API `Request`/`Response` (breaking)
+
+The custom `NormalizedRequest`/`NormalizedResponse` contract is gone. `router.handle` now takes a standard Web API `Request` and returns a standard `Response`, so the router plugs directly into fetch-native runtimes (Bun, Deno, Cloudflare Workers, Next.js route handlers, Hono) with no adapter layer.
+
+Breaking changes:
+
+- `handle(req: NormalizedRequest): Promise<NormalizedResponse>` → `handle(request: Request): Promise<Response>`.
+- Handlers receive `{ request, rawBody, path, payload }` (a `WebhookContext` plus the validated `payload`) and return a `Response` or `undefined` (default `200` `"ok"`). The `ack` helper is removed — use `Response.json(body, init)`.
+- Hooks and `verify` are retyped against the context: `BeforeHook(ctx)`, `AfterHook(ctx, response)`, `ErrorHook(error, ctx)`, `VerifyFn(ctx)`. After hooks must `clone()` the response before reading its body.
+- `Adapter`, `BaseAdapter`, and the `./adapters/base` export are removed. Node `http` users can bridge with `srvx` or `@hono/node-server`.
+
+Behavior kept: hook execution order, prefix semantics (default `/webhooks/`), exact-match routing, HMAC verification, and the `404`/`400`/`500` error body shapes. Unknown routes now return `404` without reading the request body.
+
 ## @zap-studio/webhooks@0.3.0
 
 ### Migrate to ultracite lint/format; make the adapter contract generic

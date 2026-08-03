@@ -64,9 +64,9 @@ router.register("payments/succeeded", {
     amount: z.number().positive(),
     currency: z.string().length(3),
   }),
-  handler: async ({ payload, ack }) => {
+  handler: ({ payload }) => {
     // payload: { id: string; amount: number; currency: string }
-    return ack({ status: 200, body: `processed ${payload.id}` });
+    return Response.json(`processed ${payload.id}`);
   },
 });
 ```
@@ -74,41 +74,41 @@ router.register("payments/succeeded", {
 The handler receives a context object with:
 
 - `payload` — the validated payload, typed from the schema
-- `req` — the `NormalizedRequest` (headers, raw body, path, and more)
-- `ack` — a helper that builds a response; `ack()` with no arguments returns `{ status: 200, body: "ok" }`
+- `request` — the incoming Web API `Request` (headers, method, URL — the body stream is already consumed by the router)
+- `rawBody` — the exact request body bytes as a `Uint8Array`
+- `path` — the matched route key (for example `payments/succeeded`)
 
-Returning nothing from the handler also responds with `{ status: 200, body: "ok" }`.
+Return a `Response` to control the reply, or return nothing to respond with the default `200` acknowledgement (`Response.json("ok")`).
 
 You can also register a plain handler without a schema. The payload is then the parsed JSON body, typed as `unknown` unless you declare a payload type yourself.
 
 ```ts
-router.register("ping", async ({ ack }) => ack());
+router.register("ping", () => Response.json("pong"));
 ```
 
 ## Handle a Request
 
-The router is framework-agnostic: your framework layer converts each incoming request into a `NormalizedRequest` and calls `handle`, which returns a `NormalizedResponse` to write back.
+`handle` takes a standard `Request` and returns a standard `Response`, so the router plugs directly into any fetch-compatible runtime:
 
 ```ts
-import type { NormalizedRequest } from "@zap-studio/webhooks/types";
-
-const normalizedRequest: NormalizedRequest = {
-  method: "POST",
-  path: "/webhooks/payments/succeeded",
-  headers: new Headers({ "content-type": "application/json" }),
-  rawBody: new TextEncoder().encode(
-    JSON.stringify({ id: "pay_123", amount: 42, currency: "USD" })
-  ),
+// Bun / Deno / Cloudflare Workers
+export default {
+  fetch: (request: Request) => router.handle(request),
 };
 
-const response = await router.handle(normalizedRequest);
-// { status: 200, body: "processed pay_123" }
+// Next.js route handler (app/webhooks/[...path]/route.ts)
+export const POST = (request: Request) => router.handle(request);
+
+// Hono
+app.all("/webhooks/*", (c) => router.handle(c.req.raw));
 ```
+
+For raw Node `http` servers, use a fetch-to-Node bridge such as [`srvx`](https://srvx.h3.dev) or [`@hono/node-server`](https://github.com/honojs/node-server).
 
 The router responds with:
 
-- `404` and `{ error: "not found" }` when the path is missing the prefix or no route matches
+- `404` and `{ error: "not found" }` when the path is missing the prefix or no route matches (the request body is never read in this case)
 - `400` and `{ error: "validation failed", issues: [...] }` when schema validation fails
 - `500` and `{ error: message }` when a hook, verifier, or handler throws (customizable with `onError`)
 
-:::note `rawBody` must be the exact bytes the provider sent. Signature verification recomputes the HMAC from `rawBody`, so any re-serialization (for example `JSON.stringify(JSON.parse(...))`) breaks verification. :::
+:::note The router reads the request body exactly once and keeps the exact bytes in `rawBody`. Signature verification recomputes the HMAC from those bytes, so pass the `Request` through untouched — any middleware that consumes or re-serializes the body first breaks verification. :::

@@ -1,0 +1,67 @@
+---
+title: Runtime Integration
+description: Plug the webhook router into Bun, Deno, Cloudflare Workers, Next.js, Hono, or a Node http server.
+---
+
+# Runtime Integration
+
+[`@zap-studio/webhooks`](/webhooks) is built on the standard Web API `Request` and `Response` primitives: `router.handle(request)` takes a `Request` and returns a `Response`. Any runtime or framework that speaks fetch integrates in one line — there is no adapter layer to implement.
+
+Why this design:
+
+- no framework lock-in and no custom request/response contract to learn
+- smaller package surface
+- raw body capture is handled by the router itself: it reads the request body exactly once and exposes the exact bytes as `ctx.rawBody`, so signature verification always sees what the provider sent
+
+## Fetch-Native Runtimes
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+
+const router = createWebhookRouter();
+
+router.register("ping", () => Response.json("pong"));
+
+// Bun / Deno / Cloudflare Workers
+export default {
+  fetch: (request: Request) => router.handle(request),
+};
+```
+
+## Next.js Route Handlers
+
+```ts
+// app/webhooks/[...path]/route.ts
+import { router } from "@/lib/webhooks";
+
+export const POST = (request: Request) => router.handle(request);
+```
+
+## Hono
+
+```ts
+import { Hono } from "hono";
+import { router } from "./webhooks";
+
+const app = new Hono();
+
+app.all("/webhooks/*", (c) => router.handle(c.req.raw));
+```
+
+## Node http Servers
+
+Raw Node `http` servers do not speak fetch natively. Use a fetch-to-Node bridge such as [`srvx`](https://srvx.h3.dev) or [`@hono/node-server`](https://github.com/honojs/node-server):
+
+```ts
+import { serve } from "srvx";
+import { router } from "./webhooks";
+
+serve({
+  fetch: (request) => router.handle(request),
+  port: 3000,
+});
+```
+
+:::warning Pass the incoming `Request` to `router.handle` untouched. Signature verification recomputes the HMAC from the exact body bytes — middleware that consumes or re-serializes the body before the router sees it breaks verification. :::
+
+The router parses the request URL's pathname, requires the configured prefix (default `/webhooks/`), and matches routes on the remainder. Requests that miss the prefix or match no route get a `404` without the body ever being read.
