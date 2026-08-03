@@ -76,7 +76,8 @@ export class WebhookRouter<TMap = unknown> {
    * @param opts - Router-level options.
    */
   constructor(opts: WebhookRouterOptions = {}) {
-    this.prefix = opts.prefix ?? "/webhooks/";
+    const prefix = opts.prefix ?? "/webhooks/";
+    this.prefix = prefix.endsWith("/") ? prefix : `${prefix}/`;
     this.verify = opts.verify;
     this.globalBeforeHooks = toArray(opts.before);
     this.globalAfterHooks = toArray(opts.after);
@@ -183,16 +184,12 @@ export class WebhookRouter<TMap = unknown> {
   private matchPath(request: Request): string | null {
     const { pathname } = new URL(request.url);
 
-    // Require prefix (e.g. /webhooks/path -> /path)
-    const stripped = pathname.startsWith(this.prefix)
-      ? pathname.slice(this.prefix.length - 1)
-      : "";
-    if (stripped.length === 0) {
+    // Require prefix, then match handlers on the remainder (e.g. /webhooks/path -> path)
+    if (!pathname.startsWith(this.prefix)) {
       return null;
     }
 
-    // Normalize path by removing leading slash for handler matching (e.g. /path -> path)
-    return stripped.startsWith("/") ? stripped.slice(1) : stripped;
+    return pathname.slice(this.prefix.length);
   }
 
   private static async runHooks<T>(

@@ -1303,20 +1303,33 @@ describe(WebhookRouter, () => {
       await expect(response.json()).resolves.toBe("notified");
     });
 
-    it("should normalize paths without a leading slash after prefix stripping", async () => {
+    it("should normalize a prefix without a trailing slash", async () => {
       const router = createWebhookRouter({ prefix: "/api" });
 
-      router.register("ihello", ({ path }) => {
-        expect(path).toBe("ihello");
+      router.register("hello", ({ path }) => {
+        expect(path).toBe("hello");
         return Response.json("ok");
       });
+
+      const response = await router.handle(
+        createRequest("/api/hello", { value: "test" })
+      );
+
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toBe("ok");
+    });
+
+    it("should only match the prefix on a path boundary", async () => {
+      const router = createWebhookRouter({ prefix: "/api" });
+
+      router.register("hello", () => Response.json("ok"));
+      router.register("ihello", () => Response.json("ok"));
 
       const response = await router.handle(
         createRequest("/apihello", { value: "test" })
       );
 
-      expect(response.status).toBe(200);
-      await expect(response.json()).resolves.toBe("ok");
+      expect(response.status).toBe(404);
     });
   });
 });
