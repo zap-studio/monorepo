@@ -4,10 +4,10 @@
  * @module @zap-studio/retry/base-policy
  */
 
+import { runResultMode } from "./_result-mode.js";
+import { runThrowMode } from "./_throw-mode.js";
 import { RetryError } from "./errors.js";
-import { runResultMode } from "./result-mode.js";
 import { defaultSleep } from "./sleep.js";
-import { runThrowMode } from "./throw-mode.js";
 import type {
   RetryDecision,
   RetryDecisionInput,

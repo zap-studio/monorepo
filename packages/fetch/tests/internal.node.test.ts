@@ -1,8 +1,8 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { fetchInternal } from "../src/_internal.js";
 import { FetchError } from "../src/errors.js";
-import { fetchInternal } from "../src/internal.js";
 import type { ExtendedRequestInit, FetchDefaults } from "../src/types.js";
 
 const DEFAULTS: FetchDefaults = {

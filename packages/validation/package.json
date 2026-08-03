@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/validation",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "private": false,
   "description": "Standard Schema utilities and ValidationError helpers.",
   "keywords": [
@@ -35,9 +35,6 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "scripts": {
-    "build": "tsdown --config ./tsdown.config.ts"
   },
   "dependencies": {
     "@standard-schema/spec": "catalog:"

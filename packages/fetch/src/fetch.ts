@@ -8,9 +8,9 @@
 import { isStandardSchema } from "@zap-studio/validation";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
+import { fetchInternal } from "./_internal.js";
+import { createMethod } from "./_methods.js";
 import { GLOBAL_DEFAULTS } from "./constants.js";
-import { fetchInternal } from "./internal.js";
-import { createMethod } from "./methods.js";
 import type {
   $Fetch,
   ApiMethods,

@@ -46,9 +46,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "build": "tsdown --config ./tsdown.config.ts"
-  },
   "dependencies": {
     "@zap-studio/validation": "workspace:*"
   },

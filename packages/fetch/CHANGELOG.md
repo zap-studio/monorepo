@@ -1,3 +1,12 @@
+## @zap-studio/fetch@0.5.6
+
+### Tree-shakeable root re-exports
+
+The package root now re-exports the full public API, so everything can be imported from `@zap-studio/fetch` directly (`$fetch`, `api`, `createFetch`, `FetchError`, `mergeHeaders`, `GLOBAL_DEFAULTS`, `normalizeRequest`, `resolveRequestUrl`, and all public types). All exports are side-effect free and tree-shakeable; granular subpath imports keep working.
+
+- The `$fetch`/`api`/`createFetch` implementation moved from the entrypoint into its own module, available as the new `./fetch` subpath.
+- Removed the `./internal` and `./methods` subpath exports. Both were implementation details (`fetchInternal`, `createMethod`) and are no longer part of the public API.
+
 ## @zap-studio/fetch@0.5.5
 
 ### Migrate to ultracite lint/format

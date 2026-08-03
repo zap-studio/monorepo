@@ -1,3 +1,11 @@
+## @zap-studio/validation@0.3.6
+
+### Tree-shakeable root re-exports
+
+The package root now re-exports the full public API, so `ValidationError` can be imported from `@zap-studio/validation` directly alongside the validators. All exports are side-effect free and tree-shakeable; granular subpath imports keep working.
+
+- The validator implementation moved from the entrypoint into its own module, available as the new `./validate` subpath.
+
 ## @zap-studio/validation@0.3.5
 
 ### Migrate to ultracite lint/format

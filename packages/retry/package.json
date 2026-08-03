@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/retry",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": false,
   "description": "Composable retry policies for resilient async operations.",
   "keywords": [
@@ -41,9 +41,6 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "scripts": {
-    "build": "tsdown --config ./tsdown.config.ts"
   },
   "devDependencies": {
     "@zap-studio/typescript": "workspace:*",

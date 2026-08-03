@@ -1,7 +1,7 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it, vi } from "vitest";
 
-import { createMethod } from "../src/methods.js";
+import { createMethod } from "../src/_methods.js";
 import type { $Fetch } from "../src/types.js";
 
 const schema = {
