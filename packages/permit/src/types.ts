@@ -108,8 +108,9 @@ export type InferPermission<
   TResources extends Resources,
   TActions extends Actions<TResources>,
 > = {
-  [K in keyof TResources &
-    keyof TActions]: `${K & string}:${InferAction<TActions, K> & string}`;
+  [
+    K in keyof TResources & keyof TActions
+  ]: `${K & string}:${InferAction<TActions, K> & string}`;
 }[keyof TResources & keyof TActions];
 
 /**

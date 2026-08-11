@@ -17,7 +17,7 @@
       "@vitest/coverage-v8": "^4.1.10",
       "arktype": "^2.2.3",
       "lefthook": "^2.1.10",
-      "oxfmt": "^0.61.0",
+      "oxfmt": "^0.63.0",
       "oxlint": "^1.76.0",
       "oxlint-tsgolint": "^7.0.2001",
       "ultracite": "^7.9.4",
