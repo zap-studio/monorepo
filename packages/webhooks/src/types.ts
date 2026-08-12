@@ -4,8 +4,9 @@
  * @module @zap-studio/webhooks/types
  */
 
-export type { StandardSchemaV1 } from "@zap-studio/validation";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
+
+export type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /**
  * Context shared by hooks, verifiers, and handlers for a single webhook request.
