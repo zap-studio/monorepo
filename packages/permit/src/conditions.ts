@@ -221,9 +221,9 @@ export const collectInheritedRoles = <TRole extends Role = Role>(
     }
 
     inherited.add(role);
-    const parents = hierarchy[role] ?? [];
-    for (const parent of parents) {
-      add(parent);
+    const baseRoles = hierarchy[role] ?? [];
+    for (const baseRole of baseRoles) {
+      add(baseRole);
     }
   };
 
