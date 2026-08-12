@@ -28,8 +28,8 @@ const parsePermission = <
   TActions extends Actions<TResources>,
   K extends keyof TResources & keyof TActions,
 >(
-  permission: `${K & string}:${InferAction<TActions, K> & string}`
-): { action: InferAction<TActions, K>; resourceType: K } | null => {
+  permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`
+): { action: InferAction<TResources, TActions, K>; resourceType: K } | null => {
   const [resourceTypeValue, actionValue, ...rest] = permission.split(":");
   if (
     resourceTypeValue === undefined ||
@@ -140,13 +140,13 @@ export const createPolicy = <
 
   const hasAllowedAction = <K extends keyof TResources & keyof TActions>(
     resourceType: K,
-    action: InferAction<TActions, K>
+    action: InferAction<TResources, TActions, K>
   ): boolean => actions[resourceType]?.includes(action) ?? false;
 
   const evaluatePolicy = <K extends keyof TResources & keyof TActions>(
     context: TContext,
     resourceType: K,
-    action: InferAction<TActions, K>,
+    action: InferAction<TResources, TActions, K>,
     resource: InferResource<TResources, K>
   ): boolean => {
     const policyFn = rules[resourceType]?.[action];
@@ -176,7 +176,7 @@ export const createPolicy = <
   return {
     async can<K extends keyof TResources & keyof TActions>(
       context: TContext,
-      permission: `${K & string}:${InferAction<TActions, K> & string}`,
+      permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
       resource: InferResource<TResources, K>
     ): Promise<boolean> {
       const parsedPermission = parsePermission<TResources, TActions, K>(
@@ -214,7 +214,7 @@ const mergePoliciesWithStrategy = <
 ): Policy<TContext, TResources, TActions> => ({
   async can<K extends keyof TResources & keyof TActions>(
     context: TContext,
-    permission: `${K & string}:${InferAction<TActions, K> & string}`,
+    permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
     resource: InferResource<TResources, K>
   ): Promise<boolean> {
     if (policies.length === 0) {

@@ -91,7 +91,8 @@ export type InferResource<
  * Infers the action union type for a specific resource.
  */
 export type InferAction<
-  TActions extends Record<string, readonly string[]>,
+  TResources extends Resources,
+  TActions extends Actions<TResources>,
   K extends keyof TActions,
 > = TActions[K][number];
 
@@ -110,7 +111,7 @@ export type InferPermission<
 > = {
   [
     K in keyof TResources & keyof TActions
-  ]: `${K & string}:${InferAction<TActions, K> & string}`;
+  ]: `${K & string}:${InferAction<TResources, TActions, K> & string}`;
 }[keyof TResources & keyof TActions];
 
 /**
@@ -155,6 +156,19 @@ export interface HasRoleFn {
 
 /**
  * Maps actions to their corresponding policy functions for a specific resource.
+ *
+ * @example
+ * ```ts
+ * import type { ActionPolicyMap } from "@zap-studio/permit/types";
+ *
+ * type PostActions = "read" | "write" | "delete";
+ *
+ * const postPolicies: ActionPolicyMap<AppContext, PostActions, Post> = {
+ *   read: (context, action, post) => "allow",
+ *   write: (context, action, post) =>
+ *     post.authorId === context.userId ? "allow" : "deny",
+ * };
+ * ```
  */
 export type ActionPolicyMap<
   TContext extends Context,
@@ -167,6 +181,22 @@ export type ActionPolicyMap<
 /**
  * Defines the rules for each resource and action combination.
  * Each resource key maps to an object where each action key maps to a policy function.
+ *
+ * @example
+ * ```ts
+ * import type { Rules } from "@zap-studio/permit/types";
+ *
+ * const rules: Rules<AppContext, typeof resources, typeof actions> = {
+ *   post: {
+ *     read: (context, action, post) => "allow",
+ *     write: (context, action, post) =>
+ *       post.authorId === context.userId ? "allow" : "deny",
+ *   },
+ *   comment: {
+ *     read: (context, action, comment) => "allow",
+ *   },
+ * };
+ * ```
  */
 export type Rules<
   TContext extends Context,
@@ -175,7 +205,7 @@ export type Rules<
 > = {
   [K in keyof TResources & keyof TActions]: ActionPolicyMap<
     TContext,
-    InferAction<TActions, K>,
+    InferAction<TResources, TActions, K>,
     InferResource<TResources, K>
   >;
 };
@@ -229,7 +259,7 @@ export interface Policy<
    */
   can: <K extends keyof TResources & keyof TActions>(
     context: TContext,
-    permission: `${K & string}:${InferAction<TActions, K> & string}`,
+    permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
     resource: InferResource<TResources, K>
   ) => Promise<boolean>;
 }
