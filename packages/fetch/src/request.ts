@@ -11,14 +11,13 @@ const EMPTY_OPTIONS = {} as ExtendedRequestInit;
 
 /**
  * Normalized representation used by internal request execution.
- *
- * - `url`: resolved string URL from the input (string or `URL`; `Request` uses `request.url`)
- * - `request`: original Request clone when input is a Request
- * - `options`: normalized request options merged with Request headers
  */
 export interface NormalizedRequest {
+  /** Resolved string URL from the input (string or `URL`; `Request` uses `request.url`). */
   url: string;
+  /** Original `Request` clone, present when the input was a `Request`. */
   request?: Request;
+  /** Normalized request options merged with `Request` headers. */
   options: ExtendedRequestInit;
 }
 

@@ -6,6 +6,8 @@
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
+export type { StandardSchemaV1 } from "@zap-studio/validation";
+
 /**
  * Context shared by hooks, verifiers, and handlers for a single webhook request.
  *
@@ -62,7 +64,8 @@ export type SchemaRouteOptions<
   schema: TSchema;
 };
 
-interface RouteLike {
+/** A single route's registration shape, as used by schema-driven route dictionaries. */
+export interface RouteLike {
   after?: AfterHook | AfterHook[];
   before?: BeforeHook | BeforeHook[];
   handler: WebhookHandler;

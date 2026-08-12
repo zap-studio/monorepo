@@ -31,6 +31,7 @@ interface HandlerEntry<TPayload = unknown> {
   schema?: StandardSchemaV1<unknown, TPayload>;
 }
 
+/** Configuration options for creating a `WebhookRouter`. */
 export interface WebhookRouterOptions {
   /** Global hooks executed after successful route handler completion. */
   after?: AfterHook | AfterHook[];
@@ -121,10 +122,24 @@ export class WebhookRouter<TMap = unknown> {
     path: Path,
     handlerOrOptions: SchemaRouteOptions<TSchema>
   ): WebhookRouter<TMap & Record<Path, InferSchemaOutput<TSchema>>>;
+  /**
+   * Register a webhook handler for a specific path, with schema-less registration options.
+   *
+   * @param path - Route path relative to configured prefix, starting with `/` (e.g. `"/stripe"`).
+   * @param handlerOrOptions - Registration options without a schema.
+   * @returns The same router instance with an updated internal route type map.
+   */
   register<Path extends `/${string}`, TPayload>(
     path: Path,
     handlerOrOptions: RegisterOptions<TPayload>
   ): WebhookRouter<TMap & Record<Path, TPayload>>;
+  /**
+   * Register a webhook handler for a specific path, using a plain handler function.
+   *
+   * @param path - Route path relative to configured prefix, starting with `/` (e.g. `"/stripe"`).
+   * @param handlerOrOptions - Handler function to process the webhook.
+   * @returns The same router instance with an updated internal route type map.
+   */
   register<Path extends `/${string}`>(
     path: Path,
     handlerOrOptions: WebhookHandler
@@ -204,6 +219,7 @@ export class WebhookRouter<TMap = unknown> {
     }
   }
 
+  /** Resolves the incoming request's URL to a registered route key, or `null` if it doesn't match the configured prefix. */
   private matchPath(request: Request): string | null {
     const pathname = normalizePath(new URL(request.url).pathname);
 
@@ -225,6 +241,7 @@ export class WebhookRouter<TMap = unknown> {
     return pathname.slice(this.prefix.length);
   }
 
+  /** Runs the given before-hooks in order against the request context. */
   private static async runBeforeHooks(
     ctx: WebhookContext,
     hooks?: BeforeHook[]
@@ -239,6 +256,7 @@ export class WebhookRouter<TMap = unknown> {
     }
   }
 
+  /** Runs the given after-hooks in order against the request context and response. */
   private static async runAfterHooks(
     ctx: WebhookContext,
     response: Response,
@@ -254,6 +272,7 @@ export class WebhookRouter<TMap = unknown> {
     }
   }
 
+  /** Builds an internal handler entry from route registration options. */
   private static createHandlerEntry(
     options: RegisterOptions<unknown>
   ): HandlerEntry {
@@ -280,6 +299,7 @@ export class WebhookRouter<TMap = unknown> {
     return entry;
   }
 
+  /** Parses the request's raw body bytes as JSON, returning `undefined` on invalid JSON. */
   private static parseRequestBody(ctx: WebhookContext): unknown {
     try {
       return JSON.parse(bodyDecoder.decode(ctx.rawBody)) as unknown;
@@ -288,6 +308,7 @@ export class WebhookRouter<TMap = unknown> {
     }
   }
 
+  /** Validates the parsed payload against the route schema, returning either the validated value or a `400` response. */
   private static async validatePayload<TPayload>(
     parsedJson: unknown,
     schema?: StandardSchemaV1<unknown, TPayload>
@@ -319,6 +340,7 @@ export class WebhookRouter<TMap = unknown> {
     return result.value;
   }
 
+  /** Invokes the route handler with the validated payload, defaulting to a `200 "ok"` response. */
   private static async executeHandler<TPayload = unknown>(
     handler: WebhookHandler<TPayload>,
     ctx: WebhookContext,
@@ -332,6 +354,7 @@ export class WebhookRouter<TMap = unknown> {
     return responded ?? Response.json("ok");
   }
 
+  /** Builds the error response for a failed request, deferring to the global error hook when set. */
   private async handleError(
     error: unknown,
     ctx: WebhookContext

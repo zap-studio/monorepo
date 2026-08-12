@@ -9,7 +9,7 @@
  * @module @zap-studio/validation
  */
 
-export type { StandardSchemaV1 } from "@standard-schema/spec";
+export type { StandardSchemaV1, StandardTypedV1 } from "@standard-schema/spec";
 export { ValidationError } from "./errors.js";
 export {
   createStandardValidator,
