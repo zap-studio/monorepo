@@ -7,7 +7,6 @@
     ".": "./src/index.ts",
     "./conditions": "./src/conditions.ts",
     "./errors": "./src/errors.ts",
-    "./helpers": "./src/helpers.ts",
     "./policy": "./src/policy.ts",
     "./types": "./src/types.ts"
   },

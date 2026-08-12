@@ -36,7 +36,6 @@
     ".": "./dist/index.js",
     "./conditions": "./dist/conditions.js",
     "./errors": "./dist/errors.js",
-    "./helpers": "./dist/helpers.js",
     "./policy": "./dist/policy.js",
     "./types": "./dist/types.js",
     "./package.json": "./package.json"
