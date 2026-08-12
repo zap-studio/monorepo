@@ -152,7 +152,8 @@ export const createPolicy = <
       resource: InferResource<TResources, K>
     ): Promise<boolean> {
       const parsedPermission = parsePermission<TResources, TActions, K>(
-        permission
+        permission,
+        actions
       );
       if (parsedPermission === null) {
         return false;

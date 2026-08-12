@@ -34,29 +34,34 @@ export const assertNever = (value: never): never => {
 
 /**
  * Splits a typed `resource:action` permission string into its parts.
- * Returns `null` when the string is malformed (missing/empty part or extra segments).
+ * Returns `null` when the string is malformed (missing/empty part or extra
+ * segments) or `resourceType` is not one of `actions`' keys.
  */
 export const parsePermission = <
   TResources extends Resources,
   TActions extends Actions<TResources>,
   K extends keyof TResources & keyof TActions,
 >(
-  permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`
+  permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
+  actions: TActions
 ): { action: InferAction<TResources, TActions, K>; resourceType: K } | null => {
+  const isValidResourceKey = (value: string): value is K & string =>
+    Object.keys(actions).includes(value);
+
   const [resourceTypeValue, actionValue, ...rest] = permission.split(":");
   if (
     resourceTypeValue === undefined ||
     resourceTypeValue.length === 0 ||
     actionValue === undefined ||
     actionValue.length === 0 ||
-    rest.length > 0
+    rest.length > 0 ||
+    !isValidResourceKey(resourceTypeValue)
   ) {
     return null;
   }
 
   return {
     action: actionValue,
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Parsed permission strings are constrained by the typed permission template.
-    resourceType: resourceTypeValue as K,
+    resourceType: resourceTypeValue,
   };
 };
