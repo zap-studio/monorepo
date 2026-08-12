@@ -4,6 +4,7 @@
  * @module @zap-studio/webhooks/types
  */
 
+export type { StandardSchemaV1 } from "@zap-studio/validation";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /**
@@ -62,7 +63,8 @@ export type SchemaRouteOptions<
   schema: TSchema;
 };
 
-interface RouteLike {
+/** A single route's registration shape, as used by schema-driven route dictionaries. */
+export interface RouteLike {
   after?: AfterHook | AfterHook[];
   before?: BeforeHook | BeforeHook[];
   handler: WebhookHandler;

@@ -235,7 +235,7 @@ export const collectInheritedRoles = <TRole extends Role = Role>(
 /**
  * Call signatures for {@link hasRole}, preserving the with/without hierarchy overloads.
  */
-interface HasRoleFn {
+export interface HasRoleFn {
   <
     TContext extends { role: Role | Role[] },
     TAction extends string = string,

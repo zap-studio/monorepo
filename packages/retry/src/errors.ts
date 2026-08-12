@@ -79,6 +79,8 @@ export class AbortError extends Error {
   public override readonly cause?: unknown;
 
   /**
+   * Creates an AbortError with an optional diagnostic cause.
+   *
    * @param message - Human-readable abort description.
    * @param context - Optional `cause` link for diagnostic chaining.
    */
