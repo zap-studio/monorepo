@@ -16,7 +16,7 @@ Instead of dealing with each schema library's error shape, you catch one predict
 - `standardValidate(schema, input, { throwOnError: true })`
 - `standardValidateSync(schema, input, { throwOnError: true })`
 - validators from `createStandardValidator(schema)` called with `{ throwOnError: true }`
-- validators from `createSyncStandardValidator(schema)` called with `{ throwOnError: true }`
+- validators from `createStandardValidatorSync(schema)` called with `{ throwOnError: true }`
 
 When `throwOnError` is `false` or omitted, the helpers never throw for invalid input — they return the raw result with `issues` instead.
 
@@ -98,6 +98,6 @@ As a rule of thumb:
 The sync helpers reject asynchronous schemas with errors that are **not** `ValidationError`:
 
 - `standardValidateSync` throws a `TypeError` with the message `Async schemas are not supported by standardValidateSync`.
-- Validators from `createSyncStandardValidator` throw an `Error` with the message `Async schemas are not supported by createSyncStandardValidator`, with the underlying `TypeError` as its `cause`.
+- Validators from `createStandardValidatorSync` throw an `Error` with the message `Async schemas are not supported by createStandardValidatorSync`, with the underlying `TypeError` as its `cause`.
 
 These indicate a programming error (wrong helper for the schema), so let them propagate rather than catching them alongside validation failures. Switch to [`standardValidate`](/validation/how-to-validate) if the schema may validate asynchronously.

@@ -304,7 +304,7 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
  * @param schema - The schema to validate against.
  * @returns A synchronous validator function.
  * @throws {Error} When the returned validator receives a schema result Promise.
- *   The message is `Async schemas are not supported by createSyncStandardValidator`.
+ *   The message is `Async schemas are not supported by createStandardValidatorSync`.
  * @throws {ValidationError} When the returned validator is called with
  *   `throwOnError: true` and validation returns issues.
  * @throws {TypeError} When the returned validator is called and the provided value does not
@@ -314,7 +314,7 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
  *
  * @example
  * ```ts
- * const validateUser = createSyncStandardValidator(userSchema);
+ * const validateUser = createStandardValidatorSync(userSchema);
  *
  * const result = validateUser({
  *   name: "Ada",
@@ -328,7 +328,7 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
  * }
  * ```
  */
-export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
+export function createStandardValidatorSync<TSchema extends StandardSchemaV1>(
   schema: TSchema
 ): {
   (
@@ -371,7 +371,7 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
           "Async schemas are not supported by standardValidateSync"
       ) {
         throw new Error(
-          "Async schemas are not supported by createSyncStandardValidator",
+          "Async schemas are not supported by createStandardValidatorSync",
           { cause: error }
         );
       }

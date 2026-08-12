@@ -96,7 +96,7 @@ Instead of hard-coding behavior for one validator, package code can target that 
 `@zap-studio/validation` is a thin, consistent helper surface over the Standard Schema contract:
 
 - The **validate helpers** (`standardValidate`, `standardValidateSync`) call a schema's `~standard.validate` function for you and normalize the sync/async difference.
-- The **factories** (`createStandardValidator`, `createSyncStandardValidator`) bind a schema once and return a reusable validator function.
+- The **factories** (`createStandardValidator`, `createStandardValidatorSync`) bind a schema once and return a reusable validator function.
 - The **`throwOnError` option** switches between two return modes: raw result (`{ value }` or `{ issues }`) or parsed value with a thrown `ValidationError` on failure.
 - The **guard** (`isStandardSchema`) detects at runtime whether an unknown value implements the Standard Schema interface.
 

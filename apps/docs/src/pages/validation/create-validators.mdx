@@ -1,6 +1,6 @@
 ---
 title: Create Validators
-description: Build reusable validation functions with createStandardValidator and createSyncStandardValidator.
+description: Build reusable validation functions with createStandardValidator and createStandardValidatorSync.
 ---
 
 # Create Validators
@@ -57,12 +57,12 @@ Use it when:
 
 ## Create a Sync Validator
 
-`createSyncStandardValidator(schema)` returns a synchronous validator. It supports the same options and return modes as `standardValidateSync`.
+`createStandardValidatorSync(schema)` returns a synchronous validator. It supports the same options and return modes as `standardValidateSync`.
 
 ```ts
-import { createSyncStandardValidator } from "@zap-studio/validation";
+import { createStandardValidatorSync } from "@zap-studio/validation";
 
-const validateUser = createSyncStandardValidator(userSchema);
+const validateUser = createStandardValidatorSync(userSchema);
 
 const result = validateUser({ name: "Ada", age: 37 });
 
@@ -80,10 +80,10 @@ Use it when:
 - code must stay synchronous
 - schemas are guaranteed sync
 
-:::warning[Async Schemas] If the schema validates asynchronously, the returned validator throws an `Error` with the message `Async schemas are not supported by createSyncStandardValidator`. The underlying `TypeError` is attached as the error's `cause`. :::
+:::warning[Async Schemas] If the schema validates asynchronously, the returned validator throws an `Error` with the message `Async schemas are not supported by createStandardValidatorSync`. The underlying `TypeError` is attached as the error's `cause`. :::
 
 ## Which Factory Should I Use?
 
 - Prefer `createStandardValidator` for default package and app code.
-- Use `createSyncStandardValidator` in strict sync contexts only.
+- Use `createStandardValidatorSync` in strict sync contexts only.
 - For one-shot validation without a reusable function, call [`standardValidate` or `standardValidateSync`](/validation/how-to-validate) directly.
