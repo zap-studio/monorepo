@@ -132,6 +132,28 @@ export type ConditionFn<
 > = (context: TContext, action: TAction, resource: TResource) => boolean;
 
 /**
+ * Call signatures for {@link hasRole}, preserving the with/without hierarchy overloads.
+ */
+export interface HasRoleFn {
+  <
+    TContext extends { role: Role | Role[] },
+    TAction extends string = string,
+    TResource = unknown,
+  >(
+    role: Role
+  ): ConditionFn<TContext, TAction, TResource>;
+  <
+    TContext extends { role: TRole | TRole[] },
+    TAction extends string = string,
+    TResource = unknown,
+    TRole extends Role = Role,
+  >(
+    role: TRole,
+    hierarchy: RoleHierarchy<TRole>
+  ): ConditionFn<TContext, TAction, TResource>;
+}
+
+/**
  * Maps actions to their corresponding policy functions for a specific resource.
  */
 export type ActionPolicyMap<
