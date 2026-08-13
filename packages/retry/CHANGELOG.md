@@ -1,3 +1,9 @@
+## @zap-studio/retry@0.4.1
+
+### Reduced module surface
+
+Folded `_run.ts` into `base-policy.ts` — its only consumer. `runResultMode`/`runThrowMode` are now file-private (no longer separately importable even internally). No public API or behavior change.
+
 ## @zap-studio/retry@0.4.0
 
 ### Reduced module surface (breaking)

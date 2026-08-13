@@ -9,8 +9,7 @@
  * @module @zap-studio/retry
  */
 
-export { defaultSleep } from "./_run.js";
-export { BaseRetryPolicy } from "./base-policy.js";
+export { BaseRetryPolicy, defaultSleep } from "./base-policy.js";
 export { AbortError, RetryError } from "./errors.js";
 export type { AbortErrorContext, RetryErrorContext } from "./errors.js";
 export { ExponentialBackoff } from "./exponential-backoff.js";

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { defaultSleep } from "../src/_run.js";
+import { defaultSleep } from "../src/base-policy.js";
 import { AbortError, RetryError } from "../src/errors.js";
 import {
   CustomTerminalPolicy,
