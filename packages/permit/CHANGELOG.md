@@ -1,3 +1,9 @@
+## @zap-studio/permit@0.3.5
+
+### Reduced module surface
+
+Folded `_helpers.ts` away: `parsePermission` moved into `policy.ts` (its only consumer, still private), and `assertNever` moved into `index.ts`. No public API or behavior change — `assertNever` is still exported from `@zap-studio/permit`.
+
 ## @zap-studio/permit@0.3.4
 
 ### Tree-shakeable root re-exports

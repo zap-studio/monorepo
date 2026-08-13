@@ -8,7 +8,6 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { createStandardValidator } from "@zap-studio/validation";
 
-import { parsePermission } from "./_helpers.js";
 import { PolicyError } from "./errors.js";
 import type {
   Actions,
@@ -19,6 +18,40 @@ import type {
   Policy,
   Resources,
 } from "./types.js";
+
+/**
+ * Splits a typed `resource:action` permission string into its parts.
+ * Returns `null` when the string is malformed (missing/empty part or extra
+ * segments) or `resourceType` is not one of `actions`' keys.
+ */
+const parsePermission = <
+  TResources extends Resources,
+  TActions extends Actions<TResources>,
+  K extends keyof TResources & keyof TActions,
+>(
+  permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
+  actions: TActions
+): { action: InferAction<TResources, TActions, K>; resourceType: K } | null => {
+  const isValidResourceKey = (value: string): value is K & string =>
+    Object.keys(actions).includes(value);
+
+  const [resourceTypeValue, actionValue, ...rest] = permission.split(":");
+  if (
+    resourceTypeValue === undefined ||
+    resourceTypeValue.length === 0 ||
+    actionValue === undefined ||
+    actionValue.length === 0 ||
+    rest.length > 0 ||
+    !isValidResourceKey(resourceTypeValue)
+  ) {
+    return null;
+  }
+
+  return {
+    action: actionValue,
+    resourceType: resourceTypeValue,
+  };
+};
 
 /**
  * Creates a type-safe policy from resource schemas, actions, and rules.

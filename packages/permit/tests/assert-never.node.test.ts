@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { assertNever } from "../src/_helpers.js";
+import { assertNever } from "../src/index.js";
 
 describe(assertNever, () => {
   describe("runtime behavior", () => {
