@@ -71,6 +71,22 @@ export class RetryError extends Error {
 
 /**
  * Error thrown when retry orchestration is canceled through `AbortSignal`.
+ *
+ * @example
+ * ```ts
+ * import { AbortError, BaseRetryPolicy } from "@zap-studio/retry";
+ *
+ * const controller = new AbortController();
+ * controller.abort("shutting down");
+ *
+ * try {
+ *   await policy.run(doWork, { signal: controller.signal });
+ * } catch (error) {
+ *   if (error instanceof AbortError) {
+ *     console.error("Retry canceled:", error.message);
+ *   }
+ * }
+ * ```
  */
 export class AbortError extends Error {
   /**

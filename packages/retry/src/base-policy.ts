@@ -19,6 +19,13 @@ import type {
  *
  * @param delayMs - Milliseconds to wait before resolving.
  * @returns Promise that resolves when the delay completes.
+ *
+ * @example
+ * ```ts
+ * import { defaultSleep } from "@zap-studio/retry";
+ *
+ * await defaultSleep(250); // waits 250ms
+ * ```
  */
 export const defaultSleep = async (delayMs: number): Promise<void> => {
   if (delayMs <= 0) {
@@ -371,6 +378,22 @@ const runResultMode = async <T, TError, TData>(
  * Extend this class and implement {@link BaseRetryPolicy.next} to define retry
  * behavior, then call {@link BaseRetryPolicy.run} to execute operations with that
  * policy.
+ *
+ * @example
+ * ```ts
+ * import { BaseRetryPolicy } from "@zap-studio/retry";
+ *
+ * class LinearBackoff extends BaseRetryPolicy {
+ *   next({ attempt }: { attempt: number }) {
+ *     return attempt < 3
+ *       ? { shouldRetry: true, delayMs: attempt * 100, reason: "retry" as const }
+ *       : { shouldRetry: false, delayMs: 0, reason: "max-attempts-reached" as const };
+ *   }
+ * }
+ *
+ * const policy = new LinearBackoff();
+ * const data = await policy.run(async () => fetchFlakyResource());
+ * ```
  */
 export abstract class BaseRetryPolicy<
   TError = unknown,
@@ -392,6 +415,19 @@ export abstract class BaseRetryPolicy<
    * @param input - Exhaustion context.
    * @returns `RetryError` by default.
    * @throws {Error} Any error thrown by an overriding policy implementation.
+   *
+   * @example
+   * ```ts
+   * class CustomTerminalPolicy extends BaseRetryPolicy {
+   *   next() {
+   *     return { shouldRetry: false, delayMs: 0, reason: "policy-declined" as const };
+   *   }
+   *
+   *   override onExhausted({ attempts, error }: { attempts: number; error?: unknown }) {
+   *     return new RetryError(`Gave up after ${attempts} attempts`, { attempts, lastError: error });
+   *   }
+   * }
+   * ```
    */
   // oxlint-disable-next-line class-methods-use-this -- RetryPolicy requires an instance hook that subclasses may override.
   public onExhausted(input: RetryExhaustedInput<TError, TData>): RetryError {

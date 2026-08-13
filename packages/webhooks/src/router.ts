@@ -82,6 +82,22 @@ const normalizePath = (path: string): string => {
  * Main webhook router class.
  *
  * Register routes with typed schemas and call `handle` with a Web API `Request`.
+ *
+ * @example
+ * ```ts
+ * import { WebhookRouter } from "@zap-studio/webhooks";
+ *
+ * const router = new WebhookRouter({ prefix: "/webhooks" });
+ *
+ * router.register("/stripe", {
+ *   schema: stripeEventSchema,
+ *   handler: async ({ payload }) => {
+ *     console.log("Stripe event:", payload.type);
+ *   },
+ * });
+ *
+ * export default { fetch: (request: Request) => router.handle(request) };
+ * ```
  */
 export class WebhookRouter<TMap = unknown> {
   private readonly handlers = new Map<string, HandlerEntry>();
@@ -96,6 +112,15 @@ export class WebhookRouter<TMap = unknown> {
    * Creates a webhook router with optional global hooks and verification behavior.
    *
    * @param opts - Router-level options.
+   *
+   * @example
+   * ```ts
+   * const router = new WebhookRouter({
+   *   prefix: "/webhooks",
+   *   verify: createHmacVerifier({ headerName: "x-signature", secret }),
+   *   onError: (error) => Response.json({ error: error.message }, { status: 500 }),
+   * });
+   * ```
    */
   constructor(opts: WebhookRouterOptions = {}) {
     this.prefix = normalizePath(opts.prefix ?? "/webhooks");
@@ -114,6 +139,16 @@ export class WebhookRouter<TMap = unknown> {
    * @param path - Route path relative to configured prefix, starting with `/` (e.g. `"/stripe"`).
    * @param handlerOrOptions - Handler function or schema-based registration options.
    * @returns The same router instance with an updated internal route type map.
+   *
+   * @example
+   * ```ts
+   * router.register("/stripe", {
+   *   schema: stripeEventSchema,
+   *   handler: async ({ payload }) => {
+   *     console.log(payload.type); // typed from stripeEventSchema
+   *   },
+   * });
+   * ```
    */
   register<
     Path extends `/${string}`,
@@ -128,6 +163,14 @@ export class WebhookRouter<TMap = unknown> {
    * @param path - Route path relative to configured prefix, starting with `/` (e.g. `"/stripe"`).
    * @param handlerOrOptions - Registration options without a schema.
    * @returns The same router instance with an updated internal route type map.
+   *
+   * @example
+   * ```ts
+   * router.register("/ping", {
+   *   before: (ctx) => console.log("received", ctx.path),
+   *   handler: () => Response.json({ ok: true }),
+   * });
+   * ```
    */
   register<Path extends `/${string}`, TPayload>(
     path: Path,
@@ -139,6 +182,11 @@ export class WebhookRouter<TMap = unknown> {
    * @param path - Route path relative to configured prefix, starting with `/` (e.g. `"/stripe"`).
    * @param handlerOrOptions - Handler function to process the webhook.
    * @returns The same router instance with an updated internal route type map.
+   *
+   * @example
+   * ```ts
+   * router.register("/health", () => Response.json({ status: "ok" }));
+   * ```
    */
   register<Path extends `/${string}`>(
     path: Path,
@@ -166,6 +214,14 @@ export class WebhookRouter<TMap = unknown> {
    *
    * @param request - Incoming Web API request.
    * @returns Web API response for the runtime to send back.
+   *
+   * @example
+   * ```ts
+   * // Framework-agnostic: works with any Web API Request/Response runtime.
+   * export async function POST(request: Request): Promise<Response> {
+   *   return router.handle(request);
+   * }
+   * ```
    */
   async handle(request: Request): Promise<Response> {
     const path = this.matchPath(request);
@@ -382,6 +438,14 @@ export class WebhookRouter<TMap = unknown> {
  *
  * @param opts - Optional global router options.
  * @returns A new webhook router.
+ *
+ * @example
+ * ```ts
+ * import { createWebhookRouter } from "@zap-studio/webhooks";
+ *
+ * const router = createWebhookRouter({ prefix: "/webhooks" });
+ * router.register("/stripe", { schema: stripeEventSchema, handler });
+ * ```
  */
 export const createWebhookRouter = (
   opts?: WebhookRouterOptions
