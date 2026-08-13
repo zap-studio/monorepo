@@ -177,20 +177,20 @@ rules: {
 
 ### Policy Merging
 
-#### `mergePolicies(...policies)`
+#### `mergePoliciesDeny(...policies)`
 
 Merges policies with "deny-overrides" strategy. All policies must allow for the action to be permitted.
 
 ```ts
-const merged = mergePolicies(basePolicy, restrictivePolicy);
+const merged = mergePoliciesDeny(basePolicy, restrictivePolicy);
 ```
 
-#### `mergePoliciesAny(...policies)`
+#### `mergePoliciesAllow(...policies)`
 
 Merges policies with "allow-overrides" strategy. Any policy allowing is sufficient.
 
 ```ts
-const merged = mergePoliciesAny(guestPolicy, memberPolicy);
+const merged = mergePoliciesAllow(guestPolicy, memberPolicy);
 ```
 
 ## Type Helpers

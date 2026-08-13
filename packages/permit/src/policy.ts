@@ -1,6 +1,6 @@
 /**
- * Policy creation and composition: `createPolicy`, `mergePolicies`, and
- * `mergePoliciesAny`.
+ * Policy creation and composition: `createPolicy`, `mergePoliciesDeny`, and
+ * `mergePoliciesAllow`.
  *
  * @module @zap-studio/permit/policy
  */
@@ -217,11 +217,11 @@ const mergePoliciesWithStrategy = <
  * const basePolicy = createPolicy({ ... });
  * const adminPolicy = createPolicy({ ... });
  *
- * const merged = mergePolicies(basePolicy, adminPolicy);
+ * const merged = mergePoliciesDeny(basePolicy, adminPolicy);
  * // Both policies must allow for the action to be permitted
  * ```
  */
-export const mergePolicies = <
+export const mergePoliciesDeny = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
@@ -239,11 +239,11 @@ export const mergePolicies = <
  * const guestPolicy = createPolicy({ ... });
  * const memberPolicy = createPolicy({ ... });
  *
- * const merged = mergePoliciesAny(guestPolicy, memberPolicy);
+ * const merged = mergePoliciesAllow(guestPolicy, memberPolicy);
  * // If either policy allows, the action is permitted
  * ```
  */
-export const mergePoliciesAny = <
+export const mergePoliciesAllow = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,

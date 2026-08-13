@@ -22,7 +22,11 @@ export {
 } from "./conditions.js";
 export { PolicyError } from "./errors.js";
 export { assertNever } from "./_helpers.js";
-export { createPolicy, mergePolicies, mergePoliciesAny } from "./policy.js";
+export {
+  createPolicy,
+  mergePoliciesDeny,
+  mergePoliciesAllow,
+} from "./policy.js";
 export type {
   ActionPolicyMap,
   Actions,
