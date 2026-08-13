@@ -27,5 +27,4 @@ export type {
   WebhookContext,
   WebhookHandler,
 } from "./types.js";
-export { constantTimeEquals } from "./utils.js";
 export { createHmacVerifier } from "./verify.js";

@@ -1,3 +1,12 @@
+## @zap-studio/webhooks@0.5.0
+
+### Reduced module surface (breaking)
+
+`constantTimeEquals` moved into `verify.ts` (its only consumer) and is no longer part of the public API.
+
+- Removed the `./utils` subpath export.
+- Removed the public `constantTimeEquals` export from `@zap-studio/webhooks` — it was an implementation detail of `createHmacVerifier`, not a standalone utility.
+
 ## @zap-studio/webhooks@0.4.0
 
 ### Rework the package on Web API `Request`/`Response` (breaking)
