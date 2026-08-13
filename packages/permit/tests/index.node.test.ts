@@ -1813,7 +1813,7 @@ describe(mergePoliciesSome, () => {
     await expect(merged.can(ctx, "post:read", post)).resolves.toBeFalsy();
   });
 
-  it("should short-circuit on first allow", async () => {
+  it("should evaluate all policies in parallel (no short-circuit)", async () => {
     await Promise.resolve();
     let policy2Called = false;
 
@@ -1853,7 +1853,7 @@ describe(mergePoliciesSome, () => {
     };
 
     await merged.can(ctx, "post:read", post);
-    expect(policy2Called).toBeFalsy();
+    expect(policy2Called).toBeTruthy();
   });
 
   it("should support layered permissions pattern", async () => {

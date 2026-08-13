@@ -226,18 +226,24 @@ const mergePoliciesWithStrategy = <
     if (policies.length === 0) {
       return false;
     }
-    for (const policy of policies) {
-      // oxlint-disable-next-line no-await-in-loop -- Policies must evaluate sequentially to preserve short-circuit semantics.
-      const allowed = await policy.can(context, permission, resource);
 
-      if (strategy === "some" && allowed) {
-        return true;
+    if (strategy === "every") {
+      for (const policy of policies) {
+        // oxlint-disable-next-line no-await-in-loop -- "every" must evaluate sequentially to short-circuit on the first deny.
+        const allowed = await policy.can(context, permission, resource);
+        if (!allowed) {
+          return false;
+        }
       }
-      if (strategy === "every" && !allowed) {
-        return false;
-      }
+      return true;
     }
-    return strategy === "every";
+
+    const results = await Promise.all(
+      policies.map(
+        async (policy) => await policy.can(context, permission, resource)
+      )
+    );
+    return results.some(Boolean);
   },
 });
 
@@ -265,7 +271,8 @@ export const mergePoliciesEvery = <
 
 /**
  * Merges multiple policies into one, requiring at least one policy to allow.
- * If every policy denies, the merged policy denies.
+ * If every policy denies, the merged policy denies. Policies are evaluated
+ * in parallel; every policy is invoked regardless of outcome.
  *
  * @example
  * ```ts
