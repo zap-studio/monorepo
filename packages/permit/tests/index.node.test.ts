@@ -852,6 +852,35 @@ describe(createPolicy, () => {
     ).resolves.toBeFalsy();
   });
 
+  it("should deny when the actions map has no entry for a resource type", async () => {
+    await Promise.resolve();
+    const brokenActions = {
+      comment: undefined,
+      post: ["read"],
+    } as unknown as typeof actions;
+    const policy = createPolicy<
+      TestContext,
+      typeof resources,
+      typeof brokenActions
+    >({
+      actions: brokenActions,
+      resources,
+      rules: {
+        comment: {
+          read: allow(),
+        },
+        post: {
+          read: allow(),
+        },
+      },
+    });
+
+    const ctx: TestContext = { user: { id: "user-1", role: "guest" } };
+    const comment: Comment = { authorId: "user-1", id: "1", postId: "1" };
+
+    await expect(policy.can(ctx, "comment:read", comment)).resolves.toBeFalsy();
+  });
+
   it("should evaluate when() conditions", async () => {
     await Promise.resolve();
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
