@@ -1,14 +1,14 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { describe, expect, it } from "vitest";
 
-import { ValidationError } from "../src/errors.js";
+import { ValidationError } from "./errors.js";
 import {
   createStandardValidator,
   createStandardValidatorSync,
   isStandardSchema,
   standardValidate,
   standardValidateSync,
-} from "../src/index.js";
+} from "./index.js";
 
 function createMockSchema<T>(
   validateFn: (

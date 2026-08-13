@@ -1,14 +1,15 @@
+// oxlint-disable max-classes-per-file -- Test fixture policies are intentionally colocated.
 import { expect } from "vitest";
 
-import type { AbortError } from "../src/errors.js";
-import { RetryError } from "../src/errors.js";
-import { BaseRetryPolicy } from "../src/index.js";
+import type { AbortError } from "./errors.js";
+import { RetryError } from "./errors.js";
+import { BaseRetryPolicy } from "./index.js";
 import type {
   RetryDecision,
   RetryDecisionInput,
   RetryExhaustedInput,
   RetryRunResult,
-} from "../src/types.js";
+} from "./types.js";
 
 export class SequencePolicy extends BaseRetryPolicy<Error, string> {
   public readonly seen: RetryDecisionInput<Error, string>[] = [];
@@ -32,10 +33,12 @@ export class SequencePolicy extends BaseRetryPolicy<Error, string> {
 }
 
 export class CustomTerminalPolicy extends BaseRetryPolicy<Error> {
+  // oxlint-disable-next-line class-methods-use-this -- RetryPolicy requires an instance hook that subclasses may override.
   public next(): RetryDecision {
     return { delayMs: 0, reason: "policy-declined", shouldRetry: false };
   }
 
+  // oxlint-disable-next-line class-methods-use-this -- RetryPolicy requires an instance hook that subclasses may override.
   public override onExhausted(input: RetryExhaustedInput<Error>): RetryError {
     return new RetryError(`custom:${input.attempts}`, {
       attempts: input.attempts,

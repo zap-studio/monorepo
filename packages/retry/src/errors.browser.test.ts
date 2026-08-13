@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { AbortError, RetryError } from "../src/errors.js";
+import { AbortError, RetryError } from "./errors.js";
 
 describe(RetryError, () => {
   it("stores message and context fields", () => {

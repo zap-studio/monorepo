@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { defaultSleep } from "../src/base-policy.js";
-import { AbortError, RetryError } from "../src/errors.js";
 import {
   CustomTerminalPolicy,
   expectFailureResult,
   SequencePolicy,
-} from "./sequence-policy.js";
+} from "./_sequence-policy.js";
+import { defaultSleep } from "./base-policy.js";
+import { AbortError, RetryError } from "./errors.js";
 
 describe(defaultSleep, () => {
   it("resolves immediately when delay is non-positive", async () => {
@@ -498,5 +498,80 @@ describe("result mode (throwOnExhausted: false)", () => {
     expect(failure.attempts).toBe(1);
     expect(failure.error.message).toBe("aborted-from-wait-catch");
     expect(failure.error).toBeInstanceOf(AbortError);
+  });
+});
+
+describe("BaseRetryPolicy", () => {
+  it("creates RetryError with data from default onExhausted", () => {
+    const policy = new SequencePolicy([
+      { delayMs: 0, reason: "policy-declined", shouldRetry: false },
+    ]);
+
+    const error = policy.onExhausted({
+      attempts: 3,
+      data: "payload",
+      error: new Error("boom"),
+    });
+
+    expect(error).toBeInstanceOf(RetryError);
+    expect(error.lastData).toBe("payload");
+    expect(error.attempts).toBe(3);
+  });
+});
+
+describe("test helpers", () => {
+  describe(SequencePolicy, () => {
+    it("falls back to a terminal decision when constructed without decisions", () => {
+      const policy = new SequencePolicy([]);
+
+      const decision = policy.next({
+        attempt: 1,
+        error: new Error("boom"),
+      });
+
+      expect(decision).toStrictEqual({
+        delayMs: 0,
+        reason: "policy-declined",
+        shouldRetry: false,
+      });
+    });
+
+    it("repeats the last decision once the sequence is exhausted", () => {
+      const policy = new SequencePolicy([
+        { delayMs: 5, reason: "retryable", shouldRetry: true },
+      ]);
+      const input = {
+        attempt: 1,
+        error: new Error("boom"),
+      };
+
+      const first = policy.next(input);
+      const second = policy.next({ ...input, attempt: 2 });
+
+      expect(first).toStrictEqual(second);
+      expect(policy.seen).toHaveLength(2);
+    });
+  });
+
+  describe(expectFailureResult, () => {
+    it("returns the failure result unchanged", () => {
+      const policy = new SequencePolicy([]);
+      const failure = {
+        attempts: 1,
+        error: policy.onExhausted({
+          attempts: 1,
+          error: new Error("boom"),
+        }),
+        ok: false,
+      } as const;
+
+      expect(expectFailureResult(failure)).toBe(failure);
+    });
+
+    it("fails the test when given a success result", () => {
+      expect(() =>
+        expectFailureResult({ ok: true, value: "done" })
+      ).toThrowError("Expected failure result");
+    });
   });
 });
