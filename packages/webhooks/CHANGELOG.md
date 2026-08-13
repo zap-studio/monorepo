@@ -7,6 +7,10 @@
 - Removed the `./utils` subpath export.
 - Removed the public `constantTimeEquals` export from `@zap-studio/webhooks` — it was an implementation detail of `createHmacVerifier`, not a standalone utility.
 
+### `createHmacVerifier` now compares raw signature bytes
+
+HMAC signature verification decodes the incoming header's hex signature to bytes and compares it against the computed digest byte-for-byte, instead of hex-encoding the digest and comparing hex text. Behavior is unchanged for valid requests; this only affects internals (fewer bytes compared, and the header's hex is no longer case-normalized as text since decoding handles case natively).
+
 ## @zap-studio/webhooks@0.4.0
 
 ### Rework the package on Web API `Request`/`Response` (breaking)

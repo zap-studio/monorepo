@@ -128,6 +128,23 @@ describe(createHmacVerifier, () => {
     });
   });
 
+  it("fails when the signature is valid hex but the wrong length", async () => {
+    const verify = createHmacVerifier({
+      headerName: "X-Hub-Signature-256",
+      secret: "my-secret",
+    });
+
+    const error = await captureThrownError(() =>
+      verify(createMockContext("body", "aa"))
+    );
+
+    expect(error).toBeInstanceOf(VerificationError);
+    expect(error).toMatchObject({
+      message: "Invalid signature for header: X-Hub-Signature-256",
+      name: "VerificationError",
+    });
+  });
+
   it("accepts prefixed signatures", async () => {
     const body = "test body";
     const secret = "my-secret";
