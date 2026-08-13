@@ -38,6 +38,11 @@ export type {
  *
  * These defaults are used by the top-level `$fetch` export.
  * Use `createFetch(...)` when you need per-client defaults.
+ *
+ * @example
+ * import { GLOBAL_DEFAULTS } from "@zap-studio/fetch";
+ *
+ * console.log(GLOBAL_DEFAULTS.throwOnFetchError); // true
  */
 export const GLOBAL_DEFAULTS: FetchDefaults = {
   baseURL: "",

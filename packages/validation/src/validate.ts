@@ -16,6 +16,11 @@ import { ValidationError } from "./errors.js";
 
 /**
  * Options for validation helpers.
+ *
+ * @example
+ * ```ts
+ * const options: StandardValidateOptions = { throwOnError: true };
+ * ```
  */
 export interface StandardValidateOptions {
   /**

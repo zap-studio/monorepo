@@ -31,7 +31,17 @@ interface HandlerEntry<TPayload = unknown> {
   schema?: StandardSchemaV1<unknown, TPayload>;
 }
 
-/** Configuration options for creating a `WebhookRouter`. */
+/**
+ * Configuration options for creating a `WebhookRouter`.
+ *
+ * @example
+ * ```ts
+ * const options: WebhookRouterOptions = {
+ *   prefix: "/webhooks",
+ *   verify: createHmacVerifier({ headerName: "x-signature", secret }),
+ * };
+ * ```
+ */
 export interface WebhookRouterOptions {
   /** Global hooks executed after successful route handler completion. */
   after?: AfterHook | AfterHook[];

@@ -10,17 +10,32 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
  * Represents the possible outcomes of a policy decision.
  * - "allow": The action is permitted.
  * - "deny": The action is not permitted.
+ *
+ * @example
+ * ```ts
+ * const decision: Decision = "allow";
+ * ```
  */
 export type Decision = "allow" | "deny";
 
 /**
  * Represents the context in which a policy decision is made.
  * Can include user information, environment, or any relevant data.
+ *
+ * @example
+ * ```ts
+ * type AppContext = Context<{ user: { id: string; role: string } }>;
+ * ```
  */
 export type Context<TContext = unknown> = TContext;
 
 /**
  * Represents a role within the system.
+ *
+ * @example
+ * ```ts
+ * type AppRole = Role<"guest" | "user" | "admin">;
+ * ```
  */
 export type Role<TRole extends string = string> = TRole;
 
@@ -81,6 +96,11 @@ export type Actions<TResources extends Resources> = {
 
 /**
  * Infers the output type from a Standard Schema.
+ *
+ * @example
+ * ```ts
+ * type Post = InferResource<typeof resources, "post">;
+ * ```
  */
 export type InferResource<
   TResources extends Resources,
@@ -89,6 +109,12 @@ export type InferResource<
 
 /**
  * Infers the action union type for a specific resource.
+ *
+ * @example
+ * ```ts
+ * type PostAction = InferAction<typeof resources, typeof actions, "post">;
+ * // "read" | "write" | "delete"
+ * ```
  */
 export type InferAction<
   TResources extends Resources,
@@ -116,6 +142,12 @@ export type InferPermission<
 
 /**
  * A function that determines whether a given action on a resource is allowed in a specific context.
+ *
+ * @example
+ * ```ts
+ * const readPolicy: PolicyFn<AppContext, "read", Post> = (context, action, post) =>
+ *   post.visibility === "public" ? "allow" : "deny";
+ * ```
  */
 export type PolicyFn<
   TContext extends Context,
@@ -125,6 +157,12 @@ export type PolicyFn<
 
 /**
  * A function that evaluates a condition for a given action and resource in a specific context.
+ *
+ * @example
+ * ```ts
+ * const isOwner: ConditionFn<AppContext, "write", Post> = (context, action, post) =>
+ *   context.user.id === post.authorId;
+ * ```
  */
 export type ConditionFn<
   TContext extends Context,

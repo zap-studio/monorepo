@@ -8,6 +8,9 @@
 
 /**
  * Context payload attached to `RetryError`.
+ *
+ * @example
+ * const context: RetryErrorContext = { attempts: 3, lastError: new Error("network") };
  */
 export interface RetryErrorContext {
   /**
@@ -26,6 +29,9 @@ export interface RetryErrorContext {
 
 /**
  * Context payload attached to `AbortError`.
+ *
+ * @example
+ * const context: AbortErrorContext = { cause: new Error("shutting down") };
  */
 export interface AbortErrorContext {
   /**
