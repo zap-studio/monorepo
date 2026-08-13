@@ -227,29 +227,29 @@ const mergePoliciesWithStrategy = <
       return false;
     }
 
-    if (strategy === "every") {
-      for (const policy of policies) {
-        // oxlint-disable-next-line no-await-in-loop -- "every" must evaluate sequentially to short-circuit on the first deny.
-        const allowed = await policy.can(context, permission, resource);
-        if (!allowed) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    const results = await Promise.all(
+    const settled = await Promise.allSettled(
       policies.map(
         async (policy) => await policy.can(context, permission, resource)
       )
     );
-    return results.some(Boolean);
+
+    const results = settled.map((result) => {
+      if (result.status === "fulfilled") {
+        return result.value;
+      }
+      return false;
+    });
+
+    return strategy === "every"
+      ? results.every(Boolean)
+      : results.some(Boolean);
   },
 });
 
 /**
  * Merges multiple policies into one, requiring every policy to allow.
- * If any policy denies, the merged policy denies.
+ * If any policy denies, the merged policy denies. Policies are evaluated
+ * in parallel; every policy is invoked regardless of outcome.
  *
  * @example
  * ```ts
