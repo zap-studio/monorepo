@@ -1592,6 +1592,45 @@ describe(mergePoliciesEvery, () => {
     expect(result).toBeFalsy();
   });
 
+  it("should treat a policy whose can() rejects as denied", async () => {
+    await Promise.resolve();
+    const policy1 = createPolicy<TestContext, typeof resources, typeof actions>(
+      {
+        actions,
+        resources,
+        rules: {
+          comment: { delete: allow(), read: allow(), write: allow() },
+          post: {
+            delete: allow(),
+            publish: allow(),
+            read: allow(),
+            write: allow(),
+          },
+        },
+      }
+    );
+
+    const policy2: ReturnType<
+      typeof createPolicy<TestContext, typeof resources, typeof actions>
+    > = {
+      can: async () => {
+        await Promise.resolve();
+        throw new Error("boom");
+      },
+    };
+
+    const merged = mergePoliciesEvery(policy1, policy2);
+    const ctx: TestContext = { user: { id: "1", role: "user" } };
+    const post = {
+      authorId: "user-1",
+      id: "1",
+      status: "published" as const,
+      visibility: "public" as const,
+    };
+
+    await expect(merged.can(ctx, "post:read", post)).resolves.toBeFalsy();
+  });
+
   it("should evaluate conditional rules across policies", async () => {
     await Promise.resolve();
     const policy1 = createPolicy<TestContext, typeof resources, typeof actions>(

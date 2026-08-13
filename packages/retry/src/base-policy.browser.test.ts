@@ -513,6 +513,40 @@ describe("result mode (throwOnExhausted: false)", () => {
     expect(failure.error).toBeInstanceOf(AbortError);
   });
 
+  it("returns abort result when the signal aborts during the delay race itself", async () => {
+    const policy = new SequencePolicy([
+      { delayMs: 10, reason: "retry", shouldRetry: true },
+    ]);
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockRejectedValue(new Error("fail"));
+    // oxlint-disable-next-line promise/avoid-new -- Sleep must stay pending so only the abort listener can settle the race.
+    const sleep = vi.fn(() => new Promise<void>(() => {}));
+
+    const fakeSignal = {
+      aborted: false,
+      addEventListener: vi.fn(
+        (_type: string, listener: EventListenerOrEventListenerObject) => {
+          fakeSignal.aborted = true;
+          (listener as () => void)();
+        }
+      ),
+      reason: "aborted-during-wait-race",
+      removeEventListener: vi.fn(),
+    } as unknown as AbortSignal & { aborted: boolean };
+
+    const result = await policy.run(execute, {
+      signal: fakeSignal,
+      sleep,
+      throwOnExhausted: false,
+    });
+
+    const failure = expectFailureResult(result);
+    expect(failure.attempts).toBe(1);
+    expect(failure.error.message).toBe("aborted-during-wait-race");
+    expect(failure.error).toBeInstanceOf(AbortError);
+  });
+
   it("returns a wrapped failure result immediately when it fails policy.isKnownError, bypassing retry", async () => {
     const policy = new SequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
