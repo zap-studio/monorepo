@@ -1548,7 +1548,7 @@ describe(mergePoliciesEvery, () => {
     await expect(merged.can(ctx, "post:read", post)).resolves.toBeFalsy();
   });
 
-  it("should short-circuit on first deny", async () => {
+  it("should invoke every policy even after a deny (no short-circuit)", async () => {
     await Promise.resolve();
     let policy2Called = false;
 
@@ -1587,8 +1587,9 @@ describe(mergePoliciesEvery, () => {
       visibility: "public" as const,
     };
 
-    await merged.can(ctx, "post:read", post);
-    expect(policy2Called).toBeFalsy();
+    const result = await merged.can(ctx, "post:read", post);
+    expect(policy2Called).toBeTruthy();
+    expect(result).toBeFalsy();
   });
 
   it("should evaluate conditional rules across policies", async () => {
