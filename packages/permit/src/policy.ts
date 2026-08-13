@@ -1,6 +1,6 @@
 /**
- * Policy creation and composition: `createPolicy`, `mergePoliciesDeny`, and
- * `mergePoliciesAllow`.
+ * Policy creation and composition: `createPolicy`, `mergePoliciesEvery`, and
+ * `mergePoliciesSome`.
  *
  * @module @zap-studio/permit/policy
  */
@@ -183,7 +183,7 @@ const mergePoliciesWithStrategy = <
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
   policies: Policy<TContext, TResources, TActions>[],
-  strategy: "allow-overrides" | "deny-overrides"
+  strategy: "every" | "some"
 ): Policy<TContext, TResources, TActions> => ({
   async can<K extends keyof TResources & keyof TActions>(
     context: TContext,
@@ -197,57 +197,57 @@ const mergePoliciesWithStrategy = <
       // oxlint-disable-next-line no-await-in-loop -- Policies must evaluate sequentially to preserve short-circuit semantics.
       const allowed = await policy.can(context, permission, resource);
 
-      if (strategy === "allow-overrides" && allowed) {
+      if (strategy === "some" && allowed) {
         return true;
       }
-      if (strategy === "deny-overrides" && !allowed) {
+      if (strategy === "every" && !allowed) {
         return false;
       }
     }
-    return strategy === "deny-overrides";
+    return strategy === "every";
   },
 });
 
 /**
- * Merges multiple policies into one using "deny-overrides" strategy.
- * If any policy denies, the merged policy denies. All must allow for the result to allow.
+ * Merges multiple policies into one, requiring every policy to allow.
+ * If any policy denies, the merged policy denies.
  *
  * @example
  * ```ts
  * const basePolicy = createPolicy({ ... });
  * const adminPolicy = createPolicy({ ... });
  *
- * const merged = mergePoliciesDeny(basePolicy, adminPolicy);
+ * const merged = mergePoliciesEvery(basePolicy, adminPolicy);
  * // Both policies must allow for the action to be permitted
  * ```
  */
-export const mergePoliciesDeny = <
+export const mergePoliciesEvery = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
   ...policies: Policy<TContext, TResources, TActions>[]
 ): Policy<TContext, TResources, TActions> =>
-  mergePoliciesWithStrategy(policies, "deny-overrides");
+  mergePoliciesWithStrategy(policies, "every");
 
 /**
- * Merges multiple policies into one using "allow-overrides" strategy.
- * If any policy allows, the merged policy allows. All must deny for the result to deny.
+ * Merges multiple policies into one, requiring at least one policy to allow.
+ * If every policy denies, the merged policy denies.
  *
  * @example
  * ```ts
  * const guestPolicy = createPolicy({ ... });
  * const memberPolicy = createPolicy({ ... });
  *
- * const merged = mergePoliciesAllow(guestPolicy, memberPolicy);
+ * const merged = mergePoliciesSome(guestPolicy, memberPolicy);
  * // If either policy allows, the action is permitted
  * ```
  */
-export const mergePoliciesAllow = <
+export const mergePoliciesSome = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
   ...policies: Policy<TContext, TResources, TActions>[]
 ): Policy<TContext, TResources, TActions> =>
-  mergePoliciesWithStrategy(policies, "allow-overrides");
+  mergePoliciesWithStrategy(policies, "some");

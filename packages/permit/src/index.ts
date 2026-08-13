@@ -24,8 +24,8 @@ export { PolicyError } from "./errors.js";
 export { assertNever } from "./_helpers.js";
 export {
   createPolicy,
-  mergePoliciesDeny,
-  mergePoliciesAllow,
+  mergePoliciesEvery,
+  mergePoliciesSome,
 } from "./policy.js";
 export type {
   ActionPolicyMap,
