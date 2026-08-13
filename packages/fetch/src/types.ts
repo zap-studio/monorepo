@@ -159,6 +159,18 @@ export interface $Fetch {
 }
 
 /**
+ * Normalized representation used by internal request execution.
+ */
+export interface NormalizedRequest {
+  /** Resolved string URL from the input (string or `URL`; `Request` uses `request.url`). */
+  url: string;
+  /** Original `Request` clone, present when the input was a `Request`. */
+  request?: Request;
+  /** Normalized request options merged with `Request` headers. */
+  options: ExtendedRequestInit;
+}
+
+/**
  * API HTTP method-specific fetch functions
  *
  * @example

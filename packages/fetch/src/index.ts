@@ -14,12 +14,12 @@ export { FetchError } from "./errors.js";
 export { $fetch, api, createFetch } from "./fetch.js";
 export { mergeHeaders } from "./headers.js";
 export { normalizeRequest } from "./request.js";
-export type { NormalizedRequest } from "./request.js";
 export type {
   $Fetch,
   ApiMethods,
   ExtendedRequestInit,
   FetchDefaults,
   FetchInput,
+  NormalizedRequest,
 } from "./types.js";
 export { resolveRequestUrl } from "./url.js";

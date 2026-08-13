@@ -5,21 +5,13 @@
  */
 
 import { mergeHeaders } from "./headers.js";
-import type { ExtendedRequestInit, FetchInput } from "./types.js";
+import type {
+  ExtendedRequestInit,
+  FetchInput,
+  NormalizedRequest,
+} from "./types.js";
 
 const EMPTY_OPTIONS = {} as ExtendedRequestInit;
-
-/**
- * Normalized representation used by internal request execution.
- */
-export interface NormalizedRequest {
-  /** Resolved string URL from the input (string or `URL`; `Request` uses `request.url`). */
-  url: string;
-  /** Original `Request` clone, present when the input was a `Request`. */
-  request?: Request;
-  /** Normalized request options merged with `Request` headers. */
-  options: ExtendedRequestInit;
-}
 
 /**
  * Normalizes fetch `input` and request-level options into a consistent internal shape.
