@@ -331,7 +331,7 @@ export class WebhookRouter<TMap = unknown> {
   /** Parses the request's raw body bytes as JSON, returning `undefined` on invalid JSON. */
   private static parseRequestBody(ctx: WebhookContext): unknown {
     try {
-      return JSON.parse(bodyDecoder.decode(ctx.rawBody)) as unknown;
+      return JSON.parse(bodyDecoder.decode(ctx.rawBody));
     } catch {
       return undefined;
     }
