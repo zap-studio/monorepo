@@ -1,3 +1,9 @@
+## @zap-studio/permit@0.4.1
+
+### Fixed `mergePoliciesSome` to evaluate policies in parallel
+
+`mergePoliciesSome` no longer short-circuits on the first allow. All policies now run concurrently via `Promise.all`, and every policy is invoked regardless of outcome. `mergePoliciesEvery` is unaffected and still short-circuits on the first deny.
+
 ## @zap-studio/permit@0.4.0
 
 ### Reduced module surface (breaking)
