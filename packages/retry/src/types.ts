@@ -32,11 +32,13 @@ export interface RetryPolicy<TError extends Error = Error, TData = unknown> {
    * Narrows a caught `unknown` value into `TError`.
    *
    * The runner calls this before handing an error to `next`/`onExhausted`.
-   * When it returns `false`, the runner rethrows the original value
-   * immediately instead of treating it as part of this policy's error
-   * domain. `BaseRetryPolicy`'s default checks `error instanceof Error`;
-   * override it when `TError` is a narrower subclass (e.g. a specific HTTP
-   * or domain error) to get real narrowing instead of an assumption.
+   * When it returns `false`, the value is treated as outside this policy's
+   * error domain instead of a retryable failure — `BaseRetryPolicy.run(...)`
+   * rethrows it immediately in throw mode, or wraps it in a `RetryError` on
+   * `result.error` in non-throw mode. `BaseRetryPolicy`'s default checks
+   * `error instanceof Error`; override it when `TError` is a narrower
+   * subclass (e.g. a specific HTTP or domain error) to get real narrowing
+   * instead of an assumption.
    */
   isKnownError?: (error: unknown) => error is TError;
 }

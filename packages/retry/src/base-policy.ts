@@ -336,11 +336,12 @@ const handleFailure = async <TError extends Error, TData>(
  * @param execute - Async work callback per attempt.
  * @param sleep - Delay function between retries.
  * @param signal - Optional cancel signal.
- * @returns Terminal success or failure object.
+ * @returns Terminal success or failure object. When `policy.isKnownError`
+ *   rejects a caught value as outside this policy's error domain, the
+ *   original value is wrapped in a `RetryError` and returned on
+ *   `result.error` immediately, bypassing retry — never thrown.
  * @throws {Error} Any error thrown by `next`, `onExhausted`, or a non-abort `sleep`
- *   failure. Also rethrows the original caught value immediately, bypassing
- *   retry, when `policy.isKnownError` rejects it as outside this policy's error
- *   domain.
+ *   failure.
  */
 const runResultMode = async <T, TError extends Error, TData>(
   policy: BaseRetryPolicy<TError, TData>,
@@ -363,7 +364,14 @@ const runResultMode = async <T, TError extends Error, TData>(
     }
 
     if (!policy.isKnownError(execution.error)) {
-      throw execution.error;
+      return {
+        attempts: attempt,
+        error: new RetryError("Retry policy encountered an unknown error.", {
+          attempts: attempt,
+          lastError: execution.error,
+        }),
+        ok: false,
+      };
     }
 
     // oxlint-disable-next-line no-await-in-loop -- Failure handling belongs to the current sequential attempt.
@@ -455,7 +463,9 @@ export abstract class BaseRetryPolicy<
    * plain object, etc.) but cannot distinguish `TError` from an unrelated
    * `Error` subclass. Override this when `TError` is a narrower domain (e.g.
    * a specific HTTP or domain error) to get real narrowing instead of an
-   * assumption; values it rejects are rethrown immediately, bypassing retry.
+   * assumption. Values it rejects bypass retry immediately: `run(...)`
+   * rethrows them as-is in throw mode, or wraps them in a `RetryError` on
+   * `result.error` in non-throw mode.
    *
    * @param error - Value caught from the failed attempt.
    * @returns Whether `error` belongs to this policy's declared error domain.
@@ -481,6 +491,8 @@ export abstract class BaseRetryPolicy<
    * @param execute - Async function to execute per attempt.
    * @param options - Runner settings with `throwOnExhausted: false`.
    * @returns A discriminated result union containing success value or terminal error.
+   *   When `policy.isKnownError` rejects a caught value, it is wrapped in a
+   *   `RetryError` and returned as the terminal failure instead of thrown.
    * @throws {Error} Any error thrown by `next`, `onExhausted`, or a custom `sleep`.
    */
   public async run<T>(
@@ -518,7 +530,9 @@ export abstract class BaseRetryPolicy<
    *   function. When `throwOnExhausted` is `false`, exhaustion itself is returned
    *   as `{ ok: false }` instead of thrown.
    *   Cancellation is returned as `{ ok: false, error: AbortError }` in non-throw
-   *   mode.
+   *   mode. A value rejected by `policy.isKnownError` is wrapped in a
+   *   `RetryError` and returned the same way in non-throw mode; in throw mode
+   *   it is rethrown as-is.
    *
    * @example
    * const result = await policy.run(doWork, { throwOnExhausted: false });

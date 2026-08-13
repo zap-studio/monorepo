@@ -1,18 +1,22 @@
-## @zap-studio/retry@0.4.1
-
-### Reduced module surface
-
-Folded `_run.ts` into `base-policy.ts` — its only consumer. `runResultMode`/`runThrowMode` are now file-private (no longer separately importable even internally). No public API or behavior change.
-
 ## @zap-studio/retry@0.4.0
 
 ### Reduced module surface (breaking)
 
-Folded the orchestration pipeline further: `abort.ts`, `_result-mode.ts`, `_throw-mode.ts`, and `sleep.ts` merged into a single internal `_run.ts` (mirrors `BaseRetryPolicy.run`'s two execution modes).
-
 - Removed the `./abort` and `./sleep` subpath exports.
 - Removed the public `sleepWithAbortSignal`, `throwIfAborted`, and `toAbortError` exports — they were orchestration internals with no consumer outside the retry loop, not standalone utilities.
 - `defaultSleep` is unaffected and still exported from `@zap-studio/retry` (no dedicated subpath).
+
+### Constrain `TError` to `Error` and add `isKnownError` (breaking)
+
+`TError` is now constrained to `TError extends Error` and defaults to `Error` (was `TError = unknown`) on `RetryPolicy`, `RetryDecisionInput`, `RetryExhaustedInput`, and `BaseRetryPolicy`.
+
+`execute(...)` can still throw or reject with anything, regardless of `TError`. `RetryPolicy` gains an optional `isKnownError?: (error: unknown) => error is TError` hook that `BaseRetryPolicy.run(...)` now calls before handing a caught value to `next(...)`/`onExhausted(...)`.
+
+- `BaseRetryPolicy.isKnownError` default checks `error instanceof Error`.
+- **Behavior change:** a rejection with a non-`Error` value (a thrown string, plain object, `undefined`, ...) now bypasses retry entirely on the attempt that produced it — it no longer reaches `next(...)`, and no delay/backoff is applied. Previously any thrown value was passed through to the policy unchanged. In throw mode, `run(...)` rethrows the value as-is; with `throwOnExhausted: false`, it's wrapped in a `RetryError` and returned on `result.error` — `run(...)` never throws in that mode.
+- Override `isKnownError` when `TError` is a narrower subclass (an HTTP error, a domain-specific error) to get real narrowing instead of an `instanceof Error` assumption, and to stop unrelated `Error` types from being retried as if they belonged to your domain.
+
+See [Narrow the Error Domain](https://www.zapstudio.dev/retry/custom-policies#narrow-the-error-domain) for the override pattern.
 
 ## @zap-studio/retry@0.3.2
 

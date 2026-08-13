@@ -513,7 +513,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     expect(failure.error).toBeInstanceOf(AbortError);
   });
 
-  it("rethrows a rejection immediately when it fails policy.isKnownError, bypassing retry", async () => {
+  it("returns a wrapped failure result immediately when it fails policy.isKnownError, bypassing retry", async () => {
     const policy = new SequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
     ]);
@@ -522,9 +522,14 @@ describe("result mode (throwOnExhausted: false)", () => {
       .fn<(attempt: number) => Promise<string>>()
       .mockRejectedValue(notAnError);
 
-    await expect(policy.run(execute, { throwOnExhausted: false })).rejects.toBe(
-      notAnError
-    );
+    const result = await policy.run(execute, { throwOnExhausted: false });
+
+    const failure = expectFailureResult(result);
+    expect(failure.attempts).toBe(1);
+    expect(failure.error).toBeInstanceOf(RetryError);
+    if (failure.error instanceof RetryError) {
+      expect(failure.error.lastError).toBe(notAnError);
+    }
     expect(execute).toHaveBeenCalledTimes(1);
     expect(policy.seen).toStrictEqual([]);
   });

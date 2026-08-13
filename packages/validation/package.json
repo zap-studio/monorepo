@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/validation",
-  "version": "0.3.7",
+  "version": "0.4.0",
   "private": false,
   "description": "Standard Schema utilities and ValidationError helpers.",
   "keywords": [

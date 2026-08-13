@@ -1,4 +1,4 @@
-## @zap-studio/validation@0.3.7
+## @zap-studio/validation@0.4.0
 
 ### Breaking: renamed `createSyncStandardValidator` to `createStandardValidatorSync`
 

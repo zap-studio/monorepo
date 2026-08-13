@@ -109,6 +109,46 @@ class UpstreamPolicy extends BaseRetryPolicy {
 
 `run(...)` throws the value returned by `onExhausted(...)` — or places it on `result.error` when `throwOnExhausted` is `false`.
 
+## Narrow the Error Domain
+
+`TError` defaults to `Error`, but `execute(...)` can still throw or reject with anything. Before a caught value reaches `next(...)`/`onExhausted(...)`, `BaseRetryPolicy.run(...)` checks it with `isKnownError(error)`.
+
+The default `isKnownError` checks `error instanceof Error`. When `TError` is a specific subclass, override it to narrow for real — and to stop treating unrelated failures as retryable:
+
+```ts
+import { BaseRetryPolicy } from "@zap-studio/retry";
+import type { RetryDecision, RetryDecisionInput } from "@zap-studio/retry";
+
+class HttpError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number
+  ) {
+    super(message);
+    this.name = "HttpError";
+  }
+}
+
+class HttpRetryPolicy extends BaseRetryPolicy<HttpError> {
+  public override isKnownError(error: unknown): error is HttpError {
+    return error instanceof HttpError;
+  }
+
+  public next(input: RetryDecisionInput<HttpError>): RetryDecision {
+    if (input.error && input.error.status < 500) {
+      // Client errors are terminal; only retry server errors.
+      return { shouldRetry: false, delayMs: 0, reason: "policy-declined" };
+    }
+
+    return { shouldRetry: input.attempt < 3, delayMs: 200, reason: "retry" };
+  }
+}
+```
+
+With this override, a `TypeError` from a bug elsewhere in `execute(...)` no longer masquerades as an `HttpError` — `isKnownError` rejects it, and `run(...)` bypasses retry for it instead of feeding it into `next(...)`.
+
+:::note When `isKnownError` returns `false`, the value never reaches `next(...)` or `onExhausted(...)`, and no retry is attempted for it. In throw mode, `run(...)` rethrows it as-is. With `throwOnExhausted: false`, it's wrapped in a `RetryError` and returned on `result.error` instead — `run(...)` never throws in that mode. :::
+
 ## Implement the Types Directly
 
 Use the lower-level `RetryPolicy` interface when you need to build your own orchestration layer instead of using `BaseRetryPolicy.run(...)`.
