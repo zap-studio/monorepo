@@ -1,8 +1,8 @@
-## @zap-studio/permit@0.3.5
+## @zap-studio/permit@0.4.0
 
-### Reduced module surface
+### Reduced module surface (breaking)
 
-Folded `_helpers.ts` away: `parsePermission` moved into `policy.ts` (its only consumer, still private), and `assertNever` moved into `index.ts`. No public API or behavior change — `assertNever` is still exported from `@zap-studio/permit`.
+Folded `_helpers.ts` away: `parsePermission` moved into `policy.ts` (its only consumer, still private). `assertNever` is removed — it had no internal consumers and existed only as a generic exhaustiveness-check convenience; use your own `never`-typed helper if you relied on it.
 
 ## @zap-studio/permit@0.3.4
 
