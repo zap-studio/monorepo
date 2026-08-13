@@ -61,14 +61,6 @@ const mergeHeaders = (
     return undefined;
   }
 
-  if (base === undefined) {
-    return new Headers(override);
-  }
-
-  if (override === undefined) {
-    return new Headers(base);
-  }
-
   const merged = new Headers(base);
   for (const [key, value] of new Headers(override).entries()) {
     merged.set(key, value);
@@ -230,15 +222,11 @@ const prepareRequestInit = (
     }
 
     init.body = JSON.stringify(json);
-    if (init.headers === undefined) {
-      init.headers = new Headers({ "Content-Type": "application/json" });
-    } else {
-      const requestHeaders = new Headers(init.headers);
-      if (!requestHeaders.has("Content-Type")) {
-        requestHeaders.set("Content-Type", "application/json");
-      }
-      init.headers = requestHeaders;
+    const requestHeaders = new Headers(init.headers);
+    if (!requestHeaders.has("Content-Type")) {
+      requestHeaders.set("Content-Type", "application/json");
     }
+    init.headers = requestHeaders;
   }
 
   return {
