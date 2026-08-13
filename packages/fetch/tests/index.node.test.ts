@@ -3,7 +3,7 @@ import { number, object, string } from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { FetchError } from "../src/errors.js";
-import { $fetch, api, createFetch } from "../src/index.js";
+import { $fetch, api, createFetch, GLOBAL_DEFAULTS } from "../src/index.js";
 
 async function captureRejectedError(
   run: () => Promise<unknown>
@@ -1299,5 +1299,252 @@ describe("api convenience methods", () => {
 
       expect(result).toHaveProperty("issues");
     });
+  });
+});
+
+describe("global fetch defaults", () => {
+  it("uses fetch-compatible defaults", () => {
+    expect(GLOBAL_DEFAULTS).toStrictEqual({
+      baseURL: "",
+      throwOnFetchError: true,
+      throwOnValidationError: true,
+    });
+  });
+});
+
+describe("request input normalization", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("accepts URL instances as input", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    await $fetch(new URL("/users", "https://api.example.com"));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/users",
+      expect.any(Object)
+    );
+  });
+
+  it("accepts a Request input with no options", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    const request = new Request("https://api.example.com/users", {
+      headers: { A: "1" },
+      method: "POST",
+    });
+
+    await $fetch(request);
+
+    const [sentRequest] = fetchMock.mock.calls[0] as [Request, RequestInit];
+    expect(sentRequest).toBeInstanceOf(Request);
+    expect(sentRequest.url).toBe("https://api.example.com/users");
+  });
+
+  it("clones Request inputs, merges headers, and lets request-level options win", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    const request = new Request("https://api.example.com/users", {
+      headers: { A: "1", B: "2" },
+      method: "POST",
+    });
+
+    await $fetch(request, { headers: { B: "20", C: "3" }, method: "PATCH" });
+
+    const [sentRequest, init] = fetchMock.mock.calls[0] as [
+      Request,
+      RequestInit,
+    ];
+    const headers = new Headers(init.headers);
+
+    expect(sentRequest).toBeInstanceOf(Request);
+    expect(sentRequest).not.toBe(request);
+    expect(sentRequest.url).toBe("https://api.example.com/users");
+    expect(init.method).toBe("PATCH");
+    expect(headers.get("A")).toBe("1");
+    expect(headers.get("B")).toBe("20");
+    expect(headers.get("C")).toBe("3");
+  });
+});
+
+describe("json and body conflicts", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("throws when json and body are both provided", async () => {
+    // @ts-expect-error body and json are intentionally both provided to test the runtime guard.
+    const options = { body: "raw", json: { name: "Zap" }, method: "POST" };
+
+    await expect(
+      $fetch("https://api.example.com/users", options)
+    ).rejects.toThrow(TypeError);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("sets Content-Type when default headers exist without one", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    const { $fetch: customFetch } = createFetch({
+      headers: { Authorization: "Bearer token" },
+    });
+
+    await customFetch("https://api.example.com/users", {
+      json: { name: "Zap" },
+      method: "POST",
+    });
+
+    const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const headers = new Headers(init.headers);
+    expect(headers.get("Authorization")).toBe("Bearer token");
+    expect(headers.get("Content-Type")).toBe("application/json");
+  });
+});
+
+describe("URL and search param resolution", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("merges default, URL, and request search params in that order", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    const { $fetch: customFetch } = createFetch({
+      baseURL: "https://api.example.com",
+      searchParams: { locale: "en", page: "1" },
+    });
+
+    await customFetch("users?page=2&from=resource#team", {
+      searchParams: { page: "3", q: "zap" },
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://api.example.com/users?locale=en&page=3&from=resource&q=zap#team"
+    );
+  });
+
+  it("accepts native URLSearchParams constructor input", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    await $fetch("https://api.example.com/users", {
+      searchParams: new URLSearchParams({ q: "test" }),
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://api.example.com/users?q=test"
+    );
+  });
+
+  it("does not add a query string for empty search params", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    await $fetch("https://api.example.com/users#team", { searchParams: {} });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://api.example.com/users#team"
+    );
+  });
+
+  it("preserves an explicit empty fragment when adding search params", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    await $fetch("https://api.example.com/users#", {
+      searchParams: { q: "zap" },
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://api.example.com/users?q=zap#"
+    );
+  });
+
+  it("merges search params before a fragment when the path already has a query", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    const { $fetch: customFetch } = createFetch({
+      baseURL: "https://api.example.com/",
+    });
+
+    await customFetch("items?sort=name#results", {
+      searchParams: { page: "2" },
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://api.example.com/items?sort=name&page=2#results"
+    );
+  });
+});
+
+describe("method helper", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  const UserSchema = object({
+    id: number(),
+    name: string(),
+  });
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("supports raw Response calls without a schema", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    const result = await api.delete("https://api.example.com/users/1", {
+      headers: { A: "1" },
+    });
+
+    expect(result).toBeInstanceOf(Response);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/users/1",
+      expect.objectContaining({ method: "DELETE" })
+    );
+  });
+
+  it("preserves throwOnValidationError: true when explicitly provided", async () => {
+    const invalidData = { id: "not-a-number", name: 123 };
+    fetchMock.mockResolvedValue(new Response(JSON.stringify(invalidData)));
+
+    await expect(
+      api.put("https://api.example.com/users/1", UserSchema, {
+        throwOnValidationError: true,
+      })
+    ).rejects.toThrow(ValidationError);
+  });
+
+  it("lets the helper method win when runtime options contain a method", async () => {
+    const userData = { id: 1, name: "John" };
+    fetchMock.mockResolvedValue(new Response(JSON.stringify(userData)));
+
+    await api.patch("https://api.example.com/users/1", UserSchema, {
+      method: "POST",
+    } as never);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/users/1",
+      expect.objectContaining({ method: "PATCH" })
+    );
   });
 });

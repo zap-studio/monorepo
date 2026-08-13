@@ -1,17 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  mergeHeaders,
-  normalizeRequest,
-  resolveRequestUrl,
-} from "../src/_core.js";
 import { $fetch, createFetch } from "../src/index.js";
-
-const DEFAULTS = {
-  baseURL: "",
-  throwOnFetchError: true,
-  throwOnValidationError: true,
-};
 
 describe("@zap-studio/fetch browser runtime", () => {
   let originalFetch: typeof globalThis.fetch;
@@ -28,24 +17,25 @@ describe("@zap-studio/fetch browser runtime", () => {
     vi.restoreAllMocks();
   });
 
-  it("normalizes native Request inputs without losing browser Headers semantics", () => {
+  it("normalizes native Request inputs without losing browser Headers semantics", async () => {
+    fetchMock.mockResolvedValue(new Response("ok"));
     const request = new Request("https://api.example.com/users", {
       headers: { A: "1", B: "2" },
       method: "POST",
     });
 
-    const normalized = normalizeRequest(request, {
-      headers: { B: "20", C: "3" },
-      method: "PATCH",
-    });
-    const headers = new Headers(normalized.options.headers);
+    await $fetch(request, { headers: { B: "20", C: "3" }, method: "PATCH" });
 
-    expect(normalized).toMatchObject({
-      options: { method: "PATCH" },
-      url: "https://api.example.com/users",
-    });
-    expect(normalized.request).toBeInstanceOf(Request);
-    expect(normalized.request).not.toBe(request);
+    const [sentRequest, init] = fetchMock.mock.calls[0] as [
+      Request,
+      RequestInit,
+    ];
+    const headers = new Headers(init.headers);
+
+    expect(sentRequest).toBeInstanceOf(Request);
+    expect(sentRequest).not.toBe(request);
+    expect(sentRequest.url).toBe("https://api.example.com/users");
+    expect(init.method).toBe("PATCH");
     expect([
       headers.get("A"),
       headers.get("B"),
@@ -53,35 +43,48 @@ describe("@zap-studio/fetch browser runtime", () => {
     ]).toStrictEqual(["1", "20", "3"]);
   });
 
-  it("merges native Headers, object headers, and tuple headers", () => {
-    const fromHeaders = mergeHeaders(new Headers({ A: "1" }));
-    const fromObject = mergeHeaders({ A: "1" }, { B: "2" });
-    const fromTuples = mergeHeaders([["A", "1"]], [["A", "2"]]);
+  it("merges native Headers, object headers, and tuple headers", async () => {
+    fetchMock.mockResolvedValue(new Response("ok"));
 
-    expect(fromHeaders?.get("A")).toBe("1");
-    expect(fromObject?.get("A")).toBe("1");
-    expect(fromObject?.get("B")).toBe("2");
-    expect(fromTuples?.get("A")).toBe("2");
+    await $fetch("https://api.example.com/a", {
+      headers: new Headers({ A: "1" }),
+    });
+    const fromHeaders = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
+
+    fetchMock.mockClear();
+    const { $fetch: objectFetch } = createFetch({ headers: { A: "1" } });
+    await objectFetch("https://api.example.com/b", { headers: { B: "2" } });
+    const fromObject = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
+
+    fetchMock.mockClear();
+    const { $fetch: tupleFetch } = createFetch({ headers: [["A", "1"]] });
+    await tupleFetch("https://api.example.com/c", {
+      headers: [["A", "2"]],
+    });
+    const fromTuples = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
+
+    expect(fromHeaders.get("A")).toBe("1");
+    expect(fromObject.get("A")).toBe("1");
+    expect(fromObject.get("B")).toBe("2");
+    expect(fromTuples.get("A")).toBe("2");
   });
 
-  it("resolves browser URL and URLSearchParams inputs consistently", () => {
-    expect(
-      resolveRequestUrl(
-        "users#team",
-        { ...DEFAULTS, baseURL: "https://api.example.com" },
-        {
-          q: "zap",
-        }
-      )
-    ).toBe("https://api.example.com/users?q=zap#team");
+  it("resolves browser URL and URLSearchParams inputs consistently", async () => {
+    fetchMock.mockResolvedValue(new Response("ok"));
+    const { $fetch: customFetch } = createFetch({
+      baseURL: "https://api.example.com",
+    });
 
-    expect(
-      resolveRequestUrl(
-        "/docs/guide#intro",
-        DEFAULTS,
-        new URLSearchParams({ page: "1" })
-      )
-    ).toBe("/docs/guide?page=1#intro");
+    await customFetch("users#team", { searchParams: { q: "zap" } });
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://api.example.com/users?q=zap#team"
+    );
+
+    fetchMock.mockClear();
+    await $fetch("/docs/guide#intro", {
+      searchParams: new URLSearchParams({ page: "1" }),
+    });
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/docs/guide?page=1#intro");
   });
 
   it("returns native Response objects from raw $fetch calls", async () => {
