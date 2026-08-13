@@ -32,14 +32,14 @@ export class SequencePolicy extends BaseRetryPolicy<Error, string> {
   }
 }
 
-export class CustomTerminalPolicy extends BaseRetryPolicy<Error> {
+export class CustomTerminalPolicy extends BaseRetryPolicy {
   // oxlint-disable-next-line class-methods-use-this -- RetryPolicy requires an instance hook that subclasses may override.
   public next(): RetryDecision {
     return { delayMs: 0, reason: "policy-declined", shouldRetry: false };
   }
 
   // oxlint-disable-next-line class-methods-use-this -- RetryPolicy requires an instance hook that subclasses may override.
-  public override onExhausted(input: RetryExhaustedInput<Error>): RetryError {
+  public override onExhausted(input: RetryExhaustedInput): RetryError {
     return new RetryError(`custom:${input.attempts}`, {
       attempts: input.attempts,
       lastError: input.error,

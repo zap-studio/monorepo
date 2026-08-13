@@ -15,7 +15,7 @@ import type { AbortError, RetryError } from "./errors.js";
  *   onExhausted: ({ attempts }) => new RetryError("done", { attempts }),
  * };
  */
-export interface RetryPolicy<TError = unknown, TData = unknown> {
+export interface RetryPolicy<TError extends Error = Error, TData = unknown> {
   /**
    * Returns the retry decision for a failed attempt.
    *
@@ -28,6 +28,17 @@ export interface RetryPolicy<TError = unknown, TData = unknown> {
    * @throws {Error} Any error thrown by the policy implementation.
    */
   onExhausted: (input: RetryExhaustedInput<TError, TData>) => RetryError;
+  /**
+   * Narrows a caught `unknown` value into `TError`.
+   *
+   * The runner calls this before handing an error to `next`/`onExhausted`.
+   * When it returns `false`, the runner rethrows the original value
+   * immediately instead of treating it as part of this policy's error
+   * domain. `BaseRetryPolicy`'s default checks `error instanceof Error`;
+   * override it when `TError` is a narrower subclass (e.g. a specific HTTP
+   * or domain error) to get real narrowing instead of an assumption.
+   */
+  isKnownError?: (error: unknown) => error is TError;
 }
 
 /**
@@ -58,7 +69,10 @@ export interface RetryDecision {
  * @example
  * const input: RetryDecisionInput = { attempt: 2, error: new Error("timeout") };
  */
-export interface RetryDecisionInput<TError = unknown, TData = unknown> {
+export interface RetryDecisionInput<
+  TError extends Error = Error,
+  TData = unknown,
+> {
   /**
    * One-based attempt number for the current failure.
    */
@@ -86,7 +100,10 @@ export interface RetryDecisionInput<TError = unknown, TData = unknown> {
  * @example
  * const input: RetryExhaustedInput = { attempts: 5, error: new Error("timeout") };
  */
-export interface RetryExhaustedInput<TError = unknown, TData = unknown> {
+export interface RetryExhaustedInput<
+  TError extends Error = Error,
+  TData = unknown,
+> {
   /**
    * Count of completed attempts that led to stopping retries.
    */

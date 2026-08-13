@@ -186,6 +186,19 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
       policy.run(execute, { signal: controller.signal, sleep })
     ).rejects.toThrow("sleep-sync-fail");
   });
+
+  it("rethrows a rejection immediately when it fails policy.isKnownError, bypassing retry", async () => {
+    const policy = new SequencePolicy([
+      { delayMs: 0, reason: "retry", shouldRetry: true },
+    ]);
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockRejectedValue("not-an-error");
+
+    await expect(policy.run(execute)).rejects.toBe("not-an-error");
+    expect(execute).toHaveBeenCalledTimes(1);
+    expect(policy.seen).toStrictEqual([]);
+  });
 });
 
 describe("result mode (throwOnExhausted: false)", () => {
@@ -499,6 +512,22 @@ describe("result mode (throwOnExhausted: false)", () => {
     expect(failure.error.message).toBe("aborted-from-wait-catch");
     expect(failure.error).toBeInstanceOf(AbortError);
   });
+
+  it("rethrows a rejection immediately when it fails policy.isKnownError, bypassing retry", async () => {
+    const policy = new SequencePolicy([
+      { delayMs: 0, reason: "retry", shouldRetry: true },
+    ]);
+    const notAnError = { message: "plain-object-rejection" };
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockRejectedValue(notAnError);
+
+    await expect(policy.run(execute, { throwOnExhausted: false })).rejects.toBe(
+      notAnError
+    );
+    expect(execute).toHaveBeenCalledTimes(1);
+    expect(policy.seen).toStrictEqual([]);
+  });
 });
 
 describe("BaseRetryPolicy", () => {
@@ -516,6 +545,16 @@ describe("BaseRetryPolicy", () => {
     expect(error).toBeInstanceOf(RetryError);
     expect(error.lastData).toBe("payload");
     expect(error.attempts).toBe(3);
+  });
+
+  it("default isKnownError accepts Error instances and rejects everything else", () => {
+    const policy = new SequencePolicy([]);
+
+    expect(policy.isKnownError(new Error("boom"))).toBeTruthy();
+    expect(policy.isKnownError(new TypeError("boom"))).toBeTruthy();
+    expect(policy.isKnownError("boom")).toBeFalsy();
+    expect(policy.isKnownError({ message: "boom" })).toBeFalsy();
+    expect(policy.isKnownError(undefined)).toBeFalsy();
   });
 });
 

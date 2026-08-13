@@ -131,10 +131,12 @@ const sleepWithAbortSignal = async (
  * @throws {RetryError} When retries are exhausted and `onExhausted` returns
  *   the terminal error.
  * @throws {AbortError} When `signal` is already aborted or aborts while waiting.
- * @throws {Error} Any error thrown by `next`, `onExhausted`, or `sleep`.
+ * @throws {Error} Any error thrown by `next`, `onExhausted`, or `sleep`. Also
+ *   rethrows the original caught value immediately, bypassing retry, when
+ *   `policy.isKnownError` rejects it as outside this policy's error domain.
  */
-const runThrowMode = async <T, TError, TData>(
-  policy: RetryPolicy<TError, TData>,
+const runThrowMode = async <T, TError extends Error, TData>(
+  policy: BaseRetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
   signal?: AbortSignal
@@ -150,17 +152,19 @@ const runThrowMode = async <T, TError, TData>(
     } catch (error) {
       throwIfAborted(signal);
 
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Policy error generic represents the caller's thrown error domain.
-      const typedError = error as TError;
+      if (!policy.isKnownError(error)) {
+        throw error;
+      }
+
       const decision = policy.next({
         attempt,
-        error: typedError,
+        error,
       });
 
       if (!decision.shouldRetry) {
         throw policy.onExhausted({
           attempts: attempt,
-          error: typedError,
+          error,
         });
       }
 
@@ -275,7 +279,7 @@ const waitForDelay = async (
  * @throws {Error} Any error thrown by `next`, `onExhausted`, or a custom `sleep` when
  *   the error is not an abort.
  */
-const handleFailure = async <TError, TData>(
+const handleFailure = async <TError extends Error, TData>(
   policy: RetryPolicy<TError, TData>,
   params: {
     attempt: number;
@@ -334,10 +338,12 @@ const handleFailure = async <TError, TData>(
  * @param signal - Optional cancel signal.
  * @returns Terminal success or failure object.
  * @throws {Error} Any error thrown by `next`, `onExhausted`, or a non-abort `sleep`
- *   failure.
+ *   failure. Also rethrows the original caught value immediately, bypassing
+ *   retry, when `policy.isKnownError` rejects it as outside this policy's error
+ *   domain.
  */
-const runResultMode = async <T, TError, TData>(
-  policy: RetryPolicy<TError, TData>,
+const runResultMode = async <T, TError extends Error, TData>(
+  policy: BaseRetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
   signal?: AbortSignal
@@ -356,11 +362,14 @@ const runResultMode = async <T, TError, TData>(
       return { ok: true, value: execution.value };
     }
 
+    if (!policy.isKnownError(execution.error)) {
+      throw execution.error;
+    }
+
     // oxlint-disable-next-line no-await-in-loop -- Failure handling belongs to the current sequential attempt.
     const failure = await handleFailure(policy, {
       attempt,
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Policy error generic represents the caller's thrown error domain.
-      error: execution.error as TError,
+      error: execution.error,
       signal,
       sleep,
     });
@@ -396,7 +405,7 @@ const runResultMode = async <T, TError, TData>(
  * ```
  */
 export abstract class BaseRetryPolicy<
-  TError = unknown,
+  TError extends Error = Error,
   TData = unknown,
 > implements RetryPolicy<TError, TData> {
   /**
@@ -436,6 +445,34 @@ export abstract class BaseRetryPolicy<
       lastData: input.data,
       lastError: input.error,
     });
+  }
+
+  /**
+   * Narrows a value caught from `execute(attempt)` into `TError`.
+   *
+   * The default checks `error instanceof Error`, matching `TError`'s default
+   * bound of `Error`. It rejects non-`Error` throws (a thrown string,
+   * plain object, etc.) but cannot distinguish `TError` from an unrelated
+   * `Error` subclass. Override this when `TError` is a narrower domain (e.g.
+   * a specific HTTP or domain error) to get real narrowing instead of an
+   * assumption; values it rejects are rethrown immediately, bypassing retry.
+   *
+   * @param error - Value caught from the failed attempt.
+   * @returns Whether `error` belongs to this policy's declared error domain.
+   *
+   * @example
+   * ```ts
+   * class HttpRetryPolicy extends BaseRetryPolicy<HttpError> {
+   *   override isKnownError(error: unknown): error is HttpError {
+   *     return error instanceof HttpError;
+   *   }
+   *   // ...
+   * }
+   * ```
+   */
+  // oxlint-disable-next-line class-methods-use-this -- RetryPolicy requires an instance hook that subclasses may override.
+  public isKnownError(error: unknown): error is TError {
+    return error instanceof Error;
   }
 
   /**
