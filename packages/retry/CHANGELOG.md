@@ -1,3 +1,13 @@
+## @zap-studio/retry@0.4.0
+
+### Reduced module surface (breaking)
+
+Folded the orchestration pipeline further: `abort.ts`, `_result-mode.ts`, `_throw-mode.ts`, and `sleep.ts` merged into a single internal `_run.ts` (mirrors `BaseRetryPolicy.run`'s two execution modes).
+
+- Removed the `./abort` and `./sleep` subpath exports.
+- Removed the public `sleepWithAbortSignal`, `throwIfAborted`, and `toAbortError` exports — they were orchestration internals with no consumer outside the retry loop, not standalone utilities.
+- `defaultSleep` is unaffected and still exported from `@zap-studio/retry` (no dedicated subpath).
+
 ## @zap-studio/retry@0.3.2
 
 ### Tree-shakeable root re-exports

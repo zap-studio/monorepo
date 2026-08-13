@@ -1,12 +1,167 @@
 /**
- * Result-mode execution path for `BaseRetryPolicy.run` when
- * `throwOnExhausted: false` is set.
+ * Retry orchestration internals: default sleep, abort-signal helpers, and the
+ * throw-mode / result-mode execution loops used by `BaseRetryPolicy.run`.
  *
- * @module @zap-studio/retry/_result-mode (private)
+ * @module @zap-studio/retry (internal: _run)
  */
 
-import { sleepWithAbortSignal, toAbortError } from "./abort.js";
+import { AbortError } from "./errors.js";
 import type { RetryPolicy, RetryRunResult } from "./types.js";
+
+/**
+ * Awaits a timer-based delay, unless `delayMs` is non-positive.
+ *
+ * @param delayMs - Milliseconds to wait before resolving.
+ * @returns Promise that resolves when the delay completes.
+ */
+export const defaultSleep = async (delayMs: number): Promise<void> => {
+  if (delayMs <= 0) {
+    return;
+  }
+
+  // oxlint-disable-next-line promise/avoid-new -- Timer sleep requires adapting callback API to a promise.
+  await new Promise<void>((resolve) => {
+    setTimeout(resolve, delayMs);
+  });
+};
+
+/**
+ * Normalizes an abort `reason` into an `AbortError`.
+ */
+const toAbortError = (reason: unknown): AbortError => {
+  if (reason instanceof AbortError) {
+    return reason;
+  }
+
+  if (reason instanceof Error) {
+    return new AbortError(reason.message, { cause: reason });
+  }
+
+  if (typeof reason === "string" && reason.length > 0) {
+    return new AbortError(reason);
+  }
+
+  if (reason === undefined) {
+    return new AbortError("Retry aborted.");
+  }
+
+  try {
+    return new AbortError(`Retry aborted: ${JSON.stringify(reason)}`);
+  } catch {
+    return new AbortError("Retry aborted.");
+  }
+};
+
+/**
+ * Throws when the provided abort signal is already aborted.
+ *
+ * @param signal - Optional abort signal to inspect.
+ * @throws {AbortError} When the signal is aborted.
+ */
+const throwIfAborted = (signal?: AbortSignal): void => {
+  if (signal?.aborted !== true) {
+    return;
+  }
+
+  throw toAbortError(signal.reason);
+};
+
+/**
+ * Waits for delay sleep while observing cancellation through an abort signal.
+ *
+ * @param sleep - Sleep function used to await `delayMs`.
+ * @param delayMs - Delay duration in milliseconds.
+ * @param signal - Abort signal to observe while waiting.
+ * @returns Promise that resolves when delay finishes.
+ * @throws {AbortError} When the signal aborts before or during wait.
+ */
+const sleepWithAbortSignal = async (
+  sleep: (delayMs: number) => Promise<void>,
+  delayMs: number,
+  signal: AbortSignal
+): Promise<void> => {
+  if (signal.aborted) {
+    throw toAbortError(signal.reason);
+  }
+
+  let onAbort: (() => void) | undefined;
+
+  try {
+    await Promise.race([
+      sleep(delayMs),
+      // oxlint-disable-next-line promise/avoid-new -- AbortSignal callback is adapted into the race promise.
+      new Promise<never>((_resolve, reject) => {
+        onAbort = (): void => {
+          reject(toAbortError(signal.reason));
+        };
+
+        signal.addEventListener("abort", onAbort, { once: true });
+      }),
+    ]);
+  } finally {
+    if (onAbort) {
+      signal.removeEventListener("abort", onAbort);
+    }
+  }
+};
+
+/**
+ * Runs the throw-mode retry loop: throws `RetryError` on exhaustion and
+ * `AbortError` when `signal` aborts.
+ *
+ * @param policy - Object providing `next` and `onExhausted` (same contract as
+ *   `BaseRetryPolicy`).
+ * @param execute - Async work callback per attempt.
+ * @param sleep - Delay function between retries.
+ * @param signal - Optional cancel signal.
+ * @returns Resolves to the first successful return value.
+ * @throws {RetryError} When retries are exhausted and `onExhausted` returns
+ *   the terminal error.
+ * @throws {AbortError} When `signal` is already aborted or aborts while waiting.
+ * @throws {Error} Any error thrown by `next`, `onExhausted`, or `sleep`.
+ */
+export const runThrowMode = async <T, TError, TData>(
+  policy: RetryPolicy<TError, TData>,
+  execute: (attempt: number) => Promise<T>,
+  sleep: (delayMs: number) => Promise<void>,
+  signal?: AbortSignal
+): Promise<T> => {
+  let attempt = 1;
+
+  while (true) {
+    throwIfAborted(signal);
+
+    try {
+      // oxlint-disable-next-line no-await-in-loop -- Retry attempts must run sequentially.
+      return await execute(attempt);
+    } catch (error) {
+      throwIfAborted(signal);
+
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Policy error generic represents the caller's thrown error domain.
+      const typedError = error as TError;
+      const decision = policy.next({
+        attempt,
+        error: typedError,
+      });
+
+      if (!decision.shouldRetry) {
+        throw policy.onExhausted({
+          attempts: attempt,
+          error: typedError,
+        });
+      }
+
+      if (decision.delayMs > 0) {
+        // oxlint-disable-next-line no-await-in-loop -- Delay belongs between sequential retry attempts.
+        await (signal === undefined
+          ? sleep(decision.delayMs)
+          : sleepWithAbortSignal(sleep, decision.delayMs, signal));
+      }
+
+      attempt += 1;
+    }
+  }
+};
 
 /**
  * When `signal` is already aborted, builds the terminal `{ ok: false }` object
