@@ -11,7 +11,6 @@
 
 export { VerificationError } from "./errors.js";
 export { createWebhookRouter, WebhookRouter } from "./router.js";
-export type { WebhookRouterOptions } from "./router.js";
 export type {
   AfterHook,
   BeforeHook,
@@ -26,5 +25,6 @@ export type {
   VerifyFn,
   WebhookContext,
   WebhookHandler,
+  WebhookRouterOptions,
 } from "./types.js";
 export { createHmacVerifier } from "./verify.js";

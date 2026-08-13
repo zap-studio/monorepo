@@ -45,6 +45,43 @@ export interface HandlerContext<TPayload = unknown> extends WebhookContext {
   payload: TPayload;
 }
 
+/** Internal handler entry stored per registered route. */
+export interface HandlerEntry<TPayload = unknown> {
+  after?: AfterHook[];
+  before?: BeforeHook[];
+  handler: WebhookHandler<TPayload>;
+  schema?: StandardSchemaV1<unknown, TPayload>;
+}
+
+/**
+ * Configuration options for creating a `WebhookRouter`.
+ *
+ * @example
+ * ```ts
+ * const options: WebhookRouterOptions = {
+ *   prefix: "/webhooks",
+ *   verify: createHmacVerifier({ headerName: "x-signature", secret }),
+ * };
+ * ```
+ */
+export interface WebhookRouterOptions {
+  /** Global hooks executed after successful route handler completion. */
+  after?: AfterHook | AfterHook[];
+  /** Global hooks executed before route-level hooks and verification. */
+  before?: BeforeHook | BeforeHook[];
+  /** Global error hook used to override the default `500` response. */
+  onError?: ErrorHook;
+  /**
+   * Required path prefix for all webhook routes. Defaults to `"/webhooks"`.
+   *
+   * Normalized internally: leading slash added, trailing slash stripped,
+   * duplicate slashes collapsed. Use `""` or `"/"` to mount at the root.
+   */
+  prefix?: string;
+  /** Optional request verification function (for signature checks, auth, etc.). */
+  verify?: VerifyFn;
+}
+
 /**
  * Route registration options for a webhook handler.
  *
