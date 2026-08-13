@@ -1,9 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { mergeHeaders } from "../src/headers.js";
+import {
+  mergeHeaders,
+  normalizeRequest,
+  resolveRequestUrl,
+} from "../src/_core.js";
 import { $fetch, createFetch } from "../src/index.js";
-import { normalizeRequest } from "../src/request.js";
-import { resolveRequestUrl } from "../src/url.js";
 
 const DEFAULTS = {
   baseURL: "",
