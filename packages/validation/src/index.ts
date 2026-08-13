@@ -13,7 +13,7 @@ export type { StandardSchemaV1, StandardTypedV1 } from "@standard-schema/spec";
 export { ValidationError } from "./errors.js";
 export {
   createStandardValidator,
-  createSyncStandardValidator,
+  createStandardValidatorSync,
   isStandardSchema,
   standardValidate,
   standardValidateSync,

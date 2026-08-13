@@ -7,6 +7,20 @@
 /**
  * Represents an error that occurs during policy evaluation or enforcement.
  * Use this error to indicate issues related to policy logic, configuration, or execution.
+ *
+ * @example
+ * ```ts
+ * import { PolicyError } from "@zap-studio/permit";
+ *
+ * try {
+ *   const policy = createPolicy(config);
+ *   await policy.can(ctx, "post:read", post);
+ * } catch (error) {
+ *   if (error instanceof PolicyError) {
+ *     console.error("Invalid policy configuration:", error.message);
+ *   }
+ * }
+ * ```
  */
 export class PolicyError extends Error {
   /**

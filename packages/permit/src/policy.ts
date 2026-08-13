@@ -1,6 +1,6 @@
 /**
- * Policy creation and composition: `createPolicy`, `mergePolicies`, and
- * `mergePoliciesAny`.
+ * Policy creation and composition: `createPolicy`, `mergePoliciesEvery`, and
+ * `mergePoliciesSome`.
  *
  * @module @zap-studio/permit/policy
  */
@@ -21,30 +21,35 @@ import type {
 
 /**
  * Splits a typed `resource:action` permission string into its parts.
- * Returns `null` when the string is malformed (missing/empty part or extra segments).
+ * Returns `null` when the string is malformed (missing/empty part or extra
+ * segments) or `resourceType` is not one of `actions`' keys.
  */
 const parsePermission = <
   TResources extends Resources,
   TActions extends Actions<TResources>,
   K extends keyof TResources & keyof TActions,
 >(
-  permission: `${K & string}:${InferAction<TActions, K> & string}`
-): { action: InferAction<TActions, K>; resourceType: K } | null => {
+  permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
+  actions: TActions
+): { action: InferAction<TResources, TActions, K>; resourceType: K } | null => {
+  const isValidResourceKey = (value: string): value is K & string =>
+    Object.keys(actions).includes(value);
+
   const [resourceTypeValue, actionValue, ...rest] = permission.split(":");
   if (
     resourceTypeValue === undefined ||
     resourceTypeValue.length === 0 ||
     actionValue === undefined ||
     actionValue.length === 0 ||
-    rest.length > 0
+    rest.length > 0 ||
+    !isValidResourceKey(resourceTypeValue)
   ) {
     return null;
   }
 
   return {
     action: actionValue,
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Parsed permission strings are constrained by the typed permission template.
-    resourceType: resourceTypeValue as K,
+    resourceType: resourceTypeValue,
   };
 };
 
@@ -140,13 +145,13 @@ export const createPolicy = <
 
   const hasAllowedAction = <K extends keyof TResources & keyof TActions>(
     resourceType: K,
-    action: InferAction<TActions, K>
+    action: InferAction<TResources, TActions, K>
   ): boolean => actions[resourceType]?.includes(action) ?? false;
 
   const evaluatePolicy = <K extends keyof TResources & keyof TActions>(
     context: TContext,
     resourceType: K,
-    action: InferAction<TActions, K>,
+    action: InferAction<TResources, TActions, K>,
     resource: InferResource<TResources, K>
   ): boolean => {
     const policyFn = rules[resourceType]?.[action];
@@ -176,11 +181,12 @@ export const createPolicy = <
   return {
     async can<K extends keyof TResources & keyof TActions>(
       context: TContext,
-      permission: `${K & string}:${InferAction<TActions, K> & string}`,
+      permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
       resource: InferResource<TResources, K>
     ): Promise<boolean> {
       const parsedPermission = parsePermission<TResources, TActions, K>(
-        permission
+        permission,
+        actions
       );
       if (parsedPermission === null) {
         return false;
@@ -210,71 +216,78 @@ const mergePoliciesWithStrategy = <
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
   policies: Policy<TContext, TResources, TActions>[],
-  strategy: "allow-overrides" | "deny-overrides"
+  strategy: "every" | "some"
 ): Policy<TContext, TResources, TActions> => ({
   async can<K extends keyof TResources & keyof TActions>(
     context: TContext,
-    permission: `${K & string}:${InferAction<TActions, K> & string}`,
+    permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
     resource: InferResource<TResources, K>
   ): Promise<boolean> {
     if (policies.length === 0) {
       return false;
     }
-    for (const policy of policies) {
-      // oxlint-disable-next-line no-await-in-loop -- Policies must evaluate sequentially to preserve short-circuit semantics.
-      const allowed = await policy.can(context, permission, resource);
 
-      if (strategy === "allow-overrides" && allowed) {
-        return true;
+    const settled = await Promise.allSettled(
+      policies.map(
+        async (policy) => await policy.can(context, permission, resource)
+      )
+    );
+
+    const results = settled.map((result) => {
+      if (result.status === "fulfilled") {
+        return result.value;
       }
-      if (strategy === "deny-overrides" && !allowed) {
-        return false;
-      }
-    }
-    return strategy === "deny-overrides";
+      return false;
+    });
+
+    return strategy === "every"
+      ? results.every(Boolean)
+      : results.some(Boolean);
   },
 });
 
 /**
- * Merges multiple policies into one using "deny-overrides" strategy.
- * If any policy denies, the merged policy denies. All must allow for the result to allow.
+ * Merges multiple policies into one, requiring every policy to allow.
+ * If any policy denies, the merged policy denies. Policies are evaluated
+ * in parallel; every policy is invoked regardless of outcome.
  *
  * @example
  * ```ts
  * const basePolicy = createPolicy({ ... });
  * const adminPolicy = createPolicy({ ... });
  *
- * const merged = mergePolicies(basePolicy, adminPolicy);
+ * const merged = mergePoliciesEvery(basePolicy, adminPolicy);
  * // Both policies must allow for the action to be permitted
  * ```
  */
-export const mergePolicies = <
+export const mergePoliciesEvery = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
   ...policies: Policy<TContext, TResources, TActions>[]
 ): Policy<TContext, TResources, TActions> =>
-  mergePoliciesWithStrategy(policies, "deny-overrides");
+  mergePoliciesWithStrategy(policies, "every");
 
 /**
- * Merges multiple policies into one using "allow-overrides" strategy.
- * If any policy allows, the merged policy allows. All must deny for the result to deny.
+ * Merges multiple policies into one, requiring at least one policy to allow.
+ * If every policy denies, the merged policy denies. Policies are evaluated
+ * in parallel; every policy is invoked regardless of outcome.
  *
  * @example
  * ```ts
  * const guestPolicy = createPolicy({ ... });
  * const memberPolicy = createPolicy({ ... });
  *
- * const merged = mergePoliciesAny(guestPolicy, memberPolicy);
+ * const merged = mergePoliciesSome(guestPolicy, memberPolicy);
  * // If either policy allows, the action is permitted
  * ```
  */
-export const mergePoliciesAny = <
+export const mergePoliciesSome = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
   ...policies: Policy<TContext, TResources, TActions>[]
 ): Policy<TContext, TResources, TActions> =>
-  mergePoliciesWithStrategy(policies, "allow-overrides");
+  mergePoliciesWithStrategy(policies, "some");

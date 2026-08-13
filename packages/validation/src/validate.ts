@@ -12,10 +12,13 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 import { ValidationError } from "./errors.js";
 
-// oxlint-disable func-style -- Overloaded validators need function declarations: a typed-const arrow whose implementation returns a union is not assignable to the narrow overload signatures.
-
 /**
  * Options for validation helpers.
+ *
+ * @example
+ * ```ts
+ * const options: StandardValidateOptions = { throwOnError: true };
+ * ```
  */
 export interface StandardValidateOptions {
   /**
@@ -39,14 +42,11 @@ export interface StandardValidateOptions {
  * }
  * ```
  */
-export function isStandardSchema(value?: unknown): value is StandardSchemaV1 {
-  return (
-    value !== null &&
-    value !== undefined &&
-    (typeof value === "object" || typeof value === "function") &&
-    "~standard" in value
-  );
-}
+export const isStandardSchema = (value?: unknown): value is StandardSchemaV1 =>
+  value !== null &&
+  value !== undefined &&
+  (typeof value === "object" || typeof value === "function") &&
+  "~standard" in value;
 
 /**
  * Validates a value against a Standard Schema.
@@ -87,35 +87,35 @@ export function isStandardSchema(value?: unknown): value is StandardSchemaV1 {
  * }
  * ```
  */
-export async function standardValidate<TSchema extends StandardSchemaV1>(
-  schema: TSchema,
-  input: unknown,
-  options: StandardValidateOptions & { throwOnError: true }
-): Promise<StandardSchemaV1.InferOutput<TSchema>>;
+export const standardValidate: {
+  <TSchema extends StandardSchemaV1>(
+    schema: TSchema,
+    input: unknown,
+    options: StandardValidateOptions & { throwOnError: true }
+  ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-/**
- * Validates a value against a Standard Schema without throwing by default.
- *
- * @template TSchema - The Standard Schema type.
- * @param schema - The schema to validate against.
- * @param input - The value to validate.
- * @param options - Validation options with non-throwing mode.
- * @returns The raw Standard Schema result.
- */
-export async function standardValidate<TSchema extends StandardSchemaV1>(
-  schema: TSchema,
-  input: unknown,
-  options?: StandardValidateOptions & { throwOnError?: false }
-): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
-
-export async function standardValidate<TSchema extends StandardSchemaV1>(
+  /**
+   * Validates a value against a Standard Schema without throwing by default.
+   *
+   * @template TSchema - The Standard Schema type.
+   * @param schema - The schema to validate against.
+   * @param input - The value to validate.
+   * @param options - Validation options with non-throwing mode.
+   * @returns The raw Standard Schema result.
+   */
+  <TSchema extends StandardSchemaV1>(
+    schema: TSchema,
+    input: unknown,
+    options?: StandardValidateOptions & { throwOnError?: false }
+  ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
+} = async <TSchema extends StandardSchemaV1>(
   schema: TSchema,
   input: unknown,
   options?: StandardValidateOptions
 ): Promise<
   | StandardSchemaV1.InferOutput<TSchema>
   | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
-> {
+> => {
   const throwOnError = options?.throwOnError === true;
   let result = schema["~standard"].validate(input);
   if (result instanceof Promise) {
@@ -130,7 +130,7 @@ export async function standardValidate<TSchema extends StandardSchemaV1>(
   }
 
   return throwOnError ? result.value : result;
-}
+};
 
 /**
  * Synchronously validates a value against a Standard Schema.
@@ -174,34 +174,34 @@ export async function standardValidate<TSchema extends StandardSchemaV1>(
  * }
  * ```
  */
-export function standardValidateSync<TSchema extends StandardSchemaV1>(
-  schema: TSchema,
-  input: unknown,
-  options: StandardValidateOptions & { throwOnError: true }
-): StandardSchemaV1.InferOutput<TSchema>;
+export const standardValidateSync: {
+  <TSchema extends StandardSchemaV1>(
+    schema: TSchema,
+    input: unknown,
+    options: StandardValidateOptions & { throwOnError: true }
+  ): StandardSchemaV1.InferOutput<TSchema>;
 
-/**
- * Synchronously validates a value against a Standard Schema without throwing by default.
- *
- * @template TSchema - The Standard Schema type.
- * @param schema - The schema to validate against.
- * @param input - The value to validate.
- * @param options - Validation options with non-throwing mode.
- * @returns The raw Standard Schema result.
- */
-export function standardValidateSync<TSchema extends StandardSchemaV1>(
-  schema: TSchema,
-  input: unknown,
-  options?: StandardValidateOptions & { throwOnError?: false }
-): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
-
-export function standardValidateSync<TSchema extends StandardSchemaV1>(
+  /**
+   * Synchronously validates a value against a Standard Schema without throwing by default.
+   *
+   * @template TSchema - The Standard Schema type.
+   * @param schema - The schema to validate against.
+   * @param input - The value to validate.
+   * @param options - Validation options with non-throwing mode.
+   * @returns The raw Standard Schema result.
+   */
+  <TSchema extends StandardSchemaV1>(
+    schema: TSchema,
+    input: unknown,
+    options?: StandardValidateOptions & { throwOnError?: false }
+  ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
+} = <TSchema extends StandardSchemaV1>(
   schema: TSchema,
   input: unknown,
   options?: StandardValidateOptions
 ):
   | StandardSchemaV1.InferOutput<TSchema>
-  | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>> {
+  | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>> => {
   const throwOnError = options?.throwOnError === true;
   const result = schema["~standard"].validate(input);
 
@@ -219,7 +219,7 @@ export function standardValidateSync<TSchema extends StandardSchemaV1>(
   }
 
   return throwOnError ? result.value : result;
-}
+};
 
 /**
  * Creates an async Standard Schema validator.
@@ -253,7 +253,7 @@ export function standardValidateSync<TSchema extends StandardSchemaV1>(
  * }
  * ```
  */
-export function createStandardValidator<TSchema extends StandardSchemaV1>(
+export const createStandardValidator = <TSchema extends StandardSchemaV1>(
   schema: TSchema
 ): {
   (
@@ -264,7 +264,8 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
     input: unknown,
     options?: StandardValidateOptions & { throwOnError?: false }
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
-} {
+} => {
+  // oxlint-disable-next-line func-style -- Overload signatures here are non-generic (TSchema is fixed by the closure), so TS checks the union-returning implementation against each overload individually; only a function declaration satisfies that check.
   async function validate(
     input: unknown,
     options: StandardValidateOptions & { throwOnError: true }
@@ -292,7 +293,7 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
   }
 
   return validate;
-}
+};
 
 /**
  * Creates a synchronous Standard Schema validator.
@@ -304,7 +305,7 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
  * @param schema - The schema to validate against.
  * @returns A synchronous validator function.
  * @throws {Error} When the returned validator receives a schema result Promise.
- *   The message is `Async schemas are not supported by createSyncStandardValidator`.
+ *   The message is `Async schemas are not supported by createStandardValidatorSync`.
  * @throws {ValidationError} When the returned validator is called with
  *   `throwOnError: true` and validation returns issues.
  * @throws {TypeError} When the returned validator is called and the provided value does not
@@ -314,7 +315,7 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
  *
  * @example
  * ```ts
- * const validateUser = createSyncStandardValidator(userSchema);
+ * const validateUser = createStandardValidatorSync(userSchema);
  *
  * const result = validateUser({
  *   name: "Ada",
@@ -328,7 +329,7 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
  * }
  * ```
  */
-export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
+export const createStandardValidatorSync = <TSchema extends StandardSchemaV1>(
   schema: TSchema
 ): {
   (
@@ -339,7 +340,8 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
     input: unknown,
     options?: StandardValidateOptions & { throwOnError?: false }
   ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
-} {
+} => {
+  // oxlint-disable-next-line func-style -- Overload signatures here are non-generic (TSchema is fixed by the closure), so TS checks the union-returning implementation against each overload individually; only a function declaration satisfies that check.
   function validate(
     input: unknown,
     options: StandardValidateOptions & { throwOnError: true }
@@ -371,7 +373,7 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
           "Async schemas are not supported by standardValidateSync"
       ) {
         throw new Error(
-          "Async schemas are not supported by createSyncStandardValidator",
+          "Async schemas are not supported by createStandardValidatorSync",
           { cause: error }
         );
       }
@@ -381,4 +383,4 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
   }
 
   return validate;
-}
+};

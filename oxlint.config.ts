@@ -6,8 +6,6 @@ export default defineConfig({
   extends: [core, react],
   ignorePatterns: [
     ...(core.ignorePatterns ?? []),
-    "**/tests/**",
-    "**/__tests__/**",
     "**/*.test.{ts,tsx}",
     "**/*.spec.{ts,tsx}",
   ],

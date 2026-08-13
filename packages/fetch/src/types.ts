@@ -8,6 +8,10 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /**
  * Accepted `fetch` input type (`string`, `URL`, or `Request`).
+ *
+ * @example
+ * const input: FetchInput = "/users/1";
+ * const withUrl: FetchInput = new URL("https://api.example.com/users/1");
  */
 export type FetchInput = Parameters<typeof fetch>[0];
 
@@ -97,6 +101,13 @@ export interface FetchDefaults {
 
 /**
  * Type-safe fetch function with Standard Schema validation support
+ *
+ * @example
+ * import { z } from "zod";
+ *
+ * const UserSchema = z.object({ id: z.number(), name: z.string() });
+ * const fetchUser: $Fetch = $fetch;
+ * const user = await fetchUser("/users/1", UserSchema);
  */
 export interface $Fetch {
   /**
@@ -156,6 +167,24 @@ export interface $Fetch {
    *   `AbortError` DOMException.
    */
   (input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
+}
+
+/**
+ * Normalized representation used by internal request execution.
+ *
+ * @example
+ * const normalized: NormalizedRequest = {
+ *   url: "https://api.example.com/users",
+ *   options: {},
+ * };
+ */
+export interface NormalizedRequest {
+  /** Resolved string URL from the input (string or `URL`; `Request` uses `request.url`). */
+  url: string;
+  /** Original `Request` clone, present when the input was a `Request`. */
+  request?: Request;
+  /** Normalized request options merged with `Request` headers. */
+  options: ExtendedRequestInit;
 }
 
 /**

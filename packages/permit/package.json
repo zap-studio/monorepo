@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/permit",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "private": false,
   "description": "A type-safe, declarative authorization library for TypeScript with Standard Schema support",
   "keywords": [
@@ -36,7 +36,6 @@
     ".": "./dist/index.js",
     "./conditions": "./dist/conditions.js",
     "./errors": "./dist/errors.js",
-    "./helpers": "./dist/helpers.js",
     "./policy": "./dist/policy.js",
     "./types": "./dist/types.js",
     "./package.json": "./package.json"

@@ -1,14 +1,14 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { describe, expect, it } from "vitest";
 
-import { ValidationError } from "../src/errors.js";
+import { ValidationError } from "./errors.js";
 import {
   createStandardValidator,
-  createSyncStandardValidator,
+  createStandardValidatorSync,
   isStandardSchema,
   standardValidate,
   standardValidateSync,
-} from "../src/index.js";
+} from "./index.js";
 
 function createMockSchema<T>(
   validateFn: (
@@ -192,7 +192,7 @@ describe(createStandardValidator, () => {
   });
 });
 
-describe(createSyncStandardValidator, () => {
+describe(createStandardValidatorSync, () => {
   it("should validate using a synchronous Standard Schema and return the result", () => {
     const schema: StandardSchemaV1<unknown, string> = {
       "~standard": {
@@ -204,7 +204,7 @@ describe(createSyncStandardValidator, () => {
       },
     };
 
-    const validate = createSyncStandardValidator(schema);
+    const validate = createStandardValidatorSync(schema);
     const result = validate(123);
 
     expect(result).toStrictEqual({ value: "123" });
@@ -214,7 +214,7 @@ describe(createSyncStandardValidator, () => {
     const issues: StandardSchemaV1.Issue[] = [{ message: "Invalid value" }];
     const schema = createMockSchema(() => ({ issues }));
 
-    const validate = createSyncStandardValidator(schema);
+    const validate = createStandardValidatorSync(schema);
     const result = validate("bad");
 
     expect(result).toStrictEqual({ issues });
@@ -225,7 +225,7 @@ describe(createSyncStandardValidator, () => {
       value: { id: String(input) },
     }));
 
-    const validate = createSyncStandardValidator(schema);
+    const validate = createStandardValidatorSync(schema);
     const result = validate(42, { throwOnError: true });
 
     expect(result).toStrictEqual({ id: "42" });
@@ -236,7 +236,7 @@ describe(createSyncStandardValidator, () => {
       issues: [{ message: "Invalid value" }],
     }));
 
-    const validate = createSyncStandardValidator(schema);
+    const validate = createStandardValidatorSync(schema);
 
     expect(() => validate("bad", { throwOnError: true })).toThrow(
       ValidationError
@@ -247,7 +247,7 @@ describe(createSyncStandardValidator, () => {
     const issues: StandardSchemaV1.Issue[] = [{ message: "Invalid value" }];
     const schema = createMockSchema(() => ({ issues }));
 
-    const validate = createSyncStandardValidator(schema);
+    const validate = createStandardValidatorSync(schema);
     const result = validate("bad", { throwOnError: false });
 
     expect(result).toStrictEqual({ issues });
@@ -262,10 +262,10 @@ describe(createSyncStandardValidator, () => {
       },
     };
 
-    const validate = createSyncStandardValidator(schema);
+    const validate = createStandardValidatorSync(schema);
 
     expect(() => validate(123)).toThrow(
-      "Async schemas are not supported by createSyncStandardValidator"
+      "Async schemas are not supported by createStandardValidatorSync"
     );
   });
 });

@@ -21,8 +21,11 @@ export {
   when,
 } from "./conditions.js";
 export { PolicyError } from "./errors.js";
-export { assertNever } from "./helpers.js";
-export { createPolicy, mergePolicies, mergePoliciesAny } from "./policy.js";
+export {
+  createPolicy,
+  mergePoliciesEvery,
+  mergePoliciesSome,
+} from "./policy.js";
 export type {
   ActionPolicyMap,
   Actions,

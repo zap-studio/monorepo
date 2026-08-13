@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { ExtendedRequestInit, FetchDefaults } from "../src/types.js";
+import type { ExtendedRequestInit, FetchDefaults } from "./types.js";
 
 describe("types", () => {
   it("models native request body input and json input as separate options", () => {

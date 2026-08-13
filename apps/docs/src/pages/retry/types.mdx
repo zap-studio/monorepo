@@ -20,17 +20,21 @@ import type {
 
 ## Generic Contracts
 
-The package is transport-agnostic and generic over error and data shapes. Both type parameters default to `unknown`:
+The package is transport-agnostic and generic over error and data shapes:
 
 - `RetryPolicy<TError, TData>`
 - `RetryDecisionInput<TError, TData>`
 - `RetryExhaustedInput<TError, TData>`
+
+`TError` is constrained to `TError extends Error` and defaults to `Error`. `TData` defaults to `unknown`.
 
 ```ts
 import type { RetryPolicy } from "@zap-studio/retry";
 
 type HttpPolicy = RetryPolicy<TypeError, Response>;
 ```
+
+:::note `TError` describes the error type you expect from `execute`. If it can throw something else, see [`isKnownError`](#isknownerror-and-the-error-domain) below to handle that safely. :::
 
 ## RetryPolicy
 
@@ -40,6 +44,34 @@ The contract implemented by `BaseRetryPolicy` and by hand-written policies.
 | --- | --- | --- |
 | `next` | `(input: RetryDecisionInput<TError, TData>) => RetryDecision` | Returns the retry decision for a failed attempt. |
 | `onExhausted` | `(input: RetryExhaustedInput<TError, TData>) => RetryError` | Builds the terminal error used when retries are exhausted. |
+| `isKnownError` | `(error: unknown) => error is TError` (optional) | Narrows a caught value into `TError`. See below. |
+
+### `isKnownError` and the Error Domain
+
+Before handing a caught value to `next(...)`/`onExhausted(...)`, `BaseRetryPolicy.run(...)` calls `isKnownError(error)`. When it returns `false`, the value is treated as outside this policy's declared error domain instead of a retryable failure, and **retry is bypassed entirely** — `next(...)` is never called:
+
+- In throw mode (the default), `run(...)` rethrows the original value as-is.
+- With `throwOnExhausted: false`, `run(...)` wraps the value in a `RetryError` and returns it on `result.error`, same as any other terminal failure — it never throws.
+
+`BaseRetryPolicy`'s default `isKnownError` checks `error instanceof Error`. That means a rejection with a non-`Error` value (a string, a plain object, `undefined`, ...) is treated this way on the very first attempt it occurs.
+
+Override `isKnownError` when `TError` is a narrower type than `Error` (an HTTP error, a domain-specific error class) to get real narrowing instead of an `instanceof Error` assumption:
+
+```ts
+import { BaseRetryPolicy } from "@zap-studio/retry";
+
+class HttpError extends Error {}
+
+class HttpRetryPolicy extends BaseRetryPolicy<HttpError> {
+  public override isKnownError(error: unknown): error is HttpError {
+    return error instanceof HttpError;
+  }
+
+  // ...next(), onExhausted() as usual
+}
+```
+
+See [Custom Policies](/retry/custom-policies) for the full pattern.
 
 ## RetryDecision
 

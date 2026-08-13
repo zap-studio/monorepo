@@ -104,7 +104,7 @@ If the schema performs async validation, this function will throw.
 
 ## Reusable Validators
 
-If you validate many values against the same schema, you can create reusable validators. In performance-sensitive code paths, prefer `createStandardValidator` and `createSyncStandardValidator` over calling `standardValidate` and `standardValidateSync` repeatedly.
+If you validate many values against the same schema, you can create reusable validators. In performance-sensitive code paths, prefer `createStandardValidator` and `createStandardValidatorSync` over calling `standardValidate` and `standardValidateSync` repeatedly.
 
 ### Async validator
 
@@ -120,9 +120,9 @@ const user = await validateUser(input, { throwOnError: true });
 ### Sync validator
 
 ```ts
-import { createSyncStandardValidator } from "@zap-studio/validation";
+import { createStandardValidatorSync } from "@zap-studio/validation";
 
-const validateUser = createSyncStandardValidator(userSchema);
+const validateUser = createStandardValidatorSync(userSchema);
 const result = validateUser(input);
 
 const user = validateUser(input, { throwOnError: true });
@@ -132,7 +132,7 @@ const user = validateUser(input, { throwOnError: true });
 
 For higher-throughput paths:
 
-- Prefer reusable validators (`createStandardValidator`, `createSyncStandardValidator`) whenever possible.
+- Prefer reusable validators (`createStandardValidator`, `createStandardValidatorSync`) whenever possible.
 - Prefer non-throwing mode (`throwOnError: false` or omitted) when validation failure is part of normal control flow.
 - Reserve throwing mode for boundaries where exceptions are expected behavior.
 
@@ -174,7 +174,7 @@ try {
 | `standardValidate` | You want validation that works with both sync and async schemas |
 | `standardValidateSync` | You know the schema is synchronous |
 | `createStandardValidator` | You want a reusable async validator |
-| `createSyncStandardValidator` | You want a reusable sync validator |
+| `createStandardValidatorSync` | You want a reusable sync validator |
 | `isStandardSchema` | You need to safely detect schemas at runtime |
 
 ---
@@ -191,7 +191,7 @@ In practice, teams often choose different validation libraries:
 
 When those libraries implement the Standard Schema spec, you can keep one validation flow in your app instead of writing library-specific code paths.
 
-`@zap-studio/validation` builds on that spec and gives you one consistent API for validation and error handling (`isStandardSchema`, `standardValidate`, `standardValidateSync`, `createStandardValidator`, `createSyncStandardValidator`, `ValidationError`).
+`@zap-studio/validation` builds on that spec and gives you one consistent API for validation and error handling (`isStandardSchema`, `standardValidate`, `standardValidateSync`, `createStandardValidator`, `createStandardValidatorSync`, `ValidationError`).
 
 In addition to providing validation utilities, the `@zap-studio/validation` package re-exports the `StandardSchemaV1` type from the `@standard-schema/spec` package. This allows you to use the Standard Schema type definitions directly without needing to install the `@standard-schema/spec` package separately.
 

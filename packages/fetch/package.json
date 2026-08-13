@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/fetch",
-  "version": "0.5.6",
+  "version": "0.6.0",
   "private": false,
   "description": "A type-safe fetch wrapper for HTTP requests with runtime schema validation.",
   "keywords": [
@@ -38,13 +38,8 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
-    "./constants": "./dist/constants.js",
     "./errors": "./dist/errors.js",
-    "./fetch": "./dist/fetch.js",
-    "./headers": "./dist/headers.js",
-    "./request": "./dist/request.js",
     "./types": "./dist/types.js",
-    "./url": "./dist/url.js",
     "./package.json": "./package.json"
   },
   "publishConfig": {

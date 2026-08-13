@@ -9,6 +9,13 @@ import type { RetryDecision, RetryDecisionInput } from "./types.js";
 
 /**
  * Configuration for `ExponentialBackoff`.
+ *
+ * @example
+ * const options: ExponentialBackoffOptions = {
+ *   maxAttempts: 5,
+ *   baseDelayMs: 100,
+ *   maxDelayMs: 2_000,
+ * };
  */
 export interface ExponentialBackoffOptions {
   /**

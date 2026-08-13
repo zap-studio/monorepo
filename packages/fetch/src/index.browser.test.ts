@@ -1,9 +1,13 @@
+import { isStandardSchema } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
+import { type } from "arktype";
+import * as v from "valibot";
 import { number, object, string } from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { z } from "zod";
 
-import { FetchError } from "../src/errors.js";
-import { $fetch, api, createFetch } from "../src/index.js";
+import { FetchError } from "./errors.js";
+import { $fetch, api, createFetch, GLOBAL_DEFAULTS } from "./index.js";
 
 async function captureRejectedError(
   run: () => Promise<unknown>
@@ -1299,5 +1303,1018 @@ describe("api convenience methods", () => {
 
       expect(result).toHaveProperty("issues");
     });
+  });
+});
+
+describe("global fetch defaults", () => {
+  it("uses fetch-compatible defaults", () => {
+    expect(GLOBAL_DEFAULTS).toStrictEqual({
+      baseURL: "",
+      throwOnFetchError: true,
+      throwOnValidationError: true,
+    });
+  });
+});
+
+describe("request input normalization", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("accepts URL instances as input", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    await $fetch(new URL("/users", "https://api.example.com"));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/users",
+      expect.any(Object)
+    );
+  });
+
+  it("accepts a Request input with no options", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    const request = new Request("https://api.example.com/users", {
+      headers: { A: "1" },
+      method: "POST",
+    });
+
+    await $fetch(request);
+
+    const [sentRequest] = fetchMock.mock.calls[0] as [Request, RequestInit];
+    expect(sentRequest).toBeInstanceOf(Request);
+    expect(sentRequest.url).toBe("https://api.example.com/users");
+  });
+
+  it("clones Request inputs, merges headers, and lets request-level options win", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    const request = new Request("https://api.example.com/users", {
+      headers: { A: "1", B: "2" },
+      method: "POST",
+    });
+
+    await $fetch(request, { headers: { B: "20", C: "3" }, method: "PATCH" });
+
+    const [sentRequest, init] = fetchMock.mock.calls[0] as [
+      Request,
+      RequestInit,
+    ];
+    const headers = new Headers(init.headers);
+
+    expect(sentRequest).toBeInstanceOf(Request);
+    expect(sentRequest).not.toBe(request);
+    expect(sentRequest.url).toBe("https://api.example.com/users");
+    expect(init.method).toBe("PATCH");
+    expect(headers.get("A")).toBe("1");
+    expect(headers.get("B")).toBe("20");
+    expect(headers.get("C")).toBe("3");
+  });
+});
+
+describe("json and body conflicts", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("throws when json and body are both provided", async () => {
+    // @ts-expect-error body and json are intentionally both provided to test the runtime guard.
+    const options = { body: "raw", json: { name: "Zap" }, method: "POST" };
+
+    await expect(
+      $fetch("https://api.example.com/users", options)
+    ).rejects.toThrow(TypeError);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("sets Content-Type when default headers exist without one", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    const { $fetch: customFetch } = createFetch({
+      headers: { Authorization: "Bearer token" },
+    });
+
+    await customFetch("https://api.example.com/users", {
+      json: { name: "Zap" },
+      method: "POST",
+    });
+
+    const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const headers = new Headers(init.headers);
+    expect(headers.get("Authorization")).toBe("Bearer token");
+    expect(headers.get("Content-Type")).toBe("application/json");
+  });
+});
+
+describe("URL and search param resolution", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("merges default, URL, and request search params in that order", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    const { $fetch: customFetch } = createFetch({
+      baseURL: "https://api.example.com",
+      searchParams: { locale: "en", page: "1" },
+    });
+
+    await customFetch("users?page=2&from=resource#team", {
+      searchParams: { page: "3", q: "zap" },
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://api.example.com/users?locale=en&page=3&from=resource&q=zap#team"
+    );
+  });
+
+  it("accepts native URLSearchParams constructor input", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    await $fetch("https://api.example.com/users", {
+      searchParams: new URLSearchParams({ q: "test" }),
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://api.example.com/users?q=test"
+    );
+  });
+
+  it("does not add a query string for empty search params", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    await $fetch("https://api.example.com/users#team", { searchParams: {} });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://api.example.com/users#team"
+    );
+  });
+
+  it("preserves an explicit empty fragment when adding search params", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    await $fetch("https://api.example.com/users#", {
+      searchParams: { q: "zap" },
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://api.example.com/users?q=zap#"
+    );
+  });
+
+  it("merges search params before a fragment when the path already has a query", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    const { $fetch: customFetch } = createFetch({
+      baseURL: "https://api.example.com/",
+    });
+
+    await customFetch("items?sort=name#results", {
+      searchParams: { page: "2" },
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://api.example.com/items?sort=name&page=2#results"
+    );
+  });
+});
+
+describe("method helper", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  const UserSchema = object({
+    id: number(),
+    name: string(),
+  });
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("supports raw Response calls without a schema", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    const result = await api.delete("https://api.example.com/users/1", {
+      headers: { A: "1" },
+    });
+
+    expect(result).toBeInstanceOf(Response);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/users/1",
+      expect.objectContaining({ method: "DELETE" })
+    );
+  });
+
+  it("preserves throwOnValidationError: true when explicitly provided", async () => {
+    const invalidData = { id: "not-a-number", name: 123 };
+    fetchMock.mockResolvedValue(new Response(JSON.stringify(invalidData)));
+
+    await expect(
+      api.put("https://api.example.com/users/1", UserSchema, {
+        throwOnValidationError: true,
+      })
+    ).rejects.toThrow(ValidationError);
+  });
+
+  it("lets the helper method win when runtime options contain a method", async () => {
+    const userData = { id: 1, name: "John" };
+    fetchMock.mockResolvedValue(new Response(JSON.stringify(userData)));
+
+    await api.patch("https://api.example.com/users/1", UserSchema, {
+      method: "POST",
+    } as never);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/users/1",
+      expect.objectContaining({ method: "PATCH" })
+    );
+  });
+});
+
+describe("@zap-studio/fetch browser runtime", () => {
+  let originalFetch: typeof globalThis.fetch;
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    originalFetch = globalThis.fetch;
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    vi.restoreAllMocks();
+  });
+
+  it("normalizes native Request inputs without losing browser Headers semantics", async () => {
+    fetchMock.mockResolvedValue(new Response("ok"));
+    const request = new Request("https://api.example.com/users", {
+      headers: { A: "1", B: "2" },
+      method: "POST",
+    });
+
+    await $fetch(request, { headers: { B: "20", C: "3" }, method: "PATCH" });
+
+    const [sentRequest, init] = fetchMock.mock.calls[0] as [
+      Request,
+      RequestInit,
+    ];
+    const headers = new Headers(init.headers);
+
+    expect(sentRequest).toBeInstanceOf(Request);
+    expect(sentRequest).not.toBe(request);
+    expect(sentRequest.url).toBe("https://api.example.com/users");
+    expect(init.method).toBe("PATCH");
+    expect([
+      headers.get("A"),
+      headers.get("B"),
+      headers.get("C"),
+    ]).toStrictEqual(["1", "20", "3"]);
+  });
+
+  it("merges native Headers, object headers, and tuple headers", async () => {
+    fetchMock.mockResolvedValue(new Response("ok"));
+
+    await $fetch("https://api.example.com/a", {
+      headers: new Headers({ A: "1" }),
+    });
+    const fromHeaders = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
+
+    fetchMock.mockClear();
+    const { $fetch: objectFetch } = createFetch({ headers: { A: "1" } });
+    await objectFetch("https://api.example.com/b", { headers: { B: "2" } });
+    const fromObject = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
+
+    fetchMock.mockClear();
+    const { $fetch: tupleFetch } = createFetch({ headers: [["A", "1"]] });
+    await tupleFetch("https://api.example.com/c", {
+      headers: [["A", "2"]],
+    });
+    const fromTuples = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
+
+    expect(fromHeaders.get("A")).toBe("1");
+    expect(fromObject.get("A")).toBe("1");
+    expect(fromObject.get("B")).toBe("2");
+    expect(fromTuples.get("A")).toBe("2");
+  });
+
+  it("resolves browser URL and URLSearchParams inputs consistently", async () => {
+    fetchMock.mockResolvedValue(new Response("ok"));
+    const { $fetch: customFetch } = createFetch({
+      baseURL: "https://api.example.com",
+    });
+
+    await customFetch("users#team", { searchParams: { q: "zap" } });
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://api.example.com/users?q=zap#team"
+    );
+
+    fetchMock.mockClear();
+    await $fetch("/docs/guide#intro", {
+      searchParams: new URLSearchParams({ page: "1" }),
+    });
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/docs/guide?page=1#intro");
+  });
+
+  it("returns native Response objects from raw $fetch calls", async () => {
+    const response = new Response(JSON.stringify({ ok: true }), {
+      headers: { "content-type": "application/json" },
+      status: 201,
+    });
+    fetchMock.mockResolvedValue(response);
+
+    const result = await $fetch("https://api.example.com/users", {
+      headers: { Accept: "application/json" },
+    });
+
+    expect(result).toBe(response);
+    expect(result).toBeInstanceOf(Response);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/users",
+      expect.objectContaining({
+        headers: expect.any(Headers),
+      })
+    );
+  });
+
+  it("uses Request inputs as native fetch Request arguments", async () => {
+    fetchMock.mockResolvedValue(new Response("ok"));
+
+    await $fetch(
+      new Request("https://api.example.com/users", {
+        headers: { A: "1" },
+        method: "POST",
+      }),
+      {
+        headers: { B: "2" },
+      }
+    );
+
+    const firstCall = fetchMock.mock.calls[0];
+    const [request, init] = firstCall;
+    expect(request).toBeInstanceOf(Request);
+    expect((request as Request).url).toBe("https://api.example.com/users");
+    expect(new Headers((init as RequestInit).headers).get("B")).toBe("2");
+  });
+
+  it("serializes json bodies and preserves explicit content type casing", async () => {
+    fetchMock.mockResolvedValue(new Response("ok"));
+
+    await $fetch("https://api.example.com/users", {
+      headers: { "content-type": "application/vnd.api+json" },
+      json: { name: "Zap" },
+      method: "POST",
+    });
+
+    const firstCall = fetchMock.mock.calls[0];
+    const [, init] = firstCall;
+    expect((init as RequestInit).body).toBe(JSON.stringify({ name: "Zap" }));
+    expect(new Headers((init as RequestInit).headers).get("content-type")).toBe(
+      "application/vnd.api+json"
+    );
+  });
+
+  it("applies browser fetch defaults from createFetch", async () => {
+    fetchMock.mockResolvedValue(new Response("ok"));
+    const client = createFetch({
+      baseURL: "https://api.example.com",
+      headers: { Authorization: "Bearer token" },
+    });
+
+    await client.$fetch("/users", {
+      headers: { Accept: "application/json" },
+      searchParams: { page: "1" },
+    });
+
+    const firstCall = fetchMock.mock.calls[0];
+    const [url, init] = firstCall;
+    const headers = new Headers((init as RequestInit).headers);
+    expect(url).toBe("https://api.example.com/users?page=1");
+    expect(headers.get("authorization")).toBe("Bearer token");
+    expect(headers.get("accept")).toBe("application/json");
+  });
+});
+
+describe("ArkType Standard Schema compatibility", () => {
+  it("should expose ~standard property", () => {
+    const schema = type({ id: "number" });
+    expect("~standard" in schema).toBeTruthy();
+    expect(schema["~standard"]).toBeDefined();
+  });
+
+  it("should be recognized by isStandardSchema", () => {
+    const schema = type({ id: "number" });
+    expect(isStandardSchema(schema)).toBeTruthy();
+  });
+});
+
+describe("$fetch with ArkType schemas", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should validate with ArkType object schema", async () => {
+    const schema = type({
+      email: "string.email",
+      id: "number",
+      name: "string",
+    });
+
+    const mockData = { email: "test@example.com", id: 1, name: "Test User" };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/user", schema);
+
+    expect(result).toStrictEqual(mockData);
+  });
+
+  it("should throw ValidationError on invalid data with ArkType", async () => {
+    const schema = type({
+      email: "string.email",
+      id: "number",
+    });
+
+    const invalidData = { email: "not-an-email", id: 1 };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => invalidData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    await expect(
+      $fetch("https://api.example.com/user", schema)
+    ).rejects.toThrow(ValidationError);
+  });
+
+  it("should return validation result when throwOnValidationError is false with ArkType", async () => {
+    const schema = type({
+      email: "string.email",
+      id: "number",
+    });
+
+    const invalidData = { email: "not-an-email", id: 1 };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => invalidData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/user", schema, {
+      throwOnValidationError: false,
+    });
+
+    expect(result).toHaveProperty("issues");
+    expect(Array.isArray((result as { issues?: unknown }).issues)).toBeTruthy();
+  });
+
+  it("should return successful validation result when data is valid and throwOnValidationError is false", async () => {
+    const schema = type({
+      email: "string.email",
+      id: "number",
+    });
+
+    const validData = { email: "test@example.com", id: 1 };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => validData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/user", schema, {
+      throwOnValidationError: false,
+    });
+
+    expect(result).toHaveProperty("value");
+    expect((result as { value?: unknown }).value).toStrictEqual(validData);
+    expect((result as { issues?: unknown }).issues).toBeUndefined();
+  });
+
+  it("should work with ArkType array schemas", async () => {
+    const schema = type({
+      id: "number",
+      name: "string",
+    }).array();
+
+    const mockData = [
+      { id: 1, name: "User 1" },
+      { id: 2, name: "User 2" },
+    ];
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/users", schema);
+
+    expect(result).toStrictEqual(mockData);
+  });
+
+  it("should work with api.get using ArkType", async () => {
+    const schema = type({ success: "boolean" });
+    const mockData = { success: true };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await api.get("https://api.example.com/status", schema);
+
+    expect(result).toStrictEqual(mockData);
+  });
+
+  it("should work with api.post using ArkType", async () => {
+    const schema = type({ created: "boolean", id: "number" });
+    const mockData = { created: true, id: 123 };
+    const body = { name: "New Item" };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 201,
+      statusText: "Created",
+    });
+
+    const result = await api.post("https://api.example.com/items", schema, {
+      body: JSON.stringify(body),
+    });
+
+    expect(result).toStrictEqual(mockData);
+  });
+
+  it("should work with ArkType optional fields", async () => {
+    const schema = type({
+      "description?": "string",
+      id: "number",
+      name: "string",
+    });
+
+    const mockData = { id: 1, name: "Product" };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/product", schema);
+
+    expect(result).toStrictEqual(mockData);
+  });
+
+  it("should work with ArkType union types", async () => {
+    const schema = type("string|number");
+    const mockData = "test-string";
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/value", schema);
+
+    expect(result).toBe(mockData);
+  });
+});
+
+describe("Valibot Standard Schema compatibility", () => {
+  it("should expose ~standard property", () => {
+    const schema = v.object({ id: v.number() });
+    expect("~standard" in schema).toBeTruthy();
+    expect(schema["~standard"]).toBeDefined();
+  });
+
+  it("should be recognized by isStandardSchema", () => {
+    const schema = v.object({ id: v.number() });
+    expect(isStandardSchema(schema)).toBeTruthy();
+  });
+});
+
+describe("$fetch with Valibot schemas", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should validate with Valibot object schema", async () => {
+    const schema = v.object({
+      email: v.pipe(v.string(), v.email()),
+      id: v.number(),
+      name: v.string(),
+    });
+
+    const mockData = { email: "test@example.com", id: 1, name: "Test User" };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/user", schema);
+
+    expect(result).toStrictEqual(mockData);
+  });
+
+  it("should throw ValidationError on invalid data with Valibot", async () => {
+    const schema = v.object({
+      email: v.pipe(v.string(), v.email()),
+      id: v.number(),
+    });
+
+    const invalidData = { email: "not-an-email", id: 1 };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => invalidData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    await expect(
+      $fetch("https://api.example.com/user", schema)
+    ).rejects.toThrow(ValidationError);
+  });
+
+  it("should return validation result when throwOnValidationError is false with Valibot", async () => {
+    const schema = v.object({
+      email: v.pipe(v.string(), v.email()),
+      id: v.number(),
+    });
+
+    const invalidData = { email: "not-an-email", id: 1 };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => invalidData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/user", schema, {
+      throwOnValidationError: false,
+    });
+
+    expect(result).toHaveProperty("issues");
+    expect(Array.isArray((result as { issues?: unknown }).issues)).toBeTruthy();
+  });
+
+  it("should return successful validation result when data is valid and throwOnValidationError is false", async () => {
+    const schema = v.object({
+      email: v.pipe(v.string(), v.email()),
+      id: v.number(),
+    });
+
+    const validData = { email: "test@example.com", id: 1 };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => validData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/user", schema, {
+      throwOnValidationError: false,
+    });
+
+    expect(result).toHaveProperty("value");
+    expect((result as { value?: unknown }).value).toStrictEqual(validData);
+    expect((result as { issues?: unknown }).issues).toBeUndefined();
+  });
+
+  it("should work with Valibot array schemas", async () => {
+    const schema = v.array(
+      v.object({
+        id: v.number(),
+        name: v.string(),
+      })
+    );
+
+    const mockData = [
+      { id: 1, name: "User 1" },
+      { id: 2, name: "User 2" },
+    ];
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/users", schema);
+
+    expect(result).toStrictEqual(mockData);
+  });
+
+  it("should work with api.get using Valibot", async () => {
+    const schema = v.object({ success: v.boolean() });
+    const mockData = { success: true };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await api.get("https://api.example.com/status", schema);
+
+    expect(result).toStrictEqual(mockData);
+  });
+
+  it("should work with api.post using Valibot", async () => {
+    const schema = v.object({ created: v.boolean(), id: v.number() });
+    const mockData = { created: true, id: 123 };
+    const body = { name: "New Item" };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 201,
+      statusText: "Created",
+    });
+
+    const result = await api.post("https://api.example.com/items", schema, {
+      body: JSON.stringify(body),
+    });
+
+    expect(result).toStrictEqual(mockData);
+  });
+
+  it("should work with Valibot optional fields", async () => {
+    const schema = v.object({
+      description: v.optional(v.string()),
+      id: v.number(),
+      name: v.string(),
+    });
+
+    const mockData = { id: 1, name: "Product" };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/product", schema);
+
+    expect(result).toStrictEqual(mockData);
+  });
+});
+
+describe("Zod Standard Schema compatibility", () => {
+  it("should expose ~standard property", () => {
+    const schema = z.object({ id: z.number() });
+    expect("~standard" in schema).toBeTruthy();
+    expect(schema["~standard"]).toBeDefined();
+  });
+
+  it("should be recognized by isStandardSchema", () => {
+    const schema = z.object({ id: z.number() });
+    expect(isStandardSchema(schema)).toBeTruthy();
+  });
+});
+
+describe("$fetch with Zod schemas", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should validate with Zod object schema", async () => {
+    const schema = z.object({
+      email: z.email(),
+      id: z.number(),
+      name: z.string(),
+    });
+
+    const mockData = { email: "test@example.com", id: 1, name: "Test User" };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/user", schema);
+
+    expect(result).toStrictEqual(mockData);
+  });
+
+  it("should throw ValidationError on invalid data with Zod", async () => {
+    const schema = z.object({
+      email: z.email(),
+      id: z.number(),
+    });
+
+    const invalidData = { email: "not-an-email", id: 1 };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => invalidData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    await expect(
+      $fetch("https://api.example.com/user", schema)
+    ).rejects.toThrow(ValidationError);
+  });
+
+  it("should return validation result when throwOnValidationError is false with Zod", async () => {
+    const schema = z.object({
+      email: z.email(),
+      id: z.number(),
+    });
+
+    const invalidData = { email: "not-an-email", id: 1 };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => invalidData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/user", schema, {
+      throwOnValidationError: false,
+    });
+
+    expect(result).toHaveProperty("issues");
+    expect(Array.isArray((result as { issues?: unknown }).issues)).toBeTruthy();
+  });
+
+  it("should return successful validation result when data is valid and throwOnValidationError is false", async () => {
+    const schema = z.object({
+      email: z.email(),
+      id: z.number(),
+    });
+
+    const validData = { email: "test@example.com", id: 1 };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => validData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/user", schema, {
+      throwOnValidationError: false,
+    });
+
+    expect(result).toHaveProperty("value");
+    expect((result as { value?: unknown }).value).toStrictEqual(validData);
+    expect((result as { issues?: unknown }).issues).toBeUndefined();
+  });
+
+  it("should work with Zod array schemas", async () => {
+    const schema = z.array(
+      z.object({
+        id: z.number(),
+        name: z.string(),
+      })
+    );
+
+    const mockData = [
+      { id: 1, name: "User 1" },
+      { id: 2, name: "User 2" },
+    ];
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await $fetch("https://api.example.com/users", schema);
+
+    expect(result).toStrictEqual(mockData);
+  });
+
+  it("should work with api.get using Zod", async () => {
+    const schema = z.object({ success: z.boolean() });
+    const mockData = { success: true };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 200,
+      statusText: "OK",
+    });
+
+    const result = await api.get("https://api.example.com/status", schema);
+
+    expect(result).toStrictEqual(mockData);
+  });
+
+  it("should work with api.post using Zod", async () => {
+    const schema = z.object({ created: z.boolean(), id: z.number() });
+    const mockData = { created: true, id: 123 };
+    const body = { name: "New Item" };
+
+    fetchMock.mockResolvedValue({
+      headers: new Headers({ "content-type": "application/json" }),
+      json: () => mockData,
+      ok: true,
+      status: 201,
+      statusText: "Created",
+    });
+
+    const result = await api.post("https://api.example.com/items", schema, {
+      body: JSON.stringify(body),
+    });
+
+    expect(result).toStrictEqual(mockData);
   });
 });

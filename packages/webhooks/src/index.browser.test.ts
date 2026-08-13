@@ -2,9 +2,9 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
-import { VerificationError } from "../src/errors.js";
-import { createWebhookRouter, WebhookRouter } from "../src/index.js";
-import { createHmacVerifier } from "../src/verify.js";
+import { VerificationError } from "./errors.js";
+import { createWebhookRouter, WebhookRouter } from "./index.js";
+import { createHmacVerifier } from "./verify.js";
 
 describe(WebhookRouter, () => {
   const encoder = new TextEncoder();
@@ -1331,5 +1331,150 @@ describe(WebhookRouter, () => {
 
       expect(response.status).toBe(404);
     });
+  });
+});
+
+describe("Path normalization", () => {
+  const createRequest = (path: string): Request =>
+    new Request(new URL(path, "https://example.com"), {
+      body: JSON.stringify({}),
+      method: "POST",
+    });
+
+  it("should match leading-slash routes under the default /webhooks prefix", async () => {
+    const router = createWebhookRouter();
+
+    router.register("/stripe", () => Response.json("ok"));
+
+    const response = await router.handle(createRequest("/webhooks/stripe"));
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toBe("ok");
+  });
+
+  it("should normalize registered paths missing a leading slash or with a trailing slash", async () => {
+    const router = createWebhookRouter();
+
+    router.register("stripe/" as "/stripe", () => Response.json("ok"));
+
+    const response = await router.handle(createRequest("/webhooks/stripe"));
+
+    expect(response.status).toBe(200);
+  });
+
+  it("should tolerate a trailing slash on the incoming request path", async () => {
+    const router = createWebhookRouter();
+
+    router.register("/stripe", () => Response.json("ok"));
+
+    const response = await router.handle(createRequest("/webhooks/stripe/"));
+
+    expect(response.status).toBe(200);
+  });
+
+  it("should collapse duplicate slashes in routes and request paths", async () => {
+    const router = createWebhookRouter();
+
+    router.register("//stripe//events" as "/stripe/events", () =>
+      Response.json("ok")
+    );
+
+    const response = await router.handle(
+      createRequest("/webhooks//stripe/events")
+    );
+
+    expect(response.status).toBe(200);
+  });
+
+  it("should not match paths where the prefix is only a segment prefix", async () => {
+    const router = createWebhookRouter({ prefix: "/hooks" });
+
+    router.register("/stripe", () => Response.json("ok"));
+
+    const response = await router.handle(createRequest("/hooksters/stripe"));
+
+    expect(response.status).toBe(404);
+  });
+
+  it("should normalize a prefix missing a leading slash or with a trailing slash", async () => {
+    const router = createWebhookRouter({ prefix: "webhooks/" });
+
+    router.register("/stripe", () => Response.json("ok"));
+
+    const response = await router.handle(createRequest("/webhooks/stripe"));
+
+    expect(response.status).toBe(200);
+  });
+
+  it("should mount at the root for an empty prefix", async () => {
+    const router = createWebhookRouter({ prefix: "" });
+
+    router.register("/payment", () => Response.json("ok"));
+
+    const response = await router.handle(createRequest("/payment"));
+
+    expect(response.status).toBe(200);
+  });
+
+  it("should mount at the root for a bare slash prefix", async () => {
+    const router = createWebhookRouter({ prefix: "/" });
+
+    router.register("/payment", () => Response.json("ok"));
+
+    const response = await router.handle(createRequest("/payment"));
+
+    expect(response.status).toBe(200);
+  });
+
+  it("should match the root route at the bare prefix with and without a trailing slash", async () => {
+    const router = createWebhookRouter();
+
+    router.register("/", () => Response.json("root"));
+
+    const bare = await router.handle(createRequest("/webhooks"));
+    const slashed = await router.handle(createRequest("/webhooks/"));
+
+    expect(bare.status).toBe(200);
+    expect(slashed.status).toBe(200);
+  });
+
+  it("should expose the normalized route path in the handler context", async () => {
+    const router = createWebhookRouter();
+
+    let observed: string | null = null;
+    router.register("/meta", ({ path }) => {
+      observed = path;
+      return undefined;
+    });
+
+    await router.handle(createRequest("/webhooks/meta"));
+
+    expect(observed).toBe("/meta");
+  });
+});
+
+describe("@zap-studio/webhooks browser runtime", () => {
+  it("routes browser Request objects and preserves response headers", async () => {
+    const router = createWebhookRouter().register("/github", ({ path }) => {
+      expect(path).toBe("/github");
+      return Response.json(
+        { ok: true },
+        {
+          headers: { "x-runtime": "browser" },
+          status: 202,
+        }
+      );
+    });
+
+    const response = await router.handle(
+      new Request("https://example.com/webhooks/github?delivery=1", {
+        body: JSON.stringify({ ok: true }),
+        method: "POST",
+      })
+    );
+
+    expect(response.status).toBe(202);
+    expect(response.headers.get("x-runtime")).toBe("browser");
+    await expect(response.json()).resolves.toStrictEqual({ ok: true });
   });
 });

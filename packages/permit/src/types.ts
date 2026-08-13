@@ -10,17 +10,32 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
  * Represents the possible outcomes of a policy decision.
  * - "allow": The action is permitted.
  * - "deny": The action is not permitted.
+ *
+ * @example
+ * ```ts
+ * const decision: Decision = "allow";
+ * ```
  */
 export type Decision = "allow" | "deny";
 
 /**
  * Represents the context in which a policy decision is made.
  * Can include user information, environment, or any relevant data.
+ *
+ * @example
+ * ```ts
+ * type AppContext = Context<{ user: { id: string; role: string } }>;
+ * ```
  */
 export type Context<TContext = unknown> = TContext;
 
 /**
  * Represents a role within the system.
+ *
+ * @example
+ * ```ts
+ * type AppRole = Role<"guest" | "user" | "admin">;
+ * ```
  */
 export type Role<TRole extends string = string> = TRole;
 
@@ -81,6 +96,11 @@ export type Actions<TResources extends Resources> = {
 
 /**
  * Infers the output type from a Standard Schema.
+ *
+ * @example
+ * ```ts
+ * type Post = InferResource<typeof resources, "post">;
+ * ```
  */
 export type InferResource<
   TResources extends Resources,
@@ -89,9 +109,16 @@ export type InferResource<
 
 /**
  * Infers the action union type for a specific resource.
+ *
+ * @example
+ * ```ts
+ * type PostAction = InferAction<typeof resources, typeof actions, "post">;
+ * // "read" | "write" | "delete"
+ * ```
  */
 export type InferAction<
-  TActions extends Record<string, readonly string[]>,
+  TResources extends Resources,
+  TActions extends Actions<TResources>,
   K extends keyof TActions,
 > = TActions[K][number];
 
@@ -110,11 +137,17 @@ export type InferPermission<
 > = {
   [
     K in keyof TResources & keyof TActions
-  ]: `${K & string}:${InferAction<TActions, K> & string}`;
+  ]: `${K & string}:${InferAction<TResources, TActions, K> & string}`;
 }[keyof TResources & keyof TActions];
 
 /**
  * A function that determines whether a given action on a resource is allowed in a specific context.
+ *
+ * @example
+ * ```ts
+ * const readPolicy: PolicyFn<AppContext, "read", Post> = (context, action, post) =>
+ *   post.visibility === "public" ? "allow" : "deny";
+ * ```
  */
 export type PolicyFn<
   TContext extends Context,
@@ -124,6 +157,12 @@ export type PolicyFn<
 
 /**
  * A function that evaluates a condition for a given action and resource in a specific context.
+ *
+ * @example
+ * ```ts
+ * const isOwner: ConditionFn<AppContext, "write", Post> = (context, action, post) =>
+ *   context.user.id === post.authorId;
+ * ```
  */
 export type ConditionFn<
   TContext extends Context,
@@ -132,7 +171,42 @@ export type ConditionFn<
 > = (context: TContext, action: TAction, resource: TResource) => boolean;
 
 /**
+ * Call signatures for {@link hasRole}, preserving the with/without hierarchy overloads.
+ */
+export interface HasRoleFn {
+  <
+    TContext extends { role: Role | Role[] },
+    TAction extends string = string,
+    TResource = unknown,
+  >(
+    role: Role
+  ): ConditionFn<TContext, TAction, TResource>;
+  <
+    TContext extends { role: TRole | TRole[] },
+    TAction extends string = string,
+    TResource = unknown,
+    TRole extends Role = Role,
+  >(
+    role: TRole,
+    hierarchy: RoleHierarchy<TRole>
+  ): ConditionFn<TContext, TAction, TResource>;
+}
+
+/**
  * Maps actions to their corresponding policy functions for a specific resource.
+ *
+ * @example
+ * ```ts
+ * import type { ActionPolicyMap } from "@zap-studio/permit/types";
+ *
+ * type PostActions = "read" | "write" | "delete";
+ *
+ * const postPolicies: ActionPolicyMap<AppContext, PostActions, Post> = {
+ *   read: (context, action, post) => "allow",
+ *   write: (context, action, post) =>
+ *     post.authorId === context.userId ? "allow" : "deny",
+ * };
+ * ```
  */
 export type ActionPolicyMap<
   TContext extends Context,
@@ -145,6 +219,22 @@ export type ActionPolicyMap<
 /**
  * Defines the rules for each resource and action combination.
  * Each resource key maps to an object where each action key maps to a policy function.
+ *
+ * @example
+ * ```ts
+ * import type { Rules } from "@zap-studio/permit/types";
+ *
+ * const rules: Rules<AppContext, typeof resources, typeof actions> = {
+ *   post: {
+ *     read: (context, action, post) => "allow",
+ *     write: (context, action, post) =>
+ *       post.authorId === context.userId ? "allow" : "deny",
+ *   },
+ *   comment: {
+ *     read: (context, action, comment) => "allow",
+ *   },
+ * };
+ * ```
  */
 export type Rules<
   TContext extends Context,
@@ -153,7 +243,7 @@ export type Rules<
 > = {
   [K in keyof TResources & keyof TActions]: ActionPolicyMap<
     TContext,
-    InferAction<TActions, K>,
+    InferAction<TResources, TActions, K>,
     InferResource<TResources, K>
   >;
 };
@@ -207,7 +297,7 @@ export interface Policy<
    */
   can: <K extends keyof TResources & keyof TActions>(
     context: TContext,
-    permission: `${K & string}:${InferAction<TActions, K> & string}`,
+    permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
     resource: InferResource<TResources, K>
   ) => Promise<boolean>;
 }

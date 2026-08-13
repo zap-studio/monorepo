@@ -1,3 +1,13 @@
+## @zap-studio/permit@0.4.0
+
+### Removed `assertNever` export (breaking)
+
+`assertNever` is no longer exported — it had no internal consumers and existed only as a generic exhaustiveness-check convenience. Use your own `never`-typed helper if you relied on it.
+
+### Fixed `mergePoliciesSome` and `mergePoliciesEvery` to evaluate policies in parallel
+
+Neither merge strategy short-circuits anymore. All policies now run concurrently via `Promise.allSettled`, and every policy is invoked regardless of outcome, for both `mergePoliciesSome` (allow) and `mergePoliciesEvery` (deny). A rejecting policy no longer sinks the whole check — it's treated as a deny (`false`) and logged with `console.warn`, consistent with how `createPolicy` handles internal validation/evaluation errors.
+
 ## @zap-studio/permit@0.3.4
 
 ### Tree-shakeable root re-exports

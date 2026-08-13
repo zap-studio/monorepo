@@ -1,3 +1,9 @@
+## @zap-studio/validation@0.4.0
+
+### Breaking: renamed `createSyncStandardValidator` to `createStandardValidatorSync`
+
+`createSyncStandardValidator` is renamed to `createStandardValidatorSync` for naming consistency with `standardValidateSync`. Update imports and usages accordingly; the thrown error message for async schemas now reads `Async schemas are not supported by createStandardValidatorSync`.
+
 ## @zap-studio/validation@0.3.6
 
 ### Tree-shakeable root re-exports

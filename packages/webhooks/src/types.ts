@@ -6,13 +6,18 @@
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
-export type { StandardSchemaV1 } from "@zap-studio/validation";
-
 /**
  * Context shared by hooks, verifiers, and handlers for a single webhook request.
  *
  * The router consumes the request body exactly once, so `request.body` is
  * already used by the time hooks or handlers run — read `rawBody` instead.
+ *
+ * @example
+ * ```ts
+ * const before: BeforeHook = (ctx: WebhookContext) => {
+ *   console.log("received", ctx.path);
+ * };
+ * ```
  */
 export interface WebhookContext {
   /** The matched route key registered on the router (e.g. "stripe") */
@@ -27,13 +32,67 @@ export interface WebhookContext {
  * Handler context extending the shared webhook context with the validated payload.
  *
  * @template TPayload - Validated payload type for the matched route.
+ *
+ * @example
+ * ```ts
+ * const handler: WebhookHandler<{ type: string }> = ({ payload }: HandlerContext<{ type: string }>) => {
+ *   console.log(payload.type);
+ * };
+ * ```
  */
 export interface HandlerContext<TPayload = unknown> extends WebhookContext {
   /** The validated webhook payload */
   payload: TPayload;
 }
 
-/** Route registration options for a webhook handler. */
+/** Internal handler entry stored per registered route. */
+export interface HandlerEntry<TPayload = unknown> {
+  after?: AfterHook[];
+  before?: BeforeHook[];
+  handler: WebhookHandler<TPayload>;
+  schema?: StandardSchemaV1<unknown, TPayload>;
+}
+
+/**
+ * Configuration options for creating a `WebhookRouter`.
+ *
+ * @example
+ * ```ts
+ * const options: WebhookRouterOptions = {
+ *   prefix: "/webhooks",
+ *   verify: createHmacVerifier({ headerName: "x-signature", secret }),
+ * };
+ * ```
+ */
+export interface WebhookRouterOptions {
+  /** Global hooks executed after successful route handler completion. */
+  after?: AfterHook | AfterHook[];
+  /** Global hooks executed before route-level hooks and verification. */
+  before?: BeforeHook | BeforeHook[];
+  /** Global error hook used to override the default `500` response. */
+  onError?: ErrorHook;
+  /**
+   * Required path prefix for all webhook routes. Defaults to `"/webhooks"`.
+   *
+   * Normalized internally: leading slash added, trailing slash stripped,
+   * duplicate slashes collapsed. Use `""` or `"/"` to mount at the root.
+   */
+  prefix?: string;
+  /** Optional request verification function (for signature checks, auth, etc.). */
+  verify?: VerifyFn;
+}
+
+/**
+ * Route registration options for a webhook handler.
+ *
+ * @example
+ * ```ts
+ * const options: RegisterOptions<{ type: string }> = {
+ *   schema: stripeEventSchema,
+ *   handler: ({ payload }) => console.log(payload.type),
+ * };
+ * ```
+ */
 export interface RegisterOptions<T> {
   /** Hooks that run after successful processing (before global after hooks) */
   after?: AfterHook | AfterHook[];
@@ -57,6 +116,14 @@ export type InferSchemaOutput<TSchema> =
  * Route options where schema is required and handler payload is inferred.
  *
  * @template TSchema - Schema used to infer handler payload type.
+ *
+ * @example
+ * ```ts
+ * const stripeRoute: SchemaRouteOptions<typeof stripeEventSchema> = {
+ *   schema: stripeEventSchema,
+ *   handler: ({ payload }) => console.log(payload.type),
+ * };
+ * ```
  */
 export type SchemaRouteOptions<
   TSchema extends StandardSchemaV1<unknown, unknown>,
@@ -76,6 +143,13 @@ export interface RouteLike {
  * Applies schema-driven payload inference to each route entry.
  *
  * @template TRoutes - Route dictionary keyed by webhook path.
+ *
+ * @example
+ * ```ts
+ * const routes: SchemaRoutes<{ "/stripe": { handler: WebhookHandler; schema: typeof stripeEventSchema } }> = {
+ *   "/stripe": { schema: stripeEventSchema, handler: ({ payload }) => console.log(payload.type) },
+ * };
+ * ```
  */
 export type SchemaRoutes<TRoutes extends Record<string, RouteLike>> = {
   [P in keyof TRoutes]: SchemaRouteOptions<TRoutes[P]["schema"]>;
@@ -86,12 +160,28 @@ export type SchemaRoutes<TRoutes extends Record<string, RouteLike>> = {
  *
  * Return a `Response` to control the reply, or `undefined` to let the router
  * respond with its default `200` acknowledgement.
+ *
+ * @example
+ * ```ts
+ * const handler: WebhookHandler<{ type: string }> = ({ payload }) => {
+ *   console.log(payload.type);
+ * };
+ * ```
  */
 export type WebhookHandler<TPayload = unknown> = (
   ctx: HandlerContext<TPayload>
 ) => Promise<Response | undefined> | Response | undefined;
 
-/** Maps route keys to their payload-specific webhook handlers. */
+/**
+ * Maps route keys to their payload-specific webhook handlers.
+ *
+ * @example
+ * ```ts
+ * const handlers: HandlerMap<{ "/stripe": { type: string } }> = {
+ *   "/stripe": ({ payload }) => console.log(payload.type),
+ * };
+ * ```
+ */
 export type HandlerMap<TMap extends Record<string, unknown>> = {
   [P in keyof TMap]: WebhookHandler<TMap[P]>;
 };
@@ -100,6 +190,13 @@ export type HandlerMap<TMap extends Record<string, unknown>> = {
  * Builds a webhook payload map from a schema-based route dictionary.
  *
  * @template TRoutes - Route dictionary keyed by webhook path.
+ *
+ * @example
+ * ```ts
+ * type Payloads = InferWebhookMapFromRoutes<{
+ *   "/stripe": { handler: WebhookHandler; schema: typeof stripeEventSchema };
+ * }>;
+ * ```
  */
 export type InferWebhookMapFromRoutes<
   TRoutes extends Record<string, RouteLike>,
@@ -107,10 +204,24 @@ export type InferWebhookMapFromRoutes<
   [P in keyof TRoutes]: InferSchemaOutput<TRoutes[P]["schema"]>;
 };
 
-/** Verification function for incoming requests. Throws to reject the request. */
+/**
+ * Verification function for incoming requests. Throws to reject the request.
+ *
+ * @example
+ * ```ts
+ * const verify: VerifyFn = createHmacVerifier({ headerName: "x-signature", secret });
+ * ```
+ */
 export type VerifyFn = (ctx: WebhookContext) => Promise<void> | void;
 
-/** Hook function that runs before request processing */
+/**
+ * Hook function that runs before request processing
+ *
+ * @example
+ * ```ts
+ * const before: BeforeHook = (ctx) => console.log("received", ctx.path);
+ * ```
+ */
 export type BeforeHook = (ctx: WebhookContext) => Promise<void> | void;
 
 /**
@@ -118,13 +229,25 @@ export type BeforeHook = (ctx: WebhookContext) => Promise<void> | void;
  *
  * The hook receives the outgoing response as-is; call `response.clone()`
  * before reading its body to avoid consuming the stream sent to the client.
+ *
+ * @example
+ * ```ts
+ * const after: AfterHook = (ctx, response) => console.log(response.status);
+ * ```
  */
 export type AfterHook = (
   ctx: WebhookContext,
   response: Response
 ) => Promise<void> | void;
 
-/** Hook function that runs when an error occurs */
+/**
+ * Hook function that runs when an error occurs
+ *
+ * @example
+ * ```ts
+ * const onError: ErrorHook = (error) => Response.json({ error: error.message }, { status: 500 });
+ * ```
+ */
 export type ErrorHook = (
   error: Error,
   ctx: WebhookContext

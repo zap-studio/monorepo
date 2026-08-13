@@ -8,6 +8,7 @@
 import type {
   ConditionFn,
   Context,
+  HasRoleFn,
   PolicyFn,
   Role,
   RoleHierarchy,
@@ -220,9 +221,9 @@ export const collectInheritedRoles = <TRole extends Role = Role>(
     }
 
     inherited.add(role);
-    const parents = hierarchy[role] ?? [];
-    for (const parent of parents) {
-      add(parent);
+    const baseRoles = hierarchy[role] ?? [];
+    for (const baseRole of baseRoles) {
+      add(baseRole);
     }
   };
 
@@ -231,28 +232,6 @@ export const collectInheritedRoles = <TRole extends Role = Role>(
   }
   return inherited;
 };
-
-/**
- * Call signatures for {@link hasRole}, preserving the with/without hierarchy overloads.
- */
-export interface HasRoleFn {
-  <
-    TContext extends { role: Role | Role[] },
-    TAction extends string = string,
-    TResource = unknown,
-  >(
-    role: Role
-  ): ConditionFn<TContext, TAction, TResource>;
-  <
-    TContext extends { role: TRole | TRole[] },
-    TAction extends string = string,
-    TResource = unknown,
-    TRole extends Role = Role,
-  >(
-    role: TRole,
-    hierarchy: RoleHierarchy<TRole>
-  ): ConditionFn<TContext, TAction, TResource>;
-}
 
 /**
  * Returns a condition function that checks if the user has a specific role.

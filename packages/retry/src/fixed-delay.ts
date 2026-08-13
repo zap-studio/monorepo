@@ -9,6 +9,9 @@ import type { RetryDecision, RetryDecisionInput } from "./types.js";
 
 /**
  * Configuration for `FixedDelay`.
+ *
+ * @example
+ * const options: FixedDelayOptions = { maxAttempts: 3, delayMs: 250 };
  */
 export interface FixedDelayOptions {
   /**

@@ -6,7 +6,23 @@
 
 import { VerificationError } from "./errors.js";
 import type { VerifyFn } from "./types.js";
-import { constantTimeEquals } from "./utils.js";
+
+/**
+ * Compares two byte arrays in constant time to prevent timing attacks.
+ */
+const constantTimeEquals = (a: Uint8Array, b: Uint8Array): boolean => {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  let result = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    // v8 ignore next -- `?? 0` fallback is unreachable: a Uint8Array never holds `undefined` at an in-bounds index, this exists only to satisfy noUncheckedIndexedAccess.
+    result |= (a[i] ?? 0) ^ (b[i] ?? 0); // oxlint-disable-line no-bitwise -- XOR is the constant-time compare trick.
+  }
+
+  return result === 0;
+};
 
 const HMAC_HASH = {
   sha1: "SHA-1",
@@ -17,14 +33,26 @@ const HMAC_HASH = {
 
 type HmacAlgorithm = keyof typeof HMAC_HASH;
 
-const toHex = (bytes: Uint8Array): string =>
-  Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+const HEX_PATTERN = /^[0-9a-f]*$/iu;
+
+/**
+ * Decodes a hex string into bytes, or `undefined` when it is not valid hex.
+ */
+const hexToBytes = (hex: string): Uint8Array | undefined => {
+  if (hex.length % 2 !== 0 || !HEX_PATTERN.test(hex)) {
+    return undefined;
+  }
+
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i += 1) {
+    bytes[i] = Number.parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  }
+
+  return bytes;
+};
 
 const normalizeSignature = (signature: string): string =>
-  signature
-    .replace(/^[a-z0-9-]+=/iu, "")
-    .trim()
-    .toLowerCase();
+  signature.replace(/^[a-z0-9-]+=/iu, "").trim();
 
 /**
  * Creates a webhook verifier that validates an HMAC signature from a request header.
@@ -100,9 +128,10 @@ export const createHmacVerifier = ({
       key,
       new Uint8Array(ctx.rawBody)
     );
-    const expected = toHex(new Uint8Array(signature));
+    const expected = new Uint8Array(signature);
+    const provided = hexToBytes(normalizeSignature(actual));
 
-    if (!constantTimeEquals(expected, normalizeSignature(actual))) {
+    if (provided === undefined || !constantTimeEquals(expected, provided)) {
       throw new VerificationError(
         `Invalid signature for header: ${headerName}`
       );

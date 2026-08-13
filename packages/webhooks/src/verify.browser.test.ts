@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { VerificationError } from "../src/errors.js";
-import type { WebhookContext } from "../src/types.js";
-import { createHmacVerifier } from "../src/verify.js";
+import { VerificationError } from "./errors.js";
+import type { WebhookContext } from "./types.js";
+import { createHmacVerifier } from "./verify.js";
 
 const encoder = new TextEncoder();
 
@@ -119,6 +119,23 @@ describe(createHmacVerifier, () => {
 
     const error = await captureThrownError(() =>
       verify(createMockContext("body", "invalid"))
+    );
+
+    expect(error).toBeInstanceOf(VerificationError);
+    expect(error).toMatchObject({
+      message: "Invalid signature for header: X-Hub-Signature-256",
+      name: "VerificationError",
+    });
+  });
+
+  it("fails when the signature is valid hex but the wrong length", async () => {
+    const verify = createHmacVerifier({
+      headerName: "X-Hub-Signature-256",
+      secret: "my-secret",
+    });
+
+    const error = await captureThrownError(() =>
+      verify(createMockContext("body", "aa"))
     );
 
     expect(error).toBeInstanceOf(VerificationError);
@@ -255,5 +272,51 @@ describe(createHmacVerifier, () => {
       message: "Web Crypto API is unavailable in this runtime",
       name: "VerificationError",
     });
+  });
+});
+
+describe("@zap-studio/webhooks browser runtime", () => {
+  const signBody = async (
+    body: Uint8Array,
+    secret: string
+  ): Promise<string> => {
+    const key = await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(secret),
+      { hash: "SHA-256", name: "HMAC" },
+      false,
+      ["sign"]
+    );
+    const signature = await crypto.subtle.sign(
+      "HMAC",
+      key,
+      body as BufferSource
+    );
+    return Array.from(new Uint8Array(signature), (byte) =>
+      byte.toString(16).padStart(2, "0")
+    ).join("");
+  };
+
+  it("verifies HMAC signatures with browser Web Crypto and Headers", async () => {
+    const body = encoder.encode(JSON.stringify({ event: "push" }));
+    const secret = "browser-secret";
+    const signature = await signBody(body, secret);
+    const verify = createHmacVerifier({
+      headerName: "X-Hub-Signature-256",
+      secret,
+    });
+
+    await expect(
+      verify({
+        path: "/github",
+        rawBody: body,
+        request: new Request("https://example.com/webhooks/github", {
+          headers: {
+            "x-hub-signature-256": `sha256=${signature}`,
+          },
+          method: "POST",
+        }),
+      })
+    ).resolves.toBeUndefined();
   });
 });

@@ -6,7 +6,7 @@
     "apps/docs/vocs.config.ts"
   ],
   "duplicates": {
-    "ignore": ["**/tests/**"]
+    "ignore": ["**/*.test.ts"]
   },
   "dynamicallyLoaded": ["apps/docs/src/pages/**/*.mdx"],
   "ignoreDependencies": [

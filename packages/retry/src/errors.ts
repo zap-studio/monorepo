@@ -8,6 +8,9 @@
 
 /**
  * Context payload attached to `RetryError`.
+ *
+ * @example
+ * const context: RetryErrorContext = { attempts: 3, lastError: new Error("network") };
  */
 export interface RetryErrorContext {
   /**
@@ -26,6 +29,9 @@ export interface RetryErrorContext {
 
 /**
  * Context payload attached to `AbortError`.
+ *
+ * @example
+ * const context: AbortErrorContext = { cause: new Error("shutting down") };
  */
 export interface AbortErrorContext {
   /**
@@ -71,6 +77,22 @@ export class RetryError extends Error {
 
 /**
  * Error thrown when retry orchestration is canceled through `AbortSignal`.
+ *
+ * @example
+ * ```ts
+ * import { AbortError, BaseRetryPolicy } from "@zap-studio/retry";
+ *
+ * const controller = new AbortController();
+ * controller.abort("shutting down");
+ *
+ * try {
+ *   await policy.run(doWork, { signal: controller.signal });
+ * } catch (error) {
+ *   if (error instanceof AbortError) {
+ *     console.error("Retry canceled:", error.message);
+ *   }
+ * }
+ * ```
  */
 export class AbortError extends Error {
   /**

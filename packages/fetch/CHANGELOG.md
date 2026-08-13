@@ -1,3 +1,12 @@
+## @zap-studio/fetch@0.6.0
+
+### Reduced module surface (breaking)
+
+Collapsed the internal request pipeline (`_internal.ts`, `_methods.ts`, `constants.ts`, `headers.ts`, `request.ts`, `url.ts`) into implementation-only files. `mergeHeaders`, `normalizeRequest`, and `resolveRequestUrl` are no longer public API — they were pipeline internals, not meant for standalone use.
+
+- Removed the `./constants`, `./headers`, `./request`, `./url`, and `./fetch` subpath exports. Use the root `@zap-studio/fetch` entry instead.
+- `GLOBAL_DEFAULTS`, `FetchError`, `$fetch`, `api`, `createFetch`, and all public types are unaffected and still exported from `.`; `./errors` and `./types` subpaths are unaffected.
+
 ## @zap-studio/fetch@0.5.6
 
 ### Tree-shakeable root re-exports
