@@ -318,15 +318,11 @@ export class WebhookRouter<TMap = unknown> {
     }
 
     if (options.before !== undefined) {
-      entry.before = Array.isArray(options.before)
-        ? options.before
-        : [options.before];
+      entry.before = toArray(options.before);
     }
 
     if (options.after !== undefined) {
-      entry.after = Array.isArray(options.after)
-        ? options.after
-        : [options.after];
+      entry.after = toArray(options.after);
     }
 
     return entry;
