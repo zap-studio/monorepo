@@ -363,6 +363,11 @@ const runResultMode = async <T, TError extends Error, TData>(
       return { ok: true, value: execution.value };
     }
 
+    const attemptAbortResult = buildAbortResult(signal, attempt);
+    if (attemptAbortResult !== undefined) {
+      return attemptAbortResult;
+    }
+
     if (!policy.isKnownError(execution.error)) {
       return {
         attempts: attempt,
