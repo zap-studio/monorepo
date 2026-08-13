@@ -20,7 +20,7 @@
       "oxfmt": "^0.63.0",
       "oxlint": "^1.76.0",
       "oxlint-tsgolint": "^7.0.2001",
-      "ultracite": "^7.9.4",
+      "ultracite": "^7.10.3",
       "playwright": "^1.62.1",
       "publint": "^0.3.22",
       "react": "^19.2.8",
