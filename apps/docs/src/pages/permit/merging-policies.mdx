@@ -16,7 +16,9 @@ Merging policies is useful for:
 - **Feature flags** — Enable/disable features by adding or removing policies
 - **Multi-tenancy** — Combine organization policies with application policies
 
-:::note Merged policies evaluate sequentially and short-circuit: `mergePoliciesEvery()` stops at the first deny, `mergePoliciesSome()` stops at the first allow. :::
+:::note
+Merged policies evaluate sequentially and short-circuit: `mergePoliciesEvery()` stops at the first deny, `mergePoliciesSome()` stops at the first allow.
+:::
 
 ## mergePoliciesEvery() — Deny-Overrides Strategy
 

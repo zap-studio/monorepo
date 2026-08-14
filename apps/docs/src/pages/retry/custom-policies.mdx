@@ -44,7 +44,9 @@ const value = await runRetryPolicy(policy, async () => {
 });
 ```
 
-:::note The built-in runner calls `next(...)` with the one-based `attempt` number and the `error` thrown by the failed attempt. The optional `data` and `maxAttempts` fields of `RetryDecisionInput` are only populated by custom orchestration layers that choose to supply them. :::
+:::note
+The built-in runner calls `next(...)` with the one-based `attempt` number and the `error` thrown by the failed attempt. The optional `data` and `maxAttempts` fields of `RetryDecisionInput` are only populated by custom orchestration layers that choose to supply them.
+:::
 
 ## Retry Conditionally
 
@@ -151,7 +153,9 @@ const httpRetryPolicy = (): RetryPolicy<HttpError> => ({
 
 With this policy, a `TypeError` from a bug elsewhere in `execute(...)` no longer masquerades as an `HttpError` — `isKnownError` rejects it, and `runRetryPolicy(...)` bypasses retry for it instead of feeding it into `next(...)`.
 
-:::note When `isKnownError` returns `false`, the value never reaches `next(...)` or `onExhausted(...)`, and no retry is attempted for it. In throw mode, `runRetryPolicy(...)` rethrows it as-is. With `throwOnExhausted: false`, it's wrapped in a `RetryError` and returned on `result.error` instead — `runRetryPolicy(...)` never throws in that mode. :::
+:::note
+When `isKnownError` returns `false`, the value never reaches `next(...)` or `onExhausted(...)`, and no retry is attempted for it. In throw mode, `runRetryPolicy(...)` rethrows it as-is. With `throwOnExhausted: false`, it's wrapped in a `RetryError` and returned on `result.error` instead — `runRetryPolicy(...)` never throws in that mode.
+:::
 
 ## Implement the Types Directly
 

@@ -54,7 +54,9 @@ const value = await runRetryPolicy(
 );
 ```
 
-:::note The runner only calls `sleep` when the policy's decision has `delayMs > 0`, and `defaultSleep` itself resolves immediately for non-positive delays. :::
+:::note
+The runner only calls `sleep` when the policy's decision has `delayMs > 0`, and `defaultSleep` itself resolves immediately for non-positive delays.
+:::
 
 See [Non-throw Mode](/retry/non-throw-mode) for `throwOnExhausted: false`, and [Structured Errors](/retry/errors) for what `runRetryPolicy(...)` throws by default.
 

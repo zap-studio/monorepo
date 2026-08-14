@@ -62,7 +62,9 @@ serve({
 });
 ```
 
-:::warning Pass the incoming `Request` to `router.handle` untouched. Signature verification recomputes the HMAC from the exact body bytes — middleware that consumes or re-serializes the body before the router sees it breaks verification. :::
+:::warning
+Pass the incoming `Request` to `router.handle` untouched. Signature verification recomputes the HMAC from the exact body bytes — middleware that consumes or re-serializes the body before the router sees it breaks verification.
+:::
 
 The router parses the request URL's pathname, requires the configured prefix (default `/webhooks`) on a segment boundary, and matches routes on the remainder. Prefix, routes, and incoming pathnames are normalized to the same canonical form (leading slash, no trailing slash), so a stray trailing slash never 404s. Requests that miss the prefix or match no route get a `404` without the body ever being read.
 

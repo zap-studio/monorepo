@@ -80,7 +80,9 @@ Use it when:
 - code must stay synchronous
 - schemas are guaranteed sync
 
-:::warning[Async Schemas] If the schema validates asynchronously, the returned validator throws an `Error` with the message `Async schemas are not supported by createStandardValidatorSync`. The underlying `TypeError` is attached as the error's `cause`. :::
+:::warning[Async Schemas]
+If the schema validates asynchronously, the returned validator throws an `Error` with the message `Async schemas are not supported by createStandardValidatorSync`. The underlying `TypeError` is attached as the error's `cause`.
+:::
 
 ## Which Factory Should I Use?
 
