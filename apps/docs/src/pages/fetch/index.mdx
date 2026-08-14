@@ -65,7 +65,11 @@ deno add jsr:@zap-studio/fetch
 
 :::
 
+You also need a schema library that implements [Standard Schema](https://standardschema.dev/schema), such as Zod, Valibot, or ArkType. The examples below use Zod.
+
 ## Quick Example
+
+Describe the response shape you expect with a schema, then pass it as the second argument to an `api` method helper:
 
 ```ts
 import { api } from "@zap-studio/fetch";
@@ -82,7 +86,55 @@ const user = await api.get("https://api.example.com/users/1", UserSchema);
 console.log(user.name); // typed as string
 ```
 
-The schema validates the response body. If the server returns a shape that does not match, a `ValidationError` is thrown instead of handing you bad data.
+- `user` is typed as `{ id: number; name: string; email: string }`, inferred from the schema — no manual type annotations or `as` casts.
+- The response body is parsed with `response.json()` and validated at runtime. A mismatched response throws a `ValidationError`.
+- A non-2xx response throws a `FetchError` before validation runs.
+
+:::note The schema validates the **response** body returned by the server. It never validates outgoing request payloads. :::
+
+### Send JSON
+
+Use the `json` option to send a JSON request body. The package serializes it with `JSON.stringify` and sets `Content-Type: application/json` unless a content type is already set.
+
+```ts
+const created = await api.post("https://api.example.com/users", UserSchema, {
+  json: {
+    name: "Ada",
+    email: "ada@example.com",
+  },
+});
+```
+
+Here `UserSchema` validates the server's response. The `json` object is the outgoing request body and is not validated by the schema. `json` and the native `body` option are mutually exclusive — providing both throws a `TypeError`.
+
+### Raw Responses
+
+Use `$fetch` without a schema when you need the native `Response` object:
+
+```ts
+import { $fetch } from "@zap-studio/fetch";
+
+const response = await $fetch("https://api.example.com/health");
+
+console.log(response.status);
+```
+
+### Configured Client
+
+Use `createFetch` when many requests share a base URL, headers, or query params:
+
+```ts
+import { createFetch } from "@zap-studio/fetch";
+
+const { api } = createFetch({
+  baseURL: "https://api.example.com",
+  headers: {
+    Authorization: `Bearer ${process.env.API_TOKEN}`,
+  },
+});
+
+const user = await api.get("/users/1", UserSchema);
+```
 
 ## Runtime Support
 

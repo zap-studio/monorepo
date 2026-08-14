@@ -33,7 +33,6 @@ export default defineConfig({
           collapsed: true,
           items: [
             { link: "/fetch", text: "Overview" },
-            { link: "/fetch/getting-started", text: "Getting Started" },
             { link: "/fetch/fetch-function", text: "$fetch" },
             { link: "/fetch/api-methods", text: "API Methods" },
             { link: "/fetch/create-fetch", text: "createFetch" },
