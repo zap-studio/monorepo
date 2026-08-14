@@ -4,6 +4,14 @@ A type-safe, declarative authorization library for TypeScript with [Standard Sch
 
 Full documentation: [zapstudio.dev/permit](https://www.zapstudio.dev/permit)
 
+## Installation
+
+```bash
+npm install @zap-studio/permit
+```
+
+You also need a schema library that implements [Standard Schema](https://standardschema.dev/), such as Zod, Valibot, or ArkType.
+
 ## Features
 
 - **Full type safety** — actions, resources, and permissions are inferred from your schemas and `satisfies` declarations.

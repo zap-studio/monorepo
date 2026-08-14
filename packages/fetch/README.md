@@ -4,6 +4,14 @@ A small fetch wrapper with [**Standard Schema**](https://standardschema.dev/sche
 
 Full documentation: [zapstudio.dev/fetch](https://www.zapstudio.dev/fetch)
 
+## Installation
+
+```bash
+npm install @zap-studio/fetch
+```
+
+You also need a schema library that implements [Standard Schema](https://standardschema.dev/schema), such as Zod, Valibot, or ArkType.
+
 ## Features
 
 - **Raw fetch mode** through `$fetch(input, options)` — behaves like native `fetch` and returns the `Response`.

@@ -4,6 +4,12 @@ Utilities for validating values using the [**Standard Schema**](https://standard
 
 Full documentation: [zapstudio.dev/validation](https://www.zapstudio.dev/validation)
 
+## Installation
+
+```bash
+npm install @zap-studio/validation
+```
+
 ## Features
 
 - **Async-safe validation** via `standardValidate`, works with sync and async schemas.

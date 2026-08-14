@@ -4,6 +4,12 @@ Composable retry policy primitives for HTTP clients and async workflows.
 
 Full documentation: [zapstudio.dev/retry](https://www.zapstudio.dev/retry)
 
+## Installation
+
+```bash
+npm install @zap-studio/retry
+```
+
 ## Features
 
 - **Built-in policies**: `FixedDelay` and `ExponentialBackoff`.
