@@ -73,7 +73,7 @@ catalogs:
       specifier: ^4.1.10
       version: 4.1.10
     vocs:
-      specifier: ^2.8.0
+      specifier: ^2.8.5
       version: 2.8.5
     waku:
       specifier: 1.0.0-beta.8
