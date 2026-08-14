@@ -1,7 +1,7 @@
 {
   "name": "@zap-studio/monorepo",
   "private": true,
-  "author": "alexandretrotel",
+  "author": "Alexandre Trotel",
   "workspaces": {
     "packages": [
       "apps/*",
