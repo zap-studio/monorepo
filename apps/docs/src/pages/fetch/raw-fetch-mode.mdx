@@ -1,0 +1,60 @@
+---
+title: Raw Fetch Mode
+description: Use $fetch without a schema for a native Response, behaving like global fetch.
+---
+
+# Raw Fetch Mode
+
+Behaves like native `fetch` and returns the `Response`, through `$fetch(input, options)`.
+
+```ts
+import { $fetch } from "@zap-studio/fetch";
+
+const response = await $fetch("https://api.example.com/health");
+
+console.log(response.status);
+console.log(response.headers.get("content-type"));
+```
+
+Use this mode for headers, status codes, streams, text, blobs, or any response that should not be parsed as JSON by the package. Non-2xx responses still throw a `FetchError` unless you set `throwOnFetchError: false`.
+
+## Signature
+
+```ts
+function $fetch(
+  input: FetchInput,
+  options?: ExtendedRequestInit
+): Promise<Response>;
+```
+
+- `input` — a `string`, `URL`, or `Request`, the same type as global `fetch`. Exported as `FetchInput`.
+- `options` — native `RequestInit` plus the extra options listed below. Exported as `ExtendedRequestInit`.
+
+When `input` is a `Request`, its headers are merged with per-request `headers` (per-request values win), and remaining options are applied on top:
+
+```ts
+import { $fetch } from "@zap-studio/fetch";
+
+const request = new Request("https://api.example.com/users/1", {
+  headers: {
+    Authorization: `Bearer ${process.env.API_TOKEN}`,
+  },
+});
+
+const response = await $fetch(request);
+```
+
+## Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `searchParams` | `URLSearchParams` init | `undefined` | Per-request query params, merged into the request URL. |
+| `throwOnFetchError` | `boolean` | `true` | Throw a `FetchError` on non-2xx responses. |
+
+Every standard `RequestInit` option (`method`, `headers`, `body`, `signal`, ...) is also accepted.
+
+## See Also
+
+- [Validated Fetch Mode](/fetch/validated-fetch-mode) — parse and validate the JSON response instead.
+- [Structured Errors](/fetch/errors) — `FetchError` details and catch patterns.
+- [Overview](/fetch) — package summary and quick start.

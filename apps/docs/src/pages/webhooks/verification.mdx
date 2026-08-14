@@ -1,11 +1,11 @@
 ---
 title: Verification
-description: Verify webhook authenticity with createHmacVerifier or a custom verify function.
+description: Verify webhook authenticity with createHmacVerifier or a custom verify function — built-in HMAC verification with constant-time comparison, runtime-agnostic via the Web Crypto API.
 ---
 
 # Verification
 
-The router's `verify` option is the authenticity gate for incoming requests: it runs after `before` hooks but before payload validation and the route handler, and if it throws, request handling stops. This prevents forged payloads from ever reaching your business logic.
+Built-in HMAC verifier with constant-time comparison, or plug in your own `verify` function. The router's `verify` option is the authenticity gate for incoming requests: it runs after `before` hooks but before payload validation and the route handler, and if it throws, request handling stops. This prevents forged payloads from ever reaching your business logic.
 
 :::warning Always verify signatures against the **raw request body** (`ctx.rawBody`), exactly as received. The router reads the request body once and keeps the exact bytes in `rawBody` for this purpose. If middleware upstream parses and re-serializes the body first, the bytes change and every signature check fails — or worse, appears to pass against attacker-controlled content. :::
 
@@ -39,6 +39,20 @@ The verifier:
 - compares the expected and received signatures in **constant time**, which prevents timing attacks that recover a signature byte by byte from response-time differences
 
 `createHmacVerifier` throws `VerificationError` immediately at creation time if the Web Crypto API is unavailable or the algorithm is unsupported, and per request when the signature header is missing or the signature does not match.
+
+## Runtime-Agnostic
+
+Uses the Web Crypto API, not Node-specific APIs. `createHmacVerifier` calls `globalThis.crypto.subtle` directly instead of importing Node's `crypto` module, so the same code runs unchanged in Node.js, Bun, Deno, Cloudflare Workers, and browsers.
+
+```ts
+// No Node `crypto` import — works wherever globalThis.crypto.subtle exists
+const verify = createHmacVerifier({
+  headerName: "x-hub-signature-256",
+  secret: process.env.WEBHOOK_SECRET!,
+});
+```
+
+`globalThis.crypto.subtle` is available by default in Bun, Deno, Cloudflare Workers, and browsers over HTTPS. In Node.js, it's global from Node 19 onward (pass `--experimental-global-webcrypto` on Node 18).
 
 ## Handle Verification Failures
 

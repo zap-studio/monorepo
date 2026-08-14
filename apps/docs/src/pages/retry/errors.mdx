@@ -1,11 +1,11 @@
 ---
-title: RetryError
-description: Reference for RetryError and AbortError, the terminal errors for exhaustion and cancellation.
+title: Structured Errors
+description: RetryError on exhaustion, AbortError on cancellation — both structured terminal errors.
 ---
 
-# RetryError
+# Structured Errors
 
-`RetryError` represents exhausted retry attempts with structured context. `AbortError` represents cancellation through `AbortSignal`. Both extend `Error`.
+Structured terminal errors: `RetryError` on exhaustion, `AbortError` on cancellation. Both extend `Error`.
 
 ## Import
 
@@ -88,29 +88,7 @@ try {
 }
 ```
 
-## Non-Throw Mode
-
-With `throwOnExhausted: false`, the terminal error is returned on `result.error` instead of thrown. Its type is `RetryError | AbortError`, so narrow with `instanceof` before reading `RetryError`-specific properties.
-
-```ts
-import { RetryError } from "@zap-studio/retry";
-
-const result = await policy.run(
-  async () => {
-    return await doWork();
-  },
-  { throwOnExhausted: false }
-);
-
-if (!result.ok) {
-  console.error("Failed after", result.attempts, "attempts");
-  if (result.error instanceof RetryError) {
-    console.error("Last error:", result.error.lastError);
-  }
-} else {
-  console.log(result.value);
-}
-```
+See [Non-throw Mode](/retry/non-throw-mode) for how these same errors surface as a `result.error` instead of being thrown.
 
 ## Custom Terminal Errors
 

@@ -5,7 +5,7 @@ description: Make schema-validated GET, POST, PUT, PATCH, and DELETE requests wi
 
 # API Methods
 
-The `api` object exposes method-bound `$fetch` helpers. Use them when the HTTP method is known up front and the response should be validated.
+`api.get`, `api.post`, `api.put`, `api.patch`, and `api.delete` — HTTP method helpers bound to `$fetch`. Use them when the HTTP method is known up front and the response should be validated.
 
 ```ts
 import { api } from "@zap-studio/fetch";
@@ -21,7 +21,7 @@ import { api } from "@zap-studio/fetch";
 | `api.patch`  | `PATCH`     |
 | `api.delete` | `DELETE`    |
 
-Each helper has the same overloads, options, and error behavior as [`$fetch`](/fetch/fetch-function), but injects its HTTP method for you. The injected method always wins — a `method` passed in `options` is overridden.
+Each helper has the same overloads, options, and error behavior as [`$fetch`](/fetch/validated-fetch-mode), but injects its HTTP method for you. The injected method always wins — a `method` passed in `options` is overridden.
 
 :::note The schema argument always validates the **response** body. It does not validate `json` or `body` request payloads. :::
 
@@ -158,4 +158,4 @@ const response = await api.delete("https://api.example.com/sessions/current");
 console.log(response.status);
 ```
 
-For clarity, prefer [`$fetch`](/fetch/fetch-function) directly when raw response handling is the main goal.
+For clarity, prefer [`$fetch`](/fetch/raw-fetch-mode) directly when raw response handling is the main goal.

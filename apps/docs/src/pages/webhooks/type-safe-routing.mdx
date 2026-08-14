@@ -1,0 +1,44 @@
+---
+title: Type-Safe Routing
+description: Handler payload types are inferred from the route schema.
+---
+
+# Type-Safe Routing
+
+Handler payload types are inferred from the route schema. Pass a Standard Schema as `schema` when registering a route, and the `payload` argument your handler receives is typed from that schema's output — no manual type annotations or casts.
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+import { z } from "zod";
+
+const router = createWebhookRouter();
+
+router.register("/payments/succeeded", {
+  schema: z.object({ id: z.string(), amount: z.number() }),
+  handler: ({ payload }) => {
+    // payload.id: string, payload.amount: number — inferred from schema
+    return Response.json({ ok: true });
+  },
+});
+```
+
+## Handler Context
+
+Beyond `payload`, every handler also receives:
+
+- `request` — the incoming Web API `Request` (headers, method, URL — the body stream is already consumed by the router)
+- `rawBody` — the exact request body bytes as a `Uint8Array`
+- `path` — the matched route key (for example `/payments/succeeded`)
+
+## Routes Without a Schema
+
+Registering without `schema` skips validation — `payload` is then the parsed JSON body, typed as `unknown` unless you declare a payload type yourself.
+
+```ts
+router.register("/ping", () => Response.json("pong"));
+```
+
+## See Also
+
+- [Standard Schema](/webhooks/standard-schema)
+- [Web API Native](/webhooks/web-api-native)

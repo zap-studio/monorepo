@@ -1,0 +1,41 @@
+---
+title: Types
+description: StandardSchemaV1 and StandardTypedV1 re-exported directly from this package.
+---
+
+# Types
+
+`@zap-studio/validation` re-exports `StandardSchemaV1` and `StandardTypedV1` from `@standard-schema/spec`, so you can reference the specification's types without installing `@standard-schema/spec` yourself.
+
+```ts
+import type { StandardSchemaV1, StandardTypedV1 } from "@zap-studio/validation";
+```
+
+## `StandardSchemaV1`
+
+The interface every Standard Schema-compatible schema implements. Use it to type a value that may come from any compatible library (Zod, Valibot, ArkType, ...).
+
+```ts
+function acceptsAnySchema(schema: StandardSchemaV1) {
+  // ...
+}
+```
+
+## `StandardTypedV1`
+
+The typed variant of the Standard Schema interface, useful when you need the schema's inferred input/output types alongside the interface itself.
+
+## `StandardValidateOptions`
+
+The options object accepted by `standardValidate`, `standardValidateSync`, `createStandardValidator`, and `createStandardValidatorSync`.
+
+```ts
+import type { StandardValidateOptions } from "@zap-studio/validation";
+
+const options: StandardValidateOptions = { throwOnError: true };
+```
+
+## See Also
+
+- [Async Validation](/validation/async-validation)
+- [Runtime Schema Detection](/validation/runtime-schema-detection) — `isStandardSchema` for checking a value at runtime

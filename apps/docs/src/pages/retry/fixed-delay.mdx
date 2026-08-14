@@ -35,7 +35,7 @@ Both options are required.
 
 - Every retry waits the same `delayMs`.
 - The policy stops retrying when `attempt >= maxAttempts`, returning a decision with `reason: "max-attempts-reached"`.
-- On exhaustion, `run(...)` throws a [`RetryError`](/retry/retry-error) (or returns `{ ok: false }` in [non-throw mode](/retry/running-policies)).
+- On exhaustion, `run(...)` throws a [`RetryError`](/retry/errors) (or returns `{ ok: false }` in [non-throw mode](/retry/non-throw-mode)).
 
 ## When to Use
 

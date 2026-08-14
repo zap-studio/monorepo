@@ -1,11 +1,11 @@
 ---
 title: Custom Policies
-description: Build custom retry policies by extending BaseRetryPolicy or implementing the RetryPolicy type directly.
+description: Custom policies by extending BaseRetryPolicy and implementing next(...).
 ---
 
 # Custom Policies
 
-Create a custom policy when the built-in [`FixedDelay`](/retry/fixed-delay) and [`ExponentialBackoff`](/retry/exponential-backoff) policies do not match your retry rules.
+Custom policies by extending `BaseRetryPolicy` and implementing `next(...)`. Create one when the built-in [`FixedDelay`](/retry/fixed-delay) and [`ExponentialBackoff`](/retry/exponential-backoff) policies do not match your retry rules.
 
 ## Extend BaseRetryPolicy
 
@@ -179,3 +179,5 @@ When you implement `RetryPolicy` directly, you are responsible for the retry loo
 - Return `shouldRetry: false` when the current attempt should be terminal.
 - Use `reason` values (`"retry"`, `"max-attempts-reached"`, `"policy-declined"`) for debugging and logs.
 - Prefer extending `BaseRetryPolicy` unless you need full orchestration control.
+
+See [Types](/retry/types) for the full `RetryPolicy`, `RetryDecision`, and related type reference.

@@ -1,11 +1,11 @@
 ---
 title: Error Handling
-description: Handle authorization errors with PolicyError and ensure exhaustive type checking with assertNever.
+description: PolicyError for invalid configuration or evaluation failures in permit.
 ---
 
 # Error Handling
 
-`permit` keeps error handling minimal by design: permission checks resolve to `false` instead of throwing. This page covers the `PolicyError` class, when the library throws it, and the `assertNever()` helper.
+`PolicyError` for invalid configuration or evaluation failures. `permit` keeps error handling minimal by design: permission checks resolve to `false` instead of throwing. This page covers the `PolicyError` class and when the library throws it.
 
 ## When permit Throws (and When It Doesn't)
 
@@ -82,78 +82,9 @@ async function deletePost(postId: string, context: AppContext) {
 }
 ```
 
-## assertNever
-
-The `assertNever()` helper ensures exhaustive type checking in TypeScript. It causes a compile-time error if a switch statement or if-else chain doesn't handle all possible cases.
-
-```ts
-import { assertNever } from "@zap-studio/permit";
-
-assertNever(value: never): never
-```
-
-### How It Works
-
-`assertNever()` accepts a value of type `never`. If TypeScript can prove that a value could reach `assertNever()`, it means you've missed a case.
-
-### Example: Exhaustive Action Handling
-
-```ts
-import { assertNever } from "@zap-studio/permit";
-
-type Action = "read" | "write" | "delete";
-
-function getPermissionLevel(action: Action): number {
-  switch (action) {
-    case "read":
-      return 1;
-    case "write":
-      return 2;
-    case "delete":
-      return 3;
-    default:
-      // TypeScript error if we forget a case
-      return assertNever(action);
-  }
-}
-```
-
-If you add a new action without updating the switch:
-
-```ts
-type Action = "read" | "write" | "delete" | "archive"; // Added "archive"
-
-function getPermissionLevel(action: Action): number {
-  switch (action) {
-    case "read":
-      return 1;
-    case "write":
-      return 2;
-    case "delete":
-      return 3;
-    default:
-      // TypeScript ERROR: Argument of type 'string' is not assignable to parameter of type 'never'.
-      return assertNever(action);
-  }
-}
-```
-
-### Runtime Behavior
-
-If `assertNever()` is reached at runtime (e.g., due to type assertions or plain JavaScript callers), it throws a plain `Error` — not a `PolicyError`:
-
-```ts
-import { assertNever } from "@zap-studio/permit";
-
-// This would throw: Error: Unexpected value: unknown
-const badValue = "unknown" as never;
-assertNever(badValue);
-```
-
 ## Best Practices
 
 1. **Use `PolicyError` for authorization failures** — Makes it easy to distinguish from other errors
 2. **Catch errors at boundaries** — Handle `PolicyError` in middleware or API handlers
 3. **Include context in error messages** — "Not authorized to delete post-123" is better than "Forbidden"
-4. **Use `assertNever` for exhaustive checks** — Especially when handling actions or resource types
-5. **Log denied attempts** — Track authorization failures for security monitoring
+4. **Log denied attempts** — Track authorization failures for security monitoring

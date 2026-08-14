@@ -1,0 +1,80 @@
+---
+title: Getting Started
+description: Install @zap-studio/fetch and make your first validated request.
+---
+
+# Getting Started
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm install @zap-studio/fetch
+```
+
+```bash [yarn]
+yarn add @zap-studio/fetch
+```
+
+```bash [pnpm]
+pnpm add @zap-studio/fetch
+```
+
+```bash [bun]
+bun add @zap-studio/fetch
+```
+
+```bash [deno]
+deno add jsr:@zap-studio/fetch
+```
+
+:::
+
+You also need a schema library that implements [Standard Schema](https://standardschema.dev/schema), such as Zod, Valibot, or ArkType. The examples below use Zod.
+
+## Make Your First Request
+
+Define a schema for the response shape, then pass it to `api.get`.
+
+```ts
+import { api } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.string().email(),
+});
+
+const user = await api.get("https://api.example.com/users/1", UserSchema);
+
+console.log(user.name); // typed as string, validated at runtime
+```
+
+The response is parsed and validated at runtime, and `user` is typed from `UserSchema` — no manual type annotations or `as` casts.
+
+## Handle Errors
+
+`api.get` throws `FetchError` for non-2xx responses and `ValidationError` when the response doesn't match the schema.
+
+```ts
+import { FetchError } from "@zap-studio/fetch";
+import { ValidationError } from "@zap-studio/validation";
+
+try {
+  const user = await api.get("https://api.example.com/users/1", UserSchema);
+  console.log(user);
+} catch (error) {
+  if (error instanceof FetchError) console.error(error.status);
+  if (error instanceof ValidationError) console.error(error.issues);
+}
+```
+
+:::note See [Structured Errors](/fetch/errors) for the full error reference. :::
+
+## Next Steps
+
+- [Raw Fetch Mode](/fetch/raw-fetch-mode) — skip validation, get the native `Response`.
+- [HTTP Method Helpers](/fetch/api-methods) — `api.post`, `api.put`, `api.patch`, `api.delete`.
+- [Configured Clients](/fetch/create-fetch) — share a `baseURL` and headers with `createFetch`.

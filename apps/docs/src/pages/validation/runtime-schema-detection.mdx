@@ -1,11 +1,11 @@
 ---
-title: Schema Guard
-description: Reference for isStandardSchema, the runtime guard that detects Standard Schema values.
+title: Runtime Schema Detection
+description: Detect Standard Schema values at runtime with isStandardSchema.
 ---
 
-# Schema Guard
+# Runtime Schema Detection
 
-`isStandardSchema` is a runtime type guard that checks whether a value implements the [Standard Schema](https://standardschema.dev) interface.
+Runtime schema detection via `isStandardSchema` — a type guard that checks whether a value implements the [Standard Schema](https://standardschema.dev) interface.
 
 ## Signature
 
@@ -76,3 +76,8 @@ export async function validateIfPossible(schemaLike: unknown, input: unknown) {
 - you build framework or package boundaries and want explicit runtime checks
 
 If schema values are always strongly typed as `StandardSchemaV1`, you usually do not need this guard.
+
+## See Also
+
+- [Async Validation](/validation/async-validation)
+- [Types](/validation/types) — `StandardSchemaV1`
