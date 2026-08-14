@@ -55,6 +55,115 @@ const normalizePath = (path: string): string => {
     : collapsed;
 };
 
+/** Runs the given before-hooks in order against the request context. */
+const runBeforeHooks = async (
+  ctx: WebhookContext,
+  hooks?: BeforeHook[]
+): Promise<void> => {
+  if (!hooks || hooks.length === 0) {
+    return;
+  }
+
+  for (const hook of hooks) {
+    // oxlint-disable-next-line no-await-in-loop -- hooks run sequentially; order + short-circuit matter.
+    await hook(ctx);
+  }
+};
+
+/** Runs the given after-hooks in order against the request context and response. */
+const runAfterHooks = async (
+  ctx: WebhookContext,
+  response: Response,
+  hooks?: AfterHook[]
+): Promise<void> => {
+  if (!hooks || hooks.length === 0) {
+    return;
+  }
+
+  for (const hook of hooks) {
+    // oxlint-disable-next-line no-await-in-loop -- hooks run sequentially; order + short-circuit matter.
+    await hook(ctx, response);
+  }
+};
+
+/** Builds an internal handler entry from route registration options. */
+const createHandlerEntry = (
+  options: RegisterOptions<unknown>
+): HandlerEntry => {
+  const entry: HandlerEntry = {
+    handler: options.handler,
+  };
+
+  if (options.schema !== undefined) {
+    entry.schema = options.schema;
+  }
+
+  if (options.before !== undefined) {
+    entry.before = toArray(options.before);
+  }
+
+  if (options.after !== undefined) {
+    entry.after = toArray(options.after);
+  }
+
+  return entry;
+};
+
+/** Parses the request's raw body bytes as JSON, returning `undefined` on invalid JSON. */
+const parseRequestBody = (ctx: WebhookContext): unknown => {
+  try {
+    return JSON.parse(bodyDecoder.decode(ctx.rawBody));
+  } catch {
+    return undefined;
+  }
+};
+
+/** Validates the parsed payload against the route schema, returning either the validated value or a `400` response. */
+const validatePayload = async <TPayload>(
+  parsedJson: unknown,
+  schema?: StandardSchemaV1<unknown, TPayload>
+): Promise<TPayload | Response> => {
+  if (!schema) {
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Without a schema, caller-declared payload type is the route contract.
+    return parsedJson as TPayload;
+  }
+
+  const result = await standardValidate(schema, parsedJson, {
+    throwOnError: false,
+  });
+
+  if (result.issues) {
+    return Response.json(
+      {
+        error: "validation failed",
+        issues: result.issues.map((issue) => ({
+          message: issue.message,
+          path: issue.path?.map((p) =>
+            typeof p === "object" && "key" in p ? String(p.key) : String(p)
+          ),
+        })),
+      },
+      { status: 400 }
+    );
+  }
+
+  return result.value;
+};
+
+/** Invokes the route handler with the validated payload, defaulting to a `200 "ok"` response. */
+const executeHandler = async <TPayload = unknown>(
+  handler: WebhookHandler<TPayload>,
+  ctx: WebhookContext,
+  validatedPayload: TPayload
+): Promise<Response> => {
+  const responded = await handler({
+    ...ctx,
+    payload: validatedPayload,
+  });
+
+  return responded ?? Response.json("ok");
+};
+
 /**
  * Main webhook router class.
  *
@@ -177,7 +286,7 @@ export class WebhookRouter<TMap = unknown> {
       normalizePath(path),
       typeof handlerOrOptions === "function"
         ? { handler: handlerOrOptions }
-        : WebhookRouter.createHandlerEntry(handlerOrOptions)
+        : createHandlerEntry(handlerOrOptions)
     );
 
     return this;
@@ -220,15 +329,15 @@ export class WebhookRouter<TMap = unknown> {
     try {
       ctx.rawBody = new Uint8Array(await request.arrayBuffer());
 
-      await WebhookRouter.runBeforeHooks(ctx, this.globalBeforeHooks);
-      await WebhookRouter.runBeforeHooks(ctx, handlerEntry.before);
+      await runBeforeHooks(ctx, this.globalBeforeHooks);
+      await runBeforeHooks(ctx, handlerEntry.before);
 
       if (this.verify) {
         await this.verify(ctx);
       }
 
-      const parsedJson = WebhookRouter.parseRequestBody(ctx);
-      const validationResult = await WebhookRouter.validatePayload(
+      const parsedJson = parseRequestBody(ctx);
+      const validationResult = await validatePayload(
         parsedJson,
         handlerEntry.schema
       );
@@ -237,14 +346,14 @@ export class WebhookRouter<TMap = unknown> {
         return validationResult;
       }
 
-      const response = await WebhookRouter.executeHandler(
+      const response = await executeHandler(
         handlerEntry.handler,
         ctx,
         validationResult
       );
 
-      await WebhookRouter.runAfterHooks(ctx, response, handlerEntry.after);
-      await WebhookRouter.runAfterHooks(ctx, response, this.globalAfterHooks);
+      await runAfterHooks(ctx, response, handlerEntry.after);
+      await runAfterHooks(ctx, response, this.globalAfterHooks);
 
       return response;
     } catch (error) {
@@ -272,115 +381,6 @@ export class WebhookRouter<TMap = unknown> {
     }
 
     return pathname.slice(this.prefix.length);
-  }
-
-  /** Runs the given before-hooks in order against the request context. */
-  private static async runBeforeHooks(
-    ctx: WebhookContext,
-    hooks?: BeforeHook[]
-  ): Promise<void> {
-    if (!hooks || hooks.length === 0) {
-      return;
-    }
-
-    for (const hook of hooks) {
-      // oxlint-disable-next-line no-await-in-loop -- hooks run sequentially; order + short-circuit matter.
-      await hook(ctx);
-    }
-  }
-
-  /** Runs the given after-hooks in order against the request context and response. */
-  private static async runAfterHooks(
-    ctx: WebhookContext,
-    response: Response,
-    hooks?: AfterHook[]
-  ): Promise<void> {
-    if (!hooks || hooks.length === 0) {
-      return;
-    }
-
-    for (const hook of hooks) {
-      // oxlint-disable-next-line no-await-in-loop -- hooks run sequentially; order + short-circuit matter.
-      await hook(ctx, response);
-    }
-  }
-
-  /** Builds an internal handler entry from route registration options. */
-  private static createHandlerEntry(
-    options: RegisterOptions<unknown>
-  ): HandlerEntry {
-    const entry: HandlerEntry = {
-      handler: options.handler,
-    };
-
-    if (options.schema !== undefined) {
-      entry.schema = options.schema;
-    }
-
-    if (options.before !== undefined) {
-      entry.before = toArray(options.before);
-    }
-
-    if (options.after !== undefined) {
-      entry.after = toArray(options.after);
-    }
-
-    return entry;
-  }
-
-  /** Parses the request's raw body bytes as JSON, returning `undefined` on invalid JSON. */
-  private static parseRequestBody(ctx: WebhookContext): unknown {
-    try {
-      return JSON.parse(bodyDecoder.decode(ctx.rawBody));
-    } catch {
-      return undefined;
-    }
-  }
-
-  /** Validates the parsed payload against the route schema, returning either the validated value or a `400` response. */
-  private static async validatePayload<TPayload>(
-    parsedJson: unknown,
-    schema?: StandardSchemaV1<unknown, TPayload>
-  ): Promise<TPayload | Response> {
-    if (!schema) {
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Without a schema, caller-declared payload type is the route contract.
-      return parsedJson as TPayload;
-    }
-
-    const result = await standardValidate(schema, parsedJson, {
-      throwOnError: false,
-    });
-
-    if (result.issues) {
-      return Response.json(
-        {
-          error: "validation failed",
-          issues: result.issues.map((issue) => ({
-            message: issue.message,
-            path: issue.path?.map((p) =>
-              typeof p === "object" && "key" in p ? String(p.key) : String(p)
-            ),
-          })),
-        },
-        { status: 400 }
-      );
-    }
-
-    return result.value;
-  }
-
-  /** Invokes the route handler with the validated payload, defaulting to a `200 "ok"` response. */
-  private static async executeHandler<TPayload = unknown>(
-    handler: WebhookHandler<TPayload>,
-    ctx: WebhookContext,
-    validatedPayload: TPayload
-  ): Promise<Response> {
-    const responded = await handler({
-      ...ctx,
-      payload: validatedPayload,
-    });
-
-    return responded ?? Response.json("ok");
   }
 
   /** Builds the error response for a failed request, deferring to the global error hook when set. */

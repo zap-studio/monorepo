@@ -20,6 +20,7 @@ You also need a schema library that implements [Standard Schema](https://github.
 - **Signature verification** — built-in HMAC verifier with constant-time comparison, or plug in your own `verify` function.
 - **Lifecycle hooks** — global `before`, `after`, and `onError` hooks for cross-cutting behavior.
 - **Runtime-agnostic** — uses the Web Crypto API, not Node-specific APIs.
+- **Tree-shakeable** — validation and hook-running internals are standalone functions; unused exports are dropped by any modern bundler.
 
 ## Quick Start
 
