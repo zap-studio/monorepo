@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+`WebhookRouter`'s stateless private static methods (`runBeforeHooks`, `runAfterHooks`, `createHandlerEntry`, `parseRequestBody`, `validatePayload`, `executeHandler`) are now module-level functions in `router.ts`. Internal-only change; the public API (`WebhookRouter`, `createWebhookRouter`, `.register()`, `.handle()`) is unaffected.
+
 HMAC signature verification decodes the incoming header's hex signature to bytes and compares it against the computed digest byte-for-byte, instead of hex-encoding the digest and comparing hex text. Behavior is unchanged for valid requests; this only affects internals (fewer bytes compared, and the header's hex is no longer case-normalized as text since decoding handles case natively).
 
 ### Removed
