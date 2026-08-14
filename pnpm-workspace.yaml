@@ -1,0 +1,39 @@
+packages:
+  - "apps/*"
+  - "configs/*"
+  - "packages/*"
+
+allowBuilds:
+  es5-ext: true
+  esbuild: true
+  lefthook: true
+  vue-demi: true
+  workerd: true
+
+catalog:
+  "@arethetypeswrong/core": ^0.18.5
+  "@standard-schema/spec": ^1.1.0
+  "@types/react": ^19.2.18
+  "@types/react-dom": ^19.2.4
+  "@vitest/browser-playwright": ^4.1.10
+  "@vitest/coverage-v8": ^4.1.10
+  arktype: ^2.2.3
+  lefthook: ^2.1.10
+  oxfmt: ^0.63.0
+  oxlint: ^1.78.0
+  oxlint-tsgolint: ^7.0.2001
+  ultracite: ^7.10.3
+  playwright: ^1.62.1
+  publint: ^0.3.23
+  react: ^19.2.8
+  react-dom: ^19.2.8
+  tsdown: ^0.22.14
+  typescript: ^7.0.2
+  valibot: ^1.4.2
+  vite: ^8.2.1
+  vitest: ^4.1.10
+  vocs: ^2.8.5
+  waku: 1.0.0-beta.9
+  wrangler: ^4.122.0
+  zod: ^4.4.3
+  unplugin-unused: ^0.5.7

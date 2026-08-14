@@ -8,11 +8,10 @@
     "build": "vocs build",
     "dev": "vocs dev",
     "preview": "vocs preview",
-    "deploy": "nubx wrangler deploy",
+    "deploy": "wrangler deploy",
     "types:check": "tsc --noEmit"
   },
   "dependencies": {
-    "@svgr/core": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "vocs": "catalog:",
