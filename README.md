@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/zap-studio/monorepo/actions/workflows/ci.yml/badge.svg)](https://github.com/zap-studio/monorepo/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/zap-studio/monorepo/graph/badge.svg?branch=main)](https://codecov.io/gh/zap-studio/monorepo) [![License](https://img.shields.io/github/license/zap-studio/monorepo)](https://github.com/zap-studio/monorepo/blob/main/LICENSE)
 
-Type-safe, framework-agnostic and composable TypeScript libraries for the web.
+Type-safe, framework-agnostic, composable, and tree-shakeable TypeScript libraries for the web.
 
 Documentation: [zapstudio.dev](https://www.zapstudio.dev)
 

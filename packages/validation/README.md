@@ -18,6 +18,7 @@ npm install @zap-studio/validation
 - **Optional throwing behavior** via `throwOnError`, backed by a shared `ValidationError` class.
 - **Runtime schema detection** via `isStandardSchema`.
 - **Type re-exports** — `StandardSchemaV1` and `StandardTypedV1` directly from this package.
+- **Tree-shakeable** — every helper is a standalone function; unused exports are dropped by any modern bundler.
 
 ## Quick Start
 

@@ -2,7 +2,7 @@
   "name": "@zap-studio/fetch",
   "version": "0.6.0",
   "private": false,
-  "description": "A type-safe fetch wrapper for HTTP requests with runtime schema validation.",
+  "description": "A type-safe, tree-shakeable fetch wrapper for HTTP requests with runtime schema validation.",
   "keywords": [
     "api",
     "arktype",

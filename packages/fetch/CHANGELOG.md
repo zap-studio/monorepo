@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.6.0]
 
+### Changed
+
+- Clarified tree-shakeable design in the package description and README (no code change).
+
 ### Removed
 
 Collapsed the internal request pipeline (`_internal.ts`, `_methods.ts`, `constants.ts`, `headers.ts`, `request.ts`, `url.ts`) into implementation-only files. `mergeHeaders`, `normalizeRequest`, and `resolveRequestUrl` are no longer public API — they were pipeline internals, not meant for standalone use.

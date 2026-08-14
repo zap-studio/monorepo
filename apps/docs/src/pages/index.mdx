@@ -30,6 +30,7 @@ Every package follows the same rules:
 - **Type safety.** Types come from your schema, not from hand-written annotations. `@zap-studio/fetch` infers response types from a [Standard Schema](https://standardschema.dev); a mismatched response throws a `ValidationError` instead of shipping bad data further into your app.
 - **Framework-agnostic.** Packages rely on standard runtime APIs — `fetch`, `Request`/`Response`, `AbortSignal` — not a specific framework. `@zap-studio/webhooks` routes on the raw `Request`/`Response` primitives, so it runs unchanged on Bun, Deno, Cloudflare Workers, or a Next.js route handler.
 - **Composable.** Packages are building blocks you combine as needed: wrap an `@zap-studio/fetch` call in an `@zap-studio/retry` policy, or validate a webhook payload with the same `@zap-studio/validation` helper that `permit` uses internally for resources.
+- **Tree-shakeable.** Every export is a standalone function with no side effects and no shared internal state — unused exports are dropped entirely by any modern bundler. Prefer function composition over class inheritance so only the code paths you actually call end up in your bundle.
 
 ## Packages
 

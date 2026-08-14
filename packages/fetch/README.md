@@ -21,6 +21,7 @@ You also need a schema library that implements [Standard Schema](https://standar
 - **JSON convenience** through the `json` option, which serializes the request body and sets `Content-Type`.
 - **Structured errors** with `FetchError` for HTTP failures and `ValidationError` for schema failures.
 - **Validator-agnostic** — works with any library that implements Standard Schema.
+- **Tree-shakeable** — every export is a standalone function with no shared internal state; unused exports are dropped by any modern bundler.
 
 ## Quick Start
 

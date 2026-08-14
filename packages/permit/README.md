@@ -21,6 +21,7 @@ You also need a schema library that implements [Standard Schema](https://standar
 - **Composable conditions** via `and`, `or`, and `not`.
 - **Policy merging strategies** via `mergePoliciesEvery` and `mergePoliciesSome`.
 - **Structured errors** with `PolicyError` for invalid configuration or evaluation failures.
+- **Tree-shakeable** — policies and conditions are plain functions; unused exports are dropped by any modern bundler.
 
 ## Quick Start
 

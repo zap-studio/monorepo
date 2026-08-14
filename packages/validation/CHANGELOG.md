@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Clarified tree-shakeable design in the package description and README (no code change).
 - **Breaking:** `createSyncStandardValidator` is renamed to `createStandardValidatorSync` for naming consistency with `standardValidateSync`. Update imports and usages accordingly; the thrown error message for async schemas now reads `Async schemas are not supported by createStandardValidatorSync`.
 
 ## [0.3.6]

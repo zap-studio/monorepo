@@ -2,7 +2,7 @@
   "name": "@zap-studio/validation",
   "version": "0.4.0",
   "private": false,
-  "description": "Standard Schema utilities and ValidationError helpers.",
+  "description": "Tree-shakeable Standard Schema utilities and ValidationError helpers.",
   "keywords": [
     "errors",
     "runtime validation",

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.4.0]
 
+### Changed
+
+- Clarified tree-shakeable design in the package description and README (no code change).
+
 ### Removed
 
 `assertNever` is no longer exported — it had no internal consumers and existed only as a generic exhaustiveness-check convenience. Use your own `never`-typed helper if you relied on it.
