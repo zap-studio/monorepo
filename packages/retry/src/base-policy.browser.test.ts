@@ -7,6 +7,7 @@ import {
 } from "./_sequence-policy.js";
 import { defaultSleep, runRetryPolicy } from "./base-policy.js";
 import { AbortError, RetryError } from "./errors.js";
+import type { RetryPolicy } from "./types.js";
 
 describe(defaultSleep, () => {
   it("resolves immediately when delay is non-positive", async () => {
@@ -602,6 +603,25 @@ describe("runRetryPolicy defaults", () => {
     expect(policy.isKnownError("boom")).toBeFalsy();
     expect(policy.isKnownError({ message: "boom" })).toBeFalsy();
     expect(policy.isKnownError(undefined)).toBeFalsy();
+  });
+
+  it("falls back to runRetryPolicy's default onExhausted when a policy omits it", async () => {
+    const policy: RetryPolicy = {
+      next: () => ({
+        delayMs: 0,
+        reason: "max-attempts-reached",
+        shouldRetry: false,
+      }),
+    };
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockRejectedValue(new Error("boom"));
+
+    await expect(runRetryPolicy(policy, execute)).rejects.toMatchObject({
+      attempts: 1,
+      message: "Retry policy exhausted all attempts.",
+      name: "RetryError",
+    });
   });
 });
 
