@@ -16,7 +16,7 @@ import { z } from "zod";
 const UserSchema = z.object({
   id: z.number(),
   name: z.string(),
-  email: z.string().email(),
+  email: z.email(),
 });
 
 // `user` is typed from UserSchema — no manual annotations, no `as` casts

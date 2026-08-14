@@ -75,7 +75,7 @@ const resources = {
   }),
   user: z.object({
     id: z.string(),
-    email: z.string().email(),
+    email: z.email(),
     role: z.enum(["guest", "user", "admin"]),
   }),
 } satisfies Resources;
