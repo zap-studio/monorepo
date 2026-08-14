@@ -2,14 +2,17 @@
 
 A type-safe, declarative authorization library for TypeScript with [Standard Schema](https://standardschema.dev/) support.
 
+Full documentation: [zapstudio.dev/permit](https://www.zapstudio.dev/permit)
+
 ## Features
 
-- Full type safety with TypeScript
-- Standard Schema support (Zod, Valibot, ArkType, etc.)
-- Declarative policy definitions
-- Role hierarchy support
-- Composable conditions (`and`, `or`, `not`)
-- Policy merging strategies
+- **Full type safety** — actions, resources, and permissions are inferred from your schemas and `satisfies` declarations.
+- **Standard Schema support** via `Resources` — works with Zod, Valibot, ArkType, or any compatible library.
+- **Declarative policies** through `createPolicy(...)` with `allow()`, `deny()`, and `when(condition)`.
+- **Role hierarchy support** via `hasRole(role, hierarchy?)`, with inheritance resolved by `collectInheritedRoles`.
+- **Composable conditions** via `and`, `or`, and `not`.
+- **Policy merging strategies** via `mergePoliciesEvery` and `mergePoliciesSome`.
+- **Structured errors** with `PolicyError` for invalid configuration or evaluation failures.
 
 ## Quick Start
 
@@ -18,113 +21,65 @@ import { z } from "zod";
 import { createPolicy, allow, deny, when } from "@zap-studio/permit";
 import type { Resources, Actions } from "@zap-studio/permit";
 
-// 1. Define your resource schemas
 const resources = {
-  post: z.object({
-    id: z.string(),
-    authorId: z.string(),
-    visibility: z.enum(["public", "private"]),
-  }),
-  comment: z.object({
-    id: z.string(),
-    postId: z.string(),
-    authorId: z.string(),
-  }),
+  post: z.object({ id: z.string(), authorId: z.string() }),
 } satisfies Resources;
 
-// 2. Define actions per resource
 const actions = {
   post: ["read", "write", "delete"],
-  comment: ["read", "write"],
 } as const satisfies Actions<typeof resources>;
 
-// 3. Define your context type
-type AppContext = {
-  user: { id: string; role: "guest" | "user" | "admin" };
-};
+type AppContext = { user: { id: string } };
 
-// 4. Create your policy
 const policy = createPolicy<AppContext>({
   resources,
   actions,
   rules: {
     post: {
-      read: when((ctx, action, resource) => resource.visibility === "public"),
-      write: when((ctx, action, resource) => ctx.user.id === resource.authorId),
-      delete: deny(),
-    },
-    comment: {
       read: allow(),
       write: when((ctx, action, resource) => ctx.user.id === resource.authorId),
+      delete: deny(),
     },
   },
 });
 
-// 5. Check permissions
-const ctx: AppContext = { user: { id: "user-1", role: "user" } };
-const post = { id: "1", authorId: "user-1", visibility: "public" as const };
+const ctx: AppContext = { user: { id: "user-1" } };
+const post = { id: "1", authorId: "user-1" };
 
-await policy.can(ctx, "post:read", post); // true
-await policy.can(ctx, "post:write", post); // true (user is author)
-await policy.can(ctx, "post:delete", post); // false (always denied)
+await policy.can(ctx, "post:write", post); // true, inferred as boolean
 ```
 
-## API Reference
+## Declarative Policies
 
-### Policy Builders
-
-#### `allow()`
-
-Returns a policy function that always allows the action.
+Through `createPolicy(...)` with `allow()`, `deny()`, and `when(condition)`.
 
 ```ts
 rules: {
   post: {
-    read: allow(), // Anyone can read
-  },
-}
-```
-
-#### `deny()`
-
-Returns a policy function that always denies the action.
-
-```ts
-rules: {
-  post: {
-    delete: deny(), // No one can delete
-  },
-}
-```
-
-#### `when(condition)`
-
-Returns a policy function that allows or denies based on a condition.
-
-```ts
-rules: {
-  post: {
+    read: allow(),
+    delete: deny(),
     write: when((ctx, action, resource) => ctx.user.id === resource.authorId),
   },
 }
 ```
 
-### Condition Combinators
+## Role Hierarchy Support
 
-#### `and(...conditions)`
-
-Returns a condition that is true only if all conditions are true.
+Via `hasRole(role, hierarchy?)`, with inheritance resolved by `collectInheritedRoles`.
 
 ```ts
-const isOwnerAndPublished = and(
-  (ctx, action, resource) => ctx.user.id === resource.authorId,
-  (ctx, action, resource) => resource.status === "published"
-);
+const hierarchy = { guest: [], user: ["guest"], admin: ["user"] };
+
+rules: {
+  post: {
+    read: when(hasRole("guest", hierarchy)), // admins and users inherit guest access
+  },
+}
 ```
 
-#### `or(...conditions)`
+## Composable Conditions
 
-Returns a condition that is true if any condition is true.
+Via `and`, `or`, and `not`.
 
 ```ts
 const isOwnerOrAdmin = or(
@@ -133,132 +88,38 @@ const isOwnerOrAdmin = or(
 );
 ```
 
-#### `not(condition)`
+## Policy Merging Strategies
 
-Returns a condition that negates another condition.
-
-```ts
-const isNotOwner = not(
-  (ctx, action, resource) => ctx.user.id === resource.authorId
-);
-```
-
-### Context Helpers
-
-#### `has(key, value)`
-
-Checks if a context property equals a specific value.
-
-```ts
-rules: {
-  post: {
-    write: when(has("role", "admin")),
-  },
-}
-```
-
-#### `hasRole(role, hierarchy?)`
-
-Checks if the user has a specific role, with optional hierarchy support.
-
-```ts
-const hierarchy = {
-  guest: [],
-  user: ["guest"],
-  admin: ["user"],
-};
-
-rules: {
-  post: {
-    read: when(hasRole("guest", hierarchy)), // Admins and users inherit guest permissions
-  },
-}
-```
-
-### Policy Merging
-
-#### `mergePoliciesEvery(...policies)`
-
-Merges policies with an "every" strategy. All policies must allow for the action to be permitted.
+Via `mergePoliciesEvery` and `mergePoliciesSome`.
 
 ```ts
 const merged = mergePoliciesEvery(basePolicy, restrictivePolicy);
 ```
 
-#### `mergePoliciesSome(...policies)`
-
-Merges policies with a "some" strategy. Any policy allowing is sufficient.
-
-```ts
-const merged = mergePoliciesSome(guestPolicy, memberPolicy);
-```
-
-## Type Helpers
-
-### `Resources`
-
-Type helper for defining resource schemas with `satisfies`.
-
-```ts
-const resources = {
-  post: z.object({ id: z.string() }),
-} satisfies Resources;
-```
-
-### `Actions<TResources>`
-
-Type helper for defining actions with `satisfies`. Ensures action keys match resource keys.
-
-```ts
-const actions = {
-  post: ["read", "write"],
-} as const satisfies Actions<typeof resources>;
-```
-
-### `InferResource<TResources, K>`
-
-Infers the TypeScript type for a specific resource.
-
-```ts
-type Post = InferResource<typeof resources, "post">;
-// { id: string }
-```
-
-### `InferAction<TActions, K>`
-
-Infers the action union type for a specific resource.
-
-```ts
-type PostAction = InferAction<typeof actions, "post">;
-// "read" | "write"
-```
-
 ## Standard Schema Support
 
-This library uses [Standard Schema](https://standardschema.dev/) for resource validation, which means it works with any compatible schema library:
-
-- [Zod](https://zod.dev/)
-- [Valibot](https://valibot.dev/)
-- [ArkType](https://arktype.io/)
+Works with Zod, Valibot, ArkType, or any compatible library.
 
 ```ts
-// With Zod
-import { z } from "zod";
+// Zod, Valibot, ArkType, or any Standard Schema-compatible library
 const resources = {
   post: z.object({ id: z.string() }),
 } satisfies Resources;
+```
 
-// With Valibot
-import * as v from "valibot";
-const resources = {
-  post: v.object({ id: v.string() }),
-} satisfies Resources;
+## Structured Errors
 
-// With ArkType
-import { type } from "arktype";
-const resources = {
-  post: type({ id: "string" }),
-} satisfies Resources;
+`PolicyError` for invalid configuration or evaluation failures.
+
+```ts
+import { PolicyError } from "@zap-studio/permit";
+
+try {
+  const policy = createPolicy(config);
+  await policy.can(ctx, "post:read", post);
+} catch (error) {
+  if (error instanceof PolicyError) console.error(error.message);
+}
 ```
 
 ## Runtime Support
@@ -272,3 +133,7 @@ const resources = {
 | Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
 
 The package ships standard ESM only and uses no runtime-specific APIs. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/permit`).
+
+## License
+
+MIT
