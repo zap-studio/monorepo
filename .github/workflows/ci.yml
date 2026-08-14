@@ -86,7 +86,6 @@ jobs:
         with:
           disable_search: true
           files: ./coverage/junit.xml
-          fail_ci_if_error: false
           report_type: test_results
           use_oidc: true
           verbose: true
@@ -96,6 +95,5 @@ jobs:
         with:
           disable_search: true
           files: ./coverage/lcov.info
-          fail_ci_if_error: false
           use_oidc: true
           verbose: true
