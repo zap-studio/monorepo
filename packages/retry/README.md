@@ -68,7 +68,8 @@ import { AbortError, RetryError } from "@zap-studio/retry";
 try {
   await policy.run(execute);
 } catch (error) {
-  if (error instanceof RetryError) console.error(error.attempts, error.lastError);
+  if (error instanceof RetryError)
+    console.error(error.attempts, error.lastError);
   if (error instanceof AbortError) console.error(error.message);
 }
 ```
@@ -119,7 +120,11 @@ class LinearBackoff extends BaseRetryPolicy {
     if (input.attempt >= this.maxAttempts) {
       return { shouldRetry: false, delayMs: 0, reason: "max-attempts-reached" };
     }
-    return { shouldRetry: true, delayMs: input.attempt * this.stepMs, reason: "retry" };
+    return {
+      shouldRetry: true,
+      delayMs: input.attempt * this.stepMs,
+      reason: "retry",
+    };
   }
 }
 ```
@@ -127,7 +132,7 @@ class LinearBackoff extends BaseRetryPolicy {
 ## Runtime Support
 
 | Runtime            | Minimum version                         |
-| ------------------ | ---------------------------------------- |
+| ------------------ | --------------------------------------- |
 | Node.js            | 18.0.0                                  |
 | Bun                | 1.0.0                                   |
 | Deno               | 1.42                                    |
