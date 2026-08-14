@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { ExponentialBackoff } from "./exponential-backoff.js";
+import { exponentialBackoff } from "./exponential-backoff.js";
 
-describe(ExponentialBackoff, () => {
+describe(exponentialBackoff, () => {
   it("retries with base delay at first attempt", () => {
-    const policy = new ExponentialBackoff({
+    const policy = exponentialBackoff({
       baseDelayMs: 100,
       maxAttempts: 5,
       maxDelayMs: 1000,
@@ -18,7 +18,7 @@ describe(ExponentialBackoff, () => {
   });
 
   it("doubles delay on subsequent attempts", () => {
-    const policy = new ExponentialBackoff({
+    const policy = exponentialBackoff({
       baseDelayMs: 100,
       maxAttempts: 5,
       maxDelayMs: 1000,
@@ -29,7 +29,7 @@ describe(ExponentialBackoff, () => {
   });
 
   it("caps delay at maxDelayMs", () => {
-    const policy = new ExponentialBackoff({
+    const policy = exponentialBackoff({
       baseDelayMs: 100,
       maxAttempts: 10,
       maxDelayMs: 250,
@@ -43,7 +43,7 @@ describe(ExponentialBackoff, () => {
   });
 
   it("stops retrying when max attempts is reached", () => {
-    const policy = new ExponentialBackoff({
+    const policy = exponentialBackoff({
       baseDelayMs: 100,
       maxAttempts: 3,
       maxDelayMs: 1000,

@@ -6,8 +6,7 @@
 
 import { AbortError, RetryError } from "./errors.js";
 import type {
-  RetryDecision,
-  RetryDecisionInput,
+  ResolvedRetryPolicy,
   RetryExhaustedInput,
   RetryPolicy,
   RetryRunOptions,
@@ -122,8 +121,7 @@ const sleepWithAbortSignal = async (
  * Runs the throw-mode retry loop: throws `RetryError` on exhaustion and
  * `AbortError` when `signal` aborts.
  *
- * @param policy - Object providing `next` and `onExhausted` (same contract as
- *   `BaseRetryPolicy`).
+ * @param policy - Resolved retry policy providing `next` and `onExhausted`.
  * @param execute - Async work callback per attempt.
  * @param sleep - Delay function between retries.
  * @param signal - Optional cancel signal.
@@ -136,7 +134,7 @@ const sleepWithAbortSignal = async (
  *   `policy.isKnownError` rejects it as outside this policy's error domain.
  */
 const runThrowMode = async <T, TError extends Error, TData>(
-  policy: BaseRetryPolicy<TError, TData>,
+  policy: ResolvedRetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
   signal?: AbortSignal
@@ -267,8 +265,7 @@ const waitForDelay = async (
  * After a failed attempt, applies abort rules, `next`, optional delay, and
  * either returns a terminal `RetryRunResult` or `undefined` to continue.
  *
- * @param policy - Retry policy hooks (`next`, `onExhausted`) matching
- *   `BaseRetryPolicy`.
+ * @param policy - Resolved retry policy hooks (`next`, `onExhausted`).
  * @param params - Failure context for the current attempt.
  * @param params.attempt - Current attempt number.
  * @param params.error - Error thrown by the attempt.
@@ -280,7 +277,7 @@ const waitForDelay = async (
  *   the error is not an abort.
  */
 const handleFailure = async <TError extends Error, TData>(
-  policy: RetryPolicy<TError, TData>,
+  policy: ResolvedRetryPolicy<TError, TData>,
   params: {
     attempt: number;
     error: TError;
@@ -331,8 +328,7 @@ const handleFailure = async <TError extends Error, TData>(
  * Runs the non-throw retry loop, returning
  * `RetryRunResult`.
  *
- * @param policy - Object providing `next` and `onExhausted` (same contract as
- *   `BaseRetryPolicy`).
+ * @param policy - Resolved retry policy providing `next` and `onExhausted`.
  * @param execute - Async work callback per attempt.
  * @param sleep - Delay function between retries.
  * @param signal - Optional cancel signal.
@@ -344,7 +340,7 @@ const handleFailure = async <TError extends Error, TData>(
  *   failure.
  */
 const runResultMode = async <T, TError extends Error, TData>(
-  policy: BaseRetryPolicy<TError, TData>,
+  policy: ResolvedRetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
   signal?: AbortSignal
@@ -395,164 +391,131 @@ const runResultMode = async <T, TError extends Error, TData>(
 };
 
 /**
- * Base class for implementing retry policies and running retry orchestration.
+ * Default `onExhausted` used when a policy omits it: wraps the exhaustion
+ * context in a generic `RetryError`.
+ */
+const defaultOnExhausted = <TError extends Error, TData>(
+  input: RetryExhaustedInput<TError, TData>
+): RetryError =>
+  new RetryError("Retry policy exhausted all attempts.", {
+    attempts: input.attempts,
+    lastData: input.data,
+    lastError: input.error,
+  });
+
+/**
+ * Default `isKnownError` used when a policy omits it: accepts any `Error`
+ * instance and rejects everything else.
+ */
+// oxlint-disable-next-line typescript/no-unnecessary-type-parameters -- TError only appears in the return predicate; needed so callers infer the right narrowed type.
+const defaultIsKnownError = <TError extends Error>(
+  error: unknown
+): error is TError => error instanceof Error;
+
+/**
+ * Runs retry orchestration in non-throw mode.
  *
- * Extend this class and implement {@link BaseRetryPolicy.next} to define retry
- * behavior, then call {@link BaseRetryPolicy.run} to execute operations with that
- * policy.
+ * @param policy - Retry policy: `next` is required, `onExhausted` and
+ *   `isKnownError` fall back to their defaults when omitted.
+ * @param execute - Async function to execute per attempt.
+ * @param options - Runner settings with `throwOnExhausted: false`.
+ * @returns A discriminated result union containing success value or terminal error.
+ *   When `policy.isKnownError` rejects a caught value, it is wrapped in a
+ *   `RetryError` and returned as the terminal failure instead of thrown.
+ * @throws {Error} Any error thrown by `next`, `onExhausted`, or a custom `sleep`.
+ */
+export function runRetryPolicy<
+  T,
+  TError extends Error = Error,
+  TData = unknown,
+>(
+  policy: RetryPolicy<TError, TData>,
+  execute: (attempt: number) => Promise<T>,
+  options: RetryRunOptions & { throwOnExhausted: false }
+): Promise<RetryRunResult<T>>;
+
+/**
+ * Runs retry orchestration and throws terminal error on exhaustion.
+ *
+ * @param policy - Retry policy: `next` is required, `onExhausted` and
+ *   `isKnownError` fall back to their defaults when omitted.
+ * @param execute - Async function to execute per attempt.
+ * @param options - Optional runner settings.
+ * @returns The successful execution value.
+ * @throws {RetryError} When retries are exhausted and `onExhausted` returns the
+ *   terminal retry error. The default implementation returns `RetryError` with the last
+ *   execution failure available on `RetryError.lastError`.
+ * @throws {AbortError} When `options.signal` is already aborted or aborts while retrying.
+ * @throws {Error} Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
+ *   function.
  *
  * @example
  * ```ts
- * import { BaseRetryPolicy } from "@zap-studio/retry";
+ * import { runRetryPolicy } from "@zap-studio/retry";
+ * import type { RetryPolicy } from "@zap-studio/retry";
  *
- * class LinearBackoff extends BaseRetryPolicy {
- *   next({ attempt }: { attempt: number }) {
- *     return attempt < 3
- *       ? { shouldRetry: true, delayMs: attempt * 100, reason: "retry" as const }
- *       : { shouldRetry: false, delayMs: 0, reason: "max-attempts-reached" as const };
- *   }
- * }
+ * const linearBackoff: RetryPolicy = {
+ *   next: ({ attempt }) =>
+ *     attempt < 3
+ *       ? { shouldRetry: true, delayMs: attempt * 100, reason: "retry" }
+ *       : { shouldRetry: false, delayMs: 0, reason: "max-attempts-reached" },
+ * };
  *
- * const policy = new LinearBackoff();
- * const data = await policy.run(async () => fetchFlakyResource());
+ * const data = await runRetryPolicy(linearBackoff, async () => fetchFlakyResource());
  * ```
  */
-export abstract class BaseRetryPolicy<
+export function runRetryPolicy<
+  T,
   TError extends Error = Error,
   TData = unknown,
-> implements RetryPolicy<TError, TData> {
-  /**
-   * Returns the retry decision for a failed attempt.
-   *
-   * @param input - Attempt context used to compute retry behavior.
-   * @throws {Error} Any error thrown by a concrete retry policy implementation.
-   */
-  public abstract next(input: RetryDecisionInput<TError, TData>): RetryDecision;
+>(
+  policy: RetryPolicy<TError, TData>,
+  execute: (attempt: number) => Promise<T>,
+  options?: RetryRunOptions & { throwOnExhausted?: true }
+): Promise<T>;
 
-  /**
-   * Builds the terminal error thrown or returned when retries are exhausted.
-   *
-   * Override this when you need custom terminal error types.
-   *
-   * @param input - Exhaustion context.
-   * @returns `RetryError` by default.
-   * @throws {Error} Any error thrown by an overriding policy implementation.
-   *
-   * @example
-   * ```ts
-   * class CustomTerminalPolicy extends BaseRetryPolicy {
-   *   next() {
-   *     return { shouldRetry: false, delayMs: 0, reason: "policy-declined" as const };
-   *   }
-   *
-   *   override onExhausted({ attempts, error }: { attempts: number; error?: unknown }) {
-   *     return new RetryError(`Gave up after ${attempts} attempts`, { attempts, lastError: error });
-   *   }
-   * }
-   * ```
-   */
-  // oxlint-disable-next-line class-methods-use-this -- RetryPolicy requires an instance hook that subclasses may override.
-  public onExhausted(input: RetryExhaustedInput<TError, TData>): RetryError {
-    return new RetryError("Retry policy exhausted all attempts.", {
-      attempts: input.attempts,
-      lastData: input.data,
-      lastError: input.error,
-    });
+/**
+ * Runs retry orchestration in non-throw mode.
+ *
+ * When `throwOnExhausted` is `false`, returns a discriminated result union.
+ *
+ * @param policy - Retry policy: `next` is required, `onExhausted` and
+ *   `isKnownError` fall back to their defaults when omitted.
+ * @param execute - Async function to execute per attempt.
+ * @param options - Runner settings.
+ * @returns Success value or terminal result object based on option mode.
+ * @throws {Error} Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
+ *   function. When `throwOnExhausted` is `false`, exhaustion itself is returned
+ *   as `{ ok: false }` instead of thrown.
+ *   Cancellation is returned as `{ ok: false, error: AbortError }` in non-throw
+ *   mode. A value rejected by `policy.isKnownError` is wrapped in a
+ *   `RetryError` and returned the same way in non-throw mode; in throw mode
+ *   it is rethrown as-is.
+ *
+ * @example
+ * const result = await runRetryPolicy(policy, doWork, { throwOnExhausted: false });
+ * if (!result.ok) console.error(result.error);
+ */
+export async function runRetryPolicy<
+  T,
+  TError extends Error = Error,
+  TData = unknown,
+>(
+  policy: RetryPolicy<TError, TData>,
+  execute: (attempt: number) => Promise<T>,
+  options: RetryRunOptions = {}
+): Promise<T | RetryRunResult<T>> {
+  const sleep = options.sleep ?? defaultSleep;
+  const { signal } = options;
+  const resolvedPolicy: ResolvedRetryPolicy<TError, TData> = {
+    isKnownError: policy.isKnownError ?? defaultIsKnownError,
+    next: policy.next,
+    onExhausted: policy.onExhausted ?? defaultOnExhausted,
+  };
+
+  if (options.throwOnExhausted === false) {
+    return await runResultMode(resolvedPolicy, execute, sleep, signal);
   }
 
-  /**
-   * Narrows a value caught from `execute(attempt)` into `TError`.
-   *
-   * The default checks `error instanceof Error`, matching `TError`'s default
-   * bound of `Error`. It rejects non-`Error` throws (a thrown string,
-   * plain object, etc.) but cannot distinguish `TError` from an unrelated
-   * `Error` subclass. Override this when `TError` is a narrower domain (e.g.
-   * a specific HTTP or domain error) to get real narrowing instead of an
-   * assumption. Values it rejects bypass retry immediately: `run(...)`
-   * rethrows them as-is in throw mode, or wraps them in a `RetryError` on
-   * `result.error` in non-throw mode.
-   *
-   * @param error - Value caught from the failed attempt.
-   * @returns Whether `error` belongs to this policy's declared error domain.
-   *
-   * @example
-   * ```ts
-   * class HttpRetryPolicy extends BaseRetryPolicy<HttpError> {
-   *   override isKnownError(error: unknown): error is HttpError {
-   *     return error instanceof HttpError;
-   *   }
-   *   // ...
-   * }
-   * ```
-   */
-  // oxlint-disable-next-line class-methods-use-this -- RetryPolicy requires an instance hook that subclasses may override.
-  public isKnownError(error: unknown): error is TError {
-    return error instanceof Error;
-  }
-
-  /**
-   * Runs retry orchestration in non-throw mode.
-   *
-   * @param execute - Async function to execute per attempt.
-   * @param options - Runner settings with `throwOnExhausted: false`.
-   * @returns A discriminated result union containing success value or terminal error.
-   *   When `policy.isKnownError` rejects a caught value, it is wrapped in a
-   *   `RetryError` and returned as the terminal failure instead of thrown.
-   * @throws {Error} Any error thrown by `next`, `onExhausted`, or a custom `sleep`.
-   */
-  public async run<T>(
-    execute: (attempt: number) => Promise<T>,
-    options: RetryRunOptions & { throwOnExhausted: false }
-  ): Promise<RetryRunResult<T>>;
-
-  /**
-   * Runs retry orchestration and throws terminal error on exhaustion.
-   *
-   * @param execute - Async function to execute per attempt.
-   * @param options - Optional runner settings.
-   * @returns The successful execution value.
-   * @throws {RetryError} When retries are exhausted and `onExhausted` returns the
-   *   terminal retry error. The default implementation returns `RetryError` with the last
-   *   execution failure available on `RetryError.lastError`.
-   * @throws {AbortError} When `options.signal` is already aborted or aborts while retrying.
-   * @throws {Error} Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
-   *   function.
-   */
-  public async run<T>(
-    execute: (attempt: number) => Promise<T>,
-    options?: RetryRunOptions & { throwOnExhausted?: true }
-  ): Promise<T>;
-
-  /**
-   * Runs retry orchestration in non-throw mode.
-   *
-   * When `throwOnExhausted` is `false`, returns a discriminated result union.
-   *
-   * @param execute - Async function to execute per attempt.
-   * @param options - Runner settings.
-   * @returns Success value or terminal result object based on option mode.
-   * @throws {Error} Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
-   *   function. When `throwOnExhausted` is `false`, exhaustion itself is returned
-   *   as `{ ok: false }` instead of thrown.
-   *   Cancellation is returned as `{ ok: false, error: AbortError }` in non-throw
-   *   mode. A value rejected by `policy.isKnownError` is wrapped in a
-   *   `RetryError` and returned the same way in non-throw mode; in throw mode
-   *   it is rethrown as-is.
-   *
-   * @example
-   * const result = await policy.run(doWork, { throwOnExhausted: false });
-   * if (!result.ok) console.error(result.error);
-   */
-  public async run<T>(
-    execute: (attempt: number) => Promise<T>,
-    options: RetryRunOptions = {}
-  ): Promise<T | RetryRunResult<T>> {
-    const sleep = options.sleep ?? defaultSleep;
-    const { signal } = options;
-    if (options.throwOnExhausted === false) {
-      return await runResultMode(this, execute, sleep, signal);
-    }
-
-    return await runThrowMode(this, execute, sleep, signal);
-  }
+  return await runThrowMode(resolvedPolicy, execute, sleep, signal);
 }

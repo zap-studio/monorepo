@@ -18,6 +18,12 @@ See [Narrow the Error Domain](https://www.zapstudio.dev/retry/custom-policies#na
 
 - **Breaking:** `TError` is now constrained to `TError extends Error` and defaults to `Error` (was `TError = unknown`) on `RetryPolicy`, `RetryDecisionInput`, `RetryExhaustedInput`, and `BaseRetryPolicy`.
 - **Breaking behavior change:** a rejection with a non-`Error` value (a thrown string, plain object, `undefined`, ...) now bypasses retry entirely on the attempt that produced it — it no longer reaches `next(...)`, and no delay/backoff is applied. Previously any thrown value was passed through to the policy unchanged. In throw mode, `run(...)` rethrows the value as-is; with `throwOnExhausted: false`, it's wrapped in a `RetryError` and returned on `result.error` — `run(...)` never throws in that mode.
+- **Breaking:** Policies are plain objects instead of classes, for tree-shaking — bundlers can drop an unused policy factory and its defaults entirely, which isn't possible across a shared class hierarchy. `ExponentialBackoff`/`FixedDelay` classes are replaced by `exponentialBackoff(options)`/`fixedDelay(options)` factory functions that return a `RetryPolicy`. Migrate `new ExponentialBackoff(opts)` to `exponentialBackoff(opts)`, and `new FixedDelay(opts)` to `fixedDelay(opts)`.
+- **Breaking:** `RetryPolicy.onExhausted` is now optional (previously required); omit it to use the same default `RetryError` that `BaseRetryPolicy.onExhausted` used to build.
+
+### Removed
+
+- **Breaking:** `BaseRetryPolicy` is removed. Retry orchestration is now the standalone function `runRetryPolicy(policy, execute, options?)`, which accepts any object satisfying `RetryPolicy` — no subclassing required. Migrate `policy.run(execute, options)` to `runRetryPolicy(policy, execute, options)`. A custom policy that previously extended `BaseRetryPolicy` and overrode `next`/`onExhausted`/`isKnownError` becomes an object literal implementing the same members; see [Custom Policies](https://www.zapstudio.dev/retry/custom-policies).
 
 ### Removed
 

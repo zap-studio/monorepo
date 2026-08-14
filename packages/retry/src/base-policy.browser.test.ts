@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
-  CustomTerminalPolicy,
+  createCustomTerminalPolicy,
+  createSequencePolicy,
   expectFailureResult,
-  SequencePolicy,
 } from "./_sequence-policy.js";
-import { defaultSleep } from "./base-policy.js";
+import { defaultSleep, runRetryPolicy } from "./base-policy.js";
 import { AbortError, RetryError } from "./errors.js";
 
 describe(defaultSleep, () => {
@@ -30,16 +30,16 @@ describe(defaultSleep, () => {
   });
 });
 
-describe("throw mode (BaseRetryPolicy.run default)", () => {
+describe("throw mode (runRetryPolicy default)", () => {
   it("returns successful execution result without retrying", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
     ]);
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
       .mockResolvedValue("ok");
 
-    const result = await policy.run(execute);
+    const result = await runRetryPolicy(policy, execute);
 
     expect(result).toBe("ok");
     expect(execute).toHaveBeenCalledWith(1);
@@ -47,7 +47,7 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
   });
 
   it("retries with provided sleep implementation until success", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 10, reason: "retry", shouldRetry: true },
       { delayMs: 20, reason: "retry", shouldRetry: true },
     ]);
@@ -59,7 +59,7 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
     execute.mockRejectedValueOnce(new Error("fail-2"));
     execute.mockResolvedValueOnce("ok");
 
-    const result = await policy.run(execute, { sleep });
+    const result = await runRetryPolicy(policy, execute, { sleep });
 
     expect(result).toBe("ok");
     expect(execute.mock.calls).toStrictEqual([[1], [2], [3]]);
@@ -68,7 +68,7 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
   });
 
   it("throws RetryError from default onExhausted when retries stop", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
       { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
     ]);
@@ -76,38 +76,38 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
     execute.mockRejectedValueOnce(new Error("fail-1"));
     execute.mockRejectedValueOnce(new Error("fail-2"));
 
-    await expect(policy.run(execute)).rejects.toMatchObject({
+    await expect(runRetryPolicy(policy, execute)).rejects.toMatchObject({
       attempts: 2,
       name: "RetryError",
     });
   });
 
   it("uses custom terminal error from overridden onExhausted", async () => {
-    const policy = new CustomTerminalPolicy();
+    const policy = createCustomTerminalPolicy();
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
       .mockRejectedValue(new Error("nope"));
 
-    await expect(policy.run(execute)).rejects.toThrow("custom:1");
+    await expect(runRetryPolicy(policy, execute)).rejects.toThrow("custom:1");
   });
 
   it("uses default sleep when delay is positive and no custom sleep is provided", async () => {
     vi.useFakeTimers();
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 25, reason: "retry", shouldRetry: true },
     ]);
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValueOnce(new Error("fail"));
     execute.mockResolvedValueOnce("ok");
 
-    const runPromise = policy.run(execute);
+    const runPromise = runRetryPolicy(policy, execute);
     await vi.advanceTimersByTimeAsync(25);
     await expect(runPromise).resolves.toBe("ok");
     vi.useRealTimers();
   });
 
   it("throws immediately when signal is already aborted", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
     ]);
     const execute = vi
@@ -117,13 +117,13 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
     controller.abort(new Error("aborted-before-start"));
 
     await expect(
-      policy.run(execute, { signal: controller.signal })
+      runRetryPolicy(policy, execute, { signal: controller.signal })
     ).rejects.toThrow("aborted-before-start");
     expect(execute).not.toHaveBeenCalled();
   });
 
   it("throws when signal aborts while waiting between retries", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 50, reason: "retry", shouldRetry: true },
     ]);
     const controller = new AbortController();
@@ -131,7 +131,9 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
       .fn<(attempt: number) => Promise<string>>()
       .mockRejectedValueOnce(new Error("fail-once"));
 
-    const runPromise = policy.run(execute, { signal: controller.signal });
+    const runPromise = runRetryPolicy(policy, execute, {
+      signal: controller.signal,
+    });
     await Promise.resolve();
     controller.abort(new Error("aborted-during-sleep"));
 
@@ -139,7 +141,7 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
   });
 
   it("covers immediate abort check during abort-aware sleep", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 10, reason: "retry", shouldRetry: true },
     ]);
     const execute = vi
@@ -163,13 +165,13 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
         >(),
     } as unknown as AbortSignal;
 
-    await expect(policy.run(execute, { signal: fakeSignal })).rejects.toThrow(
-      "abort-immediate-sleep-check"
-    );
+    await expect(
+      runRetryPolicy(policy, execute, { signal: fakeSignal })
+    ).rejects.toThrow("abort-immediate-sleep-check");
   });
 
   it("propagates sync sleep failure before abort listener registration", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 10, reason: "retry", shouldRetry: true },
     ]);
     const controller = new AbortController();
@@ -183,19 +185,19 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
       });
 
     await expect(
-      policy.run(execute, { signal: controller.signal, sleep })
+      runRetryPolicy(policy, execute, { signal: controller.signal, sleep })
     ).rejects.toThrow("sleep-sync-fail");
   });
 
   it("rethrows a rejection immediately when it fails policy.isKnownError, bypassing retry", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
     ]);
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
       .mockRejectedValue("not-an-error");
 
-    await expect(policy.run(execute)).rejects.toBe("not-an-error");
+    await expect(runRetryPolicy(policy, execute)).rejects.toBe("not-an-error");
     expect(execute).toHaveBeenCalledTimes(1);
     expect(policy.seen).toStrictEqual([]);
   });
@@ -203,14 +205,16 @@ describe("throw mode (BaseRetryPolicy.run default)", () => {
 
 describe("result mode (throwOnExhausted: false)", () => {
   it("returns terminal result instead of throwing when retries stop", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
     ]);
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
       .mockRejectedValue(new Error("fail"));
 
-    const result = await policy.run(execute, { throwOnExhausted: false });
+    const result = await runRetryPolicy(policy, execute, {
+      throwOnExhausted: false,
+    });
 
     const failure = expectFailureResult(result);
     expect(failure).toMatchObject({
@@ -221,20 +225,22 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 
   it("returns success result object on first success", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
     ]);
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
       .mockResolvedValue("ok");
 
-    const result = await policy.run(execute, { throwOnExhausted: false });
+    const result = await runRetryPolicy(policy, execute, {
+      throwOnExhausted: false,
+    });
 
     expect(result).toStrictEqual({ ok: true, value: "ok" });
   });
 
   it("retries with positive delay and custom sleep until success", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 15, reason: "retry", shouldRetry: true },
     ]);
     const sleep = vi
@@ -244,7 +250,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     execute.mockRejectedValueOnce(new Error("fail"));
     execute.mockResolvedValueOnce("ok");
 
-    const result = await policy.run(execute, {
+    const result = await runRetryPolicy(policy, execute, {
       sleep,
       throwOnExhausted: false,
     });
@@ -256,7 +262,7 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 
   it("returns terminal result when signal is already aborted", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
     ]);
     const execute = vi
@@ -265,7 +271,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     const controller = new AbortController();
     controller.abort("aborted-before-start");
 
-    const result = await policy.run(execute, {
+    const result = await runRetryPolicy(policy, execute, {
       signal: controller.signal,
       throwOnExhausted: false,
     });
@@ -278,7 +284,7 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 
   it("preserves AbortError reason instance in abort result", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
     ]);
     const execute = vi
@@ -299,7 +305,7 @@ describe("result mode (throwOnExhausted: false)", () => {
         >(),
     } as unknown as AbortSignal;
 
-    const result = await policy.run(execute, {
+    const result = await runRetryPolicy(policy, execute, {
       signal: fakeSignal,
       throwOnExhausted: false,
     });
@@ -309,7 +315,7 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 
   it("returns terminal result when signal is aborted during execute", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 10, reason: "retry", shouldRetry: true },
     ]);
     const controller = new AbortController();
@@ -321,7 +327,7 @@ describe("result mode (throwOnExhausted: false)", () => {
         return Promise.reject(new Error("failed"));
       });
 
-    const result = await policy.run(execute, {
+    const result = await runRetryPolicy(policy, execute, {
       signal: controller.signal,
       throwOnExhausted: false,
     });
@@ -333,7 +339,7 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 
   it("normalizes non-serializable abort reasons to fallback message", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
     ]);
     const execute = vi
@@ -344,7 +350,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     const controller = new AbortController();
     controller.abort(circular);
 
-    const result = await policy.run(execute, {
+    const result = await runRetryPolicy(policy, execute, {
       signal: controller.signal,
       throwOnExhausted: false,
     });
@@ -356,7 +362,7 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 
   it("handles undefined abort reason fallback message", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
     ]);
     const execute = vi
@@ -376,7 +382,7 @@ describe("result mode (throwOnExhausted: false)", () => {
         >(),
     } as unknown as AbortSignal;
 
-    const result = await policy.run(execute, {
+    const result = await runRetryPolicy(policy, execute, {
       signal: fakeSignal,
       throwOnExhausted: false,
     });
@@ -388,7 +394,7 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 
   it("retries with signal and positive delay until success", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 10, reason: "retry", shouldRetry: true },
     ]);
     const controller = new AbortController();
@@ -399,7 +405,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     execute.mockRejectedValueOnce(new Error("fail"));
     execute.mockResolvedValueOnce("ok");
 
-    const result = await policy.run(execute, {
+    const result = await runRetryPolicy(policy, execute, {
       signal: controller.signal,
       sleep,
       throwOnExhausted: false,
@@ -410,7 +416,7 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 
   it("retries with signal and zero delay until success", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
     ]);
     const controller = new AbortController();
@@ -418,7 +424,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     execute.mockRejectedValueOnce(new Error("fail"));
     execute.mockResolvedValueOnce("ok");
 
-    const result = await policy.run(execute, {
+    const result = await runRetryPolicy(policy, execute, {
       signal: controller.signal,
       throwOnExhausted: false,
     });
@@ -429,7 +435,7 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 
   it("returns failure result when signal aborts during backoff sleep", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 50, reason: "retry", shouldRetry: true },
     ]);
     const controller = new AbortController();
@@ -437,7 +443,7 @@ describe("result mode (throwOnExhausted: false)", () => {
       .fn<(attempt: number) => Promise<string>>()
       .mockRejectedValue(new Error("fail"));
 
-    const runPromise = policy.run(execute, {
+    const runPromise = runRetryPolicy(policy, execute, {
       signal: controller.signal,
       throwOnExhausted: false,
     });
@@ -453,7 +459,7 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 
   it("rethrows non-abort sleep errors", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 10, reason: "retry", shouldRetry: true },
     ]);
     const controller = new AbortController();
@@ -465,7 +471,7 @@ describe("result mode (throwOnExhausted: false)", () => {
       .mockRejectedValue(new Error("sleep-fail"));
 
     await expect(
-      policy.run(execute, {
+      runRetryPolicy(policy, execute, {
         signal: controller.signal,
         sleep,
         throwOnExhausted: false,
@@ -474,7 +480,7 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 
   it("returns abort result from waitForDelay catch path", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 10, reason: "retry", shouldRetry: true },
     ]);
     const execute = vi
@@ -501,7 +507,7 @@ describe("result mode (throwOnExhausted: false)", () => {
         >(),
     } as unknown as AbortSignal;
 
-    const result = await policy.run(execute, {
+    const result = await runRetryPolicy(policy, execute, {
       signal: fakeSignal,
       sleep,
       throwOnExhausted: false,
@@ -514,7 +520,7 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 
   it("returns abort result when the signal aborts during the delay race itself", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 10, reason: "retry", shouldRetry: true },
     ]);
     const execute = vi
@@ -535,7 +541,7 @@ describe("result mode (throwOnExhausted: false)", () => {
       removeEventListener: vi.fn(),
     } as unknown as AbortSignal & { aborted: boolean };
 
-    const result = await policy.run(execute, {
+    const result = await runRetryPolicy(policy, execute, {
       signal: fakeSignal,
       sleep,
       throwOnExhausted: false,
@@ -548,7 +554,7 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 
   it("returns a wrapped failure result immediately when it fails policy.isKnownError, bypassing retry", async () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
     ]);
     const notAnError = { message: "plain-object-rejection" };
@@ -556,7 +562,9 @@ describe("result mode (throwOnExhausted: false)", () => {
       .fn<(attempt: number) => Promise<string>>()
       .mockRejectedValue(notAnError);
 
-    const result = await policy.run(execute, { throwOnExhausted: false });
+    const result = await runRetryPolicy(policy, execute, {
+      throwOnExhausted: false,
+    });
 
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(1);
@@ -569,9 +577,9 @@ describe("result mode (throwOnExhausted: false)", () => {
   });
 });
 
-describe("BaseRetryPolicy", () => {
+describe("runRetryPolicy defaults", () => {
   it("creates RetryError with data from default onExhausted", () => {
-    const policy = new SequencePolicy([
+    const policy = createSequencePolicy([
       { delayMs: 0, reason: "policy-declined", shouldRetry: false },
     ]);
 
@@ -587,7 +595,7 @@ describe("BaseRetryPolicy", () => {
   });
 
   it("default isKnownError accepts Error instances and rejects everything else", () => {
-    const policy = new SequencePolicy([]);
+    const policy = createSequencePolicy([]);
 
     expect(policy.isKnownError(new Error("boom"))).toBeTruthy();
     expect(policy.isKnownError(new TypeError("boom"))).toBeTruthy();
@@ -598,9 +606,9 @@ describe("BaseRetryPolicy", () => {
 });
 
 describe("test helpers", () => {
-  describe(SequencePolicy, () => {
+  describe(createSequencePolicy, () => {
     it("falls back to a terminal decision when constructed without decisions", () => {
-      const policy = new SequencePolicy([]);
+      const policy = createSequencePolicy([]);
 
       const decision = policy.next({
         attempt: 1,
@@ -615,7 +623,7 @@ describe("test helpers", () => {
     });
 
     it("repeats the last decision once the sequence is exhausted", () => {
-      const policy = new SequencePolicy([
+      const policy = createSequencePolicy([
         { delayMs: 5, reason: "retryable", shouldRetry: true },
       ]);
       const input = {
@@ -633,7 +641,7 @@ describe("test helpers", () => {
 
   describe(expectFailureResult, () => {
     it("returns the failure result unchanged", () => {
-      const policy = new SequencePolicy([]);
+      const policy = createSequencePolicy([]);
       const failure = {
         attempts: 1,
         error: policy.onExhausted({

@@ -1,26 +1,26 @@
 ---
 title: Shared Runner
-description: A shared runner via BaseRetryPolicy.run with attempt-aware callbacks and custom sleep injection.
+description: A shared runner via runRetryPolicy with attempt-aware callbacks and custom sleep injection.
 ---
 
 # Shared Runner
 
-A shared runner via `BaseRetryPolicy.run(...)` with attempt-aware callbacks and custom sleep injection. Every policy that extends `BaseRetryPolicy` shares this same runner: `run(execute, options?)`. It calls `execute` once per attempt, consults the policy after each failure, sleeps, and stops on success, exhaustion, or abort.
+A shared runner via `runRetryPolicy(policy, execute, options?)` with attempt-aware callbacks and custom sleep injection. Every `RetryPolicy` — built-in or custom — runs through this same function. It calls `execute` once per attempt, consults the policy after each failure, sleeps, and stops on success, exhaustion, or abort.
 
 ## Basic Usage
 
-Pass an async function; the runner resolves with its first successful return value.
+Pass a policy and an async function; the runner resolves with the function's first successful return value.
 
 ```ts
-import { ExponentialBackoff } from "@zap-studio/retry";
+import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
 
-const policy = new ExponentialBackoff({
+const policy = exponentialBackoff({
   maxAttempts: 5,
   baseDelayMs: 100,
   maxDelayMs: 2_000,
 });
 
-const value = await policy.run(async () => {
+const value = await runRetryPolicy(policy, async () => {
   return await doWork();
 });
 ```
@@ -30,7 +30,7 @@ const value = await policy.run(async () => {
 The `execute` callback receives the one-based attempt number, useful for logging or per-attempt behavior.
 
 ```ts
-const value = await policy.run(async (attempt) => {
+const value = await runRetryPolicy(policy, async (attempt) => {
   console.log("Attempt:", attempt);
   return await doWork();
 });
@@ -41,7 +41,8 @@ const value = await policy.run(async (attempt) => {
 By default, delays use `defaultSleep` (a `setTimeout`-based helper exported from `@zap-studio/retry`). Inject your own `sleep` for deterministic tests or custom timing.
 
 ```ts
-const value = await policy.run(
+const value = await runRetryPolicy(
+  policy,
   async () => {
     return await doWork();
   },
@@ -55,7 +56,7 @@ const value = await policy.run(
 
 :::note The runner only calls `sleep` when the policy's decision has `delayMs > 0`, and `defaultSleep` itself resolves immediately for non-positive delays. :::
 
-See [Non-throw Mode](/retry/non-throw-mode) for `throwOnExhausted: false`, and [Structured Errors](/retry/errors) for what `run(...)` throws by default.
+See [Non-throw Mode](/retry/non-throw-mode) for `throwOnExhausted: false`, and [Structured Errors](/retry/errors) for what `runRetryPolicy(...)` throws by default.
 
 ## Run Options
 

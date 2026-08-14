@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 
+import { runRetryPolicy } from "./base-policy.js";
 import { AbortError } from "./errors.js";
-import { FixedDelay } from "./fixed-delay.js";
+import { fixedDelay } from "./fixed-delay.js";
 
-describe(FixedDelay, () => {
+describe(fixedDelay, () => {
   it("retries with constant delay before max attempts", () => {
-    const policy = new FixedDelay({
+    const policy = fixedDelay({
       delayMs: 300,
       maxAttempts: 4,
     });
@@ -19,7 +20,7 @@ describe(FixedDelay, () => {
   });
 
   it("stops retrying when max attempts is reached", () => {
-    const policy = new FixedDelay({
+    const policy = fixedDelay({
       delayMs: 300,
       maxAttempts: 2,
     });
@@ -36,10 +37,11 @@ describe("@zap-studio/retry browser runtime", () => {
   it("throws AbortError when a browser AbortSignal is already aborted", async () => {
     const controller = new AbortController();
     controller.abort("stop");
-    const policy = new FixedDelay({ delayMs: 0, maxAttempts: 2 });
+    const policy = fixedDelay({ delayMs: 0, maxAttempts: 2 });
 
     await expect(
-      policy.run(
+      runRetryPolicy(
+        policy,
         () => {
           throw new Error("should not run");
         },
@@ -52,9 +54,10 @@ describe("@zap-studio/retry browser runtime", () => {
 
   it("returns abort results for browser AbortSignal in non-throw mode", async () => {
     const controller = new AbortController();
-    const policy = new FixedDelay({ delayMs: 1, maxAttempts: 3 });
+    const policy = fixedDelay({ delayMs: 1, maxAttempts: 3 });
 
-    const result = await policy.run(
+    const result = await runRetryPolicy(
+      policy,
       async () => {
         await Promise.resolve();
         controller.abort(new Error("cancelled"));

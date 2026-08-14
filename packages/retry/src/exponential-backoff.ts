@@ -4,11 +4,14 @@
  * @module @zap-studio/retry/exponential-backoff
  */
 
-import { BaseRetryPolicy } from "./base-policy.js";
-import type { RetryDecision, RetryDecisionInput } from "./types.js";
+import type {
+  RetryDecision,
+  RetryDecisionInput,
+  RetryPolicy,
+} from "./types.js";
 
 /**
- * Configuration for `ExponentialBackoff`.
+ * Configuration for `exponentialBackoff(...)`.
  *
  * @example
  * const options: ExponentialBackoffOptions = {
@@ -33,50 +36,32 @@ export interface ExponentialBackoffOptions {
 }
 
 /**
- * Retries with exponential delay growth up to a max cap.
+ * Creates a retry policy with exponential delay growth up to a max cap.
  *
  * @example
- * const policy = new ExponentialBackoff({
+ * const policy = exponentialBackoff({
  *   maxAttempts: 5,
  *   baseDelayMs: 100,
  *   maxDelayMs: 2_000,
  * });
  */
-export class ExponentialBackoff extends BaseRetryPolicy {
-  /**
-   * Maximum number of attempts before the policy returns `max-attempts-reached`.
-   */
-  private readonly maxAttempts: number;
-  /**
-   * Base delay in milliseconds used in `baseDelayMs * 2 ** (attempt - 1)`.
-   */
-  private readonly baseDelayMs: number;
-  /**
-   * Upper cap for computed delay, applied with `Math.min`.
-   */
-  private readonly maxDelayMs: number;
-
-  /**
-   * Creates an exponential backoff retry policy.
-   */
-  constructor(options: ExponentialBackoffOptions) {
-    super();
-    this.maxAttempts = options.maxAttempts;
-    this.baseDelayMs = options.baseDelayMs;
-    this.maxDelayMs = options.maxDelayMs;
-  }
-
+export const exponentialBackoff = (
+  options: ExponentialBackoffOptions
+): RetryPolicy => ({
   /**
    * Computes retry decision for the current attempt.
    */
-  public next(input: RetryDecisionInput): RetryDecision {
-    if (input.attempt >= this.maxAttempts) {
+  next(input: RetryDecisionInput): RetryDecision {
+    if (input.attempt >= options.maxAttempts) {
       return { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false };
     }
 
     const exponent = Math.max(0, input.attempt - 1);
-    const delayMs = Math.min(this.maxDelayMs, this.baseDelayMs * 2 ** exponent);
+    const delayMs = Math.min(
+      options.maxDelayMs,
+      options.baseDelayMs * 2 ** exponent
+    );
 
     return { delayMs, reason: "retry", shouldRetry: true };
-  }
-}
+  },
+});

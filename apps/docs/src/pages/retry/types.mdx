@@ -38,37 +38,37 @@ type HttpPolicy = RetryPolicy<TypeError, Response>;
 
 ## RetryPolicy
 
-The contract implemented by `BaseRetryPolicy` and by hand-written policies.
+The contract consumed by `runRetryPolicy(...)`, implemented by the built-in policy factories and by hand-written policies.
 
 | Member | Type | Description |
 | --- | --- | --- |
 | `next` | `(input: RetryDecisionInput<TError, TData>) => RetryDecision` | Returns the retry decision for a failed attempt. |
-| `onExhausted` | `(input: RetryExhaustedInput<TError, TData>) => RetryError` | Builds the terminal error used when retries are exhausted. |
+| `onExhausted` | `(input: RetryExhaustedInput<TError, TData>) => RetryError` (optional) | Builds the terminal error used when retries are exhausted. Defaults to a generic `RetryError` when omitted. |
 | `isKnownError` | `(error: unknown) => error is TError` (optional) | Narrows a caught value into `TError`. See below. |
 
 ### `isKnownError` and the Error Domain
 
-Before handing a caught value to `next(...)`/`onExhausted(...)`, `BaseRetryPolicy.run(...)` calls `isKnownError(error)`. When it returns `false`, the value is treated as outside this policy's declared error domain instead of a retryable failure, and **retry is bypassed entirely** — `next(...)` is never called:
+Before handing a caught value to `next(...)`/`onExhausted(...)`, `runRetryPolicy(...)` calls `isKnownError(error)`. When it returns `false`, the value is treated as outside this policy's declared error domain instead of a retryable failure, and **retry is bypassed entirely** — `next(...)` is never called:
 
-- In throw mode (the default), `run(...)` rethrows the original value as-is.
-- With `throwOnExhausted: false`, `run(...)` wraps the value in a `RetryError` and returns it on `result.error`, same as any other terminal failure — it never throws.
+- In throw mode (the default), `runRetryPolicy(...)` rethrows the original value as-is.
+- With `throwOnExhausted: false`, `runRetryPolicy(...)` wraps the value in a `RetryError` and returns it on `result.error`, same as any other terminal failure — it never throws.
 
-`BaseRetryPolicy`'s default `isKnownError` checks `error instanceof Error`. That means a rejection with a non-`Error` value (a string, a plain object, `undefined`, ...) is treated this way on the very first attempt it occurs.
+The default `isKnownError` (used when a policy omits it) checks `error instanceof Error`. That means a rejection with a non-`Error` value (a string, a plain object, `undefined`, ...) is treated this way on the very first attempt it occurs.
 
-Override `isKnownError` when `TError` is a narrower type than `Error` (an HTTP error, a domain-specific error class) to get real narrowing instead of an `instanceof Error` assumption:
+Supply your own `isKnownError` when `TError` is a narrower type than `Error` (an HTTP error, a domain-specific error class) to get real narrowing instead of an `instanceof Error` assumption:
 
 ```ts
-import { BaseRetryPolicy } from "@zap-studio/retry";
+import type { RetryPolicy } from "@zap-studio/retry";
 
 class HttpError extends Error {}
 
-class HttpRetryPolicy extends BaseRetryPolicy<HttpError> {
-  public override isKnownError(error: unknown): error is HttpError {
+const httpRetryPolicy = (): RetryPolicy<HttpError> => ({
+  isKnownError(error: unknown): error is HttpError {
     return error instanceof HttpError;
-  }
+  },
 
   // ...next(), onExhausted() as usual
-}
+});
 ```
 
 See [Custom Policies](/retry/custom-policies) for the full pattern.
@@ -108,7 +108,7 @@ The input passed to `RetryPolicy.onExhausted(...)` when retries stop.
 
 ## RetryRunOptions
 
-Options accepted by `BaseRetryPolicy.run(...)`. See [Running Policies](/retry/running-policies) for usage.
+Options accepted by `runRetryPolicy(...)`. See [Running Policies](/retry/running-policies) for usage.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -129,7 +129,7 @@ const options: RetryRunOptions = {
 
 ## RetryRunResult
 
-The discriminated union returned by `run(...)` when `throwOnExhausted` is `false`.
+The discriminated union returned by `runRetryPolicy(...)` when `throwOnExhausted` is `false`.
 
 Success variant (`ok: true`):
 
