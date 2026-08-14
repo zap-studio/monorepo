@@ -12,6 +12,9 @@ catalogs:
     '@standard-schema/spec':
       specifier: ^1.1.0
       version: 1.1.0
+    '@svgr/core':
+      specifier: ^8.1.0
+      version: 8.1.0
     '@types/react':
       specifier: ^19.2.18
       version: 19.2.18
@@ -131,6 +134,9 @@ importers:
 
   apps/docs:
     dependencies:
+      '@svgr/core':
+        specifier: 'catalog:'
+        version: 8.1.0(typescript@7.0.2)
       react:
         specifier: 'catalog:'
         version: 19.2.8

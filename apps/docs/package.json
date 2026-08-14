@@ -12,6 +12,7 @@
     "types:check": "tsc --noEmit"
   },
   "dependencies": {
+    "@svgr/core": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "vocs": "catalog:",
