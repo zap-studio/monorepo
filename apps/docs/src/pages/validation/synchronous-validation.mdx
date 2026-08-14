@@ -1,0 +1,44 @@
+---
+title: Synchronous Validation
+description: Validate values synchronously with standardValidateSync, for schemas known to validate synchronously.
+---
+
+# Synchronous Validation
+
+`standardValidateSync` is for schemas known to validate synchronously — use it only when validation must remain synchronous end-to-end, for example in sync-only code paths or constrained runtimes.
+
+```ts
+import { standardValidateSync } from "@zap-studio/validation";
+import { z } from "zod";
+
+const userSchema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
+
+const result = standardValidateSync(userSchema, input);
+
+if (result.issues) {
+  console.error("Validation failed", result.issues);
+} else {
+  console.log("Validation passed", result.value);
+}
+```
+
+It supports the same `throwOnError` option as [`standardValidate`](/validation/async-validation):
+
+```ts
+const user = standardValidateSync(userSchema, input, {
+  throwOnError: true,
+});
+```
+
+:::warning[Async Schemas] If the schema validates asynchronously, `standardValidateSync` throws a `TypeError` with the message `Async schemas are not supported by standardValidateSync`. :::
+
+:::tip Prefer [`standardValidate`](/validation/async-validation) by default. It is the most compatible option because it supports both sync and async schemas. :::
+
+## See Also
+
+- [Async Validation](/validation/async-validation) — the default choice, works with sync and async schemas
+- [Create Validators](/validation/create-validators) — `createStandardValidatorSync` for a reusable sync validator
+- [Errors](/validation/errors) — `throwOnError` and `ValidationError`

@@ -1,11 +1,11 @@
 ---
-title: Abort Signal
-description: Cancel retry orchestration with AbortSignal before, between, or during retries.
+title: Cancellation
+description: Cancellation through AbortSignal, checked before, between, and during retries.
 ---
 
-# Abort Signal
+# Cancellation
 
-`BaseRetryPolicy.run(...)` accepts an `AbortSignal` through the `signal` option. Use it to stop retrying on user navigation, request timeouts, shutdown, or parent workflow cancellation.
+Cancellation through `AbortSignal`, checked before, between, and during retries. `BaseRetryPolicy.run(...)` accepts an `AbortSignal` through the `signal` option. Use it to stop retrying on user navigation, request timeouts, shutdown, or parent workflow cancellation.
 
 ## Basic Usage
 
@@ -109,4 +109,4 @@ The abort `reason` you pass to `controller.abort(...)` is normalized into the `A
 - a non-empty string reason becomes the message
 - no reason produces the message `"Retry aborted."`
 
-See [RetryError](/retry/retry-error) for the full `AbortError` reference.
+See [Structured Errors](/retry/errors) for the full `AbortError` reference.

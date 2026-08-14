@@ -34,7 +34,7 @@
     font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
     font-size="32"
     letter-spacing="-0.4"
-  >Type safe, framework agnostic and composable</text>
+  >Type-safe, framework agnostic and composable</text>
   <text
     x="96"
     y="406"

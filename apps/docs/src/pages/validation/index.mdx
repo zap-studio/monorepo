@@ -5,108 +5,44 @@ description: Standard Schema utilities and ValidationError helpers for one consi
 
 # @zap-studio/validation
 
-`@zap-studio/validation` provides small, focused helpers for validating data against any [Standard Schema](https://standardschema.dev)-compatible schema library, such as Zod, Valibot, or ArkType.
-
-## Why validation?
-
-Different teams choose different validators. That is usually fine until you need shared infrastructure across teams and packages: every library has different parsing APIs, return shapes, and error formats.
-
-Without a shared API, you end up writing separate validation branches for each schema library:
-
-```ts
-if (validatorLib === "zod") {
-  const result = userSchema.safeParse(input);
-  if (!result.success) throw result.error;
-  return result.data;
-}
-
-if (validatorLib === "valibot") {
-  const result = v.safeParse(userSchema, input);
-  if (!result.success) throw result.issues;
-  return result.output;
-}
-```
-
-With `@zap-studio/validation`, you call one helper regardless of the underlying library:
-
-```ts
-import { standardValidate } from "@zap-studio/validation";
-
-const user = await standardValidate(userSchema, input, {
-  throwOnError: true,
-});
-```
-
-At Zap Studio, multiple packages need runtime validation ([`fetch`](/fetch), [`permit`](/permit), and others). This package keeps their validation flow consistent and avoids library-specific branching.
+Utilities for validating values using the [**Standard Schema**](https://standardschema.dev/schema) specification.
 
 ## Features
 
-- `standardValidate` and `standardValidateSync` for one-shot async and sync validation
-- `createStandardValidator` and `createStandardValidatorSync` for reusable validator functions
-- Optional throwing behavior via `throwOnError`, backed by a shared `ValidationError` class
-- `isStandardSchema` runtime guard for unknown values
-- Re-exported `StandardSchemaV1` type, so you do not need to install `@standard-schema/spec` yourself
+- **Async-safe validation** via `standardValidate`, works with sync and async schemas.
+- **Synchronous validation** via `standardValidateSync`, for schemas known to validate synchronously.
+- **Reusable validators** via `createStandardValidator` and `createStandardValidatorSync`.
+- **Optional throwing behavior** via `throwOnError`, backed by a shared `ValidationError` class.
+- **Runtime schema detection** via `isStandardSchema`.
+- **Type re-exports** — `StandardSchemaV1` and `StandardTypedV1` directly from this package.
 
-## Installation
-
-:::code-group
-
-```bash [nub]
-nub add @zap-studio/validation
-```
-
-```bash [npm]
-npm install @zap-studio/validation
-```
-
-```bash [yarn]
-yarn add @zap-studio/validation
-```
-
-```bash [pnpm]
-pnpm add @zap-studio/validation
-```
-
-```bash [bun]
-bun add @zap-studio/validation
-```
-
-```bash [deno]
-deno add jsr:@zap-studio/validation
-```
-
-:::
-
-## Quick Example
+## Quick Start
 
 ```ts
 import { standardValidate } from "@zap-studio/validation";
-import { z } from "zod";
 
-// Any Standard Schema-compatible schema works here
-const userSchema = z.object({
-  name: z.string(),
-  age: z.number(),
-});
-
-const user = await standardValidate(
-  userSchema,
-  { name: "Ada", age: 37 },
-  {
+// `userSchema` can come from any Standard Schema-compatible library
+try {
+  const user = await standardValidate(userSchema, input, {
     throwOnError: true,
-  }
-);
+  });
 
-console.log(user.name); // "Ada"
+  console.log("Validation passed:", user);
+} catch (error) {
+  console.error("Validation failed:", error);
+}
 ```
 
-## Types
+## Learn More
 
-The package re-exports the `StandardSchemaV1` type from `@standard-schema/spec`, so you can reference the specification's types directly:
-
-```ts
-import type { StandardSchemaV1 } from "@zap-studio/validation";
-```
+- [Getting Started](/validation/getting-started) — install and validate your first payload
+- [Concepts](/validation/concepts) — what Standard Schema is and why it exists
+- [Async Validation](/validation/async-validation) — `standardValidate`
+- [Synchronous Validation](/validation/synchronous-validation) — `standardValidateSync`
+- [Create Validators](/validation/create-validators) — reusable validator functions
+- [Errors](/validation/errors) — `throwOnError` and `ValidationError`
+- [Runtime Schema Detection](/validation/runtime-schema-detection) — `isStandardSchema`
+- [Types](/validation/types) — `StandardSchemaV1` and `StandardTypedV1`
 
 ## Runtime Support
 

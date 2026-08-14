@@ -5,190 +5,54 @@ description: A type-safe, declarative authorization library for TypeScript with 
 
 # @zap-studio/permit
 
-`@zap-studio/permit` is a type-safe, declarative authorization library for TypeScript. You define all your rules in one policy, then answer the question every application must answer: **"Can this user do this action on this resource?"**
-
-Most codebases answer it with scattered `if` statements — checking roles in route handlers, ownership in services, and permissions in components. That approach creates problems:
-
-- **Duplicated logic** — The same checks written in multiple places
-- **Hard to audit** — No single source of truth for "who can do what"
-- **Easy to forget** — New endpoints might miss authorization entirely
-- **Difficult to test** — Authorization is tangled with business logic
-
-`permit` solves this by letting you define authorization rules in one place, with full type safety and composable building blocks.
-
-## Why permit?
-
-**Before:**
-
-```ts
-// Authorization logic scattered everywhere
-app.delete("/posts/:id", async (req, res) => {
-  const post = await getPost(req.params.id);
-  const user = req.user;
-
-  // Logic duplicated across routes
-  if (user.role !== "admin" && post.authorId !== user.id) {
-    return res.status(403).json({ error: "Forbidden" });
-  }
-
-  await deletePost(post.id);
-  res.json({ success: true });
-});
-```
-
-**After:**
-
-```ts
-import { createPolicy, when, or, hasRole } from "@zap-studio/permit";
-
-// Centralized, declarative authorization
-const policy = createPolicy<AppContext>({
-  resources,
-  actions,
-  rules: {
-    post: {
-      delete: when(
-        or(hasRole("admin"), (ctx, _, post) => ctx.user.id === post.authorId)
-      ),
-    },
-  },
-});
-
-// Clean route handler
-app.delete("/posts/:id", async (req, res) => {
-  const post = await getPost(req.params.id);
-
-  if (!(await policy.can(req.context, "post:delete", post))) {
-    return res.status(403).json({ error: "Forbidden" });
-  }
-
-  await deletePost(post.id);
-  res.json({ success: true });
-});
-```
+A type-safe, declarative authorization library for TypeScript with [Standard Schema](https://standardschema.dev/) support.
 
 ## Features
 
-- **Declarative policies** — Define authorization rules in one place with `createPolicy()`
-- **Type-safe** — Full TypeScript inference for resources, actions, permissions, and context
-- **Standard Schema validation** — Resources are validated at runtime with your Zod, Valibot, or ArkType schemas
-- **Composable conditions** — Build complex rules with `and()`, `or()`, `not()`, and `has()`
-- **Role hierarchies** — Support inherited permissions with `hasRole()` and `collectInheritedRoles()`
-- **Policy merging** — Combine policies with `mergePolicies()` (deny-overrides) or `mergePoliciesAny()` (allow-overrides)
-- **Framework agnostic** — Works with Express, Hono, Elysia, Fastify, Next.js, TanStack Start, or any framework
+- **Full type safety** — actions, resources, and permissions are inferred from your schemas and `satisfies` declarations, from [Getting Started](/permit/getting-started) onward.
+- **Standard Schema support** via `Resources` — works with Zod, Valibot, ArkType, or any compatible library. See [Standard Schema Support](/permit/standard-schema).
+- **Declarative policies** through `createPolicy(...)` with `allow()`, `deny()`, and `when(condition)`. See [Declarative Policies](/permit/declarative-policies).
+- **Role hierarchy support** via `hasRole(role, hierarchy?)`, with inheritance resolved by `collectInheritedRoles`. See [Role-Based Access Control](/permit/roles).
+- **Composable conditions** via `and`, `or`, and `not`. See [Conditions](/permit/conditions).
+- **Policy merging strategies** via `mergePoliciesEvery` and `mergePoliciesSome`. See [Merging Policies](/permit/merging-policies).
+- **Structured errors** with `PolicyError` for invalid configuration or evaluation failures. See [Error Handling](/permit/errors).
 
-## Installation
-
-:::code-group
-
-```bash [nub]
-nub add @zap-studio/permit
-```
-
-```bash [npm]
-npm install @zap-studio/permit
-```
-
-```bash [yarn]
-yarn add @zap-studio/permit
-```
-
-```bash [pnpm]
-pnpm add @zap-studio/permit
-```
-
-```bash [bun]
-bun add @zap-studio/permit
-```
-
-```bash [deno]
-deno add jsr:@zap-studio/permit
-```
-
-:::
-
-## Quick Example
-
-Build authorization for a simple blog where anyone can read public posts, but only authors can edit their own.
-
-### 1. Define Your Resources
-
-Define the shape of your resources with any [Standard Schema](https://standardschema.dev/) library. You can reuse existing schemas or create new ones.
+## Quick Start
 
 ```ts
 import { z } from "zod";
+import { createPolicy, allow, deny, when } from "@zap-studio/permit";
 import type { Resources, Actions } from "@zap-studio/permit";
 
 const resources = {
-  post: z.object({
-    id: z.string(),
-    authorId: z.string(),
-    visibility: z.enum(["public", "private"]),
-  }),
+  post: z.object({ id: z.string(), authorId: z.string() }),
 } satisfies Resources;
 
 const actions = {
   post: ["read", "write", "delete"],
 } as const satisfies Actions<typeof resources>;
-```
 
-Each resource is paired with the set of actions that make sense for it — here `read`, `write`, and `delete` for `post`.
-
-### 2. Create Your Policy
-
-Define the rules for each resource and action. Rules receive a `context` object describing the current user, plus the action and the resource being accessed.
-
-```ts
-import { createPolicy, when, or } from "@zap-studio/permit";
-
-type AppContext = {
-  user: { id: string; role: "guest" | "user" | "admin" } | null;
-};
+type AppContext = { user: { id: string } };
 
 const policy = createPolicy<AppContext>({
   resources,
   actions,
   rules: {
     post: {
-      // Anyone can read public posts, authors can read their private posts
-      read: when(
-        or(
-          (_ctx, _action, post) => post.visibility === "public",
-          (ctx, _action, post) => ctx.user?.id === post.authorId
-        )
-      ),
-      // Only authors can write their posts
-      write: when((ctx, _, post) => ctx.user?.id === post.authorId),
-      // Only authors can delete their posts
-      delete: when((ctx, _, post) => ctx.user?.id === post.authorId),
+      read: allow(),
+      write: when((ctx, action, resource) => ctx.user.id === resource.authorId),
+      delete: deny(),
     },
   },
 });
+
+const ctx: AppContext = { user: { id: "user-1" } };
+const post = { id: "1", authorId: "user-1" };
+
+await policy.can(ctx, "post:write", post); // true, inferred as boolean
 ```
 
-### 3. Check Permissions
-
-Call `policy.can()` with the context, a `"resource:action"` permission string, and the resource. It resolves to `true` or `false`.
-
-```ts
-const post = {
-  id: "post-1",
-  authorId: "user-123",
-  visibility: "public" as const,
-};
-
-const context: AppContext = {
-  user: { id: "user-456", role: "user" },
-};
-
-if (await policy.can(context, "post:read", post)) {
-  console.log("Access granted!");
-} else {
-  console.log("Access denied.");
-}
-```
-
-Everything is type-safe, centralized, and easy to test.
+Continue with [Getting Started](/permit/getting-started) for a full walkthrough of resources, actions, context, and checking permissions.
 
 ## Runtime Support
 

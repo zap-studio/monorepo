@@ -1,13 +1,11 @@
 ---
-title: Handling Errors
-description: Catch ValidationError, inspect Standard Schema issues, and choose between throwing and non-throwing modes.
+title: Errors
+description: Optional throwing behavior via throwOnError, backed by a shared ValidationError class.
 ---
 
-# Handling Errors
+# Errors
 
-Validation failures are part of normal application behavior: API payloads can be malformed, form inputs can be incomplete, and external data can drift. This page shows how to handle those failures with `@zap-studio/validation`.
-
-Instead of dealing with each schema library's error shape, you catch one predictable error class — `ValidationError` — and access normalized [Standard Schema](https://standardschema.dev) `issues`.
+Optional throwing behavior via `throwOnError`, backed by a shared `ValidationError` class. Instead of dealing with each schema library's error shape, you catch one predictable error class and access normalized [Standard Schema](https://standardschema.dev) `issues`.
 
 ## Know When ValidationError Is Thrown
 
@@ -100,4 +98,9 @@ The sync helpers reject asynchronous schemas with errors that are **not** `Valid
 - `standardValidateSync` throws a `TypeError` with the message `Async schemas are not supported by standardValidateSync`.
 - Validators from `createStandardValidatorSync` throw an `Error` with the message `Async schemas are not supported by createStandardValidatorSync`, with the underlying `TypeError` as its `cause`.
 
-These indicate a programming error (wrong helper for the schema), so let them propagate rather than catching them alongside validation failures. Switch to [`standardValidate`](/validation/how-to-validate) if the schema may validate asynchronously.
+These indicate a programming error (wrong helper for the schema), so let them propagate rather than catching them alongside validation failures. Switch to [`standardValidate`](/validation/async-validation) if the schema may validate asynchronously.
+
+## See Also
+
+- [Async Validation](/validation/async-validation)
+- [Synchronous Validation](/validation/synchronous-validation)

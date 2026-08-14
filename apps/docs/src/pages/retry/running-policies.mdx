@@ -1,11 +1,11 @@
 ---
-title: Running Policies
-description: Run work through BaseRetryPolicy.run with custom sleep, attempt awareness, and result mode.
+title: Shared Runner
+description: A shared runner via BaseRetryPolicy.run with attempt-aware callbacks and custom sleep injection.
 ---
 
-# Running Policies
+# Shared Runner
 
-Every policy that extends `BaseRetryPolicy` shares the same runner: `run(execute, options?)`. The runner calls `execute` once per attempt, consults the policy after each failure, sleeps, and stops on success, exhaustion, or abort.
+A shared runner via `BaseRetryPolicy.run(...)` with attempt-aware callbacks and custom sleep injection. Every policy that extends `BaseRetryPolicy` shares this same runner: `run(execute, options?)`. It calls `execute` once per attempt, consults the policy after each failure, sleeps, and stops on success, exhaustion, or abort.
 
 ## Basic Usage
 
@@ -55,54 +55,7 @@ const value = await policy.run(
 
 :::note The runner only calls `sleep` when the policy's decision has `delayMs > 0`, and `defaultSleep` itself resolves immediately for non-positive delays. :::
 
-## Result Mode
-
-By default, exhaustion throws. Set `throwOnExhausted: false` to receive a `RetryRunResult<T>` discriminated union instead.
-
-```ts
-const result = await policy.run(
-  async () => {
-    return await doWork();
-  },
-  { throwOnExhausted: false }
-);
-
-if (result.ok) {
-  console.log(result.value);
-} else {
-  console.error("Failed after", result.attempts, "attempts:", result.error);
-}
-```
-
-On failure, `result.error` is a `RetryError` (retries exhausted, or a caught value the policy's `isKnownError` rejected as outside its error domain) or an `AbortError` (run canceled). See [Types](/retry/types) for the full shape.
-
-:::note In result mode, `run(...)` never throws for a failed `execute(...)` attempt — an `isKnownError`-rejected value is wrapped in a `RetryError` and returned on `result.error`, not thrown. See [Narrow the Error Domain](/retry/custom-policies#narrow-the-error-domain). :::
-
-## Handling Terminal Errors
-
-In the default throw mode, `run(...)` throws the error returned by the policy's `onExhausted(...)` — a [`RetryError`](/retry/retry-error) unless the policy overrides it — and an `AbortError` when the run is [canceled](/retry/abort-signal).
-
-```ts
-import { AbortError, RetryError } from "@zap-studio/retry";
-
-try {
-  const value = await policy.run(async () => {
-    return await doWork();
-  });
-  console.log(value);
-} catch (error) {
-  if (error instanceof RetryError) {
-    console.error("Exhausted after", error.attempts, "attempts");
-    console.error("Last error:", error.lastError);
-  } else if (error instanceof AbortError) {
-    console.error("Retry aborted:", error.message);
-  } else {
-    throw error;
-  }
-}
-```
-
-:::note The final `else` branch also catches values the policy's `isKnownError` rejected as outside its error domain — the runner rethrows those immediately, without ever calling `next(...)`. See [Narrow the Error Domain](/retry/custom-policies#narrow-the-error-domain). :::
+See [Non-throw Mode](/retry/non-throw-mode) for `throwOnExhausted: false`, and [Structured Errors](/retry/errors) for what `run(...)` throws by default.
 
 ## Run Options
 

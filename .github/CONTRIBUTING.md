@@ -10,15 +10,15 @@ Thanks for contributing to Zap Studio.
 
 ## Setup
 
-This repository uses [nub](https://nubjs.com) as its package manager and script runner. Other package managers are not supported here — the lockfile is `nub.lock`.
+This repository uses [pnpm](https://pnpm.io) as its package manager. Other package managers are not supported here — the lockfile is `pnpm-lock.yaml`.
 
-1. Install nub: `npm install -g @nubjs/nub` (or `brew install nubjs/tap/nub`).
+1. Install pnpm: `corepack enable` (uses the `packageManager` field in `package.json`), or `npm install -g pnpm`.
 2. Fork the repository.
 3. Clone your fork.
 4. Install dependencies from the repository root:
 
 ```bash
-nub install
+pnpm install
 ```
 
 ## Repository layout
@@ -32,12 +32,12 @@ nub install
 Run these from the repo root:
 
 ```bash
-nub run check
-nub run test
-nub run --filter './packages/*' build
+pnpm run check
+pnpm run test
+pnpm --filter './packages/*' build
 ```
 
-If you are changing one package, prefer the relevant package or app target via `nub run --filter`.
+If you are changing one package, prefer the relevant package or app target via `pnpm --filter`.
 
 ## Issues
 

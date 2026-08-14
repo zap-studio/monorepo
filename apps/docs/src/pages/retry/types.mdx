@@ -146,4 +146,4 @@ Failure variant (`ok: false`):
 | `error` | `RetryError \| AbortError` | `RetryError` when retries are exhausted, `AbortError` when the run is canceled. |
 | `attempts` | `number` | Number of attempts that completed before the terminal outcome. |
 
-Narrow `error` with `instanceof` before reading `RetryError`-specific properties like `lastError`. See [RetryError](/retry/retry-error) for the error class reference.
+Narrow `error` with `instanceof` before reading `RetryError`-specific properties like `lastError`. See [Structured Errors](/retry/errors) for the error class reference.

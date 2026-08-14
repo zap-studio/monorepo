@@ -1,11 +1,11 @@
 ---
-title: Runtime Integration
-description: Plug the webhook router into Bun, Deno, Cloudflare Workers, Next.js, Hono, or a Node http server.
+title: Web API Native
+description: handle(request) returns a Response, so the router plugs directly into Bun, Deno, Cloudflare Workers, Next.js, Hono, and any other fetch-compatible runtime.
 ---
 
-# Runtime Integration
+# Web API Native
 
-[`@zap-studio/webhooks`](/webhooks) is built on the standard Web API `Request` and `Response` primitives: `router.handle(request)` takes a `Request` and returns a `Response`. Any runtime or framework that speaks fetch integrates in one line — there is no adapter layer to implement.
+`handle(request: Request)` returns a `Response`, so the router plugs directly into Bun, Deno, Cloudflare Workers, Next.js route handlers, Hono, and any other fetch-compatible runtime. There is no adapter layer to implement.
 
 Why this design:
 
@@ -65,3 +65,8 @@ serve({
 :::warning Pass the incoming `Request` to `router.handle` untouched. Signature verification recomputes the HMAC from the exact body bytes — middleware that consumes or re-serializes the body before the router sees it breaks verification. :::
 
 The router parses the request URL's pathname, requires the configured prefix (default `/webhooks`) on a segment boundary, and matches routes on the remainder. Prefix, routes, and incoming pathnames are normalized to the same canonical form (leading slash, no trailing slash), so a stray trailing slash never 404s. Requests that miss the prefix or match no route get a `404` without the body ever being read.
+
+## See Also
+
+- [Type-Safe Routing](/webhooks/type-safe-routing)
+- [Getting Started](/webhooks/getting-started)

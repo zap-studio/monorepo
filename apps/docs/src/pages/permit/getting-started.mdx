@@ -1,11 +1,39 @@
 ---
-title: Creating Policies
+title: Getting Started
 description: Define resources, actions, context, and rules to build your first authorization policy with permit.
 ---
 
-# Creating Policies
+# Getting Started
 
 A policy is the core building block of `permit`. It defines what actions users can perform on your application's resources based on the current context.
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm install @zap-studio/permit
+```
+
+```bash [yarn]
+yarn add @zap-studio/permit
+```
+
+```bash [pnpm]
+pnpm add @zap-studio/permit
+```
+
+```bash [bun]
+bun add @zap-studio/permit
+```
+
+```bash [deno]
+deno add jsr:@zap-studio/permit
+```
+
+:::
+
+You also need a schema library that implements [Standard Schema](https://standardschema.dev/), such as Zod, Valibot, or ArkType.
 
 ## Understanding Policies
 
@@ -26,8 +54,6 @@ A policy consists of three parts:
 ## Defining Resources
 
 Resources are defined using [Standard Schema](https://standardschema.dev/), which means you can use Zod, Valibot, ArkType, or any compatible library.
-
-### Using Zod
 
 ```ts
 import { z } from "zod";
@@ -55,35 +81,7 @@ const resources = {
 } satisfies Resources;
 ```
 
-### Using Valibot
-
-```ts
-import * as v from "valibot";
-import type { Resources } from "@zap-studio/permit";
-
-const resources = {
-  post: v.object({
-    id: v.string(),
-    authorId: v.string(),
-    visibility: v.picklist(["public", "private"]),
-  }),
-} satisfies Resources;
-```
-
-### Using ArkType
-
-```ts
-import { type } from "arktype";
-import type { Resources } from "@zap-studio/permit";
-
-const resources = {
-  post: type({
-    id: "string",
-    authorId: "string",
-    visibility: "'public' | 'private'",
-  }),
-} satisfies Resources;
-```
+See [Standard Schema Support](/permit/standard-schema) for the same definition with Valibot and ArkType.
 
 :::warning Use `satisfies` to ensure type safety and consistency. Learn more about the [TypeScript `satisfies` operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator). :::
 
@@ -129,7 +127,7 @@ Context is passed to `policy.can()` at runtime and is available in all your rule
 
 ## Creating a Policy
 
-Use `createPolicy()` to combine your resources, actions, and rules into a policy:
+Use `createPolicy()` to combine your resources, actions, and rules into a policy. See [Declarative Policies](/permit/declarative-policies) for the full reference on `allow()`, `deny()`, and `when()`.
 
 ```ts
 import { createPolicy, allow, deny, when } from "@zap-studio/permit";

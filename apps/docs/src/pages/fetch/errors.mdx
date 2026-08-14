@@ -5,7 +5,7 @@ description: Catch FetchError and ValidationError, and handle parsing, abort, an
 
 # Error Handling
 
-`@zap-studio/fetch` throws two package-specific errors for expected failures. Platform and schema errors can still propagate from native `fetch`, body parsing, request construction, or the validator itself.
+`FetchError` for HTTP failures and `ValidationError` for schema failures. Platform and schema errors can still propagate from native `fetch`, body parsing, request construction, or the validator itself.
 
 | Error | Import path | Thrown when |
 | --- | --- | --- |

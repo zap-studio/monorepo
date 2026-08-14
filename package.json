@@ -1,48 +1,13 @@
 {
   "name": "@zap-studio/monorepo",
   "private": true,
-  "author": "alexandretrotel",
-  "workspaces": {
-    "packages": [
-      "apps/*",
-      "configs/*",
-      "packages/*"
-    ],
-    "catalog": {
-      "@arethetypeswrong/core": "^0.18.5",
-      "@standard-schema/spec": "^1.1.0",
-      "@types/react": "^19.2.18",
-      "@types/react-dom": "^19.2.4",
-      "@vitest/browser-playwright": "^4.1.10",
-      "@vitest/coverage-v8": "^4.1.10",
-      "arktype": "^2.2.3",
-      "lefthook": "^2.1.10",
-      "oxfmt": "^0.63.0",
-      "oxlint": "^1.76.0",
-      "oxlint-tsgolint": "^7.0.2001",
-      "ultracite": "^7.10.3",
-      "playwright": "^1.62.1",
-      "publint": "^0.3.22",
-      "react": "^19.2.8",
-      "react-dom": "^19.2.8",
-      "tsdown": "^0.22.14",
-      "typescript": "^7.0.2",
-      "valibot": "^1.4.2",
-      "vite": "^8.2.0",
-      "vitest": "^4.1.10",
-      "vocs": "^2.8.0",
-      "waku": "1.0.0-beta.8",
-      "wrangler": "^4.118.0",
-      "zod": "^4.4.3",
-      "unplugin-unused": "^0.5.7"
-    }
-  },
+  "author": "Alexandre Trotel",
   "type": "module",
   "scripts": {
     "build": "tsdown --config ./configs/tsdown/tsdown.config.ts",
-    "publish:check": "nub run check && nub run test && nub run build",
-    "fix": "nub exec ultracite fix --type-aware --type-check",
-    "check": "nub exec ultracite check --type-aware --type-check",
+    "publish:check": "pnpm run check && pnpm run test && pnpm run build",
+    "fix": "pnpm exec ultracite fix --type-aware --type-check",
+    "check": "pnpm exec ultracite check --type-aware --type-check",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "prepare": "lefthook install"
@@ -62,26 +27,8 @@
     "unplugin-unused": "catalog:",
     "vitest": "catalog:"
   },
-  "devEngines": {
-    "packageManager": {
-      "name": "nub",
-      "version": "^0.6.0",
-      "onFail": "warn"
-    },
-    "runtime": {
-      "name": "node",
-      "version": "24.18.1",
-      "onFail": "warn"
-    }
-  },
   "engines": {
-    "node": ">=20.0.0"
+    "pnpm": ">=11.0.0"
   },
-  "allowBuilds": {
-    "es5-ext": true,
-    "esbuild": true,
-    "lefthook": true,
-    "vue-demi": true,
-    "workerd": true
-  }
+  "packageManager": "pnpm@11.21.0+sha512.521705bce689924eac72f5a3587122f362689ef6571e55ba80076fd637c11132ecffada26fad4ea79c485bfddbfd3d5a2a5b05805a77e893de71ec8a6cca3bb1"
 }

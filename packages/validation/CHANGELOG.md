@@ -1,37 +1,37 @@
-## @zap-studio/validation@0.4.0
+# Changelog
 
-### Breaking: renamed `createSyncStandardValidator` to `createStandardValidatorSync`
+All notable changes to this project will be documented in this file.
 
-`createSyncStandardValidator` is renamed to `createStandardValidatorSync` for naming consistency with `standardValidateSync`. Update imports and usages accordingly; the thrown error message for async schemas now reads `Async schemas are not supported by createStandardValidatorSync`.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## @zap-studio/validation@0.3.6
+## [0.4.0]
 
-### Tree-shakeable root re-exports
+### Changed
+
+- **Breaking:** `createSyncStandardValidator` is renamed to `createStandardValidatorSync` for naming consistency with `standardValidateSync`. Update imports and usages accordingly; the thrown error message for async schemas now reads `Async schemas are not supported by createStandardValidatorSync`.
+
+## [0.3.6]
+
+### Added
 
 The package root now re-exports the full public API, so `ValidationError` can be imported from `@zap-studio/validation` directly alongside the validators. All exports are side-effect free and tree-shakeable; granular subpath imports keep working.
 
 - The validator implementation moved from the entrypoint into its own module, available as the new `./validate` subpath.
 
-## @zap-studio/validation@0.3.5
+## [0.3.5]
 
-### Migrate to ultracite lint/format
+### Changed
 
 Internal formatting and lint cleanup with no public API change. `isStandardSchema` now accepts an optional argument, and `standardValidateSync` throws a `TypeError` (still an `Error`) for async schemas.
 
-# @zap-studio/validation
-
-## 0.3.4
+## [0.3.4]
 
 ### Changed
 
 - Improve hot-path performance with lower-overhead validator execution internals while preserving the existing public API.
 - Expand TSDoc coverage for overload signatures and module-level exports to strengthen JSR documentation quality.
 
-## 0.3.3
-
-### Fixed
-
-- 7004e9f: Allow explicit `undefined` in validator option handling while preserving typed throwing and non-throwing overload behavior.
+## [0.3.3]
 
 ### Changed
 
@@ -39,22 +39,26 @@ Internal formatting and lint cleanup with no public API change. `isStandardSchem
 - 9f31f87: Switched the package build to ESNext-aligned output and updated package tooling and publish metadata.
 - 367d588: Expanded TSDoc coverage for validator error behavior and reusable validator helpers.
 
-## 0.3.2
+### Fixed
 
-### Patch Changes
+- 7004e9f: Allow explicit `undefined` in validator option handling while preserving typed throwing and non-throwing overload behavior.
 
-- e26293e: Re-export StandardSchemaV1 type from the Standard Schema specification package and add module docs
+## [0.3.2]
 
-## 0.3.1
+### Added
 
-### Patch Changes
+- e26293e: Re-export `StandardSchemaV1` type from the Standard Schema specification package and add module docs.
 
-- 5ea3d3b: Refactor reusable validators to delegate to `standardValidate`/`standardValidateSync` and add per-call options support.
+## [0.3.1]
+
+### Added
+
+- 5ea3d3b: Refactored reusable validators to delegate to `standardValidate`/`standardValidateSync` and added per-call options support.
   - `createStandardValidator` now supports `throwOnError` with the same return-type behavior as `standardValidate`.
   - `createSyncStandardValidator` now supports `throwOnError` with the same return-type behavior as `standardValidateSync`.
   - Updated docs and examples for reusable validator option handling.
 
-## 0.3.0
+## [0.3.0]
 
 ### Added
 
@@ -65,13 +69,13 @@ Internal formatting and lint cleanup with no public API change. `isStandardSchem
 
 - 4b3ce9f: Changed `standardValidate` to accept an options object (`{ throwOnError }`) instead of a boolean argument, while preserving typed return behavior.
 
-## 0.2.1
+## [0.2.1]
 
 ### Changed
 
 - e4542bb: Refined `standardValidate` typings so return types depend on `throwOnError`, and updated `@zap-studio/fetch` integration to keep its boolean configuration API behavior.
 
-## 0.2.0
+## [0.2.0]
 
 ### Added
 
@@ -81,7 +85,7 @@ Internal formatting and lint cleanup with no public API change. `isStandardSchem
 
 - 2de8183: Updated `@zap-studio/permit` to use the new helper for resource schema validation in `createPolicy`.
 
-## 0.1.0
+## [0.1.0]
 
 ### Added
 

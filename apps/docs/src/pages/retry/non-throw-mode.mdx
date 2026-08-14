@@ -1,0 +1,34 @@
+---
+title: Non-throw Mode
+description: Set throwOnExhausted false to receive a RetryRunResult instead of a thrown error.
+---
+
+# Non-throw Mode
+
+`throwOnExhausted: false` returns a `RetryRunResult` instead of throwing.
+
+```ts
+const result = await policy.run(
+  async () => {
+    return await doWork();
+  },
+  { throwOnExhausted: false }
+);
+
+if (result.ok) {
+  console.log(result.value);
+} else {
+  console.error("Failed after", result.attempts, "attempts:", result.error);
+}
+```
+
+On failure, `result.error` is a `RetryError` (retries exhausted, or a caught value the policy's `isKnownError` rejected as outside its error domain) or an `AbortError` (run canceled). See [Types](/retry/types) for the full shape.
+
+:::note In result mode, `run(...)` never throws for a failed `execute(...)` attempt — an `isKnownError`-rejected value is wrapped in a `RetryError` and returned on `result.error`, not thrown. See [Narrow the Error Domain](/retry/custom-policies#narrow-the-error-domain). :::
+
+Aborting a run behaves the same way in this mode — see [Cancellation](/retry/abort-signal#non-throw-mode).
+
+## See Also
+
+- [Shared Runner](/retry/running-policies) — the default throw mode
+- [Structured Errors](/retry/errors) — the `RetryError` and `AbortError` shapes

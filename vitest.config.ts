@@ -9,7 +9,7 @@ export default defineConfig({
     coverage: {
       exclude: [...exclude],
       provider: "v8",
-      reporter: ["html", "json", "lcov", "text"],
+      reporter: ["lcov"],
     },
     exclude,
     globals: true,
@@ -37,7 +37,7 @@ export default defineConfig({
         },
       },
     ],
-    reporters: isCI ? ["dot", "junit"] : ["default"],
+    reporters: isCI ? ["junit"] : ["default"],
     restoreMocks: true,
   },
 });

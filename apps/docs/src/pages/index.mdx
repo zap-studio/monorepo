@@ -5,15 +5,31 @@ description: What Zap Studio is, the principles behind its packages, and what ea
 
 # Zap Studio
 
-Zap Studio is a collection of TypeScript packages for core app capabilities: typed HTTP calls, authorization policy checks, retry policies, schema validation, and webhook processing. Each package works on its own, so you adopt only what you need.
+Zap Studio is a set of type-safe, framework-agnostic, and composable TypeScript packages for core app capabilities — typed HTTP calls, authorization policy checks, retry policies, schema validation, and webhook processing.
+
+Install one package or all five — nothing here depends on the rest of the family.
+
+```ts
+import { api } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.string().email(),
+});
+
+// `user` is typed from UserSchema — no manual annotations, no `as` casts
+const user = await api.get("https://api.example.com/users/1", UserSchema);
+```
 
 ## Design Principles
 
 Every package follows the same rules:
 
-- **Type safety.** APIs are fully typed, and runtime validation backs the types where data crosses a boundary, such as HTTP responses and webhook payloads.
-- **Framework-agnostic.** Packages depend on standard runtime APIs, not on a specific framework, so they stay portable across stacks.
-- **Composable.** Packages are small building blocks you combine as needed — for example, retry policies around fetch calls, or Standard Schema validators inside webhook handlers.
+- **Type safety.** Types come from your schema, not from hand-written annotations. `@zap-studio/fetch` infers response types from a [Standard Schema](https://standardschema.dev); a mismatched response throws a `ValidationError` instead of shipping bad data further into your app.
+- **Framework-agnostic.** Packages rely on standard runtime APIs — `fetch`, `Request`/`Response`, `AbortSignal` — not a specific framework. `@zap-studio/webhooks` routes on the raw `Request`/`Response` primitives, so it runs unchanged on Bun, Deno, Cloudflare Workers, or a Next.js route handler.
+- **Composable.** Packages are building blocks you combine as needed: wrap an `@zap-studio/fetch` call in an `@zap-studio/retry` policy, or validate a webhook payload with the same `@zap-studio/validation` helper that `permit` uses internally for resources.
 
 ## Packages
 
@@ -24,3 +40,15 @@ Every package follows the same rules:
 | [`@zap-studio/retry`](/retry) | Composable retry policies with fixed and exponential backoff |
 | [`@zap-studio/validation`](/validation) | Standard Schema utilities and consistent validation errors |
 | [`@zap-studio/webhooks`](/webhooks) | Webhook routing, signature verification, and payload validation |
+
+## Next Steps
+
+Pick a package and follow its Getting Started guide:
+
+- [`@zap-studio/fetch` — Overview](/fetch)
+- [`@zap-studio/permit` — Overview](/permit)
+- [`@zap-studio/retry` — Overview](/retry)
+- [`@zap-studio/validation` — Overview](/validation)
+- [`@zap-studio/webhooks` — Overview](/webhooks)
+
+Every package installs the same way — `npm install <package>` (yarn, pnpm, bun, deno, and nub work too — each Getting Started page lists all of them).

@@ -1,0 +1,61 @@
+---
+title: Standard Schema Support
+description: permit resources work with any Standard Schema-compatible validation library — Zod, Valibot, ArkType, or your own.
+---
+
+# Standard Schema Support
+
+Works with Zod, Valibot, ArkType, or any compatible library.
+
+`permit` validates resources through the [Standard Schema](https://standardschema.dev/) specification instead of binding to one validation library. Define resources with the `Resources` type helper and any Standard Schema-compatible schema.
+
+## Using Zod
+
+```ts
+import { z } from "zod";
+import type { Resources } from "@zap-studio/permit";
+
+const resources = {
+  post: z.object({
+    id: z.string(),
+    authorId: z.string(),
+    visibility: z.enum(["public", "private"]),
+  }),
+} satisfies Resources;
+```
+
+## Using Valibot
+
+```ts
+import * as v from "valibot";
+import type { Resources } from "@zap-studio/permit";
+
+const resources = {
+  post: v.object({
+    id: v.string(),
+    authorId: v.string(),
+    visibility: v.picklist(["public", "private"]),
+  }),
+} satisfies Resources;
+```
+
+## Using ArkType
+
+```ts
+import { type } from "arktype";
+import type { Resources } from "@zap-studio/permit";
+
+const resources = {
+  post: type({
+    id: "string",
+    authorId: "string",
+    visibility: "'public' | 'private'",
+  }),
+} satisfies Resources;
+```
+
+:::warning Use `satisfies` to ensure type safety and consistency. Learn more about the [TypeScript `satisfies` operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator). :::
+
+## How Validation Runs
+
+Resources are validated against their schema whenever `policy.can()` evaluates a rule for that resource. Invalid resources resolve to `false` instead of throwing — see [Error Handling](/permit/errors) for how `permit` surfaces failures.

@@ -7,7 +7,7 @@ export default defineConfig({
   accentColor: "light-dark(hsl(38, 92%, 40%), hsl(43, 96%, 56%))",
   baseUrl,
   description:
-    "Type safe, framework agnostic and composable TypeScript libraries for the web.",
+    "Type-safe, framework-agnostic and composable TypeScript libraries for the web.",
   editLink: {
     link: "https://github.com/zap-studio/monorepo/edit/main/apps/docs/src/pages/:path",
     text: "Edit on GitHub",
@@ -15,7 +15,7 @@ export default defineConfig({
   head: {
     meta: {
       ogImageAlt:
-        "Zap Studio — type safe, framework agnostic and composable TypeScript libraries for the web.",
+        "Zap Studio — type-safe, framework-agnostic and composable TypeScript libraries for the web.",
       ogImageHeight: 630,
       ogImageType: "image/png",
       ogImageWidth: 1200,
@@ -34,9 +34,14 @@ export default defineConfig({
           items: [
             { link: "/fetch", text: "Overview" },
             { link: "/fetch/getting-started", text: "Getting Started" },
-            { link: "/fetch/fetch-function", text: "$fetch" },
+            { link: "/fetch/raw-fetch-mode", text: "Raw Fetch Mode" },
+            {
+              link: "/fetch/validated-fetch-mode",
+              text: "Validated Fetch Mode",
+            },
             { link: "/fetch/api-methods", text: "API Methods" },
             { link: "/fetch/create-fetch", text: "createFetch" },
+            { link: "/fetch/json-convenience", text: "JSON Convenience" },
             { link: "/fetch/validation", text: "Validation" },
             { link: "/fetch/errors", text: "Error Handling" },
           ],
@@ -46,10 +51,17 @@ export default defineConfig({
           collapsed: true,
           items: [
             { link: "/permit", text: "Overview" },
-            { link: "/permit/creating-policies", text: "Creating Policies" },
-            { link: "/permit/policy-rules", text: "Policy Rules" },
-            { link: "/permit/conditions", text: "Conditions" },
+            { link: "/permit/getting-started", text: "Getting Started" },
+            {
+              link: "/permit/declarative-policies",
+              text: "Declarative Policies",
+            },
+            {
+              link: "/permit/standard-schema",
+              text: "Standard Schema Support",
+            },
             { link: "/permit/roles", text: "Role-Based Access Control" },
+            { link: "/permit/conditions", text: "Conditions" },
             { link: "/permit/merging-policies", text: "Merging Policies" },
             { link: "/permit/errors", text: "Error Handling" },
           ],
@@ -60,12 +72,21 @@ export default defineConfig({
           items: [
             { link: "/retry", text: "Overview" },
             { link: "/retry/getting-started", text: "Getting Started" },
-            { link: "/retry/fixed-delay", text: "FixedDelay" },
-            { link: "/retry/exponential-backoff", text: "ExponentialBackoff" },
-            { link: "/retry/running-policies", text: "Running Policies" },
-            { link: "/retry/abort-signal", text: "Abort Signal" },
+            {
+              items: [
+                { link: "/retry/fixed-delay", text: "FixedDelay" },
+                {
+                  link: "/retry/exponential-backoff",
+                  text: "ExponentialBackoff",
+                },
+              ],
+              text: "Built-in Policies",
+            },
+            { link: "/retry/running-policies", text: "Shared Runner" },
+            { link: "/retry/non-throw-mode", text: "Non-throw Mode" },
+            { link: "/retry/abort-signal", text: "Cancellation" },
             { link: "/retry/custom-policies", text: "Custom Policies" },
-            { link: "/retry/retry-error", text: "RetryError" },
+            { link: "/retry/errors", text: "Structured Errors" },
             { link: "/retry/types", text: "Types" },
           ],
           text: "retry",
@@ -76,13 +97,21 @@ export default defineConfig({
             { link: "/validation", text: "Overview" },
             { link: "/validation/getting-started", text: "Getting Started" },
             { link: "/validation/concepts", text: "Concepts" },
-            { link: "/validation/how-to-validate", text: "How to Validate" },
+            { link: "/validation/async-validation", text: "Async Validation" },
+            {
+              link: "/validation/synchronous-validation",
+              text: "Synchronous Validation",
+            },
             {
               link: "/validation/create-validators",
               text: "Create Validators",
             },
-            { link: "/validation/is-standard-schema", text: "Schema Guard" },
-            { link: "/validation/handling-errors", text: "Handling Errors" },
+            { link: "/validation/errors", text: "Errors" },
+            {
+              link: "/validation/runtime-schema-detection",
+              text: "Runtime Schema Detection",
+            },
+            { link: "/validation/types", text: "Types" },
           ],
           text: "validation",
         },
@@ -91,13 +120,12 @@ export default defineConfig({
           items: [
             { link: "/webhooks", text: "Overview" },
             { link: "/webhooks/getting-started", text: "Getting Started" },
-            { link: "/webhooks/guides", text: "Guides" },
+            { link: "/webhooks/web-api-native", text: "Web API Native" },
+            { link: "/webhooks/type-safe-routing", text: "Type-Safe Routing" },
+            { link: "/webhooks/standard-schema", text: "Standard Schema" },
             { link: "/webhooks/verification", text: "Verification" },
             { link: "/webhooks/lifecycle-hooks", text: "Lifecycle Hooks" },
-            {
-              link: "/webhooks/runtime-integration",
-              text: "Runtime Integration",
-            },
+            { link: "/webhooks/guides", text: "Guides" },
           ],
           text: "webhooks",
         },

@@ -17,10 +17,10 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Setup nub
-        uses: ./.github/actions/setup-nub
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
       - name: Build packages
-        run: nub run build
+        run: pnpm run build
 
   build-docs:
     name: Build Docs
@@ -29,22 +29,22 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Setup nub
-        uses: ./.github/actions/setup-nub
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
       - name: Build docs
-        run: nub run --filter docs build
+        run: pnpm --filter docs run build
 
   check:
     name: Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Setup nub
-        uses: ./.github/actions/setup-nub
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
       - name: Build packages
-        run: nub run build
+        run: pnpm run build
       - name: Run check
-        run: nub run check
+        run: pnpm run check
 
   test:
     name: Test
@@ -53,14 +53,14 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Setup nub
-        uses: ./.github/actions/setup-nub
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
       - name: Build packages
-        run: nub run build
+        run: pnpm run build
       - name: Install browser
-        run: nub exec playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
       - name: Run tests
-        run: nub run test
+        run: pnpm run test
 
   coverage:
     name: Coverage
@@ -72,14 +72,14 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Setup nub
-        uses: ./.github/actions/setup-nub
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
       - name: Build packages
-        run: nub run build
+        run: pnpm run build
       - name: Install browser
-        run: nub exec playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
       - name: Run coverage
-        run: CI=1 nub run test:coverage
+        run: CI=1 pnpm run test:coverage
       - name: Upload test results to Codecov
         if: ${{ always() }}
         uses: codecov/codecov-action@v7

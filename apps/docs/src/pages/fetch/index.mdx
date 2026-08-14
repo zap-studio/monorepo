@@ -5,25 +5,7 @@ description: A type-safe fetch wrapper that validates JSON responses at runtime 
 
 # @zap-studio/fetch
 
-A small, type-safe wrapper around native `fetch` that validates JSON responses at runtime using any [Standard Schema](https://standardschema.dev/schema)-compatible validator, such as Zod, Valibot, or ArkType.
-
-## Why fetch?
-
-TypeScript can describe the data you expect from an API, but it cannot prove the API actually returned that shape. Without runtime validation, fetch code often ends with unchecked assertions:
-
-```ts
-type User = {
-  id: number;
-  name: string;
-};
-
-const response = await fetch("/api/users/1");
-const data = await response.json();
-
-const user = data as User;
-```
-
-The compiler trusts the assertion even if the server returns `{ id: "1" }`. With `@zap-studio/fetch`, the response is parsed and validated before it is returned, and the return type is inferred from the schema.
+A small fetch wrapper with [**Standard Schema**](https://standardschema.dev/schema) response validation.
 
 ## Features
 
@@ -35,37 +17,7 @@ The compiler trusts the assertion even if the server returns `{ id: "1" }`. With
 - **Structured errors** with `FetchError` for HTTP failures and `ValidationError` for schema failures.
 - **Validator-agnostic** — works with any library that implements Standard Schema.
 
-## Installation
-
-:::code-group
-
-```bash [nub]
-nub add @zap-studio/fetch
-```
-
-```bash [npm]
-npm install @zap-studio/fetch
-```
-
-```bash [yarn]
-yarn add @zap-studio/fetch
-```
-
-```bash [pnpm]
-pnpm add @zap-studio/fetch
-```
-
-```bash [bun]
-bun add @zap-studio/fetch
-```
-
-```bash [deno]
-deno add jsr:@zap-studio/fetch
-```
-
-:::
-
-## Quick Example
+## Quick Start
 
 ```ts
 import { api } from "@zap-studio/fetch";
@@ -79,10 +31,19 @@ const UserSchema = z.object({
 
 const user = await api.get("https://api.example.com/users/1", UserSchema);
 
-console.log(user.name); // typed as string
+console.log(user.name); // typed as string, validated at runtime
 ```
 
-The schema validates the response body. If the server returns a shape that does not match, a `ValidationError` is thrown instead of handing you bad data.
+## Learn More
+
+- [Getting Started](/fetch/getting-started) — install and make your first validated request.
+- [Raw Fetch Mode](/fetch/raw-fetch-mode) — `$fetch` without a schema.
+- [Validated Fetch Mode](/fetch/validated-fetch-mode) — `$fetch` with a schema.
+- [HTTP Method Helpers](/fetch/api-methods) — `api.get`, `api.post`, and friends.
+- [Configured Clients](/fetch/create-fetch) — shared defaults with `createFetch`.
+- [JSON Convenience](/fetch/json-convenience) — the `json` request option.
+- [Structured Errors](/fetch/errors) — `FetchError` and `ValidationError`.
+- [Validator-Agnostic](/fetch/validation) — Standard Schema support.
 
 ## Runtime Support
 
