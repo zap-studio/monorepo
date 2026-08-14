@@ -4435,9 +4435,6 @@ packages:
   outvariant@1.4.0:
     resolution: {integrity: sha512-AlWY719RF02ujitly7Kk/0QlV+pXGFDHrHf9O2OKqyqgBieaPOIeuSkL8sRK6j2WK+/ZAURq2kZsY0d8JapUiw==}
 
-  outvariant@1.4.3:
-    resolution: {integrity: sha512-+Sl2UErvtsoajRDKCE5/dBz4DIvHXQQnAxtQTF04OJxY0+DyZXSo5P5Bb7XYWOh81syohlYL24hbDwxedPUJCA==}
-
   oxfmt@0.63.0:
     resolution: {integrity: sha512-kgdDwv35wvVf6554U2Ab8Jnd0zTM+TsEQWwaB70RAjK3gICFAFGO+2Hd3Be27GMoXj3XRL9IKSNRVl7KBQL6iw==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -5876,7 +5873,7 @@ snapshots:
 
   '@codesandbox/nodebox@0.1.8':
     dependencies:
-      outvariant: 1.4.3
+      outvariant: 1.4.0
       strict-event-emitter: 0.4.6
 
   '@codesandbox/sandpack-client@2.19.8':
@@ -6108,7 +6105,7 @@ snapshots:
   '@floating-ui/vue@1.1.9(vue@3.5.41(typescript@7.0.2))':
     dependencies:
       '@floating-ui/dom': 1.8.0
-      '@floating-ui/utils': 0.2.12
+      '@floating-ui/utils': 0.2.10
       vue-demi: 0.14.10(vue@3.5.41(typescript@7.0.2))
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -9624,8 +9621,6 @@ snapshots:
 
   outvariant@1.4.0: {}
 
-  outvariant@1.4.3: {}
-
   oxfmt@0.63.0:
     dependencies:
       tinypool: 2.1.0
@@ -10289,7 +10284,7 @@ snapshots:
       '@open-draft/deferred-promise': 2.2.0
       dotenv: 16.6.1
       mime-db: 1.54.0
-      outvariant: 1.4.3
+      outvariant: 1.4.0
 
   statuses@2.0.2: {}
 
