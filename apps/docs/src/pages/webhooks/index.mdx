@@ -7,38 +7,6 @@ description: Schema-first, type-safe webhook routing built on the standard Web A
 
 Schema-first, type-safe webhook routing built on the standard Web API [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) primitives, with runtime-agnostic signature verification support.
 
-## Installation
-
-:::code-group
-
-```bash [nub]
-nub add @zap-studio/webhooks
-```
-
-```bash [npm]
-npm install @zap-studio/webhooks
-```
-
-```bash [yarn]
-yarn add @zap-studio/webhooks
-```
-
-```bash [pnpm]
-pnpm add @zap-studio/webhooks
-```
-
-```bash [bun]
-bun add @zap-studio/webhooks
-```
-
-```bash [deno]
-deno add jsr:@zap-studio/webhooks
-```
-
-:::
-
-You also need a schema library that implements [Standard Schema](https://github.com/standard-schema/standard-schema), such as Zod, Valibot, or ArkType.
-
 ## Features
 
 - **Web API native** — `handle(request: Request)` returns a `Response`, so the router plugs directly into Bun, Deno, Cloudflare Workers, Next.js route handlers, Hono, and any other fetch-compatible runtime.

@@ -7,34 +7,6 @@ description: A type-safe fetch wrapper that validates JSON responses at runtime 
 
 A small fetch wrapper with [**Standard Schema**](https://standardschema.dev/schema) response validation.
 
-## Installation
-
-:::code-group
-
-```bash [npm]
-npm install @zap-studio/fetch
-```
-
-```bash [yarn]
-yarn add @zap-studio/fetch
-```
-
-```bash [pnpm]
-pnpm add @zap-studio/fetch
-```
-
-```bash [bun]
-bun add @zap-studio/fetch
-```
-
-```bash [deno]
-deno add jsr:@zap-studio/fetch
-```
-
-:::
-
-You also need a schema library that implements [Standard Schema](https://standardschema.dev/schema), such as Zod, Valibot, or ArkType. The examples below use Zod.
-
 ## Features
 
 - **Raw fetch mode** through `$fetch(input, options)` — behaves like native `fetch` and returns the `Response`.

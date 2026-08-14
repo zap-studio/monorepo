@@ -7,6 +7,34 @@ description: Define resources, actions, context, and rules to build your first a
 
 A policy is the core building block of `permit`. It defines what actions users can perform on your application's resources based on the current context.
 
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm install @zap-studio/permit
+```
+
+```bash [yarn]
+yarn add @zap-studio/permit
+```
+
+```bash [pnpm]
+pnpm add @zap-studio/permit
+```
+
+```bash [bun]
+bun add @zap-studio/permit
+```
+
+```bash [deno]
+deno add jsr:@zap-studio/permit
+```
+
+:::
+
+You also need a schema library that implements [Standard Schema](https://standardschema.dev/), such as Zod, Valibot, or ArkType.
+
 ## Understanding Policies
 
 Think of a policy as a rulebook that answers questions like:
