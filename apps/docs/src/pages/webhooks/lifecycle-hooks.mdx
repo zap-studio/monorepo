@@ -33,7 +33,8 @@ Hook signatures (exported from `@zap-studio/webhooks`):
 - `AfterHook` — `(ctx: WebhookContext, response: Response) => Promise<void> | void`
 - `ErrorHook` — `(error: Error, ctx: WebhookContext) => Response | undefined`, sync or async
 
-:::note `after` hooks receive the outgoing `Response` as-is. Reading its body would consume the stream sent to the client, so call `response.clone()` first:
+:::note
+`after` hooks receive the outgoing `Response` as-is. Reading its body would consume the stream sent to the client, so call `response.clone()` first:
 
 ```ts
 const router = createWebhookRouter({
