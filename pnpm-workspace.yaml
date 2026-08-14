@@ -3,6 +3,8 @@ packages:
   - "configs/*"
   - "packages/*"
 
+catalogMode: prefer
+
 allowBuilds:
   es5-ext: true
   esbuild: true
