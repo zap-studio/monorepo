@@ -36,15 +36,23 @@ export interface FixedDelayOptions {
  *   delayMs: 250,
  * });
  */
-export const fixedDelay = (options: FixedDelayOptions): RetryPolicy => ({
-  /**
-   * Computes retry decision for the current attempt.
-   */
-  next(input: RetryDecisionInput): RetryDecision {
-    if (input.attempt >= options.maxAttempts) {
-      return { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false };
-    }
+export const fixedDelay = (options: FixedDelayOptions): RetryPolicy => {
+  const { maxAttempts, delayMs } = options;
 
-    return { delayMs: options.delayMs, reason: "retry", shouldRetry: true };
-  },
-});
+  return {
+    /**
+     * Computes retry decision for the current attempt.
+     */
+    next(input: RetryDecisionInput): RetryDecision {
+      if (input.attempt >= maxAttempts) {
+        return {
+          delayMs: 0,
+          reason: "max-attempts-reached",
+          shouldRetry: false,
+        };
+      }
+
+      return { delayMs, reason: "retry", shouldRetry: true };
+    },
+  };
+};

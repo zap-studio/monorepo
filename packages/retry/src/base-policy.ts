@@ -508,9 +508,15 @@ export async function runRetryPolicy<
   const sleep = options.sleep ?? defaultSleep;
   const { signal } = options;
   const resolvedPolicy: ResolvedRetryPolicy<TError, TData> = {
-    isKnownError: policy.isKnownError ?? defaultIsKnownError,
-    next: policy.next,
-    onExhausted: policy.onExhausted ?? defaultOnExhausted,
+    isKnownError: (error): error is TError =>
+      policy.isKnownError
+        ? policy.isKnownError(error)
+        : defaultIsKnownError(error),
+    next: (input) => policy.next(input),
+    onExhausted: (input) =>
+      policy.onExhausted
+        ? policy.onExhausted(input)
+        : defaultOnExhausted(input),
   };
 
   if (options.throwOnExhausted === false) {

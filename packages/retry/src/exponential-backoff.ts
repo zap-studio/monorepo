@@ -47,21 +47,26 @@ export interface ExponentialBackoffOptions {
  */
 export const exponentialBackoff = (
   options: ExponentialBackoffOptions
-): RetryPolicy => ({
-  /**
-   * Computes retry decision for the current attempt.
-   */
-  next(input: RetryDecisionInput): RetryDecision {
-    if (input.attempt >= options.maxAttempts) {
-      return { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false };
-    }
+): RetryPolicy => {
+  const { maxAttempts, baseDelayMs, maxDelayMs } = options;
 
-    const exponent = Math.max(0, input.attempt - 1);
-    const delayMs = Math.min(
-      options.maxDelayMs,
-      options.baseDelayMs * 2 ** exponent
-    );
+  return {
+    /**
+     * Computes retry decision for the current attempt.
+     */
+    next(input: RetryDecisionInput): RetryDecision {
+      if (input.attempt >= maxAttempts) {
+        return {
+          delayMs: 0,
+          reason: "max-attempts-reached",
+          shouldRetry: false,
+        };
+      }
 
-    return { delayMs, reason: "retry", shouldRetry: true };
-  },
-});
+      const exponent = Math.max(0, input.attempt - 1);
+      const delayMs = Math.min(maxDelayMs, baseDelayMs * 2 ** exponent);
+
+      return { delayMs, reason: "retry", shouldRetry: true };
+    },
+  };
+};
