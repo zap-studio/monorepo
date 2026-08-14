@@ -7,7 +7,7 @@ export default defineConfig({
   accentColor: "light-dark(hsl(38, 92%, 40%), hsl(43, 96%, 56%))",
   baseUrl,
   description:
-    "Type safe, framework agnostic and composable TypeScript libraries for the web.",
+    "Type-safe, framework-agnostic and composable TypeScript libraries for the web.",
   editLink: {
     link: "https://github.com/zap-studio/monorepo/edit/main/apps/docs/src/pages/:path",
     text: "Edit on GitHub",
@@ -15,7 +15,7 @@ export default defineConfig({
   head: {
     meta: {
       ogImageAlt:
-        "Zap Studio — type safe, framework agnostic and composable TypeScript libraries for the web.",
+        "Zap Studio — type-safe, framework-agnostic and composable TypeScript libraries for the web.",
       ogImageHeight: 630,
       ogImageType: "image/png",
       ogImageWidth: 1200,
