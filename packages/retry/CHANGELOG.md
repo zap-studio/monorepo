@@ -1,4 +1,11 @@
-## @zap-studio/retry@0.4.0
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.4.0]
 
 ### Reduced module surface (breaking)
 
@@ -18,7 +25,7 @@
 
 See [Narrow the Error Domain](https://www.zapstudio.dev/retry/custom-policies#narrow-the-error-domain) for the override pattern.
 
-## @zap-studio/retry@0.3.2
+## [0.3.2]
 
 ### Tree-shakeable root re-exports
 
@@ -27,15 +34,13 @@ The package root now re-exports the full public API, so everything can be import
 - `BaseRetryPolicy` moved from the entrypoint into its own module, available as the new `./base-policy` subpath.
 - Removed the `./result-mode` and `./throw-mode` subpath exports. Both were orchestration internals (`runResultMode`, `runThrowMode`) and are no longer part of the public API.
 
-## @zap-studio/retry@0.3.1
+## [0.3.1]
 
 ### Migrate to ultracite lint/format
 
 Internal formatting and lint cleanup only. No public API or behavior change.
 
-# @zap-studio/retry
-
-## 0.3.0
+## [0.3.0]
 
 ### Breaking
 
@@ -53,7 +58,7 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 - Add exhaustive TSDoc for `result-mode` and other `src` modules, including private helpers, policy option and state fields, and `RetryRunResult` union members.
 - Rework test layout into `sleep`, `throw-mode`, `result-mode`, and `index` test files with a shared `sequence-policy` fixture, replacing the prior combined `index` and `abort` test files.
 
-## 0.2.0
+## [0.2.0]
 
 ### Changed
 
@@ -63,13 +68,13 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 - Add abort-focused ecosystem benchmarks comparing signal overhead and immediate cancellation behavior.
 - Expand TSDoc coverage for new runner internals added in this release.
 
-## 0.1.2
+## [0.1.2]
 
 ### Changed
 
 - Expand TSDoc coverage across retry modules and exported contracts for stronger JSR documentation completeness.
 
-## 0.1.1
+## [0.1.1]
 
 ### Fixed
 
@@ -79,7 +84,7 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 - e9903c5: Removed redundant `| undefined` unions from public retry option and decision types.
 
-## 0.1.0
+## [0.1.0]
 
 ### Added
 
@@ -95,3 +100,4 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 ### Documentation
 
 - Documented throwable behavior on `RetryPolicy`, `BaseRetryPolicy.run`, and related contracts with explicit `@throws` tags for policy, exhaustion, and custom `sleep` failures.
+</content>

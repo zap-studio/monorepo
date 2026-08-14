@@ -1,4 +1,11 @@
-## @zap-studio/permit@0.4.0
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.4.0]
 
 ### Removed `assertNever` export (breaking)
 
@@ -8,7 +15,7 @@
 
 Neither merge strategy short-circuits anymore. All policies now run concurrently via `Promise.allSettled`, and every policy is invoked regardless of outcome, for both `mergePoliciesSome` (allow) and `mergePoliciesEvery` (deny). A rejecting policy no longer sinks the whole check — it's treated as a deny (`false`) and logged with `console.warn`, consistent with how `createPolicy` handles internal validation/evaluation errors.
 
-## @zap-studio/permit@0.3.4
+## [0.3.4]
 
 ### Tree-shakeable root re-exports
 
@@ -16,21 +23,19 @@ The package root now re-exports the full public API, so everything can be import
 
 - The implementation moved out of the entrypoint into two new subpaths: `./conditions` (`allow`, `deny`, `when`, `and`, `or`, `not`, `has`, `hasRole`, `collectInheritedRoles`) and `./policy` (`createPolicy`, `mergePolicies`, `mergePoliciesAny`).
 
-## @zap-studio/permit@0.3.3
+## [0.3.3]
 
 ### Migrate to ultracite lint/format
 
 Internal formatting and lint cleanup only. No public API or behavior change.
 
-# @zap-studio/permit
-
-## 0.3.2
+## [0.3.2]
 
 ### Dependencies
 
 - Updated dependency `@zap-studio/validation` to `0.3.4`.
 
-## 0.3.1
+## [0.3.1]
 
 ### Fixed
 
@@ -47,7 +52,7 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 - Updated dependency `@zap-studio/validation` to `0.3.3`.
 
-## 0.3.0
+## [0.3.0]
 
 ### Minor Changes
 
@@ -57,21 +62,21 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
   This is a breaking API change in the `0.x` line. Docs and examples now use the new permission-string format consistently.
 
-## 0.2.2
+## [0.2.2]
 
 ### Patch Changes
 
 - e26293e: Updated dependencies.
   - @zap-studio/validation@0.3.2
 
-## 0.2.1
+## [0.2.1]
 
 ### Patch Changes
 
 - 5ea3d3b: Updated dependencies.
   - @zap-studio/validation@0.3.1
 
-## 0.2.0
+## [0.2.0]
 
 ### Changed
 
@@ -88,13 +93,13 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 - f75b984: Updated dependency `@zap-studio/validation` to `0.3.0`.
 
-## 0.1.3
+## [0.1.3]
 
 ### Dependencies
 
 - e4542bb: Updated dependency `@zap-studio/validation` to `0.2.1`.
 
-## 0.1.2
+## [0.1.2]
 
 ### Changed
 
@@ -104,13 +109,13 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 - 2de8183: Updated dependency `@zap-studio/validation` to `0.2.0`.
 
-## 0.1.1
+## [0.1.1]
 
 ### Fixed
 
 - 907d903: Added runtime resource validation and fail-closed behavior, including deny-by-default when merges are invoked with no policies.
 
-## 0.1.0
+## [0.1.0]
 
 ### Added
 
@@ -124,3 +129,4 @@ Internal formatting and lint cleanup only. No public API or behavior change.
   - Full TypeScript type inference support.
   - `PolicyError` for authorization failures.
   - `assertNever()` for exhaustive checks.
+</content>

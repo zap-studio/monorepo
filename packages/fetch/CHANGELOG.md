@@ -1,4 +1,11 @@
-## @zap-studio/fetch@0.6.0
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.6.0]
 
 ### Reduced module surface (breaking)
 
@@ -7,7 +14,7 @@ Collapsed the internal request pipeline (`_internal.ts`, `_methods.ts`, `constan
 - Removed the `./constants`, `./headers`, `./request`, `./url`, and `./fetch` subpath exports. Use the root `@zap-studio/fetch` entry instead.
 - `GLOBAL_DEFAULTS`, `FetchError`, `$fetch`, `api`, `createFetch`, and all public types are unaffected and still exported from `.`; `./errors` and `./types` subpaths are unaffected.
 
-## @zap-studio/fetch@0.5.6
+## [0.5.6]
 
 ### Tree-shakeable root re-exports
 
@@ -16,28 +23,26 @@ The package root now re-exports the full public API, so everything can be import
 - The `$fetch`/`api`/`createFetch` implementation moved from the entrypoint into its own module, available as the new `./fetch` subpath.
 - Removed the `./internal` and `./methods` subpath exports. Both were implementation details (`fetchInternal`, `createMethod`) and are no longer part of the public API.
 
-## @zap-studio/fetch@0.5.5
+## [0.5.5]
 
 ### Migrate to ultracite lint/format
 
 Internal formatting and lint cleanup only. No public API or behavior change.
 
-# @zap-studio/fetch
-
-## 0.5.4
+## [0.5.4]
 
 ### Changed
 
 - Added fetch ecosystem benchmarks and grouped benchmark output for easier cross-library comparisons.
 - Applied small internal performance optimizations in request preparation, URL resolution, and header merging without changing public API behavior.
 
-## 0.5.3
+## [0.5.3]
 
 ### Changed
 
 - Refactor `createFetch(...)` to derive fallback defaults from `GLOBAL_DEFAULTS` instead of re-defining primitive defaults inline.
 
-## 0.5.2
+## [0.5.2]
 
 ### Changed
 
@@ -47,7 +52,7 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 - Updated dependency `@zap-studio/validation` to `0.3.4`.
 
-## 0.5.1
+## [0.5.1]
 
 ### Fixed
 
@@ -61,7 +66,7 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 - Updated dependency `@zap-studio/validation` to `0.3.3`.
 
-## 0.5.0
+## [0.5.0]
 
 ### Breaking
 
@@ -99,27 +104,27 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 - JSR dependency mapping now pins `@zap-studio/validation` to `0.3.2`.
 
-## 0.4.7
+## [0.4.7]
 
 ### Patch Changes
 
 - e26293e: Updated dependencies.
   - @zap-studio/validation@0.3.2
 
-## 0.4.6
+## [0.4.6]
 
 ### Patch Changes
 
 - 5ea3d3b: Updated dependencies.
   - @zap-studio/validation@0.3.1
 
-## 0.4.5
+## [0.4.5]
 
 ### Dependencies
 
 - f75b984: Updated dependency `@zap-studio/validation` to `0.3.0`.
 
-## 0.4.4
+## [0.4.4]
 
 ### Fixed
 
@@ -128,7 +133,7 @@ Internal formatting and lint cleanup only. No public API or behavior change.
   - Auto-stringify plain JSON body values even when no response schema is provided.
   - Set `Content-Type: application/json` only when auto-stringifying and no explicit content type is set.
 
-## 0.4.3
+## [0.4.3]
 
 ### Changed
 
@@ -138,13 +143,13 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 - e4542bb: Updated dependency `@zap-studio/validation` to `0.2.1`.
 
-## 0.4.2
+## [0.4.2]
 
 ### Dependencies
 
 - 2de8183: Updated dependency `@zap-studio/validation` to `0.2.0`.
 
-## 0.4.1
+## [0.4.1]
 
 ### Changed
 
@@ -154,13 +159,13 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 - 447dbda: Updated dependency `@zap-studio/validation` to `0.1.0`.
 
-## 0.4.0
+## [0.4.0]
 
 ### Added
 
 - 69057cd: Exposed fetch defaults constants and utility helpers as public exports.
 
-## 0.3.1
+## [0.3.1]
 
 ### Changed
 
@@ -169,26 +174,26 @@ Internal formatting and lint cleanup only. No public API or behavior change.
   - `throwOnValidationError: false` returns `Promise<StandardSchemaV1.Result<TSchema>>`.
   - This improves type safety and removes manual narrowing in default usage.
 
-## 0.3.0
+## [0.3.0]
 
 ### Added
 
 - 659621c: Added `searchParams` support in `createFetch` for factory-level default query parameters.
   - Per-request `searchParams` still override factory defaults.
 
-## 0.2.2
+## [0.2.2]
 
 ### Changed
 
 - 5c3abbf: Prepared JSR publish and `isolatedDeclarations` support with explicit `$Fetch` and `ApiMethods` types.
 
-## 0.2.1
+## [0.2.1]
 
 ### Changed
 
 - 82bac5c: Replaced regex-based slash trimming with more efficient string manipulation for URL normalization.
 
-## 0.2.0
+## [0.2.0]
 
 ### Changed
 
@@ -207,19 +212,19 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 - 78afb76: Internal file structure was reorganized (affects deep imports).
 - 78afb76: `FetchError` constructor now requires `(message, response)`.
 
-## 0.1.2
+## [0.1.2]
 
 ### Changed
 
 - 69c2b21: Renamed `safeFetch` to `$fetch` while preserving `safeFetch` compatibility for legacy usage.
 
-## 0.1.1
+## [0.1.1]
 
 ### Changed
 
 - 5f1812b: Updated `files` in `package.json` to publish only required artifacts.
 
-## 0.1.0
+## [0.1.0]
 
 ### Added
 
@@ -231,3 +236,4 @@ Internal formatting and lint cleanup only. No public API or behavior change.
   - Flexible error handling.
   - Custom `FetchError` class.
   - Full TypeScript support.
+</content>

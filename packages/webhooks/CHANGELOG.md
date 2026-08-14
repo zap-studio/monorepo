@@ -1,4 +1,11 @@
-## @zap-studio/webhooks@0.5.0
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.5.0]
 
 ### Reduced module surface (breaking)
 
@@ -11,7 +18,7 @@
 
 HMAC signature verification decodes the incoming header's hex signature to bytes and compares it against the computed digest byte-for-byte, instead of hex-encoding the digest and comparing hex text. Behavior is unchanged for valid requests; this only affects internals (fewer bytes compared, and the header's hex is no longer case-normalized as text since decoding handles case natively).
 
-## @zap-studio/webhooks@0.4.0
+## [0.4.0]
 
 ### Rework the package on Web API `Request`/`Response` (breaking)
 
@@ -27,7 +34,7 @@ Breaking changes:
 
 Behavior kept: hook execution order, prefix semantics (default `/webhooks/`), exact-match routing, HMAC verification, and the `404`/`400`/`500` error body shapes. Unknown routes now return `404` without reading the request body.
 
-## @zap-studio/webhooks@0.3.0
+## [0.3.0]
 
 ### Migrate to ultracite lint/format; make the adapter contract generic
 
@@ -35,15 +42,13 @@ Behavior kept: hook execution order, prefix semantics (default `/webhooks/`), ex
 
 Also: `register()` now returns `this`, error hooks always receive a real `Error` instance, and `rawBody` is typed as `Uint8Array`.
 
-# @zap-studio/webhooks
-
-## 0.2.2
+## [0.2.2]
 
 ### Dependencies
 
 - Updated dependency `@zap-studio/validation` to `0.3.4`.
 
-## 0.2.1
+## [0.2.1]
 
 ### Fixed
 
@@ -59,7 +64,7 @@ Also: `register()` now returns `this`, error hooks always receive a real `Error`
 
 - Updated dependency `@zap-studio/validation` to `0.3.3`.
 
-## 0.2.0
+## [0.2.0]
 
 ### Minor Changes
 
@@ -67,33 +72,33 @@ Also: `register()` now returns `this`, error hooks always receive a real `Error`
 
   This change removes the Node `crypto` dependency from the verifier path, keeps `req.rawBody` as `Uint8Array`, simplifies `createHmacVerifier` to take a string secret, and adds public `VerificationError` in `@zap-studio/webhooks/errors` for verifier setup and signature failures.
 
-## 0.1.4
+## [0.1.4]
 
 ### Patch Changes
 
 - e26293e: Updated dependencies.
   - @zap-studio/validation@0.3.2
 
-## 0.1.3
+## [0.1.3]
 
 ### Patch Changes
 
 - 5ea3d3b: Updated dependencies.
   - @zap-studio/validation@0.3.1
 
-## 0.1.2
+## [0.1.2]
 
 ### Patch Changes
 
 - c209a27: Fix payload schema validation internals to use the current async `standardValidate` options API (`{ throwOnError: false }`), restoring typecheck compatibility after the validation helper signature update.
 
-## 0.1.1
+## [0.1.1]
 
 ### Dependencies
 
 - f75b984: Updated dependency `@zap-studio/validation` to `0.3.0`.
 
-## 0.1.0
+## [0.1.0]
 
 ### Added
 
@@ -103,3 +108,4 @@ Also: `register()` now returns `this`, error hooks always receive a real `Error`
   - Lifecycle hooks (`before`, `after`, `onError`) for cross-cutting concerns.
   - Framework-agnostic adapter contracts via `Adapter` and `BaseAdapter`.
   - Comprehensive test coverage and documentation.
+</content>
