@@ -5,24 +5,29 @@ description: Cancellation through AbortSignal, checked before, between, and duri
 
 # Cancellation
 
-Cancellation through `AbortSignal`, checked before, between, and during retries. `BaseRetryPolicy.run(...)` accepts an `AbortSignal` through the `signal` option. Use it to stop retrying on user navigation, request timeouts, shutdown, or parent workflow cancellation.
+Cancellation through `AbortSignal`, checked before, between, and during retries. `runRetryPolicy(...)` accepts an `AbortSignal` through the `signal` option. Use it to stop retrying on user navigation, request timeouts, shutdown, or parent workflow cancellation.
 
 ## Basic Usage
 
-Pass `controller.signal` to `run(...)`; aborting the controller stops the run with an `AbortError`.
+Pass `controller.signal` to `runRetryPolicy(...)`; aborting the controller stops the run with an `AbortError`.
 
 ```ts
-import { AbortError, ExponentialBackoff } from "@zap-studio/retry";
+import {
+  AbortError,
+  exponentialBackoff,
+  runRetryPolicy,
+} from "@zap-studio/retry";
 
 const controller = new AbortController();
 
-const policy = new ExponentialBackoff({
+const policy = exponentialBackoff({
   maxAttempts: 5,
   baseDelayMs: 100,
   maxDelayMs: 2_000,
 });
 
-const promise = policy.run(
+const promise = runRetryPolicy(
+  policy,
   async () => {
     return await doWork();
   },
@@ -45,12 +50,13 @@ try {
 In the default throw mode, an aborted run rejects with `AbortError`.
 
 ```ts
-import { AbortError } from "@zap-studio/retry";
+import { AbortError, runRetryPolicy } from "@zap-studio/retry";
 
 const controller = new AbortController();
 
 try {
-  await policy.run(
+  await runRetryPolicy(
+    policy,
     async () => {
       return await doWork();
     },
@@ -72,7 +78,8 @@ With `throwOnExhausted: false`, an abort resolves to `{ ok: false }` with the `A
 ```ts
 const controller = new AbortController();
 
-const result = await policy.run(
+const result = await runRetryPolicy(
+  policy,
   async () => {
     return await doWork();
   },

@@ -1,51 +1,63 @@
-// oxlint-disable max-classes-per-file -- Test fixture policies are intentionally colocated.
 import { expect } from "vitest";
 
 import type { AbortError } from "./errors.js";
 import { RetryError } from "./errors.js";
-import { BaseRetryPolicy } from "./index.js";
 import type {
   RetryDecision,
   RetryDecisionInput,
   RetryExhaustedInput,
+  RetryPolicy,
   RetryRunResult,
 } from "./types.js";
 
-export class SequencePolicy extends BaseRetryPolicy<Error, string> {
-  public readonly seen: RetryDecisionInput<Error, string>[] = [];
-  private index = 0;
-  private readonly decisions: RetryDecision[];
+export const createSequencePolicy = (
+  decisions: RetryDecision[]
+): Required<
+  Pick<RetryPolicy<Error, string>, "isKnownError" | "next" | "onExhausted">
+> & {
+  seen: RetryDecisionInput<Error, string>[];
+} => {
+  const seen: RetryDecisionInput<Error, string>[] = [];
+  let index = 0;
 
-  constructor(decisions: RetryDecision[]) {
-    super();
-    this.decisions = decisions;
-  }
+  return {
+    isKnownError(error): error is Error {
+      return error instanceof Error;
+    },
+    next(input: RetryDecisionInput<Error, string>): RetryDecision {
+      seen.push(input);
+      const decision = decisions[Math.min(index, decisions.length - 1)];
+      index += 1;
+      return (
+        decision ?? {
+          delayMs: 0,
+          reason: "policy-declined",
+          shouldRetry: false,
+        }
+      );
+    },
+    onExhausted(input: RetryExhaustedInput<Error, string>): RetryError {
+      return new RetryError("Retry policy exhausted all attempts.", {
+        attempts: input.attempts,
+        lastData: input.data,
+        lastError: input.error,
+      });
+    },
+    seen,
+  };
+};
 
-  public next(input: RetryDecisionInput<Error, string>): RetryDecision {
-    this.seen.push(input);
-    const decision =
-      this.decisions[Math.min(this.index, this.decisions.length - 1)];
-    this.index += 1;
-    return (
-      decision ?? { delayMs: 0, reason: "policy-declined", shouldRetry: false }
-    );
-  }
-}
-
-export class CustomTerminalPolicy extends BaseRetryPolicy {
-  // oxlint-disable-next-line class-methods-use-this -- RetryPolicy requires an instance hook that subclasses may override.
-  public next(): RetryDecision {
+export const createCustomTerminalPolicy = (): RetryPolicy => ({
+  next(): RetryDecision {
     return { delayMs: 0, reason: "policy-declined", shouldRetry: false };
-  }
-
-  // oxlint-disable-next-line class-methods-use-this -- RetryPolicy requires an instance hook that subclasses may override.
-  public override onExhausted(input: RetryExhaustedInput): RetryError {
+  },
+  onExhausted(input: RetryExhaustedInput): RetryError {
     return new RetryError(`custom:${input.attempts}`, {
       attempts: input.attempts,
       lastError: input.error,
     });
-  }
-}
+  },
+});
 
 export const expectFailureResult = (
   result: RetryRunResult<string>

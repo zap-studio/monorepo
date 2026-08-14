@@ -59,21 +59,26 @@ new AbortError(message: string, context?: AbortErrorContext)
 
 ## Default Behavior
 
-`BaseRetryPolicy.onExhausted(...)` returns a `RetryError` with the message `"Retry policy exhausted all attempts."` — the built-in `FixedDelay` and `ExponentialBackoff` policies inherit this. When retries are exhausted in the default throw mode, `run(...)` throws that error.
+The default `onExhausted` used by `runRetryPolicy(...)` (when a policy omits its own) returns a `RetryError` with the message `"Retry policy exhausted all attempts."` — the built-in `fixedDelay` and `exponentialBackoff` policies rely on this default. When retries are exhausted in the default throw mode, `runRetryPolicy(...)` throws that error.
 
 ## Catching Terminal Errors
 
 ```ts
-import { AbortError, ExponentialBackoff, RetryError } from "@zap-studio/retry";
+import {
+  AbortError,
+  RetryError,
+  exponentialBackoff,
+  runRetryPolicy,
+} from "@zap-studio/retry";
 
-const policy = new ExponentialBackoff({
+const policy = exponentialBackoff({
   maxAttempts: 3,
   baseDelayMs: 100,
   maxDelayMs: 500,
 });
 
 try {
-  await policy.run(async () => {
+  await runRetryPolicy(policy, async () => {
     return await doWork();
   });
 } catch (error) {
@@ -92,4 +97,4 @@ See [Non-throw Mode](/retry/non-throw-mode) for how these same errors surface as
 
 ## Custom Terminal Errors
 
-Override `onExhausted(...)` in a [custom policy](/retry/custom-policies) to return your own `RetryError` subclass while keeping the same retry orchestration flow.
+Supply `onExhausted(...)` in a [custom policy](/retry/custom-policies) to return your own `RetryError` subclass while keeping the same retry orchestration flow.

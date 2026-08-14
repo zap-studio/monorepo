@@ -7,7 +7,11 @@
 import type { AbortError, RetryError } from "./errors.js";
 
 /**
- * Retry policy contract used by `BaseRetryPolicy`.
+ * Retry policy contract consumed by `runRetryPolicy(...)`.
+ *
+ * Only `next` is required. `onExhausted` and `isKnownError` fall back to
+ * `runRetryPolicy`'s defaults when omitted, so a policy can be a plain
+ * object literal.
  *
  * @example
  * const policy: RetryPolicy = {
@@ -25,22 +29,34 @@ export interface RetryPolicy<TError extends Error = Error, TData = unknown> {
   /**
    * Builds the terminal error used when retries are exhausted.
    *
+   * Defaults to a `RetryError` built by `runRetryPolicy` when omitted.
+   *
    * @throws {Error} Any error thrown by the policy implementation.
    */
-  onExhausted: (input: RetryExhaustedInput<TError, TData>) => RetryError;
+  onExhausted?: (input: RetryExhaustedInput<TError, TData>) => RetryError;
   /**
    * Narrows a caught `unknown` value into `TError`.
    *
    * The runner calls this before handing an error to `next`/`onExhausted`.
    * When it returns `false`, the value is treated as outside this policy's
-   * error domain instead of a retryable failure — `BaseRetryPolicy.run(...)`
+   * error domain instead of a retryable failure — `runRetryPolicy(...)`
    * rethrows it immediately in throw mode, or wraps it in a `RetryError` on
-   * `result.error` in non-throw mode. `BaseRetryPolicy`'s default checks
-   * `error instanceof Error`; override it when `TError` is a narrower
+   * `result.error` in non-throw mode. The default (used when omitted) checks
+   * `error instanceof Error`; supply your own when `TError` is a narrower
    * subclass (e.g. a specific HTTP or domain error) to get real narrowing
    * instead of an assumption.
    */
   isKnownError?: (error: unknown) => error is TError;
+}
+
+/**
+ * `RetryPolicy` with `onExhausted` and `isKnownError` resolved to concrete
+ * functions, used internally once `runRetryPolicy` has applied defaults.
+ */
+export interface ResolvedRetryPolicy<TError extends Error, TData> {
+  next: RetryPolicy<TError, TData>["next"];
+  onExhausted: (input: RetryExhaustedInput<TError, TData>) => RetryError;
+  isKnownError: (error: unknown) => error is TError;
 }
 
 /**
@@ -121,7 +137,7 @@ export interface RetryExhaustedInput<
 }
 
 /**
- * Options for `BaseRetryPolicy.run(...)`.
+ * Options for `runRetryPolicy(...)`.
  *
  * @example
  * const options: RetryRunOptions = { throwOnExhausted: false, signal: controller.signal };
@@ -157,7 +173,7 @@ export interface RetryRunOptions {
  *   (exhaustion or abort).
  *
  * @example
- * const result: RetryRunResult<string> = await policy.run(doWork, { throwOnExhausted: false });
+ * const result: RetryRunResult<string> = await runRetryPolicy(policy, doWork, { throwOnExhausted: false });
  * if (!result.ok) console.error(result.error);
  */
 export type RetryRunResult<T> =

@@ -33,12 +33,12 @@ deno add jsr:@zap-studio/retry
 
 ## Create a Policy
 
-Import a built-in policy and configure it. `ExponentialBackoff` doubles the delay after each failure, up to a cap.
+Import a built-in policy factory and configure it. `exponentialBackoff(...)` doubles the delay after each failure, up to a cap.
 
 ```ts
-import { ExponentialBackoff } from "@zap-studio/retry";
+import { exponentialBackoff } from "@zap-studio/retry";
 
-const policy = new ExponentialBackoff({
+const policy = exponentialBackoff({
   maxAttempts: 5, // total attempts, including the first
   baseDelayMs: 100, // first retry waits 100 ms
   maxDelayMs: 2_000, // later retries never wait longer than 2 s
@@ -47,19 +47,19 @@ const policy = new ExponentialBackoff({
 
 ## Run Your Work
 
-Pass an async function to `policy.run(...)`. The runner calls it once per attempt, catches failures, waits, and retries until it succeeds or the policy stops.
+Pass the policy and an async function to `runRetryPolicy(...)`. The runner calls the function once per attempt, catches failures, waits, and retries until it succeeds or the policy stops.
 
 ```ts
-import { ExponentialBackoff } from "@zap-studio/retry";
+import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
 import { $fetch } from "@zap-studio/fetch";
 
-const policy = new ExponentialBackoff({
+const policy = exponentialBackoff({
   maxAttempts: 5,
   baseDelayMs: 100,
   maxDelayMs: 2_000,
 });
 
-const users = await policy.run(async () => {
+const users = await runRetryPolicy(policy, async () => {
   const response = await $fetch("https://api.example.com/users", {
     throwOnFetchError: true,
   });
@@ -71,13 +71,13 @@ const users = await policy.run(async () => {
 
 ## Handle Exhaustion
 
-By default, `run(...)` throws a `RetryError` when every attempt fails.
+By default, `runRetryPolicy(...)` throws a `RetryError` when every attempt fails.
 
 ```ts
-import { RetryError } from "@zap-studio/retry";
+import { RetryError, runRetryPolicy } from "@zap-studio/retry";
 
 try {
-  const users = await policy.run(fetchUsers);
+  const users = await runRetryPolicy(policy, fetchUsers);
   console.log(users);
 } catch (error) {
   if (error instanceof RetryError) {
@@ -92,9 +92,9 @@ try {
 Prefer result objects over exceptions? Pass `throwOnExhausted: false` to receive a discriminated union instead:
 
 ```ts
-import { RetryError } from "@zap-studio/retry";
+import { RetryError, runRetryPolicy } from "@zap-studio/retry";
 
-const result = await policy.run(fetchUsers, {
+const result = await runRetryPolicy(policy, fetchUsers, {
   throwOnExhausted: false,
 });
 

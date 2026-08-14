@@ -2,7 +2,7 @@
   "name": "@zap-studio/retry",
   "version": "0.4.0",
   "private": false,
-  "description": "Composable retry policies for resilient async operations.",
+  "description": "Composable, tree-shakeable retry policies for resilient async operations.",
   "keywords": [
     "backoff",
     "exponential backoff",

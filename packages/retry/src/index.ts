@@ -9,12 +9,12 @@
  * @module @zap-studio/retry
  */
 
-export { BaseRetryPolicy, defaultSleep } from "./base-policy.js";
+export { defaultSleep, runRetryPolicy } from "./base-policy.js";
 export { AbortError, RetryError } from "./errors.js";
 export type { AbortErrorContext, RetryErrorContext } from "./errors.js";
-export { ExponentialBackoff } from "./exponential-backoff.js";
+export { exponentialBackoff } from "./exponential-backoff.js";
 export type { ExponentialBackoffOptions } from "./exponential-backoff.js";
-export { FixedDelay } from "./fixed-delay.js";
+export { fixedDelay } from "./fixed-delay.js";
 export type { FixedDelayOptions } from "./fixed-delay.js";
 export type {
   RetryDecision,

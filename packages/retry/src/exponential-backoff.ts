@@ -4,11 +4,14 @@
  * @module @zap-studio/retry/exponential-backoff
  */
 
-import { BaseRetryPolicy } from "./base-policy.js";
-import type { RetryDecision, RetryDecisionInput } from "./types.js";
+import type {
+  RetryDecision,
+  RetryDecisionInput,
+  RetryPolicy,
+} from "./types.js";
 
 /**
- * Configuration for `ExponentialBackoff`.
+ * Configuration for `exponentialBackoff(...)`.
  *
  * @example
  * const options: ExponentialBackoffOptions = {
@@ -33,50 +36,37 @@ export interface ExponentialBackoffOptions {
 }
 
 /**
- * Retries with exponential delay growth up to a max cap.
+ * Creates a retry policy with exponential delay growth up to a max cap.
  *
  * @example
- * const policy = new ExponentialBackoff({
+ * const policy = exponentialBackoff({
  *   maxAttempts: 5,
  *   baseDelayMs: 100,
  *   maxDelayMs: 2_000,
  * });
  */
-export class ExponentialBackoff extends BaseRetryPolicy {
-  /**
-   * Maximum number of attempts before the policy returns `max-attempts-reached`.
-   */
-  private readonly maxAttempts: number;
-  /**
-   * Base delay in milliseconds used in `baseDelayMs * 2 ** (attempt - 1)`.
-   */
-  private readonly baseDelayMs: number;
-  /**
-   * Upper cap for computed delay, applied with `Math.min`.
-   */
-  private readonly maxDelayMs: number;
+export const exponentialBackoff = (
+  options: ExponentialBackoffOptions
+): RetryPolicy => {
+  const { maxAttempts, baseDelayMs, maxDelayMs } = options;
 
-  /**
-   * Creates an exponential backoff retry policy.
-   */
-  constructor(options: ExponentialBackoffOptions) {
-    super();
-    this.maxAttempts = options.maxAttempts;
-    this.baseDelayMs = options.baseDelayMs;
-    this.maxDelayMs = options.maxDelayMs;
-  }
+  return {
+    /**
+     * Computes retry decision for the current attempt.
+     */
+    next(input: RetryDecisionInput): RetryDecision {
+      if (input.attempt >= maxAttempts) {
+        return {
+          delayMs: 0,
+          reason: "max-attempts-reached",
+          shouldRetry: false,
+        };
+      }
 
-  /**
-   * Computes retry decision for the current attempt.
-   */
-  public next(input: RetryDecisionInput): RetryDecision {
-    if (input.attempt >= this.maxAttempts) {
-      return { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false };
-    }
+      const exponent = Math.max(0, input.attempt - 1);
+      const delayMs = Math.min(maxDelayMs, baseDelayMs * 2 ** exponent);
 
-    const exponent = Math.max(0, input.attempt - 1);
-    const delayMs = Math.min(this.maxDelayMs, this.baseDelayMs * 2 ** exponent);
-
-    return { delayMs, reason: "retry", shouldRetry: true };
-  }
-}
+      return { delayMs, reason: "retry", shouldRetry: true };
+    },
+  };
+};

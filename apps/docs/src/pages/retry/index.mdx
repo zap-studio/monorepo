@@ -9,26 +9,27 @@ description: Composable retry policies with a built-in runner, structured termin
 
 ## Features
 
-- **Built-in policies**: [`FixedDelay`](/retry/fixed-delay) and [`ExponentialBackoff`](/retry/exponential-backoff).
-- **A shared runner** via [`BaseRetryPolicy.run(...)`](/retry/running-policies) with attempt-aware callbacks and custom sleep injection.
+- **Built-in policies**: [`fixedDelay(...)`](/retry/fixed-delay) and [`exponentialBackoff(...)`](/retry/exponential-backoff).
+- **A shared runner** via [`runRetryPolicy(policy, execute, options?)`](/retry/running-policies) with attempt-aware callbacks and custom sleep injection.
 - **Structured terminal errors**: [`RetryError` on exhaustion, `AbortError` on cancellation](/retry/errors).
 - **Non-throw mode** ([`throwOnExhausted: false`](/retry/non-throw-mode)) returns a `RetryRunResult` instead of throwing.
 - **Cancellation** through [`AbortSignal`](/retry/abort-signal), checked before, between, and during retries.
-- **Custom policies** by [extending `BaseRetryPolicy`](/retry/custom-policies) and implementing `next(...)`.
+- **Custom policies** as [plain objects implementing `RetryPolicy`](/retry/custom-policies) — just a `next(...)` function, no subclassing.
+- **Tree-shakeable** — policies are functions returning plain objects, not classes; unused policies are dropped by any modern bundler.
 
 ## Quick Start
 
 ```ts
-import { ExponentialBackoff } from "@zap-studio/retry";
+import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
 import { $fetch } from "@zap-studio/fetch";
 
-const exponential = new ExponentialBackoff({
+const policy = exponentialBackoff({
   maxAttempts: 5,
   baseDelayMs: 100,
   maxDelayMs: 2_000,
 });
 
-const data = await exponential.run(async () => {
+const data = await runRetryPolicy(policy, async () => {
   const response = await $fetch("https://api.example.com/users", {
     throwOnFetchError: true,
   });
@@ -51,8 +52,8 @@ Cancellation relies on `AbortSignal.reason`, which sets the browser minimums abo
 ## Learn More
 
 - [Getting Started](/retry/getting-started) — install and build your first retry policy step by step
-- [Built-in Policies: FixedDelay](/retry/fixed-delay)
-- [Built-in Policies: ExponentialBackoff](/retry/exponential-backoff)
+- [Built-in Policies: fixedDelay](/retry/fixed-delay)
+- [Built-in Policies: exponentialBackoff](/retry/exponential-backoff)
 - [Shared Runner](/retry/running-policies)
 - [Non-throw Mode](/retry/non-throw-mode)
 - [Structured Errors](/retry/errors)

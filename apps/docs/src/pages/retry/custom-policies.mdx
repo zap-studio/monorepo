@@ -1,30 +1,27 @@
 ---
 title: Custom Policies
-description: Custom policies by extending BaseRetryPolicy and implementing next(...).
+description: Custom policies as plain objects implementing RetryPolicy and its next(...) function.
 ---
 
 # Custom Policies
 
-Custom policies by extending `BaseRetryPolicy` and implementing `next(...)`. Create one when the built-in [`FixedDelay`](/retry/fixed-delay) and [`ExponentialBackoff`](/retry/exponential-backoff) policies do not match your retry rules.
+Custom policies are plain objects implementing the `RetryPolicy` interface — just a `next(...)` function, no subclassing. Write one when the built-in [`fixedDelay`](/retry/fixed-delay) and [`exponentialBackoff`](/retry/exponential-backoff) policies do not match your retry rules.
 
-## Extend BaseRetryPolicy
+## Implement RetryPolicy
 
-Extending `BaseRetryPolicy` is the recommended path. You implement `next(...)` only — the base class supplies `onExhausted(...)` with a default `RetryError` and provides the shared `run(...)` orchestration.
+Only `next` is required. `onExhausted` and `isKnownError` fall back to `runRetryPolicy`'s defaults when omitted — a default `RetryError` and an `error instanceof Error` check, respectively.
 
 ```ts
-import { BaseRetryPolicy } from "@zap-studio/retry";
-import type { RetryDecision, RetryDecisionInput } from "@zap-studio/retry";
+import { runRetryPolicy } from "@zap-studio/retry";
+import type {
+  RetryDecision,
+  RetryDecisionInput,
+  RetryPolicy,
+} from "@zap-studio/retry";
 
-class LinearBackoff extends BaseRetryPolicy {
-  constructor(
-    private readonly maxAttempts: number,
-    private readonly stepMs: number
-  ) {
-    super();
-  }
-
-  public next(input: RetryDecisionInput): RetryDecision {
-    if (input.attempt >= this.maxAttempts) {
+const linearBackoff = (maxAttempts: number, stepMs: number): RetryPolicy => ({
+  next(input: RetryDecisionInput): RetryDecision {
+    if (input.attempt >= maxAttempts) {
       return {
         shouldRetry: false,
         delayMs: 0,
@@ -34,15 +31,15 @@ class LinearBackoff extends BaseRetryPolicy {
 
     return {
       shouldRetry: true,
-      delayMs: input.attempt * this.stepMs,
+      delayMs: input.attempt * stepMs,
       reason: "retry",
     };
-  }
-}
+  },
+});
 
-const policy = new LinearBackoff(5, 250);
+const policy = linearBackoff(5, 250);
 
-const value = await policy.run(async () => {
+const value = await runRetryPolicy(policy, async () => {
   return await doWork();
 });
 ```
@@ -54,11 +51,14 @@ const value = await policy.run(async () => {
 Because `next(...)` receives the thrown error, a policy can stop early for failures that will never succeed.
 
 ```ts
-import { BaseRetryPolicy } from "@zap-studio/retry";
-import type { RetryDecision, RetryDecisionInput } from "@zap-studio/retry";
+import type {
+  RetryDecision,
+  RetryDecisionInput,
+  RetryPolicy,
+} from "@zap-studio/retry";
 
-class RetryOnNetworkError extends BaseRetryPolicy {
-  public next(input: RetryDecisionInput): RetryDecision {
+const retryOnNetworkError = (): RetryPolicy => ({
+  next(input: RetryDecisionInput): RetryDecision {
     if (!(input.error instanceof TypeError)) {
       // Non-network failures are terminal.
       return { shouldRetry: false, delayMs: 0, reason: "policy-declined" };
@@ -69,20 +69,21 @@ class RetryOnNetworkError extends BaseRetryPolicy {
     }
 
     return { shouldRetry: true, delayMs: 200, reason: "retry" };
-  }
-}
+  },
+});
 ```
 
 ## Customize Exhaustion
 
-Override `onExhausted(...)` when callers need a custom terminal error. The return type must extend `RetryError`.
+Supply `onExhausted(...)` when callers need a custom terminal error. The return type must extend `RetryError`.
 
 ```ts
-import { BaseRetryPolicy, RetryError } from "@zap-studio/retry";
+import { RetryError } from "@zap-studio/retry";
 import type {
   RetryDecision,
   RetryDecisionInput,
   RetryExhaustedInput,
+  RetryPolicy,
 } from "@zap-studio/retry";
 
 class UpstreamRetryError extends RetryError {
@@ -92,32 +93,35 @@ class UpstreamRetryError extends RetryError {
   }
 }
 
-class UpstreamPolicy extends BaseRetryPolicy {
-  public next(input: RetryDecisionInput): RetryDecision {
+const upstreamPolicy = (): RetryPolicy => ({
+  next(input: RetryDecisionInput): RetryDecision {
     if (input.attempt >= 3) {
       return { shouldRetry: false, delayMs: 0, reason: "max-attempts-reached" };
     }
 
     return { shouldRetry: true, delayMs: 100, reason: "retry" };
-  }
+  },
 
-  public override onExhausted(input: RetryExhaustedInput): UpstreamRetryError {
+  onExhausted(input: RetryExhaustedInput): UpstreamRetryError {
     return new UpstreamRetryError(input.attempts, input.error);
-  }
-}
+  },
+});
 ```
 
-`run(...)` throws the value returned by `onExhausted(...)` — or places it on `result.error` when `throwOnExhausted` is `false`.
+`runRetryPolicy(...)` throws the value returned by `onExhausted(...)` — or places it on `result.error` when `throwOnExhausted` is `false`.
 
 ## Narrow the Error Domain
 
-`TError` defaults to `Error`, but `execute(...)` can still throw or reject with anything. Before a caught value reaches `next(...)`/`onExhausted(...)`, `BaseRetryPolicy.run(...)` checks it with `isKnownError(error)`.
+`TError` defaults to `Error`, but `execute(...)` can still throw or reject with anything. Before a caught value reaches `next(...)`/`onExhausted(...)`, `runRetryPolicy(...)` checks it with `isKnownError(error)`.
 
-The default `isKnownError` checks `error instanceof Error`. When `TError` is a specific subclass, override it to narrow for real — and to stop treating unrelated failures as retryable:
+The default `isKnownError` checks `error instanceof Error`. When `TError` is a specific subclass, supply your own to narrow for real — and to stop treating unrelated failures as retryable:
 
 ```ts
-import { BaseRetryPolicy } from "@zap-studio/retry";
-import type { RetryDecision, RetryDecisionInput } from "@zap-studio/retry";
+import type {
+  RetryDecision,
+  RetryDecisionInput,
+  RetryPolicy,
+} from "@zap-studio/retry";
 
 class HttpError extends Error {
   constructor(
@@ -129,29 +133,29 @@ class HttpError extends Error {
   }
 }
 
-class HttpRetryPolicy extends BaseRetryPolicy<HttpError> {
-  public override isKnownError(error: unknown): error is HttpError {
+const httpRetryPolicy = (): RetryPolicy<HttpError> => ({
+  isKnownError(error: unknown): error is HttpError {
     return error instanceof HttpError;
-  }
+  },
 
-  public next(input: RetryDecisionInput<HttpError>): RetryDecision {
+  next(input: RetryDecisionInput<HttpError>): RetryDecision {
     if (input.error && input.error.status < 500) {
       // Client errors are terminal; only retry server errors.
       return { shouldRetry: false, delayMs: 0, reason: "policy-declined" };
     }
 
     return { shouldRetry: input.attempt < 3, delayMs: 200, reason: "retry" };
-  }
-}
+  },
+});
 ```
 
-With this override, a `TypeError` from a bug elsewhere in `execute(...)` no longer masquerades as an `HttpError` — `isKnownError` rejects it, and `run(...)` bypasses retry for it instead of feeding it into `next(...)`.
+With this policy, a `TypeError` from a bug elsewhere in `execute(...)` no longer masquerades as an `HttpError` — `isKnownError` rejects it, and `runRetryPolicy(...)` bypasses retry for it instead of feeding it into `next(...)`.
 
-:::note When `isKnownError` returns `false`, the value never reaches `next(...)` or `onExhausted(...)`, and no retry is attempted for it. In throw mode, `run(...)` rethrows it as-is. With `throwOnExhausted: false`, it's wrapped in a `RetryError` and returned on `result.error` instead — `run(...)` never throws in that mode. :::
+:::note When `isKnownError` returns `false`, the value never reaches `next(...)` or `onExhausted(...)`, and no retry is attempted for it. In throw mode, `runRetryPolicy(...)` rethrows it as-is. With `throwOnExhausted: false`, it's wrapped in a `RetryError` and returned on `result.error` instead — `runRetryPolicy(...)` never throws in that mode. :::
 
 ## Implement the Types Directly
 
-Use the lower-level `RetryPolicy` interface when you need to build your own orchestration layer instead of using `BaseRetryPolicy.run(...)`.
+The `RetryPolicy` interface is the only contract `runRetryPolicy(...)` needs — reach for a lower-level orchestration layer of your own only if you don't want to use `runRetryPolicy(...)` at all.
 
 ```ts
 import { RetryError } from "@zap-studio/retry";
@@ -171,13 +175,13 @@ const policy: RetryPolicy = {
 };
 ```
 
-When you implement `RetryPolicy` directly, you are responsible for the retry loop, delay behavior, and how execution errors are captured.
+When you build your own orchestration instead of `runRetryPolicy(...)`, you are responsible for the retry loop, delay behavior, and how execution errors are captured.
 
 ## Guidelines
 
 - Keep `next(...)` deterministic and side-effect light.
 - Return `shouldRetry: false` when the current attempt should be terminal.
 - Use `reason` values (`"retry"`, `"max-attempts-reached"`, `"policy-declined"`) for debugging and logs.
-- Prefer extending `BaseRetryPolicy` unless you need full orchestration control.
+- Prefer a plain object implementing `RetryPolicy` and `runRetryPolicy(...)` unless you need full orchestration control.
 
 See [Types](/retry/types) for the full `RetryPolicy`, `RetryDecision`, and related type reference.
