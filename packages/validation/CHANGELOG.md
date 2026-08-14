@@ -6,13 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.4.0]
 
-### Breaking: renamed `createSyncStandardValidator` to `createStandardValidatorSync`
+### Changed
 
-`createSyncStandardValidator` is renamed to `createStandardValidatorSync` for naming consistency with `standardValidateSync`. Update imports and usages accordingly; the thrown error message for async schemas now reads `Async schemas are not supported by createStandardValidatorSync`.
+- **Breaking:** `createSyncStandardValidator` is renamed to `createStandardValidatorSync` for naming consistency with `standardValidateSync`. Update imports and usages accordingly; the thrown error message for async schemas now reads `Async schemas are not supported by createStandardValidatorSync`.
 
 ## [0.3.6]
 
-### Tree-shakeable root re-exports
+### Added
 
 The package root now re-exports the full public API, so `ValidationError` can be imported from `@zap-studio/validation` directly alongside the validators. All exports are side-effect free and tree-shakeable; granular subpath imports keep working.
 
@@ -20,7 +20,7 @@ The package root now re-exports the full public API, so `ValidationError` can be
 
 ## [0.3.5]
 
-### Migrate to ultracite lint/format
+### Changed
 
 Internal formatting and lint cleanup with no public API change. `isStandardSchema` now accepts an optional argument, and `standardValidateSync` throws a `TypeError` (still an `Error`) for async schemas.
 
@@ -33,27 +33,27 @@ Internal formatting and lint cleanup with no public API change. `isStandardSchem
 
 ## [0.3.3]
 
-### Fixed
-
-- 7004e9f: Allow explicit `undefined` in validator option handling while preserving typed throwing and non-throwing overload behavior.
-
 ### Changed
 
 - 2a1787f: Removed redundant `| undefined` unions from public option types and overloads.
 - 9f31f87: Switched the package build to ESNext-aligned output and updated package tooling and publish metadata.
 - 367d588: Expanded TSDoc coverage for validator error behavior and reusable validator helpers.
 
+### Fixed
+
+- 7004e9f: Allow explicit `undefined` in validator option handling while preserving typed throwing and non-throwing overload behavior.
+
 ## [0.3.2]
 
-### Patch Changes
+### Added
 
-- e26293e: Re-export StandardSchemaV1 type from the Standard Schema specification package and add module docs
+- e26293e: Re-export `StandardSchemaV1` type from the Standard Schema specification package and add module docs.
 
 ## [0.3.1]
 
-### Patch Changes
+### Added
 
-- 5ea3d3b: Refactor reusable validators to delegate to `standardValidate`/`standardValidateSync` and add per-call options support.
+- 5ea3d3b: Refactored reusable validators to delegate to `standardValidate`/`standardValidateSync` and added per-call options support.
   - `createStandardValidator` now supports `throwOnError` with the same return-type behavior as `standardValidate`.
   - `createSyncStandardValidator` now supports `throwOnError` with the same return-type behavior as `standardValidateSync`.
   - Updated docs and examples for reusable validator option handling.
@@ -94,4 +94,3 @@ Internal formatting and lint cleanup with no public API change. `isStandardSchem
 ### Changed
 
 - 447dbda: Updated `@zap-studio/fetch` to consume the shared validation utilities.
-</content>

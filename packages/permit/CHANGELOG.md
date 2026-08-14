@@ -6,17 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.4.0]
 
-### Removed `assertNever` export (breaking)
+### Removed
 
 `assertNever` is no longer exported — it had no internal consumers and existed only as a generic exhaustiveness-check convenience. Use your own `never`-typed helper if you relied on it.
 
-### Fixed `mergePoliciesSome` and `mergePoliciesEvery` to evaluate policies in parallel
+### Fixed
 
 Neither merge strategy short-circuits anymore. All policies now run concurrently via `Promise.allSettled`, and every policy is invoked regardless of outcome, for both `mergePoliciesSome` (allow) and `mergePoliciesEvery` (deny). A rejecting policy no longer sinks the whole check — it's treated as a deny (`false`) and logged with `console.warn`, consistent with how `createPolicy` handles internal validation/evaluation errors.
 
 ## [0.3.4]
 
-### Tree-shakeable root re-exports
+### Added
 
 The package root now re-exports the full public API, so everything can be imported from `@zap-studio/permit` directly, including `PolicyError`, `assertNever`, and all public types. All exports are side-effect free and tree-shakeable; granular subpath imports keep working.
 
@@ -24,38 +24,35 @@ The package root now re-exports the full public API, so everything can be import
 
 ## [0.3.3]
 
-### Migrate to ultracite lint/format
+### Changed
 
 Internal formatting and lint cleanup only. No public API or behavior change.
 
 ## [0.3.2]
 
-### Dependencies
+### Changed
 
 - Updated dependency `@zap-studio/validation` to `0.3.4`.
 
 ## [0.3.1]
-
-### Fixed
-
-- d10d8c4: Removed the TanStack Intent-specific authoring helper from the package surface.
-- d9ba7d1: Reworked the packaged permit skill content.
 
 ### Changed
 
 - 5fa58b1: Reduced policy evaluation complexity by extracting permission parsing and merge strategy helpers without changing the `policy.can(...)` API.
 - abfda4b: Cleaned up public option typings by removing redundant `| undefined` unions from package types.
 - 9f31f87: Switched the package build to ESNext-aligned output and updated package tooling and publish metadata.
-
-### Dependencies
-
+- d9ba7d1: Reworked the packaged permit skill content.
 - Updated dependency `@zap-studio/validation` to `0.3.3`.
+
+### Removed
+
+- d10d8c4: Removed the TanStack Intent-specific authoring helper from the package surface.
 
 ## [0.3.0]
 
-### Minor Changes
+### Changed
 
-- fe60f55: Change `policy.can()` to use a single permission string plus the resource object.
+- fe60f55: **Breaking:** Changed `policy.can()` to use a single permission string plus the resource object.
 
   `policy.can(ctx, "read", "post", post)` is replaced by `policy.can(ctx, "post:read", post)`.
 
@@ -63,14 +60,14 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 ## [0.2.2]
 
-### Patch Changes
+### Changed
 
 - e26293e: Updated dependencies.
   - @zap-studio/validation@0.3.2
 
 ## [0.2.1]
 
-### Patch Changes
+### Changed
 
 - 5ea3d3b: Updated dependencies.
   - @zap-studio/validation@0.3.1
@@ -80,21 +77,15 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 ### Changed
 
 - f0f503e: Made policy evaluation asynchronous by default.
-
-### Breaking Changes
-
-- f0f503e: `policy.can(...)` now returns `Promise<boolean>`.
-- f0f503e: `createPolicy()` now uses async-safe Standard Schema validation for resource schemas (including async resource schemas); this is not a separate `Policy` schema API.
-- f0f503e: The `Policy` interface changed so `can()` is async, and `mergePolicies`/`mergePoliciesAny` are async accordingly.
+- f0f503e: **Breaking:** `policy.can(...)` now returns `Promise<boolean>`.
+- f0f503e: **Breaking:** `createPolicy()` now uses async-safe Standard Schema validation for resource schemas (including async resource schemas); this is not a separate `Policy` schema API.
+- f0f503e: **Breaking:** The `Policy` interface changed so `can()` is async, and `mergePolicies`/`mergePoliciesAny` are async accordingly.
 - Action required: callers must `await policy.can(...)` and handle `mergePolicies`/`mergePoliciesAny` as async operations; also account for async-safe resource schema validation in `createPolicy()`.
-
-### Dependencies
-
 - f75b984: Updated dependency `@zap-studio/validation` to `0.3.0`.
 
 ## [0.1.3]
 
-### Dependencies
+### Changed
 
 - e4542bb: Updated dependency `@zap-studio/validation` to `0.2.1`.
 
@@ -103,9 +94,6 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 ### Changed
 
 - 2de8183: Adopted shared synchronous Standard Schema validator utilities from `@zap-studio/validation` for resource schema validation in `createPolicy`.
-
-### Dependencies
-
 - 2de8183: Updated dependency `@zap-studio/validation` to `0.2.0`.
 
 ## [0.1.1]
@@ -128,4 +116,3 @@ Internal formatting and lint cleanup only. No public API or behavior change.
   - Full TypeScript type inference support.
   - `PolicyError` for authorization failures.
   - `assertNever()` for exhaustive checks.
-  </content>
