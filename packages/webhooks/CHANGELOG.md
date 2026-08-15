@@ -12,12 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 HMAC signature verification decodes the incoming header's hex signature to bytes and compares it against the computed digest byte-for-byte, instead of hex-encoding the digest and comparing hex text. Behavior is unchanged for valid requests; this only affects internals (fewer bytes compared, and the header's hex is no longer case-normalized as text since decoding handles case natively).
 
+`constantTimeEquals` moved from `utils.ts` into `verify.ts` (its only consumer) and now compares `Uint8Array`s (bytes) instead of strings. Still exported from `@zap-studio/webhooks` and `@zap-studio/webhooks/verify`.
+
 ### Removed
 
-`constantTimeEquals` moved into `verify.ts` (its only consumer) and is no longer part of the public API.
-
-- Removed the `./utils` subpath export.
-- Removed the public `constantTimeEquals` export from `@zap-studio/webhooks` — it was an implementation detail of `createHmacVerifier`, not a standalone utility.
+Removed the `./utils` subpath export.
 
 ## [0.4.0]
 
