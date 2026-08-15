@@ -24,7 +24,7 @@ catalog:
   oxfmt: ^0.63.0
   oxlint: ^1.78.0
   oxlint-tsgolint: ^7.0.2001
-  ultracite: ^7.10.3
+  ultracite: ^7.10.4
   playwright: ^1.62.1
   publint: ^0.3.23
   react: ^19.2.8
@@ -36,6 +36,6 @@ catalog:
   vitest: ^4.1.10
   vocs: ^2.8.5
   waku: 1.0.0-beta.8
-  wrangler: ^4.122.0
+  wrangler: ^4.123.0
   zod: ^4.4.3
   unplugin-unused: ^0.5.7
