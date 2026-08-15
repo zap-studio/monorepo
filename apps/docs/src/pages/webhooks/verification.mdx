@@ -89,7 +89,7 @@ For providers with their own signing scheme, pass any function matching `VerifyF
 
 ```ts
 import Stripe from "stripe";
-import { createWebhookRouter } from "@zap-studio/webhooks";
+import { createWebhookRouter, VerificationError } from "@zap-studio/webhooks";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -97,14 +97,18 @@ const router = createWebhookRouter({
   verify: ({ request, rawBody }) => {
     const signature = request.headers.get("stripe-signature");
     if (!signature) {
-      throw new Error("Missing Stripe signature");
+      throw new VerificationError("Missing Stripe signature");
     }
 
-    stripe.webhooks.constructEvent(
-      Buffer.from(rawBody),
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
+    try {
+      stripe.webhooks.constructEvent(
+        Buffer.from(rawBody),
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET!
+      );
+    } catch {
+      throw new VerificationError("Invalid Stripe signature");
+    }
   },
 });
 ```
