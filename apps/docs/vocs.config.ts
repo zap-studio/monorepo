@@ -63,6 +63,7 @@ export default defineConfig({
             { link: "/permit/roles", text: "Role-Based Access Control" },
             { link: "/permit/conditions", text: "Conditions" },
             { link: "/permit/merging-policies", text: "Merging Policies" },
+            { link: "/permit/scaling-policies", text: "Scaling Policies" },
             { link: "/permit/errors", text: "Error Handling" },
           ],
           text: "permit",

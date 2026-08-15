@@ -1,0 +1,210 @@
+---
+title: Scaling Policies
+description: Split a policy with many resources and actions across files while keeping one type-safe source of truth.
+---
+
+# Scaling Policies
+
+A policy with a handful of resources fits comfortably in one file. Once your app has a dozen resources — each with several actions and rules referencing different parts of your domain — that one `createPolicy()` call becomes hard to navigate and merge-conflict-prone to edit. Split it by domain instead.
+
+## Split Rules Across Files, Keep One Policy
+
+The recommended pattern: each domain owns a file that exports its own `resources`, `actions`, and rules slice. A central file composes them into a single `resources`, a single `actions`, and a single `rules` object, then calls `createPolicy()` once. You still get one policy with one shared permission-string type — `"post:read"`, `"comment:write"`, and so on all type-check against the same `can()` — but no file holds more than one domain's worth of rules.
+
+Every domain file below imports one shared context type from `context.ts`:
+
+```ts [context.ts]
+export type AppContext = {
+  user: { id: string; role: "guest" | "user" | "admin" } | null;
+};
+```
+
+:::code-group
+
+```ts [policies/post.ts]
+import { deny, when } from "@zap-studio/permit";
+import type { ActionPolicyMap, Actions, Resources } from "@zap-studio/permit";
+import { z } from "zod";
+import type { AppContext } from "../context.js";
+
+export const postResources = {
+  post: z.object({
+    id: z.string(),
+    authorId: z.string(),
+    visibility: z.enum(["public", "private"]),
+  }),
+} satisfies Resources;
+
+export const postActions = {
+  post: ["read", "write", "delete"],
+} as const satisfies Actions<typeof postResources>;
+
+export const postRules: ActionPolicyMap<
+  AppContext,
+  (typeof postActions)["post"][number],
+  z.infer<typeof postResources.post>
+> = {
+  read: when((_, __, post) => post.visibility === "public"),
+  write: when((ctx, _, post) => ctx.user?.id === post.authorId),
+  delete: deny(),
+};
+```
+
+```ts [policies/comment.ts]
+import { allow, when } from "@zap-studio/permit";
+import type { ActionPolicyMap, Actions, Resources } from "@zap-studio/permit";
+import { z } from "zod";
+import type { AppContext } from "../context.js";
+
+export const commentResources = {
+  comment: z.object({
+    id: z.string(),
+    postId: z.string(),
+    authorId: z.string(),
+  }),
+} satisfies Resources;
+
+export const commentActions = {
+  comment: ["read", "write"],
+} as const satisfies Actions<typeof commentResources>;
+
+export const commentRules: ActionPolicyMap<
+  AppContext,
+  (typeof commentActions)["comment"][number],
+  z.infer<typeof commentResources.comment>
+> = {
+  read: allow(),
+  write: when((ctx, _, comment) => ctx.user?.id === comment.authorId),
+};
+```
+
+```ts [policies/index.ts]
+import { createPolicy } from "@zap-studio/permit";
+import type { Actions, Resources, Rules } from "@zap-studio/permit";
+import type { AppContext } from "../context.js";
+import { commentActions, commentResources, commentRules } from "./comment.js";
+import { postActions, postResources, postRules } from "./post.js";
+
+const resources = {
+  ...postResources,
+  ...commentResources,
+} satisfies Resources;
+
+const actions = {
+  ...postActions,
+  ...commentActions,
+} as const satisfies Actions<typeof resources>;
+
+const rules: Rules<AppContext, typeof resources, typeof actions> = {
+  post: postRules,
+  comment: commentRules,
+};
+
+export const policy = createPolicy<
+  AppContext,
+  typeof resources,
+  typeof actions
+>({
+  resources,
+  actions,
+  rules,
+});
+```
+
+```ts [usage]
+import { policy } from "./policies/index.js";
+
+await policy.can(ctx, "post:read", post);
+await policy.can(ctx, "comment:write", comment);
+```
+
+:::
+
+:::note
+
+`Rules<TContext, TResources, TActions>` requires an entry for every key in `TResources`, so `policies/index.ts` is the one place that has to know about every domain — everything else about a domain's rules lives in that domain's own file.
+
+:::
+
+Add a new domain by adding a file and one spread in each of the three objects in `policies/index.ts`. Nothing else changes.
+
+## When to Merge Separate Policies Instead
+
+If your domains are independent enough that they're built and owned separately — different packages, different teams, policies that only come together at the edge of your app — build each as its own `createPolicy()` with its own narrower `resources` and `actions`, then combine them with [`mergePoliciesSome()`](/permit/merging-policies#mergepoliciessome-allow-overrides-strategy):
+
+:::code-group
+
+```ts [policies/post.ts]
+import { createPolicy, deny, when } from "@zap-studio/permit";
+import type { Actions, Resources } from "@zap-studio/permit";
+import { z } from "zod";
+import type { AppContext } from "../context.js";
+
+const postResources = {
+  post: z.object({
+    id: z.string(),
+    authorId: z.string(),
+    visibility: z.enum(["public", "private"]),
+  }),
+} satisfies Resources;
+
+const postActions = {
+  post: ["read", "write", "delete"],
+} as const satisfies Actions<typeof postResources>;
+
+export const postPolicy = createPolicy<
+  AppContext,
+  typeof postResources,
+  typeof postActions
+>({
+  resources: postResources,
+  actions: postActions,
+  rules: {
+    post: {
+      read: when((_, __, post) => post.visibility === "public"),
+      write: when((ctx, _, post) => ctx.user?.id === post.authorId),
+      delete: deny(),
+    },
+  },
+});
+```
+
+```ts [usage]
+import { mergePoliciesSome } from "@zap-studio/permit";
+import { postPolicy } from "./policies/post.js";
+import { commentPolicy } from "./policies/comment.js"; // built the same way
+
+const policy = mergePoliciesSome(postPolicy, commentPolicy);
+
+await policy.can(ctx, "post:read", post); // routed to postPolicy
+await policy.can(ctx, "comment:write", comment); // routed to commentPolicy
+```
+
+:::
+
+This works because a policy denies any permission for a resource type it doesn't define — `postPolicy` only knows about `"post"`, so it denies every `"comment:*"` check without commentPolicy's rules ever coming into play. With `mergePoliciesSome()`, each permission check is effectively routed to the one policy that owns that resource type.
+
+:::warning
+
+Don't reach for `mergePoliciesEvery()` to combine domain-split policies. It requires **every** merged policy to allow, and a policy that doesn't own a resource type always denies it — so anything outside the intersection of all domains would be denied by every check. `mergePoliciesEvery()` is for layering restrictions onto the _same_ resources (see [Merging Policies](/permit/merging-policies)), not for splitting by domain.
+
+:::
+
+## Which Approach to Use
+
+|  | Split rules, one policy | Separate policies, merged |
+| --- | --- | --- |
+| Permission strings | One shared type across all domains | Only valid within each domain's own policy |
+| Cross-domain rules (e.g. a comment rule that reads the parent post) | Straightforward — one `rules` object | Not possible — each policy only sees its own resources |
+| Ownership | One codebase, split by file | Can live in separate packages |
+| Composition | Compile-time, via object spread | Runtime, via `mergePoliciesSome()` |
+
+Default to splitting rules across files with one policy. Reach for merging separate policies only when domains are genuinely owned and shipped independently.
+
+## Best Practices
+
+1. **One file per domain** — a domain's `resources`, `actions`, and rules live together, next to the code that uses them
+2. **Keep the composition file thin** — `policies/index.ts` should only spread and call `createPolicy()`, not contain any rule logic itself
+3. **Name exports after the domain** — `postResources`, `postActions`, `postRules` scan easily across files
+4. **Share the context type** — import one `AppContext` type everywhere instead of redefining it per domain
+5. **Reach for `mergePoliciesSome()` only across real boundaries** — package, team, or deployment boundaries, not just "this file got long"
