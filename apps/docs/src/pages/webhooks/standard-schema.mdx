@@ -11,28 +11,38 @@ description: Bring Zod, Valibot, ArkType, or any Standard Schema-compatible libr
 import { createWebhookRouter } from "@zap-studio/webhooks";
 
 const router = createWebhookRouter();
+```
 
-// With Zod
+:::code-group
+
+```ts [Zod]
 import { z } from "zod";
+
 router.register("/event", {
   schema: z.object({ id: z.string() }),
   handler: ({ payload }) => Response.json(payload),
 });
+```
 
-// With Valibot
+```ts [Valibot]
 import * as v from "valibot";
+
 router.register("/event", {
   schema: v.object({ id: v.string() }),
   handler: ({ payload }) => Response.json(payload),
 });
+```
 
-// With ArkType
+```ts [ArkType]
 import { type } from "arktype";
+
 router.register("/event", {
   schema: type({ id: "string" }),
   handler: ({ payload }) => Response.json(payload),
 });
 ```
+
+:::
 
 When those libraries implement the Standard Schema spec, you keep one validation flow across your app instead of writing library-specific request handling.
 
