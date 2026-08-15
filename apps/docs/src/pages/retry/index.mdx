@@ -9,7 +9,7 @@ description: Composable retry policies with a built-in runner, structured termin
 
 ## Features
 
-- **Built-in policies**: [`fixedDelay(...)`](/retry/fixed-delay) and [`exponentialBackoff(...)`](/retry/exponential-backoff).
+- **Built-in policies**: [`fixedDelay(...)`](/retry/fixed-delay), [`linearBackoff(...)`](/retry/linear-backoff), and [`exponentialBackoff(...)`](/retry/exponential-backoff).
 - **A shared runner** via [`runRetryPolicy(policy, execute, options?)`](/retry/running-policies) with attempt-aware callbacks and custom sleep injection.
 - **Structured terminal errors**: [`RetryError` on exhaustion, `AbortError` on cancellation](/retry/errors).
 - **Non-throw mode** ([`throwOnExhausted: false`](/retry/non-throw-mode)) returns a `RetryRunResult` instead of throwing.
@@ -53,6 +53,7 @@ Cancellation relies on `AbortSignal.reason`, which sets the browser minimums abo
 
 - [Getting Started](/retry/getting-started) — install and build your first retry policy step by step
 - [Built-in Policies: fixedDelay](/retry/fixed-delay)
+- [Built-in Policies: linearBackoff](/retry/linear-backoff)
 - [Built-in Policies: exponentialBackoff](/retry/exponential-backoff)
 - [Shared Runner](/retry/running-policies)
 - [Non-throw Mode](/retry/non-throw-mode)
