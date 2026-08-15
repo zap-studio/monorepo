@@ -180,47 +180,6 @@ policy.can(context, permission, resource): Promise<boolean>
 3. **Validate the resource** — The resource is validated against its Standard Schema; invalid resources return `false`.
 4. **Evaluate the rule** — No rule defined for the action returns `false`. If the rule throws, the error is logged with `console.warn` and `can()` returns `false`.
 
-### Example: Blog Post Authorization
-
-```ts
-// Scenario: User trying to edit a blog post
-const context: AppContext = {
-  user: {
-    id: "user-123",
-    role: "user",
-    permissions: [],
-    organizationId: "org-1",
-  },
-  timestamp: new Date(),
-};
-
-const post = {
-  id: "post-456",
-  authorId: "user-123", // Same as context.user.id (so user is the author)
-  title: "My First Post",
-  visibility: "public" as const,
-  createdAt: new Date(),
-};
-
-// The user is the author, so this returns true according to the policy
-const canEdit = await policy.can(context, "post:write", post);
-console.log(canEdit); // true
-
-// A different user trying to edit
-const otherContext: AppContext = {
-  user: {
-    id: "user-789",
-    role: "user",
-    permissions: [],
-    organizationId: "org-1",
-  },
-  timestamp: new Date(),
-};
-
-const canOtherEdit = await policy.can(otherContext, "post:write", post);
-console.log(canOtherEdit); // false
-```
-
 ## Real-World Example: E-commerce Store
 
 Here's a complete example for an e-commerce application:
