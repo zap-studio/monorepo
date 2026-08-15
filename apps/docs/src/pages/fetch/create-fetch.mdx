@@ -59,7 +59,12 @@ await api.get("/users/1", UserSchema);
 await api.get("https://status.example.com/health", StatusSchema);
 ```
 
-:::note A trailing slash is added to `baseURL` before resolution, so paths without a leading slash append to the base path, while paths with a leading slash resolve from the origin root. With `baseURL: "https://api.example.com/v1"`, the path `"users"` resolves to `https://api.example.com/v1/users`, but `"/users"` resolves to `https://api.example.com/users`. :::
+:::note Paths without a leading slash append to `baseURL`; paths with a leading slash resolve from the origin root instead. With `baseURL: "https://api.example.com/v1"`:
+
+- `"users"` → `https://api.example.com/v1/users`
+- `"/users"` → `https://api.example.com/users`
+
+:::
 
 ## Headers
 
