@@ -45,8 +45,8 @@ function $fetch<TSchema extends StandardSchemaV1>(
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `throwOnValidationError` | `boolean` | `true` | Throw a `ValidationError` when validation returns issues. When `false`, the Standard Schema result object is returned instead. |
 | `searchParams` | `URLSearchParams` init | `undefined` | Per-request query params, merged into the request URL. |
+| `throwOnValidationError` | `boolean` | `true` | Throw a `ValidationError` when validation returns issues. When `false`, the Standard Schema result object is returned instead. |
 | `throwOnFetchError` | `boolean` | `true` | Throw a `FetchError` on non-2xx responses, before parsing or validation. |
 
 ## Non-Throw Validation
