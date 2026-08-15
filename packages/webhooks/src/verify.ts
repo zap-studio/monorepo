@@ -10,7 +10,7 @@ import type { VerifyFn } from "./types.js";
 /**
  * Compares two byte arrays in constant time to prevent timing attacks.
  */
-const constantTimeEquals = (a: Uint8Array, b: Uint8Array): boolean => {
+export const constantTimeEquals = (a: Uint8Array, b: Uint8Array): boolean => {
   if (a.length !== b.length) {
     return false;
   }

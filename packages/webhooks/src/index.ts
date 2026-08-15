@@ -27,4 +27,4 @@ export type {
   WebhookHandler,
   WebhookRouterOptions,
 } from "./types.js";
-export { createHmacVerifier } from "./verify.js";
+export { constantTimeEquals, createHmacVerifier } from "./verify.js";

@@ -119,12 +119,16 @@ Write a custom verifier when a provider:
 - requires SDK-specific verification logic
 - includes timestamp or replay-protection checks
 
-If your custom verifier compares signature strings itself, use `constantTimeEquals` from `@zap-studio/webhooks` instead of `===`.
+If your custom verifier compares signatures itself, use `constantTimeEquals` from `@zap-studio/webhooks` instead of `===`. It compares byte arrays (`Uint8Array`), not strings — encode strings first.
 
 ```ts
 import { constantTimeEquals } from "@zap-studio/webhooks";
 
-const isValid = constantTimeEquals(expectedSignature, receivedSignature);
+const encoder = new TextEncoder();
+const isValid = constantTimeEquals(
+  encoder.encode(expectedSignature),
+  encoder.encode(receivedSignature)
+);
 ```
 
 :::warning[Replay protection]
