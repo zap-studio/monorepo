@@ -1,6 +1,6 @@
 /**
- * Policy creation and composition: `createPolicy`, `mergePoliciesEvery`, and
- * `mergePoliciesSome`.
+ * Policy creation and composition: `createPolicy`, `mergePoliciesAnd`, and
+ * `mergePoliciesOr`.
  *
  * @module @zap-studio/permit/policy
  */
@@ -216,7 +216,7 @@ const mergePoliciesWithStrategy = <
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
   policies: Policy<TContext, TResources, TActions>[],
-  strategy: "every" | "some"
+  strategy: "and" | "or"
 ): Policy<TContext, TResources, TActions> => ({
   async can<K extends keyof TResources & keyof TActions>(
     context: TContext,
@@ -240,9 +240,7 @@ const mergePoliciesWithStrategy = <
       return false;
     });
 
-    return strategy === "every"
-      ? results.every(Boolean)
-      : results.some(Boolean);
+    return strategy === "and" ? results.every(Boolean) : results.some(Boolean);
   },
 });
 
@@ -256,18 +254,18 @@ const mergePoliciesWithStrategy = <
  * const basePolicy = createPolicy({ ... });
  * const adminPolicy = createPolicy({ ... });
  *
- * const merged = mergePoliciesEvery(basePolicy, adminPolicy);
+ * const merged = mergePoliciesAnd(basePolicy, adminPolicy);
  * // Both policies must allow for the action to be permitted
  * ```
  */
-export const mergePoliciesEvery = <
+export const mergePoliciesAnd = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
   ...policies: Policy<TContext, TResources, TActions>[]
 ): Policy<TContext, TResources, TActions> =>
-  mergePoliciesWithStrategy(policies, "every");
+  mergePoliciesWithStrategy(policies, "and");
 
 /**
  * Merges multiple policies into one, requiring at least one policy to allow.
@@ -279,15 +277,15 @@ export const mergePoliciesEvery = <
  * const guestPolicy = createPolicy({ ... });
  * const memberPolicy = createPolicy({ ... });
  *
- * const merged = mergePoliciesSome(guestPolicy, memberPolicy);
+ * const merged = mergePoliciesOr(guestPolicy, memberPolicy);
  * // If either policy allows, the action is permitted
  * ```
  */
-export const mergePoliciesSome = <
+export const mergePoliciesOr = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
   ...policies: Policy<TContext, TResources, TActions>[]
 ): Policy<TContext, TResources, TActions> =>
-  mergePoliciesWithStrategy(policies, "some");
+  mergePoliciesWithStrategy(policies, "or");

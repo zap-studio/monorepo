@@ -10,8 +10,8 @@ import {
   deny,
   has,
   hasRole,
-  mergePoliciesEvery,
-  mergePoliciesSome,
+  mergePoliciesAnd,
+  mergePoliciesOr,
   not,
   or,
   when,
@@ -344,10 +344,10 @@ describe(or, () => {
   });
 });
 
-describe(mergePoliciesEvery, () => {
+describe(mergePoliciesAnd, () => {
   it("should deny when called with no policies", async () => {
     await Promise.resolve();
-    const policy = mergePoliciesEvery<
+    const policy = mergePoliciesAnd<
       TestContext,
       typeof resources,
       typeof actions
@@ -366,10 +366,10 @@ describe(mergePoliciesEvery, () => {
   });
 });
 
-describe(mergePoliciesSome, () => {
+describe(mergePoliciesOr, () => {
   it("should deny when called with no policies", async () => {
     await Promise.resolve();
-    const policy = mergePoliciesSome<
+    const policy = mergePoliciesOr<
       TestContext,
       typeof resources,
       typeof actions
@@ -1393,7 +1393,7 @@ describe(createPolicy, () => {
   });
 });
 
-describe(mergePoliciesEvery, () => {
+describe(mergePoliciesAnd, () => {
   it("should return a policy with can method", async () => {
     await Promise.resolve();
     const policy1 = createPolicy<TestContext, typeof resources, typeof actions>(
@@ -1407,7 +1407,7 @@ describe(mergePoliciesEvery, () => {
       }
     );
 
-    const merged = mergePoliciesEvery(policy1);
+    const merged = mergePoliciesAnd(policy1);
 
     expect(merged).toHaveProperty("can");
     expect(merged.can).toBeTypeOf("function");
@@ -1447,7 +1447,7 @@ describe(mergePoliciesEvery, () => {
       }
     );
 
-    const merged = mergePoliciesEvery(policy1, policy2);
+    const merged = mergePoliciesAnd(policy1, policy2);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
       authorId: "user-1",
@@ -1493,7 +1493,7 @@ describe(mergePoliciesEvery, () => {
       }
     );
 
-    const merged = mergePoliciesEvery(policy1, policy2);
+    const merged = mergePoliciesAnd(policy1, policy2);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
       authorId: "user-1",
@@ -1516,7 +1516,7 @@ describe(mergePoliciesEvery, () => {
       },
     });
 
-    const merged = mergePoliciesEvery(policy);
+    const merged = mergePoliciesAnd(policy);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
       authorId: "user-1",
@@ -1531,7 +1531,7 @@ describe(mergePoliciesEvery, () => {
 
   it("should work with empty policies array", async () => {
     await Promise.resolve();
-    const merged = mergePoliciesEvery<
+    const merged = mergePoliciesAnd<
       TestContext,
       typeof resources,
       typeof actions
@@ -1578,7 +1578,7 @@ describe(mergePoliciesEvery, () => {
       },
     };
 
-    const merged = mergePoliciesEvery(policy1, policy2);
+    const merged = mergePoliciesAnd(policy1, policy2);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
       authorId: "user-1",
@@ -1619,7 +1619,7 @@ describe(mergePoliciesEvery, () => {
       },
     };
 
-    const merged = mergePoliciesEvery(policy1, policy2);
+    const merged = mergePoliciesAnd(policy1, policy2);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
       authorId: "user-1",
@@ -1667,7 +1667,7 @@ describe(mergePoliciesEvery, () => {
       }
     );
 
-    const merged = mergePoliciesEvery(policy1, policy2);
+    const merged = mergePoliciesAnd(policy1, policy2);
     const user: TestContext = { user: { id: "1", role: "user" } };
     const guest: TestContext = { user: { id: "2", role: "guest" } };
     const publicPost = {
@@ -1698,7 +1698,7 @@ describe(mergePoliciesEvery, () => {
   });
 });
 
-describe(mergePoliciesSome, () => {
+describe(mergePoliciesOr, () => {
   it("should return a policy with can method", async () => {
     await Promise.resolve();
     const policy1 = createPolicy<TestContext, typeof resources, typeof actions>(
@@ -1712,7 +1712,7 @@ describe(mergePoliciesSome, () => {
       }
     );
 
-    const merged = mergePoliciesSome(policy1);
+    const merged = mergePoliciesOr(policy1);
 
     expect(merged).toHaveProperty("can");
     expect(merged.can).toBeTypeOf("function");
@@ -1752,7 +1752,7 @@ describe(mergePoliciesSome, () => {
       }
     );
 
-    const merged = mergePoliciesSome(policy1, policy2);
+    const merged = mergePoliciesOr(policy1, policy2);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
       authorId: "user-1",
@@ -1798,7 +1798,7 @@ describe(mergePoliciesSome, () => {
       }
     );
 
-    const merged = mergePoliciesSome(policy1, policy2);
+    const merged = mergePoliciesOr(policy1, policy2);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
       authorId: "user-1",
@@ -1821,7 +1821,7 @@ describe(mergePoliciesSome, () => {
       },
     });
 
-    const merged = mergePoliciesSome(policy);
+    const merged = mergePoliciesOr(policy);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
       authorId: "user-1",
@@ -1836,7 +1836,7 @@ describe(mergePoliciesSome, () => {
 
   it("should work with empty policies array", async () => {
     await Promise.resolve();
-    const merged = mergePoliciesSome<
+    const merged = mergePoliciesOr<
       TestContext,
       typeof resources,
       typeof actions
@@ -1883,7 +1883,7 @@ describe(mergePoliciesSome, () => {
       },
     };
 
-    const merged = mergePoliciesSome(policy1, policy2);
+    const merged = mergePoliciesOr(policy1, policy2);
     const ctx: TestContext = { user: { id: "1", role: "user" } };
     const post = {
       authorId: "user-1",
@@ -1952,7 +1952,7 @@ describe(mergePoliciesSome, () => {
       },
     });
 
-    const merged = mergePoliciesSome(publicPolicy, ownerPolicy);
+    const merged = mergePoliciesOr(publicPolicy, ownerPolicy);
     const user: TestContext = { user: { id: "user-1", role: "user" } };
     const publicPost = {
       authorId: "user-2",

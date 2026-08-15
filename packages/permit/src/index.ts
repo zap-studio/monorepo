@@ -21,11 +21,7 @@ export {
   when,
 } from "./conditions.js";
 export { PolicyError } from "./errors.js";
-export {
-  createPolicy,
-  mergePoliciesEvery,
-  mergePoliciesSome,
-} from "./policy.js";
+export { createPolicy, mergePoliciesAnd, mergePoliciesOr } from "./policy.js";
 export type {
   ActionPolicyMap,
   Actions,

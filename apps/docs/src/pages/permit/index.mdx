@@ -14,7 +14,7 @@ description: A type-safe, declarative authorization library for TypeScript with 
 - **Declarative policies** through `createPolicy(...)` with `allow()`, `deny()`, and `when(condition)`. See [Declarative Policies](/permit/declarative-policies).
 - **Role hierarchy support** via `hasRole(role, hierarchy?)`, with inheritance resolved by `collectInheritedRoles`. See [Role-Based Access Control](/permit/roles).
 - **Composable conditions** via `and`, `or`, and `not`. See [Conditions](/permit/conditions).
-- **Policy merging strategies** via `mergePoliciesEvery` and `mergePoliciesSome`. See [Merging Policies](/permit/merging-policies).
+- **Policy merging strategies** via `mergePoliciesAnd` and `mergePoliciesOr`. See [Merging Policies](/permit/merging-policies).
 - **Structured errors** with `PolicyError` for invalid configuration or evaluation failures. See [Error Handling](/permit/errors).
 - **Tree-shakeable** — policies and conditions are plain functions; unused exports are dropped by any modern bundler.
 

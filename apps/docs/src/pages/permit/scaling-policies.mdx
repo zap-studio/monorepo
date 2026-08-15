@@ -130,7 +130,7 @@ Add a new domain by adding a file and one spread in each of the three objects in
 
 ## When to Merge Separate Policies Instead
 
-If your domains are independent enough that they're built and owned separately — different packages, different teams, policies that only come together at the edge of your app — build each as its own `createPolicy()` with its own narrower `resources` and `actions`, then combine them with [`mergePoliciesSome()`](/permit/merging-policies#mergepoliciessome-allow-overrides-strategy):
+If your domains are independent enough that they're built and owned separately — different packages, different teams, policies that only come together at the edge of your app — build each as its own `createPolicy()` with its own narrower `resources` and `actions`, then combine them with [`mergePoliciesOr()`](/permit/merging-policies#mergepoliciesor-or-strategy):
 
 :::code-group
 
@@ -170,11 +170,11 @@ export const postPolicy = createPolicy<
 ```
 
 ```ts [usage]
-import { mergePoliciesSome } from "@zap-studio/permit";
+import { mergePoliciesOr } from "@zap-studio/permit";
 import { postPolicy } from "./policies/post.js";
 import { commentPolicy } from "./policies/comment.js"; // built the same way
 
-const policy = mergePoliciesSome(postPolicy, commentPolicy);
+const policy = mergePoliciesOr(postPolicy, commentPolicy);
 
 await policy.can(ctx, "post:read", post); // routed to postPolicy
 await policy.can(ctx, "comment:write", comment); // routed to commentPolicy
@@ -182,11 +182,11 @@ await policy.can(ctx, "comment:write", comment); // routed to commentPolicy
 
 :::
 
-This works because a policy denies any permission for a resource type it doesn't define — `postPolicy` only knows about `"post"`, so it denies every `"comment:*"` check without commentPolicy's rules ever coming into play. With `mergePoliciesSome()`, each permission check is effectively routed to the one policy that owns that resource type.
+This works because a policy denies any permission for a resource type it doesn't define — `postPolicy` only knows about `"post"`, so it denies every `"comment:*"` check without commentPolicy's rules ever coming into play. With `mergePoliciesOr()`, each permission check is effectively routed to the one policy that owns that resource type.
 
 :::warning
 
-Don't reach for `mergePoliciesEvery()` to combine domain-split policies. It requires **every** merged policy to allow, and a policy that doesn't own a resource type always denies it — so anything outside the intersection of all domains would be denied by every check. `mergePoliciesEvery()` is for layering restrictions onto the _same_ resources (see [Merging Policies](/permit/merging-policies)), not for splitting by domain.
+Don't reach for `mergePoliciesAnd()` to combine domain-split policies. It requires **every** merged policy to allow, and a policy that doesn't own a resource type always denies it — so anything outside the intersection of all domains would be denied by every check. `mergePoliciesAnd()` is for layering restrictions onto the _same_ resources (see [Merging Policies](/permit/merging-policies)), not for splitting by domain.
 
 :::
 
@@ -197,7 +197,7 @@ Don't reach for `mergePoliciesEvery()` to combine domain-split policies. It requ
 | Permission strings | One shared type across all domains | Only valid within each domain's own policy |
 | Cross-domain rules (e.g. a comment rule that reads the parent post) | Straightforward — one `rules` object | Not possible — each policy only sees its own resources |
 | Ownership | One codebase, split by file | Can live in separate packages |
-| Composition | Compile-time, via object spread | Runtime, via `mergePoliciesSome()` |
+| Composition | Compile-time, via object spread | Runtime, via `mergePoliciesOr()` |
 
 Default to splitting rules across files with one policy. Reach for merging separate policies only when domains are genuinely owned and shipped independently.
 
@@ -207,4 +207,4 @@ Default to splitting rules across files with one policy. Reach for merging separ
 2. **Keep the composition file thin** — `policies/index.ts` should only spread and call `createPolicy()`, not contain any rule logic itself
 3. **Name exports after the domain** — `postResources`, `postActions`, `postRules` scan easily across files
 4. **Share the context type** — import one `AppContext` type everywhere instead of redefining it per domain
-5. **Reach for `mergePoliciesSome()` only across real boundaries** — package, team, or deployment boundaries, not just "this file got long"
+5. **Reach for `mergePoliciesOr()` only across real boundaries** — package, team, or deployment boundaries, not just "this file got long"

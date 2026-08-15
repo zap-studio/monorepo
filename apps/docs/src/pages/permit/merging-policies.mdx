@@ -1,11 +1,11 @@
 ---
 title: Merging Policies
-description: Combine multiple policies with deny-overrides or allow-overrides strategies in permit.
+description: Combine multiple policies with AND or OR strategies in permit.
 ---
 
 # Merging Policies
 
-`permit` merges policies via `mergePoliciesEvery` and `mergePoliciesSome`. As your application grows, you may want to organize authorization logic into separate policies. `permit` provides two merge strategies: deny-overrides and allow-overrides.
+`permit` merges policies via `mergePoliciesAnd` and `mergePoliciesOr`. As your application grows, you may want to organize authorization logic into separate policies. `permit` provides two merge strategies: AND and OR.
 
 ## Why Merge Policies?
 
@@ -18,18 +18,18 @@ Merging policies is useful for:
 
 :::note
 
-Merged policies evaluate in parallel and never short-circuit: every policy is invoked regardless of outcome. `mergePoliciesEvery()` requires all results to allow, `mergePoliciesSome()` requires at least one — but both wait for every policy's `can()` to settle first.
+Merged policies evaluate in parallel and never short-circuit: every policy is invoked regardless of outcome. `mergePoliciesAnd()` requires all results to allow, `mergePoliciesOr()` requires at least one — but both wait for every policy's `can()` to settle first.
 
 :::
 
-## mergePoliciesEvery() — Deny-Overrides Strategy
+## mergePoliciesAnd() — AND Strategy
 
-The `mergePoliciesEvery()` function combines policies using a deny-overrides strategy. An action is allowed only if **all** policies allow it.
+The `mergePoliciesAnd()` function combines policies using an AND strategy. An action is allowed only if **all** policies allow it.
 
 ```ts
-import { mergePoliciesEvery } from "@zap-studio/permit";
+import { mergePoliciesAnd } from "@zap-studio/permit";
 
-const mergedPolicy = mergePoliciesEvery(policy1, policy2, policy3);
+const mergedPolicy = mergePoliciesAnd(policy1, policy2, policy3);
 ```
 
 Think of it as an AND operation: `policy1 AND policy2 AND policy3`
@@ -47,7 +47,7 @@ Think of it as an AND operation: `policy1 AND policy2 AND policy3`
 
 ```ts
 import { z } from "zod";
-import { createPolicy, when, mergePoliciesEvery } from "@zap-studio/permit";
+import { createPolicy, when, mergePoliciesAnd } from "@zap-studio/permit";
 import type { Resources, Actions } from "@zap-studio/permit";
 
 const resources = {
@@ -114,7 +114,7 @@ const securityPolicy = createPolicy<AppContext>({
 });
 
 // Merge: both policies must allow
-const policy = mergePoliciesEvery(basePolicy, securityPolicy);
+const policy = mergePoliciesAnd(basePolicy, securityPolicy);
 
 // Usage
 const confidentialDoc = {
@@ -140,14 +140,14 @@ console.log(
 ); // true
 ```
 
-## mergePoliciesSome() — Allow-Overrides Strategy
+## mergePoliciesOr() — OR Strategy
 
-The `mergePoliciesSome()` function combines policies using an allow-overrides strategy. An action is allowed if **any** policy allows it.
+The `mergePoliciesOr()` function combines policies using an OR strategy. An action is allowed if **any** policy allows it.
 
 ```ts
-import { mergePoliciesSome } from "@zap-studio/permit";
+import { mergePoliciesOr } from "@zap-studio/permit";
 
-const mergedPolicy = mergePoliciesSome(policy1, policy2, policy3);
+const mergedPolicy = mergePoliciesOr(policy1, policy2, policy3);
 ```
 
 Think of it as an OR operation: `policy1 OR policy2 OR policy3`
@@ -165,7 +165,7 @@ Think of it as an OR operation: `policy1 OR policy2 OR policy3`
 
 ```ts
 import { z } from "zod";
-import { createPolicy, when, mergePoliciesSome } from "@zap-studio/permit";
+import { createPolicy, when, mergePoliciesOr } from "@zap-studio/permit";
 import type { Resources, Actions } from "@zap-studio/permit";
 
 const resources = {
@@ -251,7 +251,7 @@ const teamPolicy = createPolicy<FileContext>({
 });
 
 // Any of these policies can grant access
-const filePolicy = mergePoliciesSome(
+const filePolicy = mergePoliciesOr(
   ownerPolicy,
   publicPolicy,
   sharedPolicy,
@@ -277,23 +277,23 @@ console.log(await filePolicy.can(sharedUser, "file:delete", file)); // false (no
 
 ## Combining Both Strategies
 
-You can combine `mergePoliciesEvery()` and `mergePoliciesSome()` for complex scenarios:
+You can combine `mergePoliciesAnd()` and `mergePoliciesOr()` for complex scenarios:
 
 ```ts
-import { mergePolicies, mergePoliciesSome } from "@zap-studio/permit";
+import { mergePoliciesAnd, mergePoliciesOr } from "@zap-studio/permit";
 
 // Access layer: multiple paths to access
-const accessPolicy = mergePoliciesSome(ownerPolicy, sharedPolicy, publicPolicy);
+const accessPolicy = mergePoliciesOr(ownerPolicy, sharedPolicy, publicPolicy);
 
 // Security layer: must pass all security checks
-const securedPolicy = mergePoliciesEvery(
+const securedPolicy = mergePoliciesAnd(
   auditPolicy,
   compliancePolicy,
   ratePolicy
 );
 
 // Final policy: must have access AND pass security
-const finalPolicy = mergePoliciesEvery(accessPolicy, securedPolicy);
+const finalPolicy = mergePoliciesAnd(accessPolicy, securedPolicy);
 ```
 
 ### Visualization
@@ -302,7 +302,7 @@ const finalPolicy = mergePoliciesEvery(accessPolicy, securedPolicy);
                    ┌─────────────┐
                    │ finalPolicy │
                    └──────┬──────┘
-                          │ AND (mergePoliciesEvery)
+                          │ AND (mergePoliciesAnd)
             ┌─────────────┴─────────────┐
             │                           │
      ┌──────┴──────┐             ┌──────┴───────┐
@@ -319,8 +319,8 @@ const finalPolicy = mergePoliciesEvery(accessPolicy, securedPolicy);
 Merging zero policies always denies, with either strategy:
 
 ```ts
-const emptyAnd = mergePoliciesEvery(); // can() always resolves to false
-const emptyOr = mergePoliciesSome(); // can() always resolves to false
+const emptyAnd = mergePoliciesAnd(); // can() always resolves to false
+const emptyOr = mergePoliciesOr(); // can() always resolves to false
 ```
 
 ## Best Practices

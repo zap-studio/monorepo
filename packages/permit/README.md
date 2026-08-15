@@ -19,7 +19,7 @@ You also need a schema library that implements [Standard Schema](https://standar
 - **Declarative policies** through `createPolicy(...)` with `allow()`, `deny()`, and `when(condition)`.
 - **Role hierarchy support** via `hasRole(role, hierarchy?)`, with inheritance resolved by `collectInheritedRoles`.
 - **Composable conditions** via `and`, `or`, and `not`.
-- **Policy merging strategies** via `mergePoliciesEvery` and `mergePoliciesSome`.
+- **Policy merging strategies** via `mergePoliciesAnd` and `mergePoliciesOr`.
 - **Structured errors** with `PolicyError` for invalid configuration or evaluation failures.
 - **Tree-shakeable** — policies and conditions are plain functions; unused exports are dropped by any modern bundler.
 
@@ -99,10 +99,10 @@ const isOwnerOrAdmin = or(
 
 ## Policy Merging Strategies
 
-Via `mergePoliciesEvery` and `mergePoliciesSome`.
+Via `mergePoliciesAnd` and `mergePoliciesOr`.
 
 ```ts
-const merged = mergePoliciesEvery(basePolicy, restrictivePolicy);
+const merged = mergePoliciesAnd(basePolicy, restrictivePolicy);
 ```
 
 ## Standard Schema Support
