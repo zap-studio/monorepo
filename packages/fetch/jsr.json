@@ -9,7 +9,7 @@
     "./types": "./src/types.ts"
   },
   "imports": {
-    "@zap-studio/validation": "jsr:@zap-studio/validation@^0.4.0"
+    "@zap-studio/validation": "jsr:@zap-studio/validation@^1.0.0"
   },
   "publish": {
     "include": ["src", "CHANGELOG.md", "LICENSE", "README.md"]
