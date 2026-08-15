@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 See [Narrow the Error Domain](https://www.zapstudio.dev/retry/custom-policies#narrow-the-error-domain) for the override pattern.
 
+New built-in policy: `linearBackoff(options)` adds a fixed `incrementMs` to the delay after each failed attempt, capped at `maxDelayMs` — steadier growth than `exponentialBackoff`, more spacing than `fixedDelay`. See [linearBackoff](https://www.zapstudio.dev/retry/linear-backoff).
+
 ### Changed
 
 - **Breaking:** `TError` is now constrained to `TError extends Error` and defaults to `Error` (was `TError = unknown`) on `RetryPolicy`, `RetryDecisionInput`, `RetryExhaustedInput`, and `BaseRetryPolicy`.

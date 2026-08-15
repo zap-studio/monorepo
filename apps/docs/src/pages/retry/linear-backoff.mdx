@@ -1,0 +1,92 @@
+---
+title: linearBackoff
+description: Retry with linearly growing delays, capped at an upper bound.
+---
+
+# linearBackoff
+
+`linearBackoff(...)` creates a policy that adds a fixed increment to the delay after each failure, up to a hard cap — growth is steadier and more predictable than [`exponentialBackoff`](/retry/exponential-backoff), while still spacing out later retries more than [`fixedDelay`](/retry/fixed-delay).
+
+## Import
+
+```ts
+import { linearBackoff } from "@zap-studio/retry";
+```
+
+## Configuration
+
+```ts
+import { linearBackoff } from "@zap-studio/retry";
+
+const policy = linearBackoff({
+  maxAttempts: 6,
+  baseDelayMs: 100,
+  incrementMs: 200,
+  maxDelayMs: 5_000,
+});
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `maxAttempts` | `number` | — | Maximum number of attempts (including the first) before giving up. |
+| `baseDelayMs` | `number` | — | Delay in milliseconds after the first failed attempt. |
+| `incrementMs` | `number` | — | Amount added to the delay for each subsequent retry. |
+| `maxDelayMs` | `number` | — | Hard upper bound in milliseconds for the computed delay. |
+
+All options are required.
+
+## Delay Model
+
+The delay before the next retry is computed from the failed attempt number:
+
+```ts
+delayMs = Math.min(maxDelayMs, baseDelayMs + incrementMs * (attempt - 1));
+```
+
+With `baseDelayMs: 100`, `incrementMs: 100`, and `maxDelayMs: 500`:
+
+- after attempt 1 → wait `100` ms
+- after attempt 2 → wait `200` ms
+- after attempt 3 → wait `300` ms
+- after attempt 4 → wait `400` ms
+- after attempt 5 → wait `500` ms
+- after attempt 6 → wait `500` ms (capped)
+
+The policy stops retrying when `attempt >= maxAttempts`, returning a decision with `reason: "max-attempts-reached"`.
+
+:::note
+
+Delays are deterministic — the policy does not add jitter. If you need jitter, [write a custom policy](/retry/custom-policies).
+
+:::
+
+## When to Use
+
+Use `linearBackoff` when:
+
+- you want delays to grow, but exponential growth ramps up too fast for your `maxAttempts`
+- you want a predictable, easy-to-reason-about delay schedule
+- `fixedDelay`'s constant interval doesn't give a struggling upstream enough breathing room over multiple retries
+
+For aggressive backoff against unstable shared services, use [`exponentialBackoff`](/retry/exponential-backoff) instead. For a constant interval, use [`fixedDelay`](/retry/fixed-delay).
+
+## Example
+
+```ts
+import { linearBackoff, runRetryPolicy } from "@zap-studio/retry";
+import { $fetch } from "@zap-studio/fetch";
+
+const policy = linearBackoff({
+  maxAttempts: 5,
+  baseDelayMs: 100,
+  incrementMs: 150,
+  maxDelayMs: 1_000,
+});
+
+const user = await runRetryPolicy(policy, async () => {
+  const response = await $fetch("https://api.example.com/users/1", {
+    throwOnFetchError: true,
+  });
+  return await response.json();
+});
+```

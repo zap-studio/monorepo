@@ -76,6 +76,7 @@ export default defineConfig({
             {
               items: [
                 { link: "/retry/fixed-delay", text: "FixedDelay" },
+                { link: "/retry/linear-backoff", text: "LinearBackoff" },
                 {
                   link: "/retry/exponential-backoff",
                   text: "ExponentialBackoff",
