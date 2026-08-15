@@ -5,7 +5,7 @@ description: Custom policies as plain objects implementing RetryPolicy and its n
 
 # Custom Policies
 
-Custom policies are plain objects implementing the `RetryPolicy` interface — just a `next(...)` function, no subclassing. Write one when the built-in [`fixedDelay`](/retry/fixed-delay) and [`exponentialBackoff`](/retry/exponential-backoff) policies do not match your retry rules.
+Custom policies are plain objects implementing the `RetryPolicy` interface — just a `next(...)` function, no subclassing. Write one when the built-in [`fixedDelay`](/retry/fixed-delay), [`linearBackoff`](/retry/linear-backoff), and [`exponentialBackoff`](/retry/exponential-backoff) policies do not match your retry rules.
 
 ## Implement RetryPolicy
 
@@ -19,7 +19,7 @@ import type {
   RetryPolicy,
 } from "@zap-studio/retry";
 
-const linearBackoff = (maxAttempts: number, stepMs: number): RetryPolicy => ({
+const stepDelay = (maxAttempts: number, stepMs: number): RetryPolicy => ({
   next(input: RetryDecisionInput): RetryDecision {
     if (input.attempt >= maxAttempts) {
       return {
@@ -37,12 +37,14 @@ const linearBackoff = (maxAttempts: number, stepMs: number): RetryPolicy => ({
   },
 });
 
-const policy = linearBackoff(5, 250);
+const policy = stepDelay(5, 250);
 
 const value = await runRetryPolicy(policy, async () => {
   return await doWork();
 });
 ```
+
+For plain linear growth from a base delay, use the built-in [`linearBackoff`](/retry/linear-backoff) instead of writing this by hand.
 
 :::note
 
