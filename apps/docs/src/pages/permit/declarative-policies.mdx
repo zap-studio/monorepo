@@ -15,7 +15,11 @@ Every rule returns a **decision**: either `"allow"` or `"deny"`. Rules receive t
 2. **action** — The action being performed (e.g., `"read"`, `"write"`)
 3. **resource** — The resource being accessed (already validated against its schema)
 
-:::note Rules are optional per action. If an action has no rule, `policy.can()` returns `false` for it. If a rule throws, the error is caught, logged with `console.warn`, and the action is denied. :::
+:::note
+
+Rules are optional per action. If an action has no rule, `policy.can()` returns `false` for it. If a rule throws, the error is caught, logged with `console.warn`, and the action is denied.
+
+:::
 
 ## Setup
 

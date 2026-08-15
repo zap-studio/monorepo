@@ -58,7 +58,11 @@ if (!response.ok) {
 }
 ```
 
-:::note With `throwOnFetchError: false` and a schema provided, the error response body is still parsed and validated — which usually produces a `ValidationError` or `SyntaxError` for non-JSON error pages. Prefer schema-less `$fetch` when you need to inspect error responses. :::
+:::note
+
+With `throwOnFetchError: false` and a schema provided, the error response body is still parsed and validated — which usually produces a `ValidationError` or `SyntaxError` for non-JSON error pages. Prefer schema-less `$fetch` when you need to inspect error responses.
+
+:::
 
 ## ValidationError
 

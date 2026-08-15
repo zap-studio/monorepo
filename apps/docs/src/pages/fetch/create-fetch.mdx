@@ -59,7 +59,9 @@ await api.get("/users/1", UserSchema);
 await api.get("https://status.example.com/health", StatusSchema);
 ```
 
-:::note Paths without a leading slash append to `baseURL`; paths with a leading slash resolve from the origin root instead. With `baseURL: "https://api.example.com/v1"`:
+:::note
+
+Paths without a leading slash append to `baseURL`; paths with a leading slash resolve from the origin root instead. With `baseURL: "https://api.example.com/v1"`:
 
 - `"users"` → `https://api.example.com/v1/users`
 - `"/users"` → `https://api.example.com/users`
@@ -139,7 +141,9 @@ const response = await $fetch("https://api.example.com/users/missing");
 console.log(response.status); // e.g. 404, no FetchError thrown
 ```
 
-:::warning[Type inference and throwOnValidationError] Return types are inferred from **per-call** options only — TypeScript cannot see client defaults. If you set `throwOnValidationError: false` as a client default, calls without the flag return the Standard Schema result object at runtime, but their inferred type is the validated data. To keep types and runtime in sync, pass `throwOnValidationError: false` explicitly at the call site:
+:::warning[Type inference and throwOnValidationError]
+
+Return types are inferred from **per-call** options only — TypeScript cannot see client defaults. If you set `throwOnValidationError: false` as a client default, calls without the flag return the Standard Schema result object at runtime, but their inferred type is the validated data. To keep types and runtime in sync, pass `throwOnValidationError: false` explicitly at the call site:
 
 ```ts
 const result = await api.get("/users/1", UserSchema, {

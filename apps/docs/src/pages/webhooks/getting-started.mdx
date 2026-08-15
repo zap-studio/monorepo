@@ -109,4 +109,8 @@ The router responds with:
 - `400` and `{ error: "validation failed", issues: [...] }` when schema validation fails
 - `500` and `{ error: message }` when a hook, verifier, or handler throws (customizable with `onError`)
 
-:::note The router reads the request body exactly once and keeps the exact bytes in `rawBody`. Signature verification recomputes the HMAC from those bytes, so pass the `Request` through untouched — any middleware that consumes or re-serializes the body first breaks verification. :::
+:::note
+
+The router reads the request body exactly once and keeps the exact bytes in `rawBody`. Signature verification recomputes the HMAC from those bytes, so pass the `Request` through untouched — any middleware that consumes or re-serializes the body first breaks verification.
+
+:::

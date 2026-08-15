@@ -52,7 +52,11 @@ With `baseDelayMs: 100` and `maxDelayMs: 2_000`:
 
 The policy stops retrying when `attempt >= maxAttempts`, returning a decision with `reason: "max-attempts-reached"`.
 
-:::note Delays are deterministic — the policy does not add jitter. If you need jitter, [write a custom policy](/retry/custom-policies). :::
+:::note
+
+Delays are deterministic — the policy does not add jitter. If you need jitter, [write a custom policy](/retry/custom-policies).
+
+:::
 
 ## When to Use
 

@@ -228,7 +228,11 @@ const policy = createPolicy<AppContext>({
 });
 ```
 
-:::note `has()` only checks top-level context properties. For nested values like `ctx.user.role`, write the condition inline: `when((ctx) => ctx.user?.role === "admin")`. :::
+:::note
+
+`has()` only checks top-level context properties. For nested values like `ctx.user.role`, write the condition inline: `when((ctx) => ctx.user?.role === "admin")`.
+
+:::
 
 ## Combining Combinators
 

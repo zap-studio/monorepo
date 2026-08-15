@@ -25,7 +25,11 @@ if (result.ok) {
 
 On failure, `result.error` is a `RetryError` (retries exhausted, or a caught value the policy's `isKnownError` rejected as outside its error domain) or an `AbortError` (run canceled).
 
-:::note In result mode, `runRetryPolicy(...)` never throws for a failed `execute(...)` attempt — an `isKnownError`-rejected value is wrapped in a `RetryError` and returned on `result.error`, not thrown. See [Narrow the Error Domain](/retry/custom-policies#narrow-the-error-domain). :::
+:::note
+
+In result mode, `runRetryPolicy(...)` never throws for a failed `execute(...)` attempt — an `isKnownError`-rejected value is wrapped in a `RetryError` and returned on `result.error`, not thrown. See [Narrow the Error Domain](/retry/custom-policies#narrow-the-error-domain).
+
+:::
 
 Aborting a run behaves the same way in this mode — see [Cancellation](/retry/abort-signal#non-throw-mode).
 
