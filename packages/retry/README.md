@@ -12,7 +12,7 @@ npm install @zap-studio/retry
 
 ## Features
 
-- **Built-in policies**: `fixedDelay(...)` and `exponentialBackoff(...)`.
+- **Built-in policies**: `fixedDelay(...)`, `linearBackoff(...)`, and `exponentialBackoff(...)`.
 - **A shared runner** via `runRetryPolicy(policy, execute, options?)` with attempt-aware callbacks and custom sleep injection.
 - **Structured terminal errors**: `RetryError` on exhaustion, `AbortError` on cancellation.
 - **Non-throw mode** (`throwOnExhausted: false`) returns a `RetryRunResult` instead of throwing.
@@ -42,14 +42,24 @@ const data = await runRetryPolicy(policy, async () => {
 
 ## Built-in Policies
 
-`fixedDelay(...)` and `exponentialBackoff(...)`.
+`fixedDelay(...)`, `linearBackoff(...)`, and `exponentialBackoff(...)`.
 
 ```ts
-import { exponentialBackoff, fixedDelay } from "@zap-studio/retry";
+import {
+  exponentialBackoff,
+  fixedDelay,
+  linearBackoff,
+} from "@zap-studio/retry";
 
 const exponential = exponentialBackoff({
   maxAttempts: 5,
   baseDelayMs: 100,
+  maxDelayMs: 2_000,
+});
+const linear = linearBackoff({
+  maxAttempts: 5,
+  baseDelayMs: 100,
+  incrementMs: 100,
   maxDelayMs: 2_000,
 });
 const fixed = fixedDelay({ maxAttempts: 4, delayMs: 300 });
@@ -121,7 +131,7 @@ import type {
   RetryPolicy,
 } from "@zap-studio/retry";
 
-const linearBackoff = (maxAttempts: number, stepMs: number): RetryPolicy => ({
+const stepDelay = (maxAttempts: number, stepMs: number): RetryPolicy => ({
   next(input: RetryDecisionInput): RetryDecision {
     if (input.attempt >= maxAttempts) {
       return { shouldRetry: false, delayMs: 0, reason: "max-attempts-reached" };
@@ -134,7 +144,7 @@ const linearBackoff = (maxAttempts: number, stepMs: number): RetryPolicy => ({
   },
 });
 
-const data = await runRetryPolicy(linearBackoff(5, 100), execute);
+const data = await runRetryPolicy(stepDelay(5, 100), execute);
 ```
 
 ## Runtime Support
