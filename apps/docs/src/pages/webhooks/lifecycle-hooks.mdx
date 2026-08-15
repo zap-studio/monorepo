@@ -33,8 +33,7 @@ Hook signatures (exported from `@zap-studio/webhooks`):
 - `AfterHook` — `(ctx: WebhookContext, response: Response) => Promise<void> | void`
 - `ErrorHook` — `(error: Error, ctx: WebhookContext) => Response | undefined`, sync or async
 
-:::note
-`after` hooks receive the outgoing `Response` as-is. Reading its body would consume the stream sent to the client, so call `response.clone()` first:
+:::note `after` hooks receive the outgoing `Response` as-is. Reading its body would consume the stream sent to the client, so call `response.clone()` first:
 
 ```ts
 const router = createWebhookRouter({
@@ -80,9 +79,7 @@ For a successful request, the router runs:
 
 `after` hooks only run when the handler completes successfully. If any step throws, execution stops and error handling takes over.
 
-:::note
-`before` hooks run **before** verification, so they see requests that have not been authenticated yet. Keep side effects out of `before` hooks — use them for logging, tracing, or rate limiting, and treat the request as untrusted until `verify` has passed.
-:::
+:::note `before` hooks run **before** verification, so they see requests that have not been authenticated yet. Keep side effects out of `before` hooks — use them for logging, tracing, or rate limiting, and treat the request as untrusted until `verify` has passed. :::
 
 ## Centralize Error Handling
 

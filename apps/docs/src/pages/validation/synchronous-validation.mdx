@@ -33,13 +33,9 @@ const user = standardValidateSync(userSchema, input, {
 });
 ```
 
-:::warning[Async Schemas]
-If the schema validates asynchronously, `standardValidateSync` throws a `TypeError` with the message `Async schemas are not supported by standardValidateSync`.
-:::
+:::warning[Async Schemas] If the schema validates asynchronously, `standardValidateSync` throws a `TypeError` with the message `Async schemas are not supported by standardValidateSync`. :::
 
-:::tip
-Prefer [`standardValidate`](/validation/async-validation) by default. It is the most compatible option because it supports both sync and async schemas.
-:::
+:::tip Prefer [`standardValidate`](/validation/async-validation) by default. It is the most compatible option because it supports both sync and async schemas. :::
 
 ## See Also
 
