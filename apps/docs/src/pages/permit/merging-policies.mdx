@@ -18,7 +18,7 @@ Merging policies is useful for:
 
 :::note
 
-Merged policies evaluate sequentially and short-circuit: `mergePoliciesEvery()` stops at the first deny, `mergePoliciesSome()` stops at the first allow.
+Merged policies evaluate in parallel and never short-circuit: every policy is invoked regardless of outcome. `mergePoliciesEvery()` requires all results to allow, `mergePoliciesSome()` requires at least one — but both wait for every policy's `can()` to settle first.
 
 :::
 
@@ -327,6 +327,6 @@ const emptyOr = mergePoliciesSome(); // can() always resolves to false
 
 1. **Name policies descriptively** — `securityPolicy`, `ownerAccessPolicy`, `compliancePolicy`
 2. **Keep policies focused** — Each policy should handle one concern
-3. **Document merge order** — Explain why policies are merged in a specific order
+3. **Document why each policy is included** — Argument order has no effect on the result; explain each policy's role instead of relying on its position
 4. **Test merged policies** — Ensure the combined behavior is correct
-5. **Order for short-circuiting** — Put policies that deny (or allow) most often first
+5. **Keep merged policies cheap** — Every policy runs on every check, even after another has already decided the outcome; avoid expensive work (I/O, heavy computation) inside a merged policy's rules
