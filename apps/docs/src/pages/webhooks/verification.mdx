@@ -5,7 +5,7 @@ description: Verify webhook authenticity with createHmacVerifier or a custom ver
 
 # Verification
 
-Built-in HMAC verifier with constant-time comparison, or plug in your own `verify` function. The router's `verify` option is the authenticity gate for incoming requests: it runs after `before` hooks but before payload validation and the route handler, and if it throws, request handling stops. This prevents forged payloads from ever reaching your business logic.
+The router ships a built-in HMAC verifier with constant-time comparison, or accepts a custom `verify` function. Its `verify` option is the authenticity gate for incoming requests: it runs after `before` hooks but before payload validation and the route handler, and if it throws, request handling stops. This prevents forged payloads from ever reaching your business logic.
 
 :::warning
 

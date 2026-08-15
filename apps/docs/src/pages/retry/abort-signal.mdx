@@ -5,7 +5,7 @@ description: Cancellation through AbortSignal, checked before, between, and duri
 
 # Cancellation
 
-Cancellation through `AbortSignal`, checked before, between, and during retries. `runRetryPolicy(...)` accepts an `AbortSignal` through the `signal` option. Use it to stop retrying on user navigation, request timeouts, shutdown, or parent workflow cancellation.
+`AbortSignal` cancels retries, checked before, between, and during attempts. `runRetryPolicy(...)` accepts an `AbortSignal` through the `signal` option. Use it to stop retrying on user navigation, request timeouts, shutdown, or parent workflow cancellation.
 
 ## Basic Usage
 
