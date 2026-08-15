@@ -95,7 +95,6 @@ export default defineConfig({
           items: [
             { link: "/validation", text: "Overview" },
             { link: "/validation/getting-started", text: "Getting Started" },
-            { link: "/validation/concepts", text: "Concepts" },
             { link: "/validation/async-validation", text: "Async Validation" },
             {
               link: "/validation/synchronous-validation",
@@ -110,7 +109,6 @@ export default defineConfig({
               link: "/validation/runtime-schema-detection",
               text: "Runtime Schema Detection",
             },
-            { link: "/validation/types", text: "Types" },
           ],
           text: "validation",
         },
