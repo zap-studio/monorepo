@@ -16,7 +16,7 @@ const userSchema = z.object({
   age: z.number(),
 });
 
-const result = standardValidateSync(userSchema, input);
+const result = standardValidateSync(input, userSchema);
 
 if (result.issues) {
   console.error("Validation failed", result.issues);
@@ -28,7 +28,7 @@ if (result.issues) {
 It supports the same `throwOnError` option as [`standardValidate`](/validation/async-validation):
 
 ```ts
-const user = standardValidateSync(userSchema, input, {
+const user = standardValidateSync(input, userSchema, {
   throwOnError: true,
 });
 ```

@@ -127,7 +127,7 @@ const UserSchema = z.object({ id: z.number(), name: z.string() });
 
 const rawInput: unknown = { name: "Ada" };
 
-const input = await standardValidate(CreateUserInputSchema, rawInput, {
+const input = await standardValidate(rawInput, CreateUserInputSchema, {
   throwOnError: true,
 });
 
@@ -149,7 +149,7 @@ const UserSchema = z.object({ id: z.number(), name: z.string() });
 
 const input: unknown = { id: 1, name: "Ada" };
 
-const user = await standardValidate(UserSchema, input, {
+const user = await standardValidate(input, UserSchema, {
   throwOnError: true,
 });
 ```

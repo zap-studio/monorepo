@@ -128,7 +128,7 @@ const validatePayload = async <TPayload>(
     return parsedJson as TPayload;
   }
 
-  const result = await standardValidate(schema, parsedJson, {
+  const result = await standardValidate(parsedJson, schema, {
     throwOnError: false,
   });
 

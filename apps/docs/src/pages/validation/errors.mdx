@@ -11,8 +11,8 @@ description: Optional throwing behavior via throwOnError, backed by a shared Val
 
 `ValidationError` is thrown only in throwing mode, by:
 
-- `standardValidate(schema, input, { throwOnError: true })`
-- `standardValidateSync(schema, input, { throwOnError: true })`
+- `standardValidate(input, schema, { throwOnError: true })`
+- `standardValidateSync(input, schema, { throwOnError: true })`
 - validators from `createStandardValidator(schema)` called with `{ throwOnError: true }`
 - validators from `createStandardValidatorSync(schema)` called with `{ throwOnError: true }`
 
@@ -32,7 +32,7 @@ const userSchema = z.object({
 });
 
 try {
-  const user = await standardValidate(userSchema, input, {
+  const user = await standardValidate(input, userSchema, {
     throwOnError: true,
   });
 
@@ -77,7 +77,7 @@ const emailSchema = z.object({
   email: z.email(),
 });
 
-const result = await standardValidate(emailSchema, formData);
+const result = await standardValidate(formData, emailSchema);
 
 if (result.issues) {
   return { ok: false, fieldErrors: result.issues };

@@ -27,7 +27,7 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
  * @example
  * ```ts
  * try {
- *   const user = await standardValidate(schema, data, { throwOnError: true });
+ *   const user = await standardValidate(data, schema, { throwOnError: true });
  *   console.log(user);
  * } catch (error) {
  *   if (error instanceof ValidationError) {

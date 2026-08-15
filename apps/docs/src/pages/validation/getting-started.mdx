@@ -53,7 +53,7 @@ Use `standardValidate` to validate a value against the schema. By default it doe
 ```ts
 import { standardValidate } from "@zap-studio/validation";
 
-const result = await standardValidate(userSchema, input);
+const result = await standardValidate(input, userSchema);
 
 if (result.issues) {
   console.error("Validation failed", result.issues);
@@ -70,7 +70,7 @@ Pass `throwOnError: true` to get the parsed value directly. On failure, the help
 import { standardValidate, ValidationError } from "@zap-studio/validation";
 
 try {
-  const user = await standardValidate(userSchema, input, {
+  const user = await standardValidate(input, userSchema, {
     throwOnError: true,
   });
 

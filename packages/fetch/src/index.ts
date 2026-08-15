@@ -294,9 +294,9 @@ const fetchInternal = async (
 
   const raw: unknown = await response.json();
   if (throwOnValidationError) {
-    return await standardValidate(schema, raw, { throwOnError: true });
+    return await standardValidate(raw, schema, { throwOnError: true });
   }
-  return await standardValidate(schema, raw, { throwOnError: false });
+  return await standardValidate(raw, schema, { throwOnError: false });
 };
 
 /**

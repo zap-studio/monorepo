@@ -24,7 +24,7 @@ import { standardValidate } from "@zap-studio/validation";
 
 // `userSchema` can come from any Standard Schema-compatible library
 try {
-  const user = await standardValidate(userSchema, input, {
+  const user = await standardValidate(input, userSchema, {
     throwOnError: true,
   });
 

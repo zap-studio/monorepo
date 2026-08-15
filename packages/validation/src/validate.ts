@@ -58,8 +58,8 @@ export const isStandardSchema = (value?: unknown): value is StandardSchemaV1 =>
  * result.
  *
  * @template TSchema - The Standard Schema type.
- * @param schema - The schema to validate against.
  * @param input - The value to validate.
+ * @param schema - The schema to validate against.
  * @param options - Options for validation behavior.
  * @returns The parsed value or the raw validation result.
  * @throws {ValidationError} If validation fails and `throwOnError` is `true`.
@@ -70,13 +70,13 @@ export const isStandardSchema = (value?: unknown): value is StandardSchemaV1 =>
  *
  * @example
  * ```ts
- * const user = await standardValidate(userSchema, data, { throwOnError: true });
+ * const user = await standardValidate(data, userSchema, { throwOnError: true });
  * console.log(user.name);
  * ```
  *
  * @example
  * ```ts
- * const result = await standardValidate(userSchema, data, {
+ * const result = await standardValidate(data, userSchema, {
  *   throwOnError: false,
  * });
  *
@@ -89,8 +89,8 @@ export const isStandardSchema = (value?: unknown): value is StandardSchemaV1 =>
  */
 export const standardValidate: {
   <TSchema extends StandardSchemaV1>(
-    schema: TSchema,
     input: unknown,
+    schema: TSchema,
     options: StandardValidateOptions & { throwOnError: true }
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
@@ -98,19 +98,19 @@ export const standardValidate: {
    * Validates a value against a Standard Schema without throwing by default.
    *
    * @template TSchema - The Standard Schema type.
-   * @param schema - The schema to validate against.
    * @param input - The value to validate.
+   * @param schema - The schema to validate against.
    * @param options - Validation options with non-throwing mode.
    * @returns The raw Standard Schema result.
    */
   <TSchema extends StandardSchemaV1>(
-    schema: TSchema,
     input: unknown,
+    schema: TSchema,
     options?: StandardValidateOptions & { throwOnError?: false }
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 } = async <TSchema extends StandardSchemaV1>(
-  schema: TSchema,
   input: unknown,
+  schema: TSchema,
   options?: StandardValidateOptions
 ): Promise<
   | StandardSchemaV1.InferOutput<TSchema>
@@ -144,8 +144,8 @@ export const standardValidate: {
  * This function throws if the schema performs asynchronous validation.
  *
  * @template TSchema - The Standard Schema type.
- * @param schema - The schema to validate against.
  * @param input - The value to validate.
+ * @param schema - The schema to validate against.
  * @param options - Options for validation behavior.
  * @returns The parsed value or the raw validation result.
  * @throws {Error} If the schema performs asynchronous validation. The message is
@@ -157,13 +157,13 @@ export const standardValidate: {
  *
  * @example
  * ```ts
- * const user = standardValidateSync(userSchema, data, { throwOnError: true });
+ * const user = standardValidateSync(data, userSchema, { throwOnError: true });
  * console.log(user.name);
  * ```
  *
  * @example
  * ```ts
- * const result = standardValidateSync(userSchema, data, {
+ * const result = standardValidateSync(data, userSchema, {
  *   throwOnError: false,
  * });
  *
@@ -176,8 +176,8 @@ export const standardValidate: {
  */
 export const standardValidateSync: {
   <TSchema extends StandardSchemaV1>(
-    schema: TSchema,
     input: unknown,
+    schema: TSchema,
     options: StandardValidateOptions & { throwOnError: true }
   ): StandardSchemaV1.InferOutput<TSchema>;
 
@@ -185,19 +185,19 @@ export const standardValidateSync: {
    * Synchronously validates a value against a Standard Schema without throwing by default.
    *
    * @template TSchema - The Standard Schema type.
-   * @param schema - The schema to validate against.
    * @param input - The value to validate.
+   * @param schema - The schema to validate against.
    * @param options - Validation options with non-throwing mode.
    * @returns The raw Standard Schema result.
    */
   <TSchema extends StandardSchemaV1>(
-    schema: TSchema,
     input: unknown,
+    schema: TSchema,
     options?: StandardValidateOptions & { throwOnError?: false }
   ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
 } = <TSchema extends StandardSchemaV1>(
-  schema: TSchema,
   input: unknown,
+  schema: TSchema,
   options?: StandardValidateOptions
 ):
   | StandardSchemaV1.InferOutput<TSchema>
@@ -284,10 +284,10 @@ export const createStandardValidator = <TSchema extends StandardSchemaV1>(
     | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
   > {
     if (options?.throwOnError === true) {
-      return await standardValidate(schema, input, { throwOnError: true });
+      return await standardValidate(input, schema, { throwOnError: true });
     }
 
-    return await standardValidate(schema, input, {
+    return await standardValidate(input, schema, {
       throwOnError: false,
     });
   }
@@ -360,10 +360,10 @@ export const createStandardValidatorSync = <TSchema extends StandardSchemaV1>(
     | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>> {
     try {
       if (options?.throwOnError === true) {
-        return standardValidateSync(schema, input, { throwOnError: true });
+        return standardValidateSync(input, schema, { throwOnError: true });
       }
 
-      return standardValidateSync(schema, input, {
+      return standardValidateSync(input, schema, {
         throwOnError: false,
       });
     } catch (error) {

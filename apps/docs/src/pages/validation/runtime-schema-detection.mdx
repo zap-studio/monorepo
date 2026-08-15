@@ -50,12 +50,12 @@ Use the guard when schema values are dynamic, external, or typed as `unknown` â€
 ```ts
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 
-export async function validateIfPossible(schemaLike: unknown, input: unknown) {
+export async function validateIfPossible(input: unknown, schemaLike: unknown) {
   if (!isStandardSchema(schemaLike)) {
     return { ok: false as const, reason: "not-a-schema" as const };
   }
 
-  const result = await standardValidate(schemaLike, input);
+  const result = await standardValidate(input, schemaLike);
 
   if (result.issues) {
     return {

@@ -27,7 +27,7 @@ import { standardValidate } from "@zap-studio/validation";
 
 // `userSchema` can come from any Standard Schema-compatible library
 try {
-  const user = await standardValidate(userSchema, input, {
+  const user = await standardValidate(input, userSchema, {
     throwOnError: true,
   });
 
@@ -44,7 +44,7 @@ Via `standardValidateSync`, for schemas known to validate synchronously.
 ```ts
 import { standardValidateSync } from "@zap-studio/validation";
 
-const result = standardValidateSync(userSchema, input);
+const result = standardValidateSync(input, userSchema);
 ```
 
 ## Reusable Validators
@@ -66,7 +66,7 @@ Via `throwOnError`, backed by a shared `ValidationError` class.
 import { standardValidate, ValidationError } from "@zap-studio/validation";
 
 try {
-  await standardValidate(userSchema, input, { throwOnError: true });
+  await standardValidate(input, userSchema, { throwOnError: true });
 } catch (error) {
   if (error instanceof ValidationError) console.error(error.issues);
 }
@@ -80,7 +80,7 @@ Via `isStandardSchema`.
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 
 if (isStandardSchema(schemaLike)) {
-  await standardValidate(schemaLike, input);
+  await standardValidate(input, schemaLike);
 }
 ```
 

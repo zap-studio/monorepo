@@ -16,7 +16,7 @@ const userSchema = z.object({
   age: z.number(),
 });
 
-const result = await standardValidate(userSchema, input);
+const result = await standardValidate(input, userSchema);
 
 if (result.issues) {
   console.error("Validation failed", result.issues);
@@ -32,7 +32,7 @@ By default it does not throw — it returns the raw Standard Schema result: an o
 Pass `throwOnError: true` when invalid input should stop execution. The helper then returns the parsed value directly and throws a `ValidationError` on failure.
 
 ```ts
-const user = await standardValidate(userSchema, input, {
+const user = await standardValidate(input, userSchema, {
   throwOnError: true,
 });
 

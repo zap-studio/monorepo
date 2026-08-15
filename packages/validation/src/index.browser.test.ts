@@ -277,7 +277,7 @@ describe(standardValidate, () => {
         value: input,
       }));
 
-      const result = await standardValidate(schema, "test", {
+      const result = await standardValidate("test", schema, {
         throwOnError: true,
       });
 
@@ -291,7 +291,7 @@ describe(standardValidate, () => {
 
       const data = { id: 42 };
 
-      const result = await standardValidate(schema, data, {
+      const result = await standardValidate(data, schema, {
         throwOnError: true,
       });
 
@@ -303,7 +303,7 @@ describe(standardValidate, () => {
         value: input,
       }));
 
-      const result = await standardValidate(schema, "test", {
+      const result = await standardValidate("test", schema, {
         throwOnError: false,
       });
 
@@ -315,7 +315,7 @@ describe(standardValidate, () => {
         value: input,
       }));
 
-      const result = await standardValidate(schema, "test");
+      const result = await standardValidate("test", schema);
 
       expect(result).toStrictEqual({ value: "test" });
     });
@@ -327,7 +327,7 @@ describe(standardValidate, () => {
         Promise.resolve({ value: input })
       );
 
-      const result = await standardValidate(schema, "async-test", {
+      const result = await standardValidate("async-test", schema, {
         throwOnError: true,
       });
 
@@ -340,7 +340,7 @@ describe(standardValidate, () => {
         return { value: input as number };
       });
 
-      const result = await standardValidate(schema, 123, {
+      const result = await standardValidate(123, schema, {
         throwOnError: true,
       });
 
@@ -354,7 +354,7 @@ describe(standardValidate, () => {
 
       const data = { name: "async" };
 
-      const result = await standardValidate(schema, data, {
+      const result = await standardValidate(data, schema, {
         throwOnError: false,
       });
 
@@ -369,7 +369,7 @@ describe(standardValidate, () => {
       }));
 
       await expect(
-        standardValidate(schema, "invalid", { throwOnError: true })
+        standardValidate("invalid", schema, { throwOnError: true })
       ).rejects.toThrow(ValidationError);
     });
 
@@ -382,7 +382,7 @@ describe(standardValidate, () => {
       const schema = createMockSchema(() => ({ issues }));
 
       const error = await captureRejectedError(
-        async () => await standardValidate(schema, {}, { throwOnError: true })
+        async () => await standardValidate({}, schema, { throwOnError: true })
       );
 
       expect(error).toBeInstanceOf(ValidationError);
@@ -396,7 +396,7 @@ describe(standardValidate, () => {
 
       const schema = createMockSchema(() => ({ issues }));
 
-      const result = await standardValidate(schema, "invalid", {
+      const result = await standardValidate("invalid", schema, {
         throwOnError: false,
       });
 
@@ -409,7 +409,7 @@ describe(standardValidate, () => {
       ];
       const schema = createMockSchema(() => ({ issues }));
 
-      const result = await standardValidate(schema, "invalid");
+      const result = await standardValidate("invalid", schema);
 
       expect(result).toStrictEqual({ issues });
     });
@@ -420,7 +420,7 @@ describe(standardValidate, () => {
       }));
 
       await expect(
-        standardValidate(schema, "invalid", { throwOnError: false })
+        standardValidate("invalid", schema, { throwOnError: false })
       ).resolves.toBeDefined();
     });
 
@@ -430,7 +430,7 @@ describe(standardValidate, () => {
       );
 
       await expect(
-        standardValidate(schema, "data", { throwOnError: true })
+        standardValidate("data", schema, { throwOnError: true })
       ).rejects.toThrow(ValidationError);
     });
 
@@ -441,7 +441,7 @@ describe(standardValidate, () => {
 
       const schema = createMockSchema(() => Promise.resolve({ issues }));
 
-      const result = await standardValidate(schema, "data", {
+      const result = await standardValidate("data", schema, {
         throwOnError: false,
       });
 
@@ -457,7 +457,7 @@ describe(standardValidateSync, () => {
         value: input,
       }));
 
-      const result = standardValidateSync(schema, "test", {
+      const result = standardValidateSync("test", schema, {
         throwOnError: true,
       });
 
@@ -471,7 +471,7 @@ describe(standardValidateSync, () => {
 
       const data = { id: 42 };
 
-      const result = standardValidateSync(schema, data, {
+      const result = standardValidateSync(data, schema, {
         throwOnError: true,
       });
 
@@ -483,7 +483,7 @@ describe(standardValidateSync, () => {
         value: input,
       }));
 
-      const result = standardValidateSync(schema, "test", {
+      const result = standardValidateSync("test", schema, {
         throwOnError: false,
       });
 
@@ -495,7 +495,7 @@ describe(standardValidateSync, () => {
         value: input,
       }));
 
-      const result = standardValidateSync(schema, "test");
+      const result = standardValidateSync("test", schema);
 
       expect(result).toStrictEqual({ value: "test" });
     });
@@ -508,7 +508,7 @@ describe(standardValidateSync, () => {
       }));
 
       expect(() =>
-        standardValidateSync(schema, "invalid", { throwOnError: true })
+        standardValidateSync("invalid", schema, { throwOnError: true })
       ).toThrow(ValidationError);
     });
 
@@ -521,7 +521,7 @@ describe(standardValidateSync, () => {
       const schema = createMockSchema(() => ({ issues }));
 
       const error = captureThrownError(() =>
-        standardValidateSync(schema, {}, { throwOnError: true })
+        standardValidateSync({}, schema, { throwOnError: true })
       );
 
       expect(error).toBeInstanceOf(ValidationError);
@@ -535,7 +535,7 @@ describe(standardValidateSync, () => {
 
       const schema = createMockSchema(() => ({ issues }));
 
-      const result = standardValidateSync(schema, "invalid", {
+      const result = standardValidateSync("invalid", schema, {
         throwOnError: false,
       });
 
@@ -548,7 +548,7 @@ describe(standardValidateSync, () => {
       ];
       const schema = createMockSchema(() => ({ issues }));
 
-      const result = standardValidateSync(schema, "invalid");
+      const result = standardValidateSync("invalid", schema);
 
       expect(result).toStrictEqual({ issues });
     });
@@ -559,7 +559,7 @@ describe(standardValidateSync, () => {
       }));
 
       expect(() =>
-        standardValidateSync(schema, "invalid", { throwOnError: false })
+        standardValidateSync("invalid", schema, { throwOnError: false })
       ).not.toThrow();
     });
   });
@@ -569,7 +569,7 @@ describe(standardValidateSync, () => {
       Promise.resolve({ value: input })
     );
 
-    expect(() => standardValidateSync(schema, "test")).toThrow(
+    expect(() => standardValidateSync("test", schema)).toThrow(
       "Async schemas are not supported by standardValidateSync"
     );
   });
