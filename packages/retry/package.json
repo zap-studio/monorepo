@@ -8,6 +8,7 @@
     "exponential backoff",
     "fetch",
     "http",
+    "linear backoff",
     "resilience",
     "retry",
     "typescript"
@@ -34,6 +35,7 @@
     "./errors": "./dist/errors.js",
     "./exponential-backoff": "./dist/exponential-backoff.js",
     "./fixed-delay": "./dist/fixed-delay.js",
+    "./linear-backoff": "./dist/linear-backoff.js",
     "./types": "./dist/types.js",
     "./package.json": "./package.json"
   },

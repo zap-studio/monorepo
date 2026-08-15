@@ -16,6 +16,8 @@ export { exponentialBackoff } from "./exponential-backoff.js";
 export type { ExponentialBackoffOptions } from "./exponential-backoff.js";
 export { fixedDelay } from "./fixed-delay.js";
 export type { FixedDelayOptions } from "./fixed-delay.js";
+export { linearBackoff } from "./linear-backoff.js";
+export type { LinearBackoffOptions } from "./linear-backoff.js";
 export type {
   RetryDecision,
   RetryDecisionInput,

@@ -9,6 +9,7 @@
     "./errors": "./src/errors.ts",
     "./exponential-backoff": "./src/exponential-backoff.ts",
     "./fixed-delay": "./src/fixed-delay.ts",
+    "./linear-backoff": "./src/linear-backoff.ts",
     "./types": "./src/types.ts"
   },
   "publish": {
