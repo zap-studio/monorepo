@@ -4,6 +4,8 @@
  * @module @zap-studio/retry/linear-backoff
  */
 
+import { applyJitter } from "./jitter.js";
+import type { JitterMode, JitterOptions } from "./jitter.js";
 import type {
   RetryDecision,
   RetryDecisionInput,
@@ -19,6 +21,7 @@ import type {
  *   baseDelayMs: 100,
  *   incrementMs: 100,
  *   maxDelayMs: 2_000,
+ *   jitter: "equal",
  * };
  */
 export interface LinearBackoffOptions {
@@ -38,6 +41,11 @@ export interface LinearBackoffOptions {
    * Hard upper bound in milliseconds for computed linear delay.
    */
   maxDelayMs: number;
+  /**
+   * Optional jitter applied to the computed delay, after capping at
+   * `maxDelayMs`.
+   */
+  jitter?: JitterMode | JitterOptions;
 }
 
 /**
@@ -52,7 +60,7 @@ export interface LinearBackoffOptions {
  * });
  */
 export const linearBackoff = (options: LinearBackoffOptions): RetryPolicy => {
-  const { maxAttempts, baseDelayMs, incrementMs, maxDelayMs } = options;
+  const { maxAttempts, baseDelayMs, incrementMs, maxDelayMs, jitter } = options;
 
   return {
     /**
@@ -67,10 +75,11 @@ export const linearBackoff = (options: LinearBackoffOptions): RetryPolicy => {
         };
       }
 
-      const delayMs = Math.min(
+      const cappedDelayMs = Math.min(
         maxDelayMs,
         baseDelayMs + incrementMs * (input.attempt - 1)
       );
+      const delayMs = applyJitter(cappedDelayMs, jitter);
 
       return { delayMs, reason: "retry", shouldRetry: true };
     },
