@@ -4,6 +4,8 @@
  * @module @zap-studio/retry/exponential-backoff
  */
 
+import { applyJitter } from "./jitter.js";
+import type { JitterMode, JitterOptions } from "./jitter.js";
 import type {
   RetryDecision,
   RetryDecisionInput,
@@ -18,6 +20,7 @@ import type {
  *   maxAttempts: 5,
  *   baseDelayMs: 100,
  *   maxDelayMs: 2_000,
+ *   jitter: "full",
  * };
  */
 export interface ExponentialBackoffOptions {
@@ -33,6 +36,11 @@ export interface ExponentialBackoffOptions {
    * Hard upper bound in milliseconds for computed exponential delay.
    */
   maxDelayMs: number;
+  /**
+   * Optional jitter applied to the computed delay, after capping at
+   * `maxDelayMs`.
+   */
+  jitter?: JitterMode | JitterOptions;
 }
 
 /**
@@ -48,7 +56,7 @@ export interface ExponentialBackoffOptions {
 export const exponentialBackoff = (
   options: ExponentialBackoffOptions
 ): RetryPolicy => {
-  const { maxAttempts, baseDelayMs, maxDelayMs } = options;
+  const { maxAttempts, baseDelayMs, maxDelayMs, jitter } = options;
 
   return {
     /**
@@ -64,7 +72,8 @@ export const exponentialBackoff = (
       }
 
       const exponent = Math.max(0, input.attempt - 1);
-      const delayMs = Math.min(maxDelayMs, baseDelayMs * 2 ** exponent);
+      const cappedDelayMs = Math.min(maxDelayMs, baseDelayMs * 2 ** exponent);
+      const delayMs = applyJitter(cappedDelayMs, jitter);
 
       return { delayMs, reason: "retry", shouldRetry: true };
     },

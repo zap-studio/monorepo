@@ -1,0 +1,61 @@
+---
+title: Jitter
+description: Randomize exponentialBackoff/linearBackoff delays to avoid synchronized retries against a shared upstream.
+---
+
+# Jitter
+
+When many clients fail at the same time and retry on the same deterministic schedule, they hammer the upstream in synchronized waves. `jitter` randomizes the computed delay so retries spread out instead.
+
+`exponentialBackoff(...)` and `linearBackoff(...)` accept an optional `jitter` option, applied to the delay after it's capped at `maxDelayMs`.
+
+```ts
+import { exponentialBackoff } from "@zap-studio/retry";
+
+const policy = exponentialBackoff({
+  maxAttempts: 5,
+  baseDelayMs: 100,
+  maxDelayMs: 2_000,
+  jitter: "full",
+});
+```
+
+## Modes
+
+| Mode | Formula | Description |
+| --- | --- | --- |
+| `"full"` | `random(0, delayMs)` | Maximum spread; strongest protection against synchronized retries. |
+| `"equal"` | `delayMs / 2 + random(0, delayMs / 2)` | Keeps a floor at half the computed delay; less spread than `"full"`. |
+
+With a capped delay of `1_000` ms, `"full"` produces any value in `[0, 1_000]`; `"equal"` produces any value in `[500, 1_000]`.
+
+## Custom Random Source
+
+Pass `{ mode, random }` instead of the mode shorthand to override the random source — useful for deterministic tests:
+
+```ts
+const policy = exponentialBackoff({
+  maxAttempts: 5,
+  baseDelayMs: 100,
+  maxDelayMs: 2_000,
+  jitter: { mode: "full", random: () => 0.5 },
+});
+```
+
+`random` must return a number in `[0, 1)`. Defaults to `Math.random`.
+
+## Standalone Use
+
+`applyJitter(delayMs, jitter?)` is also exported directly, for custom policies:
+
+```ts
+import { applyJitter } from "@zap-studio/retry";
+
+const delayMs = applyJitter(1_000, "equal");
+```
+
+## See Also
+
+- [exponentialBackoff](/retry/exponential-backoff)
+- [linearBackoff](/retry/linear-backoff)
+- [Custom Policies](/retry/custom-policies)

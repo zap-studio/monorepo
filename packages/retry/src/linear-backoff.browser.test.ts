@@ -59,4 +59,16 @@ describe(linearBackoff, () => {
       shouldRetry: false,
     });
   });
+
+  it("applies jitter to the capped delay", () => {
+    const policy = linearBackoff({
+      baseDelayMs: 100,
+      incrementMs: 50,
+      jitter: { mode: "equal", random: () => 0 },
+      maxAttempts: 5,
+      maxDelayMs: 1000,
+    });
+
+    expect(policy.next({ attempt: 2 }).delayMs).toBe(75);
+  });
 });

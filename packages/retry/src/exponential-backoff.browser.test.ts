@@ -55,4 +55,15 @@ describe(exponentialBackoff, () => {
       shouldRetry: false,
     });
   });
+
+  it("applies jitter to the capped delay", () => {
+    const policy = exponentialBackoff({
+      baseDelayMs: 100,
+      jitter: { mode: "full", random: () => 0.5 },
+      maxAttempts: 5,
+      maxDelayMs: 1000,
+    });
+
+    expect(policy.next({ attempt: 2 }).delayMs).toBe(100);
+  });
 });

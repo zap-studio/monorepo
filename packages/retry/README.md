@@ -13,6 +13,7 @@ npm install @zap-studio/retry
 ## Features
 
 - **Built-in policies**: `fixedDelay(...)`, `linearBackoff(...)`, and `exponentialBackoff(...)`.
+- **Jitter**: `"full"` or `"equal"` jitter on `exponentialBackoff`/`linearBackoff`, to avoid synchronized retries against a shared upstream.
 - **A shared runner** via `runRetryPolicy(policy, execute, options?)` with attempt-aware callbacks and custom sleep injection.
 - **Structured terminal errors**: `RetryError` on exhaustion, `AbortError` on cancellation.
 - **Non-throw mode** (`throwOnExhausted: false`) returns a `RetryRunResult` instead of throwing.
@@ -63,6 +64,19 @@ const linear = linearBackoff({
   maxDelayMs: 2_000,
 });
 const fixed = fixedDelay({ maxAttempts: 4, delayMs: 300 });
+```
+
+## Jitter
+
+`"full"` or `"equal"` jitter on `exponentialBackoff`/`linearBackoff`, applied to the delay after it's capped, to avoid synchronized retries against a shared upstream.
+
+```ts
+const policy = exponentialBackoff({
+  maxAttempts: 5,
+  baseDelayMs: 100,
+  maxDelayMs: 2_000,
+  jitter: "full",
+});
 ```
 
 ## Shared Runner

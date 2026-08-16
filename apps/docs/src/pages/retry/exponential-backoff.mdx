@@ -30,8 +30,9 @@ const policy = exponentialBackoff({
 | `maxAttempts` | `number` | — | Maximum number of attempts (including the first) before giving up. |
 | `baseDelayMs` | `number` | — | Initial delay in milliseconds, doubled after each retry. |
 | `maxDelayMs` | `number` | — | Hard upper bound in milliseconds for the computed delay. |
+| `jitter` | `"full" \| "equal" \| JitterOptions` | — | Randomizes the capped delay. See [Jitter](/retry/jitter). |
 
-All options are required.
+All options are required except `jitter`.
 
 ## Delay Model
 
@@ -54,7 +55,7 @@ The policy stops retrying when `attempt >= maxAttempts`, returning a decision wi
 
 :::note
 
-Delays are deterministic — the policy does not add jitter. If you need jitter, [write a custom policy](/retry/custom-policies).
+Delays are deterministic by default. Pass `jitter: "full"` or `jitter: "equal"` to randomize them — see [Jitter](/retry/jitter).
 
 :::
 
