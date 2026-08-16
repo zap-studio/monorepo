@@ -1179,7 +1179,7 @@ describe(createPolicy, () => {
     await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
   });
 
-  it("should deny and warn when resource validation throws", async () => {
+  it("should deny when resource validation throws (no logger, no console)", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     const throwingResources = {
@@ -1221,9 +1221,7 @@ describe(createPolicy, () => {
     };
 
     await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
-    expect(warnSpy).toHaveBeenCalledWith(
-      "Resource validation failed for post: Error: validator exploded"
-    );
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it("should throw PolicyError when a resource schema is missing", async () => {
