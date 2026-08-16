@@ -60,15 +60,27 @@ const silentLogger = new ConsoleLogger({ minLevel: "none" });
 
 ## Passing a Logger to Other Packages
 
-`@zap-studio/*` packages that support logging accept an optional `logger?: Logger` option. Passing nothing means no logging overhead at all — the package never calls into a logger it wasn't given.
+`@zap-studio/retry`, `@zap-studio/fetch`, `@zap-studio/webhooks`, and `@zap-studio/permit` all accept an optional `logger?: Logger` option. Passing nothing means no logging overhead at all — the package never calls into a logger it wasn't given.
 
 ```ts
 import { ConsoleLogger } from "@zap-studio/logger";
+import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
 
 const logger = new ConsoleLogger({ minLevel: "debug" });
+const policy = exponentialBackoff({ maxAttempts: 5, baseDelayMs: 100 });
 
-const policy = exponentialBackoff({ maxAttempts: 5, baseDelayMs: 100, logger });
+await runRetryPolicy(policy, execute, { logger });
 ```
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+import { createWebhookRouter } from "@zap-studio/webhooks";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const router = createWebhookRouter({ prefix: "/webhooks", logger });
+```
+
+Each package logs at a level that matches how noteworthy the event is — routine activity at `debug`, denials and failures at `warn`/`error`/`info` depending on the package.
 
 ## Implement a Custom Logger
 
