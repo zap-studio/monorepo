@@ -1,0 +1,42 @@
+---
+title: Overview
+description: A lean logging abstraction with a console implementation.
+---
+
+# @zap-studio/logger
+
+`@zap-studio/logger` gives `@zap-studio/*` packages (and your own code) an optional, pluggable way to emit logs — one interface, one console-backed implementation, zero dependencies.
+
+## Features
+
+- **One interface**: [`Logger`](/logger/getting-started) — `trace`/`debug`/`info`/`warn`/`error`/`fatal`, each `(message: string, context?: Record<string, unknown>) => void`.
+- **One implementation**: [`ConsoleLogger`](/logger/getting-started), backed by the global `console` object, with a configurable `minLevel` to control verbosity.
+- **Zero dependencies, tree-shakeable** — unused exports are dropped by any modern bundler.
+- **Optional by design** — other `@zap-studio/*` packages accept a `logger?: Logger` option; omit it and there's zero logging overhead.
+
+## Quick Start
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+
+logger.debug("cache miss", { key: "user:42" });
+logger.warn("retrying after failure", { attempt: 2 });
+```
+
+## Runtime Support
+
+| Runtime            | Minimum version                         |
+| ------------------ | --------------------------------------- |
+| Node.js            | 18.0.0                                  |
+| Bun                | 1.0.0                                   |
+| Deno               | 1.42                                    |
+| Cloudflare Workers | Any current release                     |
+| Browsers           | Chrome/Edge 98, Firefox 97, Safari 15.4 |
+
+Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/logger`).
+
+## Learn More
+
+- [Getting Started](/logger/getting-started) — install and use `ConsoleLogger`, and see how to implement `Logger` for a custom backend
