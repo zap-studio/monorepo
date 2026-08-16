@@ -15,15 +15,18 @@ description: Schema-first, type-safe webhook routing built on the standard Web A
 - **Signature verification** — built-in HMAC verifier with constant-time comparison, or plug in your own `verify` function.
 - **Lifecycle hooks** — global `before`, `after`, and `onError` hooks for cross-cutting behavior.
 - **Runtime-agnostic** — uses the Web Crypto API, not Node-specific APIs.
+- **[Optional logging](/webhooks/logging)** through `createWebhookRouter({ logger })` from [`@zap-studio/logger`](/logger) — omit it and there's zero logging overhead.
 - **Tree-shakeable** — validation and hook-running internals are standalone functions; unused exports are dropped by any modern bundler.
 
 ## Quick Start
 
 ```ts
+import { ConsoleLogger } from "@zap-studio/logger";
 import { createWebhookRouter } from "@zap-studio/webhooks";
 import { z } from "zod";
 
-const router = createWebhookRouter({ prefix: "/webhooks" });
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const router = createWebhookRouter({ prefix: "/webhooks", logger });
 
 router.register("/payments/succeeded", {
   schema: z.object({ id: z.string(), amount: z.number().positive() }),
@@ -46,6 +49,7 @@ export default {
 - [Standard Schema](/webhooks/standard-schema) — using Zod, Valibot, ArkType, or any compatible library
 - [Verification](/webhooks/verification) — HMAC signature verification and the Web Crypto API
 - [Lifecycle Hooks](/webhooks/lifecycle-hooks) — `before`, `after`, and `onError` hooks
+- [Logging](/webhooks/logging) — observe delivery attempts, dispatch, verification failures, and unmatched routes
 
 ## Runtime Support
 
