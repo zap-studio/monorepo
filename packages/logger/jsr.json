@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./console": "./src/console.ts",
+    "./core": "./src/core.ts",
     "./types": "./src/types.ts"
   },
   "publish": {
