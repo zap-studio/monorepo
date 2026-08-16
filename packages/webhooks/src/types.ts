@@ -48,9 +48,13 @@ export interface HandlerContext<TPayload = unknown> extends WebhookContext {
 
 /** Internal handler entry stored per registered route. */
 export interface HandlerEntry<TPayload = unknown> {
+  /** Route-level hooks that run after successful processing. */
   after?: AfterHook[];
+  /** Route-level hooks that run before request processing. */
   before?: BeforeHook[];
+  /** The handler function to process the webhook. */
   handler: WebhookHandler<TPayload>;
+  /** Optional Standard Schema validator to validate the webhook payload. */
   schema?: StandardSchemaV1<unknown, TPayload>;
 }
 
@@ -141,9 +145,13 @@ export type SchemaRouteOptions<
 
 /** A single route's registration shape, as used by schema-driven route dictionaries. */
 export interface RouteLike {
+  /** Hooks that run after successful processing. */
   after?: AfterHook | AfterHook[];
+  /** Hooks that run before request processing. */
   before?: BeforeHook | BeforeHook[];
+  /** The handler function to process the webhook. */
   handler: WebhookHandler;
+  /** Standard Schema validator the route's payload type is inferred from. */
   schema: StandardSchemaV1<unknown, unknown>;
 }
 

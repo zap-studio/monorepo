@@ -56,8 +56,19 @@ export interface RetryPolicy<TError extends Error = Error, TData = unknown> {
  * functions, used internally once `runRetryPolicy` has applied defaults.
  */
 export interface ResolvedRetryPolicy<TError extends Error, TData> {
+  /**
+   * Returns the retry decision for a failed attempt.
+   */
   next: RetryPolicy<TError, TData>["next"];
+  /**
+   * Builds the terminal error used when retries are exhausted. Always
+   * present here, unlike on `RetryPolicy` where it's optional.
+   */
   onExhausted: (input: RetryExhaustedInput<TError, TData>) => RetryError;
+  /**
+   * Narrows a caught `unknown` value into `TError`. Always present here,
+   * unlike on `RetryPolicy` where it's optional.
+   */
   isKnownError: (error: unknown) => error is TError;
 }
 

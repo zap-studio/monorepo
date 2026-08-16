@@ -175,6 +175,11 @@ export type ConditionFn<
  * Call signatures for {@link hasRole}, preserving the with/without hierarchy overloads.
  */
 export interface HasRoleFn {
+  /**
+   * Checks membership in `role` only, with no inherited roles.
+   *
+   * @param role - Role the context's `role` (or `role[]`) must include.
+   */
   <
     TContext extends { role: Role | Role[] },
     TAction extends string = string,
@@ -182,6 +187,13 @@ export interface HasRoleFn {
   >(
     role: Role
   ): ConditionFn<TContext, TAction, TResource>;
+  /**
+   * Checks membership in `role`, treating any role that inherits from it
+   * (per `hierarchy`) as also satisfying the check.
+   *
+   * @param role - Role the context's `role` (or `role[]`) must include or inherit.
+   * @param hierarchy - Maps each role to the roles it inherits from.
+   */
   <
     TContext extends { role: TRole | TRole[] },
     TAction extends string = string,
@@ -268,6 +280,10 @@ export interface PermitConfig<
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 > {
+  /**
+   * Allowed actions per resource type. Determines which `resource:action`
+   * permission strings are valid to check with `Policy.can(...)`.
+   */
   actions: TActions;
   /**
    * Optional logger for policy evaluation internals. When omitted, nothing
@@ -276,7 +292,15 @@ export interface PermitConfig<
    * Logs allow decisions at `debug` and deny decisions at `info`.
    */
   logger?: Logger;
+  /**
+   * Standard Schema resource definitions, keyed by resource type. Each
+   * resource is validated against its schema before rules are evaluated.
+   */
   resources: TResources;
+  /**
+   * Policy functions for each resource/action combination, deciding
+   * `"allow"` or `"deny"` for a given context and resource.
+   */
   rules: Rules<TContext, TResources, TActions>;
 }
 
