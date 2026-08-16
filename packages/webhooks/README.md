@@ -26,10 +26,12 @@ You also need a schema library that implements [Standard Schema](https://github.
 ## Quick Start
 
 ```ts
+import { ConsoleLogger } from "@zap-studio/logger";
 import { createWebhookRouter } from "@zap-studio/webhooks";
 import { z } from "zod";
 
-const router = createWebhookRouter({ prefix: "/webhooks" });
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const router = createWebhookRouter({ prefix: "/webhooks", logger });
 
 router.register("/payments/succeeded", {
   schema: z.object({ id: z.string(), amount: z.number().positive() }),

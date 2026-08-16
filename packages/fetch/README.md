@@ -27,7 +27,8 @@ You also need a schema library that implements [Standard Schema](https://standar
 ## Quick Start
 
 ```ts
-import { api } from "@zap-studio/fetch";
+import { ConsoleLogger } from "@zap-studio/logger";
+import { createFetch } from "@zap-studio/fetch";
 import { z } from "zod";
 
 const UserSchema = z.object({
@@ -35,6 +36,9 @@ const UserSchema = z.object({
   name: z.string(),
   email: z.email(),
 });
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const { api } = createFetch({ logger });
 
 const user = await api.get("https://api.example.com/users/1", UserSchema);
 

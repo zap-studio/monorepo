@@ -25,8 +25,11 @@ npm install @zap-studio/retry
 ## Quick Start
 
 ```ts
+import { ConsoleLogger } from "@zap-studio/logger";
 import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
 import { $fetch } from "@zap-studio/fetch";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
 
 const policy = exponentialBackoff({
   maxAttempts: 5,
@@ -34,12 +37,16 @@ const policy = exponentialBackoff({
   maxDelayMs: 2_000,
 });
 
-const data = await runRetryPolicy(policy, async () => {
-  const response = await $fetch("https://api.example.com/users", {
-    throwOnFetchError: true,
-  });
-  return await response.json();
-});
+const data = await runRetryPolicy(
+  policy,
+  async () => {
+    const response = await $fetch("https://api.example.com/users", {
+      throwOnFetchError: true,
+    });
+    return await response.json();
+  },
+  { logger }
+);
 ```
 
 ## Built-in Policies

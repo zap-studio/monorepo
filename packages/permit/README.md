@@ -28,6 +28,7 @@ You also need a schema library that implements [Standard Schema](https://standar
 
 ```ts
 import { z } from "zod";
+import { ConsoleLogger } from "@zap-studio/logger";
 import { createPolicy, allow, deny, when } from "@zap-studio/permit";
 import type { Resources, Actions } from "@zap-studio/permit";
 
@@ -41,6 +42,8 @@ const actions = {
 
 type AppContext = { user: { id: string } };
 
+const logger = new ConsoleLogger({ minLevel: "debug" });
+
 const policy = createPolicy<AppContext>({
   resources,
   actions,
@@ -51,6 +54,7 @@ const policy = createPolicy<AppContext>({
       delete: deny(),
     },
   },
+  logger,
 });
 
 const ctx: AppContext = { user: { id: "user-1" } };
