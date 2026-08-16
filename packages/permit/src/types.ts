@@ -270,9 +270,8 @@ export interface PermitConfig<
 > {
   actions: TActions;
   /**
-   * Optional logger for policy evaluation internals. When omitted, only the
-   * pre-existing internal-error warnings still print (via `console.warn`,
-   * unchanged default behavior); nothing else is logged.
+   * Optional logger for policy evaluation internals. When omitted, nothing
+   * is logged.
    *
    * Logs allow decisions at `debug` and deny decisions at `info`.
    */
