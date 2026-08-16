@@ -1,3 +1,4 @@
+import type { Logger } from "@zap-studio/logger";
 import { describe, expect, it, vi } from "vitest";
 
 import {
@@ -8,6 +9,35 @@ import {
 import { defaultSleep, runRetryPolicy } from "./base-policy.js";
 import { AbortError, RetryError } from "./errors.js";
 import type { RetryPolicy } from "./types.js";
+
+const createRecordingLogger = (): Logger & {
+  calls: {
+    level: string;
+    message: string;
+    context: Record<string, unknown> | undefined;
+  }[];
+} => {
+  const calls: {
+    level: string;
+    message: string;
+    context: Record<string, unknown> | undefined;
+  }[] = [];
+  const record =
+    (level: string) =>
+    (message: string, context?: Record<string, unknown>): void => {
+      calls.push({ context, level, message });
+    };
+
+  return {
+    calls,
+    debug: record("debug"),
+    error: record("error"),
+    fatal: record("fatal"),
+    info: record("info"),
+    trace: record("trace"),
+    warn: record("warn"),
+  };
+};
 
 describe(defaultSleep, () => {
   it("resolves immediately when delay is non-positive", async () => {
@@ -575,6 +605,109 @@ describe("result mode (throwOnExhausted: false)", () => {
     }
     expect(execute).toHaveBeenCalledTimes(1);
     expect(policy.seen).toStrictEqual([]);
+  });
+});
+
+describe("logging", () => {
+  it("logs each retry decision at debug and exhaustion at warn in throw mode", async () => {
+    const logger = createRecordingLogger();
+    const policy = createSequencePolicy([
+      { delayMs: 0, reason: "retry", shouldRetry: true },
+      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
+    ]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>();
+    execute.mockRejectedValueOnce(new Error("fail-1"));
+    execute.mockRejectedValueOnce(new Error("fail-2"));
+
+    await expect(
+      runRetryPolicy(policy, execute, { logger })
+    ).rejects.toBeInstanceOf(RetryError);
+
+    expect(logger.calls).toStrictEqual([
+      {
+        context: { attempt: 1, delayMs: 0, reason: "retry" },
+        level: "debug",
+        message: "retry scheduled",
+      },
+      {
+        context: {
+          attempts: 2,
+          error: expect.any(Error),
+          reason: "max-attempts-reached",
+        },
+        level: "warn",
+        message: "retry policy exhausted",
+      },
+    ]);
+  });
+
+  it("logs each retry decision at debug and exhaustion at warn in result mode", async () => {
+    const logger = createRecordingLogger();
+    const policy = createSequencePolicy([
+      { delayMs: 0, reason: "retry", shouldRetry: true },
+      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
+    ]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>();
+    execute.mockRejectedValueOnce(new Error("fail-1"));
+    execute.mockRejectedValueOnce(new Error("fail-2"));
+
+    const result = await runRetryPolicy(policy, execute, {
+      logger,
+      throwOnExhausted: false,
+    });
+
+    expectFailureResult(result);
+    expect(logger.calls).toStrictEqual([
+      {
+        context: { attempt: 1, delayMs: 0, reason: "retry" },
+        level: "debug",
+        message: "retry scheduled",
+      },
+      {
+        context: {
+          attempts: 2,
+          error: expect.any(Error),
+          reason: "max-attempts-reached",
+        },
+        level: "warn",
+        message: "retry policy exhausted",
+      },
+    ]);
+  });
+
+  it("logs an abort at debug when the signal is already aborted", async () => {
+    const logger = createRecordingLogger();
+    const policy = createSequencePolicy([
+      { delayMs: 0, reason: "retry", shouldRetry: true },
+    ]);
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockResolvedValue("ok");
+    const controller = new AbortController();
+    controller.abort(new Error("stop"));
+
+    await expect(
+      runRetryPolicy(policy, execute, { logger, signal: controller.signal })
+    ).rejects.toBeInstanceOf(AbortError);
+
+    expect(logger.calls).toStrictEqual([
+      {
+        context: { reason: expect.any(Error) },
+        level: "debug",
+        message: "retry aborted",
+      },
+    ]);
+  });
+
+  it("does not log anything when no logger is provided", async () => {
+    const policy = createSequencePolicy([
+      { delayMs: 0, reason: "retry", shouldRetry: true },
+    ]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>();
+    execute.mockRejectedValueOnce(new Error("fail"));
+    execute.mockResolvedValueOnce("ok");
+
+    await expect(runRetryPolicy(policy, execute)).resolves.toBe("ok");
   });
 });
 

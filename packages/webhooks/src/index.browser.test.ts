@@ -1,3 +1,4 @@
+import type { Logger } from "@zap-studio/logger";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
@@ -5,6 +6,35 @@ import { z } from "zod";
 import { VerificationError } from "./errors.js";
 import { createWebhookRouter, WebhookRouter } from "./index.js";
 import { createHmacVerifier } from "./verify.js";
+
+const createRecordingLogger = (): Logger & {
+  calls: {
+    level: string;
+    message: string;
+    context: Record<string, unknown> | undefined;
+  }[];
+} => {
+  const calls: {
+    level: string;
+    message: string;
+    context: Record<string, unknown> | undefined;
+  }[] = [];
+  const record =
+    (level: string) =>
+    (message: string, context?: Record<string, unknown>): void => {
+      calls.push({ context, level, message });
+    };
+
+  return {
+    calls,
+    debug: record("debug"),
+    error: record("error"),
+    fatal: record("fatal"),
+    info: record("info"),
+    trace: record("trace"),
+    warn: record("warn"),
+  };
+};
 
 describe(WebhookRouter, () => {
   const encoder = new TextEncoder();
@@ -1476,5 +1506,87 @@ describe("@zap-studio/webhooks browser runtime", () => {
     expect(response.status).toBe(202);
     expect(response.headers.get("x-runtime")).toBe("browser");
     await expect(response.json()).resolves.toStrictEqual({ ok: true });
+  });
+});
+
+describe("logging", () => {
+  const createRequest = (path: string, body?: unknown): Request =>
+    new Request(new URL(path, "https://example.com"), {
+      body: body === undefined ? null : JSON.stringify(body),
+      method: "POST",
+    });
+
+  it("logs a delivery attempt at debug and dispatch at debug on success", async () => {
+    const logger = createRecordingLogger();
+    const router = createWebhookRouter({ logger }).register(
+      "/test",
+      () => undefined
+    );
+
+    await router.handle(createRequest("/webhooks/test", { id: "1" }));
+
+    expect(logger.calls).toStrictEqual([
+      {
+        context: { path: "/webhooks/test" },
+        level: "debug",
+        message: "webhook delivery attempt",
+      },
+      {
+        context: { path: "/test" },
+        level: "debug",
+        message: "webhook handler dispatch",
+      },
+    ]);
+  });
+
+  it("logs a warn for an unmatched route", async () => {
+    const logger = createRecordingLogger();
+    const router = createWebhookRouter({ logger });
+
+    await router.handle(createRequest("/webhooks/unknown", { id: "1" }));
+
+    expect(logger.calls).toStrictEqual([
+      {
+        context: { path: "/webhooks/unknown" },
+        level: "debug",
+        message: "webhook delivery attempt",
+      },
+      {
+        context: { path: "/unknown" },
+        level: "warn",
+        message: "webhook route not matched",
+      },
+    ]);
+  });
+
+  it("logs a warn when verification fails", async () => {
+    const logger = createRecordingLogger();
+    const router = createWebhookRouter({
+      logger,
+      onError: () => Response.json({}, { status: 401 }),
+      verify: createHmacVerifier({
+        headerName: "x-signature",
+        secret: "secret",
+      }),
+    });
+    router.register("/test", () => undefined);
+
+    await router.handle(createRequest("/webhooks/test", { id: "1" }));
+
+    const warnCall = logger.calls.find(
+      (call) => call.message === "webhook verification failed"
+    );
+    expect(warnCall).toBeDefined();
+    expect(warnCall?.context?.path).toBe("/test");
+  });
+
+  it("does not log anything when no logger is provided", async () => {
+    const router = createWebhookRouter().register("/test", () => undefined);
+
+    const response = await router.handle(
+      createRequest("/webhooks/test", { id: "1" })
+    );
+
+    expect(response.status).toBe(200);
   });
 });
