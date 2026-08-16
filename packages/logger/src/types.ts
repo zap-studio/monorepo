@@ -27,6 +27,12 @@ export type LogLevel =
   | "none";
 
 /**
+ * `LogLevel` values that correspond to a callable `Logger` method, i.e.
+ * every level except the `"all"`/`"none"` filtering boundaries.
+ */
+export type CallableLogLevel = Exclude<LogLevel, "all" | "none">;
+
+/**
  * Logger contract consumed by `@zap-studio/*` packages that accept an
  * optional `logger` option.
  *
