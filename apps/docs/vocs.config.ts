@@ -50,6 +50,14 @@ export default defineConfig({
         {
           collapsed: true,
           items: [
+            { link: "/logger", text: "Overview" },
+            { link: "/logger/getting-started", text: "Getting Started" },
+          ],
+          text: "logger",
+        },
+        {
+          collapsed: true,
+          items: [
             { link: "/permit", text: "Overview" },
             { link: "/permit/getting-started", text: "Getting Started" },
             {
@@ -136,6 +144,7 @@ export default defineConfig({
   title: "Zap Studio",
   topNav: [
     { link: "/fetch", text: "fetch" },
+    { link: "/logger", text: "logger" },
     { link: "/permit", text: "permit" },
     { link: "/retry", text: "retry" },
     { link: "/validation", text: "validation" },
