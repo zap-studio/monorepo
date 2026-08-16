@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0]
+
+### Added
+
+`runRetryPolicy(...)` gains an optional `logger?: Logger` option (from `@zap-studio/logger`). When provided, it logs each retry decision at `debug` (attempt, delay, reason), exhaustion at `warn`, and cancellation at `debug`. Omitting it keeps zero logging overhead. See [Logging](https://www.zapstudio.dev/retry/logging).
+
 ## [1.1.0]
 
 ### Added
