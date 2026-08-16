@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0]
+
+### Added
+
+`exponentialBackoff(...)` and `linearBackoff(...)` gain an optional `jitter?: "full" | "equal" | JitterOptions` option, applied to the computed delay after it's capped at `maxDelayMs`. `"full"` randomizes across `[0, delayMs]`; `"equal"` keeps a floor at half the delay, randomizing across `[delayMs/2, delayMs]`. Pass `{ mode, random }` to override the random source, useful for deterministic tests.
+
+New export: `applyJitter(delayMs, jitter?)`, also available from the `./jitter` subpath. See [Jitter](https://www.zapstudio.dev/retry/jitter).
+
 ## [1.0.0]
 
 ### Added

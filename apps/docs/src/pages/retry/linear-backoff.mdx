@@ -32,8 +32,9 @@ const policy = linearBackoff({
 | `baseDelayMs` | `number` | — | Delay in milliseconds after the first failed attempt. |
 | `incrementMs` | `number` | — | Amount added to the delay for each subsequent retry. |
 | `maxDelayMs` | `number` | — | Hard upper bound in milliseconds for the computed delay. |
+| `jitter` | `"full" \| "equal" \| JitterOptions` | — | Randomizes the capped delay. See [Jitter](/retry/jitter). |
 
-All options are required.
+All options are required except `jitter`.
 
 ## Delay Model
 
@@ -56,7 +57,7 @@ The policy stops retrying when `attempt >= maxAttempts`, returning a decision wi
 
 :::note
 
-Delays are deterministic — the policy does not add jitter. If you need jitter, [write a custom policy](/retry/custom-policies).
+Delays are deterministic by default. Pass `jitter: "full"` or `jitter: "equal"` to randomize them — see [Jitter](/retry/jitter).
 
 :::
 
