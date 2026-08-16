@@ -4,6 +4,7 @@
  * @module @zap-studio/webhooks/types
  */
 
+import type { Logger } from "@zap-studio/logger";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /**
@@ -71,6 +72,13 @@ export interface WebhookRouterOptions {
   before?: BeforeHook | BeforeHook[];
   /** Global error hook used to override the default `500` response. */
   onError?: ErrorHook;
+  /**
+   * Optional logger for router internals. When omitted, nothing is logged.
+   *
+   * Logs each delivery attempt and handler dispatch at `debug`, and
+   * verification failures and unmatched routes at `warn`.
+   */
+  logger?: Logger;
   /**
    * Required path prefix for all webhook routes. Defaults to `"/webhooks"`.
    *

@@ -4,6 +4,7 @@
  * @module @zap-studio/permit/types
  */
 
+import type { Logger } from "@zap-studio/logger";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /**
@@ -268,6 +269,14 @@ export interface PermitConfig<
   TActions extends Actions<TResources> = Actions<TResources>,
 > {
   actions: TActions;
+  /**
+   * Optional logger for policy evaluation internals. When omitted, only the
+   * pre-existing internal-error warnings still print (via `console.warn`,
+   * unchanged default behavior); nothing else is logged.
+   *
+   * Logs allow decisions at `debug` and deny decisions at `info`.
+   */
+  logger?: Logger;
   resources: TResources;
   rules: Rules<TContext, TResources, TActions>;
 }

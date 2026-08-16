@@ -4,6 +4,8 @@
  * @module @zap-studio/retry/types
  */
 
+import type { Logger } from "@zap-studio/logger";
+
 import type { AbortError, RetryError } from "./errors.js";
 
 /**
@@ -163,6 +165,13 @@ export interface RetryRunOptions {
    * @default true
    */
   readonly throwOnExhausted?: boolean;
+  /**
+   * Optional logger for retry internals. When omitted, nothing is logged.
+   *
+   * Logs each retry decision at `debug`, exhaustion at `warn`, and
+   * cancellation at `debug`.
+   */
+  readonly logger?: Logger;
 }
 
 /**
