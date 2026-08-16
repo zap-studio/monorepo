@@ -20,6 +20,7 @@ You also need a schema library that implements [Standard Schema](https://github.
 - **Signature verification** — built-in HMAC verifier with constant-time comparison, or plug in your own `verify` function.
 - **Lifecycle hooks** — global `before`, `after`, and `onError` hooks for cross-cutting behavior.
 - **Runtime-agnostic** — uses the Web Crypto API, not Node-specific APIs.
+- **Optional logging** through `createWebhookRouter({ logger })` ([`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger)) — omit it and there's zero logging overhead.
 - **Tree-shakeable** — validation and hook-running internals are standalone functions; unused exports are dropped by any modern bundler.
 
 ## Quick Start
@@ -133,6 +134,20 @@ const verify = createHmacVerifier({
   secret: process.env.WEBHOOK_SECRET!,
 });
 ```
+
+## Logging
+
+Pass a `logger?: Logger` from [`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger) to `createWebhookRouter(...)` to observe delivery attempts, dispatch, verification failures, and unmatched routes. Omit it and nothing is logged.
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+import { createWebhookRouter } from "@zap-studio/webhooks";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const router = createWebhookRouter({ prefix: "/webhooks", logger });
+```
+
+Each delivery attempt and handler dispatch logs at `debug`; verification failures and unmatched routes log at `warn`.
 
 ## Runtime Support
 
