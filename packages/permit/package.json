@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/permit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": false,
   "description": "A type-safe, declarative, tree-shakeable authorization library for TypeScript with Standard Schema support",
   "keywords": [
@@ -44,6 +44,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@zap-studio/logger": "workspace:*",
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {

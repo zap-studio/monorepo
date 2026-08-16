@@ -21,6 +21,7 @@ You also need a schema library that implements [Standard Schema](https://standar
 - **Composable conditions** via `and`, `or`, and `not`.
 - **Policy merging strategies** via `mergePoliciesAnd` and `mergePoliciesOr`.
 - **Structured errors** with `PolicyError` for invalid configuration or evaluation failures.
+- **Optional logging** through `createPolicy({ logger })` ([`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger)) — omit it and there's zero added logging overhead.
 - **Tree-shakeable** — policies and conditions are plain functions; unused exports are dropped by any modern bundler.
 
 ## Quick Start
@@ -130,6 +131,20 @@ try {
   if (error instanceof PolicyError) console.error(error.message);
 }
 ```
+
+## Logging
+
+Pass a `logger?: Logger` from [`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger) to `createPolicy(...)` to observe allow/deny decisions. Omit it and only the pre-existing internal-error warnings still print, unchanged.
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+import { createPolicy } from "@zap-studio/permit";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const policy = createPolicy({ resources, actions, rules, logger });
+```
+
+Allow decisions log at `debug`, deny decisions log at `info`. Resource validation and policy evaluation errors log at `warn` through the logger when one is provided, instead of `console.warn`.
 
 ## Runtime Support
 
