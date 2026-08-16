@@ -1,0 +1,47 @@
+{
+  "name": "@zap-studio/logger",
+  "version": "1.0.0",
+  "private": false,
+  "description": "A lean, tree-shakeable logging abstraction with a console implementation.",
+  "keywords": [
+    "console",
+    "log",
+    "logger",
+    "logging",
+    "typescript"
+  ],
+  "homepage": "https://www.zapstudio.dev/packages/logger",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/logger"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./console": "./dist/console.js",
+    "./types": "./dist/types.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@zap-studio/typescript": "workspace:*",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
