@@ -2148,7 +2148,7 @@ describe("logging", () => {
     expect(warnCall?.level).toBe("warn");
   });
 
-  it("still falls back to console.warn when no logger is provided", async () => {
+  it("does not call console.warn when no logger is provided", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
       actions,
@@ -2165,8 +2165,6 @@ describe("logging", () => {
 
     await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
 
-    expect(warnSpy).toHaveBeenCalledWith(
-      "Policy evaluation error for post.read: Error: boom"
-    );
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 });
