@@ -21,6 +21,7 @@ You also need a schema library that implements [Standard Schema](https://standar
 - **JSON convenience** through the `json` option, which serializes the request body and sets `Content-Type`.
 - **Structured errors** with `FetchError` for HTTP failures and `ValidationError` for schema failures.
 - **Validator-agnostic** — works with any library that implements Standard Schema.
+- **Optional logging** through `createFetch({ logger })` ([`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger)) — omit it and there's zero logging overhead.
 - **Tree-shakeable** — every export is a standalone function with no shared internal state; unused exports are dropped by any modern bundler.
 
 ## Quick Start
@@ -122,6 +123,20 @@ Works with any library that implements Standard Schema.
 // UserSchema can come from Zod, Valibot, ArkType, or any Standard Schema-compatible library
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 ```
+
+## Logging
+
+Pass a `logger?: Logger` from [`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger) to `createFetch(...)` to observe requests, responses, and validation failures. Omit it and nothing is logged.
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+import { createFetch } from "@zap-studio/fetch";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const { api } = createFetch({ baseURL: "https://api.example.com", logger });
+```
+
+Outgoing requests log at `debug`, response status logs at `debug` (2xx) or `warn` (non-2xx), and schema validation failures log at `error`.
 
 ## Runtime Support
 
