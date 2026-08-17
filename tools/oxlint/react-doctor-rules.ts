@@ -23,7 +23,7 @@
 
 type Severity = "error" | "warn";
 
-export const reactDoctorRules: Record<string, Severity> = {
+export const reactDoctorRules = {
   "activity-wraps-effect-heavy-subtree": "warn",
   "advanced-event-handler-refs": "warn",
   "anchor-ambiguous-text": "warn",
@@ -564,4 +564,4 @@ export const reactDoctorRules: Record<string, Severity> = {
   "zustand-no-get-during-initialization": "error",
   "zustand-no-mutating-state": "error",
   "zustand-no-whole-store-destructure": "warn",
-};
+} satisfies Record<string, Severity>;
