@@ -17,6 +17,7 @@ import {
   andThen as optionAndThen,
   map as optionMap,
   match as optionMatch,
+  orElse as optionOrElse,
   unwrap as optionUnwrap,
   unwrapOr as optionUnwrapOr,
   unwrapOrElse as optionUnwrapOrElse,
@@ -86,6 +87,8 @@ interface OptionNamespace {
   map: typeof optionMap;
   /** See `match` in `@zap-studio/monads/option`. */
   match: typeof optionMatch;
+  /** See `orElse` in `@zap-studio/monads/option`. */
+  orElse: typeof optionOrElse;
   /** See `unwrap` in `@zap-studio/monads/option`. */
   unwrap: typeof optionUnwrap;
   /** See `unwrapOr` in `@zap-studio/monads/option`. */
@@ -116,6 +119,7 @@ export const Option: OptionNamespace = {
   andThen: optionAndThen,
   map: optionMap,
   match: optionMatch,
+  orElse: optionOrElse,
   unwrap: optionUnwrap,
   unwrapOr: optionUnwrapOr,
   unwrapOrElse: optionUnwrapOrElse,

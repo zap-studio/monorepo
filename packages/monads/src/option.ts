@@ -62,6 +62,21 @@ export const andThen =
     isSome(option) ? fn(option.value) : option;
 
 /**
+ * Recovers from a `None` by computing a fallback `Option`. A `Some` passes
+ * through unchanged. Mirrors Rust's `Option::or_else`.
+ *
+ * @example
+ * ```ts
+ * pipe(none(), orElse(() => some(0))); // Some(0)
+ * pipe(some(1), orElse(() => some(0))); // Some(1), fn not called
+ * ```
+ */
+export const orElse =
+  <T>(fn: () => Option<T>): ((option: Option<T>) => Option<T>) =>
+  (option: Option<T>): Option<T> =>
+    isSome(option) ? option : fn();
+
+/**
  * Extracts the `Some` value, or returns `defaultValue` for `None`.
  *
  * @example
