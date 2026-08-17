@@ -35,6 +35,7 @@ const HMAC_HASH = {
 type HmacAlgorithm = keyof typeof HMAC_HASH;
 
 const HEX_PATTERN = /^[0-9a-f]*$/iu;
+const SIGNATURE_PREFIX_PATTERN = /^[a-z0-9-]+=/iu;
 
 /**
  * Decodes a hex string into bytes, or `undefined` when it is not valid hex.
@@ -53,7 +54,7 @@ const hexToBytes = (hex: string): Uint8Array | undefined => {
 };
 
 const normalizeSignature = (signature: string): string =>
-  signature.replace(/^[a-z0-9-]+=/iu, "").trim();
+  signature.replace(SIGNATURE_PREFIX_PATTERN, "").trim();
 
 /**
  * Creates a webhook verifier that validates an HMAC signature from a request header.
