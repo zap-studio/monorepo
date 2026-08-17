@@ -1,0 +1,17 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@zap-studio/monads",
+  "version": "1.0.0",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./option": "./src/option.ts",
+    "./pipe": "./src/pipe.ts",
+    "./result": "./src/result.ts",
+    "./result-async": "./src/result-async.ts",
+    "./types": "./src/types.ts"
+  },
+  "publish": {
+    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
+  }
+}

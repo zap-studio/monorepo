@@ -1,0 +1,74 @@
+---
+title: Getting Started
+description: Install @zap-studio/monads and handle your first fallible operation with Result.
+---
+
+# Getting Started
+
+This page walks you through installing `@zap-studio/monads` and using `Result` for a value that might fail. For deeper details, check the other pages in this section.
+
+## Install
+
+:::code-group
+
+```bash [npm]
+npm install @zap-studio/monads
+```
+
+```bash [yarn]
+yarn add @zap-studio/monads
+```
+
+```bash [pnpm]
+pnpm add @zap-studio/monads
+```
+
+```bash [bun]
+bun add @zap-studio/monads
+```
+
+```bash [deno]
+deno add jsr:@zap-studio/monads
+```
+
+:::
+
+## Write a Function That Returns a `Result`
+
+Instead of throwing, return `ok(value)` on success and `err(reason)` on failure:
+
+```ts
+import { err, ok, Result } from "@zap-studio/monads";
+
+function parseAge(input: string): Result<number, string> {
+  const value = Number(input);
+  return Number.isNaN(value) ? err("not a number") : ok(value);
+}
+```
+
+## Compose With `pipe`
+
+`Result`'s combinators are curried functions, not methods — compose them with `pipe`:
+
+```ts
+import { pipe, Result } from "@zap-studio/monads";
+
+const message = pipe(
+  parseAge("42"),
+  Result.map((age) => age + 1),
+  Result.match({
+    ok: (age) => `Age next year: ${age}`,
+    err: (reason) => `Invalid input: ${reason}`,
+  })
+);
+```
+
+## Extract the Value
+
+Use `Result.unwrapOr` for a default, `Result.unwrapOrElse` to compute a fallback from the error, or `Result.unwrap` to throw on `Err`:
+
+```ts
+import { pipe, Result } from "@zap-studio/monads";
+
+pipe(parseAge("not a number"), Result.unwrapOr(0)); // 0
+```

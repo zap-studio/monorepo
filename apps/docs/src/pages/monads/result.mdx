@@ -1,0 +1,113 @@
+---
+title: Result
+description: Result<T, E> constructors, guards, and combinators for explicit, type-safe error handling.
+---
+
+# Result
+
+`Result<T, E>` represents either success (`Ok<T>`) or failure (`Err<E>`). It's an explicit alternative to throw/catch — the possibility of failure is part of the function's return type, and the compiler checks that both branches are handled.
+
+```ts
+import type { Result } from "@zap-studio/monads";
+```
+
+## Constructors
+
+```ts
+import { err, ok } from "@zap-studio/monads";
+
+ok(42); // { ok: true, value: 42 }
+err("not found"); // { ok: false, error: "not found" }
+```
+
+## Guards
+
+```ts
+import { err, isErr, isOk, ok } from "@zap-studio/monads";
+
+isOk(ok(1)); // true
+isErr(err("x")); // true
+```
+
+## Combinators
+
+All combinators live under the `Result` namespace to avoid colliding with `Option`'s combinators of the same name, and are curried — compose them with `pipe`.
+
+```ts
+import { err, ok, pipe, Result } from "@zap-studio/monads";
+
+pipe(
+  ok(2),
+  Result.map((n) => n * 2)
+); // Ok(4)
+
+pipe(
+  err("bad"),
+  Result.mapErr((e) => e.toUpperCase())
+); // Err("BAD")
+
+pipe(
+  ok("42"),
+  Result.andThen((s) =>
+    Number.isNaN(Number(s)) ? err("not a number") : ok(Number(s))
+  )
+); // Ok(42)
+
+pipe(
+  err("bad"),
+  Result.orElse((e) => ok(e.length))
+); // Ok(3)
+pipe(
+  ok(1),
+  Result.orElse(() => ok(0))
+); // Ok(1), fallback not called
+
+pipe(err("bad"), Result.unwrapOr(0)); // 0
+pipe(
+  err("bad"),
+  Result.unwrapOrElse((e) => e.length)
+); // 3
+
+pipe(
+  ok(42),
+  Result.match({ ok: (n) => `got ${n}`, err: (e) => `failed: ${e}` })
+); // "got 42"
+```
+
+`orElse` mirrors Rust's `Result::or_else`: it recovers an `Err` into a fallback `Result`, and leaves an `Ok` untouched without calling the fallback.
+
+## Unwrapping
+
+`Result.unwrap` throws if the `Result` is `Err`, mirroring Rust's `Result::unwrap`. The original error is attached as `cause`.
+
+```ts
+import { err, Result } from "@zap-studio/monads";
+
+Result.unwrap(err("bad")); // throws Error("Called unwrap() on an Err value", { cause: "bad" })
+```
+
+Prefer `Result.match`, `Result.unwrapOr`, or `Result.unwrapOrElse` for control flow that shouldn't throw.
+
+## Wrapping Throwing Functions
+
+`fromThrowable` wraps a synchronous, potentially throwing function so it returns a `Result` instead:
+
+```ts
+import { fromThrowable } from "@zap-studio/monads";
+
+const safeParse = fromThrowable(JSON.parse, (error) =>
+  error instanceof Error ? error.message : "parse failed"
+);
+
+safeParse('{"a":1}'); // Ok({ a: 1 })
+safeParse("not json"); // Err("Unexpected token ...")
+```
+
+Called with just a function, `fromThrowable` uses the caught value as the `Err` error, typed as `unknown`:
+
+```ts
+const safeParse = fromThrowable(JSON.parse);
+safeParse("not json"); // Err(SyntaxError: Unexpected token ...)
+```
+
+For asynchronous operations that can reject, see [ResultAsync](/monads/result-async).

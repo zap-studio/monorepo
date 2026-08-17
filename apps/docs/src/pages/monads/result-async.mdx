@@ -1,0 +1,71 @@
+---
+title: ResultAsync
+description: A thenable wrapper around Promise<Result<T, E>> for chaining async operations that can fail.
+---
+
+# ResultAsync
+
+`ResultAsync<T, E>` wraps a `Promise<Result<T, E>>`. It's the one class in this package: it needs to be awaitable directly, and its combinators are instance methods so you can build an async chain before the final `await`. `Result` and `Option` stay plain discriminated unions with standalone functions — see [Result](/monads/result) and [Option](/monads/option).
+
+## Creating a `ResultAsync`
+
+`fromPromise` wraps a rejecting `Promise`, mapping the rejection reason into your error type:
+
+```ts
+import { fromPromise } from "@zap-studio/monads";
+
+const user = fromPromise(
+  fetch("/api/user").then((response) => response.json()),
+  (error) => `request failed: ${String(error)}`
+);
+```
+
+## Chaining
+
+```ts
+import { err, fromPromise, ok } from "@zap-studio/monads";
+
+const greeting = fromPromise(
+  fetch("/api/user").then((response) => response.json()),
+  (error) => `request failed: ${String(error)}`
+)
+  .map((user) => user.name)
+  .andThen((name) =>
+    name.length > 0 ? ok(`Hello, ${name}`) : err("empty name")
+  );
+```
+
+`andThen`'s callback can return a `Result`, a `Promise<Result>`, or another `ResultAsync` — all three are awaited the same way.
+
+## Recovering
+
+`orElse` is `andThen`'s counterpart for the failure side: it recovers an eventual `Err`, leaving an eventual `Ok` untouched. Its callback accepts the same three return shapes as `andThen`'s:
+
+```ts
+const withFallback = fromPromise(
+  fetch("/api/user").then((response) => response.json()),
+  (error) => `request failed: ${String(error)}`
+).orElse((reason) =>
+  fromPromise(
+    fetch("/api/user/default").then((response) => response.json()),
+    () => reason
+  )
+);
+```
+
+## Resolving
+
+`ResultAsync` is awaitable directly, resolving to the wrapped `Result`:
+
+```ts
+const result = await user; // Result<User, string>
+```
+
+Or fold it with `match`, which returns a `Promise` of the matched value:
+
+```ts
+const message = await user.match({
+  ok: (u) => `Hello, ${u.name}`,
+  err: (reason) => reason,
+});
+```

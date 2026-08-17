@@ -62,3 +62,6 @@ todo.json
 
 # Generated route files
 **/src/pages.gen.ts
+
+# Local superpowers skill artifacts
+docs/superpowers/

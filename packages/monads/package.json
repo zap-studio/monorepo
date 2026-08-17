@@ -1,0 +1,53 @@
+{
+  "name": "@zap-studio/monads",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Result/Option types and Rust-style functional combinators for explicit, type-safe error handling.",
+  "keywords": [
+    "combinators",
+    "error handling",
+    "functional",
+    "monad",
+    "option",
+    "result",
+    "rust",
+    "typescript"
+  ],
+  "homepage": "https://www.zapstudio.dev/packages/monads",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/monads"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./option": "./dist/option.js",
+    "./pipe": "./dist/pipe.js",
+    "./result": "./dist/result.js",
+    "./result-async": "./dist/result-async.js",
+    "./types": "./dist/types.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@zap-studio/typescript": "workspace:*",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

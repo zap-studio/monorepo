@@ -66,6 +66,18 @@ export default defineConfig({
         {
           collapsed: true,
           items: [
+            { link: "/monads", text: "Overview" },
+            { link: "/monads/getting-started", text: "Getting Started" },
+            { link: "/monads/result", text: "Result" },
+            { link: "/monads/result-async", text: "ResultAsync" },
+            { link: "/monads/option", text: "Option" },
+            { link: "/monads/pipe", text: "Pipe" },
+          ],
+          text: "monads",
+        },
+        {
+          collapsed: true,
+          items: [
             { link: "/permit", text: "Overview" },
             { link: "/permit/getting-started", text: "Getting Started" },
             {
@@ -159,6 +171,7 @@ export default defineConfig({
   topNav: [
     { link: "/fetch", text: "fetch" },
     { link: "/logger", text: "logger" },
+    { link: "/monads", text: "monads" },
     { link: "/permit", text: "permit" },
     { link: "/retry", text: "retry" },
     { link: "/validation", text: "validation" },
