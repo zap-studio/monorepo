@@ -6,7 +6,7 @@
  * @module @zap-studio/permit/otel
  */
 
-import { SpanKind, metrics, trace } from "@opentelemetry/api";
+import { SpanKind, context, metrics, trace } from "@opentelemetry/api";
 
 import pkg from "../package.json" with { type: "json" };
 
@@ -52,11 +52,16 @@ export const withCheckSpan = async (
   });
 
   try {
-    const allowed = await run();
-    const decision = allowed ? "allow" : "deny";
-    span.setAttribute("permit.decision", decision);
-    recordPermitCheck(decision);
-    return allowed;
+    return await context.with(
+      trace.setSpan(context.active(), span),
+      async () => {
+        const allowed = await run();
+        const decision = allowed ? "allow" : "deny";
+        span.setAttribute("permit.decision", decision);
+        recordPermitCheck(decision);
+        return allowed;
+      }
+    );
   } finally {
     span.end();
   }

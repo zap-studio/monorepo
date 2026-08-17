@@ -188,17 +188,20 @@ const dispatchHandler = async (
   handlerEntry: HandlerEntry,
   ctx: WebhookContext,
   validatedPayload: unknown,
-  parentContext: Context,
-  deliverySpan: Span
+  deliveryContext: Context
 ): Promise<Response> => {
   const handlerSpan = tracer.startSpan(
     `webhook.handler ${ctx.path}`,
     { kind: SpanKind.INTERNAL },
-    trace.setSpan(parentContext, deliverySpan)
+    deliveryContext
   );
 
   try {
-    return await executeHandler(handlerEntry.handler, ctx, validatedPayload);
+    return await otelContext.with(
+      trace.setSpan(deliveryContext, handlerSpan),
+      async () =>
+        await executeHandler(handlerEntry.handler, ctx, validatedPayload)
+    );
   } catch (error) {
     recordSpanError(handlerSpan, error);
     throw error;
@@ -375,13 +378,12 @@ export class WebhookRouter<TMap = unknown> {
       },
       parentContext
     );
+    const deliveryContext = trace.setSpan(parentContext, deliverySpan);
 
     try {
-      const response = await this.dispatch(
-        request,
-        requestPath,
-        parentContext,
-        deliverySpan
+      const response = await otelContext.with(
+        deliveryContext,
+        async () => await this.dispatch(request, requestPath, deliveryContext)
       );
       return finishDelivery(deliverySpan, response);
     } finally {
@@ -393,8 +395,7 @@ export class WebhookRouter<TMap = unknown> {
   private async dispatch(
     request: Request,
     requestPath: string,
-    parentContext: Context,
-    deliverySpan: Span
+    deliveryContext: Context
   ): Promise<Response> {
     const path = this.matchPath(request);
     if (path === null) {
@@ -444,8 +445,7 @@ export class WebhookRouter<TMap = unknown> {
         handlerEntry,
         ctx,
         validationResult,
-        parentContext,
-        deliverySpan
+        deliveryContext
       );
 
       await runAfterHooks(ctx, response, handlerEntry.after);

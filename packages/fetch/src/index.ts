@@ -344,45 +344,44 @@ const fetchInternal = async (
     },
     kind: SpanKind.CLIENT,
   });
+  const spanContext = trace.setSpan(otelContext.active(), span);
 
   try {
-    const headers = new Headers(init.headers);
-    propagation.inject(
-      trace.setSpan(otelContext.active(), span),
-      headers,
-      HEADERS_SETTER
-    );
-    init.headers = headers;
+    return await otelContext.with(spanContext, async () => {
+      const headers = new Headers(init.headers);
+      propagation.inject(spanContext, headers, HEADERS_SETTER);
+      init.headers = headers;
 
-    const response = request.request
-      ? await fetch(new Request(url, request.request), init)
-      : await fetch(url, init);
+      const response = request.request
+        ? await fetch(new Request(url, request.request), init)
+        : await fetch(url, init);
 
-    logResponse(logger, method, url, response);
-    span.setAttribute("http.response.status_code", response.status);
-    if (!response.ok) {
-      span.setStatus({ code: SpanStatusCode.ERROR });
-    }
+      logResponse(logger, method, url, response);
+      span.setAttribute("http.response.status_code", response.status);
+      if (!response.ok) {
+        span.setStatus({ code: SpanStatusCode.ERROR });
+      }
 
-    if (throwOnFetchError && !response.ok) {
-      throw new FetchError(
-        `HTTP ${response.status}: ${response.statusText}`,
-        response
+      if (throwOnFetchError && !response.ok) {
+        throw new FetchError(
+          `HTTP ${response.status}: ${response.statusText}`,
+          response
+        );
+      }
+
+      if (schema === undefined) {
+        return response;
+      }
+
+      const raw: unknown = await response.json();
+      return await validateResponse(
+        raw,
+        schema,
+        throwOnValidationError,
+        logger,
+        url
       );
-    }
-
-    if (schema === undefined) {
-      return response;
-    }
-
-    const raw: unknown = await response.json();
-    return await validateResponse(
-      raw,
-      schema,
-      throwOnValidationError,
-      logger,
-      url
-    );
+    });
   } catch (error) {
     recordSpanError(span, error);
     throw error;
