@@ -33,6 +33,39 @@ export type LogLevel =
 export type CallableLogLevel = Exclude<LogLevel, "all" | "none">;
 
 /**
+ * A single log call's data, built right before it's written (below-threshold
+ * calls never reach a formatter).
+ */
+export interface LogRecord {
+  /**
+   * The level the message was logged at.
+   */
+  readonly level: CallableLogLevel;
+  /**
+   * The log message.
+   */
+  readonly message: string;
+  /**
+   * Optional structured data passed alongside the message.
+   */
+  readonly context: Record<string, unknown> | undefined;
+  /**
+   * When the log call was made.
+   */
+  readonly timestamp: Date;
+}
+
+/**
+ * Turns a {@link LogRecord} into the argument list passed to
+ * `console[method](...args)`. Any function matching this shape works — no
+ * base class or registration required.
+ *
+ * @example
+ * const upperFormat: LogFormatter = (record) => [record.message.toUpperCase()];
+ */
+export type LogFormatter = (record: LogRecord) => unknown[];
+
+/**
  * Logger contract consumed by `@zap-studio/*` packages that accept an
  * optional `logger` option.
  *

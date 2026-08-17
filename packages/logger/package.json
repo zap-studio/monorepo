@@ -30,6 +30,7 @@
     ".": "./dist/index.js",
     "./console": "./dist/console.js",
     "./core": "./dist/core.js",
+    "./format": "./dist/format.js",
     "./types": "./dist/types.js",
     "./package.json": "./package.json"
   },

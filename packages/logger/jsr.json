@@ -7,6 +7,7 @@
     ".": "./src/index.ts",
     "./console": "./src/console.ts",
     "./core": "./src/core.ts",
+    "./format": "./src/format.ts",
     "./types": "./src/types.ts"
   },
   "publish": {
