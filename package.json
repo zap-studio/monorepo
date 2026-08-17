@@ -26,6 +26,7 @@
     "lefthook": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
+    "oxlint-plugin-react-doctor": "catalog:",
     "oxlint-tsgolint": "catalog:",
     "playwright": "catalog:",
     "publint": "catalog:",
