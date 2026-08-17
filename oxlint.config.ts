@@ -18,6 +18,7 @@ export default defineConfig({
   ignorePatterns: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "tools/oxlint/anti-slop/**"],
   jsPlugins: [{ name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" }],
   rules: {
+    "import/no-cycle": ["error", { maxDepth: 3 }],
     "anti-slop/no-chained-type-assertions": "error",
     "anti-slop/no-conditional-empty-object-spread": "error",
     "anti-slop/no-known-value-widening": "error",
