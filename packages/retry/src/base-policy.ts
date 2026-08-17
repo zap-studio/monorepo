@@ -4,11 +4,10 @@
  * @module @zap-studio/retry/base-policy
  */
 
-import { trace } from "@opentelemetry/api";
 import type { Logger } from "@zap-studio/logger";
 
-import { recordRetryAttempt } from "./_otel.js";
-import { AbortError, RetryError } from "./errors.js";
+import { trace } from "@opentelemetry/api";
+
 import type {
   ResolvedRetryPolicy,
   RetryDecision,
@@ -17,6 +16,9 @@ import type {
   RetryRunOptions,
   RetryRunResult,
 } from "./types.js";
+
+import { recordRetryAttempt } from "./_otel.js";
+import { AbortError, RetryError } from "./errors.js";
 
 /**
  * Awaits a timer-based delay, unless `delayMs` is non-positive.

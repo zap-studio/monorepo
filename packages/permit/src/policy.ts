@@ -6,10 +6,9 @@
  */
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";
+
 import { createStandardValidator } from "@zap-studio/validation";
 
-import { withCheckSpan } from "./_otel.js";
-import { PolicyError } from "./errors.js";
 import type {
   Actions,
   Context,
@@ -19,6 +18,9 @@ import type {
   Policy,
   Resources,
 } from "./types.js";
+
+import { withCheckSpan } from "./_otel.js";
+import { PolicyError } from "./errors.js";
 
 /**
  * Splits a typed `resource:action` permission string into its parts.

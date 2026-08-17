@@ -11,6 +11,8 @@
  * @module @zap-studio/monads/result-async
  */
 
+import type { Result, ResultMatchers } from "./types.js";
+
 import {
   err as resultErr,
   isErr,
@@ -20,7 +22,6 @@ import {
   match as resultMatch,
   ok as resultOk,
 } from "./result.js";
-import type { Result, ResultMatchers } from "./types.js";
 
 /** A `Promise<Result<T, E>>` wrapper with chainable, async-aware combinators. */
 export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {

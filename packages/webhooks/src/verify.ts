@@ -4,8 +4,9 @@
  * @module @zap-studio/webhooks/verify
  */
 
-import { VerificationError } from "./errors.js";
 import type { VerifyFn } from "./types.js";
+
+import { VerificationError } from "./errors.js";
 
 /**
  * Compares two byte arrays in constant time to prevent timing attacks.

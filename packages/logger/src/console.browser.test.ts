@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { LogRecord } from "./types.js";
+
 import { ConsoleLogger } from "./console.js";
 import { jsonFormat } from "./format.js";
-import type { LogRecord } from "./types.js";
 
 describe("ConsoleLogger", () => {
   let debugSpy: ReturnType<typeof vi.spyOn>;

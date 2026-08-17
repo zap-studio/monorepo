@@ -1,3 +1,5 @@
+import type { StandardSchemaV1 } from "@zap-studio/validation";
+
 import { SpanKind, SpanStatusCode, metrics, trace } from "@opentelemetry/api";
 import {
   InMemoryMetricExporter,
@@ -10,11 +12,11 @@ import {
   InMemorySpanExporter,
   SimpleSpanProcessor,
 } from "@opentelemetry/sdk-trace-base";
-import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { allow, createPolicy, deny, mergePoliciesOr } from "./index.js";
 import type { Actions, Resources } from "./types.js";
+
+import { allow, createPolicy, deny, mergePoliciesOr } from "./index.js";
 
 function createSchema<T>(): StandardSchemaV1<T, T> {
   return {

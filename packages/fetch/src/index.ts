@@ -10,6 +10,9 @@
  * @module @zap-studio/fetch
  */
 
+import type { Logger } from "@zap-studio/logger";
+import type { StandardSchemaV1 } from "@zap-studio/validation";
+
 import {
   SpanKind,
   SpanStatusCode,
@@ -17,12 +20,8 @@ import {
   propagation,
   trace,
 } from "@opentelemetry/api";
-import type { Logger } from "@zap-studio/logger";
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
-import type { StandardSchemaV1 } from "@zap-studio/validation";
 
-import { HEADERS_SETTER, recordSpanError, tracer } from "./_otel.js";
-import { FetchError } from "./errors.js";
 import type {
   $Fetch,
   ApiMethods,
@@ -31,6 +30,9 @@ import type {
   FetchInput,
   NormalizedRequest,
 } from "./types.js";
+
+import { HEADERS_SETTER, recordSpanError, tracer } from "./_otel.js";
+import { FetchError } from "./errors.js";
 
 export { FetchError } from "./errors.js";
 export type {

@@ -1,6 +1,9 @@
 import type { Logger } from "@zap-studio/logger";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
+
 import { describe, expect, it, vi } from "vitest";
+
+import type { Actions, Resources, RoleHierarchy } from "./types.js";
 
 import { PolicyError } from "./errors.js";
 import {
@@ -17,7 +20,6 @@ import {
   or,
   when,
 } from "./index.js";
-import type { Actions, Resources, RoleHierarchy } from "./types.js";
 
 const createRecordingLogger = (): Logger & {
   calls: {

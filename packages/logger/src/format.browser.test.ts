@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { classicFormat, compactFormat, jsonFormat, prettyFormat } from "./format.js";
 import type { LogRecord } from "./types.js";
+
+import { classicFormat, compactFormat, jsonFormat, prettyFormat } from "./format.js";
 
 const baseRecord = (overrides: Partial<LogRecord> = {}): LogRecord => ({
   context: undefined,

@@ -13,6 +13,8 @@
  * @module @zap-studio/monads
  */
 
+import type { Option as OptionType, Result as ResultType } from "./types.js";
+
 import {
   andThen as optionAndThen,
   map as optionMap,
@@ -32,7 +34,6 @@ import {
   unwrapOr as resultUnwrapOr,
   unwrapOrElse as resultUnwrapOrElse,
 } from "./result.js";
-import type { Option as OptionType, Result as ResultType } from "./types.js";
 
 export { fromNullable, isNone, isSome, none, some } from "./option.js";
 export { pipe } from "./pipe.js";

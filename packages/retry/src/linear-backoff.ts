@@ -4,9 +4,10 @@
  * @module @zap-studio/retry/linear-backoff
  */
 
-import { applyJitter } from "./jitter.js";
 import type { JitterMode, JitterOptions } from "./jitter.js";
 import type { RetryDecision, RetryDecisionInput, RetryPolicy } from "./types.js";
+
+import { applyJitter } from "./jitter.js";
 
 /**
  * Configuration for `linearBackoff(...)`.

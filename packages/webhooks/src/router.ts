@@ -5,6 +5,9 @@
  */
 
 import type { Context, Span } from "@opentelemetry/api";
+import type { Logger } from "@zap-studio/logger";
+import type { StandardSchemaV1 } from "@zap-studio/validation";
+
 import {
   SpanKind,
   SpanStatusCode,
@@ -12,11 +15,8 @@ import {
   propagation,
   trace,
 } from "@opentelemetry/api";
-import type { Logger } from "@zap-studio/logger";
-import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { standardValidate } from "@zap-studio/validation";
 
-import { HEADERS_GETTER, recordSpanError, tracer } from "./_otel.js";
 import type {
   AfterHook,
   BeforeHook,
@@ -30,6 +30,8 @@ import type {
   WebhookHandler,
   WebhookRouterOptions,
 } from "./types.js";
+
+import { HEADERS_GETTER, recordSpanError, tracer } from "./_otel.js";
 
 /**
  * Schema-first webhook router with path dispatching, validation, and optional verification.

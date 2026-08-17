@@ -1,5 +1,4 @@
 import { fileURLToPath } from "node:url";
-
 import { defineConfig } from "tsdown";
 
 const repoRoot = fileURLToPath(new URL("../..", import.meta.url));

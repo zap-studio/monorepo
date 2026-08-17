@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 
-import { RetryError } from "./errors.js";
 import type {
   RetryDecisionInput,
   RetryExhaustedInput,
@@ -8,6 +7,8 @@ import type {
   RetryRunOptions,
   RetryRunResult,
 } from "./types.js";
+
+import { RetryError } from "./errors.js";
 
 describe("types", () => {
   it("supports generic RetryPolicy contracts", () => {

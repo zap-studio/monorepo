@@ -1,5 +1,8 @@
 import type { Logger } from "@zap-studio/logger";
+
 import { describe, expect, it, vi } from "vitest";
+
+import type { RetryPolicy } from "./types.js";
 
 import {
   createCustomTerminalPolicy,
@@ -8,7 +11,6 @@ import {
 } from "./_sequence-policy.js";
 import { defaultSleep, runRetryPolicy } from "./base-policy.js";
 import { AbortError, RetryError } from "./errors.js";
-import type { RetryPolicy } from "./types.js";
 
 const createRecordingLogger = (): Logger & {
   calls: {

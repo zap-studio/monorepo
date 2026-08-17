@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { VerificationError } from "./errors.js";
 import type { WebhookContext } from "./types.js";
+
+import { VerificationError } from "./errors.js";
 import { createHmacVerifier } from "./verify.js";
 
 const encoder = new TextEncoder();
