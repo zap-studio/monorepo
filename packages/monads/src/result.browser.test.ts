@@ -11,6 +11,7 @@ import {
   mapErr,
   match,
   ok,
+  orElse,
   unwrap,
   unwrapOr,
   unwrapOrElse,
@@ -91,6 +92,40 @@ describe("andThen", () => {
   it("short-circuits on Err", () => {
     const result = err("upstream failure");
     expect(pipe(result, andThen(parse))).toEqual(result);
+  });
+});
+
+describe("orElse", () => {
+  it("passes an Ok through unchanged, without calling fn", () => {
+    let called = false;
+    const result = pipe(
+      ok(1),
+      orElse(() => {
+        called = true;
+        return ok(0);
+      })
+    );
+
+    expect(result).toEqual(ok(1));
+    expect(called).toBe(false);
+  });
+
+  it("recovers an Err with the fallback Result", () => {
+    expect(
+      pipe(
+        err("bad"),
+        orElse((e: string) => ok(e.length))
+      )
+    ).toEqual(ok(3));
+  });
+
+  it("can produce Err from an Err input", () => {
+    expect(
+      pipe(
+        err("bad"),
+        orElse((e: string) => err(e.toUpperCase()))
+      )
+    ).toEqual(err("BAD"));
   });
 });
 

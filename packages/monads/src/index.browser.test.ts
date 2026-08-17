@@ -68,7 +68,14 @@ describe("root entrypoint", () => {
     expect(Result.map).not.toBe(Option.map);
   });
 
-  it("exposes Option.orElse, with no Result counterpart", () => {
+  it("exposes orElse under both namespaces, as distinct functions", () => {
+    expect(
+      pipe(
+        err("bad"),
+        Result.orElse(() => ok(0))
+      )
+    ).toEqual(ok(0));
+
     expect(
       pipe(
         none(),
@@ -76,6 +83,6 @@ describe("root entrypoint", () => {
       )
     ).toEqual(some(0));
 
-    expect("orElse" in Result).toBe(false);
+    expect(Result.orElse).not.toBe(Option.orElse);
   });
 });
