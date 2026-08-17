@@ -4,10 +4,19 @@
  * @module @zap-studio/webhooks/router
  */
 
+import type { Context, Span } from "@opentelemetry/api";
+import {
+  SpanKind,
+  SpanStatusCode,
+  context as otelContext,
+  propagation,
+  trace,
+} from "@opentelemetry/api";
 import type { Logger } from "@zap-studio/logger";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { standardValidate } from "@zap-studio/validation";
 
+import { HEADERS_GETTER, recordSpanError, tracer } from "./_otel.js";
 import type {
   AfterHook,
   BeforeHook,
@@ -38,6 +47,15 @@ const toArray = <T>(value: T | T[] | undefined): T[] => {
 
 const notFoundResponse = (): Response =>
   Response.json({ error: "not found" }, { status: 404 });
+
+/** Sets `http.response.status_code` and marks `span` `ERROR` on a non-2xx response. */
+const finishDelivery = (span: Span, response: Response): Response => {
+  span.setAttribute("http.response.status_code", response.status);
+  if (!response.ok) {
+    span.setStatus({ code: SpanStatusCode.ERROR });
+  }
+  return response;
+};
 
 const bodyDecoder = new TextDecoder();
 
@@ -163,6 +181,33 @@ const executeHandler = async <TPayload = unknown>(
   });
 
   return responded ?? Response.json("ok");
+};
+
+/** Runs the route handler inside its own `INTERNAL` span, nested under the delivery span. */
+const dispatchHandler = async (
+  handlerEntry: HandlerEntry,
+  ctx: WebhookContext,
+  validatedPayload: unknown,
+  deliveryContext: Context
+): Promise<Response> => {
+  const handlerSpan = tracer.startSpan(
+    `webhook.handler ${ctx.path}`,
+    { kind: SpanKind.INTERNAL },
+    deliveryContext
+  );
+
+  try {
+    return await otelContext.with(
+      trace.setSpan(deliveryContext, handlerSpan),
+      async () =>
+        await executeHandler(handlerEntry.handler, ctx, validatedPayload)
+    );
+  } catch (error) {
+    recordSpanError(handlerSpan, error);
+    throw error;
+  } finally {
+    handlerSpan.end();
+  }
 };
 
 /**
@@ -314,8 +359,44 @@ export class WebhookRouter<TMap = unknown> {
    */
   async handle(request: Request): Promise<Response> {
     const requestPath = new URL(request.url).pathname;
+    const { method } = request;
     this.logger?.debug("webhook delivery attempt", { path: requestPath });
 
+    const parentContext = propagation.extract(
+      otelContext.active(),
+      request.headers,
+      HEADERS_GETTER
+    );
+    const deliverySpan = tracer.startSpan(
+      `${method} ${requestPath}`,
+      {
+        attributes: {
+          "http.request.method": method,
+          "url.path": requestPath,
+        },
+        kind: SpanKind.SERVER,
+      },
+      parentContext
+    );
+    const deliveryContext = trace.setSpan(parentContext, deliverySpan);
+
+    try {
+      const response = await otelContext.with(
+        deliveryContext,
+        async () => await this.dispatch(request, requestPath, deliveryContext)
+      );
+      return finishDelivery(deliverySpan, response);
+    } finally {
+      deliverySpan.end();
+    }
+  }
+
+  /** Matches the route, runs hooks/verification/validation, and dispatches the handler. */
+  private async dispatch(
+    request: Request,
+    requestPath: string,
+    deliveryContext: Context
+  ): Promise<Response> {
     const path = this.matchPath(request);
     if (path === null) {
       this.logger?.warn("webhook route not matched", { path: requestPath });
@@ -360,10 +441,11 @@ export class WebhookRouter<TMap = unknown> {
       }
 
       this.logger?.debug("webhook handler dispatch", { path });
-      const response = await executeHandler(
-        handlerEntry.handler,
+      const response = await dispatchHandler(
+        handlerEntry,
         ctx,
-        validationResult
+        validationResult,
+        deliveryContext
       );
 
       await runAfterHooks(ctx, response, handlerEntry.after);

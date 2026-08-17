@@ -8,6 +8,7 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { createStandardValidator } from "@zap-studio/validation";
 
+import { withCheckSpan } from "./_otel.js";
 import { PolicyError } from "./errors.js";
 import type {
   Actions,
@@ -204,28 +205,30 @@ export const createPolicy = <
       permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
       resource: InferResource<TResources, K>
     ): Promise<boolean> {
-      const parsedPermission = parsePermission<TResources, TActions, K>(
-        permission,
-        actions
-      );
-      if (parsedPermission === null) {
-        return false;
-      }
+      return await withCheckSpan(permission, async () => {
+        const parsedPermission = parsePermission<TResources, TActions, K>(
+          permission,
+          actions
+        );
+        if (parsedPermission === null) {
+          return false;
+        }
 
-      const { action, resourceType } = parsedPermission;
-      if (!hasAllowedAction(resourceType, action)) {
-        return false;
-      }
+        const { action, resourceType } = parsedPermission;
+        if (!hasAllowedAction(resourceType, action)) {
+          return false;
+        }
 
-      const validatedResource = await getValidatedResource(
-        resourceType,
-        resource
-      );
-      if (validatedResource === null) {
-        return false;
-      }
+        const validatedResource = await getValidatedResource(
+          resourceType,
+          resource
+        );
+        if (validatedResource === null) {
+          return false;
+        }
 
-      return evaluatePolicy(context, resourceType, action, validatedResource);
+        return evaluatePolicy(context, resourceType, action, validatedResource);
+      });
     },
   };
 };
@@ -243,24 +246,28 @@ const mergePoliciesWithStrategy = <
     permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
     resource: InferResource<TResources, K>
   ): Promise<boolean> {
-    if (policies.length === 0) {
-      return false;
-    }
-
-    const settled = await Promise.allSettled(
-      policies.map(
-        async (policy) => await policy.can(context, permission, resource)
-      )
-    );
-
-    const results = settled.map((result) => {
-      if (result.status === "fulfilled") {
-        return result.value;
+    return await withCheckSpan(permission, async () => {
+      if (policies.length === 0) {
+        return false;
       }
-      return false;
-    });
 
-    return strategy === "and" ? results.every(Boolean) : results.some(Boolean);
+      const settled = await Promise.allSettled(
+        policies.map(
+          async (policy) => await policy.can(context, permission, resource)
+        )
+      );
+
+      const results = settled.map((result) => {
+        if (result.status === "fulfilled") {
+          return result.value;
+        }
+        return false;
+      });
+
+      return strategy === "and"
+        ? results.every(Boolean)
+        : results.some(Boolean);
+    });
   },
 });
 

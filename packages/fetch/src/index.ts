@@ -10,10 +10,18 @@
  * @module @zap-studio/fetch
  */
 
+import {
+  SpanKind,
+  SpanStatusCode,
+  context as otelContext,
+  propagation,
+  trace,
+} from "@opentelemetry/api";
 import type { Logger } from "@zap-studio/logger";
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
+import { HEADERS_SETTER, recordSpanError, tracer } from "./_otel.js";
 import { FetchError } from "./errors.js";
 import type {
   $Fetch,
@@ -329,31 +337,57 @@ const fetchInternal = async (
 
   logger?.debug("fetch request", { method, url });
 
-  const response = request.request
-    ? await fetch(new Request(url, request.request), init)
-    : await fetch(url, init);
+  const span = tracer.startSpan(method, {
+    attributes: {
+      "http.request.method": method,
+      "url.full": url,
+    },
+    kind: SpanKind.CLIENT,
+  });
+  const spanContext = trace.setSpan(otelContext.active(), span);
 
-  logResponse(logger, method, url, response);
+  try {
+    return await otelContext.with(spanContext, async () => {
+      const headers = new Headers(init.headers);
+      propagation.inject(spanContext, headers, HEADERS_SETTER);
+      init.headers = headers;
 
-  if (throwOnFetchError && !response.ok) {
-    throw new FetchError(
-      `HTTP ${response.status}: ${response.statusText}`,
-      response
-    );
+      const response = request.request
+        ? await fetch(new Request(url, request.request), init)
+        : await fetch(url, init);
+
+      logResponse(logger, method, url, response);
+      span.setAttribute("http.response.status_code", response.status);
+      if (!response.ok) {
+        span.setStatus({ code: SpanStatusCode.ERROR });
+      }
+
+      if (throwOnFetchError && !response.ok) {
+        throw new FetchError(
+          `HTTP ${response.status}: ${response.statusText}`,
+          response
+        );
+      }
+
+      if (schema === undefined) {
+        return response;
+      }
+
+      const raw: unknown = await response.json();
+      return await validateResponse(
+        raw,
+        schema,
+        throwOnValidationError,
+        logger,
+        url
+      );
+    });
+  } catch (error) {
+    recordSpanError(span, error);
+    throw error;
+  } finally {
+    span.end();
   }
-
-  if (schema === undefined) {
-    return response;
-  }
-
-  const raw: unknown = await response.json();
-  return await validateResponse(
-    raw,
-    schema,
-    throwOnValidationError,
-    logger,
-    url
-  );
 };
 
 /**

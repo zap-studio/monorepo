@@ -1,0 +1,61 @@
+---
+title: OpenTelemetry
+description: Native distributed tracing through @opentelemetry/api, with zero setup when no SDK is registered.
+---
+
+# OpenTelemetry
+
+`@opentelemetry/api` is a required peer dependency of `@zap-studio/webhooks`. It's a tiny, side-effect-free package that's a no-op until an app registers a real SDK, so installing it costs nothing at runtime for consumers who never set one up — the same deal [`logger?`](/webhooks/logging) already gives.
+
+:::code-group
+
+```bash [npm]
+npm install @opentelemetry/api
+```
+
+```bash [yarn]
+yarn add @opentelemetry/api
+```
+
+```bash [pnpm]
+pnpm add @opentelemetry/api
+```
+
+```bash [bun]
+bun add @opentelemetry/api
+```
+
+```bash [deno]
+deno add npm:@opentelemetry/api
+```
+
+:::
+
+There's no option to configure — tracing is always on, and does nothing observable until your app registers an OpenTelemetry SDK:
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+
+const router = createWebhookRouter({ prefix: "/webhooks" });
+router.register("/stripe", { schema: stripeEventSchema, handler });
+
+export default { fetch: (request: Request) => router.handle(request) };
+```
+
+## What Gets Instrumented
+
+Every `handle(request)` call produces a `SERVER` delivery span named `{method} {path}` (the full request path, e.g. `POST /webhooks/stripe`), with `http.request.method`, `url.path`, and `http.response.status_code` attributes.
+
+The incoming request's `traceparent` header is extracted first, so the delivery span continues the sender's trace instead of starting a new one — most webhook senders (Stripe, GitHub, etc.) that run their own OTel-instrumented infrastructure will already send one.
+
+The route handler dispatch gets its own child `INTERNAL` span, named `webhook.handler {path}` (the matched route, e.g. `/stripe`), nested under the delivery span.
+
+A non-2xx response — an unmatched route, a validation failure, a verification failure, or a handler error — marks the delivery span `ERROR`. When the handler itself throws, that exception is also recorded on the handler span via `recordException`.
+
+## Edge Runtime Caveat
+
+Implicit context propagation — auto-linking the "active span" across `await` boundaries — depends on the host runtime supporting `AsyncLocalStorage`/`async_hooks`, which some edge runtimes don't support reliably. Span creation, extraction, and attribute-setting always work everywhere regardless of this.
+
+## Log Correlation
+
+Pair this with [`@zap-studio/logger`](/logger/opentelemetry): once a span is active, `ConsoleLogger` automatically stamps `trace_id`/`span_id` onto every log line, so a delivery's spans and logs line up in whatever backend you send them to.

@@ -27,6 +27,7 @@ Already use `pino`? It already exposes the same six methods, so it works as a `L
 - **Zero dependencies, tree-shakeable** — unused exports are dropped by any modern bundler.
 - **Optional by design** — other `@zap-studio/*` packages accept a `logger?: Logger` option; omit it and there's zero logging overhead.
 - **[Runtime-agnostic, zero config](/logger/runtime-compatibility)** — works out of the box on Node.js, Bun, Deno, browsers, and Cloudflare Workers.
+- **[Automatic trace-log correlation](/logger/opentelemetry)** — `ConsoleLogger` stamps the active span's `trace_id`/`span_id` onto every log call, no-op until an SDK is registered.
 
 ## Quick Start
 
@@ -60,3 +61,4 @@ Deno 1.42 is the first release that can install packages from JSR (`deno add jsr
 - [Getting Started](/logger/getting-started) — install and use `ConsoleLogger`, and see how to implement `Logger` for a custom backend
 - [Output Formats](/logger/formats) — `classicFormat`, `jsonFormat`, `compactFormat`, `prettyFormat`, and writing your own
 - [Runtime Compatibility](/logger/runtime-compatibility) — how the package adapts automatically to each runtime
+- [OpenTelemetry](/logger/opentelemetry) — automatic trace-log correlation

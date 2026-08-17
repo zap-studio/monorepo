@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/retry",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "private": false,
   "description": "Composable, tree-shakeable retry policies for resilient async operations.",
   "keywords": [
@@ -44,6 +44,10 @@
     "access": "public"
   },
   "devDependencies": {
+    "@opentelemetry/api": "catalog:",
+    "@opentelemetry/context-async-hooks": "catalog:",
+    "@opentelemetry/sdk-metrics": "catalog:",
+    "@opentelemetry/sdk-trace-base": "catalog:",
     "@zap-studio/logger": "workspace:*",
     "@zap-studio/typescript": "workspace:*",
     "tsdown": "catalog:",
@@ -51,6 +55,7 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
+    "@opentelemetry/api": "catalog:",
     "@zap-studio/logger": "workspace:*"
   },
   "peerDependenciesMeta": {

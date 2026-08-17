@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/webhooks",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "private": false,
   "description": "A lightweight, type-safe, tree-shakeable webhook router with Standard Schema validation, signature verification, and lifecycle hooks.",
   "keywords": [
@@ -49,6 +49,10 @@
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
+    "@opentelemetry/api": "catalog:",
+    "@opentelemetry/context-async-hooks": "catalog:",
+    "@opentelemetry/core": "catalog:",
+    "@opentelemetry/sdk-trace-base": "catalog:",
     "@zap-studio/logger": "workspace:*",
     "@zap-studio/typescript": "workspace:*",
     "tsdown": "catalog:",
@@ -57,6 +61,7 @@
     "zod": "catalog:"
   },
   "peerDependencies": {
+    "@opentelemetry/api": "catalog:",
     "@zap-studio/logger": "workspace:*"
   },
   "peerDependenciesMeta": {

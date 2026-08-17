@@ -93,6 +93,28 @@ const logger: Logger = {
 };
 ```
 
+## OpenTelemetry
+
+`@opentelemetry/api` is a required peer dependency — tiny, side-effect-free, and a no-op until an app registers a real SDK, so installing it costs nothing at runtime for consumers who never set one up.
+
+This isn't a full bridge to the OTel Logs API — `Logger` already does that job well. `ConsoleLogger` just stamps trace context onto the log automatically: when a span is active, every log call gets `trace_id`/`span_id` merged into its context (an explicit `trace_id`/`span_id` you pass yourself takes precedence):
+
+```bash
+npm install @opentelemetry/api
+```
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+
+const logger = new ConsoleLogger();
+
+// If this runs inside an active span (e.g. nested inside a
+// @zap-studio/fetch call, or your own app-level span), the log context
+// automatically gets `trace_id`/`span_id` merged in. If not, it's a no-op
+// — no wiring required either way.
+logger.info("checkpoint", { userId: "u1" });
+```
+
 ## Runtime Compatibility
 
 Works out of the box on Node.js, Bun, Deno, browsers, and Cloudflare Workers — no configuration needed. `console` dispatch, level filtering, `classicFormat`, `jsonFormat`, and `compactFormat` have no runtime-specific code at all. The only per-runtime behavior is `prettyFormat`'s color detection:

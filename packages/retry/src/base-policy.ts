@@ -4,8 +4,10 @@
  * @module @zap-studio/retry/base-policy
  */
 
+import { trace } from "@opentelemetry/api";
 import type { Logger } from "@zap-studio/logger";
 
+import { recordRetryAttempt } from "./_otel.js";
 import { AbortError, RetryError } from "./errors.js";
 import type {
   ResolvedRetryPolicy,
@@ -138,6 +140,12 @@ const logRetryDecision = (
       delayMs: decision.delayMs,
       reason: decision.reason,
     });
+    trace.getActiveSpan()?.addEvent("retry.scheduled", {
+      attempt,
+      "retry.delay_ms": decision.delayMs,
+      "retry.reason": decision.reason ?? "",
+    });
+    recordRetryAttempt("retry");
     return;
   }
 
@@ -146,6 +154,11 @@ const logRetryDecision = (
     error,
     reason: decision.reason,
   });
+  trace.getActiveSpan()?.addEvent("retry.exhausted", {
+    attempt,
+    "retry.reason": decision.reason ?? "",
+  });
+  recordRetryAttempt("exhausted");
 };
 
 /**

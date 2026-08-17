@@ -27,6 +27,7 @@ Every retry loop also accepts an `AbortSignal`, checked before each attempt and 
 - **Cancellation** through [`AbortSignal`](/retry/abort-signal), checked before, between, and during retries.
 - **Custom policies** as [plain objects implementing `RetryPolicy`](/retry/custom-policies) — just a `next(...)` function, no subclassing.
 - **[Optional logging](/retry/logging)** via a `logger?: Logger` option from [`@zap-studio/logger`](/logger) — omit it and there's zero logging overhead.
+- **[Native OpenTelemetry](/retry/opentelemetry)** — retry decisions as events on the caller's active span, plus a `retry.attempts` counter, no-op until an SDK is registered.
 - **Tree-shakeable** — policies are functions returning plain objects, not classes; unused policies are dropped by any modern bundler.
 
 ## Quick Start
@@ -81,3 +82,4 @@ Cancellation relies on `AbortSignal.reason`, which sets the browser minimums abo
 - [Cancellation](/retry/abort-signal)
 - [Custom Policies](/retry/custom-policies)
 - [Logging](/retry/logging)
+- [OpenTelemetry](/retry/opentelemetry)

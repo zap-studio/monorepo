@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0]
+
+### Added
+
+Native OpenTelemetry support. Every `can(...)` call gets an `INTERNAL` span (`permit.check {resourceType}:{action}`) with the decision (`"allow"`/`"deny"`) set as a span attribute, plus a `permit.checks` counter tagged the same way. `mergePoliciesAnd`/`mergePoliciesOr` get their own wrapping span around the composite check. See [OpenTelemetry](https://www.zapstudio.dev/permit/opentelemetry).
+
+### Changed
+
+**Breaking:** `@opentelemetry/api` is now a required peer dependency. It's tiny, side-effect-free, and a no-op until an app registers a real SDK, so nothing changes at runtime for consumers who don't set one up — but the package won't resolve without it installed: `npm install @opentelemetry/api`.
+
 ## [1.1.1]
 
 ### Changed

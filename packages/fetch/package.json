@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/fetch",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "private": false,
   "description": "A type-safe, tree-shakeable fetch wrapper for HTTP requests with runtime schema validation.",
   "keywords": [
@@ -49,6 +49,10 @@
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
+    "@opentelemetry/api": "catalog:",
+    "@opentelemetry/context-async-hooks": "catalog:",
+    "@opentelemetry/core": "catalog:",
+    "@opentelemetry/sdk-trace-base": "catalog:",
     "@zap-studio/logger": "workspace:*",
     "@zap-studio/typescript": "workspace:*",
     "arktype": "catalog:",
@@ -59,6 +63,7 @@
     "zod": "catalog:"
   },
   "peerDependencies": {
+    "@opentelemetry/api": "catalog:",
     "@zap-studio/logger": "workspace:*"
   },
   "peerDependenciesMeta": {
