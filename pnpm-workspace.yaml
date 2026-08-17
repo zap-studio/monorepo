@@ -14,6 +14,7 @@ allowBuilds:
 
 catalog:
   "@arethetypeswrong/core": ^0.18.5
+  "@oxlint/plugins": ^1.78.0
   "@opentelemetry/api": ^1.9.0
   "@opentelemetry/context-async-hooks": ^2.10.0
   "@opentelemetry/core": ^2.10.0
