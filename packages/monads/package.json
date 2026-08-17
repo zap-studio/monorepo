@@ -30,6 +30,7 @@
   "sideEffects": false,
   "types": "./dist/index.d.ts",
   "exports": {
+    ".": "./dist/index.js",
     "./option": "./dist/option.js",
     "./pipe": "./dist/pipe.js",
     "./result": "./dist/result.js",
