@@ -43,8 +43,10 @@ jobs:
         uses: ./.github/actions/setup-pnpm
       - name: Build packages
         run: pnpm run build
-      - name: Run check
-        run: pnpm run check
+      - name: Run lint
+        run: pnpm run lint
+      - name: Run format check
+        run: pnpm run format:check
 
   test:
     name: Test
