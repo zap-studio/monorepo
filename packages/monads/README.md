@@ -20,7 +20,7 @@ npm install @zap-studio/monads
 
 - **`Result<T, E>`** — `ok`/`err` constructors, `isOk`/`isErr` guards, and `Result.map`/`Result.mapErr`/`Result.andThen`/`Result.unwrapOr`/`Result.unwrapOrElse`/`Result.unwrap`/`Result.match` combinators.
 - **`ResultAsync<T, E>`** — a thenable wrapper around `Promise<Result<T, E>>`, awaitable directly, with chainable `map`/`mapErr`/`andThen`/`match` for building async pipelines before the final `await`.
-- **`Option<T>`** — `some`/`none` constructors, `isSome`/`isNone` guards, and `Option.map`/`Option.andThen`/`Option.unwrapOr`/`Option.unwrapOrElse`/`Option.unwrap`/`Option.match` combinators.
+- **`Option<T>`** — `some`/`none` constructors, `isSome`/`isNone` guards, and `Option.map`/`Option.andThen`/`Option.orElse`/`Option.unwrapOr`/`Option.unwrapOrElse`/`Option.unwrap`/`Option.match` combinators.
 - **Bridges** — `fromThrowable` (sync throwing function → `Result`), `fromPromise` (rejecting `Promise` → `ResultAsync`), `fromNullable` (`T | null | undefined` → `Option`).
 - **`pipe`** — left-to-right composition for the standalone combinators above; there's no native pipe operator in TypeScript.
 - **Zero dependencies, tree-shakeable** — every export is a standalone value or function; unused ones are dropped by any modern bundler.
@@ -48,7 +48,7 @@ const message = pipe(
 ## Option
 
 ```ts
-import { fromNullable, Option, pipe } from "@zap-studio/monads";
+import { fromNullable, Option, pipe, some } from "@zap-studio/monads";
 
 const found = fromNullable([1, 2, 3].find((n) => n > 5));
 
@@ -57,6 +57,11 @@ pipe(
   Option.map((n) => n * 2),
   Option.unwrapOr(0)
 ); // 0, since nothing in [1, 2, 3] is greater than 5
+
+pipe(
+  found,
+  Option.orElse(() => some(-1))
+); // Some(-1), recovered from None
 ```
 
 ## Async
