@@ -24,7 +24,9 @@ const policy = createPolicy({ resources, actions, rules, logger });
 | Resource validation fails | `warn`  | `resourceType`, `error`           |
 | A policy function throws  | `warn`  | `action`, `resourceType`, `error` |
 
-Deny decisions log at `info` rather than `debug` — a denial is a meaningful authorization outcome worth seeing by default once a logger is attached, not just noise. The internal-error warnings (a policy function throwing, or resource validation failing) predate this option: without a logger they still print via `console.warn`, exactly as before; with one, they route through `logger.warn(...)` instead so they land wherever the rest of your logs go.
+Deny decisions log at `info` rather than `debug` — a denial is a meaningful authorization outcome worth seeing by default once a logger is attached, not just noise.
+
+The internal-error warnings (a policy function throwing, or resource validation failing) predate this option: without a logger they still print via `console.warn`, exactly as before; with one, they route through `logger.warn(...)` instead so they land wherever the rest of your logs go.
 
 ## Bring Your Own Logger
 

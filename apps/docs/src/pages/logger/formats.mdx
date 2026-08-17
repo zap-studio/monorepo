@@ -84,4 +84,6 @@ const upperFormat: LogFormatter = (record: LogRecord) => [
 const logger = new ConsoleLogger({ format: upperFormat });
 ```
 
-A `LogRecord` has `level`, `message`, `context` (`Record<string, unknown> | undefined`), and `timestamp` (a `Date`, built fresh for each call that passes the `minLevel` filter). A `LogFormatter` returns the argument list `console[method](...)` gets called with — return one string for a single line, or more arguments (like `classicFormat` and `prettyFormat` do) to hand `context` off for native inspection.
+A `LogRecord` has `level`, `message`, `context` (`Record<string, unknown> | undefined`), and `timestamp` (a `Date`, built fresh for each call that passes the `minLevel` filter).
+
+A `LogFormatter` returns the argument list `console[method](...)` gets called with — return one string for a single line, or more arguments (like `classicFormat` and `prettyFormat` do) to hand `context` off for native inspection.

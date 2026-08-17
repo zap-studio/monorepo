@@ -15,6 +15,10 @@ description: How @zap-studio/logger adapts automatically to Node, Bun, Deno, bro
 | Browsers | Always — devtools render ANSI fine |
 | Cloudflare Workers | Never — output may land in the dashboard's web log viewer, which can't render it |
 
-Node/Bun/Deno detection checks for a `process` global with `process.stdout.isTTY` and `process.env.NO_COLOR`. Cloudflare Workers is detected via `navigator.userAgent === "Cloudflare-Workers"`, [the runtime's own documented self-identification](https://developers.cloudflare.com/workers/runtime-apis/web-standards/#navigatoruseragent) — Workers has no `process` global, and its output can land in `wrangler tail` (a real terminal, color-safe) or the dashboard's web log viewer (not color-safe), with no way to tell which from inside the Worker. Color stays off there to guarantee clean output either way. Anywhere else without a `process` global (browsers) colors unconditionally, on the assumption it's a devtools-like console.
+Node/Bun/Deno detection checks for a `process` global with `process.stdout.isTTY` and `process.env.NO_COLOR`.
+
+Cloudflare Workers is detected via `navigator.userAgent === "Cloudflare-Workers"`, [the runtime's own documented self-identification](https://developers.cloudflare.com/workers/runtime-apis/web-standards/#navigatoruseragent). Workers has no `process` global, and its output can land in `wrangler tail` (a real terminal, color-safe) or the dashboard's web log viewer (not color-safe), with no way to tell which from inside the Worker. Color stays off there to guarantee clean output either way.
+
+Anywhere else without a `process` global (browsers) colors unconditionally, on the assumption it's a devtools-like console.
 
 See [Runtime Support](/logger#runtime-support) for minimum versions per runtime.
