@@ -11,6 +11,7 @@ description: A lean logging abstraction with a console implementation.
 
 - **One interface**: [`Logger`](/logger/getting-started) — `trace`/`debug`/`info`/`warn`/`error`/`fatal`, each `(message: string, context?: Record<string, unknown>) => void`.
 - **One implementation**: [`ConsoleLogger`](/logger/getting-started), backed by the global `console` object, with a configurable `minLevel` to control verbosity.
+- **[Pluggable output formats](/logger/formats)**: `classicFormat` (default), `jsonFormat`, `compactFormat`, `prettyFormat` — pass any function matching `LogFormatter`, no registration required.
 - **Zero dependencies, tree-shakeable** — unused exports are dropped by any modern bundler.
 - **Optional by design** — other `@zap-studio/*` packages accept a `logger?: Logger` option; omit it and there's zero logging overhead.
 
@@ -40,3 +41,4 @@ Deno 1.42 is the first release that can install packages from JSR (`deno add jsr
 ## Learn More
 
 - [Getting Started](/logger/getting-started) — install and use `ConsoleLogger`, and see how to implement `Logger` for a custom backend
+- [Output Formats](/logger/formats) — `classicFormat`, `jsonFormat`, `compactFormat`, `prettyFormat`, and writing your own

@@ -58,6 +58,8 @@ const quietLogger = new ConsoleLogger({ minLevel: "error" });
 const silentLogger = new ConsoleLogger({ minLevel: "none" });
 ```
 
+`ConsoleLogger` also accepts a `format` option to switch between plain text, JSON, logfmt, or colorized output — see [Output Formats](/logger/formats).
+
 ## Passing a Logger to Other Packages
 
 `@zap-studio/retry`, `@zap-studio/fetch`, `@zap-studio/webhooks`, and `@zap-studio/permit` all accept an optional `logger?: Logger` option. Passing nothing means no logging overhead at all — the package never calls into a logger it wasn't given.

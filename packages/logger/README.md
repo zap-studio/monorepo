@@ -34,7 +34,12 @@ logger.warn("retrying after failure", { attempt: 2 });
 `ConsoleLogger` accepts a `format?: LogFormatter` option, defaulting to `classicFormat` (today's `message` + `context` output). Built-in formatters, all from `@zap-studio/logger/format`:
 
 ```ts
-import { ConsoleLogger, jsonFormat, compactFormat, prettyFormat } from "@zap-studio/logger";
+import {
+  ConsoleLogger,
+  jsonFormat,
+  compactFormat,
+  prettyFormat,
+} from "@zap-studio/logger";
 
 new ConsoleLogger({ format: jsonFormat });
 // {"port":3000,"time":1704067200000,"level":"info","msg":"server started"}

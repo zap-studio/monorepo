@@ -53,6 +53,7 @@ export default defineConfig({
           items: [
             { link: "/logger", text: "Overview" },
             { link: "/logger/getting-started", text: "Getting Started" },
+            { link: "/logger/formats", text: "Output Formats" },
           ],
           text: "logger",
         },
