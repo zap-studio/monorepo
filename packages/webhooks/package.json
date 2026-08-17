@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "@opentelemetry/api": "catalog:",
+    "@opentelemetry/core": "catalog:",
     "@opentelemetry/sdk-trace-base": "catalog:",
     "@zap-studio/logger": "workspace:*",
     "@zap-studio/typescript": "workspace:*",
