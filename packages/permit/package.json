@@ -47,6 +47,9 @@
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
+    "@opentelemetry/api": "catalog:",
+    "@opentelemetry/sdk-metrics": "catalog:",
+    "@opentelemetry/sdk-trace-base": "catalog:",
     "@zap-studio/logger": "workspace:*",
     "@zap-studio/typescript": "workspace:*",
     "tsdown": "catalog:",
@@ -54,6 +57,7 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
+    "@opentelemetry/api": "catalog:",
     "@zap-studio/logger": "workspace:*"
   },
   "peerDependenciesMeta": {

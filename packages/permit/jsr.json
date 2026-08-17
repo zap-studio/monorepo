@@ -11,6 +11,7 @@
     "./types": "./src/types.ts"
   },
   "imports": {
+    "@opentelemetry/api": "npm:@opentelemetry/api@^1.9.0",
     "@zap-studio/logger": "jsr:@zap-studio/logger@^1.0.0",
     "@zap-studio/validation": "jsr:@zap-studio/validation@^1.0.0"
   },

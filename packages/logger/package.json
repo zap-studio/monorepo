@@ -38,10 +38,15 @@
     "access": "public"
   },
   "devDependencies": {
+    "@opentelemetry/api": "catalog:",
+    "@opentelemetry/sdk-trace-base": "catalog:",
     "@zap-studio/typescript": "workspace:*",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "@opentelemetry/api": "catalog:"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -10,6 +10,9 @@
     "./format": "./src/format.ts",
     "./types": "./src/types.ts"
   },
+  "imports": {
+    "@opentelemetry/api": "npm:@opentelemetry/api@^1.9.0"
+  },
   "publish": {
     "include": ["src", "CHANGELOG.md", "LICENSE", "README.md"]
   }
