@@ -8,6 +8,7 @@ import {
   map,
   match,
   none,
+  orElse,
   some,
   unwrap,
   unwrapOr,
@@ -70,6 +71,40 @@ describe("andThen", () => {
 
   it("can produce None from a Some input", () => {
     expect(pipe(some(3), andThen(half))).toEqual(none());
+  });
+});
+
+describe("orElse", () => {
+  it("passes a Some through unchanged, without calling fn", () => {
+    let called = false;
+    const result = pipe(
+      some(1),
+      orElse(() => {
+        called = true;
+        return some(0);
+      })
+    );
+
+    expect(result).toEqual(some(1));
+    expect(called).toBe(false);
+  });
+
+  it("recovers a None with the fallback Option", () => {
+    expect(
+      pipe(
+        none(),
+        orElse(() => some(0))
+      )
+    ).toEqual(some(0));
+  });
+
+  it("can produce None from a None input", () => {
+    expect(
+      pipe(
+        none(),
+        orElse(() => none())
+      )
+    ).toEqual(none());
   });
 });
 

@@ -67,4 +67,15 @@ describe("root entrypoint", () => {
 
     expect(Result.map).not.toBe(Option.map);
   });
+
+  it("exposes Option.orElse, with no Result counterpart", () => {
+    expect(
+      pipe(
+        none(),
+        Option.orElse(() => some(0))
+      )
+    ).toEqual(some(0));
+
+    expect("orElse" in Result).toBe(false);
+  });
 });
