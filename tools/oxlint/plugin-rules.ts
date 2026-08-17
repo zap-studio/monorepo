@@ -351,11 +351,10 @@ const e18eRules: RuleMap = {
   "prefer-url-canparse": "error",
 };
 
-function prefixed(pluginName: string, rules: RuleMap): RuleMap {
-  return Object.fromEntries(
+const prefixed = (pluginName: string, rules: RuleMap): RuleMap =>
+  Object.fromEntries(
     Object.entries(rules).map(([rule, severity]) => [`${pluginName}/${rule}`, severity]),
   );
-}
 
 export const eslintPluginRules: RuleMap = {
   ...prefixed("playwright", playwrightRules),
