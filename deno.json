@@ -3,6 +3,7 @@
     "./packages/validation",
     "./packages/fetch",
     "./packages/logger",
+    "./packages/monads",
     "./packages/permit",
     "./packages/retry",
     "./packages/webhooks"
