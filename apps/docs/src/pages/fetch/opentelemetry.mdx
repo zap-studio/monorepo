@@ -1,0 +1,66 @@
+---
+title: OpenTelemetry
+description: Native distributed tracing through @opentelemetry/api, with zero setup when no SDK is registered.
+---
+
+# OpenTelemetry
+
+`@opentelemetry/api` is a required peer dependency of `@zap-studio/fetch`. It's a tiny, side-effect-free package that's a no-op until an app registers a real SDK, so installing it costs nothing at runtime for consumers who never set one up — the same deal [`logger?`](/fetch/logging) already gives.
+
+:::code-group
+
+```bash [npm]
+npm install @opentelemetry/api
+```
+
+```bash [yarn]
+yarn add @opentelemetry/api
+```
+
+```bash [pnpm]
+pnpm add @opentelemetry/api
+```
+
+```bash [bun]
+bun add @opentelemetry/api
+```
+
+```bash [deno]
+deno add npm:@opentelemetry/api
+```
+
+:::
+
+There's no option to configure — tracing is always on, and does nothing observable until your app registers an OpenTelemetry SDK (a Datadog agent, Honeycomb, Vercel OTel, a self-hosted collector, etc.):
+
+```ts
+import { createFetch } from "@zap-studio/fetch";
+
+const { api } = createFetch({ baseURL: "https://api.example.com" });
+
+await api.get("/users/1", UserSchema);
+```
+
+## What Gets Instrumented
+
+Every request produces a `CLIENT` span named after the HTTP method (e.g. `GET`), with:
+
+| Attribute                   | Value                          |
+| --------------------------- | ------------------------------ |
+| `http.request.method`       | The HTTP method (e.g. `"GET"`) |
+| `url.full`                  | The resolved request URL       |
+| `http.response.status_code` | Set once the response arrives  |
+
+The span's trace context is injected into the outgoing request's headers (`traceparent`, and `tracestate` if your propagator uses it), so the call continues the caller's distributed trace instead of starting a new one.
+
+On failure — a non-2xx response, or a thrown error (network failure, aborted request, JSON parse failure, validation failure) — the span's status is set to `ERROR`. A thrown error is additionally recorded as a span exception via `recordException`.
+
+## Edge Runtime Caveat
+
+Implicit context propagation — auto-linking the "active span" across `await` boundaries so your own spans nest correctly under the request span — depends on the host runtime supporting `AsyncLocalStorage`/`async_hooks`. Some edge runtimes don't support this reliably.
+
+Span creation and attribute-setting always work everywhere, regardless of this. Only the automatic parent/child linking across async boundaries can be affected on those runtimes.
+
+## Log Correlation
+
+Pair this with [`@zap-studio/logger`](/logger/opentelemetry): once a span is active, `ConsoleLogger` automatically stamps `trace_id`/`span_id` onto every log line, so a request's spans and logs line up in whatever backend you send them to.

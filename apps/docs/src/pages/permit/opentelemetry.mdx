@@ -1,0 +1,56 @@
+---
+title: OpenTelemetry
+description: Authorization checks surfaced as spans and a decision counter through @opentelemetry/api.
+---
+
+# OpenTelemetry
+
+`@opentelemetry/api` is a required peer dependency of `@zap-studio/permit`. It's a tiny, side-effect-free package that's a no-op until an app registers a real SDK, so installing it costs nothing at runtime for consumers who never set one up — the same deal [`logger?`](/permit/logging) already gives.
+
+:::code-group
+
+```bash [npm]
+npm install @opentelemetry/api
+```
+
+```bash [yarn]
+yarn add @opentelemetry/api
+```
+
+```bash [pnpm]
+pnpm add @opentelemetry/api
+```
+
+```bash [bun]
+bun add @opentelemetry/api
+```
+
+```bash [deno]
+deno add npm:@opentelemetry/api
+```
+
+:::
+
+There's no option to configure — tracing is always on, and does nothing observable until your app registers an OpenTelemetry SDK:
+
+```ts
+import { createPolicy } from "@zap-studio/permit";
+
+const policy = createPolicy({ resources, actions, rules });
+
+await policy.can(ctx, "post:write", post);
+```
+
+## What Gets Instrumented
+
+Every `can(...)` call produces an `INTERNAL` span named `permit.check {resourceType}:{action}` (e.g. `permit.check post:write`), with a `permit.decision` attribute set to `"allow"` or `"deny"` once the check resolves. A permission string that doesn't parse, an action that isn't allowed, or a resource that fails validation all resolve to `"deny"`, same as a rule explicitly denying.
+
+A `permit.checks` counter is incremented alongside every span, tagged with the same `permit.decision` value — the metric to graph "what's our deny rate" without needing a trace backend.
+
+## Merged Policies
+
+`mergePoliciesAnd(...)` and `mergePoliciesOr(...)` get their own span around the composite check, in addition to the spans each underlying policy already produces for its own `can(...)` call — so a merged check shows up as one span with the aggregate decision, with each contributing policy's check nested inside it.
+
+## Log Correlation
+
+Pair this with [`@zap-studio/logger`](/logger/opentelemetry): once a span is active, `ConsoleLogger` automatically stamps `trace_id`/`span_id` onto every log line, so the allow/deny logs from [the `logger` option](/permit/logging) line up with the check spans.
