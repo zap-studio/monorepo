@@ -6,9 +6,13 @@ Full documentation: [zapstudio.dev/fetch](https://www.zapstudio.dev/fetch)
 
 ## Motivation
 
-Raw `fetch` does not throw on HTTP errors like 404 or 500 — you must check `response.ok` yourself. And it does not check that the JSON body matches what your code expects. So most projects add the same pattern at every call site: check the status, parse the JSON, then validate it with `schema.parse(await res.json())`. It is easy to forget one of these steps somewhere, and that is how bad data or a network error goes unnoticed until it breaks something downstream.
+Raw `fetch` does not throw on HTTP errors like 404 or 500 — you must check `response.ok` yourself. And it does not check that the JSON body matches what your code expects.
 
-`@zap-studio/fetch` makes this pattern the default, not something you write by hand. `api.get(url, UserSchema)` checks the response, validates the body, and throws a clear, typed error — `FetchError` for a bad HTTP status, `ValidationError` for a bad shape — so you always know what went wrong and where. It uses [Standard Schema](https://standardschema.dev/schema), so you are not locked into one validation library: start with Zod, move to Valibot later, and the call sites do not change. And because it only wraps the global `fetch` function, it is not a Node-only HTTP client — it runs the same way on Bun, Deno, Cloudflare Workers, and in the browser.
+So most projects add the same pattern at every call site: check the status, parse the JSON, then validate it with `schema.parse(await res.json())`. It is easy to forget one of these steps somewhere, and that is how bad data or a network error goes unnoticed until it breaks something downstream.
+
+`@zap-studio/fetch` makes this pattern the default, not something you write by hand. `api.get(url, UserSchema)` checks the response, validates the body, and throws a clear, typed error — `FetchError` for a bad HTTP status, `ValidationError` for a bad shape — so you always know what went wrong and where.
+
+It uses [Standard Schema](https://standardschema.dev/schema), so you are not locked into one validation library: start with Zod, move to Valibot later, and the call sites do not change. And because it only wraps the global `fetch` function, it is not a Node-only HTTP client — it runs the same way on Bun, Deno, Cloudflare Workers, and in the browser.
 
 ## Installation
 

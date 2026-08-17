@@ -9,9 +9,13 @@ description: A type-safe, declarative authorization library for TypeScript with 
 
 ## Motivation
 
-Authorization checks written by hand, like `if (user.role === "admin")`, spread through a codebase over time. After a while, nobody can answer "who is allowed to delete a post?" without searching the whole app. A framework like CASL solves the spreading problem, but it comes with its own vocabulary to learn (`subject`, `can`, `cannot`, `rules`), and its rules are not checked against your actual data shapes — you can write a rule that references a field your resource does not have, and it will only fail once that code runs.
+Authorization checks written by hand, like `if (user.role === "admin")`, spread through a codebase over time. After a while, nobody can answer "who is allowed to delete a post?" without searching the whole app.
 
-`@zap-studio/permit` keeps all rules in one place, through `createPolicy(...)` with `allow()`, `deny()`, and `when(condition)` — one file answers "who can do what." And because resources come from your Standard Schema schemas, policy types are derived straight from your real data shapes. Reference a field that does not exist, and you get an error while writing the code, not a silent `undefined` in production.
+A framework like CASL solves the spreading problem, but it comes with its own vocabulary to learn (`subject`, `can`, `cannot`, `rules`), and its rules are not checked against your actual data shapes — you can write a rule that references a field your resource does not have, and it will only fail once that code runs.
+
+`@zap-studio/permit` keeps all rules in one place, through `createPolicy(...)` with `allow()`, `deny()`, and `when(condition)` — one file answers "who can do what."
+
+And because resources come from your Standard Schema schemas, policy types are derived straight from your real data shapes. Reference a field that does not exist, and you get an error while writing the code, not a silent `undefined` in production.
 
 ## Features
 

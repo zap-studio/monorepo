@@ -6,9 +6,13 @@ Full documentation: [zapstudio.dev/retry](https://www.zapstudio.dev/retry)
 
 ## Motivation
 
-A hand-written retry loop is usually a `for` loop with `setTimeout`, and it is easy to get wrong in ways that only show up under load. Without jitter, every client that lost connection to a service retries at the exact same moment once it comes back, causing a new spike right when the service is trying to recover. Without cancellation, a retry loop can keep running — and keep hitting the network — after the result is no longer needed, for example after a user navigates away.
+A hand-written retry loop is usually a `for` loop with `setTimeout`, and it is easy to get wrong in ways that only show up under load. Without jitter, every client that lost connection to a service retries at the exact same moment once it comes back, causing a new spike right when the service is trying to recover.
 
-`@zap-studio/retry` gives you this behavior as a built-in option, instead of something you write from scratch. `exponentialBackoff` and `linearBackoff` support jitter (`"full"` or `"equal"`, the same strategies AWS recommends) through the `jitter` option — turn it on and delays are randomized instead of fixed. Every retry loop also accepts an `AbortSignal`, checked before each attempt and while waiting between attempts, so an abort stops the next attempt or delay from starting; it does not interrupt an attempt that is already running. You get retry policies as values you configure once and reuse, instead of logic you have to get right from scratch in every project.
+Without cancellation, a retry loop can keep running — and keep hitting the network — after the result is no longer needed, for example after a user navigates away.
+
+`@zap-studio/retry` gives you this behavior as a built-in option, instead of something you write from scratch. `exponentialBackoff` and `linearBackoff` support jitter (`"full"` or `"equal"`, the same strategies AWS recommends) through the `jitter` option — turn it on and delays are randomized instead of fixed.
+
+Every retry loop also accepts an `AbortSignal`, checked before each attempt and while waiting between attempts, so an abort stops the next attempt or delay from starting; it does not interrupt an attempt that is already running. You get retry policies as values you configure once and reuse, instead of logic you have to get right from scratch in every project.
 
 ## Installation
 

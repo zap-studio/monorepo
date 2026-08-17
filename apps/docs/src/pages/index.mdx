@@ -11,9 +11,13 @@ Install one package or all six — nothing here depends on the rest of the famil
 
 ## Motivation
 
-For each of these problems — typed HTTP calls, authorization, retries, validation, logging, webhooks — most teams do not start from zero. They pick a general library, or write a small wrapper by hand, and move on. The problem is that these ad hoc solutions tend to skip the hard parts: raw `fetch` does not validate response bodies, hand-written retry loops skip jitter and cancellation, hand-written authorization checks spread through the codebase with no single place to audit them, and hand-written webhook signature checks often use `===` instead of a constant-time comparison, which is a real security gap. These wrappers are also often built for Node only, so they silently break the moment the code needs to run on an edge runtime or in the browser.
+For each of these problems — typed HTTP calls, authorization, retries, validation, logging, webhooks — most teams do not start from zero. They pick a general library, or write a small wrapper by hand, and move on.
 
-Zap Studio packages solve each of these problems once, correctly, so you do not have to solve them again per project. They share the same foundations — [Standard Schema](https://standardschema.dev) for validation, standard web APIs like `fetch`, `Request`/`Response`, and `AbortSignal` instead of Node-specific ones, and a common, optional `Logger` interface — so they compose cleanly and stay small. Install one package or all six: each one is type-safe, framework-agnostic, and tree-shakeable on its own.
+The problem is that these ad hoc solutions tend to skip the hard parts: raw `fetch` does not validate response bodies, hand-written retry loops skip jitter and cancellation, hand-written authorization checks spread through the codebase with no single place to audit them, and hand-written webhook signature checks often use `===` instead of a constant-time comparison, which is a real security gap. These wrappers are also often built for Node only, so they silently break the moment the code needs to run on an edge runtime or in the browser.
+
+Zap Studio packages solve each of these problems once, correctly, so you do not have to solve them again per project. They share the same foundations — [Standard Schema](https://standardschema.dev) for validation, standard web APIs like `fetch`, `Request`/`Response`, and `AbortSignal` instead of Node-specific ones, and a common, optional `Logger` interface — so they compose cleanly and stay small.
+
+Install one package or all six: each one is type-safe, framework-agnostic, and tree-shakeable on its own.
 
 ```ts
 import { api } from "@zap-studio/fetch";
