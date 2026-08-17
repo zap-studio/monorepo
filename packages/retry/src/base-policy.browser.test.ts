@@ -475,7 +475,6 @@ describe("result mode (throwOnExhausted: false)", () => {
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
       .mockRejectedValue(new Error("fail"));
-    // oxlint-disable-next-line promise/avoid-new -- Sleep must stay pending so only the abort listener can settle the race.
     const sleep = vi.fn(() => new Promise<void>(() => {}));
 
     const fakeSignal = {

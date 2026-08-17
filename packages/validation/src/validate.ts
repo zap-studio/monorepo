@@ -263,7 +263,6 @@ export const createStandardValidator = <TSchema extends StandardSchemaV1>(
     options?: StandardValidateOptions & { throwOnError?: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 } => {
-  // oxlint-disable-next-line func-style -- Overload signatures here are non-generic (TSchema is fixed by the closure), so TS checks the union-returning implementation against each overload individually; only a function declaration satisfies that check.
   async function validate(
     input: unknown,
     options: StandardValidateOptions & { throwOnError: true },
@@ -339,7 +338,6 @@ export const createStandardValidatorSync = <TSchema extends StandardSchemaV1>(
     options?: StandardValidateOptions & { throwOnError?: false },
   ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
 } => {
-  // oxlint-disable-next-line func-style -- Overload signatures here are non-generic (TSchema is fixed by the closure), so TS checks the union-returning implementation against each overload individually; only a function declaration satisfies that check.
   function validate(
     input: unknown,
     options: StandardValidateOptions & { throwOnError: true },

@@ -38,7 +38,6 @@ export const defaultSleep = async (delayMs: number): Promise<void> => {
     return;
   }
 
-  // oxlint-disable-next-line promise/avoid-new -- Timer sleep requires adapting callback API to a promise.
   await new Promise<void>((resolve) => {
     setTimeout(resolve, delayMs);
   });
@@ -110,7 +109,6 @@ const sleepWithAbortSignal = async (
   try {
     await Promise.race([
       sleep(delayMs),
-      // oxlint-disable-next-line promise/avoid-new -- AbortSignal callback is adapted into the race promise.
       new Promise<never>((_resolve, reject) => {
         onAbort = (): void => {
           reject(toAbortError(signal.reason));
@@ -194,7 +192,6 @@ const runThrowMode = async <T, TError extends Error, TData>(
     throwIfAborted(signal, logger);
 
     try {
-      // oxlint-disable-next-line no-await-in-loop -- Retry attempts must run sequentially.
       return await execute(attempt);
     } catch (error) {
       throwIfAborted(signal, logger);
@@ -217,7 +214,6 @@ const runThrowMode = async <T, TError extends Error, TData>(
       }
 
       if (decision.delayMs > 0) {
-        // oxlint-disable-next-line no-await-in-loop -- Delay belongs between sequential retry attempts.
         await (signal === undefined
           ? sleep(decision.delayMs)
           : sleepWithAbortSignal(sleep, decision.delayMs, signal));
@@ -411,7 +407,6 @@ const runResultMode = async <T, TError extends Error, TData>(
       return abortResult;
     }
 
-    // oxlint-disable-next-line no-await-in-loop -- Retry attempts must run sequentially.
     const execution = await runAttempt(execute, attempt);
     if (execution.ok) {
       return { ok: true, value: execution.value };
@@ -433,7 +428,6 @@ const runResultMode = async <T, TError extends Error, TData>(
       };
     }
 
-    // oxlint-disable-next-line no-await-in-loop -- Failure handling belongs to the current sequential attempt.
     const failure = await handleFailure(policy, {
       attempt,
       error: execution.error,
@@ -466,7 +460,6 @@ const defaultOnExhausted = <TError extends Error, TData>(
  * Default `isKnownError` used when a policy omits it: accepts any `Error`
  * instance and rejects everything else.
  */
-// oxlint-disable-next-line typescript/no-unnecessary-type-parameters -- TError only appears in the return predicate; needed so callers infer the right narrowed type.
 const defaultIsKnownError = <TError extends Error>(error: unknown): error is TError =>
   error instanceof Error;
 

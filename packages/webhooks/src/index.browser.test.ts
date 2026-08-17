@@ -851,7 +851,6 @@ describe(WebhookRouter, () => {
         const router = createWebhookRouter();
 
         router.register("/test", () => {
-          // oxlint-disable-next-line no-throw-literal -- Testing non-Error throw handling.
           throw "string error";
         });
 
@@ -874,7 +873,6 @@ describe(WebhookRouter, () => {
         });
 
         router.register("/test", () => {
-          // oxlint-disable-next-line no-throw-literal -- Testing non-Error throw handling.
           throw { reason: "object" };
         });
 

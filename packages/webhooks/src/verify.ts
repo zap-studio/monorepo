@@ -19,7 +19,7 @@ export const constantTimeEquals = (a: Uint8Array, b: Uint8Array): boolean => {
   let result = 0;
   for (let i = 0; i < a.length; i += 1) {
     // v8 ignore next -- `?? 0` fallback is unreachable: a Uint8Array never holds `undefined` at an in-bounds index, this exists only to satisfy noUncheckedIndexedAccess.
-    result |= (a[i] ?? 0) ^ (b[i] ?? 0); // oxlint-disable-line no-bitwise -- XOR is the constant-time compare trick.
+    result |= (a[i] ?? 0) ^ (b[i] ?? 0);
   }
 
   return result === 0;

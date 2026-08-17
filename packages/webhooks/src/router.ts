@@ -80,7 +80,6 @@ const runBeforeHooks = async (ctx: WebhookContext, hooks?: BeforeHook[]): Promis
   }
 
   for (const hook of hooks) {
-    // oxlint-disable-next-line no-await-in-loop -- hooks run sequentially; order + short-circuit matter.
     await hook(ctx);
   }
 };
@@ -96,7 +95,6 @@ const runAfterHooks = async (
   }
 
   for (const hook of hooks) {
-    // oxlint-disable-next-line no-await-in-loop -- hooks run sequentially; order + short-circuit matter.
     await hook(ctx, response);
   }
 };
@@ -137,7 +135,6 @@ const validatePayload = async <TPayload>(
   schema?: StandardSchemaV1<unknown, TPayload>,
 ): Promise<TPayload | Response> => {
   if (!schema) {
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Without a schema, caller-declared payload type is the route contract.
     return parsedJson as TPayload;
   }
 
