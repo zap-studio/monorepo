@@ -5,21 +5,17 @@ description: What Zap Studio is, the principles behind its packages, and what ea
 
 # Zap Studio
 
-Zap Studio is a set of type-safe, framework-agnostic, and composable TypeScript packages for core app capabilities — typed HTTP calls, authorization policy checks, retry policies, schema validation, logging, and webhook processing.
-
-Install one package or all six — nothing here depends on the rest of the family.
+Zap Studio is a set of type-safe, framework-agnostic, and composable TypeScript packages for core app capabilities — typed HTTP calls, authorization policy checks, retry policies, schema validation, logging, explicit error handling, and webhook processing.
 
 ## Motivation
 
-For each of these problems — typed HTTP calls, authorization, retries, validation, logging, webhooks — most teams do not start from zero. They pick a general library, or write a small wrapper by hand, and move on.
+For each of these problems — typed HTTP calls, authorization, retries, validation, logging, error handling, webhooks — most teams do not start from zero. They pick a general library, or write a small wrapper by hand, and move on.
 
 The problem is that these ad hoc solutions tend to skip the hard parts: raw `fetch` does not validate response bodies, hand-written retry loops skip jitter and cancellation, hand-written authorization checks spread through the codebase with no single place to audit them, and hand-written webhook signature checks often use `===` instead of a constant-time comparison, which is a real security gap.
 
 These wrappers are also often built for Node only, so they silently break the moment the code needs to run on an edge runtime or in the browser.
 
 Zap Studio packages solve each of these problems once, correctly, so you do not have to solve them again per project. They share the same foundations — [Standard Schema](https://standardschema.dev) for validation, standard web APIs like `fetch`, `Request`/`Response`, and `AbortSignal` instead of Node-specific ones, and a common, optional `Logger` interface — so they compose cleanly and stay small.
-
-Install one package or all six: each one is type-safe, framework-agnostic, and tree-shakeable on its own.
 
 If you already know [Effect](https://effect.website), much of what Zap Studio covers overlaps with it — typed errors, retries, schema validation. Effect is a full ecosystem built around its own runtime and effect type, and that investment pays off in large production systems that need that level of control.
 
@@ -54,6 +50,7 @@ Every package follows the same rules:
 | --- | --- |
 | [`@zap-studio/fetch`](/fetch) | Type-safe HTTP requests with schema-validated responses |
 | [`@zap-studio/logger`](/logger) | Lean logging abstraction with a console implementation |
+| [`@zap-studio/monads`](/monads) | Result/Option types and Rust-style functional combinators |
 | [`@zap-studio/permit`](/permit) | Declarative authorization policies and permission checks |
 | [`@zap-studio/retry`](/retry) | Composable retry policies with fixed and exponential backoff |
 | [`@zap-studio/validation`](/validation) | Standard Schema utilities and consistent validation errors |
@@ -63,9 +60,10 @@ Every package follows the same rules:
 
 Pick a package and follow its Getting Started guide:
 
-- [`@zap-studio/fetch` — Overview](/fetch)
-- [`@zap-studio/logger` — Overview](/logger)
-- [`@zap-studio/permit` — Overview](/permit)
-- [`@zap-studio/retry` — Overview](/retry)
-- [`@zap-studio/validation` — Overview](/validation)
-- [`@zap-studio/webhooks` — Overview](/webhooks)
+- [`@zap-studio/fetch`](/fetch)
+- [`@zap-studio/logger`](/logger)
+- [`@zap-studio/monads`](/monads)
+- [`@zap-studio/permit`](/permit)
+- [`@zap-studio/retry`](/retry)
+- [`@zap-studio/validation`](/validation)
+- [`@zap-studio/webhooks`](/webhooks)

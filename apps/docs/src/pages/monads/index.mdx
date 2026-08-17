@@ -11,7 +11,7 @@ description: Result/Option types and Rust-style functional combinators for expli
 
 Hand-rolled `{ ok: boolean, ... }` result shapes and nullable checks are easy to write once and painful to keep consistent across a codebase. Libraries like [neverthrow](https://github.com/supermacro/neverthrow) and [Effect](https://effect.website/) solve this well, but pull in more surface (do-notation, a runtime, generators, `Either`, class-based fluent APIs) than most projects need.
 
-`@zap-studio/monads` is a deliberately small v1: `Result`, `ResultAsync`, and `Option`, as standalone, tree-shakeable functions composed with `pipe` — not class instances with chained methods.
+`@zap-studio/monads` is deliberately small: `Result`, `ResultAsync`, and `Option`, as standalone, tree-shakeable functions composed with `pipe` — not class instances with chained methods.
 
 ## Features
 
