@@ -14,6 +14,7 @@ npm install @zap-studio/logger
 
 - **One interface**: `Logger` — `trace`/`debug`/`info`/`warn`/`error`/`fatal`, each `(message: string, context?: Record<string, unknown>) => void`. Any object shaped like it works, no subclassing required.
 - **One implementation**: `ConsoleLogger`, backed by the global `console` object, with a configurable `minLevel` to control verbosity.
+- **Pluggable output formats**: `classicFormat` (default), `jsonFormat`, `compactFormat`, `prettyFormat` — pass any function matching `LogFormatter`, no registration required.
 - **Zero dependencies, tree-shakeable** — unused exports are dropped by any modern bundler.
 - **Optional by design** — other `@zap-studio/*` packages accept a `logger?: Logger` option; omit it and there's zero logging overhead.
 
@@ -26,6 +27,33 @@ const logger = new ConsoleLogger({ minLevel: "debug" });
 
 logger.debug("cache miss", { key: "user:42" });
 logger.warn("retrying after failure", { attempt: 2 });
+```
+
+## Output Formats
+
+`ConsoleLogger` accepts a `format?: LogFormatter` option, defaulting to `classicFormat` (today's `message` + `context` output). Built-in formatters, all from `@zap-studio/logger/format`:
+
+```ts
+import { ConsoleLogger, jsonFormat, compactFormat, prettyFormat } from "@zap-studio/logger";
+
+new ConsoleLogger({ format: jsonFormat });
+// {"port":3000,"time":1704067200000,"level":"info","msg":"server started"}
+
+new ConsoleLogger({ format: compactFormat });
+// port=3000 time=2024-01-01T00:00:00.000Z level=info msg="server started"
+
+new ConsoleLogger({ format: prettyFormat });
+// 12:34:56.789 INFO  server started   (colored, context inspected as a second arg)
+```
+
+`jsonFormat` and `compactFormat` flatten `context` fields to the top level (a field named `time`, `level`, or `msg` can't override the base field), and safely serialize `Error` and `bigint` context values instead of losing them to `JSON.stringify`'s default behavior. `prettyFormat` colors output on a real TTY (skipped when `NO_COLOR` is set) and unconditionally in runtimes without a `process` global, like browsers.
+
+Any function matching `LogFormatter` works — no registration required:
+
+```ts
+import type { LogFormatter } from "@zap-studio/logger";
+
+const upperFormat: LogFormatter = (record) => [record.message.toUpperCase()];
 ```
 
 ## Custom Implementations
