@@ -2,7 +2,7 @@ import { playwright } from "@vitest/browser-playwright";
 import { configDefaults, defineConfig } from "vitest/config";
 
 const isCI = process.env.CI !== undefined;
-const exclude = [...configDefaults.exclude, "**/dist/**"];
+const exclude = [...configDefaults.exclude, "**/dist/**", "**/package.json"];
 
 export default defineConfig({
   test: {
