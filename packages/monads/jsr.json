@@ -8,7 +8,8 @@
     "./option": "./src/option.ts",
     "./pipe": "./src/pipe.ts",
     "./result": "./src/result.ts",
-    "./result-async": "./src/result-async.ts"
+    "./result-async": "./src/result-async.ts",
+    "./types": "./src/types.ts"
   },
   "publish": {
     "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]

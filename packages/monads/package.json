@@ -30,11 +30,11 @@
   "sideEffects": false,
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
     "./option": "./dist/option.js",
     "./pipe": "./dist/pipe.js",
     "./result": "./dist/result.js",
     "./result-async": "./dist/result-async.js",
+    "./types": "./dist/types.js",
     "./package.json": "./package.json"
   },
   "publishConfig": {
