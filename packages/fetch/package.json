@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/fetch",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": false,
   "description": "A type-safe, tree-shakeable fetch wrapper for HTTP requests with runtime schema validation.",
   "keywords": [
@@ -46,10 +46,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@zap-studio/logger": "workspace:*",
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
+    "@zap-studio/logger": "workspace:*",
     "@zap-studio/typescript": "workspace:*",
     "arktype": "catalog:",
     "tsdown": "catalog:",
@@ -57,6 +57,14 @@
     "valibot": "catalog:",
     "vitest": "catalog:",
     "zod": "catalog:"
+  },
+  "peerDependencies": {
+    "@zap-studio/logger": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@zap-studio/logger": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=18.0.0"

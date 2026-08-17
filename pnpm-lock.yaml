@@ -365,13 +365,13 @@ importers:
 
   packages/fetch:
     dependencies:
-      '@zap-studio/logger':
-        specifier: workspace:*
-        version: link:../logger
       '@zap-studio/validation':
         specifier: workspace:*
         version: link:../validation
     devDependencies:
+      '@zap-studio/logger':
+        specifier: workspace:*
+        version: link:../logger
       '@zap-studio/typescript':
         specifier: workspace:*
         version: link:../../configs/typescript
@@ -411,13 +411,13 @@ importers:
 
   packages/permit:
     dependencies:
-      '@zap-studio/logger':
-        specifier: workspace:*
-        version: link:../logger
       '@zap-studio/validation':
         specifier: workspace:*
         version: link:../validation
     devDependencies:
+      '@zap-studio/logger':
+        specifier: workspace:*
+        version: link:../logger
       '@zap-studio/typescript':
         specifier: workspace:*
         version: link:../../configs/typescript
@@ -432,11 +432,10 @@ importers:
         version: 4.1.10(@types/node@26.2.0)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.10)(vite@8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.0))
 
   packages/retry:
-    dependencies:
+    devDependencies:
       '@zap-studio/logger':
         specifier: workspace:*
         version: link:../logger
-    devDependencies:
       '@zap-studio/typescript':
         specifier: workspace:*
         version: link:../../configs/typescript
@@ -471,13 +470,13 @@ importers:
 
   packages/webhooks:
     dependencies:
-      '@zap-studio/logger':
-        specifier: workspace:*
-        version: link:../logger
       '@zap-studio/validation':
         specifier: workspace:*
         version: link:../validation
     devDependencies:
+      '@zap-studio/logger':
+        specifier: workspace:*
+        version: link:../logger
       '@zap-studio/typescript':
         specifier: workspace:*
         version: link:../../configs/typescript
