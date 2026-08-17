@@ -1,8 +1,16 @@
 pre-commit:
   parallel: true
   jobs:
-    - name: ultracite
-      run: pnpm exec ultracite fix
+    - name: lint
+      run: pnpm run lint:fix
+      glob:
+        - "**/*.js"
+        - "**/*.jsx"
+        - "**/*.ts"
+        - "**/*.tsx"
+      stage_fixed: true
+    - name: format
+      run: pnpm run format
       glob:
         - "**/*.js"
         - "**/*.jsx"
