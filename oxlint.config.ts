@@ -29,6 +29,7 @@ export default defineConfig({
   ],
   rules: {
     "import/no-cycle": ["error", { maxDepth: 3 }],
+    "eslint/func-style": ["error", "expression"],
     "react/rules-of-hooks": "error",
     "react/exhaustive-deps": "error",
     ...eslintPluginRules,
