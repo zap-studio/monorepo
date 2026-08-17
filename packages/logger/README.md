@@ -17,6 +17,7 @@ npm install @zap-studio/logger
 - **Pluggable output formats**: `classicFormat` (default), `jsonFormat`, `compactFormat`, `prettyFormat` — pass any function matching `LogFormatter`, no registration required.
 - **Zero dependencies, tree-shakeable** — unused exports are dropped by any modern bundler.
 - **Optional by design** — other `@zap-studio/*` packages accept a `logger?: Logger` option; omit it and there's zero logging overhead.
+- **Runtime-agnostic, zero config** — works out of the box on Node.js, Bun, Deno, browsers, and Cloudflare Workers.
 
 ## Quick Start
 
@@ -51,7 +52,9 @@ new ConsoleLogger({ format: prettyFormat });
 // 12:34:56.789 INFO  server started   (colored, context inspected as a second arg)
 ```
 
-`jsonFormat` and `compactFormat` flatten `context` fields to the top level (a field named `time`, `level`, or `msg` can't override the base field), and safely serialize `Error` and `bigint` context values instead of losing them to `JSON.stringify`'s default behavior. `prettyFormat` colors output on a real TTY (skipped when `NO_COLOR` is set) and unconditionally in runtimes without a `process` global, like browsers.
+`jsonFormat` and `compactFormat` flatten `context` fields to the top level (a field named `time`, `level`, or `msg` can't override the base field), and safely serialize `Error` and `bigint` context values instead of losing them to `JSON.stringify`'s default behavior.
+
+`prettyFormat`'s color output adapts automatically per runtime, with no configuration — see [Runtime Compatibility](#runtime-compatibility).
 
 Any function matching `LogFormatter` works — no registration required:
 
@@ -77,6 +80,16 @@ const logger: Logger = {
   fatal: (message, context) => myBackend.log("fatal", message, context),
 };
 ```
+
+## Runtime Compatibility
+
+Works out of the box on Node.js, Bun, Deno, browsers, and Cloudflare Workers — no configuration needed. `console` dispatch, level filtering, `classicFormat`, `jsonFormat`, and `compactFormat` have no runtime-specific code at all. The only per-runtime behavior is `prettyFormat`'s color detection:
+
+| Runtime | Colored? |
+| --- | --- |
+| Node / Bun / Deno | On a real TTY only, never when `NO_COLOR` is set |
+| Browsers | Always — devtools render ANSI fine |
+| Cloudflare Workers | Never — output may land in the dashboard's web log viewer, which can't render it |
 
 ## Runtime Support
 

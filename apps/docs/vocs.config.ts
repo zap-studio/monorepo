@@ -54,6 +54,10 @@ export default defineConfig({
             { link: "/logger", text: "Overview" },
             { link: "/logger/getting-started", text: "Getting Started" },
             { link: "/logger/formats", text: "Output Formats" },
+            {
+              link: "/logger/runtime-compatibility",
+              text: "Runtime Compatibility",
+            },
           ],
           text: "logger",
         },

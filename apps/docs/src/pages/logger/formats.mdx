@@ -49,7 +49,7 @@ logger.info("server started", { port: 3000 });
 // 12:34:56.789 INFO  server started   { port: 3000 }   (colored)
 ```
 
-Color is skipped automatically when it wouldn't render correctly: only on a real TTY (and not when `NO_COLOR` is set) in Node/Bun, and unconditionally colored anywhere without a `process` global — browsers and Workers — on the assumption it's a devtools-like console.
+Color is applied automatically per runtime, with no configuration needed — see [Runtime Compatibility](/logger/runtime-compatibility) for exactly how it adapts on Node, Bun, Deno, browsers, and Cloudflare Workers.
 
 ## Field Merging (jsonFormat / compactFormat)
 
