@@ -6,8 +6,10 @@
   "scripts": {
     "build": "tsdown --config ./configs/tsdown/tsdown.config.ts",
     "publish:check": "pnpm run check && pnpm run test && pnpm run build",
-    "fix": "pnpm exec ultracite fix --type-aware --type-check",
-    "check": "pnpm exec ultracite check --type-aware --type-check",
+    "lint": "pnpm exec oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "prepare": "lefthook install"
@@ -23,7 +25,6 @@
     "playwright": "catalog:",
     "publint": "catalog:",
     "tsdown": "catalog:",
-    "ultracite": "catalog:",
     "unplugin-unused": "catalog:",
     "vitest": "catalog:"
   },
