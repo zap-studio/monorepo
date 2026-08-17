@@ -5,7 +5,7 @@ description: A lean logging abstraction with a console implementation.
 
 # @zap-studio/logger
 
-`@zap-studio/logger` gives `@zap-studio/*` packages (and your own code) an optional, pluggable way to emit logs — one interface, one console-backed implementation, zero dependencies.
+`@zap-studio/logger` gives `@zap-studio/*` packages (and your own code) an optional, pluggable way to emit logs — one interface, one console-backed implementation, with next to no dependency weight.
 
 ## Motivation
 
@@ -24,7 +24,7 @@ Already use `pino`? It already exposes the same six methods, so it works as a `L
 - **One interface**: [`Logger`](/logger/getting-started) — `trace`/`debug`/`info`/`warn`/`error`/`fatal`, each `(message: string, context?: Record<string, unknown>) => void`.
 - **One implementation**: [`ConsoleLogger`](/logger/getting-started), backed by the global `console` object, with a configurable `minLevel` to control verbosity.
 - **[Pluggable output formats](/logger/formats)**: `classicFormat` (default), `jsonFormat`, `compactFormat`, `prettyFormat` — pass any function matching `LogFormatter`, no registration required.
-- **Zero dependencies, tree-shakeable** — unused exports are dropped by any modern bundler.
+- **Minimal dependencies, tree-shakeable** — [`@opentelemetry/api`](/logger/opentelemetry) is the only peer dependency, tiny and a no-op until you register an SDK; unused exports are dropped by any modern bundler.
 - **Optional by design** — other `@zap-studio/*` packages accept a `logger?: Logger` option; omit it and there's zero logging overhead.
 - **[Runtime-agnostic, zero config](/logger/runtime-compatibility)** — works out of the box on Node.js, Bun, Deno, browsers, and Cloudflare Workers.
 - **[Automatic trace-log correlation](/logger/opentelemetry)** — `ConsoleLogger` stamps the active span's `trace_id`/`span_id` onto every log call, no-op until an SDK is registered.
