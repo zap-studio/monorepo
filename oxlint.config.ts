@@ -1,6 +1,20 @@
 import { defineConfig } from "oxlint";
 
 export default defineConfig({
+  plugins: [
+    "eslint",
+    "typescript",
+    "unicorn",
+    "oxc",
+    "react",
+    "react-perf",
+    "import",
+    "jsx-a11y",
+    "jsdoc",
+    "node",
+    "promise",
+    "vitest",
+  ],
   ignorePatterns: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "tools/oxlint/anti-slop/**"],
   jsPlugins: [{ name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" }],
   rules: {
