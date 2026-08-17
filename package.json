@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "tsdown --config ./configs/tsdown/tsdown.config.ts",
-    "publish:check": "pnpm run check && pnpm run test && pnpm run build",
+    "publish:check": "pnpm run lint && pnpm run format:check && pnpm run test && pnpm run build",
     "lint": "pnpm exec oxlint",
     "lint:fix": "oxlint --fix",
     "format": "oxfmt",
@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:",
+    "@oxlint/plugins": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "lefthook": "catalog:",
