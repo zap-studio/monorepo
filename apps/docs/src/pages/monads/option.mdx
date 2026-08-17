@@ -53,6 +53,15 @@ pipe(
 const half = (n: number) => (n % 2 === 0 ? some(n / 2) : none());
 pipe(some(4), Option.andThen(half)); // Some(2)
 
+pipe(
+  none(),
+  Option.orElse(() => some(0))
+); // Some(0)
+pipe(
+  some(1),
+  Option.orElse(() => some(0))
+); // Some(1), fallback not called
+
 pipe(none(), Option.unwrapOr(0)); // 0
 pipe(
   none(),
@@ -64,6 +73,8 @@ pipe(
   Option.match({ some: (n) => `got ${n}`, none: () => "nothing" })
 ); // "got 42"
 ```
+
+`orElse` mirrors Rust's `Option::or_else`: it recovers a `None` into a fallback `Option` of the same type, and leaves a `Some` untouched without calling the fallback.
 
 ## Unwrapping
 
