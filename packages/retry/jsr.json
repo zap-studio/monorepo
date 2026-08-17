@@ -18,6 +18,6 @@
     "@zap-studio/logger": "jsr:@zap-studio/logger@^2.0.0"
   },
   "publish": {
-    "include": ["src", "CHANGELOG.md", "LICENSE", "README.md"]
+    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
   }
 }

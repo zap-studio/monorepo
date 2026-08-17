@@ -16,6 +16,6 @@
     "@zap-studio/validation": "jsr:@zap-studio/validation@^1.0.0"
   },
   "publish": {
-    "include": ["src", "CHANGELOG.md", "LICENSE", "README.md"]
+    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
   }
 }

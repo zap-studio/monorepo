@@ -14,6 +14,6 @@
     "@opentelemetry/api": "npm:@opentelemetry/api@^1.9.0"
   },
   "publish": {
-    "include": ["src", "CHANGELOG.md", "LICENSE", "README.md"]
+    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
   }
 }
