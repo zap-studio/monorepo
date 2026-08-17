@@ -1,6 +1,7 @@
 import { defineConfig } from "oxlint";
 
-import { eslintPluginRules } from "./oxlint-plugin-rules.ts";
+import { eslintPluginRules } from "./tools/oxlint/plugin-rules.ts";
+import { reactDoctorRules } from "./tools/oxlint/react-doctor-rules.ts";
 
 export default defineConfig({
   plugins: [
@@ -20,6 +21,7 @@ export default defineConfig({
   ignorePatterns: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "tools/oxlint/anti-slop/**"],
   jsPlugins: [
     { name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" },
+    { name: "react-doctor", specifier: "oxlint-plugin-react-doctor" },
     "eslint-plugin-playwright",
     "eslint-plugin-regexp",
     "eslint-plugin-sonarjs",
@@ -30,6 +32,12 @@ export default defineConfig({
     "react/rules-of-hooks": "error",
     "react/exhaustive-deps": "error",
     ...eslintPluginRules,
+    ...Object.fromEntries(
+      Object.entries(reactDoctorRules).map(([rule, severity]) => [
+        `react-doctor/${rule}`,
+        severity,
+      ]),
+    ),
     "anti-slop/no-chained-type-assertions": "error",
     "anti-slop/no-conditional-empty-object-spread": "error",
     "anti-slop/no-known-value-widening": "error",
