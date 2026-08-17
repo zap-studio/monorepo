@@ -1,0 +1,47 @@
+---
+title: Pipe
+description: Left-to-right function composition for the standalone Result/Option combinators.
+---
+
+# Pipe
+
+`Result` and `Option` combinators are standalone, curried functions rather than methods — there's no `result.map().andThen()`. `pipe` is how you compose them, since TypeScript has no native pipe operator.
+
+```ts
+import { pipe } from "@zap-studio/monads";
+
+pipe(5); // 5, no functions applied
+pipe(5, (n) => n + 1); // 6
+pipe(
+  5,
+  (n) => n + 1,
+  (n) => n * 2
+); // 12
+```
+
+## With `Result`
+
+```ts
+import { err, ok, pipe, Result } from "@zap-studio/monads";
+
+pipe(
+  ok(2),
+  Result.map((n) => n * 2),
+  Result.andThen((n) => (n > 0 ? ok(n) : err("not positive"))),
+  Result.unwrapOr(0)
+); // 4
+```
+
+## With `Option`
+
+```ts
+import { Option, pipe, some } from "@zap-studio/monads";
+
+pipe(
+  some(2),
+  Option.map((n) => n * 2),
+  Option.unwrapOr(0)
+); // 4
+```
+
+Each function in the chain receives the previous function's return value, left to right — `pipe(value, f, g, h)` is `h(g(f(value)))`.

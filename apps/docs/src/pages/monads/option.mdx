@@ -1,0 +1,78 @@
+---
+title: Option
+description: Option<T> constructors, guards, and combinators for explicit, type-safe null handling.
+---
+
+# Option
+
+`Option<T>` represents either a present value (`Some<T>`) or its absence (`None`). It's an explicit alternative to `null`/`undefined` checks — absence is part of the type, and the compiler checks that both branches are handled.
+
+```ts
+import type { Option } from "@zap-studio/monads";
+```
+
+## Constructors
+
+```ts
+import { none, some } from "@zap-studio/monads";
+
+some(42); // { some: true, value: 42 }
+none(); // { some: false }
+```
+
+## Guards
+
+```ts
+import { isNone, isSome, none, some } from "@zap-studio/monads";
+
+isSome(some(1)); // true
+isNone(none()); // true
+```
+
+## Bridging From Nullable Values
+
+```ts
+import { fromNullable } from "@zap-studio/monads";
+
+fromNullable([1, 2, 3].find((n) => n > 5)); // None
+fromNullable([1, 2, 3].find((n) => n > 1)); // Some(2)
+```
+
+## Combinators
+
+All combinators live under the `Option` namespace to avoid colliding with `Result`'s combinators of the same name, and are curried — compose them with `pipe`.
+
+```ts
+import { none, Option, pipe, some } from "@zap-studio/monads";
+
+pipe(
+  some(2),
+  Option.map((n) => n * 2)
+); // Some(4)
+
+const half = (n: number) => (n % 2 === 0 ? some(n / 2) : none());
+pipe(some(4), Option.andThen(half)); // Some(2)
+
+pipe(none(), Option.unwrapOr(0)); // 0
+pipe(
+  none(),
+  Option.unwrapOrElse(() => 99)
+); // 99
+
+pipe(
+  some(42),
+  Option.match({ some: (n) => `got ${n}`, none: () => "nothing" })
+); // "got 42"
+```
+
+## Unwrapping
+
+`Option.unwrap` throws if the `Option` is `None`, mirroring Rust's `Option::unwrap`.
+
+```ts
+import { none, Option } from "@zap-studio/monads";
+
+Option.unwrap(none()); // throws Error("Called unwrap() on a None value")
+```
+
+Prefer `Option.match`, `Option.unwrapOr`, or `Option.unwrapOrElse` for control flow that shouldn't throw.
