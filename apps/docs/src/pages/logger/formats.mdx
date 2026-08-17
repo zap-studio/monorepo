@@ -1,0 +1,87 @@
+---
+title: Output Formats
+description: Pick a built-in output format for ConsoleLogger, or write your own.
+---
+
+# Output Formats
+
+`ConsoleLogger` accepts a `format?: LogFormatter` option, defaulting to `classicFormat` — today's `message` + `context` output. Built-in formatters are all exported from `@zap-studio/logger` (and the dedicated `@zap-studio/logger/format` subpath).
+
+```ts
+import { ConsoleLogger, jsonFormat } from "@zap-studio/logger";
+
+const logger = new ConsoleLogger({ format: jsonFormat });
+```
+
+## classicFormat (default)
+
+The message, plus `context` as a second `console` argument when present. Leaves object inspection to the runtime console — collapsible in browser devtools, `util.inspect` in Node.
+
+```ts
+logger.info("server started", { port: 3000 });
+// console.info("server started", { port: 3000 })
+```
+
+## jsonFormat
+
+Single-line JSON, pino-compatible field names (`time` as epoch milliseconds, `level`, `msg`):
+
+```ts
+logger.info("server started", { port: 3000 });
+// {"port":3000,"time":1704067200000,"level":"info","msg":"server started"}
+```
+
+## compactFormat
+
+Single-line `key=value` pairs (logfmt) — grep-friendly and still machine-parseable. Values containing whitespace, `"`, or `=` are quoted:
+
+```ts
+logger.info("server started", { port: 3000 });
+// port=3000 time=2024-01-01T00:00:00.000Z level=info msg="server started"
+```
+
+## prettyFormat
+
+Colorized, human-friendly single-line output: a dim local clock time, a color-coded level label, then the message. `context`, when present, is still passed as a second argument for native object inspection instead of being hand-formatted:
+
+```ts
+logger.info("server started", { port: 3000 });
+// 12:34:56.789 INFO  server started   { port: 3000 }   (colored)
+```
+
+Color is skipped automatically when it wouldn't render correctly: only on a real TTY (and not when `NO_COLOR` is set) in Node/Bun, and unconditionally colored anywhere without a `process` global — browsers and Workers — on the assumption it's a devtools-like console.
+
+## Field Merging (jsonFormat / compactFormat)
+
+`context` fields are flattened to the top level rather than nested under a `context` key, matching the pino/bunyan convention:
+
+```ts
+logger.info("server started", { port: 3000 });
+// jsonFormat: {"port":3000,"time":...,"level":"info","msg":"server started"}
+```
+
+A context field named `time`, `level`, or `msg` can never override the base field — the base fields are always applied last.
+
+`Error` and `bigint` context values are handled specially, since neither survives `JSON.stringify` on its own (`JSON.stringify(new Error("boom"))` is `"{}"`):
+
+```ts
+logger.error("request failed", { error: new Error("boom") });
+// jsonFormat:    ...,"error":{"name":"Error","message":"boom","stack":"..."}
+// compactFormat: ... error="Error: boom"
+```
+
+## Writing Your Own
+
+Any function matching `LogFormatter` works — no registration required:
+
+```ts
+import type { LogFormatter, LogRecord } from "@zap-studio/logger";
+
+const upperFormat: LogFormatter = (record: LogRecord) => [
+  record.message.toUpperCase(),
+];
+
+const logger = new ConsoleLogger({ format: upperFormat });
+```
+
+A `LogRecord` has `level`, `message`, `context` (`Record<string, unknown> | undefined`), and `timestamp` (a `Date`, built fresh for each call that passes the `minLevel` filter). A `LogFormatter` returns the argument list `console[method](...)` gets called with — return one string for a single line, or more arguments (like `classicFormat` and `prettyFormat` do) to hand `context` off for native inspection.
