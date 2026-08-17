@@ -18,8 +18,8 @@ npm install @zap-studio/monads
 
 ## Features
 
-- **`Result<T, E>`** — `ok`/`err` constructors, `isOk`/`isErr` guards, and `Result.map`/`Result.mapErr`/`Result.andThen`/`Result.unwrapOr`/`Result.unwrapOrElse`/`Result.unwrap`/`Result.match` combinators.
-- **`ResultAsync<T, E>`** — a thenable wrapper around `Promise<Result<T, E>>`, awaitable directly, with chainable `map`/`mapErr`/`andThen`/`match` for building async pipelines before the final `await`.
+- **`Result<T, E>`** — `ok`/`err` constructors, `isOk`/`isErr` guards, and `Result.map`/`Result.mapErr`/`Result.andThen`/`Result.orElse`/`Result.unwrapOr`/`Result.unwrapOrElse`/`Result.unwrap`/`Result.match` combinators.
+- **`ResultAsync<T, E>`** — a thenable wrapper around `Promise<Result<T, E>>`, awaitable directly, with chainable `map`/`mapErr`/`andThen`/`orElse`/`match` for building async pipelines before the final `await`.
 - **`Option<T>`** — `some`/`none` constructors, `isSome`/`isNone` guards, and `Option.map`/`Option.andThen`/`Option.orElse`/`Option.unwrapOr`/`Option.unwrapOrElse`/`Option.unwrap`/`Option.match` combinators.
 - **Bridges** — `fromThrowable` (sync throwing function → `Result`), `fromPromise` (rejecting `Promise` → `ResultAsync`), `fromNullable` (`T | null | undefined` → `Option`).
 - **`pipe`** — left-to-right composition for the standalone combinators above; there's no native pipe operator in TypeScript.
@@ -43,6 +43,11 @@ const message = pipe(
     err: (reason) => `Invalid input: ${reason}`,
   })
 );
+
+pipe(
+  parseAge("not a number"),
+  Result.orElse(() => ok(0))
+); // Ok(0), recovered from Err
 ```
 
 ## Option
