@@ -35,8 +35,7 @@ export const err = <E>(error: E): Err<E> => ({ error, ok: false });
 export const isOk = <T, E>(result: Result<T, E>): result is Ok<T> => result.ok;
 
 /** Type guard: `true` when `result` is `Err`. */
-export const isErr = <T, E>(result: Result<T, E>): result is Err<E> =>
-  !result.ok;
+export const isErr = <T, E>(result: Result<T, E>): result is Err<E> => !result.ok;
 
 /**
  * Transforms the value inside an `Ok`, passing `Err` through unchanged.
@@ -77,9 +76,7 @@ export const mapErr =
  * ```
  */
 export const andThen =
-  <T, U, E>(
-    fn: (value: T) => Result<U, E>
-  ): ((result: Result<T, E>) => Result<U, E>) =>
+  <T, U, E>(fn: (value: T) => Result<U, E>): ((result: Result<T, E>) => Result<U, E>) =>
   (result: Result<T, E>): Result<U, E> =>
     isOk(result) ? fn(result.value) : result;
 
@@ -94,9 +91,7 @@ export const andThen =
  * ```
  */
 export const orElse =
-  <T, E, F>(
-    fn: (error: E) => Result<T, F>
-  ): ((result: Result<T, E>) => Result<T, F>) =>
+  <T, E, F>(fn: (error: E) => Result<T, F>): ((result: Result<T, E>) => Result<T, F>) =>
   (result: Result<T, E>): Result<T, F> =>
     isErr(result) ? fn(result.error) : result;
 
@@ -181,7 +176,7 @@ export const match =
  * ```
  */
 export function fromThrowable<Args extends unknown[], T>(
-  fn: (...args: Args) => T
+  fn: (...args: Args) => T,
 ): (...args: Args) => Result<T, unknown>;
 /**
  * Wraps a synchronous, potentially throwing function so it returns a
@@ -203,11 +198,11 @@ export function fromThrowable<Args extends unknown[], T>(
  */
 export function fromThrowable<Args extends unknown[], T, E>(
   fn: (...args: Args) => T,
-  mapError: (error: unknown) => E
+  mapError: (error: unknown) => E,
 ): (...args: Args) => Result<T, E>;
 export function fromThrowable<Args extends unknown[], T, E>(
   fn: (...args: Args) => T,
-  mapError?: (error: unknown) => E
+  mapError?: (error: unknown) => E,
 ): (...args: Args) => Result<T, unknown> {
   return (...args: Args): Result<T, unknown> => {
     try {

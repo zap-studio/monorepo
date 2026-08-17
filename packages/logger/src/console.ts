@@ -7,17 +7,9 @@
 import { withTraceContext } from "./_otel.js";
 import { isLevelEnabled } from "./core.js";
 import { classicFormat } from "./format.js";
-import type {
-  CallableLogLevel,
-  Logger,
-  LogFormatter,
-  LogLevel,
-} from "./types.js";
+import type { CallableLogLevel, Logger, LogFormatter, LogLevel } from "./types.js";
 
-const CONSOLE_METHOD_BY_LEVEL: Record<
-  CallableLogLevel,
-  "debug" | "info" | "warn" | "error"
-> = {
+const CONSOLE_METHOD_BY_LEVEL: Record<CallableLogLevel, "debug" | "info" | "warn" | "error"> = {
   debug: "debug",
   error: "error",
   fatal: "error",
@@ -91,11 +83,7 @@ export class ConsoleLogger implements Logger {
     this.write("fatal", message, context);
   }
 
-  private write(
-    level: CallableLogLevel,
-    message: string,
-    context?: Record<string, unknown>
-  ): void {
+  private write(level: CallableLogLevel, message: string, context?: Record<string, unknown>): void {
     if (!isLevelEnabled(level, this.minLevel)) {
       return;
     }

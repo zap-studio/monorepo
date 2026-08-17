@@ -150,9 +150,7 @@ export const match =
  * fromNullable([1, 2, 3].find((n) => n > 1)); // Some(2)
  * ```
  */
-export const fromNullable = <T>(
-  value: T | null | undefined
-): Option<NonNullable<T>> => {
+export const fromNullable = <T>(value: T | null | undefined): Option<NonNullable<T>> => {
   if (value === null || value === undefined) {
     return none();
   }

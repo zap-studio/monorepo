@@ -21,10 +21,7 @@ Use this mode for headers, status codes, streams, text, blobs, or any response t
 ## Signature
 
 ```ts
-function $fetch(
-  input: FetchInput,
-  options?: ExtendedRequestInit
-): Promise<Response>;
+function $fetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 ```
 
 - `input` — a `string`, `URL`, or `Request`, the same type as global `fetch`. Exported as `FetchInput`.
@@ -46,10 +43,10 @@ const response = await $fetch(request);
 
 ## Options
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `searchParams` | `URLSearchParams` init | `undefined` | Per-request query params, merged into the request URL. |
-| `throwOnFetchError` | `boolean` | `true` | Throw a `FetchError` on non-2xx responses. |
+| Option              | Type                   | Default     | Description                                            |
+| ------------------- | ---------------------- | ----------- | ------------------------------------------------------ |
+| `searchParams`      | `URLSearchParams` init | `undefined` | Per-request query params, merged into the request URL. |
+| `throwOnFetchError` | `boolean`              | `true`      | Throw a `FetchError` on non-2xx responses.             |
 
 Every standard `RequestInit` option (`method`, `headers`, `body`, `signal`, ...) is also accepted.
 

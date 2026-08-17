@@ -32,13 +32,13 @@ The returned `$fetch` and `api` have the same overloads, options, and error beha
 
 All options are optional; unset options fall back to the global defaults.
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `baseURL` | `string` | `""` | Base URL that relative request URLs are resolved against. |
-| `headers` | `HeadersInit` | `undefined` | Default headers merged into every request. Per-request headers win. |
-| `searchParams` | `URLSearchParams` init | `undefined` | Default query params applied to every request. |
-| `throwOnFetchError` | `boolean` | `true` | Default for throwing `FetchError` on non-2xx responses. |
-| `throwOnValidationError` | `boolean` | `true` | Default for throwing `ValidationError` on validation issues. |
+| Option                   | Type                   | Default     | Description                                                         |
+| ------------------------ | ---------------------- | ----------- | ------------------------------------------------------------------- |
+| `baseURL`                | `string`               | `""`        | Base URL that relative request URLs are resolved against.           |
+| `headers`                | `HeadersInit`          | `undefined` | Default headers merged into every request. Per-request headers win. |
+| `searchParams`           | `URLSearchParams` init | `undefined` | Default query params applied to every request.                      |
+| `throwOnFetchError`      | `boolean`              | `true`      | Default for throwing `FetchError` on non-2xx responses.             |
+| `throwOnValidationError` | `boolean`              | `true`      | Default for throwing `ValidationError` on validation issues.        |
 
 ## Base URL
 

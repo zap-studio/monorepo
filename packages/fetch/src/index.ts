@@ -67,10 +67,7 @@ export const GLOBAL_DEFAULTS: FetchDefaults = {
  * @returns A merged `Headers` object, or `undefined` when both inputs are empty.
  * @throws {TypeError} When either header input contains invalid header names or values.
  */
-const mergeHeaders = (
-  base?: HeadersInit,
-  override?: HeadersInit
-): Headers | undefined => {
+const mergeHeaders = (base?: HeadersInit, override?: HeadersInit): Headers | undefined => {
   if (base === undefined && override === undefined) {
     return undefined;
   }
@@ -92,10 +89,7 @@ const EMPTY_OPTIONS = {} as ExtendedRequestInit;
  * @returns A normalized request structure for internal processing.
  * @throws {TypeError} When cloning a `Request` fails or the merged headers are invalid.
  */
-const normalizeRequest = (
-  input: FetchInput,
-  options?: ExtendedRequestInit
-): NormalizedRequest => {
+const normalizeRequest = (input: FetchInput, options?: ExtendedRequestInit): NormalizedRequest => {
   if (!(input instanceof Request)) {
     const url = input instanceof URL ? input.href : input;
     return {
@@ -125,7 +119,7 @@ const normalizeRequest = (
  */
 const mergeSearchParams = (
   target: URLSearchParams,
-  source: ExtendedRequestInit["searchParams"] | undefined
+  source: ExtendedRequestInit["searchParams"] | undefined,
 ): void => {
   for (const [key, value] of new URLSearchParams(source)) {
     target.set(key, value);
@@ -135,8 +129,7 @@ const mergeSearchParams = (
 /**
  * Ensures a URL has a trailing slash for relative URL resolution.
  */
-const ensureTrailingSlash = (url: string): string =>
-  url.endsWith("/") ? url : `${url}/`;
+const ensureTrailingSlash = (url: string): string => (url.endsWith("/") ? url : `${url}/`);
 
 /**
  * Resolves search params by applying default params, URL params, then request params.
@@ -144,7 +137,7 @@ const ensureTrailingSlash = (url: string): string =>
 const resolveSearchParams = (
   url: string,
   defaultSearchParams: FetchDefaults["searchParams"] | undefined,
-  searchParams: ExtendedRequestInit["searchParams"] | undefined
+  searchParams: ExtendedRequestInit["searchParams"] | undefined,
 ): string => {
   if (defaultSearchParams === undefined && searchParams === undefined) {
     return url;
@@ -155,10 +148,8 @@ const resolveSearchParams = (
   const urlWithoutHash = hasFragment ? url.slice(0, hashIndex) : url;
   const hash = hasFragment ? url.slice(hashIndex + 1) : "";
   const queryIndex = urlWithoutHash.indexOf("?");
-  const pathname =
-    queryIndex === -1 ? urlWithoutHash : urlWithoutHash.slice(0, queryIndex);
-  const urlSearchParams =
-    queryIndex === -1 ? undefined : urlWithoutHash.slice(queryIndex + 1);
+  const pathname = queryIndex === -1 ? urlWithoutHash : urlWithoutHash.slice(0, queryIndex);
+  const urlSearchParams = queryIndex === -1 ? undefined : urlWithoutHash.slice(queryIndex + 1);
   const resolvedSearchParams = new URLSearchParams();
 
   mergeSearchParams(resolvedSearchParams, defaultSearchParams);
@@ -190,7 +181,7 @@ const resolveSearchParams = (
 const resolveRequestUrl = (
   resourceUrl: string,
   defaults: FetchDefaults,
-  searchParams?: ExtendedRequestInit["searchParams"]
+  searchParams?: ExtendedRequestInit["searchParams"],
 ): string => {
   const url = defaults.baseURL
     ? new URL(resourceUrl, ensureTrailingSlash(defaults.baseURL)).toString()
@@ -208,7 +199,7 @@ const resolveRequestUrl = (
  */
 const prepareRequestInit = (
   options: ExtendedRequestInit,
-  defaults: FetchDefaults
+  defaults: FetchDefaults,
 ): {
   init: RequestInit;
   searchParams: ExtendedRequestInit["searchParams"] | undefined;
@@ -258,7 +249,7 @@ const logResponse = (
   logger: Logger | undefined,
   method: string,
   url: string,
-  response: Response
+  response: Response,
 ): void => {
   const context = { method, status: response.status, url };
   if (response.ok) {
@@ -279,7 +270,7 @@ const validateResponse = async (
   schema: StandardSchemaV1,
   throwOnValidationError: boolean,
   logger: Logger | undefined,
-  url: string
+  url: string,
 ): Promise<unknown> => {
   if (throwOnValidationError) {
     try {
@@ -326,12 +317,14 @@ const fetchInternal = async (
   input: FetchInput,
   schema: StandardSchemaV1 | undefined,
   options: ExtendedRequestInit | undefined,
-  defaults: FetchDefaults
+  defaults: FetchDefaults,
 ): Promise<unknown> => {
   const { logger } = defaults;
   const request = normalizeRequest(input, options);
-  const { init, searchParams, throwOnFetchError, throwOnValidationError } =
-    prepareRequestInit(request.options, defaults);
+  const { init, searchParams, throwOnFetchError, throwOnValidationError } = prepareRequestInit(
+    request.options,
+    defaults,
+  );
   const url = resolveRequestUrl(request.url, defaults, searchParams);
   const method = init.method ?? "GET";
 
@@ -363,10 +356,7 @@ const fetchInternal = async (
       }
 
       if (throwOnFetchError && !response.ok) {
-        throw new FetchError(
-          `HTTP ${response.status}: ${response.statusText}`,
-          response
-        );
+        throw new FetchError(`HTTP ${response.status}: ${response.statusText}`, response);
       }
 
       if (schema === undefined) {
@@ -374,13 +364,7 @@ const fetchInternal = async (
       }
 
       const raw: unknown = await response.json();
-      return await validateResponse(
-        raw,
-        schema,
-        throwOnValidationError,
-        logger,
-        url
-      );
+      return await validateResponse(raw, schema, throwOnValidationError, logger, url);
     });
   } catch (error) {
     recordSpanError(span, error);
@@ -412,7 +396,7 @@ const createMethod = (fetchFn: $Fetch, method: string): $Fetch => {
     schema: TSchema,
     options: ExtendedRequestInit & {
       throwOnValidationError: false;
-    }
+    },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   function methodFetch<TSchema extends StandardSchemaV1>(
@@ -420,13 +404,10 @@ const createMethod = (fetchFn: $Fetch, method: string): $Fetch => {
     schema: TSchema,
     options?: ExtendedRequestInit & {
       throwOnValidationError?: true;
-    }
+    },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-  function methodFetch(
-    input: FetchInput,
-    options?: ExtendedRequestInit
-  ): Promise<Response>;
+  function methodFetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 
   /**
    * Method-bound `$Fetch` implementation.
@@ -436,7 +417,7 @@ const createMethod = (fetchFn: $Fetch, method: string): $Fetch => {
   async function methodFetch(
     input: FetchInput,
     schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
-    optionsOrUndefined?: ExtendedRequestInit
+    optionsOrUndefined?: ExtendedRequestInit,
   ): Promise<unknown> {
     if (isStandardSchema(schemaOrOptions)) {
       if (optionsOrUndefined?.throwOnValidationError === false) {
@@ -447,8 +428,7 @@ const createMethod = (fetchFn: $Fetch, method: string): $Fetch => {
         });
       }
 
-      const { throwOnValidationError, ...restOptions } =
-        optionsOrUndefined ?? {};
+      const { throwOnValidationError, ...restOptions } = optionsOrUndefined ?? {};
 
       if (throwOnValidationError === true) {
         return await fetchFn(input, schemaOrOptions, {
@@ -522,24 +502,21 @@ const createMethod = (fetchFn: $Fetch, method: string): $Fetch => {
 export async function $fetch<TSchema extends StandardSchemaV1>(
   input: FetchInput,
   schema: TSchema,
-  options: ExtendedRequestInit & { throwOnValidationError: false }
+  options: ExtendedRequestInit & { throwOnValidationError: false },
 ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
 export async function $fetch<TSchema extends StandardSchemaV1>(
   input: FetchInput,
   schema: TSchema,
-  options?: ExtendedRequestInit & { throwOnValidationError?: true }
+  options?: ExtendedRequestInit & { throwOnValidationError?: true },
 ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-export async function $fetch(
-  input: FetchInput,
-  options?: ExtendedRequestInit
-): Promise<Response>;
+export async function $fetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 
 export async function $fetch(
   input: FetchInput,
   schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
-  optionsOrUndefined?: ExtendedRequestInit
+  optionsOrUndefined?: ExtendedRequestInit,
 ): Promise<unknown> {
   const [schema, options] = isStandardSchema(schemaOrOptions)
     ? [schemaOrOptions, optionsOrUndefined]
@@ -607,7 +584,7 @@ export const api: ApiMethods = {
  * const response = await $fetch("/users", UserSchema, { method: "POST", json: { name: "John" } });
  */
 export const createFetch = (
-  factoryOptions: Partial<FetchDefaults> = {}
+  factoryOptions: Partial<FetchDefaults> = {},
 ): {
   $fetch: $Fetch;
   api: ApiMethods;
@@ -616,17 +593,15 @@ export const createFetch = (
     ...GLOBAL_DEFAULTS,
     ...factoryOptions,
     baseURL: factoryOptions.baseURL ?? GLOBAL_DEFAULTS.baseURL,
-    throwOnFetchError:
-      factoryOptions.throwOnFetchError ?? GLOBAL_DEFAULTS.throwOnFetchError,
+    throwOnFetchError: factoryOptions.throwOnFetchError ?? GLOBAL_DEFAULTS.throwOnFetchError,
     throwOnValidationError:
-      factoryOptions.throwOnValidationError ??
-      GLOBAL_DEFAULTS.throwOnValidationError,
+      factoryOptions.throwOnValidationError ?? GLOBAL_DEFAULTS.throwOnValidationError,
   };
 
   async function customFetch<TSchema extends StandardSchemaV1>(
     input: FetchInput,
     schema: TSchema,
-    options: ExtendedRequestInit & { throwOnValidationError: false }
+    options: ExtendedRequestInit & { throwOnValidationError: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   async function customFetch<TSchema extends StandardSchemaV1>(
@@ -634,18 +609,15 @@ export const createFetch = (
     schema: TSchema,
     options?: ExtendedRequestInit & {
       throwOnValidationError?: true;
-    }
+    },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-  async function customFetch(
-    input: FetchInput,
-    options?: ExtendedRequestInit
-  ): Promise<Response>;
+  async function customFetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 
   async function customFetch(
     input: FetchInput,
     schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
-    optionsOrUndefined?: ExtendedRequestInit
+    optionsOrUndefined?: ExtendedRequestInit,
   ): Promise<unknown> {
     const [schema, options] = isStandardSchema(schemaOrOptions)
       ? [schemaOrOptions, optionsOrUndefined]

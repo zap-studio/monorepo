@@ -38,14 +38,7 @@ export { fromNullable, isNone, isSome, none, some } from "./option.js";
 export { pipe } from "./pipe.js";
 export { err, fromThrowable, isErr, isOk, ok } from "./result.js";
 export { fromPromise, ResultAsync } from "./result-async.js";
-export type {
-  Err,
-  None,
-  Ok,
-  OptionMatchers,
-  ResultMatchers,
-  Some,
-} from "./types.js";
+export type { Err, None, Ok, OptionMatchers, ResultMatchers, Some } from "./types.js";
 
 /**
  * Either a successful (`Ok`) or failed (`Err`) outcome. Alias of the type

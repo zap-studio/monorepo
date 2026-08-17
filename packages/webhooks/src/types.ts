@@ -137,9 +137,10 @@ export type InferSchemaOutput<TSchema> =
  * };
  * ```
  */
-export type SchemaRouteOptions<
-  TSchema extends StandardSchemaV1<unknown, unknown>,
-> = Omit<RegisterOptions<InferSchemaOutput<TSchema>>, "schema"> & {
+export type SchemaRouteOptions<TSchema extends StandardSchemaV1<unknown, unknown>> = Omit<
+  RegisterOptions<InferSchemaOutput<TSchema>>,
+  "schema"
+> & {
   schema: TSchema;
 };
 
@@ -185,7 +186,7 @@ export type SchemaRoutes<TRoutes extends Record<string, RouteLike>> = {
  * ```
  */
 export type WebhookHandler<TPayload = unknown> = (
-  ctx: HandlerContext<TPayload>
+  ctx: HandlerContext<TPayload>,
 ) => Promise<Response | undefined> | Response | undefined;
 
 /**
@@ -214,9 +215,7 @@ export type HandlerMap<TMap extends Record<string, unknown>> = {
  * }>;
  * ```
  */
-export type InferWebhookMapFromRoutes<
-  TRoutes extends Record<string, RouteLike>,
-> = {
+export type InferWebhookMapFromRoutes<TRoutes extends Record<string, RouteLike>> = {
   [P in keyof TRoutes]: InferSchemaOutput<TRoutes[P]["schema"]>;
 };
 
@@ -251,10 +250,7 @@ export type BeforeHook = (ctx: WebhookContext) => Promise<void> | void;
  * const after: AfterHook = (ctx, response) => console.log(response.status);
  * ```
  */
-export type AfterHook = (
-  ctx: WebhookContext,
-  response: Response
-) => Promise<void> | void;
+export type AfterHook = (ctx: WebhookContext, response: Response) => Promise<void> | void;
 
 /**
  * Hook function that runs when an error occurs
@@ -266,5 +262,5 @@ export type AfterHook = (
  */
 export type ErrorHook = (
   error: Error,
-  ctx: WebhookContext
+  ctx: WebhookContext,
 ) => Promise<Response | undefined> | Response | undefined;

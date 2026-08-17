@@ -45,15 +45,15 @@ describe("root entrypoint", () => {
     expect(
       pipe(
         ok(2),
-        Result.map((n: number) => n * 2)
-      )
+        Result.map((n: number) => n * 2),
+      ),
     ).toEqual(ok(4));
 
     expect(
       pipe(
         ok(2),
-        Result.andThen((n: number) => ok(n + 1))
-      )
+        Result.andThen((n: number) => ok(n + 1)),
+      ),
     ).toEqual(ok(3));
   });
 
@@ -61,8 +61,8 @@ describe("root entrypoint", () => {
     expect(
       pipe(
         some(2),
-        Option.map((n: number) => n * 2)
-      )
+        Option.map((n: number) => n * 2),
+      ),
     ).toEqual(some(4));
 
     expect(Result.map).not.toBe(Option.map);
@@ -72,15 +72,15 @@ describe("root entrypoint", () => {
     expect(
       pipe(
         err("bad"),
-        Result.orElse(() => ok(0))
-      )
+        Result.orElse(() => ok(0)),
+      ),
     ).toEqual(ok(0));
 
     expect(
       pipe(
         none(),
-        Option.orElse(() => some(0))
-      )
+        Option.orElse(() => some(0)),
+      ),
     ).toEqual(some(0));
 
     expect(Result.orElse).not.toBe(Option.orElse);

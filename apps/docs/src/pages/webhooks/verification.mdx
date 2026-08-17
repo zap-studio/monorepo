@@ -63,11 +63,7 @@ const verify = createHmacVerifier({
 Import `VerificationError` from `@zap-studio/webhooks` to distinguish verification failures from other errors — for example, in an `onError` hook that maps them to a `401` instead of the default `500`.
 
 ```ts
-import {
-  createHmacVerifier,
-  createWebhookRouter,
-  VerificationError,
-} from "@zap-studio/webhooks";
+import { createHmacVerifier, createWebhookRouter, VerificationError } from "@zap-studio/webhooks";
 
 const router = createWebhookRouter({
   verify: createHmacVerifier({
@@ -104,7 +100,7 @@ const router = createWebhookRouter({
       stripe.webhooks.constructEvent(
         Buffer.from(rawBody),
         signature,
-        process.env.STRIPE_WEBHOOK_SECRET!
+        process.env.STRIPE_WEBHOOK_SECRET!,
       );
     } catch {
       throw new VerificationError("Invalid Stripe signature");
@@ -127,7 +123,7 @@ import { constantTimeEquals } from "@zap-studio/webhooks";
 const encoder = new TextEncoder();
 const isValid = constantTimeEquals(
   encoder.encode(expectedSignature),
-  encoder.encode(receivedSignature)
+  encoder.encode(receivedSignature),
 );
 ```
 

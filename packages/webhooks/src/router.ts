@@ -45,8 +45,7 @@ const toArray = <T>(value: T | T[] | undefined): T[] => {
   return Array.isArray(value) ? value : [value];
 };
 
-const notFoundResponse = (): Response =>
-  Response.json({ error: "not found" }, { status: 404 });
+const notFoundResponse = (): Response => Response.json({ error: "not found" }, { status: 404 });
 
 /** Sets `http.response.status_code` and marks `span` `ERROR` on a non-2xx response. */
 const finishDelivery = (span: Span, response: Response): Response => {
@@ -69,16 +68,11 @@ const normalizePath = (path: string): string => {
     ? withLeadingSlash.replaceAll(/\/{2,}/gu, "/")
     : withLeadingSlash;
 
-  return collapsed.length > 1 && collapsed.endsWith("/")
-    ? collapsed.slice(0, -1)
-    : collapsed;
+  return collapsed.length > 1 && collapsed.endsWith("/") ? collapsed.slice(0, -1) : collapsed;
 };
 
 /** Runs the given before-hooks in order against the request context. */
-const runBeforeHooks = async (
-  ctx: WebhookContext,
-  hooks?: BeforeHook[]
-): Promise<void> => {
+const runBeforeHooks = async (ctx: WebhookContext, hooks?: BeforeHook[]): Promise<void> => {
   if (!hooks || hooks.length === 0) {
     return;
   }
@@ -93,7 +87,7 @@ const runBeforeHooks = async (
 const runAfterHooks = async (
   ctx: WebhookContext,
   response: Response,
-  hooks?: AfterHook[]
+  hooks?: AfterHook[],
 ): Promise<void> => {
   if (!hooks || hooks.length === 0) {
     return;
@@ -106,9 +100,7 @@ const runAfterHooks = async (
 };
 
 /** Builds an internal handler entry from route registration options. */
-const createHandlerEntry = (
-  options: RegisterOptions<unknown>
-): HandlerEntry => {
+const createHandlerEntry = (options: RegisterOptions<unknown>): HandlerEntry => {
   const entry: HandlerEntry = {
     handler: options.handler,
   };
@@ -140,7 +132,7 @@ const parseRequestBody = (ctx: WebhookContext): unknown => {
 /** Validates the parsed payload against the route schema, returning either the validated value or a `400` response. */
 const validatePayload = async <TPayload>(
   parsedJson: unknown,
-  schema?: StandardSchemaV1<unknown, TPayload>
+  schema?: StandardSchemaV1<unknown, TPayload>,
 ): Promise<TPayload | Response> => {
   if (!schema) {
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Without a schema, caller-declared payload type is the route contract.
@@ -158,11 +150,11 @@ const validatePayload = async <TPayload>(
         issues: result.issues.map((issue) => ({
           message: issue.message,
           path: issue.path?.map((p) =>
-            typeof p === "object" && "key" in p ? String(p.key) : String(p)
+            typeof p === "object" && "key" in p ? String(p.key) : String(p),
           ),
         })),
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -173,7 +165,7 @@ const validatePayload = async <TPayload>(
 const executeHandler = async <TPayload = unknown>(
   handler: WebhookHandler<TPayload>,
   ctx: WebhookContext,
-  validatedPayload: TPayload
+  validatedPayload: TPayload,
 ): Promise<Response> => {
   const responded = await handler({
     ...ctx,
@@ -188,19 +180,18 @@ const dispatchHandler = async (
   handlerEntry: HandlerEntry,
   ctx: WebhookContext,
   validatedPayload: unknown,
-  deliveryContext: Context
+  deliveryContext: Context,
 ): Promise<Response> => {
   const handlerSpan = tracer.startSpan(
     `webhook.handler ${ctx.path}`,
     { kind: SpanKind.INTERNAL },
-    deliveryContext
+    deliveryContext,
   );
 
   try {
     return await otelContext.with(
       trace.setSpan(deliveryContext, handlerSpan),
-      async () =>
-        await executeHandler(handlerEntry.handler, ctx, validatedPayload)
+      async () => await executeHandler(handlerEntry.handler, ctx, validatedPayload),
     );
   } catch (error) {
     recordSpanError(handlerSpan, error);
@@ -284,12 +275,9 @@ export class WebhookRouter<TMap = unknown> {
    * });
    * ```
    */
-  register<
-    Path extends `/${string}`,
-    TSchema extends StandardSchemaV1<unknown, unknown>,
-  >(
+  register<Path extends `/${string}`, TSchema extends StandardSchemaV1<unknown, unknown>>(
     path: Path,
-    handlerOrOptions: SchemaRouteOptions<TSchema>
+    handlerOrOptions: SchemaRouteOptions<TSchema>,
   ): WebhookRouter<TMap & Record<Path, InferSchemaOutput<TSchema>>>;
   /**
    * Register a webhook handler for a specific path, with schema-less registration options.
@@ -308,7 +296,7 @@ export class WebhookRouter<TMap = unknown> {
    */
   register<Path extends `/${string}`, TPayload>(
     path: Path,
-    handlerOrOptions: RegisterOptions<TPayload>
+    handlerOrOptions: RegisterOptions<TPayload>,
   ): WebhookRouter<TMap & Record<Path, TPayload>>;
   /**
    * Register a webhook handler for a specific path, using a plain handler function.
@@ -324,17 +312,14 @@ export class WebhookRouter<TMap = unknown> {
    */
   register<Path extends `/${string}`>(
     path: Path,
-    handlerOrOptions: WebhookHandler
+    handlerOrOptions: WebhookHandler,
   ): WebhookRouter<TMap & Record<Path, unknown>>;
-  register(
-    path: string,
-    handlerOrOptions: WebhookHandler | RegisterOptions<unknown>
-  ): this {
+  register(path: string, handlerOrOptions: WebhookHandler | RegisterOptions<unknown>): this {
     this.handlers.set(
       normalizePath(path),
       typeof handlerOrOptions === "function"
         ? { handler: handlerOrOptions }
-        : createHandlerEntry(handlerOrOptions)
+        : createHandlerEntry(handlerOrOptions),
     );
 
     return this;
@@ -365,7 +350,7 @@ export class WebhookRouter<TMap = unknown> {
     const parentContext = propagation.extract(
       otelContext.active(),
       request.headers,
-      HEADERS_GETTER
+      HEADERS_GETTER,
     );
     const deliverySpan = tracer.startSpan(
       `${method} ${requestPath}`,
@@ -376,14 +361,14 @@ export class WebhookRouter<TMap = unknown> {
         },
         kind: SpanKind.SERVER,
       },
-      parentContext
+      parentContext,
     );
     const deliveryContext = trace.setSpan(parentContext, deliverySpan);
 
     try {
       const response = await otelContext.with(
         deliveryContext,
-        async () => await this.dispatch(request, requestPath, deliveryContext)
+        async () => await this.dispatch(request, requestPath, deliveryContext),
       );
       return finishDelivery(deliverySpan, response);
     } finally {
@@ -395,7 +380,7 @@ export class WebhookRouter<TMap = unknown> {
   private async dispatch(
     request: Request,
     requestPath: string,
-    deliveryContext: Context
+    deliveryContext: Context,
   ): Promise<Response> {
     const path = this.matchPath(request);
     if (path === null) {
@@ -431,22 +416,14 @@ export class WebhookRouter<TMap = unknown> {
       }
 
       const parsedJson = parseRequestBody(ctx);
-      const validationResult = await validatePayload(
-        parsedJson,
-        handlerEntry.schema
-      );
+      const validationResult = await validatePayload(parsedJson, handlerEntry.schema);
 
       if (validationResult instanceof Response) {
         return validationResult;
       }
 
       this.logger?.debug("webhook handler dispatch", { path });
-      const response = await dispatchHandler(
-        handlerEntry,
-        ctx,
-        validationResult,
-        deliveryContext
-      );
+      const response = await dispatchHandler(handlerEntry, ctx, validationResult, deliveryContext);
 
       await runAfterHooks(ctx, response, handlerEntry.after);
       await runAfterHooks(ctx, response, this.globalAfterHooks);
@@ -480,13 +457,9 @@ export class WebhookRouter<TMap = unknown> {
   }
 
   /** Builds the error response for a failed request, deferring to the global error hook when set. */
-  private async handleError(
-    error: unknown,
-    ctx: WebhookContext
-  ): Promise<Response> {
+  private async handleError(error: unknown, ctx: WebhookContext): Promise<Response> {
     if (this.globalErrorHook) {
-      const normalizedError =
-        error instanceof Error ? error : new Error("Internal server error");
+      const normalizedError = error instanceof Error ? error : new Error("Internal server error");
       const errorResponse = await this.globalErrorHook(normalizedError, ctx);
       if (errorResponse) {
         return errorResponse;
@@ -497,7 +470,7 @@ export class WebhookRouter<TMap = unknown> {
       {
         error: error instanceof Error ? error.message : "Internal server error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -516,6 +489,5 @@ export class WebhookRouter<TMap = unknown> {
  * router.register("/stripe", { schema: stripeEventSchema, handler });
  * ```
  */
-export const createWebhookRouter = (
-  opts?: WebhookRouterOptions
-): WebhookRouter => new WebhookRouter(opts);
+export const createWebhookRouter = (opts?: WebhookRouterOptions): WebhookRouter =>
+  new WebhookRouter(opts);

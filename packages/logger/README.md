@@ -47,12 +47,7 @@ logger.warn("retrying after failure", { attempt: 2 });
 `ConsoleLogger` accepts a `format?: LogFormatter` option, defaulting to `classicFormat` (today's `message` + `context` output). Built-in formatters, all from `@zap-studio/logger/format`:
 
 ```ts
-import {
-  ConsoleLogger,
-  jsonFormat,
-  compactFormat,
-  prettyFormat,
-} from "@zap-studio/logger";
+import { ConsoleLogger, jsonFormat, compactFormat, prettyFormat } from "@zap-studio/logger";
 
 new ConsoleLogger({ format: jsonFormat });
 // {"port":3000,"time":1704067200000,"level":"info","msg":"server started"}
@@ -119,10 +114,10 @@ logger.info("checkpoint", { userId: "u1" });
 
 Works out of the box on Node.js, Bun, Deno, browsers, and Cloudflare Workers — no configuration needed. `console` dispatch, level filtering, `classicFormat`, `jsonFormat`, and `compactFormat` have no runtime-specific code at all. The only per-runtime behavior is `prettyFormat`'s color detection:
 
-| Runtime | Colored? |
-| --- | --- |
-| Node / Bun / Deno | On a real TTY only, never when `NO_COLOR` is set |
-| Browsers | Always — devtools render ANSI fine |
+| Runtime            | Colored?                                                                         |
+| ------------------ | -------------------------------------------------------------------------------- |
+| Node / Bun / Deno  | On a real TTY only, never when `NO_COLOR` is set                                 |
+| Browsers           | Always — devtools render ANSI fine                                               |
 | Cloudflare Workers | Never — output may land in the dashboard's web log viewer, which can't render it |
 
 ## Runtime Support

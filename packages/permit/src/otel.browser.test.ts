@@ -70,7 +70,7 @@ describe("permit OpenTelemetry", () => {
     await meterProvider.forceFlush();
     const resourceMetrics = metricExporter.getMetrics().at(-1);
     const metric = resourceMetrics?.scopeMetrics[0]?.metrics.find(
-      (m) => m.descriptor.name === "permit.checks"
+      (m) => m.descriptor.name === "permit.checks",
     );
 
     const counts: Record<string, number> = {};
@@ -114,12 +114,16 @@ describe("permit OpenTelemetry", () => {
   });
 
   it("wraps a merged policy's check in its own span", async () => {
-    const policyA = createPolicy<TestContext, typeof resources, typeof actions>(
-      { actions, resources, rules: { post: { read: deny(), write: deny() } } }
-    );
-    const policyB = createPolicy<TestContext, typeof resources, typeof actions>(
-      { actions, resources, rules: { post: { read: allow(), write: deny() } } }
-    );
+    const policyA = createPolicy<TestContext, typeof resources, typeof actions>({
+      actions,
+      resources,
+      rules: { post: { read: deny(), write: deny() } },
+    });
+    const policyB = createPolicy<TestContext, typeof resources, typeof actions>({
+      actions,
+      resources,
+      rules: { post: { read: allow(), write: deny() } },
+    });
     const merged = mergePoliciesOr(policyA, policyB);
 
     await merged.can({ user: { id: "user-1" } }, "post:read", post);

@@ -18,9 +18,7 @@ import type { CallableLogLevel, LogFormatter } from "./types.js";
  * // ["server started", { port: 3000 }]
  */
 export const classicFormat: LogFormatter = (record) =>
-  record.context === undefined
-    ? [record.message]
-    : [record.message, record.context];
+  record.context === undefined ? [record.message] : [record.message, record.context];
 
 /**
  * `JSON.stringify` replacer used by {@link jsonFormat}: expands `Error`
@@ -57,7 +55,7 @@ export const jsonFormat: LogFormatter = (record) => [
       msg: record.message,
       time: record.timestamp.getTime(),
     },
-    jsonReplacer
+    jsonReplacer,
   ),
 ];
 
@@ -65,8 +63,7 @@ export const jsonFormat: LogFormatter = (record) => [
  * Whether a logfmt value needs quoting: empty, or containing whitespace,
  * `"`, or `=`.
  */
-const needsLogfmtQuoting = (value: string): boolean =>
-  value.length === 0 || /[\s"=]/u.test(value);
+const needsLogfmtQuoting = (value: string): boolean => value.length === 0 || /[\s"=]/u.test(value);
 
 /**
  * Wraps a logfmt value in double quotes, escaping backslashes and quotes.
@@ -92,11 +89,7 @@ const formatLogfmtValue = (value: unknown): string => {
   if (typeof value === "string") {
     return needsLogfmtQuoting(value) ? quoteLogfmtValue(value) : value;
   }
-  if (
-    typeof value === "number" ||
-    typeof value === "boolean" ||
-    typeof value === "bigint"
-  ) {
+  if (typeof value === "number" || typeof value === "boolean" || typeof value === "bigint") {
     return String(value);
   }
   return quoteLogfmtValue(JSON.stringify(value));
@@ -165,8 +158,7 @@ const CLOUDFLARE_WORKERS_USER_AGENT = "Cloudflare-Workers";
  * {@link CLOUDFLARE_WORKERS_USER_AGENT}.
  */
 const isCloudflareWorkers = (): boolean =>
-  typeof navigator !== "undefined" &&
-  navigator.userAgent === CLOUDFLARE_WORKERS_USER_AGENT;
+  typeof navigator !== "undefined" && navigator.userAgent === CLOUDFLARE_WORKERS_USER_AGENT;
 
 /**
  * Whether ANSI colors should be written.
@@ -212,8 +204,7 @@ const LEVEL_LABEL_WIDTH = 5;
 /**
  * Zero-pads a number to `width` digits.
  */
-const pad = (value: number, width = 2): string =>
-  String(value).padStart(width, "0");
+const pad = (value: number, width = 2): string => String(value).padStart(width, "0");
 
 /**
  * Formats a `Date` as a local `HH:MM:SS.mmm` clock time for

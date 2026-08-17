@@ -61,9 +61,7 @@ describe("permit OpenTelemetry active context", () => {
       rules: {
         post: {
           read: () => {
-            activeSpanIdDuringRule = trace
-              .getActiveSpan()
-              ?.spanContext().spanId;
+            activeSpanIdDuringRule = trace.getActiveSpan()?.spanContext().spanId;
             return "allow";
           },
         },
@@ -77,28 +75,28 @@ describe("permit OpenTelemetry active context", () => {
   });
 
   it("nests a merged policy's constituent check spans under the composite span", async () => {
-    const policyA = createPolicy<TestContext, typeof resources, typeof actions>(
-      { actions, resources, rules: { post: { read: allow() } } }
-    );
-    const policyB = createPolicy<TestContext, typeof resources, typeof actions>(
-      { actions, resources, rules: { post: { read: allow() } } }
-    );
+    const policyA = createPolicy<TestContext, typeof resources, typeof actions>({
+      actions,
+      resources,
+      rules: { post: { read: allow() } },
+    });
+    const policyB = createPolicy<TestContext, typeof resources, typeof actions>({
+      actions,
+      resources,
+      rules: { post: { read: allow() } },
+    });
     const merged = mergePoliciesOr(policyA, policyB);
 
     await merged.can({ user: { id: "user-1" } }, "post:read", post);
 
     const spans = spanExporter.getFinishedSpans();
-    const composite = spans.find(
-      (span) => span.parentSpanContext === undefined
-    );
+    const composite = spans.find((span) => span.parentSpanContext === undefined);
     const constituents = spans.filter((span) => span !== composite);
 
     expect(composite).toBeDefined();
     expect(constituents).toHaveLength(2);
     for (const span of constituents) {
-      expect(span.parentSpanContext?.spanId).toBe(
-        composite?.spanContext().spanId
-      );
+      expect(span.parentSpanContext?.spanId).toBe(composite?.spanContext().spanId);
     }
   });
 });

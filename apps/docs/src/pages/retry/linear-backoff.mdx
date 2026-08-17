@@ -26,13 +26,13 @@ const policy = linearBackoff({
 });
 ```
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `maxAttempts` | `number` | — | Maximum number of attempts (including the first) before giving up. |
-| `baseDelayMs` | `number` | — | Delay in milliseconds after the first failed attempt. |
-| `incrementMs` | `number` | — | Amount added to the delay for each subsequent retry. |
-| `maxDelayMs` | `number` | — | Hard upper bound in milliseconds for the computed delay. |
-| `jitter` | `"full" \| "equal" \| JitterOptions` | — | Randomizes the capped delay. See [Jitter](/retry/jitter). |
+| Option        | Type                                 | Default | Description                                                        |
+| ------------- | ------------------------------------ | ------- | ------------------------------------------------------------------ |
+| `maxAttempts` | `number`                             | —       | Maximum number of attempts (including the first) before giving up. |
+| `baseDelayMs` | `number`                             | —       | Delay in milliseconds after the first failed attempt.              |
+| `incrementMs` | `number`                             | —       | Amount added to the delay for each subsequent retry.               |
+| `maxDelayMs`  | `number`                             | —       | Hard upper bound in milliseconds for the computed delay.           |
+| `jitter`      | `"full" \| "equal" \| JitterOptions` | —       | Randomizes the capped delay. See [Jitter](/retry/jitter).          |
 
 All options are required except `jitter`.
 

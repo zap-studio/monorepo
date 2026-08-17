@@ -55,7 +55,7 @@ const data = await runRetryPolicy(
     });
     return await response.json();
   },
-  { logger }
+  { logger },
 );
 ```
 
@@ -64,11 +64,7 @@ const data = await runRetryPolicy(
 `fixedDelay(...)`, `linearBackoff(...)`, and `exponentialBackoff(...)`.
 
 ```ts
-import {
-  exponentialBackoff,
-  fixedDelay,
-  linearBackoff,
-} from "@zap-studio/retry";
+import { exponentialBackoff, fixedDelay, linearBackoff } from "@zap-studio/retry";
 
 const exponential = exponentialBackoff({
   maxAttempts: 5,
@@ -117,8 +113,7 @@ import { AbortError, RetryError, runRetryPolicy } from "@zap-studio/retry";
 try {
   await runRetryPolicy(policy, execute);
 } catch (error) {
-  if (error instanceof RetryError)
-    console.error(error.attempts, error.lastError);
+  if (error instanceof RetryError) console.error(error.attempts, error.lastError);
   if (error instanceof AbortError) console.error(error.message);
 }
 ```
@@ -157,11 +152,7 @@ As plain objects implementing `RetryPolicy` — just a `next(...)` function, no 
 
 ```ts
 import { runRetryPolicy } from "@zap-studio/retry";
-import type {
-  RetryDecision,
-  RetryDecisionInput,
-  RetryPolicy,
-} from "@zap-studio/retry";
+import type { RetryDecision, RetryDecisionInput, RetryPolicy } from "@zap-studio/retry";
 
 const stepDelay = (maxAttempts: number, stepMs: number): RetryPolicy => ({
   next(input: RetryDecisionInput): RetryDecision {

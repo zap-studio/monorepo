@@ -38,7 +38,7 @@ const message = pipe(
   Result.match({
     ok: (age) => `Age next year: ${age}`,
     err: (reason) => `Invalid input: ${reason}`,
-  })
+  }),
 );
 ```
 

@@ -91,7 +91,7 @@ export const standardValidate: {
   <TSchema extends StandardSchemaV1>(
     input: unknown,
     schema: TSchema,
-    options: StandardValidateOptions & { throwOnError: true }
+    options: StandardValidateOptions & { throwOnError: true },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   /**
@@ -106,12 +106,12 @@ export const standardValidate: {
   <TSchema extends StandardSchemaV1>(
     input: unknown,
     schema: TSchema,
-    options?: StandardValidateOptions & { throwOnError?: false }
+    options?: StandardValidateOptions & { throwOnError?: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 } = async <TSchema extends StandardSchemaV1>(
   input: unknown,
   schema: TSchema,
-  options?: StandardValidateOptions
+  options?: StandardValidateOptions,
 ): Promise<
   | StandardSchemaV1.InferOutput<TSchema>
   | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
@@ -178,7 +178,7 @@ export const standardValidateSync: {
   <TSchema extends StandardSchemaV1>(
     input: unknown,
     schema: TSchema,
-    options: StandardValidateOptions & { throwOnError: true }
+    options: StandardValidateOptions & { throwOnError: true },
   ): StandardSchemaV1.InferOutput<TSchema>;
 
   /**
@@ -193,12 +193,12 @@ export const standardValidateSync: {
   <TSchema extends StandardSchemaV1>(
     input: unknown,
     schema: TSchema,
-    options?: StandardValidateOptions & { throwOnError?: false }
+    options?: StandardValidateOptions & { throwOnError?: false },
   ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
 } = <TSchema extends StandardSchemaV1>(
   input: unknown,
   schema: TSchema,
-  options?: StandardValidateOptions
+  options?: StandardValidateOptions,
 ):
   | StandardSchemaV1.InferOutput<TSchema>
   | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>> => {
@@ -206,9 +206,7 @@ export const standardValidateSync: {
   const result = schema["~standard"].validate(input);
 
   if (result instanceof Promise) {
-    throw new TypeError(
-      "Async schemas are not supported by standardValidateSync"
-    );
+    throw new TypeError("Async schemas are not supported by standardValidateSync");
   }
 
   if (result.issues) {
@@ -254,31 +252,31 @@ export const standardValidateSync: {
  * ```
  */
 export const createStandardValidator = <TSchema extends StandardSchemaV1>(
-  schema: TSchema
+  schema: TSchema,
 ): {
   (
     input: unknown,
-    options: StandardValidateOptions & { throwOnError: true }
+    options: StandardValidateOptions & { throwOnError: true },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
   (
     input: unknown,
-    options?: StandardValidateOptions & { throwOnError?: false }
+    options?: StandardValidateOptions & { throwOnError?: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 } => {
   // oxlint-disable-next-line func-style -- Overload signatures here are non-generic (TSchema is fixed by the closure), so TS checks the union-returning implementation against each overload individually; only a function declaration satisfies that check.
   async function validate(
     input: unknown,
-    options: StandardValidateOptions & { throwOnError: true }
+    options: StandardValidateOptions & { throwOnError: true },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   async function validate(
     input: unknown,
-    options?: StandardValidateOptions & { throwOnError?: false }
+    options?: StandardValidateOptions & { throwOnError?: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   async function validate(
     input: unknown,
-    options?: StandardValidateOptions
+    options?: StandardValidateOptions,
   ): Promise<
     | StandardSchemaV1.InferOutput<TSchema>
     | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>
@@ -330,31 +328,31 @@ export const createStandardValidator = <TSchema extends StandardSchemaV1>(
  * ```
  */
 export const createStandardValidatorSync = <TSchema extends StandardSchemaV1>(
-  schema: TSchema
+  schema: TSchema,
 ): {
   (
     input: unknown,
-    options: StandardValidateOptions & { throwOnError: true }
+    options: StandardValidateOptions & { throwOnError: true },
   ): StandardSchemaV1.InferOutput<TSchema>;
   (
     input: unknown,
-    options?: StandardValidateOptions & { throwOnError?: false }
+    options?: StandardValidateOptions & { throwOnError?: false },
   ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
 } => {
   // oxlint-disable-next-line func-style -- Overload signatures here are non-generic (TSchema is fixed by the closure), so TS checks the union-returning implementation against each overload individually; only a function declaration satisfies that check.
   function validate(
     input: unknown,
-    options: StandardValidateOptions & { throwOnError: true }
+    options: StandardValidateOptions & { throwOnError: true },
   ): StandardSchemaV1.InferOutput<TSchema>;
 
   function validate(
     input: unknown,
-    options?: StandardValidateOptions & { throwOnError?: false }
+    options?: StandardValidateOptions & { throwOnError?: false },
   ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
 
   function validate(
     input: unknown,
-    options?: StandardValidateOptions
+    options?: StandardValidateOptions,
   ):
     | StandardSchemaV1.InferOutput<TSchema>
     | StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>> {
@@ -369,13 +367,11 @@ export const createStandardValidatorSync = <TSchema extends StandardSchemaV1>(
     } catch (error) {
       if (
         error instanceof Error &&
-        error.message ===
-          "Async schemas are not supported by standardValidateSync"
+        error.message === "Async schemas are not supported by standardValidateSync"
       ) {
-        throw new Error(
-          "Async schemas are not supported by createStandardValidatorSync",
-          { cause: error }
-        );
+        throw new Error("Async schemas are not supported by createStandardValidatorSync", {
+          cause: error,
+        });
       }
 
       throw error;

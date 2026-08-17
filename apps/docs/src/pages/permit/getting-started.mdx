@@ -161,9 +161,7 @@ const policy = createPolicy<AppContext>({
     comment: {
       read: allow(),
       write: when((ctx) => ctx.user !== null),
-      delete: when(
-        (ctx, _action, comment) => ctx.user?.id === comment.authorId
-      ),
+      delete: when((ctx, _action, comment) => ctx.user?.id === comment.authorId),
     },
   },
 });
@@ -185,11 +183,11 @@ policy.can(context, permission, resource): Promise<boolean>
 
 ### Parameters
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `context` | `TContext` | The current context (user, request, etc.) |
-| `permission` | `string` | The permission to check (e.g., `"post:read"`, `"comment:write"`) |
-| `resource` | `object` | The actual resource being accessed |
+| Parameter    | Type       | Description                                                      |
+| ------------ | ---------- | ---------------------------------------------------------------- |
+| `context`    | `TContext` | The current context (user, request, etc.)                        |
+| `permission` | `string`   | The permission to check (e.g., `"post:read"`, `"comment:write"`) |
+| `resource`   | `object`   | The actual resource being accessed                               |
 
 ### How can() Decides
 
@@ -255,15 +253,13 @@ const storePolicy = createPolicy<StoreContext>({
       create: when((ctx) => ctx.user?.role === "seller"),
       // Sellers can update their own products
       update: when(
-        (ctx, _, product) =>
-          ctx.user?.role === "seller" && ctx.user.id === product.sellerId
+        (ctx, _, product) => ctx.user?.role === "seller" && ctx.user.id === product.sellerId,
       ),
       // Only admins can delete products
       delete: when((ctx) => ctx.user?.role === "admin"),
       // Sellers can publish their own products
       publish: when(
-        (ctx, _, product) =>
-          ctx.user?.role === "seller" && ctx.user.id === product.sellerId
+        (ctx, _, product) => ctx.user?.role === "seller" && ctx.user.id === product.sellerId,
       ),
     },
     order: {
@@ -271,8 +267,8 @@ const storePolicy = createPolicy<StoreContext>({
       read: when(
         or(
           (ctx, _, order) => ctx.user?.id === order.customerId,
-          (ctx, _, order) => ctx.user?.id === order.sellerId
-        )
+          (ctx, _, order) => ctx.user?.id === order.sellerId,
+        ),
       ),
       // Only authenticated customers can create orders
       create: when((ctx) => ctx.user?.role === "customer"),
@@ -280,8 +276,7 @@ const storePolicy = createPolicy<StoreContext>({
       update: when((ctx, _, order) => ctx.user?.id === order.sellerId),
       // Customers can cancel pending orders
       cancel: when(
-        (ctx, _, order) =>
-          ctx.user?.id === order.customerId && order.status === "pending"
+        (ctx, _, order) => ctx.user?.id === order.customerId && order.status === "pending",
       ),
     },
     review: {
@@ -295,8 +290,8 @@ const storePolicy = createPolicy<StoreContext>({
       delete: when(
         or(
           (ctx, _, review) => ctx.user?.id === review.customerId,
-          (ctx) => ctx.user?.role === "admin"
-        )
+          (ctx) => ctx.user?.role === "admin",
+        ),
       ),
     },
   },

@@ -77,9 +77,7 @@ Any function matching `LogFormatter` works — no registration required:
 ```ts
 import type { LogFormatter, LogRecord } from "@zap-studio/logger";
 
-const upperFormat: LogFormatter = (record: LogRecord) => [
-  record.message.toUpperCase(),
-];
+const upperFormat: LogFormatter = (record: LogRecord) => [record.message.toUpperCase()];
 
 const logger = new ConsoleLogger({ format: upperFormat });
 ```

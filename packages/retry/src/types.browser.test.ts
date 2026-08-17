@@ -17,9 +17,7 @@ describe("types", () => {
         reason: "retry",
         shouldRetry: input.attempt < 3,
       }),
-      onExhausted: (
-        input: RetryExhaustedInput<TypeError, { status: number }>
-      ) =>
+      onExhausted: (input: RetryExhaustedInput<TypeError, { status: number }>) =>
         new RetryError("exhausted", {
           attempts: input.attempts,
           lastData: input.data,

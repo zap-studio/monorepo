@@ -132,10 +132,7 @@ export type InferAction<
  * // "post:read" | "post:write" | "comment:read"
  * ```
  */
-export type InferPermission<
-  TResources extends Resources,
-  TActions extends Actions<TResources>,
-> = {
+export type InferPermission<TResources extends Resources, TActions extends Actions<TResources>> = {
   [
     K in keyof TResources & keyof TActions
   ]: `${K & string}:${InferAction<TResources, TActions, K> & string}`;
@@ -180,12 +177,8 @@ export interface HasRoleFn {
    *
    * @param role - Role the context's `role` (or `role[]`) must include.
    */
-  <
-    TContext extends { role: Role | Role[] },
-    TAction extends string = string,
-    TResource = unknown,
-  >(
-    role: Role
+  <TContext extends { role: Role | Role[] }, TAction extends string = string, TResource = unknown>(
+    role: Role,
   ): ConditionFn<TContext, TAction, TResource>;
   /**
    * Checks membership in `role`, treating any role that inherits from it
@@ -201,7 +194,7 @@ export interface HasRoleFn {
     TRole extends Role = Role,
   >(
     role: TRole,
-    hierarchy: RoleHierarchy<TRole>
+    hierarchy: RoleHierarchy<TRole>,
   ): ConditionFn<TContext, TAction, TResource>;
 }
 
@@ -330,6 +323,6 @@ export interface Policy<
   can: <K extends keyof TResources & keyof TActions>(
     context: TContext,
     permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
-    resource: InferResource<TResources, K>
+    resource: InferResource<TResources, K>,
   ) => Promise<boolean>;
 }

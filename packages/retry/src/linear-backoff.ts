@@ -6,11 +6,7 @@
 
 import { applyJitter } from "./jitter.js";
 import type { JitterMode, JitterOptions } from "./jitter.js";
-import type {
-  RetryDecision,
-  RetryDecisionInput,
-  RetryPolicy,
-} from "./types.js";
+import type { RetryDecision, RetryDecisionInput, RetryPolicy } from "./types.js";
 
 /**
  * Configuration for `linearBackoff(...)`.
@@ -75,10 +71,7 @@ export const linearBackoff = (options: LinearBackoffOptions): RetryPolicy => {
         };
       }
 
-      const cappedDelayMs = Math.min(
-        maxDelayMs,
-        baseDelayMs + incrementMs * (input.attempt - 1)
-      );
+      const cappedDelayMs = Math.min(maxDelayMs, baseDelayMs + incrementMs * (input.attempt - 1));
       const delayMs = applyJitter(cappedDelayMs, jitter);
 
       return { delayMs, reason: "retry", shouldRetry: true };

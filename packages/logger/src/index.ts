@@ -13,16 +13,5 @@
 export { ConsoleLogger } from "./console.js";
 export type { ConsoleLoggerOptions } from "./console.js";
 export { isLevelEnabled, LOG_LEVEL_ORDER } from "./core.js";
-export {
-  classicFormat,
-  compactFormat,
-  jsonFormat,
-  prettyFormat,
-} from "./format.js";
-export type {
-  CallableLogLevel,
-  Logger,
-  LogFormatter,
-  LogLevel,
-  LogRecord,
-} from "./types.js";
+export { classicFormat, compactFormat, jsonFormat, prettyFormat } from "./format.js";
+export type { CallableLogLevel, Logger, LogFormatter, LogLevel, LogRecord } from "./types.js";

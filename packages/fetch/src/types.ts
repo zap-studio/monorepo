@@ -59,8 +59,7 @@ interface CustomRequestInit {
  *   throwOnFetchError: true,
  * };
  */
-export type ExtendedRequestInit = (RequestBodyInit | JsonBodyInit) &
-  CustomRequestInit;
+export type ExtendedRequestInit = (RequestBodyInit | JsonBodyInit) & CustomRequestInit;
 
 /**
  * Internal defaults used by fetchInternal
@@ -137,7 +136,7 @@ export interface $Fetch {
   <TSchema extends StandardSchemaV1>(
     input: FetchInput,
     schema: TSchema,
-    options: ExtendedRequestInit & { throwOnValidationError: false }
+    options: ExtendedRequestInit & { throwOnValidationError: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   /**
@@ -161,7 +160,7 @@ export interface $Fetch {
     schema: TSchema,
     options?: ExtendedRequestInit & {
       throwOnValidationError?: true;
-    }
+    },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   /**

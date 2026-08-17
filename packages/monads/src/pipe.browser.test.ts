@@ -16,7 +16,7 @@ describe("pipe", () => {
       5,
       (n: number) => n + 1,
       (n: number) => n * 2,
-      (n: number) => `${n}`
+      (n: number) => `${n}`,
     );
 
     expect(result).toBe("12");
@@ -32,7 +32,7 @@ describe("pipe", () => {
       (n: number) => n + 1,
       (n: number) => n + 1,
       (n: number) => n + 1,
-      (n: number) => n + 1
+      (n: number) => n + 1,
     );
 
     expect(result).toBe(9);

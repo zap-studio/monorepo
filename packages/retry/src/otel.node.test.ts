@@ -49,10 +49,7 @@ describe("retry OpenTelemetry", () => {
   const runWithActiveSpan = async <T>(run: () => Promise<T>): Promise<T> => {
     const callerSpan = trace.getTracer("retry-otel-test").startSpan("caller");
     try {
-      return await context.with(
-        trace.setSpan(context.active(), callerSpan),
-        run
-      );
+      return await context.with(trace.setSpan(context.active(), callerSpan), run);
     } finally {
       callerSpan.end();
     }
@@ -62,18 +59,14 @@ describe("retry OpenTelemetry", () => {
     spanExporter.getFinishedSpans().find((span) => span.name === "caller");
 
   it("adds a retry.scheduled event to the active span on each retry", async () => {
-    const policy = createSequencePolicy([
-      { delayMs: 0, reason: "retry", shouldRetry: true },
-    ]);
+    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValueOnce(new Error("fail"));
     execute.mockResolvedValueOnce("ok");
 
     await runWithActiveSpan(() => runRetryPolicy(policy, execute));
 
-    const event = getCallerSpan()?.events.find(
-      (e) => e.name === "retry.scheduled"
-    );
+    const event = getCallerSpan()?.events.find((e) => e.name === "retry.scheduled");
     expect(event?.attributes?.attempt).toBe(1);
     expect(event?.attributes?.["retry.reason"]).toBe("retry");
   });
@@ -86,9 +79,7 @@ describe("retry OpenTelemetry", () => {
 
     await runWithActiveSpan(() => runRetryPolicy(policy, execute));
 
-    const event = getCallerSpan()?.events.find(
-      (e) => e.name === "retry.scheduled"
-    );
+    const event = getCallerSpan()?.events.find((e) => e.name === "retry.scheduled");
     expect(event?.attributes?.["retry.reason"]).toBe("");
   });
 
@@ -99,13 +90,9 @@ describe("retry OpenTelemetry", () => {
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValue(new Error("fail"));
 
-    await runWithActiveSpan(() =>
-      runRetryPolicy(policy, execute, { throwOnExhausted: false })
-    );
+    await runWithActiveSpan(() => runRetryPolicy(policy, execute, { throwOnExhausted: false }));
 
-    const event = getCallerSpan()?.events.find(
-      (e) => e.name === "retry.exhausted"
-    );
+    const event = getCallerSpan()?.events.find((e) => e.name === "retry.exhausted");
     expect(event?.attributes?.attempt).toBe(1);
     expect(event?.attributes?.["retry.reason"]).toBe("max-attempts-reached");
   });
@@ -115,13 +102,9 @@ describe("retry OpenTelemetry", () => {
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValue(new Error("fail"));
 
-    await runWithActiveSpan(() =>
-      runRetryPolicy(policy, execute, { throwOnExhausted: false })
-    );
+    await runWithActiveSpan(() => runRetryPolicy(policy, execute, { throwOnExhausted: false }));
 
-    const event = getCallerSpan()?.events.find(
-      (e) => e.name === "retry.exhausted"
-    );
+    const event = getCallerSpan()?.events.find((e) => e.name === "retry.exhausted");
     expect(event?.attributes?.["retry.reason"]).toBe("");
   });
 
@@ -130,7 +113,7 @@ describe("retry OpenTelemetry", () => {
     await meterProvider.forceFlush();
     const resourceMetrics = metricExporter.getMetrics().at(-1);
     const metric = resourceMetrics?.scopeMetrics[0]?.metrics.find(
-      (m) => m.descriptor.name === "retry.attempts"
+      (m) => m.descriptor.name === "retry.attempts",
     );
 
     const counts: Record<string, number> = {};

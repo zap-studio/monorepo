@@ -16,9 +16,7 @@ describe(applyJitter, () => {
   it("applies equal jitter across [delayMs/2, delayMs]", () => {
     expect(applyJitter(1000, { mode: "equal", random: () => 0 })).toBe(500);
     expect(applyJitter(1000, { mode: "equal", random: () => 0.5 })).toBe(750);
-    expect(applyJitter(1000, { mode: "equal", random: () => 0.999 })).toBe(
-      1000
-    );
+    expect(applyJitter(1000, { mode: "equal", random: () => 0.999 })).toBe(1000);
   });
 
   it("accepts a jitter mode string shorthand with Math.random", () => {

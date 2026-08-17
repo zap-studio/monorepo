@@ -11,10 +11,8 @@ import type {
 } from "./types.js";
 
 export const createSequencePolicy = (
-  decisions: RetryDecision[]
-): Required<
-  Pick<RetryPolicy<Error, string>, "isKnownError" | "next" | "onExhausted">
-> & {
+  decisions: RetryDecision[],
+): Required<Pick<RetryPolicy<Error, string>, "isKnownError" | "next" | "onExhausted">> & {
   seen: RetryDecisionInput<Error, string>[];
 } => {
   const seen: RetryDecisionInput<Error, string>[] = [];
@@ -60,7 +58,7 @@ export const createCustomTerminalPolicy = (): RetryPolicy => ({
 });
 
 export const expectFailureResult = (
-  result: RetryRunResult<string>
+  result: RetryRunResult<string>,
 ): {
   ok: false;
   attempts: number;

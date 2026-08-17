@@ -47,8 +47,8 @@ describe("@zap-studio/retry browser runtime", () => {
         },
         {
           signal: controller.signal,
-        }
-      )
+        },
+      ),
     ).rejects.toBeInstanceOf(AbortError);
   });
 
@@ -66,7 +66,7 @@ describe("@zap-studio/retry browser runtime", () => {
       {
         signal: controller.signal,
         throwOnExhausted: false,
-      }
+      },
     );
 
     expect(result).toMatchObject({

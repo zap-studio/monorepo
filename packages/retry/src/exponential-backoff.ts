@@ -6,11 +6,7 @@
 
 import { applyJitter } from "./jitter.js";
 import type { JitterMode, JitterOptions } from "./jitter.js";
-import type {
-  RetryDecision,
-  RetryDecisionInput,
-  RetryPolicy,
-} from "./types.js";
+import type { RetryDecision, RetryDecisionInput, RetryPolicy } from "./types.js";
 
 /**
  * Configuration for `exponentialBackoff(...)`.
@@ -53,9 +49,7 @@ export interface ExponentialBackoffOptions {
  *   maxDelayMs: 2_000,
  * });
  */
-export const exponentialBackoff = (
-  options: ExponentialBackoffOptions
-): RetryPolicy => {
+export const exponentialBackoff = (options: ExponentialBackoffOptions): RetryPolicy => {
   const { maxAttempts, baseDelayMs, maxDelayMs, jitter } = options;
 
   return {

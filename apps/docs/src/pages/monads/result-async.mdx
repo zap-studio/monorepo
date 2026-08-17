@@ -16,7 +16,7 @@ import { fromPromise } from "@zap-studio/monads";
 
 const user = fromPromise(
   fetch("/api/user").then((response) => response.json()),
-  (error) => `request failed: ${String(error)}`
+  (error) => `request failed: ${String(error)}`,
 );
 ```
 
@@ -27,12 +27,10 @@ import { err, fromPromise, ok } from "@zap-studio/monads";
 
 const greeting = fromPromise(
   fetch("/api/user").then((response) => response.json()),
-  (error) => `request failed: ${String(error)}`
+  (error) => `request failed: ${String(error)}`,
 )
   .map((user) => user.name)
-  .andThen((name) =>
-    name.length > 0 ? ok(`Hello, ${name}`) : err("empty name")
-  );
+  .andThen((name) => (name.length > 0 ? ok(`Hello, ${name}`) : err("empty name")));
 ```
 
 `andThen`'s callback can return a `Result`, a `Promise<Result>`, or another `ResultAsync` — all three are awaited the same way.
@@ -44,12 +42,12 @@ const greeting = fromPromise(
 ```ts
 const withFallback = fromPromise(
   fetch("/api/user").then((response) => response.json()),
-  (error) => `request failed: ${String(error)}`
+  (error) => `request failed: ${String(error)}`,
 ).orElse((reason) =>
   fromPromise(
     fetch("/api/user/default").then((response) => response.json()),
-    () => reason
-  )
+    () => reason,
+  ),
 );
 ```
 

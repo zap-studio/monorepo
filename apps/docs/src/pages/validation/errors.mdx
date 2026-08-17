@@ -51,11 +51,11 @@ try {
 
 `ValidationError` extends `Error` and exposes:
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `name` | `string` | Always `"ValidationError"`. |
-| `issues` | `readonly StandardSchemaV1.Issue[]` | The validation issues reported by the schema. Each issue has a `message` and an optional `path`. |
-| `message` | `string` | A JSON string representation of `issues`, useful for logging. |
+| Property  | Type                                | Description                                                                                      |
+| --------- | ----------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `name`    | `string`                            | Always `"ValidationError"`.                                                                      |
+| `issues`  | `readonly StandardSchemaV1.Issue[]` | The validation issues reported by the schema. Each issue has a `message` and an optional `path`. |
+| `message` | `string`                            | A JSON string representation of `issues`, useful for logging.                                    |
 
 ```ts
 if (error instanceof ValidationError) {

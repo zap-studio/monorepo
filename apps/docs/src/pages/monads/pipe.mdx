@@ -15,7 +15,7 @@ pipe(5, (n) => n + 1); // 6
 pipe(
   5,
   (n) => n + 1,
-  (n) => n * 2
+  (n) => n * 2,
 ); // 12
 ```
 
@@ -28,7 +28,7 @@ pipe(
   ok(2),
   Result.map((n) => n * 2),
   Result.andThen((n) => (n > 0 ? ok(n) : err("not positive"))),
-  Result.unwrapOr(0)
+  Result.unwrapOr(0),
 ); // 4
 ```
 
@@ -40,7 +40,7 @@ import { Option, pipe, some } from "@zap-studio/monads";
 pipe(
   some(2),
   Option.map((n) => n * 2),
-  Option.unwrapOr(0)
+  Option.unwrapOr(0),
 ); // 4
 ```
 

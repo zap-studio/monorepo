@@ -7,9 +7,9 @@ description: Catch FetchError and ValidationError, and handle parsing, abort, an
 
 `@zap-studio/fetch` throws `FetchError` for HTTP failures and `ValidationError` for schema failures. Platform and schema errors can still propagate from native `fetch`, body parsing, request construction, or the validator itself.
 
-| Error | Import path | Thrown when |
-| --- | --- | --- |
-| `FetchError` | `@zap-studio/fetch` | The response is not ok and `throwOnFetchError` is `true` (default). |
+| Error             | Import path              | Thrown when                                                                                        |
+| ----------------- | ------------------------ | -------------------------------------------------------------------------------------------------- |
+| `FetchError`      | `@zap-studio/fetch`      | The response is not ok and `throwOnFetchError` is `true` (default).                                |
 | `ValidationError` | `@zap-studio/validation` | A schema is provided, validation returns issues, and `throwOnValidationError` is `true` (default). |
 
 ```ts
@@ -21,9 +21,9 @@ import { ValidationError } from "@zap-studio/validation";
 
 Thrown for non-2xx responses before the body is parsed or validated. Its message has the form `HTTP <status>: <statusText>`.
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `status` | `number` | HTTP status code from the failing response. |
+| Property   | Type       | Description                                                       |
+| ---------- | ---------- | ----------------------------------------------------------------- |
+| `status`   | `number`   | HTTP status code from the failing response.                       |
 | `response` | `Response` | Full response object for further inspection (headers, body, ...). |
 
 ```ts
@@ -68,8 +68,8 @@ With `throwOnFetchError: false` and a schema provided, the error response body i
 
 Thrown when the response body does not match the provided schema. Its message is a JSON string of the issues.
 
-| Property | Type | Description |
-| --- | --- | --- |
+| Property | Type                                | Description                               |
+| -------- | ----------------------------------- | ----------------------------------------- |
 | `issues` | `readonly StandardSchemaV1.Issue[]` | Validation issues reported by the schema. |
 
 ```ts
@@ -131,10 +131,7 @@ const UserSchema = z.object({ id: z.number(), name: z.string() });
 
 async function loadUser(id: string) {
   try {
-    const user = await api.get(
-      `https://api.example.com/users/${id}`,
-      UserSchema
-    );
+    const user = await api.get(`https://api.example.com/users/${id}`, UserSchema);
     return { ok: true as const, user };
   } catch (error) {
     if (error instanceof FetchError) {

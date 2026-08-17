@@ -38,40 +38,35 @@ import { err, ok, pipe, Result } from "@zap-studio/monads";
 
 pipe(
   ok(2),
-  Result.map((n) => n * 2)
+  Result.map((n) => n * 2),
 ); // Ok(4)
 
 pipe(
   err("bad"),
-  Result.mapErr((e) => e.toUpperCase())
+  Result.mapErr((e) => e.toUpperCase()),
 ); // Err("BAD")
 
 pipe(
   ok("42"),
-  Result.andThen((s) =>
-    Number.isNaN(Number(s)) ? err("not a number") : ok(Number(s))
-  )
+  Result.andThen((s) => (Number.isNaN(Number(s)) ? err("not a number") : ok(Number(s)))),
 ); // Ok(42)
 
 pipe(
   err("bad"),
-  Result.orElse((e) => ok(e.length))
+  Result.orElse((e) => ok(e.length)),
 ); // Ok(3)
 pipe(
   ok(1),
-  Result.orElse(() => ok(0))
+  Result.orElse(() => ok(0)),
 ); // Ok(1), fallback not called
 
 pipe(err("bad"), Result.unwrapOr(0)); // 0
 pipe(
   err("bad"),
-  Result.unwrapOrElse((e) => e.length)
+  Result.unwrapOrElse((e) => e.length),
 ); // 3
 
-pipe(
-  ok(42),
-  Result.match({ ok: (n) => `got ${n}`, err: (e) => `failed: ${e}` })
-); // "got 42"
+pipe(ok(42), Result.match({ ok: (n) => `got ${n}`, err: (e) => `failed: ${e}` })); // "got 42"
 ```
 
 `orElse` mirrors Rust's `Result::or_else`: it recovers an `Err` into a fallback `Result`, and leaves an `Ok` untouched without calling the fallback.
@@ -96,7 +91,7 @@ Prefer `Result.match`, `Result.unwrapOr`, or `Result.unwrapOrElse` for control f
 import { fromThrowable } from "@zap-studio/monads";
 
 const safeParse = fromThrowable(JSON.parse, (error) =>
-  error instanceof Error ? error.message : "parse failed"
+  error instanceof Error ? error.message : "parse failed",
 );
 
 safeParse('{"a":1}'); // Ok({ a: 1 })

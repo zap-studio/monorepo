@@ -96,9 +96,7 @@ export const createHmacVerifier = ({
   algo?: HmacAlgorithm;
 }): VerifyFn => {
   if (globalThis.crypto?.subtle === undefined) {
-    throw new VerificationError(
-      "Web Crypto API is unavailable in this runtime"
-    );
+    throw new VerificationError("Web Crypto API is unavailable in this runtime");
   }
 
   const { subtle } = globalThis.crypto;
@@ -113,7 +111,7 @@ export const createHmacVerifier = ({
     new TextEncoder().encode(secret),
     { hash, name: "HMAC" },
     false,
-    ["sign"]
+    ["sign"],
   );
 
   return async (ctx) => {
@@ -123,18 +121,12 @@ export const createHmacVerifier = ({
     }
 
     const key = await keyPromise;
-    const signature = await subtle.sign(
-      "HMAC",
-      key,
-      new Uint8Array(ctx.rawBody)
-    );
+    const signature = await subtle.sign("HMAC", key, new Uint8Array(ctx.rawBody));
     const expected = new Uint8Array(signature);
     const provided = hexToBytes(normalizeSignature(actual));
 
     if (provided === undefined || !constantTimeEquals(expected, provided)) {
-      throw new VerificationError(
-        `Invalid signature for header: ${headerName}`
-      );
+      throw new VerificationError(`Invalid signature for header: ${headerName}`);
     }
   };
 };

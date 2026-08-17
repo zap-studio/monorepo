@@ -46,10 +46,8 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
    */
   // oxlint-disable-next-line unicorn/no-thenable -- ResultAsync is designed to be thenable, so `await resultAsync` resolves to the wrapped Result directly; see the class doc.
   then<TResult1 = Result<T, E>, TResult2 = never>(
-    onfulfilled?:
-      | ((value: Result<T, E>) => PromiseLike<TResult1> | TResult1)
-      | null,
-    onrejected?: ((reason: unknown) => PromiseLike<TResult2> | TResult2) | null
+    onfulfilled?: ((value: Result<T, E>) => PromiseLike<TResult1> | TResult1) | null,
+    onrejected?: ((reason: unknown) => PromiseLike<TResult2> | TResult2) | null,
   ): PromiseLike<TResult1 | TResult2> {
     return this.promise.then(onfulfilled, onrejected);
   }
@@ -60,7 +58,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
    */
   map<U>(fn: (value: T) => U): ResultAsync<U, E> {
     return new ResultAsync(
-      (async (): Promise<Result<U, E>> => resultMap(fn)(await this.promise))()
+      (async (): Promise<Result<U, E>> => resultMap(fn)(await this.promise))(),
     );
   }
 
@@ -70,8 +68,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
    */
   mapErr<F>(fn: (error: E) => F): ResultAsync<T, F> {
     return new ResultAsync(
-      (async (): Promise<Result<T, F>> =>
-        resultMapErr(fn)(await this.promise))()
+      (async (): Promise<Result<T, F>> => resultMapErr(fn)(await this.promise))(),
     );
   }
 
@@ -83,7 +80,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
    * @param fn - Receives the `Ok` value, returns the next step.
    */
   andThen<U>(
-    fn: (value: T) => Result<U, E> | ResultAsync<U, E> | Promise<Result<U, E>>
+    fn: (value: T) => Result<U, E> | ResultAsync<U, E> | Promise<Result<U, E>>,
   ): ResultAsync<U, E> {
     return new ResultAsync(
       (async (): Promise<Result<U, E>> => {
@@ -94,7 +91,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
         }
 
         return await fn(result.value);
-      })()
+      })(),
     );
   }
 
@@ -107,7 +104,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
    * @param fn - Receives the `Err` error, returns the recovery step.
    */
   orElse<F>(
-    fn: (error: E) => Result<T, F> | ResultAsync<T, F> | Promise<Result<T, F>>
+    fn: (error: E) => Result<T, F> | ResultAsync<T, F> | Promise<Result<T, F>>,
   ): ResultAsync<T, F> {
     return new ResultAsync(
       (async (): Promise<Result<T, F>> => {
@@ -118,7 +115,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
         }
 
         return await fn(result.error);
-      })()
+      })(),
     );
   }
 
@@ -155,7 +152,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
  */
 export const fromPromise = <T, E>(
   promise: Promise<T>,
-  mapError: (error: unknown) => E
+  mapError: (error: unknown) => E,
 ): ResultAsync<T, E> =>
   new ResultAsync(
     (async (): Promise<Result<T, E>> => {
@@ -164,5 +161,5 @@ export const fromPromise = <T, E>(
       } catch (error) {
         return resultErr(mapError(error));
       }
-    })()
+    })(),
   );

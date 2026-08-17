@@ -5,9 +5,7 @@ import type { Logger } from "./index.js";
 
 describe("index", () => {
   it("exports ConsoleLogger constructible as a Logger", () => {
-    const infoSpy = vi
-      .spyOn(console, "info")
-      .mockImplementation(() => undefined);
+    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => undefined);
 
     const logger: Logger = new ConsoleLogger();
     logger.info("hello");

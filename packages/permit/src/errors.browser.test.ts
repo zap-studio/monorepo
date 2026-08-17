@@ -76,9 +76,7 @@ describe(PolicyError, () => {
       const error = new PolicyError("Test");
 
       expect(Object.getPrototypeOf(error)).toBe(PolicyError.prototype);
-      expect(Object.getPrototypeOf(PolicyError.prototype)).toBe(
-        Error.prototype
-      );
+      expect(Object.getPrototypeOf(PolicyError.prototype)).toBe(Error.prototype);
     });
   });
 

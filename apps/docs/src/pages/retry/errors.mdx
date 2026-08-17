@@ -21,11 +21,11 @@ import { AbortError, RetryError } from "@zap-studio/retry";
 new RetryError(message: string, context: RetryErrorContext)
 ```
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `context.attempts` | `number` | — | Count of completed attempts at exhaustion. Required. |
-| `context.lastError` | `unknown` | — | Last error raised by a failed `execute` attempt. |
-| `context.lastData` | `unknown` | — | Optional data captured from the last attempt. |
+| Option              | Type      | Default | Description                                          |
+| ------------------- | --------- | ------- | ---------------------------------------------------- |
+| `context.attempts`  | `number`  | —       | Count of completed attempts at exhaustion. Required. |
+| `context.lastError` | `unknown` | —       | Last error raised by a failed `execute` attempt.     |
+| `context.lastData`  | `unknown` | —       | Optional data captured from the last attempt.        |
 
 ### Properties
 
@@ -45,17 +45,17 @@ new RetryError(message: string, context: RetryErrorContext)
 new AbortError(message: string, context?: AbortErrorContext)
 ```
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `context.cause` | `unknown` | — | Wrapped cause when the abort reason was an `Error`. |
+| Option          | Type      | Default | Description                                         |
+| --------------- | --------- | ------- | --------------------------------------------------- |
+| `context.cause` | `unknown` | —       | Wrapped cause when the abort reason was an `Error`. |
 
 ### Properties
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `name` | `string` | Always `"AbortError"` |
-| `message` | `string` | Human-readable abort message |
-| `cause` | `unknown` | Original abort reason when it was an `Error`, else `undefined` |
+| Property  | Type      | Description                                                    |
+| --------- | --------- | -------------------------------------------------------------- |
+| `name`    | `string`  | Always `"AbortError"`                                          |
+| `message` | `string`  | Human-readable abort message                                   |
+| `cause`   | `unknown` | Original abort reason when it was an `Error`, else `undefined` |
 
 ## Default Behavior
 
@@ -64,12 +64,7 @@ The default `onExhausted` used by `runRetryPolicy(...)` (when a policy omits its
 ## Catching Terminal Errors
 
 ```ts
-import {
-  AbortError,
-  RetryError,
-  exponentialBackoff,
-  runRetryPolicy,
-} from "@zap-studio/retry";
+import { AbortError, RetryError, exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
 
 const policy = exponentialBackoff({
   maxAttempts: 3,

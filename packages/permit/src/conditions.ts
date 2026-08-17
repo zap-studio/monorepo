@@ -5,14 +5,7 @@
  * @module @zap-studio/permit/conditions
  */
 
-import type {
-  ConditionFn,
-  Context,
-  HasRoleFn,
-  PolicyFn,
-  Role,
-  RoleHierarchy,
-} from "./types.js";
+import type { ConditionFn, Context, HasRoleFn, PolicyFn, Role, RoleHierarchy } from "./types.js";
 
 /**
  * Returns a policy function that always allows the action.
@@ -31,11 +24,11 @@ import type {
  * ```
  */
 export const allow =
-  <
-    TContext extends Context,
-    TAction extends string = string,
-    TResource = unknown,
-  >(): PolicyFn<TContext, TAction, TResource> =>
+  <TContext extends Context, TAction extends string = string, TResource = unknown>(): PolicyFn<
+    TContext,
+    TAction,
+    TResource
+  > =>
   () =>
     "allow";
 
@@ -56,11 +49,11 @@ export const allow =
  * ```
  */
 export const deny =
-  <
-    TContext extends Context,
-    TAction extends string = string,
-    TResource = unknown,
-  >(): PolicyFn<TContext, TAction, TResource> =>
+  <TContext extends Context, TAction extends string = string, TResource = unknown>(): PolicyFn<
+    TContext,
+    TAction,
+    TResource
+  > =>
   () =>
     "deny";
 
@@ -81,12 +74,8 @@ export const deny =
  * ```
  */
 export const when =
-  <
-    TContext extends Context,
-    TAction extends string = string,
-    TResource = unknown,
-  >(
-    condition: ConditionFn<TContext, TAction, TResource>
+  <TContext extends Context, TAction extends string = string, TResource = unknown>(
+    condition: ConditionFn<TContext, TAction, TResource>,
   ): PolicyFn<TContext, TAction, TResource> =>
   (context, action, resource) =>
     condition(context, action, resource) ? "allow" : "deny";
@@ -109,11 +98,7 @@ export const when =
  * ```
  */
 export const and =
-  <
-    TContext extends Context,
-    TAction extends string = string,
-    TResource = unknown,
-  >(
+  <TContext extends Context, TAction extends string = string, TResource = unknown>(
     ...conditions: ConditionFn<TContext, TAction, TResource>[]
   ): ConditionFn<TContext, TAction, TResource> =>
   (context, action, resource) =>
@@ -137,11 +122,7 @@ export const and =
  * ```
  */
 export const or =
-  <
-    TContext extends Context,
-    TAction extends string = string,
-    TResource = unknown,
-  >(
+  <TContext extends Context, TAction extends string = string, TResource = unknown>(
     ...conditions: ConditionFn<TContext, TAction, TResource>[]
   ): ConditionFn<TContext, TAction, TResource> =>
   (context, action, resource) =>
@@ -162,12 +143,8 @@ export const or =
  * ```
  */
 export const not =
-  <
-    TContext extends Context,
-    TAction extends string = string,
-    TResource = unknown,
-  >(
-    condition: ConditionFn<TContext, TAction, TResource>
+  <TContext extends Context, TAction extends string = string, TResource = unknown>(
+    condition: ConditionFn<TContext, TAction, TResource>,
   ): ConditionFn<TContext, TAction, TResource> =>
   (context, action, resource) =>
     !condition(context, action, resource);
@@ -187,7 +164,7 @@ export const not =
 export const has =
   <TContext extends Context, K extends keyof TContext>(
     key: K,
-    value: TContext[K]
+    value: TContext[K],
   ): ConditionFn<TContext> =>
   (context) =>
     context[key] === value;
@@ -211,7 +188,7 @@ export const has =
  */
 export const collectInheritedRoles = <TRole extends Role = Role>(
   roles: TRole[],
-  hierarchy: RoleHierarchy<TRole>
+  hierarchy: RoleHierarchy<TRole>,
 ): Set<TRole> => {
   const inherited = new Set<TRole>();
 
@@ -261,14 +238,9 @@ export const collectInheritedRoles = <TRole extends Role = Role>(
  * ```
  */
 export const hasRole: HasRoleFn =
-  (
-    role: Role,
-    hierarchy?: RoleHierarchy
-  ): ConditionFn<{ role: Role | Role[] }> =>
+  (role: Role, hierarchy?: RoleHierarchy): ConditionFn<{ role: Role | Role[] }> =>
   (context) => {
-    const userRoles = Array.isArray(context.role)
-      ? context.role
-      : [context.role];
+    const userRoles = Array.isArray(context.role) ? context.role : [context.role];
 
     if (hierarchy === undefined) {
       return userRoles.includes(role);

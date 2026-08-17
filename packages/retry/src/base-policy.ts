@@ -97,7 +97,7 @@ const throwIfAborted = (signal?: AbortSignal, logger?: Logger): void => {
 const sleepWithAbortSignal = async (
   sleep: (delayMs: number) => Promise<void>,
   delayMs: number,
-  signal: AbortSignal
+  signal: AbortSignal,
 ): Promise<void> => {
   if (signal.aborted) {
     throw toAbortError(signal.reason);
@@ -132,7 +132,7 @@ const logRetryDecision = (
   logger: Logger | undefined,
   attempt: number,
   decision: RetryDecision,
-  error: unknown
+  error: unknown,
 ): void => {
   if (decision.shouldRetry) {
     logger?.debug("retry scheduled", {
@@ -184,7 +184,7 @@ const runThrowMode = async <T, TError extends Error, TData>(
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
   signal?: AbortSignal,
-  logger?: Logger
+  logger?: Logger,
 ): Promise<T> => {
   let attempt = 1;
 
@@ -238,7 +238,7 @@ const runThrowMode = async <T, TError extends Error, TData>(
 const buildAbortResult = (
   signal: AbortSignal | undefined,
   attempts: number,
-  logger?: Logger
+  logger?: Logger,
 ): RetryRunResult<never> | undefined => {
   if (signal?.aborted !== true) {
     return undefined;
@@ -263,7 +263,7 @@ const buildAbortResult = (
  */
 const runAttempt = async <T>(
   execute: (attempt: number) => Promise<T>,
-  attempt: number
+  attempt: number,
 ): Promise<{ ok: true; value: T } | { ok: false; error: unknown }> => {
   try {
     return {
@@ -296,7 +296,7 @@ const waitForDelay = async (
   delayMs: number,
   signal: AbortSignal | undefined,
   attempts: number,
-  logger?: Logger
+  logger?: Logger,
 ): Promise<RetryRunResult<never> | undefined> => {
   if (signal === undefined) {
     await sleep(delayMs);
@@ -340,7 +340,7 @@ const handleFailure = async <TError extends Error, TData>(
     sleep: (delayMs: number) => Promise<void>;
     signal: AbortSignal | undefined;
     logger: Logger | undefined;
-  }
+  },
 ): Promise<RetryRunResult<never> | undefined> => {
   const { attempt, error, sleep, signal, logger } = params;
   const abortResult = buildAbortResult(signal, attempt, logger);
@@ -368,13 +368,7 @@ const handleFailure = async <TError extends Error, TData>(
   }
 
   if (decision.delayMs > 0) {
-    const delayAbortResult = await waitForDelay(
-      sleep,
-      decision.delayMs,
-      signal,
-      attempt,
-      logger
-    );
+    const delayAbortResult = await waitForDelay(sleep, decision.delayMs, signal, attempt, logger);
     if (delayAbortResult !== undefined) {
       return delayAbortResult;
     }
@@ -405,16 +399,12 @@ const runResultMode = async <T, TError extends Error, TData>(
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
   signal?: AbortSignal,
-  logger?: Logger
+  logger?: Logger,
 ): Promise<RetryRunResult<T>> => {
   let attempt = 1;
 
   while (true) {
-    const abortResult = buildAbortResult(
-      signal,
-      Math.max(0, attempt - 1),
-      logger
-    );
+    const abortResult = buildAbortResult(signal, Math.max(0, attempt - 1), logger);
     if (abortResult !== undefined) {
       return abortResult;
     }
@@ -462,7 +452,7 @@ const runResultMode = async <T, TError extends Error, TData>(
  * context in a generic `RetryError`.
  */
 const defaultOnExhausted = <TError extends Error, TData>(
-  input: RetryExhaustedInput<TError, TData>
+  input: RetryExhaustedInput<TError, TData>,
 ): RetryError =>
   new RetryError("Retry policy exhausted all attempts.", {
     attempts: input.attempts,
@@ -475,9 +465,8 @@ const defaultOnExhausted = <TError extends Error, TData>(
  * instance and rejects everything else.
  */
 // oxlint-disable-next-line typescript/no-unnecessary-type-parameters -- TError only appears in the return predicate; needed so callers infer the right narrowed type.
-const defaultIsKnownError = <TError extends Error>(
-  error: unknown
-): error is TError => error instanceof Error;
+const defaultIsKnownError = <TError extends Error>(error: unknown): error is TError =>
+  error instanceof Error;
 
 /**
  * Runs retry orchestration in non-throw mode.
@@ -491,14 +480,10 @@ const defaultIsKnownError = <TError extends Error>(
  *   `RetryError` and returned as the terminal failure instead of thrown.
  * @throws {Error} Any error thrown by `next`, `onExhausted`, or a custom `sleep`.
  */
-export function runRetryPolicy<
-  T,
-  TError extends Error = Error,
-  TData = unknown,
->(
+export function runRetryPolicy<T, TError extends Error = Error, TData = unknown>(
   policy: RetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
-  options: RetryRunOptions & { throwOnExhausted: false }
+  options: RetryRunOptions & { throwOnExhausted: false },
 ): Promise<RetryRunResult<T>>;
 
 /**
@@ -531,14 +516,10 @@ export function runRetryPolicy<
  * const data = await runRetryPolicy(linearBackoff, async () => fetchFlakyResource());
  * ```
  */
-export function runRetryPolicy<
-  T,
-  TError extends Error = Error,
-  TData = unknown,
->(
+export function runRetryPolicy<T, TError extends Error = Error, TData = unknown>(
   policy: RetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
-  options?: RetryRunOptions & { throwOnExhausted?: true }
+  options?: RetryRunOptions & { throwOnExhausted?: true },
 ): Promise<T>;
 
 /**
@@ -563,27 +544,19 @@ export function runRetryPolicy<
  * const result = await runRetryPolicy(policy, doWork, { throwOnExhausted: false });
  * if (!result.ok) console.error(result.error);
  */
-export async function runRetryPolicy<
-  T,
-  TError extends Error = Error,
-  TData = unknown,
->(
+export async function runRetryPolicy<T, TError extends Error = Error, TData = unknown>(
   policy: RetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
-  options: RetryRunOptions = {}
+  options: RetryRunOptions = {},
 ): Promise<T | RetryRunResult<T>> {
   const sleep = options.sleep ?? defaultSleep;
   const { signal, logger } = options;
   const resolvedPolicy: ResolvedRetryPolicy<TError, TData> = {
     isKnownError: (error): error is TError =>
-      policy.isKnownError
-        ? policy.isKnownError(error)
-        : defaultIsKnownError(error),
+      policy.isKnownError ? policy.isKnownError(error) : defaultIsKnownError(error),
     next: (input) => policy.next(input),
     onExhausted: (input) =>
-      policy.onExhausted
-        ? policy.onExhausted(input)
-        : defaultOnExhausted(input),
+      policy.onExhausted ? policy.onExhausted(input) : defaultOnExhausted(input),
   };
 
   if (options.throwOnExhausted === false) {
