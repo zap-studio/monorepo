@@ -4,6 +4,7 @@
  * @module @zap-studio/logger/console
  */
 
+import { withTraceContext } from "./_otel.js";
 import { isLevelEnabled } from "./core.js";
 import { classicFormat } from "./format.js";
 import type {
@@ -101,7 +102,7 @@ export class ConsoleLogger implements Logger {
 
     const consoleMethod = CONSOLE_METHOD_BY_LEVEL[level];
     const args = this.format({
-      context,
+      context: withTraceContext(context),
       level,
       message,
       timestamp: new Date(),
