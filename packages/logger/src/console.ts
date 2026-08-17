@@ -5,7 +5,13 @@
  */
 
 import { isLevelEnabled } from "./core.js";
-import type { CallableLogLevel, Logger, LogLevel } from "./types.js";
+import { classicFormat } from "./format.js";
+import type {
+  CallableLogLevel,
+  Logger,
+  LogFormatter,
+  LogLevel,
+} from "./types.js";
 
 const CONSOLE_METHOD_BY_LEVEL: Record<
   CallableLogLevel,
@@ -29,6 +35,15 @@ export interface ConsoleLoggerOptions {
    * @default "info"
    */
   readonly minLevel?: LogLevel;
+  /**
+   * Turns a log call into the arguments passed to `console[method](...)`.
+   * Built-in formatters: `classicFormat`, `jsonFormat`, `compactFormat`,
+   * `prettyFormat` (all from `@zap-studio/logger/format`). Any function
+   * matching `LogFormatter` works — no registration required.
+   *
+   * @default classicFormat
+   */
+  readonly format?: LogFormatter;
 }
 
 /**
@@ -44,9 +59,11 @@ export interface ConsoleLoggerOptions {
  */
 export class ConsoleLogger implements Logger {
   private readonly minLevel: LogLevel;
+  private readonly format: LogFormatter;
 
   constructor(options: ConsoleLoggerOptions = {}) {
     this.minLevel = options.minLevel ?? "info";
+    this.format = options.format ?? classicFormat;
   }
 
   trace(message: string, context?: Record<string, unknown>): void {
@@ -83,11 +100,13 @@ export class ConsoleLogger implements Logger {
     }
 
     const consoleMethod = CONSOLE_METHOD_BY_LEVEL[level];
+    const args = this.format({
+      context,
+      level,
+      message,
+      timestamp: new Date(),
+    });
 
-    if (context === undefined) {
-      console[consoleMethod](message);
-    } else {
-      console[consoleMethod](message, context);
-    }
+    console[consoleMethod](...args);
   }
 }

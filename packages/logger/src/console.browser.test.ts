@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ConsoleLogger } from "./console.js";
+import { jsonFormat } from "./format.js";
+import type { LogRecord } from "./types.js";
 
 describe("ConsoleLogger", () => {
   let debugSpy: ReturnType<typeof vi.spyOn>;
@@ -113,5 +115,48 @@ describe("ConsoleLogger", () => {
     expect(infoSpy).not.toHaveBeenCalled();
     expect(warnSpy).toHaveBeenCalledExactlyOnceWith("w");
     expect(errorSpy).toHaveBeenCalledExactlyOnceWith("e");
+  });
+
+  it("defaults to classicFormat, passing message and context through unchanged", () => {
+    const logger = new ConsoleLogger({ minLevel: "all" });
+
+    logger.info("i", { requestId: "abc" });
+
+    expect(infoSpy).toHaveBeenCalledExactlyOnceWith("i", {
+      requestId: "abc",
+    });
+  });
+
+  it("uses a custom format when provided", () => {
+    const logger = new ConsoleLogger({
+      format: jsonFormat,
+      minLevel: "all",
+    });
+
+    logger.info("i", { requestId: "abc" });
+
+    expect(infoSpy).toHaveBeenCalledTimes(1);
+    const [line] = infoSpy.mock.calls[0] as [string];
+    expect(JSON.parse(line)).toMatchObject({
+      level: "info",
+      msg: "i",
+      requestId: "abc",
+    });
+  });
+
+  it("passes a fresh timestamp to the format on every call", () => {
+    const records: LogRecord[] = [];
+    const logger = new ConsoleLogger({
+      format: (record) => {
+        records.push(record);
+        return [record.message];
+      },
+      minLevel: "all",
+    });
+
+    logger.info("i");
+
+    expect(records).toHaveLength(1);
+    expect(records[0]?.timestamp).toBeInstanceOf(Date);
   });
 });
