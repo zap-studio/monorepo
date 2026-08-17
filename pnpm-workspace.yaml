@@ -33,6 +33,7 @@ catalog:
   lefthook: ^2.1.10
   oxfmt: ^0.63.0
   oxlint: ^1.78.0
+  oxlint-plugin-react-doctor: ^0.9.12
   oxlint-tsgolint: ^7.0.2001
   playwright: ^1.62.1
   publint: ^0.3.23
