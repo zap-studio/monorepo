@@ -19,6 +19,8 @@ Zap Studio packages solve each of these problems once, correctly, so you do not 
 
 Install one package or all six: each one is type-safe, framework-agnostic, and tree-shakeable on its own.
 
+If you already know [Effect](https://effect.website), much of what Zap Studio covers overlaps with it — typed errors, retries, schema validation. Effect is a full ecosystem built around its own runtime and effect type, and that investment pays off in large production systems that need that level of control. Zap Studio stays closer to plain TypeScript/JavaScript: no new runtime or mental model to learn, a shallower learning curve, and small composable packages you adopt one at a time — a better fit when you don't need everything Effect brings.
+
 ```ts
 import { api } from "@zap-studio/fetch";
 import { z } from "zod";
