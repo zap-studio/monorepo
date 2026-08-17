@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0]
+
+### Added
+
+Native OpenTelemetry support. Every request gets a `CLIENT` span (`http.request.method`, `url.full`, `http.response.status_code`), and the trace context is injected into the outgoing request's headers so the call continues the caller's distributed trace. On failure — a non-2xx response or a thrown error — the span is marked `ERROR`, with thrown errors also recorded as span exceptions. See [OpenTelemetry](https://www.zapstudio.dev/fetch/opentelemetry).
+
+### Changed
+
+**Breaking:** `@opentelemetry/api` is now a required peer dependency. It's tiny, side-effect-free, and a no-op until an app registers a real SDK, so nothing changes at runtime for consumers who don't set one up — but the package won't resolve without it installed: `npm install @opentelemetry/api`.
+
 ## [1.1.1]
 
 ### Changed
