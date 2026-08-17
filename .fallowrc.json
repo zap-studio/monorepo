@@ -1,6 +1,11 @@
 {
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
-  "ignorePatterns": ["oxfmt.config.ts", "oxlint.config.ts", "apps/docs/vocs.config.ts", "tools/oxlint/anti-slop/**"],
+  "ignorePatterns": [
+    "oxfmt.config.ts",
+    "oxlint.config.ts",
+    "apps/docs/vocs.config.ts",
+    "tools/oxlint/anti-slop/**"
+  ],
   "duplicates": {
     "ignore": ["**/*.test.ts"]
   },
