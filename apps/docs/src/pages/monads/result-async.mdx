@@ -37,6 +37,22 @@ const greeting = fromPromise(
 
 `andThen`'s callback can return a `Result`, a `Promise<Result>`, or another `ResultAsync` — all three are awaited the same way.
 
+## Recovering
+
+`orElse` is `andThen`'s counterpart for the failure side: it recovers an eventual `Err`, leaving an eventual `Ok` untouched. Its callback accepts the same three return shapes as `andThen`'s:
+
+```ts
+const withFallback = fromPromise(
+  fetch("/api/user").then((response) => response.json()),
+  (error) => `request failed: ${String(error)}`
+).orElse((reason) =>
+  fromPromise(
+    fetch("/api/user/default").then((response) => response.json()),
+    () => reason
+  )
+);
+```
+
 ## Resolving
 
 `ResultAsync` is awaitable directly, resolving to the wrapped `Result`:
