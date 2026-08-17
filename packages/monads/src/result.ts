@@ -84,6 +84,23 @@ export const andThen =
     isOk(result) ? fn(result.value) : result;
 
 /**
+ * Recovers from an `Err` by computing a fallback `Result`. An `Ok` passes
+ * through unchanged. Mirrors Rust's `Result::or_else`.
+ *
+ * @example
+ * ```ts
+ * pipe(err("bad"), orElse((e) => ok(e.length))); // Ok(3)
+ * pipe(ok(1), orElse((e) => ok(0))); // Ok(1), fn not called
+ * ```
+ */
+export const orElse =
+  <T, E, F>(
+    fn: (error: E) => Result<T, F>
+  ): ((result: Result<T, E>) => Result<T, F>) =>
+  (result: Result<T, E>): Result<T, F> =>
+    isErr(result) ? fn(result.error) : result;
+
+/**
  * Extracts the `Ok` value, or returns `defaultValue` for `Err`.
  *
  * @example

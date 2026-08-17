@@ -3,9 +3,9 @@
  *
  * Re-exports the `Result`/`Option` types, their constructors and guards as
  * bare functions, and their overlapping combinators (`map`, `andThen`,
- * `unwrapOr`, `unwrapOrElse`, `unwrap`, `match`, plus `mapErr` on `Result`
- * only) grouped under `Result` and `Option` namespace objects to avoid a
- * naming collision. Every symbol is also available from a dedicated subpath
+ * `orElse`, `unwrapOr`, `unwrapOrElse`, `unwrap`, `match`, plus `mapErr` on
+ * `Result` only) grouped under `Result` and `Option` namespace objects to
+ * avoid a naming collision. Every symbol is also available from a dedicated subpath
  * (`@zap-studio/monads/result`, `/result-async`, `/option`, `/pipe`,
  * `/types`) as flat named exports, with no namespacing needed there. All
  * exports are side-effect free and tree-shakeable.
@@ -27,6 +27,7 @@ import {
   map as resultMap,
   mapErr as resultMapErr,
   match as resultMatch,
+  orElse as resultOrElse,
   unwrap as resultUnwrap,
   unwrapOr as resultUnwrapOr,
   unwrapOrElse as resultUnwrapOrElse,
@@ -71,6 +72,8 @@ interface ResultNamespace {
   mapErr: typeof resultMapErr;
   /** See `match` in `@zap-studio/monads/result`. */
   match: typeof resultMatch;
+  /** See `orElse` in `@zap-studio/monads/result`. */
+  orElse: typeof resultOrElse;
   /** See `unwrap` in `@zap-studio/monads/result`. */
   unwrap: typeof resultUnwrap;
   /** See `unwrapOr` in `@zap-studio/monads/result`. */
@@ -106,6 +109,7 @@ export const Result: ResultNamespace = {
   map: resultMap,
   mapErr: resultMapErr,
   match: resultMatch,
+  orElse: resultOrElse,
   unwrap: resultUnwrap,
   unwrapOr: resultUnwrapOr,
   unwrapOrElse: resultUnwrapOrElse,

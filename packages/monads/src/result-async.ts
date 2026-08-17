@@ -14,6 +14,7 @@
 import {
   err as resultErr,
   isErr,
+  isOk,
   map as resultMap,
   mapErr as resultMapErr,
   match as resultMatch,
@@ -93,6 +94,30 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
         }
 
         return await fn(result.value);
+      })()
+    );
+  }
+
+  /**
+   * Recovers from an eventual `Err` by computing a fallback. The function
+   * may return a `Result`, a `Promise<Result>`, or another `ResultAsync` —
+   * all three are awaited uniformly. An eventual `Ok` passes through
+   * unchanged.
+   *
+   * @param fn - Receives the `Err` error, returns the recovery step.
+   */
+  orElse<F>(
+    fn: (error: E) => Result<T, F> | ResultAsync<T, F> | Promise<Result<T, F>>
+  ): ResultAsync<T, F> {
+    return new ResultAsync(
+      (async (): Promise<Result<T, F>> => {
+        const result = await this.promise;
+
+        if (isOk(result)) {
+          return result;
+        }
+
+        return await fn(result.error);
       })()
     );
   }
