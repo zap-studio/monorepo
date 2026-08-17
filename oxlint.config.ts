@@ -19,6 +19,8 @@ export default defineConfig({
   jsPlugins: [{ name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" }],
   rules: {
     "import/no-cycle": ["error", { maxDepth: 3 }],
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "error",
     "anti-slop/no-chained-type-assertions": "error",
     "anti-slop/no-conditional-empty-object-spread": "error",
     "anti-slop/no-known-value-widening": "error",

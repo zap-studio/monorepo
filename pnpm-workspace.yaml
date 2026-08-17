@@ -14,6 +14,7 @@ allowBuilds:
 
 catalog:
   "@arethetypeswrong/core": ^0.18.5
+  "@e18e/eslint-plugin": ^0.8.0
   "@oxlint/plugins": ^1.78.0
   "@opentelemetry/api": ^1.9.0
   "@opentelemetry/context-async-hooks": ^2.10.0
@@ -26,6 +27,9 @@ catalog:
   "@vitest/browser-playwright": ^4.1.10
   "@vitest/coverage-v8": ^4.1.10
   arktype: ^2.2.3
+  eslint-plugin-playwright: ^2.11.0
+  eslint-plugin-regexp: ^3.2.0
+  eslint-plugin-sonarjs: ^4.2.0
   lefthook: ^2.1.10
   oxfmt: ^0.63.0
   oxlint: ^1.78.0
