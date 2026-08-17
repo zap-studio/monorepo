@@ -27,6 +27,7 @@ It uses [Standard Schema](https://standardschema.dev/schema), so you are not loc
 - **Structured errors** with `FetchError` for HTTP failures and `ValidationError` for schema failures.
 - **Validator-agnostic** — works with any library that implements Standard Schema.
 - **[Optional logging](/fetch/logging)** through `createFetch({ logger })` from [`@zap-studio/logger`](/logger) — omit it and there's zero logging overhead.
+- **[Native OpenTelemetry](/fetch/opentelemetry)** — a `CLIENT` span per request with trace context injected into outgoing headers, no-op until an SDK is registered.
 - **Tree-shakeable** — every export is a standalone function with no shared internal state; unused exports are dropped by any modern bundler.
 
 ## Quick Start
@@ -61,6 +62,7 @@ console.log(user.name); // typed as string, validated at runtime
 - [Structured Errors](/fetch/errors) — `FetchError` and `ValidationError`.
 - [Validator-Agnostic](/fetch/validation) — Standard Schema support.
 - [Logging](/fetch/logging) — observe requests, responses, and validation failures.
+- [OpenTelemetry](/fetch/opentelemetry) — native distributed tracing.
 
 ## Runtime Support
 

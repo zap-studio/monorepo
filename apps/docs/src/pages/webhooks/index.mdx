@@ -26,6 +26,7 @@ Signature verification is opt-in through the `verify` option, and the built-in H
 - **Lifecycle hooks** — global `before`, `after`, and `onError` hooks for cross-cutting behavior.
 - **Runtime-agnostic** — uses the Web Crypto API, not Node-specific APIs.
 - **[Optional logging](/webhooks/logging)** through `createWebhookRouter({ logger })` from [`@zap-studio/logger`](/logger) — omit it and there's zero logging overhead.
+- **[Native OpenTelemetry](/webhooks/opentelemetry)** — a `SERVER` span per delivery continuing the sender's trace, plus a child span per handler dispatch, no-op until an SDK is registered.
 - **Tree-shakeable** — validation and hook-running internals are standalone functions; unused exports are dropped by any modern bundler.
 
 ## Quick Start
@@ -60,6 +61,7 @@ export default {
 - [Verification](/webhooks/verification) — HMAC signature verification and the Web Crypto API
 - [Lifecycle Hooks](/webhooks/lifecycle-hooks) — `before`, `after`, and `onError` hooks
 - [Logging](/webhooks/logging) — observe delivery attempts, dispatch, verification failures, and unmatched routes
+- [OpenTelemetry](/webhooks/opentelemetry) — native distributed tracing
 
 ## Runtime Support
 

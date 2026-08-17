@@ -27,6 +27,7 @@ And because resources come from your Standard Schema schemas, policy types are d
 - **Policy merging strategies** via `mergePoliciesAnd` and `mergePoliciesOr`. See [Merging Policies](/permit/merging-policies).
 - **Structured errors** with `PolicyError` for invalid configuration or evaluation failures. See [Error Handling](/permit/errors).
 - **[Optional logging](/permit/logging)** through `createPolicy({ logger })` from [`@zap-studio/logger`](/logger) — omit it and there's zero added logging overhead.
+- **[Native OpenTelemetry](/permit/opentelemetry)** — an `INTERNAL` span per check with the allow/deny decision as an attribute, plus a `permit.checks` counter, no-op until an SDK is registered.
 - **Tree-shakeable** — policies and conditions are plain functions; unused exports are dropped by any modern bundler.
 
 ## Quick Start
