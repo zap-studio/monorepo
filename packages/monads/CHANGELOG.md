@@ -12,6 +12,6 @@ Initial release of `@zap-studio/monads`.
 
 - `Result<T, E>`: `ok()`, `err()`, `isOk()`, `isErr()`, `fromThrowable()`, and the `Result` namespace (`map`, `mapErr`, `andThen`, `unwrapOr`, `unwrapOrElse`, `unwrap`, `match`).
 - `ResultAsync<T, E>`: a thenable wrapper around `Promise<Result<T, E>>` with chainable `map()`, `mapErr()`, `andThen()`, `match()`, plus `fromPromise()`.
-- `Option<T>`: `some()`, `none()`, `isSome()`, `isNone()`, `fromNullable()`, and the `Option` namespace (`map`, `andThen`, `unwrapOr`, `unwrapOrElse`, `unwrap`, `match`).
+- `Option<T>`: `some()`, `none()`, `isSome()`, `isNone()`, `fromNullable()`, and the `Option` namespace (`map`, `andThen`, `orElse`, `unwrapOr`, `unwrapOrElse`, `unwrap`, `match`).
 - `pipe()`: left-to-right composition for chaining the standalone combinators above.
 - Public types (`Ok`, `Err`, `Result`, `ResultMatchers`, `Some`, `None`, `Option`, `OptionMatchers`) in a dedicated `@zap-studio/monads/types` module.
