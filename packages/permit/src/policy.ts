@@ -192,7 +192,7 @@ export const createPolicy = <
     }
   };
 
-  for (const key of Object.keys(resources) as (keyof TResources)[]) {
+  for (const key of Object.keys(resources)) {
     const schema = resources[key];
     if (schema === undefined) {
       throw new PolicyError(`Missing schema for resource: ${String(key)}`);
