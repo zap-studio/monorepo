@@ -152,6 +152,29 @@ const { api } = createFetch({ baseURL: "https://api.example.com", logger });
 
 Outgoing requests log at `debug`, response status logs at `debug` (2xx) or `warn` (non-2xx), and schema validation failures log at `error`.
 
+## OpenTelemetry
+
+`@opentelemetry/api` is a required peer dependency. It's a tiny, side-effect-free package that's a no-op until an app registers a real SDK, so installing it costs nothing at runtime for consumers who never set one up.
+
+Every request gets a `CLIENT` span (`http.request.method`, `url.full`, `http.response.status_code`), and the trace context is injected into the outgoing request's headers so the call continues the caller's distributed trace:
+
+```bash
+npm install @opentelemetry/api
+```
+
+```ts
+import { createFetch } from "@zap-studio/fetch";
+
+const { api } = createFetch({ baseURL: "https://api.example.com" });
+
+// If your app has registered an OpenTelemetry SDK, this call now produces a
+// CLIENT span and injects `traceparent` into the outgoing request headers.
+// If not, it's a no-op — no wiring required either way.
+await api.get("/users/1", UserSchema);
+```
+
+On failure — a non-2xx response or a thrown error — the span is marked `ERROR`; thrown errors are also recorded as span exceptions.
+
 ## Runtime Support
 
 | Runtime            | Minimum version                                  |

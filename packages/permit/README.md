@@ -160,6 +160,27 @@ const policy = createPolicy({ resources, actions, rules, logger });
 
 Allow decisions log at `debug`, deny decisions log at `info`. Resource validation and policy evaluation errors log at `warn` through the logger when one is provided, instead of `console.warn`.
 
+## OpenTelemetry
+
+`@opentelemetry/api` is a required peer dependency — tiny, side-effect-free, and a no-op until an app registers a real SDK, so installing it costs nothing at runtime for consumers who never set one up.
+
+Every `can(...)` check gets an `INTERNAL` span named `permit.check {resourceType}:{action}`, with the decision (`"allow"` or `"deny"`) set as a span attribute, plus a `permit.checks` counter tagged the same way. `mergePoliciesAnd`/`mergePoliciesOr` get their own span around the composite check, on top of the spans each underlying policy already produces:
+
+```bash
+npm install @opentelemetry/api
+```
+
+```ts
+import { createPolicy } from "@zap-studio/permit";
+
+const policy = createPolicy({ resources, actions, rules });
+
+// If your app has registered an OpenTelemetry SDK, this call now produces a
+// span attributed with the allow/deny decision. If not, it's a no-op — no
+// wiring required either way.
+await policy.can(ctx, "post:write", post);
+```
+
 ## Runtime Support
 
 | Runtime            | Minimum version                                  |

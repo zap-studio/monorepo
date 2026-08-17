@@ -161,6 +161,31 @@ const router = createWebhookRouter({ prefix: "/webhooks", logger });
 
 Each delivery attempt and handler dispatch logs at `debug`; verification failures and unmatched routes log at `warn`.
 
+## OpenTelemetry
+
+`@opentelemetry/api` is a required peer dependency — tiny, side-effect-free, and a no-op until an app registers a real SDK, so installing it costs nothing at runtime for consumers who never set one up.
+
+Each delivery gets a `SERVER` span, and the sender's `traceparent` header is extracted so the delivery continues their trace instead of starting a new one. Each handler dispatch gets its own child `INTERNAL` span:
+
+```bash
+npm install @opentelemetry/api
+```
+
+```ts
+import { createWebhookRouter } from "@zap-studio/webhooks";
+
+const router = createWebhookRouter({ prefix: "/webhooks" });
+router.register("/stripe", { schema: stripeEventSchema, handler });
+
+// If your app has registered an OpenTelemetry SDK, router.handle(request)
+// now produces a SERVER span per delivery (continuing the sender's trace
+// when a traceparent header is present) and an INTERNAL span per handler
+// dispatch. If not, it's a no-op — no wiring required either way.
+export default { fetch: (request: Request) => router.handle(request) };
+```
+
+A non-2xx response (unmatched route, validation failure, verification failure, handler error) marks the delivery span `ERROR`; a thrown handler error is also recorded as an exception on the handler span.
+
 ## Runtime Support
 
 | Runtime            | Minimum version                                  |

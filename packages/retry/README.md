@@ -195,6 +195,28 @@ await runRetryPolicy(policy, execute, { logger });
 
 Each retry decision logs at `debug` (attempt, delay, reason), exhaustion logs at `warn`, and cancellation logs at `debug`.
 
+## OpenTelemetry
+
+`@opentelemetry/api` is a required peer dependency — tiny, side-effect-free, and a no-op until an app registers a real SDK, so installing it costs nothing at runtime for consumers who never set one up.
+
+Unlike `fetch`, `webhooks`, and `permit`, this package never creates its own span — a retry loop wraps someone else's operation, so each decision is recorded as an **event** on whatever span is already active (e.g. a caller's `fetch` span), plus a `retry.attempts` counter tagged by outcome:
+
+```bash
+npm install @opentelemetry/api
+```
+
+```ts
+import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
+
+const policy = exponentialBackoff({ maxAttempts: 5, baseDelayMs: 100 });
+
+// If a span is active when this runs (e.g. inside a caller's own span, or
+// nested inside a @zap-studio/fetch call), each retry adds a
+// "retry.scheduled" or "retry.exhausted" event to it. If not, it's a no-op
+// — no wiring required either way.
+await runRetryPolicy(policy, execute);
+```
+
 ## Runtime Support
 
 | Runtime            | Minimum version                         |
