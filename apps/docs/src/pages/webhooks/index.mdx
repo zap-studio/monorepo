@@ -7,6 +7,12 @@ description: Schema-first, type-safe webhook routing built on the standard Web A
 
 `@zap-studio/webhooks` is schema-first, type-safe webhook routing built on the standard Web API [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) primitives, with runtime-agnostic signature verification support.
 
+## Motivation
+
+Webhook endpoints are usually built by hand, per provider, and this tends to repeat the same two mistakes. First, signature checks often use Node's `crypto` module, which does not exist on Cloudflare Workers, Deno, or Bun's edge runtimes — so the same code cannot run everywhere the webhook needs to be received. Second, signatures are often compared with `===`, which leaks timing information and opens a timing-attack risk that most teams do not know they have.
+
+`@zap-studio/webhooks` fixes both. It is built on the standard `Request`/`Response` objects, so the same router works on Bun, Deno, Cloudflare Workers, or any framework that accepts a `Request`. Signature verification uses the Web Crypto API (`globalThis.crypto.subtle`) with a constant-time comparison by default, so the safe way is also the default way. Payloads are validated and typed straight from your Standard Schema — no `any` from `JSON.parse`, no manual casts.
+
 ## Features
 
 - **Web API native** — `handle(request: Request)` returns a `Response`, so the router plugs directly into Bun, Deno, Cloudflare Workers, Next.js route handlers, Hono, and any other fetch-compatible runtime.

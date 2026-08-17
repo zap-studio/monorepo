@@ -4,6 +4,12 @@ A lean logging abstraction: one `Logger` interface, one `ConsoleLogger` implemen
 
 Full documentation: [zapstudio.dev/logger](https://www.zapstudio.dev/logger)
 
+## Motivation
+
+Libraries like `winston` and `pino` are built for Node servers, with file transports and streams. They do not run well — or at all — on Cloudflare Workers or in the browser. This becomes a problem for small libraries that want to add logging: if a retry library or an HTTP client hard-depends on `winston`, every user of that library must install `winston`, even if they do not want logging, and even if their code runs somewhere `winston` does not.
+
+`@zap-studio/logger` avoids this by shipping an interface, not an implementation. `Logger` is a small type with six methods (`trace`, `debug`, `info`, `warn`, `error`, `fatal`). Every `@zap-studio/*` package accepts an optional `logger: Logger`. Pass nothing, and there is no dependency and no runtime cost. Pass `ConsoleLogger`, and you get leveled, formatted output that works on Node, Bun, Deno, browsers, and Cloudflare Workers with no setup. Already use `pino`? It already exposes the same six methods, so it works as a `Logger` with no adapter code needed.
+
 ## Installation
 
 ```bash

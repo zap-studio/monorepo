@@ -4,6 +4,12 @@ Utilities for validating values using the [**Standard Schema**](https://standard
 
 Full documentation: [zapstudio.dev/validation](https://www.zapstudio.dev/validation)
 
+## Motivation
+
+Zod throws a `ZodError`. Valibot returns a result object. ArkType has its own shape. If your code — or a library you are writing — needs to support more than one of these, or wants to let its users bring whichever one they prefer, you end up writing different error-handling code for each. And if you ever switch from one to another, every call site that touches validation needs to change too.
+
+`@zap-studio/validation` removes this difference. `standardValidate` and `standardValidateSync` give you one function and one `ValidationError` shape, no matter which Standard Schema library sits underneath. Validation code becomes portable: swap the schema library later, and the code that calls it does not need to change.
+
 ## Installation
 
 ```bash
