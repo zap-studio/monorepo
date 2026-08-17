@@ -4,6 +4,12 @@ Schema-first, type-safe webhook routing built on the standard Web API [`Request`
 
 Full documentation: [zapstudio.dev/webhooks](https://www.zapstudio.dev/webhooks)
 
+## Motivation
+
+Webhook endpoints are usually built by hand, per provider, and this tends to repeat the same two mistakes. First, signature checks often use Node's `crypto` module, which does not exist on Cloudflare Workers, Deno, or Bun's edge runtimes — so the same code cannot run everywhere the webhook needs to be received. Second, signatures are often compared with `===`, which leaks timing information and opens a timing-attack risk that most teams do not know they have.
+
+`@zap-studio/webhooks` fixes both. It is built on the standard `Request`/`Response` objects, so the same router works on Bun, Deno, Cloudflare Workers, or any framework that accepts a `Request`. Signature verification is opt-in through the `verify` option, and the built-in HMAC verifier uses the Web Crypto API (`globalThis.crypto.subtle`) with a constant-time comparison, so once you turn it on, you get the safe comparison without writing it yourself. Payloads are validated and typed straight from your Standard Schema — no `any` from `JSON.parse`, no manual casts.
+
 ## Installation
 
 ```bash
