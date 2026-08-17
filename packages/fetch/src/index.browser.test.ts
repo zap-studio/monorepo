@@ -1,3 +1,4 @@
+import type { Logger } from "@zap-studio/logger";
 import { isStandardSchema } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
 import { type } from "arktype";
@@ -8,6 +9,35 @@ import { z } from "zod";
 
 import { FetchError } from "./errors.js";
 import { $fetch, api, createFetch, GLOBAL_DEFAULTS } from "./index.js";
+
+const createRecordingLogger = (): Logger & {
+  calls: {
+    level: string;
+    message: string;
+    context: Record<string, unknown> | undefined;
+  }[];
+} => {
+  const calls: {
+    level: string;
+    message: string;
+    context: Record<string, unknown> | undefined;
+  }[] = [];
+  const record =
+    (level: string) =>
+    (message: string, context?: Record<string, unknown>): void => {
+      calls.push({ context, level, message });
+    };
+
+  return {
+    calls,
+    debug: record("debug"),
+    error: record("error"),
+    fatal: record("fatal"),
+    info: record("info"),
+    trace: record("trace"),
+    warn: record("warn"),
+  };
+};
 
 async function captureRejectedError(
   run: () => Promise<unknown>
@@ -2316,5 +2346,121 @@ describe("$fetch with Zod schemas", () => {
     });
 
     expect(result).toStrictEqual(mockData);
+  });
+});
+
+describe("logging", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("logs the outgoing request and a debug response on success", async () => {
+    const logger = createRecordingLogger();
+    const { $fetch: instanceFetch } = createFetch({ logger });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
+
+    await instanceFetch("https://api.example.com/users", { method: "POST" });
+
+    expect(logger.calls).toStrictEqual([
+      {
+        context: { method: "POST", url: "https://api.example.com/users" },
+        level: "debug",
+        message: "fetch request",
+      },
+      {
+        context: {
+          method: "POST",
+          status: 200,
+          url: "https://api.example.com/users",
+        },
+        level: "debug",
+        message: "fetch response",
+      },
+    ]);
+  });
+
+  it("logs a warn response for non-2xx status", async () => {
+    const logger = createRecordingLogger();
+    const { $fetch: instanceFetch } = createFetch({
+      logger,
+      throwOnFetchError: false,
+    });
+    fetchMock.mockResolvedValue(
+      new Response(null, { status: 500, statusText: "Internal Server Error" })
+    );
+
+    await instanceFetch("https://api.example.com/users");
+
+    expect(logger.calls).toStrictEqual([
+      {
+        context: { method: "GET", url: "https://api.example.com/users" },
+        level: "debug",
+        message: "fetch request",
+      },
+      {
+        context: {
+          method: "GET",
+          status: 500,
+          url: "https://api.example.com/users",
+        },
+        level: "warn",
+        message: "fetch response",
+      },
+    ]);
+  });
+
+  it("logs a validation failure at error when throwOnValidationError is true", async () => {
+    const logger = createRecordingLogger();
+    const { $fetch: instanceFetch } = createFetch({ logger });
+    const schema = z.object({ id: z.number() });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ id: "not-a-number" }), { status: 200 })
+    );
+
+    await expect(
+      instanceFetch("https://api.example.com/users/1", schema)
+    ).rejects.toBeInstanceOf(ValidationError);
+
+    const errorCall = logger.calls.find((call) => call.level === "error");
+    expect(errorCall?.message).toBe("fetch validation failed");
+    expect(errorCall?.context?.url).toBe("https://api.example.com/users/1");
+  });
+
+  it("logs a validation failure at error when throwOnValidationError is false", async () => {
+    const logger = createRecordingLogger();
+    const { $fetch: instanceFetch } = createFetch({ logger });
+    const schema = z.object({ id: z.number() });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ id: "not-a-number" }), { status: 200 })
+    );
+
+    const result = await instanceFetch(
+      "https://api.example.com/users/1",
+      schema,
+      {
+        throwOnValidationError: false,
+      }
+    );
+
+    expect(result.issues).toBeDefined();
+    const errorCall = logger.calls.find((call) => call.level === "error");
+    expect(errorCall?.message).toBe("fetch validation failed");
+  });
+
+  it("does not log anything when no logger is provided", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    await expect(
+      $fetch("https://api.example.com/users")
+    ).resolves.toBeInstanceOf(Response);
   });
 });

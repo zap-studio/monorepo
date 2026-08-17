@@ -1,27 +1,21 @@
 {
-  "name": "@zap-studio/permit",
-  "version": "1.1.0",
+  "name": "@zap-studio/logger",
+  "version": "1.0.0",
   "private": false,
-  "description": "A type-safe, declarative, tree-shakeable authorization library for TypeScript with Standard Schema support",
+  "description": "A lean, tree-shakeable logging abstraction with a console implementation.",
   "keywords": [
-    "abac",
-    "access-control",
-    "arktype",
-    "authorization",
-    "permissions",
-    "policy",
-    "rbac",
-    "standard-schema",
-    "typescript",
-    "valibot",
-    "zod"
+    "console",
+    "log",
+    "logger",
+    "logging",
+    "typescript"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/permit",
+  "homepage": "https://www.zapstudio.dev/packages/logger",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zap-studio/monorepo.git",
-    "directory": "packages/permit"
+    "directory": "packages/logger"
   },
   "files": [
     "dist",
@@ -34,18 +28,14 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
-    "./conditions": "./dist/conditions.js",
-    "./errors": "./dist/errors.js",
-    "./policy": "./dist/policy.js",
+    "./console": "./dist/console.js",
+    "./core": "./dist/core.js",
+    "./format": "./dist/format.js",
     "./types": "./dist/types.js",
     "./package.json": "./package.json"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "dependencies": {
-    "@zap-studio/logger": "workspace:*",
-    "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
     "@zap-studio/typescript": "workspace:*",

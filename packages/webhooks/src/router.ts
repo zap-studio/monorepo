@@ -4,6 +4,7 @@
  * @module @zap-studio/webhooks/router
  */
 
+import type { Logger } from "@zap-studio/logger";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { standardValidate } from "@zap-studio/validation";
 
@@ -191,6 +192,7 @@ export class WebhookRouter<TMap = unknown> {
   private readonly globalBeforeHooks: BeforeHook[] = [];
   private readonly globalAfterHooks: AfterHook[] = [];
   private readonly globalErrorHook: ErrorHook | undefined;
+  private readonly logger: Logger | undefined;
   private readonly prefix: string;
   private readonly prefixWithSlash: string;
 
@@ -215,6 +217,7 @@ export class WebhookRouter<TMap = unknown> {
     this.globalBeforeHooks = toArray(opts.before);
     this.globalAfterHooks = toArray(opts.after);
     this.globalErrorHook = opts.onError;
+    this.logger = opts.logger;
   }
 
   /**
@@ -310,13 +313,18 @@ export class WebhookRouter<TMap = unknown> {
    * ```
    */
   async handle(request: Request): Promise<Response> {
+    const requestPath = new URL(request.url).pathname;
+    this.logger?.debug("webhook delivery attempt", { path: requestPath });
+
     const path = this.matchPath(request);
     if (path === null) {
+      this.logger?.warn("webhook route not matched", { path: requestPath });
       return notFoundResponse();
     }
 
     const handlerEntry = this.handlers.get(path);
     if (!handlerEntry) {
+      this.logger?.warn("webhook route not matched", { path });
       return notFoundResponse();
     }
 
@@ -333,7 +341,12 @@ export class WebhookRouter<TMap = unknown> {
       await runBeforeHooks(ctx, handlerEntry.before);
 
       if (this.verify) {
-        await this.verify(ctx);
+        try {
+          await this.verify(ctx);
+        } catch (error) {
+          this.logger?.warn("webhook verification failed", { error, path });
+          throw error;
+        }
       }
 
       const parsedJson = parseRequestBody(ctx);
@@ -346,6 +359,7 @@ export class WebhookRouter<TMap = unknown> {
         return validationResult;
       }
 
+      this.logger?.debug("webhook handler dispatch", { path });
       const response = await executeHandler(
         handlerEntry.handler,
         ctx,

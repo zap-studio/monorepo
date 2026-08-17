@@ -1,0 +1,48 @@
+---
+title: Logging
+description: Observe delivery attempts, dispatch, verification failures, and unmatched routes with an optional logger.
+---
+
+# Logging
+
+`createWebhookRouter(...)` (and `new WebhookRouter(...)`) accept an optional `logger?: Logger` option from [`@zap-studio/logger`](/logger). Pass one to observe router internals; omit it and nothing is logged — zero overhead.
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+import { createWebhookRouter } from "@zap-studio/webhooks";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const router = createWebhookRouter({ prefix: "/webhooks", logger });
+```
+
+## What Gets Logged
+
+| Event                        | Level   | Context         |
+| ---------------------------- | ------- | --------------- |
+| A request is delivered       | `debug` | `path`          |
+| The route handler dispatches | `debug` | `path`          |
+| Verification fails           | `warn`  | `path`, `error` |
+| No route matches             | `warn`  | `path`          |
+
+Verification failures and unmatched routes log at `warn` rather than `debug` because they usually mean a misconfigured webhook or an unexpected caller — worth surfacing by default when a logger is attached, without flooding `debug` output on every successful delivery.
+
+## Bring Your Own Logger
+
+Any object implementing the `Logger` interface works, so you can forward these events into an existing logging setup instead of `ConsoleLogger`:
+
+```ts
+import type { Logger } from "@zap-studio/logger";
+
+const logger: Logger = {
+  trace: (message, context) => myBackend.log("trace", message, context),
+  debug: (message, context) => myBackend.log("debug", message, context),
+  info: (message, context) => myBackend.log("info", message, context),
+  warn: (message, context) => myBackend.log("warn", message, context),
+  error: (message, context) => myBackend.log("error", message, context),
+  fatal: (message, context) => myBackend.log("fatal", message, context),
+};
+
+const router = createWebhookRouter({ logger });
+```
+
+See [`@zap-studio/logger`](/logger) for the full `Logger` interface and `ConsoleLogger` options.

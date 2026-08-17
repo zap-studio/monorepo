@@ -1,3 +1,4 @@
+import type { Logger } from "@zap-studio/logger";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it, vi } from "vitest";
 
@@ -17,6 +18,35 @@ import {
   when,
 } from "./index.js";
 import type { Actions, Resources, RoleHierarchy } from "./types.js";
+
+const createRecordingLogger = (): Logger & {
+  calls: {
+    level: string;
+    message: string;
+    context: Record<string, unknown> | undefined;
+  }[];
+} => {
+  const calls: {
+    level: string;
+    message: string;
+    context: Record<string, unknown> | undefined;
+  }[] = [];
+  const record =
+    (level: string) =>
+    (message: string, context?: Record<string, unknown>): void => {
+      calls.push({ context, level, message });
+    };
+
+  return {
+    calls,
+    debug: record("debug"),
+    error: record("error"),
+    fatal: record("fatal"),
+    info: record("info"),
+    trace: record("trace"),
+    warn: record("warn"),
+  };
+};
 
 // Helper to create a mock Standard Schema
 function createSchema<T>(): StandardSchemaV1<T, T> {
@@ -1149,7 +1179,7 @@ describe(createPolicy, () => {
     await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
   });
 
-  it("should deny and warn when resource validation throws", async () => {
+  it("should deny when resource validation throws (no logger, no console)", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     const throwingResources = {
@@ -1191,9 +1221,7 @@ describe(createPolicy, () => {
     };
 
     await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
-    expect(warnSpy).toHaveBeenCalledWith(
-      "Resource validation failed for post: Error: validator exploded"
-    );
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it("should throw PolicyError when a resource schema is missing", async () => {
@@ -1993,5 +2021,148 @@ describe(mergePoliciesOr, () => {
     await expect(
       merged.can(user, "post:write", publicPost)
     ).resolves.toBeFalsy();
+  });
+});
+
+describe("logging", () => {
+  const ctx: TestContext = { user: { id: "user-1", role: "user" } };
+  const post: Post = {
+    authorId: "user-1",
+    id: "1",
+    status: "published",
+    visibility: "public",
+  };
+
+  it("logs an allow decision at debug", async () => {
+    const logger = createRecordingLogger();
+    const policy = createPolicy<TestContext, typeof resources, typeof actions>({
+      actions,
+      logger,
+      resources,
+      rules: { comment: {}, post: { read: allow() } },
+    });
+
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBeTruthy();
+
+    expect(logger.calls).toStrictEqual([
+      {
+        context: { action: "read", resourceType: "post" },
+        level: "debug",
+        message: "permission allowed",
+      },
+    ]);
+  });
+
+  it("routes the resource validation warning through the logger instead of console.warn", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const logger = createRecordingLogger();
+    const throwingResources = {
+      post: {
+        "~standard": {
+          validate: () => {
+            throw new Error("validator exploded");
+          },
+          vendor: "test",
+          version: 1,
+        },
+      } as StandardSchemaV1,
+    } satisfies Resources<"post">;
+    const throwingActions = {
+      post: ["read"],
+    } as const satisfies Actions<typeof throwingResources>;
+
+    const policy = createPolicy<
+      TestContext,
+      typeof throwingResources,
+      typeof throwingActions
+    >({
+      actions: throwingActions,
+      logger,
+      resources: throwingResources,
+      rules: { post: { read: allow() } },
+    });
+
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
+
+    expect(warnSpy).not.toHaveBeenCalled();
+    expect(logger.calls).toStrictEqual([
+      {
+        context: {
+          error: expect.any(Error),
+          resourceType: "post",
+        },
+        level: "warn",
+        message:
+          "Resource validation failed for post: Error: validator exploded",
+      },
+    ]);
+  });
+
+  it("logs a deny decision at info", async () => {
+    const logger = createRecordingLogger();
+    const policy = createPolicy<TestContext, typeof resources, typeof actions>({
+      actions,
+      logger,
+      resources,
+      rules: { comment: {}, post: { read: deny() } },
+    });
+
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
+
+    expect(logger.calls).toStrictEqual([
+      {
+        context: { action: "read", resourceType: "post" },
+        level: "info",
+        message: "permission denied",
+      },
+    ]);
+  });
+
+  it("routes the policy evaluation error warning through the logger instead of console.warn", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const logger = createRecordingLogger();
+    const policy = createPolicy<TestContext, typeof resources, typeof actions>({
+      actions,
+      logger,
+      resources,
+      rules: {
+        comment: {},
+        post: {
+          read: () => {
+            throw new Error("boom");
+          },
+        },
+      },
+    });
+
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
+
+    expect(warnSpy).not.toHaveBeenCalled();
+    const warnCall = logger.calls.find(
+      (call) =>
+        call.message === "Policy evaluation error for post.read: Error: boom"
+    );
+    expect(warnCall).toBeDefined();
+    expect(warnCall?.level).toBe("warn");
+  });
+
+  it("does not call console.warn when no logger is provided", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const policy = createPolicy<TestContext, typeof resources, typeof actions>({
+      actions,
+      resources,
+      rules: {
+        comment: {},
+        post: {
+          read: () => {
+            throw new Error("boom");
+          },
+        },
+      },
+    });
+
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBeFalsy();
+
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 });

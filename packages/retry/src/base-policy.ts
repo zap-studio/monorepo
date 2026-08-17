@@ -4,9 +4,12 @@
  * @module @zap-studio/retry/base-policy
  */
 
+import type { Logger } from "@zap-studio/logger";
+
 import { AbortError, RetryError } from "./errors.js";
 import type {
   ResolvedRetryPolicy,
+  RetryDecision,
   RetryExhaustedInput,
   RetryPolicy,
   RetryRunOptions,
@@ -68,13 +71,15 @@ const toAbortError = (reason: unknown): AbortError => {
  * Throws when the provided abort signal is already aborted.
  *
  * @param signal - Optional abort signal to inspect.
+ * @param logger - Optional logger; logs the abort at `debug` before throwing.
  * @throws {AbortError} When the signal is aborted.
  */
-const throwIfAborted = (signal?: AbortSignal): void => {
+const throwIfAborted = (signal?: AbortSignal, logger?: Logger): void => {
   if (signal?.aborted !== true) {
     return;
   }
 
+  logger?.debug("retry aborted", { reason: signal.reason });
   throw toAbortError(signal.reason);
 };
 
@@ -118,6 +123,32 @@ const sleepWithAbortSignal = async (
 };
 
 /**
+ * Logs a `next(...)` decision: `debug` when retrying, `warn` when exhausted.
+ * Shared by both the throw-mode and non-throw retry loops.
+ */
+const logRetryDecision = (
+  logger: Logger | undefined,
+  attempt: number,
+  decision: RetryDecision,
+  error: unknown
+): void => {
+  if (decision.shouldRetry) {
+    logger?.debug("retry scheduled", {
+      attempt,
+      delayMs: decision.delayMs,
+      reason: decision.reason,
+    });
+    return;
+  }
+
+  logger?.warn("retry policy exhausted", {
+    attempts: attempt,
+    error,
+    reason: decision.reason,
+  });
+};
+
+/**
  * Runs the throw-mode retry loop: throws `RetryError` on exhaustion and
  * `AbortError` when `signal` aborts.
  *
@@ -125,6 +156,8 @@ const sleepWithAbortSignal = async (
  * @param execute - Async work callback per attempt.
  * @param sleep - Delay function between retries.
  * @param signal - Optional cancel signal.
+ * @param logger - Optional logger; logs each retry decision at `debug` and
+ *   exhaustion at `warn`.
  * @returns Resolves to the first successful return value.
  * @throws {RetryError} When retries are exhausted and `onExhausted` returns
  *   the terminal error.
@@ -137,18 +170,19 @@ const runThrowMode = async <T, TError extends Error, TData>(
   policy: ResolvedRetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  logger?: Logger
 ): Promise<T> => {
   let attempt = 1;
 
   while (true) {
-    throwIfAborted(signal);
+    throwIfAborted(signal, logger);
 
     try {
       // oxlint-disable-next-line no-await-in-loop -- Retry attempts must run sequentially.
       return await execute(attempt);
     } catch (error) {
-      throwIfAborted(signal);
+      throwIfAborted(signal, logger);
 
       if (!policy.isKnownError(error)) {
         throw error;
@@ -158,6 +192,7 @@ const runThrowMode = async <T, TError extends Error, TData>(
         attempt,
         error,
       });
+      logRetryDecision(logger, attempt, decision, error);
 
       if (!decision.shouldRetry) {
         throw policy.onExhausted({
@@ -184,15 +219,19 @@ const runThrowMode = async <T, TError extends Error, TData>(
  *
  * @param signal - Optional abort signal; only acts when `aborted` is set.
  * @param attempts - Number of finished attempts to report in the result.
+ * @param logger - Optional logger; logs the abort at `debug`.
  * @returns Failure result or `undefined` if not aborted.
  */
 const buildAbortResult = (
   signal: AbortSignal | undefined,
-  attempts: number
+  attempts: number,
+  logger?: Logger
 ): RetryRunResult<never> | undefined => {
   if (signal?.aborted !== true) {
     return undefined;
   }
+
+  logger?.debug("retry aborted", { reason: signal.reason });
 
   return {
     attempts,
@@ -234,6 +273,7 @@ const runAttempt = async <T>(
  * @param delayMs - Milliseconds to wait.
  * @param signal - If set, `sleep` is raced with the abort signal.
  * @param attempts - Attempt count to attach if the wait ends in abort.
+ * @param logger - Optional logger; logs an abort ending the wait at `debug`.
  * @returns A terminal result when canceled during the wait, otherwise
  *   `undefined`.
  * @throws {Error} The underlying `sleep` rejection when it is not an abort.
@@ -242,7 +282,8 @@ const waitForDelay = async (
   sleep: (delayMs: number) => Promise<void>,
   delayMs: number,
   signal: AbortSignal | undefined,
-  attempts: number
+  attempts: number,
+  logger?: Logger
 ): Promise<RetryRunResult<never> | undefined> => {
   if (signal === undefined) {
     await sleep(delayMs);
@@ -253,7 +294,7 @@ const waitForDelay = async (
     await sleepWithAbortSignal(sleep, delayMs, signal);
     return undefined;
   } catch (error) {
-    const aborted = buildAbortResult(signal, attempts);
+    const aborted = buildAbortResult(signal, attempts, logger);
     if (aborted !== undefined) {
       return aborted;
     }
@@ -271,6 +312,8 @@ const waitForDelay = async (
  * @param params.error - Error thrown by the attempt.
  * @param params.sleep - Delay function between retries.
  * @param params.signal - Optional abort signal.
+ * @param params.logger - Optional logger; logs each retry decision at
+ *   `debug`, exhaustion at `warn`, and cancellation at `debug`.
  * @returns Terminal non-throw result if the loop should stop, otherwise
  *   `undefined` to schedule another attempt.
  * @throws {Error} Any error thrown by `next`, `onExhausted`, or a custom `sleep` when
@@ -283,10 +326,11 @@ const handleFailure = async <TError extends Error, TData>(
     error: TError;
     sleep: (delayMs: number) => Promise<void>;
     signal: AbortSignal | undefined;
+    logger: Logger | undefined;
   }
 ): Promise<RetryRunResult<never> | undefined> => {
-  const { attempt, error, sleep, signal } = params;
-  const abortResult = buildAbortResult(signal, attempt);
+  const { attempt, error, sleep, signal, logger } = params;
+  const abortResult = buildAbortResult(signal, attempt, logger);
   if (abortResult !== undefined) {
     return abortResult;
   }
@@ -295,6 +339,7 @@ const handleFailure = async <TError extends Error, TData>(
     attempt,
     error,
   });
+  logRetryDecision(logger, attempt, decision, error);
 
   if (!decision.shouldRetry) {
     const terminalError = policy.onExhausted({
@@ -314,7 +359,8 @@ const handleFailure = async <TError extends Error, TData>(
       sleep,
       decision.delayMs,
       signal,
-      attempt
+      attempt,
+      logger
     );
     if (delayAbortResult !== undefined) {
       return delayAbortResult;
@@ -332,6 +378,8 @@ const handleFailure = async <TError extends Error, TData>(
  * @param execute - Async work callback per attempt.
  * @param sleep - Delay function between retries.
  * @param signal - Optional cancel signal.
+ * @param logger - Optional logger; logs each retry decision at `debug`,
+ *   exhaustion at `warn`, and cancellation at `debug`.
  * @returns Terminal success or failure object. When `policy.isKnownError`
  *   rejects a caught value as outside this policy's error domain, the
  *   original value is wrapped in a `RetryError` and returned on
@@ -343,12 +391,17 @@ const runResultMode = async <T, TError extends Error, TData>(
   policy: ResolvedRetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  logger?: Logger
 ): Promise<RetryRunResult<T>> => {
   let attempt = 1;
 
   while (true) {
-    const abortResult = buildAbortResult(signal, Math.max(0, attempt - 1));
+    const abortResult = buildAbortResult(
+      signal,
+      Math.max(0, attempt - 1),
+      logger
+    );
     if (abortResult !== undefined) {
       return abortResult;
     }
@@ -359,7 +412,7 @@ const runResultMode = async <T, TError extends Error, TData>(
       return { ok: true, value: execution.value };
     }
 
-    const attemptAbortResult = buildAbortResult(signal, attempt);
+    const attemptAbortResult = buildAbortResult(signal, attempt, logger);
     if (attemptAbortResult !== undefined) {
       return attemptAbortResult;
     }
@@ -379,6 +432,7 @@ const runResultMode = async <T, TError extends Error, TData>(
     const failure = await handleFailure(policy, {
       attempt,
       error: execution.error,
+      logger,
       signal,
       sleep,
     });
@@ -506,7 +560,7 @@ export async function runRetryPolicy<
   options: RetryRunOptions = {}
 ): Promise<T | RetryRunResult<T>> {
   const sleep = options.sleep ?? defaultSleep;
-  const { signal } = options;
+  const { signal, logger } = options;
   const resolvedPolicy: ResolvedRetryPolicy<TError, TData> = {
     isKnownError: (error): error is TError =>
       policy.isKnownError
@@ -520,8 +574,8 @@ export async function runRetryPolicy<
   };
 
   if (options.throwOnExhausted === false) {
-    return await runResultMode(resolvedPolicy, execute, sleep, signal);
+    return await runResultMode(resolvedPolicy, execute, sleep, signal, logger);
   }
 
-  return await runThrowMode(resolvedPolicy, execute, sleep, signal);
+  return await runThrowMode(resolvedPolicy, execute, sleep, signal, logger);
 }

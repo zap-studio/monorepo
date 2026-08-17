@@ -4,6 +4,7 @@
  * @module @zap-studio/fetch/types
  */
 
+import type { Logger } from "@zap-studio/logger";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /**
@@ -97,6 +98,14 @@ export interface FetchDefaults {
    * @default true
    */
   throwOnValidationError: boolean;
+  /**
+   * Optional logger for request/response internals. When omitted, nothing
+   * is logged.
+   *
+   * Logs outgoing requests at `debug`, response status at `debug` (2xx) or
+   * `warn` (non-2xx), and validation failures at `error`.
+   */
+  logger?: Logger;
 }
 
 /**

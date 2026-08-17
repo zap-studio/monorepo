@@ -1,16 +1,14 @@
 {
   "$schema": "https://jsr.io/schema/config-file.v1.json",
-  "name": "@zap-studio/fetch",
-  "version": "1.1.0",
+  "name": "@zap-studio/logger",
+  "version": "1.0.0",
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
-    "./errors": "./src/errors.ts",
+    "./console": "./src/console.ts",
+    "./core": "./src/core.ts",
+    "./format": "./src/format.ts",
     "./types": "./src/types.ts"
-  },
-  "imports": {
-    "@zap-studio/logger": "jsr:@zap-studio/logger@^1.0.0",
-    "@zap-studio/validation": "jsr:@zap-studio/validation@^1.0.0"
   },
   "publish": {
     "include": ["src", "CHANGELOG.md", "LICENSE", "README.md"]

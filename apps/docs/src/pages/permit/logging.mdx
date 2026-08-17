@@ -1,0 +1,48 @@
+---
+title: Logging
+description: Observe allow and deny decisions with an optional logger.
+---
+
+# Logging
+
+`createPolicy(...)` accepts an optional `logger?: Logger` option from [`@zap-studio/logger`](/logger). Pass one to observe policy evaluation; omit it and only the pre-existing internal-error warnings still print, unchanged.
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+import { createPolicy } from "@zap-studio/permit";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const policy = createPolicy({ resources, actions, rules, logger });
+```
+
+## What Gets Logged
+
+| Event                     | Level   | Context                           |
+| ------------------------- | ------- | --------------------------------- |
+| A permission is allowed   | `debug` | `action`, `resourceType`          |
+| A permission is denied    | `info`  | `action`, `resourceType`          |
+| Resource validation fails | `warn`  | `resourceType`, `error`           |
+| A policy function throws  | `warn`  | `action`, `resourceType`, `error` |
+
+Deny decisions log at `info` rather than `debug` — a denial is a meaningful authorization outcome worth seeing by default once a logger is attached, not just noise. The internal-error warnings (a policy function throwing, or resource validation failing) predate this option: without a logger they still print via `console.warn`, exactly as before; with one, they route through `logger.warn(...)` instead so they land wherever the rest of your logs go.
+
+## Bring Your Own Logger
+
+Any object implementing the `Logger` interface works, so you can forward these events into an existing logging setup instead of `ConsoleLogger`:
+
+```ts
+import type { Logger } from "@zap-studio/logger";
+
+const logger: Logger = {
+  trace: (message, context) => myBackend.log("trace", message, context),
+  debug: (message, context) => myBackend.log("debug", message, context),
+  info: (message, context) => myBackend.log("info", message, context),
+  warn: (message, context) => myBackend.log("warn", message, context),
+  error: (message, context) => myBackend.log("error", message, context),
+  fatal: (message, context) => myBackend.log("fatal", message, context),
+};
+
+const policy = createPolicy({ resources, actions, rules, logger });
+```
+
+See [`@zap-studio/logger`](/logger) for the full `Logger` interface and `ConsoleLogger` options.

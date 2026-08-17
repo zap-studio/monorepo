@@ -5,9 +5,9 @@ description: What Zap Studio is, the principles behind its packages, and what ea
 
 # Zap Studio
 
-Zap Studio is a set of type-safe, framework-agnostic, and composable TypeScript packages for core app capabilities — typed HTTP calls, authorization policy checks, retry policies, schema validation, and webhook processing.
+Zap Studio is a set of type-safe, framework-agnostic, and composable TypeScript packages for core app capabilities — typed HTTP calls, authorization policy checks, retry policies, schema validation, logging, and webhook processing.
 
-Install one package or all five — nothing here depends on the rest of the family.
+Install one package or all six — nothing here depends on the rest of the family.
 
 ```ts
 import { api } from "@zap-studio/fetch";
@@ -37,6 +37,7 @@ Every package follows the same rules:
 | Package | What it covers |
 | --- | --- |
 | [`@zap-studio/fetch`](/fetch) | Type-safe HTTP requests with schema-validated responses |
+| [`@zap-studio/logger`](/logger) | Lean logging abstraction with a console implementation |
 | [`@zap-studio/permit`](/permit) | Declarative authorization policies and permission checks |
 | [`@zap-studio/retry`](/retry) | Composable retry policies with fixed and exponential backoff |
 | [`@zap-studio/validation`](/validation) | Standard Schema utilities and consistent validation errors |
@@ -47,6 +48,7 @@ Every package follows the same rules:
 Pick a package and follow its Getting Started guide:
 
 - [`@zap-studio/fetch` — Overview](/fetch)
+- [`@zap-studio/logger` — Overview](/logger)
 - [`@zap-studio/permit` — Overview](/permit)
 - [`@zap-studio/retry` — Overview](/retry)
 - [`@zap-studio/validation` — Overview](/validation)

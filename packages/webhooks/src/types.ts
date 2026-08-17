@@ -4,6 +4,7 @@
  * @module @zap-studio/webhooks/types
  */
 
+import type { Logger } from "@zap-studio/logger";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /**
@@ -47,9 +48,13 @@ export interface HandlerContext<TPayload = unknown> extends WebhookContext {
 
 /** Internal handler entry stored per registered route. */
 export interface HandlerEntry<TPayload = unknown> {
+  /** Route-level hooks that run after successful processing. */
   after?: AfterHook[];
+  /** Route-level hooks that run before request processing. */
   before?: BeforeHook[];
+  /** The handler function to process the webhook. */
   handler: WebhookHandler<TPayload>;
+  /** Optional Standard Schema validator to validate the webhook payload. */
   schema?: StandardSchemaV1<unknown, TPayload>;
 }
 
@@ -71,6 +76,13 @@ export interface WebhookRouterOptions {
   before?: BeforeHook | BeforeHook[];
   /** Global error hook used to override the default `500` response. */
   onError?: ErrorHook;
+  /**
+   * Optional logger for router internals. When omitted, nothing is logged.
+   *
+   * Logs each delivery attempt and handler dispatch at `debug`, and
+   * verification failures and unmatched routes at `warn`.
+   */
+  logger?: Logger;
   /**
    * Required path prefix for all webhook routes. Defaults to `"/webhooks"`.
    *
@@ -133,9 +145,13 @@ export type SchemaRouteOptions<
 
 /** A single route's registration shape, as used by schema-driven route dictionaries. */
 export interface RouteLike {
+  /** Hooks that run after successful processing. */
   after?: AfterHook | AfterHook[];
+  /** Hooks that run before request processing. */
   before?: BeforeHook | BeforeHook[];
+  /** The handler function to process the webhook. */
   handler: WebhookHandler;
+  /** Standard Schema validator the route's payload type is inferred from. */
   schema: StandardSchemaV1<unknown, unknown>;
 }
 

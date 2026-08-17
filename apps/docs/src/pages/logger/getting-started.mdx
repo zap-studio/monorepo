@@ -1,0 +1,102 @@
+---
+title: Getting Started
+description: Install @zap-studio/logger and control log verbosity with ConsoleLogger.
+---
+
+# Getting Started
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm install @zap-studio/logger
+```
+
+```bash [yarn]
+yarn add @zap-studio/logger
+```
+
+```bash [pnpm]
+pnpm add @zap-studio/logger
+```
+
+```bash [bun]
+bun add @zap-studio/logger
+```
+
+```bash [deno]
+deno add jsr:@zap-studio/logger
+```
+
+:::
+
+## Use ConsoleLogger
+
+`ConsoleLogger` is the package's only built-in implementation. It logs to the global `console` object and filters calls below its `minLevel` (`"info"` by default).
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+
+const logger = new ConsoleLogger(); // minLevel defaults to "info"
+
+logger.debug("this is filtered out by default");
+logger.info("server started", { port: 3000 });
+logger.error("request failed", { status: 500 });
+```
+
+Lower `minLevel` to see more verbose output during development:
+
+```ts
+const verboseLogger = new ConsoleLogger({ minLevel: "trace" });
+```
+
+Raise it (or set it to `"none"`) to quiet a logger down in production:
+
+```ts
+const quietLogger = new ConsoleLogger({ minLevel: "error" });
+const silentLogger = new ConsoleLogger({ minLevel: "none" });
+```
+
+`ConsoleLogger` also accepts a `format` option to switch between plain text, JSON, logfmt, or colorized output — see [Output Formats](/logger/formats).
+
+## Passing a Logger to Other Packages
+
+`@zap-studio/retry`, `@zap-studio/fetch`, `@zap-studio/webhooks`, and `@zap-studio/permit` all accept an optional `logger?: Logger` option. Passing nothing means no logging overhead at all — the package never calls into a logger it wasn't given.
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const policy = exponentialBackoff({ maxAttempts: 5, baseDelayMs: 100 });
+
+await runRetryPolicy(policy, execute, { logger });
+```
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+import { createWebhookRouter } from "@zap-studio/webhooks";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const router = createWebhookRouter({ prefix: "/webhooks", logger });
+```
+
+Each package logs at a level that matches how noteworthy the event is — routine activity at `debug`, denials and failures at `warn`/`error`/`info` depending on the package.
+
+## Implement a Custom Logger
+
+Any object matching the `Logger` shape works — no base class or subclassing required. This makes it straightforward to forward `@zap-studio/*` package logs into an existing logging backend (pino, a hosted log aggregator, etc.):
+
+```ts
+import type { Logger } from "@zap-studio/logger";
+
+const logger: Logger = {
+  trace: (message, context) => myBackend.log("trace", message, context),
+  debug: (message, context) => myBackend.log("debug", message, context),
+  info: (message, context) => myBackend.log("info", message, context),
+  warn: (message, context) => myBackend.log("warn", message, context),
+  error: (message, context) => myBackend.log("error", message, context),
+  fatal: (message, context) => myBackend.log("fatal", message, context),
+};
+```

@@ -19,13 +19,17 @@ npm install @zap-studio/retry
 - **Non-throw mode** (`throwOnExhausted: false`) returns a `RetryRunResult` instead of throwing.
 - **Cancellation** through `AbortSignal`, checked before, between, and during retries.
 - **Custom policies** as plain objects implementing `RetryPolicy` — just a `next(...)` function, no subclassing.
+- **Optional logging** via a `logger?: Logger` option ([`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger)) — omit it and there's zero logging overhead.
 - **Tree-shakeable** — policies are functions returning plain objects, not classes; unused policies are dropped by any modern bundler.
 
 ## Quick Start
 
 ```ts
+import { ConsoleLogger } from "@zap-studio/logger";
 import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
 import { $fetch } from "@zap-studio/fetch";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
 
 const policy = exponentialBackoff({
   maxAttempts: 5,
@@ -33,12 +37,16 @@ const policy = exponentialBackoff({
   maxDelayMs: 2_000,
 });
 
-const data = await runRetryPolicy(policy, async () => {
-  const response = await $fetch("https://api.example.com/users", {
-    throwOnFetchError: true,
-  });
-  return await response.json();
-});
+const data = await runRetryPolicy(
+  policy,
+  async () => {
+    const response = await $fetch("https://api.example.com/users", {
+      throwOnFetchError: true,
+    });
+    return await response.json();
+  },
+  { logger }
+);
 ```
 
 ## Built-in Policies
@@ -160,6 +168,22 @@ const stepDelay = (maxAttempts: number, stepMs: number): RetryPolicy => ({
 
 const data = await runRetryPolicy(stepDelay(5, 100), execute);
 ```
+
+## Logging
+
+Pass a `logger?: Logger` from [`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger) to `runRetryPolicy(...)` to observe retry decisions, exhaustion, and cancellation. Omit it and nothing is logged.
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const policy = exponentialBackoff({ maxAttempts: 5, baseDelayMs: 100 });
+
+await runRetryPolicy(policy, execute, { logger });
+```
+
+Each retry decision logs at `debug` (attempt, delay, reason), exhaustion logs at `warn`, and cancellation logs at `debug`.
 
 ## Runtime Support
 

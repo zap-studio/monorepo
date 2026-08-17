@@ -1,0 +1,49 @@
+---
+title: Logging
+description: Observe retry decisions, exhaustion, and cancellation with an optional logger.
+---
+
+# Logging
+
+`runRetryPolicy(...)` accepts an optional `logger?: Logger` option from [`@zap-studio/logger`](/logger). Pass one to observe retry internals; omit it and nothing is logged — zero overhead.
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const policy = exponentialBackoff({ maxAttempts: 5, baseDelayMs: 100 });
+
+await runRetryPolicy(policy, execute, { logger });
+```
+
+## What Gets Logged
+
+| Event                 | Level   | Context                            |
+| --------------------- | ------- | ---------------------------------- |
+| A retry is scheduled  | `debug` | `attempt`, `delayMs`, `reason`     |
+| Retries are exhausted | `warn`  | `attempts`, `error`, `reason`      |
+| The run is aborted    | `debug` | `reason` (the abort signal reason) |
+
+Exhaustion logs at `warn` rather than `debug` because it means the caller's work ultimately failed — worth surfacing by default when a logger is attached, without being so verbose that a passing retry sequence floods `debug` output on its own.
+
+## Bring Your Own Logger
+
+Any object implementing the `Logger` interface works, so you can forward these events into an existing logging setup instead of `ConsoleLogger`:
+
+```ts
+import type { Logger } from "@zap-studio/logger";
+
+const logger: Logger = {
+  trace: (message, context) => myBackend.log("trace", message, context),
+  debug: (message, context) => myBackend.log("debug", message, context),
+  info: (message, context) => myBackend.log("info", message, context),
+  warn: (message, context) => myBackend.log("warn", message, context),
+  error: (message, context) => myBackend.log("error", message, context),
+  fatal: (message, context) => myBackend.log("fatal", message, context),
+};
+
+await runRetryPolicy(policy, execute, { logger });
+```
+
+See [`@zap-studio/logger`](/logger) for the full `Logger` interface and `ConsoleLogger` options.

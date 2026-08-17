@@ -2,6 +2,7 @@
   "workspace": [
     "./packages/validation",
     "./packages/fetch",
+    "./packages/logger",
     "./packages/permit",
     "./packages/retry",
     "./packages/webhooks"

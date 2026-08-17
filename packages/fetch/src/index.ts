@@ -10,6 +10,7 @@
  * @module @zap-studio/fetch
  */
 
+import type { Logger } from "@zap-studio/logger";
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
@@ -243,6 +244,52 @@ const prepareRequestInit = (
 };
 
 /**
+ * Logs a fetch response: `debug` for 2xx, `warn` otherwise.
+ */
+const logResponse = (
+  logger: Logger | undefined,
+  method: string,
+  url: string,
+  response: Response
+): void => {
+  const context = { method, status: response.status, url };
+  if (response.ok) {
+    logger?.debug("fetch response", context);
+  } else {
+    logger?.warn("fetch response", context);
+  }
+};
+
+/**
+ * Validates the raw JSON payload against `schema`, logging a `fetch
+ * validation failed` message at `error` on failure regardless of throw mode.
+ *
+ * @throws {unknown} Any error thrown by `standardValidate` in throw mode.
+ */
+const validateResponse = async (
+  raw: unknown,
+  schema: StandardSchemaV1,
+  throwOnValidationError: boolean,
+  logger: Logger | undefined,
+  url: string
+): Promise<unknown> => {
+  if (throwOnValidationError) {
+    try {
+      return await standardValidate(raw, schema, { throwOnError: true });
+    } catch (error) {
+      logger?.error("fetch validation failed", { error, url });
+      throw error;
+    }
+  }
+
+  const result = await standardValidate(raw, schema, { throwOnError: false });
+  if (result.issues) {
+    logger?.error("fetch validation failed", { issues: result.issues, url });
+  }
+  return result;
+};
+
+/**
  * Internal fetch implementation used by both $fetch and createFetch.
  *
  * This function normalizes request input, resolves final URL + query params,
@@ -273,13 +320,20 @@ const fetchInternal = async (
   options: ExtendedRequestInit | undefined,
   defaults: FetchDefaults
 ): Promise<unknown> => {
+  const { logger } = defaults;
   const request = normalizeRequest(input, options);
   const { init, searchParams, throwOnFetchError, throwOnValidationError } =
     prepareRequestInit(request.options, defaults);
   const url = resolveRequestUrl(request.url, defaults, searchParams);
+  const method = init.method ?? "GET";
+
+  logger?.debug("fetch request", { method, url });
+
   const response = request.request
     ? await fetch(new Request(url, request.request), init)
     : await fetch(url, init);
+
+  logResponse(logger, method, url, response);
 
   if (throwOnFetchError && !response.ok) {
     throw new FetchError(
@@ -293,10 +347,13 @@ const fetchInternal = async (
   }
 
   const raw: unknown = await response.json();
-  if (throwOnValidationError) {
-    return await standardValidate(raw, schema, { throwOnError: true });
-  }
-  return await standardValidate(raw, schema, { throwOnError: false });
+  return await validateResponse(
+    raw,
+    schema,
+    throwOnValidationError,
+    logger,
+    url
+  );
 };
 
 /**

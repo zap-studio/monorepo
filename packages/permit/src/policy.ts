@@ -115,7 +115,7 @@ export const createPolicy = <
 >(
   config: PermitConfig<TContext, TResources, TActions>
 ): Policy<TContext, TResources, TActions> => {
-  const { rules, resources, actions } = config;
+  const { rules, resources, actions, logger } = config;
   const validators = new Map<
     keyof TResources,
     (input: unknown) => Promise<StandardSchemaV1.Result<unknown>>
@@ -136,8 +136,9 @@ export const createPolicy = <
       }
       return result.value;
     } catch (error) {
-      console.warn(
-        `Resource validation failed for ${String(resourceType)}: ${String(error)}`
+      logger?.warn(
+        `Resource validation failed for ${String(resourceType)}: ${String(error)}`,
+        { error, resourceType: String(resourceType) }
       );
       return null;
     }
@@ -160,10 +161,29 @@ export const createPolicy = <
     }
 
     try {
-      return policyFn(context, action, resource) === "allow";
+      const allowed = policyFn(context, action, resource) === "allow";
+
+      if (allowed) {
+        logger?.debug("permission allowed", {
+          action,
+          resourceType: String(resourceType),
+        });
+      } else {
+        logger?.info("permission denied", {
+          action,
+          resourceType: String(resourceType),
+        });
+      }
+
+      return allowed;
     } catch (error) {
-      console.warn(
-        `Policy evaluation error for ${String(resourceType)}.${action}: ${String(error)}`
+      logger?.warn(
+        `Policy evaluation error for ${String(resourceType)}.${action}: ${String(error)}`,
+        {
+          action,
+          error,
+          resourceType: String(resourceType),
+        }
       );
       return false;
     }

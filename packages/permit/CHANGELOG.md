@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0]
+
+### Added
+
+`createPolicy(...)` gains an optional `logger?: Logger` option (from `@zap-studio/logger`). When provided, it logs allow decisions at `debug` and deny decisions at `info`. Internal-error warnings (resource validation and policy evaluation errors) route through the logger's `warn` instead of `console.warn` when a logger is provided; without one, they still print via `console.warn` as before. See [Logging](https://www.zapstudio.dev/permit/logging).
+
 ## [1.0.0]
 
 ### Changed

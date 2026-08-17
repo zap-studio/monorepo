@@ -16,13 +16,17 @@ description: Composable retry policies with a built-in runner, structured termin
 - **Non-throw mode** ([`throwOnExhausted: false`](/retry/non-throw-mode)) returns a `RetryRunResult` instead of throwing.
 - **Cancellation** through [`AbortSignal`](/retry/abort-signal), checked before, between, and during retries.
 - **Custom policies** as [plain objects implementing `RetryPolicy`](/retry/custom-policies) — just a `next(...)` function, no subclassing.
+- **[Optional logging](/retry/logging)** via a `logger?: Logger` option from [`@zap-studio/logger`](/logger) — omit it and there's zero logging overhead.
 - **Tree-shakeable** — policies are functions returning plain objects, not classes; unused policies are dropped by any modern bundler.
 
 ## Quick Start
 
 ```ts
+import { ConsoleLogger } from "@zap-studio/logger";
 import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
 import { $fetch } from "@zap-studio/fetch";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
 
 const policy = exponentialBackoff({
   maxAttempts: 5,
@@ -30,12 +34,16 @@ const policy = exponentialBackoff({
   maxDelayMs: 2_000,
 });
 
-const data = await runRetryPolicy(policy, async () => {
-  const response = await $fetch("https://api.example.com/users", {
-    throwOnFetchError: true,
-  });
-  return await response.json();
-});
+const data = await runRetryPolicy(
+  policy,
+  async () => {
+    const response = await $fetch("https://api.example.com/users", {
+      throwOnFetchError: true,
+    });
+    return await response.json();
+  },
+  { logger }
+);
 ```
 
 ## Runtime Support
@@ -62,3 +70,4 @@ Cancellation relies on `AbortSignal.reason`, which sets the browser minimums abo
 - [Structured Errors](/retry/errors)
 - [Cancellation](/retry/abort-signal)
 - [Custom Policies](/retry/custom-policies)
+- [Logging](/retry/logging)

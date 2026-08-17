@@ -1,0 +1,48 @@
+---
+title: Logging
+description: Observe requests, responses, and validation failures with an optional logger.
+---
+
+# Logging
+
+`createFetch(...)` accepts an optional `logger?: Logger` option from [`@zap-studio/logger`](/logger). Pass one to observe request internals; omit it and nothing is logged — zero overhead.
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+import { createFetch } from "@zap-studio/fetch";
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const { api } = createFetch({ baseURL: "https://api.example.com", logger });
+```
+
+## What Gets Logged
+
+| Event                         | Level   | Context                        |
+| ----------------------------- | ------- | ------------------------------ |
+| A request goes out            | `debug` | `method`, `url`                |
+| A 2xx response comes back     | `debug` | `method`, `status`, `url`      |
+| A non-2xx response comes back | `warn`  | `method`, `status`, `url`      |
+| Schema validation fails       | `error` | `url`, and `error` or `issues` |
+
+A non-2xx response logs at `warn` instead of `debug` because it usually means something the caller should notice, even without `throwOnFetchError` turned on — without flooding `debug` output for every successful call.
+
+## Bring Your Own Logger
+
+Any object implementing the `Logger` interface works, so you can forward these events into an existing logging setup instead of `ConsoleLogger`:
+
+```ts
+import type { Logger } from "@zap-studio/logger";
+
+const logger: Logger = {
+  trace: (message, context) => myBackend.log("trace", message, context),
+  debug: (message, context) => myBackend.log("debug", message, context),
+  info: (message, context) => myBackend.log("info", message, context),
+  warn: (message, context) => myBackend.log("warn", message, context),
+  error: (message, context) => myBackend.log("error", message, context),
+  fatal: (message, context) => myBackend.log("fatal", message, context),
+};
+
+const { api } = createFetch({ logger });
+```
+
+See [`@zap-studio/logger`](/logger) for the full `Logger` interface and `ConsoleLogger` options.
