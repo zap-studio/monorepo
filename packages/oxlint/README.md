@@ -1,6 +1,8 @@
 # @zap-studio/oxlint
 
-Zap Studio's [oxlint](https://oxc.rs/docs/guide/usage/linter.html) preset: composable `base`, `react`, `react-compiler`, `tanstack`, `tanstack-react-compiler`, and `testing` rule sets, built from vetted ESLint plugins (`eslint-plugin-regexp`, `eslint-plugin-sonarjs`, `eslint-plugin-github`, `@e18e/eslint-plugin`, `eslint-plugin-playwright`, `oxlint-plugin-react-doctor`, `@tanstack/eslint-plugin-query`, `@tanstack/eslint-plugin-router`) plus a bundled `anti-slop` plugin.
+Zap Studio's [oxlint](https://oxc.rs/docs/guide/usage/linter.html) preset — composable rule sets built from vetted ESLint plugins, plus a bundled `anti-slop` plugin.
+
+Every plugin's full upstream rule list is covered: each rule is either turned on or explicitly set to `"off"` with a comment explaining why, so nothing is silently missing.
 
 ## Installation
 
@@ -12,20 +14,9 @@ npm install --save-dev @zap-studio/oxlint oxlint
 
 ## Usage
 
-Pick the preset that matches your project and extend it from `oxlint.config.ts`:
+Pick the preset that matches your project and `extends` it from `oxlint.config.ts`:
 
 ```ts
-// non-React project
-import { defineConfig } from "oxlint";
-import zapStudio from "@zap-studio/oxlint/base";
-
-export default defineConfig({
-  extends: [zapStudio],
-});
-```
-
-```ts
-// React project
 import { defineConfig } from "oxlint";
 import zapStudio from "@zap-studio/oxlint/react";
 
@@ -34,8 +25,9 @@ export default defineConfig({
 });
 ```
 
+Need more than one rule set? `extends` accepts an array — each preset already includes everything up its own chain (e.g. `tanstack` already includes `react`, so you never need to list both):
+
 ```ts
-// React project with the testing rule set (vitest + playwright) too
 import { defineConfig } from "oxlint";
 import react from "@zap-studio/oxlint/react";
 import testing from "@zap-studio/oxlint/testing";
@@ -45,9 +37,7 @@ export default defineConfig({
 });
 ```
 
-There is no bundled "everything" preset on purpose — pick the pieces your project actually uses and `extends` them together.
-
-`extends` merges `rules` key-by-key and unions `plugins`/`jsPlugins`, so anything you add to your own `rules` after `extends` overrides the preset — no need to fork the preset to change or disable a single rule:
+`extends` merges `rules` key-by-key and unions `plugins`/`jsPlugins`, so anything you add to your own `rules` after `extends` overrides the preset — no need to fork it to change or disable a single rule:
 
 ```ts
 export default defineConfig({
@@ -60,14 +50,16 @@ export default defineConfig({
 
 ## Presets
 
-- `@zap-studio/oxlint/base` — general-purpose rules: `eslint`, `typescript`, `unicorn`, `oxc`, `import`, `jsdoc`, `node`, `promise`, plus `regexp`, `sonarjs`, `github`, `e18e`, and `anti-slop`.
-- `@zap-studio/oxlint/react` — `base` plus `react`, `react-perf`, `jsx-a11y`, and `react-doctor`.
-- `@zap-studio/oxlint/react-compiler` — `react` plus the `react/react-compiler` rule, for projects on the React Compiler.
-- `@zap-studio/oxlint/tanstack` — `react` plus TanStack Query and Router rules.
-- `@zap-studio/oxlint/tanstack-react-compiler` — `react-compiler` plus TanStack Query and Router rules, for projects on both.
-- `@zap-studio/oxlint/testing` — `base` plus `vitest` and `playwright`.
+| Preset                                       | Built on         | Adds                                                                                                                                        |
+| -------------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@zap-studio/oxlint/base`                    | —                | `eslint`, `typescript`, `unicorn`, `oxc`, `import`, `jsdoc`, `node`, `promise`, plus `regexp`, `sonarjs`, `github`, `e18e`, and `anti-slop` |
+| `@zap-studio/oxlint/react`                   | `base`           | `react`, `react-perf`, `jsx-a11y`, and `react-doctor`                                                                                       |
+| `@zap-studio/oxlint/react-compiler`          | `react`          | the `react/react-compiler` rule, for projects on the React Compiler                                                                         |
+| `@zap-studio/oxlint/tanstack`                | `react`          | TanStack Query and TanStack Router rules                                                                                                    |
+| `@zap-studio/oxlint/tanstack-react-compiler` | `react-compiler` | TanStack Query and Router rules, for projects on both                                                                                       |
+| `@zap-studio/oxlint/testing`                 | `base`           | `vitest` and `playwright`                                                                                                                   |
 
-Combine presets yourself with `extends` — there's no bundled "everything" preset, so each project only takes on the rule sets it actually needs.
+There's no bundled "everything" preset on purpose — pick the leaf preset(s) that match your project (and stack them with `extends` if you need more than one branch, e.g. `react` + `testing`).
 
 ## Cherry-picking rules
 
