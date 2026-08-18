@@ -25,6 +25,7 @@ export default defineConfig({
     "eslint-plugin-playwright",
     "eslint-plugin-regexp",
     "eslint-plugin-sonarjs",
+    "eslint-plugin-github",
     "@e18e/eslint-plugin",
   ],
   rules: {
