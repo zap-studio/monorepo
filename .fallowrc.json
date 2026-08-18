@@ -4,7 +4,7 @@
     "oxfmt.config.ts",
     "oxlint.config.ts",
     "apps/docs/vocs.config.ts",
-    "tools/oxlint/**"
+    "packages/oxlint/src/anti-slop/**"
   ],
   "duplicates": {
     "ignore": ["**/*.test.ts"]
@@ -15,13 +15,16 @@
     "@e18e/eslint-plugin",
     "@oxlint/plugins",
     "@zap-studio/fetch",
+    "@zap-studio/oxlint",
     "@zap-studio/permit",
     "@zap-studio/retry",
     "@zap-studio/validation",
     "@zap-studio/webhooks",
+    "eslint-plugin-github",
     "eslint-plugin-playwright",
     "eslint-plugin-regexp",
     "eslint-plugin-sonarjs",
+    "oxlint-plugin-react-doctor",
     "publint",
     "react",
     "unplugin-unused",
