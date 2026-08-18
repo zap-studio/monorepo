@@ -267,6 +267,7 @@ const validateResponse = async (
   throwOnValidationError: boolean,
   logger: Logger | undefined,
   url: string,
+  // oxlint-disable-next-line anti-slop/no-unknown-returns -- Internal helper backing the public overloaded `$fetch`/`api.*` methods, whose return type depends on which schema overload the caller matched; those typed overloads are the caller-facing contract, this implementation never is.
 ): Promise<unknown> => {
   if (throwOnValidationError) {
     try {
@@ -314,6 +315,7 @@ const fetchInternal = async (
   schema: StandardSchemaV1 | undefined,
   options: ExtendedRequestInit | undefined,
   defaults: FetchDefaults,
+  // oxlint-disable-next-line anti-slop/no-unknown-returns -- Internal helper backing the public overloaded `$fetch`/`api.*` methods; same reasoning as validateResponse above.
 ): Promise<unknown> => {
   const { logger } = defaults;
   const request = normalizeRequest(input, options);
@@ -346,7 +348,7 @@ const fetchInternal = async (
         : await fetch(url, init);
 
       logResponse(logger, method, url, response);
-      span.setAttribute("http.response.status_code", response.status);
+      span.setAttribute('http.response.status_code', response.status);
       if (!response.ok) {
         span.setStatus({ code: SpanStatusCode.ERROR });
       }
@@ -414,6 +416,7 @@ const createMethod = (fetchFn: $Fetch, method: string): $Fetch => {
     input: FetchInput,
     schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
     optionsOrUndefined?: ExtendedRequestInit,
+    // oxlint-disable-next-line anti-slop/no-unknown-returns -- Implementation behind the typed overloads declared above; same reasoning as validateResponse/fetchInternal.
   ): Promise<unknown> {
     if (isStandardSchema(schemaOrOptions)) {
       if (optionsOrUndefined?.throwOnValidationError === false) {
