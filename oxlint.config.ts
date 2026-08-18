@@ -1,59 +1,7 @@
+import zapStudio from "@zap-studio/oxlint/full";
 import { defineConfig } from "oxlint";
 
-import { eslintPluginRules } from "./tools/oxlint/plugin-rules.ts";
-import { reactDoctorRules } from "./tools/oxlint/react-doctor-rules.ts";
-
 export default defineConfig({
-  plugins: [
-    "eslint",
-    "typescript",
-    "unicorn",
-    "oxc",
-    "react",
-    "react-perf",
-    "import",
-    "jsx-a11y",
-    "jsdoc",
-    "node",
-    "promise",
-    "vitest",
-  ],
-  ignorePatterns: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "tools/oxlint/anti-slop/**"],
-  jsPlugins: [
-    { name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" },
-    { name: "react-doctor", specifier: "oxlint-plugin-react-doctor" },
-    "eslint-plugin-playwright",
-    "eslint-plugin-regexp",
-    "eslint-plugin-sonarjs",
-    "eslint-plugin-github",
-    "@e18e/eslint-plugin",
-  ],
-  rules: {
-    "import/no-cycle": ["error", { maxDepth: 3 }],
-    "eslint/func-style": ["error", "expression"],
-    "react/rules-of-hooks": "error",
-    "react/exhaustive-deps": "error",
-    ...eslintPluginRules,
-    ...Object.fromEntries(
-      Object.entries(reactDoctorRules).map(([rule, severity]) => [
-        `react-doctor/${rule}`,
-        severity,
-      ]),
-    ),
-    "anti-slop/no-chained-type-assertions": "error",
-    "anti-slop/no-conditional-empty-object-spread": "error",
-    "anti-slop/no-known-value-widening": "error",
-    "anti-slop/no-module-mocking": "error",
-    "anti-slop/no-object-parameters": "error",
-    "anti-slop/no-reflect-apply": "error",
-    "anti-slop/no-reflect-get": "error",
-    "anti-slop/no-shape-in-symbol-names": "error",
-    "anti-slop/no-unknown-type-aliases": "error",
-    "anti-slop/no-widen-then-assert": "error",
-    "anti-slop/require-safety-comment-for-type-assertion": "error",
-  },
-  options: {
-    typeAware: true,
-    typeCheck: true,
-  },
+  extends: [zapStudio],
+  ignorePatterns: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "packages/oxlint/src/anti-slop/**"],
 });
