@@ -10,6 +10,9 @@
     "ignore": ["**/*.test.ts"]
   },
   "dynamicallyLoaded": ["apps/docs/src/pages/**/*.mdx"],
+  "workspaces": {
+    "patterns": ["apps/*", "configs/*", "packages/*"]
+  },
   "ignoreDependencies": [
     "@arethetypeswrong/core",
     "@e18e/eslint-plugin",
