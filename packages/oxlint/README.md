@@ -76,25 +76,25 @@ Five independent presets — pick every one your project needs. None of them imp
 
 Each of these owns only its own slice of `oxlint-plugin-react-doctor`'s framework-specific rules. None of them pull in `react`, `react-a11y`, `react-perf`, or `react-doctor` — add those yourself if you want them (you almost always do, for anything that renders JSX).
 
-| Preset                                 | Targets                                                                                                    |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `@zap-studio/oxlint/nextjs`            | Next.js — App Router, metadata, route handlers, `Image`/`Script`/`Head`                                    |
-| `@zap-studio/oxlint/react-router`      | React Router — loaders, actions, middleware, splat and nested routes                                       |
-| `@zap-studio/oxlint/react-native`      | React Native/Expo — lists, `Pressable`, Reanimated, deprecated modules                                     |
-| `@zap-studio/oxlint/remotion`          | Remotion — deterministic rendering, `delayRender`, CSS animation bans                                      |
-| `@zap-studio/oxlint/preact`            | Preact — API differences from React (`render` args, hooks import, `children`)                              |
-| `@zap-studio/oxlint/ink`               | Ink — terminal rendering, raw mode, `Static`, focus handling                                               |
-| `@zap-studio/oxlint/r3f`               | React Three Fiber                                                                                          |
-| `@zap-studio/oxlint/three`             | three.js                                                                                                   |
-| `@zap-studio/oxlint/motion`            | Motion (Framer Motion) — `AnimatePresence`, imperative animation, layout ids                               |
-| `@zap-studio/oxlint/redux`             | Redux — `useSelector` derivation and return-value pitfalls                                                 |
-| `@zap-studio/oxlint/zustand`           | Zustand — selector freshness, store mutation, whole-store destructuring                                    |
-| `@zap-studio/oxlint/valtio`            | Valtio — proxy reads and snapshots                                                                         |
-| `@zap-studio/oxlint/mobx`              | MobX — `observer`/`memo` interaction, `makeAutoObservable`, reaction disposal                              |
-| `@zap-studio/oxlint/jotai`             | Jotai — derived atoms, `selectAtom` placement                                                              |
-| `@zap-studio/oxlint/styled-components` | styled-components — duplicate CSS properties, transient props                                              |
+| Preset                                 | Targets                                                                                                                                                         |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@zap-studio/oxlint/nextjs`            | Next.js — App Router, metadata, route handlers, `Image`/`Script`/`Head`                                                                                         |
+| `@zap-studio/oxlint/react-router`      | React Router — loaders, actions, middleware, splat and nested routes                                                                                            |
+| `@zap-studio/oxlint/react-native`      | React Native/Expo — lists, `Pressable`, Reanimated, deprecated modules                                                                                          |
+| `@zap-studio/oxlint/remotion`          | Remotion — deterministic rendering, `delayRender`, CSS animation bans                                                                                           |
+| `@zap-studio/oxlint/preact`            | Preact — API differences from React (`render` args, hooks import, `children`)                                                                                   |
+| `@zap-studio/oxlint/ink`               | Ink — terminal rendering, raw mode, `Static`, focus handling                                                                                                    |
+| `@zap-studio/oxlint/r3f`               | React Three Fiber                                                                                                                                               |
+| `@zap-studio/oxlint/three`             | three.js                                                                                                                                                        |
+| `@zap-studio/oxlint/motion`            | Motion (Framer Motion) — `AnimatePresence`, imperative animation, layout ids                                                                                    |
+| `@zap-studio/oxlint/redux`             | Redux — `useSelector` derivation and return-value pitfalls                                                                                                      |
+| `@zap-studio/oxlint/zustand`           | Zustand — selector freshness, store mutation, whole-store destructuring                                                                                         |
+| `@zap-studio/oxlint/valtio`            | Valtio — proxy reads and snapshots                                                                                                                              |
+| `@zap-studio/oxlint/mobx`              | MobX — `observer`/`memo` interaction, `makeAutoObservable`, reaction disposal                                                                                   |
+| `@zap-studio/oxlint/jotai`             | Jotai — derived atoms, `selectAtom` placement                                                                                                                   |
+| `@zap-studio/oxlint/styled-components` | styled-components — duplicate CSS properties, transient props                                                                                                   |
 | `@zap-studio/oxlint/tanstack-query`    | TanStack Query — `@tanstack/eslint-plugin-query` plus `react-doctor`'s 9 query-pattern rules (floating mutations, missing invalidation, unstable query clients) |
-| `@zap-studio/oxlint/tanstack-start`    | TanStack Start — `react-doctor`'s 15 meta-framework rules (loaders, route property order, server functions, secrets in loaders)                                |
+| `@zap-studio/oxlint/tanstack-start`    | TanStack Start — `react-doctor`'s 15 meta-framework rules (loaders, route property order, server functions, secrets in loaders)                                 |
 
 Preact and React Native are runtime-ambiguous — combine either with `jsx-runtime-automatic` or `jsx-runtime-classic` depending on your project's transform.
 
@@ -102,9 +102,9 @@ Preact and React Native are runtime-ambiguous — combine either with `jsx-runti
 
 `tanstack-query` above already bundles `@tanstack/eslint-plugin-query`. `@tanstack/eslint-plugin-router` is separate — add it if your project uses TanStack Router:
 
-| Preset                               | Owns                              |
-| ------------------------------------ | --------------------------------- |
-| `@zap-studio/oxlint/tanstack-router` | `@tanstack/eslint-plugin-router`  |
+| Preset                               | Owns                             |
+| ------------------------------------ | -------------------------------- |
+| `@zap-studio/oxlint/tanstack-router` | `@tanstack/eslint-plugin-router` |
 
 ## Opt-in environment presets
 
