@@ -2,7 +2,7 @@
 
 Zap Studio's [oxlint](https://oxc.rs/docs/guide/usage/linter.html) preset — composable rule sets built from vetted ESLint plugins, plus a bundled `anti-slop` plugin.
 
-Every plugin's full upstream rule list is covered: each rule is either turned on or explicitly set to `"off"` with a comment explaining why, so nothing is silently missing.
+`oxlint`'s zero-config only covers its own bundled rules. This package picks up from there: a preset per framework and library, ready to `extends` in one line, so you get useful linting for your stack without assembling plugins by hand.
 
 ## Installation
 
