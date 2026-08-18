@@ -14,6 +14,8 @@
     "@arethetypeswrong/core",
     "@e18e/eslint-plugin",
     "@oxlint/plugins",
+    "@tanstack/eslint-plugin-query",
+    "@tanstack/eslint-plugin-router",
     "@zap-studio/fetch",
     "@zap-studio/oxfmt",
     "@zap-studio/oxlint",
