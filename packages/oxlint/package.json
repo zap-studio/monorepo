@@ -49,6 +49,7 @@
   },
   "devDependencies": {
     "@oxlint/plugins": "catalog:",
+    "@types/node": "catalog:",
     "@zap-studio/typescript": "workspace:*",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",

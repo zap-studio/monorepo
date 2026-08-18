@@ -4,6 +4,6 @@
   "exclude": ["dist", "node_modules"],
   "compilerOptions": {
     "lib": ["ESNext"],
-    "types": []
+    "types": ["node"]
   }
 }

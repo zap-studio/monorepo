@@ -232,6 +232,9 @@ catalogs:
     '@standard-schema/spec':
       specifier: ^1.1.0
       version: 1.1.0
+    '@types/node':
+      specifier: ^26.2.0
+      version: 26.2.0
     '@types/react':
       specifier: ^19.2.18
       version: 19.2.18
@@ -505,6 +508,9 @@ importers:
       '@oxlint/plugins':
         specifier: 'catalog:'
         version: 1.78.0
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.2.0
       '@zap-studio/typescript':
         specifier: workspace:*
         version: link:../../configs/typescript
