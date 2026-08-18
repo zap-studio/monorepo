@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1]
+
+### Fixed
+
+- `@zap-studio/oxlint/anti-slop` now ships as a compiled `dist/anti-slop/index.js` instead of raw `src/anti-slop/index.ts`. The previous raw-source export crashed with `ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING` for any real (non-workspace) consumer, since Node's default type-stripping refuses `.ts` files resolved from inside `node_modules` — this broke `base` (and therefore every preset that extends it) for every external install.
+
 ## [1.0.0]
 
 ### Added

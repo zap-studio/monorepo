@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/oxlint",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "description": "Zap Studio's oxlint preset: composable base, react, react-compiler, tanstack, and testing rule sets.",
   "keywords": [
