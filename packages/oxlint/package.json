@@ -30,10 +30,10 @@
   "sideEffects": false,
   "exports": {
     "./base": "./dist/base.js",
-    "./full": "./dist/full.js",
     "./react": "./dist/react.js",
     "./react-compiler": "./dist/react-compiler.js",
     "./tanstack": "./dist/tanstack.js",
+    "./tanstack-react-compiler": "./dist/tanstack-react-compiler.js",
     "./testing": "./dist/testing.js",
     "./package.json": "./package.json",
     "./anti-slop": "./src/anti-slop/index.ts"
