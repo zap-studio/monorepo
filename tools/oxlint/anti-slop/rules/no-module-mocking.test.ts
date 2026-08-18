@@ -19,7 +19,10 @@ tester.run("anti-slop/no-module-mocking", noModuleMockingRule, {
     { code: "vi['doMock']('./user-store');", errors: [error] },
     { code: "jest.unstable_mockModule('./user-store');", errors: [error] },
     { code: "import { vi } from 'vitest'; vi.mock('./user-store');", errors: [error] },
-    { code: "import { vi as testApi } from 'vitest'; testApi.mock('./user-store');", errors: [error] },
+    {
+      code: "import { vi as testApi } from 'vitest'; testApi.mock('./user-store');",
+      errors: [error],
+    },
     {
       code: "import { jest } from '@jest/globals'; jest.mock('./user-store');",
       errors: [error],
