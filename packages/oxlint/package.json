@@ -29,6 +29,7 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
+    "./anti-slop": "./dist/anti-slop/index.js",
     "./base": "./dist/base.js",
     "./ink": "./dist/ink.js",
     "./jotai": "./dist/jotai.js",
@@ -51,8 +52,7 @@
     "./three": "./dist/three.js",
     "./valtio": "./dist/valtio.js",
     "./zustand": "./dist/zustand.js",
-    "./package.json": "./package.json",
-    "./anti-slop": "./src/anti-slop/index.ts"
+    "./package.json": "./package.json"
   },
   "publishConfig": {
     "access": "public"

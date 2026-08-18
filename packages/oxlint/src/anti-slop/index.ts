@@ -1,3 +1,5 @@
+import type { Plugin } from "@oxlint/plugins";
+
 import { eslintCompatPlugin } from "@oxlint/plugins";
 
 import { noChainedTypeAssertionsRule } from "./rules/no-chained-type-assertions.ts";
@@ -17,7 +19,7 @@ import { noWidenThenAssertRule } from "./rules/no-widen-then-assert.ts";
 import { requireSafetyCommentForTypeAssertionRule } from "./rules/require-safety-comment-for-type-assertion.ts";
 
 /** Generic Oxlint rules that reject low-evidence and low-signal implementation patterns. */
-const antiSlopPlugin = eslintCompatPlugin({
+const antiSlopPlugin: Plugin = eslintCompatPlugin({
   meta: { name: "anti-slop" },
   rules: {
     "no-chained-type-assertions": noChainedTypeAssertionsRule,
