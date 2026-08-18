@@ -20,6 +20,11 @@
 //
 // Severities are exactly what the plugin`s own RECOMMENDED_RULES assigns (error/warn
 // mix, not flattened). Bare rule ids — prefix with "react-doctor/" when merging.
+//
+// "dialog-has-accessible-name" was missing from the original generation pass
+// despite being in RECOMMENDED_RULES — added back after a diff against
+// ultracite`s oxlint preset surfaced the gap (severity confirmed via the
+// installed package, not copied from ultracite).
 
 type Severity = "error" | "warn";
 
@@ -39,6 +44,7 @@ export const reactDoctorRules = {
   "client-passive-event-listeners": "warn",
   "context-provider-value-from-unmemoized-local-literal": "warn",
   "debounce-no-cleanup": "warn",
+  "dialog-has-accessible-name": "warn",
   "effect-listener-cleanup-mismatch": "error",
   "effect-listener-cleanup-reference-mismatch": "error",
   "effect-needs-cleanup": "error",
