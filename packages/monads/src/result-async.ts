@@ -50,6 +50,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
     onfulfilled?: ((value: Result<T, E>) => PromiseLike<TResult1> | TResult1) | null,
     onrejected?: ((reason: unknown) => PromiseLike<TResult2> | TResult2) | null,
   ): PromiseLike<TResult1 | TResult2> {
+    // oxlint-disable-next-line github/no-then -- implements PromiseLike; delegating to the native `.then` is the correct implementation, not an async/await opportunity.
     return this.promise.then(onfulfilled, onrejected);
   }
 
