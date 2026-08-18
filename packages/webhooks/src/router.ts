@@ -29,9 +29,9 @@ import type {
   WebhookContext,
   WebhookHandler,
   WebhookRouterOptions,
-} from "./types.js";
+} from "./types.ts";
 
-import { HEADERS_GETTER, recordSpanError, tracer } from "./_otel.js";
+import { HEADERS_GETTER, recordSpanError, tracer } from "./_otel.ts";
 
 /**
  * Schema-first webhook router with path dispatching, validation, and optional verification.

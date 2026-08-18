@@ -4,11 +4,11 @@
  * @module @zap-studio/logger/console
  */
 
-import type { CallableLogLevel, Logger, LogFormatter, LogLevel } from "./types.js";
+import type { CallableLogLevel, Logger, LogFormatter, LogLevel } from "./types.ts";
 
-import { withTraceContext } from "./_otel.js";
-import { isLevelEnabled } from "./core.js";
-import { classicFormat } from "./format.js";
+import { withTraceContext } from "./_otel.ts";
+import { isLevelEnabled } from "./core.ts";
+import { classicFormat } from "./format.ts";
 
 const CONSOLE_METHOD_BY_LEVEL = {
   debug: "debug",

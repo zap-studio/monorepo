@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { pipe } from "./pipe.js";
+import { pipe } from "./pipe.ts";
 import {
   andThen,
   err,
@@ -15,7 +15,7 @@ import {
   unwrap,
   unwrapOr,
   unwrapOrElse,
-} from "./result.js";
+} from "./result.ts";
 
 describe("ok/err", () => {
   it("creates an Ok value", () => {

@@ -10,7 +10,7 @@
  * @module @zap-studio/monads/option
  */
 
-import type { None, Option, OptionMatchers, Some } from "./types.js";
+import type { None, Option, OptionMatchers, Some } from "./types.ts";
 
 /**
  * Wraps a value in `Some`.

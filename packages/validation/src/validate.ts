@@ -10,7 +10,7 @@
 
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
-import { ValidationError } from "./errors.js";
+import { ValidationError } from "./errors.ts";
 
 /**
  * Callable contract for {@link standardValidate}, factored out so the

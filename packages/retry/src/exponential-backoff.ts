@@ -4,10 +4,10 @@
  * @module @zap-studio/retry/exponential-backoff
  */
 
-import type { JitterMode, JitterOptions } from "./jitter.js";
-import type { RetryDecision, RetryDecisionInput, RetryPolicy } from "./types.js";
+import type { JitterMode, JitterOptions } from "./jitter.ts";
+import type { RetryDecision, RetryDecisionInput, RetryPolicy } from "./types.ts";
 
-import { applyJitter } from "./jitter.js";
+import { applyJitter } from "./jitter.ts";
 
 /**
  * Configuration for `exponentialBackoff(...)`.

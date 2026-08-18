@@ -17,10 +17,10 @@ import type {
   PermitConfig,
   Policy,
   Resources,
-} from "./types.js";
+} from "./types.ts";
 
-import { withCheckSpan } from "./_otel.js";
-import { PolicyError } from "./errors.js";
+import { withCheckSpan } from "./_otel.ts";
+import { PolicyError } from "./errors.ts";
 
 /**
  * Splits a typed `resource:action` permission string into its parts.

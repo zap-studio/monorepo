@@ -10,8 +10,8 @@
  * @module @zap-studio/logger
  */
 
-export { ConsoleLogger } from "./console.js";
-export type { ConsoleLoggerOptions } from "./console.js";
-export { isLevelEnabled, LOG_LEVEL_ORDER } from "./core.js";
-export { classicFormat, compactFormat, jsonFormat, prettyFormat } from "./format.js";
-export type { CallableLogLevel, Logger, LogFormatter, LogLevel, LogRecord } from "./types.js";
+export { ConsoleLogger } from "./console.ts";
+export type { ConsoleLoggerOptions } from "./console.ts";
+export { isLevelEnabled, LOG_LEVEL_ORDER } from "./core.ts";
+export { classicFormat, compactFormat, jsonFormat, prettyFormat } from "./format.ts";
+export type { CallableLogLevel, Logger, LogFormatter, LogLevel, LogRecord } from "./types.ts";

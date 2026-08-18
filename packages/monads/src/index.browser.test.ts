@@ -16,7 +16,7 @@ import {
   Result,
   ResultAsync,
   some,
-} from "./index.js";
+} from "./index.ts";
 
 describe("root entrypoint", () => {
   it("re-exports Result constructors and guards bare", () => {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { fromPromise, ResultAsync } from "./result-async.js";
-import { err, isErr, isOk, ok } from "./result.js";
+import { fromPromise, ResultAsync } from "./result-async.ts";
+import { err, isErr, isOk, ok } from "./result.ts";
 
 describe("ResultAsync", () => {
   it("is awaitable, resolving to the wrapped Result", async () => {

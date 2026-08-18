@@ -3,7 +3,7 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
 import { describe, expect, it } from "vitest";
 
-import { FetchError } from "./errors.js";
+import { FetchError } from "./errors.ts";
 
 describe(FetchError, () => {
   describe("constructor", () => {

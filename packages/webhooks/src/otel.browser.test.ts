@@ -7,8 +7,8 @@ import {
 } from "@opentelemetry/sdk-trace-base";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { HEADERS_GETTER } from "./_otel.js";
-import { createWebhookRouter } from "./index.js";
+import { HEADERS_GETTER } from "./_otel.ts";
+import { createWebhookRouter } from "./index.ts";
 
 describe("HEADERS_GETTER", () => {
   it("reads a header value by key", () => {

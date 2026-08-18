@@ -30,12 +30,12 @@ import type {
   FetchInput,
   FetchInstance,
   NormalizedRequest,
-} from "./types.js";
+} from "./types.ts";
 
-import { HEADERS_SETTER, recordSpanError, tracer } from "./_otel.js";
-import { FetchError } from "./errors.js";
+import { HEADERS_SETTER, recordSpanError, tracer } from "./_otel.ts";
+import { FetchError } from "./errors.ts";
 
-export { FetchError } from "./errors.js";
+export { FetchError } from "./errors.ts";
 export type {
   $Fetch,
   ApiMethods,
@@ -44,7 +44,7 @@ export type {
   FetchInput,
   FetchInstance,
   NormalizedRequest,
-} from "./types.js";
+} from "./types.ts";
 
 /**
  * Default options for the global $fetch

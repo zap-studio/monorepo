@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { Logger } from "./index.js";
+import type { Logger } from "./index.ts";
 
-import { ConsoleLogger } from "./index.js";
+import { ConsoleLogger } from "./index.ts";
 
 describe("index", () => {
   it("exports ConsoleLogger constructible as a Logger", () => {

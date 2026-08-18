@@ -9,8 +9,8 @@
  * @module @zap-studio/webhooks
  */
 
-export { VerificationError } from "./errors.js";
-export { createWebhookRouter, WebhookRouter } from "./router.js";
+export { VerificationError } from "./errors.ts";
+export { createWebhookRouter, WebhookRouter } from "./router.ts";
 export type {
   AfterHook,
   BeforeHook,
@@ -26,5 +26,5 @@ export type {
   WebhookContext,
   WebhookHandler,
   WebhookRouterOptions,
-} from "./types.js";
-export { constantTimeEquals, createHmacVerifier } from "./verify.js";
+} from "./types.ts";
+export { constantTimeEquals, createHmacVerifier } from "./verify.ts";

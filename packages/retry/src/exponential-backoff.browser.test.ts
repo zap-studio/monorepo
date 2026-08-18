@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { exponentialBackoff } from "./exponential-backoff.js";
+import { exponentialBackoff } from "./exponential-backoff.ts";
 
 describe(exponentialBackoff, () => {
   it("retries with base delay at first attempt", () => {

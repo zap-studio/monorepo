@@ -13,7 +13,7 @@
  * @module @zap-studio/monads
  */
 
-import type { Option as OptionType, Result as ResultType } from "./types.js";
+import type { Option as OptionType, Result as ResultType } from "./types.ts";
 
 import {
   andThen as optionAndThen,
@@ -23,7 +23,7 @@ import {
   unwrap as optionUnwrap,
   unwrapOr as optionUnwrapOr,
   unwrapOrElse as optionUnwrapOrElse,
-} from "./option.js";
+} from "./option.ts";
 import {
   andThen as resultAndThen,
   map as resultMap,
@@ -33,13 +33,13 @@ import {
   unwrap as resultUnwrap,
   unwrapOr as resultUnwrapOr,
   unwrapOrElse as resultUnwrapOrElse,
-} from "./result.js";
+} from "./result.ts";
 
-export { fromNullable, isNone, isSome, none, some } from "./option.js";
-export { pipe } from "./pipe.js";
-export { err, fromThrowable, isErr, isOk, ok } from "./result.js";
-export { fromPromise, ResultAsync } from "./result-async.js";
-export type { Err, None, Ok, OptionMatchers, ResultMatchers, Some } from "./types.js";
+export { fromNullable, isNone, isSome, none, some } from "./option.ts";
+export { pipe } from "./pipe.ts";
+export { err, fromThrowable, isErr, isOk, ok } from "./result.ts";
+export { fromPromise, ResultAsync } from "./result-async.ts";
+export type { Err, None, Ok, OptionMatchers, ResultMatchers, Some } from "./types.ts";
 
 /**
  * Either a successful (`Ok`) or failed (`Err`) outcome. Alias of the type

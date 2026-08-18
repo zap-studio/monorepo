@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { applyJitter } from "./jitter.js";
+import { applyJitter } from "./jitter.ts";
 
 describe(applyJitter, () => {
   it("returns delayMs unchanged when jitter is omitted", () => {

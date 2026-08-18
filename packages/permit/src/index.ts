@@ -19,9 +19,9 @@ export {
   not,
   or,
   when,
-} from "./conditions.js";
-export { PolicyError } from "./errors.js";
-export { createPolicy, mergePoliciesAnd, mergePoliciesOr } from "./policy.js";
+} from "./conditions.ts";
+export { PolicyError } from "./errors.ts";
+export { createPolicy, mergePoliciesAnd, mergePoliciesOr } from "./policy.ts";
 export type {
   ActionPolicyMap,
   Actions,
@@ -38,4 +38,4 @@ export type {
   Role,
   RoleHierarchy,
   Rules,
-} from "./types.js";
+} from "./types.ts";

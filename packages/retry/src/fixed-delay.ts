@@ -4,7 +4,7 @@
  * @module @zap-studio/retry/fixed-delay
  */
 
-import type { RetryDecision, RetryDecisionInput, RetryPolicy } from "./types.js";
+import type { RetryDecision, RetryDecisionInput, RetryPolicy } from "./types.ts";
 
 /**
  * Configuration for `fixedDelay(...)`.
