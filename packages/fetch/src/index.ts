@@ -618,6 +618,7 @@ export const createFetch = (
     input: FetchInput,
     schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
     optionsOrUndefined?: ExtendedRequestInit,
+    // oxlint-disable-next-line anti-slop/no-unknown-returns -- Implementation behind the typed overloads declared above; same reasoning as validateResponse/fetchInternal/methodFetch.
   ): Promise<unknown> {
     const [schema, options] = isStandardSchema(schemaOrOptions)
       ? [schemaOrOptions, optionsOrUndefined]
