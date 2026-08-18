@@ -64,3 +64,7 @@ export default defineConfig({
 | `@zap-studio/oxlint/tanstack-react-compiler` | `tanstack` rules and plugins + `react/react-compiler` |
 
 There's no `react-compiler` variant for every other leaf — combine `react-compiler`'s rules with a leaf's rules yourself via [cherry-picking](/oxlint/getting-started#cherry-pick-pieces) if you need one.
+
+## Where the Rules Come From
+
+Every plugin named in the tables above — built-in or external — traces back to an upstream project or, for `anti-slop`, this repo directly. See [Plugins](/oxlint/plugins) for the source of each one and a link to the file where its rules are decided on or off.

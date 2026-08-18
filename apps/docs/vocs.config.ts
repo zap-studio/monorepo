@@ -89,6 +89,9 @@ export default defineConfig({
           items: [
             { link: "/oxlint", text: "Overview" },
             { link: "/oxlint/getting-started", text: gettingStarted },
+            { link: "/oxlint/presets", text: "Presets" },
+            { link: "/oxlint/plugins", text: "Plugins" },
+            { link: "/oxlint/anti-slop", text: "Anti-Slop Plugin" },
           ],
           text: "oxlint",
         },
