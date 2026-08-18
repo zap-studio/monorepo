@@ -15,6 +15,7 @@
     "@e18e/eslint-plugin",
     "@oxlint/plugins",
     "@zap-studio/fetch",
+    "@zap-studio/oxfmt",
     "@zap-studio/oxlint",
     "@zap-studio/permit",
     "@zap-studio/retry",
