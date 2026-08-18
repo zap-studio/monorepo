@@ -7,6 +7,7 @@ export default defineConfig({
   attw: { profile: "esm-only" },
   dts: true,
   entry: ["src/**/*.ts", "!src/**/_*.ts", "!src/anti-slop/**", "!**/*.test.ts", "!**/*.spec.ts"],
+  external: [/^node:/u],
   exports: {
     customExports(exports, { pkg }) {
       if (pkg.name === "@zap-studio/oxlint") {
