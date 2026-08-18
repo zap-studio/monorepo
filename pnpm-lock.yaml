@@ -324,9 +324,6 @@ importers:
       '@arethetypeswrong/core':
         specifier: 'catalog:'
         version: 0.18.5
-      '@e18e/eslint-plugin':
-        specifier: 'catalog:'
-        version: 0.8.0(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))
       '@oxlint/plugins':
         specifier: 'catalog:'
         version: 1.78.0
@@ -336,18 +333,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 4.1.10(@vitest/browser@4.1.10)(vitest@4.1.10)
-      eslint-plugin-github:
-        specifier: 'catalog:'
-        version: 6.1.2(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
-      eslint-plugin-playwright:
-        specifier: 'catalog:'
-        version: 2.11.0(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))
-      eslint-plugin-regexp:
-        specifier: 'catalog:'
-        version: 3.2.0(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))
-      eslint-plugin-sonarjs:
-        specifier: 'catalog:'
-        version: 4.2.0(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))
+      '@zap-studio/oxlint':
+        specifier: workspace:*
+        version: link:packages/oxlint
       lefthook:
         specifier: 'catalog:'
         version: 2.1.10
@@ -357,9 +345,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.78.0(oxlint-tsgolint@7.0.2001)
-      oxlint-plugin-react-doctor:
-        specifier: 'catalog:'
-        version: 0.9.12
       oxlint-tsgolint:
         specifier: 'catalog:'
         version: 7.0.2001
@@ -495,6 +480,46 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.2.0)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.10)(vite@8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.0))
+
+  packages/oxlint:
+    dependencies:
+      '@e18e/eslint-plugin':
+        specifier: 'catalog:'
+        version: 0.8.0(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))
+      eslint-plugin-github:
+        specifier: 'catalog:'
+        version: 6.1.2(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
+      eslint-plugin-playwright:
+        specifier: 'catalog:'
+        version: 2.11.0(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))
+      eslint-plugin-regexp:
+        specifier: 'catalog:'
+        version: 3.2.0(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))
+      eslint-plugin-sonarjs:
+        specifier: 'catalog:'
+        version: 4.2.0(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))
+      oxlint-plugin-react-doctor:
+        specifier: 'catalog:'
+        version: 0.9.12
+    devDependencies:
+      '@oxlint/plugins':
+        specifier: 'catalog:'
+        version: 1.78.0
+      '@zap-studio/typescript':
+        specifier: workspace:*
+        version: link:../../configs/typescript
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.78.0(oxlint-tsgolint@7.0.2001)
+      oxlint-tsgolint:
+        specifier: 'catalog:'
+        version: 7.0.2001
+      tsdown:
+        specifier: 'catalog:'
+        version: 0.22.14(@arethetypeswrong/core@0.18.5)(publint@0.3.23)(tsx@4.23.12)(typescript@7.0.2)(unplugin-unused@0.5.7(esbuild@0.28.2)(rolldown@1.2.4)(rollup@4.62.4)(vite@8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.0))(webpack@5.109.2(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.26)))
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
 
   packages/permit:
     dependencies:
