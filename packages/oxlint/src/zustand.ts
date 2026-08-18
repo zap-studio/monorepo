@@ -1,17 +1,19 @@
-import type { DummyRuleMap, OxlintConfig } from "oxlint";
+import type { DummyRuleMap, ExternalPluginEntry, OxlintConfig } from "oxlint";
 
 import { defineConfig } from "oxlint";
 
 import { prefixed } from "./_prefixed.ts";
+import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorZustandRules } from "./_rules-react-doctor-zustand.ts";
-import react from "./react.ts";
 
-export const zustandRules: DummyRuleMap = {
-  ...prefixed("react-doctor", reactDoctorZustandRules),
-};
+export const zustandJsPlugins: ExternalPluginEntry[] = [
+  { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
+];
+
+export const zustandRules: DummyRuleMap = prefixed("react-doctor", reactDoctorZustandRules);
 
 const zustand: OxlintConfig = defineConfig({
-  extends: [react],
+  jsPlugins: zustandJsPlugins,
   rules: zustandRules,
 });
 

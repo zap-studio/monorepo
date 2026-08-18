@@ -1,69 +1,133 @@
 ---
 title: Presets
-description: What base, react, and every framework- and library-specific leaf preset adds, and how they chain into each other.
+description: What each preset owns — one plugin or framework integration per preset, nothing implied by another.
 ---
 
 # Presets
 
-Every preset extends the one below it in its chain. `rules` merge key-by-key and `plugins`/`jsPlugins` union along the way, so a leaf preset always includes everything its parents decided — you never need to list a parent alongside it.
+Every preset owns a disjoint slice of rules and stands alone — none of them `extends` another. `rules` merge key-by-key and `plugins`/`jsPlugins` union when you list several in your own `extends` array, so pick every preset your project needs; nothing comes along for free.
 
-## Core Chain
+The one exception is `base`.
 
-| Preset                              | Extends | Adds                                                                                                                                                                                |
-| ----------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@zap-studio/oxlint/base`           | —       | `eslint`, `typescript`, `unicorn`, `oxc`, `import`, `jsdoc`, `node`, `promise`, plus `regexp`, `sonarjs`, `github`, `e18e`, and the bundled [`anti-slop`](/oxlint/anti-slop) plugin |
-| `@zap-studio/oxlint/react`          | `base`  | `react`, `react-perf`, `jsx-a11y`, and the framework-agnostic core of `react-doctor` — accessibility, security, correctness, and performance rules that apply to any React codebase |
-| `@zap-studio/oxlint/react-compiler` | `react` | the `react/react-compiler` rule, for projects on the React Compiler                                                                                                                 |
-| `@zap-studio/oxlint/testing`        | `base`  | `vitest` and `playwright`                                                                                                                                                           |
+## `base`
 
-`react`'s `react-doctor` slice is deliberately framework-agnostic — it's the rules that hold regardless of what meta-framework, router, or state library sits on top of React. Anything specific to one of those lives in a leaf preset instead, so pulling in `react` never pulls in rules for a library you don't use.
+Assumes no runtime, no framework, no UI library — JS/TS correctness and security rules any project wants, a Node CLI and a React app alike. The only bundled preset in the package, since there's no meaningful way to want half of it.
+
+| Preset                    | Adds                                                                                                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `@zap-studio/oxlint/base` | `eslint`, `typescript`, `unicorn`, `oxc`, `import`, `promise`, plus `regexp`, `sonarjs`, `github`, `e18e`, and the bundled [`anti-slop`](/oxlint/anti-slop) plugin |
+
+## React
+
+Five independent presets. `react` alone gets hooks correctness only — accessibility, performance, and React-Doctor's broader catalog are each their own opt-in.
+
+| Preset                              | Owns                                                                                                                |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `@zap-studio/oxlint/react`          | the `react` plugin — `rules-of-hooks`, `exhaustive-deps`                                                            |
+| `@zap-studio/oxlint/react-a11y`     | the `jsx-a11y` plugin, plus 4 accessibility checks from `eslint-plugin-github` with no jsx-a11y equivalent          |
+| `@zap-studio/oxlint/react-perf`     | the `react-perf` plugin — the 4 `jsx-no-new-*-as-prop` rules                                                        |
+| `@zap-studio/oxlint/react-doctor`   | `oxlint-plugin-react-doctor`'s framework-agnostic rules — security, hydration, effect-timing, rendering correctness |
+| `@zap-studio/oxlint/react-compiler` | the `react/react-compiler` rule, for projects on the React Compiler                                                 |
+
+`react-doctor`'s rule catalog used to duplicate roughly 90 rules that `react`, `react-perf`, and `jsx-a11y` already cover under their own names — `button-has-type`, the entire `jsx-a11y` alt-text/aria/role catalog, all 4 `react-perf` prop-identity checks, and more. Those now live exclusively in the plugin they originate from; `react-doctor` only owns what's genuinely original to it.
+
+### JSX runtime
+
+`react-in-jsx-scope` depends on which JSX transform a project uses, so it's a choice, not a default baked into `react`:
+
+| Preset                                     | Sets                                                                                                                             |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `@zap-studio/oxlint/jsx-runtime-automatic` | `react/react-in-jsx-scope: "off"` — for `jsx: "react-jsx"` (the default in modern React/Next.js/Vite/Preact/React Native setups) |
+| `@zap-studio/oxlint/jsx-runtime-classic`   | `react/react-in-jsx-scope: "warn"` — for projects still on the classic transform                                                 |
+
+Pick exactly one.
 
 ## Framework & Library Leaves
 
-Each of these extends `react` and adds only that integration's slice of `react-doctor` — no shared plugins to configure, just the rules for the surface you're actually using.
+Each of these owns only its own slice of `oxlint-plugin-react-doctor`'s framework-specific rules — no `react`, `react-a11y`, `react-perf`, or `react-doctor` bundled in. Add those separately (you almost always want them, for anything that renders JSX).
 
-| Preset                                 | Targets                                                                       |
-| -------------------------------------- | ----------------------------------------------------------------------------- |
-| `@zap-studio/oxlint/nextjs`            | Next.js — App Router, metadata, route handlers, `Image`/`Script`/`Head`       |
-| `@zap-studio/oxlint/react-router`      | React Router — loaders, actions, middleware, splat and nested routes          |
-| `@zap-studio/oxlint/react-native`      | React Native/Expo — lists, `Pressable`, Reanimated, deprecated modules        |
-| `@zap-studio/oxlint/remotion`          | Remotion — deterministic rendering, `delayRender`, CSS animation bans         |
-| `@zap-studio/oxlint/preact`            | Preact — API differences from React (`render` args, hooks import, `children`) |
-| `@zap-studio/oxlint/ink`               | Ink — terminal rendering, raw mode, `Static`, focus handling                  |
-| `@zap-studio/oxlint/r3f`               | React Three Fiber                                                             |
-| `@zap-studio/oxlint/three`             | three.js                                                                      |
-| `@zap-studio/oxlint/motion`            | Motion (Framer Motion) — `AnimatePresence`, imperative animation, layout ids  |
-| `@zap-studio/oxlint/redux`             | Redux — `useSelector` derivation and return-value pitfalls                    |
-| `@zap-studio/oxlint/zustand`           | Zustand — selector freshness, store mutation, whole-store destructuring       |
-| `@zap-studio/oxlint/valtio`            | Valtio — proxy reads and snapshots                                            |
-| `@zap-studio/oxlint/mobx`              | MobX — `observer`/`memo` interaction, `makeAutoObservable`, reaction disposal |
-| `@zap-studio/oxlint/jotai`             | Jotai — derived atoms, `selectAtom` placement                                 |
-| `@zap-studio/oxlint/styled-components` | styled-components — duplicate CSS properties, transient props                 |
-| `@zap-studio/oxlint/tanstack`          | TanStack Query and TanStack Router (see below)                                |
+| Preset                                 | Targets                                                                                                    |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `@zap-studio/oxlint/nextjs`            | Next.js — App Router, metadata, route handlers, `Image`/`Script`/`Head`                                    |
+| `@zap-studio/oxlint/react-router`      | React Router — loaders, actions, middleware, splat and nested routes                                       |
+| `@zap-studio/oxlint/react-native`      | React Native/Expo — lists, `Pressable`, Reanimated, deprecated modules                                     |
+| `@zap-studio/oxlint/remotion`          | Remotion — deterministic rendering, `delayRender`, CSS animation bans                                      |
+| `@zap-studio/oxlint/preact`            | Preact — API differences from React (`render` args, hooks import, `children`)                              |
+| `@zap-studio/oxlint/ink`               | Ink — terminal rendering, raw mode, `Static`, focus handling                                               |
+| `@zap-studio/oxlint/r3f`               | React Three Fiber                                                                                          |
+| `@zap-studio/oxlint/three`             | three.js                                                                                                   |
+| `@zap-studio/oxlint/motion`            | Motion (Framer Motion) — `AnimatePresence`, imperative animation, layout ids                               |
+| `@zap-studio/oxlint/redux`             | Redux — `useSelector` derivation and return-value pitfalls                                                 |
+| `@zap-studio/oxlint/zustand`           | Zustand — selector freshness, store mutation, whole-store destructuring                                    |
+| `@zap-studio/oxlint/valtio`            | Valtio — proxy reads and snapshots                                                                         |
+| `@zap-studio/oxlint/mobx`              | MobX — `observer`/`memo` interaction, `makeAutoObservable`, reaction disposal                              |
+| `@zap-studio/oxlint/jotai`             | Jotai — derived atoms, `selectAtom` placement                                                              |
+| `@zap-studio/oxlint/styled-components` | styled-components — duplicate CSS properties, transient props                                              |
+| `@zap-studio/oxlint/tanstack`          | TanStack Query/Router usage patterns from `react-doctor` (loaders, route property order, server functions) |
 
-## TanStack
+Preact and React Native are runtime-ambiguous — pair either with `jsx-runtime-automatic` or `jsx-runtime-classic` depending on the project's transform.
 
-`tanstack` is the one leaf that also brings its own plugins — `@tanstack/eslint-plugin-query` and `@tanstack/eslint-plugin-router` — alongside its `react-doctor` slice:
+### TanStack's own plugins
+
+`tanstack` above only carries `react-doctor`'s TanStack-specific rules — the plugins themselves are separate, since a project might use TanStack Query without Router, or vice versa:
+
+| Preset                               | Owns                             |
+| ------------------------------------ | -------------------------------- |
+| `@zap-studio/oxlint/tanstack-query`  | `@tanstack/eslint-plugin-query`  |
+| `@zap-studio/oxlint/tanstack-router` | `@tanstack/eslint-plugin-router` |
+
+## Opt-in Environment Presets
+
+Not every project runs in Node or wants JSDoc type-annotation rules enforced (redundant once a project is on TypeScript, which `base` already assumes) — kept separate from `base` for that reason:
+
+| Preset                     | Adds                                                        |
+| -------------------------- | ----------------------------------------------------------- |
+| `@zap-studio/oxlint/jsdoc` | the `jsdoc` plugin — for JS (or intentionally-untyped) code |
+| `@zap-studio/oxlint/node`  | the `node` plugin — for code that actually runs under Node  |
+
+## Testing
+
+Split by test runner:
+
+| Preset                          | Adds                       |
+| ------------------------------- | -------------------------- |
+| `@zap-studio/oxlint/vitest`     | the `vitest` plugin        |
+| `@zap-studio/oxlint/playwright` | `eslint-plugin-playwright` |
+
+## Example: Next.js + TanStack, React Compiler on
 
 ```ts
 import { defineConfig } from "oxlint";
-import zapStudio from "@zap-studio/oxlint/tanstack";
+import base from "@zap-studio/oxlint/base";
+import react from "@zap-studio/oxlint/react";
+import reactA11y from "@zap-studio/oxlint/react-a11y";
+import reactDoctor from "@zap-studio/oxlint/react-doctor";
+import reactCompiler from "@zap-studio/oxlint/react-compiler";
+import jsxRuntimeAutomatic from "@zap-studio/oxlint/jsx-runtime-automatic";
+import nextjs from "@zap-studio/oxlint/nextjs";
+import tanstack from "@zap-studio/oxlint/tanstack";
+import tanstackQuery from "@zap-studio/oxlint/tanstack-query";
+import tanstackRouter from "@zap-studio/oxlint/tanstack-router";
+import vitest from "@zap-studio/oxlint/vitest";
 
 export default defineConfig({
-  extends: [zapStudio],
+  extends: [
+    base,
+    react,
+    reactA11y,
+    reactDoctor,
+    reactCompiler,
+    jsxRuntimeAutomatic,
+    nextjs,
+    tanstack,
+    tanstackQuery,
+    tanstackRouter,
+    vitest,
+  ],
 });
 ```
 
-## Combining with React Compiler
-
-`nextjs-react-compiler` and `tanstack-react-compiler` extend `react-compiler` instead of `react`, then layer the same `nextjs`/`tanstack` rules on top — use one of these instead of `nextjs`/`tanstack` if your project is also on the React Compiler:
-
-| Preset                                       | Equivalent to                                         |
-| -------------------------------------------- | ----------------------------------------------------- |
-| `@zap-studio/oxlint/nextjs-react-compiler`   | `nextjs` rules + `react/react-compiler`               |
-| `@zap-studio/oxlint/tanstack-react-compiler` | `tanstack` rules and plugins + `react/react-compiler` |
-
-There's no `react-compiler` variant for every other leaf — combine `react-compiler`'s rules with a leaf's rules yourself via [cherry-picking](/oxlint/getting-started#cherry-pick-pieces) if you need one.
+Eleven imports instead of one — the tradeoff for a preset stack that's exactly what the project uses, nothing implied.
 
 ## Where the Rules Come From
 

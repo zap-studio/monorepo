@@ -1,17 +1,19 @@
-import type { DummyRuleMap, OxlintConfig } from "oxlint";
+import type { DummyRuleMap, ExternalPluginEntry, OxlintConfig } from "oxlint";
 
 import { defineConfig } from "oxlint";
 
 import { prefixed } from "./_prefixed.ts";
+import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorR3fRules } from "./_rules-react-doctor-r3f.ts";
-import react from "./react.ts";
 
-export const r3fRules: DummyRuleMap = {
-  ...prefixed("react-doctor", reactDoctorR3fRules),
-};
+export const r3fJsPlugins: ExternalPluginEntry[] = [
+  { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
+];
+
+export const r3fRules: DummyRuleMap = prefixed("react-doctor", reactDoctorR3fRules);
 
 const r3f: OxlintConfig = defineConfig({
-  extends: [react],
+  jsPlugins: r3fJsPlugins,
   rules: r3fRules,
 });
 

@@ -1,17 +1,19 @@
-import type { DummyRuleMap, OxlintConfig } from "oxlint";
+import type { DummyRuleMap, ExternalPluginEntry, OxlintConfig } from "oxlint";
 
 import { defineConfig } from "oxlint";
 
 import { prefixed } from "./_prefixed.ts";
+import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorJotaiRules } from "./_rules-react-doctor-jotai.ts";
-import react from "./react.ts";
 
-export const jotaiRules: DummyRuleMap = {
-  ...prefixed("react-doctor", reactDoctorJotaiRules),
-};
+export const jotaiJsPlugins: ExternalPluginEntry[] = [
+  { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
+];
+
+export const jotaiRules: DummyRuleMap = prefixed("react-doctor", reactDoctorJotaiRules);
 
 const jotai: OxlintConfig = defineConfig({
-  extends: [react],
+  jsPlugins: jotaiJsPlugins,
   rules: jotaiRules,
 });
 

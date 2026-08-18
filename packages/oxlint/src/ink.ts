@@ -1,17 +1,19 @@
-import type { DummyRuleMap, OxlintConfig } from "oxlint";
+import type { DummyRuleMap, ExternalPluginEntry, OxlintConfig } from "oxlint";
 
 import { defineConfig } from "oxlint";
 
 import { prefixed } from "./_prefixed.ts";
+import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorInkRules } from "./_rules-react-doctor-ink.ts";
-import react from "./react.ts";
 
-export const inkRules: DummyRuleMap = {
-  ...prefixed("react-doctor", reactDoctorInkRules),
-};
+export const inkJsPlugins: ExternalPluginEntry[] = [
+  { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
+];
+
+export const inkRules: DummyRuleMap = prefixed("react-doctor", reactDoctorInkRules);
 
 const ink: OxlintConfig = defineConfig({
-  extends: [react],
+  jsPlugins: inkJsPlugins,
   rules: inkRules,
 });
 

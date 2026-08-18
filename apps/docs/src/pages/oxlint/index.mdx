@@ -1,37 +1,40 @@
 ---
 title: Overview
-description: Composable oxlint presets for zero-config linting — pick the preset that matches your stack and extend it in one line.
+description: Exclusive, single-owner oxlint presets — pick exactly the plugins and framework rules your project needs, nothing implied.
 ---
 
 # @zap-studio/oxlint
 
-`@zap-studio/oxlint` is Zap Studio's [oxlint](https://oxc.rs/docs/guide/usage/linter.html) preset — composable rule sets built from vetted ESLint plugins, plus a bundled `anti-slop` plugin.
+`@zap-studio/oxlint` is Zap Studio's [oxlint](https://oxc.rs/docs/guide/usage/linter.html) preset — exclusive, single-owner rule sets built from vetted ESLint plugins, plus a bundled `anti-slop` plugin.
 
 ## Motivation
 
 `oxlint` runs zero-config out of the box, but that config only covers its own bundled rules. The moment a project needs React, Next.js, TanStack, or test-specific linting, that zero-config story ends — now it's on you to find the right plugins, wire them up, and decide which rules to turn on.
 
-`@zap-studio/oxlint` picks up where zero-config leaves off: a preset per stack, ready to `extends` in one line, so React, Next.js, and the rest of the framework and library surface get useful linting immediately — no plugin list to assemble by hand.
+`@zap-studio/oxlint` picks up where zero-config leaves off: one preset per plugin or framework integration, each owning a disjoint slice of rules. Nothing cascades — `extends: [react]` gets you the `react` plugin's hooks rules and nothing else, not accessibility, not React-Doctor's broader catalog, not any particular framework. You list every preset you want.
 
-Presets are composed from a `base` up through framework- and library-specific leaves, and each one already includes everything up its own chain, so you pick the single preset that matches your project instead of stacking pieces yourself.
+The one exception is `base`: JS/TS correctness and security rules that apply regardless of framework, bundled as a single preset since there's no meaningful way to want half of it.
 
 ## Features
 
-- **Zero-config for your stack** — `extends: [zapStudio]` in `oxlint.config.ts` is the whole setup; each preset already includes everything up its own chain, so `tanstack` never needs `react` listed alongside it.
-- **A preset per framework and library** — from a `base` chain up through Next.js, React Router, TanStack, and more, so you're not assembling plugins by hand to cover the surface you actually use.
+- **One preset, one owner** — no preset silently pulls another in, so two presets never fire the same check twice under different rule names.
+- **A preset per plugin and framework integration** — React, Next.js, React Router, TanStack, and more, composed explicitly instead of inherited through a chain.
 - **Bundled `anti-slop` plugin** — original rules for patterns that don't fit any upstream plugin.
 - **`extends` merges, it doesn't replace** — `rules` merge key-by-key and `plugins`/`jsPlugins` union, so overriding one rule in your own config doesn't require forking a preset.
-- **Cherry-pickable pieces** — every preset also exports its plugins and rules as plain values, for building a custom combination instead of taking a whole preset.
+- **Cherry-pickable pieces** — every preset also exports its plugins and rules as plain values, for merging by hand instead of taking the default export.
 
 ## Quick Start
 
 ```ts
 // oxlint.config.ts
 import { defineConfig } from "oxlint";
-import zapStudio from "@zap-studio/oxlint/react";
+import base from "@zap-studio/oxlint/base";
+import react from "@zap-studio/oxlint/react";
+import reactA11y from "@zap-studio/oxlint/react-a11y";
+import reactDoctor from "@zap-studio/oxlint/react-doctor";
 
 export default defineConfig({
-  extends: [zapStudio],
+  extends: [base, react, reactA11y, reactDoctor],
 });
 ```
 

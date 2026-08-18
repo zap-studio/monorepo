@@ -1,17 +1,19 @@
-import type { DummyRuleMap, OxlintConfig } from "oxlint";
+import type { DummyRuleMap, ExternalPluginEntry, OxlintConfig } from "oxlint";
 
 import { defineConfig } from "oxlint";
 
 import { prefixed } from "./_prefixed.ts";
+import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorValtioRules } from "./_rules-react-doctor-valtio.ts";
-import react from "./react.ts";
 
-export const valtioRules: DummyRuleMap = {
-  ...prefixed("react-doctor", reactDoctorValtioRules),
-};
+export const valtioJsPlugins: ExternalPluginEntry[] = [
+  { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
+];
+
+export const valtioRules: DummyRuleMap = prefixed("react-doctor", reactDoctorValtioRules);
 
 const valtio: OxlintConfig = defineConfig({
-  extends: [react],
+  jsPlugins: valtioJsPlugins,
   rules: valtioRules,
 });
 

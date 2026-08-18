@@ -1,17 +1,19 @@
-import type { DummyRuleMap, OxlintConfig } from "oxlint";
+import type { DummyRuleMap, ExternalPluginEntry, OxlintConfig } from "oxlint";
 
 import { defineConfig } from "oxlint";
 
 import { prefixed } from "./_prefixed.ts";
+import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorRemotionRules } from "./_rules-react-doctor-remotion.ts";
-import react from "./react.ts";
 
-export const remotionRules: DummyRuleMap = {
-  ...prefixed("react-doctor", reactDoctorRemotionRules),
-};
+export const remotionJsPlugins: ExternalPluginEntry[] = [
+  { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
+];
+
+export const remotionRules: DummyRuleMap = prefixed("react-doctor", reactDoctorRemotionRules);
 
 const remotion: OxlintConfig = defineConfig({
-  extends: [react],
+  jsPlugins: remotionJsPlugins,
   rules: remotionRules,
 });
 

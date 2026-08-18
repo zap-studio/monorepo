@@ -15,8 +15,6 @@ export const basePlugins: NonNullable<OxlintConfig["plugins"]> = [
   "unicorn",
   "oxc",
   "import",
-  "jsdoc",
-  "node",
   "promise",
 ];
 
