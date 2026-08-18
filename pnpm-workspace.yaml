@@ -34,6 +34,7 @@ catalog:
   eslint-plugin-playwright: ^2.11.0
   eslint-plugin-regexp: ^3.2.0
   eslint-plugin-sonarjs: ^4.2.0
+  fallow: ^3.17.0
   lefthook: ^2.1.10
   oxfmt: ^0.63.0
   oxlint: ^1.78.0
@@ -41,6 +42,7 @@ catalog:
   oxlint-tsgolint: ^7.0.2001
   playwright: ^1.62.1
   publint: ^0.3.23
+  react-doctor: ^0.9.12
   react: ^19.2.8
   react-dom: ^19.2.8
   tsdown: ^0.22.14
