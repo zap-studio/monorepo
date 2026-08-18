@@ -1,6 +1,6 @@
 # @zap-studio/oxfmt
 
-Zap Studio's [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) preset: sorted imports, sorted `package.json` (keys and scripts), and an optional Tailwind CSS class-sorting extension.
+Zap Studio's [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) preset — sorted imports, sorted `package.json`, and an optional Tailwind CSS class-sorting extension.
 
 ## Installation
 
@@ -40,8 +40,10 @@ export default defineConfig({
 
 ## Presets
 
-- `@zap-studio/oxfmt/base` — sorted imports (`type-import`, then builtin/external values, internal types, internal values, then parent/sibling/index grouped by type then value, then unknown — blank line between groups) and sorted `package.json` (keys and `scripts`, alphabetically).
-- `@zap-studio/oxfmt/tailwind` — `base` plus `sortTailwindcss: true`.
+| Preset                       | Built on | Adds                                                                                                                                                                                                                                                         |
+| ---------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `@zap-studio/oxfmt/base`     | —        | sorted imports (`type-import`, then builtin/external values, internal types, internal values, then parent/sibling/index grouped by type then value, then unknown — blank line between groups) and sorted `package.json` (keys and `scripts`, alphabetically) |
+| `@zap-studio/oxfmt/tailwind` | `base`   | `sortTailwindcss: true`                                                                                                                                                                                                                                      |
 
 ## License
 
