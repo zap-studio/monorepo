@@ -25,7 +25,7 @@ export const classicFormat: LogFormatter = (record) =>
  * values into `{ name, message, stack }` and stringifies `bigint` values,
  * since neither survives `JSON.stringify` on its own.
  */
-const jsonReplacer = (_key: string, value: unknown): unknown => {
+const jsonReplacer = (_key: string, value: unknown) => {
   if (value instanceof Error) {
     return { message: value.message, name: value.name, stack: value.stack };
   }
