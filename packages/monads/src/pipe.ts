@@ -77,6 +77,7 @@ export function pipe<A, B, C, D, E, F, G, H, I, J>(
   fn8: (h: H) => I,
   fn9: (i: I) => J,
 ): J;
+// oxlint-disable-next-line anti-slop/no-unknown-returns anti-slop/no-unknown-parameters -- This is the single runtime implementation behind the typed overloads above; TS requires an overload implementation signature to be wide enough for every overload it backs. Callers only ever see one of the typed overloads, never this signature.
 export function pipe(value: unknown, ...fns: ((input: unknown) => unknown)[]): unknown {
   let acc = value;
 
