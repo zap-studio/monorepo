@@ -7,7 +7,14 @@ export default defineConfig({
   attw: { profile: "esm-only" },
   dts: true,
   entry: ["src/**/*.ts", "!src/**/_*.ts", "!src/anti-slop/**", "!**/*.test.ts", "!**/*.spec.ts"],
-  exports: true,
+  exports: {
+    customExports(exports, { pkg }) {
+      if (pkg.name === "@zap-studio/oxlint") {
+        exports["./anti-slop"] = "./src/anti-slop/index.ts";
+      }
+      return exports;
+    },
+  },
   platform: "neutral",
   publint: true,
   unused: true,
