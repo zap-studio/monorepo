@@ -25,6 +25,7 @@ export const classicFormat: LogFormatter = (record) =>
  * values into `{ name, message, stack }` and stringifies `bigint` values,
  * since neither survives `JSON.stringify` on its own.
  */
+// oxlint-disable-next-line anti-slop/no-unknown-returns anti-slop/no-unknown-parameters -- Required by JSON.stringify's built-in replacer signature ((key: string, value: any) => any); narrowing the return type would break assignability to that stdlib API.
 const jsonReplacer = (_key: string, value: unknown): unknown => {
   if (value instanceof Error) {
     return { message: value.message, name: value.name, stack: value.stack };
