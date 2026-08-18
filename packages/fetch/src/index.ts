@@ -346,7 +346,7 @@ const fetchInternal = async (
         : await fetch(url, init);
 
       logResponse(logger, method, url, response);
-      span.setAttribute('http.response.status_code', response.status);
+      span.setAttribute("http.response.status_code", response.status);
       if (!response.ok) {
         span.setStatus({ code: SpanStatusCode.ERROR });
       }
