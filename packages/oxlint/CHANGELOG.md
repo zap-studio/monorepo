@@ -20,6 +20,15 @@ Seven new leaf presets, each exclusive-owner of its own plugin's rules — none 
 
 `@graphql-eslint/eslint-plugin` was evaluated and intentionally not added: it requires its own GraphQL-AST parser and a template-literal processor, neither of which oxlint's `jsPlugins` bridge supports (it loads plain ESLint rule objects operating on the JS/TS AST only).
 
+### Fixed
+
+- `react-a11y`: removed `jsx-a11y/aria-braille-equivalent`. It's part of upstream `eslint-plugin-jsx-a11y`'s rule catalog but isn't implemented in oxlint's native `jsx_a11y` port in any oxlint version published to date (checked `1.78.0` and `1.79.0` via `oxlint --print-config`) — oxlint reimplements a subset of `jsx-a11y`'s rules in Rust, not the full upstream set. Config parsing hard-fails on any unknown rule name regardless of severity, so `"off"` wasn't an option either — the entry had to come out entirely. This preset previously crashed every consumer that extended it, since oxlint refuses to parse the whole config on one unresolvable rule.
+
+### Added
+
+- `scripts/verify-presets.mjs` + a `verify` package script, wired into `prepublishOnly` — a pre-publish gate that runs `oxlint --print-config` against every built preset (`dist/*.js`) using the installed `oxlint`, and fails the build if any preset's rules or jsPlugin specifiers don't resolve. This is what should have caught the `aria-braille-equivalent` bug before it ever published; it now runs automatically on every `npm publish` of this package.
+- A "Compatibility" section in the README documenting the coupling between this package's native-plugin-referencing presets and the installed `oxlint` binary version, and pointing at `scripts/verify-presets.mjs` as the source of truth for what's actually verified.
+
 ## [2.0.0]
 
 ### Changed

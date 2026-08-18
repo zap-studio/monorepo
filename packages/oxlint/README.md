@@ -12,6 +12,12 @@ npm install --save-dev @zap-studio/oxlint oxlint
 
 `oxlint` is a peer dependency — install the version you want to run. If you use `base`'s `typeAware`/`typeCheck` options, also install `oxlint-tsgolint`.
 
+## Compatibility
+
+`oxlint` is a peer dependency, not a bundled one — check that your installed version satisfies `peerDependencies.oxlint` in this package's `package.json` before extending a preset. This matters more here than for most peer dependencies: presets built on jsPlugins (`stylex`, `playwright`, `tanstack-query`, ...) resolve a real installed npm package, so version drift there just resolves to whatever you have installed. Presets built on oxlint's _native_ plugins (`jsx-a11y`, `react`, `react-perf`, `typescript`, `unicorn`, `oxc`, `import`, `promise`, `eslint`) reference rules baked into the `oxlint` binary itself — if a referenced rule doesn't exist in your installed `oxlint`, config parsing hard-fails immediately with `Rule '<name>' not found in plugin '<plugin>'`, for the whole config, not just that rule.
+
+Every release of this package is verified against the exact `oxlint` version its own `peerDependencies.oxlint` floor resolves to — `scripts/verify-presets.mjs` runs `oxlint --print-config` against every built preset before publish and fails the release if any preset doesn't parse. If you still hit the error above, your installed `oxlint` is older than this package's declared floor; upgrade `oxlint` to match.
+
 ## Usage
 
 Every preset owns its own slice of rules and nothing else's — `react` doesn't bring accessibility rules, `nextjs` doesn't bring hooks rules, `tanstack-start` doesn't bring the TanStack Query plugin. List every preset your project actually needs in `extends`:
