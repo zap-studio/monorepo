@@ -10,7 +10,6 @@ export const githubRules = {
   "async-currenttarget": "error",
   "async-preventdefault": "error",
   "authenticity-token": "error",
-  "get-attribute": "error",
   "js-class-name": "error",
   "no-blur": "error",
   "no-d-none": "error",
@@ -32,4 +31,9 @@ export const githubRules = {
   // pushes getAttribute('data-*') over .dataset for old-browser compat; every
   // runtime these packages target supports .dataset fine
   "no-dataset": "off",
+  // matches on method name only (setAttribute/getAttribute), no type-awareness —
+  // fires on OpenTelemetry Span.setAttribute() calls across _otel.ts files, whose
+  // dotted keys (e.g. "http.response.status_code") are the correct OTel
+  // convention, not a DOM-attribute bug
+  "get-attribute": "off",
 } satisfies RuleMap;
