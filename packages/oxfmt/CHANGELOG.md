@@ -8,4 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-Initial release. `base` and `tailwind` oxfmt presets, extracted from the monorepo's own `oxfmt.config.ts`.
+Initial release, extracted from the monorepo's own `oxfmt.config.ts`.
+
+- Two composable presets: `base` and `tailwind` (`tailwind` builds on `base`, adding `sortTailwindcss: true`).
+- `base` sorts imports (reusing this monorepo's own group order) and sorts `package.json` keys and `scripts` alphabetically.
