@@ -72,6 +72,10 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "prepublishOnly": "pnpm run verify",
+    "verify": "node scripts/verify-presets.mjs"
+  },
   "dependencies": {
     "@e18e/eslint-plugin": "catalog:",
     "@stylexjs/eslint-plugin": "catalog:",
