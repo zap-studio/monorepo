@@ -192,7 +192,8 @@ export const createPolicy = <
     }
   };
 
-  for (const key of Object.keys(resources)) {
+  // SAFETY: `resources` is typed as `TResources`, so its own enumerable keys are exactly `keyof TResources`.
+  for (const key of Object.keys(resources) as (keyof TResources)[]) {
     const schema = resources[key];
     if (schema === undefined) {
       throw new PolicyError(`Missing schema for resource: ${String(key)}`);
