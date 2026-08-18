@@ -223,3 +223,20 @@ export interface ApiMethods {
    */
   put: $Fetch;
 }
+
+/**
+ * Configured fetch instance returned by `createFetch(...)`.
+ *
+ * @example
+ * const { $fetch, api } = createFetch({ baseURL: "https://api.example.com" });
+ */
+export interface FetchInstance {
+  /**
+   * Configured `$fetch` function.
+   */
+  $fetch: $Fetch;
+  /**
+   * Configured HTTP method-specific fetch functions.
+   */
+  api: ApiMethods;
+}

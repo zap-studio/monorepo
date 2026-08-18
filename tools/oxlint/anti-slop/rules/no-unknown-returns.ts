@@ -1,6 +1,6 @@
-import { defineRule } from "@oxlint/plugins";
-
 import type { ESTree } from "@oxlint/plugins";
+
+import { defineRule } from "@oxlint/plugins";
 
 import { lexicalTypeParameterNames } from "../shared/lexical-type-parameters.ts";
 
@@ -49,9 +49,7 @@ export const noUnknownReturnsRule = defineRule({
         return resolvesToUnknown(type.typeAnnotation, shadowedAliases, visited);
       }
       if (type.type === "TSUnionType") {
-        return type.types.some((member) =>
-          resolvesToUnknown(member, shadowedAliases, visited),
-        );
+        return type.types.some((member) => resolvesToUnknown(member, shadowedAliases, visited));
       }
       if (
         type.type === "TSTypeReference" &&

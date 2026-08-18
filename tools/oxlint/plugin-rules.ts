@@ -1,8 +1,7 @@
 type Severity = "error" | "warn" | "off";
 type RuleMap = Record<string, Severity>;
 
-// eslint-plugin-playwright@2.11.0 `configs.recommended`, bare rule ids.
-const playwrightRules: RuleMap = {
+const playwrightRules = {
   "consistent-spacing-between-blocks": "warn",
   "expect-expect": "warn",
   "max-nested-describe": "warn",
@@ -39,10 +38,9 @@ const playwrightRules: RuleMap = {
   "valid-expect-in-promise": "error",
   "valid-test-tags": "error",
   "valid-title": "error",
-};
+} satisfies RuleMap;
 
-// eslint-plugin-regexp@3.2.0 `configs.recommended`, bare rule ids.
-const regexpRules: RuleMap = {
+const regexpRules = {
   "confusing-quantifier": "warn",
   "control-character-escape": "error",
   "match-any": "error",
@@ -103,13 +101,31 @@ const regexpRules: RuleMap = {
   "sort-flags": "error",
   strict: "error",
   "use-ignore-case": "error",
-};
+} satisfies RuleMap;
 
-// eslint-plugin-sonarjs@4.2.0 `configs.recommended`, bare rule ids.
-// Only rules the recommended config sets to "error"/"warn" are listed —
-// rules it leaves "off" are simply omitted (an unlisted jsPlugin rule
-// never runs, so listing them as "off" here would be a no-op).
-const sonarjsRules: RuleMap = {
+const githubRules = {
+  "a11y-aria-label-is-well-formatted": "error",
+  "a11y-no-title-attribute": "error",
+  "a11y-no-visually-hidden-interactive-element": "error",
+  "a11y-role-supports-aria-props": "error",
+  "a11y-svg-has-accessible-name": "error",
+  "array-foreach": "error",
+  "async-currenttarget": "error",
+  "async-preventdefault": "error",
+  "authenticity-token": "error",
+  "js-class-name": "error",
+  "no-blur": "error",
+  "no-d-none": "error",
+  "no-dynamic-script-tag": "error",
+  "no-inner-html": "error",
+  "no-innerText": "error",
+  "no-then": "error",
+  "no-useless-passive": "error",
+  "prefer-observers": "error",
+  "require-passive-events": "error",
+} satisfies RuleMap;
+
+const sonarjsRules = {
   "anchor-precedence": "error",
   "argument-type": "error",
   "arguments-order": "error",
@@ -327,10 +343,9 @@ const sonarjsRules: RuleMap = {
   "weak-ssl": "error",
   "x-powered-by": "error",
   "xml-parser-xxe": "error",
-};
+} satisfies RuleMap;
 
-// @e18e/eslint-plugin@0.8.0 `configs.recommended`, bare rule ids.
-const e18eRules: RuleMap = {
+const e18eRules = {
   "ban-dependencies": "error",
   "prefer-array-at": "error",
   "prefer-array-fill": "error",
@@ -349,17 +364,17 @@ const e18eRules: RuleMap = {
   "prefer-string-fromcharcode": "error",
   "prefer-timer-args": "error",
   "prefer-url-canparse": "error",
-};
+} satisfies RuleMap;
 
-function prefixed(pluginName: string, rules: RuleMap): RuleMap {
-  return Object.fromEntries(
+const prefixed = (pluginName: string, rules: RuleMap): RuleMap =>
+  Object.fromEntries(
     Object.entries(rules).map(([rule, severity]) => [`${pluginName}/${rule}`, severity]),
   );
-}
 
-export const eslintPluginRules: RuleMap = {
+export const eslintPluginRules = {
   ...prefixed("playwright", playwrightRules),
   ...prefixed("regexp", regexpRules),
   ...prefixed("sonarjs", sonarjsRules),
   ...prefixed("e18e", e18eRules),
-};
+  ...prefixed("github", githubRules),
+} satisfies RuleMap;

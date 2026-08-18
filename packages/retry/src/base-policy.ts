@@ -200,27 +200,59 @@ const runThrowMode = async <T, TError extends Error, TData>(
         throw error;
       }
 
-      const decision = policy.next({
-        attempt,
-        error,
-      });
-      logRetryDecision(logger, attempt, decision, error);
-
-      if (!decision.shouldRetry) {
-        throw policy.onExhausted({
-          attempts: attempt,
-          error,
-        });
-      }
-
-      if (decision.delayMs > 0) {
-        await (signal === undefined
-          ? sleep(decision.delayMs)
-          : sleepWithAbortSignal(sleep, decision.delayMs, signal));
-      }
-
+      await handleThrowModeRetry(policy, { attempt, error, logger, signal, sleep });
       attempt += 1;
     }
+  }
+};
+
+/**
+ * After a failed, known-domain attempt in throw mode, applies the policy's
+ * retry decision: throws the terminal error from `onExhausted` on
+ * exhaustion, otherwise waits out the retry delay so the caller's loop can
+ * continue.
+ *
+ * @param policy - Resolved retry policy providing `next` and `onExhausted`.
+ * @param params - Failure context for the current attempt.
+ * @param params.attempt - Current attempt number.
+ * @param params.error - Error thrown by the attempt, already known to the policy's domain.
+ * @param params.sleep - Delay function between retries.
+ * @param params.signal - Optional abort signal.
+ * @param params.logger - Optional logger; logs each retry decision at `debug`
+ *   and exhaustion at `warn`.
+ * @throws {RetryError} When retries are exhausted and `onExhausted` returns
+ *   the terminal error.
+ * @throws {AbortError} When `signal` aborts while waiting for the retry delay.
+ * @throws {Error} Any error thrown by `next`, `onExhausted`, or `sleep`.
+ */
+const handleThrowModeRetry = async <TError extends Error, TData>(
+  policy: ResolvedRetryPolicy<TError, TData>,
+  params: {
+    attempt: number;
+    error: TError;
+    sleep: (delayMs: number) => Promise<void>;
+    signal: AbortSignal | undefined;
+    logger: Logger | undefined;
+  },
+): Promise<void> => {
+  const { attempt, error, sleep, signal, logger } = params;
+  const decision = policy.next({
+    attempt,
+    error,
+  });
+  logRetryDecision(logger, attempt, decision, error);
+
+  if (!decision.shouldRetry) {
+    throw policy.onExhausted({
+      attempts: attempt,
+      error,
+    });
+  }
+
+  if (decision.delayMs > 0) {
+    await (signal === undefined
+      ? sleep(decision.delayMs)
+      : sleepWithAbortSignal(sleep, decision.delayMs, signal));
   }
 };
 

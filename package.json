@@ -20,6 +20,7 @@
     "@oxlint/plugins": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@vitest/coverage-v8": "catalog:",
+    "eslint-plugin-github": "catalog:",
     "eslint-plugin-playwright": "catalog:",
     "eslint-plugin-regexp": "catalog:",
     "eslint-plugin-sonarjs": "catalog:",

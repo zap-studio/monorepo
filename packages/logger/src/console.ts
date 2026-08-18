@@ -10,14 +10,14 @@ import { withTraceContext } from "./_otel.js";
 import { isLevelEnabled } from "./core.js";
 import { classicFormat } from "./format.js";
 
-const CONSOLE_METHOD_BY_LEVEL: Record<CallableLogLevel, "debug" | "info" | "warn" | "error"> = {
+const CONSOLE_METHOD_BY_LEVEL = {
   debug: "debug",
   error: "error",
   fatal: "error",
   info: "info",
   trace: "debug",
   warn: "warn",
-};
+} satisfies Record<CallableLogLevel, "debug" | "info" | "warn" | "error">;
 
 /**
  * Options for {@link ConsoleLogger}.
