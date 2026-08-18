@@ -2,7 +2,7 @@
   "name": "@zap-studio/oxlint",
   "version": "1.0.0",
   "private": false,
-  "description": "Zap Studio's oxlint preset: composable base, react, and testing rule sets.",
+  "description": "Zap Studio's oxlint preset: composable base, react, react-compiler, tanstack, and testing rule sets.",
   "keywords": [
     "config",
     "eslint",
@@ -32,6 +32,8 @@
     "./base": "./dist/base.js",
     "./full": "./dist/full.js",
     "./react": "./dist/react.js",
+    "./react-compiler": "./dist/react-compiler.js",
+    "./tanstack": "./dist/tanstack.js",
     "./testing": "./dist/testing.js",
     "./package.json": "./package.json",
     "./anti-slop": "./src/anti-slop/index.ts"
@@ -41,6 +43,8 @@
   },
   "dependencies": {
     "@e18e/eslint-plugin": "catalog:",
+    "@tanstack/eslint-plugin-query": "catalog:",
+    "@tanstack/eslint-plugin-router": "catalog:",
     "eslint-plugin-github": "catalog:",
     "eslint-plugin-playwright": "catalog:",
     "eslint-plugin-regexp": "catalog:",
