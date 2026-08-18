@@ -2,6 +2,7 @@ import { defineConfig } from "vocs/config";
 
 const baseUrl = "https://www.zapstudio.dev";
 const ogImageUrl = `${baseUrl}/og.png`;
+const gettingStarted = "Getting Started";
 
 export default defineConfig({
   accentColor: "light-dark(hsl(38, 92%, 40%), hsl(43, 96%, 56%))",
@@ -25,14 +26,14 @@ export default defineConfig({
   ogImageUrl,
   renderStrategy: "full-static",
   sidebar: [
-    { link: "/", text: "Getting Started" },
+    { link: "/", text: gettingStarted },
     {
       items: [
         {
           collapsed: true,
           items: [
             { link: "/fetch", text: "Overview" },
-            { link: "/fetch/getting-started", text: "Getting Started" },
+            { link: "/fetch/getting-started", text: gettingStarted },
             { link: "/fetch/raw-fetch-mode", text: "Raw Fetch Mode" },
             {
               link: "/fetch/validated-fetch-mode",
@@ -52,7 +53,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             { link: "/logger", text: "Overview" },
-            { link: "/logger/getting-started", text: "Getting Started" },
+            { link: "/logger/getting-started", text: gettingStarted },
             { link: "/logger/formats", text: "Output Formats" },
             {
               link: "/logger/runtime-compatibility",
@@ -66,7 +67,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             { link: "/monads", text: "Overview" },
-            { link: "/monads/getting-started", text: "Getting Started" },
+            { link: "/monads/getting-started", text: gettingStarted },
             { link: "/monads/result", text: "Result" },
             { link: "/monads/result-async", text: "ResultAsync" },
             { link: "/monads/option", text: "Option" },
@@ -78,7 +79,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             { link: "/permit", text: "Overview" },
-            { link: "/permit/getting-started", text: "Getting Started" },
+            { link: "/permit/getting-started", text: gettingStarted },
             {
               link: "/permit/declarative-policies",
               text: "Declarative Policies",
@@ -101,7 +102,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             { link: "/retry", text: "Overview" },
-            { link: "/retry/getting-started", text: "Getting Started" },
+            { link: "/retry/getting-started", text: gettingStarted },
             {
               items: [
                 { link: "/retry/fixed-delay", text: "FixedDelay" },
@@ -128,7 +129,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             { link: "/validation", text: "Overview" },
-            { link: "/validation/getting-started", text: "Getting Started" },
+            { link: "/validation/getting-started", text: gettingStarted },
             { link: "/validation/async-validation", text: "Async Validation" },
             {
               link: "/validation/synchronous-validation",
@@ -150,7 +151,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             { link: "/webhooks", text: "Overview" },
-            { link: "/webhooks/getting-started", text: "Getting Started" },
+            { link: "/webhooks/getting-started", text: gettingStarted },
             { link: "/webhooks/web-api-native", text: "Web API Native" },
             { link: "/webhooks/type-safe-routing", text: "Type-Safe Routing" },
             { link: "/webhooks/standard-schema", text: "Standard Schema" },
