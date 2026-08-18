@@ -1,0 +1,66 @@
+{
+  "name": "@zap-studio/oxlint",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Zap Studio's oxlint preset: composable base, react, and testing rule sets.",
+  "keywords": [
+    "config",
+    "eslint",
+    "lint",
+    "oxlint",
+    "preset",
+    "react",
+    "typescript"
+  ],
+  "homepage": "https://www.zapstudio.dev/packages/oxlint",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/oxlint"
+  },
+  "files": [
+    "dist",
+    "src/anti-slop",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./base": "./dist/base.js",
+    "./full": "./dist/full.js",
+    "./react": "./dist/react.js",
+    "./testing": "./dist/testing.js",
+    "./package.json": "./package.json",
+    "./anti-slop": "./src/anti-slop/index.ts"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@e18e/eslint-plugin": "catalog:",
+    "eslint-plugin-github": "catalog:",
+    "eslint-plugin-playwright": "catalog:",
+    "eslint-plugin-regexp": "catalog:",
+    "eslint-plugin-sonarjs": "catalog:",
+    "oxlint-plugin-react-doctor": "catalog:"
+  },
+  "devDependencies": {
+    "@oxlint/plugins": "catalog:",
+    "@zap-studio/typescript": "workspace:*",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "@oxlint/plugins": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}
