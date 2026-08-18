@@ -80,6 +80,7 @@ const runBeforeHooks = async (ctx: WebhookContext, hooks?: BeforeHook[]): Promis
   }
 
   for (const hook of hooks) {
+    // oxlint-disable-next-line react-doctor/async-await-in-loop -- False positive: before-hooks must run in registration order (a later hook may depend on an earlier one's side effect), and a throw from any hook must abort the remaining ones. Promise.all would run them concurrently and lose both properties.
     await hook(ctx);
   }
 };
@@ -95,6 +96,7 @@ const runAfterHooks = async (
   }
 
   for (const hook of hooks) {
+    // oxlint-disable-next-line react-doctor/async-await-in-loop -- False positive: same ordering/abort contract as runBeforeHooks above — after-hooks must run in registration order and a throw must abort the remaining ones.
     await hook(ctx, response);
   }
 };
