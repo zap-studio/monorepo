@@ -17,6 +17,8 @@ export default defineConfig({
   },
   platform: "neutral",
   publint: true,
-  unused: true,
+  unused: {
+    ignore: ["@oxlint/plugins", "oxlint-tsgolint"],
+  },
   workspace: { include: [`${repoRoot}packages/*`] },
 });
