@@ -113,7 +113,6 @@ const githubRules = {
   "async-currenttarget": "error",
   "async-preventdefault": "error",
   "authenticity-token": "error",
-  "get-attribute": "error",
   "js-class-name": "error",
   "no-blur": "error",
   "no-d-none": "error",
