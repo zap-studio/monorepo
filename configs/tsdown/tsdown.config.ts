@@ -6,7 +6,7 @@ const repoRoot = fileURLToPath(new URL("../..", import.meta.url));
 export default defineConfig({
   attw: { profile: "esm-only" },
   dts: true,
-  entry: ["src/**/*.ts", "!src/**/_*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
+  entry: ["src/**/*.ts", "!src/**/_*.ts", "!src/anti-slop/**", "!**/*.test.ts", "!**/*.spec.ts"],
   exports: true,
   platform: "neutral",
   publint: true,
