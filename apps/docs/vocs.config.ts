@@ -78,6 +78,23 @@ export default defineConfig({
         {
           collapsed: true,
           items: [
+            { link: "/oxfmt", text: "Overview" },
+            { link: "/oxfmt/getting-started", text: gettingStarted },
+            { link: "/oxfmt/presets", text: "Presets" },
+          ],
+          text: "oxfmt",
+        },
+        {
+          collapsed: true,
+          items: [
+            { link: "/oxlint", text: "Overview" },
+            { link: "/oxlint/getting-started", text: gettingStarted },
+          ],
+          text: "oxlint",
+        },
+        {
+          collapsed: true,
+          items: [
             { link: "/permit", text: "Overview" },
             { link: "/permit/getting-started", text: gettingStarted },
             {
@@ -172,6 +189,8 @@ export default defineConfig({
     { link: "/fetch", text: "fetch" },
     { link: "/logger", text: "logger" },
     { link: "/monads", text: "monads" },
+    { link: "/oxfmt", text: "oxfmt" },
+    { link: "/oxlint", text: "oxlint" },
     { link: "/permit", text: "permit" },
     { link: "/retry", text: "retry" },
     { link: "/validation", text: "validation" },
