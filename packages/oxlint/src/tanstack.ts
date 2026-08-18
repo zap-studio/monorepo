@@ -4,6 +4,7 @@ import { defineConfig } from "oxlint";
 
 import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
+import { reactDoctorTanstackRules } from "./_rules-react-doctor-tanstack.ts";
 import { tanstackQueryRules } from "./_rules-tanstack-query.ts";
 import { tanstackRouterRules } from "./_rules-tanstack-router.ts";
 import react from "./react.ts";
@@ -16,6 +17,7 @@ export const tanstackJsPlugins: ExternalPluginEntry[] = [
 export const tanstackRules: DummyRuleMap = {
   ...prefixed("tanstack-query", tanstackQueryRules),
   ...prefixed("tanstack-router", tanstackRouterRules),
+  ...prefixed("react-doctor", reactDoctorTanstackRules),
 };
 
 const tanstack: OxlintConfig = defineConfig({
