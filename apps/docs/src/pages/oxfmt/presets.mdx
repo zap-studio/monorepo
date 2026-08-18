@@ -28,20 +28,20 @@ Type-only imports always sort ahead of value imports from the same source, and r
 
 ### Group meanings
 
-| Group           | Meaning                                                         | Example                              |
-| --------------- | ---------------------------------------------------------------- | ------------------------------------- |
-| `type-import`   | Any `import type` statement, regardless of source                | `import type { User } from "./user"` |
-| `value-builtin` | Node.js built-in modules                                         | `import fs from "node:fs"`           |
-| `value-external`| Packages from `node_modules`                                     | `import React from "react"`          |
-| `type-internal` | Type-only import from an internal path alias                     | `import type { Config } from "@/config"` |
-| `value-internal`| Value import from an internal path alias                         | `import { db } from "@/lib/db"`      |
-| `type-parent`   | Type-only import from a parent directory (`../`)                 | `import type { Props } from "../types"` |
-| `type-sibling`  | Type-only import from a sibling file (`./`)                      | `import type { Options } from "./options"` |
-| `type-index`    | Type-only import from an index file                              | `import type { Foo } from "."`       |
-| `value-parent`  | Value import from a parent directory (`../`)                     | `import { helper } from "../utils"`  |
-| `value-sibling` | Value import from a sibling file (`./`)                          | `import { Button } from "./Button"`  |
-| `value-index`   | Value import from an index file                                  | `import { App } from "."`            |
-| `unknown`       | Anything oxfmt can't classify into the above                     | —                                     |
+| Group            | Meaning                                           | Example                                    |
+| ---------------- | ------------------------------------------------- | ------------------------------------------ |
+| `type-import`    | Any `import type` statement, regardless of source | `import type { User } from "./user"`       |
+| `value-builtin`  | Node.js built-in modules                          | `import fs from "node:fs"`                 |
+| `value-external` | Packages from `node_modules`                      | `import React from "react"`                |
+| `type-internal`  | Type-only import from an internal path alias      | `import type { Config } from "@/config"`   |
+| `value-internal` | Value import from an internal path alias          | `import { db } from "@/lib/db"`            |
+| `type-parent`    | Type-only import from a parent directory (`../`)  | `import type { Props } from "../types"`    |
+| `type-sibling`   | Type-only import from a sibling file (`./`)       | `import type { Options } from "./options"` |
+| `type-index`     | Type-only import from an index file               | `import type { Foo } from "."`             |
+| `value-parent`   | Value import from a parent directory (`../`)      | `import { helper } from "../utils"`        |
+| `value-sibling`  | Value import from a sibling file (`./`)           | `import { Button } from "./Button"`        |
+| `value-index`    | Value import from an index file                   | `import { App } from "."`                  |
+| `unknown`        | Anything oxfmt can't classify into the above      | —                                          |
 
 An internal path alias is any import resolved through `tsconfig`/`jsconfig` paths (like `@/*`) rather than a relative or package specifier.
 

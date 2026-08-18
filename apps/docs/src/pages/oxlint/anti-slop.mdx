@@ -9,22 +9,22 @@ description: The bundled anti-slop plugin — original rules for patterns that d
 
 ## Rules
 
-| Rule                                                | Catches                                                                                       |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `no-chained-type-assertions`                          | Nested type assertions, while still permitting chains made only of const assertions          |
-| `no-conditional-empty-object-spread`                  | Conditional empty-object spreads that change omission semantics                                |
-| `no-known-value-widening`                             | Syntactic cases where a known value is explicitly widened and loses evidence                    |
-| `no-module-mocking`                                   | Test-framework module mocking, in favor of real dependency seams                                |
-| `no-object-parameters`                                | The broad `object` type on function inputs, including local aliases to it                       |
-| `no-reflect-apply`                                    | `Reflect.apply`, which bypasses ordinary typed function calls                                   |
-| `no-reflect-get`                                      | `Reflect.get`, which bypasses ordinary property access and useful type evidence                 |
-| `no-shape-in-symbol-names`                            | The case-insensitive substring "shape" in any JS/TS symbol name                                 |
-| `no-unknown-parameters`                               | Unknown-typed inputs, except explicitly named error-cause enrichment                             |
-| `no-unknown-returns`                                  | Function contracts that return `unknown` instead of a parsed domain type                        |
-| `no-unknown-type-aliases`                             | Named aliases that merely conceal TypeScript's `unknown` top type                                |
-| `no-unsafe-dictionary-type`                           | Object-dictionary contracts whose direct value type is an unsafe escape hatch                    |
-| `no-widen-then-assert`                                | Immutable local bindings that erase a known type, later asserted back to a narrower type          |
-| `require-safety-comment-for-type-assertion`           | Non-const type assertions missing a comment stating the invariant TypeScript can't express        |
+| Rule                                        | Catches                                                                                    |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `no-chained-type-assertions`                | Nested type assertions, while still permitting chains made only of const assertions        |
+| `no-conditional-empty-object-spread`        | Conditional empty-object spreads that change omission semantics                            |
+| `no-known-value-widening`                   | Syntactic cases where a known value is explicitly widened and loses evidence               |
+| `no-module-mocking`                         | Test-framework module mocking, in favor of real dependency seams                           |
+| `no-object-parameters`                      | The broad `object` type on function inputs, including local aliases to it                  |
+| `no-reflect-apply`                          | `Reflect.apply`, which bypasses ordinary typed function calls                              |
+| `no-reflect-get`                            | `Reflect.get`, which bypasses ordinary property access and useful type evidence            |
+| `no-shape-in-symbol-names`                  | The case-insensitive substring "shape" in any JS/TS symbol name                            |
+| `no-unknown-parameters`                     | Unknown-typed inputs, except explicitly named error-cause enrichment                       |
+| `no-unknown-returns`                        | Function contracts that return `unknown` instead of a parsed domain type                   |
+| `no-unknown-type-aliases`                   | Named aliases that merely conceal TypeScript's `unknown` top type                          |
+| `no-unsafe-dictionary-type`                 | Object-dictionary contracts whose direct value type is an unsafe escape hatch              |
+| `no-widen-then-assert`                      | Immutable local bindings that erase a known type, later asserted back to a narrower type   |
+| `require-safety-comment-for-type-assertion` | Non-const type assertions missing a comment stating the invariant TypeScript can't express |
 
 ## License
 
