@@ -14,7 +14,7 @@ npm install --save-dev @zap-studio/oxlint oxlint
 
 ## Usage
 
-Every preset owns its own slice of rules and nothing else's — `react` doesn't bring accessibility rules, `nextjs` doesn't bring hooks rules, `tanstack` doesn't bring the TanStack Query plugin. List every preset your project actually needs in `extends`:
+Every preset owns its own slice of rules and nothing else's — `react` doesn't bring accessibility rules, `nextjs` doesn't bring hooks rules, `tanstack-start` doesn't bring the TanStack Query plugin. List every preset your project actually needs in `extends`:
 
 ```ts
 import { defineConfig } from "oxlint";
@@ -93,18 +93,18 @@ Each of these owns only its own slice of `oxlint-plugin-react-doctor`'s framewor
 | `@zap-studio/oxlint/mobx`              | MobX — `observer`/`memo` interaction, `makeAutoObservable`, reaction disposal                              |
 | `@zap-studio/oxlint/jotai`             | Jotai — derived atoms, `selectAtom` placement                                                              |
 | `@zap-studio/oxlint/styled-components` | styled-components — duplicate CSS properties, transient props                                              |
-| `@zap-studio/oxlint/tanstack`          | TanStack Query/Router usage patterns from `react-doctor` (loaders, route property order, server functions) |
+| `@zap-studio/oxlint/tanstack-query`    | TanStack Query — `@tanstack/eslint-plugin-query` plus `react-doctor`'s 9 query-pattern rules (floating mutations, missing invalidation, unstable query clients) |
+| `@zap-studio/oxlint/tanstack-start`    | TanStack Start — `react-doctor`'s 15 meta-framework rules (loaders, route property order, server functions, secrets in loaders)                                |
 
 Preact and React Native are runtime-ambiguous — combine either with `jsx-runtime-automatic` or `jsx-runtime-classic` depending on your project's transform.
 
-### TanStack's own plugins
+### TanStack's own plugin
 
-`@tanstack/eslint-plugin-query` and `@tanstack/eslint-plugin-router` are separate from the `tanstack` leaf above — that one only carries `react-doctor`'s TanStack-specific rules. Add these two if you want the plugins themselves:
+`tanstack-query` above already bundles `@tanstack/eslint-plugin-query`. `@tanstack/eslint-plugin-router` is separate — add it if your project uses TanStack Router:
 
-| Preset                               | Owns                             |
-| ------------------------------------ | -------------------------------- |
-| `@zap-studio/oxlint/tanstack-query`  | `@tanstack/eslint-plugin-query`  |
-| `@zap-studio/oxlint/tanstack-router` | `@tanstack/eslint-plugin-router` |
+| Preset                               | Owns                              |
+| ------------------------------------ | --------------------------------- |
+| `@zap-studio/oxlint/tanstack-router` | `@tanstack/eslint-plugin-router`  |
 
 ## Opt-in environment presets
 

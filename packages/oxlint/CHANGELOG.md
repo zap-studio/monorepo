@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0]
+
+### Changed
+
+- `oxlint-plugin-react-doctor`'s framework-agnostic core no longer duplicates rules already owned by `react`, `react-perf`, and `jsx-a11y` — roughly 90 rules (`button-has-type`, the `jsx-a11y` alt-text/aria/role catalog, all 4 `react-perf` prop-identity checks, and more) were removed from `react-doctor` and now live exclusively in the plugin that originates them.
+- Every framework and library leaf preset now owns its own `_rules-react-doctor-*.ts` slice and pulls in `react-doctor` directly, instead of relying on a shared, overlapping rule map.
+- `testing` (the combined `vitest` + `eslint-plugin-playwright` preset) is removed — `vitest` and `playwright` are now standalone presets, composed independently.
+- `nextjs-react-compiler` is removed — compose `nextjs` and `react-compiler` directly instead.
+
+### Removed
+
+- The `tanstack` leaf preset is removed, split into two independent presets:
+  - `@zap-studio/oxlint/tanstack-query` — now bundles `@tanstack/eslint-plugin-query` together with `react-doctor`'s 9 query-pattern rules (floating mutations, missing invalidation, unstable query clients).
+  - `@zap-studio/oxlint/tanstack-start` — carries `react-doctor`'s 15 meta-framework rules (loaders, route property order, server functions, secrets in loaders).
+- `tanstack-react-compiler` is removed — compose `tanstack-query`/`tanstack-start` and `react-compiler` directly instead.
+
 ## [1.0.1]
 
 ### Fixed
