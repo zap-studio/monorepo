@@ -1,7 +1,6 @@
 type Severity = "error" | "warn" | "off";
 type RuleMap = Record<string, Severity>;
 
-// eslint-plugin-playwright@2.11.0 `configs.recommended`, bare rule ids.
 const playwrightRules = {
   "consistent-spacing-between-blocks": "warn",
   "expect-expect": "warn",
@@ -41,7 +40,6 @@ const playwrightRules = {
   "valid-title": "error",
 } satisfies RuleMap;
 
-// eslint-plugin-regexp@3.2.0 `configs.recommended`, bare rule ids.
 const regexpRules = {
   "confusing-quantifier": "warn",
   "control-character-escape": "error",
@@ -105,7 +103,6 @@ const regexpRules = {
   "use-ignore-case": "error",
 } satisfies RuleMap;
 
-// eslint-plugin-github@6.1.2 `configs.recommended`, bare rule ids.
 const githubRules = {
   "a11y-aria-label-is-well-formatted": "error",
   "a11y-no-title-attribute": "error",
@@ -116,30 +113,19 @@ const githubRules = {
   "async-currenttarget": "error",
   "async-preventdefault": "error",
   "authenticity-token": "error",
-  "filenames-match-regex": "error",
   "get-attribute": "error",
   "js-class-name": "error",
   "no-blur": "error",
   "no-d-none": "error",
-  // Conflicts with unicorn/prefer-dom-node-dataset, which is the benchmark.
-  "no-dataset": "off",
   "no-dynamic-script-tag": "error",
-  // The JS plugin bridge misreads module-scoped declarations as implicit
-  // globals, producing false positives.
-  "no-implicit-buggy-globals": "off",
   "no-inner-html": "error",
   "no-innerText": "error",
   "no-then": "error",
   "no-useless-passive": "error",
   "prefer-observers": "error",
   "require-passive-events": "error",
-  "unescaped-html-literal": "off",
 } satisfies RuleMap;
 
-// eslint-plugin-sonarjs@4.2.0 `configs.recommended`, bare rule ids.
-// Only rules the recommended config sets to "error"/"warn" are listed —
-// rules it leaves "off" are simply omitted (an unlisted jsPlugin rule
-// never runs, so listing them as "off" here would be a no-op).
 const sonarjsRules = {
   "anchor-precedence": "error",
   "argument-type": "error",
@@ -360,7 +346,6 @@ const sonarjsRules = {
   "xml-parser-xxe": "error",
 } satisfies RuleMap;
 
-// @e18e/eslint-plugin@0.8.0 `configs.recommended`, bare rule ids.
 const e18eRules = {
   "ban-dependencies": "error",
   "prefer-array-at": "error",

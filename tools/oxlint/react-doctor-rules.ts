@@ -1,31 +1,3 @@
-// Generated from oxlint-plugin-react-doctor@0.9.12`s real RECOMMENDED_RULES export
-// (introspected via require() on the installed package, not reconstructed from docs).
-//
-// RECOMMENDED_RULES ships 581 rules total. 41 were excluded here because they
-// duplicate rules already enabled natively by oxlint`s own "react", "react-perf",
-// and "jsx-a11y" plugins under a different prefix (same check, same violation,
-// reported twice under two rule ids) — specifically:
-//   - rules-of-hooks, exhaustive-deps (native react/* — already explicitly enabled)
-//   - the 4 native react-perf/* rules (jsx-no-jsx-as-prop, jsx-no-new-array-as-prop,
-//     jsx-no-new-function-as-prop, jsx-no-new-object-as-prop)
-//   - 35 rules matching oxlint`s native jsx-a11y/* catalog 1:1 (alt-text, aria-props,
-//     aria-role, click-events-have-key-events, label-has-associated-control, etc.)
-// The remaining 540 are genuinely new coverage react-doctor adds on top of oxlint`s
-// native plugins: state/effect bugs, security, non-duplicate a11y checks, bundle-size,
-// maintainability, and additional performance rules beyond react-perf`s 4.
-//
-// The 8-rule "you might not need an effect" family (ported 1:1 from
-// eslint-plugin-react-you-might-not-need-an-effect) IS included below — confirmed
-// present in the real recommended set with these exact ids: ["no-derived-state","no-chain-state-updates","no-event-handler","no-adjust-state-on-prop-change","no-reset-all-state-on-prop-change","no-pass-live-state-to-parent","no-pass-data-to-parent","no-initialize-state"]
-//
-// Severities are exactly what the plugin`s own RECOMMENDED_RULES assigns (error/warn
-// mix, not flattened). Bare rule ids — prefix with "react-doctor/" when merging.
-//
-// "dialog-has-accessible-name" was missing from the original generation pass
-// despite being in RECOMMENDED_RULES — added back after a diff against
-// ultracite`s oxlint preset surfaced the gap (severity confirmed via the
-// installed package, not copied from ultracite).
-
 type Severity = "error" | "warn";
 
 export const reactDoctorRules = {
