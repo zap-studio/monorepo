@@ -6,10 +6,20 @@ const repoRoot = fileURLToPath(new URL("../..", import.meta.url));
 export default defineConfig({
   attw: { profile: "esm-only" },
   dts: true,
-  entry: ["src/**/*.ts", "!src/**/_*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
-  exports: true,
+  entry: ["src/**/*.ts", "!src/**/_*.ts", "!src/anti-slop/**", "!**/*.test.ts", "!**/*.spec.ts"],
+  deps: { neverBundle: [/^node:/u] },
+  exports: {
+    customExports(exports, { pkg }) {
+      if (pkg.name === "@zap-studio/oxlint") {
+        exports["./anti-slop"] = "./src/anti-slop/index.ts";
+      }
+      return exports;
+    },
+  },
   platform: "neutral",
   publint: true,
-  unused: true,
+  unused: {
+    ignore: ["@oxlint/plugins", "oxlint-tsgolint"],
+  },
   workspace: { include: [`${repoRoot}packages/*`] },
 });

@@ -1,15 +1,15 @@
 import { expect } from "vitest";
 
-import type { AbortError } from "./errors.js";
+import type { AbortError } from "./errors.ts";
 import type {
   RetryDecision,
   RetryDecisionInput,
   RetryExhaustedInput,
   RetryPolicy,
   RetryRunResult,
-} from "./types.js";
+} from "./types.ts";
 
-import { RetryError } from "./errors.js";
+import { RetryError } from "./errors.ts";
 
 export const createSequencePolicy = (
   decisions: RetryDecision[],

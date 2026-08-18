@@ -1,0 +1,78 @@
+---
+title: Presets
+description: The base preset's import group order and package.json sorting, and what the tailwind preset adds.
+---
+
+# Presets
+
+| Preset                       | Built on | Adds                                     |
+| ---------------------------- | -------- | ---------------------------------------- |
+| `@zap-studio/oxfmt/base`     | —        | Sorted imports and sorted `package.json` |
+| `@zap-studio/oxfmt/tailwind` | `base`   | `sortTailwindcss: true`                  |
+
+## Sorted Imports
+
+`base` sets `sortImports.groups` to a fixed order, with `newlinesBetween: true` so each group is separated by a blank line:
+
+| Order | Group                                          |
+| ----- | ---------------------------------------------- |
+| 1     | `type-import`                                  |
+| 2     | `value-builtin`, `value-external`              |
+| 3     | `type-internal`                                |
+| 4     | `value-internal`                               |
+| 5     | `type-parent`, `type-sibling`, `type-index`    |
+| 6     | `value-parent`, `value-sibling`, `value-index` |
+| 7     | `unknown`                                      |
+
+Type-only imports always sort ahead of value imports from the same source, and relative imports (`parent`/`sibling`/`index`) always sort after internal ones — the same shape whether it's a single package or a monorepo with path aliases.
+
+### Group meanings
+
+| Group            | Meaning                                           | Example                                    |
+| ---------------- | ------------------------------------------------- | ------------------------------------------ |
+| `type-import`    | Any `import type` statement, regardless of source | `import type { User } from "./user"`       |
+| `value-builtin`  | Node.js built-in modules                          | `import fs from "node:fs"`                 |
+| `value-external` | Packages from `node_modules`                      | `import React from "react"`                |
+| `type-internal`  | Type-only import from an internal path alias      | `import type { Config } from "@/config"`   |
+| `value-internal` | Value import from an internal path alias          | `import { db } from "@/lib/db"`            |
+| `type-parent`    | Type-only import from a parent directory (`../`)  | `import type { Props } from "../types"`    |
+| `type-sibling`   | Type-only import from a sibling file (`./`)       | `import type { Options } from "./options"` |
+| `type-index`     | Type-only import from an index file               | `import type { Foo } from "."`             |
+| `value-parent`   | Value import from a parent directory (`../`)      | `import { helper } from "../utils"`        |
+| `value-sibling`  | Value import from a sibling file (`./`)           | `import { Button } from "./Button"`        |
+| `value-index`    | Value import from an index file                   | `import { App } from "."`                  |
+| `unknown`        | Anything oxfmt can't classify into the above      | —                                          |
+
+An internal path alias is any import resolved through `tsconfig`/`jsconfig` paths (like `@/*`) rather than a relative or package specifier.
+
+### Before and after
+
+```ts
+// Before
+import { Button } from "./Button";
+import type { Config } from "@/config";
+import fs from "node:fs";
+import type { User } from "./user";
+import { db } from "@/lib/db";
+import React from "react";
+
+// After
+import type { User } from "./user";
+
+import fs from "node:fs";
+import React from "react";
+
+import type { Config } from "@/config";
+
+import { db } from "@/lib/db";
+
+import { Button } from "./Button";
+```
+
+## Sorted package.json
+
+`base` sets `sortPackageJson.sortScripts: true` — top-level keys and the `scripts` object are both sorted alphabetically, so `package.json` diffs stay small and reviewable regardless of the order fields were added in.
+
+## Tailwind CSS
+
+`tailwind` extends `base` with `sortTailwindcss: true`, sorting class lists in template literals and JSX `className`/`class` attributes into Tailwind's recommended order.

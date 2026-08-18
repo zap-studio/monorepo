@@ -1,25 +1,21 @@
 ---
 title: Overview
-description: What Zap Studio is, the principles behind its packages, and what each package covers.
+description: Type-safe, framework-agnostic TypeScript packages for HTTP calls, retries, auth, validation, logging, and webhooks — what Zap Studio is and how it compares.
 ---
 
 # Zap Studio
 
-Zap Studio is a set of type-safe, framework-agnostic, and composable TypeScript packages for core app capabilities — typed HTTP calls, authorization policy checks, retry policies, schema validation, logging, explicit error handling, and webhook processing.
+[![CI](https://github.com/zap-studio/monorepo/actions/workflows/ci.yml/badge.svg)](https://github.com/zap-studio/monorepo/actions/workflows/ci.yml) [![License](https://img.shields.io/github/license/zap-studio/monorepo)](https://github.com/zap-studio/monorepo/blob/main/LICENSE)
 
-## Motivation
+Small, type-safe TypeScript packages for the infrastructure code every app needs — HTTP calls, retries, auth checks, validation, logging, webhooks. Done once, correctly, so you don't rebuild it per project.
 
-For each of these problems — typed HTTP calls, authorization, retries, validation, logging, error handling, webhooks — most teams do not start from zero. They pick a general library, or write a small wrapper by hand, and move on.
+```bash
+npm install @zap-studio/fetch
+```
 
-The problem is that these ad hoc solutions tend to skip the hard parts: raw `fetch` does not validate response bodies, hand-written retry loops skip jitter and cancellation, hand-written authorization checks spread through the codebase with no single place to audit them, and hand-written webhook signature checks often use `===` instead of a constant-time comparison, which is a real security gap.
+[Start with `fetch` →](/fetch/getting-started)
 
-These wrappers are also often built for Node only, so they silently break the moment the code needs to run on an edge runtime or in the browser.
-
-Zap Studio packages solve each of these problems once, correctly, so you do not have to solve them again per project. They share the same foundations — [Standard Schema](https://standardschema.dev) for validation, standard web APIs like `fetch`, `Request`/`Response`, and `AbortSignal` instead of Node-specific ones, and a common, optional `Logger` interface — so they compose cleanly and stay small.
-
-If you already know [Effect](https://effect.website), much of what Zap Studio covers overlaps with it — typed errors, retries, schema validation. Effect is a full ecosystem built around its own runtime and effect type, and that investment pays off in large production systems that need that level of control.
-
-Zap Studio stays closer to plain TypeScript/JavaScript: no new runtime or mental model to learn, a shallower learning curve, and small composable packages you adopt one at a time — a better fit when you don't need everything Effect brings.
+## Quick Look
 
 ```ts
 import { api } from "@zap-studio/fetch";
@@ -35,35 +31,59 @@ const UserSchema = z.object({
 const user = await api.get("https://api.example.com/users/1", UserSchema);
 ```
 
-## Design Principles
+## Packages
 
-Every package follows the same rules:
+| Package                                 | What you get                                                      |
+| --------------------------------------- | ----------------------------------------------------------------- |
+| [`@zap-studio/fetch`](/fetch)           | Typed responses from any API — no manual casts                    |
+| [`@zap-studio/logger`](/logger)         | Structured logs anywhere — console today, any backend tomorrow    |
+| [`@zap-studio/monads`](/monads)         | Errors as values you can't forget to handle                       |
+| [`@zap-studio/oxfmt`](/oxfmt)           | One decided import/`package.json` order — no more per-repo debate |
+| [`@zap-studio/oxlint`](/oxlint)         | Composable oxlint presets, every rule on or off, nothing missing  |
+| [`@zap-studio/permit`](/permit)         | Every permission check in one auditable place                     |
+| [`@zap-studio/retry`](/retry)           | Retries done right — backoff, jitter, cancellation included       |
+| [`@zap-studio/validation`](/validation) | One validation error shape, whatever schema library you use       |
+| [`@zap-studio/webhooks`](/webhooks)     | Verified, routed webhooks without a hand-rolled signature check   |
+
+Install only the packages you need — each one works standalone.
+
+## Why Zap Studio
+
+Most teams solve these problems by hand, per project — and the hard parts get skipped:
+
+- **Fragile by default.** Hand-rolled retries and webhook checks quietly skip the parts that matter.
+- **Scattered, not audited.** Permission checks end up copy-pasted across the codebase instead of living in one place.
+- **Node-only, until it isn't.** Homegrown wrappers break the moment your code runs on an edge runtime or in the browser.
+
+## Every Package Follows the Same Rules
 
 - **Type safety.** Types come from your schema via [Standard Schema](https://standardschema.dev), not hand-written annotations.
 - **Framework-agnostic.** Built on standard runtime APIs — `fetch`, `Request`/`Response`, `AbortSignal`.
 - **Composable.** Combine packages as needed — wrap a `fetch` call in a `retry` policy, validate a webhook with `validation`.
 - **Tree-shakeable.** Standalone functions, no shared state — unused exports drop out of your bundle.
 
-## Packages
+## Compared to Effect
 
-| Package                                 | What it covers                                                  |
-| --------------------------------------- | --------------------------------------------------------------- |
-| [`@zap-studio/fetch`](/fetch)           | Type-safe HTTP requests with schema-validated responses         |
-| [`@zap-studio/logger`](/logger)         | Lean logging abstraction with a console implementation          |
-| [`@zap-studio/monads`](/monads)         | Result/Option types and Rust-style functional combinators       |
-| [`@zap-studio/permit`](/permit)         | Declarative authorization policies and permission checks        |
-| [`@zap-studio/retry`](/retry)           | Composable retry policies with fixed and exponential backoff    |
-| [`@zap-studio/validation`](/validation) | Standard Schema utilities and consistent validation errors      |
-| [`@zap-studio/webhooks`](/webhooks)     | Webhook routing, signature verification, and payload validation |
+If you know [Effect](https://effect.website): yes, there's overlap — typed errors, retries, schema validation. Effect is a full ecosystem built around its own runtime, and that investment pays off once you need that level of control.
+
+Zap Studio stays in plain TypeScript — no new runtime, no new mental model, small packages you adopt one at a time. Reach for it when you don't need everything Effect brings.
+
+## Not For You If
+
+- You want one framework that owns your whole effect/error model — Effect is built for that.
+- You need every package to come from a single all-in-one SDK.
+- What you have today isn't costing you bugs.
 
 ## Next Steps
 
 Pick a package and follow its Getting Started guide:
 
-- [`@zap-studio/fetch`](/fetch)
-- [`@zap-studio/logger`](/logger)
-- [`@zap-studio/monads`](/monads)
-- [`@zap-studio/permit`](/permit)
-- [`@zap-studio/retry`](/retry)
-- [`@zap-studio/validation`](/validation)
-- [`@zap-studio/webhooks`](/webhooks)
+- [`@zap-studio/fetch`](/fetch/getting-started)
+- [`@zap-studio/logger`](/logger/getting-started)
+- [`@zap-studio/monads`](/monads/getting-started)
+- [`@zap-studio/oxfmt`](/oxfmt/getting-started)
+- [`@zap-studio/oxlint`](/oxlint/getting-started)
+- [`@zap-studio/permit`](/permit/getting-started)
+- [`@zap-studio/retry`](/retry/getting-started)
+- [`@zap-studio/validation`](/validation/getting-started)
+- [`@zap-studio/webhooks`](/webhooks/getting-started)

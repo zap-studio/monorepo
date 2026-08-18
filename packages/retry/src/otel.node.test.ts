@@ -13,8 +13,8 @@ import {
 } from "@opentelemetry/sdk-trace-base";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createSequencePolicy } from "./_sequence-policy.js";
-import { runRetryPolicy } from "./base-policy.js";
+import { createSequencePolicy } from "./_sequence-policy.ts";
+import { runRetryPolicy } from "./base-policy.ts";
 
 describe("retry OpenTelemetry", () => {
   const spanExporter = new InMemorySpanExporter();

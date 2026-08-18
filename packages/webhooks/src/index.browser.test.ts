@@ -4,9 +4,9 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
-import { VerificationError } from "./errors.js";
-import { createWebhookRouter, WebhookRouter } from "./index.js";
-import { createHmacVerifier } from "./verify.js";
+import { VerificationError } from "./errors.ts";
+import { createWebhookRouter, WebhookRouter } from "./index.ts";
+import { createHmacVerifier } from "./verify.ts";
 
 const createRecordingLogger = (): Logger & {
   calls: {

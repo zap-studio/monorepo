@@ -1,0 +1,66 @@
+---
+title: Presets
+description: What base, react, and every framework- and library-specific leaf preset adds, and how they chain into each other.
+---
+
+# Presets
+
+Every preset extends the one below it in its chain. `rules` merge key-by-key and `plugins`/`jsPlugins` union along the way, so a leaf preset always includes everything its parents decided — you never need to list a parent alongside it.
+
+## Core Chain
+
+| Preset                              | Extends | Adds                                                                                                                                                                                |
+| ----------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@zap-studio/oxlint/base`           | —       | `eslint`, `typescript`, `unicorn`, `oxc`, `import`, `jsdoc`, `node`, `promise`, plus `regexp`, `sonarjs`, `github`, `e18e`, and the bundled [`anti-slop`](/oxlint/anti-slop) plugin |
+| `@zap-studio/oxlint/react`          | `base`  | `react`, `react-perf`, `jsx-a11y`, and the framework-agnostic core of `react-doctor` — accessibility, security, correctness, and performance rules that apply to any React codebase |
+| `@zap-studio/oxlint/react-compiler` | `react` | the `react/react-compiler` rule, for projects on the React Compiler                                                                                                                 |
+| `@zap-studio/oxlint/testing`        | `base`  | `vitest` and `playwright`                                                                                                                                                           |
+
+`react`'s `react-doctor` slice is deliberately framework-agnostic — it's the rules that hold regardless of what meta-framework, router, or state library sits on top of React. Anything specific to one of those lives in a leaf preset instead, so pulling in `react` never pulls in rules for a library you don't use.
+
+## Framework & Library Leaves
+
+Each of these extends `react` and adds only that integration's slice of `react-doctor` — no shared plugins to configure, just the rules for the surface you're actually using.
+
+| Preset                                 | Targets                                                                       |
+| -------------------------------------- | ----------------------------------------------------------------------------- |
+| `@zap-studio/oxlint/nextjs`            | Next.js — App Router, metadata, route handlers, `Image`/`Script`/`Head`       |
+| `@zap-studio/oxlint/react-router`      | React Router — loaders, actions, middleware, splat and nested routes          |
+| `@zap-studio/oxlint/react-native`      | React Native/Expo — lists, `Pressable`, Reanimated, deprecated modules        |
+| `@zap-studio/oxlint/remotion`          | Remotion — deterministic rendering, `delayRender`, CSS animation bans         |
+| `@zap-studio/oxlint/preact`            | Preact — API differences from React (`render` args, hooks import, `children`) |
+| `@zap-studio/oxlint/ink`               | Ink — terminal rendering, raw mode, `Static`, focus handling                  |
+| `@zap-studio/oxlint/r3f`               | React Three Fiber                                                             |
+| `@zap-studio/oxlint/three`             | three.js                                                                      |
+| `@zap-studio/oxlint/motion`            | Motion (Framer Motion) — `AnimatePresence`, imperative animation, layout ids  |
+| `@zap-studio/oxlint/redux`             | Redux — `useSelector` derivation and return-value pitfalls                    |
+| `@zap-studio/oxlint/zustand`           | Zustand — selector freshness, store mutation, whole-store destructuring       |
+| `@zap-studio/oxlint/valtio`            | Valtio — proxy reads and snapshots                                            |
+| `@zap-studio/oxlint/mobx`              | MobX — `observer`/`memo` interaction, `makeAutoObservable`, reaction disposal |
+| `@zap-studio/oxlint/jotai`             | Jotai — derived atoms, `selectAtom` placement                                 |
+| `@zap-studio/oxlint/styled-components` | styled-components — duplicate CSS properties, transient props                 |
+| `@zap-studio/oxlint/tanstack`          | TanStack Query and TanStack Router (see below)                                |
+
+## TanStack
+
+`tanstack` is the one leaf that also brings its own plugins — `@tanstack/eslint-plugin-query` and `@tanstack/eslint-plugin-router` — alongside its `react-doctor` slice:
+
+```ts
+import { defineConfig } from "oxlint";
+import zapStudio from "@zap-studio/oxlint/tanstack";
+
+export default defineConfig({
+  extends: [zapStudio],
+});
+```
+
+## Combining with React Compiler
+
+`nextjs-react-compiler` and `tanstack-react-compiler` extend `react-compiler` instead of `react`, then layer the same `nextjs`/`tanstack` rules on top — use one of these instead of `nextjs`/`tanstack` if your project is also on the React Compiler:
+
+| Preset                                       | Equivalent to                                         |
+| -------------------------------------------- | ----------------------------------------------------- |
+| `@zap-studio/oxlint/nextjs-react-compiler`   | `nextjs` rules + `react/react-compiler`               |
+| `@zap-studio/oxlint/tanstack-react-compiler` | `tanstack` rules and plugins + `react/react-compiler` |
+
+There's no `react-compiler` variant for every other leaf — combine `react-compiler`'s rules with a leaf's rules yourself via [cherry-picking](/oxlint/getting-started#cherry-pick-pieces) if you need one.

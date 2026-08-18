@@ -6,7 +6,7 @@
  * @module @zap-studio/logger/format
  */
 
-import type { CallableLogLevel, LogFormatter } from "./types.js";
+import type { CallableLogLevel, LogFormatter } from "./types.ts";
 
 /**
  * Default formatter: the message, plus `context` as a second argument when

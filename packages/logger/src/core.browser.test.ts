@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isLevelEnabled, LOG_LEVEL_ORDER } from "./core.js";
+import { isLevelEnabled, LOG_LEVEL_ORDER } from "./core.ts";
 
 describe("core", () => {
   it("orders levels from all to none", () => {

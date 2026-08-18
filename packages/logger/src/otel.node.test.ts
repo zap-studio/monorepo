@@ -7,8 +7,8 @@ import {
 } from "@opentelemetry/sdk-trace-base";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ConsoleLogger } from "./console.js";
-import { jsonFormat } from "./format.js";
+import { ConsoleLogger } from "./console.ts";
+import { jsonFormat } from "./format.ts";
 
 describe("ConsoleLogger trace-log correlation", () => {
   let infoSpy: ReturnType<typeof vi.spyOn>;

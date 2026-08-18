@@ -6,9 +6,9 @@ import type {
   RetryPolicy,
   RetryRunOptions,
   RetryRunResult,
-} from "./types.js";
+} from "./types.ts";
 
-import { RetryError } from "./errors.js";
+import { RetryError } from "./errors.ts";
 
 describe("types", () => {
   it("supports generic RetryPolicy contracts", () => {

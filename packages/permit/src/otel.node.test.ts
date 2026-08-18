@@ -9,9 +9,9 @@ import {
 } from "@opentelemetry/sdk-trace-base";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import type { Actions, Resources } from "./types.js";
+import type { Actions, Resources } from "./types.ts";
 
-import { allow, createPolicy, mergePoliciesOr } from "./index.js";
+import { allow, createPolicy, mergePoliciesOr } from "./index.ts";
 
 function createSchema<T>(): StandardSchemaV1<T, T> {
   return {

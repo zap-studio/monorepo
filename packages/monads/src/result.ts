@@ -9,7 +9,7 @@
  * @module @zap-studio/monads/result
  */
 
-import type { Err, Ok, Result, ResultMatchers } from "./types.js";
+import type { Err, Ok, Result, ResultMatchers } from "./types.ts";
 
 /**
  * Wraps a value in a successful `Result`.

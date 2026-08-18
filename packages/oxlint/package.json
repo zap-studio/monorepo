@@ -1,0 +1,87 @@
+{
+  "name": "@zap-studio/oxlint",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Zap Studio's oxlint preset: composable base, react, react-compiler, tanstack, and testing rule sets.",
+  "keywords": [
+    "config",
+    "eslint",
+    "lint",
+    "oxlint",
+    "preset",
+    "react",
+    "typescript"
+  ],
+  "homepage": "https://www.zapstudio.dev/packages/oxlint",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/oxlint"
+  },
+  "files": [
+    "dist",
+    "src/anti-slop",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./base": "./dist/base.js",
+    "./ink": "./dist/ink.js",
+    "./jotai": "./dist/jotai.js",
+    "./mobx": "./dist/mobx.js",
+    "./motion": "./dist/motion.js",
+    "./nextjs": "./dist/nextjs.js",
+    "./nextjs-react-compiler": "./dist/nextjs-react-compiler.js",
+    "./preact": "./dist/preact.js",
+    "./r3f": "./dist/r3f.js",
+    "./react": "./dist/react.js",
+    "./react-compiler": "./dist/react-compiler.js",
+    "./react-native": "./dist/react-native.js",
+    "./react-router": "./dist/react-router.js",
+    "./redux": "./dist/redux.js",
+    "./remotion": "./dist/remotion.js",
+    "./styled-components": "./dist/styled-components.js",
+    "./tanstack": "./dist/tanstack.js",
+    "./tanstack-react-compiler": "./dist/tanstack-react-compiler.js",
+    "./testing": "./dist/testing.js",
+    "./three": "./dist/three.js",
+    "./valtio": "./dist/valtio.js",
+    "./zustand": "./dist/zustand.js",
+    "./package.json": "./package.json",
+    "./anti-slop": "./src/anti-slop/index.ts"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@e18e/eslint-plugin": "catalog:",
+    "@tanstack/eslint-plugin-query": "catalog:",
+    "@tanstack/eslint-plugin-router": "catalog:",
+    "eslint-plugin-github": "catalog:",
+    "eslint-plugin-playwright": "catalog:",
+    "eslint-plugin-regexp": "catalog:",
+    "eslint-plugin-sonarjs": "catalog:",
+    "oxlint-plugin-react-doctor": "catalog:"
+  },
+  "devDependencies": {
+    "@oxlint/plugins": "catalog:",
+    "@types/node": "catalog:",
+    "@zap-studio/typescript": "workspace:*",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "@oxlint/plugins": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}

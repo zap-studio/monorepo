@@ -1,0 +1,40 @@
+---
+title: Overview
+description: Composable oxlint presets built from vetted ESLint plugins, with every rule explicitly on or off, plus a bundled anti-slop plugin.
+---
+
+# @zap-studio/oxlint
+
+`@zap-studio/oxlint` is Zap Studio's [oxlint](https://oxc.rs/docs/guide/usage/linter.html) preset — composable rule sets built from vetted ESLint plugins, plus a bundled `anti-slop` plugin.
+
+## Motivation
+
+Turning on an ESLint plugin usually means inheriting whatever the plugin author shipped as `recommended`, without knowing which rules were left out or why. New rules land in a plugin release and stay off by default, silently, until someone notices the gap.
+
+`@zap-studio/oxlint` decides that once, for every plugin it wraps: each rule is either turned on or explicitly set to `"off"` with a comment explaining why. Nothing is left undecided, and nothing new can go quietly missing.
+
+Those decisions are composed into presets, from a `base` up through framework- and library-specific leaves, so you pick the preset that matches your project instead of assembling plugins and rules by hand.
+
+## Features
+
+- **Composable presets** — `extends: [zapStudio]` in `oxlint.config.ts`; each preset already includes everything up its own chain, so `tanstack` never needs `react` listed alongside it.
+- **Nothing silently missing** — every rule from a wrapped plugin is `"error"` or explicitly `"off"` with a reason, so plugin updates can't add rules you never decided on.
+- **Bundled `anti-slop` plugin** — original rules for patterns that don't fit any upstream plugin.
+- **`extends` merges, it doesn't replace** — `rules` merge key-by-key and `plugins`/`jsPlugins` union, so overriding one rule in your own config doesn't require forking a preset.
+- **Cherry-pickable pieces** — every preset also exports its plugins and rules as plain values, for building a custom combination instead of taking a whole preset.
+
+## Quick Start
+
+```ts
+// oxlint.config.ts
+import { defineConfig } from "oxlint";
+import zapStudio from "@zap-studio/oxlint/react";
+
+export default defineConfig({
+  extends: [zapStudio],
+});
+```
+
+## Learn More
+
+- [Getting Started](/oxlint/getting-started) — install, pick a preset, and override a rule

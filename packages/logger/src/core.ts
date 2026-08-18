@@ -5,7 +5,7 @@
  * @module @zap-studio/logger/core
  */
 
-import type { LogLevel } from "./types.js";
+import type { LogLevel } from "./types.ts";
 
 /**
  * `LogLevel` values in increasing verbosity-filtering order, from `"all"`

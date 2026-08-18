@@ -1,0 +1,36 @@
+---
+title: Overview
+description: A decided oxfmt preset for sorted imports, sorted package.json, and optional Tailwind CSS class sorting.
+---
+
+# @zap-studio/oxfmt
+
+`@zap-studio/oxfmt` is Zap Studio's [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) preset — sorted imports, sorted `package.json`, and an optional Tailwind CSS class-sorting extension.
+
+## Motivation
+
+`oxfmt`'s `sortImports` option is powerful but unopinionated — it asks you to define your own group order, and most projects either skip it or improvise one per repo, so import order drifts between packages in the same monorepo and every PR review re-litigates it.
+
+`@zap-studio/oxfmt` ships one decided order: type-only imports first, then builtin/external values, then internal types, then internal values, then parent/sibling/index imports grouped by type then value, then anything unmatched — with a blank line between each group. `package.json` is sorted the same way every time, keys and `scripts` alphabetically. Adopt the preset once and stop deciding it per project.
+
+## Features
+
+- **[Sorted imports](/oxfmt/presets)** — a fixed group order (type-only, then value builtin/external, internal types, internal values, parent/sibling/index, unknown) with a blank line between groups.
+- **Sorted `package.json`** — keys and `scripts` sorted alphabetically, every time.
+- **[Optional Tailwind CSS class sorting](/oxfmt/presets)** — `sortTailwindcss: true` via the `tailwind` preset, for projects using Tailwind.
+- **Plain object, not a merge** — `oxfmt.config.ts` has no `extends`; override or add options with a spread.
+
+## Quick Start
+
+```ts
+// oxfmt.config.ts
+import { defineConfig } from "oxfmt";
+import zapStudio from "@zap-studio/oxfmt/base";
+
+export default defineConfig(zapStudio);
+```
+
+## Learn More
+
+- [Getting Started](/oxfmt/getting-started) — install and configure the preset
+- [Presets](/oxfmt/presets) — the import group order, `package.json` sorting, and the Tailwind extension

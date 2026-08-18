@@ -5,7 +5,7 @@
  * @module @zap-studio/permit/conditions
  */
 
-import type { ConditionFn, Context, HasRoleFn, PolicyFn, Role, RoleHierarchy } from "./types.js";
+import type { ConditionFn, Context, HasRoleFn, PolicyFn, Role, RoleHierarchy } from "./types.ts";
 
 /**
  * Returns a policy function that always allows the action.

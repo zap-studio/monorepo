@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { Logger, LogLevel } from "./types.js";
+import type { Logger, LogLevel } from "./types.ts";
 
 describe("types", () => {
   it("supports a Logger implementation exercising every method", () => {

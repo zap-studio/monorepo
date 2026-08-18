@@ -9,17 +9,17 @@
  * @module @zap-studio/retry
  */
 
-export { defaultSleep, runRetryPolicy } from "./base-policy.js";
-export { AbortError, RetryError } from "./errors.js";
-export type { AbortErrorContext, RetryErrorContext } from "./errors.js";
-export { exponentialBackoff } from "./exponential-backoff.js";
-export type { ExponentialBackoffOptions } from "./exponential-backoff.js";
-export { fixedDelay } from "./fixed-delay.js";
-export type { FixedDelayOptions } from "./fixed-delay.js";
-export { applyJitter } from "./jitter.js";
-export type { JitterMode, JitterOptions } from "./jitter.js";
-export { linearBackoff } from "./linear-backoff.js";
-export type { LinearBackoffOptions } from "./linear-backoff.js";
+export { defaultSleep, runRetryPolicy } from "./base-policy.ts";
+export { AbortError, RetryError } from "./errors.ts";
+export type { AbortErrorContext, RetryErrorContext } from "./errors.ts";
+export { exponentialBackoff } from "./exponential-backoff.ts";
+export type { ExponentialBackoffOptions } from "./exponential-backoff.ts";
+export { fixedDelay } from "./fixed-delay.ts";
+export type { FixedDelayOptions } from "./fixed-delay.ts";
+export { applyJitter } from "./jitter.ts";
+export type { JitterMode, JitterOptions } from "./jitter.ts";
+export { linearBackoff } from "./linear-backoff.ts";
+export type { LinearBackoffOptions } from "./linear-backoff.ts";
 export type {
   RetryDecision,
   RetryDecisionInput,
@@ -27,4 +27,4 @@ export type {
   RetryPolicy,
   RetryRunOptions,
   RetryRunResult,
-} from "./types.js";
+} from "./types.ts";

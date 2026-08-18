@@ -22,6 +22,9 @@ catalog:
   "@opentelemetry/sdk-metrics": ^2.10.0
   "@opentelemetry/sdk-trace-base": ^2.10.0
   "@standard-schema/spec": ^1.1.0
+  "@tanstack/eslint-plugin-query": ^5.101.4
+  "@tanstack/eslint-plugin-router": ^1.162.0
+  "@types/node": ^26.2.0
   "@types/react": ^19.2.18
   "@types/react-dom": ^19.2.4
   "@vitest/browser-playwright": ^4.1.10

@@ -8,8 +8,8 @@ import { number, object, string } from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
-import { FetchError } from "./errors.js";
-import { $fetch, api, createFetch, GLOBAL_DEFAULTS } from "./index.js";
+import { FetchError } from "./errors.ts";
+import { $fetch, api, createFetch, GLOBAL_DEFAULTS } from "./index.ts";
 
 const createRecordingLogger = (): Logger & {
   calls: {

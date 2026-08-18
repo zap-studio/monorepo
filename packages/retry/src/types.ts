@@ -6,7 +6,7 @@
 
 import type { Logger } from "@zap-studio/logger";
 
-import type { AbortError, RetryError } from "./errors.js";
+import type { AbortError, RetryError } from "./errors.ts";
 
 /**
  * Retry policy contract consumed by `runRetryPolicy(...)`.

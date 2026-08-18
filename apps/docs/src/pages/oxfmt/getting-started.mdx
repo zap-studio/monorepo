@@ -1,0 +1,71 @@
+---
+title: Getting Started
+description: Install @zap-studio/oxfmt and configure the base or Tailwind preset.
+---
+
+# Getting Started
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm install --save-dev @zap-studio/oxfmt oxfmt
+```
+
+```bash [yarn]
+yarn add -D @zap-studio/oxfmt oxfmt
+```
+
+```bash [pnpm]
+pnpm add -D @zap-studio/oxfmt oxfmt
+```
+
+```bash [bun]
+bun add -D @zap-studio/oxfmt oxfmt
+```
+
+```bash [deno]
+deno add -D npm:@zap-studio/oxfmt npm:oxfmt
+```
+
+:::
+
+`oxfmt` is a peer dependency — install the version you want to run.
+
+## Base Config
+
+```ts
+// oxfmt.config.ts
+import { defineConfig } from "oxfmt";
+import zapStudio from "@zap-studio/oxfmt/base";
+
+export default defineConfig(zapStudio);
+```
+
+This sorts imports into groups and sorts `package.json` keys and `scripts` alphabetically. See [Presets](/oxfmt/presets) for the exact group order.
+
+## Tailwind CSS Projects
+
+Swap in the `tailwind` preset — it extends `base` with `sortTailwindcss: true`:
+
+```ts
+import { defineConfig } from "oxfmt";
+import zapStudio from "@zap-studio/oxfmt/tailwind";
+
+export default defineConfig(zapStudio);
+```
+
+## Override an Option
+
+Unlike `oxlint.config.ts`, oxfmt's config has no `extends` merge — the preset is a plain object, so override or add options with a spread:
+
+```ts
+import { defineConfig } from "oxfmt";
+import zapStudio from "@zap-studio/oxfmt/base";
+
+export default defineConfig({
+  ...zapStudio,
+  printWidth: 120,
+});
+```

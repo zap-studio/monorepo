@@ -15,10 +15,10 @@ import type {
   RetryPolicy,
   RetryRunOptions,
   RetryRunResult,
-} from "./types.js";
+} from "./types.ts";
 
-import { recordRetryAttempt } from "./_otel.js";
-import { AbortError, RetryError } from "./errors.js";
+import { recordRetryAttempt } from "./_otel.ts";
+import { AbortError, RetryError } from "./errors.ts";
 
 /**
  * Awaits a timer-based delay, unless `delayMs` is non-positive.

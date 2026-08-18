@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { PolicyError } from "./errors.js";
+import { PolicyError } from "./errors.ts";
 
 describe(PolicyError, () => {
   describe("constructor", () => {

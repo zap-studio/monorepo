@@ -13,8 +13,8 @@ import {
   unwrap,
   unwrapOr,
   unwrapOrElse,
-} from "./option.js";
-import { pipe } from "./pipe.js";
+} from "./option.ts";
+import { pipe } from "./pipe.ts";
 
 describe("some/none", () => {
   it("creates a Some value", () => {

@@ -1,0 +1,101 @@
+---
+title: Getting Started
+description: Install @zap-studio/oxlint, extend a preset, and override a single rule without forking it.
+---
+
+# Getting Started
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm install --save-dev @zap-studio/oxlint oxlint
+```
+
+```bash [yarn]
+yarn add -D @zap-studio/oxlint oxlint
+```
+
+```bash [pnpm]
+pnpm add -D @zap-studio/oxlint oxlint
+```
+
+```bash [bun]
+bun add -D @zap-studio/oxlint oxlint
+```
+
+```bash [deno]
+deno add -D npm:@zap-studio/oxlint npm:oxlint
+```
+
+:::
+
+`oxlint` is a peer dependency — install the version you want to run. If you use the `typeAware`/`typeCheck` options from `base` (on by default), also install `oxlint-tsgolint`.
+
+## Extend a Preset
+
+Pick the preset that matches your project and `extends` it from `oxlint.config.ts`. A React project reaches for `react`:
+
+```ts
+import { defineConfig } from "oxlint";
+import zapStudio from "@zap-studio/oxlint/react";
+
+export default defineConfig({
+  extends: [zapStudio],
+});
+```
+
+Every preset extends the ones below it in its chain — pick the leaf preset closest to your project's stack instead of stacking related presets yourself.
+
+## Combine Presets
+
+`extends` accepts an array. Each preset already includes everything up its own chain, so `tanstack` never needs `react` listed next to it — only stack presets that come from different branches, like `react` and `testing`:
+
+```ts
+import { defineConfig } from "oxlint";
+import react from "@zap-studio/oxlint/react";
+import testing from "@zap-studio/oxlint/testing";
+
+export default defineConfig({
+  extends: [react, testing],
+});
+```
+
+## Override a Rule
+
+`extends` merges `rules` key-by-key and unions `plugins`/`jsPlugins`. Anything you set in your own `rules` after `extends` overrides the preset, so disabling or retuning a single rule doesn't require forking it:
+
+```ts
+import { defineConfig } from "oxlint";
+import zapStudio from "@zap-studio/oxlint/react";
+
+export default defineConfig({
+  extends: [zapStudio],
+  rules: {
+    "sonarjs/cognitive-complexity": "off",
+  },
+});
+```
+
+:::note
+
+Rule names from wrapped plugins are prefixed with the plugin's name (`sonarjs/...`, `regexp/...`, `github/...`, `e18e/...`, `react-doctor/...`), matching how they're registered as `jsPlugins`.
+
+:::
+
+## Cherry-Pick Pieces
+
+Every preset also exports its constituent `plugins`, `jsPlugins`, and `rules`, so you can build a custom combination instead of taking a whole preset:
+
+```ts
+import { defineConfig } from "oxlint";
+import { basePlugins, baseJsPlugins, baseRules } from "@zap-studio/oxlint/base";
+import { reactPlugins, reactJsPlugins, reactRules } from "@zap-studio/oxlint/react";
+
+export default defineConfig({
+  plugins: [...basePlugins, ...reactPlugins],
+  jsPlugins: [...baseJsPlugins, ...reactJsPlugins],
+  rules: { ...baseRules, ...reactRules, "react-doctor/no-barrel-import": "off" },
+});
+```
