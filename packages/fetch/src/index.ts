@@ -267,7 +267,6 @@ const validateResponse = async (
   throwOnValidationError: boolean,
   logger: Logger | undefined,
   url: string,
-  // oxlint-disable-next-line anti-slop/no-unknown-returns -- Internal helper backing the public overloaded `$fetch`/`api.*` methods, whose return type depends on which schema overload the caller matched; those typed overloads are the caller-facing contract, this implementation never is.
 ): Promise<unknown> => {
   if (throwOnValidationError) {
     try {
@@ -315,7 +314,6 @@ const fetchInternal = async (
   schema: StandardSchemaV1 | undefined,
   options: ExtendedRequestInit | undefined,
   defaults: FetchDefaults,
-  // oxlint-disable-next-line anti-slop/no-unknown-returns -- Internal helper backing the public overloaded `$fetch`/`api.*` methods; same reasoning as validateResponse above.
 ): Promise<unknown> => {
   const { logger } = defaults;
   const request = normalizeRequest(input, options);
@@ -416,7 +414,6 @@ const createMethod = (fetchFn: $Fetch, method: string): $Fetch => {
     input: FetchInput,
     schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
     optionsOrUndefined?: ExtendedRequestInit,
-    // oxlint-disable-next-line anti-slop/no-unknown-returns -- Implementation behind the typed overloads declared above; same reasoning as validateResponse/fetchInternal.
   ): Promise<unknown> {
     if (isStandardSchema(schemaOrOptions)) {
       if (optionsOrUndefined?.throwOnValidationError === false) {
@@ -516,7 +513,6 @@ export async function $fetch(
   input: FetchInput,
   schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
   optionsOrUndefined?: ExtendedRequestInit,
-  // oxlint-disable-next-line anti-slop/no-unknown-returns -- Implementation behind the typed overloads declared above; same reasoning as validateResponse/fetchInternal/methodFetch.
 ): Promise<unknown> {
   const [schema, options] = isStandardSchema(schemaOrOptions)
     ? [schemaOrOptions, optionsOrUndefined]
@@ -618,7 +614,6 @@ export const createFetch = (
     input: FetchInput,
     schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
     optionsOrUndefined?: ExtendedRequestInit,
-    // oxlint-disable-next-line anti-slop/no-unknown-returns -- Implementation behind the typed overloads declared above; same reasoning as validateResponse/fetchInternal/methodFetch.
   ): Promise<unknown> {
     const [schema, options] = isStandardSchema(schemaOrOptions)
       ? [schemaOrOptions, optionsOrUndefined]

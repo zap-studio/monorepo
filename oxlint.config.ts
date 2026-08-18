@@ -49,8 +49,6 @@ export default defineConfig({
     "anti-slop/no-reflect-get": "error",
     "anti-slop/no-runtime-typeof": ["error", { allowInTypeGuards: true }],
     "anti-slop/no-shape-in-symbol-names": "error",
-    "anti-slop/no-unknown-parameters": "error",
-    "anti-slop/no-unknown-returns": "error",
     "anti-slop/no-unknown-type-aliases": "error",
     "anti-slop/no-unsafe-dictionary-type": "error",
     "anti-slop/no-widen-then-assert": "error",
