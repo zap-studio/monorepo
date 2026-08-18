@@ -13,7 +13,7 @@ const result = await runRetryPolicy(
   async () => {
     return await doWork();
   },
-  { throwOnExhausted: false }
+  { throwOnExhausted: false },
 );
 
 if (result.ok) {

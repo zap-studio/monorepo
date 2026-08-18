@@ -6,7 +6,7 @@
  * @module @zap-studio/logger/format
  */
 
-import type { CallableLogLevel, LogFormatter } from "./types.js";
+import type { CallableLogLevel, LogFormatter } from "./types.ts";
 
 /**
  * Default formatter: the message, plus `context` as a second argument when
@@ -18,16 +18,14 @@ import type { CallableLogLevel, LogFormatter } from "./types.js";
  * // ["server started", { port: 3000 }]
  */
 export const classicFormat: LogFormatter = (record) =>
-  record.context === undefined
-    ? [record.message]
-    : [record.message, record.context];
+  record.context === undefined ? [record.message] : [record.message, record.context];
 
 /**
  * `JSON.stringify` replacer used by {@link jsonFormat}: expands `Error`
  * values into `{ name, message, stack }` and stringifies `bigint` values,
  * since neither survives `JSON.stringify` on its own.
  */
-const jsonReplacer = (_key: string, value: unknown): unknown => {
+const jsonReplacer = (_key: string, value: unknown) => {
   if (value instanceof Error) {
     return { message: value.message, name: value.name, stack: value.stack };
   }
@@ -57,16 +55,18 @@ export const jsonFormat: LogFormatter = (record) => [
       msg: record.message,
       time: record.timestamp.getTime(),
     },
-    jsonReplacer
+    jsonReplacer,
   ),
 ];
+
+const LOGFMT_NEEDS_QUOTING_PATTERN = /[\s"=]/u;
 
 /**
  * Whether a logfmt value needs quoting: empty, or containing whitespace,
  * `"`, or `=`.
  */
 const needsLogfmtQuoting = (value: string): boolean =>
-  value.length === 0 || /[\s"=]/u.test(value);
+  value.length === 0 || LOGFMT_NEEDS_QUOTING_PATTERN.test(value);
 
 /**
  * Wraps a logfmt value in double quotes, escaping backslashes and quotes.
@@ -92,11 +92,7 @@ const formatLogfmtValue = (value: unknown): string => {
   if (typeof value === "string") {
     return needsLogfmtQuoting(value) ? quoteLogfmtValue(value) : value;
   }
-  if (
-    typeof value === "number" ||
-    typeof value === "boolean" ||
-    typeof value === "bigint"
-  ) {
+  if (typeof value === "number" || typeof value === "boolean" || typeof value === "bigint") {
     return String(value);
   }
   return quoteLogfmtValue(JSON.stringify(value));
@@ -113,12 +109,12 @@ const formatLogfmtValue = (value: unknown): string => {
  * // ['port=3000 time=1970-01-01T00:00:00.000Z level=info msg="server started"']
  */
 export const compactFormat: LogFormatter = (record) => {
-  const fields: Record<string, unknown> = {
+  const fields = {
     ...record.context,
     level: record.level,
     msg: record.message,
     time: record.timestamp.toISOString(),
-  };
+  } satisfies Record<string, unknown>;
 
   return [
     Object.entries(fields)
@@ -165,8 +161,7 @@ const CLOUDFLARE_WORKERS_USER_AGENT = "Cloudflare-Workers";
  * {@link CLOUDFLARE_WORKERS_USER_AGENT}.
  */
 const isCloudflareWorkers = (): boolean =>
-  typeof navigator !== "undefined" &&
-  navigator.userAgent === CLOUDFLARE_WORKERS_USER_AGENT;
+  typeof navigator !== "undefined" && navigator.userAgent === CLOUDFLARE_WORKERS_USER_AGENT;
 
 /**
  * Whether ANSI colors should be written.
@@ -181,7 +176,8 @@ const isCloudflareWorkers = (): boolean =>
  *   on the assumption it's a devtools-like console.
  */
 const isColorSupported = (): boolean => {
-  const proc: unknown = Reflect.get(globalThis, "process");
+  // SAFETY: `process` isn't declared on `globalThis`'s type in browser/edge targets; this reads it as an optional untyped property, validated below by `isNodeProcessLike`.
+  const proc: unknown = (globalThis as { process?: unknown }).process;
   if (isNodeProcessLike(proc)) {
     return Boolean(proc.stdout?.isTTY) && proc.env?.["NO_COLOR"] === undefined;
   }
@@ -191,7 +187,7 @@ const isColorSupported = (): boolean => {
 
 const ANSI_ESCAPE = "\u001B";
 
-const LEVEL_COLOR: Record<CallableLogLevel, string> = {
+const LEVEL_COLOR = {
   // cyan
   debug: `${ANSI_ESCAPE}[36m`,
   // red
@@ -204,7 +200,7 @@ const LEVEL_COLOR: Record<CallableLogLevel, string> = {
   trace: `${ANSI_ESCAPE}[90m`,
   // yellow
   warn: `${ANSI_ESCAPE}[33m`,
-};
+} satisfies Record<CallableLogLevel, string>;
 const ANSI_RESET = `${ANSI_ESCAPE}[0m`;
 const ANSI_DIM = `${ANSI_ESCAPE}[2m`;
 const LEVEL_LABEL_WIDTH = 5;
@@ -212,8 +208,7 @@ const LEVEL_LABEL_WIDTH = 5;
 /**
  * Zero-pads a number to `width` digits.
  */
-const pad = (value: number, width = 2): string =>
-  String(value).padStart(width, "0");
+const pad = (value: number, width = 2): string => String(value).padStart(width, "0");
 
 /**
  * Formats a `Date` as a local `HH:MM:SS.mmm` clock time for

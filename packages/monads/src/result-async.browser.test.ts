@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { fromPromise, ResultAsync } from "./result-async.js";
-import { err, isErr, isOk, ok } from "./result.js";
+import { fromPromise, ResultAsync } from "./result-async.ts";
+import { err, isErr, isOk, ok } from "./result.ts";
 
 describe("ResultAsync", () => {
   it("is awaitable, resolving to the wrapped Result", async () => {
@@ -11,17 +11,15 @@ describe("ResultAsync", () => {
 
   describe("map", () => {
     it("transforms an eventual Ok", async () => {
-      const resultAsync = new ResultAsync(Promise.resolve(ok(2))).map(
-        (n) => n * 2
-      );
+      const resultAsync = new ResultAsync(Promise.resolve(ok(2))).map((n) => n * 2);
 
       expect(await resultAsync).toEqual(ok(4));
     });
 
     it("passes an eventual Err through unchanged", async () => {
-      const resultAsync = new ResultAsync<number, string>(
-        Promise.resolve(err("bad"))
-      ).map((n) => n * 2);
+      const resultAsync = new ResultAsync<number, string>(Promise.resolve(err("bad"))).map(
+        (n) => n * 2,
+      );
 
       expect(await resultAsync).toEqual(err("bad"));
     });
@@ -29,8 +27,8 @@ describe("ResultAsync", () => {
 
   describe("mapErr", () => {
     it("transforms an eventual Err", async () => {
-      const resultAsync = new ResultAsync(Promise.resolve(err("bad"))).mapErr(
-        (e) => e.toUpperCase()
+      const resultAsync = new ResultAsync(Promise.resolve(err("bad"))).mapErr((e) =>
+        e.toUpperCase(),
       );
 
       expect(await resultAsync).toEqual(err("BAD"));
@@ -39,33 +37,33 @@ describe("ResultAsync", () => {
 
   describe("andThen", () => {
     it("chains a sync Result-returning function", async () => {
-      const resultAsync = new ResultAsync<number, string>(
-        Promise.resolve(ok(2))
-      ).andThen((n) => (n > 0 ? ok(n * 2) : err("negative")));
+      const resultAsync = new ResultAsync<number, string>(Promise.resolve(ok(2))).andThen((n) =>
+        n > 0 ? ok(n * 2) : err("negative"),
+      );
 
       expect(await resultAsync).toEqual(ok(4));
     });
 
     it("chains a Promise<Result>-returning function", async () => {
-      const resultAsync = new ResultAsync<number, string>(
-        Promise.resolve(ok(2))
-      ).andThen((n) => Promise.resolve(ok(n * 2)));
+      const resultAsync = new ResultAsync<number, string>(Promise.resolve(ok(2))).andThen((n) =>
+        Promise.resolve(ok(n * 2)),
+      );
 
       expect(await resultAsync).toEqual(ok(4));
     });
 
     it("chains a ResultAsync-returning function", async () => {
-      const resultAsync = new ResultAsync<number, string>(
-        Promise.resolve(ok(2))
-      ).andThen((n) => new ResultAsync(Promise.resolve(ok(n * 2))));
+      const resultAsync = new ResultAsync<number, string>(Promise.resolve(ok(2))).andThen(
+        (n) => new ResultAsync(Promise.resolve(ok(n * 2))),
+      );
 
       expect(await resultAsync).toEqual(ok(4));
     });
 
     it("short-circuits on an eventual Err", async () => {
-      const resultAsync = new ResultAsync<number, string>(
-        Promise.resolve(err("bad"))
-      ).andThen((n) => ok(n * 2));
+      const resultAsync = new ResultAsync<number, string>(Promise.resolve(err("bad"))).andThen(
+        (n) => ok(n * 2),
+      );
 
       expect(await resultAsync).toEqual(err("bad"));
     });
@@ -74,9 +72,7 @@ describe("ResultAsync", () => {
   describe("orElse", () => {
     it("passes an eventual Ok through unchanged, without calling fn", async () => {
       let called = false;
-      const resultAsync = new ResultAsync<number, string>(
-        Promise.resolve(ok(1))
-      ).orElse(() => {
+      const resultAsync = new ResultAsync<number, string>(Promise.resolve(ok(1))).orElse(() => {
         called = true;
         return ok(0);
       });
@@ -86,33 +82,33 @@ describe("ResultAsync", () => {
     });
 
     it("recovers with a sync Result-returning function", async () => {
-      const resultAsync = new ResultAsync<number, string>(
-        Promise.resolve(err("bad"))
-      ).orElse((e) => ok(e.length));
+      const resultAsync = new ResultAsync<number, string>(Promise.resolve(err("bad"))).orElse((e) =>
+        ok(e.length),
+      );
 
       expect(await resultAsync).toEqual(ok(3));
     });
 
     it("recovers with a Promise<Result>-returning function", async () => {
-      const resultAsync = new ResultAsync<number, string>(
-        Promise.resolve(err("bad"))
-      ).orElse((e) => Promise.resolve(ok(e.length)));
+      const resultAsync = new ResultAsync<number, string>(Promise.resolve(err("bad"))).orElse((e) =>
+        Promise.resolve(ok(e.length)),
+      );
 
       expect(await resultAsync).toEqual(ok(3));
     });
 
     it("recovers with a ResultAsync-returning function", async () => {
-      const resultAsync = new ResultAsync<number, string>(
-        Promise.resolve(err("bad"))
-      ).orElse((e) => new ResultAsync(Promise.resolve(ok(e.length))));
+      const resultAsync = new ResultAsync<number, string>(Promise.resolve(err("bad"))).orElse(
+        (e) => new ResultAsync(Promise.resolve(ok(e.length))),
+      );
 
       expect(await resultAsync).toEqual(ok(3));
     });
 
     it("can recover into an eventual Err", async () => {
-      const resultAsync = new ResultAsync<number, string>(
-        Promise.resolve(err("bad"))
-      ).orElse((e) => err(e.toUpperCase()));
+      const resultAsync = new ResultAsync<number, string>(Promise.resolve(err("bad"))).orElse((e) =>
+        err(e.toUpperCase()),
+      );
 
       expect(await resultAsync).toEqual(err("BAD"));
     });
@@ -147,9 +143,8 @@ describe("fromPromise", () => {
   });
 
   it("wraps a rejected promise in Err via mapError", async () => {
-    const result = await fromPromise(
-      Promise.reject(new Error("boom")),
-      (error) => (error instanceof Error ? error.message : "unknown")
+    const result = await fromPromise(Promise.reject(new Error("boom")), (error) =>
+      error instanceof Error ? error.message : "unknown",
     );
 
     expect(isErr(result)).toBe(true);

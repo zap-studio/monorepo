@@ -6,10 +6,9 @@
  */
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";
+
 import { createStandardValidator } from "@zap-studio/validation";
 
-import { withCheckSpan } from "./_otel.js";
-import { PolicyError } from "./errors.js";
 import type {
   Actions,
   Context,
@@ -18,7 +17,10 @@ import type {
   PermitConfig,
   Policy,
   Resources,
-} from "./types.js";
+} from "./types.ts";
+
+import { withCheckSpan } from "./_otel.ts";
+import { PolicyError } from "./errors.ts";
 
 /**
  * Splits a typed `resource:action` permission string into its parts.
@@ -31,7 +33,7 @@ const parsePermission = <
   K extends keyof TResources & keyof TActions,
 >(
   permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
-  actions: TActions
+  actions: TActions,
 ): { action: InferAction<TResources, TActions, K>; resourceType: K } | null => {
   const isValidResourceKey = (value: string): value is K & string =>
     Object.keys(actions).includes(value);
@@ -114,7 +116,7 @@ export const createPolicy = <
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
-  config: PermitConfig<TContext, TResources, TActions>
+  config: PermitConfig<TContext, TResources, TActions>,
 ): Policy<TContext, TResources, TActions> => {
   const { rules, resources, actions, logger } = config;
   const validators = new Map<
@@ -124,7 +126,7 @@ export const createPolicy = <
 
   const getValidatedResource = async <K extends keyof TResources>(
     resourceType: K,
-    resource: InferResource<TResources, K>
+    resource: InferResource<TResources, K>,
   ): Promise<InferResource<TResources, K> | null> => {
     const validator = validators.get(resourceType);
     if (validator === undefined) {
@@ -137,24 +139,24 @@ export const createPolicy = <
       }
       return result.value;
     } catch (error) {
-      logger?.warn(
-        `Resource validation failed for ${String(resourceType)}: ${String(error)}`,
-        { error, resourceType: String(resourceType) }
-      );
+      logger?.warn(`Resource validation failed for ${String(resourceType)}: ${String(error)}`, {
+        error,
+        resourceType: String(resourceType),
+      });
       return null;
     }
   };
 
   const hasAllowedAction = <K extends keyof TResources & keyof TActions>(
     resourceType: K,
-    action: InferAction<TResources, TActions, K>
+    action: InferAction<TResources, TActions, K>,
   ): boolean => actions[resourceType]?.includes(action) ?? false;
 
   const evaluatePolicy = <K extends keyof TResources & keyof TActions>(
     context: TContext,
     resourceType: K,
     action: InferAction<TResources, TActions, K>,
-    resource: InferResource<TResources, K>
+    resource: InferResource<TResources, K>,
   ): boolean => {
     const policyFn = rules[resourceType]?.[action];
     if (policyFn === undefined) {
@@ -184,12 +186,13 @@ export const createPolicy = <
           action,
           error,
           resourceType: String(resourceType),
-        }
+        },
       );
       return false;
     }
   };
 
+  // SAFETY: `resources` is typed as `TResources`, so its own enumerable keys are exactly `keyof TResources`.
   for (const key of Object.keys(resources) as (keyof TResources)[]) {
     const schema = resources[key];
     if (schema === undefined) {
@@ -203,13 +206,10 @@ export const createPolicy = <
     async can<K extends keyof TResources & keyof TActions>(
       context: TContext,
       permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
-      resource: InferResource<TResources, K>
+      resource: InferResource<TResources, K>,
     ): Promise<boolean> {
       return await withCheckSpan(permission, async () => {
-        const parsedPermission = parsePermission<TResources, TActions, K>(
-          permission,
-          actions
-        );
+        const parsedPermission = parsePermission<TResources, TActions, K>(permission, actions);
         if (parsedPermission === null) {
           return false;
         }
@@ -219,10 +219,7 @@ export const createPolicy = <
           return false;
         }
 
-        const validatedResource = await getValidatedResource(
-          resourceType,
-          resource
-        );
+        const validatedResource = await getValidatedResource(resourceType, resource);
         if (validatedResource === null) {
           return false;
         }
@@ -239,12 +236,12 @@ const mergePoliciesWithStrategy = <
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
   policies: Policy<TContext, TResources, TActions>[],
-  strategy: "and" | "or"
+  strategy: "and" | "or",
 ): Policy<TContext, TResources, TActions> => ({
   async can<K extends keyof TResources & keyof TActions>(
     context: TContext,
     permission: `${K & string}:${InferAction<TResources, TActions, K> & string}`,
-    resource: InferResource<TResources, K>
+    resource: InferResource<TResources, K>,
   ): Promise<boolean> {
     return await withCheckSpan(permission, async () => {
       if (policies.length === 0) {
@@ -252,9 +249,7 @@ const mergePoliciesWithStrategy = <
       }
 
       const settled = await Promise.allSettled(
-        policies.map(
-          async (policy) => await policy.can(context, permission, resource)
-        )
+        policies.map(async (policy) => await policy.can(context, permission, resource)),
       );
 
       const results = settled.map((result) => {
@@ -264,9 +259,7 @@ const mergePoliciesWithStrategy = <
         return false;
       });
 
-      return strategy === "and"
-        ? results.every(Boolean)
-        : results.some(Boolean);
+      return strategy === "and" ? results.every(Boolean) : results.some(Boolean);
     });
   },
 });
@@ -291,8 +284,7 @@ export const mergePoliciesAnd = <
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
   ...policies: Policy<TContext, TResources, TActions>[]
-): Policy<TContext, TResources, TActions> =>
-  mergePoliciesWithStrategy(policies, "and");
+): Policy<TContext, TResources, TActions> => mergePoliciesWithStrategy(policies, "and");
 
 /**
  * Merges multiple policies into one, requiring at least one policy to allow.
@@ -314,5 +306,4 @@ export const mergePoliciesOr = <
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
   ...policies: Policy<TContext, TResources, TActions>[]
-): Policy<TContext, TResources, TActions> =>
-  mergePoliciesWithStrategy(policies, "or");
+): Policy<TContext, TResources, TActions> => mergePoliciesWithStrategy(policies, "or");

@@ -1,26 +1,13 @@
-import {
-  SpanKind,
-  SpanStatusCode,
-  propagation,
-  trace,
-} from "@opentelemetry/api";
+import { SpanKind, SpanStatusCode, propagation, trace } from "@opentelemetry/api";
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import {
   BasicTracerProvider,
   InMemorySpanExporter,
   SimpleSpanProcessor,
 } from "@opentelemetry/sdk-trace-base";
-import {
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { $fetch } from "./index.js";
+import { $fetch } from "./index.ts";
 
 describe("$fetch OpenTelemetry", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
@@ -53,9 +40,7 @@ describe("$fetch OpenTelemetry", () => {
     expect(span?.name).toBe("GET");
     expect(span?.kind).toBe(SpanKind.CLIENT);
     expect(span?.attributes["http.request.method"]).toBe("GET");
-    expect(span?.attributes["url.full"]).toBe(
-      "https://api.example.com/users/1"
-    );
+    expect(span?.attributes["url.full"]).toBe("https://api.example.com/users/1");
   });
 
   it("sets http.response.status_code and OK status on a 2xx response", async () => {
@@ -69,9 +54,7 @@ describe("$fetch OpenTelemetry", () => {
   });
 
   it("sets ERROR status on a non-2xx response", async () => {
-    fetchMock.mockResolvedValue(
-      new Response(null, { status: 500, statusText: "Internal Error" })
-    );
+    fetchMock.mockResolvedValue(new Response(null, { status: 500, statusText: "Internal Error" }));
 
     await $fetch("https://api.example.com/users/1", {
       throwOnFetchError: false,
@@ -86,9 +69,7 @@ describe("$fetch OpenTelemetry", () => {
     const networkError = new TypeError("network down");
     fetchMock.mockRejectedValue(networkError);
 
-    await expect($fetch("https://api.example.com/users/1")).rejects.toThrow(
-      "network down"
-    );
+    await expect($fetch("https://api.example.com/users/1")).rejects.toThrow("network down");
 
     const [span] = exporter.getFinishedSpans();
     expect(span?.status.code).toBe(SpanStatusCode.ERROR);
@@ -98,15 +79,13 @@ describe("$fetch OpenTelemetry", () => {
   it("sets ERROR status without an exception event when a non-Error value is thrown", async () => {
     fetchMock.mockRejectedValue({ reason: "aborted" });
 
-    await expect(
-      $fetch("https://api.example.com/users/1")
-    ).rejects.toStrictEqual({ reason: "aborted" });
+    await expect($fetch("https://api.example.com/users/1")).rejects.toStrictEqual({
+      reason: "aborted",
+    });
 
     const [span] = exporter.getFinishedSpans();
     expect(span?.status.code).toBe(SpanStatusCode.ERROR);
-    expect(span?.events.some((event) => event.name === "exception")).toBe(
-      false
-    );
+    expect(span?.events.some((event) => event.name === "exception")).toBe(false);
   });
 
   it("injects a traceparent header into the outgoing request", async () => {
@@ -116,8 +95,6 @@ describe("$fetch OpenTelemetry", () => {
 
     const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     const headers = new Headers(init.headers);
-    expect(headers.get("traceparent")).toMatch(
-      /^00-[0-9a-f]{32}-[0-9a-f]{16}-0[01]$/
-    );
+    expect(headers.get("traceparent")).toMatch(/^00-[0-9a-f]{32}-[0-9a-f]{16}-0[01]$/);
   });
 });

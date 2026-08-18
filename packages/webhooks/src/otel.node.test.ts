@@ -7,7 +7,7 @@ import {
 } from "@opentelemetry/sdk-trace-base";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { createWebhookRouter } from "./index.js";
+import { createWebhookRouter } from "./index.ts";
 
 describe("WebhookRouter OpenTelemetry active context", () => {
   const spanExporter = new InMemorySpanExporter();

@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { runRetryPolicy } from "./base-policy.js";
-import { AbortError } from "./errors.js";
-import { fixedDelay } from "./fixed-delay.js";
+import { runRetryPolicy } from "./base-policy.ts";
+import { AbortError } from "./errors.ts";
+import { fixedDelay } from "./fixed-delay.ts";
 
 describe(fixedDelay, () => {
   it("retries with constant delay before max attempts", () => {
@@ -47,8 +47,8 @@ describe("@zap-studio/retry browser runtime", () => {
         },
         {
           signal: controller.signal,
-        }
-      )
+        },
+      ),
     ).rejects.toBeInstanceOf(AbortError);
   });
 
@@ -66,7 +66,7 @@ describe("@zap-studio/retry browser runtime", () => {
       {
         signal: controller.signal,
         throwOnExhausted: false,
-      }
+      },
     );
 
     expect(result).toMatchObject({

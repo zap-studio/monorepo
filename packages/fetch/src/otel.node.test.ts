@@ -5,17 +5,9 @@ import {
   InMemorySpanExporter,
   SimpleSpanProcessor,
 } from "@opentelemetry/sdk-trace-base";
-import {
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { $fetch } from "./index.js";
+import { $fetch } from "./index.ts";
 
 describe("$fetch OpenTelemetry active context", () => {
   let fetchMock: ReturnType<typeof vi.fn>;

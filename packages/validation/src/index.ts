@@ -10,12 +10,12 @@
  */
 
 export type { StandardSchemaV1, StandardTypedV1 } from "@standard-schema/spec";
-export { ValidationError } from "./errors.js";
+export { ValidationError } from "./errors.ts";
 export {
   createStandardValidator,
   createStandardValidatorSync,
   isStandardSchema,
   standardValidate,
   standardValidateSync,
-} from "./validate.js";
-export type { StandardValidateOptions } from "./validate.js";
+} from "./validate.ts";
+export type { StandardValidateOptions } from "./validate.ts";

@@ -108,7 +108,7 @@ Via `and`, `or`, and `not`.
 ```ts
 const isOwnerOrAdmin = or(
   (ctx, action, resource) => ctx.user.id === resource.authorId,
-  (ctx, action, resource) => ctx.user.role === "admin"
+  (ctx, action, resource) => ctx.user.role === "admin",
 );
 ```
 

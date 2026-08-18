@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { pipe } from "./pipe.js";
+import { pipe } from "./pipe.ts";
 import {
   andThen,
   err,
@@ -15,7 +15,7 @@ import {
   unwrap,
   unwrapOr,
   unwrapOrElse,
-} from "./result.js";
+} from "./result.ts";
 
 describe("ok/err", () => {
   it("creates an Ok value", () => {
@@ -44,8 +44,8 @@ describe("map", () => {
     expect(
       pipe(
         ok(2),
-        map((n: number) => n * 2)
-      )
+        map((n: number) => n * 2),
+      ),
     ).toEqual(ok(4));
   });
 
@@ -54,8 +54,8 @@ describe("map", () => {
     expect(
       pipe(
         result,
-        map((n: number) => n * 2)
-      )
+        map((n: number) => n * 2),
+      ),
     ).toEqual(result);
   });
 });
@@ -65,8 +65,8 @@ describe("mapErr", () => {
     expect(
       pipe(
         err("bad"),
-        mapErr((e: string) => e.toUpperCase())
-      )
+        mapErr((e: string) => e.toUpperCase()),
+      ),
     ).toEqual(err("BAD"));
   });
 
@@ -75,15 +75,14 @@ describe("mapErr", () => {
     expect(
       pipe(
         result,
-        mapErr((e: string) => e.toUpperCase())
-      )
+        mapErr((e: string) => e.toUpperCase()),
+      ),
     ).toEqual(result);
   });
 });
 
 describe("andThen", () => {
-  const parse = (s: string) =>
-    Number.isNaN(Number(s)) ? err("not a number") : ok(Number(s));
+  const parse = (s: string) => (Number.isNaN(Number(s)) ? err("not a number") : ok(Number(s)));
 
   it("chains on Ok", () => {
     expect(pipe(ok("42"), andThen(parse))).toEqual(ok(42));
@@ -103,7 +102,7 @@ describe("orElse", () => {
       orElse(() => {
         called = true;
         return ok(0);
-      })
+      }),
     );
 
     expect(result).toEqual(ok(1));
@@ -114,8 +113,8 @@ describe("orElse", () => {
     expect(
       pipe(
         err("bad"),
-        orElse((e: string) => ok(e.length))
-      )
+        orElse((e: string) => ok(e.length)),
+      ),
     ).toEqual(ok(3));
   });
 
@@ -123,8 +122,8 @@ describe("orElse", () => {
     expect(
       pipe(
         err("bad"),
-        orElse((e: string) => err(e.toUpperCase()))
-      )
+        orElse((e: string) => err(e.toUpperCase())),
+      ),
     ).toEqual(err("BAD"));
   });
 });
@@ -144,8 +143,8 @@ describe("unwrapOrElse", () => {
     expect(
       pipe(
         ok(1),
-        unwrapOrElse(() => 0)
-      )
+        unwrapOrElse(() => 0),
+      ),
     ).toBe(1);
   });
 
@@ -153,8 +152,8 @@ describe("unwrapOrElse", () => {
     expect(
       pipe(
         err("bad"),
-        unwrapOrElse((e: string) => e.length)
-      )
+        unwrapOrElse((e: string) => e.length),
+      ),
     ).toBe(3);
   });
 });
@@ -181,10 +180,7 @@ describe("unwrap", () => {
 
 describe("match", () => {
   it("calls ok for Ok", () => {
-    const result = pipe(
-      ok(42),
-      match({ ok: (n: number) => `got ${n}`, err: () => "never" })
-    );
+    const result = pipe(ok(42), match({ ok: (n: number) => `got ${n}`, err: () => "never" }));
 
     expect(result).toBe("got 42");
   });
@@ -192,7 +188,7 @@ describe("match", () => {
   it("calls err for Err", () => {
     const result = pipe(
       err("bad"),
-      match({ ok: () => "never", err: (e: string) => `failed: ${e}` })
+      match({ ok: () => "never", err: (e: string) => `failed: ${e}` }),
     );
 
     expect(result).toBe("failed: bad");
@@ -207,7 +203,7 @@ describe("fromThrowable", () => {
 
   it("returns Err with the mapped error when the function throws", () => {
     const safeParse = fromThrowable(JSON.parse, (error) =>
-      error instanceof Error ? error.message : "parse failed"
+      error instanceof Error ? error.message : "parse failed",
     );
 
     const result = safeParse("not json");

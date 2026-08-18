@@ -9,7 +9,7 @@ import type {
   Result,
   ResultMatchers,
   Some,
-} from "./types.js";
+} from "./types.ts";
 
 describe("types", () => {
   it("supports the Ok/Err/Result shapes", () => {

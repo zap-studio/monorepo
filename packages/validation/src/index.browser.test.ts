@@ -1,19 +1,18 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+
 import { describe, expect, it } from "vitest";
 
-import { ValidationError } from "./errors.js";
+import { ValidationError } from "./errors.ts";
 import {
   createStandardValidator,
   createStandardValidatorSync,
   isStandardSchema,
   standardValidate,
   standardValidateSync,
-} from "./index.js";
+} from "./index.ts";
 
 function createMockSchema<T>(
-  validateFn: (
-    input: unknown
-  ) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>
+  validateFn: (input: unknown) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>,
 ): StandardSchemaV1<unknown, T> {
   return {
     "~standard": {
@@ -25,9 +24,7 @@ function createMockSchema<T>(
 }
 
 function createMockSchemaFunction<T>(
-  validateFn: (
-    input: unknown
-  ) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>
+  validateFn: (input: unknown) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>,
 ): StandardSchemaV1<unknown, T> {
   const fn = (): void => undefined;
 
@@ -42,9 +39,7 @@ function createMockSchemaFunction<T>(
   return fn as unknown as StandardSchemaV1<unknown, T>;
 }
 
-async function captureRejectedError(
-  run: () => Promise<unknown>
-): Promise<unknown> {
+async function captureRejectedError(run: () => Promise<unknown>): Promise<unknown> {
   try {
     await run();
   } catch (error) {
@@ -113,7 +108,7 @@ describe(isStandardSchema, () => {
     expect(
       isStandardSchema({
         validate: (): void => undefined,
-      })
+      }),
     ).toBeFalsy();
 
     expect(isStandardSchema({ version: 1 })).toBeFalsy();
@@ -138,9 +133,7 @@ describe(createStandardValidator, () => {
   });
 
   it("should return a reusable async validator for asynchronous schemas", async () => {
-    const schema = createMockSchema((input) =>
-      Promise.resolve({ value: { wrapped: input } })
-    );
+    const schema = createMockSchema((input) => Promise.resolve({ value: { wrapped: input } }));
 
     const validate = createStandardValidator(schema);
     const result = await validate("test");
@@ -176,9 +169,7 @@ describe(createStandardValidator, () => {
 
     const validate = createStandardValidator(schema);
 
-    await expect(validate("bad", { throwOnError: true })).rejects.toThrow(
-      ValidationError
-    );
+    await expect(validate("bad", { throwOnError: true })).rejects.toThrow(ValidationError);
   });
 
   it("should return result object when throwOnError is false", async () => {
@@ -238,9 +229,7 @@ describe(createStandardValidatorSync, () => {
 
     const validate = createStandardValidatorSync(schema);
 
-    expect(() => validate("bad", { throwOnError: true })).toThrow(
-      ValidationError
-    );
+    expect(() => validate("bad", { throwOnError: true })).toThrow(ValidationError);
   });
 
   it("should return result object when throwOnError is false", () => {
@@ -265,7 +254,7 @@ describe(createStandardValidatorSync, () => {
     const validate = createStandardValidatorSync(schema);
 
     expect(() => validate(123)).toThrow(
-      "Async schemas are not supported by createStandardValidatorSync"
+      "Async schemas are not supported by createStandardValidatorSync",
     );
   });
 });
@@ -323,9 +312,7 @@ describe(standardValidate, () => {
 
   describe("asynchronous validation", () => {
     it("should validate data against an asynchronous schema", async () => {
-      const schema = createMockSchema((input) =>
-        Promise.resolve({ value: input })
-      );
+      const schema = createMockSchema((input) => Promise.resolve({ value: input }));
 
       const result = await standardValidate("async-test", schema, {
         throwOnError: true,
@@ -348,9 +335,7 @@ describe(standardValidate, () => {
     });
 
     it("should return result object when throwOnError is false", async () => {
-      const schema = createMockSchema((input) =>
-        Promise.resolve({ value: input })
-      );
+      const schema = createMockSchema((input) => Promise.resolve({ value: input }));
 
       const data = { name: "async" };
 
@@ -368,9 +353,9 @@ describe(standardValidate, () => {
         issues: [{ message: "Invalid value" }],
       }));
 
-      await expect(
-        standardValidate("invalid", schema, { throwOnError: true })
-      ).rejects.toThrow(ValidationError);
+      await expect(standardValidate("invalid", schema, { throwOnError: true })).rejects.toThrow(
+        ValidationError,
+      );
     });
 
     it("should include issues in thrown ValidationError", async () => {
@@ -382,7 +367,7 @@ describe(standardValidate, () => {
       const schema = createMockSchema(() => ({ issues }));
 
       const error = await captureRejectedError(
-        async () => await standardValidate({}, schema, { throwOnError: true })
+        async () => await standardValidate({}, schema, { throwOnError: true }),
       );
 
       expect(error).toBeInstanceOf(ValidationError);
@@ -390,9 +375,7 @@ describe(standardValidate, () => {
     });
 
     it("should return result object with issues when throwOnError is false", async () => {
-      const issues: StandardSchemaV1.Issue[] = [
-        { message: "Validation failed" },
-      ];
+      const issues: StandardSchemaV1.Issue[] = [{ message: "Validation failed" }];
 
       const schema = createMockSchema(() => ({ issues }));
 
@@ -404,9 +387,7 @@ describe(standardValidate, () => {
     });
 
     it("should return result object with issues when options are omitted", async () => {
-      const issues: StandardSchemaV1.Issue[] = [
-        { message: "Validation failed" },
-      ];
+      const issues: StandardSchemaV1.Issue[] = [{ message: "Validation failed" }];
       const schema = createMockSchema(() => ({ issues }));
 
       const result = await standardValidate("invalid", schema);
@@ -420,24 +401,22 @@ describe(standardValidate, () => {
       }));
 
       await expect(
-        standardValidate("invalid", schema, { throwOnError: false })
+        standardValidate("invalid", schema, { throwOnError: false }),
       ).resolves.toBeDefined();
     });
 
     it("should handle async validation failure with throwOnError true", async () => {
       const schema = createMockSchema(() =>
-        Promise.resolve({ issues: [{ message: "Async validation failed" }] })
+        Promise.resolve({ issues: [{ message: "Async validation failed" }] }),
       );
 
-      await expect(
-        standardValidate("data", schema, { throwOnError: true })
-      ).rejects.toThrow(ValidationError);
+      await expect(standardValidate("data", schema, { throwOnError: true })).rejects.toThrow(
+        ValidationError,
+      );
     });
 
     it("should handle async validation failure with throwOnError false", async () => {
-      const issues: StandardSchemaV1.Issue[] = [
-        { message: "Async validation failed" },
-      ];
+      const issues: StandardSchemaV1.Issue[] = [{ message: "Async validation failed" }];
 
       const schema = createMockSchema(() => Promise.resolve({ issues }));
 
@@ -507,9 +486,9 @@ describe(standardValidateSync, () => {
         issues: [{ message: "Invalid value" }],
       }));
 
-      expect(() =>
-        standardValidateSync("invalid", schema, { throwOnError: true })
-      ).toThrow(ValidationError);
+      expect(() => standardValidateSync("invalid", schema, { throwOnError: true })).toThrow(
+        ValidationError,
+      );
     });
 
     it("should include issues in thrown ValidationError", () => {
@@ -521,7 +500,7 @@ describe(standardValidateSync, () => {
       const schema = createMockSchema(() => ({ issues }));
 
       const error = captureThrownError(() =>
-        standardValidateSync({}, schema, { throwOnError: true })
+        standardValidateSync({}, schema, { throwOnError: true }),
       );
 
       expect(error).toBeInstanceOf(ValidationError);
@@ -529,9 +508,7 @@ describe(standardValidateSync, () => {
     });
 
     it("should return result object with issues when throwOnError is false", () => {
-      const issues: StandardSchemaV1.Issue[] = [
-        { message: "Validation failed" },
-      ];
+      const issues: StandardSchemaV1.Issue[] = [{ message: "Validation failed" }];
 
       const schema = createMockSchema(() => ({ issues }));
 
@@ -543,9 +520,7 @@ describe(standardValidateSync, () => {
     });
 
     it("should return result object with issues when options are omitted", () => {
-      const issues: StandardSchemaV1.Issue[] = [
-        { message: "Validation failed" },
-      ];
+      const issues: StandardSchemaV1.Issue[] = [{ message: "Validation failed" }];
       const schema = createMockSchema(() => ({ issues }));
 
       const result = standardValidateSync("invalid", schema);
@@ -558,19 +533,15 @@ describe(standardValidateSync, () => {
         issues: [{ message: "Error" }],
       }));
 
-      expect(() =>
-        standardValidateSync("invalid", schema, { throwOnError: false })
-      ).not.toThrow();
+      expect(() => standardValidateSync("invalid", schema, { throwOnError: false })).not.toThrow();
     });
   });
 
   it("should throw if the schema performs asynchronous validation", () => {
-    const schema = createMockSchema((input) =>
-      Promise.resolve({ value: input })
-    );
+    const schema = createMockSchema((input) => Promise.resolve({ value: input }));
 
     expect(() => standardValidateSync("test", schema)).toThrow(
-      "Async schemas are not supported by standardValidateSync"
+      "Async schemas are not supported by standardValidateSync",
     );
   });
 });

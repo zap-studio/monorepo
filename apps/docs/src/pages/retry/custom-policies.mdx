@@ -13,11 +13,7 @@ Only `next` is required. `onExhausted` and `isKnownError` fall back to `runRetry
 
 ```ts
 import { runRetryPolicy } from "@zap-studio/retry";
-import type {
-  RetryDecision,
-  RetryDecisionInput,
-  RetryPolicy,
-} from "@zap-studio/retry";
+import type { RetryDecision, RetryDecisionInput, RetryPolicy } from "@zap-studio/retry";
 
 const stepDelay = (maxAttempts: number, stepMs: number): RetryPolicy => ({
   next(input: RetryDecisionInput): RetryDecision {
@@ -57,11 +53,7 @@ The built-in runner calls `next(...)` with the one-based `attempt` number and th
 Because `next(...)` receives the thrown error, a policy can stop early for failures that will never succeed.
 
 ```ts
-import type {
-  RetryDecision,
-  RetryDecisionInput,
-  RetryPolicy,
-} from "@zap-studio/retry";
+import type { RetryDecision, RetryDecisionInput, RetryPolicy } from "@zap-studio/retry";
 
 const retryOnNetworkError = (): RetryPolicy => ({
   next(input: RetryDecisionInput): RetryDecision {
@@ -123,16 +115,12 @@ const upstreamPolicy = (): RetryPolicy => ({
 The default `isKnownError` checks `error instanceof Error`. When `TError` is a specific subclass, supply your own to narrow for real — and to stop treating unrelated failures as retryable:
 
 ```ts
-import type {
-  RetryDecision,
-  RetryDecisionInput,
-  RetryPolicy,
-} from "@zap-studio/retry";
+import type { RetryDecision, RetryDecisionInput, RetryPolicy } from "@zap-studio/retry";
 
 class HttpError extends Error {
   constructor(
     message: string,
-    public readonly status: number
+    public readonly status: number,
   ) {
     super(message);
     this.name = "HttpError";

@@ -5,6 +5,7 @@
     "target": "esnext",
     "module": "preserve",
     "moduleDetection": "force",
+    "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
     "skipLibCheck": true,

@@ -9,10 +9,10 @@ description: How @zap-studio/logger adapts automatically to Node, Bun, Deno, bro
 
 `console` dispatch, level filtering, `classicFormat`, `jsonFormat`, and `compactFormat` have no runtime-specific code at all. The only per-runtime behavior is [`prettyFormat`](/logger/formats)'s color detection:
 
-| Runtime | Colored? |
-| --- | --- |
-| Node / Bun / Deno | On a real TTY only, never when `NO_COLOR` is set |
-| Browsers | Always — devtools render ANSI fine |
+| Runtime            | Colored?                                                                         |
+| ------------------ | -------------------------------------------------------------------------------- |
+| Node / Bun / Deno  | On a real TTY only, never when `NO_COLOR` is set                                 |
+| Browsers           | Always — devtools render ANSI fine                                               |
 | Cloudflare Workers | Never — output may land in the dashboard's web log viewer, which can't render it |
 
 Node/Bun/Deno detection checks for a `process` global with `process.stdout.isTTY` and `process.env.NO_COLOR`.

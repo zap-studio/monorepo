@@ -1,12 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import {
-  classicFormat,
-  compactFormat,
-  jsonFormat,
-  prettyFormat,
-} from "./format.js";
-import type { LogRecord } from "./types.js";
+import type { LogRecord } from "./types.ts";
+
+import { classicFormat, compactFormat, jsonFormat, prettyFormat } from "./format.ts";
 
 const baseRecord = (overrides: Partial<LogRecord> = {}): LogRecord => ({
   context: undefined,
@@ -23,10 +19,7 @@ describe("classicFormat", () => {
 
   it("appends context as a second argument when present", () => {
     const record = baseRecord({ context: { port: 3000 } });
-    expect(classicFormat(record)).toStrictEqual([
-      "server started",
-      { port: 3000 },
-    ]);
+    expect(classicFormat(record)).toStrictEqual(["server started", { port: 3000 }]);
   });
 });
 
@@ -82,17 +75,13 @@ describe("jsonFormat", () => {
 describe("compactFormat", () => {
   it("produces a single logfmt line with pino-style field names", () => {
     const [line] = compactFormat(baseRecord());
-    expect(line).toBe(
-      'level=info msg="server started" time=2024-01-01T00:00:00.000Z'
-    );
+    expect(line).toBe('level=info msg="server started" time=2024-01-01T00:00:00.000Z');
   });
 
   it("flattens context fields to the top level", () => {
     const record = baseRecord({ context: { port: 3000 } });
     const [line] = compactFormat(record);
-    expect(line).toBe(
-      'port=3000 level=info msg="server started" time=2024-01-01T00:00:00.000Z'
-    );
+    expect(line).toBe('port=3000 level=info msg="server started" time=2024-01-01T00:00:00.000Z');
   });
 
   it("quotes values containing whitespace, quotes, or =", () => {

@@ -1,16 +1,8 @@
+import react from "@zap-studio/oxlint/react";
+import testing from "@zap-studio/oxlint/testing";
 import { defineConfig } from "oxlint";
-import core from "ultracite/oxlint/core";
-import react from "ultracite/oxlint/react";
 
 export default defineConfig({
-  extends: [core, react],
-  ignorePatterns: [
-    ...(core.ignorePatterns ?? []),
-    "**/*.test.{ts,tsx}",
-    "**/*.spec.{ts,tsx}",
-  ],
-  options: {
-    typeAware: true,
-    typeCheck: true,
-  },
+  extends: [react, testing],
+  ignorePatterns: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "packages/oxlint/src/anti-slop/**"],
 });

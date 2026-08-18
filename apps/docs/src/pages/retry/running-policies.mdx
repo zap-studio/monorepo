@@ -50,7 +50,7 @@ const value = await runRetryPolicy(
     sleep: async (_delayMs) => {
       // no delay in tests
     },
-  }
+  },
 );
 ```
 
@@ -66,8 +66,8 @@ See [Non-throw Mode](/retry/non-throw-mode) for `throwOnExhausted: false`, and [
 
 All options are optional.
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `sleep` | `(delayMs: number) => Promise<void>` | `defaultSleep` | Delay function used between retry attempts. |
-| `signal` | `AbortSignal` | — | Cancels retry orchestration when aborted. See [Abort Signal](/retry/abort-signal). |
-| `throwOnExhausted` | `boolean` | `true` | `true` throws on exhaustion; `false` returns a `RetryRunResult<T>` union. |
+| Option             | Type                                 | Default        | Description                                                                        |
+| ------------------ | ------------------------------------ | -------------- | ---------------------------------------------------------------------------------- |
+| `sleep`            | `(delayMs: number) => Promise<void>` | `defaultSleep` | Delay function used between retry attempts.                                        |
+| `signal`           | `AbortSignal`                        | —              | Cancels retry orchestration when aborted. See [Abort Signal](/retry/abort-signal). |
+| `throwOnExhausted` | `boolean`                            | `true`         | `true` throws on exhaustion; `false` returns a `RetryRunResult<T>` union.          |

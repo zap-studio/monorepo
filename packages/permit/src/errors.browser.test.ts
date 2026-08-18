@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { PolicyError } from "./errors.js";
+import { PolicyError } from "./errors.ts";
 
 describe(PolicyError, () => {
   describe("constructor", () => {
@@ -76,9 +76,7 @@ describe(PolicyError, () => {
       const error = new PolicyError("Test");
 
       expect(Object.getPrototypeOf(error)).toBe(PolicyError.prototype);
-      expect(Object.getPrototypeOf(PolicyError.prototype)).toBe(
-        Error.prototype
-      );
+      expect(Object.getPrototypeOf(PolicyError.prototype)).toBe(Error.prototype);
     });
   });
 

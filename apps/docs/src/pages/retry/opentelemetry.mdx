@@ -47,10 +47,10 @@ Unlike [`fetch`](/fetch/opentelemetry), [`webhooks`](/webhooks/opentelemetry), a
 
 Instead, each retry decision is recorded as an **event** on whatever span is already active when the decision happens (for example, the `CLIENT` span from a `@zap-studio/fetch` call being retried, or your own app-level span):
 
-| Event | When | Attributes |
-| --- | --- | --- |
-| `retry.scheduled` | A retry will be attempted | `attempt`, `retry.delay_ms`, `retry.reason` |
-| `retry.exhausted` | No more retries will happen | `attempt`, `retry.reason` |
+| Event             | When                        | Attributes                                  |
+| ----------------- | --------------------------- | ------------------------------------------- |
+| `retry.scheduled` | A retry will be attempted   | `attempt`, `retry.delay_ms`, `retry.reason` |
+| `retry.exhausted` | No more retries will happen | `attempt`, `retry.reason`                   |
 
 If no span is active, `addEvent` is a no-op — nothing to attach the event to, so nothing happens.
 

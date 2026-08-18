@@ -173,11 +173,7 @@ type PostAction = "read" | "write" | "delete";
 type Post = { id: string; authorId: string; visibility: "public" | "private" };
 
 // Reusable condition that behaves differently based on action
-const canAccessPost: ConditionFn<AppContext, PostAction, Post> = (
-  ctx,
-  action,
-  post
-) => {
+const canAccessPost: ConditionFn<AppContext, PostAction, Post> = (ctx, action, post) => {
   // Anyone can read public posts
   if (action === "read" && post.visibility === "public") {
     return true;

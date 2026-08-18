@@ -1,3 +1,5 @@
+import type { StandardSchemaV1 } from "@zap-studio/validation";
+
 import { SpanKind, SpanStatusCode, metrics, trace } from "@opentelemetry/api";
 import {
   InMemoryMetricExporter,
@@ -10,11 +12,11 @@ import {
   InMemorySpanExporter,
   SimpleSpanProcessor,
 } from "@opentelemetry/sdk-trace-base";
-import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { allow, createPolicy, deny, mergePoliciesOr } from "./index.js";
-import type { Actions, Resources } from "./types.js";
+import type { Actions, Resources } from "./types.ts";
+
+import { allow, createPolicy, deny, mergePoliciesOr } from "./index.ts";
 
 function createSchema<T>(): StandardSchemaV1<T, T> {
   return {
@@ -70,7 +72,7 @@ describe("permit OpenTelemetry", () => {
     await meterProvider.forceFlush();
     const resourceMetrics = metricExporter.getMetrics().at(-1);
     const metric = resourceMetrics?.scopeMetrics[0]?.metrics.find(
-      (m) => m.descriptor.name === "permit.checks"
+      (m) => m.descriptor.name === "permit.checks",
     );
 
     const counts: Record<string, number> = {};
@@ -114,12 +116,16 @@ describe("permit OpenTelemetry", () => {
   });
 
   it("wraps a merged policy's check in its own span", async () => {
-    const policyA = createPolicy<TestContext, typeof resources, typeof actions>(
-      { actions, resources, rules: { post: { read: deny(), write: deny() } } }
-    );
-    const policyB = createPolicy<TestContext, typeof resources, typeof actions>(
-      { actions, resources, rules: { post: { read: allow(), write: deny() } } }
-    );
+    const policyA = createPolicy<TestContext, typeof resources, typeof actions>({
+      actions,
+      resources,
+      rules: { post: { read: deny(), write: deny() } },
+    });
+    const policyB = createPolicy<TestContext, typeof resources, typeof actions>({
+      actions,
+      resources,
+      rules: { post: { read: allow(), write: deny() } },
+    });
     const merged = mergePoliciesOr(policyA, policyB);
 
     await merged.can({ user: { id: "user-1" } }, "post:read", post);

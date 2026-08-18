@@ -25,12 +25,12 @@ const policy = exponentialBackoff({
 });
 ```
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `maxAttempts` | `number` | — | Maximum number of attempts (including the first) before giving up. |
-| `baseDelayMs` | `number` | — | Initial delay in milliseconds, doubled after each retry. |
-| `maxDelayMs` | `number` | — | Hard upper bound in milliseconds for the computed delay. |
-| `jitter` | `"full" \| "equal" \| JitterOptions` | — | Randomizes the capped delay. See [Jitter](/retry/jitter). |
+| Option        | Type                                 | Default | Description                                                        |
+| ------------- | ------------------------------------ | ------- | ------------------------------------------------------------------ |
+| `maxAttempts` | `number`                             | —       | Maximum number of attempts (including the first) before giving up. |
+| `baseDelayMs` | `number`                             | —       | Initial delay in milliseconds, doubled after each retry.           |
+| `maxDelayMs`  | `number`                             | —       | Hard upper bound in milliseconds for the computed delay.           |
+| `jitter`      | `"full" \| "equal" \| JitterOptions` | —       | Randomizes the capped delay. See [Jitter](/retry/jitter).          |
 
 All options are required except `jitter`.
 

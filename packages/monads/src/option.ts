@@ -10,7 +10,7 @@
  * @module @zap-studio/monads/option
  */
 
-import type { None, Option, OptionMatchers, Some } from "./types.js";
+import type { None, Option, OptionMatchers, Some } from "./types.ts";
 
 /**
  * Wraps a value in `Some`.
@@ -150,12 +150,11 @@ export const match =
  * fromNullable([1, 2, 3].find((n) => n > 1)); // Some(2)
  * ```
  */
-export const fromNullable = <T>(
-  value: T | null | undefined
-): Option<NonNullable<T>> => {
+export const fromNullable = <T>(value: T | null | undefined): Option<NonNullable<T>> => {
   if (value === null || value === undefined) {
     return none();
   }
 
+  // SAFETY: The null/undefined branch above already returned, so `value` is narrowed to `NonNullable<T>` here.
   return some(value as NonNullable<T>);
 };

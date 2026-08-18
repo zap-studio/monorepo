@@ -4,8 +4,9 @@
  * @module @zap-studio/webhooks/verify
  */
 
-import { VerificationError } from "./errors.js";
-import type { VerifyFn } from "./types.js";
+import type { VerifyFn } from "./types.ts";
+
+import { VerificationError } from "./errors.ts";
 
 /**
  * Compares two byte arrays in constant time to prevent timing attacks.
@@ -18,7 +19,7 @@ export const constantTimeEquals = (a: Uint8Array, b: Uint8Array): boolean => {
   let result = 0;
   for (let i = 0; i < a.length; i += 1) {
     // v8 ignore next -- `?? 0` fallback is unreachable: a Uint8Array never holds `undefined` at an in-bounds index, this exists only to satisfy noUncheckedIndexedAccess.
-    result |= (a[i] ?? 0) ^ (b[i] ?? 0); // oxlint-disable-line no-bitwise -- XOR is the constant-time compare trick.
+    result |= (a[i] ?? 0) ^ (b[i] ?? 0);
   }
 
   return result === 0;
@@ -34,6 +35,7 @@ const HMAC_HASH = {
 type HmacAlgorithm = keyof typeof HMAC_HASH;
 
 const HEX_PATTERN = /^[0-9a-f]*$/iu;
+const SIGNATURE_PREFIX_PATTERN = /^[a-z0-9-]+=/iu;
 
 /**
  * Decodes a hex string into bytes, or `undefined` when it is not valid hex.
@@ -52,7 +54,7 @@ const hexToBytes = (hex: string): Uint8Array | undefined => {
 };
 
 const normalizeSignature = (signature: string): string =>
-  signature.replace(/^[a-z0-9-]+=/iu, "").trim();
+  signature.replace(SIGNATURE_PREFIX_PATTERN, "").trim();
 
 /**
  * Creates a webhook verifier that validates an HMAC signature from a request header.
@@ -96,9 +98,7 @@ export const createHmacVerifier = ({
   algo?: HmacAlgorithm;
 }): VerifyFn => {
   if (globalThis.crypto?.subtle === undefined) {
-    throw new VerificationError(
-      "Web Crypto API is unavailable in this runtime"
-    );
+    throw new VerificationError("Web Crypto API is unavailable in this runtime");
   }
 
   const { subtle } = globalThis.crypto;
@@ -113,7 +113,7 @@ export const createHmacVerifier = ({
     new TextEncoder().encode(secret),
     { hash, name: "HMAC" },
     false,
-    ["sign"]
+    ["sign"],
   );
 
   return async (ctx) => {
@@ -123,18 +123,12 @@ export const createHmacVerifier = ({
     }
 
     const key = await keyPromise;
-    const signature = await subtle.sign(
-      "HMAC",
-      key,
-      new Uint8Array(ctx.rawBody)
-    );
+    const signature = await subtle.sign("HMAC", key, new Uint8Array(ctx.rawBody));
     const expected = new Uint8Array(signature);
     const provided = hexToBytes(normalizeSignature(actual));
 
     if (provided === undefined || !constantTimeEquals(expected, provided)) {
-      throw new VerificationError(
-        `Invalid signature for header: ${headerName}`
-      );
+      throw new VerificationError(`Invalid signature for header: ${headerName}`);
     }
   };
 };

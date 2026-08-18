@@ -6,9 +6,9 @@
   "sideEffects": false,
   "scripts": {
     "build": "vocs build",
+    "deploy": "wrangler deploy",
     "dev": "vocs dev",
     "preview": "vocs preview",
-    "deploy": "wrangler deploy",
     "types:check": "tsc --noEmit"
   },
   "dependencies": {

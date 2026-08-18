@@ -6,7 +6,7 @@
 
 import type { Logger } from "@zap-studio/logger";
 
-import type { AbortError, RetryError } from "./errors.js";
+import type { AbortError, RetryError } from "./errors.ts";
 
 /**
  * Retry policy contract consumed by `runRetryPolicy(...)`.
@@ -100,10 +100,7 @@ export interface RetryDecision {
  * @example
  * const input: RetryDecisionInput = { attempt: 2, error: new Error("timeout") };
  */
-export interface RetryDecisionInput<
-  TError extends Error = Error,
-  TData = unknown,
-> {
+export interface RetryDecisionInput<TError extends Error = Error, TData = unknown> {
   /**
    * One-based attempt number for the current failure.
    */
@@ -131,10 +128,7 @@ export interface RetryDecisionInput<
  * @example
  * const input: RetryExhaustedInput = { attempts: 5, error: new Error("timeout") };
  */
-export interface RetryExhaustedInput<
-  TError extends Error = Error,
-  TData = unknown,
-> {
+export interface RetryExhaustedInput<TError extends Error = Error, TData = unknown> {
   /**
    * Count of completed attempts that led to stopping retries.
    */

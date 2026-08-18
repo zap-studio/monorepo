@@ -3,7 +3,8 @@
   "ignorePatterns": [
     "oxfmt.config.ts",
     "oxlint.config.ts",
-    "apps/docs/vocs.config.ts"
+    "apps/docs/vocs.config.ts",
+    "packages/oxlint/src/anti-slop/**"
   ],
   "duplicates": {
     "ignore": ["**/*.test.ts"]
@@ -11,11 +12,22 @@
   "dynamicallyLoaded": ["apps/docs/src/pages/**/*.mdx"],
   "ignoreDependencies": [
     "@arethetypeswrong/core",
+    "@e18e/eslint-plugin",
+    "@oxlint/plugins",
+    "@tanstack/eslint-plugin-query",
+    "@tanstack/eslint-plugin-router",
     "@zap-studio/fetch",
+    "@zap-studio/oxfmt",
+    "@zap-studio/oxlint",
     "@zap-studio/permit",
     "@zap-studio/retry",
     "@zap-studio/validation",
     "@zap-studio/webhooks",
+    "eslint-plugin-github",
+    "eslint-plugin-playwright",
+    "eslint-plugin-regexp",
+    "eslint-plugin-sonarjs",
+    "oxlint-plugin-react-doctor",
     "publint",
     "react",
     "unplugin-unused",

@@ -1,13 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { RetryError } from "./errors.js";
 import type {
   RetryDecisionInput,
   RetryExhaustedInput,
   RetryPolicy,
   RetryRunOptions,
   RetryRunResult,
-} from "./types.js";
+} from "./types.ts";
+
+import { RetryError } from "./errors.ts";
 
 describe("types", () => {
   it("supports generic RetryPolicy contracts", () => {
@@ -17,9 +18,7 @@ describe("types", () => {
         reason: "retry",
         shouldRetry: input.attempt < 3,
       }),
-      onExhausted: (
-        input: RetryExhaustedInput<TypeError, { status: number }>
-      ) =>
+      onExhausted: (input: RetryExhaustedInput<TypeError, { status: number }>) =>
         new RetryError("exhausted", {
           attempts: input.attempts,
           lastData: input.data,

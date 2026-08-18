@@ -1,20 +1,19 @@
 import { expect } from "vitest";
 
-import type { AbortError } from "./errors.js";
-import { RetryError } from "./errors.js";
+import type { AbortError } from "./errors.ts";
 import type {
   RetryDecision,
   RetryDecisionInput,
   RetryExhaustedInput,
   RetryPolicy,
   RetryRunResult,
-} from "./types.js";
+} from "./types.ts";
+
+import { RetryError } from "./errors.ts";
 
 export const createSequencePolicy = (
-  decisions: RetryDecision[]
-): Required<
-  Pick<RetryPolicy<Error, string>, "isKnownError" | "next" | "onExhausted">
-> & {
+  decisions: RetryDecision[],
+): Required<Pick<RetryPolicy<Error, string>, "isKnownError" | "next" | "onExhausted">> & {
   seen: RetryDecisionInput<Error, string>[];
 } => {
   const seen: RetryDecisionInput<Error, string>[] = [];
@@ -60,7 +59,7 @@ export const createCustomTerminalPolicy = (): RetryPolicy => ({
 });
 
 export const expectFailureResult = (
-  result: RetryRunResult<string>
+  result: RetryRunResult<string>,
 ): {
   ok: false;
   attempts: number;

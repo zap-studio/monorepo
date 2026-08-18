@@ -1,9 +1,4 @@
-import {
-  SpanKind,
-  SpanStatusCode,
-  propagation,
-  trace,
-} from "@opentelemetry/api";
+import { SpanKind, SpanStatusCode, propagation, trace } from "@opentelemetry/api";
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import {
   BasicTracerProvider,
@@ -12,8 +7,8 @@ import {
 } from "@opentelemetry/sdk-trace-base";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { HEADERS_GETTER } from "./_otel.js";
-import { createWebhookRouter } from "./index.js";
+import { HEADERS_GETTER } from "./_otel.ts";
+import { createWebhookRouter } from "./index.ts";
 
 describe("HEADERS_GETTER", () => {
   it("reads a header value by key", () => {
@@ -35,11 +30,7 @@ describe("HEADERS_GETTER", () => {
 describe("WebhookRouter OpenTelemetry", () => {
   const exporter = new InMemorySpanExporter();
 
-  const createRequest = (
-    path: string,
-    body?: unknown,
-    headers?: HeadersInit
-  ): Request =>
+  const createRequest = (path: string, body?: unknown, headers?: HeadersInit): Request =>
     new Request(new URL(path, "https://example.com"), {
       body: body === undefined ? null : JSON.stringify(body),
       headers,
@@ -76,9 +67,7 @@ describe("WebhookRouter OpenTelemetry", () => {
     expect(delivery?.attributes["http.request.method"]).toBe("POST");
     expect(delivery?.attributes["url.path"]).toBe("/webhooks/stripe");
     expect(handler?.name).toBe("webhook.handler /stripe");
-    expect(handler?.parentSpanContext?.spanId).toBe(
-      delivery?.spanContext().spanId
-    );
+    expect(handler?.parentSpanContext?.spanId).toBe(delivery?.spanContext().spanId);
   });
 
   it("sets http.response.status_code and OK status on a successful delivery", async () => {
@@ -87,9 +76,7 @@ describe("WebhookRouter OpenTelemetry", () => {
 
     await router.handle(createRequest("/webhooks/stripe"));
 
-    const delivery = exporter
-      .getFinishedSpans()
-      .find((span) => span.kind === SpanKind.SERVER);
+    const delivery = exporter.getFinishedSpans().find((span) => span.kind === SpanKind.SERVER);
     expect(delivery?.attributes["http.response.status_code"]).toBe(200);
     expect(delivery?.status.code).toBe(SpanStatusCode.UNSET);
   });
@@ -99,9 +86,7 @@ describe("WebhookRouter OpenTelemetry", () => {
 
     await router.handle(createRequest("/webhooks/missing"));
 
-    const delivery = exporter
-      .getFinishedSpans()
-      .find((span) => span.kind === SpanKind.SERVER);
+    const delivery = exporter.getFinishedSpans().find((span) => span.kind === SpanKind.SERVER);
     expect(delivery?.attributes["http.response.status_code"]).toBe(404);
     expect(delivery?.status.code).toBe(SpanStatusCode.ERROR);
   });
@@ -117,9 +102,7 @@ describe("WebhookRouter OpenTelemetry", () => {
     const spans = exporter.getFinishedSpans();
     const handler = spans.find((span) => span.kind === SpanKind.INTERNAL);
     expect(handler?.status.code).toBe(SpanStatusCode.ERROR);
-    expect(handler?.events.some((event) => event.name === "exception")).toBe(
-      true
-    );
+    expect(handler?.events.some((event) => event.name === "exception")).toBe(true);
   });
 
   it("continues the sender's trace via an extracted traceparent header", async () => {
@@ -132,12 +115,10 @@ describe("WebhookRouter OpenTelemetry", () => {
     await router.handle(
       createRequest("/webhooks/stripe", undefined, {
         traceparent: `00-${traceId}-${parentSpanId}-01`,
-      })
+      }),
     );
 
-    const delivery = exporter
-      .getFinishedSpans()
-      .find((span) => span.kind === SpanKind.SERVER);
+    const delivery = exporter.getFinishedSpans().find((span) => span.kind === SpanKind.SERVER);
     expect(delivery?.spanContext().traceId).toBe(traceId);
     expect(delivery?.parentSpanContext?.spanId).toBe(parentSpanId);
   });

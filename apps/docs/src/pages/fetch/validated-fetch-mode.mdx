@@ -28,14 +28,14 @@ The return type is inferred from the schema. The schema validates the response b
 function $fetch<TSchema extends StandardSchemaV1>(
   input: FetchInput,
   schema: TSchema,
-  options?: ExtendedRequestInit & { throwOnValidationError?: true }
+  options?: ExtendedRequestInit & { throwOnValidationError?: true },
 ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
 // Result mode: resolves to the Standard Schema result object
 function $fetch<TSchema extends StandardSchemaV1>(
   input: FetchInput,
   schema: TSchema,
-  options: ExtendedRequestInit & { throwOnValidationError: false }
+  options: ExtendedRequestInit & { throwOnValidationError: false },
 ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 ```
 
@@ -43,11 +43,11 @@ function $fetch<TSchema extends StandardSchemaV1>(
 
 ## Options
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `searchParams` | `URLSearchParams` init | `undefined` | Per-request query params, merged into the request URL. |
-| `throwOnValidationError` | `boolean` | `true` | Throw a `ValidationError` when validation returns issues. When `false`, the Standard Schema result object is returned instead. |
-| `throwOnFetchError` | `boolean` | `true` | Throw a `FetchError` on non-2xx responses, before parsing or validation. |
+| Option                   | Type                   | Default     | Description                                                                                                                    |
+| ------------------------ | ---------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `searchParams`           | `URLSearchParams` init | `undefined` | Per-request query params, merged into the request URL.                                                                         |
+| `throwOnValidationError` | `boolean`              | `true`      | Throw a `ValidationError` when validation returns issues. When `false`, the Standard Schema result object is returned instead. |
+| `throwOnFetchError`      | `boolean`              | `true`      | Throw a `FetchError` on non-2xx responses, before parsing or validation.                                                       |
 
 ## Non-Throw Validation
 

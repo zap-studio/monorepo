@@ -13,8 +13,8 @@ import {
   unwrap,
   unwrapOr,
   unwrapOrElse,
-} from "./option.js";
-import { pipe } from "./pipe.js";
+} from "./option.ts";
+import { pipe } from "./pipe.ts";
 
 describe("some/none", () => {
   it("creates a Some value", () => {
@@ -43,8 +43,8 @@ describe("map", () => {
     expect(
       pipe(
         some(2),
-        map((n: number) => n * 2)
-      )
+        map((n: number) => n * 2),
+      ),
     ).toEqual(some(4));
   });
 
@@ -52,8 +52,8 @@ describe("map", () => {
     expect(
       pipe(
         none(),
-        map((n: number) => n * 2)
-      )
+        map((n: number) => n * 2),
+      ),
     ).toEqual(none());
   });
 });
@@ -82,7 +82,7 @@ describe("orElse", () => {
       orElse(() => {
         called = true;
         return some(0);
-      })
+      }),
     );
 
     expect(result).toEqual(some(1));
@@ -93,8 +93,8 @@ describe("orElse", () => {
     expect(
       pipe(
         none(),
-        orElse(() => some(0))
-      )
+        orElse(() => some(0)),
+      ),
     ).toEqual(some(0));
   });
 
@@ -102,8 +102,8 @@ describe("orElse", () => {
     expect(
       pipe(
         none(),
-        orElse(() => none())
-      )
+        orElse(() => none()),
+      ),
     ).toEqual(none());
   });
 });
@@ -123,8 +123,8 @@ describe("unwrapOrElse", () => {
     expect(
       pipe(
         some(1),
-        unwrapOrElse(() => 0)
-      )
+        unwrapOrElse(() => 0),
+      ),
     ).toBe(1);
   });
 
@@ -132,8 +132,8 @@ describe("unwrapOrElse", () => {
     expect(
       pipe(
         none(),
-        unwrapOrElse(() => 99)
-      )
+        unwrapOrElse(() => 99),
+      ),
     ).toBe(99);
   });
 });
@@ -144,9 +144,7 @@ describe("unwrap", () => {
   });
 
   it("throws for None", () => {
-    expect(() => unwrap(none())).toThrowError(
-      "Called unwrap() on a None value"
-    );
+    expect(() => unwrap(none())).toThrowError("Called unwrap() on a None value");
   });
 });
 
@@ -154,17 +152,14 @@ describe("match", () => {
   it("calls some for Some", () => {
     const result = pipe(
       some(42),
-      match({ some: (n: number) => `got ${n}`, none: () => "nothing" })
+      match({ some: (n: number) => `got ${n}`, none: () => "nothing" }),
     );
 
     expect(result).toBe("got 42");
   });
 
   it("calls none for None", () => {
-    const result = pipe(
-      none(),
-      match({ some: () => "never", none: () => "nothing" })
-    );
+    const result = pipe(none(), match({ some: () => "never", none: () => "nothing" }));
 
     expect(result).toBe("nothing");
   });

@@ -4,27 +4,20 @@
  * @module @zap-studio/logger/console
  */
 
-import { withTraceContext } from "./_otel.js";
-import { isLevelEnabled } from "./core.js";
-import { classicFormat } from "./format.js";
-import type {
-  CallableLogLevel,
-  Logger,
-  LogFormatter,
-  LogLevel,
-} from "./types.js";
+import type { CallableLogLevel, Logger, LogFormatter, LogLevel } from "./types.ts";
 
-const CONSOLE_METHOD_BY_LEVEL: Record<
-  CallableLogLevel,
-  "debug" | "info" | "warn" | "error"
-> = {
+import { withTraceContext } from "./_otel.ts";
+import { isLevelEnabled } from "./core.ts";
+import { classicFormat } from "./format.ts";
+
+const CONSOLE_METHOD_BY_LEVEL = {
   debug: "debug",
   error: "error",
   fatal: "error",
   info: "info",
   trace: "debug",
   warn: "warn",
-};
+} satisfies Record<CallableLogLevel, "debug" | "info" | "warn" | "error">;
 
 /**
  * Options for {@link ConsoleLogger}.
@@ -91,11 +84,7 @@ export class ConsoleLogger implements Logger {
     this.write("fatal", message, context);
   }
 
-  private write(
-    level: CallableLogLevel,
-    message: string,
-    context?: Record<string, unknown>
-  ): void {
+  private write(level: CallableLogLevel, message: string, context?: Record<string, unknown>): void {
     if (!isLevelEnabled(level, this.minLevel)) {
       return;
     }

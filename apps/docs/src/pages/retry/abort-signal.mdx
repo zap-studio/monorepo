@@ -12,11 +12,7 @@ description: Cancellation through AbortSignal, checked before, between, and duri
 Pass `controller.signal` to `runRetryPolicy(...)`; aborting the controller stops the run with an `AbortError`.
 
 ```ts
-import {
-  AbortError,
-  exponentialBackoff,
-  runRetryPolicy,
-} from "@zap-studio/retry";
+import { AbortError, exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
 
 const controller = new AbortController();
 
@@ -31,7 +27,7 @@ const promise = runRetryPolicy(
   async () => {
     return await doWork();
   },
-  { signal: controller.signal }
+  { signal: controller.signal },
 );
 
 controller.abort(new Error("Request canceled by user"));
@@ -60,7 +56,7 @@ try {
     async () => {
       return await doWork();
     },
-    { signal: controller.signal }
+    { signal: controller.signal },
   );
 } catch (error) {
   if (error instanceof AbortError) {
@@ -86,7 +82,7 @@ const result = await runRetryPolicy(
   {
     signal: controller.signal,
     throwOnExhausted: false,
-  }
+  },
 );
 
 if (result.ok) {

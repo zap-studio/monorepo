@@ -44,17 +44,13 @@ export interface JitterOptions {
  * @example
  * const delayMs = applyJitter(1000, "full"); // 0-1000
  */
-export const applyJitter = (
-  delayMs: number,
-  jitter?: JitterMode | JitterOptions
-): number => {
+export const applyJitter = (delayMs: number, jitter?: JitterMode | JitterOptions): number => {
   if (jitter === undefined) {
     return delayMs;
   }
 
   const mode = typeof jitter === "string" ? jitter : jitter.mode;
-  const random =
-    (typeof jitter === "string" ? undefined : jitter.random) ?? Math.random;
+  const random = (typeof jitter === "string" ? undefined : jitter.random) ?? Math.random;
 
   if (mode === "full") {
     return Math.round(random() * delayMs);

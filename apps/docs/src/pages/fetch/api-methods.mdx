@@ -56,15 +56,11 @@ const CreateUserResponseSchema = z.object({
   name: z.string(),
 });
 
-const user = await api.post(
-  "https://api.example.com/users",
-  CreateUserResponseSchema,
-  {
-    json: {
-      name: "Ada",
-    },
-  }
-);
+const user = await api.post("https://api.example.com/users", CreateUserResponseSchema, {
+  json: {
+    name: "Ada",
+  },
+});
 ```
 
 `CreateUserResponseSchema` validates the response from the server. The `json` object is only the outgoing request body.
@@ -88,13 +84,9 @@ const avatar = new Blob([avatarBytes], { type: "image/png" });
 const formData = new FormData();
 formData.set("avatar", avatar, "avatar.png");
 
-const profile = await api.patch(
-  "https://api.example.com/profile",
-  ProfileSchema,
-  {
-    body: formData,
-  }
-);
+const profile = await api.patch("https://api.example.com/profile", ProfileSchema, {
+  body: formData,
+});
 ```
 
 `body` and `json` cannot be used together — providing both throws a `TypeError`.
@@ -128,13 +120,9 @@ import { z } from "zod";
 const UserSchema = z.object({ id: z.string(), name: z.string() });
 
 // Does not throw FetchError on non-2xx responses
-const user = await api.get(
-  "https://api.example.com/users/missing",
-  UserSchema,
-  {
-    throwOnFetchError: false,
-  }
-);
+const user = await api.get("https://api.example.com/users/missing", UserSchema, {
+  throwOnFetchError: false,
+});
 
 // Returns a Standard Schema result object instead of throwing ValidationError
 const result = await api.get("https://api.example.com/users/1", UserSchema, {

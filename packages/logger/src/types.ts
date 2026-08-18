@@ -16,15 +16,7 @@
  * Ordered `"all" < "trace" < "debug" < "info" < "warn" < "error" < "fatal" <
  * "none"`.
  */
-export type LogLevel =
-  | "all"
-  | "trace"
-  | "debug"
-  | "info"
-  | "warn"
-  | "error"
-  | "fatal"
-  | "none";
+export type LogLevel = "all" | "trace" | "debug" | "info" | "warn" | "error" | "fatal" | "none";
 
 /**
  * `LogLevel` values that correspond to a callable `Logger` method, i.e.

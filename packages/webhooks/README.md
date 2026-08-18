@@ -104,11 +104,7 @@ router.register("/event", {
 Built-in HMAC verifier with constant-time comparison, or plug in your own `verify` function.
 
 ```ts
-import {
-  createHmacVerifier,
-  createWebhookRouter,
-  VerificationError,
-} from "@zap-studio/webhooks";
+import { createHmacVerifier, createWebhookRouter, VerificationError } from "@zap-studio/webhooks";
 
 const router = createWebhookRouter({
   verify: createHmacVerifier({

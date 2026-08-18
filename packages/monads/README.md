@@ -41,12 +41,12 @@ const message = pipe(
   Result.match({
     ok: (age) => `Age next year: ${age}`,
     err: (reason) => `Invalid input: ${reason}`,
-  })
+  }),
 );
 
 pipe(
   parseAge("not a number"),
-  Result.orElse(() => ok(0))
+  Result.orElse(() => ok(0)),
 ); // Ok(0), recovered from Err
 ```
 
@@ -60,12 +60,12 @@ const found = fromNullable([1, 2, 3].find((n) => n > 5));
 pipe(
   found,
   Option.map((n) => n * 2),
-  Option.unwrapOr(0)
+  Option.unwrapOr(0),
 ); // 0, since nothing in [1, 2, 3] is greater than 5
 
 pipe(
   found,
-  Option.orElse(() => some(-1))
+  Option.orElse(() => some(-1)),
 ); // Some(-1), recovered from None
 ```
 
@@ -76,7 +76,7 @@ import { fromPromise } from "@zap-studio/monads";
 
 const user = fromPromise(
   fetch("/api/user").then((response) => response.json()),
-  (error) => `request failed: ${String(error)}`
+  (error) => `request failed: ${String(error)}`,
 ).map((data) => data.name);
 
 const message = await user.match({

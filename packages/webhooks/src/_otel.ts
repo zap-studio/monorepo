@@ -7,6 +7,7 @@
  */
 
 import type { Span, TextMapGetter, Tracer } from "@opentelemetry/api";
+
 import { SpanStatusCode, trace } from "@opentelemetry/api";
 
 import pkg from "../package.json" with { type: "json" };

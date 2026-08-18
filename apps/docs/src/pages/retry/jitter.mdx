@@ -22,9 +22,9 @@ const policy = exponentialBackoff({
 
 ## Modes
 
-| Mode | Formula | Description |
-| --- | --- | --- |
-| `"full"` | `random(0, delayMs)` | Maximum spread; strongest protection against synchronized retries. |
+| Mode      | Formula                                | Description                                                          |
+| --------- | -------------------------------------- | -------------------------------------------------------------------- |
+| `"full"`  | `random(0, delayMs)`                   | Maximum spread; strongest protection against synchronized retries.   |
 | `"equal"` | `delayMs / 2 + random(0, delayMs / 2)` | Keeps a floor at half the computed delay; less spread than `"full"`. |
 
 With a capped delay of `1_000` ms, `"full"` produces any value in `[0, 1_000]`; `"equal"` produces any value in `[500, 1_000]`.

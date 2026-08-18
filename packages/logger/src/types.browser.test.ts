@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { Logger, LogLevel } from "./types.js";
+import type { Logger, LogLevel } from "./types.ts";
 
 describe("types", () => {
   it("supports a Logger implementation exercising every method", () => {
@@ -11,18 +11,12 @@ describe("types", () => {
     }[] = [];
 
     const logger: Logger = {
-      trace: (message, context) =>
-        calls.push({ context, level: "trace", message }),
-      debug: (message, context) =>
-        calls.push({ context, level: "debug", message }),
-      info: (message, context) =>
-        calls.push({ context, level: "info", message }),
-      warn: (message, context) =>
-        calls.push({ context, level: "warn", message }),
-      error: (message, context) =>
-        calls.push({ context, level: "error", message }),
-      fatal: (message, context) =>
-        calls.push({ context, level: "fatal", message }),
+      trace: (message, context) => calls.push({ context, level: "trace", message }),
+      debug: (message, context) => calls.push({ context, level: "debug", message }),
+      info: (message, context) => calls.push({ context, level: "info", message }),
+      warn: (message, context) => calls.push({ context, level: "warn", message }),
+      error: (message, context) => calls.push({ context, level: "error", message }),
+      fatal: (message, context) => calls.push({ context, level: "fatal", message }),
     };
 
     logger.trace("t");
@@ -43,16 +37,7 @@ describe("types", () => {
   });
 
   it("accepts every LogLevel value, including all/none boundaries", () => {
-    const levels: LogLevel[] = [
-      "all",
-      "trace",
-      "debug",
-      "info",
-      "warn",
-      "error",
-      "fatal",
-      "none",
-    ];
+    const levels: LogLevel[] = ["all", "trace", "debug", "info", "warn", "error", "fatal", "none"];
 
     expect(levels).toHaveLength(8);
   });

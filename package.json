@@ -5,17 +5,22 @@
   "type": "module",
   "scripts": {
     "build": "tsdown --config ./configs/tsdown/tsdown.config.ts",
-    "publish:check": "pnpm run check && pnpm run test && pnpm run build",
-    "fix": "pnpm exec ultracite fix --type-aware --type-check",
-    "check": "pnpm exec ultracite check --type-aware --type-check",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "lint": "pnpm exec oxlint",
+    "lint:fix": "oxlint --fix",
+    "prepare": "lefthook install",
+    "publish:check": "pnpm run lint && pnpm run format:check && pnpm run test && pnpm run build",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "prepare": "lefthook install"
+    "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:",
+    "@oxlint/plugins": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@vitest/coverage-v8": "catalog:",
+    "@zap-studio/oxfmt": "workspace:*",
+    "@zap-studio/oxlint": "workspace:*",
     "lefthook": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
@@ -23,7 +28,6 @@
     "playwright": "catalog:",
     "publint": "catalog:",
     "tsdown": "catalog:",
-    "ultracite": "catalog:",
     "unplugin-unused": "catalog:",
     "vitest": "catalog:"
   },

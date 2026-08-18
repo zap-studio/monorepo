@@ -45,23 +45,20 @@ const recordPermitCheck = (decision: "allow" | "deny"): void => {
  */
 export const withCheckSpan = async (
   permission: string,
-  run: () => Promise<boolean>
+  run: () => Promise<boolean>,
 ): Promise<boolean> => {
   const span = tracer.startSpan(`permit.check ${permission}`, {
     kind: SpanKind.INTERNAL,
   });
 
   try {
-    return await context.with(
-      trace.setSpan(context.active(), span),
-      async () => {
-        const allowed = await run();
-        const decision = allowed ? "allow" : "deny";
-        span.setAttribute("permit.decision", decision);
-        recordPermitCheck(decision);
-        return allowed;
-      }
-    );
+    return await context.with(trace.setSpan(context.active(), span), async () => {
+      const allowed = await run();
+      const decision = allowed ? "allow" : "deny";
+      span.setAttribute("permit.decision", decision);
+      recordPermitCheck(decision);
+      return allowed;
+    });
   } finally {
     span.end();
   }

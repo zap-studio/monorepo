@@ -4,11 +4,10 @@
  * @module @zap-studio/retry/base-policy
  */
 
-import { trace } from "@opentelemetry/api";
 import type { Logger } from "@zap-studio/logger";
 
-import { recordRetryAttempt } from "./_otel.js";
-import { AbortError, RetryError } from "./errors.js";
+import { trace } from "@opentelemetry/api";
+
 import type {
   ResolvedRetryPolicy,
   RetryDecision,
@@ -16,7 +15,10 @@ import type {
   RetryPolicy,
   RetryRunOptions,
   RetryRunResult,
-} from "./types.js";
+} from "./types.ts";
+
+import { recordRetryAttempt } from "./_otel.ts";
+import { AbortError, RetryError } from "./errors.ts";
 
 /**
  * Awaits a timer-based delay, unless `delayMs` is non-positive.
@@ -36,7 +38,6 @@ export const defaultSleep = async (delayMs: number): Promise<void> => {
     return;
   }
 
-  // oxlint-disable-next-line promise/avoid-new -- Timer sleep requires adapting callback API to a promise.
   await new Promise<void>((resolve) => {
     setTimeout(resolve, delayMs);
   });
@@ -97,7 +98,7 @@ const throwIfAborted = (signal?: AbortSignal, logger?: Logger): void => {
 const sleepWithAbortSignal = async (
   sleep: (delayMs: number) => Promise<void>,
   delayMs: number,
-  signal: AbortSignal
+  signal: AbortSignal,
 ): Promise<void> => {
   if (signal.aborted) {
     throw toAbortError(signal.reason);
@@ -108,7 +109,6 @@ const sleepWithAbortSignal = async (
   try {
     await Promise.race([
       sleep(delayMs),
-      // oxlint-disable-next-line promise/avoid-new -- AbortSignal callback is adapted into the race promise.
       new Promise<never>((_resolve, reject) => {
         onAbort = (): void => {
           reject(toAbortError(signal.reason));
@@ -132,7 +132,7 @@ const logRetryDecision = (
   logger: Logger | undefined,
   attempt: number,
   decision: RetryDecision,
-  error: unknown
+  error: unknown,
 ): void => {
   if (decision.shouldRetry) {
     logger?.debug("retry scheduled", {
@@ -184,7 +184,7 @@ const runThrowMode = async <T, TError extends Error, TData>(
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
   signal?: AbortSignal,
-  logger?: Logger
+  logger?: Logger,
 ): Promise<T> => {
   let attempt = 1;
 
@@ -192,7 +192,6 @@ const runThrowMode = async <T, TError extends Error, TData>(
     throwIfAborted(signal, logger);
 
     try {
-      // oxlint-disable-next-line no-await-in-loop -- Retry attempts must run sequentially.
       return await execute(attempt);
     } catch (error) {
       throwIfAborted(signal, logger);
@@ -201,28 +200,59 @@ const runThrowMode = async <T, TError extends Error, TData>(
         throw error;
       }
 
-      const decision = policy.next({
-        attempt,
-        error,
-      });
-      logRetryDecision(logger, attempt, decision, error);
-
-      if (!decision.shouldRetry) {
-        throw policy.onExhausted({
-          attempts: attempt,
-          error,
-        });
-      }
-
-      if (decision.delayMs > 0) {
-        // oxlint-disable-next-line no-await-in-loop -- Delay belongs between sequential retry attempts.
-        await (signal === undefined
-          ? sleep(decision.delayMs)
-          : sleepWithAbortSignal(sleep, decision.delayMs, signal));
-      }
-
+      await handleThrowModeRetry(policy, { attempt, error, logger, signal, sleep });
       attempt += 1;
     }
+  }
+};
+
+/**
+ * After a failed, known-domain attempt in throw mode, applies the policy's
+ * retry decision: throws the terminal error from `onExhausted` on
+ * exhaustion, otherwise waits out the retry delay so the caller's loop can
+ * continue.
+ *
+ * @param policy - Resolved retry policy providing `next` and `onExhausted`.
+ * @param params - Failure context for the current attempt.
+ * @param params.attempt - Current attempt number.
+ * @param params.error - Error thrown by the attempt, already known to the policy's domain.
+ * @param params.sleep - Delay function between retries.
+ * @param params.signal - Optional abort signal.
+ * @param params.logger - Optional logger; logs each retry decision at `debug`
+ *   and exhaustion at `warn`.
+ * @throws {RetryError} When retries are exhausted and `onExhausted` returns
+ *   the terminal error.
+ * @throws {AbortError} When `signal` aborts while waiting for the retry delay.
+ * @throws {Error} Any error thrown by `next`, `onExhausted`, or `sleep`.
+ */
+const handleThrowModeRetry = async <TError extends Error, TData>(
+  policy: ResolvedRetryPolicy<TError, TData>,
+  params: {
+    attempt: number;
+    error: TError;
+    sleep: (delayMs: number) => Promise<void>;
+    signal: AbortSignal | undefined;
+    logger: Logger | undefined;
+  },
+): Promise<void> => {
+  const { attempt, error, sleep, signal, logger } = params;
+  const decision = policy.next({
+    attempt,
+    error,
+  });
+  logRetryDecision(logger, attempt, decision, error);
+
+  if (!decision.shouldRetry) {
+    throw policy.onExhausted({
+      attempts: attempt,
+      error,
+    });
+  }
+
+  if (decision.delayMs > 0) {
+    await (signal === undefined
+      ? sleep(decision.delayMs)
+      : sleepWithAbortSignal(sleep, decision.delayMs, signal));
   }
 };
 
@@ -238,7 +268,7 @@ const runThrowMode = async <T, TError extends Error, TData>(
 const buildAbortResult = (
   signal: AbortSignal | undefined,
   attempts: number,
-  logger?: Logger
+  logger?: Logger,
 ): RetryRunResult<never> | undefined => {
   if (signal?.aborted !== true) {
     return undefined;
@@ -263,7 +293,7 @@ const buildAbortResult = (
  */
 const runAttempt = async <T>(
   execute: (attempt: number) => Promise<T>,
-  attempt: number
+  attempt: number,
 ): Promise<{ ok: true; value: T } | { ok: false; error: unknown }> => {
   try {
     return {
@@ -296,7 +326,7 @@ const waitForDelay = async (
   delayMs: number,
   signal: AbortSignal | undefined,
   attempts: number,
-  logger?: Logger
+  logger?: Logger,
 ): Promise<RetryRunResult<never> | undefined> => {
   if (signal === undefined) {
     await sleep(delayMs);
@@ -340,7 +370,7 @@ const handleFailure = async <TError extends Error, TData>(
     sleep: (delayMs: number) => Promise<void>;
     signal: AbortSignal | undefined;
     logger: Logger | undefined;
-  }
+  },
 ): Promise<RetryRunResult<never> | undefined> => {
   const { attempt, error, sleep, signal, logger } = params;
   const abortResult = buildAbortResult(signal, attempt, logger);
@@ -368,13 +398,7 @@ const handleFailure = async <TError extends Error, TData>(
   }
 
   if (decision.delayMs > 0) {
-    const delayAbortResult = await waitForDelay(
-      sleep,
-      decision.delayMs,
-      signal,
-      attempt,
-      logger
-    );
+    const delayAbortResult = await waitForDelay(sleep, decision.delayMs, signal, attempt, logger);
     if (delayAbortResult !== undefined) {
       return delayAbortResult;
     }
@@ -405,21 +429,16 @@ const runResultMode = async <T, TError extends Error, TData>(
   execute: (attempt: number) => Promise<T>,
   sleep: (delayMs: number) => Promise<void>,
   signal?: AbortSignal,
-  logger?: Logger
+  logger?: Logger,
 ): Promise<RetryRunResult<T>> => {
   let attempt = 1;
 
   while (true) {
-    const abortResult = buildAbortResult(
-      signal,
-      Math.max(0, attempt - 1),
-      logger
-    );
+    const abortResult = buildAbortResult(signal, Math.max(0, attempt - 1), logger);
     if (abortResult !== undefined) {
       return abortResult;
     }
 
-    // oxlint-disable-next-line no-await-in-loop -- Retry attempts must run sequentially.
     const execution = await runAttempt(execute, attempt);
     if (execution.ok) {
       return { ok: true, value: execution.value };
@@ -441,7 +460,6 @@ const runResultMode = async <T, TError extends Error, TData>(
       };
     }
 
-    // oxlint-disable-next-line no-await-in-loop -- Failure handling belongs to the current sequential attempt.
     const failure = await handleFailure(policy, {
       attempt,
       error: execution.error,
@@ -462,7 +480,7 @@ const runResultMode = async <T, TError extends Error, TData>(
  * context in a generic `RetryError`.
  */
 const defaultOnExhausted = <TError extends Error, TData>(
-  input: RetryExhaustedInput<TError, TData>
+  input: RetryExhaustedInput<TError, TData>,
 ): RetryError =>
   new RetryError("Retry policy exhausted all attempts.", {
     attempts: input.attempts,
@@ -474,10 +492,8 @@ const defaultOnExhausted = <TError extends Error, TData>(
  * Default `isKnownError` used when a policy omits it: accepts any `Error`
  * instance and rejects everything else.
  */
-// oxlint-disable-next-line typescript/no-unnecessary-type-parameters -- TError only appears in the return predicate; needed so callers infer the right narrowed type.
-const defaultIsKnownError = <TError extends Error>(
-  error: unknown
-): error is TError => error instanceof Error;
+const defaultIsKnownError = <TError extends Error>(error: unknown): error is TError =>
+  error instanceof Error;
 
 /**
  * Runs retry orchestration in non-throw mode.
@@ -491,14 +507,10 @@ const defaultIsKnownError = <TError extends Error>(
  *   `RetryError` and returned as the terminal failure instead of thrown.
  * @throws {Error} Any error thrown by `next`, `onExhausted`, or a custom `sleep`.
  */
-export function runRetryPolicy<
-  T,
-  TError extends Error = Error,
-  TData = unknown,
->(
+export function runRetryPolicy<T, TError extends Error = Error, TData = unknown>(
   policy: RetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
-  options: RetryRunOptions & { throwOnExhausted: false }
+  options: RetryRunOptions & { throwOnExhausted: false },
 ): Promise<RetryRunResult<T>>;
 
 /**
@@ -531,14 +543,10 @@ export function runRetryPolicy<
  * const data = await runRetryPolicy(linearBackoff, async () => fetchFlakyResource());
  * ```
  */
-export function runRetryPolicy<
-  T,
-  TError extends Error = Error,
-  TData = unknown,
->(
+export function runRetryPolicy<T, TError extends Error = Error, TData = unknown>(
   policy: RetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
-  options?: RetryRunOptions & { throwOnExhausted?: true }
+  options?: RetryRunOptions & { throwOnExhausted?: true },
 ): Promise<T>;
 
 /**
@@ -563,27 +571,19 @@ export function runRetryPolicy<
  * const result = await runRetryPolicy(policy, doWork, { throwOnExhausted: false });
  * if (!result.ok) console.error(result.error);
  */
-export async function runRetryPolicy<
-  T,
-  TError extends Error = Error,
-  TData = unknown,
->(
+export async function runRetryPolicy<T, TError extends Error = Error, TData = unknown>(
   policy: RetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
-  options: RetryRunOptions = {}
+  options: RetryRunOptions = {},
 ): Promise<T | RetryRunResult<T>> {
   const sleep = options.sleep ?? defaultSleep;
   const { signal, logger } = options;
   const resolvedPolicy: ResolvedRetryPolicy<TError, TData> = {
     isKnownError: (error): error is TError =>
-      policy.isKnownError
-        ? policy.isKnownError(error)
-        : defaultIsKnownError(error),
+      policy.isKnownError ? policy.isKnownError(error) : defaultIsKnownError(error),
     next: (input) => policy.next(input),
     onExhausted: (input) =>
-      policy.onExhausted
-        ? policy.onExhausted(input)
-        : defaultOnExhausted(input),
+      policy.onExhausted ? policy.onExhausted(input) : defaultOnExhausted(input),
   };
 
   if (options.throwOnExhausted === false) {

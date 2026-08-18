@@ -100,11 +100,7 @@ const rules: Rules<AppContext, typeof resources, typeof actions> = {
   comment: commentRules,
 };
 
-export const policy = createPolicy<
-  AppContext,
-  typeof resources,
-  typeof actions
->({
+export const policy = createPolicy<AppContext, typeof resources, typeof actions>({
   resources,
   actions,
   rules,
@@ -152,11 +148,7 @@ const postActions = {
   post: ["read", "write", "delete"],
 } as const satisfies Actions<typeof postResources>;
 
-export const postPolicy = createPolicy<
-  AppContext,
-  typeof postResources,
-  typeof postActions
->({
+export const postPolicy = createPolicy<AppContext, typeof postResources, typeof postActions>({
   resources: postResources,
   actions: postActions,
   rules: {
@@ -192,12 +184,12 @@ Don't reach for `mergePoliciesAnd()` to combine domain-split policies. It requir
 
 ## Which Approach to Use
 
-|  | Split rules, one policy | Separate policies, merged |
-| --- | --- | --- |
-| Permission strings | One shared type across all domains | Only valid within each domain's own policy |
+|                                                                     | Split rules, one policy              | Separate policies, merged                              |
+| ------------------------------------------------------------------- | ------------------------------------ | ------------------------------------------------------ |
+| Permission strings                                                  | One shared type across all domains   | Only valid within each domain's own policy             |
 | Cross-domain rules (e.g. a comment rule that reads the parent post) | Straightforward — one `rules` object | Not possible — each policy only sees its own resources |
-| Ownership | One codebase, split by file | Can live in separate packages |
-| Composition | Compile-time, via object spread | Runtime, via `mergePoliciesOr()` |
+| Ownership                                                           | One codebase, split by file          | Can live in separate packages                          |
+| Composition                                                         | Compile-time, via object spread      | Runtime, via `mergePoliciesOr()`                       |
 
 Default to splitting rules across files with one policy. Reach for merging separate policies only when domains are genuinely owned and shipped independently.
 

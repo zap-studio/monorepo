@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { VerificationError } from "./errors.js";
-import type { WebhookContext } from "./types.js";
-import { createHmacVerifier } from "./verify.js";
+import type { WebhookContext } from "./types.ts";
+
+import { VerificationError } from "./errors.ts";
+import { createHmacVerifier } from "./verify.ts";
 
 const encoder = new TextEncoder();
 
@@ -31,9 +32,7 @@ const normalizeHashName = (algo: HmacAlgorithm): string => {
 const toHex = (bytes: Uint8Array): string =>
   Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
 
-const captureThrownError = async <T>(
-  run: () => T | Promise<T>
-): Promise<unknown> => {
+const captureThrownError = async <T>(run: () => T | Promise<T>): Promise<unknown> => {
   try {
     await run();
     expect.fail("Expected function to throw");
@@ -47,7 +46,7 @@ describe(createHmacVerifier, () => {
   const createMockContext = (
     body: string | Uint8Array,
     signature?: string,
-    headerName = "x-hub-signature-256"
+    headerName = "x-hub-signature-256",
   ): WebhookContext => ({
     path: "webhook",
     rawBody: typeof body === "string" ? encoder.encode(body) : body,
@@ -60,22 +59,18 @@ describe(createHmacVerifier, () => {
   const generateValidSignature = async (
     body: string | Uint8Array,
     secret: string,
-    algo: HmacAlgorithm = "sha256"
+    algo: HmacAlgorithm = "sha256",
   ): Promise<string> => {
     const key = await crypto.subtle.importKey(
       "raw",
       encoder.encode(secret),
       { hash: normalizeHashName(algo), name: "HMAC" },
       false,
-      ["sign"]
+      ["sign"],
     );
 
     const data = typeof body === "string" ? encoder.encode(body) : body;
-    const signature = await crypto.subtle.sign(
-      "HMAC",
-      key,
-      data as BufferSource
-    );
+    const signature = await crypto.subtle.sign("HMAC", key, data as BufferSource);
 
     return toHex(new Uint8Array(signature));
   };
@@ -89,9 +84,7 @@ describe(createHmacVerifier, () => {
       secret,
     });
 
-    await expect(
-      verify(createMockContext(body, signature))
-    ).resolves.toBeUndefined();
+    await expect(verify(createMockContext(body, signature))).resolves.toBeUndefined();
   });
 
   it("fails when the signature header is missing", async () => {
@@ -100,9 +93,7 @@ describe(createHmacVerifier, () => {
       secret: "my-secret",
     });
 
-    const error = await captureThrownError(() =>
-      verify(createMockContext("body"))
-    );
+    const error = await captureThrownError(() => verify(createMockContext("body")));
 
     expect(error).toBeInstanceOf(VerificationError);
     expect(error).toMatchObject({
@@ -117,9 +108,7 @@ describe(createHmacVerifier, () => {
       secret: "my-secret",
     });
 
-    const error = await captureThrownError(() =>
-      verify(createMockContext("body", "invalid"))
-    );
+    const error = await captureThrownError(() => verify(createMockContext("body", "invalid")));
 
     expect(error).toBeInstanceOf(VerificationError);
     expect(error).toMatchObject({
@@ -134,9 +123,7 @@ describe(createHmacVerifier, () => {
       secret: "my-secret",
     });
 
-    const error = await captureThrownError(() =>
-      verify(createMockContext("body", "aa"))
-    );
+    const error = await captureThrownError(() => verify(createMockContext("body", "aa")));
 
     expect(error).toBeInstanceOf(VerificationError);
     expect(error).toMatchObject({
@@ -154,9 +141,7 @@ describe(createHmacVerifier, () => {
       secret,
     });
 
-    await expect(
-      verify(createMockContext(body, `sha256=${signature}`))
-    ).resolves.toBeUndefined();
+    await expect(verify(createMockContext(body, `sha256=${signature}`))).resolves.toBeUndefined();
   });
 
   it("matches header names case-insensitively through Headers", async () => {
@@ -169,7 +154,7 @@ describe(createHmacVerifier, () => {
     });
 
     await expect(
-      verify(createMockContext(body, signature, "x-hub-signature-256"))
+      verify(createMockContext(body, signature, "x-hub-signature-256")),
     ).resolves.toBeUndefined();
   });
 
@@ -184,7 +169,7 @@ describe(createHmacVerifier, () => {
     });
 
     await expect(
-      verify(createMockContext(body, signature, "x-hub-signature-512"))
+      verify(createMockContext(body, signature, "x-hub-signature-512")),
     ).resolves.toBeUndefined();
   });
 
@@ -194,7 +179,7 @@ describe(createHmacVerifier, () => {
         algo: "md5" as HmacAlgorithm,
         headerName: "X-Hub-Signature-256",
         secret: "my-secret",
-      })
+      }),
     );
 
     expect(error).toBeInstanceOf(VerificationError);
@@ -214,11 +199,9 @@ describe(createHmacVerifier, () => {
       secret,
     });
 
-    await expect(
-      verify(createMockContext(body, signature))
-    ).resolves.toBeUndefined();
+    await expect(verify(createMockContext(body, signature))).resolves.toBeUndefined();
     const error = await captureThrownError(() =>
-      verify(createMockContext(modifiedBody, signature))
+      verify(createMockContext(modifiedBody, signature)),
     );
 
     expect(error).toBeInstanceOf(VerificationError);
@@ -237,16 +220,11 @@ describe(createHmacVerifier, () => {
       secret,
     });
 
-    await expect(
-      verify(createMockContext(body, signature))
-    ).resolves.toBeUndefined();
+    await expect(verify(createMockContext(body, signature))).resolves.toBeUndefined();
   });
 
   it("throws when Web Crypto is unavailable", async () => {
-    const originalDescriptor = Object.getOwnPropertyDescriptor(
-      globalThis,
-      "crypto"
-    );
+    const originalDescriptor = Object.getOwnPropertyDescriptor(globalThis, "crypto");
 
     Object.defineProperty(globalThis, "crypto", {
       configurable: true,
@@ -259,7 +237,7 @@ describe(createHmacVerifier, () => {
         createHmacVerifier({
           headerName: "X-Hub-Signature-256",
           secret: "my-secret",
-        })
+        }),
       );
     } finally {
       if (originalDescriptor) {
@@ -276,25 +254,18 @@ describe(createHmacVerifier, () => {
 });
 
 describe("@zap-studio/webhooks browser runtime", () => {
-  const signBody = async (
-    body: Uint8Array,
-    secret: string
-  ): Promise<string> => {
+  const signBody = async (body: Uint8Array, secret: string): Promise<string> => {
     const key = await crypto.subtle.importKey(
       "raw",
       encoder.encode(secret),
       { hash: "SHA-256", name: "HMAC" },
       false,
-      ["sign"]
+      ["sign"],
     );
-    const signature = await crypto.subtle.sign(
-      "HMAC",
-      key,
-      body as BufferSource
+    const signature = await crypto.subtle.sign("HMAC", key, body as BufferSource);
+    return Array.from(new Uint8Array(signature), (byte) => byte.toString(16).padStart(2, "0")).join(
+      "",
     );
-    return Array.from(new Uint8Array(signature), (byte) =>
-      byte.toString(16).padStart(2, "0")
-    ).join("");
   };
 
   it("verifies HMAC signatures with browser Web Crypto and Headers", async () => {
@@ -316,7 +287,7 @@ describe("@zap-studio/webhooks browser runtime", () => {
           },
           method: "POST",
         }),
-      })
+      }),
     ).resolves.toBeUndefined();
   });
 });
