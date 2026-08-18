@@ -13,6 +13,44 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { ValidationError } from "./errors.js";
 
 /**
+ * Callable contract for {@link standardValidate}, factored out so the
+ * overloaded implementation can be assigned a named type instead of an
+ * anonymous object type.
+ */
+export interface StandardValidateFn {
+  <TSchema extends StandardSchemaV1>(
+    input: unknown,
+    schema: TSchema,
+    options: StandardValidateOptions & { throwOnError: true },
+  ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
+
+  <TSchema extends StandardSchemaV1>(
+    input: unknown,
+    schema: TSchema,
+    options?: StandardValidateOptions & { throwOnError?: false },
+  ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
+}
+
+/**
+ * Callable contract for {@link standardValidateSync}, factored out so the
+ * overloaded implementation can be assigned a named type instead of an
+ * anonymous object type.
+ */
+export interface StandardValidateSyncFn {
+  <TSchema extends StandardSchemaV1>(
+    input: unknown,
+    schema: TSchema,
+    options: StandardValidateOptions & { throwOnError: true },
+  ): StandardSchemaV1.InferOutput<TSchema>;
+
+  <TSchema extends StandardSchemaV1>(
+    input: unknown,
+    schema: TSchema,
+    options?: StandardValidateOptions & { throwOnError?: false },
+  ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
+}
+
+/**
  * Options for validation helpers.
  *
  * @example
@@ -87,28 +125,7 @@ export const isStandardSchema = (value?: unknown): value is StandardSchemaV1 =>
  * }
  * ```
  */
-export const standardValidate: {
-  <TSchema extends StandardSchemaV1>(
-    input: unknown,
-    schema: TSchema,
-    options: StandardValidateOptions & { throwOnError: true },
-  ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
-
-  /**
-   * Validates a value against a Standard Schema without throwing by default.
-   *
-   * @template TSchema - The Standard Schema type.
-   * @param input - The value to validate.
-   * @param schema - The schema to validate against.
-   * @param options - Validation options with non-throwing mode.
-   * @returns The raw Standard Schema result.
-   */
-  <TSchema extends StandardSchemaV1>(
-    input: unknown,
-    schema: TSchema,
-    options?: StandardValidateOptions & { throwOnError?: false },
-  ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
-} = async <TSchema extends StandardSchemaV1>(
+export const standardValidate: StandardValidateFn = async <TSchema extends StandardSchemaV1>(
   input: unknown,
   schema: TSchema,
   options?: StandardValidateOptions,
@@ -174,28 +191,7 @@ export const standardValidate: {
  * }
  * ```
  */
-export const standardValidateSync: {
-  <TSchema extends StandardSchemaV1>(
-    input: unknown,
-    schema: TSchema,
-    options: StandardValidateOptions & { throwOnError: true },
-  ): StandardSchemaV1.InferOutput<TSchema>;
-
-  /**
-   * Synchronously validates a value against a Standard Schema without throwing by default.
-   *
-   * @template TSchema - The Standard Schema type.
-   * @param input - The value to validate.
-   * @param schema - The schema to validate against.
-   * @param options - Validation options with non-throwing mode.
-   * @returns The raw Standard Schema result.
-   */
-  <TSchema extends StandardSchemaV1>(
-    input: unknown,
-    schema: TSchema,
-    options?: StandardValidateOptions & { throwOnError?: false },
-  ): StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
-} = <TSchema extends StandardSchemaV1>(
+export const standardValidateSync: StandardValidateSyncFn = <TSchema extends StandardSchemaV1>(
   input: unknown,
   schema: TSchema,
   options?: StandardValidateOptions,
