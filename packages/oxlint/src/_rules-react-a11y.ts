@@ -6,7 +6,6 @@ export const reactA11yRules = {
   "anchor-has-content": "warn",
   "anchor-is-valid": "warn",
   "aria-activedescendant-has-tabindex": "warn",
-  "aria-braille-equivalent": "warn",
   "aria-props": "error",
   "aria-proptypes": "error",
   "aria-role": "error",
