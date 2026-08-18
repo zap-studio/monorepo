@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0]
+
+### Added
+
+Seven new leaf presets, each exclusive-owner of its own plugin's rules — none extend another preset or each other:
+
+- `@zap-studio/oxlint/stylex` — `@stylexjs/eslint-plugin`'s full 9-rule catalog (`valid-styles`, `valid-shorthands`, `no-nonstandard-styles`, `no-conflicting-props` as `error`; `no-unused`, `no-legacy-contextual-styles`, `no-lookahead-selectors`, `sort-keys`, `enforce-extension` as `warn`).
+- `@zap-studio/oxlint/tailwindcss` — `eslint-plugin-tailwindcss` (Tailwind CSS v4). `no-contradicting-classname` as `error`; ordering/arbitrary-value consistency rules as `warn`; `no-arbitrary-value` and `no-custom-classname` left `off` (too disruptive/needs project-specific config as shared defaults).
+- `@zap-studio/oxlint/testing-library` — `eslint-plugin-testing-library`'s framework-agnostic `dom` rule set: async/query-await correctness as `error`, `no-debugging-utils`/`prefer-user-event*` as `warn`, framework-specific (React/Vue/Svelte-only) and no-op-without-config rules left `off`.
+- `@zap-studio/oxlint/jest-dom` — `eslint-plugin-jest-dom`'s matcher-preference rules (works under both Jest and Vitest's jest-dom-compatible `expect`); 11 of 12 rules `error`, `prefer-pressed` `warn` pending upstream's own recommended-config promotion.
+- `@zap-studio/oxlint/cypress` — `eslint-plugin-cypress`; command-queue and CI-hang correctness rules as `error`, situational rules as `warn`, `no-xpath` and `require-data-selectors` left `off`.
+- `@zap-studio/oxlint/storybook` — `eslint-plugin-storybook`'s `recommended` + `csf` + `csf-strict` rules: broken-story/CSF-shape/deprecated-API rules as `error`, naming and organizational conventions as `warn`.
+- `@zap-studio/oxlint/solid` — `eslint-plugin-solid`; reactivity-breaking and XSS-risk rules as `error`, JSX-style conventions as `warn`. Not a `react-doctor` slice — Solid's reactivity model and JSX transform are its own, and it isn't compatible with the `jsx-runtime-automatic`/`jsx-runtime-classic` presets.
+
+`@graphql-eslint/eslint-plugin` was evaluated and intentionally not added: it requires its own GraphQL-AST parser and a template-literal processor, neither of which oxlint's `jsPlugins` bridge supports (it loads plain ESLint rule objects operating on the JS/TS AST only).
+
 ## [2.0.0]
 
 ### Changed

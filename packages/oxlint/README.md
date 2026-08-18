@@ -76,28 +76,31 @@ Five independent presets — pick every one your project needs. None of them imp
 
 Each of these owns only its own slice of `oxlint-plugin-react-doctor`'s framework-specific rules. None of them pull in `react`, `react-a11y`, `react-perf`, or `react-doctor` — add those yourself if you want them (you almost always do, for anything that renders JSX).
 
-| Preset                                 | Targets                                                                                                                                                         |
-| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@zap-studio/oxlint/nextjs`            | Next.js — App Router, metadata, route handlers, `Image`/`Script`/`Head`                                                                                         |
-| `@zap-studio/oxlint/react-router`      | React Router — loaders, actions, middleware, splat and nested routes                                                                                            |
-| `@zap-studio/oxlint/react-native`      | React Native/Expo — lists, `Pressable`, Reanimated, deprecated modules                                                                                          |
-| `@zap-studio/oxlint/remotion`          | Remotion — deterministic rendering, `delayRender`, CSS animation bans                                                                                           |
-| `@zap-studio/oxlint/preact`            | Preact — API differences from React (`render` args, hooks import, `children`)                                                                                   |
-| `@zap-studio/oxlint/ink`               | Ink — terminal rendering, raw mode, `Static`, focus handling                                                                                                    |
-| `@zap-studio/oxlint/r3f`               | React Three Fiber                                                                                                                                               |
-| `@zap-studio/oxlint/three`             | three.js                                                                                                                                                        |
-| `@zap-studio/oxlint/motion`            | Motion (Framer Motion) — `AnimatePresence`, imperative animation, layout ids                                                                                    |
-| `@zap-studio/oxlint/redux`             | Redux — `useSelector` derivation and return-value pitfalls                                                                                                      |
-| `@zap-studio/oxlint/zustand`           | Zustand — selector freshness, store mutation, whole-store destructuring                                                                                         |
-| `@zap-studio/oxlint/valtio`            | Valtio — proxy reads and snapshots                                                                                                                              |
-| `@zap-studio/oxlint/mobx`              | MobX — `observer`/`memo` interaction, `makeAutoObservable`, reaction disposal                                                                                   |
-| `@zap-studio/oxlint/jotai`             | Jotai — derived atoms, `selectAtom` placement                                                                                                                   |
-| `@zap-studio/oxlint/styled-components` | styled-components — duplicate CSS properties, transient props                                                                                                   |
-| `@zap-studio/oxlint/tanstack-query`    | TanStack Query — `@tanstack/eslint-plugin-query` plus `react-doctor`'s 9 query-pattern rules (floating mutations, missing invalidation, unstable query clients) |
-| `@zap-studio/oxlint/tanstack-start`    | TanStack Start — `react-doctor`'s 15 meta-framework rules (loaders, route property order, server functions, secrets in loaders)                                 |
-| `@zap-studio/oxlint/tanstack-router`   | TanStack Router — `@tanstack/eslint-plugin-router`                                                                                                              |
+| Preset                                 | Targets                                                                                                                                                                 |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@zap-studio/oxlint/nextjs`            | Next.js — App Router, metadata, route handlers, `Image`/`Script`/`Head`                                                                                                 |
+| `@zap-studio/oxlint/react-router`      | React Router — loaders, actions, middleware, splat and nested routes                                                                                                    |
+| `@zap-studio/oxlint/react-native`      | React Native/Expo — lists, `Pressable`, Reanimated, deprecated modules                                                                                                  |
+| `@zap-studio/oxlint/remotion`          | Remotion — deterministic rendering, `delayRender`, CSS animation bans                                                                                                   |
+| `@zap-studio/oxlint/preact`            | Preact — API differences from React (`render` args, hooks import, `children`)                                                                                           |
+| `@zap-studio/oxlint/solid`             | Solid — `eslint-plugin-solid`'s reactivity/JSX rules (props destructuring, `no-innerhtml`, `prefer-for`); not a react-doctor slice, Solid's reactivity model is its own |
+| `@zap-studio/oxlint/ink`               | Ink — terminal rendering, raw mode, `Static`, focus handling                                                                                                            |
+| `@zap-studio/oxlint/r3f`               | React Three Fiber                                                                                                                                                       |
+| `@zap-studio/oxlint/three`             | three.js                                                                                                                                                                |
+| `@zap-studio/oxlint/motion`            | Motion (Framer Motion) — `AnimatePresence`, imperative animation, layout ids                                                                                            |
+| `@zap-studio/oxlint/redux`             | Redux — `useSelector` derivation and return-value pitfalls                                                                                                              |
+| `@zap-studio/oxlint/zustand`           | Zustand — selector freshness, store mutation, whole-store destructuring                                                                                                 |
+| `@zap-studio/oxlint/valtio`            | Valtio — proxy reads and snapshots                                                                                                                                      |
+| `@zap-studio/oxlint/mobx`              | MobX — `observer`/`memo` interaction, `makeAutoObservable`, reaction disposal                                                                                           |
+| `@zap-studio/oxlint/jotai`             | Jotai — derived atoms, `selectAtom` placement                                                                                                                           |
+| `@zap-studio/oxlint/styled-components` | styled-components — duplicate CSS properties, transient props                                                                                                           |
+| `@zap-studio/oxlint/stylex`            | StyleX — `@stylexjs/eslint-plugin`'s full rule set: valid/standard styles, unsafe shorthands, unused styles, conflicting props                                          |
+| `@zap-studio/oxlint/tailwindcss`       | Tailwind CSS v4 — `eslint-plugin-tailwindcss`'s contradicting/unnecessary-arbitrary-value and class-order rules                                                         |
+| `@zap-studio/oxlint/tanstack-query`    | TanStack Query — `@tanstack/eslint-plugin-query` plus `react-doctor`'s 9 query-pattern rules (floating mutations, missing invalidation, unstable query clients)         |
+| `@zap-studio/oxlint/tanstack-start`    | TanStack Start — `react-doctor`'s 15 meta-framework rules (loaders, route property order, server functions, secrets in loaders)                                         |
+| `@zap-studio/oxlint/tanstack-router`   | TanStack Router — `@tanstack/eslint-plugin-router`                                                                                                                      |
 
-Preact and React Native are runtime-ambiguous — combine either with `jsx-runtime-automatic` or `jsx-runtime-classic` depending on your project's transform.
+Preact and React Native are runtime-ambiguous — combine either with `jsx-runtime-automatic` or `jsx-runtime-classic` depending on your project's transform. Solid uses its own JSX transform (`babel-preset-solid`), not React's, so neither `jsx-runtime` preset applies to it.
 
 ## Opt-in environment presets
 
@@ -110,12 +113,21 @@ Not every project runs in Node or wants JSDoc type-annotation rules enforced (re
 
 ## Testing
 
-Split by test runner — take the one(s) you actually use:
+Split by test runner and testing library — take the one(s) you actually use, none of them imply another:
 
-| Preset                          | Adds                       |
-| ------------------------------- | -------------------------- |
-| `@zap-studio/oxlint/vitest`     | the `vitest` plugin        |
-| `@zap-studio/oxlint/playwright` | `eslint-plugin-playwright` |
+| Preset                               | Adds                                                                                                        |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `@zap-studio/oxlint/vitest`          | the `vitest` plugin                                                                                         |
+| `@zap-studio/oxlint/playwright`      | `eslint-plugin-playwright`                                                                                  |
+| `@zap-studio/oxlint/cypress`         | `eslint-plugin-cypress`                                                                                     |
+| `@zap-studio/oxlint/testing-library` | `eslint-plugin-testing-library`'s framework-agnostic DOM query/async rules                                  |
+| `@zap-studio/oxlint/jest-dom`        | `eslint-plugin-jest-dom` — its matcher rules work under both Jest and Vitest's jest-dom-compatible `expect` |
+
+## Storybook
+
+| Preset                         | Adds                                                                    |
+| ------------------------------ | ----------------------------------------------------------------------- |
+| `@zap-studio/oxlint/storybook` | `eslint-plugin-storybook`'s story-file correctness and CSF-format rules |
 
 ## Composing your own rules
 

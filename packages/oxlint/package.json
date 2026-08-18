@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/oxlint",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": false,
   "description": "Zap Studio's oxlint preset: exclusive, single-owner rule sets — pick exactly the presets your project needs, nothing implied.",
   "keywords": [
@@ -31,7 +31,9 @@
   "exports": {
     "./anti-slop": "./dist/anti-slop/index.js",
     "./base": "./dist/base.js",
+    "./cypress": "./dist/cypress.js",
     "./ink": "./dist/ink.js",
+    "./jest-dom": "./dist/jest-dom.js",
     "./jotai": "./dist/jotai.js",
     "./jsdoc": "./dist/jsdoc.js",
     "./jsx-runtime-automatic": "./dist/jsx-runtime-automatic.js",
@@ -52,10 +54,15 @@
     "./react-router": "./dist/react-router.js",
     "./redux": "./dist/redux.js",
     "./remotion": "./dist/remotion.js",
+    "./solid": "./dist/solid.js",
+    "./storybook": "./dist/storybook.js",
     "./styled-components": "./dist/styled-components.js",
+    "./stylex": "./dist/stylex.js",
+    "./tailwindcss": "./dist/tailwindcss.js",
     "./tanstack-query": "./dist/tanstack-query.js",
     "./tanstack-router": "./dist/tanstack-router.js",
     "./tanstack-start": "./dist/tanstack-start.js",
+    "./testing-library": "./dist/testing-library.js",
     "./three": "./dist/three.js",
     "./valtio": "./dist/valtio.js",
     "./vitest": "./dist/vitest.js",
@@ -67,12 +74,19 @@
   },
   "dependencies": {
     "@e18e/eslint-plugin": "catalog:",
+    "@stylexjs/eslint-plugin": "catalog:",
     "@tanstack/eslint-plugin-query": "catalog:",
     "@tanstack/eslint-plugin-router": "catalog:",
+    "eslint-plugin-cypress": "catalog:",
     "eslint-plugin-github": "catalog:",
+    "eslint-plugin-jest-dom": "catalog:",
     "eslint-plugin-playwright": "catalog:",
     "eslint-plugin-regexp": "catalog:",
+    "eslint-plugin-solid": "catalog:",
     "eslint-plugin-sonarjs": "catalog:",
+    "eslint-plugin-storybook": "catalog:",
+    "eslint-plugin-tailwindcss": "catalog:",
+    "eslint-plugin-testing-library": "catalog:",
     "oxlint-plugin-react-doctor": "catalog:"
   },
   "devDependencies": {
