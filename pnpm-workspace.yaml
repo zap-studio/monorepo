@@ -27,6 +27,7 @@ catalog:
   "@vitest/browser-playwright": ^4.1.10
   "@vitest/coverage-v8": ^4.1.10
   arktype: ^2.2.3
+  eslint-plugin-github: ^6.1.2
   eslint-plugin-playwright: ^2.11.0
   eslint-plugin-regexp: ^3.2.0
   eslint-plugin-sonarjs: ^4.2.0
