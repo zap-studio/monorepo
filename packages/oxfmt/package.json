@@ -1,0 +1,49 @@
+{
+  "name": "@zap-studio/oxfmt",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Zap Studio's oxfmt preset: sorted imports, sorted package.json, and an optional Tailwind CSS class-sorting extension.",
+  "keywords": [
+    "config",
+    "formatter",
+    "oxfmt",
+    "preset",
+    "prettier",
+    "tailwind"
+  ],
+  "homepage": "https://www.zapstudio.dev/packages/oxfmt",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/oxfmt"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./base": "./dist/base.js",
+    "./tailwind": "./dist/tailwind.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@zap-studio/typescript": "workspace:*",
+    "oxfmt": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "oxfmt": "catalog:"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
