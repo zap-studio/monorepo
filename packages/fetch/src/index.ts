@@ -28,6 +28,7 @@ import type {
   ExtendedRequestInit,
   FetchDefaults,
   FetchInput,
+  FetchInstance,
   NormalizedRequest,
 } from "./types.js";
 
@@ -41,6 +42,7 @@ export type {
   ExtendedRequestInit,
   FetchDefaults,
   FetchInput,
+  FetchInstance,
   NormalizedRequest,
 } from "./types.js";
 
@@ -579,12 +581,7 @@ export const api: ApiMethods = {
  * // Or use $fetch directly
  * const response = await $fetch("/users", UserSchema, { method: "POST", json: { name: "John" } });
  */
-export const createFetch = (
-  factoryOptions: Partial<FetchDefaults> = {},
-): {
-  $fetch: $Fetch;
-  api: ApiMethods;
-} => {
+export const createFetch = (factoryOptions: Partial<FetchDefaults> = {}): FetchInstance => {
   const defaults: FetchDefaults = {
     ...GLOBAL_DEFAULTS,
     ...factoryOptions,
