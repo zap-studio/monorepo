@@ -24,6 +24,7 @@ Every retry loop also accepts an `AbortSignal`, checked before each attempt and 
 - **A shared runner** via [`runRetryPolicy(policy, execute, options?)`](/retry/running-policies) with attempt-aware callbacks and custom sleep injection.
 - **Structured terminal errors**: [`RetryError` on exhaustion, `AbortError` on cancellation](/retry/errors).
 - **Non-throw mode** ([`throwOnExhausted: false`](/retry/non-throw-mode)) returns a `RetryRunResult` instead of throwing.
+- **[`Result`-returning variant](/retry/result)** via `runRetryPolicyResult(policy, execute, options?)`, for explicit error handling with [`@zap-studio/monads`](/monads) instead of throw/catch.
 - **Cancellation** through [`AbortSignal`](/retry/abort-signal), checked before, between, and during retries.
 - **Custom policies** as [plain objects implementing `RetryPolicy`](/retry/custom-policies) — just a `next(...)` function, no subclassing.
 - **[Optional logging](/retry/logging)** via a `logger?: Logger` option from [`@zap-studio/logger`](/logger) — omit it and there's zero logging overhead.
@@ -78,6 +79,7 @@ Cancellation relies on `AbortSignal.reason`, which sets the browser minimums abo
 - [Jitter](/retry/jitter)
 - [Shared Runner](/retry/running-policies)
 - [Non-throw Mode](/retry/non-throw-mode)
+- [Result-Returning Variant](/retry/result)
 - [Structured Errors](/retry/errors)
 - [Cancellation](/retry/abort-signal)
 - [Custom Policies](/retry/custom-policies)
