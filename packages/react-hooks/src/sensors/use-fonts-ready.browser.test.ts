@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { useFontsReady } from "./use-fonts-ready.ts";
@@ -25,5 +25,16 @@ describe(useFontsReady, () => {
     await waitFor(() => expect(result.current).toBe(true));
 
     Object.defineProperty(document, "fonts", { configurable: true, value: originalFonts });
+  });
+
+  it("ignores a late resolution if the component unmounted first", async () => {
+    const { result, unmount } = renderHook(() => useFontsReady());
+    unmount();
+
+    await act(async () => {
+      await document.fonts.ready;
+    });
+
+    expect(result.current).toBe(false);
   });
 });
