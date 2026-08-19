@@ -43,6 +43,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "dependencies": {
+    "@zap-studio/monads": "workspace:*"
+  },
   "devDependencies": {
     "@opentelemetry/api": "catalog:",
     "@opentelemetry/context-async-hooks": "catalog:",
