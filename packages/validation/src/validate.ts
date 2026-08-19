@@ -16,6 +16,23 @@ import { err, ok, ResultAsync } from "@zap-studio/monads";
 import { ValidationError } from "./errors.ts";
 
 /**
+ * Duck-types a value as a thenable rather than checking `instanceof Promise`,
+ * which evaluates `false` for a Promise constructed in a different
+ * JavaScript realm (a separate `vm.Context`, iframe, or worker) even though
+ * it is a spec-compliant Promise there. A conforming Standard Schema is
+ * allowed to return such a value.
+ */
+const isPromiseLike = <T>(value: T | PromiseLike<T>): value is PromiseLike<T> => {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  // SAFETY: only reading `then` to duck-type a thenable; not calling it or treating `value` as a resolved PromiseLike until this check passes.
+  // oxlint-disable-next-line github/no-then -- feature-detecting a `then` method to duck-type a thenable, not chaining a Promise.
+  return typeof (value as { then?: unknown }).then === "function";
+};
+
+/**
  * Callable contract for {@link standardValidate}, factored out so the
  * overloaded implementation can be assigned a named type instead of an
  * anonymous object type.
@@ -138,7 +155,7 @@ export const standardValidate: StandardValidateFn = async <TSchema extends Stand
 > => {
   const throwOnError = options?.throwOnError === true;
   let result = schema["~standard"].validate(input);
-  if (result instanceof Promise) {
+  if (isPromiseLike(result)) {
     result = await result;
   }
 
@@ -204,7 +221,7 @@ export const standardValidateSync: StandardValidateSyncFn = <TSchema extends Sta
   const throwOnError = options?.throwOnError === true;
   const result = schema["~standard"].validate(input);
 
-  if (result instanceof Promise) {
+  if (isPromiseLike(result)) {
     throw new TypeError("Async schemas are not supported by standardValidateSync");
   }
 
@@ -415,7 +432,7 @@ export const standardValidateResultSync = <TSchema extends StandardSchemaV1>(
 ): Result<StandardSchemaV1.InferOutput<TSchema>, ValidationError> => {
   const result = schema["~standard"].validate(input);
 
-  if (result instanceof Promise) {
+  if (isPromiseLike(result)) {
     throw new TypeError("Async schemas are not supported by standardValidateResultSync");
   }
 
@@ -457,7 +474,7 @@ export const standardValidateResult = <TSchema extends StandardSchemaV1>(
   new ResultAsync(
     (async (): Promise<Result<StandardSchemaV1.InferOutput<TSchema>, ValidationError>> => {
       let result = schema["~standard"].validate(input);
-      if (result instanceof Promise) {
+      if (isPromiseLike(result)) {
         result = await result;
       }
 
