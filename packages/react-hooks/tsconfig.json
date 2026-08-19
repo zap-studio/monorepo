@@ -1,10 +1,8 @@
 {
-  "extends": "@zap-studio/typescript/library.json",
+  "extends": "@zap-studio/typescript/react.json",
   "include": ["src/**/*.ts"],
   "exclude": ["dist", "node_modules", "vite.config.ts"],
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "lib": ["ESNext", "DOM"],
     "types": []
   }
 }
