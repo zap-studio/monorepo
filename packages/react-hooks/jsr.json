@@ -7,6 +7,7 @@
     ".": "./src/index.ts",
     "./sensors/use-is-client": "./src/sensors/use-is-client.ts",
     "./sensors/use-is-mobile": "./src/sensors/use-is-mobile.ts",
+    "./sensors/use-is-server": "./src/sensors/use-is-server.ts",
     "./sensors/use-media-query": "./src/sensors/use-media-query.ts",
     "./unstable": "./src/unstable/index.ts"
   },

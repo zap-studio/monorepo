@@ -41,6 +41,7 @@ Both hooks are SSR-safe: they return `false` until the client subscribes to `mat
 | `useMediaQuery` | Matches the viewport against an arbitrary CSS media query string        |
 | `useIsMobile`   | `true` below a breakpoint (768px by default) — built on `useMediaQuery` |
 | `useIsClient`   | `true` only after the client has mounted — SSR hydration guard          |
+| `useIsServer`   | `true` only during server rendering — the inverse of `useIsClient`      |
 
 More hooks land incrementally.
 
