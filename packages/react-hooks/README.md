@@ -36,16 +36,20 @@ Both hooks are SSR-safe: they return `false` until the client subscribes to `mat
 
 ## Available Hooks
 
-| Hook                 | What it does                                                            |
-| -------------------- | ----------------------------------------------------------------------- |
-| `useMediaQuery`      | Matches the viewport against an arbitrary CSS media query string        |
-| `useIsMobile`        | `true` below a breakpoint (768px by default) — built on `useMediaQuery` |
-| `useIsClient`        | `true` only after the client has mounted — SSR hydration guard          |
-| `useIsServer`        | `true` only during server rendering — the inverse of `useIsClient`      |
-| `useColorScheme`     | `"dark"` or `"light"`, from `(prefers-color-scheme: dark)`              |
-| `usePrefersDarkMode` | Boolean shorthand for `useColorScheme() === "dark"`                     |
-| `useOnlineStatus`    | Tracks `navigator.onLine`, updating on `online`/`offline` events        |
-| `useNetworkState`    | `useOnlineStatus` plus `navigator.connection` info where supported      |
+| Hook                   | What it does                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| `useMediaQuery`        | Matches the viewport against an arbitrary CSS media query string                         |
+| `useIsMobile`          | `true` below a breakpoint (768px by default) — built on `useMediaQuery`                  |
+| `useIsClient`          | `true` only after the client has mounted — SSR hydration guard                           |
+| `useIsServer`          | `true` only during server rendering — the inverse of `useIsClient`                       |
+| `useColorScheme`       | `"dark"` or `"light"`, from `(prefers-color-scheme: dark)`                               |
+| `usePrefersDarkMode`   | Boolean shorthand for `useColorScheme() === "dark"`                                      |
+| `useOnlineStatus`      | Tracks `navigator.onLine`, updating on `online`/`offline` events                         |
+| `useNetworkState`      | `useOnlineStatus` plus `navigator.connection` info where supported                       |
+| `usePreferredLanguage` | `navigator.language`/`navigator.languages`, updating on `languagechange`                 |
+| `useOrientation`       | `screen.orientation`'s `angle`/`type`, updating on orientation change                    |
+| `useGeolocation`       | Wraps `navigator.geolocation`; one-shot by default, `watch: true` for continuous updates |
+| `useBattery`           | Wraps the Battery Status API (Chromium-only); `supported: false` elsewhere               |
 
 More hooks land incrementally.
 
