@@ -44,6 +44,19 @@ function createMockSchemaFunction<T>(
   return fn as unknown as StandardSchemaV1<unknown, T>;
 }
 
+function createMockSchemaWithThenable<T>(
+  resolved: StandardSchemaV1.Result<T>,
+): StandardSchemaV1<unknown, T> {
+  return createMockSchema(
+    () =>
+      ({
+        then: (onfulfilled?: ((value: StandardSchemaV1.Result<T>) => unknown) | null): void => {
+          onfulfilled?.(resolved);
+        },
+      }) as unknown as StandardSchemaV1.Result<T>,
+  );
+}
+
 async function captureRejectedError(run: () => Promise<unknown>): Promise<unknown> {
   try {
     await run();
@@ -350,6 +363,14 @@ describe(standardValidate, () => {
 
       expect(result).toStrictEqual({ value: { name: "async" } });
     });
+
+    it("should await a thenable that is not an instance of the local Promise (cross-realm)", async () => {
+      const schema = createMockSchemaWithThenable({ value: "cross-realm" });
+
+      const result = await standardValidate("input", schema, { throwOnError: true });
+
+      expect(result).toBe("cross-realm");
+    });
   });
 
   describe("validation failure", () => {
@@ -549,6 +570,14 @@ describe(standardValidateSync, () => {
       "Async schemas are not supported by standardValidateSync",
     );
   });
+
+  it("should throw for a thenable that is not an instance of the local Promise (cross-realm)", () => {
+    const schema = createMockSchemaWithThenable({ value: "test" });
+
+    expect(() => standardValidateSync("test", schema)).toThrow(
+      "Async schemas are not supported by standardValidateSync",
+    );
+  });
 });
 
 describe(standardValidateResultSync, () => {
@@ -581,6 +610,14 @@ describe(standardValidateResultSync, () => {
       "Async schemas are not supported by standardValidateResultSync",
     );
   });
+
+  it("should throw for a thenable that is not an instance of the local Promise (cross-realm)", () => {
+    const schema = createMockSchemaWithThenable({ value: "test" });
+
+    expect(() => standardValidateResultSync("test", schema)).toThrow(
+      "Async schemas are not supported by standardValidateResultSync",
+    );
+  });
 });
 
 describe(standardValidateResult, () => {
@@ -599,6 +636,14 @@ describe(standardValidateResult, () => {
     const result = await standardValidateResult("async-test", schema);
 
     expect(result).toStrictEqual({ ok: true, value: "async-test" });
+  });
+
+  it("should await a thenable that is not an instance of the local Promise (cross-realm)", async () => {
+    const schema = createMockSchemaWithThenable({ value: "cross-realm" });
+
+    const result = await standardValidateResult("input", schema);
+
+    expect(result).toStrictEqual({ ok: true, value: "cross-realm" });
   });
 
   it("should resolve to an Err result wrapping a ValidationError when validation fails", async () => {
