@@ -44,36 +44,38 @@ export const useBattery = (): BatteryState => {
       return undefined;
     }
 
-    let battery: BatteryManager | undefined;
     let cancelled = false;
-
-    const handleChange = () => {
-      if (battery) {
-        setState(readBatteryState(battery));
-      }
-    };
+    let cleanup: (() => void) | undefined;
 
     const subscribeToBattery = async () => {
-      const result = await getBattery.call(navigator);
+      const battery = await getBattery.call(navigator);
       if (cancelled) {
         return;
       }
-      battery = result;
       setState(readBatteryState(battery));
+
+      const handleChange = () => {
+        setState(readBatteryState(battery));
+      };
+
       battery.addEventListener("chargingchange", handleChange);
       battery.addEventListener("chargingtimechange", handleChange);
       battery.addEventListener("dischargingtimechange", handleChange);
       battery.addEventListener("levelchange", handleChange);
+
+      cleanup = () => {
+        battery.removeEventListener("chargingchange", handleChange);
+        battery.removeEventListener("chargingtimechange", handleChange);
+        battery.removeEventListener("dischargingtimechange", handleChange);
+        battery.removeEventListener("levelchange", handleChange);
+      };
     };
 
     void subscribeToBattery();
 
     return () => {
       cancelled = true;
-      battery?.removeEventListener("chargingchange", handleChange);
-      battery?.removeEventListener("chargingtimechange", handleChange);
-      battery?.removeEventListener("dischargingtimechange", handleChange);
-      battery?.removeEventListener("levelchange", handleChange);
+      cleanup?.();
     };
   }, []);
 
