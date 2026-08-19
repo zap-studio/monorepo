@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+/** The `coords` shape `useGeolocation` reports on success — a flattened `GeolocationCoordinates`. */
 export interface GeolocationCoordinatesState {
   accuracy: number;
   altitude: number | null;
@@ -10,17 +11,20 @@ export interface GeolocationCoordinatesState {
   speed: number | null;
 }
 
+/** The `error` shape `useGeolocation` reports on failure or when unsupported. */
 export interface GeolocationErrorState {
   code: number;
   message: string;
 }
 
+/** The shape returned by `useGeolocation`. */
 export interface GeolocationState {
   coords?: GeolocationCoordinatesState;
   error?: GeolocationErrorState;
   loading: boolean;
 }
 
+/** Options accepted by `useGeolocation`, passed through to the underlying `PositionOptions`. */
 export interface UseGeolocationOptions {
   enableHighAccuracy?: boolean;
   maximumAge?: number;

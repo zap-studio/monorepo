@@ -12,6 +12,7 @@ interface NavigatorWithConnection extends Navigator {
   readonly connection?: NetworkInformation;
 }
 
+/** The shape returned by `useNetworkState` (and `useOnlineStatus`'s `.online`). */
 export interface NetworkState {
   downlink?: number;
   // oxlint-disable-next-line sonarjs/max-union-size -- Same fixed NetworkInformation effectiveType set as above.

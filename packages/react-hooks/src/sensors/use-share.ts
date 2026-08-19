@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 
+/** The shape returned by `useShare`. */
 export interface UseShareResult {
   canShare: (data?: ShareData) => boolean;
   share: (data: ShareData) => Promise<void>;

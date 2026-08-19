@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+/** Minimal shape of the Battery Status API's `BatteryManager`, as used by `useBattery`. */
 export interface BatteryManager extends EventTarget {
   readonly charging: boolean;
   readonly chargingTime: number;
@@ -11,6 +12,7 @@ interface NavigatorWithBattery extends Navigator {
   getBattery?: () => Promise<BatteryManager>;
 }
 
+/** The shape returned by `useBattery`. */
 export interface BatteryState {
   charging?: boolean;
   chargingTime?: number;

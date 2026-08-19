@@ -1,5 +1,6 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
+/** The shape returned by `useWindowSize`. */
 export interface WindowSize {
   height: number;
   width: number;

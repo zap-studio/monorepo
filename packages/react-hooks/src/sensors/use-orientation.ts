@@ -1,5 +1,6 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
+/** The shape returned by `useOrientation`. */
 export interface Orientation {
   angle: number;
   type?: OrientationType;

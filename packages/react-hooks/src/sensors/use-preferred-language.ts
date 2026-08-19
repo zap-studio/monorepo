@@ -1,5 +1,6 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
+/** The shape returned by `usePreferredLanguage`. */
 export interface PreferredLanguage {
   language: string;
   languages: readonly string[];
