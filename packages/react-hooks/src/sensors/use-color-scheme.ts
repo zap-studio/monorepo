@@ -1,0 +1,11 @@
+import { useMediaQueryMatch } from "./_media-query.ts";
+
+export type ColorScheme = "dark" | "light";
+
+/**
+ * The OS/browser color scheme preference, via `(prefers-color-scheme:
+ * dark)`. Defaults to `"light"` during server rendering and before the
+ * client subscribes to `matchMedia`.
+ */
+export const useColorScheme = (): ColorScheme =>
+  useMediaQueryMatch("(prefers-color-scheme: dark)") ? "dark" : "light";
