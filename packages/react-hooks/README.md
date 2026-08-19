@@ -21,8 +21,8 @@ Import hooks from the top-level package, or from their own subpath if you want t
 ```tsx
 import { useIsMobile, useMediaQuery } from "@zap-studio/react-hooks";
 // or, equivalently:
-// import { useIsMobile } from "@zap-studio/react-hooks/use-is-mobile";
-// import { useMediaQuery } from "@zap-studio/react-hooks/use-media-query";
+// import { useIsMobile } from "@zap-studio/react-hooks/sensors/use-is-mobile";
+// import { useMediaQuery } from "@zap-studio/react-hooks/sensors/use-media-query";
 
 function Nav() {
   const isMobile = useIsMobile(); // true below 768px
@@ -46,5 +46,5 @@ More hooks land incrementally.
 
 ## Conventions
 
-- Every stable hook is available both from the top-level package and from its own subpath (`@zap-studio/react-hooks/use-is-mobile`) — same function either way.
+- Every stable hook is available both from the top-level package and from its own subpath (`@zap-studio/react-hooks/sensors/use-is-mobile`) — same function either way.
 - Hooks relying on private, non-semver-guaranteed APIs live under `@zap-studio/react-hooks/unstable` and are never exported from the top-level package.
