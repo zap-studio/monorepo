@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added `Result`/`ResultAsync`-returning variants of the existing throw-based API, backed by the new `@zap-studio/monads` dependency: `standardValidateResult`, `standardValidateResultSync`, `createStandardValidatorResult`, and `createStandardValidatorResultSync`. Additive and opt-in — `standardValidate`, `standardValidateSync`, and the existing `throwOnError` behavior are unchanged. Only validation issues become `Err`; a malformed schema still throws.
 
+### Fixed
+
+- Fixed async-schema detection relying on `instanceof Promise`, which returns `false` for a Promise constructed in a different JavaScript realm (a separate `vm.Context`, iframe, or worker), even though a conforming Standard Schema is allowed to return one. Previously this caused the value to be silently misread as a synchronous result (`Ok(undefined)`/`undefined`/an unresolved raw result, depending on the function) instead of being awaited or rejected. Affects `standardValidate`, `standardValidateSync`, `standardValidateResult`, and `standardValidateResultSync` (and the `createStandardValidator*` factories built on them).
+
 ## [1.0.0]
 
 ### Changed
