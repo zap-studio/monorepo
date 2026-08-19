@@ -6,7 +6,7 @@ export interface UseNotificationPermissionResult {
   requestPermission: () => Promise<NotificationPermission>;
 }
 
-const isSupported = (): boolean => typeof window !== "undefined" && "Notification" in window;
+const isSupported = (): boolean => typeof window !== "undefined" && Boolean(window.Notification);
 
 const readPermission = (): NotificationPermission | "unsupported" =>
   isSupported() ? Notification.permission : "unsupported";

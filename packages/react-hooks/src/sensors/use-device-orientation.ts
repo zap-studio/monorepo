@@ -58,7 +58,7 @@ const requestDeviceOrientationPermission = async (): Promise<boolean> => {
  */
 export const useDeviceOrientation = (): UseDeviceOrientationResult => {
   const [state, setState] = useState<DeviceOrientationState>(INITIAL_STATE);
-  const supported = typeof window !== "undefined" && "DeviceOrientationEvent" in window;
+  const supported = typeof window !== "undefined" && Boolean(window.DeviceOrientationEvent);
 
   useEffect(() => {
     const handleOrientation = (event: DeviceOrientationEvent) => {

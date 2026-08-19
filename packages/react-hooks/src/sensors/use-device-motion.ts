@@ -56,7 +56,7 @@ const requestDeviceMotionPermission = async (): Promise<boolean> => {
  */
 export const useDeviceMotion = (): UseDeviceMotionResult => {
   const [state, setState] = useState<DeviceMotionState>(INITIAL_STATE);
-  const supported = typeof window !== "undefined" && "DeviceMotionEvent" in window;
+  const supported = typeof window !== "undefined" && Boolean(window.DeviceMotionEvent);
 
   useEffect(() => {
     const handleMotion = (event: DeviceMotionEvent) => {
