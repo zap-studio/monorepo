@@ -44,6 +44,7 @@ export default defineConfig({
             { link: "/fetch/json-convenience", text: "JSON Convenience" },
             { link: "/fetch/validation", text: "Validation" },
             { link: "/fetch/errors", text: "Error Handling" },
+            { link: "/fetch/result", text: "Result-Returning Variant" },
             { link: "/fetch/logging", text: "Logging" },
             { link: "/fetch/opentelemetry", text: "OpenTelemetry" },
           ],
