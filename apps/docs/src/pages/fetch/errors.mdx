@@ -118,8 +118,6 @@ Calls can also reject with:
 - `DOMException` — the request or response body read is aborted (`AbortError`).
 - Any error thrown or rejected by the provided Standard Schema validator.
 
-See [Result-Returning Variant](/fetch/result) for `$fetchResult`/`apiResult`, an alternative to try/catch that returns these same errors as `Err` instead of throwing them.
-
 ## Exhaustive Handling
 
 Catch package-specific errors first, then rethrow unknown failures.

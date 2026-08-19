@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0]
+## [1.1.1]
+
+### Changed
+
+Reverted the `@zap-studio/monads` dependency and the `standardValidateResult`/`standardValidateResultSync`/`createStandardValidatorResult`/`createStandardValidatorResultSync` exports added in 1.1.0 — they added a dependency and bundle size cost for a use case consumers can already cover themselves by wrapping `standardValidate`/`standardValidateSync` with `@zap-studio/monads`'s `fromPromise`/`fromThrowable`. See the README's "Using with `@zap-studio/monads`" section. 1.1.0 is deprecated on npm in favor of this release. The `instanceof Promise` fix below is retained.
+
+## [1.1.0] (deprecated — see 1.1.1)
 
 ### Added
 

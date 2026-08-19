@@ -23,7 +23,6 @@ Validation code becomes portable: swap the schema library later, and the code th
 - **Synchronous validation** via `standardValidateSync`, for schemas known to validate synchronously.
 - **Reusable validators** via `createStandardValidator` and `createStandardValidatorSync`.
 - **Optional throwing behavior** via `throwOnError`, backed by a shared `ValidationError` class.
-- **`Result`-returning variants** via `standardValidateResult`/`standardValidateResultSync`, for explicit error handling with [`@zap-studio/monads`](/monads) instead of throw/catch.
 - **Runtime schema detection** via `isStandardSchema`.
 - **Type re-exports** — `StandardSchemaV1` and `StandardTypedV1` directly from this package.
 - **Tree-shakeable** — every helper is a standalone function; unused exports are dropped by any modern bundler.
@@ -52,7 +51,6 @@ try {
 - [Synchronous Validation](/validation/synchronous-validation) — `standardValidateSync`
 - [Create Validators](/validation/create-validators) — reusable validator functions
 - [Errors](/validation/errors) — `throwOnError` and `ValidationError`
-- [Result-Returning Variants](/validation/result) — `standardValidateResult`/`standardValidateResultSync`
 - [Runtime Schema Detection](/validation/runtime-schema-detection) — `isStandardSchema`
 
 ## Runtime Support

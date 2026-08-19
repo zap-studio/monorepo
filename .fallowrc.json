@@ -21,7 +21,6 @@
     "@tanstack/eslint-plugin-query",
     "@tanstack/eslint-plugin-router",
     "@zap-studio/fetch",
-    "@zap-studio/monads",
     "@zap-studio/oxfmt",
     "@zap-studio/oxlint",
     "@zap-studio/permit",

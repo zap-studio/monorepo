@@ -9,7 +9,7 @@
  * @module @zap-studio/retry
  */
 
-export { defaultSleep, runRetryPolicy, runRetryPolicyResult } from "./base-policy.ts";
+export { defaultSleep, runRetryPolicy } from "./base-policy.ts";
 export { AbortError, RetryError } from "./errors.ts";
 export type { AbortErrorContext, RetryErrorContext } from "./errors.ts";
 export { exponentialBackoff } from "./exponential-backoff.ts";
@@ -27,5 +27,4 @@ export type {
   RetryPolicy,
   RetryRunOptions,
   RetryRunResult,
-  RetryRunResultOptions,
 } from "./types.ts";

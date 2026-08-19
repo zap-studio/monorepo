@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/retry",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "private": false,
   "description": "Composable, tree-shakeable retry policies for resilient async operations.",
   "keywords": [
@@ -42,9 +42,6 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "dependencies": {
-    "@zap-studio/monads": "workspace:*"
   },
   "devDependencies": {
     "@opentelemetry/api": "catalog:",

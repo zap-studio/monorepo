@@ -11,7 +11,6 @@
  */
 
 import type { Logger } from "@zap-studio/logger";
-import type { Result } from "@zap-studio/monads";
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 import {
@@ -21,19 +20,15 @@ import {
   propagation,
   trace,
 } from "@opentelemetry/api";
-import { err, ok, ResultAsync } from "@zap-studio/monads";
-import { isStandardSchema, standardValidate, ValidationError } from "@zap-studio/validation";
+import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 
 import type {
   $Fetch,
-  $FetchResult,
   ApiMethods,
-  ApiResultMethods,
   ExtendedRequestInit,
   FetchDefaults,
   FetchInput,
   FetchInstance,
-  FetchResultRequestInit,
   NormalizedRequest,
 } from "./types.ts";
 
@@ -43,14 +38,11 @@ import { FetchError } from "./errors.ts";
 export { FetchError } from "./errors.ts";
 export type {
   $Fetch,
-  $FetchResult,
   ApiMethods,
-  ApiResultMethods,
   ExtendedRequestInit,
   FetchDefaults,
   FetchInput,
   FetchInstance,
-  FetchResultRequestInit,
   NormalizedRequest,
 } from "./types.ts";
 
@@ -381,87 +373,6 @@ const fetchInternal = async (
 };
 
 /**
- * Runs `fetchInternal` with both throw flags forced to `true`, converting a
- * thrown `FetchError`/`ValidationError` into `Err` instead of rethrowing.
- *
- * Any other thrown value (malformed input, a `TypeError`/`DOMException`/
- * `SyntaxError`, or an unknown validator throw) is a programmer error, not a
- * value a caller should branch on, and propagates unchanged.
- *
- * @throws {unknown} Any error thrown or rejected by `fetchInternal` that isn't a
- *   `FetchError` or `ValidationError`.
- */
-const fetchInternalResult = async (
-  input: FetchInput,
-  schema: StandardSchemaV1 | undefined,
-  options: FetchResultRequestInit | undefined,
-  defaults: FetchDefaults,
-): Promise<Result<unknown, FetchError | ValidationError>> => {
-  try {
-    // SAFETY: `options` is `FetchResultRequestInit`, i.e. `ExtendedRequestInit` minus the two throw flags set explicitly below, so this spread is already structurally a valid `ExtendedRequestInit`.
-    const requestInit = {
-      ...options,
-      throwOnFetchError: true,
-      throwOnValidationError: true,
-    } as ExtendedRequestInit;
-    const value = await fetchInternal(input, schema, requestInit, defaults);
-    return ok(value);
-  } catch (error) {
-    if (error instanceof FetchError || error instanceof ValidationError) {
-      return err(error);
-    }
-
-    throw error;
-  }
-};
-
-/**
- * Creates an HTTP method helper bound to a `Result`-returning fetch function.
- *
- * The returned function mirrors `$FetchResult`'s overloads but forces the
- * provided HTTP method (`GET`, `POST`, etc.) into request options.
- *
- * @param fetchFn - `Result`-returning fetch function to wrap.
- * @param method - HTTP method to enforce.
- * @returns Method-bound `Result`-returning fetch function.
- *
- * @example
- * const get = createMethodResult($fetchResult, "GET");
- * const result = await get("/users/1", UserSchema);
- */
-const createMethodResult = (fetchFn: $FetchResult, method: string): $FetchResult => {
-  function methodFetch<TSchema extends StandardSchemaV1>(
-    input: FetchInput,
-    schema: TSchema,
-    options?: FetchResultRequestInit,
-  ): ResultAsync<StandardSchemaV1.InferOutput<TSchema>, FetchError | ValidationError>;
-
-  function methodFetch(
-    input: FetchInput,
-    options?: FetchResultRequestInit,
-  ): ResultAsync<Response, FetchError>;
-
-  /**
-   * Method-bound `$FetchResult` implementation.
-   *
-   * Resolves the schema/options overload and injects the configured HTTP method.
-   */
-  function methodFetch(
-    input: FetchInput,
-    schemaOrOptions?: StandardSchemaV1 | FetchResultRequestInit,
-    optionsOrUndefined?: FetchResultRequestInit,
-  ): ResultAsync<unknown, FetchError | ValidationError> {
-    if (isStandardSchema(schemaOrOptions)) {
-      return fetchFn(input, schemaOrOptions, { ...optionsOrUndefined, method });
-    }
-
-    return fetchFn(input, { ...schemaOrOptions, method });
-  }
-
-  return methodFetch;
-};
-
-/**
  * Creates an HTTP method helper bound to a fetch function.
  *
  * The returned function mirrors `$Fetch` overloads but forces the provided
@@ -613,71 +524,6 @@ export async function $fetch(
 }
 
 /**
- * `Result`-returning counterpart to {@link $fetch}, for consumers who prefer
- * explicit `Result`/`ResultAsync` values (from `@zap-studio/monads`) over
- * throw/catch.
- *
- * There's no `throwOnFetchError`/`throwOnValidationError` option — this
- * function always returns a `Result`, so the flags don't apply. A non-ok
- * response and validation issues both become `Err`; a malformed schema or
- * request still throws, since that's a programmer error, not a value to
- * branch on.
- *
- * If no schema is provided, resolves to `Ok` with the raw `Response` object
- * (still `Err(FetchError)` on a non-ok response).
- *
- * @throws {TypeError} When both `body` and `json` are provided, when JSON request
- *   serialization fails, when request construction fails, when headers/search params are
- *   invalid, when `response.json()` cannot read the body, or when the runtime `fetch`
- *   implementation rejects network-level failures as `TypeError`.
- * @throws {DOMException} When the runtime rejects an aborted request or response body read
- *   as an `AbortError` DOMException.
- * @throws {SyntaxError} When a schema is provided and `response.json()` cannot parse the
- *   response body.
- * @throws {unknown} Any error thrown or rejected by the provided Standard Schema validator
- *   that isn't a `ValidationError`.
- *
- * @example
- * ```ts
- * import { isOk } from "@zap-studio/monads";
- * import { $fetchResult } from "@zap-studio/fetch";
- * import { z } from "zod";
- *
- * const UserSchema = z.object({ id: z.number(), name: z.string() });
- *
- * const result = await $fetchResult("/api/users/1", UserSchema);
- *
- * if (isOk(result)) {
- *   console.log("Validated user:", result.value);
- * } else {
- *   console.error("Failed:", result.error);
- * }
- * ```
- */
-export function $fetchResult<TSchema extends StandardSchemaV1>(
-  input: FetchInput,
-  schema: TSchema,
-  options?: FetchResultRequestInit,
-): ResultAsync<StandardSchemaV1.InferOutput<TSchema>, FetchError | ValidationError>;
-
-export function $fetchResult(
-  input: FetchInput,
-  options?: FetchResultRequestInit,
-): ResultAsync<Response, FetchError>;
-
-export function $fetchResult(
-  input: FetchInput,
-  schemaOrOptions?: StandardSchemaV1 | FetchResultRequestInit,
-  optionsOrUndefined?: FetchResultRequestInit,
-): ResultAsync<unknown, FetchError | ValidationError> {
-  const [schema, options] = isStandardSchema(schemaOrOptions)
-    ? [schemaOrOptions, optionsOrUndefined]
-    : [undefined, schemaOrOptions];
-
-  return new ResultAsync(fetchInternalResult(input, schema, options, GLOBAL_DEFAULTS));
-}
-
-/**
  * Convenience methods for common HTTP verbs.
  *
  * These methods always require a schema for validation.
@@ -706,29 +552,6 @@ export const api: ApiMethods = {
   patch: createMethod($fetch, "PATCH"),
   post: createMethod($fetch, "POST"),
   put: createMethod($fetch, "PUT"),
-};
-
-/**
- * `Result`-returning counterpart to {@link api}.
- *
- * @example
- * import { z } from "zod";
- * import { apiResult } from "@zap-studio/fetch";
- *
- * const PostSchema = z.object({
- *   id: z.number(),
- *   title: z.string(),
- *   content: z.string(),
- * });
- *
- * const result = await apiResult.get(`https://api.example.com/posts/1`, PostSchema);
- */
-export const apiResult: ApiResultMethods = {
-  delete: createMethodResult($fetchResult, "DELETE"),
-  get: createMethodResult($fetchResult, "GET"),
-  patch: createMethodResult($fetchResult, "PATCH"),
-  post: createMethodResult($fetchResult, "POST"),
-  put: createMethodResult($fetchResult, "PUT"),
 };
 
 /**
@@ -804,41 +627,8 @@ export const createFetch = (factoryOptions: Partial<FetchDefaults> = {}): FetchI
     put: createMethod(customFetch, "PUT"),
   };
 
-  function customFetchResult<TSchema extends StandardSchemaV1>(
-    input: FetchInput,
-    schema: TSchema,
-    options?: FetchResultRequestInit,
-  ): ResultAsync<StandardSchemaV1.InferOutput<TSchema>, FetchError | ValidationError>;
-
-  function customFetchResult(
-    input: FetchInput,
-    options?: FetchResultRequestInit,
-  ): ResultAsync<Response, FetchError>;
-
-  function customFetchResult(
-    input: FetchInput,
-    schemaOrOptions?: StandardSchemaV1 | FetchResultRequestInit,
-    optionsOrUndefined?: FetchResultRequestInit,
-  ): ResultAsync<unknown, FetchError | ValidationError> {
-    const [schema, options] = isStandardSchema(schemaOrOptions)
-      ? [schemaOrOptions, optionsOrUndefined]
-      : [undefined, schemaOrOptions];
-
-    return new ResultAsync(fetchInternalResult(input, schema, options, defaults));
-  }
-
-  const customApiResult: ApiResultMethods = {
-    delete: createMethodResult(customFetchResult, "DELETE"),
-    get: createMethodResult(customFetchResult, "GET"),
-    patch: createMethodResult(customFetchResult, "PATCH"),
-    post: createMethodResult(customFetchResult, "POST"),
-    put: createMethodResult(customFetchResult, "PUT"),
-  };
-
   return {
     $fetch: customFetch,
-    $fetchResult: customFetchResult,
     api: customApi,
-    apiResult: customApiResult,
   };
 };

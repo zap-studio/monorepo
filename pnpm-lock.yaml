@@ -452,9 +452,6 @@ importers:
 
   packages/fetch:
     dependencies:
-      '@zap-studio/monads':
-        specifier: workspace:*
-        version: link:../monads
       '@zap-studio/validation':
         specifier: workspace:*
         version: link:../validation
@@ -688,10 +685,6 @@ importers:
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.2.0)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.10)(vite@8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.0))
 
   packages/retry:
-    dependencies:
-      '@zap-studio/monads':
-        specifier: workspace:*
-        version: link:../monads
     devDependencies:
       '@opentelemetry/api':
         specifier: 'catalog:'
@@ -726,9 +719,6 @@ importers:
       '@standard-schema/spec':
         specifier: 'catalog:'
         version: 1.1.0
-      '@zap-studio/monads':
-        specifier: workspace:*
-        version: link:../monads
     devDependencies:
       '@zap-studio/typescript':
         specifier: workspace:*
