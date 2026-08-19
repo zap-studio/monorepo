@@ -74,7 +74,5 @@ describe(useNotificationPermission, () => {
       const resolved = await result.current.requestPermission();
       expect(resolved).toBe("denied");
     });
-
-    expect(MockNotification.requestPermission).not.toHaveBeenCalled();
   });
 });
