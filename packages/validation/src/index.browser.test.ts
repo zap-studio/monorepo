@@ -618,6 +618,12 @@ describe(standardValidateResultSync, () => {
       "Async schemas are not supported by standardValidateResultSync",
     );
   });
+
+  it("should throw when the schema's validate function returns a non-object value", () => {
+    const schema = createMockSchema(() => null as unknown as StandardSchemaV1.Result<string>);
+
+    expect(() => standardValidateResultSync("test", schema)).toThrow();
+  });
 });
 
 describe(standardValidateResult, () => {
@@ -700,6 +706,17 @@ describe(createStandardValidatorResultSync, () => {
     expect(() => validate("test")).toThrow(
       "Async schemas are not supported by createStandardValidatorResultSync",
     );
+  });
+
+  it("should propagate an unrelated error thrown by the schema's validate function as-is", () => {
+    const schema = createMockSchema(() => {
+      throw new RangeError("schema exploded");
+    });
+
+    const validate = createStandardValidatorResultSync(schema);
+
+    expect(() => validate("test")).toThrow(RangeError);
+    expect(() => validate("test")).toThrow("schema exploded");
   });
 });
 
