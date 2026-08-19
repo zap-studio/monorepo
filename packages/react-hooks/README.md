@@ -45,6 +45,7 @@ Both hooks are SSR-safe: they return `false` until the client subscribes to `mat
 | `useColorScheme`     | `"dark"` or `"light"`, from `(prefers-color-scheme: dark)`              |
 | `usePrefersDarkMode` | Boolean shorthand for `useColorScheme() === "dark"`                     |
 | `useOnlineStatus`    | Tracks `navigator.onLine`, updating on `online`/`offline` events        |
+| `useNetworkState`    | `useOnlineStatus` plus `navigator.connection` info where supported      |
 
 More hooks land incrementally.
 

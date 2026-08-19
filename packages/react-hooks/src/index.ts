@@ -18,5 +18,7 @@ export { useIsClient } from "./sensors/use-is-client.ts";
 export { useIsMobile } from "./sensors/use-is-mobile.ts";
 export { useIsServer } from "./sensors/use-is-server.ts";
 export { useMediaQuery } from "./sensors/use-media-query.ts";
+export type { NetworkState } from "./sensors/use-network-state.ts";
+export { useNetworkState } from "./sensors/use-network-state.ts";
 export { useOnlineStatus } from "./sensors/use-online-status.ts";
 export { usePrefersDarkMode } from "./sensors/use-prefers-dark-mode.ts";
