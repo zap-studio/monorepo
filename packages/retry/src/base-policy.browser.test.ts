@@ -1,5 +1,6 @@
 import type { Logger } from "@zap-studio/logger";
 
+import { isErr, isOk } from "@zap-studio/monads";
 import { describe, expect, it, vi } from "vitest";
 
 import type { RetryPolicy } from "./types.ts";
@@ -9,7 +10,7 @@ import {
   createSequencePolicy,
   expectFailureResult,
 } from "./_sequence-policy.ts";
-import { defaultSleep, runRetryPolicy } from "./base-policy.ts";
+import { defaultSleep, runRetryPolicy, runRetryPolicyResult } from "./base-policy.ts";
 import { AbortError, RetryError } from "./errors.ts";
 
 const createRecordingLogger = (): Logger & {
@@ -516,6 +517,94 @@ describe("result mode (throwOnExhausted: false)", () => {
     }
     expect(execute).toHaveBeenCalledTimes(1);
     expect(policy.seen).toStrictEqual([]);
+  });
+});
+
+describe(runRetryPolicyResult, () => {
+  it("resolves to an Ok result on first success", async () => {
+    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+
+    const result = await runRetryPolicyResult(policy, execute);
+
+    expect(isOk(result)).toBeTruthy();
+    expect(result).toStrictEqual({ ok: true, value: "ok" });
+  });
+
+  it("retries with custom sleep until success", async () => {
+    const policy = createSequencePolicy([{ delayMs: 15, reason: "retry", shouldRetry: true }]);
+    const sleep = vi.fn<(delayMs: number) => Promise<void>>().mockResolvedValue();
+    const execute = vi.fn<(attempt: number) => Promise<string>>();
+    execute.mockRejectedValueOnce(new Error("fail"));
+    execute.mockResolvedValueOnce("ok");
+
+    const result = await runRetryPolicyResult(policy, execute, { sleep });
+
+    expect(result).toStrictEqual({ ok: true, value: "ok" });
+    expect(sleep).toHaveBeenCalledWith(15);
+    expect(execute).toHaveBeenNthCalledWith(1, 1);
+    expect(execute).toHaveBeenNthCalledWith(2, 2);
+  });
+
+  it("resolves to an Err result wrapping a RetryError when retries are exhausted", async () => {
+    const policy = createSequencePolicy([
+      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
+    ]);
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockRejectedValue(new Error("fail"));
+
+    const result = await runRetryPolicyResult(policy, execute);
+
+    expect(isErr(result)).toBeTruthy();
+    if (isErr(result)) {
+      expect(result.error).toBeInstanceOf(RetryError);
+      if (result.error instanceof RetryError) {
+        expect(result.error.attempts).toBe(1);
+      }
+    }
+  });
+
+  it("resolves to an Err result wrapping an AbortError when the signal is already aborted", async () => {
+    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+    const controller = new AbortController();
+    controller.abort("aborted-before-start");
+
+    const result = await runRetryPolicyResult(policy, execute, { signal: controller.signal });
+
+    expect(isErr(result)).toBeTruthy();
+    if (isErr(result)) {
+      expect(result.error).toBeInstanceOf(AbortError);
+      expect(result.error.message).toBe("aborted-before-start");
+    }
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("wraps a value rejected by policy.isKnownError in a RetryError, bypassing retry", async () => {
+    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
+    const notAnError = { message: "plain-object-rejection" };
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockRejectedValue(notAnError);
+
+    const result = await runRetryPolicyResult(policy, execute);
+
+    expect(isErr(result)).toBeTruthy();
+    if (isErr(result)) {
+      expect(result.error).toBeInstanceOf(RetryError);
+      if (result.error instanceof RetryError) {
+        expect(result.error.lastError).toBe(notAnError);
+      }
+    }
+    expect(execute).toHaveBeenCalledTimes(1);
+  });
+
+  it("supports chaining before awaiting, like other ResultAsync values", async () => {
+    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
+    const execute = vi.fn<(attempt: number) => Promise<number>>().mockResolvedValue(21);
+
+    const doubled = await runRetryPolicyResult(policy, execute).map((n) => n * 2);
+
+    expect(doubled).toStrictEqual({ ok: true, value: 42 });
   });
 });
 
