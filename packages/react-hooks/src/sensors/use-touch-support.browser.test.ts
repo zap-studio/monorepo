@@ -11,9 +11,10 @@ describe(useTouchSupport, () => {
   it("is true when maxTouchPoints is greater than 0", () => {
     setMaxTouchPoints(5);
 
-    const { result } = renderHook(() => useTouchSupport());
+    const { result, unmount } = renderHook(() => useTouchSupport());
 
     expect(result.current).toBe(true);
+    unmount();
   });
 
   it("is false when maxTouchPoints is 0", () => {

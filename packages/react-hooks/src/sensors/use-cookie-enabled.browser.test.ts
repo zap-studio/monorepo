@@ -11,9 +11,10 @@ describe(useCookieEnabled, () => {
   it("is true when navigator.cookieEnabled is true", () => {
     setCookieEnabled(true);
 
-    const { result } = renderHook(() => useCookieEnabled());
+    const { result, unmount } = renderHook(() => useCookieEnabled());
 
     expect(result.current).toBe(true);
+    unmount();
   });
 
   it("is false when navigator.cookieEnabled is false", () => {

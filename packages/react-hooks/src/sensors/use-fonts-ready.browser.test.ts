@@ -15,4 +15,15 @@ describe(useFontsReady, () => {
 
     await waitFor(() => expect(result.current).toBe(true));
   });
+
+  it("resolves immediately when the CSS Font Loading API is unsupported", async () => {
+    const originalFonts = document.fonts;
+    Object.defineProperty(document, "fonts", { configurable: true, value: undefined });
+
+    const { result } = renderHook(() => useFontsReady());
+
+    await waitFor(() => expect(result.current).toBe(true));
+
+    Object.defineProperty(document, "fonts", { configurable: true, value: originalFonts });
+  });
 });

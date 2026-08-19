@@ -118,6 +118,24 @@ describe(useWakeLock, () => {
     expect(sentinel.release).toHaveBeenCalledTimes(1);
   });
 
+  it("does not release when visibilitychange fires while still visible", async () => {
+    setDocumentHidden(false);
+    const sentinel = createSentinelMock();
+    setNavigatorWakeLock(() => Promise.resolve(sentinel));
+
+    const { result } = renderHook(() => useWakeLock());
+    await act(async () => {
+      await result.current.request();
+    });
+
+    await act(async () => {
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+
+    expect(result.current.active).toBe(true);
+    expect(sentinel.release).not.toHaveBeenCalled();
+  });
+
   it("releases the active lock on unmount", async () => {
     const sentinel = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));

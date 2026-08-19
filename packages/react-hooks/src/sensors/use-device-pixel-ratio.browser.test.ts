@@ -39,9 +39,10 @@ describe(useDevicePixelRatio, () => {
     const { matchMedia } = createMatchMediaMock();
     vi.spyOn(window, "matchMedia").mockImplementation(matchMedia);
 
-    const { result } = renderHook(() => useDevicePixelRatio());
+    const { result, unmount } = renderHook(() => useDevicePixelRatio());
 
     expect(result.current).toBe(2);
+    unmount();
   });
 
   it("updates when the resolution media query fires a change", async () => {

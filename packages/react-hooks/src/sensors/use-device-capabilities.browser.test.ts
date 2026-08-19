@@ -16,9 +16,10 @@ describe(useDeviceCapabilities, () => {
     setHardwareConcurrency(8);
     setDeviceMemory(4);
 
-    const { result } = renderHook(() => useDeviceCapabilities());
+    const { result, unmount } = renderHook(() => useDeviceCapabilities());
 
     expect(result.current).toEqual({ deviceMemory: 4, hardwareConcurrency: 8 });
+    unmount();
   });
 
   it("leaves deviceMemory undefined where the Chromium-only API is unsupported", () => {

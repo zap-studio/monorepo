@@ -15,13 +15,14 @@ describe(useUserAgentData, () => {
       platform: "macOS",
     });
 
-    const { result } = renderHook(() => useUserAgentData());
+    const { result, unmount } = renderHook(() => useUserAgentData());
 
     expect(result.current).toEqual({
       brands: [{ brand: "Chromium", version: "130" }],
       mobile: false,
       platform: "macOS",
     });
+    unmount();
   });
 
   it("is undefined when User-Agent Client Hints is unsupported", () => {
