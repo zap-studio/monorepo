@@ -1,7 +1,9 @@
 /**
  * Public entrypoint for the react-hooks package.
  *
- * Re-exports every stable hook. Each hook is also available from its own
+ * Re-exports every stable hook, regardless of which category folder it lives
+ * in under `src/` — categories are internal organization only, never part of
+ * the public export surface. Each hook is also available from its own
  * dedicated subpath (`@zap-studio/react-hooks/use-is-mobile`, ...) for
  * consumers who prefer granular imports. All exports are side-effect free
  * and tree-shakeable.
@@ -12,4 +14,5 @@
  * @module @zap-studio/react-hooks
  */
 
-export {};
+export { useIsMobile } from "./sensors/use-is-mobile.ts";
+export { useMediaQuery } from "./sensors/use-media-query.ts";
