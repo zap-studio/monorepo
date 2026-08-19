@@ -21,6 +21,11 @@ const subscribe = (onStoreChange: () => void) => {
  * `navigator.language` and `navigator.languages`, updating on the
  * `languagechange` event. Falls back to `"en"` during server rendering and
  * before the client subscribes.
+ *
+ * @example
+ * ```tsx
+ * const { language } = usePreferredLanguage(); // e.g. "en-US"
+ * ```
  */
 export const usePreferredLanguage = (): PreferredLanguage => {
   const cacheRef = useRef<PreferredLanguage>(FALLBACK_LANGUAGE);

@@ -51,6 +51,8 @@ Both hooks are SSR-safe: they return `false` until the client subscribes to `mat
 | `useGeolocation`       | Wraps `navigator.geolocation`; one-shot by default, `watch: true` for continuous updates |
 | `useBattery`           | Wraps the Battery Status API (Chromium-only); `supported: false` elsewhere               |
 
+Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
+
 More hooks land incrementally.
 
 ## Conventions

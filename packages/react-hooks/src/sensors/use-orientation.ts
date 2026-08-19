@@ -31,6 +31,11 @@ const subscribe = (onStoreChange: () => void) => {
  * the legacy `window` `orientationchange` event. Falls back to
  * `{ angle: 0 }` during server rendering, before the client subscribes, and
  * where the ScreenOrientation API is unsupported.
+ *
+ * @example
+ * ```tsx
+ * const { angle, type } = useOrientation();
+ * ```
  */
 export const useOrientation = (): Orientation => {
   const cacheRef = useRef<Orientation>(FALLBACK_ORIENTATION);

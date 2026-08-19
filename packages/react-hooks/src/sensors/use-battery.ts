@@ -33,6 +33,11 @@ const readBatteryState = (battery: BatteryManager): BatteryState => ({
  * Wraps the Battery Status API (`navigator.getBattery()`) — Chromium-only,
  * removed from most other browsers. `{ supported: false }` — the SSR-safe
  * default — until the client confirms `getBattery` exists and resolves it.
+ *
+ * @example
+ * ```tsx
+ * const { supported, level, charging } = useBattery();
+ * ```
  */
 export const useBattery = (): BatteryState => {
   const [state, setState] = useState<BatteryState>(UNSUPPORTED_STATE);

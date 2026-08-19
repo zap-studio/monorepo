@@ -10,5 +10,10 @@ export type { NetworkState } from "./_network.ts";
  * supported — `undefined` for those fields elsewhere. Updates on
  * `online`/`offline` and connection `change` events. During server
  * rendering, `online` defaults to `true` and the rest are `undefined`.
+ *
+ * @example
+ * ```tsx
+ * const { online, effectiveType, saveData } = useNetworkState();
+ * ```
  */
 export const useNetworkState = (): NetworkState => useNetworkSnapshot();

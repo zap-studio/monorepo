@@ -56,6 +56,12 @@ const toErrorState = (error: GeolocationPositionError): GeolocationErrorState =>
  * `clearWatch` on unmount or option change). `loading` starts `true` and the
  * effect — client-only — resolves it, so this is SSR-safe with no extra
  * handling needed.
+ *
+ * @example
+ * ```tsx
+ * const { coords, loading, error } = useGeolocation();
+ * // useGeolocation({ watch: true }) for continuous updates
+ * ```
  */
 export const useGeolocation = (options: UseGeolocationOptions = {}): GeolocationState => {
   const { enableHighAccuracy, maximumAge, timeout, watch = false } = options;
