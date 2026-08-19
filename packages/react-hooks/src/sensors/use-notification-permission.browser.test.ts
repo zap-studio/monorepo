@@ -74,5 +74,10 @@ describe(useNotificationPermission, () => {
       const resolved = await result.current.requestPermission();
       expect(resolved).toBe("denied");
     });
+
+    Object.defineProperty(window, "Notification", {
+      configurable: true,
+      value: MockNotification,
+    });
   });
 });
