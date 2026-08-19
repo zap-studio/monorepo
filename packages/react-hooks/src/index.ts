@@ -16,7 +16,19 @@ export type { BatteryState } from "./sensors/use-battery.ts";
 export { useBattery } from "./sensors/use-battery.ts";
 export type { ColorScheme } from "./sensors/use-color-scheme.ts";
 export { useColorScheme } from "./sensors/use-color-scheme.ts";
+export { useCookieEnabled } from "./sensors/use-cookie-enabled.ts";
+export type { DeviceCapabilities } from "./sensors/use-device-capabilities.ts";
+export { useDeviceCapabilities } from "./sensors/use-device-capabilities.ts";
+export type { DeviceMotionState, UseDeviceMotionResult } from "./sensors/use-device-motion.ts";
+export { useDeviceMotion } from "./sensors/use-device-motion.ts";
+export type {
+  DeviceOrientationState,
+  UseDeviceOrientationResult,
+} from "./sensors/use-device-orientation.ts";
+export { useDeviceOrientation } from "./sensors/use-device-orientation.ts";
+export { useDevicePixelRatio } from "./sensors/use-device-pixel-ratio.ts";
 export { useDocumentVisibility } from "./sensors/use-document-visibility.ts";
+export { useFontsReady } from "./sensors/use-fonts-ready.ts";
 export type {
   GeolocationCoordinatesState,
   GeolocationErrorState,
@@ -30,6 +42,8 @@ export { useIsServer } from "./sensors/use-is-server.ts";
 export { useMediaQuery } from "./sensors/use-media-query.ts";
 export type { NetworkState } from "./sensors/use-network-state.ts";
 export { useNetworkState } from "./sensors/use-network-state.ts";
+export type { UseNotificationPermissionResult } from "./sensors/use-notification-permission.ts";
+export { useNotificationPermission } from "./sensors/use-notification-permission.ts";
 export { useOnlineStatus } from "./sensors/use-online-status.ts";
 export type { Orientation } from "./sensors/use-orientation.ts";
 export { useOrientation } from "./sensors/use-orientation.ts";
@@ -38,7 +52,21 @@ export { usePermission } from "./sensors/use-permission.ts";
 export { usePrefersDarkMode } from "./sensors/use-prefers-dark-mode.ts";
 export type { PreferredLanguage } from "./sensors/use-preferred-language.ts";
 export { usePreferredLanguage } from "./sensors/use-preferred-language.ts";
+export { usePrintMode } from "./sensors/use-print-mode.ts";
 export type { UseShareResult } from "./sensors/use-share.ts";
 export { useShare } from "./sensors/use-share.ts";
+export type { StorageEstimateState } from "./sensors/use-storage-estimate.ts";
+export { useStorageEstimate } from "./sensors/use-storage-estimate.ts";
+export { useTouchSupport } from "./sensors/use-touch-support.ts";
+export type { UserAgentData, UserAgentDataBrand } from "./sensors/use-user-agent-data.ts";
+export { useUserAgentData } from "./sensors/use-user-agent-data.ts";
+export type { UseVibrateResult } from "./sensors/use-vibrate.ts";
+export { useVibrate } from "./sensors/use-vibrate.ts";
+export type { VirtualKeyboardRect } from "./sensors/use-virtual-keyboard.ts";
+export { useVirtualKeyboard } from "./sensors/use-virtual-keyboard.ts";
+export type { VisualViewportState } from "./sensors/use-visual-viewport.ts";
+export { useVisualViewport } from "./sensors/use-visual-viewport.ts";
+export type { UseWakeLockResult } from "./sensors/use-wake-lock.ts";
+export { useWakeLock } from "./sensors/use-wake-lock.ts";
 export type { WindowSize } from "./sensors/use-window-size.ts";
 export { useWindowSize } from "./sensors/use-window-size.ts";
