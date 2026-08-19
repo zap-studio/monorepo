@@ -30,7 +30,6 @@ You also need a schema library that implements [Standard Schema](https://standar
 - **Configured clients** through `createFetch(...)` with shared `baseURL`, headers, query params, and error defaults.
 - **JSON convenience** through the `json` option, which serializes the request body and sets `Content-Type`.
 - **Structured errors** with `FetchError` for HTTP failures and `ValidationError` for schema failures.
-- **`Result`-returning variant** through `$fetchResult`/`apiResult`, for explicit error handling with [`@zap-studio/monads`](https://www.npmjs.com/package/@zap-studio/monads) instead of throw/catch.
 - **Validator-agnostic** — works with any library that implements Standard Schema.
 - **Optional logging** through `createFetch({ logger })` ([`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger)) — omit it and there's zero logging overhead.
 - **Tree-shakeable** — every export is a standalone function with no shared internal state; unused exports are dropped by any modern bundler.
@@ -130,25 +129,6 @@ try {
 }
 ```
 
-## Result-Returning Variant
-
-`$fetchResult`/`apiResult` — additive alternative to `$fetch`/`api` for consumers who prefer explicit [`Result`](https://www.zapstudio.dev/monads/result)/[`ResultAsync`](https://www.zapstudio.dev/monads/result-async) values over throw/catch. `createFetch(...)` instances get `$fetchResult`/`apiResult` too, alongside `$fetch`/`api`.
-
-```ts
-import { isOk } from "@zap-studio/monads";
-import { apiResult } from "@zap-studio/fetch";
-
-const result = await apiResult.get("/api/users/1", UserSchema);
-
-if (isOk(result)) {
-  console.log(result.value);
-} else {
-  console.error(result.error); // FetchError | ValidationError
-}
-```
-
-There's no `throwOnFetchError`/`throwOnValidationError` option — these always return a `Result`. A non-ok response and validation issues both become `Err`; a malformed schema or request still throws, since that's a programmer error, not a value to branch on.
-
 ## Validator-Agnostic
 
 Works with any library that implements Standard Schema.
@@ -194,6 +174,23 @@ await api.get("/users/1", UserSchema);
 ```
 
 On failure — a non-2xx response or a thrown error — the span is marked `ERROR`; thrown errors are also recorded as span exceptions.
+
+## Using with `@zap-studio/monads`
+
+This package has no dependency on `@zap-studio/monads` — nothing is added to your
+bundle unless you install it yourself. If you want a `Result` instead of throw/catch,
+wrap the call with `@zap-studio/monads`'s `fromPromise`, mapping the rejection into
+your error type:
+
+```ts
+import { fromPromise } from "@zap-studio/monads";
+import { api } from "@zap-studio/fetch";
+
+const result = fromPromise(
+  api.get("/users/1", UserSchema, { throwOnFetchError: true, throwOnValidationError: true }),
+  (error) => error,
+);
+```
 
 ## Runtime Support
 

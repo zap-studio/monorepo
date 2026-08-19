@@ -13,13 +13,9 @@ export type { StandardSchemaV1, StandardTypedV1 } from "@standard-schema/spec";
 export { ValidationError } from "./errors.ts";
 export {
   createStandardValidator,
-  createStandardValidatorResult,
-  createStandardValidatorResultSync,
   createStandardValidatorSync,
   isStandardSchema,
   standardValidate,
-  standardValidateResult,
-  standardValidateResultSync,
   standardValidateSync,
 } from "./validate.ts";
 export type { StandardValidateOptions } from "./validate.ts";

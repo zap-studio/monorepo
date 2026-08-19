@@ -26,7 +26,6 @@ npm install @zap-studio/validation
 - **Synchronous validation** via `standardValidateSync`, for schemas known to validate synchronously.
 - **Reusable validators** via `createStandardValidator` and `createStandardValidatorSync`.
 - **Optional throwing behavior** via `throwOnError`, backed by a shared `ValidationError` class.
-- **`Result`-returning variants** via `standardValidateResult`, `standardValidateResultSync`, `createStandardValidatorResult`, and `createStandardValidatorResultSync`, for explicit error handling without throw/catch.
 - **Runtime schema detection** via `isStandardSchema`.
 - **Type re-exports** — `StandardSchemaV1` and `StandardTypedV1` directly from this package.
 - **Tree-shakeable** — every helper is a standalone function; unused exports are dropped by any modern bundler.
@@ -83,35 +82,6 @@ try {
 }
 ```
 
-## Result-Returning Variants
-
-Via `standardValidateResult`, `standardValidateResultSync`, `createStandardValidatorResult`, and `createStandardValidatorResultSync` — an alternative to `throwOnError` for consumers who prefer explicit `Result`/`ResultAsync` values (from [`@zap-studio/monads`](https://www.zapstudio.dev/monads)) over throw/catch. Only validation issues become `Err`; a malformed schema still throws, since that's a programmer error rather than a value to branch on.
-
-```ts
-import { isOk } from "@zap-studio/monads";
-import { standardValidateResult, standardValidateResultSync } from "@zap-studio/validation";
-
-const result = await standardValidateResult(input, userSchema);
-
-if (isOk(result)) {
-  console.log("Validation passed:", result.value);
-} else {
-  console.error("Validation failed:", result.error.issues);
-}
-
-// Synchronous schemas:
-const syncResult = standardValidateResultSync(input, userSchema);
-```
-
-Reusable validators work the same way, via `createStandardValidatorResult` and `createStandardValidatorResultSync`:
-
-```ts
-import { createStandardValidatorResult } from "@zap-studio/validation";
-
-const validateUser = createStandardValidatorResult(userSchema);
-const result = await validateUser(input);
-```
-
 ## Runtime Schema Detection
 
 Via `isStandardSchema`.
@@ -130,6 +100,29 @@ if (isStandardSchema(schemaLike)) {
 
 ```ts
 import type { StandardSchemaV1, StandardTypedV1 } from "@zap-studio/validation";
+```
+
+## Using with `@zap-studio/monads`
+
+This package has no dependency on `@zap-studio/monads` — nothing is added to your
+bundle unless you install it yourself. If you want a `Result` instead of throw/catch,
+wrap the `throwOnError: true` variant with `@zap-studio/monads`'s `fromThrowable` (sync)
+or `fromPromise` (async):
+
+```ts
+import { fromPromise, fromThrowable } from "@zap-studio/monads";
+import { standardValidate, standardValidateSync } from "@zap-studio/validation";
+
+// Sync — fromThrowable wraps a function directly.
+const safeValidateSync = fromThrowable(standardValidateSync);
+const result = safeValidateSync(input, schema, { throwOnError: true });
+
+// Async — fromPromise wraps an already-created promise, mapping any
+// rejection (a ValidationError, or a schema throw) into your error type.
+const resultAsync = fromPromise(
+  standardValidate(input, schema, { throwOnError: true }),
+  (error) => error,
+);
 ```
 
 ## Runtime Support
