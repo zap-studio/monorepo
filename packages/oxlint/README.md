@@ -20,25 +20,7 @@ Every release of this package is verified against the exact `oxlint` version its
 
 ## Usage
 
-Every preset owns its own slice of rules and nothing else's — `react` doesn't bring accessibility rules, `nextjs` doesn't bring hooks rules, `tanstack-start` doesn't bring the TanStack Query plugin. List every preset your project actually needs in `extends`:
-
-```ts
-import { defineConfig } from "oxlint";
-import base from "@zap-studio/oxlint/base";
-import react from "@zap-studio/oxlint/react";
-import reactA11y from "@zap-studio/oxlint/react-a11y";
-import reactDoctor from "@zap-studio/oxlint/react-doctor";
-import jsxRuntimeAutomatic from "@zap-studio/oxlint/jsx-runtime-automatic";
-import nextjs from "@zap-studio/oxlint/nextjs";
-
-export default defineConfig({
-  extends: [base, react, reactA11y, reactDoctor, jsxRuntimeAutomatic, nextjs],
-});
-```
-
-This is more imports than a bundled "one big preset" would need — that's the tradeoff for never getting rules you didn't ask for. `base` is the one exception: it's the JS/TS correctness and security baseline every project wants regardless of framework, so it stays a single preset instead of splitting into a dozen one-plugin imports.
-
-Every preset is also re-exported by name from the package root, if you'd rather have one import statement:
+Every preset owns its own slice of rules and nothing else's — `react` doesn't bring accessibility rules, `nextjs` doesn't bring hooks rules, `tanstack-start` doesn't bring the TanStack Query plugin. List every preset your project actually needs in `extends`, importing each by name from the package root:
 
 ```ts
 import { defineConfig } from "oxlint";
@@ -56,7 +38,21 @@ export default defineConfig({
 });
 ```
 
-This is the same code as the per-preset subpath imports — named ESM exports, so bundlers tree-shake away whatever preset you didn't import either way.
+This is more imports than a bundled "one big preset" would need — that's the tradeoff for never getting rules you didn't ask for. `base` is the one exception: it's the JS/TS correctness and security baseline every project wants regardless of framework, so it stays a single preset instead of splitting into a dozen one-plugin imports.
+
+Every preset is also reachable by its own subpath, if you'd rather import one preset per line instead of destructuring the root:
+
+```ts
+import { defineConfig } from "oxlint";
+import base from "@zap-studio/oxlint/base";
+import react from "@zap-studio/oxlint/react";
+
+export default defineConfig({
+  extends: [base, react],
+});
+```
+
+This is the same code as the named root import — named ESM exports either way, so bundlers tree-shake away whatever preset you didn't import.
 
 `extends` merges `rules` key-by-key and unions `plugins`/`jsPlugins`, so anything you add to your own `rules` after `extends` overrides a preset — no need to fork it to change or disable a single rule:
 

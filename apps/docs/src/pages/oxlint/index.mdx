@@ -28,10 +28,7 @@ The one exception is `base`: JS/TS correctness and security rules that apply reg
 ```ts
 // oxlint.config.ts
 import { defineConfig } from "oxlint";
-import base from "@zap-studio/oxlint/base";
-import react from "@zap-studio/oxlint/react";
-import reactA11y from "@zap-studio/oxlint/react-a11y";
-import reactDoctor from "@zap-studio/oxlint/react-doctor";
+import { base, react, reactA11y, reactDoctor } from "@zap-studio/oxlint";
 
 export default defineConfig({
   extends: [base, react, reactA11y, reactDoctor],

@@ -35,11 +35,11 @@ deno add -D npm:@zap-studio/oxlint npm:oxlint
 
 ## Extend a Preset
 
-Start with `base` — it's the one bundled preset, and the only one every project wants regardless of framework:
+Start with `base` — it's the one bundled preset, and the only one every project wants regardless of framework. Import it by name from the package root:
 
 ```ts
 import { defineConfig } from "oxlint";
-import base from "@zap-studio/oxlint/base";
+import { base } from "@zap-studio/oxlint";
 
 export default defineConfig({
   extends: [base],
@@ -52,12 +52,14 @@ Every other preset owns one plugin or one framework integration's slice of rules
 
 ```ts
 import { defineConfig } from "oxlint";
-import base from "@zap-studio/oxlint/base";
-import react from "@zap-studio/oxlint/react";
-import reactA11y from "@zap-studio/oxlint/react-a11y";
-import reactDoctor from "@zap-studio/oxlint/react-doctor";
-import jsxRuntimeAutomatic from "@zap-studio/oxlint/jsx-runtime-automatic";
-import nextjs from "@zap-studio/oxlint/nextjs";
+import {
+  base,
+  react,
+  reactA11y,
+  reactDoctor,
+  jsxRuntimeAutomatic,
+  nextjs,
+} from "@zap-studio/oxlint";
 
 export default defineConfig({
   extends: [base, react, reactA11y, reactDoctor, jsxRuntimeAutomatic, nextjs],
@@ -66,16 +68,27 @@ export default defineConfig({
 
 This is more imports than one bundled preset would need — that's the tradeoff for never inheriting rules you didn't ask for. See [Presets](/oxlint/presets) for the full list and what each one owns.
 
+Every preset is also reachable by its own subpath, e.g. `@zap-studio/oxlint/react`, if you'd rather import one preset per line instead of destructuring the root — both forms export the same value:
+
+```ts
+import { defineConfig } from "oxlint";
+import react from "@zap-studio/oxlint/react";
+
+export default defineConfig({
+  extends: [react],
+});
+```
+
 ## Override a Rule
 
 `extends` merges `rules` key-by-key and unions `plugins`/`jsPlugins`. Anything you set in your own `rules` after `extends` overrides the preset, so disabling or retuning a single rule doesn't require forking it:
 
 ```ts
 import { defineConfig } from "oxlint";
-import zapStudio from "@zap-studio/oxlint/react";
+import { react } from "@zap-studio/oxlint";
 
 export default defineConfig({
-  extends: [zapStudio],
+  extends: [react],
   rules: {
     "sonarjs/cognitive-complexity": "off",
   },
