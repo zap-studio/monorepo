@@ -30,6 +30,7 @@ You also need a schema library that implements [Standard Schema](https://standar
 - **Configured clients** through `createFetch(...)` with shared `baseURL`, headers, query params, and error defaults.
 - **JSON convenience** through the `json` option, which serializes the request body and sets `Content-Type`.
 - **Structured errors** with `FetchError` for HTTP failures and `ValidationError` for schema failures.
+- **`Result`-returning variant** through `$fetchResult`/`apiResult`, for explicit error handling with [`@zap-studio/monads`](https://www.npmjs.com/package/@zap-studio/monads) instead of throw/catch.
 - **Validator-agnostic** — works with any library that implements Standard Schema.
 - **Optional logging** through `createFetch({ logger })` ([`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger)) — omit it and there's zero logging overhead.
 - **Tree-shakeable** — every export is a standalone function with no shared internal state; unused exports are dropped by any modern bundler.
@@ -128,6 +129,25 @@ try {
   if (error instanceof ValidationError) console.error(error.issues);
 }
 ```
+
+## Result-Returning Variant
+
+`$fetchResult`/`apiResult` — additive alternative to `$fetch`/`api` for consumers who prefer explicit [`Result`](https://www.zapstudio.dev/monads/result)/[`ResultAsync`](https://www.zapstudio.dev/monads/result-async) values over throw/catch. `createFetch(...)` instances get `$fetchResult`/`apiResult` too, alongside `$fetch`/`api`.
+
+```ts
+import { isOk } from "@zap-studio/monads";
+import { apiResult } from "@zap-studio/fetch";
+
+const result = await apiResult.get("/api/users/1", UserSchema);
+
+if (isOk(result)) {
+  console.log(result.value);
+} else {
+  console.error(result.error); // FetchError | ValidationError
+}
+```
+
+There's no `throwOnFetchError`/`throwOnValidationError` option — these always return a `Result`. A non-ok response and validation issues both become `Err`; a malformed schema or request still throws, since that's a programmer error, not a value to branch on.
 
 ## Validator-Agnostic
 
