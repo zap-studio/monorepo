@@ -5,7 +5,12 @@
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
-    "./unstable": "./src/unstable/index.ts"
+    "./unstable": "./src/unstable/index.ts",
+    "./use-is-mobile": "./src/sensors/use-is-mobile.ts",
+    "./use-media-query": "./src/sensors/use-media-query.ts"
+  },
+  "imports": {
+    "react": "npm:react@^19.2.8"
   },
   "publish": {
     "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
