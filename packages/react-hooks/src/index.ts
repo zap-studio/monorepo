@@ -14,5 +14,6 @@
  * @module @zap-studio/react-hooks
  */
 
+export { useIsClient } from "./sensors/use-is-client.ts";
 export { useIsMobile } from "./sensors/use-is-mobile.ts";
 export { useMediaQuery } from "./sensors/use-media-query.ts";
