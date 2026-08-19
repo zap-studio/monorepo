@@ -37,7 +37,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@standard-schema/spec": "catalog:"
+    "@standard-schema/spec": "catalog:",
+    "@zap-studio/monads": "workspace:*"
   },
   "devDependencies": {
     "@zap-studio/typescript": "workspace:*",
