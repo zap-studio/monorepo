@@ -86,4 +86,25 @@ describe(usePermission, () => {
 
     expect(result.current).toBeUndefined();
   });
+
+  it("ignores a resolved query if the component unmounted first", async () => {
+    let resolveQuery!: (status: PermissionStatus) => void;
+    const queryPromise = new Promise<PermissionStatus>((resolve) => {
+      resolveQuery = resolve;
+    });
+    setNavigatorPermissions(() => queryPromise);
+
+    const { unmount } = renderHook(() => usePermission("geolocation"));
+    unmount();
+
+    const { status } = createPermissionStatusMock("granted");
+    const addEventListener = vi.spyOn(status, "addEventListener");
+
+    await act(async () => {
+      resolveQuery(status);
+      await queryPromise;
+    });
+
+    expect(addEventListener).not.toHaveBeenCalled();
+  });
 });
