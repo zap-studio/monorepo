@@ -35,9 +35,7 @@ export const useWakeLock = (): UseWakeLockResult => {
     }
     sentinelRef.current = null;
     setActive(false);
-    if (!sentinel.released) {
-      await sentinel.release();
-    }
+    await sentinel.release();
   }, []);
 
   const request = useCallback(async (): Promise<void> => {
