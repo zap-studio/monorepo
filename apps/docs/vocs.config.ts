@@ -164,6 +164,7 @@ export default defineConfig({
               link: "/validation/runtime-schema-detection",
               text: "Runtime Schema Detection",
             },
+            { link: "/validation/result", text: "Result-Returning Variants" },
           ],
           text: "validation",
         },
