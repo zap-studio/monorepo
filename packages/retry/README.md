@@ -27,6 +27,7 @@ npm install @zap-studio/retry
 - **A shared runner** via `runRetryPolicy(policy, execute, options?)` with attempt-aware callbacks and custom sleep injection.
 - **Structured terminal errors**: `RetryError` on exhaustion, `AbortError` on cancellation.
 - **Non-throw mode** (`throwOnExhausted: false`) returns a `RetryRunResult` instead of throwing.
+- **`Result`-returning variant** via `runRetryPolicyResult(policy, execute, options?)`, for explicit error handling with [`@zap-studio/monads`](https://www.npmjs.com/package/@zap-studio/monads) instead of throw/catch.
 - **Cancellation** through `AbortSignal`, checked before, between, and during retries.
 - **Custom policies** as plain objects implementing `RetryPolicy` — just a `next(...)` function, no subclassing.
 - **Optional logging** via a `logger?: Logger` option ([`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger)) — omit it and there's zero logging overhead.
@@ -133,6 +134,25 @@ if (!result.ok) {
   console.log(result.value);
 }
 ```
+
+## Result-Returning Variant
+
+`runRetryPolicyResult(policy, execute, options?)` — additive alternative to `runRetryPolicy` for consumers who prefer explicit [`Result`](https://www.zapstudio.dev/monads/result)/[`ResultAsync`](https://www.zapstudio.dev/monads/result-async) values over throw/catch. There's no `throwOnExhausted` option — it always returns a `Result`.
+
+```ts
+import { isOk } from "@zap-studio/monads";
+import { runRetryPolicyResult } from "@zap-studio/retry";
+
+const result = await runRetryPolicyResult(policy, execute);
+
+if (isOk(result)) {
+  console.log(result.value);
+} else {
+  console.error(result.error); // RetryError | AbortError, same as runRetryPolicy's throw mode
+}
+```
+
+`RetryError`/`AbortError` are the same error objects `runRetryPolicy`'s throw mode would throw — `RetryError.attempts`/`lastError`/`lastData` and `AbortError.cause` are preserved.
 
 ## Cancellation
 
