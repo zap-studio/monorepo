@@ -16,6 +16,7 @@ export type { BatteryState } from "./sensors/use-battery.ts";
 export { useBattery } from "./sensors/use-battery.ts";
 export type { ColorScheme } from "./sensors/use-color-scheme.ts";
 export { useColorScheme } from "./sensors/use-color-scheme.ts";
+export { useDocumentVisibility } from "./sensors/use-document-visibility.ts";
 export type {
   GeolocationCoordinatesState,
   GeolocationErrorState,
@@ -32,6 +33,12 @@ export { useNetworkState } from "./sensors/use-network-state.ts";
 export { useOnlineStatus } from "./sensors/use-online-status.ts";
 export type { Orientation } from "./sensors/use-orientation.ts";
 export { useOrientation } from "./sensors/use-orientation.ts";
+export { usePageLeave } from "./sensors/use-page-leave.ts";
+export { usePermission } from "./sensors/use-permission.ts";
 export { usePrefersDarkMode } from "./sensors/use-prefers-dark-mode.ts";
 export type { PreferredLanguage } from "./sensors/use-preferred-language.ts";
 export { usePreferredLanguage } from "./sensors/use-preferred-language.ts";
+export type { UseShareResult } from "./sensors/use-share.ts";
+export { useShare } from "./sensors/use-share.ts";
+export type { WindowSize } from "./sensors/use-window-size.ts";
+export { useWindowSize } from "./sensors/use-window-size.ts";
