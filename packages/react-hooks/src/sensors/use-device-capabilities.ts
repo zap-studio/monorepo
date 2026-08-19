@@ -4,6 +4,7 @@ interface NavigatorWithDeviceMemory extends Navigator {
   readonly deviceMemory?: number;
 }
 
+/** The shape returned by `useDeviceCapabilities`. */
 export interface DeviceCapabilities {
   deviceMemory?: number;
   hardwareConcurrency: number;

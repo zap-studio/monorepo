@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 
+/** The shape returned by `useNotificationPermission`. */
 export interface UseNotificationPermissionResult {
   notify: (title: string, options?: NotificationOptions) => Notification | undefined;
   permission: NotificationPermission | "unsupported";

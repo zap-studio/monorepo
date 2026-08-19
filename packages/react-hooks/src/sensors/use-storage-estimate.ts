@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+/** The shape returned by `useStorageEstimate`. */
 export interface StorageEstimateState {
   quota?: number;
   supported: boolean;

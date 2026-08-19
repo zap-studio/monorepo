@@ -4,6 +4,7 @@ interface DeviceMotionEventConstructorWithPermission {
   requestPermission?: () => Promise<"denied" | "granted">;
 }
 
+/** The motion fields `useDeviceMotion` reports — mirrors `DeviceMotionEvent`. */
 export interface DeviceMotionState {
   acceleration: DeviceMotionEvent["acceleration"];
   accelerationIncludingGravity: DeviceMotionEvent["accelerationIncludingGravity"];
@@ -11,6 +12,7 @@ export interface DeviceMotionState {
   rotationRate: DeviceMotionEvent["rotationRate"];
 }
 
+/** The shape returned by `useDeviceMotion`. */
 export interface UseDeviceMotionResult extends DeviceMotionState {
   requestPermission: () => Promise<boolean>;
   supported: boolean;

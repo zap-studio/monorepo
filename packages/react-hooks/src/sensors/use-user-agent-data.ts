@@ -1,10 +1,12 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
+/** One entry in `UserAgentData.brands`. */
 export interface UserAgentDataBrand {
   brand: string;
   version: string;
 }
 
+/** The shape returned by `useUserAgentData` — `navigator.userAgentData`'s low-entropy fields. */
 export interface UserAgentData {
   brands: readonly UserAgentDataBrand[];
   mobile: boolean;

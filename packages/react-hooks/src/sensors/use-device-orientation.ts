@@ -4,6 +4,7 @@ interface DeviceOrientationEventConstructorWithPermission {
   requestPermission?: () => Promise<"denied" | "granted">;
 }
 
+/** The tilt fields `useDeviceOrientation` reports — mirrors `DeviceOrientationEvent`. */
 export interface DeviceOrientationState {
   absolute: boolean;
   alpha: number | null;
@@ -11,6 +12,7 @@ export interface DeviceOrientationState {
   gamma: number | null;
 }
 
+/** The shape returned by `useDeviceOrientation`. */
 export interface UseDeviceOrientationResult extends DeviceOrientationState {
   requestPermission: () => Promise<boolean>;
   supported: boolean;
