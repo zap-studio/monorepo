@@ -1,5 +1,6 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
+/** Minimal shape of the (Chromium-only) VirtualKeyboard API, as used by `useVirtualKeyboard`. */
 export interface VirtualKeyboard extends EventTarget {
   readonly boundingRect: { height: number; width: number; x: number; y: number };
 }
@@ -8,6 +9,7 @@ interface NavigatorWithVirtualKeyboard extends Navigator {
   readonly virtualKeyboard?: VirtualKeyboard;
 }
 
+/** The shape returned by `useVirtualKeyboard`. */
 export interface VirtualKeyboardRect {
   height: number;
   width: number;

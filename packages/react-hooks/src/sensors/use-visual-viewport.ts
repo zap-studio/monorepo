@@ -1,5 +1,6 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
+/** The shape returned by `useVisualViewport`. */
 export interface VisualViewportState {
   height: number;
   offsetLeft: number;

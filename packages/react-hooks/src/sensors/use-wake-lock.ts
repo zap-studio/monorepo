@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+/** The shape returned by `useWakeLock`. */
 export interface UseWakeLockResult {
   active: boolean;
   release: () => Promise<void>;
