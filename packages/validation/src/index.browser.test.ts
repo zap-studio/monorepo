@@ -1,13 +1,18 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
+import { isErr, isOk } from "@zap-studio/monads";
 import { describe, expect, it } from "vitest";
 
 import { ValidationError } from "./errors.ts";
 import {
   createStandardValidator,
+  createStandardValidatorResult,
+  createStandardValidatorResultSync,
   createStandardValidatorSync,
   isStandardSchema,
   standardValidate,
+  standardValidateResult,
+  standardValidateResultSync,
   standardValidateSync,
 } from "./index.ts";
 
@@ -543,5 +548,145 @@ describe(standardValidateSync, () => {
     expect(() => standardValidateSync("test", schema)).toThrow(
       "Async schemas are not supported by standardValidateSync",
     );
+  });
+});
+
+describe(standardValidateResultSync, () => {
+  it("should return an Ok result with the validated value", () => {
+    const schema = createMockSchema((input) => ({ value: input }));
+
+    const result = standardValidateResultSync("test", schema);
+
+    expect(isOk(result)).toBeTruthy();
+    expect(result).toStrictEqual({ ok: true, value: "test" });
+  });
+
+  it("should return an Err result wrapping a ValidationError when validation fails", () => {
+    const issues: StandardSchemaV1.Issue[] = [{ message: "Invalid value" }];
+    const schema = createMockSchema(() => ({ issues }));
+
+    const result = standardValidateResultSync("invalid", schema);
+
+    expect(isErr(result)).toBeTruthy();
+    if (isErr(result)) {
+      expect(result.error).toBeInstanceOf(ValidationError);
+      expect(result.error.issues).toStrictEqual(issues);
+    }
+  });
+
+  it("should throw if the schema performs asynchronous validation", () => {
+    const schema = createMockSchema((input) => Promise.resolve({ value: input }));
+
+    expect(() => standardValidateResultSync("test", schema)).toThrow(
+      "Async schemas are not supported by standardValidateResultSync",
+    );
+  });
+});
+
+describe(standardValidateResult, () => {
+  it("should resolve to an Ok result with the validated value", async () => {
+    const schema = createMockSchema((input) => ({ value: input }));
+
+    const result = await standardValidateResult("test", schema);
+
+    expect(isOk(result)).toBeTruthy();
+    expect(result).toStrictEqual({ ok: true, value: "test" });
+  });
+
+  it("should await Promise-based validation before resolving", async () => {
+    const schema = createMockSchema((input) => Promise.resolve({ value: input }));
+
+    const result = await standardValidateResult("async-test", schema);
+
+    expect(result).toStrictEqual({ ok: true, value: "async-test" });
+  });
+
+  it("should resolve to an Err result wrapping a ValidationError when validation fails", async () => {
+    const issues: StandardSchemaV1.Issue[] = [{ message: "Invalid value" }];
+    const schema = createMockSchema(() => ({ issues }));
+
+    const result = await standardValidateResult("invalid", schema);
+
+    expect(isErr(result)).toBeTruthy();
+    if (isErr(result)) {
+      expect(result.error).toBeInstanceOf(ValidationError);
+      expect(result.error.issues).toStrictEqual(issues);
+    }
+  });
+
+  it("should resolve to an Err result for asynchronous validation failures", async () => {
+    const issues: StandardSchemaV1.Issue[] = [{ message: "Async validation failed" }];
+    const schema = createMockSchema(() => Promise.resolve({ issues }));
+
+    const result = await standardValidateResult("data", schema);
+
+    expect(isErr(result)).toBeTruthy();
+  });
+});
+
+describe(createStandardValidatorResultSync, () => {
+  it("should return a reusable sync validator returning Ok on success", () => {
+    const schema = createMockSchema((input) => ({ value: String(input) }));
+
+    const validate = createStandardValidatorResultSync(schema);
+    const result = validate(123);
+
+    expect(result).toStrictEqual({ ok: true, value: "123" });
+  });
+
+  it("should return a reusable sync validator returning Err on failure", () => {
+    const issues: StandardSchemaV1.Issue[] = [{ message: "Invalid value" }];
+    const schema = createMockSchema(() => ({ issues }));
+
+    const validate = createStandardValidatorResultSync(schema);
+    const result = validate("bad");
+
+    expect(isErr(result)).toBeTruthy();
+    if (isErr(result)) {
+      expect(result.error).toBeInstanceOf(ValidationError);
+    }
+  });
+
+  it("should throw if the schema performs asynchronous validation", () => {
+    const schema = createMockSchema((input) => Promise.resolve({ value: input }));
+
+    const validate = createStandardValidatorResultSync(schema);
+
+    expect(() => validate("test")).toThrow(
+      "Async schemas are not supported by createStandardValidatorResultSync",
+    );
+  });
+});
+
+describe(createStandardValidatorResult, () => {
+  it("should return a reusable async validator returning Ok on success", async () => {
+    const schema = createMockSchema((input) => ({ value: String(input) }));
+
+    const validate = createStandardValidatorResult(schema);
+    const result = await validate(123);
+
+    expect(result).toStrictEqual({ ok: true, value: "123" });
+  });
+
+  it("should return a reusable async validator for asynchronous schemas", async () => {
+    const schema = createMockSchema((input) => Promise.resolve({ value: { wrapped: input } }));
+
+    const validate = createStandardValidatorResult(schema);
+    const result = await validate("test");
+
+    expect(result).toStrictEqual({ ok: true, value: { wrapped: "test" } });
+  });
+
+  it("should return a reusable async validator returning Err on failure", async () => {
+    const issues: StandardSchemaV1.Issue[] = [{ message: "Invalid value" }];
+    const schema = createMockSchema(() => ({ issues }));
+
+    const validate = createStandardValidatorResult(schema);
+    const result = await validate("bad");
+
+    expect(isErr(result)).toBeTruthy();
+    if (isErr(result)) {
+      expect(result.error).toBeInstanceOf(ValidationError);
+    }
   });
 });
