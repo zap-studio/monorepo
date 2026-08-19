@@ -36,12 +36,14 @@ Both hooks are SSR-safe: they return `false` until the client subscribes to `mat
 
 ## Available Hooks
 
-| Hook            | What it does                                                            |
-| --------------- | ----------------------------------------------------------------------- |
-| `useMediaQuery` | Matches the viewport against an arbitrary CSS media query string        |
-| `useIsMobile`   | `true` below a breakpoint (768px by default) — built on `useMediaQuery` |
-| `useIsClient`   | `true` only after the client has mounted — SSR hydration guard          |
-| `useIsServer`   | `true` only during server rendering — the inverse of `useIsClient`      |
+| Hook                 | What it does                                                            |
+| -------------------- | ----------------------------------------------------------------------- |
+| `useMediaQuery`      | Matches the viewport against an arbitrary CSS media query string        |
+| `useIsMobile`        | `true` below a breakpoint (768px by default) — built on `useMediaQuery` |
+| `useIsClient`        | `true` only after the client has mounted — SSR hydration guard          |
+| `useIsServer`        | `true` only during server rendering — the inverse of `useIsClient`      |
+| `useColorScheme`     | `"dark"` or `"light"`, from `(prefers-color-scheme: dark)`              |
+| `usePrefersDarkMode` | Boolean shorthand for `useColorScheme() === "dark"`                     |
 
 More hooks land incrementally.
 

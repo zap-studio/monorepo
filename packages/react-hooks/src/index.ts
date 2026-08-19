@@ -12,7 +12,10 @@
  * @module @zap-studio/react-hooks
  */
 
+export type { ColorScheme } from "./sensors/use-color-scheme.ts";
+export { useColorScheme } from "./sensors/use-color-scheme.ts";
 export { useIsClient } from "./sensors/use-is-client.ts";
 export { useIsMobile } from "./sensors/use-is-mobile.ts";
 export { useIsServer } from "./sensors/use-is-server.ts";
 export { useMediaQuery } from "./sensors/use-media-query.ts";
+export { usePrefersDarkMode } from "./sensors/use-prefers-dark-mode.ts";

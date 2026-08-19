@@ -28,10 +28,12 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
+    "./sensors/use-color-scheme": "./dist/sensors/use-color-scheme.js",
     "./sensors/use-is-client": "./dist/sensors/use-is-client.js",
     "./sensors/use-is-mobile": "./dist/sensors/use-is-mobile.js",
     "./sensors/use-is-server": "./dist/sensors/use-is-server.js",
     "./sensors/use-media-query": "./dist/sensors/use-media-query.js",
+    "./sensors/use-prefers-dark-mode": "./dist/sensors/use-prefers-dark-mode.js",
     "./unstable": "./dist/unstable/index.js",
     "./package.json": "./package.json"
   },

@@ -5,10 +5,12 @@
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
+    "./sensors/use-color-scheme": "./src/sensors/use-color-scheme.ts",
     "./sensors/use-is-client": "./src/sensors/use-is-client.ts",
     "./sensors/use-is-mobile": "./src/sensors/use-is-mobile.ts",
     "./sensors/use-is-server": "./src/sensors/use-is-server.ts",
     "./sensors/use-media-query": "./src/sensors/use-media-query.ts",
+    "./sensors/use-prefers-dark-mode": "./src/sensors/use-prefers-dark-mode.ts",
     "./unstable": "./src/unstable/index.ts"
   },
   "imports": {
