@@ -1,5 +1,6 @@
 import type { Logger } from "@zap-studio/logger";
 
+import { isErr, isOk } from "@zap-studio/monads";
 import { isStandardSchema } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
 import { type } from "arktype";
@@ -9,7 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
 import { FetchError } from "./errors.ts";
-import { $fetch, api, createFetch, GLOBAL_DEFAULTS } from "./index.ts";
+import { $fetch, $fetchResult, api, apiResult, createFetch, GLOBAL_DEFAULTS } from "./index.ts";
 
 const createRecordingLogger = (): Logger & {
   calls: {
@@ -2340,5 +2341,211 @@ describe("logging", () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
 
     await expect($fetch("https://api.example.com/users")).resolves.toBeInstanceOf(Response);
+  });
+});
+
+describe($fetchResult, () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  const UserSchema = object({
+    id: number(),
+    name: string(),
+  });
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("resolves to an Ok result with the raw Response when no schema is provided", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), { status: 200 });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const result = await $fetchResult("https://api.example.com/test");
+
+    expect(isOk(result)).toBeTruthy();
+    if (isOk(result)) {
+      expect(result.value).toBe(mockResponse);
+    }
+  });
+
+  it("resolves to an Err result wrapping a FetchError on a non-ok response", async () => {
+    const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+      status: 404,
+      statusText: "Not Found",
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const result = await $fetchResult("https://api.example.com/missing");
+
+    expect(isErr(result)).toBeTruthy();
+    if (isErr(result)) {
+      expect(result.error).toBeInstanceOf(FetchError);
+      expect(result.error.status).toBe(404);
+    }
+  });
+
+  it("resolves to an Ok result with the validated value when a schema is provided", async () => {
+    const userData = { id: 1, name: "John" };
+    fetchMock.mockResolvedValue(new Response(JSON.stringify(userData), { status: 200 }));
+
+    const result = await $fetchResult("https://api.example.com/user", UserSchema);
+
+    expect(result).toStrictEqual({ ok: true, value: userData });
+  });
+
+  it("resolves to an Err result wrapping a ValidationError when validation fails", async () => {
+    const invalidData = { id: "not-a-number", name: 123 };
+    fetchMock.mockResolvedValue(new Response(JSON.stringify(invalidData), { status: 200 }));
+
+    const result = await $fetchResult("https://api.example.com/user", UserSchema);
+
+    expect(isErr(result)).toBeTruthy();
+    if (isErr(result)) {
+      expect(result.error).toBeInstanceOf(ValidationError);
+    }
+  });
+
+  it("resolves to an Err result wrapping a FetchError before validating, on a non-ok response with a schema", async () => {
+    const mockResponse = new Response(JSON.stringify({}), { status: 500 });
+    fetchMock.mockResolvedValue(mockResponse);
+    const jsonSpy = vi.spyOn(mockResponse, "json");
+
+    const result = await $fetchResult("https://api.example.com/user", UserSchema);
+
+    expect(isErr(result)).toBeTruthy();
+    if (isErr(result)) {
+      expect(result.error).toBeInstanceOf(FetchError);
+    }
+    expect(jsonSpy).not.toHaveBeenCalled();
+  });
+
+  it("propagates a programmer error (e.g. conflicting body/json options) instead of wrapping it", async () => {
+    await expect(
+      $fetchResult("https://api.example.com/test", {
+        body: "raw",
+        // @ts-expect-error -- deliberately conflicting with `body` to trigger the TypeError.
+        json: { a: 1 },
+      }),
+    ).rejects.toThrow("Cannot provide both `body` and `json`.");
+  });
+
+  it("supports chaining before awaiting, like other ResultAsync values", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), { status: 200 });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const status = await $fetchResult("https://api.example.com/test").map(
+      (response) => response.status,
+    );
+
+    expect(status).toStrictEqual({ ok: true, value: 200 });
+  });
+});
+
+describe("apiResult convenience methods", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  const UserSchema = object({
+    id: number(),
+    name: string(),
+  });
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("apiResult.get makes a GET request and resolves to Ok with the validated value", async () => {
+    const userData = { id: 1, name: "John" };
+    fetchMock.mockResolvedValue(new Response(JSON.stringify(userData), { status: 200 }));
+
+    const result = await apiResult.get("https://api.example.com/users/1", UserSchema);
+
+    expect(result).toStrictEqual({ ok: true, value: userData });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/users/1",
+      expect.objectContaining({ method: "GET" }),
+    );
+  });
+
+  it("apiResult.post makes a POST request and resolves to an Err result on failure", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({}), { status: 500 }));
+
+    const result = await apiResult.post("https://api.example.com/users", UserSchema);
+
+    expect(isErr(result)).toBeTruthy();
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/users",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
+  it("apiResult.delete makes a DELETE request without a schema and resolves to Ok with the raw Response", async () => {
+    const mockResponse = new Response(null, { status: 204 });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const result = await apiResult.delete("https://api.example.com/users/1");
+
+    expect(result).toStrictEqual({ ok: true, value: mockResponse });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/users/1",
+      expect.objectContaining({ method: "DELETE" }),
+    );
+  });
+});
+
+describe("createFetch Result-returning variant", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns an instance with $fetchResult and apiResult properties", () => {
+    const instance = createFetch();
+
+    expect(instance).toHaveProperty("$fetchResult");
+    expect(instance).toHaveProperty("apiResult");
+    expect(instance.$fetchResult).toBeTypeOf("function");
+    expect(instance.apiResult).toBeTypeOf("object");
+  });
+
+  it("$fetchResult respects the instance's baseURL", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), { status: 200 });
+    fetchMock.mockResolvedValue(mockResponse);
+    const { $fetchResult: instanceFetchResult } = createFetch({
+      baseURL: "https://api.example.com",
+    });
+
+    const result = await instanceFetchResult("/endpoint");
+
+    expect(result).toStrictEqual({ ok: true, value: mockResponse });
+    expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/endpoint", expect.any(Object));
+  });
+
+  it("$fetchResult validates against a schema when one is provided", async () => {
+    const userData = { id: 1, name: "John" };
+    fetchMock.mockResolvedValue(new Response(JSON.stringify(userData), { status: 200 }));
+    const { $fetchResult: instanceFetchResult } = createFetch({
+      baseURL: "https://api.example.com",
+    });
+    const UserSchema = object({ id: number(), name: string() });
+
+    const result = await instanceFetchResult("/users/1", UserSchema);
+
+    expect(result).toStrictEqual({ ok: true, value: userData });
   });
 });

@@ -25,6 +25,7 @@ It uses [Standard Schema](https://standardschema.dev/schema), so you are not loc
 - **Configured clients** through `createFetch(...)` with shared `baseURL`, headers, query params, and error defaults.
 - **JSON convenience** through the `json` option, which serializes the request body and sets `Content-Type`.
 - **Structured errors** with `FetchError` for HTTP failures and `ValidationError` for schema failures.
+- **[`Result`-returning variant](/fetch/result)** through `$fetchResult`/`apiResult`, for explicit error handling with [`@zap-studio/monads`](/monads) instead of throw/catch.
 - **Validator-agnostic** — works with any library that implements Standard Schema.
 - **[Optional logging](/fetch/logging)** through `createFetch({ logger })` from [`@zap-studio/logger`](/logger) — omit it and there's zero logging overhead.
 - **[Native OpenTelemetry](/fetch/opentelemetry)** — a `CLIENT` span per request with trace context injected into outgoing headers, no-op until an SDK is registered.
@@ -60,6 +61,7 @@ console.log(user.name); // typed as string, validated at runtime
 - [Configured Clients](/fetch/create-fetch) — shared defaults with `createFetch`.
 - [JSON Convenience](/fetch/json-convenience) — the `json` request option.
 - [Structured Errors](/fetch/errors) — `FetchError` and `ValidationError`.
+- [Result-Returning Variant](/fetch/result) — `$fetchResult`/`apiResult`.
 - [Validator-Agnostic](/fetch/validation) — Standard Schema support.
 - [Logging](/fetch/logging) — observe requests, responses, and validation failures.
 - [OpenTelemetry](/fetch/opentelemetry) — native distributed tracing.
