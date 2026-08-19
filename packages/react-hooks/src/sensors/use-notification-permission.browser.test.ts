@@ -63,4 +63,18 @@ describe(useNotificationPermission, () => {
     expect(notification?.title).toBe("Hi");
     expect(notification?.body).toBe("there");
   });
+
+  it('requestPermission resolves "denied" without calling the API when unsupported', async () => {
+    Object.defineProperty(window, "Notification", { configurable: true, value: undefined });
+
+    const { result } = renderHook(() => useNotificationPermission());
+    expect(result.current.permission).toBe("unsupported");
+
+    await act(async () => {
+      const resolved = await result.current.requestPermission();
+      expect(resolved).toBe("denied");
+    });
+
+    expect(MockNotification.requestPermission).not.toHaveBeenCalled();
+  });
 });

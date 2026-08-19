@@ -75,4 +75,21 @@ describe(useDeviceOrientation, () => {
 
     Reflect.deleteProperty(DeviceOrientationEvent, "requestPermission");
   });
+
+  it("reports supported: false when DeviceOrientationEvent is unavailable", () => {
+    const original = window.DeviceOrientationEvent;
+    Object.defineProperty(window, "DeviceOrientationEvent", {
+      configurable: true,
+      value: undefined,
+    });
+
+    const { result } = renderHook(() => useDeviceOrientation());
+
+    expect(result.current.supported).toBe(false);
+
+    Object.defineProperty(window, "DeviceOrientationEvent", {
+      configurable: true,
+      value: original,
+    });
+  });
 });

@@ -52,4 +52,15 @@ describe(useDeviceMotion, () => {
 
     Reflect.deleteProperty(DeviceMotionEvent, "requestPermission");
   });
+
+  it("reports supported: false when DeviceMotionEvent is unavailable", () => {
+    const original = window.DeviceMotionEvent;
+    Object.defineProperty(window, "DeviceMotionEvent", { configurable: true, value: undefined });
+
+    const { result } = renderHook(() => useDeviceMotion());
+
+    expect(result.current.supported).toBe(false);
+
+    Object.defineProperty(window, "DeviceMotionEvent", { configurable: true, value: original });
+  });
 });
