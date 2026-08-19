@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Pre-publish gate: every built preset in `dist/*.js` must parse cleanly under the
+ * Pre-publish gate: every public preset in `package.json#exports` must parse cleanly under the
  * `oxlint` version this package actually has installed (which is kept equal to
  * `peerDependencies.oxlint`'s floor via the `oxlint` catalog entry — see README's
  * "Compatibility" section).
@@ -19,12 +19,11 @@
  */
 
 import { spawnSync } from "node:child_process";
-import { readdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const packageRoot = dirname(dirname(fileURLToPath(import.meta.url)));
-const distDir = join(packageRoot, "dist");
 
 const oxlintPackageJson = fileURLToPath(import.meta.resolve("oxlint/package.json"));
 const oxlintBin = join(dirname(oxlintPackageJson), "bin", "oxlint");
@@ -32,19 +31,36 @@ const oxlintVersion = spawnSync(process.execPath, [oxlintBin, "--version"], {
   encoding: "utf8",
 }).stdout.trim();
 
-const presetFiles = readdirSync(distDir, { withFileTypes: true })
-  // leading `_` marks an internal shared chunk (mirrors the `_rules-*.ts`/`_resolve.ts`
-  // source convention), not a public preset with its own `defineConfig` default export.
-  .filter((entry) => entry.isFile() && entry.name.endsWith(".js") && !entry.name.startsWith("_"))
-  .map((entry) => entry.name)
-  .sort();
+const { exports: packageExports } = JSON.parse(
+  readFileSync(join(packageRoot, "package.json"), "utf8"),
+);
+
+const compareFilePaths = (a, b) => {
+  if (a < b) return -1;
+  if (a > b) return 1;
+  return 0;
+};
+
+// Derived from `package.json#exports` rather than a `dist` directory scan: bundling
+// `index.ts`'s tree-shakeable barrel can split shared code into internal chunk files
+// (e.g. `base-XXXXXXXX.js`) that sit alongside the public presets in `dist` but aren't
+// themselves a `defineConfig` default export meant to be loaded via `-c`. `.` (the
+// barrel) and `./anti-slop` (a plugin, not an `OxlintConfig`) are excluded for the same
+// reason — neither is consumed via `oxlint -c`.
+const presetFiles = Object.entries(packageExports)
+  .filter(
+    ([specifier]) =>
+      specifier !== "." && specifier !== "./anti-slop" && specifier !== "./package.json",
+  )
+  .map(([, file]) => file)
+  .sort(compareFilePaths);
 
 console.log(`Verifying ${presetFiles.length} presets against installed ${oxlintVersion}...\n`);
 
 const failures = [];
 
 for (const file of presetFiles) {
-  const absolutePath = join(distDir, file);
+  const absolutePath = join(packageRoot, file);
   const result = spawnSync(process.execPath, [oxlintBin, "-c", absolutePath, "--print-config"], {
     encoding: "utf8",
   });
@@ -60,7 +76,7 @@ for (const file of presetFiles) {
 if (failures.length > 0) {
   console.error(`${failures.length} of ${presetFiles.length} preset(s) failed to parse:\n`);
   for (const { file, message } of failures) {
-    console.error(`  dist/${file}`);
+    console.error(`  ${file}`);
     console.error(
       `    ${message
         .split("\n")
