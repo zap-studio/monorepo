@@ -1,0 +1,70 @@
+---
+title: Result-Returning Variant
+description: Run a retry policy with runRetryPolicyResult, returning a ResultAsync from @zap-studio/monads instead of throwing.
+---
+
+# Result-Returning Variant
+
+`runRetryPolicyResult(policy, execute, options?)` is an additive alternative to [`runRetryPolicy`](/retry/running-policies) for consumers who prefer explicit [`Result`](/monads/result)/[`ResultAsync`](/monads/result-async) values over throw/catch. `runRetryPolicy` (both throw mode and [non-throw mode](/retry/non-throw-mode)) is unchanged.
+
+```ts
+import { isOk } from "@zap-studio/monads";
+import { exponentialBackoff, runRetryPolicyResult } from "@zap-studio/retry";
+
+const policy = exponentialBackoff({
+  maxAttempts: 5,
+  baseDelayMs: 100,
+  maxDelayMs: 2_000,
+});
+
+const result = await runRetryPolicyResult(policy, async () => {
+  return await doWork();
+});
+
+if (isOk(result)) {
+  console.log(result.value);
+} else {
+  console.error(result.error);
+}
+```
+
+There's no `throwOnExhausted` option — `runRetryPolicyResult` always returns a `Result`, so the flag doesn't apply. Every other [run option](/retry/running-policies#run-options) (`sleep`, `signal`, `logger`) works the same as `runRetryPolicy`.
+
+## Chaining Before Awaiting
+
+`runRetryPolicyResult` returns a [`ResultAsync<T, RetryError | AbortError>`](/monads/result-async), so it's awaitable directly like the example above, or chainable before awaiting:
+
+```ts
+const label = await runRetryPolicyResult(policy, doWork)
+  .map((value) => `done: ${value}`)
+  .unwrapOr("failed");
+```
+
+## What Becomes Err
+
+For exhaustion and cancellation, `Err` contains the same [`RetryError`/`AbortError`](/retry/errors) object that `runRetryPolicy`'s throw mode would throw. A value rejected by `policy.isKnownError` is instead wrapped in a new `RetryError`, because throw mode rethrows that value as-is:
+
+- **`RetryError`** — retries exhausted. `attempts`, `lastError`, and `lastData` are preserved.
+- **`AbortError`** — the run was canceled through `AbortSignal`. `cause` is preserved when the abort reason was an `Error`.
+- **A value rejected by `policy.isKnownError`** (outside its error domain — see [Narrow the Error Domain](/retry/custom-policies#narrow-the-error-domain)) is wrapped in a new `RetryError` with `lastError` set to the original value. In throw mode, that same value is rethrown unchanged instead — this is the one case where `Err`'s payload isn't the object throw mode would throw.
+
+```ts
+import { AbortError, RetryError } from "@zap-studio/retry";
+
+if (!isOk(result)) {
+  if (result.error instanceof RetryError) {
+    console.error("Attempts:", result.error.attempts);
+  } else if (result.error instanceof AbortError) {
+    console.error("Aborted:", result.error.message);
+  }
+}
+```
+
+Unlike [non-throw mode](/retry/non-throw-mode)'s `RetryRunResult`, there's no separate top-level `attempts` field on the failure branch — `RetryError` already carries `attempts` on itself, so `Err(error)` alone is the full picture.
+
+## See Also
+
+- [Shared Runner](/retry/running-policies) — the throw-mode default
+- [Non-throw Mode](/retry/non-throw-mode) — `RetryRunResult`, the hand-rolled result union this variant complements
+- [Structured Errors](/retry/errors) — the `RetryError`/`AbortError` shapes
+- [Result](/monads/result) and [ResultAsync](/monads/result-async) — the `@zap-studio/monads` types this variant returns

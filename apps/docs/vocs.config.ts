@@ -136,6 +136,7 @@ export default defineConfig({
             },
             { link: "/retry/running-policies", text: "Shared Runner" },
             { link: "/retry/non-throw-mode", text: "Non-throw Mode" },
+            { link: "/retry/result", text: "Result-Returning Variant" },
             { link: "/retry/abort-signal", text: "Cancellation" },
             { link: "/retry/jitter", text: "Jitter" },
             { link: "/retry/custom-policies", text: "Custom Policies" },

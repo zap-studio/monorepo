@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0]
+
+### Added
+
+- Added `runRetryPolicyResult(policy, execute, options?)`, a `ResultAsync`-returning alternative to `runRetryPolicy`, backed by the new `@zap-studio/monads` dependency. Additive and opt-in — `runRetryPolicy` (both throw and non-throw modes) is unchanged. No `throwOnExhausted` option; it always returns a `Result`. `Err`'s payload is the same `RetryError`/`AbortError` object `runRetryPolicy`'s throw mode would throw, preserving `RetryError.attempts`/`lastError`/`lastData` and `AbortError.cause`.
+
 ## [2.0.0]
 
 ### Added

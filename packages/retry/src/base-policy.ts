@@ -5,8 +5,10 @@
  */
 
 import type { Logger } from "@zap-studio/logger";
+import type { Result } from "@zap-studio/monads";
 
 import { trace } from "@opentelemetry/api";
+import { err, ok, ResultAsync } from "@zap-studio/monads";
 
 import type {
   ResolvedRetryPolicy,
@@ -15,6 +17,7 @@ import type {
   RetryPolicy,
   RetryRunOptions,
   RetryRunResult,
+  RetryRunResultOptions,
 } from "./types.ts";
 
 import { recordRetryAttempt } from "./_otel.ts";
@@ -496,6 +499,20 @@ const defaultIsKnownError = <TError extends Error>(error: unknown): error is TEr
   error instanceof Error;
 
 /**
+ * Applies `runRetryPolicy`/`runRetryPolicyResult`'s shared defaults
+ * (`onExhausted`, `isKnownError`) to a caller-supplied `RetryPolicy`.
+ */
+const resolvePolicy = <TError extends Error, TData>(
+  policy: RetryPolicy<TError, TData>,
+): ResolvedRetryPolicy<TError, TData> => ({
+  isKnownError: (error): error is TError =>
+    policy.isKnownError ? policy.isKnownError(error) : defaultIsKnownError(error),
+  next: (input) => policy.next(input),
+  onExhausted: (input) =>
+    policy.onExhausted ? policy.onExhausted(input) : defaultOnExhausted(input),
+});
+
+/**
  * Runs retry orchestration in non-throw mode.
  *
  * @param policy - Retry policy: `next` is required, `onExhausted` and
@@ -578,13 +595,7 @@ export async function runRetryPolicy<T, TError extends Error = Error, TData = un
 ): Promise<T | RetryRunResult<T>> {
   const sleep = options.sleep ?? defaultSleep;
   const { signal, logger } = options;
-  const resolvedPolicy: ResolvedRetryPolicy<TError, TData> = {
-    isKnownError: (error): error is TError =>
-      policy.isKnownError ? policy.isKnownError(error) : defaultIsKnownError(error),
-    next: (input) => policy.next(input),
-    onExhausted: (input) =>
-      policy.onExhausted ? policy.onExhausted(input) : defaultOnExhausted(input),
-  };
+  const resolvedPolicy = resolvePolicy(policy);
 
   if (options.throwOnExhausted === false) {
     return await runResultMode(resolvedPolicy, execute, sleep, signal, logger);
@@ -592,3 +603,56 @@ export async function runRetryPolicy<T, TError extends Error = Error, TData = un
 
   return await runThrowMode(resolvedPolicy, execute, sleep, signal, logger);
 }
+
+/**
+ * Runs retry orchestration, returning a `ResultAsync` instead of throwing or
+ * returning the hand-rolled {@link RetryRunResult} union.
+ *
+ * Additive alternative to `runRetryPolicy` for consumers who prefer explicit
+ * `Result`/`ResultAsync` values (from `@zap-studio/monads`) over throw/catch.
+ * There's no `throwOnExhausted` option — this function always returns a
+ * `Result`, so the flag doesn't apply.
+ *
+ * @param policy - Retry policy: `next` is required, `onExhausted` and
+ *   `isKnownError` fall back to their defaults when omitted.
+ * @param execute - Async function to execute per attempt.
+ * @param options - Runner settings, same as {@link RetryRunOptions} minus
+ *   `throwOnExhausted`.
+ * @returns A `ResultAsync` resolving to `Ok` with the successful value, or `Err`
+ *   with a `RetryError` (exhaustion) or `AbortError` (cancellation) — the same
+ *   error object `runRetryPolicy`'s throw mode would throw. When
+ *   `policy.isKnownError` rejects a caught value, it is wrapped in a new
+ *   `RetryError` and returned on `Err` instead — in throw mode that same value
+ *   is rethrown unchanged, not wrapped.
+ * @throws {Error} Any error thrown by `next`, `onExhausted`, or a custom `sleep`
+ *   function.
+ *
+ * @example
+ * ```ts
+ * import { runRetryPolicyResult } from "@zap-studio/retry";
+ *
+ * const result = await runRetryPolicyResult(policy, async () => fetchFlakyResource());
+ *
+ * if (isOk(result)) {
+ *   console.log(result.value);
+ * } else {
+ *   console.error(result.error);
+ * }
+ * ```
+ */
+export const runRetryPolicyResult = <T, TError extends Error = Error, TData = unknown>(
+  policy: RetryPolicy<TError, TData>,
+  execute: (attempt: number) => Promise<T>,
+  options: RetryRunResultOptions = {},
+): ResultAsync<T, RetryError | AbortError> =>
+  new ResultAsync(
+    (async (): Promise<Result<T, RetryError | AbortError>> => {
+      const sleep = options.sleep ?? defaultSleep;
+      const { signal, logger } = options;
+      const resolvedPolicy = resolvePolicy(policy);
+
+      const result = await runResultMode(resolvedPolicy, execute, sleep, signal, logger);
+
+      return result.ok ? ok(result.value) : err(result.error);
+    })(),
+  );

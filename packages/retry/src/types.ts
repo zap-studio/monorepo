@@ -180,6 +180,18 @@ export interface RetryRunOptions {
 }
 
 /**
+ * Options for `runRetryPolicyResult(...)`.
+ *
+ * Same as {@link RetryRunOptions} minus `throwOnExhausted`, which doesn't
+ * apply — `runRetryPolicyResult` always returns a `Result`, never throws for
+ * exhaustion or abort.
+ *
+ * @example
+ * const options: RetryRunResultOptions = { signal: controller.signal };
+ */
+export type RetryRunResultOptions = Omit<RetryRunOptions, "throwOnExhausted">;
+
+/**
  * Result union returned by non-throw runner mode.
  *
  * - Success: `ok: true` with the resolved `value`.
