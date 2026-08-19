@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0]
+
+### Added
+
+- `@zap-studio/oxlint` (the package root) now re-exports every preset by name — `import { base, react, reactDoctor } from "@zap-studio/oxlint"` — as a tree-shakeable alternative to the per-preset subpath imports (`@zap-studio/oxlint/react`, etc.), which are unchanged and still work.
+- `scripts/verify-presets.mjs` now derives its file list from `package.json#exports` instead of scanning `dist/*.js`, so it validates exactly the public presets and ignores internal bundler-generated chunk files (bundling the new root barrel causes shared code to split into chunks like `base-XXXXXXXX.js`, which aren't standalone `defineConfig` exports and were never meant to be loaded via `oxlint -c`).
+
 ## [2.1.0]
 
 ### Added
