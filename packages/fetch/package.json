@@ -46,6 +46,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@zap-studio/monads": "workspace:*",
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
