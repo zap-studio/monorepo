@@ -544,4 +544,18 @@ describe(standardValidateSync, () => {
       "Async schemas are not supported by standardValidateSync",
     );
   });
+
+  it("should pass through a non-object synchronous result from a malformed schema unchanged", () => {
+    const schema = createMockSchema(() => 42 as unknown as StandardSchemaV1.Result<unknown>);
+
+    const result = standardValidateSync("test", schema);
+
+    expect(result).toBe(42);
+  });
+
+  it("should throw when a malformed schema synchronously returns null", () => {
+    const schema = createMockSchema(() => null as unknown as StandardSchemaV1.Result<unknown>);
+
+    expect(() => standardValidateSync("test", schema)).toThrow();
+  });
 });
