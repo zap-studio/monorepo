@@ -29,6 +29,7 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
+    ".": "./dist/index.js",
     "./anti-slop": "./dist/anti-slop/index.js",
     "./base": "./dist/base.js",
     "./cypress": "./dist/cypress.js",
