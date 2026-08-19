@@ -44,6 +44,7 @@ Both hooks are SSR-safe: they return `false` until the client subscribes to `mat
 | `useIsServer`        | `true` only during server rendering — the inverse of `useIsClient`      |
 | `useColorScheme`     | `"dark"` or `"light"`, from `(prefers-color-scheme: dark)`              |
 | `usePrefersDarkMode` | Boolean shorthand for `useColorScheme() === "dark"`                     |
+| `useOnlineStatus`    | Tracks `navigator.onLine`, updating on `online`/`offline` events        |
 
 More hooks land incrementally.
 

@@ -10,6 +10,7 @@
     "./sensors/use-is-mobile": "./src/sensors/use-is-mobile.ts",
     "./sensors/use-is-server": "./src/sensors/use-is-server.ts",
     "./sensors/use-media-query": "./src/sensors/use-media-query.ts",
+    "./sensors/use-online-status": "./src/sensors/use-online-status.ts",
     "./sensors/use-prefers-dark-mode": "./src/sensors/use-prefers-dark-mode.ts",
     "./unstable": "./src/unstable/index.ts"
   },
