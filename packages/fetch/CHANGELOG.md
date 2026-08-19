@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1]
+
+### Changed
+
+Reverted the `@zap-studio/monads` dependency and the `$fetchResult`/`apiResult`/`createFetch(...).​$fetchResult`/`createFetch(...).​apiResult` exports added in 2.1.0 — they added a dependency and bundle size cost for a use case consumers can already cover themselves by wrapping `$fetch`/`api` with `@zap-studio/monads`'s `fromPromise`. See the README's "Using with `@zap-studio/monads`" section. 2.1.0 is deprecated on npm in favor of this release.
+
+## [2.1.0] (deprecated — see 2.1.1)
+
+### Added
+
+- Added `$fetchResult`/`apiResult`, `Result`/`ResultAsync`-returning counterparts to `$fetch`/`api`, backed by the new `@zap-studio/monads` dependency. `createFetch(...)` instances also get `$fetchResult`/`apiResult` alongside the existing `$fetch`/`api`. Additive and opt-in — `$fetch`, `api`, and `createFetch(...)` are unchanged. No `throwOnFetchError`/`throwOnValidationError` option; a non-ok response and validation issues both become `Err`, and a malformed schema or request still throws.
+
 ## [2.0.0]
 
 ### Added

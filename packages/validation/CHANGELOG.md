@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1]
+
+### Changed
+
+Reverted the `@zap-studio/monads` dependency and the `standardValidateResult`/`standardValidateResultSync`/`createStandardValidatorResult`/`createStandardValidatorResultSync` exports added in 1.1.0 — they added a dependency and bundle size cost for a use case consumers can already cover themselves by wrapping `standardValidate`/`standardValidateSync` with `@zap-studio/monads`'s `fromPromise`/`fromThrowable`. See the README's "Using with `@zap-studio/monads`" section. 1.1.0 is deprecated on npm in favor of this release. The `instanceof Promise` fix below is retained.
+
+## [1.1.0] (deprecated — see 1.1.1)
+
+### Added
+
+- Added `Result`/`ResultAsync`-returning variants of the existing throw-based API, backed by the new `@zap-studio/monads` dependency: `standardValidateResult`, `standardValidateResultSync`, `createStandardValidatorResult`, and `createStandardValidatorResultSync`. Additive and opt-in — `standardValidate`, `standardValidateSync`, and the existing `throwOnError` behavior are unchanged. Only validation issues become `Err`; a malformed schema still throws.
+
+### Fixed
+
+- Fixed async-schema detection relying on `instanceof Promise`, which returns `false` for a Promise constructed in a different JavaScript realm (a separate `vm.Context`, iframe, or worker), even though a conforming Standard Schema is allowed to return one. Previously this caused the value to be silently misread as a synchronous result (`Ok(undefined)`/`undefined`/an unresolved raw result, depending on the function) instead of being awaited or rejected. Affects `standardValidate`, `standardValidateSync`, `standardValidateResult`, and `standardValidateResultSync` (and the `createStandardValidator*` factories built on them).
+
 ## [1.0.0]
 
 ### Changed
