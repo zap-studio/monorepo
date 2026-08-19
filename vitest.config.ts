@@ -9,7 +9,7 @@ export default defineConfig({
     coverage: {
       exclude: [...exclude],
       provider: "v8",
-      reporter: ["lcov"],
+      reporter: ["lcov", "text"],
     },
     exclude,
     globals: true,

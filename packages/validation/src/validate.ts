@@ -9,8 +9,28 @@
  */
 
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { Result } from "@zap-studio/monads";
+
+import { err, ok, ResultAsync } from "@zap-studio/monads";
 
 import { ValidationError } from "./errors.ts";
+
+/**
+ * Duck-types a value as a thenable rather than checking `instanceof Promise`,
+ * which evaluates `false` for a Promise constructed in a different
+ * JavaScript realm (a separate `vm.Context`, iframe, or worker) even though
+ * it is a spec-compliant Promise there. A conforming Standard Schema is
+ * allowed to return such a value.
+ */
+const isPromiseLike = <T>(value: T | PromiseLike<T>): value is PromiseLike<T> => {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  // SAFETY: only reading `then` to duck-type a thenable; not calling it or treating `value` as a resolved PromiseLike until this check passes.
+  // oxlint-disable-next-line github/no-then -- feature-detecting a `then` method to duck-type a thenable, not chaining a Promise.
+  return typeof (value as { then?: unknown }).then === "function";
+};
 
 /**
  * Callable contract for {@link standardValidate}, factored out so the
@@ -135,7 +155,7 @@ export const standardValidate: StandardValidateFn = async <TSchema extends Stand
 > => {
   const throwOnError = options?.throwOnError === true;
   let result = schema["~standard"].validate(input);
-  if (result instanceof Promise) {
+  if (isPromiseLike(result)) {
     result = await result;
   }
 
@@ -201,7 +221,7 @@ export const standardValidateSync: StandardValidateSyncFn = <TSchema extends Sta
   const throwOnError = options?.throwOnError === true;
   const result = schema["~standard"].validate(input);
 
-  if (result instanceof Promise) {
+  if (isPromiseLike(result)) {
     throw new TypeError("Async schemas are not supported by standardValidateSync");
   }
 
@@ -373,4 +393,163 @@ export const createStandardValidatorSync = <TSchema extends StandardSchemaV1>(
   }
 
   return validate;
+};
+
+/**
+ * Synchronously validates a value against a Standard Schema, returning a
+ * `Result` instead of throwing or returning the raw Standard Schema result.
+ *
+ * Only validation issues become `Err`. A malformed schema, or a schema that
+ * performs asynchronous validation, still throws — those are programmer
+ * errors, not values a caller should branch on.
+ *
+ * This function throws if the schema performs asynchronous validation.
+ *
+ * @template TSchema - The Standard Schema type.
+ * @param input - The value to validate.
+ * @param schema - The schema to validate against.
+ * @returns `Ok` with the parsed value, or `Err` with a {@link ValidationError}.
+ * @throws {Error} If the schema performs asynchronous validation. The message is
+ *   `Async schemas are not supported by standardValidateResultSync`.
+ * @throws {TypeError} If the provided value does not expose a callable Standard Schema
+ *   `~standard.validate` implementation at runtime.
+ * @throws {unknown} Any error thrown by the schema's Standard Schema `validate` function.
+ *
+ * @example
+ * ```ts
+ * const result = standardValidateResultSync(data, userSchema);
+ *
+ * if (isOk(result)) {
+ *   console.log(result.value);
+ * } else {
+ *   console.error(result.error.issues);
+ * }
+ * ```
+ */
+export const standardValidateResultSync = <TSchema extends StandardSchemaV1>(
+  input: unknown,
+  schema: TSchema,
+): Result<StandardSchemaV1.InferOutput<TSchema>, ValidationError> => {
+  const result = schema["~standard"].validate(input);
+
+  if (isPromiseLike(result)) {
+    throw new TypeError("Async schemas are not supported by standardValidateResultSync");
+  }
+
+  return result.issues ? err(new ValidationError(result.issues)) : ok(result.value);
+};
+
+/**
+ * Validates a value against a Standard Schema, returning a `ResultAsync`
+ * instead of throwing or returning the raw Standard Schema result.
+ *
+ * Only validation issues become `Err`. A malformed schema still throws —
+ * that is a programmer error, not a value a caller should branch on.
+ *
+ * @template TSchema - The Standard Schema type.
+ * @param input - The value to validate.
+ * @param schema - The schema to validate against.
+ * @returns A `ResultAsync` resolving to `Ok` with the parsed value, or `Err` with a
+ *   {@link ValidationError}.
+ * @throws {TypeError} If the provided value does not expose a callable Standard Schema
+ *   `~standard.validate` implementation at runtime.
+ * @throws {unknown} Any error thrown or rejected by the schema's Standard Schema
+ *   `validate` function.
+ *
+ * @example
+ * ```ts
+ * const result = await standardValidateResult(data, userSchema);
+ *
+ * if (isOk(result)) {
+ *   console.log(result.value);
+ * } else {
+ *   console.error(result.error.issues);
+ * }
+ * ```
+ */
+export const standardValidateResult = <TSchema extends StandardSchemaV1>(
+  input: unknown,
+  schema: TSchema,
+): ResultAsync<StandardSchemaV1.InferOutput<TSchema>, ValidationError> =>
+  new ResultAsync(
+    (async (): Promise<Result<StandardSchemaV1.InferOutput<TSchema>, ValidationError>> => {
+      let result = schema["~standard"].validate(input);
+      if (isPromiseLike(result)) {
+        result = await result;
+      }
+
+      return result.issues ? err(new ValidationError(result.issues)) : ok(result.value);
+    })(),
+  );
+
+/**
+ * Creates a synchronous Standard Schema validator that returns a `Result`.
+ *
+ * The returned function behaves like {@link standardValidateResultSync}, bound
+ * to `schema`.
+ *
+ * @template TSchema - The Standard Schema type.
+ * @param schema - The schema to validate against.
+ * @returns A synchronous validator function returning a `Result`.
+ * @throws {Error} When the returned validator receives a schema result Promise.
+ *   The message is `Async schemas are not supported by createStandardValidatorResultSync`.
+ * @throws {TypeError} When the returned validator is called and the provided value does not
+ *   expose a callable Standard Schema `~standard.validate` implementation at runtime.
+ * @throws {unknown} Any error thrown by the schema's Standard Schema `validate` function
+ *   when the returned validator is called.
+ *
+ * @example
+ * ```ts
+ * const validateUser = createStandardValidatorResultSync(userSchema);
+ *
+ * const result = validateUser({ name: "Ada", age: 37 });
+ * ```
+ */
+export const createStandardValidatorResultSync = <TSchema extends StandardSchemaV1>(
+  schema: TSchema,
+): ((input: unknown) => Result<StandardSchemaV1.InferOutput<TSchema>, ValidationError>) => {
+  return (input: unknown): Result<StandardSchemaV1.InferOutput<TSchema>, ValidationError> => {
+    try {
+      return standardValidateResultSync(input, schema);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === "Async schemas are not supported by standardValidateResultSync"
+      ) {
+        throw new Error("Async schemas are not supported by createStandardValidatorResultSync", {
+          cause: error,
+        });
+      }
+
+      throw error;
+    }
+  };
+};
+
+/**
+ * Creates a Standard Schema validator that returns a `ResultAsync`.
+ *
+ * The returned function behaves like {@link standardValidateResult}, bound to
+ * `schema`.
+ *
+ * @template TSchema - The Standard Schema type.
+ * @param schema - The schema to validate against.
+ * @returns An async validator function returning a `ResultAsync`.
+ * @throws {TypeError} When the returned validator is called and the provided value does not
+ *   expose a callable Standard Schema `~standard.validate` implementation at runtime.
+ * @throws {unknown} Any error thrown or rejected by the schema's Standard Schema
+ *   `validate` function when the returned validator is called.
+ *
+ * @example
+ * ```ts
+ * const validateUser = createStandardValidatorResult(userSchema);
+ *
+ * const result = await validateUser({ name: "Ada", age: 37 });
+ * ```
+ */
+export const createStandardValidatorResult = <TSchema extends StandardSchemaV1>(
+  schema: TSchema,
+): ((input: unknown) => ResultAsync<StandardSchemaV1.InferOutput<TSchema>, ValidationError>) => {
+  return (input: unknown): ResultAsync<StandardSchemaV1.InferOutput<TSchema>, ValidationError> =>
+    standardValidateResult(input, schema);
 };

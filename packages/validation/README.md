@@ -26,6 +26,7 @@ npm install @zap-studio/validation
 - **Synchronous validation** via `standardValidateSync`, for schemas known to validate synchronously.
 - **Reusable validators** via `createStandardValidator` and `createStandardValidatorSync`.
 - **Optional throwing behavior** via `throwOnError`, backed by a shared `ValidationError` class.
+- **`Result`-returning variants** via `standardValidateResult`, `standardValidateResultSync`, `createStandardValidatorResult`, and `createStandardValidatorResultSync`, for explicit error handling without throw/catch.
 - **Runtime schema detection** via `isStandardSchema`.
 - **Type re-exports** — `StandardSchemaV1` and `StandardTypedV1` directly from this package.
 - **Tree-shakeable** — every helper is a standalone function; unused exports are dropped by any modern bundler.
@@ -80,6 +81,35 @@ try {
 } catch (error) {
   if (error instanceof ValidationError) console.error(error.issues);
 }
+```
+
+## Result-Returning Variants
+
+Via `standardValidateResult`, `standardValidateResultSync`, `createStandardValidatorResult`, and `createStandardValidatorResultSync` — an alternative to `throwOnError` for consumers who prefer explicit `Result`/`ResultAsync` values (from [`@zap-studio/monads`](https://www.zapstudio.dev/monads)) over throw/catch. Only validation issues become `Err`; a malformed schema still throws, since that's a programmer error rather than a value to branch on.
+
+```ts
+import { isOk } from "@zap-studio/monads";
+import { standardValidateResult, standardValidateResultSync } from "@zap-studio/validation";
+
+const result = await standardValidateResult(input, userSchema);
+
+if (isOk(result)) {
+  console.log("Validation passed:", result.value);
+} else {
+  console.error("Validation failed:", result.error.issues);
+}
+
+// Synchronous schemas:
+const syncResult = standardValidateResultSync(input, userSchema);
+```
+
+Reusable validators work the same way, via `createStandardValidatorResult` and `createStandardValidatorResultSync`:
+
+```ts
+import { createStandardValidatorResult } from "@zap-studio/validation";
+
+const validateUser = createStandardValidatorResult(userSchema);
+const result = await validateUser(input);
 ```
 
 ## Runtime Schema Detection

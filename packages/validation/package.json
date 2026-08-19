@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/validation",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": false,
   "description": "Tree-shakeable Standard Schema utilities and ValidationError helpers.",
   "keywords": [
@@ -37,7 +37,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@standard-schema/spec": "catalog:"
+    "@standard-schema/spec": "catalog:",
+    "@zap-studio/monads": "workspace:*"
   },
   "devDependencies": {
     "@zap-studio/typescript": "workspace:*",
