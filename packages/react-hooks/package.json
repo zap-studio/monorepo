@@ -1,0 +1,52 @@
+{
+  "name": "@zap-studio/react-hooks",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Small, focused, tree-shakeable React hooks — one hook, one subpath, no forced bundle.",
+  "keywords": [
+    "hooks",
+    "react",
+    "react-hooks",
+    "tree-shakeable",
+    "typescript"
+  ],
+  "homepage": "https://www.zapstudio.dev/packages/react-hooks",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/react-hooks"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./unstable": "./dist/unstable/index.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@zap-studio/typescript": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

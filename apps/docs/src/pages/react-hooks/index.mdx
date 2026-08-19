@@ -1,0 +1,18 @@
+---
+title: Overview
+description: Small, focused, tree-shakeable React hooks — one hook, one subpath, no forced bundle.
+---
+
+# @zap-studio/react-hooks
+
+`@zap-studio/react-hooks` is a collection of small, focused React hooks. Each hook ships as its own subpath export, importing one hook never pulls in the others.
+
+## Conventions
+
+- Stable hooks are exported flat from the top-level `.` barrel, each also available from its own subpath (e.g. `@zap-studio/react-hooks/use-is-mobile`).
+- Unstable hooks — anything relying on private/non-semver-guaranteed APIs — live under `./unstable`, never re-exported from the top-level barrel.
+- No hook file imports another hook file.
+
+## Learn More
+
+- [Getting Started](/react-hooks/getting-started) — install the package

@@ -122,6 +122,14 @@ export default defineConfig({
         {
           collapsed: true,
           items: [
+            { link: "/react-hooks", text: "Overview" },
+            { link: "/react-hooks/getting-started", text: gettingStarted },
+          ],
+          text: "react-hooks",
+        },
+        {
+          collapsed: true,
+          items: [
             { link: "/retry", text: "Overview" },
             { link: "/retry/getting-started", text: gettingStarted },
             {
@@ -198,6 +206,7 @@ export default defineConfig({
     { link: "/oxfmt", text: "oxfmt" },
     { link: "/oxlint", text: "oxlint" },
     { link: "/permit", text: "permit" },
+    { link: "/react-hooks", text: "react-hooks" },
     { link: "/retry", text: "retry" },
     { link: "/validation", text: "validation" },
     { link: "/webhooks", text: "webhooks" },
