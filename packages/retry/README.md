@@ -152,7 +152,7 @@ if (isOk(result)) {
 }
 ```
 
-`RetryError`/`AbortError` are the same error objects `runRetryPolicy`'s throw mode would throw — `RetryError.attempts`/`lastError`/`lastData` and `AbortError.cause` are preserved.
+For exhaustion and cancellation, `Err` contains the same `RetryError`/`AbortError` object `runRetryPolicy`'s throw mode would throw — `RetryError.attempts`/`lastError`/`lastData` and `AbortError.cause` are preserved. A value rejected by `policy.isKnownError` is instead wrapped in a new `RetryError`, because throw mode rethrows that value as-is.
 
 ## Cancellation
 

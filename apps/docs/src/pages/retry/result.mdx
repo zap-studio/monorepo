@@ -42,10 +42,11 @@ const label = await runRetryPolicyResult(policy, doWork)
 
 ## What Becomes Err
 
-`Err`'s payload is the same [`RetryError`/`AbortError`](/retry/errors) object `runRetryPolicy`'s throw mode would throw — not a separate wrapper type:
+For exhaustion and cancellation, `Err` contains the same [`RetryError`/`AbortError`](/retry/errors) object that `runRetryPolicy`'s throw mode would throw. A value rejected by `policy.isKnownError` is instead wrapped in a new `RetryError`, because throw mode rethrows that value as-is:
 
-- **`RetryError`** — retries exhausted, or a caught value `policy.isKnownError` rejected as outside its error domain (see [Narrow the Error Domain](/retry/custom-policies#narrow-the-error-domain)). `attempts`, `lastError`, and `lastData` are preserved.
+- **`RetryError`** — retries exhausted. `attempts`, `lastError`, and `lastData` are preserved.
 - **`AbortError`** — the run was canceled through `AbortSignal`. `cause` is preserved when the abort reason was an `Error`.
+- **A value rejected by `policy.isKnownError`** (outside its error domain — see [Narrow the Error Domain](/retry/custom-policies#narrow-the-error-domain)) is wrapped in a new `RetryError` with `lastError` set to the original value. In throw mode, that same value is rethrown unchanged instead — this is the one case where `Err`'s payload isn't the object throw mode would throw.
 
 ```ts
 import { AbortError, RetryError } from "@zap-studio/retry";

@@ -619,9 +619,11 @@ export async function runRetryPolicy<T, TError extends Error = Error, TData = un
  * @param options - Runner settings, same as {@link RetryRunOptions} minus
  *   `throwOnExhausted`.
  * @returns A `ResultAsync` resolving to `Ok` with the successful value, or `Err`
- *   with a `RetryError` (exhaustion, or a value rejected by
- *   `policy.isKnownError`) or `AbortError` (cancellation) — the same error
- *   objects `runRetryPolicy`'s throw mode would throw.
+ *   with a `RetryError` (exhaustion) or `AbortError` (cancellation) — the same
+ *   error object `runRetryPolicy`'s throw mode would throw. When
+ *   `policy.isKnownError` rejects a caught value, it is wrapped in a new
+ *   `RetryError` and returned on `Err` instead — in throw mode that same value
+ *   is rethrown unchanged, not wrapped.
  * @throws {Error} Any error thrown by `next`, `onExhausted`, or a custom `sleep`
  *   function.
  *
