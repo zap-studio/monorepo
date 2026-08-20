@@ -119,6 +119,23 @@ Every hook is also importable from its own category subpath — see [Conventions
 | ------------------- | -------------------------------------------------------------- |
 | `usePaymentRequest` | Wraps the Payment Request API — shows the native payment sheet |
 
+### Lifecycle (`lifecycle/`)
+
+| Hook                     | What it does                                                             |
+| ------------------------ | ------------------------------------------------------------------------ |
+| `useMount`               | Runs an effect exactly once, on mount                                    |
+| `useUnmount`             | Runs a cleanup exactly once, on unmount                                  |
+| `useUpdateEffect`        | `useEffect` that skips the first (mount) run                             |
+| `useTimeout`             | Declarative `setTimeout` with cleanup                                    |
+| `useInterval`            | Declarative `setInterval` with cleanup                                   |
+| `useAsync`               | Wraps a promise-returning function with `loading`/`error`/`data` state   |
+| `useBeforeUnload`        | `beforeunload` event — "unsaved changes" navigation guard                |
+| `useAnimationFrame`      | Declarative `requestAnimationFrame` loop, called with delta time         |
+| `useIdleCallback`        | Wraps `requestIdleCallback`/`cancelIdleCallback`, with a Safari fallback |
+| `useWebLock`             | Web Locks API — async mutual exclusion across tabs                       |
+| `useWorker`              | Offloads work to a `Worker`, with a promise-based `run()`                |
+| `usePerformanceObserver` | Wraps `PerformanceObserver` — long tasks, paint timing, and more         |
+
 Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
 
 More hooks land incrementally.
