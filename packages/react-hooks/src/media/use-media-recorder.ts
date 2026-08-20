@@ -7,6 +7,7 @@ export type MediaRecorderStatus = "inactive" | "paused" | "recording";
 export interface UseMediaRecorderResult {
   blob: Blob | undefined;
   error: Error | undefined;
+  isTypeSupported: (mimeType: string) => boolean;
   pause: () => void;
   resume: () => void;
   start: () => void;
@@ -17,12 +18,16 @@ export interface UseMediaRecorderResult {
 
 const isSupported = (): boolean => typeof MediaRecorder !== "undefined";
 
+const isTypeSupported = (mimeType: string): boolean =>
+  isSupported() && MediaRecorder.isTypeSupported(mimeType);
+
 /**
  * Wraps the MediaStream Recording API around an existing `stream` — e.g.
  * one from `useUserMedia`/`useCamera`/`useScreenCapture`. Manual
  * `start()`/`stop()`/`pause()`/`resume()`; `blob` is assembled once
  * recording stops. `supported: false` — the SSR-safe default — where
- * `MediaRecorder` doesn't exist.
+ * `MediaRecorder` doesn't exist. `isTypeSupported(mimeType)` checks whether
+ * a given MIME type can be recorded, false when unsupported.
  *
  * @example
  * ```tsx
@@ -96,5 +101,5 @@ export const useMediaRecorder = (
     [],
   );
 
-  return { blob, error, pause, resume, start, status, stop, supported };
+  return { blob, error, isTypeSupported, pause, resume, start, status, stop, supported };
 };

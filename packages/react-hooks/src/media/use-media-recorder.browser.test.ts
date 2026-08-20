@@ -5,6 +5,10 @@ import { useMediaRecorder } from "./use-media-recorder.ts";
 
 class MockMediaRecorder extends EventTarget {
   static instances: MockMediaRecorder[] = [];
+
+  static isTypeSupported(mimeType: string) {
+    return mimeType === "video/webm";
+  }
   state: "inactive" | "paused" | "recording" = "inactive";
   readonly mimeType = "video/webm";
   readonly stream: MediaStream;
@@ -211,6 +215,20 @@ describe(useMediaRecorder, () => {
     });
 
     expect(result.current.error).toBeUndefined();
+  });
+
+  it("isTypeSupported() reflects MediaRecorder.isTypeSupported() when supported", () => {
+    installMockMediaRecorder();
+    const { result } = renderHook(() => useMediaRecorder(fakeStream));
+
+    expect(result.current.isTypeSupported("video/webm")).toBe(true);
+    expect(result.current.isTypeSupported("video/mp4")).toBe(false);
+  });
+
+  it("isTypeSupported() returns false when MediaRecorder is unavailable", () => {
+    const { result } = renderHook(() => useMediaRecorder(fakeStream));
+
+    expect(result.current.isTypeSupported("video/webm")).toBe(false);
   });
 
   it("does not throw when stop()/pause()/resume() are called while unsupported", () => {
