@@ -64,6 +64,11 @@ export { useOnlineStatus } from "./sensors/use-online-status.ts";
 export type { Orientation } from "./sensors/use-orientation.ts";
 export { useOrientation } from "./sensors/use-orientation.ts";
 export { usePageLeave } from "./sensors/use-page-leave.ts";
+export type {
+  PaymentRequestStatus,
+  UsePaymentRequestResult,
+} from "./commerce/use-payment-request.ts";
+export { usePaymentRequest } from "./commerce/use-payment-request.ts";
 export { usePermission } from "./sensors/use-permission.ts";
 export type { UsePictureInPictureResult } from "./media/use-picture-in-picture.ts";
 export { usePictureInPicture } from "./media/use-picture-in-picture.ts";

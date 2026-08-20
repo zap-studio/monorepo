@@ -113,6 +113,12 @@ Every hook is also importable from its own category subpath — see [Conventions
 | `useServiceWorker` | Service Worker registration + update-available state                          |
 | `useAppBadge`      | Wraps the Badging API (`navigator.setAppBadge`/`clearAppBadge`)               |
 
+### Commerce (`commerce/`)
+
+| Hook                | What it does                                                   |
+| ------------------- | -------------------------------------------------------------- |
+| `usePaymentRequest` | Wraps the Payment Request API — shows the native payment sheet |
+
 Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
 
 More hooks land incrementally.

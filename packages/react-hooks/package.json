@@ -28,6 +28,7 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
+    "./commerce/use-payment-request": "./dist/commerce/use-payment-request.js",
     "./input/use-gamepad": "./dist/input/use-gamepad.js",
     "./input/use-hotkeys": "./dist/input/use-hotkeys.js",
     "./input/use-idle": "./dist/input/use-idle.js",

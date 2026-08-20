@@ -5,6 +5,7 @@
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
+    "./commerce/use-payment-request": "./src/commerce/use-payment-request.ts",
     "./input/use-gamepad": "./src/input/use-gamepad.ts",
     "./input/use-hotkeys": "./src/input/use-hotkeys.ts",
     "./input/use-idle": "./src/input/use-idle.ts",
