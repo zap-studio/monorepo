@@ -30,6 +30,8 @@ export type {
 export { useDeviceOrientation } from "./sensors/use-device-orientation.ts";
 export { useDevicePixelRatio } from "./sensors/use-device-pixel-ratio.ts";
 export { useDocumentVisibility } from "./sensors/use-document-visibility.ts";
+export type { EventSourceStatus, UseEventSourceResult } from "./network/use-event-source.ts";
+export { useEventSource } from "./network/use-event-source.ts";
 export { useFontsReady } from "./sensors/use-fonts-ready.ts";
 export type { GamepadInfo } from "./input/use-gamepad.ts";
 export { useGamepad } from "./input/use-gamepad.ts";
@@ -84,5 +86,7 @@ export type { VisualViewportState } from "./sensors/use-visual-viewport.ts";
 export { useVisualViewport } from "./sensors/use-visual-viewport.ts";
 export type { UseWakeLockResult } from "./sensors/use-wake-lock.ts";
 export { useWakeLock } from "./sensors/use-wake-lock.ts";
+export type { UseWebSocketResult, WebSocketStatus } from "./network/use-web-socket.ts";
+export { useWebSocket } from "./network/use-web-socket.ts";
 export type { WindowSize } from "./sensors/use-window-size.ts";
 export { useWindowSize } from "./sensors/use-window-size.ts";

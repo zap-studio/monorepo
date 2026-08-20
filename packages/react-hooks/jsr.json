@@ -11,6 +11,8 @@
     "./input/use-key-press": "./src/input/use-key-press.ts",
     "./input/use-pointer-lock": "./src/input/use-pointer-lock.ts",
     "./input/use-user-activation": "./src/input/use-user-activation.ts",
+    "./network/use-event-source": "./src/network/use-event-source.ts",
+    "./network/use-web-socket": "./src/network/use-web-socket.ts",
     "./pwa/use-app-badge": "./src/pwa/use-app-badge.ts",
     "./pwa/use-install-prompt": "./src/pwa/use-install-prompt.ts",
     "./pwa/use-service-worker": "./src/pwa/use-service-worker.ts",

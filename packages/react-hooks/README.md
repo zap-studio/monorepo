@@ -79,6 +79,8 @@ Both hooks are SSR-safe: they return `false` until the client subscribes to `mat
 | `useInstallPrompt`          | Custom "Add to Home Screen" UI, wrapping `beforeinstallprompt`/`appinstalled`            |
 | `useServiceWorker`          | Service Worker registration + update-available state                                     |
 | `useAppBadge`               | Wraps the Badging API (`navigator.setAppBadge`/`clearAppBadge`)                          |
+| `useWebSocket`              | WebSocket connection state + `send()`/`close()`, latest message received                 |
+| `useEventSource`            | Server-Sent Events connection state + latest message data                                |
 
 Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
 

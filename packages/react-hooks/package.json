@@ -34,6 +34,8 @@
     "./input/use-key-press": "./dist/input/use-key-press.js",
     "./input/use-pointer-lock": "./dist/input/use-pointer-lock.js",
     "./input/use-user-activation": "./dist/input/use-user-activation.js",
+    "./network/use-event-source": "./dist/network/use-event-source.js",
+    "./network/use-web-socket": "./dist/network/use-web-socket.js",
     "./pwa/use-app-badge": "./dist/pwa/use-app-badge.js",
     "./pwa/use-install-prompt": "./dist/pwa/use-install-prompt.js",
     "./pwa/use-service-worker": "./dist/pwa/use-service-worker.js",
