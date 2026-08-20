@@ -74,6 +74,7 @@ Every hook is also importable from its own category subpath — see [Conventions
 | `usePrintMode`              | `true` while printing, via the `print` media query                                       |
 | `useNotificationPermission` | Notifications API permission state + a `notify()` trigger                                |
 | `useFontsReady`             | `true` once `document.fonts.ready` resolves — avoid FOUC on custom web fonts             |
+| `useTheme`                  | `"light"`/`"dark"`/`"system"` mode with persistence, layered on `useColorScheme`         |
 
 ### Input (`input/`)
 
@@ -135,6 +136,22 @@ Every hook is also importable from its own category subpath — see [Conventions
 | `useWebLock`             | Web Locks API — async mutual exclusion across tabs                       |
 | `useWorker`              | Offloads work to a `Worker`, with a promise-based `run()`                |
 | `usePerformanceObserver` | Wraps `PerformanceObserver` — long tasks, paint timing, and more         |
+
+### State (`state/`)
+
+| Hook                 | What it does                                                    |
+| -------------------- | --------------------------------------------------------------- |
+| `useToggle`          | Boolean state with a `toggle()` function                        |
+| `useDebounce`        | Debounced wrapper around a callback                             |
+| `useDebouncedValue`  | Debounces a value directly, without a separate handler          |
+| `useThrottle`        | Throttled wrapper around a callback (leading edge)              |
+| `useThrottledValue`  | Throttles a value directly (leading edge)                       |
+| `useLocalStorage`    | State synced to `localStorage`, with cross-tab sync             |
+| `useSessionStorage`  | State synced to `sessionStorage`                                |
+| `useIndexedDB`       | State synced to IndexedDB — structured values, async read/write |
+| `usePrevious`        | The value from the previous render                              |
+| `useCopyToClipboard` | Clipboard write helper + `copied` state                         |
+| `useCounter`         | Increment/decrement/reset counter state, with optional min/max  |
 
 Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
 
