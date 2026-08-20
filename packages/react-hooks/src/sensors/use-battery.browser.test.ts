@@ -8,7 +8,7 @@ import { useBattery } from "./use-battery.ts";
 function createBatteryMock(
   initial: Pick<BatteryManager, "charging" | "chargingTime" | "dischargingTime" | "level">,
 ) {
-  const battery: BatteryManager = new EventTarget();
+  const battery = new EventTarget() as unknown as BatteryManager;
   let state = { ...initial };
 
   Object.defineProperties(battery, {

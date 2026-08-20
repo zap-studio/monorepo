@@ -1,4 +1,11 @@
+import type { Mock } from "vitest";
+
 import { vi } from "vitest";
+
+interface MatchMediaMock {
+  matchMedia: Mock<() => MediaQueryList>;
+  setMatches: (value: boolean) => void;
+}
 
 /**
  * Fake `window.matchMedia` shared by the sensors category's media-query
@@ -8,7 +15,7 @@ import { vi } from "vitest";
  * `@vitest/browser-playwright`) so no properties need faking — only
  * `matches` is overridden, and `dispatchEvent` drives real listeners.
  */
-export const createMatchMediaMock = (initialMatches: boolean) => {
+export const createMatchMediaMock = (initialMatches: boolean): MatchMediaMock => {
   let matches = initialMatches;
   const mediaQueryList = window.matchMedia("not all");
 

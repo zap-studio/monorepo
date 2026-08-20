@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { useWakeLock } from "./use-wake-lock.ts";
 
 function createSentinelMock() {
-  const sentinel: WakeLockSentinel = new EventTarget();
+  const sentinel = new EventTarget() as unknown as WakeLockSentinel;
   let released = false;
 
   Object.defineProperty(sentinel, "released", { configurable: true, get: () => released });

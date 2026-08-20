@@ -19,7 +19,7 @@ function createMatchMediaMock() {
         }
       },
       removeEventListener: () => {},
-    } as MediaQueryList;
+    } as unknown as MediaQueryList;
     lists.push({ matchMediaList: list, query });
     return list;
   });

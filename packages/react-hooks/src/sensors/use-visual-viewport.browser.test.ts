@@ -12,7 +12,7 @@ function createVisualViewportMock(initial: {
   scale: number;
   width: number;
 }) {
-  const viewport: VisualViewport = new EventTarget();
+  const viewport = new EventTarget() as unknown as VisualViewport;
   let state = { ...initial };
 
   Object.defineProperties(viewport, {

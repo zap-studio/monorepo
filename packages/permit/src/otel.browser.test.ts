@@ -2,8 +2,8 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 import { SpanKind, SpanStatusCode, metrics, trace } from "@opentelemetry/api";
 import {
+  AggregationTemporality,
   InMemoryMetricExporter,
-  InstrumentType,
   MeterProvider,
   PeriodicExportingMetricReader,
 } from "@opentelemetry/sdk-metrics";
@@ -44,7 +44,7 @@ interface TestContext {
 
 describe("permit OpenTelemetry", () => {
   const spanExporter = new InMemorySpanExporter();
-  const metricExporter = new InMemoryMetricExporter(InstrumentType.COUNTER);
+  const metricExporter = new InMemoryMetricExporter(AggregationTemporality.CUMULATIVE);
   let meterProvider: MeterProvider;
 
   beforeAll(() => {
@@ -147,7 +147,7 @@ describe("permit OpenTelemetry", () => {
     await policy.can({ user: { id: "user-1" } }, "post:write", post);
 
     const counts = await readCheckCounts();
-    expect(counts.allow).toBe(1);
-    expect(counts.deny).toBe(1);
+    expect(counts["allow"]).toBe(1);
+    expect(counts["deny"]).toBe(1);
   });
 });

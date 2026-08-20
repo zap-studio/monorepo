@@ -3,13 +3,19 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useInstallPrompt } from "./use-install-prompt.ts";
 
-function makeBeforeInstallPromptEvent(outcome: "accepted" | "dismissed") {
+type BeforeInstallPromptTestEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+};
+
+function makeBeforeInstallPromptEvent(
+  outcome: "accepted" | "dismissed",
+): BeforeInstallPromptTestEvent {
   const event = new Event("beforeinstallprompt", { cancelable: true });
-  Object.assign(event, {
+  return Object.assign(event, {
     prompt: vi.fn(() => Promise.resolve()),
     userChoice: Promise.resolve({ outcome, platform: "web" }),
   });
-  return event;
 }
 
 describe(useInstallPrompt, () => {

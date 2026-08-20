@@ -11,7 +11,7 @@ function createVirtualKeyboardMock(initial: {
   x: number;
   y: number;
 }) {
-  const keyboard: VirtualKeyboard = new EventTarget();
+  const keyboard = new EventTarget() as unknown as VirtualKeyboard;
   let rect = { ...initial };
 
   Object.defineProperty(keyboard, "boundingRect", {

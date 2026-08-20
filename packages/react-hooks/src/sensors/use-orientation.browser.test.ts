@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { useOrientation } from "./use-orientation.ts";
 
 function createOrientationMock(initial: Pick<ScreenOrientation, "angle" | "type">) {
-  const info: ScreenOrientation = new EventTarget();
+  const info = new EventTarget() as unknown as ScreenOrientation;
   let state = { ...initial };
 
   Object.defineProperties(info, {

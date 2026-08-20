@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { usePermission } from "./use-permission.ts";
 
 function createPermissionStatusMock(initialState: PermissionState) {
-  const status: PermissionStatus = new EventTarget();
+  const status = new EventTarget() as unknown as PermissionStatus;
   let state = initialState;
 
   Object.defineProperty(status, "state", { configurable: true, get: () => state });
@@ -60,7 +60,7 @@ describe(usePermission, () => {
   });
 
   it("queries again when the permission name changes", async () => {
-    const query = vi.fn((descriptor: PermissionDescriptor) =>
+    const query = vi.fn((_descriptor: PermissionDescriptor) =>
       Promise.resolve(
         createPermissionStatusMock("granted").status as PermissionStatus & { name: string },
       ),

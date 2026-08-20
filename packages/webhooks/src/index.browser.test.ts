@@ -47,8 +47,8 @@ describe(WebhookRouter, () => {
   ): Request =>
     new Request(new URL(path, "https://example.com"), {
       body: body === undefined ? null : JSON.stringify(body),
-      headers: init?.headers,
       method: init?.method ?? "POST",
+      ...(init?.headers === undefined ? {} : { headers: init.headers }),
     });
 
   describe("Basic routing", () => {
@@ -159,20 +159,20 @@ describe(WebhookRouter, () => {
     it("should expose request metadata and raw body in handler context", async () => {
       const router = createWebhookRouter();
 
-      let observed: {
+      const observed: {
         method: string;
         path: string;
         rawBody: Uint8Array;
         signature: string | null;
-      } | null = null;
+      }[] = [];
 
       router.register("/meta", ({ request, rawBody, path }) => {
-        observed = {
+        observed.push({
           method: request.method,
           path,
           rawBody,
           signature: request.headers.get("x-signature"),
-        };
+        });
         return undefined;
       });
 
@@ -183,11 +183,12 @@ describe(WebhookRouter, () => {
         }),
       );
 
-      expect(observed).not.toBeNull();
-      expect(observed?.method).toBe("POST");
-      expect(observed?.path).toBe("/meta");
-      expect(observed?.signature).toBe("sig");
-      expect(observed?.rawBody).toStrictEqual(encoder.encode(JSON.stringify(body)));
+      expect(observed).toHaveLength(1);
+      const [entry] = observed;
+      expect(entry?.method).toBe("POST");
+      expect(entry?.path).toBe("/meta");
+      expect(entry?.signature).toBe("sig");
+      expect(entry?.rawBody).toStrictEqual(encoder.encode(JSON.stringify(body)));
     });
   });
 
@@ -1468,7 +1469,7 @@ describe("logging", () => {
 
     const warnCall = logger.calls.find((call) => call.message === "webhook verification failed");
     expect(warnCall).toBeDefined();
-    expect(warnCall?.context?.path).toBe("/test");
+    expect(warnCall?.context?.["path"]).toBe("/test");
   });
 
   it("does not log anything when no logger is provided", async () => {

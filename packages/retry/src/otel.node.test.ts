@@ -1,8 +1,8 @@
 import { context, metrics, trace } from "@opentelemetry/api";
 import { AsyncHooksContextManager } from "@opentelemetry/context-async-hooks";
 import {
+  AggregationTemporality,
   InMemoryMetricExporter,
-  InstrumentType,
   MeterProvider,
   PeriodicExportingMetricReader,
 } from "@opentelemetry/sdk-metrics";
@@ -18,7 +18,7 @@ import { runRetryPolicy } from "./base-policy.ts";
 
 describe("retry OpenTelemetry", () => {
   const spanExporter = new InMemorySpanExporter();
-  const metricExporter = new InMemoryMetricExporter(InstrumentType.COUNTER);
+  const metricExporter = new InMemoryMetricExporter(AggregationTemporality.CUMULATIVE);
   let meterProvider: MeterProvider;
 
   beforeAll(() => {
@@ -67,7 +67,7 @@ describe("retry OpenTelemetry", () => {
     await runWithActiveSpan(() => runRetryPolicy(policy, execute));
 
     const event = getCallerSpan()?.events.find((e) => e.name === "retry.scheduled");
-    expect(event?.attributes?.attempt).toBe(1);
+    expect(event?.attributes?.["attempt"]).toBe(1);
     expect(event?.attributes?.["retry.reason"]).toBe("retry");
   });
 
@@ -93,7 +93,7 @@ describe("retry OpenTelemetry", () => {
     await runWithActiveSpan(() => runRetryPolicy(policy, execute, { throwOnExhausted: false }));
 
     const event = getCallerSpan()?.events.find((e) => e.name === "retry.exhausted");
-    expect(event?.attributes?.attempt).toBe(1);
+    expect(event?.attributes?.["attempt"]).toBe(1);
     expect(event?.attributes?.["retry.reason"]).toBe("max-attempts-reached");
   });
 
@@ -139,7 +139,7 @@ describe("retry OpenTelemetry", () => {
     await runRetryPolicy(policy, execute, { throwOnExhausted: false });
     const counts = await readAttemptCounts();
 
-    expect(counts.retry).toBe(1);
-    expect(counts.exhausted).toBe(1);
+    expect(counts["retry"]).toBe(1);
+    expect(counts["exhausted"]).toBe(1);
   });
 });
