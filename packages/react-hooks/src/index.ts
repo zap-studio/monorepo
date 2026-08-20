@@ -29,6 +29,8 @@ export { useDeviceOrientation } from "./sensors/use-device-orientation.ts";
 export { useDevicePixelRatio } from "./sensors/use-device-pixel-ratio.ts";
 export { useDocumentVisibility } from "./sensors/use-document-visibility.ts";
 export { useFontsReady } from "./sensors/use-fonts-ready.ts";
+export type { GamepadInfo } from "./input/use-gamepad.ts";
+export { useGamepad } from "./input/use-gamepad.ts";
 export type {
   GeolocationCoordinatesState,
   GeolocationErrorState,
@@ -36,9 +38,13 @@ export type {
   UseGeolocationOptions,
 } from "./sensors/use-geolocation.ts";
 export { useGeolocation } from "./sensors/use-geolocation.ts";
+export type { HotkeyBindings, UseHotkeysOptions } from "./input/use-hotkeys.ts";
+export { useHotkeys } from "./input/use-hotkeys.ts";
+export { useIdle } from "./input/use-idle.ts";
 export { useIsClient } from "./sensors/use-is-client.ts";
 export { useIsMobile } from "./sensors/use-is-mobile.ts";
 export { useIsServer } from "./sensors/use-is-server.ts";
+export { useKeyPress } from "./input/use-key-press.ts";
 export { useMediaQuery } from "./sensors/use-media-query.ts";
 export type { NetworkState } from "./sensors/use-network-state.ts";
 export { useNetworkState } from "./sensors/use-network-state.ts";
@@ -49,6 +55,8 @@ export type { Orientation } from "./sensors/use-orientation.ts";
 export { useOrientation } from "./sensors/use-orientation.ts";
 export { usePageLeave } from "./sensors/use-page-leave.ts";
 export { usePermission } from "./sensors/use-permission.ts";
+export type { UsePointerLockResult } from "./input/use-pointer-lock.ts";
+export { usePointerLock } from "./input/use-pointer-lock.ts";
 export { usePrefersDarkMode } from "./sensors/use-prefers-dark-mode.ts";
 export type { PreferredLanguage } from "./sensors/use-preferred-language.ts";
 export { usePreferredLanguage } from "./sensors/use-preferred-language.ts";
@@ -58,6 +66,8 @@ export { useShare } from "./sensors/use-share.ts";
 export type { StorageEstimateState } from "./sensors/use-storage-estimate.ts";
 export { useStorageEstimate } from "./sensors/use-storage-estimate.ts";
 export { useTouchSupport } from "./sensors/use-touch-support.ts";
+export type { UserActivationState } from "./input/use-user-activation.ts";
+export { useUserActivation } from "./input/use-user-activation.ts";
 export type { UserAgentData, UserAgentDataBrand } from "./sensors/use-user-agent-data.ts";
 export { useUserAgentData } from "./sensors/use-user-agent-data.ts";
 export type { UseVibrateResult } from "./sensors/use-vibrate.ts";

@@ -28,6 +28,12 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
+    "./input/use-gamepad": "./dist/input/use-gamepad.js",
+    "./input/use-hotkeys": "./dist/input/use-hotkeys.js",
+    "./input/use-idle": "./dist/input/use-idle.js",
+    "./input/use-key-press": "./dist/input/use-key-press.js",
+    "./input/use-pointer-lock": "./dist/input/use-pointer-lock.js",
+    "./input/use-user-activation": "./dist/input/use-user-activation.js",
     "./sensors/use-battery": "./dist/sensors/use-battery.js",
     "./sensors/use-color-scheme": "./dist/sensors/use-color-scheme.js",
     "./sensors/use-cookie-enabled": "./dist/sensors/use-cookie-enabled.js",

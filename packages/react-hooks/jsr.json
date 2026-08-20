@@ -5,6 +5,12 @@
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
+    "./input/use-gamepad": "./src/input/use-gamepad.ts",
+    "./input/use-hotkeys": "./src/input/use-hotkeys.ts",
+    "./input/use-idle": "./src/input/use-idle.ts",
+    "./input/use-key-press": "./src/input/use-key-press.ts",
+    "./input/use-pointer-lock": "./src/input/use-pointer-lock.ts",
+    "./input/use-user-activation": "./src/input/use-user-activation.ts",
     "./sensors/use-battery": "./src/sensors/use-battery.ts",
     "./sensors/use-color-scheme": "./src/sensors/use-color-scheme.ts",
     "./sensors/use-cookie-enabled": "./src/sensors/use-cookie-enabled.ts",

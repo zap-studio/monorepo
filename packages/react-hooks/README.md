@@ -70,6 +70,12 @@ Both hooks are SSR-safe: they return `false` until the client subscribes to `mat
 | `usePrintMode`              | `true` while printing, via the `print` media query                                       |
 | `useNotificationPermission` | Notifications API permission state + a `notify()` trigger                                |
 | `useFontsReady`             | `true` once `document.fonts.ready` resolves — avoid FOUC on custom web fonts             |
+| `useKeyPress`               | `true` while any of the given key(s) is held down                                        |
+| `useHotkeys`                | Registers `"ctrl+s"`-style keyboard shortcut combos mapped to handlers                   |
+| `useIdle`                   | `true` after a period of no mouse/keyboard/touch/scroll activity                         |
+| `useGamepad`                | Connected gamepads, via `navigator.getGamepads()` + connect/disconnect events            |
+| `useUserActivation`         | `navigator.userActivation`'s `isActive`/`hasBeenActive` — gate autoplay/popups           |
+| `usePointerLock`            | Pointer Lock API wrapper for a ref'd element (games, drag-to-look UIs)                   |
 
 Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
 
