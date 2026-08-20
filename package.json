@@ -14,7 +14,8 @@
     "publish:check": "pnpm run lint && pnpm run format:check && pnpm run test && pnpm run build && pnpm -r --if-present run prepublishOnly",
     "react-doctor": "react-doctor --scope full --verbose",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "for f in packages/*/tsconfig.json apps/*/tsconfig.json; do tsc --noEmit -p \"$f\" || exit 1; done"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:",
@@ -32,6 +33,7 @@
     "publint": "catalog:",
     "react-doctor": "catalog:",
     "tsdown": "catalog:",
+    "typescript": "catalog:",
     "unplugin-unused": "catalog:",
     "vitest": "catalog:"
   },
