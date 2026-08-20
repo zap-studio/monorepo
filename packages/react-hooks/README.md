@@ -81,6 +81,13 @@ Both hooks are SSR-safe: they return `false` until the client subscribes to `mat
 | `useAppBadge`               | Wraps the Badging API (`navigator.setAppBadge`/`clearAppBadge`)                          |
 | `useWebSocket`              | WebSocket connection state + `send()`/`close()`, latest message received                 |
 | `useEventSource`            | Server-Sent Events connection state + latest message data                                |
+| `useUserMedia`              | Wraps `getUserMedia()` for arbitrary audio/video constraints                             |
+| `useCamera`                 | `useUserMedia` convenience wrapper for the common webcam case                            |
+| `useScreenCapture`          | Wraps `getDisplayMedia()` — screen/window/tab sharing                                    |
+| `useMediaRecorder`          | Wraps the MediaStream Recording API around an existing stream                            |
+| `useSpeechSynthesis`        | Wraps the Web Speech API's synthesis half — text-to-speech                               |
+| `useSpeechRecognition`      | Wraps the Web Speech API's recognition half — voice input (Chromium/Safari only)         |
+| `usePictureInPicture`       | Picture-in-Picture wrapper for a ref'd `<video>`                                         |
 
 Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
 
