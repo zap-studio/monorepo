@@ -98,6 +98,15 @@ Every hook is also importable from its own category subpath — see [Conventions
 | `useSpeechRecognition` | Wraps the Web Speech API's recognition half — voice input (Chromium/Safari only) |
 | `usePictureInPicture`  | Picture-in-Picture wrapper for a ref'd `<video>`                                 |
 
+### History & Navigation (`navigation/`)
+
+| Hook                   | What it does                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------- |
+| `usePopState`          | `popstate` event — `location.pathname`/`history.state` on back/forward          |
+| `useNavigationType`    | Classifies the current entry: `navigate`/`reload`/`back_forward`/`prerender`    |
+| `useNavigation`        | Wraps the Navigation API's `window.navigation` (Chromium-only)                  |
+| `useNavigationBlocker` | Blocks/confirms in-app route transitions via the Navigation API (Chromium-only) |
+
 ### Network (`network/`)
 
 | Hook             | What it does                                                             |
