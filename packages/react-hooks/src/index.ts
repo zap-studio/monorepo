@@ -12,6 +12,8 @@
  * @module @zap-studio/react-hooks
  */
 
+export type { UseAppBadgeResult } from "./pwa/use-app-badge.ts";
+export { useAppBadge } from "./pwa/use-app-badge.ts";
 export type { BatteryState } from "./sensors/use-battery.ts";
 export { useBattery } from "./sensors/use-battery.ts";
 export type { ColorScheme } from "./sensors/use-color-scheme.ts";
@@ -41,6 +43,8 @@ export { useGeolocation } from "./sensors/use-geolocation.ts";
 export type { HotkeyBindings, UseHotkeysOptions } from "./input/use-hotkeys.ts";
 export { useHotkeys } from "./input/use-hotkeys.ts";
 export { useIdle } from "./input/use-idle.ts";
+export type { UseInstallPromptResult } from "./pwa/use-install-prompt.ts";
+export { useInstallPrompt } from "./pwa/use-install-prompt.ts";
 export { useIsClient } from "./sensors/use-is-client.ts";
 export { useIsMobile } from "./sensors/use-is-mobile.ts";
 export { useIsServer } from "./sensors/use-is-server.ts";
@@ -61,6 +65,8 @@ export { usePrefersDarkMode } from "./sensors/use-prefers-dark-mode.ts";
 export type { PreferredLanguage } from "./sensors/use-preferred-language.ts";
 export { usePreferredLanguage } from "./sensors/use-preferred-language.ts";
 export { usePrintMode } from "./sensors/use-print-mode.ts";
+export type { UseServiceWorkerResult } from "./pwa/use-service-worker.ts";
+export { useServiceWorker } from "./pwa/use-service-worker.ts";
 export type { UseShareResult } from "./sensors/use-share.ts";
 export { useShare } from "./sensors/use-share.ts";
 export type { StorageEstimateState } from "./sensors/use-storage-estimate.ts";

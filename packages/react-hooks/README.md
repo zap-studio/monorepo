@@ -76,6 +76,9 @@ Both hooks are SSR-safe: they return `false` until the client subscribes to `mat
 | `useGamepad`                | Connected gamepads, via `navigator.getGamepads()` + connect/disconnect events            |
 | `useUserActivation`         | `navigator.userActivation`'s `isActive`/`hasBeenActive` — gate autoplay/popups           |
 | `usePointerLock`            | Pointer Lock API wrapper for a ref'd element (games, drag-to-look UIs)                   |
+| `useInstallPrompt`          | Custom "Add to Home Screen" UI, wrapping `beforeinstallprompt`/`appinstalled`            |
+| `useServiceWorker`          | Service Worker registration + update-available state                                     |
+| `useAppBadge`               | Wraps the Badging API (`navigator.setAppBadge`/`clearAppBadge`)                          |
 
 Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
 
