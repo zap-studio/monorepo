@@ -1,4 +1,4 @@
-import type { ESTree } from "@oxlint/plugins";
+import type { ESTree, Rule } from "@oxlint/plugins";
 
 import { defineRule } from "@oxlint/plugins";
 
@@ -52,7 +52,7 @@ function isForbiddenAssertionChain(node: TypeAssertionExpression): boolean {
 }
 
 /** Disallow nested TypeScript type assertions, while permitting chains made only of const assertions. */
-export const noChainedTypeAssertionsRule = defineRule({
+export const noChainedTypeAssertionsRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {

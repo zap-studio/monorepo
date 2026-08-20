@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const githubRules = {
+export const githubRules: RuleMap = {
   "array-foreach": "error",
   "async-currenttarget": "error",
   "async-preventdefault": "error",
@@ -29,4 +29,4 @@ export const githubRules = {
   // dotted keys (e.g. "http.response.status_code") are the correct OTel
   // convention, not a DOM-attribute bug
   "get-attribute": "off",
-} satisfies RuleMap;
+};

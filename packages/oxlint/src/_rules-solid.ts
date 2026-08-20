@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const solidRules = {
+export const solidRules: RuleMap = {
   "components-return-once": "warn",
   "event-handlers": "warn",
   imports: "warn",
@@ -27,4 +27,4 @@ export const solidRules = {
   "no-proxy-apis": "off",
   // deprecated by the plugin author
   "prefer-classlist": "off",
-} satisfies RuleMap;
+};

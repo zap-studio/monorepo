@@ -1,4 +1,4 @@
-import type { ESTree, Scope, SourceCode, Variable } from "@oxlint/plugins";
+import type { ESTree, Rule, Scope, SourceCode, Variable } from "@oxlint/plugins";
 
 import { defineRule } from "@oxlint/plugins";
 
@@ -68,7 +68,7 @@ function moduleMockCall(sourceCode: SourceCode, callee: ESTree.Expression): bool
 }
 
 /** Ban test framework module mocking in favor of real dependency seams. */
-export const noModuleMockingRule = defineRule({
+export const noModuleMockingRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {

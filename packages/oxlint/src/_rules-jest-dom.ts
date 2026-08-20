@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const jestDomRules = {
+export const jestDomRules: RuleMap = {
   "prefer-checked": "error",
   "prefer-empty": "error",
   "prefer-enabled-disabled": "error",
@@ -15,4 +15,4 @@ export const jestDomRules = {
 
   // not yet in upstream's own recommended config (planned for their next major)
   "prefer-pressed": "warn",
-} satisfies RuleMap;
+};

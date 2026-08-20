@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const reactDoctorThreeRules = {
+export const reactDoctorThreeRules: RuleMap = {
   "three-cap-device-pixel-ratio": "warn",
   "three-effect-composer-output-pass-last": "error",
   "three-effect-composer-require-size-on-resize": "error",
@@ -107,4 +107,4 @@ export const reactDoctorThreeRules = {
   "three-webgpu-no-legacy-effect-composer": "error",
   "three-webgpu-no-legacy-material-api": "error",
   "three-webgpu-require-init-before-sync-operation": "error",
-} satisfies RuleMap;
+};

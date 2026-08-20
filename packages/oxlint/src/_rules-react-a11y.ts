@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const reactA11yRules = {
+export const reactA11yRules: RuleMap = {
   "alt-text": "error",
   "anchor-ambiguous-text": "warn",
   "anchor-has-content": "warn",
@@ -40,4 +40,4 @@ export const reactA11yRules = {
   // per-element — see reactDoctorRules' history for the original off-call
   lang: "off",
   scope: "off",
-} satisfies RuleMap;
+};

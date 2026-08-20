@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const tanstackQueryRules = {
+export const tanstackQueryRules: RuleMap = {
   "exhaustive-deps": "error",
   "infinite-query-property-order": "error",
   "mutation-property-order": "error",
@@ -9,4 +9,4 @@ export const tanstackQueryRules = {
   "no-void-query-fn": "error",
   "prefer-query-options": "error",
   "stable-query-client": "error",
-} satisfies RuleMap;
+};

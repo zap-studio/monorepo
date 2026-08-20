@@ -1,4 +1,4 @@
-import type { ESTree, SourceCode } from "@oxlint/plugins";
+import type { ESTree, Rule, SourceCode } from "@oxlint/plugins";
 
 import { defineRule } from "@oxlint/plugins";
 
@@ -34,7 +34,7 @@ function parameterName(parameter: Parameter, sourceCode: SourceCode): string {
 }
 
 /** Ban the broad object type on function inputs, including local aliases to object. */
-export const noObjectParametersRule = defineRule({
+export const noObjectParametersRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {

@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const reactDoctorReduxRules = {
+export const reactDoctorReduxRules: RuleMap = {
   "redux-useselector-inline-derivation": "warn",
   "redux-useselector-returns-new-collection": "warn",
-} satisfies RuleMap;
+};

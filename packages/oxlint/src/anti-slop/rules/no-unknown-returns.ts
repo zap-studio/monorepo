@@ -1,4 +1,4 @@
-import type { ESTree } from "@oxlint/plugins";
+import type { ESTree, Rule } from "@oxlint/plugins";
 
 import { defineRule } from "@oxlint/plugins";
 
@@ -24,7 +24,7 @@ function referencedAliasName(type: ESTree.TSType): string | null {
 }
 
 /** Ban function contracts that return unknown instead of a parsed domain type. */
-export const noUnknownReturnsRule = defineRule({
+export const noUnknownReturnsRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {

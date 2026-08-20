@@ -1,4 +1,4 @@
-import type { ESTree } from "@oxlint/plugins";
+import type { ESTree, Rule } from "@oxlint/plugins";
 
 import { defineRule } from "@oxlint/plugins";
 
@@ -24,7 +24,7 @@ function isInsideTypeGuard(node: ESTree.Node): boolean {
 }
 
 /** Disallow runtime typeof checks that narrow unparsed values instead of decoding them. */
-export const noRuntimeTypeofRule = defineRule({
+export const noRuntimeTypeofRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -54,7 +54,7 @@ export const noRuntimeTypeofRule = defineRule({
           typeof option === "object" &&
           option !== null &&
           !Array.isArray(option) &&
-          option.allowInTypeGuards === true;
+          option["allowInTypeGuards"] === true;
         if (node.operator === "typeof" && (!allowInTypeGuards || !isInsideTypeGuard(node))) {
           context.report({ node, messageId: "runtimeTypeof" });
         }

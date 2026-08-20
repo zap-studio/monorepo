@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const stylexRules = {
+export const stylexRules: RuleMap = {
   "no-conflicting-props": "error",
   "no-nonstandard-styles": "error",
   "valid-shorthands": "error",
@@ -16,4 +16,4 @@ export const stylexRules = {
   "sort-keys": "warn",
   // only bites once a project adopts the .stylex.ts theme-file convention
   "enforce-extension": "warn",
-} satisfies RuleMap;
+};

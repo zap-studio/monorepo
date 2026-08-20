@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const cypressRules = {
+export const cypressRules: RuleMap = {
   "no-assigning-return-values": "error",
   // async/await masks Cypress's command-queue semantics same as `no-async-tests`
   // (upstream's own `recommended` config omits this despite its `docs.recommended: true`
@@ -27,4 +27,4 @@ export const cypressRules = {
   // opinionated selector-strategy convention needing a data-* attribute
   // convention and visibility into real test files this repo doesn't have
   "require-data-selectors": "off",
-} satisfies RuleMap;
+};
