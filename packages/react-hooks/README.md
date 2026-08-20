@@ -36,6 +36,10 @@ Both hooks are SSR-safe: they return `false` until the client subscribes to `mat
 
 ## Available Hooks
 
+Every hook is also importable from its own category subpath — see [Conventions](#conventions).
+
+### Sensors (`sensors/`)
+
 | Hook                        | What it does                                                                             |
 | --------------------------- | ---------------------------------------------------------------------------------------- |
 | `useMediaQuery`             | Matches the viewport against an arbitrary CSS media query string                         |
@@ -70,24 +74,44 @@ Both hooks are SSR-safe: they return `false` until the client subscribes to `mat
 | `usePrintMode`              | `true` while printing, via the `print` media query                                       |
 | `useNotificationPermission` | Notifications API permission state + a `notify()` trigger                                |
 | `useFontsReady`             | `true` once `document.fonts.ready` resolves — avoid FOUC on custom web fonts             |
-| `useKeyPress`               | `true` while any of the given key(s) is held down                                        |
-| `useHotkeys`                | Registers `"ctrl+s"`-style keyboard shortcut combos mapped to handlers                   |
-| `useIdle`                   | `true` after a period of no mouse/keyboard/touch/scroll activity                         |
-| `useGamepad`                | Connected gamepads, via `navigator.getGamepads()` + connect/disconnect events            |
-| `useUserActivation`         | `navigator.userActivation`'s `isActive`/`hasBeenActive` — gate autoplay/popups           |
-| `usePointerLock`            | Pointer Lock API wrapper for a ref'd element (games, drag-to-look UIs)                   |
-| `useInstallPrompt`          | Custom "Add to Home Screen" UI, wrapping `beforeinstallprompt`/`appinstalled`            |
-| `useServiceWorker`          | Service Worker registration + update-available state                                     |
-| `useAppBadge`               | Wraps the Badging API (`navigator.setAppBadge`/`clearAppBadge`)                          |
-| `useWebSocket`              | WebSocket connection state + `send()`/`close()`, latest message received                 |
-| `useEventSource`            | Server-Sent Events connection state + latest message data                                |
-| `useUserMedia`              | Wraps `getUserMedia()` for arbitrary audio/video constraints                             |
-| `useCamera`                 | `useUserMedia` convenience wrapper for the common webcam case                            |
-| `useScreenCapture`          | Wraps `getDisplayMedia()` — screen/window/tab sharing                                    |
-| `useMediaRecorder`          | Wraps the MediaStream Recording API around an existing stream                            |
-| `useSpeechSynthesis`        | Wraps the Web Speech API's synthesis half — text-to-speech                               |
-| `useSpeechRecognition`      | Wraps the Web Speech API's recognition half — voice input (Chromium/Safari only)         |
-| `usePictureInPicture`       | Picture-in-Picture wrapper for a ref'd `<video>`                                         |
+
+### Input (`input/`)
+
+| Hook                | What it does                                                                   |
+| ------------------- | ------------------------------------------------------------------------------ |
+| `useKeyPress`       | `true` while any of the given key(s) is held down                              |
+| `useHotkeys`        | Registers `"ctrl+s"`-style keyboard shortcut combos mapped to handlers         |
+| `useIdle`           | `true` after a period of no mouse/keyboard/touch/scroll activity               |
+| `useGamepad`        | Connected gamepads, via `navigator.getGamepads()` + connect/disconnect events  |
+| `useUserActivation` | `navigator.userActivation`'s `isActive`/`hasBeenActive` — gate autoplay/popups |
+| `usePointerLock`    | Pointer Lock API wrapper for a ref'd element (games, drag-to-look UIs)         |
+
+### Media (`media/`)
+
+| Hook                   | What it does                                                                     |
+| ---------------------- | -------------------------------------------------------------------------------- |
+| `useUserMedia`         | Wraps `getUserMedia()` for arbitrary audio/video constraints                     |
+| `useCamera`            | `useUserMedia` convenience wrapper for the common webcam case                    |
+| `useScreenCapture`     | Wraps `getDisplayMedia()` — screen/window/tab sharing                            |
+| `useMediaRecorder`     | Wraps the MediaStream Recording API around an existing stream                    |
+| `useSpeechSynthesis`   | Wraps the Web Speech API's synthesis half — text-to-speech                       |
+| `useSpeechRecognition` | Wraps the Web Speech API's recognition half — voice input (Chromium/Safari only) |
+| `usePictureInPicture`  | Picture-in-Picture wrapper for a ref'd `<video>`                                 |
+
+### Network (`network/`)
+
+| Hook             | What it does                                                             |
+| ---------------- | ------------------------------------------------------------------------ |
+| `useWebSocket`   | WebSocket connection state + `send()`/`close()`, latest message received |
+| `useEventSource` | Server-Sent Events connection state + latest message data                |
+
+### PWA (`pwa/`)
+
+| Hook               | What it does                                                                  |
+| ------------------ | ----------------------------------------------------------------------------- |
+| `useInstallPrompt` | Custom "Add to Home Screen" UI, wrapping `beforeinstallprompt`/`appinstalled` |
+| `useServiceWorker` | Service Worker registration + update-available state                          |
+| `useAppBadge`      | Wraps the Badging API (`navigator.setAppBadge`/`clearAppBadge`)               |
 
 Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
 
@@ -97,3 +121,6 @@ More hooks land incrementally.
 
 - Every stable hook is available both from the top-level package and from its own subpath (`@zap-studio/react-hooks/sensors/use-is-mobile`) — same function either way.
 - Hooks relying on private, non-semver-guaranteed APIs live under `@zap-studio/react-hooks/unstable` and are never exported from the top-level package.
+</content>
+
+</invoke>
