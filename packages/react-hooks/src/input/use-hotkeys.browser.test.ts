@@ -104,6 +104,17 @@ describe(useHotkeys, () => {
     expect(secondHandler).toHaveBeenCalledTimes(1);
   });
 
+  it("ignores a combo string with no key part", async () => {
+    const handler = vi.fn();
+    renderHook(() => useHotkeys({ "": handler }));
+
+    await act(async () => {
+      dispatchKeyDown({ key: "a" });
+    });
+
+    expect(handler).not.toHaveBeenCalled();
+  });
+
   it("removes the listener on unmount", async () => {
     const handler = vi.fn();
     const { unmount } = renderHook(() => useHotkeys({ "ctrl+s": handler }));
