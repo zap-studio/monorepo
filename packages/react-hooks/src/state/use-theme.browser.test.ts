@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { createMatchMediaMock } from "./_media-query-test-utils.ts";
+import { createMatchMediaMock } from "../sensors/_media-query-test-utils.ts";
 import { useTheme } from "./use-theme.ts";
 
 afterEach(() => {

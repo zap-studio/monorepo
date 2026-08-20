@@ -1,5 +1,5 @@
-import { useWebStorage } from "../state/_web-storage.ts";
-import { useMediaQueryMatch } from "./_media-query.ts";
+import { useMediaQueryMatch } from "../sensors/_media-query.ts";
+import { useWebStorage } from "./_web-storage.ts";
 
 /** The persisted theme mode `useTheme` tracks. */
 export type ThemeMode = "dark" | "light" | "system";
