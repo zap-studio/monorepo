@@ -40,7 +40,7 @@ catalog:
   eslint-plugin-regexp: ^3.2.0
   eslint-plugin-solid: ^0.15.0
   eslint-plugin-sonarjs: ^4.2.0
-  eslint-plugin-storybook: ^10.5.9
+  eslint-plugin-storybook: ^10.5.10
   eslint-plugin-tailwindcss: ^4.3.0
   eslint-plugin-testing-library: ^7.16.2
   fallow: ^3.17.0
@@ -50,14 +50,14 @@ catalog:
   oxlint-plugin-react-doctor: ^0.9.12
   oxlint-tsgolint: ^7.0.2001
   playwright: ^1.62.1
-  publint: ^0.3.23
+  publint: ^0.3.24
   react-doctor: ^0.9.12
   react: ^19.2.8
   react-dom: ^19.2.8
   tsdown: ^0.22.14
   typescript: ^7.0.2
   valibot: ^1.4.2
-  vite: ^8.2.1
+  vite: ^8.2.2
   vitest: ^4.1.11
   vocs: ^2.8.5
   waku: 1.0.0-beta.8
