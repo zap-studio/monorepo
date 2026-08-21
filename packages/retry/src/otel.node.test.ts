@@ -125,9 +125,9 @@ describe("retry OpenTelemetry", () => {
   };
 
   it("increments the retry.attempts counter tagged by decision", async () => {
-    // Metric exports report the delta since the last export, so drain any
-    // pending increments from earlier tests before measuring this one.
-    await readAttemptCounts();
+    // The counter is cumulative and shared across tests in this file, so
+    // measure the delta against a baseline rather than the raw total.
+    const before = await readAttemptCounts();
 
     const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
@@ -137,9 +137,9 @@ describe("retry OpenTelemetry", () => {
     execute.mockRejectedValue(new Error("fail"));
 
     await runRetryPolicy(policy, execute, { throwOnExhausted: false });
-    const counts = await readAttemptCounts();
+    const after = await readAttemptCounts();
 
-    expect(counts["retry"]).toBe(1);
-    expect(counts["exhausted"]).toBe(1);
+    expect((after["retry"] ?? 0) - (before["retry"] ?? 0)).toBe(1);
+    expect((after["exhausted"] ?? 0) - (before["exhausted"] ?? 0)).toBe(1);
   });
 });
