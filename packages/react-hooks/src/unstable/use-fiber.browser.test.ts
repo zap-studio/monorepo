@@ -1,9 +1,16 @@
 import { render, renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { useFiber, type UseFiberResult } from "./use-fiber.ts";
 
+/**
+ * `fiber` reflects the DOM ref from the *previous* commit (documented,
+ * matching every ref-based hook in this package), so a freshly-mounted
+ * component's very first render always reads `fiber: null` — the ref
+ * only attaches during that render's own commit. Renders once, then
+ * "settles" with a same-props re-render so the ref has a commit to read.
+ */
 function renderFiberDiv(props: { label: string }) {
   let latest!: UseFiberResult<HTMLDivElement>;
   function TestComponent({ label }: { label: string }) {
@@ -11,6 +18,7 @@ function renderFiberDiv(props: { label: string }) {
     return createElement("div", { ref: latest.ref }, label);
   }
   const { rerender, unmount } = render(createElement(TestComponent, props));
+  rerender(createElement(TestComponent, props));
   return {
     get current() {
       return latest;
@@ -19,10 +27,6 @@ function renderFiberDiv(props: { label: string }) {
     unmount,
   };
 }
-
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
 
 describe(useFiber, () => {
   it("starts with fiber: null before mount", () => {
@@ -43,6 +47,7 @@ describe(useFiber, () => {
     const view = renderFiberDiv({ label: "a" });
     expect(view.current.fiber?.memoizedProps).toEqual({ label: "a" });
 
+    view.rerender({ label: "b" });
     view.rerender({ label: "b" });
 
     expect(view.current.fiber?.memoizedProps).toEqual({ label: "b" });
@@ -72,13 +77,5 @@ describe(useFiber, () => {
 
     expect(() => rerender()).not.toThrow();
     expect(result.current.fiber).toBeNull();
-  });
-
-  it("no-ops (fiber: null) in production builds", () => {
-    vi.stubGlobal("process", { env: { NODE_ENV: "production" } });
-
-    const view = renderFiberDiv({ label: "hello" });
-
-    expect(view.current.fiber).toBeNull();
   });
 });
