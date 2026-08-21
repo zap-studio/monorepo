@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1]
+
+### Fixed
+
+- `@zap-studio/oxlint/react-compiler` no longer references the nursery `react/react-compiler` rule, which oxlint 1.79.0 removed in favor of 22 category-specific rules (`react/purity`, `react/immutability`, `react/hooks`, `react/set-state-in-render`, ...) — see [oxc's React Compiler support announcement](https://oxc.rs/blog/2026-08-18-react-compiler-support). The old rule name made every preset extending this one fail to parse under the pinned `oxlint` peer version; the preset now declares all 22 replacement rules directly.
+
 ## [2.2.0]
 
 ### Added
