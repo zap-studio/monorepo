@@ -140,11 +140,12 @@ Every hook is also importable from its own category subpath — see [Conventions
 
 ### PWA (`pwa/`)
 
-| Hook               | What it does                                                                  |
-| ------------------ | ----------------------------------------------------------------------------- |
-| `useInstallPrompt` | Custom "Add to Home Screen" UI, wrapping `beforeinstallprompt`/`appinstalled` |
-| `useServiceWorker` | Service Worker registration + update-available state                          |
-| `useAppBadge`      | Wraps the Badging API (`navigator.setAppBadge`/`clearAppBadge`)               |
+| Hook                | What it does                                                                   |
+| ------------------- | ------------------------------------------------------------------------------ |
+| `useInstallPrompt`  | Custom "Add to Home Screen" UI, wrapping `beforeinstallprompt`/`appinstalled`  |
+| `useServiceWorker`  | Service Worker registration + update-available state                           |
+| `useAppBadge`       | Wraps the Badging API (`navigator.setAppBadge`/`clearAppBadge`)                |
+| `useStandaloneMode` | Whether the app is running standalone (installed as a PWA), via `display-mode` |
 
 ### Commerce (`commerce/`)
 

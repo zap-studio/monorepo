@@ -82,6 +82,7 @@
     "./pwa/use-app-badge": "./dist/pwa/use-app-badge.js",
     "./pwa/use-install-prompt": "./dist/pwa/use-install-prompt.js",
     "./pwa/use-service-worker": "./dist/pwa/use-service-worker.js",
+    "./pwa/use-standalone-mode": "./dist/pwa/use-standalone-mode.js",
     "./sensors/use-battery": "./dist/sensors/use-battery.js",
     "./sensors/use-color-scheme": "./dist/sensors/use-color-scheme.js",
     "./sensors/use-cookie-enabled": "./dist/sensors/use-cookie-enabled.js",

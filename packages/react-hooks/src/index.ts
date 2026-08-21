@@ -179,6 +179,7 @@ export type {
 export { useSpeechRecognition } from "./media/use-speech-recognition.ts";
 export type { SpeakOptions, UseSpeechSynthesisResult } from "./media/use-speech-synthesis.ts";
 export { useSpeechSynthesis } from "./media/use-speech-synthesis.ts";
+export { useStandaloneMode } from "./pwa/use-standalone-mode.ts";
 export { useStorageEstimate } from "./sensors/use-storage-estimate.ts";
 export { useTextSelection } from "./dom/use-text-selection.ts";
 export type { ResolvedTheme, ThemeMode, UseThemeResult } from "./state/use-theme.ts";
