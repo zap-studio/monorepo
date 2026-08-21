@@ -2,25 +2,25 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { useRenderDuration } from "./use-render-duration.ts";
+import { useUnstableRenderCount } from "./use-unstable-render-count.ts";
 
 function TestComponent() {
-  const { samples } = useRenderDuration();
-  return String(samples.length);
+  const count = useUnstableRenderCount();
+  return String(count);
 }
 
 afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe(useRenderDuration, () => {
-  it("renders with no samples on the server", () => {
+describe(useUnstableRenderCount, () => {
+  it("renders 1 on the first server render", () => {
     const html = renderToString(createElement(TestComponent));
 
-    expect(html).toBe("0");
+    expect(html).toBe("1");
   });
 
-  it("no-ops (still no samples) in production builds", () => {
+  it("no-ops (renders 0) in production builds", () => {
     vi.stubEnv("NODE_ENV", "production");
 
     const html = renderToString(createElement(TestComponent));

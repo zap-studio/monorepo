@@ -1,19 +1,22 @@
 import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { useWhyDidYouUpdate } from "./use-why-did-you-update.ts";
+import { useUnstableWhyDidYouUpdate } from "./use-unstable-why-did-you-update.ts";
 
 afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe(useWhyDidYouUpdate, () => {
+describe(useUnstableWhyDidYouUpdate, () => {
   it("does not log on the mount render", () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
 
-    renderHook(({ props }: { props: Record<string, unknown> }) => useWhyDidYouUpdate("X", props), {
-      initialProps: { props: { value: 1 } },
-    });
+    renderHook(
+      ({ props }: { props: Record<string, unknown> }) => useUnstableWhyDidYouUpdate("X", props),
+      {
+        initialProps: { props: { value: 1 } },
+      },
+    );
 
     expect(spy).not.toHaveBeenCalled();
   });
@@ -22,7 +25,7 @@ describe(useWhyDidYouUpdate, () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     const { rerender } = renderHook(
-      ({ props }: { props: Record<string, unknown> }) => useWhyDidYouUpdate("X", props),
+      ({ props }: { props: Record<string, unknown> }) => useUnstableWhyDidYouUpdate("X", props),
       { initialProps: { props: { value: 1 } } },
     );
 
@@ -35,7 +38,7 @@ describe(useWhyDidYouUpdate, () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     const { rerender } = renderHook(
-      ({ props }: { props: Record<string, unknown> }) => useWhyDidYouUpdate("X", props),
+      ({ props }: { props: Record<string, unknown> }) => useUnstableWhyDidYouUpdate("X", props),
       { initialProps: { props: { a: 1 } as Record<string, unknown> } },
     );
 
@@ -51,7 +54,7 @@ describe(useWhyDidYouUpdate, () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     const { rerender } = renderHook(
-      ({ props }: { props: Record<string, unknown> }) => useWhyDidYouUpdate("X", props),
+      ({ props }: { props: Record<string, unknown> }) => useUnstableWhyDidYouUpdate("X", props),
       { initialProps: { props: { value: 1 } } },
     );
 

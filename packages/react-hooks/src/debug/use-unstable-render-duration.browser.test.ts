@@ -1,18 +1,18 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { useRenderDuration } from "./use-render-duration.ts";
+import { useUnstableRenderDuration } from "./use-unstable-render-duration.ts";
 
-describe(useRenderDuration, () => {
+describe(useUnstableRenderDuration, () => {
   it("starts with no samples", () => {
-    const { result } = renderHook(() => useRenderDuration());
+    const { result } = renderHook(() => useUnstableRenderDuration());
 
     expect(result.current.samples).toEqual([]);
     expect(result.current.last).toBeNull();
   });
 
   it("accumulates a sample on each onRender call", () => {
-    const { result } = renderHook(() => useRenderDuration());
+    const { result } = renderHook(() => useUnstableRenderDuration());
 
     act(() => {
       result.current.onRender("Sidebar", "mount", 5, 4, 100, 105);
@@ -37,7 +37,7 @@ describe(useRenderDuration, () => {
   });
 
   it("caps samples at the given limit", () => {
-    const { result } = renderHook(() => useRenderDuration(2));
+    const { result } = renderHook(() => useUnstableRenderDuration(2));
 
     act(() => {
       result.current.onRender("A", "mount", 1, 1, 0, 1);

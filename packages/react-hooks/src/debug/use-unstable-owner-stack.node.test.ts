@@ -2,10 +2,10 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { useOwnerStack } from "./use-owner-stack.ts";
+import { useUnstableOwnerStack } from "./use-unstable-owner-stack.ts";
 
 function TestComponent() {
-  const { supported } = useOwnerStack();
+  const { supported } = useUnstableOwnerStack();
   return supported ? "true" : "false";
 }
 
@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe(useOwnerStack, () => {
+describe(useUnstableOwnerStack, () => {
   it("renders without throwing during server rendering", () => {
     expect(() => renderToString(createElement(TestComponent))).not.toThrow();
   });

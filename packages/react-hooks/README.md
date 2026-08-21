@@ -196,14 +196,26 @@ Every hook is also importable from its own category subpath — see [Conventions
 | `useBroadcastChannel` | Pub/sub state shared across same-origin tabs/workers                             |
 | `useWindowMessage`    | Cross-origin window/iframe/popup messaging (`postMessage`)                       |
 
+### Debug / observability (`debug/`)
+
+| Hook                         | What it does                                                                    |
+| ---------------------------- | ------------------------------------------------------------------------------- |
+| `useUnstableRenderCount`     | Render count for the calling component instance                                 |
+| `useUnstableWhyDidYouUpdate` | Logs which props changed to cause the current render                            |
+| `useUnstableIsFirstRender`   | `true` only on the mount render                                                 |
+| `useUnstableRenderReason`    | Classifies the render cause — `mount`/`props`/`state`/`context`/`parent`        |
+| `useUnstableFiber`           | The nearest Fiber node for a ref'd DOM element, via a private react-dom pointer |
+| `useUnstableRenderDuration`  | Wraps React `<Profiler>`'s `onRender` timing as a hook                          |
+| `useUnstableOwnerStack`      | Wraps React 19's `captureOwnerStack` debug API                                  |
+
 Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
 
 More hooks land incrementally.
 
 ## Conventions
 
-- Every stable hook is available both from the top-level package and from its own subpath (`@zap-studio/react-hooks/sensors/use-is-mobile`) — same function either way.
-- Hooks relying on private, non-semver-guaranteed APIs live under `@zap-studio/react-hooks/unstable` and are never exported from the top-level package.
+- Every hook is available both from the top-level package and from its own subpath (`@zap-studio/react-hooks/sensors/use-is-mobile`) — same function either way.
+- Hooks relying on private, non-semver-guaranteed APIs (react-dom internals, mostly) carry an `Unstable` marker in the hook's own name — `useUnstableFiber`, not a separate module — so the risk travels with every import and autocomplete hit, not just a path a reader might skip.
 </content>
 
 </invoke>

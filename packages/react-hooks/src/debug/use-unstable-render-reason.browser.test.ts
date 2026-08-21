@@ -1,8 +1,8 @@
 import { act, render, renderHook } from "@testing-library/react";
-import { createContext, createElement, useContext, useState } from "react";
+import { createContext, createElement, useContext, useRef, useState } from "react";
 import { describe, expect, it } from "vitest";
 
-import { useRenderReason, type RenderReason } from "./use-render-reason.ts";
+import { useUnstableRenderReason, type RenderReason } from "./use-unstable-render-reason.ts";
 
 const TestContext = createContext("default");
 
@@ -14,7 +14,9 @@ interface ChildHandle {
 function renderChild(props: { label: string }) {
   let latest!: ChildHandle;
   function Child({ label }: { label: string }) {
-    const { reason, ref } = useRenderReason<HTMLDivElement>();
+    const { reason, ref } = useUnstableRenderReason<HTMLDivElement>();
+    // A non-dispatch-capable hook (no `.queue`) called after useUnstableRenderReason, alongside the useState below — exercises both sides of collectStateHookValues' per-node filter.
+    useRef(null);
     const [count, setCount] = useState(0);
     const contextValue = useContext(TestContext);
     latest = { reason, setCount };
@@ -33,7 +35,7 @@ function renderChild(props: { label: string }) {
 function renderChildWithContext(props: { label: string }, contextValue: string) {
   let latest!: ChildHandle;
   function Child({ label }: { label: string }) {
-    const { reason, ref } = useRenderReason<HTMLDivElement>();
+    const { reason, ref } = useUnstableRenderReason<HTMLDivElement>();
     const value = useContext(TestContext);
     latest = { reason, setCount: () => {} };
     return createElement("div", { ref }, `${label}-${value}`);
@@ -52,9 +54,9 @@ function renderChildWithContext(props: { label: string }, contextValue: string) 
   };
 }
 
-describe(useRenderReason, () => {
+describe(useUnstableRenderReason, () => {
   it("classifies a hook with no attached ref as unknown", () => {
-    const { result } = renderHook(() => useRenderReason());
+    const { result } = renderHook(() => useUnstableRenderReason());
 
     expect(result.current.reason).toBe("unknown");
   });
@@ -113,10 +115,50 @@ describe(useRenderReason, () => {
       },
     ) as unknown as HTMLDivElement;
 
-    const { rerender, result } = renderHook(() => useRenderReason<HTMLDivElement>());
+    const { rerender, result } = renderHook(() => useUnstableRenderReason<HTMLDivElement>());
     result.current.ref.current = throwing;
 
     expect(() => rerender()).not.toThrow();
     expect(result.current.reason).toBe("unknown");
+  });
+
+  it("classifies as unknown for a DOM node react-dom never mounted", () => {
+    const { rerender, result } = renderHook(() => useUnstableRenderReason<HTMLDivElement>());
+    result.current.ref.current = document.createElement("div");
+
+    rerender();
+
+    expect(result.current.reason).toBe("unknown");
+  });
+
+  it("classifies as props when the previous snapshot's props were null", () => {
+    const nullPropsFiber = {
+      alternate: null,
+      dependencies: null,
+      memoizedProps: null,
+      memoizedState: null,
+      return: null,
+      type: "div",
+    };
+    const somePropsFiber = {
+      alternate: null,
+      dependencies: null,
+      memoizedProps: { x: 1 },
+      memoizedState: null,
+      return: null,
+      type: "div",
+    };
+    const element = document.createElement("div") as unknown as Record<string, unknown>;
+
+    const { rerender, result } = renderHook(() => useUnstableRenderReason<HTMLDivElement>());
+
+    element["__reactFiber$fake"] = nullPropsFiber;
+    result.current.ref.current = element as unknown as HTMLDivElement;
+    rerender();
+    expect(result.current.reason).toBe("mount");
+
+    element["__reactFiber$fake"] = somePropsFiber;
+    rerender();
+    expect(result.current.reason).toBe("props");
   });
 });

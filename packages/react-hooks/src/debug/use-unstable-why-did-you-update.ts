@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import { isProductionBuild } from "./_env.ts";
 
-/** One changed prop, as logged by `useWhyDidYouUpdate`. */
+/** One changed prop, as logged by `useUnstableWhyDidYouUpdate`. */
 export interface ChangedProp {
   from: unknown;
   to: unknown;
@@ -13,24 +13,26 @@ export interface ChangedProp {
  * `console.log`s a `name`-labeled table of `{ from, to }` per changed key,
  * or nothing when no key changed (a render caused by state/context rather
  * than these particular props). Does nothing on the mount render, since
- * there's no previous `props` to diff against. No-ops entirely in
- * production builds.
+ * there's no previous `props` to diff against, or in production builds.
  *
  * @example
  * ```tsx
  * function UserCard(props: { name: string; age: number }) {
- *   useWhyDidYouUpdate("UserCard", props);
+ *   useUnstableWhyDidYouUpdate("UserCard", props);
  *   return <div>{props.name}</div>;
  * }
  * ```
  */
-export const useWhyDidYouUpdate = (name: string, props: Record<string, unknown>): void => {
+// v8 ignore next -- selected during SSR (tested), but only ever *called* once React actually runs the effect, which requires a real browser commit under `NODE_ENV=production` — unreachable here since bundlers replace `process.env.NODE_ENV` at this test suite's own build time, before any per-test override could apply.
+const noop = (): void => {};
+
+export const useUnstableWhyDidYouUpdate = (name: string, props: Record<string, unknown>): void => {
   const previousPropsRef = useRef<Record<string, unknown> | undefined>(undefined);
   const skip = isProductionBuild();
 
   useEffect(
     skip
-      ? () => {}
+      ? noop
       : () => {
           const previousProps = previousPropsRef.current;
           if (previousProps) {

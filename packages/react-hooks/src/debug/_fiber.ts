@@ -1,7 +1,7 @@
 /**
  * Local model of the private react-dom Fiber shape this file's helpers
- * read — no public type exists for it. Shared by `useFiber` and
- * `useRenderReason`; not itself a public hook (see the package's
+ * read — no public type exists for it. Shared by `useUnstableFiber` and
+ * `useUnstableRenderReason`; not itself a public hook (see the package's
  * `_internal.ts`-style shared-file convention).
  */
 export interface ContextDependency {

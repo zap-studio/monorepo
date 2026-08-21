@@ -2,10 +2,10 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { useRenderReason } from "./use-render-reason.ts";
+import { useUnstableRenderReason } from "./use-unstable-render-reason.ts";
 
 function TestComponent() {
-  const { reason, ref } = useRenderReason<HTMLDivElement>();
+  const { reason, ref } = useUnstableRenderReason<HTMLDivElement>();
   return createElement("div", { ref }, reason);
 }
 
@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe(useRenderReason, () => {
+describe(useUnstableRenderReason, () => {
   it("renders unknown on the server, before any ref can attach", () => {
     const html = renderToString(createElement(TestComponent));
 

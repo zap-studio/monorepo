@@ -1,13 +1,14 @@
 /**
  * Public entrypoint for the react-hooks package.
  *
- * Re-exports every stable hook. Each hook is also available from its own
+ * Re-exports every hook. Each hook is also available from its own
  * category subpath (`@zap-studio/react-hooks/sensors/use-is-mobile`, ...)
  * for consumers who prefer granular imports. All exports are side-effect
  * free and tree-shakeable.
  *
- * Unstable hooks (relying on private/non-semver-guaranteed APIs) are never
- * re-exported here — see `@zap-studio/react-hooks/unstable`.
+ * Hooks relying on private/non-semver-guaranteed APIs carry an `Unstable`
+ * marker in their own name (`useUnstableFiber`, ...) rather than living in
+ * a separate module — grep for `Unstable` to find them.
  *
  * @module @zap-studio/react-hooks
  */
@@ -191,6 +192,24 @@ export type { UseToggleResult } from "./state/use-toggle.ts";
 export { useToggle } from "./state/use-toggle.ts";
 export { useTouchSupport } from "./sensors/use-touch-support.ts";
 export { useUnmount } from "./lifecycle/use-unmount.ts";
+export type { UseUnstableFiberResult } from "./debug/use-unstable-fiber.ts";
+export { useUnstableFiber } from "./debug/use-unstable-fiber.ts";
+export { useUnstableIsFirstRender } from "./debug/use-unstable-is-first-render.ts";
+export type { UseUnstableOwnerStackResult } from "./debug/use-unstable-owner-stack.ts";
+export { useUnstableOwnerStack } from "./debug/use-unstable-owner-stack.ts";
+export { useUnstableRenderCount } from "./debug/use-unstable-render-count.ts";
+export type {
+  RenderDurationSample,
+  UseUnstableRenderDurationResult,
+} from "./debug/use-unstable-render-duration.ts";
+export { useUnstableRenderDuration } from "./debug/use-unstable-render-duration.ts";
+export type {
+  RenderReason,
+  UseUnstableRenderReasonResult,
+} from "./debug/use-unstable-render-reason.ts";
+export { useUnstableRenderReason } from "./debug/use-unstable-render-reason.ts";
+export type { ChangedProp } from "./debug/use-unstable-why-did-you-update.ts";
+export { useUnstableWhyDidYouUpdate } from "./debug/use-unstable-why-did-you-update.ts";
 export { useUpdateEffect } from "./lifecycle/use-update-effect.ts";
 export type { UserActivationState } from "./input/use-user-activation.ts";
 export { useUserActivation } from "./input/use-user-activation.ts";

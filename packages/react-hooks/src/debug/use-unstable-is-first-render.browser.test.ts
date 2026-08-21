@@ -1,11 +1,11 @@
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { useIsFirstRender } from "./use-is-first-render.ts";
+import { useUnstableIsFirstRender } from "./use-unstable-is-first-render.ts";
 
-describe(useIsFirstRender, () => {
+describe(useUnstableIsFirstRender, () => {
   it("is true on mount, then false on every later render", () => {
-    const { rerender, result } = renderHook(() => useIsFirstRender());
+    const { rerender, result } = renderHook(() => useUnstableIsFirstRender());
 
     expect(result.current).toBe(true);
 

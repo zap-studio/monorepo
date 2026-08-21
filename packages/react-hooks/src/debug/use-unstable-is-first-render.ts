@@ -3,16 +3,16 @@ import { useRef } from "react";
 import { isProductionBuild } from "./_env.ts";
 
 /**
- * `true` only on the mount render, `false` on every render after. No-ops
- * (always `false`) in production builds.
+ * `true` only on the mount render, `false` on every render after. Always
+ * `false` in production builds.
  *
  * @example
  * ```tsx
- * const isFirstRender = useIsFirstRender();
+ * const isFirstRender = useUnstableIsFirstRender();
  * if (isFirstRender) console.log("mounted");
  * ```
  */
-export const useIsFirstRender = (): boolean => {
+export const useUnstableIsFirstRender = (): boolean => {
   const isFirstRef = useRef(true);
   if (isProductionBuild()) {
     return false;

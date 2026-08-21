@@ -29,6 +29,13 @@
   "exports": {
     ".": "./dist/index.js",
     "./commerce/use-payment-request": "./dist/commerce/use-payment-request.js",
+    "./debug/use-unstable-fiber": "./dist/debug/use-unstable-fiber.js",
+    "./debug/use-unstable-is-first-render": "./dist/debug/use-unstable-is-first-render.js",
+    "./debug/use-unstable-owner-stack": "./dist/debug/use-unstable-owner-stack.js",
+    "./debug/use-unstable-render-count": "./dist/debug/use-unstable-render-count.js",
+    "./debug/use-unstable-render-duration": "./dist/debug/use-unstable-render-duration.js",
+    "./debug/use-unstable-render-reason": "./dist/debug/use-unstable-render-reason.js",
+    "./debug/use-unstable-why-did-you-update": "./dist/debug/use-unstable-why-did-you-update.js",
     "./dom/use-click-outside": "./dist/dom/use-click-outside.js",
     "./dom/use-event-listener": "./dist/dom/use-event-listener.js",
     "./dom/use-eye-dropper": "./dist/dom/use-eye-dropper.js",
@@ -136,14 +143,6 @@
     "./state/use-throttled-value": "./dist/state/use-throttled-value.js",
     "./state/use-toggle": "./dist/state/use-toggle.js",
     "./state/use-window-message": "./dist/state/use-window-message.js",
-    "./unstable": "./dist/unstable/index.js",
-    "./unstable/use-fiber": "./dist/unstable/use-fiber.js",
-    "./unstable/use-is-first-render": "./dist/unstable/use-is-first-render.js",
-    "./unstable/use-owner-stack": "./dist/unstable/use-owner-stack.js",
-    "./unstable/use-render-count": "./dist/unstable/use-render-count.js",
-    "./unstable/use-render-duration": "./dist/unstable/use-render-duration.js",
-    "./unstable/use-render-reason": "./dist/unstable/use-render-reason.js",
-    "./unstable/use-why-did-you-update": "./dist/unstable/use-why-did-you-update.js",
     "./package.json": "./package.json"
   },
   "publishConfig": {

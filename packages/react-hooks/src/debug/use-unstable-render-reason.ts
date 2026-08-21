@@ -11,11 +11,11 @@ import {
   type FiberLike,
 } from "./_fiber.ts";
 
-/** The classification `useRenderReason` reports. */
+/** The classification `useUnstableRenderReason` reports. */
 export type RenderReason = "context" | "mount" | "parent" | "props" | "state" | "unknown";
 
-/** The shape returned by `useRenderReason`. */
-export interface UseRenderReasonResult<T extends Element> {
+/** The shape returned by `useUnstableRenderReason`. */
+export interface UseUnstableRenderReasonResult<T extends Element> {
   reason: RenderReason;
   ref: RefObject<T | null>;
 }
@@ -29,12 +29,10 @@ interface RenderSnapshot {
 const EMPTY_SNAPSHOT: RenderSnapshot = { context: [], props: null, state: [] };
 
 /**
- * How many hooks `useRenderReason` itself calls (4 `useRef`s, 1
+ * How many hooks `useUnstableRenderReason` itself calls (4 `useRef`s, 1
  * `useState`, 1 `useEffect`) — skipped when walking the caller's hook
  * list so this hook's own `reason` state doesn't show up as if it were
- * the caller's own `useState`. Only correct when `useRenderReason()` is
- * called before any of the caller's own stateful hooks — see the caveat
- * in this hook's docs.
+ * the caller's own `useState`.
  */
 const OWN_HOOK_COUNT = 6;
 
@@ -71,34 +69,26 @@ const classify = (
  * of the above changed, so the parent re-rendered this component without a
  * locally-observable cause — typically a non-memoized child). When more
  * than one changed at once, the first match wins, checked in that order.
- * `"unknown"` is the starting value, and covers an unrecognized internal
- * shape.
+ * `"unknown"` is the starting value.
  *
- * Computed in an effect, after commit — reading `ref`'s Fiber *during*
- * render (mid-`beginWork`) sees `memoizedProps` not yet updated to this
- * render's props and `memoizedState`/`dependencies` not yet rebuilt past
- * whatever hooks ran before this one, since React only finishes both once
- * the component function returns. Waiting for the effect means the read
- * Fiber reflects the fully-completed render — one commit's lag, exposed
- * as `reason` updating via its own extra render rather than being
- * available synchronously in the same render that caused it.
+ * Computed in an effect, after commit, so `reason` updates one render
+ * behind the change that caused it rather than being available
+ * synchronously in the same render.
  *
- * Built on the same private, no-semver-guarantee react-dom internals as
- * `useFiber` (see its docs) — fails closed to `"unknown"` rather than
- * throwing, and no-ops (stays `"unknown"`) in production builds.
- *
- * Call `useRenderReason()` as the first hook in the component — state
- * detection works by walking the component's own Fiber hook list and
- * skipping this hook's own internal hooks by count, so a stateful hook
- * called *before* it would be miscounted as this hook's own.
+ * Call `useUnstableRenderReason()` as the first hook in the component —
+ * state detection skips this hook's own internal hooks by count when
+ * walking the Fiber hook list, so a stateful hook called *before* it
+ * would be miscounted as this hook's own.
  *
  * @example
  * ```tsx
- * const { ref, reason } = useRenderReason<HTMLDivElement>();
+ * const { ref, reason } = useUnstableRenderReason<HTMLDivElement>();
  * return <div ref={ref}>{reason}</div>;
  * ```
  */
-export const useRenderReason = <T extends Element = HTMLElement>(): UseRenderReasonResult<T> => {
+export const useUnstableRenderReason = <
+  T extends Element = HTMLElement,
+>(): UseUnstableRenderReasonResult<T> => {
   const ref = useRef<T | null>(null);
   const hasSeenFiberRef = useRef(false);
   const previousRef = useRef<RenderSnapshot>(EMPTY_SNAPSHOT);
@@ -106,6 +96,7 @@ export const useRenderReason = <T extends Element = HTMLElement>(): UseRenderRea
   const [reason, setReason] = useState<RenderReason>("unknown");
 
   const computeReason = (): RenderReason => {
+    /* v8 ignore next 3 -- computeReason only runs inside the effect below, which never runs during SSR (so a Node test can't reach this) and can't be forced into a production build at test time (bundlers replace `process.env.NODE_ENV` at build time, before this browser test suite's own build). */
     if (isProductionBuild()) {
       return "unknown";
     }

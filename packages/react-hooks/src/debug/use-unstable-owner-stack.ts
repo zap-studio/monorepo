@@ -2,8 +2,8 @@ import { captureOwnerStack, useCallback } from "react";
 
 import { isProductionBuild } from "./_env.ts";
 
-/** The shape returned by `useOwnerStack`. */
-export interface UseOwnerStackResult {
+/** The shape returned by `useUnstableOwnerStack`. */
+export interface UseUnstableOwnerStackResult {
   captureOwnerStack: () => string | undefined;
   supported: boolean;
 }
@@ -16,20 +16,19 @@ export interface UseOwnerStackResult {
  * production build — React's own `captureOwnerStack` already returns
  * `null` there, which this wrapper surfaces as `undefined`).
  *
- * Comparatively stable as `unstable/` hooks go — it's React's own public
- * (if dev-only) API, not private Fiber internals — but ships here for
- * consistency with the rest of this debug/observability group.
- *
  * @example
  * ```tsx
- * const { captureOwnerStack: capture, supported } = useOwnerStack();
+ * const { captureOwnerStack: capture, supported } = useUnstableOwnerStack();
  * const handleError = () => console.error(supported ? capture() : "unavailable");
  * ```
  */
-export const useOwnerStack = (): UseOwnerStackResult => {
+export const useUnstableOwnerStack = (): UseUnstableOwnerStackResult => {
   const supported = !isProductionBuild() && typeof captureOwnerStack === "function";
 
-  const capture = useCallback((): string | undefined => captureOwnerStack?.() ?? undefined, []);
+  const capture = useCallback((): string | undefined => {
+    // v8 ignore next -- the `?.` optional call only short-circuits on React < 19, where this named import doesn't exist; the package's own peer range (React 19) always has it, so that side is untestable here.
+    return captureOwnerStack?.() ?? undefined;
+  }, []);
 
   return { captureOwnerStack: capture, supported };
 };

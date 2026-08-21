@@ -2,7 +2,7 @@ import { useCallback, useRef, useState, type ProfilerOnRenderCallback } from "re
 
 import { isProductionBuild } from "./_env.ts";
 
-/** One `<Profiler>` `onRender` sample, as recorded by `useRenderDuration`. */
+/** One `<Profiler>` `onRender` sample, as recorded by `useUnstableRenderDuration`. */
 export interface RenderDurationSample {
   actualDuration: number;
   baseDuration: number;
@@ -12,27 +12,32 @@ export interface RenderDurationSample {
   startTime: number;
 }
 
-/** The shape returned by `useRenderDuration`. */
-export interface UseRenderDurationResult {
+/** The shape returned by `useUnstableRenderDuration`. */
+export interface UseUnstableRenderDurationResult {
   last: RenderDurationSample | null;
   onRender: ProfilerOnRenderCallback;
   samples: RenderDurationSample[];
 }
 
-const NOOP_RESULT: UseRenderDurationResult = { last: null, onRender: () => {}, samples: [] };
+// v8 ignore next -- selected in production builds (tested), but only ever *called* by a real <Profiler> commit, which requires a real browser under NODE_ENV=production — unreachable here since bundlers replace `process.env.NODE_ENV` at this test suite's own build time.
+const noopOnRender: ProfilerOnRenderCallback = () => {};
+
+const NOOP_RESULT: UseUnstableRenderDurationResult = {
+  last: null,
+  onRender: noopOnRender,
+  samples: [],
+};
 
 /**
  * Wraps React's `<Profiler>` `onRender` timing as a hook — pass `onRender`
  * to a `<Profiler>` wrapping the subtree to measure; `samples` accumulates
  * each render's `{ id, phase, actualDuration, baseDuration, startTime,
- * commitTime }`, capped at the last `limit` (default `20`). Built entirely
- * on the public `<Profiler>` API — no private internals — but still lives
- * under `unstable/` since it's a dev/debug tool, not runtime behavior to
- * depend on: it no-ops (records nothing) in production builds.
+ * commitTime }`, capped at the last `limit` (default `20`). Records
+ * nothing in production builds.
  *
  * @example
  * ```tsx
- * const { onRender, last } = useRenderDuration();
+ * const { onRender, last } = useUnstableRenderDuration();
  * return (
  *   <Profiler id="Sidebar" onRender={onRender}>
  *     <Sidebar />
@@ -40,7 +45,7 @@ const NOOP_RESULT: UseRenderDurationResult = { last: null, onRender: () => {}, s
  * );
  * ```
  */
-export const useRenderDuration = (limit = 20): UseRenderDurationResult => {
+export const useUnstableRenderDuration = (limit = 20): UseUnstableRenderDurationResult => {
   const [samples, setSamples] = useState<RenderDurationSample[]>([]);
   const limitRef = useRef(limit);
   limitRef.current = limit;

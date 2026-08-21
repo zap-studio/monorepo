@@ -2,10 +2,10 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { useIsFirstRender } from "./use-is-first-render.ts";
+import { useUnstableIsFirstRender } from "./use-unstable-is-first-render.ts";
 
 function TestComponent() {
-  const isFirst = useIsFirstRender();
+  const isFirst = useUnstableIsFirstRender();
   return isFirst ? "true" : "false";
 }
 
@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe(useIsFirstRender, () => {
+describe(useUnstableIsFirstRender, () => {
   it("renders true on the first server render", () => {
     const html = renderToString(createElement(TestComponent));
 
