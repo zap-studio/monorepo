@@ -89,7 +89,8 @@ export const collectContextValues = (fiber: FiberLike): unknown[] => {
   return values;
 };
 
-const listsDiffer = (a: unknown[], b: unknown[]): boolean =>
+/** Value-equality check for two hook/context value snapshots (from `collectStateHookValues`/`collectContextValues`). */
+export const arraysDiffer = (a: unknown[], b: unknown[]): boolean =>
   a.length !== b.length || a.some((value, index) => !Object.is(value, b[index]));
 
 export const propsDiffer = (
@@ -110,9 +111,3 @@ export const propsDiffer = (
   }
   return false;
 };
-
-export const stateHooksDiffer = (a: HookNode | null, b: HookNode | null): boolean =>
-  listsDiffer(collectStateHookValues(a), collectStateHookValues(b));
-
-export const contextValuesDiffer = (a: FiberLike, b: FiberLike): boolean =>
-  listsDiffer(collectContextValues(a), collectContextValues(b));
