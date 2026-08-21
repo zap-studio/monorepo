@@ -75,6 +75,30 @@ Every hook is also importable from its own category subpath — see [Conventions
 | `useNotificationPermission` | Notifications API permission state + a `notify()` trigger                                |
 | `useFontsReady`             | `true` once `document.fonts.ready` resolves — avoid FOUC on custom web fonts             |
 
+### DOM / element interaction (`dom/`)
+
+| Hook                      | What it does                                                                     |
+| ------------------------- | -------------------------------------------------------------------------------- |
+| `useClickOutside`         | Detects a click/touch outside a ref'd element                                    |
+| `useHover`                | Boolean hover state for a ref'd element                                          |
+| `useMousePosition`        | Pointer `clientX`/`clientY`/`pageX`/`pageY`/`screenX`/`screenY`, via `mousemove` |
+| `useIntersectionObserver` | Element visibility in the viewport (also exported as `useInView`)                |
+| `useResizeObserver`       | Element content-box size tracking via `ResizeObserver`                           |
+| `useEventListener`        | Typed, auto-cleanup `addEventListener` wrapper                                   |
+| `useLockBodyScroll`       | Locks body scroll (modals/drawers)                                               |
+| `useFavicon`              | Imperatively swaps the `<link rel="icon">` href                                  |
+| `useScript`               | Loads an external `<script src>` on demand, dedupes concurrent requests          |
+| `useScrollPosition`       | `window.scrollX`/`scrollY`, updating on the `scroll` event                       |
+| `useTextSelection`        | The current page text selection, via `window.getSelection()`                     |
+| `useFilePicker`           | File System Access API (Chromium-only)                                           |
+| `useFileDrop`             | Drag-and-drop file upload state (also exported as `useDropzone`)                 |
+| `useMutationObserver`     | `MutationObserver` on a ref'd element/subtree                                    |
+| `useFullscreen`           | Fullscreen API wrapper for a ref'd element                                       |
+| `usePointer`              | Unified mouse/touch/pen position via Pointer events                              |
+| `usePopover`              | Native Popover API open/close state                                              |
+| `useViewTransition`       | `document.startViewTransition()` wrapper                                         |
+| `useEyeDropper`           | EyeDropper API, single-shot color picker (Chromium-only)                         |
+
 ### Input (`input/`)
 
 | Hook                | What it does                                                                   |
