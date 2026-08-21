@@ -137,6 +137,13 @@
     "./state/use-toggle": "./dist/state/use-toggle.js",
     "./state/use-window-message": "./dist/state/use-window-message.js",
     "./unstable": "./dist/unstable/index.js",
+    "./unstable/use-fiber": "./dist/unstable/use-fiber.js",
+    "./unstable/use-is-first-render": "./dist/unstable/use-is-first-render.js",
+    "./unstable/use-owner-stack": "./dist/unstable/use-owner-stack.js",
+    "./unstable/use-render-count": "./dist/unstable/use-render-count.js",
+    "./unstable/use-render-duration": "./dist/unstable/use-render-duration.js",
+    "./unstable/use-render-reason": "./dist/unstable/use-render-reason.js",
+    "./unstable/use-why-did-you-update": "./dist/unstable/use-why-did-you-update.js",
     "./package.json": "./package.json"
   },
   "publishConfig": {
