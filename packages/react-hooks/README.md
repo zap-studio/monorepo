@@ -2,6 +2,8 @@
 
 Small, focused React hooks. Each one ships as its own subpath export, so importing one never pulls in the others.
 
+Full documentation: [zapstudio.dev/react-hooks](https://www.zapstudio.dev/react-hooks)
+
 ## Motivation
 
 Most React hook collections are either one giant package (import a `useDebounce` and your bundle quietly gains forty other hooks' worth of code) or a pile of one-off gists copy-pasted between projects, each with its own subtly different bugs around SSR safety and cleanup.
