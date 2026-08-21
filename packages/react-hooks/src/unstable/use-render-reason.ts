@@ -1,4 +1,4 @@
-import { type RefObject, useRef } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 
 import { isProductionBuild } from "./_env.ts";
 import {
@@ -8,6 +8,7 @@ import {
   findOwnerFiber,
   propsDiffer,
   readHostFiber,
+  type FiberLike,
 } from "./_fiber.ts";
 
 /** The classification `useRenderReason` reports. */
@@ -19,27 +20,62 @@ export interface UseRenderReasonResult<T extends Element> {
   ref: RefObject<T | null>;
 }
 
+interface RenderSnapshot {
+  context: unknown[];
+  props: Record<string, unknown> | null;
+  state: unknown[];
+}
+
+const EMPTY_SNAPSHOT: RenderSnapshot = { context: [], props: null, state: [] };
+
+const snapshotOf = (fiber: FiberLike): RenderSnapshot => ({
+  context: collectContextValues(fiber),
+  props: fiber.memoizedProps,
+  state: collectStateHookValues(fiber.memoizedState),
+});
+
+const classify = (
+  hasSeenFiber: boolean,
+  current: RenderSnapshot,
+  previous: RenderSnapshot,
+): RenderReason => {
+  if (!hasSeenFiber) {
+    return "mount";
+  }
+  if (propsDiffer(current.props, previous.props)) {
+    return "props";
+  }
+  if (arraysDiffer(current.state, previous.state)) {
+    return "state";
+  }
+  if (arraysDiffer(current.context, previous.context)) {
+    return "context";
+  }
+  return "parent";
+};
+
 /**
- * Classifies why the ref'd component just re-rendered — `"mount"` (the
- * first render where a Fiber can be read — see the one-render-behind note
- * below), `"props"`, `"state"` (a `useState`/`useReducer` value changed),
+ * Classifies why the ref'd component just re-rendered — `"mount"`,
+ * `"props"`, `"state"` (a `useState`/`useReducer` value changed),
  * `"context"` (a read `useContext()` value changed), or `"parent"` (none
  * of the above changed, so the parent re-rendered this component without a
  * locally-observable cause — typically a non-memoized child). When more
  * than one changed at once, the first match wins, checked in that order.
- * `"unknown"` covers an unrecognized internal shape or no Fiber yet.
+ * `"unknown"` is the starting value, and covers an unrecognized internal
+ * shape.
  *
- * Like every ref-based hook in this package, this reads `ref`'s DOM node
- * one render behind — the ref only attaches during its own commit. Rather
- * than lean on react-dom's own `alternate` pairing (whose props/state
- * aren't guaranteed settled mid-render), this hook keeps its own
- * props/state/context snapshot from the last time it read a Fiber, and
- * compares against that — reliable regardless of exactly when react-dom
- * finishes updating a Fiber's fields relative to this hook's read.
+ * Computed in an effect, after commit — reading `ref`'s Fiber *during*
+ * render (mid-`beginWork`) sees `memoizedProps` not yet updated to this
+ * render's props and `memoizedState`/`dependencies` not yet rebuilt past
+ * whatever hooks ran before this one, since React only finishes both once
+ * the component function returns. Waiting for the effect means the read
+ * Fiber reflects the fully-completed render — one commit's lag, exposed
+ * as `reason` updating via its own extra render rather than being
+ * available synchronously in the same render that caused it.
  *
  * Built on the same private, no-semver-guarantee react-dom internals as
  * `useFiber` (see its docs) — fails closed to `"unknown"` rather than
- * throwing, and no-ops (always `"unknown"`) in production builds.
+ * throwing, and no-ops (stays `"unknown"`) in production builds.
  *
  * @example
  * ```tsx
@@ -50,49 +86,46 @@ export interface UseRenderReasonResult<T extends Element> {
 export const useRenderReason = <T extends Element = HTMLElement>(): UseRenderReasonResult<T> => {
   const ref = useRef<T | null>(null);
   const hasSeenFiberRef = useRef(false);
-  const previousPropsRef = useRef<Record<string, unknown> | null>(null);
-  const previousStateRef = useRef<unknown[]>([]);
-  const previousContextRef = useRef<unknown[]>([]);
+  const previousRef = useRef<RenderSnapshot>(EMPTY_SNAPSHOT);
+  const skipNextRef = useRef(false);
+  const [reason, setReason] = useState<RenderReason>("unknown");
 
-  if (isProductionBuild()) {
-    return { reason: "unknown", ref };
-  }
-
-  const element = ref.current;
-  if (!element) {
-    return { reason: "unknown", ref };
-  }
-
-  try {
-    const hostFiber = readHostFiber(element);
-    if (!hostFiber) {
-      return { reason: "unknown", ref };
+  const computeReason = (): RenderReason => {
+    if (isProductionBuild()) {
+      return "unknown";
     }
-    const fiber = findOwnerFiber(hostFiber);
-    const currentProps = fiber.memoizedProps;
-    const currentState = collectStateHookValues(fiber.memoizedState);
-    const currentContext = collectContextValues(fiber);
+    const element = ref.current;
+    if (!element) {
+      return "unknown";
+    }
+    try {
+      const hostFiber = readHostFiber(element);
+      if (!hostFiber) {
+        return "unknown";
+      }
+      const current = snapshotOf(findOwnerFiber(hostFiber));
+      const nextReason = classify(hasSeenFiberRef.current, current, previousRef.current);
+      hasSeenFiberRef.current = true;
+      previousRef.current = current;
+      return nextReason;
+    } catch {
+      return "unknown";
+    }
+  };
 
-    let reason: RenderReason;
-    if (!hasSeenFiberRef.current) {
-      reason = "mount";
-    } else if (propsDiffer(currentProps, previousPropsRef.current)) {
-      reason = "props";
-    } else if (arraysDiffer(currentState, previousStateRef.current)) {
-      reason = "state";
-    } else if (arraysDiffer(currentContext, previousContextRef.current)) {
-      reason = "context";
-    } else {
-      reason = "parent";
+  useEffect(() => {
+    if (skipNextRef.current) {
+      skipNextRef.current = false;
+      return;
     }
 
-    hasSeenFiberRef.current = true;
-    previousPropsRef.current = currentProps;
-    previousStateRef.current = currentState;
-    previousContextRef.current = currentContext;
+    const nextReason = computeReason();
+    // A setState call only triggers (and thus needs skipping) another commit when the value actually changes — Object.is-equal updates are bailed out of silently, so skipNextRef would otherwise go stale and wrongly skip the next real render.
+    if (nextReason !== reason) {
+      skipNextRef.current = true;
+    }
+    setReason(nextReason);
+  });
 
-    return { reason, ref };
-  } catch {
-    return { reason: "unknown", ref };
-  }
+  return { reason, ref };
 };

@@ -11,13 +11,6 @@ interface ChildHandle {
   setCount: (value: number) => void;
 }
 
-/**
- * `useRenderReason` reads its ref one render behind (see its docs), so
- * `"mount"` is only observable on the render *after* the actual mount
- * commit. Renders once (the real mount), then "settles" with a same-props
- * re-render so the returned handle's `reason` is already `"mount"` —
- * from there, one more render is what each test asserts on.
- */
 function renderChild(props: { label: string }) {
   let latest!: ChildHandle;
   function Child({ label }: { label: string }) {
@@ -29,7 +22,6 @@ function renderChild(props: { label: string }) {
   }
 
   const { rerender } = render(createElement(Child, props));
-  rerender(createElement(Child, props));
   return {
     get current() {
       return latest;
@@ -51,7 +43,6 @@ function renderChildWithContext(props: { label: string }, contextValue: string) 
     createElement(TestContext.Provider, { value }, createElement(Child, elementProps));
 
   const { rerender } = render(wrap(props, contextValue));
-  rerender(wrap(props, contextValue));
   return {
     get current() {
       return latest;
@@ -68,7 +59,7 @@ describe(useRenderReason, () => {
     expect(result.current.reason).toBe("unknown");
   });
 
-  it("classifies the first observable render as mount", () => {
+  it("classifies the mount render as mount", () => {
     const child = renderChild({ label: "a" });
 
     expect(child.current.reason).toBe("mount");
