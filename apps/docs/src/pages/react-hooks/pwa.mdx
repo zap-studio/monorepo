@@ -1,0 +1,48 @@
+---
+title: PWA
+description: Installability, Service Worker update state, app badges, and standalone-display detection for progressive web apps.
+---
+
+# PWA
+
+Hooks for the progressive-web-app lifecycle — installing, updating, badging, and detecting when the app is already running installed.
+
+## useInstallPrompt
+
+Custom "Add to Home Screen" UI, wrapping [`beforeinstallprompt`](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeinstallprompt_event) (deferred and replayed via `promptInstall()`, since the browser's own prompt is suppressed) and [`appinstalled`](https://developer.mozilla.org/en-US/docs/Web/API/Window/appinstalled_event). `canInstall`/`installed` are both `false` — the SSR-safe default — until the client observes the respective event, and `canInstall` stays `false` permanently in browsers that never fire `beforeinstallprompt`. [Chromium-only — Safari and Firefox never fire this event](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeinstallprompt_event#browser_compatibility).
+
+```tsx
+const { canInstall, promptInstall } = useInstallPrompt();
+if (canInstall) return <button onClick={() => promptInstall()}>Install</button>;
+```
+
+## useServiceWorker
+
+The current page's [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) registration (if any), plus whether a new worker has finished installing while an existing one already controls the page — the standard "update available, reload to activate" signal. `registration` is `undefined` — the SSR-safe default — until the client resolves it, and permanently where Service Workers are unsupported.
+
+```tsx
+const { updateAvailable } = useServiceWorker();
+if (updateAvailable) showReloadToast();
+```
+
+## useAppBadge
+
+Wraps the [Badging API](https://developer.mozilla.org/en-US/docs/Web/API/Badging_API) (`navigator.setAppBadge`/`clearAppBadge`) — the small numeric/dot badge shown on an installed PWA's app icon. `supported: false` where the Badging API doesn't exist, and `setBadge()`/`clearBadge()` then no-op. [Chromium-only — no Safari/Firefox support yet](https://developer.mozilla.org/en-US/docs/Web/API/Badging_API#browser_compatibility).
+
+```tsx
+const { setBadge, clearBadge } = useAppBadge();
+setBadge(unreadCount); // or setBadge() for a plain dot, clearBadge() to remove it
+```
+
+## useStandaloneMode
+
+`true` when the app is running in standalone display mode — launched from a home screen icon or otherwise installed as a PWA — via the [`(display-mode: standalone)`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode) media query. `false` in an ordinary browser tab, during server rendering, and before the client subscribes.
+
+```tsx
+const isStandalone = useStandaloneMode();
+```
+
+## See Also
+
+- [Getting Started](/react-hooks/getting-started)
+- [Overview](/react-hooks)

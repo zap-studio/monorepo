@@ -1,0 +1,25 @@
+---
+title: Commerce
+description: Show the browser/OS's native payment sheet via the Payment Request API.
+---
+
+# Commerce
+
+A single hook wrapping the browser's native checkout UI.
+
+## usePaymentRequest
+
+Wraps the [Payment Request API](https://developer.mozilla.org/en-US/docs/Web/API/Payment_Request_API) — shows the browser/OS's native payment sheet for the given payment method data and details, resolving with the user's `PaymentResponse` once they authorize it. Callers are responsible for calling `response.complete("success" | "fail")` once their own backend confirms the charge — this hook only tracks whether the sheet itself completed or was cancelled/errored, not whether the charge succeeded. `supported: false` — the SSR-safe default — where the Payment Request API doesn't exist, and `pay()` then resolves `undefined` without throwing. [Support varies by browser and payment method](https://developer.mozilla.org/en-US/docs/Web/API/Payment_Request_API#browser_compatibility) — check `supported` before relying on it.
+
+```tsx
+const { pay, status } = usePaymentRequest();
+const response = await pay([{ supportedMethods: "basic-card" }], {
+  total: { label: "Total", amount: { currency: "USD", value: "10.00" } },
+});
+await response?.complete("success");
+```
+
+## See Also
+
+- [Getting Started](/react-hooks/getting-started)
+- [Overview](/react-hooks)

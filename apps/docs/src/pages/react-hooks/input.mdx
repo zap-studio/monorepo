@@ -1,0 +1,65 @@
+---
+title: Input
+description: Keyboard shortcuts, gamepads, pointer lock, and user-activation state.
+---
+
+# Input
+
+Hooks for keyboard shortcuts, held-key state, idle detection, gamepads, user-activation gating, and Pointer Lock — everything short of full drag/drop or touch gesture handling (see [DOM / Element Interaction](/react-hooks/dom) for those).
+
+## useKeyPress
+
+Tracks whether any of the given key(s) is currently held down, matching [`KeyboardEvent.key`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) case-insensitively via `keydown`/`keyup` on `window`. SSR-safe — returns `false` until the client subscribes.
+
+```tsx
+const isShiftHeld = useKeyPress("Shift");
+const isArrowHeld = useKeyPress(["ArrowLeft", "ArrowRight"]);
+```
+
+## useHotkeys
+
+Registers `"ctrl+s"`-style keyboard shortcut combos mapped to handlers, matched on [`keydown`](https://developer.mozilla.org/en-US/docs/Web/API/Element/keydown_event) against `window`. Modifiers (`ctrl`/`control`, `shift`, `alt`, `meta`/`cmd`/`command`) must all match exactly — a plain `"s"` binding never fires while `ctrl` is held.
+
+```tsx
+useHotkeys({ "ctrl+s": save, "shift+enter": submit }, { preventDefault: true });
+```
+
+## useIdle
+
+`true` once a timeout (default 60s) has passed without user activity — mouse move/click, key press, touch, scroll, or wheel — resetting to `false` on the next activity. SSR-safe — returns `false` on the server and until the first timeout elapses on the client.
+
+```tsx
+const isIdle = useIdle(5 * 60_000); // idle after 5 minutes
+```
+
+## useGamepad
+
+Currently connected gamepads, via the [Gamepad API](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API)'s `navigator.getGamepads()`, updating on `gamepadconnected`/`gamepaddisconnected`. Only exposes `id`/`index`/`mapping` — live button/axis state requires polling on an animation frame, out of scope for this hook.
+
+```tsx
+const gamepads = useGamepad();
+const isControllerConnected = gamepads.length > 0;
+```
+
+## useUserActivation
+
+Wraps [`navigator.userActivation`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/userActivation) — whether the page has ever/is currently within a user-activation window (a click, key press, or similar gesture) — useful to gate autoplay/popups browsers block outside one. Falls back to `{ isActive: false, hasBeenActive: false }` during server rendering and where the API is unsupported.
+
+```tsx
+const { isActive } = useUserActivation();
+if (isActive) audio.play(); // gate autoplay behind a real user gesture
+```
+
+## usePointerLock
+
+Wraps the [Pointer Lock API](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API) for a single ref'd element — attach `ref` to the element (e.g. a `<canvas>`) that should capture the pointer, then call `request()`/`exit()` imperatively, typically from a click handler (the API requires a user gesture). `supported: false` is the SSR-safe default where the API doesn't exist.
+
+```tsx
+const { ref, locked, request, exit } = usePointerLock<HTMLCanvasElement>();
+return <canvas ref={ref} onClick={() => request()} />;
+```
+
+## See Also
+
+- [Getting Started](/react-hooks/getting-started)
+- [Overview](/react-hooks)

@@ -1,0 +1,205 @@
+---
+title: State
+description: Local, persisted, cross-tab, and cross-window state hooks — from a plain toggle to IndexedDB, cookies, and postMessage.
+---
+
+# State
+
+Hooks for holding and syncing state — plain in-memory utilities (toggles, counters, `Map`/`Set`/queue-backed state, undo/redo) alongside hooks that keep state in sync with a storage or messaging API (`localStorage`, `sessionStorage`, IndexedDB, cookies, the URL, `BroadcastChannel`, `postMessage`).
+
+## useToggle
+
+Boolean state with a `toggle()` function — calling it with no argument flips the value, calling it with a boolean sets that value explicitly.
+
+```tsx
+const [isOpen, toggleOpen] = useToggle();
+<button onClick={() => toggleOpen()}>Toggle</button>
+<button onClick={() => toggleOpen(false)}>Close</button>
+```
+
+## useDebounce
+
+Returns a debounced wrapper around a callback — each call resets a delay timer, so the callback only actually runs once calls stop arriving for that long, with the most recent call's arguments. Pending calls are cleared on unmount.
+
+```tsx
+const debouncedSearch = useDebounce((query: string) => fetchResults(query), 300);
+<input onChange={(e) => debouncedSearch(e.target.value)} />;
+```
+
+## useDebouncedValue
+
+Debounces a value directly, without a separate handler — the returned value lags behind the input by `delayMs`, only updating once the input stops changing for that long. Use this instead of `useDebounce` when there's no natural "callback" to wrap, e.g. delaying a search re-fetch until typing pauses.
+
+```tsx
+const debouncedQuery = useDebouncedValue(query, 300);
+useEffect(() => {
+  fetchResults(debouncedQuery);
+}, [debouncedQuery]);
+```
+
+## useThrottle
+
+Returns a throttled wrapper around a callback — the first call runs immediately (leading edge), and further calls are dropped until the delay has passed. Unlike `useDebounce`, calls made during the cooldown are discarded rather than queued for later.
+
+```tsx
+const throttledScroll = useThrottle(() => trackScrollDepth(), 1000);
+window.addEventListener("scroll", throttledScroll);
+```
+
+## useThrottledValue
+
+Throttles a value directly (leading edge) — updates immediately on the first change after mount, then at most once per `delayMs` after that, always eventually reflecting the latest value once the cooldown elapses.
+
+```tsx
+const throttledScrollY = useThrottledValue(scrollY, 200);
+```
+
+## useLocalStorage
+
+State synced to [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) under a key, JSON-serialized. Reads the stored value on mount, falling back to the initial value when nothing's stored or the stored JSON is malformed, and syncs across same-origin tabs via the `storage` event. Storage read/write failures (quota exceeded, private browsing) are swallowed — state still updates in-memory.
+
+```tsx
+const [theme, setTheme, clearTheme] = useLocalStorage("theme", "light");
+```
+
+## useSessionStorage
+
+State synced to [`sessionStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) under a key, JSON-serialized — the same read/fallback/error-swallowing behavior as `useLocalStorage`, minus cross-tab sync, since `sessionStorage` is already scoped to a single tab.
+
+```tsx
+const [draft, setDraft, clearDraft] = useSessionStorage("draft", "");
+```
+
+## useIndexedDB
+
+State synced to [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) under a key, via a small dedicated object store. Distinct from `useLocalStorage`/`useSessionStorage`: those wrap a synchronous, string-only, size-limited API, while this hook supports structured/binary values and much larger storage quotas at the cost of an async read/write API — `status` tracks the initial read (`"loading"` → `"ready"`/`"error"`), and `setValue`/`remove` return promises that resolve once the write completes.
+
+```tsx
+const { value, setValue, status } = useIndexedDB("draft", { title: "", body: "" });
+if (status === "ready") await setValue((prev) => ({ ...prev, title: "Hello" }));
+```
+
+## usePrevious
+
+Returns a value as it was during the previous render — `undefined` on the first render, before there is one. Updates after every render, via an effect, so the value returned always reflects the previously _committed_ render, not the one currently in progress.
+
+```tsx
+const previousCount = usePrevious(count);
+const delta = previousCount === undefined ? 0 : count - previousCount;
+```
+
+## useCopyToClipboard
+
+Wraps [`navigator.clipboard.writeText()`](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard/writeText) — `copy(text)` writes to the clipboard and resolves `true`/`false` for success/failure, and `copied` mirrors that, auto-resetting to `false` after a delay. `supported: false` (reflected as an error on `copy()`) where the Clipboard API doesn't exist.
+
+```tsx
+const { copy, copied } = useCopyToClipboard();
+<button onClick={() => copy(code)}>{copied ? "Copied!" : "Copy"}</button>;
+```
+
+## useCounter
+
+Numeric counter state with `increment()`/`decrement()` (default step `1`), `set()`, and `reset()` (back to the initial value). Clamped to `min`/`max` when given — including the initial value itself.
+
+```tsx
+const { count, increment, decrement, reset } = useCounter(0, { min: 0, max: 10 });
+```
+
+## useTheme
+
+`"light"`/`"dark"`/`"system"` theme mode with persistence (via `localStorage`, syncing across tabs), layered on the same `prefers-color-scheme` reading [`useColorScheme`](/react-hooks/sensors) uses for the `"system"` case. Distinct from `useColorScheme`: that hook only ever reports the OS's actual current preference, while this hook additionally tracks a stored user override and falls back to the OS reading when the mode is `"system"`.
+
+```tsx
+const { theme, resolvedTheme, setTheme } = useTheme();
+document.documentElement.dataset.theme = resolvedTheme;
+<button onClick={() => setTheme("dark")}>Dark</button>;
+```
+
+## useMap
+
+`Map`-backed state — `set()`/`delete()`/`clear()` each replace the underlying `Map` with a new one, so React re-renders on every mutation (a plain mutable `Map` ref wouldn't trigger a re-render on `.set()`). `get()`/`has()` always read the latest map, independent of any stale closure.
+
+```tsx
+const { map, set, delete: del } = useMap<string, number>();
+set("a", 1);
+```
+
+## useSet
+
+`Set`-backed state — the same "replace, don't mutate" approach as `useMap`, so `add()`/`delete()`/`clear()` all trigger a re-render. `has()` always reads the latest set.
+
+```tsx
+const { set, add, has } = useSet<string>();
+add("a");
+```
+
+## useQueue
+
+FIFO queue state. `dequeue()` both removes and returns the front item synchronously — reading/writing through a ref kept in lockstep with state, rather than a plain `useState` updater, so a `dequeue()` right after an `enqueue()` in the same synchronous block always sees the item that was just enqueued.
+
+```tsx
+const { enqueue, dequeue, first } = useQueue<string>();
+enqueue("a");
+const next = dequeue(); // "a"
+```
+
+## useHistoryState
+
+State with undo/redo, backed by a bounded history stack — `set()` pushes the previous value onto the past stack (dropping the oldest entry once it reaches capacity) and clears the future stack; `undo()`/`redo()` move the boundary between past/future without discarding either side, so redoing after an undo restores exactly what was undone. A generic state utility, unrelated to the browser History API — see [History & Navigation](/react-hooks/navigation) for `usePopState`/`useNavigation`.
+
+```tsx
+const { value, set, undo, redo, canUndo, canRedo } = useHistoryState("");
+set("hello");
+if (canUndo) undo();
+```
+
+## useSearchParams
+
+State synced to the URL's query string, via [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams). Reads `location.search` and updates on `popstate` (back/forward); the setter itself calls `history.pushState`/`replaceState` (silent APIs that don't fire `popstate`), so it updates local state directly rather than waiting on an event. Pass `{ replace: true }` to replace the current history entry instead of pushing a new one. Falls back to empty params during server rendering.
+
+```tsx
+const [searchParams, setSearchParams] = useSearchParams();
+const page = searchParams.get("page") ?? "1";
+setSearchParams((prev) => new URLSearchParams({ ...Object.fromEntries(prev), page: "2" }));
+```
+
+## useHashState
+
+State synced to `location.hash`, updating on the native [`hashchange`](https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event) event — including when the setter itself writes `location.hash`, since that assignment synchronously fires `hashchange` too (unlike `history.pushState`/`replaceState`, which stay silent — see `useSearchParams` above). Falls back to `""` during server rendering and before the client subscribes.
+
+```tsx
+const [hash, setHash] = useHashState();
+setHash("#section-2");
+```
+
+## useCookie
+
+A single cookie's value, via the [Cookie Store API](https://developer.mozilla.org/en-US/docs/Web/API/Cookie_Store_API) — an async alternative to parsing `document.cookie` by hand, with a `change` event subscription so the value stays live even when the cookie is set/removed by other code (or a `Set-Cookie` response header) rather than this hook's own `set()`/`remove()`. Chromium-only — `supported: false`, with the value staying `undefined` and `set()`/`remove()` no-oping, where the API doesn't exist (Safari, Firefox); see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Cookie_Store_API#browser_compatibility).
+
+```tsx
+const { value, set, remove, supported } = useCookie("theme");
+if (supported) await set("dark", { path: "/" });
+```
+
+## useBroadcastChannel
+
+Pub/sub state shared across same-origin tabs/windows/workers via the [Broadcast Channel API](https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API) — every `useBroadcastChannel(name)` instance (in any same-origin browsing context, including this one) that posts a message updates every other instance's `lastMessage`. Distinct from `useWindowMessage`: this needs no target reference or origin handshake (same-origin, name-addressed), while that handles cross-origin window/iframe/popup communication requiring an explicit target origin. `supported: false` — with `postMessage()` no-oping — where the Broadcast Channel API doesn't exist.
+
+```tsx
+const { lastMessage, postMessage } = useBroadcastChannel<string>("cart-updates");
+postMessage("item-added");
+```
+
+## useWindowMessage
+
+Cross-origin window/iframe/popup communication via the [`message`/`messageerror`](https://developer.mozilla.org/en-US/docs/Web/API/Window/message_event) events and [`postMessage()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage). Distinct from `useBroadcastChannel`: that's same-origin tabs talking to each other by channel name with no target reference or origin check needed; this handles cross-origin windows, which require an explicit target origin on every send and — since anything on the page can dispatch a `message` event — should always be checked on receive too. Pass an origin filter to ignore messages from any other origin; without it, every `message` event updates `lastMessage`, matching the raw DOM event.
+
+```tsx
+const { lastMessage, postMessage } = useWindowMessage<string>("https://trusted.example");
+postMessage(iframeRef.current!.contentWindow!, "hello", "https://trusted.example");
+```
+
+## See Also
+
+- [Getting Started](/react-hooks/getting-started)
+- [Overview](/react-hooks)

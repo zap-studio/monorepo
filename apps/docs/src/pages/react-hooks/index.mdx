@@ -5,13 +5,27 @@ description: Small, focused, tree-shakeable React hooks — one hook, one subpat
 
 # @zap-studio/react-hooks
 
-`@zap-studio/react-hooks` is a collection of small, focused React hooks. Each hook ships as its own subpath export, importing one hook never pulls in the others.
+`@zap-studio/react-hooks` is a collection of 100+ small, focused React hooks. Each hook ships as its own subpath export — importing one never pulls in the others — with SSR-safe defaults and 100% test coverage.
 
 ## Conventions
 
-- Stable hooks are exported flat from the top-level `.` barrel, each also available from its own subpath (e.g. `@zap-studio/react-hooks/use-is-mobile`).
-- Unstable hooks — anything relying on private/non-semver-guaranteed APIs — live under `./unstable`, never re-exported from the top-level barrel.
+- Every hook is available both from the top-level `.` barrel and from its own subpath (e.g. `@zap-studio/react-hooks/sensors/use-is-mobile`) — same function either way.
+- Hooks relying on private, non-semver-guaranteed APIs (react-dom internals, mostly) carry an `Unstable` marker in the hook's own name — `useUnstableFiber`, not a separate module — so the risk travels with every import and autocomplete hit, not just a path a reader might skip. See [Debug / Observability](/react-hooks/debug).
 - No hook file imports another hook file.
+
+## Hooks by Category
+
+- [Sensors](/react-hooks/sensors) — viewport, network, device, and permission state (`useMediaQuery`, `useOnlineStatus`, `useGeolocation`, `useBattery`, ...)
+- [DOM / Element Interaction](/react-hooks/dom) — ref'd-element observers and browser chrome APIs (`useClickOutside`, `useIntersectionObserver`, `useFullscreen`, ...)
+- [Input](/react-hooks/input) — keyboard, gamepad, and pointer input (`useKeyPress`, `useHotkeys`, `useGamepad`, ...)
+- [Media](/react-hooks/media) — camera, microphone, and screen capture (`useCamera`, `useMediaRecorder`, `useSpeechRecognition`, ...)
+- [History & Navigation](/react-hooks/navigation) — `popstate` and the Navigation API (`usePopState`, `useNavigation`, `useNavigationBlocker`, ...)
+- [Network](/react-hooks/network) — WebSocket and Server-Sent Events (`useWebSocket`, `useEventSource`)
+- [PWA](/react-hooks/pwa) — installability and service worker state (`useInstallPrompt`, `useServiceWorker`, ...)
+- [Commerce](/react-hooks/commerce) — the Payment Request API (`usePaymentRequest`)
+- [Lifecycle](/react-hooks/lifecycle) — mount/unmount, timers, and async helpers (`useMount`, `useInterval`, `useAsync`, ...)
+- [State](/react-hooks/state) — local, persisted, and cross-tab state (`useLocalStorage`, `useIndexedDB`, `useBroadcastChannel`, ...)
+- [Debug / Observability](/react-hooks/debug) — render diagnostics built on private React internals (`useUnstableRenderCount`, `useUnstableFiber`, ...)
 
 ## Learn More
 

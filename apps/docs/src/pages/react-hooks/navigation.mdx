@@ -1,0 +1,48 @@
+---
+title: History & Navigation
+description: Track back/forward navigation, classify how the current page was reached, and block in-app route transitions via the Navigation API.
+---
+
+# History & Navigation
+
+Hooks for reading and reacting to browser navigation — from the low-level `popstate` event up to the newer Navigation API.
+
+## usePopState
+
+Tracks `location.pathname`/`history.state`, updating on the [`popstate` event](https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event) — fired only by browser back/forward navigation (and `history.back()`/`forward()`/`go()`), never by the `pushState`/`replaceState` calls a client-side router makes itself. Falls back to `{ pathname: "/", state: null }` during server rendering and before the client subscribes.
+
+```tsx
+const { pathname } = usePopState();
+```
+
+## useNavigationType
+
+Classifies how the current page was reached — `"navigate"` (a fresh link/URL-bar navigation), `"reload"`, `"back_forward"` (browser back/forward), or `"prerender"` — via the [Navigation Timing API](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceNavigationTiming)'s `performance.getEntriesByType("navigation")[0].type`. This value is fixed once for the page's entire lifetime, unlike `usePopState`, which only ever fires for back/forward transitions after mount. Falls back to `"navigate"` during server rendering and where the Navigation Timing API is unsupported.
+
+```tsx
+const navigationType = useNavigationType();
+if (navigationType === "reload") restoreScrollPosition();
+```
+
+## useNavigation
+
+Wraps the [Navigation API](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API)'s `window.navigation` — `currentEntry`, `entries()`, `canGoBack`/`canGoForward` — updating on its `currententrychange` event, which fires for both same-document and cross-document navigations the API observes (a superset of `usePopState`'s `popstate`, which only ever fires for back/forward). Falls back to `{ canGoBack: false, canGoForward: false, currentEntry: null, entries: [] }` during server rendering and permanently in browsers without the Navigation API. [Chromium-only — no Safari/Firefox support yet](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API#browser_compatibility).
+
+```tsx
+const { canGoBack, currentEntry } = useNavigation();
+if (canGoBack) window.navigation?.back();
+```
+
+## useNavigationBlocker
+
+Wraps the Navigation API's [`navigate` event](https://developer.mozilla.org/en-US/docs/Web/API/Navigation/navigate_event) and `event.intercept()` to block/confirm in-app client-side route transitions — `shouldBlock` receives the destination URL and returns whether to hold the transition. While `blocked` is `true`, the navigation is intercepted and pending; call `proceed()` to let it complete, or `reset()` to clear the blocked state. Distinct from `useBeforeUnload`: that guards full page unload/tab close, this guards SPA route changes that never hit `beforeunload`. No-ops (never blocks) in browsers without the Navigation API. [Chromium-only — no Safari/Firefox support yet](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API#browser_compatibility).
+
+```tsx
+const { blocked, proceed, reset } = useNavigationBlocker(() => isDirty);
+if (blocked) return <ConfirmLeaveDialog onConfirm={proceed} onCancel={reset} />;
+```
+
+## See Also
+
+- [Getting Started](/react-hooks/getting-started)
+- [Overview](/react-hooks)
