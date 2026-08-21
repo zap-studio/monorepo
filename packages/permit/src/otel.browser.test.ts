@@ -136,7 +136,7 @@ describe("permit OpenTelemetry", () => {
   });
 
   it("increments the permit.checks counter tagged by decision", async () => {
-    await readCheckCounts();
+    const before = await readCheckCounts();
 
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
       actions,
@@ -146,8 +146,8 @@ describe("permit OpenTelemetry", () => {
     await policy.can({ user: { id: "user-1" } }, "post:read", post);
     await policy.can({ user: { id: "user-1" } }, "post:write", post);
 
-    const counts = await readCheckCounts();
-    expect(counts["allow"]).toBe(1);
-    expect(counts["deny"]).toBe(1);
+    const after = await readCheckCounts();
+    expect((after["allow"] ?? 0) - (before["allow"] ?? 0)).toBe(1);
+    expect((after["deny"] ?? 0) - (before["deny"] ?? 0)).toBe(1);
   });
 });
