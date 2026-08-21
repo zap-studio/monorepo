@@ -28,10 +28,20 @@ interface RenderSnapshot {
 
 const EMPTY_SNAPSHOT: RenderSnapshot = { context: [], props: null, state: [] };
 
+/**
+ * How many hooks `useRenderReason` itself calls (4 `useRef`s, 1
+ * `useState`, 1 `useEffect`) — skipped when walking the caller's hook
+ * list so this hook's own `reason` state doesn't show up as if it were
+ * the caller's own `useState`. Only correct when `useRenderReason()` is
+ * called before any of the caller's own stateful hooks — see the caveat
+ * in this hook's docs.
+ */
+const OWN_HOOK_COUNT = 6;
+
 const snapshotOf = (fiber: FiberLike): RenderSnapshot => ({
   context: collectContextValues(fiber),
   props: fiber.memoizedProps,
-  state: collectStateHookValues(fiber.memoizedState),
+  state: collectStateHookValues(fiber.memoizedState, OWN_HOOK_COUNT),
 });
 
 const classify = (
@@ -76,6 +86,11 @@ const classify = (
  * Built on the same private, no-semver-guarantee react-dom internals as
  * `useFiber` (see its docs) — fails closed to `"unknown"` rather than
  * throwing, and no-ops (stays `"unknown"`) in production builds.
+ *
+ * Call `useRenderReason()` as the first hook in the component — state
+ * detection works by walking the component's own Fiber hook list and
+ * skipping this hook's own internal hooks by count, so a stateful hook
+ * called *before* it would be miscounted as this hook's own.
  *
  * @example
  * ```tsx

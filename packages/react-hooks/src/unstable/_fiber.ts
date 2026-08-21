@@ -65,10 +65,20 @@ export const findOwnerFiber = (hostFiber: FiberLike): FiberLike => {
   return last;
 };
 
-/** Dispatch-capable (`useState`/`useReducer`) hook values in a Fiber's hook list — `useRef`/`useMemo`/`useCallback`/`useEffect` nodes have no `queue` and are skipped. */
-export const collectStateHookValues = (head: HookNode | null): unknown[] => {
+/**
+ * Dispatch-capable (`useState`/`useReducer`) hook values in a Fiber's hook
+ * list — `useRef`/`useMemo`/`useCallback`/`useEffect` nodes have no
+ * `queue` and are skipped. `skip` drops the first N nodes unconditionally
+ * (not just non-queue ones) — for a hook introspecting its own caller's
+ * Fiber, that's how many hooks the introspecting hook itself calls, so its
+ * own state doesn't show up as if it were the caller's.
+ */
+export const collectStateHookValues = (head: HookNode | null, skip = 0): unknown[] => {
   const values: unknown[] = [];
   let node = head;
+  for (let i = 0; i < skip && node; i += 1) {
+    node = node.next;
+  }
   for (let i = 0; i < MAX_WALK && node; i += 1) {
     if (node.queue) {
       values.push(node.memoizedState);
