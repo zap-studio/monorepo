@@ -11,7 +11,7 @@
     "lint": "pnpm exec oxlint --type-aware --type-check",
     "lint:fix": "pnpm exec oxlint --fix --type-aware --type-check",
     "prepare": "lefthook install",
-    "publish:check": "pnpm run lint && pnpm run format:check && pnpm run test && pnpm run build && pnpm -r --if-present run prepublishOnly",
+    "publish:check": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test && pnpm run build && pnpm -r --if-present run prepublishOnly",
     "react-doctor": "react-doctor --scope full --verbose",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
