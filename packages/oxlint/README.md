@@ -83,7 +83,7 @@ Five independent presets — pick every one your project needs. None of them imp
 | `@zap-studio/oxlint/react-a11y`     | the `jsx-a11y` plugin, plus 4 accessibility checks from `eslint-plugin-github` with no jsx-a11y equivalent                                                                                      |
 | `@zap-studio/oxlint/react-perf`     | the `react-perf` plugin — the 4 `jsx-no-new-*-as-prop` rules                                                                                                                                    |
 | `@zap-studio/oxlint/react-doctor`   | `oxlint-plugin-react-doctor`'s framework-agnostic rules — security, hydration, effect-timing, rendering correctness — minus everything already owned by `react`/`react-a11y`/`react-perf` above |
-| `@zap-studio/oxlint/react-compiler` | the `react/react-compiler` rule, for projects on the React Compiler                                                                                                                             |
+| `@zap-studio/oxlint/react-compiler` | the 22 `react/*` React Compiler rules (Rules-of-React checks), for projects on the React Compiler                                                                                               |
 
 ### JSX runtime
 
