@@ -147,20 +147,29 @@ Every hook is also importable from its own category subpath — see [Conventions
 
 ### State (`state/`)
 
-| Hook                 | What it does                                                                     |
-| -------------------- | -------------------------------------------------------------------------------- |
-| `useToggle`          | Boolean state with a `toggle()` function                                         |
-| `useDebounce`        | Debounced wrapper around a callback                                              |
-| `useDebouncedValue`  | Debounces a value directly, without a separate handler                           |
-| `useThrottle`        | Throttled wrapper around a callback (leading edge)                               |
-| `useThrottledValue`  | Throttles a value directly (leading edge)                                        |
-| `useLocalStorage`    | State synced to `localStorage`, with cross-tab sync                              |
-| `useSessionStorage`  | State synced to `sessionStorage`                                                 |
-| `useIndexedDB`       | State synced to IndexedDB — structured values, async read/write                  |
-| `usePrevious`        | The value from the previous render                                               |
-| `useCopyToClipboard` | Clipboard write helper + `copied` state                                          |
-| `useCounter`         | Increment/decrement/reset counter state, with optional min/max                   |
-| `useTheme`           | `"light"`/`"dark"`/`"system"` mode with persistence, layered on `useColorScheme` |
+| Hook                  | What it does                                                                     |
+| --------------------- | -------------------------------------------------------------------------------- |
+| `useToggle`           | Boolean state with a `toggle()` function                                         |
+| `useDebounce`         | Debounced wrapper around a callback                                              |
+| `useDebouncedValue`   | Debounces a value directly, without a separate handler                           |
+| `useThrottle`         | Throttled wrapper around a callback (leading edge)                               |
+| `useThrottledValue`   | Throttles a value directly (leading edge)                                        |
+| `useLocalStorage`     | State synced to `localStorage`, with cross-tab sync                              |
+| `useSessionStorage`   | State synced to `sessionStorage`                                                 |
+| `useIndexedDB`        | State synced to IndexedDB — structured values, async read/write                  |
+| `usePrevious`         | The value from the previous render                                               |
+| `useCopyToClipboard`  | Clipboard write helper + `copied` state                                          |
+| `useCounter`          | Increment/decrement/reset counter state, with optional min/max                   |
+| `useTheme`            | `"light"`/`"dark"`/`"system"` mode with persistence, layered on `useColorScheme` |
+| `useMap`              | `Map`-backed state with `set`/`delete`/`clear`/`get`/`has`                       |
+| `useSet`              | `Set`-backed state with `add`/`delete`/`clear`/`has`                             |
+| `useQueue`            | FIFO queue state — `enqueue`/`dequeue`/`clear`, `first`/`last` accessors         |
+| `useHistoryState`     | State with undo/redo, over a bounded history stack                               |
+| `useSearchParams`     | State synced to the URL query string (`URLSearchParams`)                         |
+| `useHashState`        | State synced to `location.hash`, via the `hashchange` event                      |
+| `useCookie`           | A single cookie's value, via the Cookie Store API (Chromium-only)                |
+| `useBroadcastChannel` | Pub/sub state shared across same-origin tabs/workers                             |
+| `useWindowMessage`    | Cross-origin window/iframe/popup messaging (`postMessage`)                       |
 
 Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
 

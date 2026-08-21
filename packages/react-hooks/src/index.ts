@@ -20,10 +20,21 @@ export { useAsync } from "./lifecycle/use-async.ts";
 export type { BatteryState } from "./sensors/use-battery.ts";
 export { useBattery } from "./sensors/use-battery.ts";
 export { useBeforeUnload } from "./lifecycle/use-before-unload.ts";
+export type { UseBroadcastChannelResult } from "./state/use-broadcast-channel.ts";
+export { useBroadcastChannel } from "./state/use-broadcast-channel.ts";
 export type { UseCameraOptions, UseCameraResult } from "./media/use-camera.ts";
 export { useCamera } from "./media/use-camera.ts";
 export type { ColorScheme } from "./sensors/use-color-scheme.ts";
 export { useColorScheme } from "./sensors/use-color-scheme.ts";
+export type {
+  CookieChangeEvent,
+  CookieInit,
+  CookieListItem,
+  CookieStore,
+  SetCookieOptions,
+  UseCookieResult,
+} from "./state/use-cookie.ts";
+export { useCookie } from "./state/use-cookie.ts";
 export { useCookieEnabled } from "./sensors/use-cookie-enabled.ts";
 export type { UseCopyToClipboardResult } from "./state/use-copy-to-clipboard.ts";
 export { useCopyToClipboard } from "./state/use-copy-to-clipboard.ts";
@@ -54,6 +65,10 @@ export type {
   UseGeolocationOptions,
 } from "./sensors/use-geolocation.ts";
 export { useGeolocation } from "./sensors/use-geolocation.ts";
+export type { SetHash } from "./state/use-hash-state.ts";
+export { useHashState } from "./state/use-hash-state.ts";
+export type { UseHistoryStateResult } from "./state/use-history-state.ts";
+export { useHistoryState } from "./state/use-history-state.ts";
 export type { HotkeyBindings, UseHotkeysOptions } from "./input/use-hotkeys.ts";
 export { useHotkeys } from "./input/use-hotkeys.ts";
 export { useIdle } from "./input/use-idle.ts";
@@ -69,6 +84,8 @@ export { useIsServer } from "./sensors/use-is-server.ts";
 export { useKeyPress } from "./input/use-key-press.ts";
 export type { SetStoredValue, UseLocalStorageResult } from "./state/use-local-storage.ts";
 export { useLocalStorage } from "./state/use-local-storage.ts";
+export type { UseMapResult } from "./state/use-map.ts";
+export { useMap } from "./state/use-map.ts";
 export { useMediaQuery } from "./sensors/use-media-query.ts";
 export type { MediaRecorderStatus, UseMediaRecorderResult } from "./media/use-media-recorder.ts";
 export { useMediaRecorder } from "./media/use-media-recorder.ts";
@@ -106,12 +123,22 @@ export type { PreferredLanguage } from "./sensors/use-preferred-language.ts";
 export { usePreferredLanguage } from "./sensors/use-preferred-language.ts";
 export { usePrevious } from "./state/use-previous.ts";
 export { usePrintMode } from "./sensors/use-print-mode.ts";
+export type { UseQueueResult } from "./state/use-queue.ts";
+export { useQueue } from "./state/use-queue.ts";
 export type { UseServiceWorkerResult } from "./pwa/use-service-worker.ts";
 export type { ScreenCaptureStatus, UseScreenCaptureResult } from "./media/use-screen-capture.ts";
 export { useScreenCapture } from "./media/use-screen-capture.ts";
+export type {
+  SearchParamsInit,
+  SetSearchParams,
+  SetSearchParamsOptions,
+} from "./state/use-search-params.ts";
+export { useSearchParams } from "./state/use-search-params.ts";
 export { useServiceWorker } from "./pwa/use-service-worker.ts";
 export type { UseSessionStorageResult } from "./state/use-session-storage.ts";
 export { useSessionStorage } from "./state/use-session-storage.ts";
+export type { UseSetResult } from "./state/use-set.ts";
+export { useSet } from "./state/use-set.ts";
 export type { UseShareResult } from "./sensors/use-share.ts";
 export { useShare } from "./sensors/use-share.ts";
 export type { StorageEstimateState } from "./sensors/use-storage-estimate.ts";
@@ -151,6 +178,8 @@ export type { UseWebLockResult, WebLockStatus } from "./lifecycle/use-web-lock.t
 export { useWebLock } from "./lifecycle/use-web-lock.ts";
 export type { UseWebSocketResult, WebSocketStatus } from "./network/use-web-socket.ts";
 export { useWebSocket } from "./network/use-web-socket.ts";
+export type { UseWindowMessageResult, WindowMessage } from "./state/use-window-message.ts";
+export { useWindowMessage } from "./state/use-window-message.ts";
 export type { WindowSize } from "./sensors/use-window-size.ts";
 export { useWindowSize } from "./sensors/use-window-size.ts";
 export type { UseWorkerResult } from "./lifecycle/use-worker.ts";
