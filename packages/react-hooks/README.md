@@ -1,6 +1,6 @@
 # @zap-studio/react-hooks
 
-Small, focused React hooks. Each one ships as its own subpath export, so importing one never pulls in the others.
+Small, focused React hooks. Each one ships as its own subpath export, so importing one never pulls in unrelated hooks.
 
 Full documentation: [zapstudio.dev/react-hooks](https://www.zapstudio.dev/react-hooks)
 
@@ -10,7 +10,7 @@ Reaching a browser API from React usually means hand-writing a `useEffect` — a
 
 `@zap-studio/react-hooks` wraps these APIs — `IntersectionObserver`, `ResizeObserver`, the Battery/Geolocation/Share/Wake Lock APIs, `matchMedia`, and more — behind a small, correct React interface instead of code you write from scratch. Every hook is SSR- and hydration-safe: nothing touches `window`, `document`, or `navigator` outside an effect or a guarded check, so server renders never throw and hydration never mismatches.
 
-Every hook also ships as its own standalone, side-effect-free module — import it on its own and it tree-shakes cleanly. Hooks never depend on each other, so pulling in `useIsMobile` never drags in unrelated code.
+Every hook also ships as its own standalone, side-effect-free module — import it on its own and it tree-shakes cleanly. Public hooks never import each other; some share small internal (`_`-prefixed) helper modules, so pulling in `useIsMobile` never drags in unrelated hook code.
 
 ## Installation
 
