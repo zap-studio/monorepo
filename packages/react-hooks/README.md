@@ -6,9 +6,11 @@ Full documentation: [zapstudio.dev/react-hooks](https://www.zapstudio.dev/react-
 
 ## Motivation
 
-Most React hook collections are either one giant package (import a `useDebounce` and your bundle quietly gains forty other hooks' worth of code) or a pile of one-off gists copy-pasted between projects, each with its own subtly different bugs around SSR safety and cleanup.
+Reaching a browser API from React usually means hand-writing a `useEffect` — a resize listener, a `matchMedia` subscription, an `IntersectionObserver` — and each one carries the same two risks: forget the cleanup and you get a leaked listener that keeps firing after unmount, or forget to guard `window`/`document`/`navigator` and the same code throws on the server or hydrates to a value the client's first render did not have.
 
-Every hook in `@zap-studio/react-hooks` ships as its own standalone, side-effect-free module — import it on its own and it tree-shakes cleanly. Hooks never depend on each other, so pulling in `useIsMobile` never drags in unrelated code.
+`@zap-studio/react-hooks` wraps these APIs — `IntersectionObserver`, `ResizeObserver`, the Battery/Geolocation/Share/Wake Lock APIs, `matchMedia`, and more — behind a small, correct React interface instead of code you write from scratch. Every hook is SSR- and hydration-safe: nothing touches `window`, `document`, or `navigator` outside an effect or a guarded check, so server renders never throw and hydration never mismatches.
+
+Every hook also ships as its own standalone, side-effect-free module — import it on its own and it tree-shakes cleanly. Hooks never depend on each other, so pulling in `useIsMobile` never drags in unrelated code.
 
 ## Installation
 
