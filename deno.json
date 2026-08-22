@@ -5,6 +5,7 @@
     "./packages/logger",
     "./packages/monads",
     "./packages/permit",
+    "./packages/react-hooks",
     "./packages/retry",
     "./packages/webhooks"
   ]
