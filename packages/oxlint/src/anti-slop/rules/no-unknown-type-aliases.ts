@@ -1,4 +1,4 @@
-import type { ESTree } from "@oxlint/plugins";
+import type { ESTree, Rule } from "@oxlint/plugins";
 
 import { defineRule } from "@oxlint/plugins";
 
@@ -13,7 +13,7 @@ function referencedAliasName(type: ESTree.TSType): string | null {
 }
 
 /** Ban named aliases that merely conceal TypeScript's unknown top type. */
-export const noUnknownTypeAliasesRule = defineRule({
+export const noUnknownTypeAliasesRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {

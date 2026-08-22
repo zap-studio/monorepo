@@ -1,0 +1,170 @@
+import { act, renderHook } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { useSpeechSynthesis } from "./use-speech-synthesis.ts";
+
+class MockUtterance extends EventTarget {
+  lang = "";
+  pitch = 1;
+  rate = 1;
+  voice: SpeechSynthesisVoice | null = null;
+
+  constructor(readonly text: string) {
+    super();
+  }
+}
+
+function installMockSpeechSynthesis() {
+  const speak = vi.fn((utterance: SpeechSynthesisUtterance) => {
+    utterance.dispatchEvent(new Event("start"));
+  });
+  const cancel = vi.fn();
+  Object.defineProperty(window, "speechSynthesis", {
+    configurable: true,
+    value: { cancel, speak },
+  });
+  Object.defineProperty(window, "SpeechSynthesisUtterance", {
+    configurable: true,
+    value: MockUtterance,
+  });
+  return { cancel, speak };
+}
+
+afterEach(() => {
+  Object.defineProperty(window, "speechSynthesis", { configurable: true, value: undefined });
+  Object.defineProperty(window, "SpeechSynthesisUtterance", {
+    configurable: true,
+    value: undefined,
+  });
+});
+
+describe(useSpeechSynthesis, () => {
+  it("reports supported: true when window.speechSynthesis exists", () => {
+    installMockSpeechSynthesis();
+
+    const { result } = renderHook(() => useSpeechSynthesis());
+
+    expect(result.current.supported).toBe(true);
+    expect(result.current.speaking).toBe(false);
+  });
+
+  it("reports supported: false when window.speechSynthesis is unavailable", () => {
+    const { result } = renderHook(() => useSpeechSynthesis());
+
+    expect(result.current.supported).toBe(false);
+  });
+
+  it("speak() calls speechSynthesis.speak() and becomes speaking: true on start", async () => {
+    const { speak } = installMockSpeechSynthesis();
+    const { result } = renderHook(() => useSpeechSynthesis());
+
+    await act(async () => {
+      result.current.speak("hello");
+    });
+
+    expect(speak).toHaveBeenCalledTimes(1);
+    expect(result.current.speaking).toBe(true);
+  });
+
+  it("applies rate/pitch/lang/voice options to the utterance", async () => {
+    const { speak } = installMockSpeechSynthesis();
+    const { result } = renderHook(() => useSpeechSynthesis());
+    const voice = {} as SpeechSynthesisVoice;
+
+    await act(async () => {
+      result.current.speak("hello", { lang: "fr-FR", pitch: 1.5, rate: 0.5, voice });
+    });
+
+    const utterance = speak.mock.calls[0]?.[0] as SpeechSynthesisUtterance;
+    expect(utterance.lang).toBe("fr-FR");
+    expect(utterance.pitch).toBe(1.5);
+    expect(utterance.rate).toBe(0.5);
+    expect(utterance.voice).toBe(voice);
+  });
+
+  it("becomes speaking: false when the utterance ends", async () => {
+    installMockSpeechSynthesis();
+    const { result } = renderHook(() => useSpeechSynthesis());
+
+    let utterance: SpeechSynthesisUtterance | undefined;
+    await act(async () => {
+      result.current.speak("hello");
+    });
+    utterance = (window.speechSynthesis.speak as ReturnType<typeof vi.fn>).mock
+      .calls[0]?.[0] as SpeechSynthesisUtterance;
+
+    await act(async () => {
+      utterance?.dispatchEvent(new Event("end"));
+    });
+
+    expect(result.current.speaking).toBe(false);
+  });
+
+  it("becomes speaking: false when the utterance errors", async () => {
+    installMockSpeechSynthesis();
+    const { result } = renderHook(() => useSpeechSynthesis());
+
+    await act(async () => {
+      result.current.speak("hello");
+    });
+    const utterance = (window.speechSynthesis.speak as ReturnType<typeof vi.fn>).mock
+      .calls[0]?.[0] as SpeechSynthesisUtterance;
+
+    await act(async () => {
+      utterance.dispatchEvent(new Event("error"));
+    });
+
+    expect(result.current.speaking).toBe(false);
+  });
+
+  it("speak() no-ops when unsupported", () => {
+    const { result } = renderHook(() => useSpeechSynthesis());
+
+    expect(() => {
+      act(() => {
+        result.current.speak("hello");
+      });
+    }).not.toThrow();
+    expect(result.current.speaking).toBe(false);
+  });
+
+  it("cancel() calls speechSynthesis.cancel() and resets speaking", async () => {
+    const { cancel } = installMockSpeechSynthesis();
+    const { result } = renderHook(() => useSpeechSynthesis());
+
+    await act(async () => {
+      result.current.speak("hello");
+    });
+    expect(result.current.speaking).toBe(true);
+
+    act(() => {
+      result.current.cancel();
+    });
+
+    expect(cancel).toHaveBeenCalledTimes(1);
+    expect(result.current.speaking).toBe(false);
+  });
+
+  it("cancel() no-ops when unsupported", () => {
+    const { result } = renderHook(() => useSpeechSynthesis());
+
+    expect(() => {
+      act(() => {
+        result.current.cancel();
+      });
+    }).not.toThrow();
+  });
+
+  it("cancels any in-progress speech on unmount", async () => {
+    const { cancel } = installMockSpeechSynthesis();
+    const { result, unmount } = renderHook(() => useSpeechSynthesis());
+
+    await act(async () => {
+      result.current.speak("hello");
+    });
+
+    unmount();
+
+    expect(cancel).toHaveBeenCalledTimes(1);
+  });
+});

@@ -1,4 +1,4 @@
-import type { ESTree } from "@oxlint/plugins";
+import type { ESTree, Rule } from "@oxlint/plugins";
 
 import { defineRule } from "@oxlint/plugins";
 
@@ -85,7 +85,7 @@ function shouldReportType(node: ESTree.TSType, environment: TypeEnvironment): bo
 }
 
 /** Disallow object-dictionary contracts whose direct value type is an unsafe escape hatch. */
-export const noUnsafeDictionaryTypeRule = defineRule({
+export const noUnsafeDictionaryTypeRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {

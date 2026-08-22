@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const sonarjsRules = {
+export const sonarjsRules: RuleMap = {
   "anchor-precedence": "error",
   "argument-type": "error",
   "arguments-order": "error",
@@ -303,4 +303,4 @@ export const sonarjsRules = {
   "shorthand-property-grouping": "off",
   // would clash with existing SCREAMING_SNAKE_CASE constants (e.g. LOG_LEVEL_ORDER)
   "variable-name": "off",
-} satisfies RuleMap;
+};

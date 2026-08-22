@@ -1,0 +1,83 @@
+---
+title: Media
+description: Camera, microphone, screen capture, recording, and speech hooks.
+---
+
+# Media
+
+Hooks wrapping the browser's audio/video capture, recording, and speech APIs — camera/mic access, screen sharing, `MediaRecorder`, text-to-speech, voice input, and Picture-in-Picture.
+
+## useUserMedia
+
+Wraps [`navigator.mediaDevices.getUserMedia()`](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia) for arbitrary audio/video constraints. Manual `start()`/`stop()` — never requested automatically, since a camera/mic prompt firing on mount without a user gesture is bad UX (and some browsers reject it outright). `stream` is stopped automatically on unmount. For the common "just give me the webcam" case, see `useCamera` below.
+
+```tsx
+const { stream, status, start, stop } = useUserMedia({ video: true, audio: true });
+<button onClick={start}>Enable camera</button>;
+```
+
+## useCamera
+
+A `useUserMedia` convenience wrapper for the common "just give me the webcam" case — defaults to `{ video: true, audio: false }`. Same manual `start()`/`stop()` as `useUserMedia`.
+
+```tsx
+const { stream, start } = useCamera({ audio: true });
+<button onClick={start}>Enable camera + mic</button>;
+```
+
+## useScreenCapture
+
+Wraps [`navigator.mediaDevices.getDisplayMedia()`](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia) — screen/window/tab sharing. Manual `start()` only, since the browser requires (and this hook never fakes) a real user gesture to grant it; `stream` also stops itself automatically when the browser's own "Stop sharing" bar ends the track, keeping `status` in sync with reality.
+
+```tsx
+const { stream, status, start, stop } = useScreenCapture({ video: true });
+<button onClick={start}>Share screen</button>;
+```
+
+## useMediaRecorder
+
+Wraps the [MediaStream Recording API](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream_Recording_API) around an existing `stream` — e.g. one from `useUserMedia`/`useCamera`/`useScreenCapture`. Manual `start()`/`stop()`/`pause()`/`resume()`; `blob` is assembled once recording stops. `supported: false` is the SSR-safe default where `MediaRecorder` doesn't exist.
+
+```tsx
+const { stream } = useCamera();
+const { start, stop, blob, status } = useMediaRecorder(stream);
+```
+
+## useSpeechSynthesis
+
+Wraps the [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)'s synthesis half (`window.speechSynthesis`) — text-to-speech. `speaking` tracks the current utterance via its `start`/`end`/`error` events. `supported: false` is the SSR-safe default where Speech Synthesis doesn't exist, and `speak()`/`cancel()` then no-op.
+
+```tsx
+const { speak, speaking } = useSpeechSynthesis();
+<button onClick={() => speak("Hello there")} disabled={speaking}>
+  Speak
+</button>;
+```
+
+## useSpeechRecognition
+
+Wraps the Web Speech API's recognition half ([`SpeechRecognition`](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition), or its `webkitSpeechRecognition` twin on Safari) — voice input. `transcript` accumulates recognized text across `result` events.
+
+:::note
+
+Chromium/Safari only — Firefox never exposes either constructor, so `supported: false` there (the SSR-safe default too), and `start()`/`stop()` then no-op. See the [browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition#browser_compatibility).
+
+:::
+
+```tsx
+const { transcript, listening, start, stop } = useSpeechRecognition({ continuous: true });
+```
+
+## usePictureInPicture
+
+Wraps the [Picture-in-Picture API](https://developer.mozilla.org/en-US/docs/Web/API/Picture-in-Picture_API) for a single ref'd `<video>` — attach `ref` to the element, then call `enter()`/`exit()` imperatively (typically from a click handler). `active` tracks whether that exact element currently floats in PiP, via its own `enterpictureinpicture`/`leavepictureinpicture` events (which also fire when the browser's native PiP window is closed directly, keeping state in sync). `supported: false` is the SSR-safe default where the API doesn't exist.
+
+```tsx
+const { ref, active, enter, exit } = usePictureInPicture<HTMLVideoElement>();
+return <video ref={ref} onDoubleClick={() => (active ? exit() : enter())} />;
+```
+
+## See Also
+
+- [Getting Started](/react-hooks/getting-started)
+- [Overview](/react-hooks)

@@ -1,0 +1,285 @@
+---
+title: Sensors
+description: Viewport, network, device, and permission state — SSR-safe reads of the browser environment around your component.
+---
+
+# Sensors
+
+Hooks that read ambient browser/device state — viewport size, color scheme, connectivity, device capabilities, permissions — and re-render when it changes. Every hook here has an SSR-safe default and updates on the client once it can subscribe to the underlying API.
+
+## useMediaQuery
+
+Matches the current viewport against an arbitrary CSS media query string, re-rendering when the match changes. SSR-safe — returns `false` until the client subscribes via [`matchMedia`](https://developer.mozilla.org/en-US/docs/Web/API/Window/matchMedia).
+
+```tsx
+const isWide = useMediaQuery("(min-width: 1024px)");
+```
+
+## useIsMobile
+
+Reports whether the viewport is below a breakpoint (768px by default) — `(max-width: breakpoint - 1)`. Built on `useMediaQuery`, so it shares the same SSR-safe default.
+
+```tsx
+const isMobile = useIsMobile(); // true below 768px
+const isCompact = useIsMobile(1024); // true below 1024px
+```
+
+## useIsClient
+
+SSR-safe hydration guard — `false` during server rendering, `true` once mounted on the client. Useful for gating client-only rendering (portals, `window`-dependent UI) without a hydration mismatch.
+
+```tsx
+const isClient = useIsClient();
+return isClient ? <ClientOnlyWidget /> : null;
+```
+
+## useIsServer
+
+`true` during server rendering, `false` once mounted on the client — the inverse of `useIsClient`. Useful for skipping client-only work during SSR.
+
+```tsx
+const isServer = useIsServer();
+if (isServer) return null; // skip client-only work during SSR
+```
+
+## useColorScheme
+
+The OS/browser color scheme preference, via the [`prefers-color-scheme`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme) media feature. Defaults to `"light"` during server rendering and before the client subscribes to `matchMedia`.
+
+```tsx
+const scheme = useColorScheme(); // "dark" | "light"
+```
+
+## usePrefersDarkMode
+
+`true` when the OS/browser prefers dark mode, via `prefers-color-scheme: dark`. `false` during server rendering and before the client subscribes to `matchMedia`.
+
+```tsx
+const prefersDark = usePrefersDarkMode();
+```
+
+## useOnlineStatus
+
+Tracks [`navigator.onLine`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/onLine), updating on the `online`/`offline` window events. Defaults to `true` during server rendering and before the client subscribes — most visitors are online, so this avoids a false "offline" flash on the common path.
+
+```tsx
+const isOnline = useOnlineStatus();
+```
+
+## useNetworkState
+
+`navigator.onLine` plus [`navigator.connection`](https://developer.mozilla.org/en-US/docs/Web/API/Network_Information_API) info (`effectiveType`, `downlink`, `rtt`, `saveData`) where the Network Information API is supported — `undefined` for those fields elsewhere. Updates on `online`/`offline` and connection `change` events. During server rendering, `online` defaults to `true` and the rest are `undefined`.
+
+The Network Information API is Chromium-only — check [its browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Network_Information_API#browser_compatibility) — `useOnlineStatus` alone is the portable subset.
+
+```tsx
+const { online, effectiveType, saveData } = useNetworkState();
+```
+
+## usePreferredLanguage
+
+[`navigator.language`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language) and `navigator.languages`, updating on the `languagechange` event. Falls back to `"en"` during server rendering and before the client subscribes.
+
+```tsx
+const { language } = usePreferredLanguage(); // e.g. "en-US"
+```
+
+## useOrientation
+
+[`screen.orientation`](https://developer.mozilla.org/en-US/docs/Web/API/Screen_Orientation_API)'s `angle`/`type`, updating on its `change` event and the legacy `window` `orientationchange` event. Falls back to `{ angle: 0 }` during server rendering, before the client subscribes, and where the Screen Orientation API is unsupported.
+
+```tsx
+const { angle, type } = useOrientation();
+```
+
+## useGeolocation
+
+Wraps the [Geolocation API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API) (`navigator.geolocation`). One-shot by default (`getCurrentPosition`); pass `watch: true` for continuous updates (`watchPosition`, cleaned up via `clearWatch` on unmount or option change). `loading` starts `true` and the effect — client-only — resolves it, so this is SSR-safe with no extra handling needed.
+
+```tsx
+const { coords, loading, error } = useGeolocation();
+// useGeolocation({ watch: true }) for continuous updates
+```
+
+## useBattery
+
+Wraps the [Battery Status API](https://developer.mozilla.org/en-US/docs/Web/API/Battery_Status_API) (`navigator.getBattery()`) — Chromium-only, removed from most other browsers ([browser compatibility](https://developer.mozilla.org/en-US/docs/Web/API/Battery_Status_API#browser_compatibility)). `{ supported: false }` — the SSR-safe default — until the client confirms `getBattery` exists and resolves it.
+
+```tsx
+const { supported, level, charging } = useBattery();
+```
+
+## useWindowSize
+
+[`window.innerWidth`](https://developer.mozilla.org/en-US/docs/Web/API/Window/innerWidth)/`innerHeight`, updating on the `resize` event. Falls back to `{ width: 0, height: 0 }` during server rendering and before the client subscribes.
+
+```tsx
+const { width, height } = useWindowSize();
+```
+
+## useDocumentVisibility
+
+[`document.visibilityState`](https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilityState), updating on the [`visibilitychange`](https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilitychange_event) event. Falls back to `"visible"` during server rendering and before the client subscribes.
+
+```tsx
+const visibility = useDocumentVisibility(); // "visible" | "hidden"
+```
+
+## usePageLeave
+
+Calls `onPageLeave` when the pointer leaves the viewport — a [`mouseout`](https://developer.mozilla.org/en-US/docs/Web/API/Element/mouseout_event) on `document` whose `relatedTarget` (and legacy `toElement`) are both null, meaning the pointer left the page entirely rather than moving between two elements inside it. Useful for exit-intent UI. `onPageLeave` doesn't need to be memoized — the latest one is always called.
+
+```tsx
+usePageLeave(() => setShowExitIntentModal(true));
+```
+
+## useShare
+
+Wraps the [Web Share API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Share_API) (`navigator.share()`), with `canShare` support feature-detection. `supported: false` — the SSR-safe default — where `navigator.share` doesn't exist.
+
+```tsx
+const { share, canShare, supported } = useShare();
+const data = { title: "Zap Studio", url: location.href };
+if (supported && canShare(data)) await share(data);
+```
+
+## usePermission
+
+[`navigator.permissions.query({ name })`](https://developer.mozilla.org/en-US/docs/Web/API/Permissions_API)'s state for the given permission (`"granted" | "denied" | "prompt"`), updating on the query result's `change` event. `undefined` — the SSR-safe default — until the client resolves it, and permanently where the Permissions API is unsupported.
+
+```tsx
+const cameraPermission = usePermission("camera");
+```
+
+## useVibrate
+
+Wraps [`navigator.vibrate()`](https://developer.mozilla.org/en-US/docs/Web/API/Vibration_API) — mostly Android Chrome; no-op elsewhere ([browser compatibility](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/vibrate#browser_compatibility)). `supported: false` — the SSR-safe default — where `navigator.vibrate` doesn't exist, and `vibrate()` then always returns `false`.
+
+```tsx
+const { vibrate, supported } = useVibrate();
+if (supported) vibrate([100, 50, 100]);
+```
+
+## useWakeLock
+
+[Screen Wake Lock API](https://developer.mozilla.org/en-US/docs/Web/API/Screen_Wake_Lock_API) wrapper — not auto-acquired on mount; call `request()`/`release()` imperatively. Automatically released when the document is hidden (per spec the platform already does this, but this also proactively releases on `visibilitychange`) and on unmount. `supported: false` — the SSR-safe default — where `navigator.wakeLock` doesn't exist.
+
+```tsx
+const { active, request, release, supported } = useWakeLock();
+if (supported) await request(); // keep the screen awake
+```
+
+## useStorageEstimate
+
+[`navigator.storage.estimate()`](https://developer.mozilla.org/en-US/docs/Web/API/StorageManager/estimate)'s `usage`/`quota`, one-shot on mount — no live updates, no refresh. `supported` reflects whether the Storage API is available; `{ supported: false }` — the SSR-safe default — where it isn't.
+
+```tsx
+const { usage, quota, supported } = useStorageEstimate();
+```
+
+## useDeviceCapabilities
+
+[`navigator.hardwareConcurrency`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency) and `navigator.deviceMemory` (the latter Chromium-only — `undefined` elsewhere; see its [browser compatibility](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/deviceMemory#browser_compatibility)). Static device capabilities — don't change at runtime. `{ hardwareConcurrency: 0, deviceMemory: undefined }` — the SSR-safe default — during server rendering.
+
+```tsx
+const { hardwareConcurrency, deviceMemory } = useDeviceCapabilities();
+```
+
+## useDeviceOrientation
+
+Device tilt from the [`deviceorientation`/`deviceorientationabsolute`](https://developer.mozilla.org/en-US/docs/Web/API/Device_orientation_events) events (accelerometer/magnetometer) — there's no synchronous read, only the event, so this starts at `{ alpha: null, beta: null, gamma: null, absolute: false }` (also the SSR-safe default) until one fires. iOS Safari gates this behind a user-gesture permission prompt — call `requestPermission()` from a click handler before relying on the values; it resolves `true` (no-op success) on platforms without the gate.
+
+```tsx
+const { alpha, beta, gamma, supported, requestPermission } = useDeviceOrientation();
+<button onClick={requestPermission}>Enable tilt controls</button>;
+```
+
+## useDeviceMotion
+
+Device acceleration from the [`devicemotion`](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicemotion_event) event — there's no synchronous read, only the event, so this starts all-`null` (`interval: 0`, also the SSR-safe default) until one fires. Same iOS Safari user-gesture permission caveat as `useDeviceOrientation` — `requestPermission()` resolves `true` (no-op success) on platforms without the gate.
+
+```tsx
+const { acceleration, supported, requestPermission } = useDeviceMotion();
+<button onClick={requestPermission}>Enable motion controls</button>;
+```
+
+## useVisualViewport
+
+[`window.visualViewport`](https://developer.mozilla.org/en-US/docs/Web/API/Visual_Viewport_API)'s geometry, updating on its `resize`/`scroll` events — this is what actually shrinks when an on-screen mobile keyboard opens, unlike `useWindowSize`'s `innerHeight`. Falls back to `{ width: 0, height: 0, offsetLeft: 0, offsetTop: 0, pageLeft: 0, pageTop: 0, scale: 1 }` during server rendering, before the client subscribes, and where the Visual Viewport API is unsupported.
+
+```tsx
+const { height, scale } = useVisualViewport();
+```
+
+## useDevicePixelRatio
+
+[`window.devicePixelRatio`](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio), updating on zoom or a monitor-move-driven DPR change. There's no native "devicePixelRatio changed" event, so this subscribes to a `(resolution: <current DPR>dppx)` media query — which only ever matches once — and recreates it against the new DPR each time it fires. Useful for canvas/retina rendering. Falls back to `1` during server rendering and before the client subscribes.
+
+```tsx
+const dpr = useDevicePixelRatio();
+```
+
+## useTouchSupport
+
+`true` when [`navigator.maxTouchPoints`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/maxTouchPoints)` > 0`. A static device capability — doesn't change at runtime. `false` — the SSR-safe default — during server rendering.
+
+```tsx
+const hasTouch = useTouchSupport();
+```
+
+## useUserAgentData
+
+[`navigator.userAgentData`](https://developer.mozilla.org/en-US/docs/Web/API/User-Agent_Client_Hints_API)'s low-entropy fields (`brands`, `mobile`, `platform`) — a structured, Chromium-only replacement for parsing `navigator.userAgent` (see [browser compatibility](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/userAgentData#browser_compatibility)). A static device capability — doesn't change at runtime. `undefined` — the SSR-safe default — where User-Agent Client Hints is unsupported.
+
+```tsx
+const uaData = useUserAgentData();
+const isMobile = uaData?.mobile ?? false;
+```
+
+## useCookieEnabled
+
+[`navigator.cookieEnabled`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/cookieEnabled). A static capability — doesn't change at runtime. `false` — the SSR-safe default — during server rendering.
+
+```tsx
+const cookiesEnabled = useCookieEnabled();
+```
+
+## useVirtualKeyboard
+
+[`navigator.virtualKeyboard`](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API)'s `boundingRect` (Chromium-only VirtualKeyboard API — see [browser compatibility](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API#browser_compatibility)), updating on its `geometrychange` event. Falls back to `{ x: 0, y: 0, width: 0, height: 0 }` during server rendering, before the client subscribes, and where the API is unsupported.
+
+```tsx
+const { height } = useVirtualKeyboard(); // on-screen keyboard height, in px
+```
+
+## usePrintMode
+
+`true` while the page is being printed (or previewed for print), via the [`print`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/print) media query — more reliable than the raw `beforeprint`/`afterprint` events, which some browsers fire inconsistently around the print dialog. `false` during server rendering and before the client subscribes.
+
+```tsx
+const isPrinting = usePrintMode();
+```
+
+## useNotificationPermission
+
+The [Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API)'s permission state, plus `requestPermission()` and a `notify()` helper that no-ops (returns `undefined`) unless permission is `"granted"`. There's no native "permission changed" event, so `permission` only updates when `requestPermission()` resolves. `"unsupported"` — the SSR-safe default — where the Notifications API doesn't exist.
+
+```tsx
+const { permission, requestPermission, notify } = useNotificationPermission();
+await requestPermission();
+notify("Done!", { body: "Your export finished." });
+```
+
+## useFontsReady
+
+`true` once [`document.fonts.ready`](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Font_Loading_API) resolves — custom web fonts have finished loading. Starts `false` (also the SSR-safe default); useful for delaying text render to avoid FOUC. Resolves immediately to `true` where the CSS Font Loading API is unsupported, rather than blocking forever.
+
+```tsx
+const fontsReady = useFontsReady();
+if (!fontsReady) return <Skeleton />;
+```
+
+## See Also
+
+- [Getting Started](/react-hooks/getting-started)
+- [Overview](/react-hooks)

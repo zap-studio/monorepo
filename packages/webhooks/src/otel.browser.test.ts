@@ -33,8 +33,8 @@ describe("WebhookRouter OpenTelemetry", () => {
   const createRequest = (path: string, body?: unknown, headers?: HeadersInit): Request =>
     new Request(new URL(path, "https://example.com"), {
       body: body === undefined ? null : JSON.stringify(body),
-      headers,
       method: "POST",
+      ...(headers === undefined ? {} : { headers }),
     });
 
   beforeAll(() => {

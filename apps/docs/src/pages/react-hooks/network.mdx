@@ -1,0 +1,30 @@
+---
+title: Network
+description: Connection state for WebSocket and Server-Sent Events, with automatic teardown on unmount or URL change.
+---
+
+# Network
+
+Two hooks for long-lived network connections — both wrap a browser connection object opened for a given URL and torn down on unmount or when the URL changes.
+
+## useWebSocket
+
+WebSocket connection state (`"connecting" | "open" | "closed"`) plus `send()`/`close()`, wrapping a [`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) opened for `url` and torn down on unmount or when `url` changes. Pass `undefined` to stay disconnected (e.g. before an auth token is ready).
+
+```tsx
+const { status, lastMessage, send } = useWebSocket("wss://example.com");
+if (status === "open") send("ping");
+```
+
+## useEventSource
+
+Server-Sent Events connection state (`"connecting" | "open" | "closed"`) plus the latest `message` event's `data`, wrapping an [`EventSource`](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) (part of the [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) spec) opened for `url` and torn down on unmount or when `url` changes. Pass `undefined` to stay disconnected.
+
+```tsx
+const { status, data } = useEventSource("https://example.com/stream");
+```
+
+## See Also
+
+- [Getting Started](/react-hooks/getting-started)
+- [Overview](/react-hooks)

@@ -1,8 +1,8 @@
 import { context, metrics, trace } from "@opentelemetry/api";
 import { AsyncHooksContextManager } from "@opentelemetry/context-async-hooks";
 import {
+  AggregationTemporality,
   InMemoryMetricExporter,
-  InstrumentType,
   MeterProvider,
   PeriodicExportingMetricReader,
 } from "@opentelemetry/sdk-metrics";
@@ -18,7 +18,7 @@ import { runRetryPolicy } from "./base-policy.ts";
 
 describe("retry OpenTelemetry", () => {
   const spanExporter = new InMemorySpanExporter();
-  const metricExporter = new InMemoryMetricExporter(InstrumentType.COUNTER);
+  const metricExporter = new InMemoryMetricExporter(AggregationTemporality.CUMULATIVE);
   let meterProvider: MeterProvider;
 
   beforeAll(() => {
@@ -67,7 +67,7 @@ describe("retry OpenTelemetry", () => {
     await runWithActiveSpan(() => runRetryPolicy(policy, execute));
 
     const event = getCallerSpan()?.events.find((e) => e.name === "retry.scheduled");
-    expect(event?.attributes?.attempt).toBe(1);
+    expect(event?.attributes?.["attempt"]).toBe(1);
     expect(event?.attributes?.["retry.reason"]).toBe("retry");
   });
 
@@ -93,7 +93,7 @@ describe("retry OpenTelemetry", () => {
     await runWithActiveSpan(() => runRetryPolicy(policy, execute, { throwOnExhausted: false }));
 
     const event = getCallerSpan()?.events.find((e) => e.name === "retry.exhausted");
-    expect(event?.attributes?.attempt).toBe(1);
+    expect(event?.attributes?.["attempt"]).toBe(1);
     expect(event?.attributes?.["retry.reason"]).toBe("max-attempts-reached");
   });
 
@@ -125,9 +125,9 @@ describe("retry OpenTelemetry", () => {
   };
 
   it("increments the retry.attempts counter tagged by decision", async () => {
-    // Metric exports report the delta since the last export, so drain any
-    // pending increments from earlier tests before measuring this one.
-    await readAttemptCounts();
+    // The counter is cumulative and shared across tests in this file, so
+    // measure the delta against a baseline rather than the raw total.
+    const before = await readAttemptCounts();
 
     const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
@@ -137,9 +137,9 @@ describe("retry OpenTelemetry", () => {
     execute.mockRejectedValue(new Error("fail"));
 
     await runRetryPolicy(policy, execute, { throwOnExhausted: false });
-    const counts = await readAttemptCounts();
+    const after = await readAttemptCounts();
 
-    expect(counts.retry).toBe(1);
-    expect(counts.exhausted).toBe(1);
+    expect((after["retry"] ?? 0) - (before["retry"] ?? 0)).toBe(1);
+    expect((after["exhausted"] ?? 0) - (before["exhausted"] ?? 0)).toBe(1);
   });
 });

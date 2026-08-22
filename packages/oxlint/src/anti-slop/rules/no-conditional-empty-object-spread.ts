@@ -1,4 +1,4 @@
-import type { ESTree } from "@oxlint/plugins";
+import type { ESTree, Rule } from "@oxlint/plugins";
 
 import { defineRule } from "@oxlint/plugins";
 
@@ -24,7 +24,7 @@ function isConditionalEmptyObjectSpread(node: ESTree.Expression): boolean {
 }
 
 /** Ban conditional empty-object spreads without changing their omission semantics. */
-export const noConditionalEmptyObjectSpreadRule = defineRule({
+export const noConditionalEmptyObjectSpreadRule: Rule = defineRule({
   meta: {
     type: "suggestion",
     docs: {

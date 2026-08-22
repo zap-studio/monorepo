@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const tailwindcssRules = {
+export const tailwindcssRules: RuleMap = {
   "no-contradicting-classname": "error",
 
   // consistency preferences, all autofixable
@@ -15,4 +15,4 @@ export const tailwindcssRules = {
   // needs the project's own tailwind config/design tokens wired into settings.tailwindcss.classnames,
   // otherwise flags every non-utility classname (cva variants, CSS module classes, third-party classnames)
   "no-custom-classname": "off",
-} satisfies RuleMap;
+};

@@ -1,4 +1,4 @@
-import type { ESTree } from "@oxlint/plugins";
+import type { ESTree, Rule } from "@oxlint/plugins";
 
 import { defineRule } from "@oxlint/plugins";
 
@@ -41,7 +41,7 @@ function parameterName(parameter: Parameter, sourceText: string): string {
 }
 
 /** Disallow unknown inputs except explicitly named error-cause enrichment. */
-export const noUnknownParametersRule = defineRule({
+export const noUnknownParametersRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {

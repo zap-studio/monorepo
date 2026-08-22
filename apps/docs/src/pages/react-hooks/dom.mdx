@@ -1,0 +1,202 @@
+---
+title: DOM / Element Interaction
+description: Ref'd-element observers, drag-and-drop, and browser chrome APIs — click-outside, intersection/resize/mutation observers, fullscreen, popovers, and more.
+---
+
+# DOM / Element Interaction
+
+Hooks that observe a ref'd DOM element (visibility, size, mutations, hover, drag state) or reach into browser chrome (favicon, fullscreen, script loading, the clipboard-adjacent EyeDropper). Every hook here degrades to an inert, SSR-safe default when its underlying API is unsupported.
+
+## useClickOutside
+
+Calls `onOutside` on a `mousedown`/`touchstart` whose target falls outside the ref'd element — the standard "close on outside click" pattern for dropdowns, popovers, and modals. Listens on the capture phase, so it still fires even if an inner handler calls `stopPropagation()`.
+
+```tsx
+const ref = useClickOutside<HTMLDivElement>(() => setOpen(false));
+return open ? <div ref={ref}>Menu</div> : null;
+```
+
+## useHover
+
+Boolean hover state for a single ref'd element, via [`mouseenter`/`mouseleave`](https://developer.mozilla.org/en-US/docs/Web/API/Element/mouseenter_event).
+
+```tsx
+const { ref, hovered } = useHover<HTMLDivElement>();
+return <div ref={ref}>{hovered ? "Hovering" : "Not hovering"}</div>;
+```
+
+## useMousePosition
+
+Tracks the pointer's `clientX`/`clientY` (plus `pageX`/`pageY` and `screenX`/`screenY`) via window's [`mousemove`](https://developer.mozilla.org/en-US/docs/Web/API/Element/mousemove_event) event. There's no synchronous read for pointer position, only the event, so this starts at all-`0` until the pointer first moves.
+
+```tsx
+const { clientX, clientY } = useMousePosition();
+```
+
+## useIntersectionObserver
+
+Tracks whether the ref'd element is visible in the viewport (or a given `root`), via [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API). `options` is passed straight through to the observer (`root`/`rootMargin`/`threshold`). Also exported as `useInView`, an alias for the same hook.
+
+```tsx
+const { ref, inView } = useIntersectionObserver<HTMLDivElement>();
+return <div ref={ref}>{inView ? "Visible" : "Off-screen"}</div>;
+```
+
+## useResizeObserver
+
+Tracks the ref'd element's content-box size via [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver).
+
+```tsx
+const { ref, size } = useResizeObserver<HTMLDivElement>();
+return (
+  <div ref={ref}>
+    {size?.width}×{size?.height}
+  </div>
+);
+```
+
+## useEventListener
+
+Typed [`addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) wrapper with automatic cleanup — attaches `handler` for `type` on `target` (a `RefObject`, a DOM node, or `window`/`document`), and removes it on unmount or when `target`/`type`/`options` change.
+
+```tsx
+const ref = useRef<HTMLDivElement>(null);
+useEventListener(ref, "scroll", (event) => console.log(event));
+useEventListener(window, "resize", () => console.log("resized"));
+```
+
+## useLockBodyScroll
+
+Locks `document.body`'s scroll while `locked` is `true` — the standard "no background scroll behind an open modal/drawer" pattern. Restores the body's previous inline `overflow` on unlock or unmount.
+
+```tsx
+useLockBodyScroll(isModalOpen);
+```
+
+## useFavicon
+
+Imperatively swaps the `<link rel="icon">` `href` — creates the tag if the document doesn't already have one, and restores the previous `href` on unmount.
+
+```tsx
+useFavicon(hasUnread ? "/favicon-unread.svg" : "/favicon.svg");
+```
+
+## useScript
+
+Loads an external `<script src>` on demand. Concurrent `useScript` calls for the same `src` share a single `<script>` tag — the request is never duplicated. `status` starts `"loading"` and becomes `"ready"`/`"error"` once the script settles. With `removeOnUnmount: true`, the tag is removed once the last consumer of that `src` unmounts.
+
+```tsx
+const { status } = useScript("https://maps.example.com/sdk.js");
+if (status === "ready") renderMap();
+```
+
+## useScrollPosition
+
+`window.scrollX`/`scrollY`, updating on the [`scroll`](https://developer.mozilla.org/en-US/docs/Web/API/Document/scroll_event) event — window-level; for a specific scrollable element, attach a listener to its ref instead (see [`useEventListener`](#useeventlistener)).
+
+```tsx
+const { y } = useScrollPosition();
+const showBackToTop = y > 400;
+```
+
+## useTextSelection
+
+The current page text selection, via [`window.getSelection()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/getSelection), updating on the document's `selectionchange` event.
+
+```tsx
+const text = useTextSelection();
+const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+```
+
+## useFilePicker
+
+Wraps the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API) — `showOpenFilePicker`/`showSaveFilePicker`/`showDirectoryPicker`. Each method resolves `undefined` (rather than throwing) when the user dismisses the native picker.
+
+Chromium-only, no Safari/Firefox support yet — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API#browser_compatibility). `supported: false` elsewhere, and every method resolves `undefined` without opening a dialog.
+
+```tsx
+const { showOpenFilePicker, supported } = useFilePicker();
+const handles = supported ? await showOpenFilePicker({ multiple: true }) : undefined;
+```
+
+## useFileDrop
+
+Drag-and-drop file upload state for a single ref'd drop target, via the [HTML Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API). `isOver` tracks whether a drag is currently over the element; `onDrop` is called with the dropped `File[]`. Also exported as `useDropzone`, an alias for the same hook.
+
+```tsx
+const { ref, isOver } = useFileDrop<HTMLDivElement>((files) => upload(files));
+return <div ref={ref}>{isOver ? "Drop to upload" : "Drag files here"}</div>;
+```
+
+## useMutationObserver
+
+Observes DOM mutations on the ref'd element/subtree via [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver). Defaults to watching attributes, character data, and the full child subtree; `options` overrides that.
+
+```tsx
+const ref = useMutationObserver<HTMLDivElement>((mutations) => console.log(mutations));
+return <div ref={ref}>{children}</div>;
+```
+
+## useFullscreen
+
+[Fullscreen API](https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API) wrapper for a single ref'd element — attach `ref`, then call `enter()`/`exit()`/`toggle()` imperatively (the API requires a user gesture). `isFullscreen` tracks whether that exact element currently holds fullscreen, via `fullscreenchange`.
+
+```tsx
+const { ref, isFullscreen, toggle } = useFullscreen<HTMLDivElement>();
+return (
+  <div ref={ref}>
+    <button onClick={toggle}>{isFullscreen ? "Exit" : "Enter"}</button>
+  </div>
+);
+```
+
+## usePointer
+
+Unified mouse/touch/pen position and pressure via [Pointer events](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events) — a modern superset of a plain `mousemove`-based position hook. `isDown` reflects whether the primary pointer button/contact is currently active.
+
+```tsx
+const { clientX, clientY, pointerType, isDown } = usePointer();
+```
+
+## usePopover
+
+Wraps the native [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) (2024+ baseline) for a single ref'd element carrying the `popover` attribute — call `show()`/`hide()`/`toggle()` imperatively. `isOpen` tracks the element's open state via its own `toggle` event, so it also stays in sync when the browser closes the popover itself (light-dismiss, Esc).
+
+```tsx
+const { ref, isOpen, toggle } = usePopover<HTMLDivElement>();
+return (
+  <>
+    <button onClick={toggle}>Menu</button>
+    <div ref={ref} popover="auto">
+      {isOpen ? "Open" : "Closed"}
+    </div>
+  </>
+);
+```
+
+## useViewTransition
+
+Wraps [`document.startViewTransition()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/startViewTransition) — runs `callback` (typically a DOM update) inside a native view transition, animating between the before/after states.
+
+Not supported in every browser — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Document/startViewTransition#browser_compatibility). Where unsupported, `startTransition` just calls `callback` directly and resolves once it settles — the recommended fallback, per the spec, since the DOM update itself still needs to happen.
+
+```tsx
+const { startTransition } = useViewTransition();
+const handleThemeChange = () => startTransition(() => setTheme("dark"));
+```
+
+## useEyeDropper
+
+Wraps the [EyeDropper API](https://developer.mozilla.org/en-US/docs/Web/API/EyeDropper) — a single-shot native color picker. `open()` resolves the picked color as an `sRGBHex` string (e.g. `"#ff0000"`), or `undefined` if the user cancels or the API is unsupported.
+
+Chromium-only, no Safari/Firefox support yet — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/EyeDropper#browser_compatibility).
+
+```tsx
+const { open, supported } = useEyeDropper();
+const hex = supported ? await open() : undefined;
+```
+
+## See Also
+
+- [Getting Started](/react-hooks/getting-started)
+- [Overview](/react-hooks)

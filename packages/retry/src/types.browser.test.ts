@@ -31,7 +31,7 @@ describe("types", () => {
       data: { status: 500 },
       error: new TypeError("network"),
     });
-    const error = policy.onExhausted({
+    const error = policy.onExhausted?.({
       attempts: 3,
       data: { status: 500 },
       error: new TypeError("network"),

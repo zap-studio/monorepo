@@ -679,7 +679,7 @@ describe("test helpers", () => {
     });
 
     it("repeats the last decision once the sequence is exhausted", () => {
-      const policy = createSequencePolicy([{ delayMs: 5, reason: "retryable", shouldRetry: true }]);
+      const policy = createSequencePolicy([{ delayMs: 5, reason: "retry", shouldRetry: true }]);
       const input = {
         attempt: 1,
         error: new Error("boom"),

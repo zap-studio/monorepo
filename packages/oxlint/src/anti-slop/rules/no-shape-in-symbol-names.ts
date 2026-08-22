@@ -1,4 +1,4 @@
-import type { ESTree } from "@oxlint/plugins";
+import type { ESTree, Rule } from "@oxlint/plugins";
 
 import { defineRule } from "@oxlint/plugins";
 
@@ -9,7 +9,7 @@ function containsForbiddenSymbolName(name: string): boolean {
 }
 
 /** Ban the case-insensitive substring "shape" in every JavaScript and TypeScript symbol name. */
-export const noForbiddenTermInSymbolNamesRule = defineRule({
+export const noForbiddenTermInSymbolNamesRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {

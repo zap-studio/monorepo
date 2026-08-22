@@ -1,4 +1,4 @@
-import type { ESTree, Scope, SourceCode, Variable } from "@oxlint/plugins";
+import type { ESTree, Rule, Scope, SourceCode, Variable } from "@oxlint/plugins";
 
 import { defineRule } from "@oxlint/plugins";
 
@@ -131,7 +131,7 @@ function hasParentAssertion(node: ESTree.Node): boolean {
 }
 
 /** Detect sound syntactic cases where a known value is explicitly widened and loses evidence. */
-export const noKnownValueWideningRule = defineRule({
+export const noKnownValueWideningRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {

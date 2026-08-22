@@ -1,0 +1,92 @@
+import { act, render, renderHook } from "@testing-library/react";
+import { createElement } from "react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { useResizeObserver, type UseResizeObserverResult } from "./use-resize-observer.ts";
+
+class FakeResizeObserver implements ResizeObserver {
+  static instances: FakeResizeObserver[] = [];
+  readonly callback: ResizeObserverCallback;
+  readonly disconnect = vi.fn();
+  readonly observe = vi.fn();
+  readonly unobserve = vi.fn();
+
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+    FakeResizeObserver.instances.push(this);
+  }
+
+  trigger(width: number, height: number): void {
+    this.callback([{ contentRect: { height, width } } as ResizeObserverEntry], this);
+  }
+}
+
+function renderObservedDiv() {
+  let latest!: UseResizeObserverResult<HTMLDivElement>;
+  function TestComponent() {
+    latest = useResizeObserver<HTMLDivElement>();
+    return createElement("div", { ref: latest.ref });
+  }
+  const { unmount } = render(createElement(TestComponent));
+  return {
+    get current() {
+      return latest;
+    },
+    unmount,
+  };
+}
+
+afterEach(() => {
+  FakeResizeObserver.instances = [];
+  vi.unstubAllGlobals();
+});
+
+describe(useResizeObserver, () => {
+  it("starts with size: undefined", () => {
+    vi.stubGlobal("ResizeObserver", FakeResizeObserver);
+    const div = renderObservedDiv();
+
+    expect(div.current.size).toBeUndefined();
+  });
+
+  it("observes the ref'd element and updates on resize", () => {
+    vi.stubGlobal("ResizeObserver", FakeResizeObserver);
+    const div = renderObservedDiv();
+    const [observer] = FakeResizeObserver.instances;
+
+    expect(observer?.observe).toHaveBeenCalledWith(div.current.ref.current);
+
+    act(() => {
+      observer?.trigger(200, 100);
+    });
+
+    expect(div.current.size).toEqual({ height: 100, width: 200 });
+  });
+
+  it("does not observe when no element is attached to the ref", () => {
+    vi.stubGlobal("ResizeObserver", FakeResizeObserver);
+
+    expect(() => {
+      renderHook(() => useResizeObserver());
+    }).not.toThrow();
+    expect(FakeResizeObserver.instances).toHaveLength(0);
+  });
+
+  it("does not observe when ResizeObserver is unsupported", () => {
+    vi.stubGlobal("ResizeObserver", undefined);
+
+    expect(() => {
+      renderObservedDiv();
+    }).not.toThrow();
+  });
+
+  it("disconnects the observer on unmount", () => {
+    vi.stubGlobal("ResizeObserver", FakeResizeObserver);
+    const div = renderObservedDiv();
+    const [observer] = FakeResizeObserver.instances;
+
+    div.unmount();
+
+    expect(observer?.disconnect).toHaveBeenCalledTimes(1);
+  });
+});

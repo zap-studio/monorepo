@@ -121,6 +121,25 @@ export default defineConfig({
         {
           collapsed: true,
           items: [
+            { link: "/react-hooks", text: "Overview" },
+            { link: "/react-hooks/getting-started", text: gettingStarted },
+            { link: "/react-hooks/sensors", text: "Sensors" },
+            { link: "/react-hooks/dom", text: "DOM / Element Interaction" },
+            { link: "/react-hooks/input", text: "Input" },
+            { link: "/react-hooks/media", text: "Media" },
+            { link: "/react-hooks/navigation", text: "History & Navigation" },
+            { link: "/react-hooks/network", text: "Network" },
+            { link: "/react-hooks/pwa", text: "PWA" },
+            { link: "/react-hooks/commerce", text: "Commerce" },
+            { link: "/react-hooks/lifecycle", text: "Lifecycle" },
+            { link: "/react-hooks/state", text: "State" },
+            { link: "/react-hooks/debug", text: "Debug / Observability" },
+          ],
+          text: "react-hooks",
+        },
+        {
+          collapsed: true,
+          items: [
             { link: "/retry", text: "Overview" },
             { link: "/retry/getting-started", text: gettingStarted },
             {
@@ -195,6 +214,7 @@ export default defineConfig({
     { link: "/oxfmt", text: "oxfmt" },
     { link: "/oxlint", text: "oxlint" },
     { link: "/permit", text: "permit" },
+    { link: "/react-hooks", text: "react-hooks" },
     { link: "/retry", text: "retry" },
     { link: "/validation", text: "validation" },
     { link: "/webhooks", text: "webhooks" },

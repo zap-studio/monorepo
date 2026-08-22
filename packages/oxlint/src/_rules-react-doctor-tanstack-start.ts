@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const reactDoctorTanstackStartRules = {
+export const reactDoctorTanstackStartRules: RuleMap = {
   "tanstack-start-get-mutation": "warn",
   "tanstack-start-loader-parallel-fetch": "warn",
   "tanstack-start-missing-head-content": "warn",
@@ -16,4 +16,4 @@ export const reactDoctorTanstackStartRules = {
   "tanstack-start-route-property-order": "error",
   "tanstack-start-server-fn-method-order": "error",
   "tanstack-start-server-fn-validate-input": "warn",
-} satisfies RuleMap;
+};

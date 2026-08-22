@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const reactDoctorMotionRules = {
+export const reactDoctorMotionRules: RuleMap = {
   "motion-animate-presence-must-outlive-child": "warn",
   "motion-animate-presence-requires-key": "warn",
   "motion-animate-presence-wait-single-child": "warn",
@@ -13,4 +13,4 @@ export const reactDoctorMotionRules = {
   "motion-use-transform-range-length": "error",
   "motion-value-constructor-in-render": "warn",
   "motion-value-subscription-in-render": "error",
-} satisfies RuleMap;
+};

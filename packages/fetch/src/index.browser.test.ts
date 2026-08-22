@@ -1330,9 +1330,9 @@ describe("json and body conflicts", () => {
   });
 
   it("throws when json and body are both provided", async () => {
-    // @ts-expect-error body and json are intentionally both provided to test the runtime guard.
     const options = { body: "raw", json: { name: "Zap" }, method: "POST" };
 
+    // @ts-expect-error body and json are intentionally both provided to test the runtime guard.
     await expect($fetch("https://api.example.com/users", options)).rejects.toThrow(TypeError);
     expect(fetchMock).not.toHaveBeenCalled();
   });
@@ -1595,7 +1595,7 @@ describe("@zap-studio/fetch browser runtime", () => {
     );
 
     const firstCall = fetchMock.mock.calls[0];
-    const [request, init] = firstCall;
+    const [request, init] = firstCall ?? [];
     expect(request).toBeInstanceOf(Request);
     expect((request as Request).url).toBe("https://api.example.com/users");
     expect(new Headers((init as RequestInit).headers).get("B")).toBe("2");
@@ -1611,7 +1611,7 @@ describe("@zap-studio/fetch browser runtime", () => {
     });
 
     const firstCall = fetchMock.mock.calls[0];
-    const [, init] = firstCall;
+    const [, init] = firstCall ?? [];
     expect((init as RequestInit).body).toBe(JSON.stringify({ name: "Zap" }));
     expect(new Headers((init as RequestInit).headers).get("content-type")).toBe(
       "application/vnd.api+json",
@@ -1631,7 +1631,7 @@ describe("@zap-studio/fetch browser runtime", () => {
     });
 
     const firstCall = fetchMock.mock.calls[0];
-    const [url, init] = firstCall;
+    const [url, init] = firstCall ?? [];
     const headers = new Headers((init as RequestInit).headers);
     expect(url).toBe("https://api.example.com/users?page=1");
     expect(headers.get("authorization")).toBe("Bearer token");
@@ -2316,7 +2316,7 @@ describe("logging", () => {
 
     const errorCall = logger.calls.find((call) => call.level === "error");
     expect(errorCall?.message).toBe("fetch validation failed");
-    expect(errorCall?.context?.url).toBe("https://api.example.com/users/1");
+    expect(errorCall?.context?.["url"]).toBe("https://api.example.com/users/1");
   });
 
   it("logs a validation failure at error when throwOnValidationError is false", async () => {

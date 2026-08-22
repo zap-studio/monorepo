@@ -1,0 +1,133 @@
+---
+title: Lifecycle
+description: Mount/unmount effects, declarative timers, async state, and scheduling primitives.
+---
+
+# Lifecycle
+
+Small building blocks for effect timing (mount-only, unmount-only, update-only), declarative timers, async state, and browser scheduling APIs (`requestAnimationFrame`, `requestIdleCallback`, Web Locks, Web Workers, `PerformanceObserver`).
+
+## useMount
+
+Runs `effect` exactly once, on mount — a thin `useEffect(effect, [])` wrapper for callers who want the intent to read explicitly rather than relying on an empty dependency array.
+
+```tsx
+useMount(() => analytics.track("page_viewed"));
+```
+
+## useUnmount
+
+Runs `cleanup` exactly once, on unmount. Always calls the latest `cleanup` — it doesn't need to be memoized, and doesn't need `[]`-style discipline the way a raw `useEffect` cleanup would.
+
+```tsx
+useUnmount(() => socket.close());
+```
+
+## useUpdateEffect
+
+`useEffect` that skips the first (mount) run — only fires on dependency-driven updates, exactly like `useEffect` otherwise (cleanup included).
+
+```tsx
+useUpdateEffect(() => {
+  toast(`Filter changed to ${filter}`); // never fires for the initial value
+}, [filter]);
+```
+
+## useTimeout
+
+Declarative [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout) — schedules `callback` after `delayMs`, clearing and rescheduling when `delayMs` changes, and clearing on unmount. Pass `delayMs: null` to pause without unmounting the hook.
+
+```tsx
+useTimeout(() => setShowTooltip(false), showTooltip ? 3000 : null);
+```
+
+## useInterval
+
+Declarative [`setInterval`](https://developer.mozilla.org/en-US/docs/Web/API/Window/setInterval) — calls `callback` every `delayMs`, restarting when `delayMs` changes, and clearing on unmount. Pass `delayMs: null` to pause without unmounting the hook.
+
+```tsx
+useInterval(() => setElapsed((s) => s + 1), running ? 1000 : null);
+```
+
+## useAsync
+
+Wraps a promise-returning function with `loading`/`error`/`data` state. Re-runs `asyncFn` whenever `deps` changes (forwarded verbatim to the underlying effect — omit it to run once on mount). A stale run's resolution is ignored if `deps` changes (or the component unmounts) before it settles.
+
+```tsx
+const { data, loading, error } = useAsync(() => fetchUser(id), [id]);
+```
+
+## useBeforeUnload
+
+Registers a [`beforeunload`](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event) handler — the classic "unsaved changes" navigation guard. Call `event.preventDefault()` (and, for legacy browser support, set `event.returnValue = ""`) inside `handler` to trigger the browser's own confirmation prompt.
+
+```tsx
+useBeforeUnload((event) => {
+  if (isDirty) {
+    event.preventDefault();
+    event.returnValue = "";
+  }
+}, isDirty);
+```
+
+## useAnimationFrame
+
+Declarative [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame) loop — calls `callback` every frame with the delta time (ms) since the previous one, skipping the very first frame (no delta to report yet). Auto-cancels on unmount or when `enabled` becomes `false`.
+
+```tsx
+useAnimationFrame((deltaMs) => setRotation((r) => r + deltaMs * 0.1));
+```
+
+## useIdleCallback
+
+Wraps [`requestIdleCallback`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback)/`cancelIdleCallback` — background scheduling for low-priority work during a frame's idle time.
+
+:::note
+
+Safari never implemented `requestIdleCallback`. This hook falls back to a `setTimeout(fn, 1)` with a synthetic `{ didTimeout: false, timeRemaining: () => 50 }` deadline there — see the [browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback#browser_compatibility).
+
+:::
+
+```tsx
+useIdleCallback((deadline) => {
+  while (deadline.timeRemaining() > 0 && queue.length > 0) processNext();
+});
+```
+
+## useWebLock
+
+Wraps the [Web Locks API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Locks_API) — async mutual exclusion for a named resource, shared across same-origin tabs/workers. `runExclusive(callback)` runs `callback` once the named lock is granted, releasing it automatically when `callback` settles (success or throw) — this hook never leaks a held lock. `supported: false` is the SSR-safe default where the API doesn't exist.
+
+```tsx
+const { runExclusive, status } = useWebLock("sync-cart");
+const total = await runExclusive(() => mergeCartFromOtherTabs());
+```
+
+## useWorker
+
+Offloads work to a [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker), with a promise-based `run()` instead of raw `postMessage`/`onmessage` plumbing. The worker is only created lazily, on the first `run()` — never on mount — and the same instance is reused across calls until `terminate()` (or unmount) tears it down.
+
+```tsx
+const { run } = useWorker<number, number>(
+  () => new Worker(new URL("./sum.worker.ts", import.meta.url)),
+);
+const total = await run(42);
+```
+
+## usePerformanceObserver
+
+Wraps [`PerformanceObserver`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver) — long tasks, paint timing, layout shift, and other performance entry types, streamed to `callback` as they happen. Subscribes on mount and whenever `options` changes, disconnecting the previous observer first.
+
+```tsx
+usePerformanceObserver(
+  (list) => {
+    for (const entry of list.getEntries()) reportLongTask(entry);
+  },
+  { entryTypes: ["longtask"] },
+);
+```
+
+## See Also
+
+- [Getting Started](/react-hooks/getting-started)
+- [Overview](/react-hooks)

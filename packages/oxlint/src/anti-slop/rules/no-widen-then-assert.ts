@@ -1,4 +1,4 @@
-import type { ESTree, Variable } from "@oxlint/plugins";
+import type { ESTree, Rule, Variable } from "@oxlint/plugins";
 
 import { defineRule } from "@oxlint/plugins";
 
@@ -313,7 +313,7 @@ function assertionIsNarrower(
 }
 
 /** Detect immutable local bindings that erase a known type and are later asserted back to a narrower type. */
-export const noWidenThenAssertRule = defineRule({
+export const noWidenThenAssertRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {

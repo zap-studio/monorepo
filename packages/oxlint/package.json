@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/oxlint",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": false,
   "description": "Zap Studio's oxlint preset: exclusive, single-owner rule sets — pick exactly the presets your project needs, nothing implied.",
   "keywords": [
