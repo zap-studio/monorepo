@@ -148,6 +148,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "prepublishOnly": "pnpm -C ../.. run build"
+  },
   "devDependencies": {
     "@testing-library/dom": "catalog:",
     "@testing-library/react": "catalog:",

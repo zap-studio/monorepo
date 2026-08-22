@@ -36,6 +36,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "prepublishOnly": "pnpm -C ../.. run build"
+  },
   "dependencies": {
     "@standard-schema/spec": "catalog:"
   },

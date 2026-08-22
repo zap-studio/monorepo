@@ -45,6 +45,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "prepublishOnly": "pnpm -C ../.. run build"
+  },
   "dependencies": {
     "@zap-studio/validation": "workspace:*"
   },

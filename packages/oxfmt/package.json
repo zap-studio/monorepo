@@ -34,6 +34,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "prepublishOnly": "pnpm -C ../.. run build"
+  },
   "devDependencies": {
     "@zap-studio/typescript": "workspace:*",
     "oxfmt": "catalog:",

@@ -74,7 +74,7 @@
     "access": "public"
   },
   "scripts": {
-    "prepublishOnly": "pnpm run verify",
+    "prepublishOnly": "pnpm run verify && pnpm -C ../.. run build",
     "verify": "node scripts/verify-presets.mjs"
   },
   "dependencies": {
