@@ -15,7 +15,7 @@ allowBuilds:
 catalog:
   "@arethetypeswrong/core": ^0.18.5
   "@e18e/eslint-plugin": ^0.8.0
-  "@oxlint/plugins": ^1.79.0
+  "@oxlint/plugins": ^1.80.0
   "@opentelemetry/api": ^1.9.1
   "@opentelemetry/context-async-hooks": ^2.10.0
   "@opentelemetry/core": ^2.10.0
@@ -46,7 +46,7 @@ catalog:
   fallow: ^3.17.0
   lefthook: ^2.1.10
   oxfmt: ^0.64.0
-  oxlint: ^1.79.0
+  oxlint: ^1.80.0
   oxlint-plugin-react-doctor: ^0.9.12
   oxlint-tsgolint: ^7.0.2001
   playwright: ^1.62.1
