@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Media** (`media/`) — `useExperimentalBarcodeDetector` (Barcode Detection API), `useExperimentalSelectAudioOutput` (audio output device selection).
 - **DOM / element interaction** (`dom/`) — `useExperimentalContactPicker` (Contact Picker API).
 - **Sensors** (`sensors/`) — `useExperimentalIdleDetector` (Idle Detection API), `useExperimentalLocalFonts` (Local Font Access API), and the Generic Sensor API family: `useExperimentalAccelerometer`, `useExperimentalLinearAccelerationSensor`, `useExperimentalGravitySensor`, `useExperimentalGyroscope`, `useExperimentalMagnetometer`, `useExperimentalAbsoluteOrientationSensor`, `useExperimentalRelativeOrientationSensor`, `useExperimentalAmbientLightSensor`.
+- **Sensors** (`sensors/`) — `useExperimentalNfc`, wrapping the Web NFC API's `NDEFReader` for scanning, writing, and locking NDEF tags.
 - **Lifecycle** (`lifecycle/`) — `useIsomorphicLayoutEffect`, `useLayoutEffect` on the client and `useEffect` on the server, so pre-paint effects don't warn during server rendering.
 
 ### Changed

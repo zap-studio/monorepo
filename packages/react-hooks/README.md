@@ -80,6 +80,7 @@ Every hook is also importable from its own category subpath — see [Conventions
 | `useFontsReady`                            | `true` once `document.fonts.ready` resolves — avoid FOUC on custom web fonts                                          |
 | `useExperimentalIdleDetector`              | Idle Detection API — `userState`/`screenState` (Experimental, Chromium-only)                                          |
 | `useExperimentalLocalFonts`                | Local Font Access API — `window.queryLocalFonts()` (Experimental, Chromium-only)                                      |
+| `useExperimentalNfc`                       | Web NFC API — scan, write, and lock NDEF tags (Experimental, Chromium on Android only)                                |
 | `useExperimentalAccelerometer`             | Generic Sensor API `Accelerometer` — acceleration incl. gravity (Experimental, Chromium-only)                         |
 | `useExperimentalLinearAccelerationSensor`  | Generic Sensor API `LinearAccelerationSensor` — acceleration excl. gravity (Experimental, Chromium-only)              |
 | `useExperimentalGravitySensor`             | Generic Sensor API `GravitySensor` — gravity component of acceleration (Experimental, Chromium-only)                  |

@@ -128,6 +128,17 @@ export type {
 } from "./sensors/use-experimental-magnetometer.ts";
 export { useExperimentalMagnetometer } from "./sensors/use-experimental-magnetometer.ts";
 export type {
+  NDEFMessage,
+  NDEFMessageSource,
+  NDEFReadingEvent,
+  NDEFRecord,
+  NDEFRecordInit,
+  NDEFWriteOptions,
+  NfcReading,
+  UseExperimentalNfcResult,
+} from "./sensors/use-experimental-nfc.ts";
+export { useExperimentalNfc } from "./sensors/use-experimental-nfc.ts";
+export type {
   RelativeOrientationReading,
   UseExperimentalRelativeOrientationSensorResult,
 } from "./sensors/use-experimental-relative-orientation-sensor.ts";

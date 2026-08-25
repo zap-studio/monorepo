@@ -303,6 +303,24 @@ const { query, supported } = useExperimentalLocalFonts();
 const fonts = supported ? await query() : undefined;
 ```
 
+## useExperimentalNfc
+
+Wraps the [Web NFC API](https://developer.mozilla.org/en-US/docs/Web/API/Web_NFC_API)'s `NDEFReader` — `scan()` prompts for the `"nfc"` permission and starts listening for tags, resolving `false` when the API is missing or the user denies it; every tag that comes into range then updates `reading` with its `serialNumber` and raw `records`. `stop()` aborts the scan. `write()` and `makeReadOnly()` act on the next tag in range, each resolving `false` rather than throwing when the tag can't be written. `error` holds the last failure — a rejected call, or a tag that couldn't be decoded.
+
+Records are handed over undecoded: `data` is a `DataView`, so text records are read with a `TextDecoder` built from the record's own `encoding`.
+
+Experimental per MDN, Chromium on Android only, and gated behind a secure context and a user gesture — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Web_NFC_API#browser_compatibility).
+
+```tsx
+const { scan, reading, supported } = useExperimentalNfc();
+<button onClick={() => scan()} disabled={!supported}>
+  Scan a tag
+</button>;
+{
+  reading ? <p>Tag {reading.serialNumber}</p> : null;
+}
+```
+
 ## See Also
 
 - [Getting Started](/react-hooks/getting-started)

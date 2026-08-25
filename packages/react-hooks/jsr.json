@@ -87,6 +87,7 @@
     "./sensors/use-experimental-linear-acceleration-sensor": "./src/sensors/use-experimental-linear-acceleration-sensor.ts",
     "./sensors/use-experimental-local-fonts": "./src/sensors/use-experimental-local-fonts.ts",
     "./sensors/use-experimental-magnetometer": "./src/sensors/use-experimental-magnetometer.ts",
+    "./sensors/use-experimental-nfc": "./src/sensors/use-experimental-nfc.ts",
     "./sensors/use-experimental-relative-orientation-sensor": "./src/sensors/use-experimental-relative-orientation-sensor.ts",
     "./sensors/use-fonts-ready": "./src/sensors/use-fonts-ready.ts",
     "./sensors/use-geolocation": "./src/sensors/use-geolocation.ts",

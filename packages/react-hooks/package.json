@@ -111,6 +111,7 @@
     "./sensors/use-experimental-linear-acceleration-sensor": "./dist/sensors/use-experimental-linear-acceleration-sensor.js",
     "./sensors/use-experimental-local-fonts": "./dist/sensors/use-experimental-local-fonts.js",
     "./sensors/use-experimental-magnetometer": "./dist/sensors/use-experimental-magnetometer.js",
+    "./sensors/use-experimental-nfc": "./dist/sensors/use-experimental-nfc.js",
     "./sensors/use-experimental-relative-orientation-sensor": "./dist/sensors/use-experimental-relative-orientation-sensor.js",
     "./sensors/use-fonts-ready": "./dist/sensors/use-fonts-ready.js",
     "./sensors/use-geolocation": "./dist/sensors/use-geolocation.js",
