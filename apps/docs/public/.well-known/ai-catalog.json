@@ -1,0 +1,93 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "identifier": "zapstudio.dev",
+    "displayName": "Zap Studio"
+  },
+  "entries": [
+    {
+      "identifier": "urn:ai:zapstudio.dev:docs:llms-index",
+      "displayName": "Zap Studio Documentation Index",
+      "type": "text/plain",
+      "url": "https://www.zapstudio.dev/llms.txt",
+      "description": "Indexed list of every Zap Studio documentation page with a one-line summary, for agents that want to fetch only the relevant pages."
+    },
+    {
+      "identifier": "urn:ai:zapstudio.dev:docs:llms-full",
+      "displayName": "Zap Studio Documentation (full corpus)",
+      "type": "text/plain",
+      "url": "https://www.zapstudio.dev/llms-full.txt",
+      "description": "The complete Zap Studio documentation for all packages in one Markdown file, for agents that need full context in a single request."
+    },
+    {
+      "identifier": "urn:ai:zapstudio.dev:package:fetch",
+      "displayName": "@zap-studio/fetch",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/fetch",
+      "description": "A type-safe, tree-shakeable fetch wrapper for HTTP requests with runtime schema validation."
+    },
+    {
+      "identifier": "urn:ai:zapstudio.dev:package:logger",
+      "displayName": "@zap-studio/logger",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/logger",
+      "description": "A lean, tree-shakeable logging abstraction with a console implementation."
+    },
+    {
+      "identifier": "urn:ai:zapstudio.dev:package:monads",
+      "displayName": "@zap-studio/monads",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/monads",
+      "description": "Result/Option types and Rust-style functional combinators for explicit, type-safe error handling."
+    },
+    {
+      "identifier": "urn:ai:zapstudio.dev:package:oxfmt",
+      "displayName": "@zap-studio/oxfmt",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/oxfmt",
+      "description": "Zap Studio's oxfmt preset: sorted imports, sorted package.json, and an optional Tailwind CSS class-sorting extension."
+    },
+    {
+      "identifier": "urn:ai:zapstudio.dev:package:oxlint",
+      "displayName": "@zap-studio/oxlint",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/oxlint",
+      "description": "Zap Studio's oxlint preset: exclusive, single-owner rule sets — pick exactly the presets your project needs, nothing implied."
+    },
+    {
+      "identifier": "urn:ai:zapstudio.dev:package:permit",
+      "displayName": "@zap-studio/permit",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/permit",
+      "description": "A type-safe, declarative, tree-shakeable authorization library for TypeScript with Standard Schema support."
+    },
+    {
+      "identifier": "urn:ai:zapstudio.dev:package:react-hooks",
+      "displayName": "@zap-studio/react-hooks",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/react-hooks",
+      "description": "Small, focused, tree-shakeable React hooks — one hook, one subpath, no forced bundle."
+    },
+    {
+      "identifier": "urn:ai:zapstudio.dev:package:retry",
+      "displayName": "@zap-studio/retry",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/retry",
+      "description": "Composable, tree-shakeable retry policies for resilient async operations."
+    },
+    {
+      "identifier": "urn:ai:zapstudio.dev:package:validation",
+      "displayName": "@zap-studio/validation",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/validation",
+      "description": "Tree-shakeable Standard Schema utilities and ValidationError helpers."
+    },
+    {
+      "identifier": "urn:ai:zapstudio.dev:package:webhooks",
+      "displayName": "@zap-studio/webhooks",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/webhooks",
+      "description": "A lightweight, type-safe, tree-shakeable webhook router with Standard Schema validation, signature verification, and lifecycle hooks."
+    }
+  ]
+}
