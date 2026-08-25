@@ -26,6 +26,10 @@ export default defineConfig({
         innerHTML: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
+          address: {
+            "@type": "PostalAddress",
+            addressCountry: "FR",
+          },
           name: "Zap Studio",
           url: baseUrl,
           logo: `${baseUrl}/icon.svg`,
