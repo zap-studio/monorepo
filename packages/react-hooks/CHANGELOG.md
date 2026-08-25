@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **State** (`state/`) — `useCredential`, wrapping the Credential Management API (`navigator.credentials`) for programmatic sign-in/sign-out.
 - **Media** (`media/`) — `useExperimentalBarcodeDetector` (Barcode Detection API), `useExperimentalSelectAudioOutput` (audio output device selection).
 - **DOM / element interaction** (`dom/`) — `useExperimentalContactPicker` (Contact Picker API).
-- **Sensors** (`sensors/`) — `useExperimentalIdleDetector` (Idle Detection API), `useExperimentalLocalFonts` (Local Font Access API).
+- **Sensors** (`sensors/`) — `useExperimentalIdleDetector` (Idle Detection API), `useExperimentalLocalFonts` (Local Font Access API), and the Generic Sensor API family: `useExperimentalAccelerometer`, `useExperimentalLinearAccelerationSensor`, `useExperimentalGravitySensor`, `useExperimentalGyroscope`, `useExperimentalMagnetometer`, `useExperimentalAbsoluteOrientationSensor`, `useExperimentalRelativeOrientationSensor`, `useExperimentalAmbientLightSensor`.
 
 ## [1.0.0]
 

@@ -44,42 +44,50 @@ Every hook is also importable from its own category subpath — see [Conventions
 
 ### Sensors (`sensors/`)
 
-| Hook                          | What it does                                                                             |
-| ----------------------------- | ---------------------------------------------------------------------------------------- |
-| `useMediaQuery`               | Matches the viewport against an arbitrary CSS media query string                         |
-| `useIsMobile`                 | `true` below a breakpoint (768px by default) — built on `useMediaQuery`                  |
-| `useIsClient`                 | `true` only after the client has mounted — SSR hydration guard                           |
-| `useIsServer`                 | `true` only during server rendering — the inverse of `useIsClient`                       |
-| `useColorScheme`              | `"dark"` or `"light"`, from `(prefers-color-scheme: dark)`                               |
-| `usePrefersDarkMode`          | Boolean shorthand for `useColorScheme() === "dark"`                                      |
-| `useOnlineStatus`             | Tracks `navigator.onLine`, updating on `online`/`offline` events                         |
-| `useNetworkState`             | `useOnlineStatus` plus `navigator.connection` info where supported                       |
-| `usePreferredLanguage`        | `navigator.language`/`navigator.languages`, updating on `languagechange`                 |
-| `useOrientation`              | `screen.orientation`'s `angle`/`type`, updating on orientation change                    |
-| `useGeolocation`              | Wraps `navigator.geolocation`; one-shot by default, `watch: true` for continuous updates |
-| `useBattery`                  | Wraps the Battery Status API (Chromium-only); `supported: false` elsewhere               |
-| `useWindowSize`               | `window.innerWidth`/`innerHeight`, updating on `resize`                                  |
-| `useDocumentVisibility`       | `document.visibilityState`, updating on `visibilitychange`                               |
-| `usePageLeave`                | Calls a handler when the pointer leaves the viewport — exit-intent UI                    |
-| `useShare`                    | Wraps the Web Share API (`navigator.share`), with `canShare` feature-detection           |
-| `usePermission`               | `navigator.permissions.query({ name })`'s state for a given permission                   |
-| `useVibrate`                  | Wraps `navigator.vibrate()` — mostly Android Chrome; no-op elsewhere                     |
-| `useWakeLock`                 | Screen Wake Lock; auto-released on tab hide/unmount                                      |
-| `useStorageEstimate`          | `navigator.storage.estimate()`'s `usage`/`quota`, one-shot on mount                      |
-| `useDeviceCapabilities`       | `navigator.hardwareConcurrency`/`deviceMemory` (latter Chromium-only)                    |
-| `useDeviceOrientation`        | Accelerometer/magnetometer tilt; iOS requires a `requestPermission()` gesture            |
-| `useDeviceMotion`             | Accelerometer motion; same iOS permission caveat as `useDeviceOrientation`               |
-| `useVisualViewport`           | `window.visualViewport`; captures on-screen-keyboard shrink `innerHeight` misses         |
-| `useDevicePixelRatio`         | `window.devicePixelRatio`, updating on zoom/monitor moves                                |
-| `useTouchSupport`             | `true` when `navigator.maxTouchPoints > 0`                                               |
-| `useUserAgentData`            | `navigator.userAgentData`'s low-entropy fields — structured `navigator.userAgent`        |
-| `useCookieEnabled`            | `navigator.cookieEnabled`                                                                |
-| `useVirtualKeyboard`          | `navigator.virtualKeyboard`'s bounding rect (Chromium-only)                              |
-| `usePrintMode`                | `true` while printing, via the `print` media query                                       |
-| `useNotificationPermission`   | Notifications API permission state + a `notify()` trigger                                |
-| `useFontsReady`               | `true` once `document.fonts.ready` resolves — avoid FOUC on custom web fonts             |
-| `useExperimentalIdleDetector` | Idle Detection API — `userState`/`screenState` (Experimental, Chromium-only)             |
-| `useExperimentalLocalFonts`   | Local Font Access API — `window.queryLocalFonts()` (Experimental, Chromium-only)         |
+| Hook                                       | What it does                                                                                                          |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `useMediaQuery`                            | Matches the viewport against an arbitrary CSS media query string                                                      |
+| `useIsMobile`                              | `true` below a breakpoint (768px by default) — built on `useMediaQuery`                                               |
+| `useIsClient`                              | `true` only after the client has mounted — SSR hydration guard                                                        |
+| `useIsServer`                              | `true` only during server rendering — the inverse of `useIsClient`                                                    |
+| `useColorScheme`                           | `"dark"` or `"light"`, from `(prefers-color-scheme: dark)`                                                            |
+| `usePrefersDarkMode`                       | Boolean shorthand for `useColorScheme() === "dark"`                                                                   |
+| `useOnlineStatus`                          | Tracks `navigator.onLine`, updating on `online`/`offline` events                                                      |
+| `useNetworkState`                          | `useOnlineStatus` plus `navigator.connection` info where supported                                                    |
+| `usePreferredLanguage`                     | `navigator.language`/`navigator.languages`, updating on `languagechange`                                              |
+| `useOrientation`                           | `screen.orientation`'s `angle`/`type`, updating on orientation change                                                 |
+| `useGeolocation`                           | Wraps `navigator.geolocation`; one-shot by default, `watch: true` for continuous updates                              |
+| `useBattery`                               | Wraps the Battery Status API (Chromium-only); `supported: false` elsewhere                                            |
+| `useWindowSize`                            | `window.innerWidth`/`innerHeight`, updating on `resize`                                                               |
+| `useDocumentVisibility`                    | `document.visibilityState`, updating on `visibilitychange`                                                            |
+| `usePageLeave`                             | Calls a handler when the pointer leaves the viewport — exit-intent UI                                                 |
+| `useShare`                                 | Wraps the Web Share API (`navigator.share`), with `canShare` feature-detection                                        |
+| `usePermission`                            | `navigator.permissions.query({ name })`'s state for a given permission                                                |
+| `useVibrate`                               | Wraps `navigator.vibrate()` — mostly Android Chrome; no-op elsewhere                                                  |
+| `useWakeLock`                              | Screen Wake Lock; auto-released on tab hide/unmount                                                                   |
+| `useStorageEstimate`                       | `navigator.storage.estimate()`'s `usage`/`quota`, one-shot on mount                                                   |
+| `useDeviceCapabilities`                    | `navigator.hardwareConcurrency`/`deviceMemory` (latter Chromium-only)                                                 |
+| `useDeviceOrientation`                     | Accelerometer/magnetometer tilt; iOS requires a `requestPermission()` gesture                                         |
+| `useDeviceMotion`                          | Accelerometer motion; same iOS permission caveat as `useDeviceOrientation`                                            |
+| `useVisualViewport`                        | `window.visualViewport`; captures on-screen-keyboard shrink `innerHeight` misses                                      |
+| `useDevicePixelRatio`                      | `window.devicePixelRatio`, updating on zoom/monitor moves                                                             |
+| `useTouchSupport`                          | `true` when `navigator.maxTouchPoints > 0`                                                                            |
+| `useUserAgentData`                         | `navigator.userAgentData`'s low-entropy fields — structured `navigator.userAgent`                                     |
+| `useCookieEnabled`                         | `navigator.cookieEnabled`                                                                                             |
+| `useVirtualKeyboard`                       | `navigator.virtualKeyboard`'s bounding rect (Chromium-only)                                                           |
+| `usePrintMode`                             | `true` while printing, via the `print` media query                                                                    |
+| `useNotificationPermission`                | Notifications API permission state + a `notify()` trigger                                                             |
+| `useFontsReady`                            | `true` once `document.fonts.ready` resolves — avoid FOUC on custom web fonts                                          |
+| `useExperimentalIdleDetector`              | Idle Detection API — `userState`/`screenState` (Experimental, Chromium-only)                                          |
+| `useExperimentalLocalFonts`                | Local Font Access API — `window.queryLocalFonts()` (Experimental, Chromium-only)                                      |
+| `useExperimentalAccelerometer`             | Generic Sensor API `Accelerometer` — acceleration incl. gravity (Experimental, Chromium-only)                         |
+| `useExperimentalLinearAccelerationSensor`  | Generic Sensor API `LinearAccelerationSensor` — acceleration excl. gravity (Experimental, Chromium-only)              |
+| `useExperimentalGravitySensor`             | Generic Sensor API `GravitySensor` — gravity component of acceleration (Experimental, Chromium-only)                  |
+| `useExperimentalGyroscope`                 | Generic Sensor API `Gyroscope` — angular velocity (Experimental, Chromium-only)                                       |
+| `useExperimentalMagnetometer`              | Generic Sensor API `Magnetometer` — ambient magnetic field (Experimental, Chromium-only)                              |
+| `useExperimentalAbsoluteOrientationSensor` | Generic Sensor API `AbsoluteOrientationSensor` — rotation quaternion, geomagnetic north (Experimental, Chromium-only) |
+| `useExperimentalRelativeOrientationSensor` | Generic Sensor API `RelativeOrientationSensor` — rotation quaternion, no magnetometer (Experimental, Chromium-only)   |
+| `useExperimentalAmbientLightSensor`        | Generic Sensor API `AmbientLightSensor` — ambient light in lux (Experimental, Chromium-only)                          |
 
 ### DOM / element interaction (`dom/`)
 

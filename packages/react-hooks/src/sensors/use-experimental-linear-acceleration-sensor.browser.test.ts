@@ -1,0 +1,145 @@
+import { act, renderHook } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { useExperimentalLinearAccelerationSensor } from "./use-experimental-linear-acceleration-sensor.ts";
+
+function createSensorMock(reading: { x: number; y: number; z: number }) {
+  const sensor = new EventTarget() as EventTarget & {
+    activated: boolean;
+    onerror: ((event: Event & { error: DOMException }) => void) | null;
+    onreading: ((event: Event) => void) | null;
+    start: () => void;
+    stop: () => void;
+    x: number;
+    y: number;
+    z: number;
+  };
+  sensor.activated = false;
+  sensor.x = reading.x;
+  sensor.y = reading.y;
+  sensor.z = reading.z;
+  sensor.onreading = null;
+  sensor.onerror = null;
+  sensor.start = vi.fn(() => {
+    sensor.activated = true;
+    sensor.onreading?.(new Event("reading"));
+  });
+  sensor.stop = vi.fn(() => {
+    sensor.activated = false;
+  });
+
+  return {
+    fireError: (error: DOMException) => {
+      sensor.onerror?.(Object.assign(new Event("error"), { error }));
+    },
+    fireReading: (next: { x: number; y: number; z: number }) => {
+      sensor.x = next.x;
+      sensor.y = next.y;
+      sensor.z = next.z;
+      sensor.onreading?.(new Event("reading"));
+    },
+    sensor,
+  };
+}
+
+function stubLinearAccelerationSensor(sensor?: ReturnType<typeof createSensorMock>["sensor"]) {
+  const LinearAccelerationSensorCtor = vi
+    .fn()
+    .mockImplementation(function LinearAccelerationSensor() {
+      return sensor;
+    });
+  vi.stubGlobal("LinearAccelerationSensor", LinearAccelerationSensorCtor);
+  return LinearAccelerationSensorCtor;
+}
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+describe(useExperimentalLinearAccelerationSensor, () => {
+  it("reports supported: false when the Generic Sensor API is unavailable", () => {
+    vi.stubGlobal("LinearAccelerationSensor", undefined);
+
+    const { result } = renderHook(() => useExperimentalLinearAccelerationSensor());
+
+    expect(result.current.supported).toBe(false);
+    expect(result.current.reading).toBeUndefined();
+  });
+
+  it("reports supported: true when window.LinearAccelerationSensor exists", () => {
+    stubLinearAccelerationSensor();
+
+    const { result } = renderHook(() => useExperimentalLinearAccelerationSensor());
+
+    expect(result.current.supported).toBe(true);
+  });
+
+  it("start() returns false without constructing a sensor when unsupported", () => {
+    vi.stubGlobal("LinearAccelerationSensor", undefined);
+
+    const { result } = renderHook(() => useExperimentalLinearAccelerationSensor());
+    let started = false;
+    act(() => {
+      started = result.current.start();
+    });
+
+    expect(started).toBe(false);
+  });
+
+  it("start() reports the reading and updates on subsequent readings", () => {
+    const { sensor, fireReading } = createSensorMock({ x: 1, y: 2, z: 3 });
+    stubLinearAccelerationSensor(sensor);
+
+    const { result } = renderHook(() => useExperimentalLinearAccelerationSensor());
+
+    act(() => {
+      result.current.start();
+    });
+
+    expect(result.current.reading).toEqual({ x: 1, y: 2, z: 3 });
+    expect(result.current.activated).toBe(true);
+
+    act(() => {
+      fireReading({ x: 4, y: 5, z: 6 });
+    });
+
+    expect(result.current.reading).toEqual({ x: 4, y: 5, z: 6 });
+  });
+
+  it("reports a permission/policy failure through error", () => {
+    const { sensor, fireError } = createSensorMock({ x: 0, y: 0, z: 0 });
+    stubLinearAccelerationSensor(sensor);
+    const domException = new DOMException("Permission denied", "NotAllowedError");
+
+    const { result } = renderHook(() => useExperimentalLinearAccelerationSensor());
+
+    act(() => {
+      result.current.start();
+    });
+    act(() => {
+      fireError(domException);
+    });
+
+    expect(result.current.error).toBe(domException);
+    expect(result.current.activated).toBe(false);
+  });
+
+  it("stop() stops the sensor and resets activated", () => {
+    const { sensor } = createSensorMock({ x: 1, y: 2, z: 3 });
+    stubLinearAccelerationSensor(sensor);
+
+    const { result } = renderHook(() => useExperimentalLinearAccelerationSensor());
+
+    act(() => {
+      result.current.start();
+    });
+    expect(result.current.activated).toBe(true);
+
+    act(() => {
+      result.current.stop();
+    });
+
+    expect(result.current.activated).toBe(false);
+    expect(sensor.stop).toHaveBeenCalled();
+  });
+});

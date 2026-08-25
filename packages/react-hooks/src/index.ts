@@ -64,6 +64,22 @@ export { useEventListener } from "./dom/use-event-listener.ts";
 export type { EventSourceStatus, UseEventSourceResult } from "./network/use-event-source.ts";
 export { useEventSource } from "./network/use-event-source.ts";
 export type {
+  AbsoluteOrientationReading,
+  GenericSensorOptions,
+  UseExperimentalAbsoluteOrientationSensorResult,
+} from "./sensors/use-experimental-absolute-orientation-sensor.ts";
+export { useExperimentalAbsoluteOrientationSensor } from "./sensors/use-experimental-absolute-orientation-sensor.ts";
+export type {
+  AccelerometerReading,
+  UseExperimentalAccelerometerResult,
+} from "./sensors/use-experimental-accelerometer.ts";
+export { useExperimentalAccelerometer } from "./sensors/use-experimental-accelerometer.ts";
+export type {
+  AmbientLightReading,
+  UseExperimentalAmbientLightSensorResult,
+} from "./sensors/use-experimental-ambient-light-sensor.ts";
+export { useExperimentalAmbientLightSensor } from "./sensors/use-experimental-ambient-light-sensor.ts";
+export type {
   BarcodeDetectorSource,
   BarcodeFormat,
   DetectedBarcode,
@@ -79,6 +95,16 @@ export type {
 } from "./dom/use-experimental-contact-picker.ts";
 export { useExperimentalContactPicker } from "./dom/use-experimental-contact-picker.ts";
 export type {
+  GravityReading,
+  UseExperimentalGravitySensorResult,
+} from "./sensors/use-experimental-gravity-sensor.ts";
+export { useExperimentalGravitySensor } from "./sensors/use-experimental-gravity-sensor.ts";
+export type {
+  GyroscopeReading,
+  UseExperimentalGyroscopeResult,
+} from "./sensors/use-experimental-gyroscope.ts";
+export { useExperimentalGyroscope } from "./sensors/use-experimental-gyroscope.ts";
+export type {
   IdleDetectorStartOptions,
   IdleScreenState,
   IdleUserState,
@@ -86,11 +112,26 @@ export type {
 } from "./sensors/use-experimental-idle-detector.ts";
 export { useExperimentalIdleDetector } from "./sensors/use-experimental-idle-detector.ts";
 export type {
+  LinearAccelerationReading,
+  UseExperimentalLinearAccelerationSensorResult,
+} from "./sensors/use-experimental-linear-acceleration-sensor.ts";
+export { useExperimentalLinearAccelerationSensor } from "./sensors/use-experimental-linear-acceleration-sensor.ts";
+export type {
   LocalFontData,
   QueryLocalFontsOptions,
   UseExperimentalLocalFontsResult,
 } from "./sensors/use-experimental-local-fonts.ts";
 export { useExperimentalLocalFonts } from "./sensors/use-experimental-local-fonts.ts";
+export type {
+  MagnetometerReading,
+  UseExperimentalMagnetometerResult,
+} from "./sensors/use-experimental-magnetometer.ts";
+export { useExperimentalMagnetometer } from "./sensors/use-experimental-magnetometer.ts";
+export type {
+  RelativeOrientationReading,
+  UseExperimentalRelativeOrientationSensorResult,
+} from "./sensors/use-experimental-relative-orientation-sensor.ts";
+export { useExperimentalRelativeOrientationSensor } from "./sensors/use-experimental-relative-orientation-sensor.ts";
 export type {
   SelectAudioOutputOptions,
   UseExperimentalSelectAudioOutputResult,
