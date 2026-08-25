@@ -27,6 +27,11 @@ export const useMediaStream = (constraints: MediaStreamConstraints): UserMediaRe
   const [error, setError] = useState<Error | undefined>(undefined);
   const streamRef = useRef<MediaStream | null>(null);
 
+  const constraintsRef = useRef(constraints);
+  useEffect(() => {
+    constraintsRef.current = constraints;
+  });
+
   const stop = useCallback((): void => {
     for (const track of streamRef.current?.getTracks() ?? []) {
       track.stop();
@@ -45,7 +50,7 @@ export const useMediaStream = (constraints: MediaStreamConstraints): UserMediaRe
     setStatus("requesting");
     setError(undefined);
     try {
-      const media = await navigator.mediaDevices.getUserMedia(constraints);
+      const media = await navigator.mediaDevices.getUserMedia(constraintsRef.current);
       streamRef.current = media;
       setStream(media);
       setStatus("active");
@@ -53,7 +58,7 @@ export const useMediaStream = (constraints: MediaStreamConstraints): UserMediaRe
       setError(caught instanceof Error ? caught : new Error(String(caught)));
       setStatus("error");
     }
-  }, [constraints]);
+  }, []);
 
   useEffect(() => stop, [stop]);
 

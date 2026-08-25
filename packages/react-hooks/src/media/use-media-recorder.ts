@@ -46,6 +46,11 @@ export const useMediaRecorder = (
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
+  const optionsRef = useRef(options);
+  useEffect(() => {
+    optionsRef.current = options;
+  });
+
   const start = useCallback((): void => {
     if (!isSupported() || !stream) {
       return;
@@ -54,7 +59,7 @@ export const useMediaRecorder = (
     setBlob(undefined);
     chunksRef.current = [];
 
-    const recorder = new MediaRecorder(stream, options);
+    const recorder = new MediaRecorder(stream, optionsRef.current);
     // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- these listeners are registered on a per-call `recorder` on a user-triggered `start()`, not the effect's mount body; the unmount effect below stops the recorder, and its listeners die with the object since it's never reused.
     recorder.addEventListener("dataavailable", (event: BlobEvent) => {
       if (event.data.size > 0) {
@@ -73,7 +78,7 @@ export const useMediaRecorder = (
     recorder.start();
     recorderRef.current = recorder;
     setStatus("recording");
-  }, [stream, options]);
+  }, [stream]);
 
   const stop = useCallback((): void => {
     recorderRef.current?.stop();

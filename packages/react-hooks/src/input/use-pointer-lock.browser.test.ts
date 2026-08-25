@@ -145,3 +145,18 @@ describe(usePointerLock, () => {
     expect(result.current.locked).toBe(false);
   });
 });
+
+describe("usePointerLock with an unattached ref", () => {
+  it("stays false when another element releases the pointer lock", () => {
+    setPointerLockSupport(true);
+    setPointerLockElement(null);
+
+    const { result } = renderHook(() => usePointerLock());
+
+    act(() => {
+      document.dispatchEvent(new Event("pointerlockchange"));
+    });
+
+    expect(result.current.locked).toBe(false);
+  });
+});

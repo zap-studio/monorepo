@@ -98,3 +98,14 @@ describe(useWebLock, () => {
     expect(result.current.status).toBe("error");
   });
 });
+
+describe("useWebLock option stability", () => {
+  it("keeps runExclusive stable across renders with an inline options object", () => {
+    const { rerender, result } = renderHook(() => useWebLock("cart", { mode: "shared" }));
+    const first = result.current.runExclusive;
+
+    rerender();
+
+    expect(result.current.runExclusive).toBe(first);
+  });
+});

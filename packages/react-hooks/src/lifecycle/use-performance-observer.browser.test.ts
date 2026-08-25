@@ -109,3 +109,38 @@ describe(usePerformanceObserver, () => {
     expect(MockPerformanceObserver.instances[0]?.disconnected).toBe(true);
   });
 });
+
+describe("usePerformanceObserver option stability", () => {
+  it("does not rebuild the observer for an options object re-created every render", () => {
+    vi.stubGlobal("PerformanceObserver", MockPerformanceObserver);
+    MockPerformanceObserver.instances = [];
+
+    const { rerender } = renderHook(() =>
+      usePerformanceObserver(() => {}, { buffered: true, entryTypes: ["mark"] }),
+    );
+
+    expect(MockPerformanceObserver.instances).toHaveLength(1);
+
+    rerender();
+    rerender();
+
+    expect(MockPerformanceObserver.instances).toHaveLength(1);
+  });
+
+  it("rebuilds the observer when an option actually changes", () => {
+    vi.stubGlobal("PerformanceObserver", MockPerformanceObserver);
+    MockPerformanceObserver.instances = [];
+
+    const { rerender } = renderHook(
+      ({ type }: { type: string }) => usePerformanceObserver(() => {}, { type }),
+      { initialProps: { type: "mark" } },
+    );
+
+    expect(MockPerformanceObserver.instances).toHaveLength(1);
+
+    rerender({ type: "measure" });
+
+    expect(MockPerformanceObserver.instances).toHaveLength(2);
+    expect(MockPerformanceObserver.instances[0]?.disconnected).toBe(true);
+  });
+});

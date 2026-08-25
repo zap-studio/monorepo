@@ -256,3 +256,17 @@ describe(useMediaRecorder, () => {
     expect(MockMediaRecorder.instances[0]?.state).toBe("inactive");
   });
 });
+
+describe("useMediaRecorder option stability", () => {
+  it("keeps start stable across renders with an inline options object", () => {
+    const stream = new MediaStream();
+    const { rerender, result } = renderHook(() =>
+      useMediaRecorder(stream, { mimeType: "video/webm" }),
+    );
+    const first = result.current.start;
+
+    rerender();
+
+    expect(result.current.start).toBe(first);
+  });
+});

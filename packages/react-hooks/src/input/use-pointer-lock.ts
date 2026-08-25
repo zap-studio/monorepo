@@ -51,7 +51,7 @@ export const usePointerLock = <T extends Element = HTMLElement>(): UsePointerLoc
     }
 
     const handlePointerLockChange = () => {
-      setLocked(document.pointerLockElement === ref.current);
+      setLocked(ref.current !== null && document.pointerLockElement === ref.current);
     };
 
     document.addEventListener("pointerlockchange", handlePointerLockChange);

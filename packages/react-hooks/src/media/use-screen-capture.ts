@@ -34,6 +34,11 @@ export const useScreenCapture = (options?: DisplayMediaStreamOptions): UseScreen
   const [error, setError] = useState<Error | undefined>(undefined);
   const streamRef = useRef<MediaStream | null>(null);
 
+  const optionsRef = useRef(options);
+  useEffect(() => {
+    optionsRef.current = options;
+  });
+
   const stop = useCallback((): void => {
     for (const track of streamRef.current?.getTracks() ?? []) {
       track.stop();
@@ -52,7 +57,7 @@ export const useScreenCapture = (options?: DisplayMediaStreamOptions): UseScreen
     setStatus("requesting");
     setError(undefined);
     try {
-      const media = await navigator.mediaDevices.getDisplayMedia(options);
+      const media = await navigator.mediaDevices.getDisplayMedia(optionsRef.current);
       streamRef.current = media;
       setStream(media);
       setStatus("active");
@@ -62,7 +67,7 @@ export const useScreenCapture = (options?: DisplayMediaStreamOptions): UseScreen
       setError(caught instanceof Error ? caught : new Error(String(caught)));
       setStatus("error");
     }
-  }, [options, stop]);
+  }, [stop]);
 
   useEffect(() => stop, [stop]);
 

@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** The shape returned by `usePointer`. */
 export interface PointerState {
@@ -23,7 +25,9 @@ const INITIAL_STATE: PointerState = {
  * `pointerdown`/`pointermove`/`pointerup` on `window`. `isDown` reflects
  * whether the primary pointer button/contact is currently active. Starts
  * all-`0`/`false`/`""` — also the SSR-safe default — until the first
- * pointer event fires.
+ * pointer event fires. The listeners attach in a layout effect, before the
+ * browser paints, so a `pointerup` can't be missed and leave `isDown` stuck
+ * at `true`.
  *
  * @example
  * ```tsx
@@ -33,7 +37,7 @@ const INITIAL_STATE: PointerState = {
 export const usePointer = (): PointerState => {
   const [state, setState] = useState<PointerState>(INITIAL_STATE);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const handlePointerDown = (event: PointerEvent) => {
       setState({
         clientX: event.clientX,

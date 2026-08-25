@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /** A new value, or an updater deriving one from the previous value — matches `useState`'s setter shape. */
 export type SetStoredValue<T> = T | ((prev: T) => T);
@@ -35,6 +35,11 @@ export const useWebStorage = <T>(
     typeof window === "undefined" ? initialValue : readStoredValue(getStorage(), key, initialValue),
   );
 
+  const initialValueRef = useRef(initialValue);
+  useEffect(() => {
+    initialValueRef.current = initialValue;
+  });
+
   const setValue = useCallback(
     (next: SetStoredValue<T>): void => {
       // SAFETY: SetStoredValue<T> = T | ((prev: T) => T); the typeof check above narrows to the function branch, so this cast just recovers the parameter type TS can't infer through a bare `typeof x === "function"` guard on a generic union.
@@ -55,8 +60,8 @@ export const useWebStorage = <T>(
     } catch {
       // Storage removal failed — state still resets in-memory.
     }
-    setValueState(initialValue);
-  }, [key, getStorage, initialValue]);
+    setValueState(initialValueRef.current);
+  }, [key, getStorage]);
 
   useEffect(() => {
     const handleStorageEvent = (event: StorageEvent) => {
@@ -64,12 +69,14 @@ export const useWebStorage = <T>(
         return;
       }
       // SAFETY: this StorageEvent is for the exact key this hook owns, and this hook is the only writer of that key, so a non-null newValue always parses back to a T.
-      setValueState(event.newValue === null ? initialValue : (JSON.parse(event.newValue) as T));
+      setValueState(
+        event.newValue === null ? initialValueRef.current : (JSON.parse(event.newValue) as T),
+      );
     };
 
     window.addEventListener("storage", handleStorageEvent);
     return () => window.removeEventListener("storage", handleStorageEvent);
-  }, [key, getStorage, initialValue]);
+  }, [key, getStorage]);
 
   return [value, setValue, remove];
 };

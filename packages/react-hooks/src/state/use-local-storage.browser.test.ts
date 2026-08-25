@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useLocalStorage } from "./use-local-storage.ts";
 
@@ -132,5 +132,34 @@ describe(useLocalStorage, () => {
     const { unmount } = renderHook(() => useLocalStorage("count", 0));
 
     expect(() => unmount()).not.toThrow();
+  });
+});
+
+describe("useLocalStorage initialValue stability", () => {
+  it("does not re-add the storage listener for an object literal re-created every render", () => {
+    const addEventListener = vi.spyOn(window, "addEventListener");
+    const { rerender } = renderHook(() => useLocalStorage("filters", { page: 1 }));
+
+    const initialCalls = addEventListener.mock.calls.length;
+    rerender();
+    rerender();
+
+    expect(addEventListener.mock.calls.length).toBe(initialCalls);
+  });
+
+  it("still falls back to the latest initial value when the key is cleared in another tab", () => {
+    const { result } = renderHook(() => useLocalStorage("filters", { page: 1 }));
+
+    act(() => {
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key: "filters",
+          newValue: null,
+          storageArea: window.localStorage,
+        }),
+      );
+    });
+
+    expect(result.current[0]).toEqual({ page: 1 });
   });
 });

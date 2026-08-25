@@ -1,4 +1,6 @@
-import { type RefObject, useEffect, useRef, useState } from "react";
+import { type RefObject, useRef, useState } from "react";
+
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** The shape returned by `useFileDrop`. */
 export interface UseFileDropResult<T extends HTMLElement> {
@@ -15,6 +17,13 @@ const filesFrom = (event: DragEvent): File[] => [...(event.dataTransfer?.files ?
  * doesn't need to be memoized — the latest one is always called. Also
  * exported as `useDropzone`, an alias for the same hook.
  *
+ * The listeners attach in a layout effect, before the browser paints — a
+ * `drop` is one-shot, so an overlay mounted mid-drag would otherwise lose the
+ * files outright. `ref` is re-read on every commit, so a drop target rendered
+ * conditionally (the usual "show the overlay while dragging" pattern),
+ * mounted later, or swapped for another one is wired up as soon as React
+ * commits the change.
+ *
  * @example
  * ```tsx
  * const { ref, isOver } = useFileDrop<HTMLDivElement>((files) => upload(files));
@@ -26,13 +35,17 @@ export const useFileDrop = <T extends HTMLElement = HTMLElement>(
 ): UseFileDropResult<T> => {
   const ref = useRef<T | null>(null);
   const onDropRef = useRef(onDrop);
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     onDropRef.current = onDrop;
   });
   const [isOver, setIsOver] = useState(false);
 
-  useEffect(() => {
-    const element = ref.current;
+  const [element, setElement] = useState<T | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    setElement(ref.current);
+  });
+
+  useIsomorphicLayoutEffect(() => {
     if (!element) {
       return undefined;
     }
@@ -61,7 +74,7 @@ export const useFileDrop = <T extends HTMLElement = HTMLElement>(
       element.removeEventListener("dragleave", handleDragLeave);
       element.removeEventListener("drop", handleDrop);
     };
-  }, []);
+  }, [element]);
 
   return { isOver, ref };
 };

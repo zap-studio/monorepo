@@ -91,3 +91,14 @@ describe(useExperimentalBarcodeDetector, () => {
     await expect(result.current.getSupportedFormats()).resolves.toBeUndefined();
   });
 });
+
+describe("useExperimentalBarcodeDetector format stability", () => {
+  it("keeps detect stable across renders with an inline formats array", () => {
+    const { rerender, result } = renderHook(() => useExperimentalBarcodeDetector(["qr_code"]));
+    const first = result.current.detect;
+
+    rerender();
+
+    expect(result.current.detect).toBe(first);
+  });
+});

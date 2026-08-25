@@ -104,3 +104,21 @@ describe(usePopover, () => {
     expect(popover.current.isOpen).toBe(false);
   });
 });
+
+describe("usePopover ref tracking", () => {
+  it("tracks a popover that only attaches after the first render", async () => {
+    let latest!: UsePopoverResult<HTMLDivElement>;
+    function TestComponent({ show }: { show: boolean }) {
+      latest = usePopover<HTMLDivElement>();
+      return show ? createElement("div", { popover: "manual", ref: latest.ref }) : null;
+    }
+    const { rerender } = render(createElement(TestComponent, { show: false }));
+
+    rerender(createElement(TestComponent, { show: true }));
+    act(() => {
+      latest.show();
+    });
+
+    await waitFor(() => expect(latest.isOpen).toBe(true));
+  });
+});

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Status reported by `useWebLock`. */
 export type WebLockStatus = "error" | "holding" | "idle" | "released";
@@ -33,6 +33,11 @@ export const useWebLock = (name: string, options?: LockOptions): UseWebLockResul
   const [status, setStatus] = useState<WebLockStatus>("idle");
   const [error, setError] = useState<Error | undefined>(undefined);
 
+  const optionsRef = useRef(options);
+  useEffect(() => {
+    optionsRef.current = options;
+  });
+
   const runExclusive = useCallback(
     async <T>(callback: (lock: Lock | null) => Promise<T> | T): Promise<T | undefined> => {
       if (!isSupported()) {
@@ -43,10 +48,14 @@ export const useWebLock = (name: string, options?: LockOptions): UseWebLockResul
       setStatus("idle");
       setError(undefined);
       try {
-        const result = await navigator.locks.request(name, options ?? {}, async (lock) => {
-          setStatus("holding");
-          return callback(lock);
-        });
+        const result = await navigator.locks.request(
+          name,
+          optionsRef.current ?? {},
+          async (lock) => {
+            setStatus("holding");
+            return callback(lock);
+          },
+        );
         setStatus("released");
         return result;
       } catch (caught) {
@@ -55,7 +64,7 @@ export const useWebLock = (name: string, options?: LockOptions): UseWebLockResul
         return undefined;
       }
     },
-    [name, options],
+    [name],
   );
 
   return { error, runExclusive, status, supported };

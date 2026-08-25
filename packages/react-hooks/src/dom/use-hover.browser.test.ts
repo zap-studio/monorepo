@@ -70,3 +70,45 @@ describe(useHover, () => {
     expect(hover.current.hovered).toBe(false);
   });
 });
+
+describe("useHover ref tracking", () => {
+  it("tracks an element that only attaches after the first render", () => {
+    let latest!: UseHoverResult<HTMLDivElement>;
+    function TestComponent({ show }: { show: boolean }) {
+      latest = useHover<HTMLDivElement>();
+      return show ? createElement("div", { ref: latest.ref }) : null;
+    }
+    const { rerender } = render(createElement(TestComponent, { show: false }));
+
+    rerender(createElement(TestComponent, { show: true }));
+    const element = latest.ref.current;
+    act(() => {
+      element?.dispatchEvent(new Event("mouseenter"));
+    });
+
+    expect(latest.hovered).toBe(true);
+  });
+
+  it("moves the listeners when the ref points at a different element", () => {
+    let latest!: UseHoverResult<HTMLDivElement>;
+    function TestComponent({ which }: { which: string }) {
+      latest = useHover<HTMLDivElement>();
+      return createElement("div", { key: which, ref: latest.ref });
+    }
+    const { rerender } = render(createElement(TestComponent, { which: "a" }));
+    const first = latest.ref.current;
+
+    rerender(createElement(TestComponent, { which: "b" }));
+    act(() => {
+      first?.dispatchEvent(new Event("mouseenter"));
+    });
+
+    expect(latest.hovered).toBe(false);
+
+    act(() => {
+      latest.ref.current?.dispatchEvent(new Event("mouseenter"));
+    });
+
+    expect(latest.hovered).toBe(true);
+  });
+});

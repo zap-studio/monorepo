@@ -1,4 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** A combo string (e.g. `"ctrl+s"`, `"shift+enter"`) mapped to a handler, as passed to `useHotkeys`. */
 export type HotkeyBindings = Record<string, () => void>;
@@ -47,6 +49,10 @@ const matchesCombo = (event: KeyboardEvent, combo: ParsedCombo): boolean =>
  * doesn't need to be memoized — the latest map is always read, without
  * re-subscribing.
  *
+ * The listener attaches in a layout effect, before the browser paints — a
+ * `keydown` missed in the gap would also lose its `preventDefault()`, letting
+ * the browser's default action fire instead.
+ *
  * @example
  * ```tsx
  * useHotkeys({ "ctrl+s": save, "shift+enter": submit }, { preventDefault: true });
@@ -55,11 +61,11 @@ const matchesCombo = (event: KeyboardEvent, combo: ParsedCombo): boolean =>
 export const useHotkeys = (bindings: HotkeyBindings, options: UseHotkeysOptions = {}): void => {
   const { enabled = true, preventDefault = false } = options;
   const bindingsRef = useRef(bindings);
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     bindingsRef.current = bindings;
   });
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!enabled) {
       return undefined;
     }

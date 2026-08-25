@@ -60,7 +60,7 @@ export const useFullscreen = <T extends Element = HTMLElement>(): UseFullscreenR
     }
 
     const handleFullscreenChange = () => {
-      setIsFullscreen(document.fullscreenElement === ref.current);
+      setIsFullscreen(ref.current !== null && document.fullscreenElement === ref.current);
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);

@@ -90,3 +90,29 @@ describe(useResizeObserver, () => {
     expect(observer?.disconnect).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("useResizeObserver ref tracking", () => {
+  it("observes an element that only attaches after the first render", () => {
+    vi.stubGlobal("ResizeObserver", FakeResizeObserver);
+    FakeResizeObserver.instances = [];
+
+    let latest!: UseResizeObserverResult<HTMLDivElement>;
+    function TestComponent({ show }: { show: boolean }) {
+      latest = useResizeObserver<HTMLDivElement>();
+      return show ? createElement("div", { ref: latest.ref }) : null;
+    }
+    const { rerender } = render(createElement(TestComponent, { show: false }));
+
+    expect(FakeResizeObserver.instances).toHaveLength(0);
+
+    rerender(createElement(TestComponent, { show: true }));
+
+    expect(FakeResizeObserver.instances).toHaveLength(1);
+
+    act(() => {
+      FakeResizeObserver.instances[0]?.trigger(120, 40);
+    });
+
+    expect(latest.size).toEqual({ height: 40, width: 120 });
+  });
+});

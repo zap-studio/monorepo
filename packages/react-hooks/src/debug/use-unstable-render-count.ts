@@ -7,6 +7,11 @@ import { isProductionBuild } from "./_env.ts";
  * incrementing by one on every subsequent render. Always `0` in
  * production builds.
  *
+ * It counts render *attempts*, not commits, which is the point of the hook
+ * but means the number is not one-per-visible-update: StrictMode
+ * double-invokes every render, so it reports `2`, `4`, `6`…, and a render
+ * React starts and then throws away still increments it.
+ *
  * @example
  * ```tsx
  * const renderCount = useUnstableRenderCount();

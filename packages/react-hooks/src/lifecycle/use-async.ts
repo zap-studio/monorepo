@@ -15,6 +15,11 @@ export interface UseAsyncState<T> {
  * resolution is ignored if `deps` changes (or the component unmounts)
  * before it settles.
  *
+ * `asyncFn` follows `useEffect`'s closure rules too: whatever it closes over
+ * is frozen at the last `deps` change. With the default `[]`, that means
+ * `useAsync(() => fetchUser(id))` keeps calling the first render's `id`
+ * forever — pass `[id]` for a value that can change.
+ *
  * `useAsync(() => fetch(url).then((r) => r.json()), [url])` covers the
  * common "fetch on mount/when url changes" case — a separate `useFetch`
  * would be a near-duplicate, and real fetch ergonomics (caching,

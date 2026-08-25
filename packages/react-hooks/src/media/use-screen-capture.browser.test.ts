@@ -137,3 +137,14 @@ describe(useScreenCapture, () => {
     expect(stream.track.stop).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("useScreenCapture option stability", () => {
+  it("keeps start stable across renders with an inline options object", () => {
+    const { rerender, result } = renderHook(() => useScreenCapture({ video: true }));
+    const first = result.current.start;
+
+    rerender();
+
+    expect(result.current.start).toBe(first);
+  });
+});

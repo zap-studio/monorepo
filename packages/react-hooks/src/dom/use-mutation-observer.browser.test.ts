@@ -86,3 +86,81 @@ describe(useMutationObserver, () => {
     expect(callback).not.toHaveBeenCalled();
   });
 });
+
+describe("useMutationObserver ref and option tracking", () => {
+  it("observes a subtree that only attaches after the first render", async () => {
+    const callback = vi.fn();
+    let element: HTMLDivElement | null = null;
+    function TestComponent({ show }: { show: boolean }) {
+      const ref = useMutationObserver<HTMLDivElement>(callback);
+      return show
+        ? createElement("div", {
+            ref: (node: HTMLDivElement | null) => {
+              element = node;
+              ref.current = node;
+            },
+          })
+        : null;
+    }
+    const { rerender } = render(createElement(TestComponent, { show: false }));
+
+    rerender(createElement(TestComponent, { show: true }));
+    (element as HTMLDivElement | null)?.setAttribute("data-late", "1");
+
+    await waitFor(() => expect(callback).toHaveBeenCalled());
+  });
+
+  it("does not re-observe for an options object re-created every render", () => {
+    const observe = vi.fn();
+    const disconnect = vi.fn();
+    vi.stubGlobal(
+      "MutationObserver",
+      class {
+        disconnect = disconnect;
+        observe = observe;
+        takeRecords = () => [];
+      },
+    );
+
+    function TestComponent() {
+      const ref = useMutationObserver<HTMLDivElement>(() => {}, { attributes: true });
+      return createElement("div", { ref });
+    }
+    const { rerender } = render(createElement(TestComponent));
+
+    expect(observe).toHaveBeenCalledTimes(1);
+
+    rerender(createElement(TestComponent));
+    rerender(createElement(TestComponent));
+
+    expect(observe).toHaveBeenCalledTimes(1);
+
+    vi.unstubAllGlobals();
+  });
+
+  it("re-observes when an option changes", () => {
+    const observe = vi.fn();
+    vi.stubGlobal(
+      "MutationObserver",
+      class {
+        disconnect = vi.fn();
+        observe = observe;
+        takeRecords = () => [];
+      },
+    );
+
+    function TestComponent({ subtree }: { subtree: boolean }) {
+      const ref = useMutationObserver<HTMLDivElement>(() => {}, { attributes: true, subtree });
+      return createElement("div", { ref });
+    }
+    const { rerender } = render(createElement(TestComponent, { subtree: false }));
+
+    expect(observe).toHaveBeenCalledTimes(1);
+
+    rerender(createElement(TestComponent, { subtree: true }));
+
+    expect(observe).toHaveBeenCalledTimes(2);
+
+    vi.unstubAllGlobals();
+  });
+});

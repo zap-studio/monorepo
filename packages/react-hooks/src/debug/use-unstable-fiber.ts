@@ -1,5 +1,6 @@
-import { type RefObject, useRef } from "react";
+import { type RefObject, useRef, useState } from "react";
 
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 import { isProductionBuild } from "./_env.ts";
 import { findOwnerFiber, readHostFiber, type FiberLike } from "./_fiber.ts";
 
@@ -15,7 +16,9 @@ export interface UseUnstableFiberResult<T extends Element> {
  * function-component ancestor when found, else the host (DOM) fiber
  * itself. `fiber` is `null` until `ref` attaches to a mounted element,
  * and stays `null` (rather than throwing) on an unrecognized internal
- * shape or in production builds.
+ * shape or in production builds. Attaching the ref schedules a re-render,
+ * so the fiber is available from the commit after mount rather than
+ * waiting for an unrelated render.
  *
  * @example
  * ```tsx
@@ -26,11 +29,15 @@ export interface UseUnstableFiberResult<T extends Element> {
 export const useUnstableFiber = <T extends Element = HTMLElement>(): UseUnstableFiberResult<T> => {
   const ref = useRef<T | null>(null);
 
+  const [element, setElement] = useState<T | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    setElement(ref.current);
+  });
+
   if (isProductionBuild()) {
     return { fiber: null, ref };
   }
 
-  const element = ref.current;
   if (!element) {
     return { fiber: null, ref };
   }

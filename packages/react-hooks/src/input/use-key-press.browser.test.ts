@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { useKeyPress } from "./use-key-press.ts";
 
@@ -95,5 +95,46 @@ describe(useKeyPress, () => {
     });
 
     expect(result.current).toBe(false);
+  });
+});
+
+describe("useKeyPress target stability", () => {
+  it("does not resubscribe for an array literal re-created every render", async () => {
+    const addEventListener = vi.spyOn(window, "addEventListener");
+    const { rerender, result } = renderHook(() => useKeyPress(["ArrowLeft", "ArrowRight"]));
+
+    const initialCalls = addEventListener.mock.calls.length;
+    rerender();
+    rerender();
+
+    expect(addEventListener.mock.calls.length).toBe(initialCalls);
+
+    await act(async () => {
+      dispatchKey("keydown", "ArrowLeft");
+    });
+
+    expect(result.current).toBe(true);
+  });
+
+  it("resubscribes when the key list actually changes", async () => {
+    const { rerender, result } = renderHook(({ keys }: { keys: string[] }) => useKeyPress(keys), {
+      initialProps: { keys: ["a"] },
+    });
+
+    rerender({ keys: ["b"] });
+    await act(async () => {
+      dispatchKey("keydown", "a");
+    });
+
+    expect(result.current).toBe(false);
+
+    await act(async () => {
+      dispatchKey("keydown", "b");
+    });
+
+    expect(result.current).toBe(true);
+    await act(async () => {
+      dispatchKey("keyup", "b");
+    });
   });
 });

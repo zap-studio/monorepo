@@ -120,3 +120,14 @@ describe(useUserMedia, () => {
     expect(stream.track.stop).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("useUserMedia constraint stability", () => {
+  it("keeps start stable across renders with an inline constraints object", () => {
+    const { rerender, result } = renderHook(() => useUserMedia({ audio: true, video: true }));
+    const first = result.current.start;
+
+    rerender();
+
+    expect(result.current.start).toBe(first);
+  });
+});

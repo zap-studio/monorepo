@@ -98,3 +98,16 @@ describe(useUnstableFiber, () => {
     expect(result.current.fiber).toBe(fakeFiber);
   });
 });
+
+describe("useUnstableFiber ref tracking", () => {
+  it("resolves the fiber without an extra manual re-render", () => {
+    let latest!: UseUnstableFiberResult<HTMLDivElement>;
+    function TestComponent() {
+      latest = useUnstableFiber<HTMLDivElement>();
+      return createElement("div", { ref: latest.ref });
+    }
+    render(createElement(TestComponent));
+
+    expect(latest.fiber).not.toBeNull();
+  });
+});

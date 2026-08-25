@@ -148,3 +148,23 @@ describe(useFileDrop, () => {
     expect(useDropzone).toBe(useFileDrop);
   });
 });
+
+describe("useFileDrop ref tracking", () => {
+  it("wires up a drop target that only attaches after the first render", () => {
+    const onDrop = vi.fn();
+    let latest!: UseFileDropResult<HTMLDivElement>;
+    function TestComponent({ show }: { show: boolean }) {
+      latest = useFileDrop<HTMLDivElement>(onDrop);
+      return show ? createElement("div", { ref: latest.ref }) : null;
+    }
+    const { rerender } = render(createElement(TestComponent, { show: false }));
+
+    rerender(createElement(TestComponent, { show: true }));
+    const file = new File(["x"], "late.txt", { type: "text/plain" });
+    act(() => {
+      latest.ref.current?.dispatchEvent(dragEventWithFiles("drop", [file]));
+    });
+
+    expect(onDrop).toHaveBeenCalledWith([file]);
+  });
+});

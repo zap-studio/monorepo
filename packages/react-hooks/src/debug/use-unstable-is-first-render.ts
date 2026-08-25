@@ -1,10 +1,13 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import { isProductionBuild } from "./_env.ts";
 
 /**
  * `true` only on the mount render, `false` on every render after. Always
- * `false` in production builds.
+ * `false` in production builds. The flag is flipped in a mount effect
+ * rather than during render, so StrictMode's double-invoked mount render
+ * reports `true` on both passes instead of returning `false` from the one
+ * React actually commits.
  *
  * @example
  * ```tsx
@@ -13,12 +16,14 @@ import { isProductionBuild } from "./_env.ts";
  * ```
  */
 export const useUnstableIsFirstRender = (): boolean => {
-  const isFirstRef = useRef(true);
+  const mountedRef = useRef(false);
+  useEffect(() => {
+    mountedRef.current = true;
+  }, []);
+
   if (isProductionBuild()) {
     return false;
   }
-  const isFirst = isFirstRef.current;
-  // oxlint-disable-next-line react-doctor/no-ref-current-in-render -- this hook's entire purpose is observing actual render attempts (including ones React discards); moving this into an effect would count commits instead and defeat the hook.
-  isFirstRef.current = false;
-  return isFirst;
+  // oxlint-disable-next-line react-doctor/no-ref-current-in-render -- read-only, and the ref only ever holds a committed value, so both passes of a double-invoked render agree; the write it used to pair with now lives in the mount effect above.
+  return !mountedRef.current;
 };

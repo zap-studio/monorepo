@@ -1,15 +1,16 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
-const toKeyList = (target: string | string[]): string[] =>
-  (Array.isArray(target) ? target : [target]).map((key) => key.toLowerCase());
+const toKeyList = (keys: string[]): string[] => keys.map((key) => key.toLowerCase());
 
 const getServerSnapshot = (): boolean => false;
 
 /**
  * Tracks whether any of the given key(s) is currently held down, matching
  * `KeyboardEvent.key` case-insensitively via `keydown`/`keyup` on `window`.
- * SSR-safe — returns `false` until the client subscribes. Pass a stable
- * array reference (or a single string) to avoid resubscribing every render.
+ * SSR-safe — returns `false` until the client subscribes. `target` doesn't
+ * need to be a stable reference — an array is compared by its contents, so
+ * an array literal written inline at the call site doesn't resubscribe on
+ * every render.
  *
  * @example
  * ```tsx
@@ -19,10 +20,11 @@ const getServerSnapshot = (): boolean => false;
  */
 export const useKeyPress = (target: string | string[]): boolean => {
   const pressedRef = useRef(false);
+  const targetKey = Array.isArray(target) ? target.join("\u0000") : target;
 
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
-      const keys = toKeyList(target);
+      const keys = toKeyList(targetKey.split("\u0000"));
 
       const handleKeyDown = (event: KeyboardEvent) => {
         if (keys.includes(event.key.toLowerCase())) {
@@ -44,7 +46,7 @@ export const useKeyPress = (target: string | string[]): boolean => {
         window.removeEventListener("keyup", handleKeyUp);
       };
     },
-    [target],
+    [targetKey],
   );
 
   const getSnapshot = useCallback(() => pressedRef.current, []);

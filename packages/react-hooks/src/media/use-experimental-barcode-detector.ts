@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 import {
   getBarcodeDetectorConstructor,
@@ -39,16 +39,24 @@ export const useExperimentalBarcodeDetector = (
 ): UseExperimentalBarcodeDetectorResult => {
   const supported = Boolean(getBarcodeDetectorConstructor());
 
+  const formatsRef = useRef(formats);
+  useEffect(() => {
+    formatsRef.current = formats;
+  });
+
   const detect = useCallback(
     async (image: BarcodeDetectorSource): Promise<DetectedBarcode[] | undefined> => {
       const BarcodeDetectorCtor = getBarcodeDetectorConstructor();
       if (!BarcodeDetectorCtor) {
         return undefined;
       }
-      const detector = new BarcodeDetectorCtor(formats ? { formats } : undefined);
+      const currentFormats = formatsRef.current;
+      const detector = new BarcodeDetectorCtor(
+        currentFormats ? { formats: currentFormats } : undefined,
+      );
       return detector.detect(image);
     },
-    [formats],
+    [],
   );
 
   const getSupportedFormats = useCallback(async (): Promise<BarcodeFormat[] | undefined> => {

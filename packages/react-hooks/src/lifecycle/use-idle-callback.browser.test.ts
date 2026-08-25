@@ -88,3 +88,31 @@ describe(useIdleCallback, () => {
     expect(window.cancelIdleCallback).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("useIdleCallback option stability", () => {
+  it("does not re-request for an options object re-created every render", () => {
+    const idle = setIdleCallbackSupport(true);
+    const { rerender } = renderHook(() => useIdleCallback(() => {}, { timeout: 500 }));
+
+    expect(idle?.requestIdleCallback).toHaveBeenCalledTimes(1);
+
+    rerender();
+    rerender();
+
+    expect(idle?.requestIdleCallback).toHaveBeenCalledTimes(1);
+  });
+
+  it("re-requests when the timeout actually changes", () => {
+    const idle = setIdleCallbackSupport(true);
+    const { rerender } = renderHook(
+      ({ timeout }: { timeout: number }) => useIdleCallback(() => {}, { timeout }),
+      { initialProps: { timeout: 500 } },
+    );
+
+    expect(idle?.requestIdleCallback).toHaveBeenCalledTimes(1);
+
+    rerender({ timeout: 1000 });
+
+    expect(idle?.requestIdleCallback).toHaveBeenCalledTimes(2);
+  });
+});

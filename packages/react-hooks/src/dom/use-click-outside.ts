@@ -1,4 +1,6 @@
-import { type RefObject, useEffect, useRef } from "react";
+import { type RefObject, useRef } from "react";
+
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /**
  * Calls `onOutside` on a `mousedown`/`touchstart` whose target falls outside
@@ -6,6 +8,10 @@ import { type RefObject, useEffect, useRef } from "react";
  * dropdowns, popovers, and modals. Listens on the capture phase, so it still
  * fires even if an inner handler calls `stopPropagation()`. `onOutside`
  * doesn't need to be memoized — the latest one is always called.
+ *
+ * The listener attaches in a layout effect, before the browser paints, so a
+ * menu that opens and is clicked away from immediately can't miss that first
+ * outside click.
  *
  * @example
  * ```tsx
@@ -18,11 +24,11 @@ export const useClickOutside = <T extends HTMLElement = HTMLElement>(
 ): RefObject<T | null> => {
   const ref = useRef<T | null>(null);
   const onOutsideRef = useRef(onOutside);
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     onOutsideRef.current = onOutside;
   });
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const handlePointerDown = (event: MouseEvent | TouchEvent) => {
       const element = ref.current;
       const target = event.target;

@@ -1,5 +1,7 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+
 /** The shape returned by `usePopover`. */
 export interface UsePopoverResult<T extends HTMLElement> {
   hide: () => void;
@@ -20,6 +22,10 @@ const isSupported = (): boolean =>
  * element's open state via its own `toggle` event, so it also stays in
  * sync when the browser closes the popover itself (light-dismiss, Esc).
  * `supported: false` — the SSR-safe default — where the API doesn't exist.
+ *
+ * `ref` is re-read on every commit, so a popover rendered conditionally —
+ * the usual shape for a menu — is tracked as soon as React commits it,
+ * rather than leaving `isOpen` stuck at `false` while it is visibly open.
  *
  * @example
  * ```tsx
@@ -47,8 +53,12 @@ export const usePopover = <T extends HTMLElement = HTMLElement>(): UsePopoverRes
     ref.current?.togglePopover();
   }, []);
 
+  const [element, setElement] = useState<T | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    setElement(ref.current);
+  });
+
   useEffect(() => {
-    const element = ref.current;
     if (!isSupported() || !element) {
       return undefined;
     }
@@ -60,7 +70,7 @@ export const usePopover = <T extends HTMLElement = HTMLElement>(): UsePopoverRes
 
     element.addEventListener("toggle", handleToggle);
     return () => element.removeEventListener("toggle", handleToggle);
-  }, []);
+  }, [element]);
 
   return { hide, isOpen, ref, show, supported, toggle };
 };

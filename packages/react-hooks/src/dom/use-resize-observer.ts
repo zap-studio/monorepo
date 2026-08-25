@@ -1,5 +1,7 @@
 import { type RefObject, useEffect, useRef, useState } from "react";
 
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+
 /** The size fields `useResizeObserver` reports. */
 export interface ElementSize {
   height: number;
@@ -19,6 +21,10 @@ const isSupported = (): boolean => typeof ResizeObserver !== "undefined";
  * `ref` to the element to observe. `size` starts `undefined` — the
  * SSR-safe default — until the first observation fires.
  *
+ * `ref` is re-read on every commit, so an element rendered conditionally,
+ * mounted later, or swapped for another one is observed as soon as React
+ * commits the change.
+ *
  * @example
  * ```tsx
  * const { ref, size } = useResizeObserver<HTMLDivElement>();
@@ -31,8 +37,12 @@ export const useResizeObserver = <
   const ref = useRef<T | null>(null);
   const [size, setSize] = useState<ElementSize | undefined>(undefined);
 
+  const [element, setElement] = useState<T | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    setElement(ref.current);
+  });
+
   useEffect(() => {
-    const element = ref.current;
     if (!isSupported() || !element) {
       return undefined;
     }
@@ -45,7 +55,7 @@ export const useResizeObserver = <
 
     observer.observe(element);
     return () => observer.disconnect();
-  }, []);
+  }, [element]);
 
   return { ref, size };
 };
