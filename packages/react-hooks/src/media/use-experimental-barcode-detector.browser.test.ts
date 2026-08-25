@@ -51,6 +51,21 @@ describe(useExperimentalBarcodeDetector, () => {
     expect(detect).toHaveBeenCalledWith(image);
   });
 
+  it("detect() constructs a detector for every format when none are given", async () => {
+    const detect = vi.fn().mockResolvedValue([]);
+    const BarcodeDetectorCtor = vi.fn().mockImplementation(function BarcodeDetector() {
+      return { detect };
+    });
+    vi.stubGlobal("BarcodeDetector", BarcodeDetectorCtor);
+
+    const { result } = renderHook(() => useExperimentalBarcodeDetector());
+    const image = {} as HTMLImageElement;
+
+    await result.current.detect(image);
+
+    expect(BarcodeDetectorCtor).toHaveBeenCalledWith(undefined);
+  });
+
   it("detect() resolves undefined when unsupported", async () => {
     vi.stubGlobal("BarcodeDetector", undefined);
 

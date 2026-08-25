@@ -84,6 +84,54 @@ describe(useExperimentalAccelerometer, () => {
     expect(started).toBe(false);
   });
 
+  it("start() catches a construction failure and reports it through error", () => {
+    const domException = new DOMException(
+      "Permissions Policy blocks Accelerometer",
+      "SecurityError",
+    );
+    const AccelerometerCtor = vi.fn().mockImplementation(function Accelerometer() {
+      throw domException;
+    });
+    vi.stubGlobal("Accelerometer", AccelerometerCtor);
+
+    const { result } = renderHook(() => useExperimentalAccelerometer());
+    let started = true;
+    act(() => {
+      started = result.current.start();
+    });
+
+    expect(started).toBe(false);
+    expect(result.current.error).toBe(domException);
+  });
+
+  it("start() catches a non-DOMException construction failure without reporting error", () => {
+    const AccelerometerCtor = vi.fn().mockImplementation(function Accelerometer() {
+      throw new TypeError("boom");
+    });
+    vi.stubGlobal("Accelerometer", AccelerometerCtor);
+
+    const { result } = renderHook(() => useExperimentalAccelerometer());
+    let started = true;
+    act(() => {
+      started = result.current.start();
+    });
+
+    expect(started).toBe(false);
+    expect(result.current.error).toBeUndefined();
+  });
+
+  it("start() constructs the sensor with the given frequency", () => {
+    const { sensor } = createSensorMock({ x: 1, y: 2, z: 3 });
+    const AccelerometerCtor = stubAccelerometer(sensor);
+
+    const { result } = renderHook(() => useExperimentalAccelerometer({ frequency: 60 }));
+    act(() => {
+      result.current.start();
+    });
+
+    expect(AccelerometerCtor).toHaveBeenCalledWith({ frequency: 60 });
+  });
+
   it("start() reports the reading and updates on subsequent readings", () => {
     const { sensor, fireReading } = createSensorMock({ x: 1, y: 2, z: 3 });
     stubAccelerometer(sensor);

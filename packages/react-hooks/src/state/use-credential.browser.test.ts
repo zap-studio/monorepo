@@ -104,6 +104,14 @@ describe(useCredential, () => {
     expect(create).toHaveBeenCalledWith({});
   });
 
+  it("create() resolves undefined when unsupported", async () => {
+    setNavigatorCredentials(undefined);
+
+    const { result } = renderHook(() => useCredential());
+
+    await expect(result.current.create({})).resolves.toBeUndefined();
+  });
+
   it("preventSilentAccess() delegates to navigator.credentials.preventSilentAccess", async () => {
     const preventSilentAccess = vi.fn().mockResolvedValue(undefined);
     setNavigatorCredentials({

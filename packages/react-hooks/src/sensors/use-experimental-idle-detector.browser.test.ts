@@ -60,6 +60,36 @@ describe(useExperimentalIdleDetector, () => {
     expect(result.current.supported).toBe(true);
   });
 
+  it("requestPermission() resolves false without asking when unsupported", async () => {
+    vi.stubGlobal("IdleDetector", undefined);
+
+    const { result } = renderHook(() => useExperimentalIdleDetector());
+
+    await expect(result.current.requestPermission()).resolves.toBe(false);
+  });
+
+  it("start() resolves false without constructing a detector when unsupported", async () => {
+    vi.stubGlobal("IdleDetector", undefined);
+
+    const { result } = renderHook(() => useExperimentalIdleDetector());
+    const started = await result.current.start();
+
+    expect(started).toBe(false);
+  });
+
+  it("start() resolves false and cleans up when the detector fails to start", async () => {
+    const { detector } = createIdleDetectorMock({ screenState: "unlocked", userState: "active" });
+    detector.start = vi.fn().mockRejectedValue(new Error("permission denied"));
+    stubIdleDetector({ detector, requestPermission: () => Promise.resolve("granted") });
+
+    const { result } = renderHook(() => useExperimentalIdleDetector());
+    const started = await result.current.start();
+
+    expect(started).toBe(false);
+    expect(result.current.userState).toBeUndefined();
+    expect(result.current.screenState).toBeUndefined();
+  });
+
   it("requestPermission() resolves true only when permission is granted", async () => {
     stubIdleDetector({ requestPermission: () => Promise.resolve("granted") });
 
