@@ -37,7 +37,9 @@ export const useEventListener = <E extends Event = Event>(
   options?: AddEventListenerOptions | boolean,
 ): void => {
   const handlerRef = useRef(handler);
-  handlerRef.current = handler;
+  useEffect(() => {
+    handlerRef.current = handler;
+  });
 
   useEffect(() => {
     const element = resolveTarget(target);

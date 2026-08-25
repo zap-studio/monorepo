@@ -30,7 +30,9 @@ export const useWorker = <TMessage = unknown, TResult = unknown>(
   const supported = isSupported();
   const workerRef = useRef<Worker | null>(null);
   const createWorkerRef = useRef(createWorker);
-  createWorkerRef.current = createWorker;
+  useEffect(() => {
+    createWorkerRef.current = createWorker;
+  });
 
   const terminate = useCallback((): void => {
     workerRef.current?.terminate();

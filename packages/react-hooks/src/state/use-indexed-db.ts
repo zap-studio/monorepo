@@ -97,9 +97,11 @@ export const useIndexedDB = <T>(key: string, initialValue: T): UseIndexedDBResul
   const [status, setStatus] = useState<IndexedDBStatus>("loading");
   const [error, setError] = useState<Error | undefined>(undefined);
   const valueRef = useRef(value);
-  valueRef.current = value;
   const initialValueRef = useRef(initialValue);
-  initialValueRef.current = initialValue;
+  useEffect(() => {
+    valueRef.current = value;
+    initialValueRef.current = initialValue;
+  });
 
   useEffect(() => {
     if (!isSupported()) {

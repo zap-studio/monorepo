@@ -52,6 +52,7 @@ export const useSpeechSynthesis = (): UseSpeechSynthesisResult => {
     if (options.lang !== undefined) {
       utterance.lang = options.lang;
     }
+    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- registered on a per-call `utterance` inside a user-triggered `speak()`, not the effect's mount body; the utterance is never stored or reused, so its listeners die with it once it finishes, errors, or `cancel()` (called on unmount below) cuts it off.
     utterance.addEventListener("start", () => setSpeaking(true));
     utterance.addEventListener("end", () => setSpeaking(false));
     utterance.addEventListener("error", () => setSpeaking(false));

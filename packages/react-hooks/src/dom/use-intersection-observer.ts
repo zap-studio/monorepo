@@ -29,7 +29,9 @@ export const useIntersectionObserver = <T extends Element = HTMLElement>(
 ): UseIntersectionObserverResult<T> => {
   const ref = useRef<T | null>(null);
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+  useEffect(() => {
+    optionsRef.current = options;
+  });
   const [entry, setEntry] = useState<IntersectionObserverEntry | undefined>(undefined);
 
   useEffect(() => {

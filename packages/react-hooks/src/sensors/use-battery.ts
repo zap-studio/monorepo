@@ -44,6 +44,7 @@ const readBatteryState = (battery: BatteryManager): BatteryState => ({
 export const useBattery = (): BatteryState => {
   const [state, setState] = useState<BatteryState>(UNSUPPORTED_STATE);
 
+  // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- the returned cleanup does call the `cleanup` closure variable, which removes every listener added in `subscribeToBattery`; the detector's cleanup matcher misses it because the removeEventListener calls sit behind that indirection instead of literally inline in the returned function.
   useEffect(() => {
     // SAFETY: getBattery is an experimental, largely Chromium-only API not declared in TypeScript's DOM lib; guarded by the `if (!getBattery)` check below, so an unsupported browser degrades to the SSR default instead of throwing.
     const getBattery = (navigator as NavigatorWithBattery).getBattery;

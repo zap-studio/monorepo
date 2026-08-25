@@ -18,6 +18,7 @@ export const useUnstableIsFirstRender = (): boolean => {
     return false;
   }
   const isFirst = isFirstRef.current;
+  // oxlint-disable-next-line react-doctor/no-ref-current-in-render -- this hook's entire purpose is observing actual render attempts (including ones React discards); moving this into an effect would count commits instead and defeat the hook.
   isFirstRef.current = false;
   return isFirst;
 };

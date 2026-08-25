@@ -29,7 +29,9 @@ export const usePerformanceObserver = (
 ): UsePerformanceObserverResult => {
   const supported = isSupported();
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
 
   useEffect(() => {
     if (!isSupported()) {

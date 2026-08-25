@@ -56,6 +56,7 @@ export const useScreenCapture = (options?: DisplayMediaStreamOptions): UseScreen
       streamRef.current = media;
       setStream(media);
       setStatus("active");
+      // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- registered on a per-call track inside a user-triggered `start()`, not the effect's mount body; `useEffect(() => stop, [stop])` below stops every track on unmount, and the listener dies with the track since it's never reused.
       media.getVideoTracks()[0]?.addEventListener("ended", stop);
     } catch (caught) {
       setError(caught instanceof Error ? caught : new Error(String(caught)));

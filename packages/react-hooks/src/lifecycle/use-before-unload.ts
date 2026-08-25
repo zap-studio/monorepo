@@ -25,7 +25,9 @@ export const useBeforeUnload = (
   enabled = true,
 ): void => {
   const handlerRef = useRef(handler);
-  handlerRef.current = handler;
+  useEffect(() => {
+    handlerRef.current = handler;
+  });
 
   useEffect(() => {
     if (!enabled) {

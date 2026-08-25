@@ -26,7 +26,9 @@ export const useFileDrop = <T extends HTMLElement = HTMLElement>(
 ): UseFileDropResult<T> => {
   const ref = useRef<T | null>(null);
   const onDropRef = useRef(onDrop);
-  onDropRef.current = onDrop;
+  useEffect(() => {
+    onDropRef.current = onDrop;
+  });
   const [isOver, setIsOver] = useState(false);
 
   useEffect(() => {

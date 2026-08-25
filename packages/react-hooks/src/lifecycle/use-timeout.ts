@@ -14,7 +14,9 @@ import { useEffect, useRef } from "react";
  */
 export const useTimeout = (callback: () => void, delayMs: number | null): void => {
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
 
   useEffect(() => {
     if (delayMs === null) {

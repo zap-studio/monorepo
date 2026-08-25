@@ -19,7 +19,9 @@ export const useThrottle = <Args extends unknown[]>(
   delayMs: number,
 ): ((...args: Args) => void) => {
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
   const coolingDownRef = useRef(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

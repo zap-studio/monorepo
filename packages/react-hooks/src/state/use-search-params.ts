@@ -48,12 +48,12 @@ export const useSearchParams = (): [URLSearchParams, SetSearchParams] => {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
-  const setSearchParams = useCallback<SetSearchParams>((next, options) => {
-    setSearchParamsState((prev) => {
+  const setSearchParams = useCallback<SetSearchParams>(
+    (next, options) => {
       const resolvedInit =
         typeof next === "function"
           ? // SAFETY: SearchParamsInit | ((prev: URLSearchParams) => SearchParamsInit); the typeof check narrows to the function branch, so this cast just recovers the parameter type TS can't infer through a bare `typeof x === "function"` guard on a generic union.
-            (next as (prev: URLSearchParams) => SearchParamsInit)(prev)
+            (next as (prev: URLSearchParams) => SearchParamsInit)(searchParams)
           : next;
       const nextParams = new URLSearchParams(resolvedInit);
       const url = buildUrl(nextParams);
@@ -62,9 +62,10 @@ export const useSearchParams = (): [URLSearchParams, SetSearchParams] => {
       } else {
         history.pushState(history.state, "", url);
       }
-      return nextParams;
-    });
-  }, []);
+      setSearchParamsState(nextParams);
+    },
+    [searchParams],
+  );
 
   return [searchParams, setSearchParams];
 };

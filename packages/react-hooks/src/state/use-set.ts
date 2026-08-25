@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /** The shape returned by `useSet`. */
 export interface UseSetResult<T> {
@@ -24,7 +24,9 @@ export interface UseSetResult<T> {
 export const useSet = <T>(initialValues?: Iterable<T>): UseSetResult<T> => {
   const [set, setSet] = useState<Set<T>>(() => new Set(initialValues));
   const setRef = useRef(set);
-  setRef.current = set;
+  useEffect(() => {
+    setRef.current = set;
+  });
 
   const add = useCallback((value: T) => {
     if (setRef.current.has(value)) {

@@ -24,7 +24,9 @@ export const useHashState = (): [string, SetHash] => {
     typeof window === "undefined" ? "" : readHash(),
   );
   const hashRef = useRef(hash);
-  hashRef.current = hash;
+  useEffect(() => {
+    hashRef.current = hash;
+  });
 
   useEffect(() => {
     const handleHashChange = () => setHashState(readHash());

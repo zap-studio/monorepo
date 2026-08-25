@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 export const usePermission = (name: PermissionName): PermissionState | undefined => {
   const [state, setState] = useState<PermissionState | undefined>(undefined);
 
+  // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- the returned cleanup does call the `cleanup` closure variable, which removes the "change" listener added in `subscribeToPermission`; the detector's cleanup matcher misses it because the removeEventListener call sits behind that indirection instead of literally inline in the returned function.
   useEffect(() => {
     const permissions = navigator.permissions;
     if (!permissions) {

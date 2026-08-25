@@ -35,7 +35,9 @@ export const useNavigationBlocker = (
 ): NavigationBlockerResult => {
   const [blocked, setBlocked] = useState(false);
   const shouldBlockRef = useRef(shouldBlock);
-  shouldBlockRef.current = shouldBlock;
+  useEffect(() => {
+    shouldBlockRef.current = shouldBlock;
+  });
   const resolveRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {

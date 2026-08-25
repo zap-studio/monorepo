@@ -81,6 +81,7 @@ export const useExperimentalIdleDetector = (): UseExperimentalIdleDetectorResult
         setUserState(detector.userState);
         setScreenState(detector.screenState);
       };
+      // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- registered inside a user-triggered `start()`, not the effect's mount body; `cleanupRef` (invoked here, in `stop()`, in the catch below, and on unmount by the effect further down) always removes this listener, just via indirection the detector's matcher misses.
       detector.addEventListener("change", handleChange);
       cleanupRef.current = () => {
         abortController.abort();

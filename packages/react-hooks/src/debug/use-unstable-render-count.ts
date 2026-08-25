@@ -18,6 +18,7 @@ export const useUnstableRenderCount = (): number => {
   if (isProductionBuild()) {
     return countRef.current;
   }
+  // oxlint-disable-next-line react-doctor/no-ref-current-in-render -- this hook's entire purpose is counting actual render attempts (including ones React discards); moving this into an effect would count commits instead and defeat the hook.
   countRef.current += 1;
   return countRef.current;
 };

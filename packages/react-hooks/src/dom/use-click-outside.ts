@@ -18,7 +18,9 @@ export const useClickOutside = <T extends HTMLElement = HTMLElement>(
 ): RefObject<T | null> => {
   const ref = useRef<T | null>(null);
   const onOutsideRef = useRef(onOutside);
-  onOutsideRef.current = onOutside;
+  useEffect(() => {
+    onOutsideRef.current = onOutside;
+  });
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent | TouchEvent) => {

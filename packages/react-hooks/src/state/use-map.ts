@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /** The shape returned by `useMap`. */
 export interface UseMapResult<K, V> {
@@ -26,7 +26,9 @@ export interface UseMapResult<K, V> {
 export const useMap = <K, V>(initialEntries?: Iterable<readonly [K, V]>): UseMapResult<K, V> => {
   const [map, setMap] = useState<Map<K, V>>(() => new Map(initialEntries));
   const mapRef = useRef(map);
-  mapRef.current = map;
+  useEffect(() => {
+    mapRef.current = map;
+  });
 
   const set = useCallback((key: K, value: V) => {
     const next = new Map(mapRef.current);

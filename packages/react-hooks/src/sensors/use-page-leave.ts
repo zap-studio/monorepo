@@ -18,7 +18,9 @@ interface LegacyMouseEvent extends MouseEvent {
  */
 export const usePageLeave = (onPageLeave: () => void): void => {
   const onPageLeaveRef = useRef(onPageLeave);
-  onPageLeaveRef.current = onPageLeave;
+  useEffect(() => {
+    onPageLeaveRef.current = onPageLeave;
+  });
 
   useEffect(() => {
     const handleMouseOut = (event: MouseEvent) => {

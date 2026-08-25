@@ -46,6 +46,7 @@ export const useWakeLock = (): UseWakeLockResult => {
     const sentinel = await navigator.wakeLock.request("screen");
     sentinelRef.current = sentinel;
     setActive(true);
+    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- registered on a per-call `sentinel` inside a user-triggered `request()`, not the effect's mount body; the sentinel is never stored beyond `sentinelRef` or reused, so this one-shot listener dies with it once `release()` (called on unmount by the effect below) fires it.
     sentinel.addEventListener("release", () => {
       sentinelRef.current = null;
       setActive(false);

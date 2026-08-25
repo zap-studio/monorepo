@@ -37,6 +37,7 @@ export const useServiceWorker = (): UseServiceWorkerResult => {
     }
 
     let cancelled = false;
+    const cleanupFns: (() => void)[] = [];
 
     const handleUpdateFound = (reg: ServiceWorkerRegistration) => {
       const installingWorker = reg.installing;
@@ -49,6 +50,7 @@ export const useServiceWorker = (): UseServiceWorkerResult => {
         }
       };
       installingWorker.addEventListener("statechange", handleStateChange);
+      cleanupFns.push(() => installingWorker.removeEventListener("statechange", handleStateChange));
     };
 
     const subscribeToRegistration = async () => {
@@ -57,13 +59,18 @@ export const useServiceWorker = (): UseServiceWorkerResult => {
         return;
       }
       setRegistration(reg);
-      reg.addEventListener("updatefound", () => handleUpdateFound(reg));
+      const handleUpdateFoundForReg = () => handleUpdateFound(reg);
+      reg.addEventListener("updatefound", handleUpdateFoundForReg);
+      cleanupFns.push(() => reg.removeEventListener("updatefound", handleUpdateFoundForReg));
     };
 
     void subscribeToRegistration();
 
     return () => {
       cancelled = true;
+      for (const fn of cleanupFns) {
+        fn();
+      }
     };
   }, []);
 

@@ -14,7 +14,9 @@ import { useEffect, useRef } from "react";
  */
 export const useAnimationFrame = (callback: (deltaMs: number) => void, enabled = true): void => {
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
   const previousTimeRef = useRef<number | null>(null);
   const frameRef = useRef<number>(0);
 

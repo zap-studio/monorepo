@@ -37,18 +37,16 @@ export const useWebStorage = <T>(
 
   const setValue = useCallback(
     (next: SetStoredValue<T>): void => {
-      setValueState((prev) => {
-        // SAFETY: SetStoredValue<T> = T | ((prev: T) => T); the typeof check above narrows to the function branch, so this cast just recovers the parameter type TS can't infer through a bare `typeof x === "function"` guard on a generic union.
-        const resolved = typeof next === "function" ? (next as (prev: T) => T)(prev) : next;
-        try {
-          getStorage().setItem(key, JSON.stringify(resolved));
-        } catch {
-          // Storage write failed (quota exceeded, private browsing, etc.) — state still updates in-memory.
-        }
-        return resolved;
-      });
+      // SAFETY: SetStoredValue<T> = T | ((prev: T) => T); the typeof check above narrows to the function branch, so this cast just recovers the parameter type TS can't infer through a bare `typeof x === "function"` guard on a generic union.
+      const resolved = typeof next === "function" ? (next as (prev: T) => T)(value) : next;
+      try {
+        getStorage().setItem(key, JSON.stringify(resolved));
+      } catch {
+        // Storage write failed (quota exceeded, private browsing, etc.) — state still updates in-memory.
+      }
+      setValueState(resolved);
     },
-    [key, getStorage],
+    [key, getStorage, value],
   );
 
   const remove = useCallback((): void => {

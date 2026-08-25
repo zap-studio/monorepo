@@ -26,9 +26,11 @@ export const useMutationObserver = <T extends Element = HTMLElement>(
 ): RefObject<T | null> => {
   const ref = useRef<T | null>(null);
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+  useEffect(() => {
+    callbackRef.current = callback;
+    optionsRef.current = options;
+  });
 
   useEffect(() => {
     const element = ref.current;

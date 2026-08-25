@@ -55,6 +55,7 @@ export const useMediaRecorder = (
     chunksRef.current = [];
 
     const recorder = new MediaRecorder(stream, options);
+    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- these listeners are registered on a per-call `recorder` on a user-triggered `start()`, not the effect's mount body; the unmount effect below stops the recorder, and its listeners die with the object since it's never reused.
     recorder.addEventListener("dataavailable", (event: BlobEvent) => {
       if (event.data.size > 0) {
         chunksRef.current.push(event.data);

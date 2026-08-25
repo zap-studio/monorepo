@@ -12,7 +12,9 @@ import { useEffect, useRef } from "react";
  */
 export const useUnmount = (cleanup: () => void): void => {
   const cleanupRef = useRef(cleanup);
-  cleanupRef.current = cleanup;
+  useEffect(() => {
+    cleanupRef.current = cleanup;
+  });
 
   useEffect(() => () => cleanupRef.current(), []);
 };

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const DEFAULT_CAPACITY = 100;
 
@@ -45,7 +45,9 @@ export const useHistoryState = <T>(
     present: initialValue,
   });
   const capacityRef = useRef(capacity);
-  capacityRef.current = capacity;
+  useEffect(() => {
+    capacityRef.current = capacity;
+  });
 
   const set = useCallback((next: T | ((prev: T) => T)) => {
     setStack((prev) => {

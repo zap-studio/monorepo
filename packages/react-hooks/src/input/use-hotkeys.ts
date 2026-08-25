@@ -55,7 +55,9 @@ const matchesCombo = (event: KeyboardEvent, combo: ParsedCombo): boolean =>
 export const useHotkeys = (bindings: HotkeyBindings, options: UseHotkeysOptions = {}): void => {
   const { enabled = true, preventDefault = false } = options;
   const bindingsRef = useRef(bindings);
-  bindingsRef.current = bindings;
+  useEffect(() => {
+    bindingsRef.current = bindings;
+  });
 
   useEffect(() => {
     if (!enabled) {

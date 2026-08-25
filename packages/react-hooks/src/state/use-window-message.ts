@@ -35,7 +35,9 @@ export const useWindowMessage = <T = unknown>(originFilter?: string): UseWindowM
   const [lastMessage, setLastMessage] = useState<WindowMessage<T> | undefined>(undefined);
   const [lastError, setLastError] = useState<MessageEvent | undefined>(undefined);
   const originFilterRef = useRef(originFilter);
-  originFilterRef.current = originFilter;
+  useEffect(() => {
+    originFilterRef.current = originFilter;
+  });
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {

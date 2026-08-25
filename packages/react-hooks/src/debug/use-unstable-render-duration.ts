@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type ProfilerOnRenderCallback } from "react";
+import { useCallback, useEffect, useRef, useState, type ProfilerOnRenderCallback } from "react";
 
 import { isProductionBuild } from "./_env.ts";
 
@@ -48,7 +48,9 @@ const NOOP_RESULT: UseUnstableRenderDurationResult = {
 export const useUnstableRenderDuration = (limit = 20): UseUnstableRenderDurationResult => {
   const [samples, setSamples] = useState<RenderDurationSample[]>([]);
   const limitRef = useRef(limit);
-  limitRef.current = limit;
+  useEffect(() => {
+    limitRef.current = limit;
+  });
 
   const onRender = useCallback<ProfilerOnRenderCallback>(
     (id, phase, actualDuration, baseDuration, startTime, commitTime) => {
