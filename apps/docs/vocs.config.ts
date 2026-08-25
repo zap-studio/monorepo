@@ -253,7 +253,7 @@ export default defineConfig({
       {
         slug: "react-hooks",
         name: "@zap-studio/react-hooks",
-        version: "1.0.0",
+        version: "1.1.0",
         description:
           "Small, focused, tree-shakeable React hooks — one hook, one subpath, no forced bundle.",
       },
