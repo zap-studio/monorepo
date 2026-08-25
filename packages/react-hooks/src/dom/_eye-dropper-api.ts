@@ -4,6 +4,7 @@ export interface EyeDropperOpenOptions {
 }
 
 /** Minimal local model of the EyeDropper API — Chromium-only, not declared in every TypeScript DOM lib. */
+// fallow-ignore-next-line unused-type
 export interface EyeDropperResult {
   sRGBHex: string;
 }
