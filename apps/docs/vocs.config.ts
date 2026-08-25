@@ -3,13 +3,14 @@ import { defineConfig } from "vocs/config";
 const baseUrl = "https://www.zapstudio.dev";
 const ogImageUrl = `${baseUrl}/og.png`;
 const gettingStarted = "Getting Started";
+const repoUrl = "https://github.com/zap-studio/monorepo";
 
 export default defineConfig({
   accentColor: "light-dark(hsl(38, 92%, 40%), hsl(43, 96%, 56%))",
   baseUrl,
   description: "Type-safe, framework-agnostic and composable TypeScript libraries for the web.",
   editLink: {
-    link: "https://github.com/zap-studio/monorepo/edit/main/apps/docs/src/pages/:path",
+    link: `${repoUrl}/edit/main/apps/docs/src/pages/:path`,
     text: "Edit on GitHub",
   },
   head: {
@@ -20,6 +21,19 @@ export default defineConfig({
       ogImageType: "image/png",
       ogImageWidth: 1200,
     },
+    script: [
+      {
+        innerHTML: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Zap Studio",
+          url: baseUrl,
+          logo: `${baseUrl}/icon.svg`,
+          sameAs: ["https://github.com/zap-studio", repoUrl],
+        }),
+        type: "application/ld+json",
+      },
+    ],
   },
   iconUrl: "/icon.svg",
   logoUrl: { dark: "/logo-dark.svg", light: "/logo-light.svg" },
@@ -205,7 +219,7 @@ export default defineConfig({
       text: "Packages",
     },
   ],
-  socials: [{ icon: "github", link: "https://github.com/zap-studio/monorepo" }],
+  socials: [{ icon: "github", link: repoUrl }],
   title: "Zap Studio",
   topNav: [
     { link: "/fetch", text: "fetch" },
@@ -218,6 +232,6 @@ export default defineConfig({
     { link: "/retry", text: "retry" },
     { link: "/validation", text: "validation" },
     { link: "/webhooks", text: "webhooks" },
-    { link: "https://github.com/zap-studio/monorepo", text: "GitHub" },
+    { link: repoUrl, text: "GitHub" },
   ],
 });
