@@ -51,8 +51,8 @@ const normalizeOptions = (
  * `window`/`document`), and removes it on unmount or when the resolved
  * element, `type`, or `options` change. `handler` doesn't need to be memoized
  * — the latest one is always called, without re-subscribing. Neither does
- * `options`: it is compared field by field, so an object literal written
- * inline at the call site is free.
+ * `options`: it is flattened to its individual fields, so an object literal
+ * written inline at the call site is free.
  *
  * The listener is attached in a layout effect, before the browser paints, so
  * no event can slip through the gap a passive effect would leave open. When
@@ -90,17 +90,23 @@ export const useEventListener = <E extends Event = Event>(
       return undefined;
     }
 
-    const listenerOptions: AddEventListenerOptions = { capture, once };
-    if (passive !== undefined) {
-      listenerOptions.passive = passive;
-    }
-    if (signal !== undefined) {
-      listenerOptions.signal = signal;
-    }
-
     // SAFETY: addEventListener's native `Event` is narrowed to `E` on the caller's word — TypeScript can't derive `E` from a runtime string `type`, so this trusts the caller's explicit type parameter (or its `Event` default).
     const listener = (event: Event) => handlerRef.current(event as E);
-    element.addEventListener(type, listener, listenerOptions);
-    return () => element.removeEventListener(type, listener, { capture });
+    // SAFETY: `exactOptionalPropertyTypes` rejects an explicit `undefined` for the optional `passive`/`signal` members, but WebIDL treats an `undefined` dictionary member as absent — so this literal behaves exactly like one that omits them. It is spelled out at both call sites rather than hoisted so that the add/remove pair stays statically matchable.
+    element.addEventListener(type, listener, {
+      capture,
+      once,
+      passive,
+      signal,
+    } as AddEventListenerOptions);
+    return () => {
+      // SAFETY: same options literal as the `addEventListener` call above, and safe for the same reason — an `undefined` WebIDL dictionary member is treated as absent.
+      element.removeEventListener(type, listener, {
+        capture,
+        once,
+        passive,
+        signal,
+      } as AddEventListenerOptions);
+    };
   }, [element, type, capture, once, passive, signal]);
 };
