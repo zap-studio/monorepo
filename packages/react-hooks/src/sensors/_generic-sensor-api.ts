@@ -32,7 +32,7 @@ interface GenericSensorWindow {
  * this synchronously in the hook body, on every render including SSR — not
  * just from an effect.
  */
-export const getGenericSensorConstructor = <TSensor extends GenericSensorInstance>(
+const getGenericSensorConstructor = <TSensor extends GenericSensorInstance>(
   constructorName: string,
 ): GenericSensorConstructor<TSensor> | undefined => {
   if (typeof window === "undefined") {
