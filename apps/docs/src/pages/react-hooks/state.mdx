@@ -199,6 +199,16 @@ const { lastMessage, postMessage } = useWindowMessage<string>("https://trusted.e
 postMessage(iframeRef.current!.contentWindow!, "hello", "https://trusted.example");
 ```
 
+## useCredential
+
+Wraps the [Credential Management API](https://developer.mozilla.org/en-US/docs/Web/API/Credential_Management_API) (`navigator.credentials`) — the browser's native store for WebAuthn (public-key) credentials, the only credential type still typed by TypeScript's DOM lib (Password/Federated Credential support was dropped from both browsers and types). Every method resolves `undefined` where the API is unsupported; `get()`/`create()` still resolve `null` the way the underlying API does, when there's no credential to return.
+
+```tsx
+const { get, store, supported } = useCredential();
+const credential = supported ? await get({ publicKey: requestOptions }) : undefined;
+if (credential) await store(credential);
+```
+
 ## See Also
 
 - [Getting Started](/react-hooks/getting-started)

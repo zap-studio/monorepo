@@ -8,7 +8,9 @@
  *
  * Hooks relying on private/non-semver-guaranteed APIs carry an `Unstable`
  * marker in their own name (`useUnstableFiber`, ...) rather than living in
- * a separate module — grep for `Unstable` to find them.
+ * a separate module — grep for `Unstable` to find them. Hooks wrapping Web
+ * APIs MDN itself badges "Experimental" carry an `Experimental` marker the
+ * same way (`useExperimentalIdleDetector`, ...) — grep for `Experimental`.
  *
  * @module @zap-studio/react-hooks
  */
@@ -42,6 +44,8 @@ export type { UseCopyToClipboardResult } from "./state/use-copy-to-clipboard.ts"
 export { useCopyToClipboard } from "./state/use-copy-to-clipboard.ts";
 export type { UseCounterOptions, UseCounterResult } from "./state/use-counter.ts";
 export { useCounter } from "./state/use-counter.ts";
+export type { UseCredentialResult } from "./state/use-credential.ts";
+export { useCredential } from "./state/use-credential.ts";
 export { useDebounce } from "./state/use-debounce.ts";
 export { useDebouncedValue } from "./state/use-debounced-value.ts";
 export type { DeviceCapabilities } from "./sensors/use-device-capabilities.ts";
@@ -59,6 +63,39 @@ export type { EventListenerTarget } from "./dom/use-event-listener.ts";
 export { useEventListener } from "./dom/use-event-listener.ts";
 export type { EventSourceStatus, UseEventSourceResult } from "./network/use-event-source.ts";
 export { useEventSource } from "./network/use-event-source.ts";
+export type {
+  BarcodeDetectorSource,
+  BarcodeFormat,
+  DetectedBarcode,
+  UseExperimentalBarcodeDetectorResult,
+} from "./media/use-experimental-barcode-detector.ts";
+export { useExperimentalBarcodeDetector } from "./media/use-experimental-barcode-detector.ts";
+export type {
+  ContactAddress,
+  ContactInfo,
+  ContactProperty,
+  ContactSelectOptions,
+  UseExperimentalContactPickerResult,
+} from "./dom/use-experimental-contact-picker.ts";
+export { useExperimentalContactPicker } from "./dom/use-experimental-contact-picker.ts";
+export type {
+  IdleDetectorStartOptions,
+  IdleScreenState,
+  IdleUserState,
+  UseExperimentalIdleDetectorResult,
+} from "./sensors/use-experimental-idle-detector.ts";
+export { useExperimentalIdleDetector } from "./sensors/use-experimental-idle-detector.ts";
+export type {
+  LocalFontData,
+  QueryLocalFontsOptions,
+  UseExperimentalLocalFontsResult,
+} from "./sensors/use-experimental-local-fonts.ts";
+export { useExperimentalLocalFonts } from "./sensors/use-experimental-local-fonts.ts";
+export type {
+  SelectAudioOutputOptions,
+  UseExperimentalSelectAudioOutputResult,
+} from "./media/use-experimental-select-audio-output.ts";
+export { useExperimentalSelectAudioOutput } from "./media/use-experimental-select-audio-output.ts";
 export type { UseEyeDropperResult } from "./dom/use-eye-dropper.ts";
 export { useEyeDropper } from "./dom/use-eye-dropper.ts";
 export { useFavicon } from "./dom/use-favicon.ts";

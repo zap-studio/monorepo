@@ -196,6 +196,17 @@ const { open, supported } = useEyeDropper();
 const hex = supported ? await open() : undefined;
 ```
 
+## useExperimentalContactPicker
+
+Wraps the [Contact Picker API](https://developer.mozilla.org/en-US/docs/Web/API/Contact_Picker_API) (`navigator.contacts`) — `select()` shows the OS contact picker for the given properties, resolving the chosen contacts, or `undefined` if the user cancels or the API is unsupported. `getProperties()` resolves which properties this browser can actually retrieve.
+
+Experimental per MDN, Chromium-only, requires a secure context and a user gesture — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Contact_Picker_API#browser_compatibility).
+
+```tsx
+const { select, supported } = useExperimentalContactPicker();
+const contacts = supported ? await select(["name", "email"], { multiple: true }) : undefined;
+```
+
 ## See Also
 
 - [Getting Started](/react-hooks/getting-started)

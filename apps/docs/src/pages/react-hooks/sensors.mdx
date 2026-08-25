@@ -279,6 +279,30 @@ const fontsReady = useFontsReady();
 if (!fontsReady) return <Skeleton />;
 ```
 
+## useExperimentalIdleDetector
+
+Wraps the [Idle Detection API](https://developer.mozilla.org/en-US/docs/Web/API/Idle_Detection_API)'s `IdleDetector` — reports `userState` (`"active"`/`"idle"`) and `screenState` (`"locked"`/`"unlocked"`), updating on its `change` event. `start()` requests the `"idle-detection"` permission first (resolving `false` if denied), then begins reporting; `stop()` tears the detector down. Both states stay `undefined` — the SSR-safe default — until `start()` resolves `true`.
+
+Experimental per MDN, Chromium-only, requires a secure context — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Idle_Detection_API#browser_compatibility).
+
+```tsx
+const { userState, screenState, start, supported } = useExperimentalIdleDetector();
+<button onClick={() => start({ threshold: 60_000 })} disabled={!supported}>
+  Watch for idle
+</button>;
+```
+
+## useExperimentalLocalFonts
+
+Wraps [`window.queryLocalFonts()`](https://developer.mozilla.org/en-US/docs/Web/API/Local_Font_Access_API) (Local Font Access API) — `query()` prompts for the `"local-fonts"` permission on first call and resolves the user's locally installed fonts, or `undefined` when the user denies the prompt or the API is unsupported.
+
+Experimental per MDN, Chromium-only — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Local_Font_Access_API#browser_compatibility).
+
+```tsx
+const { query, supported } = useExperimentalLocalFonts();
+const fonts = supported ? await query() : undefined;
+```
+
 ## See Also
 
 - [Getting Started](/react-hooks/getting-started)
