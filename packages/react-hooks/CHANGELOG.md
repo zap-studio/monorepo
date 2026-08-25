@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Media** (`media/`) — `useExperimentalBarcodeDetector` (Barcode Detection API), `useExperimentalSelectAudioOutput` (audio output device selection).
 - **DOM / element interaction** (`dom/`) — `useExperimentalContactPicker` (Contact Picker API).
 - **Sensors** (`sensors/`) — `useExperimentalIdleDetector` (Idle Detection API), `useExperimentalLocalFonts` (Local Font Access API), and the Generic Sensor API family: `useExperimentalAccelerometer`, `useExperimentalLinearAccelerationSensor`, `useExperimentalGravitySensor`, `useExperimentalGyroscope`, `useExperimentalMagnetometer`, `useExperimentalAbsoluteOrientationSensor`, `useExperimentalRelativeOrientationSensor`, `useExperimentalAmbientLightSensor`.
+- **Lifecycle** (`lifecycle/`) — `useIsomorphicLayoutEffect`, `useLayoutEffect` on the client and `useEffect` on the server, so pre-paint effects don't warn during server rendering.
+
+### Changed
+
+- **DOM / element interaction** (`dom/`) — `useEventListener` now attaches in a layout effect rather than a passive one, so an event fired between paint and the passive effect flush can no longer be missed. Its `options` argument is compared field by field instead of by identity, so an inline object literal no longer re-subscribes on every render, and a `RefObject` target's `current` is re-read on every commit, so a ref that is `null` on the first render — or that later points at a different element — is picked up.
 
 ## [1.0.0]
 

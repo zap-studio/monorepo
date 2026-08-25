@@ -57,7 +57,9 @@ return (
 
 ## useEventListener
 
-Typed [`addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) wrapper with automatic cleanup — attaches `handler` for `type` on `target` (a `RefObject`, a DOM node, or `window`/`document`), and removes it on unmount or when `target`/`type`/`options` change.
+Typed [`addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) wrapper with automatic cleanup — attaches `handler` for `type` on `target` (a `RefObject`, a DOM node, or `window`/`document`), and removes it on unmount or when the resolved element, `type`, or `options` change. Neither `handler` nor `options` needs to be memoized: the latest `handler` is always called without re-subscribing, and `options` is compared field by field, so an object literal written inline at the call site is free.
+
+The listener is attached in a layout effect ([`useIsomorphicLayoutEffect`](/react-hooks/lifecycle#useisomorphiclayouteffect)), before the browser paints, so no event can slip through the gap a passive effect would leave open. When `target` is a ref, its `current` is re-read on every commit — a ref that is still `null` on the first render, or that later points at a different element, is picked up as soon as React commits the change.
 
 ```tsx
 const ref = useRef<HTMLDivElement>(null);

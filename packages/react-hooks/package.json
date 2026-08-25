@@ -67,6 +67,7 @@
     "./lifecycle/use-before-unload": "./dist/lifecycle/use-before-unload.js",
     "./lifecycle/use-idle-callback": "./dist/lifecycle/use-idle-callback.js",
     "./lifecycle/use-interval": "./dist/lifecycle/use-interval.js",
+    "./lifecycle/use-isomorphic-layout-effect": "./dist/lifecycle/use-isomorphic-layout-effect.js",
     "./lifecycle/use-mount": "./dist/lifecycle/use-mount.js",
     "./lifecycle/use-performance-observer": "./dist/lifecycle/use-performance-observer.js",
     "./lifecycle/use-timeout": "./dist/lifecycle/use-timeout.js",

@@ -175,6 +175,7 @@ export { useInView, useIntersectionObserver } from "./dom/use-intersection-obser
 export { useInterval } from "./lifecycle/use-interval.ts";
 export { useIsClient } from "./sensors/use-is-client.ts";
 export { useIsMobile } from "./sensors/use-is-mobile.ts";
+export { useIsomorphicLayoutEffect } from "./lifecycle/use-isomorphic-layout-effect.ts";
 export { useIsServer } from "./sensors/use-is-server.ts";
 export { useKeyPress } from "./input/use-key-press.ts";
 export type { SetStoredValue, UseLocalStorageResult } from "./state/use-local-storage.ts";

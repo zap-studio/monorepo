@@ -44,6 +44,7 @@
     "./lifecycle/use-before-unload": "./src/lifecycle/use-before-unload.ts",
     "./lifecycle/use-idle-callback": "./src/lifecycle/use-idle-callback.ts",
     "./lifecycle/use-interval": "./src/lifecycle/use-interval.ts",
+    "./lifecycle/use-isomorphic-layout-effect": "./src/lifecycle/use-isomorphic-layout-effect.ts",
     "./lifecycle/use-mount": "./src/lifecycle/use-mount.ts",
     "./lifecycle/use-performance-observer": "./src/lifecycle/use-performance-observer.ts",
     "./lifecycle/use-timeout": "./src/lifecycle/use-timeout.ts",
