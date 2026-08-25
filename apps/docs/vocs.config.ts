@@ -383,7 +383,16 @@ export default defineConfig({
       toScript({ "@context": schemaContext, "@graph": graph }),
     ];
 
+    const markdownPath = path === "/" ? "/index" : path;
+
     return {
+      link: [
+        {
+          href: `${siteBaseUrl}/assets/md${markdownPath}.md`,
+          rel: "alternate",
+          type: "text/markdown",
+        },
+      ],
       meta: {
         ogImageAlt:
           "Zap Studio — type-safe, framework-agnostic and composable TypeScript libraries for the web.",
