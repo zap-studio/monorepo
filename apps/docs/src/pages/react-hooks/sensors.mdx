@@ -321,6 +321,19 @@ const { scan, reading, supported } = useExperimentalNfc();
 }
 ```
 
+## useExperimentalWindowManagement
+
+Wraps the [Window Management API](https://developer.mozilla.org/en-US/docs/Web/API/Window_Management_API) — for placing windows across multiple screens. `isExtended` mirrors `window.screen.isExtended` (`true` once more than one display is connected), updating on the `screen`'s `change` event and needing no permission prompt. `requestPermission()` calls `window.getScreenDetails()`, resolving `false` when the API is missing or the user denies it; once granted, `screens` (every connected display) and `currentScreen` (the one showing this window) populate and stay live, updating on the underlying `screenschange`/`currentscreenchange` events. `screens`/`currentScreen` stay empty/`undefined` — the SSR-safe default — until permission is granted.
+
+Experimental per MDN, Chromium-only, not Baseline — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Window_Management_API#browser_compatibility).
+
+```tsx
+const { isExtended, screens, currentScreen, requestPermission } = useExperimentalWindowManagement();
+<button onClick={requestPermission} disabled={!isExtended}>
+  Show all {screens.length} screens
+</button>;
+```
+
 ## See Also
 
 - [Getting Started](/react-hooks/getting-started)

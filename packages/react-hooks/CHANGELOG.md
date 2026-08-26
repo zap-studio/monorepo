@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **DOM / element interaction** (`dom/`) — `useExperimentalContactPicker` (Contact Picker API).
 - **Sensors** (`sensors/`) — `useExperimentalIdleDetector` (Idle Detection API), `useExperimentalLocalFonts` (Local Font Access API), and the Generic Sensor API family: `useExperimentalAccelerometer`, `useExperimentalLinearAccelerationSensor`, `useExperimentalGravitySensor`, `useExperimentalGyroscope`, `useExperimentalMagnetometer`, `useExperimentalAbsoluteOrientationSensor`, `useExperimentalRelativeOrientationSensor`, `useExperimentalAmbientLightSensor`.
 - **Sensors** (`sensors/`) — `useExperimentalNfc`, wrapping the Web NFC API's `NDEFReader` for scanning, writing, and locking NDEF tags.
+- **Sensors** (`sensors/`) — `useExperimentalWindowManagement`, wrapping the Window Management API (`window.getScreenDetails()`) for multi-screen layouts, plus a permission-free `isExtended` flag.
+- **Network** (`network/`) — `useWebTransport`, wrapping the WebTransport API for HTTP/3 datagrams and reliable streams, alongside `useWebSocket`/`useEventSource`.
 - **Lifecycle** (`lifecycle/`) — `useIsomorphicLayoutEffect`, `useLayoutEffect` on the client and `useEffect` on the server, so pre-paint effects don't warn during server rendering.
 
 ### Fixed

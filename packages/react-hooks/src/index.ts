@@ -148,6 +148,12 @@ export type {
   UseExperimentalSelectAudioOutputResult,
 } from "./media/use-experimental-select-audio-output.ts";
 export { useExperimentalSelectAudioOutput } from "./media/use-experimental-select-audio-output.ts";
+export type {
+  ScreenDetailed,
+  ScreenDetails,
+  UseExperimentalWindowManagementResult,
+} from "./sensors/use-experimental-window-management.ts";
+export { useExperimentalWindowManagement } from "./sensors/use-experimental-window-management.ts";
 export type { UseEyeDropperResult } from "./dom/use-eye-dropper.ts";
 export { useEyeDropper } from "./dom/use-eye-dropper.ts";
 export { useFavicon } from "./dom/use-favicon.ts";
@@ -321,6 +327,8 @@ export type { UseWebLockResult, WebLockStatus } from "./lifecycle/use-web-lock.t
 export { useWebLock } from "./lifecycle/use-web-lock.ts";
 export type { UseWebSocketResult, WebSocketStatus } from "./network/use-web-socket.ts";
 export { useWebSocket } from "./network/use-web-socket.ts";
+export type { UseWebTransportResult, WebTransportStatus } from "./network/use-web-transport.ts";
+export { useWebTransport } from "./network/use-web-transport.ts";
 export type { UseWindowMessageResult, WindowMessage } from "./state/use-window-message.ts";
 export { useWindowMessage } from "./state/use-window-message.ts";
 export type { WindowSize } from "./sensors/use-window-size.ts";

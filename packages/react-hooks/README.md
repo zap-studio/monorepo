@@ -89,6 +89,7 @@ Every hook is also importable from its own category subpath — see [Conventions
 | `useExperimentalAbsoluteOrientationSensor` | Generic Sensor API `AbsoluteOrientationSensor` — rotation quaternion, geomagnetic north (Experimental, Chromium-only) |
 | `useExperimentalRelativeOrientationSensor` | Generic Sensor API `RelativeOrientationSensor` — rotation quaternion, no magnetometer (Experimental, Chromium-only)   |
 | `useExperimentalAmbientLightSensor`        | Generic Sensor API `AmbientLightSensor` — ambient light in lux (Experimental, Chromium-only)                          |
+| `useExperimentalWindowManagement`          | Window Management API — multi-screen details + `getScreenDetails()` (Experimental, Chromium-only)                     |
 
 ### DOM / element interaction (`dom/`)
 
@@ -151,10 +152,11 @@ Every hook is also importable from its own category subpath — see [Conventions
 
 ### Network (`network/`)
 
-| Hook             | What it does                                                             |
-| ---------------- | ------------------------------------------------------------------------ |
-| `useWebSocket`   | WebSocket connection state + `send()`/`close()`, latest message received |
-| `useEventSource` | Server-Sent Events connection state + latest message data                |
+| Hook              | What it does                                                             |
+| ----------------- | ------------------------------------------------------------------------ |
+| `useWebSocket`    | WebSocket connection state + `send()`/`close()`, latest message received |
+| `useEventSource`  | Server-Sent Events connection state + latest message data                |
+| `useWebTransport` | WebTransport (HTTP/3) connection state + datagrams and streams           |
 
 ### PWA (`pwa/`)
 
