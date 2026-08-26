@@ -220,15 +220,15 @@ Every hook is also importable from its own category subpath — see [Conventions
 
 ### Debug / observability (`debug/`)
 
-| Hook                       | What it does                                                                    |
-| -------------------------- | -------------------------------------------------------------------------------- |
-| `useRenderCount`           | Render count for the calling component instance                                 |
-| `useWhyDidYouUpdate`       | Logs which props changed to cause the current render                            |
-| `useIsFirstRender`         | `true` only on the mount render                                                 |
-| `useUnstableRenderReason`  | Classifies the render cause — `mount`/`props`/`state`/`context`/`parent`        |
-| `useUnstableFiber`         | The nearest Fiber node for a ref'd DOM element, via a private react-dom pointer |
-| `useRenderDuration`        | Wraps React `<Profiler>`'s `onRender` timing as a hook                          |
-| `useOwnerStack`            | Wraps React 19's `captureOwnerStack` debug API                                  |
+| Hook                      | What it does                                                                    |
+| ------------------------- | ------------------------------------------------------------------------------- |
+| `useRenderCount`          | Render count for the calling component instance                                 |
+| `useWhyDidYouUpdate`      | Logs which props changed to cause the current render                            |
+| `useIsFirstRender`        | `true` only on the mount render                                                 |
+| `useUnstableRenderReason` | Classifies the render cause — `mount`/`props`/`state`/`context`/`parent`        |
+| `useUnstableFiber`        | The nearest Fiber node for a ref'd DOM element, via a private react-dom pointer |
+| `useRenderDuration`       | Wraps React `<Profiler>`'s `onRender` timing as a hook                          |
+| `useOwnerStack`           | Wraps React 19's `captureOwnerStack` debug API                                  |
 
 Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
 
