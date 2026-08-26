@@ -59,13 +59,14 @@ export const useWebTransport = (
     optionsRef.current = options;
   });
 
+  // react-doctor-disable-next-line react-doctor/no-set-state-after-await-in-effect -- every setter that follows an `await` here (in `readDatagrams`, `waitForReady`, `waitForClose`) is guarded by `if (!controller.signal.aborted)`, and the cleanup below calls `controller.abort()` first; a re-run from `url` changing can't write stale state.
   useEffect(() => {
     if (!url || !isSupported()) {
       setStatus("closed");
       return undefined;
     }
 
-    let cancelled = false;
+    const controller = new AbortController();
     const transport = new WebTransport(url, optionsRef.current);
     transportRef.current = transport;
     setStatus("connecting");
@@ -82,7 +83,7 @@ export const useWebTransport = (
           if (done) {
             return;
           }
-          if (!cancelled) {
+          if (!controller.signal.aborted) {
             // SAFETY: WebTransportDatagramDuplexStream's readable always yields Uint8Array chunks per spec; ReadableStream.read()'s `value` is typed `any` only because the interface is declared without a type parameter.
             setLastDatagram(value as Uint8Array);
           }
@@ -96,11 +97,11 @@ export const useWebTransport = (
     const waitForReady = async (): Promise<void> => {
       try {
         await transport.ready;
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setStatus("connected");
         }
       } catch (caught) {
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setStatus("closed");
           setError(toError(caught));
         }
@@ -111,11 +112,11 @@ export const useWebTransport = (
     const waitForClose = async (): Promise<void> => {
       try {
         await transport.closed;
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setStatus("closed");
         }
       } catch (caught) {
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setStatus("closed");
           setError(toError(caught));
         }
@@ -124,7 +125,7 @@ export const useWebTransport = (
     void waitForClose();
 
     return () => {
-      cancelled = true;
+      controller.abort();
       const cancelReader = async (): Promise<void> => {
         try {
           await reader.cancel();

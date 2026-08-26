@@ -21,11 +21,8 @@ export interface UseExperimentalWindowManagementResult {
 
 const subscribeIsExtended = (onStoreChange: () => void) => {
   const screen = getScreenEventTarget();
-  if (!screen?.addEventListener) {
-    return () => {};
-  }
   screen.addEventListener("change", onStoreChange);
-  return () => screen.removeEventListener?.("change", onStoreChange);
+  return () => screen.removeEventListener("change", onStoreChange);
 };
 
 const getIsExtendedServerSnapshot = (): boolean => false;
