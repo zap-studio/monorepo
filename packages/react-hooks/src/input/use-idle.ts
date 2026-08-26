@@ -27,7 +27,6 @@ const ACTIVITY_EVENTS = [
 export const useIdle = (timeoutMs: number = DEFAULT_TIMEOUT_MS): boolean => {
   const [idle, setIdle] = useState(false);
 
-  // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- the cleanup function below already clears the shared `timer` variable (including every time resetTimer reassigns it) and removes all activity listeners.
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 
