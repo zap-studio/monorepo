@@ -193,6 +193,7 @@ export type { UseIntersectionObserverResult } from "./dom/use-intersection-obser
 export { useInView, useIntersectionObserver } from "./dom/use-intersection-observer.ts";
 export { useInterval } from "./lifecycle/use-interval.ts";
 export { useIsClient } from "./sensors/use-is-client.ts";
+export { useIsFirstRender } from "./debug/use-is-first-render.ts";
 export { useIsMobile } from "./sensors/use-is-mobile.ts";
 export { useIsomorphicLayoutEffect } from "./lifecycle/use-isomorphic-layout-effect.ts";
 export { useIsServer } from "./sensors/use-is-server.ts";
@@ -222,6 +223,8 @@ export { useNotificationPermission } from "./sensors/use-notification-permission
 export { useOnlineStatus } from "./sensors/use-online-status.ts";
 export type { Orientation } from "./sensors/use-orientation.ts";
 export { useOrientation } from "./sensors/use-orientation.ts";
+export type { UseOwnerStackResult } from "./debug/use-owner-stack.ts";
+export { useOwnerStack } from "./debug/use-owner-stack.ts";
 export { usePageLeave } from "./sensors/use-page-leave.ts";
 export type {
   PaymentRequestStatus,
@@ -248,6 +251,9 @@ export { usePrevious } from "./state/use-previous.ts";
 export { usePrintMode } from "./sensors/use-print-mode.ts";
 export type { UseQueueResult } from "./state/use-queue.ts";
 export { useQueue } from "./state/use-queue.ts";
+export { useRenderCount } from "./debug/use-render-count.ts";
+export type { RenderDurationSample, UseRenderDurationResult } from "./debug/use-render-duration.ts";
+export { useRenderDuration } from "./debug/use-render-duration.ts";
 export type { ElementSize, UseResizeObserverResult } from "./dom/use-resize-observer.ts";
 export { useResizeObserver } from "./dom/use-resize-observer.ts";
 export type { UseServiceWorkerResult } from "./pwa/use-service-worker.ts";
@@ -295,23 +301,12 @@ export type {
   UseUnstableFiberResult,
 } from "./debug/use-unstable-fiber.ts";
 export { useUnstableFiber } from "./debug/use-unstable-fiber.ts";
-export { useUnstableIsFirstRender } from "./debug/use-unstable-is-first-render.ts";
-export type { UseUnstableOwnerStackResult } from "./debug/use-unstable-owner-stack.ts";
-export { useUnstableOwnerStack } from "./debug/use-unstable-owner-stack.ts";
-export { useUnstableRenderCount } from "./debug/use-unstable-render-count.ts";
-export type {
-  RenderDurationSample,
-  UseUnstableRenderDurationResult,
-} from "./debug/use-unstable-render-duration.ts";
-export { useUnstableRenderDuration } from "./debug/use-unstable-render-duration.ts";
 export type {
   RenderReason,
   UseUnstableRenderReasonOptions,
   UseUnstableRenderReasonResult,
 } from "./debug/use-unstable-render-reason.ts";
 export { useUnstableRenderReason } from "./debug/use-unstable-render-reason.ts";
-export type { ChangedProp } from "./debug/use-unstable-why-did-you-update.ts";
-export { useUnstableWhyDidYouUpdate } from "./debug/use-unstable-why-did-you-update.ts";
 export { useUpdateEffect } from "./lifecycle/use-update-effect.ts";
 export type { UserActivationState } from "./input/use-user-activation.ts";
 export { useUserActivation } from "./input/use-user-activation.ts";
@@ -335,6 +330,8 @@ export type { UseWebSocketResult, WebSocketStatus } from "./network/use-web-sock
 export { useWebSocket } from "./network/use-web-socket.ts";
 export type { UseWebTransportResult, WebTransportStatus } from "./network/use-web-transport.ts";
 export { useWebTransport } from "./network/use-web-transport.ts";
+export type { ChangedProp } from "./debug/use-why-did-you-update.ts";
+export { useWhyDidYouUpdate } from "./debug/use-why-did-you-update.ts";
 export type { UseWindowMessageResult, WindowMessage } from "./state/use-window-message.ts";
 export { useWindowMessage } from "./state/use-window-message.ts";
 export type { WindowSize } from "./sensors/use-window-size.ts";

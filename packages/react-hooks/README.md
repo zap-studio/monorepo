@@ -220,15 +220,15 @@ Every hook is also importable from its own category subpath — see [Conventions
 
 ### Debug / observability (`debug/`)
 
-| Hook                         | What it does                                                                    |
-| ---------------------------- | ------------------------------------------------------------------------------- |
-| `useUnstableRenderCount`     | Render count for the calling component instance                                 |
-| `useUnstableWhyDidYouUpdate` | Logs which props changed to cause the current render                            |
-| `useUnstableIsFirstRender`   | `true` only on the mount render                                                 |
-| `useUnstableRenderReason`    | Classifies the render cause — `mount`/`props`/`state`/`context`/`parent`        |
-| `useUnstableFiber`           | The nearest Fiber node for a ref'd DOM element, via a private react-dom pointer |
-| `useUnstableRenderDuration`  | Wraps React `<Profiler>`'s `onRender` timing as a hook                          |
-| `useUnstableOwnerStack`      | Wraps React 19's `captureOwnerStack` debug API                                  |
+| Hook                       | What it does                                                                    |
+| -------------------------- | -------------------------------------------------------------------------------- |
+| `useRenderCount`           | Render count for the calling component instance                                 |
+| `useWhyDidYouUpdate`       | Logs which props changed to cause the current render                            |
+| `useIsFirstRender`         | `true` only on the mount render                                                 |
+| `useUnstableRenderReason`  | Classifies the render cause — `mount`/`props`/`state`/`context`/`parent`        |
+| `useUnstableFiber`         | The nearest Fiber node for a ref'd DOM element, via a private react-dom pointer |
+| `useRenderDuration`        | Wraps React `<Profiler>`'s `onRender` timing as a hook                          |
+| `useOwnerStack`            | Wraps React 19's `captureOwnerStack` debug API                                  |
 
 Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
 
@@ -237,8 +237,12 @@ More hooks land incrementally.
 ## Conventions
 
 - Every hook is available both from the top-level package and from its own subpath (`@zap-studio/react-hooks/sensors/use-is-mobile`) — same function either way.
-- Hooks relying on private, non-semver-guaranteed APIs (react-dom internals, mostly) carry an `Unstable` marker in the hook's own name — `useUnstableFiber`, not a separate module — so the risk travels with every import and autocomplete hit, not just a path a reader might skip.
-- Hooks wrapping Web APIs MDN itself badges "Experimental" carry an `Experimental` marker the same way — `useExperimentalIdleDetector`, not `Unstable` (reserved for private/non-standard internals) — so the browser-support risk is visible at the call site.
-</content>
 
-</invoke>
+### `Unstable` vs. `Experimental`
+
+Two different name markers warn about two different kinds of risk:
+
+- **`Unstable`** — the hook reads a private API with no public type, not guaranteed to stay the same shape between React versions. Only `useUnstableFiber` and `useUnstableRenderReason` carry this marker: they walk react-dom's internal Fiber tree, the same private structure React DevTools itself reads. The risk is this package breaking on a React upgrade, not the browser.
+- **`Experimental`** — the hook wraps a browser Web API that MDN itself badges "Experimental," like the Idle Detection API or Web NFC (`useExperimentalIdleDetector`, `useExperimentalNfc`, ...). The hook's own code is stable; the risk is that the browser API can change or ship in fewer browsers than you'd like. Every `useExperimental*` hook still fails closed — `supported: false` (or the equivalent) wherever the underlying API doesn't exist, instead of throwing.
+
+A hook with neither marker is built entirely on public, standard APIs — safe to treat like any other hook in the package.

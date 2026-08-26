@@ -2,17 +2,17 @@ import { render, renderHook } from "@testing-library/react";
 import { createElement, useEffect } from "react";
 import { describe, expect, it } from "vitest";
 
-import { useUnstableOwnerStack } from "./use-unstable-owner-stack.ts";
+import { useOwnerStack } from "./use-owner-stack.ts";
 
-describe(useUnstableOwnerStack, () => {
+describe(useOwnerStack, () => {
   it("reports supported: true on this React version", () => {
-    const { result } = renderHook(() => useUnstableOwnerStack());
+    const { result } = renderHook(() => useOwnerStack());
 
     expect(result.current.supported).toBe(true);
   });
 
   it("captureOwnerStack() returns a string or undefined without throwing", () => {
-    const { result } = renderHook(() => useUnstableOwnerStack());
+    const { result } = renderHook(() => useOwnerStack());
 
     const stack = result.current.captureOwnerStack();
 
@@ -21,7 +21,7 @@ describe(useUnstableOwnerStack, () => {
 
   it("captureOwnerStack() surfaces a null result (no current owner) as undefined", () => {
     // Calling capture() with no render/commit in progress on this call stack is the "no current owner" case React's own captureOwnerStack returns null for.
-    const { result } = renderHook(() => useUnstableOwnerStack());
+    const { result } = renderHook(() => useOwnerStack());
     const { captureOwnerStack: capture } = result.current;
 
     expect(capture()).toBeUndefined();
@@ -31,7 +31,7 @@ describe(useUnstableOwnerStack, () => {
     let captured: string | undefined;
 
     function Child() {
-      const { captureOwnerStack: capture } = useUnstableOwnerStack();
+      const { captureOwnerStack: capture } = useOwnerStack();
       useEffect(() => {
         captured = capture();
       });

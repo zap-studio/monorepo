@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ProfilerOnRenderCallback
 
 import { isProductionBuild } from "./_env.ts";
 
-/** One `<Profiler>` `onRender` sample, as recorded by `useUnstableRenderDuration`. */
+/** One `<Profiler>` `onRender` sample, as recorded by `useRenderDuration`. */
 export interface RenderDurationSample {
   actualDuration: number;
   baseDuration: number;
@@ -12,8 +12,8 @@ export interface RenderDurationSample {
   startTime: number;
 }
 
-/** The shape returned by `useUnstableRenderDuration`. */
-export interface UseUnstableRenderDurationResult {
+/** The shape returned by `useRenderDuration`. */
+export interface UseRenderDurationResult {
   last: RenderDurationSample | null;
   onRender: ProfilerOnRenderCallback;
   samples: RenderDurationSample[];
@@ -22,7 +22,7 @@ export interface UseUnstableRenderDurationResult {
 // v8 ignore next -- this is picked in production builds (that part is tested), but it only gets *called* by a real `<Profiler>` commit in a real browser running under `NODE_ENV=production`. We can't reach that here, because bundlers replace `process.env.NODE_ENV` at this test suite's own build time.
 const noopOnRender: ProfilerOnRenderCallback = () => {};
 
-const NOOP_RESULT: UseUnstableRenderDurationResult = {
+const NOOP_RESULT: UseRenderDurationResult = {
   last: null,
   onRender: noopOnRender,
   samples: [],
@@ -38,7 +38,7 @@ const NOOP_RESULT: UseUnstableRenderDurationResult = {
  *
  * @example
  * ```tsx
- * const { onRender, last } = useUnstableRenderDuration();
+ * const { onRender, last } = useRenderDuration();
  * return (
  *   <Profiler id="Sidebar" onRender={onRender}>
  *     <Sidebar />
@@ -46,7 +46,7 @@ const NOOP_RESULT: UseUnstableRenderDurationResult = {
  * );
  * ```
  */
-export const useUnstableRenderDuration = (limit = 20): UseUnstableRenderDurationResult => {
+export const useRenderDuration = (limit = 20): UseRenderDurationResult => {
   const [samples, setSamples] = useState<RenderDurationSample[]>([]);
   const limitRef = useRef(limit);
   useEffect(() => {

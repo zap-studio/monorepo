@@ -2,11 +2,11 @@ import { render, renderHook } from "@testing-library/react";
 import { createElement, StrictMode } from "react";
 import { describe, expect, it } from "vitest";
 
-import { useUnstableIsFirstRender } from "./use-unstable-is-first-render.ts";
+import { useIsFirstRender } from "./use-is-first-render.ts";
 
-describe(useUnstableIsFirstRender, () => {
+describe(useIsFirstRender, () => {
   it("is true on mount, then false on every later render", () => {
-    const { rerender, result } = renderHook(() => useUnstableIsFirstRender());
+    const { rerender, result } = renderHook(() => useIsFirstRender());
 
     expect(result.current).toBe(true);
 
@@ -18,11 +18,11 @@ describe(useUnstableIsFirstRender, () => {
   });
 });
 
-describe("useUnstableIsFirstRender under StrictMode", () => {
+describe("useIsFirstRender under StrictMode", () => {
   it("is true on both passes of the double-invoked mount render", () => {
     const seen: boolean[] = [];
     function TestComponent() {
-      seen.push(useUnstableIsFirstRender());
+      seen.push(useIsFirstRender());
       return null;
     }
     render(createElement(StrictMode, null, createElement(TestComponent)));

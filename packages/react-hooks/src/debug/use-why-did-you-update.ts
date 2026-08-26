@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import { isProductionBuild } from "./_env.ts";
 
-/** One changed prop, as logged by `useUnstableWhyDidYouUpdate`. */
+/** One changed prop, as logged by `useWhyDidYouUpdate`. */
 export interface ChangedProp {
   from: unknown;
   to: unknown;
@@ -21,12 +21,12 @@ const noop = (): void => {};
  * @example
  * ```tsx
  * function UserCard(props: { name: string; age: number }) {
- *   useUnstableWhyDidYouUpdate("UserCard", props);
+ *   useWhyDidYouUpdate("UserCard", props);
  *   return <div>{props.name}</div>;
  * }
  * ```
  */
-export const useUnstableWhyDidYouUpdate = (name: string, props: Record<string, unknown>): void => {
+export const useWhyDidYouUpdate = (name: string, props: Record<string, unknown>): void => {
   const previousPropsRef = useRef<Record<string, unknown> | undefined>(undefined);
   const skip = isProductionBuild();
 

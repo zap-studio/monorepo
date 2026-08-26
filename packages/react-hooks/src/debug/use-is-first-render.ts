@@ -13,11 +13,11 @@ import { isProductionBuild } from "./_env.ts";
  *
  * @example
  * ```tsx
- * const isFirstRender = useUnstableIsFirstRender();
+ * const isFirstRender = useIsFirstRender();
  * if (isFirstRender) console.log("mounted");
  * ```
  */
-export const useUnstableIsFirstRender = (): boolean => {
+export const useIsFirstRender = (): boolean => {
   const mountedRef = useRef(false);
   useEffect(() => {
     mountedRef.current = true;

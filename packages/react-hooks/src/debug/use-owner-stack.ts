@@ -2,8 +2,8 @@ import { captureOwnerStack, useCallback } from "react";
 
 import { isProductionBuild } from "./_env.ts";
 
-/** The shape returned by `useUnstableOwnerStack`. */
-export interface UseUnstableOwnerStackResult {
+/** The shape returned by `useOwnerStack`. */
+export interface UseOwnerStackResult {
   captureOwnerStack: () => string | undefined;
   supported: boolean;
 }
@@ -21,11 +21,11 @@ export interface UseUnstableOwnerStackResult {
  *
  * @example
  * ```tsx
- * const { captureOwnerStack: capture, supported } = useUnstableOwnerStack();
+ * const { captureOwnerStack: capture, supported } = useOwnerStack();
  * const handleError = () => console.error(supported ? capture() : "unavailable");
  * ```
  */
-export const useUnstableOwnerStack = (): UseUnstableOwnerStackResult => {
+export const useOwnerStack = (): UseOwnerStackResult => {
   const supported = !isProductionBuild() && typeof captureOwnerStack === "function";
 
   const capture = useCallback((): string | undefined => {

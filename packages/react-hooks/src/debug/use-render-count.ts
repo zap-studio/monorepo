@@ -15,11 +15,11 @@ import { isProductionBuild } from "./_env.ts";
  *
  * @example
  * ```tsx
- * const renderCount = useUnstableRenderCount();
+ * const renderCount = useRenderCount();
  * console.log(`rendered ${renderCount} times`);
  * ```
  */
-export const useUnstableRenderCount = (): number => {
+export const useRenderCount = (): number => {
   const countRef = useRef(0);
   if (isProductionBuild()) {
     return countRef.current;

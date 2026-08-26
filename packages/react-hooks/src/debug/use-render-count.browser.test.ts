@@ -1,15 +1,15 @@
 import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { useUnstableRenderCount } from "./use-unstable-render-count.ts";
+import { useRenderCount } from "./use-render-count.ts";
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useUnstableRenderCount, () => {
+describe(useRenderCount, () => {
   it("starts at 1 and increments on each render", () => {
-    const { rerender, result } = renderHook(() => useUnstableRenderCount());
+    const { rerender, result } = renderHook(() => useRenderCount());
 
     expect(result.current).toBe(1);
 
@@ -23,7 +23,7 @@ describe(useUnstableRenderCount, () => {
   it("still counts normally when process is entirely undefined", () => {
     vi.stubGlobal("process", undefined);
 
-    const { result } = renderHook(() => useUnstableRenderCount());
+    const { result } = renderHook(() => useRenderCount());
 
     expect(result.current).toBe(1);
   });

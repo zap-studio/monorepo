@@ -1,7 +1,7 @@
 declare const process: { env?: { NODE_ENV?: string } } | undefined;
 
 /**
- * Checks whether this is a production build. Every unstable debug hook
+ * Checks whether this is a production build. Every hook in `debug/`
  * uses this to turn itself off in production, the same way React's own
  * dev-only warnings work. These hooks are dev tools, not something your
  * app should rely on at runtime.

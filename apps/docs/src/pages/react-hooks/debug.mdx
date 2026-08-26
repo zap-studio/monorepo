@@ -1,38 +1,42 @@
 ---
 title: Debug / Observability
-description: Render diagnostics — render count, render reason, why-did-you-update, and Fiber access — built on private, non-semver-guaranteed React/react-dom internals.
+description: Render diagnostics — render count, render reason, why-did-you-update, and Fiber access.
 ---
 
 # Debug / Observability
 
-Hooks relying on private, non-semver-guaranteed APIs (react-dom internals, mostly) carry an `Unstable` marker in the hook's own name — `useUnstableFiber`, not a separate module — so the risk travels with every import and autocomplete hit, not just a path a reader might skip.
+Every hook in this category is a dev tool: it turns itself off in production builds, the same way React's own dev-only warnings do.
 
-## useUnstableRenderCount
+Two of them — `useUnstableFiber` and `useUnstableRenderReason` — read react-dom's private, undocumented Fiber tree to do their job. That tree has no public type and isn't guaranteed to stay the same shape between React versions, so these two carry an `Unstable` marker in their own name. The risk travels with every import and autocomplete hit, not just a path a reader might skip. See [Unstable vs. Experimental](/react-hooks#unstable-vs-experimental) for what that marker means package-wide.
+
+The rest of this page's hooks (`useRenderCount`, `useWhyDidYouUpdate`, `useIsFirstRender`, `useRenderDuration`, `useOwnerStack`) are built entirely on public React APIs (`useRef`, `useEffect`, `<Profiler>`, `captureOwnerStack`) — nothing private, so no `Unstable` marker.
+
+## useRenderCount
 
 The render count for the calling component instance — `1` on mount, incrementing by one on every subsequent render. Always `0` in production builds.
 
 ```tsx
-const renderCount = useUnstableRenderCount();
+const renderCount = useRenderCount();
 console.log(`rendered ${renderCount} times`);
 ```
 
-## useUnstableWhyDidYouUpdate
+## useWhyDidYouUpdate
 
 Logs which of `props`' keys changed to cause the current render — `console.log`s a `name`-labeled table of `{ from, to }` per changed key, or nothing when no key changed (a render caused by state/context rather than these particular props). Does nothing on the mount render, since there's no previous `props` to diff against, or in production builds.
 
 ```tsx
 function UserCard(props: { name: string; age: number }) {
-  useUnstableWhyDidYouUpdate("UserCard", props);
+  useWhyDidYouUpdate("UserCard", props);
   return <div>{props.name}</div>;
 }
 ```
 
-## useUnstableIsFirstRender
+## useIsFirstRender
 
 `true` only on the mount render, `false` on every render after. Always `false` in production builds.
 
 ```tsx
-const isFirstRender = useUnstableIsFirstRender();
+const isFirstRender = useIsFirstRender();
 if (isFirstRender) console.log("mounted");
 ```
 
@@ -41,6 +45,8 @@ if (isFirstRender) console.log("mounted");
 Classifies why the ref'd component just re-rendered — `"mount"`, `"props"`, `"state"` (a `useState`/`useReducer` value changed), `"context"` (a read `useContext()` value changed), or `"parent"` (none of the above changed, so the parent re-rendered this component without a locally-observable cause). Computed in an effect, after commit, so `reason` updates one render behind the change that caused it.
 
 Call it as the first hook in the component — state detection skips this hook's own internal hooks by count when walking the Fiber hook list, so a stateful hook called before it would be miscounted as this hook's own.
+
+`options.maxWalk` caps how many Fiber ancestors, hooks, and context entries get walked while computing the reason. Defaults to 50.
 
 ```tsx
 const { ref, reason } = useUnstableRenderReason<HTMLDivElement>();
@@ -51,17 +57,19 @@ return <div ref={ref}>{reason}</div>;
 
 Returns the nearest Fiber node for a ref'd DOM element, via react-dom's private `__reactFiber$<id>` DOM pointer — walks up to the nearest function-component ancestor when found, else the host (DOM) fiber itself. No public API for this — it's the same private tree React DevTools itself walks. `fiber` is `null` until `ref` attaches to a mounted element, and stays `null` (rather than throwing) on an unrecognized internal shape or in production builds.
 
+`options.maxWalk` caps how many ancestors get walked while looking for a function component. Defaults to 50.
+
 ```tsx
 const { ref, fiber } = useUnstableFiber<HTMLDivElement>();
 return <div ref={ref}>{typeof fiber?.type === "function" ? fiber.type.name : "?"}</div>;
 ```
 
-## useUnstableRenderDuration
+## useRenderDuration
 
 Wraps React's [`<Profiler>`](https://react.dev/reference/react/Profiler) `onRender` timing as a hook — pass `onRender` to a `<Profiler>` wrapping the subtree to measure; `samples` accumulates each render's `{ id, phase, actualDuration, baseDuration, startTime, commitTime }`, capped at the last `limit` (default `20`). Records nothing in production builds.
 
 ```tsx
-const { onRender, last } = useUnstableRenderDuration();
+const { onRender, last } = useRenderDuration();
 return (
   <Profiler id="Sidebar" onRender={onRender}>
     <Sidebar />
@@ -69,12 +77,12 @@ return (
 );
 ```
 
-## useUnstableOwnerStack
+## useOwnerStack
 
 Wraps React 19's [`captureOwnerStack`](https://react.dev/reference/react/captureOwnerStack) debug API — call `captureOwnerStack()` during an event handler or effect to get the JSX "owner" stack (which component rendered which), the same trace React's own dev warnings use. `supported: false` where the export doesn't exist (React < 19, or a production build — React's own `captureOwnerStack` already returns `null` there, which this wrapper surfaces as `undefined`).
 
 ```tsx
-const { captureOwnerStack: capture, supported } = useUnstableOwnerStack();
+const { captureOwnerStack: capture, supported } = useOwnerStack();
 const handleError = () => console.error(supported ? capture() : "unavailable");
 ```
 
