@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useState, type ProfilerOnRenderCallback } from "react";
+import { useCallback, useRef, useState, type ProfilerOnRenderCallback } from "react";
 
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 import { isProductionBuild } from "./_env.ts";
 
 /** One `<Profiler>` `onRender` sample, as recorded by `useRenderDuration`. */
@@ -49,7 +50,7 @@ const NOOP_RESULT: UseRenderDurationResult = {
 export const useRenderDuration = (limit = 20): UseRenderDurationResult => {
   const [samples, setSamples] = useState<RenderDurationSample[]>([]);
   const limitRef = useRef(limit);
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     limitRef.current = limit;
   });
 
