@@ -2,7 +2,7 @@
  * A simplified copy of React's internal "Fiber" shape, used only by the
  * helpers in this file. React does not publish an official type for
  * this, so we define our own here. Shared by `useUnstableFiber` and
- * `useUnstableRenderReason`. This file is not a public hook itself.
+ * `useUnstableRenderReason`.
  */
 export interface ContextDependency {
   memoizedValue: unknown;

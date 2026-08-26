@@ -22,10 +22,7 @@ const readStoredValue = <T>(storage: Storage, key: string, initialValue: T): T =
 
 /**
  * Shared logic for syncing state to a `Storage` object (localStorage or
- * sessionStorage), used by `useLocalStorage` and `useSessionStorage`. This
- * is not a public hook itself — hook files never import each other, so
- * shared code lives here instead (same pattern as `_otel.ts` in
- * `@zap-studio/retry`).
+ * sessionStorage), used by `useLocalStorage` and `useSessionStorage`.
  */
 export const useWebStorage = <T>(
   getStorage: () => Storage,

@@ -59,9 +59,7 @@ export interface UseGenericSensorResult<TReading> {
 
 /**
  * Shared logic (start/stop/reading/error) used by every `useExperimental*Sensor`
- * hook. It is not a public hook itself. Hook files never import each other, so
- * shared code lives here instead (the same pattern as `useNetworkSnapshot` in
- * `_network.ts`). The `start()` function creates the sensor and calls its
+ * hook. The `start()` function creates the sensor and calls its
  * `start()`. If creating the sensor fails (for example, a Permissions Policy
  * block) or it fails later (for example, a denied permission), both cases
  * are reported through `error` instead of throwing an exception.

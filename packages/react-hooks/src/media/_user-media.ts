@@ -17,9 +17,7 @@ const isSupported = (): boolean =>
 
 /**
  * Handles starting and stopping `getUserMedia` for both `useUserMedia`
- * and `useCamera`. This is not a public hook. Hook files never import
- * each other, so shared code lives here instead (the same pattern used
- * by `@zap-studio/retry`'s `_otel.ts` file).
+ * and `useCamera`.
  */
 export const useMediaStream = (constraints: MediaStreamConstraints): UserMediaResult => {
   const [stream, setStream] = useState<MediaStream | undefined>(undefined);

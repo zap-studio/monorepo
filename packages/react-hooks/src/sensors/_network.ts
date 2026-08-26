@@ -64,9 +64,7 @@ const subscribe = (onStoreChange: () => void) => {
 
 /**
  * Shared `navigator.onLine` and `navigator.connection` subscription used by
- * `useOnlineStatus` and `useNetworkState`. It is not a public hook itself.
- * Hook files never import each other, so shared code lives here instead
- * (the same pattern as `_otel.ts` in `@zap-studio/retry`).
+ * `useOnlineStatus` and `useNetworkState`.
  *
  * Caches the snapshot object and only replaces it when a field actually
  * changes, so unchanged reads return the same object reference.
