@@ -27,7 +27,7 @@ export interface FiberLike {
 }
 
 /** How many Fiber/hook/context list entries `findOwnerFiber`, `collectStateHookValues`, and `collectContextValues` walk through by default, unless a caller passes its own `maxWalk`. */
-export const DEFAULT_MAX_WALK = 50;
+const DEFAULT_MAX_WALK = 50;
 
 /** Finds the DOM node's private `__reactFiber$<id>` property key, if any. */
 const getReactFiberKey = (node: Element): string | undefined =>
