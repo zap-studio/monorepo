@@ -19,8 +19,8 @@ interface EyeDropperWindow {
 
 /**
  * Checks for `typeof window === "undefined"`. This is needed because
- * `useEyeDropper` calls this function directly during render (including on
- * the server), not just inside an effect.
+ * `useExperimentalEyeDropper` calls this function directly during render
+ * (including on the server), not just inside an effect.
  */
 export const getEyeDropperConstructor = (): EyeDropperConstructor | undefined => {
   if (typeof window === "undefined") {

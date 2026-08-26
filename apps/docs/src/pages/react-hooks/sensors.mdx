@@ -227,29 +227,12 @@ const dpr = useDevicePixelRatio();
 const hasTouch = useTouchSupport();
 ```
 
-## useUserAgentData
-
-[`navigator.userAgentData`](https://developer.mozilla.org/en-US/docs/Web/API/User-Agent_Client_Hints_API)'s low-entropy fields (`brands`, `mobile`, `platform`) — a structured, Chromium-only replacement for parsing `navigator.userAgent` (see [browser compatibility](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/userAgentData#browser_compatibility)). A static device capability — doesn't change at runtime. `undefined` — the SSR-safe default — where User-Agent Client Hints is unsupported.
-
-```tsx
-const uaData = useUserAgentData();
-const isMobile = uaData?.mobile ?? false;
-```
-
 ## useCookieEnabled
 
 [`navigator.cookieEnabled`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/cookieEnabled). A static capability — doesn't change at runtime. `false` — the SSR-safe default — during server rendering.
 
 ```tsx
 const cookiesEnabled = useCookieEnabled();
-```
-
-## useVirtualKeyboard
-
-[`navigator.virtualKeyboard`](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API)'s `boundingRect` (Chromium-only VirtualKeyboard API — see [browser compatibility](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API#browser_compatibility)), updating on its `geometrychange` event. Falls back to `{ x: 0, y: 0, width: 0, height: 0 }` during server rendering, before the client subscribes, and where the API is unsupported.
-
-```tsx
-const { height } = useVirtualKeyboard(); // on-screen keyboard height, in px
 ```
 
 ## usePrintMode
@@ -319,6 +302,27 @@ const { scan, reading, supported } = useExperimentalNfc();
 {
   reading ? <p>Tag {reading.serialNumber}</p> : null;
 }
+```
+
+## useExperimentalUserAgentData
+
+[`navigator.userAgentData`](https://developer.mozilla.org/en-US/docs/Web/API/User-Agent_Client_Hints_API)'s low-entropy fields (`brands`, `mobile`, `platform`) — a structured replacement for parsing `navigator.userAgent`. A static device capability — doesn't change at runtime. `undefined` — the SSR-safe default — where User-Agent Client Hints is unsupported.
+
+Experimental per MDN, Chromium-only — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/userAgentData#browser_compatibility).
+
+```tsx
+const uaData = useExperimentalUserAgentData();
+const isMobile = uaData?.mobile ?? false;
+```
+
+## useExperimentalVirtualKeyboard
+
+[`navigator.virtualKeyboard`](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API)'s `boundingRect`, updating on its `geometrychange` event. Falls back to `{ x: 0, y: 0, width: 0, height: 0 }` during server rendering, before the client subscribes, and where the API is unsupported.
+
+Experimental per MDN, Chromium-only — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API#browser_compatibility).
+
+```tsx
+const { height } = useExperimentalVirtualKeyboard(); // on-screen keyboard height, in px
 ```
 
 ## useExperimentalWindowManagement

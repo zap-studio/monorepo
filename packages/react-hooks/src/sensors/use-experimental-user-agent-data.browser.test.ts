@@ -1,13 +1,13 @@
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { useUserAgentData } from "./use-user-agent-data.ts";
+import { useExperimentalUserAgentData } from "./use-experimental-user-agent-data.ts";
 
 function setUserAgentData(data: unknown) {
   Object.defineProperty(navigator, "userAgentData", { configurable: true, value: data });
 }
 
-describe(useUserAgentData, () => {
+describe(useExperimentalUserAgentData, () => {
   it("reports navigator.userAgentData when available", () => {
     setUserAgentData({
       brands: [{ brand: "Chromium", version: "130" }],
@@ -15,7 +15,7 @@ describe(useUserAgentData, () => {
       platform: "macOS",
     });
 
-    const { result, unmount } = renderHook(() => useUserAgentData());
+    const { result, unmount } = renderHook(() => useExperimentalUserAgentData());
 
     expect(result.current).toEqual({
       brands: [{ brand: "Chromium", version: "130" }],
@@ -28,7 +28,7 @@ describe(useUserAgentData, () => {
   it("is undefined when User-Agent Client Hints is unsupported", () => {
     setUserAgentData(undefined);
 
-    const { result } = renderHook(() => useUserAgentData());
+    const { result } = renderHook(() => useExperimentalUserAgentData());
 
     expect(result.current).toBeUndefined();
   });

@@ -96,6 +96,8 @@ export type {
   UseExperimentalContactPickerResult,
 } from "./dom/use-experimental-contact-picker.ts";
 export { useExperimentalContactPicker } from "./dom/use-experimental-contact-picker.ts";
+export type { UseExperimentalEyeDropperResult } from "./dom/use-experimental-eye-dropper.ts";
+export { useExperimentalEyeDropper } from "./dom/use-experimental-eye-dropper.ts";
 export type {
   GravityReading,
   UseExperimentalGravitySensorResult,
@@ -155,9 +157,14 @@ export type {
   ScreenDetails,
   UseExperimentalWindowManagementResult,
 } from "./sensors/use-experimental-window-management.ts";
+export type {
+  UserAgentData,
+  UserAgentDataBrand,
+} from "./sensors/use-experimental-user-agent-data.ts";
+export { useExperimentalUserAgentData } from "./sensors/use-experimental-user-agent-data.ts";
+export type { VirtualKeyboardRect } from "./sensors/use-experimental-virtual-keyboard.ts";
+export { useExperimentalVirtualKeyboard } from "./sensors/use-experimental-virtual-keyboard.ts";
 export { useExperimentalWindowManagement } from "./sensors/use-experimental-window-management.ts";
-export type { UseEyeDropperResult } from "./dom/use-eye-dropper.ts";
-export { useEyeDropper } from "./dom/use-eye-dropper.ts";
 export { useFavicon } from "./dom/use-favicon.ts";
 export type { UseFileDropResult } from "./dom/use-file-drop.ts";
 export { useDropzone, useFileDrop } from "./dom/use-file-drop.ts";
@@ -310,16 +317,12 @@ export { useUnstableRenderReason } from "./debug/use-unstable-render-reason.ts";
 export { useUpdateEffect } from "./lifecycle/use-update-effect.ts";
 export type { UserActivationState } from "./input/use-user-activation.ts";
 export { useUserActivation } from "./input/use-user-activation.ts";
-export type { UserAgentData, UserAgentDataBrand } from "./sensors/use-user-agent-data.ts";
-export { useUserAgentData } from "./sensors/use-user-agent-data.ts";
 export type { UseVibrateResult } from "./sensors/use-vibrate.ts";
 export type { MediaStreamStatus, UseUserMediaResult } from "./media/use-user-media.ts";
 export { useUserMedia } from "./media/use-user-media.ts";
 export { useVibrate } from "./sensors/use-vibrate.ts";
 export type { UseViewTransitionResult } from "./dom/use-view-transition.ts";
 export { useViewTransition } from "./dom/use-view-transition.ts";
-export type { VirtualKeyboardRect } from "./sensors/use-virtual-keyboard.ts";
-export { useVirtualKeyboard } from "./sensors/use-virtual-keyboard.ts";
 export type { VisualViewportState } from "./sensors/use-visual-viewport.ts";
 export { useVisualViewport } from "./sensors/use-visual-viewport.ts";
 export type { UseWakeLockResult } from "./sensors/use-wake-lock.ts";

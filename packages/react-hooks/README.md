@@ -72,9 +72,7 @@ Every hook is also importable from its own category subpath — see [Conventions
 | `useVisualViewport`                        | `window.visualViewport`; captures on-screen-keyboard shrink `innerHeight` misses                                      |
 | `useDevicePixelRatio`                      | `window.devicePixelRatio`, updating on zoom/monitor moves                                                             |
 | `useTouchSupport`                          | `true` when `navigator.maxTouchPoints > 0`                                                                            |
-| `useUserAgentData`                         | `navigator.userAgentData`'s low-entropy fields — structured `navigator.userAgent`                                     |
 | `useCookieEnabled`                         | `navigator.cookieEnabled`                                                                                             |
-| `useVirtualKeyboard`                       | `navigator.virtualKeyboard`'s bounding rect (Chromium-only)                                                           |
 | `usePrintMode`                             | `true` while printing, via the `print` media query                                                                    |
 | `useNotificationPermission`                | Notifications API permission state + a `notify()` trigger                                                             |
 | `useFontsReady`                            | `true` once `document.fonts.ready` resolves — avoid FOUC on custom web fonts                                          |
@@ -89,6 +87,8 @@ Every hook is also importable from its own category subpath — see [Conventions
 | `useExperimentalAbsoluteOrientationSensor` | Generic Sensor API `AbsoluteOrientationSensor` — rotation quaternion, geomagnetic north (Experimental, Chromium-only) |
 | `useExperimentalRelativeOrientationSensor` | Generic Sensor API `RelativeOrientationSensor` — rotation quaternion, no magnetometer (Experimental, Chromium-only)   |
 | `useExperimentalAmbientLightSensor`        | Generic Sensor API `AmbientLightSensor` — ambient light in lux (Experimental, Chromium-only)                          |
+| `useExperimentalUserAgentData`             | User-Agent Client Hints API — `navigator.userAgentData`'s low-entropy fields (Experimental, Chromium-only)            |
+| `useExperimentalVirtualKeyboard`           | VirtualKeyboard API — `navigator.virtualKeyboard`'s bounding rect (Experimental, Chromium-only)                       |
 | `useExperimentalWindowManagement`          | Window Management API — multi-screen details + `getScreenDetails()` (Experimental, Chromium-only)                     |
 
 ### DOM / element interaction (`dom/`)
@@ -113,8 +113,8 @@ Every hook is also importable from its own category subpath — see [Conventions
 | `usePointer`                   | Unified mouse/touch/pen position via Pointer events                              |
 | `usePopover`                   | Native Popover API open/close state                                              |
 | `useViewTransition`            | `document.startViewTransition()` wrapper                                         |
-| `useEyeDropper`                | EyeDropper API, single-shot color picker (Chromium-only)                         |
 | `useExperimentalContactPicker` | Contact Picker API — `navigator.contacts.select()` (Experimental, Chromium-only) |
+| `useExperimentalEyeDropper`    | EyeDropper API, single-shot color picker (Experimental, Chromium-only)           |
 
 ### Input (`input/`)
 

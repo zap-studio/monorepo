@@ -2,14 +2,14 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { useVirtualKeyboard } from "./use-virtual-keyboard.ts";
+import { useExperimentalVirtualKeyboard } from "./use-experimental-virtual-keyboard.ts";
 
 function TestComponent() {
-  const { width, height } = useVirtualKeyboard();
+  const { width, height } = useExperimentalVirtualKeyboard();
   return `${width}x${height}`;
 }
 
-describe(useVirtualKeyboard, () => {
+describe(useExperimentalVirtualKeyboard, () => {
   it("falls back to 0x0 on the server, before navigator can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

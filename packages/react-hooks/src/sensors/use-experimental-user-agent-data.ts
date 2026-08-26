@@ -6,7 +6,7 @@ export interface UserAgentDataBrand {
   version: string;
 }
 
-/** The shape returned by `useUserAgentData`: the basic fields from `navigator.userAgentData`. */
+/** The shape returned by `useExperimentalUserAgentData`: the basic fields from `navigator.userAgentData`. */
 export interface UserAgentData {
   brands: readonly UserAgentDataBrand[];
   mobile: boolean;
@@ -33,19 +33,19 @@ const dataEqual = (a: UserAgentData | undefined, b: UserAgentData | undefined): 
 /**
  * Gives you basic browser info (`brands`, `mobile`, `platform`) from
  * `navigator.userAgentData`. This is a newer, more structured way to get
- * this data instead of parsing the `navigator.userAgent` string, but it
- * only works in Chromium browsers (like Chrome and Edge). This
- * information doesn't change while the app is running. The value is
- * `undefined` (the safe default for server rendering) when the
- * User-Agent Client Hints API isn't supported.
+ * this data instead of parsing the `navigator.userAgent` string. The
+ * User-Agent Client Hints API is experimental (see MDN), and only works
+ * in Chromium browsers (like Chrome and Edge). This information doesn't
+ * change while the app is running. The value is `undefined` (the safe
+ * default for server rendering) when the API isn't supported.
  *
  * @example
  * ```tsx
- * const uaData = useUserAgentData();
+ * const uaData = useExperimentalUserAgentData();
  * const isMobile = uaData?.mobile ?? false;
  * ```
  */
-export const useUserAgentData = (): UserAgentData | undefined => {
+export const useExperimentalUserAgentData = (): UserAgentData | undefined => {
   const cacheRef = useRef<UserAgentData | undefined>(undefined);
 
   const getSnapshot = useCallback((): UserAgentData | undefined => {

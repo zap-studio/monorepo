@@ -1,7 +1,7 @@
 import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { useEyeDropper } from "./use-eye-dropper.ts";
+import { useExperimentalEyeDropper } from "./use-experimental-eye-dropper.ts";
 
 function abortError(): Error {
   const error = new Error("The user chose not to pick a color.");
@@ -13,11 +13,11 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useEyeDropper, () => {
+describe(useExperimentalEyeDropper, () => {
   it("reports supported: false when the EyeDropper API is unavailable", () => {
     vi.stubGlobal("EyeDropper", undefined);
 
-    const { result } = renderHook(() => useEyeDropper());
+    const { result } = renderHook(() => useExperimentalEyeDropper());
 
     expect(result.current.supported).toBe(false);
   });
@@ -32,7 +32,7 @@ describe(useEyeDropper, () => {
       },
     );
 
-    const { result } = renderHook(() => useEyeDropper());
+    const { result } = renderHook(() => useExperimentalEyeDropper());
 
     expect(result.current.supported).toBe(true);
   });
@@ -47,7 +47,7 @@ describe(useEyeDropper, () => {
       },
     );
 
-    const { result } = renderHook(() => useEyeDropper());
+    const { result } = renderHook(() => useExperimentalEyeDropper());
     await expect(result.current.open()).resolves.toBe("#ff0000");
   });
 
@@ -61,7 +61,7 @@ describe(useEyeDropper, () => {
       },
     );
 
-    const { result } = renderHook(() => useEyeDropper());
+    const { result } = renderHook(() => useExperimentalEyeDropper());
     await expect(result.current.open()).resolves.toBeUndefined();
   });
 
@@ -75,14 +75,14 @@ describe(useEyeDropper, () => {
       },
     );
 
-    const { result } = renderHook(() => useEyeDropper());
+    const { result } = renderHook(() => useExperimentalEyeDropper());
     await expect(result.current.open()).rejects.toThrow("permission error");
   });
 
   it("open() resolves undefined when unsupported", async () => {
     vi.stubGlobal("EyeDropper", undefined);
 
-    const { result } = renderHook(() => useEyeDropper());
+    const { result } = renderHook(() => useExperimentalEyeDropper());
     await expect(result.current.open()).resolves.toBeUndefined();
   });
 });
