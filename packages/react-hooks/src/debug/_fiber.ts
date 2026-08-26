@@ -27,8 +27,7 @@ export interface FiberLike {
 const MAX_WALK = 50;
 
 /** Finds the DOM node's private `__reactFiber$<id>` property key, if any. */
-// fallow-ignore-next-line unused-export
-export const getReactFiberKey = (node: Element): string | undefined =>
+const getReactFiberKey = (node: Element): string | undefined =>
   Object.keys(node).find((key) => key.startsWith("__reactFiber$"));
 
 /**
