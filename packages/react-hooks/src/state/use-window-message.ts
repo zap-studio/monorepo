@@ -43,12 +43,11 @@ export const useWindowMessage = <T = unknown>(originFilter?: string): UseWindowM
   });
 
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessage = (event: MessageEvent<T>) => {
       if (originFilterRef.current !== undefined && event.origin !== originFilterRef.current) {
         return;
       }
-      // SAFETY: T is a type you provide to describe the messages you expect on this channel. postMessage data has no shape TypeScript can check at runtime — this is the same trust boundary as MessageEvent.data, which TypeScript already types as any.
-      setLastMessage({ data: event.data as T, origin: event.origin, source: event.source });
+      setLastMessage({ data: event.data, origin: event.origin, source: event.source });
     };
     const handleMessageError = (event: MessageEvent) => setLastError(event);
 
