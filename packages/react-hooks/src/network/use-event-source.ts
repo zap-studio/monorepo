@@ -38,8 +38,7 @@ export const useEventSource = (url: string | undefined): UseEventSourceResult =>
     setStatus("connecting");
 
     const handleOpen = () => setStatus("open");
-    // SAFETY: EventSource's message event always carries text data, per spec. MessageEvent.data is typed `any` only because the same event type is also used by WebSocket/Worker, which can carry binary data.
-    const handleMessage = (event: MessageEvent) => setData(event.data as string);
+    const handleMessage = (event: MessageEvent<string>) => setData(event.data);
     const handleError = () => setStatus("closed");
 
     source.addEventListener("open", handleOpen);
