@@ -11,9 +11,9 @@ const isSupported = (): boolean =>
   typeof navigator !== "undefined" && typeof navigator.share === "function";
 
 /**
- * Wraps the Web Share API (`navigator.share()`), with `canShare` support
- * feature-detection. `supported: false` — the SSR-safe default — where
- * `navigator.share` doesn't exist.
+ * Wraps the Web Share API (`navigator.share()`) and adds a `canShare`
+ * check to see if sharing is supported. `supported` is `false` (the safe
+ * default for server rendering) when `navigator.share` doesn't exist.
  *
  * @example
  * ```tsx

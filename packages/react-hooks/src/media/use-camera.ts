@@ -10,9 +10,9 @@ export interface UseCameraOptions {
 export type UseCameraResult = UserMediaResult;
 
 /**
- * `useUserMedia` convenience wrapper for the common "just give me the
- * webcam" case — defaults to `{ video: true, audio: false }`. Manual
- * `start()`/`stop()`, same as `useUserMedia`.
+ * A shortcut version of `useUserMedia` for the common case: just turn on
+ * the webcam. Defaults to `{ video: true, audio: false }`. You still call
+ * `start()` and `stop()` yourself, just like with `useUserMedia`.
  *
  * @example
  * ```tsx

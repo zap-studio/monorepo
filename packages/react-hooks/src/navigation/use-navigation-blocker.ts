@@ -10,19 +10,21 @@ export interface NavigationBlockerResult {
 }
 
 /**
- * Wraps the Navigation API's `navigate` event and `event.intercept()` to
- * block/confirm in-app client-side route transitions — `shouldBlock`
- * receives the destination URL and returns whether to hold the
- * transition. While `blocked` is `true`, the navigation is intercepted
- * and pending; call `proceed()` to let it complete, or `reset()` to
- * clear the blocked state (the pending transition itself stays
- * suspended — recommended only alongside a `shouldBlock` that stops
- * blocking once the guard condition clears). Distinct from
- * `useBeforeUnload`: that guards full page unload/tab close, this guards
- * SPA route changes that never hit `beforeunload`. `shouldBlock` doesn't
- * need to be memoized — the latest one is always called, without
- * re-subscribing. No-ops (never blocks) in browsers without the
- * Navigation API (Safari, Firefox).
+ * Wraps the Navigation API's `navigate` event to block or confirm
+ * in-app route changes. `shouldBlock` receives the destination URL and
+ * returns `true` to hold the navigation, or `false` to let it continue.
+ * While `blocked` is `true`, the navigation is paused. Call `proceed()`
+ * to let it finish, or call `reset()` to clear the blocked state (this
+ * leaves the navigation itself paused, so only use `reset()` together
+ * with a `shouldBlock` that stops blocking once its condition is no
+ * longer met).
+ *
+ * This is different from `useBeforeUnload`, which only guards full page
+ * unloads or tab closes. This hook guards in-app route changes, which
+ * never trigger `beforeunload`. You don't need to memoize `shouldBlock` —
+ * the hook always uses the latest version, without re-subscribing. In
+ * browsers without the Navigation API (Safari, Firefox), this hook does
+ * nothing and never blocks.
  *
  * @example
  * ```tsx
@@ -52,7 +54,7 @@ export const useNavigationBlocker = (
       });
 
     const handleNavigate = (event: Event) => {
-      // SAFETY: this listener is only ever registered for Navigation's "navigate" event, whose event object is always shaped like NavigateEvent at runtime, even though that type is modeled locally rather than pulled from TypeScript's DOM lib (see _navigation-api.ts).
+      // SAFETY: this listener is only ever added for the "navigate" event, so the event object always matches NavigateEvent at runtime. This type is defined locally instead of coming from TypeScript's DOM lib (see _navigation-api.ts).
       const navigateEvent = event as NavigateEvent;
       if (
         !navigateEvent.canIntercept ||

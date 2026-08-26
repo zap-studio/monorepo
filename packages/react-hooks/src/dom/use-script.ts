@@ -29,7 +29,7 @@ const getOrCreateEntry = (src: string, async: boolean | undefined): ScriptEntry 
     return existing;
   }
 
-  // oxlint-disable-next-line github/no-dynamic-script-tag -- on-demand script loading is this hook's entire purpose; the src is caller-supplied, same trust boundary as any other API URL this codebase fetches.
+  // oxlint-disable-next-line github/no-dynamic-script-tag -- loading a script on demand is exactly what this hook does. The src comes from the caller, just like any other URL this codebase fetches.
   const script = document.createElement("script");
   script.src = src;
   script.async = async ?? true;
@@ -49,12 +49,15 @@ const getOrCreateEntry = (src: string, async: boolean | undefined): ScriptEntry 
 };
 
 /**
- * Loads an external `<script src>` on demand. Concurrent `useScript` calls
- * for the same `src` share a single `<script>` tag — the request is never
- * duplicated. `status` starts `"loading"` and becomes `"ready"`/`"error"`
- * once the script settles (or immediately reflects an already-settled
- * script for later consumers). With `removeOnUnmount: true`, the tag is
- * removed once the last consumer of that `src` unmounts.
+ * Loads an external script (`<script src>`) when needed. If you call
+ * `useScript` more than once with the same `src`, all calls share a
+ * single `<script>` tag, so the script is never loaded twice.
+ *
+ * `status` starts as `"loading"` and becomes `"ready"` or `"error"` once
+ * the script finishes loading. If the script already finished loading
+ * before this call, `status` reflects that right away. With
+ * `removeOnUnmount: true`, the `<script>` tag is removed once the last
+ * component using that `src` unmounts.
  *
  * @example
  * ```tsx

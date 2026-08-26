@@ -1,16 +1,18 @@
 /**
- * Public entrypoint for the react-hooks package.
+ * Public entry point for the react-hooks package.
  *
- * Re-exports every hook. Each hook is also available from its own
- * category subpath (`@zap-studio/react-hooks/sensors/use-is-mobile`, ...)
- * for consumers who prefer granular imports. All exports are side-effect
- * free and tree-shakeable.
+ * This file re-exports every hook. Each hook is also available from its
+ * own category subpath (for example,
+ * `@zap-studio/react-hooks/sensors/use-is-mobile`), if you prefer
+ * importing hooks one by one. All exports are side-effect free and can
+ * be tree-shaken.
  *
- * Hooks relying on private/non-semver-guaranteed APIs carry an `Unstable`
- * marker in their own name (`useUnstableFiber`, ...) rather than living in
- * a separate module — grep for `Unstable` to find them. Hooks wrapping Web
- * APIs MDN itself badges "Experimental" carry an `Experimental` marker the
- * same way (`useExperimentalIdleDetector`, ...) — grep for `Experimental`.
+ * Hooks that rely on private APIs (not guaranteed to stay the same
+ * between React versions) have `Unstable` in their name, like
+ * `useUnstableFiber`. Search for `Unstable` to find them. Hooks that wrap
+ * a Web API MDN marks as "Experimental" have `Experimental` in their
+ * name the same way, like `useExperimentalIdleDetector`. Search for
+ * `Experimental` to find those.
  *
  * @module @zap-studio/react-hooks
  */

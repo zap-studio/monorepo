@@ -11,11 +11,11 @@ export interface UseMapResult<K, V> {
 }
 
 /**
- * `Map`-backed state — `set()`/`delete()`/`clear()` each replace the
- * underlying `Map` with a new one, so React re-renders on every mutation
- * (a plain mutable `Map` ref wouldn't trigger a re-render on `.set()`).
- * `get()`/`has()` always read the latest map, independent of any stale
- * closure.
+ * State backed by a `Map`. `set()`, `delete()`, and `clear()` each create
+ * a new `Map`, so React re-renders every time you change it — a plain
+ * mutable `Map` wouldn't trigger a re-render when you call `.set()` on
+ * it. `get()` and `has()` always read the latest map, so they never
+ * return stale data.
  *
  * @example
  * ```tsx

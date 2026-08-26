@@ -13,10 +13,11 @@ const isSupported = (): boolean =>
 const INITIAL_STATE: StorageEstimateState = { supported: false };
 
 /**
- * `navigator.storage.estimate()`'s `usage`/`quota`, one-shot on mount — no
- * live updates, no refresh. `supported` reflects whether the Storage API is
- * available; `{ supported: false }` — the SSR-safe default — where it
- * isn't.
+ * Reads `usage` and `quota` from `navigator.storage.estimate()` once, when
+ * the component mounts. It does not update or refresh after that.
+ * `supported` tells you if the Storage API is available. The default
+ * value, `{ supported: false }`, is also what you get when the API isn't
+ * available.
  *
  * @example
  * ```tsx

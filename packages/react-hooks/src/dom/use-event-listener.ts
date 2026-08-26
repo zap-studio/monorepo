@@ -11,7 +11,7 @@ export type EventListenerTarget =
   | null
   | undefined;
 
-/** The `options` fields that actually change what `addEventListener` does, flattened to comparable values. */
+/** The `options` fields that actually change how `addEventListener` behaves, kept as plain values so we can compare them easily. */
 type NormalizedOptions = {
   capture: boolean;
   once: boolean;
@@ -46,19 +46,19 @@ const normalizeOptions = (
 };
 
 /**
- * Typed `addEventListener` wrapper with automatic cleanup — attaches
- * `handler` for `type` on `target` (a `RefObject`, a DOM node, or
- * `window`/`document`), and removes it on unmount or when the resolved
- * element, `type`, or `options` change. `handler` doesn't need to be memoized
- * — the latest one is always called, without re-subscribing. Neither does
- * `options`: it is flattened to its individual fields, so an object literal
- * written inline at the call site is free.
+ * A typed `addEventListener` wrapper that cleans up after itself. It attaches
+ * `handler` for the given `type` on `target` (a `RefObject`, a DOM node, or
+ * `window`/`document`). It removes the listener when the component unmounts,
+ * or when the resolved element, `type`, or `options` change.
  *
- * The listener is attached in a layout effect, before the browser paints, so
- * no event can slip through the gap a passive effect would leave open. When
- * `target` is a ref, its `current` is re-read on every commit, so a ref that
- * is still `null` on the first render — or that later points at a different
- * element — is picked up as soon as React commits the change.
+ * You don't need to memoize `handler` or `options` — the hook always uses the
+ * latest values you pass in, without re-attaching the listener. You can even
+ * pass a new `options` object literal on every render for free.
+ *
+ * The listener attaches before the browser paints, so it never misses an
+ * early event. When `target` is a ref, the hook checks `ref.current` again on
+ * every render, so it still works if the ref is `null` at first, or later
+ * points to a different element.
  *
  * @example
  * ```tsx
@@ -90,9 +90,9 @@ export const useEventListener = <E extends Event = Event>(
       return undefined;
     }
 
-    // SAFETY: addEventListener's native `Event` is narrowed to `E` on the caller's word — TypeScript can't derive `E` from a runtime string `type`, so this trusts the caller's explicit type parameter (or its `Event` default).
+    // SAFETY: we trust the caller's type parameter `E` here. TypeScript can't figure out `E` from a runtime string like `type`, so we cast the native `Event` to `E` based on what the caller declared (or the default `Event` type).
     const listener = (event: Event) => handlerRef.current(event as E);
-    // SAFETY: `exactOptionalPropertyTypes` rejects an explicit `undefined` for the optional `passive`/`signal` members, but WebIDL treats an `undefined` dictionary member as absent — so this literal behaves exactly like one that omits them. It is spelled out at both call sites rather than hoisted so that the add/remove pair stays statically matchable.
+    // SAFETY: TypeScript's `exactOptionalPropertyTypes` won't let us set `passive`/`signal` to `undefined` directly, but browsers treat an `undefined` value the same as leaving the field out. We write this options object at both the add and remove calls, instead of sharing one variable, so it's easy to match each `addEventListener` with its `removeEventListener`.
     element.addEventListener(type, listener, {
       capture,
       once,
@@ -100,7 +100,7 @@ export const useEventListener = <E extends Event = Event>(
       signal,
     } as AddEventListenerOptions);
     return () => {
-      // SAFETY: same options literal as the `addEventListener` call above, and safe for the same reason — an `undefined` WebIDL dictionary member is treated as absent.
+      // SAFETY: this is the same options object as the `addEventListener` call above, and it's safe for the same reason: browsers treat an `undefined` value the same as leaving the field out.
       element.removeEventListener(type, listener, {
         capture,
         once,

@@ -22,12 +22,13 @@ const isTypeSupported = (mimeType: string): boolean =>
   isSupported() && MediaRecorder.isTypeSupported(mimeType);
 
 /**
- * Wraps the MediaStream Recording API around an existing `stream` — e.g.
- * one from `useUserMedia`/`useCamera`/`useScreenCapture`. Manual
- * `start()`/`stop()`/`pause()`/`resume()`; `blob` is assembled once
- * recording stops. `supported: false` — the SSR-safe default — where
- * `MediaRecorder` doesn't exist. `isTypeSupported(mimeType)` checks whether
- * a given MIME type can be recorded, false when unsupported.
+ * Wraps the MediaStream Recording API around an existing `stream` (for
+ * example, one from `useUserMedia`, `useCamera`, or `useScreenCapture`).
+ * You call `start()`, `stop()`, `pause()`, and `resume()` yourself. The
+ * `blob` is built once recording stops. `supported` is `false` by default
+ * (safe for server-side rendering) when `MediaRecorder` doesn't exist.
+ * `isTypeSupported(mimeType)` tells you if a given MIME type can be
+ * recorded.
  *
  * @example
  * ```tsx
@@ -60,7 +61,7 @@ export const useMediaRecorder = (
     chunksRef.current = [];
 
     const recorder = new MediaRecorder(stream, optionsRef.current);
-    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- these listeners are registered on a per-call `recorder` on a user-triggered `start()`, not the effect's mount body; the unmount effect below stops the recorder, and its listeners die with the object since it's never reused.
+    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- these listeners are added to a new `recorder` created inside `start()`, which runs from a user action, not from the effect below. The unmount effect stops the recorder, and its listeners go away with it since the recorder is never reused.
     recorder.addEventListener("dataavailable", (event: BlobEvent) => {
       if (event.data.size > 0) {
         chunksRef.current.push(event.data);

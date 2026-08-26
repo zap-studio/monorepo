@@ -3,15 +3,16 @@ import { type RefObject, useRef } from "react";
 import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /**
- * Calls `onOutside` on a `mousedown`/`touchstart` whose target falls outside
- * the ref'd element — the standard "close on outside click" pattern for
- * dropdowns, popovers, and modals. Listens on the capture phase, so it still
- * fires even if an inner handler calls `stopPropagation()`. `onOutside`
- * doesn't need to be memoized — the latest one is always called.
+ * Calls `onOutside` when the user clicks or taps outside the element you
+ * attach the returned ref to. This is the usual way to close dropdowns,
+ * popovers, and modals when the user clicks away from them.
  *
- * The listener attaches in a layout effect, before the browser paints, so a
- * menu that opens and is clicked away from immediately can't miss that first
- * outside click.
+ * The listener uses the capture phase, so it still fires even if some other
+ * click handler calls `stopPropagation()`. You don't need to memoize
+ * `onOutside` — the hook always calls the latest version you passed in.
+ *
+ * The listener is attached before the browser paints the screen, so it can
+ * catch a click that happens right after the menu opens.
  *
  * @example
  * ```tsx

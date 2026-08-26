@@ -12,12 +12,13 @@ const isAbortError = (error: unknown): boolean =>
   error instanceof Error && error.name === "AbortError";
 
 /**
- * Wraps the EyeDropper API — a single-shot native color picker.
- * `open()` resolves the picked color as an `sRGBHex` string (e.g.
- * `"#ff0000"`), or `undefined` if the user cancels (`Escape`, an aborted
- * `signal`) or the API is unsupported. `supported: false` — the SSR-safe
- * default — where the API doesn't exist (Chromium-only, no Safari/Firefox
- * support yet).
+ * Wraps the EyeDropper API, a native color picker built into the browser.
+ * `open()` resolves with the picked color as an `sRGBHex` string (for
+ * example `"#ff0000"`). It resolves to `undefined` if the user cancels (by
+ * pressing Escape or aborting the `signal`) or if the API isn't supported.
+ * `supported` is `false` by default (safe for server rendering), which
+ * happens where the API doesn't exist — it only works in Chromium
+ * browsers, not yet in Safari or Firefox.
  *
  * @example
  * ```tsx

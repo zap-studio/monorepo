@@ -4,8 +4,8 @@ import { useCallback, useState } from "react";
 export type UseToggleResult = [value: boolean, toggle: (next?: boolean) => void];
 
 /**
- * Boolean state with a `toggle()` function — calling it with no argument
- * flips the value, calling it with a boolean sets that value explicitly.
+ * Boolean state with a `toggle()` function. Call it with no argument to
+ * flip the value, or pass `true`/`false` to set it directly.
  *
  * @example
  * ```tsx

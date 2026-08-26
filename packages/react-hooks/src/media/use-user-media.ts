@@ -6,12 +6,13 @@ export type { MediaStreamStatus };
 export type UseUserMediaResult = UserMediaResult;
 
 /**
- * Wraps `navigator.mediaDevices.getUserMedia()` for arbitrary audio/video
- * constraints. Manual `start()`/`stop()` — never requested automatically,
- * since a camera/mic prompt firing on mount without a user gesture is bad
- * UX (and some browsers reject it outright). `stream` is stopped
- * automatically on unmount. For the common "just give me the webcam" case,
- * see `useCamera`.
+ * Wraps `navigator.mediaDevices.getUserMedia()` for any audio/video
+ * constraints you need. You call `start()` and `stop()` yourself. It
+ * never asks for permission automatically, since a camera or microphone
+ * prompt on mount, without a user action, is bad UX (some browsers even
+ * block it). The `stream` stops itself automatically when the component
+ * unmounts. For the common "just turn on the webcam" case, see
+ * `useCamera`.
  *
  * @example
  * ```tsx

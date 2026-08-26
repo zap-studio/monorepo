@@ -13,7 +13,7 @@ interface MagnetometerSensor extends GenericSensorInstance {
   readonly z: number | null;
 }
 
-/** The reading `useExperimentalMagnetometer` reports — magnetic field in µT along each axis. */
+/** The reading from `useExperimentalMagnetometer`. The magnetic field in µT along each axis. */
 export interface MagnetometerReading {
   x: number | null;
   y: number | null;
@@ -30,14 +30,15 @@ const readMagnetometer = (sensor: MagnetometerSensor): MagnetometerReading => ({
 export type UseExperimentalMagnetometerResult = UseGenericSensorResult<MagnetometerReading>;
 
 /**
- * Wraps the Generic Sensor API's `Magnetometer` — Experimental per MDN,
- * Chromium-only, requires the `"magnetometer"` Permissions Policy and a
- * secure context. Reports the ambient magnetic field along the device's
- * x/y/z axes. `start()` constructs the sensor and begins reporting
- * `reading`/`activated`; a Permissions Policy block or a denied permission
- * prompt surfaces through `error` rather than a thrown exception.
- * `reading` stays `undefined` — the SSR-safe default — until the first
- * reading arrives.
+ * Reads the device's `Magnetometer`. This is experimental, only works in
+ * Chrome, needs the `"magnetometer"` permission, and needs a secure
+ * (HTTPS) page. Reports the magnetic field around the device along its
+ * x/y/z axes.
+ *
+ * Call `start()` to create the sensor and start getting readings. If a
+ * permission is blocked or denied, you see that in `error` instead of a
+ * thrown error. `reading` stays `undefined` until the first reading
+ * arrives, which is safe for server-side rendering.
  *
  * @example
  * ```tsx

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
 /**
- * `true` once `document.fonts.ready` resolves — custom web fonts have
- * finished loading. Starts `false` (also the SSR-safe default); useful for
- * delaying text render to avoid FOUC. Resolves immediately to `true` where
- * the CSS Font Loading API is unsupported, rather than blocking forever.
+ * `true` once `document.fonts.ready` resolves, meaning custom web fonts
+ * have finished loading. Starts as `false` (also the safe default for
+ * server rendering). Useful for delaying text rendering to avoid a flash
+ * of unstyled text. Resolves right away to `true` if the browser doesn't
+ * support the CSS Font Loading API, instead of waiting forever.
  *
  * @example
  * ```tsx

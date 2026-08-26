@@ -34,25 +34,24 @@ export interface CookieStore extends EventTarget {
 }
 
 /**
- * The Cookie Store API is Chromium-only and isn't declared in every
- * supported TypeScript version's DOM lib, so its shape (above) is modeled
- * locally, to only what this hook actually reads/calls — same reasoning
- * as `navigation/_navigation-api.ts` for the Navigation API. Cast through
- * a small local shape (rather than an `interface extends Window`) so it
- * can't conflict with whatever `Window.cookieStore` typing a given
- * lib.dom.d.ts snapshot has.
+ * The Cookie Store API only works in Chromium browsers, and not every
+ * version of TypeScript's DOM types knows about it. So we define our own
+ * small type for it above, with just what this hook needs. Same idea as
+ * `navigation/_navigation-api.ts` for the Navigation API.
  *
- * Unlike `_navigation-api.ts`'s `getNavigation()`, this is called directly
- * from the hook body on every render (not just from inside `useEffect`),
- * so — since plain `window` isn't just untyped but a genuine
- * `ReferenceError` during SSR — it needs its own `typeof window`
- * guard rather than relying on an effect to keep it client-only.
+ * We cast to this local type instead of extending `Window`, so it never
+ * conflicts with whatever `Window.cookieStore` typing a given TypeScript
+ * version happens to have.
+ *
+ * This function runs on every render, not just inside `useEffect`. During
+ * server-side rendering, `window` does not exist at all, so we check for
+ * it directly here instead of relying on an effect to skip the server.
  */
 const getCookieStore = (): CookieStore | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: window.cookieStore is read as optional here regardless of how (or whether) the resolved TypeScript version's DOM lib declares it, so a browser where it's genuinely absent (Safari, Firefox) degrades to undefined rather than throwing.
+  // SAFETY: we read window.cookieStore as optional here, no matter what the DOM types say. This way, a browser that doesn't have it (Safari, Firefox) gives undefined instead of throwing an error.
   return (window as { cookieStore?: CookieStore }).cookieStore;
 };
 
@@ -68,13 +67,13 @@ export interface UseCookieResult {
 }
 
 /**
- * A single cookie's value, via the Cookie Store API — an async
- * alternative to parsing `document.cookie` by hand, with a `change` event
- * this hook subscribes to so `value` stays live even when the cookie is
- * set/removed by other code (or by a `Set-Cookie` response header) rather
- * than this hook's own `set()`/`remove()`. `supported: false` — with
- * `value` staying `undefined` and `set()`/`remove()` no-oping — where the
- * Cookie Store API doesn't exist (Safari, Firefox).
+ * Tracks a single cookie's value using the Cookie Store API. This is
+ * easier than parsing `document.cookie` yourself. The hook listens for
+ * the `change` event, so `value` stays up to date even when the cookie is
+ * set or removed by other code, or by a `Set-Cookie` response header —
+ * not just by this hook's own `set()`/`remove()`. If the browser doesn't
+ * support the Cookie Store API (Safari, Firefox), `supported` is `false`,
+ * `value` stays `undefined`, and `set()`/`remove()` do nothing.
  *
  * @example
  * ```tsx
@@ -102,7 +101,7 @@ export const useCookie = (name: string): UseCookieResult => {
     void loadInitialValue();
 
     const handleChange = (event: Event) => {
-      // SAFETY: this listener is only ever registered for the Cookie Store API's "change" event, whose event object is always shaped like CookieChangeEvent at runtime, even though that type is modeled locally rather than pulled from TypeScript's DOM lib.
+      // SAFETY: this listener only ever fires for the Cookie Store API's "change" event, which always has the shape of CookieChangeEvent at runtime, even though we define that type ourselves instead of using TypeScript's DOM types.
       const changeEvent = event as CookieChangeEvent;
       const changed = changeEvent.changed.find((cookie) => cookie.name === name);
       if (changed) {

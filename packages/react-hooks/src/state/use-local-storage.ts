@@ -8,12 +8,13 @@ export type UseLocalStorageResult<T> = WebStorageResult<T>;
 const getLocalStorage = (): Storage => window.localStorage;
 
 /**
- * State synced to `localStorage` under `key`, JSON-serialized. Reads the
- * stored value (if any) on mount, falling back to `initialValue` when
- * nothing's stored or the stored JSON is malformed. Also syncs across
- * same-origin tabs via the `storage` event. `remove()` clears the key and
- * resets to `initialValue`. Storage read/write failures (quota exceeded,
- * private browsing) are swallowed — state still updates in-memory.
+ * State synced to `localStorage` under `key`, stored as JSON. Reads the
+ * stored value when the component mounts, and falls back to
+ * `initialValue` if nothing is stored or the stored JSON is invalid. Also
+ * syncs across tabs on the same origin, using the `storage` event.
+ * `remove()` clears the key and resets the value to `initialValue`. If
+ * reading or writing storage fails (for example: quota exceeded, private
+ * browsing), the error is ignored and the state still updates in memory.
  *
  * @example
  * ```tsx

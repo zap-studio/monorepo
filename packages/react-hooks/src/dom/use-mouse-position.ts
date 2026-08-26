@@ -29,10 +29,12 @@ const toPosition = (event: MouseEvent): MousePosition => ({
 });
 
 /**
- * Tracks the pointer's `clientX`/`clientY` (plus `pageX`/`pageY` and
- * `screenX`/`screenY`) via `window`'s `mousemove` event. There's no
- * synchronous read for pointer position, only the event, so this starts at
- * all-`0` (also the SSR-safe default) until the pointer first moves.
+ * Tracks the mouse position using `window`'s `mousemove` event. Returns
+ * `clientX`/`clientY`, plus `pageX`/`pageY` and `screenX`/`screenY`.
+ *
+ * There is no way to read the mouse position directly, only through this
+ * event. So all values start at `0` (also the safe default for
+ * server-side rendering) until the mouse first moves.
  *
  * @example
  * ```tsx

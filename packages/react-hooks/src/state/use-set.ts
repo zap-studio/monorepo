@@ -10,10 +10,11 @@ export interface UseSetResult<T> {
 }
 
 /**
- * `Set`-backed state — `add()`/`delete()`/`clear()` each replace the
- * underlying `Set` with a new one, so React re-renders on every mutation
- * (a plain mutable `Set` ref wouldn't trigger a re-render on `.add()`).
- * `has()` always reads the latest set, independent of any stale closure.
+ * State backed by a `Set`. `add()`, `delete()`, and `clear()` each create
+ * a new `Set`, so React re-renders every time you change it — a plain
+ * mutable `Set` wouldn't trigger a re-render when you call `.add()` on
+ * it. `has()` always reads the latest set, so it never returns stale
+ * data.
  *
  * @example
  * ```tsx

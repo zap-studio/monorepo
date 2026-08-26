@@ -15,7 +15,7 @@ const openDatabase = (): Promise<IDBDatabase> =>
       }
     };
     request.onsuccess = () => resolve(request.result);
-    // SAFETY: per the IndexedDB spec, an IDBRequest's `error` is always populated by the time its `error` event fires, so this is never null in practice.
+    // SAFETY: by the time an IDBRequest's `error` event fires, its `error` property is always set. So this is never null in practice.
     request.onerror = () => reject(request.error);
   });
 
@@ -24,7 +24,7 @@ const getValue = async <T>(key: string, initialValue: T): Promise<T> => {
   try {
     return await new Promise<T>((resolve, reject) => {
       const request = db.transaction(STORE_NAME, "readonly").objectStore(STORE_NAME).get(key);
-      // SAFETY: this hook is the only writer of this key (via putValue below), so a stored entry always round-trips back to a T; an absent entry (undefined) falls back to initialValue.
+      // SAFETY: only this hook writes to this key (through putValue below), so a stored entry is always a T. If there's no entry (undefined), we fall back to initialValue.
       request.onsuccess = () =>
         resolve(request.result === undefined ? initialValue : (request.result as T));
       // SAFETY: see openDatabase — an IDBRequest's `error` is always populated when its `error` event fires.
@@ -78,13 +78,14 @@ export interface UseIndexedDBResult<T> {
 }
 
 /**
- * State synced to IndexedDB under `key`, via a small dedicated
- * object store. Distinct from `useLocalStorage`/`useSessionStorage`:
- * those wrap a synchronous, string-only, size-limited API, while this
- * hook supports structured/binary values and much larger storage quotas
- * at the cost of an async read/write API — `status` tracks the initial
- * read (`"loading"` → `"ready"`/`"error"`), and `setValue`/`remove`
- * return promises that resolve once the write completes.
+ * State synced to IndexedDB under `key`, using a small dedicated object
+ * store. This is different from `useLocalStorage`/`useSessionStorage`:
+ * those wrap a synchronous API that only stores strings and has a small
+ * size limit. This hook supports structured or binary values and much
+ * more storage space, but the read/write API is async — `status` tracks
+ * the first read (`"loading"` then `"ready"` or `"error"`), and
+ * `setValue`/`remove` return promises that resolve once the write is
+ * done.
  *
  * @example
  * ```tsx
@@ -137,7 +138,7 @@ export const useIndexedDB = <T>(key: string, initialValue: T): UseIndexedDBResul
 
   const setValue = useCallback(
     async (next: T | ((prev: T) => T)): Promise<void> => {
-      // SAFETY: T | ((prev: T) => T); the typeof check above narrows to the function branch, so this cast just recovers the parameter type TS can't infer through a bare `typeof x === "function"` guard on a generic union.
+      // SAFETY: the typeof check above already confirms `next` is a function here. This cast just restores the type that TypeScript loses when checking `typeof x === "function"` on a generic union.
       const resolved =
         typeof next === "function" ? (next as (prev: T) => T)(valueRef.current) : next;
       setValueState(resolved);

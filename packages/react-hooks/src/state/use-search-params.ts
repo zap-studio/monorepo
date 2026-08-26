@@ -23,12 +23,12 @@ const buildUrl = (params: URLSearchParams): string => {
 
 /**
  * State synced to the URL's query string. Reads `location.search` and
- * updates on `popstate` (back/forward); the setter itself calls
- * `history.pushState`/`replaceState` (silent APIs — they don't fire
- * `popstate`), so it updates local state directly rather than waiting on
- * an event. Pass `{ replace: true }` to replace the current history entry
- * instead of pushing a new one. Falls back to empty params during server
- * rendering.
+ * updates when the user goes back or forward (the `popstate` event). The
+ * setter calls `history.pushState`/`replaceState`, which don't fire
+ * `popstate`, so the setter also updates the local state directly instead
+ * of waiting for an event. Pass `{ replace: true }` to replace the
+ * current history entry instead of adding a new one. Falls back to empty
+ * params during server rendering.
  *
  * @example
  * ```tsx
@@ -52,7 +52,7 @@ export const useSearchParams = (): [URLSearchParams, SetSearchParams] => {
     (next, options) => {
       const resolvedInit =
         typeof next === "function"
-          ? // SAFETY: SearchParamsInit | ((prev: URLSearchParams) => SearchParamsInit); the typeof check narrows to the function branch, so this cast just recovers the parameter type TS can't infer through a bare `typeof x === "function"` guard on a generic union.
+          ? // SAFETY: the typeof check above already confirms `next` is a function here. This cast just restores the type that TypeScript loses when checking `typeof x === "function"` on a generic union.
             (next as (prev: URLSearchParams) => SearchParamsInit)(searchParams)
           : next;
       const nextParams = new URLSearchParams(resolvedInit);

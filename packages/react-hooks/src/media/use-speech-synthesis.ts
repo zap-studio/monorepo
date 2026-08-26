@@ -19,11 +19,11 @@ export interface UseSpeechSynthesisResult {
 const isSupported = (): boolean => typeof window !== "undefined" && Boolean(window.speechSynthesis);
 
 /**
- * Wraps the Web Speech API's synthesis half (`window.speechSynthesis`) —
- * text-to-speech. `speaking` tracks the current utterance via its
- * `start`/`end`/`error` events. `supported: false` — the SSR-safe default
- * — where Speech Synthesis doesn't exist, and `speak()`/`cancel()` then
- * no-op.
+ * Wraps the text-to-speech part of the Web Speech API
+ * (`window.speechSynthesis`). `speaking` tracks the current utterance
+ * using its `start`, `end`, and `error` events. `supported` is `false`
+ * by default (safe for server-side rendering) when Speech Synthesis
+ * doesn't exist, and `speak()`/`cancel()` do nothing in that case.
  *
  * @example
  * ```tsx
@@ -52,7 +52,7 @@ export const useSpeechSynthesis = (): UseSpeechSynthesisResult => {
     if (options.lang !== undefined) {
       utterance.lang = options.lang;
     }
-    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- registered on a per-call `utterance` inside a user-triggered `speak()`, not the effect's mount body; the utterance is never stored or reused, so its listeners die with it once it finishes, errors, or `cancel()` (called on unmount below) cuts it off.
+    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- these listeners are added to a new `utterance` created inside `speak()`, which runs from a user action, not from the effect below. The utterance is never stored or reused, so its listeners go away once it finishes, errors, or `cancel()` (called on unmount below) stops it.
     utterance.addEventListener("start", () => setSpeaking(true));
     utterance.addEventListener("end", () => setSpeaking(false));
     utterance.addEventListener("error", () => setSpeaking(false));

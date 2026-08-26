@@ -12,7 +12,7 @@ const readNavigationType = (): NavigationEntryType => {
   if (!isSupported()) {
     return FALLBACK_NAVIGATION_TYPE;
   }
-  // SAFETY: Performance.getEntriesByType's return type isn't narrowed by the "navigation" string literal in TypeScript's DOM lib, but the Navigation Timing spec guarantees every entry it returns for that type is a PerformanceNavigationTiming.
+  // SAFETY: TypeScript's DOM types don't narrow the result of getEntriesByType("navigation") to the right type, but the spec guarantees every entry returned for "navigation" is a PerformanceNavigationTiming.
   const [entry] = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
   return entry?.type ?? FALLBACK_NAVIGATION_TYPE;
 };
@@ -22,14 +22,14 @@ const getServerSnapshot = (): NavigationEntryType => FALLBACK_NAVIGATION_TYPE;
 const subscribe = () => () => {};
 
 /**
- * Classifies how the current page was reached — `"navigate"` (a fresh
- * link/URL-bar navigation), `"reload"`, `"back_forward"` (browser
- * back/forward), or `"prerender"` — via the Navigation Timing API's
- * `performance.getEntriesByType("navigation")[0].type`. This value is
- * fixed once for the page's entire lifetime, unlike `usePopState`, which
- * only ever fires for back/forward transitions *after* mount. Falls back
- * to `"navigate"` during server rendering and where the Navigation Timing
- * API is unsupported.
+ * Tells you how the current page was reached: `"navigate"` (a fresh link
+ * or URL-bar navigation), `"reload"`, `"back_forward"` (browser back or
+ * forward button), or `"prerender"`. It reads this from the Navigation
+ * Timing API. This value is set once and never changes during the page's
+ * lifetime. This is different from `usePopState`, which only fires for
+ * back/forward navigation that happens after the component mounts. Falls
+ * back to `"navigate"` during server rendering, or if the Navigation
+ * Timing API isn't supported.
  *
  * @example
  * ```tsx

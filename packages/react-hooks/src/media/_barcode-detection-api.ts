@@ -1,4 +1,8 @@
-/** Minimal local model of the Barcode Detection API — Experimental per MDN, Chromium-only, not declared in every TypeScript DOM lib. */
+/**
+ * A small local type definition for the Barcode Detection API. MDN marks
+ * this API as experimental. It only works in Chromium browsers, and not
+ * every version of TypeScript's DOM types includes it.
+ */
 export type BarcodeFormat =
   | "aztec"
   | "codabar"
@@ -48,14 +52,14 @@ interface BarcodeDetectionWindow {
 }
 
 /**
- * Guards `typeof window === "undefined"` because `useExperimentalBarcodeDetector`
- * reads this synchronously in the hook body, on every render including SSR —
- * not just from an effect.
+ * Checks `typeof window === "undefined"` first. `useExperimentalBarcodeDetector`
+ * calls this directly in the hook body on every render, including during
+ * server-side rendering, not only inside an effect.
  */
 export const getBarcodeDetectorConstructor = (): BarcodeDetectorConstructor | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: window.BarcodeDetector is read as optional here regardless of how (or whether) the resolved TypeScript version's DOM lib declares it, so a browser where it's genuinely absent (Safari, Firefox) degrades to undefined rather than throwing.
+  // SAFETY: We read window.BarcodeDetector as optional, no matter what the TypeScript DOM types say. This way, browsers that don't have it (like Safari or Firefox) just return undefined instead of throwing an error.
   return (window as BarcodeDetectionWindow).BarcodeDetector;
 };

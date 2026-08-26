@@ -1,10 +1,10 @@
-/** Minimal local model of the File System Access API — Chromium-only, not declared in every TypeScript DOM lib. */
+/** A simple local copy of the File System Access API types. It only works in Chromium browsers, and not every version of TypeScript's DOM types includes it. */
 export interface FileSystemFileHandle {
   readonly kind: "file";
   readonly name: string;
 }
 
-/** Minimal local model of the File System Access API — Chromium-only, not declared in every TypeScript DOM lib. */
+/** A simple local copy of the File System Access API types. It only works in Chromium browsers, and not every version of TypeScript's DOM types includes it. */
 export interface FileSystemDirectoryHandle {
   readonly kind: "directory";
   readonly name: string;
@@ -43,14 +43,14 @@ interface FileSystemAccessWindow {
 }
 
 /**
- * Guards `typeof window === "undefined"` (unlike `_navigation-api.ts`'s
- * `getNavigation()`) because `useFilePicker` reads this synchronously in
- * the hook body, on every render including SSR — not just from an effect.
+ * Checks for `typeof window === "undefined"`. This is needed because
+ * `useFilePicker` calls this function directly during render (including on
+ * the server), not just inside an effect.
  */
 export const getFileSystemAccess = (): FileSystemAccessWindow => {
   if (typeof window === "undefined") {
     return {};
   }
-  // SAFETY: these File System Access API entry points are read as optional here regardless of how (or whether) the resolved TypeScript version's DOM lib declares them, so a browser where they're genuinely absent (Safari, Firefox) degrades to undefined rather than throwing.
+  // SAFETY: we read these File System Access API functions as optional, no matter what the current TypeScript DOM types say. This way, a browser that doesn't have them (Safari, Firefox) just gives us undefined instead of an error.
   return window as FileSystemAccessWindow;
 };

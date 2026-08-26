@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-/** A new value, or an updater deriving one from the previous value — matches `useState`'s setter shape. */
+/** A new value, or a function that returns one based on the previous value. Same shape as `useState`'s setter. */
 export type SetStoredValue<T> = T | ((prev: T) => T);
 
 /** The tuple returned by `useLocalStorage`/`useSessionStorage`. */
@@ -13,7 +13,7 @@ export type WebStorageResult<T> = [
 const readStoredValue = <T>(storage: Storage, key: string, initialValue: T): T => {
   try {
     const item = storage.getItem(key);
-    // SAFETY: this hook is the only writer of this key (via JSON.stringify(resolved) below), so a parse here always yields back a T — except when storage was edited externally, which the surrounding try/catch already treats as "fall back to initialValue".
+    // SAFETY: only this hook writes to this key (see JSON.stringify(resolved) below), so parsing it here always gives back a T. If something outside this hook changes the storage, the try/catch above already falls back to initialValue.
     return item === null ? initialValue : (JSON.parse(item) as T);
   } catch {
     return initialValue;
@@ -21,10 +21,11 @@ const readStoredValue = <T>(storage: Storage, key: string, initialValue: T): T =
 };
 
 /**
- * Shared `Storage` (localStorage/sessionStorage) sync behind
- * `useLocalStorage` and `useSessionStorage`. Not itself a public hook —
- * hook files never import one another, so shared logic lives here
- * (mirrors `@zap-studio/retry`'s `_otel.ts` convention).
+ * Shared logic for syncing state to a `Storage` object (localStorage or
+ * sessionStorage), used by `useLocalStorage` and `useSessionStorage`. This
+ * is not a public hook itself — hook files never import each other, so
+ * shared code lives here instead (same pattern as `_otel.ts` in
+ * `@zap-studio/retry`).
  */
 export const useWebStorage = <T>(
   getStorage: () => Storage,
@@ -42,12 +43,12 @@ export const useWebStorage = <T>(
 
   const setValue = useCallback(
     (next: SetStoredValue<T>): void => {
-      // SAFETY: SetStoredValue<T> = T | ((prev: T) => T); the typeof check above narrows to the function branch, so this cast just recovers the parameter type TS can't infer through a bare `typeof x === "function"` guard on a generic union.
+      // SAFETY: the typeof check above already confirms `next` is a function here. This cast just restores the type that TypeScript loses when checking `typeof x === "function"` on a generic union.
       const resolved = typeof next === "function" ? (next as (prev: T) => T)(value) : next;
       try {
         getStorage().setItem(key, JSON.stringify(resolved));
       } catch {
-        // Storage write failed (quota exceeded, private browsing, etc.) — state still updates in-memory.
+        // Storage write failed (for example: quota exceeded, private browsing). The state still updates in memory.
       }
       setValueState(resolved);
     },
@@ -58,7 +59,7 @@ export const useWebStorage = <T>(
     try {
       getStorage().removeItem(key);
     } catch {
-      // Storage removal failed — state still resets in-memory.
+      // Storage removal failed. The state still resets in memory.
     }
     setValueState(initialValueRef.current);
   }, [key, getStorage]);
@@ -68,7 +69,7 @@ export const useWebStorage = <T>(
       if (event.key !== key || event.storageArea !== getStorage()) {
         return;
       }
-      // SAFETY: this StorageEvent is for the exact key this hook owns, and this hook is the only writer of that key, so a non-null newValue always parses back to a T.
+      // SAFETY: this event is for the exact key this hook manages, and only this hook writes to it. So when newValue is not null, it always parses back into a T.
       setValueState(
         event.newValue === null ? initialValueRef.current : (JSON.parse(event.newValue) as T),
       );

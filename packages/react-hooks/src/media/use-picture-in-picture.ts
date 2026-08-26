@@ -15,16 +15,18 @@ const isSupported = (): boolean =>
   typeof document !== "undefined" && Boolean(document.pictureInPictureEnabled);
 
 /**
- * Picture-in-Picture wrapper for a single ref'd `<video>` — attach `ref`
- * to the element, then call `enter()`/`exit()` imperatively (typically
- * from a click handler). `active` tracks whether that exact element
- * currently floats in PiP, via its own `enterpictureinpicture`/
- * `leavepictureinpicture` events (which also fire when the browser's
- * native PiP window is closed directly, keeping state in sync).
- * `supported: false` — the SSR-safe default — where the API doesn't exist.
+ * Picture-in-Picture wrapper for one `<video>` element. Attach `ref` to
+ * the element, then call `enter()` or `exit()` yourself, usually from a
+ * click handler. `active` tells you if that exact video is currently
+ * floating in Picture-in-Picture. It listens to the video's own
+ * `enterpictureinpicture` and `leavepictureinpicture` events, so it stays
+ * correct even if the user closes the browser's native PiP window
+ * directly. `supported` is `false` by default (safe for server-side
+ * rendering) when the API doesn't exist.
  *
- * `ref` is re-read on every commit, so a `<video>` that appears after load
- * (an async source, a playlist swap) is tracked as soon as React commits it.
+ * React reads `ref` again after every render, so a `<video>` that appears
+ * later (like an async source or a playlist change) is tracked as soon as
+ * React commits it.
  *
  * @example
  * ```tsx

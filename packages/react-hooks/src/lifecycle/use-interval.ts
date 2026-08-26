@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Declarative `setInterval` — calls `callback` every `delayMs`, restarting
- * when `delayMs` changes, and clearing on unmount. Pass `delayMs: null` to
- * pause without unmounting the hook. `callback` doesn't need to be
- * memoized — the latest one is always called, without resetting the
- * interval.
+ * A `setInterval` wrapper for React. Calls `callback` every `delayMs`
+ * milliseconds. It restarts the timer when `delayMs` changes, and clears
+ * it when the component unmounts. Pass `delayMs: null` to pause without
+ * unmounting the hook. You don't need to memoize `callback` — the hook
+ * always uses the latest version, without resetting the timer.
  *
  * @example
  * ```tsx

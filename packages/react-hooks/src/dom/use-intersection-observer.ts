@@ -12,19 +12,22 @@ export interface UseIntersectionObserverResult<T extends Element> {
 const isSupported = (): boolean => typeof IntersectionObserver !== "undefined";
 
 /**
- * Tracks whether the ref'd element is visible in the viewport (or a given
- * `root`), via `IntersectionObserver`. Attach `ref` to the element to
- * observe; `options` is passed straight through to the observer
- * (`root`/`rootMargin`/`threshold`) and doesn't need to be memoized — it is
- * compared field by field, and the observer is rebuilt when one changes.
- * `inView` and `entry` start at `false`/`undefined` — the SSR-safe default —
- * until the first observation fires.
+ * Tracks whether the ref'd element is visible on screen (or inside a
+ * given `root` element), using `IntersectionObserver`. Attach `ref` to
+ * the element you want to watch.
  *
- * `ref` is re-read on every commit, so an element rendered conditionally,
- * mounted later, or swapped for another one is observed as soon as React
- * commits the change.
+ * `options` (`root`/`rootMargin`/`threshold`) is passed straight to the
+ * observer. You don't need to memoize it — the hook compares its fields
+ * itself and only rebuilds the observer when one of them changes.
  *
- * Also exported as `useInView`, an alias for the same hook.
+ * `inView` starts as `false` and `entry` starts as `undefined`. This is
+ * also the safe default for server-side rendering. Both update once the
+ * first observation happens.
+ *
+ * The hook checks `ref` again after every render, so it still works if
+ * the element appears later, is conditionally rendered, or gets replaced.
+ *
+ * Also exported as `useInView`, which is the same hook under another name.
  *
  * @example
  * ```tsx

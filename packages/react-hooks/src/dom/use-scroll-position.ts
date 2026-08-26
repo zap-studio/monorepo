@@ -14,16 +14,18 @@ const positionsEqual = (a: ScrollPosition, b: ScrollPosition): boolean =>
 const getServerSnapshot = (): ScrollPosition => FALLBACK_POSITION;
 
 const subscribe = (onStoreChange: () => void) => {
-  // oxlint-disable-next-line github/prefer-observers -- IntersectionObserver reports a specific element's visibility, not the window's own scroll offset; there's no element/root pairing that yields scrollX/scrollY, so the `scroll` event is the correct primitive here.
+  // oxlint-disable-next-line github/prefer-observers -- IntersectionObserver reports if one element is visible, not the window's scroll position. There's no way to get scrollX/scrollY from it, so the "scroll" event is the right tool here.
   window.addEventListener("scroll", onStoreChange);
   return () => window.removeEventListener("scroll", onStoreChange);
 };
 
 /**
- * `window.scrollX`/`scrollY`, updating on the `scroll` event —
- * window-level; for a specific scrollable element, attach a listener to
- * its ref instead (see `useEventListener`). Falls back to `{ x: 0, y: 0 }`
- * during server rendering and before the client subscribes.
+ * Tracks `window.scrollX`/`scrollY`, updating whenever the page scrolls.
+ * This tracks the whole window. For a specific scrollable element, attach
+ * a listener to its ref instead (see `useEventListener`).
+ *
+ * Falls back to `{ x: 0, y: 0 }` during server rendering, and before the
+ * client starts listening.
  *
  * @example
  * ```tsx

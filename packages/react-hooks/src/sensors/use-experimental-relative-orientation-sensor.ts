@@ -11,7 +11,7 @@ interface RelativeOrientationSensorInstance extends GenericSensorInstance {
   readonly quaternion: [number, number, number, number] | null;
 }
 
-/** The reading `useExperimentalRelativeOrientationSensor` reports — device rotation as a unit quaternion `[x, y, z, w]`. */
+/** The reading from `useExperimentalRelativeOrientationSensor`. It gives the device's rotation as a quaternion `[x, y, z, w]`. */
 export interface RelativeOrientationReading {
   quaternion: [number, number, number, number] | null;
 }
@@ -27,17 +27,18 @@ export type UseExperimentalRelativeOrientationSensorResult =
   UseGenericSensorResult<RelativeOrientationReading>;
 
 /**
- * Wraps the Generic Sensor API's `RelativeOrientationSensor` —
- * Experimental per MDN, Chromium-only, requires the `"accelerometer"` and
- * `"gyroscope"` Permissions Policies and a secure context. Reports device
- * rotation as a unit quaternion relative to an arbitrary starting
- * orientation — unlike `useExperimentalAbsoluteOrientationSensor`, it
- * doesn't use the magnetometer, so it drifts and ignores geomagnetic
- * north. `start()` constructs the sensor and begins reporting
- * `reading`/`activated`; a Permissions Policy block or a denied permission
- * prompt surfaces through `error` rather than a thrown exception.
- * `reading` stays `undefined` — the SSR-safe default — until the first
- * reading arrives.
+ * Reads the device's `RelativeOrientationSensor`. This is experimental,
+ * only works in Chrome, needs the `"accelerometer"` and `"gyroscope"`
+ * permissions, and needs a secure (HTTPS) page. Reports the device's
+ * rotation as a quaternion, compared to wherever it started (not compared
+ * to Earth). Unlike `useExperimentalAbsoluteOrientationSensor`, it doesn't
+ * use the magnetometer, so it can drift over time and ignores magnetic
+ * north.
+ *
+ * Call `start()` to create the sensor and start getting readings. If a
+ * permission is blocked or denied, you see that in `error` instead of a
+ * thrown error. `reading` stays `undefined` until the first reading
+ * arrives, which is safe for server-side rendering.
  *
  * @example
  * ```tsx

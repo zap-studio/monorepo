@@ -1,16 +1,17 @@
 import { useEffect, useLayoutEffect } from "react";
 
 /**
- * `useLayoutEffect` on the client, `useEffect` on the server — same signature
- * as either, so it is a drop-in replacement. `useLayoutEffect` has no meaning
- * during server rendering (there is no layout to read or mutate), and React
- * warns when it is called there; picking the implementation once, at module
- * scope, keeps that warning away without changing client behaviour.
+ * Uses `useLayoutEffect` in the browser, and `useEffect` on the server.
+ * It has the same signature as both, so you can swap it in directly.
+ * `useLayoutEffect` doesn't make sense during server rendering, since
+ * there is no layout to read or change, and React shows a warning if you
+ * call it there. This hook picks the right one automatically, so you
+ * never see that warning, and the browser behavior stays the same.
  *
- * Reach for it when an effect must run *before* the browser paints — reading
- * layout, mutating the DOM to avoid a visible flash, or attaching an event
- * listener that must not miss anything the user does between paint and the
- * passive effect flush.
+ * Use this hook when your effect must run before the browser paints the
+ * screen. For example: reading layout information, changing the DOM to
+ * avoid a visible flash, or attaching an event listener that must not
+ * miss anything the user does right after the paint.
  *
  * @example
  * ```tsx

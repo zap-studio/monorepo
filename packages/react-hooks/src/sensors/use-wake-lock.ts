@@ -11,12 +11,13 @@ export interface UseWakeLockResult {
 const isSupported = (): boolean => typeof navigator !== "undefined" && Boolean(navigator.wakeLock);
 
 /**
- * Screen Wake Lock API wrapper — not auto-acquired on mount; call
- * `request()`/`release()` imperatively. Automatically released when the
- * document is hidden (per spec the platform already does this, but this
- * also proactively releases on `visibilitychange`) and on unmount.
- * `supported: false` — the SSR-safe default — where `navigator.wakeLock`
- * doesn't exist.
+ * Wraps the Screen Wake Lock API. It does not turn on automatically when
+ * the component mounts — call `request()` to turn it on and `release()`
+ * to turn it off. It also releases automatically when the document is
+ * hidden (browsers already do this, but this hook also releases on the
+ * `visibilitychange` event to be safe) and when the component unmounts.
+ * `supported` is `false` (the safe default for server rendering) when
+ * `navigator.wakeLock` doesn't exist.
  *
  * @example
  * ```tsx
@@ -46,7 +47,7 @@ export const useWakeLock = (): UseWakeLockResult => {
     const sentinel = await navigator.wakeLock.request("screen");
     sentinelRef.current = sentinel;
     setActive(true);
-    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- registered on a per-call `sentinel` inside a user-triggered `request()`, not the effect's mount body; the sentinel is never stored beyond `sentinelRef` or reused, so this one-shot listener dies with it once `release()` (called on unmount by the effect below) fires it.
+    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- this listener is added inside `request()`, which the user calls directly, not inside an effect's setup code. The `sentinel` is only stored in `sentinelRef` and never reused, so this listener naturally goes away once `release()` fires it (the effect below calls `release()` on unmount).
     sentinel.addEventListener("release", () => {
       sentinelRef.current = null;
       setActive(false);

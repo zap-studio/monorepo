@@ -21,12 +21,12 @@ const subscribe = (onStoreChange: () => void) => {
 };
 
 /**
- * Tracks `location.pathname`/`history.state`, updating on the `popstate`
- * event — fired only by browser back/forward navigation (and
- * `history.back()`/`forward()`/`go()`), never by the `pushState`/
- * `replaceState` calls a client-side router makes itself. Falls back to
- * `{ pathname: "/", state: null }` during server rendering and before the
- * client subscribes.
+ * Tracks `location.pathname` and `history.state`, updating on the
+ * `popstate` event. This event only fires for browser back/forward
+ * navigation (including `history.back()`, `forward()`, and `go()`). It
+ * never fires for `pushState`/`replaceState` calls made by a client-side
+ * router. Falls back to `{ pathname: "/", state: null }` during server
+ * rendering and before the client subscribes.
  *
  * @example
  * ```tsx

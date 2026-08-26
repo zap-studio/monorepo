@@ -20,14 +20,18 @@ const INITIAL_STATE: PointerState = {
 };
 
 /**
- * Unified mouse/touch/pen position and pressure via Pointer events — a
- * modern superset of a plain `mousemove`-based position hook, tracking
- * `pointerdown`/`pointermove`/`pointerup` on `window`. `isDown` reflects
- * whether the primary pointer button/contact is currently active. Starts
- * all-`0`/`false`/`""` — also the SSR-safe default — until the first
- * pointer event fires. The listeners attach in a layout effect, before the
- * browser paints, so a `pointerup` can't be missed and leave `isDown` stuck
- * at `true`.
+ * Tracks mouse, touch, and pen input together, using Pointer events. It
+ * listens for `pointerdown`, `pointermove`, and `pointerup` on `window`.
+ * This covers more input types than a simple `mousemove` hook.
+ *
+ * `isDown` is `true` while the pointer (finger, pen, or mouse button) is
+ * pressed down. All values start at `0`, `false`, or `""` — this is also
+ * the safe default for server-side rendering — until the first pointer
+ * event happens.
+ *
+ * The listeners attach early, before the browser paints. This makes sure
+ * a `pointerup` event is never missed, so `isDown` does not get stuck at
+ * `true`.
  *
  * @example
  * ```tsx

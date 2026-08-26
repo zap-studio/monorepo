@@ -9,14 +9,15 @@ export interface UseHoverResult<T extends HTMLElement> {
 }
 
 /**
- * Boolean hover state for a single ref'd element, via `mouseenter`/
- * `mouseleave` on that element. Attach `ref` to the element to track.
+ * Tracks whether the mouse is hovering over a ref'd element. It listens
+ * for `mouseenter` and `mouseleave` on that element. Attach `ref` to the
+ * element you want to track.
  *
- * The listeners attach in a layout effect, before the browser paints, so a
- * `mouseleave` can't be missed and leave `hovered` stuck at `true`. `ref` is
- * re-read on every commit, so an element rendered conditionally, mounted
- * later, or swapped for another one is tracked as soon as React commits the
- * change.
+ * The listeners attach early, before the browser paints. This makes sure
+ * a `mouseleave` event is never missed, so `hovered` does not get stuck at
+ * `true`. The hook also checks `ref` again after every render, so it
+ * still works if the element appears later, is conditionally rendered, or
+ * gets replaced.
  *
  * @example
  * ```tsx

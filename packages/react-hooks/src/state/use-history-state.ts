@@ -20,13 +20,14 @@ export interface UseHistoryStateResult<T> {
 }
 
 /**
- * State with undo/redo, backed by a bounded history stack — `set()` pushes
- * the previous value onto `past` (dropping the oldest entry once `past`
- * reaches `capacity`) and clears `future`; `undo()`/`redo()` move the
- * boundary between `past`/`future` without discarding either side, so
- * redoing after an undo restores exactly what was undone. `reset()`
- * replaces `value` and clears both stacks. Generic state utility, unrelated
- * to the browser History API — see `usePopState`/`useNavigation` for that.
+ * State with undo/redo, backed by a history stack that has a maximum
+ * size. `set()` saves the previous value into `past` and clears `future`.
+ * Once `past` reaches `capacity`, its oldest entry is dropped. `undo()`
+ * and `redo()` move values between `past` and `future` without deleting
+ * them, so redoing after an undo brings back exactly what you undid.
+ * `reset()` replaces the value and clears both `past` and `future`. This
+ * is a general state helper — it has nothing to do with the browser's
+ * History API. See `usePopState`/`useNavigation` for that.
  *
  * @example
  * ```tsx
@@ -51,7 +52,7 @@ export const useHistoryState = <T>(
 
   const set = useCallback((next: T | ((prev: T) => T)) => {
     setStack((prev) => {
-      // SAFETY: T | ((prev: T) => T); the typeof check narrows to the function branch, so this cast just recovers the parameter type TS can't infer through a bare `typeof x === "function"` guard on a generic union.
+      // SAFETY: the typeof check above already confirms `next` is a function here. This cast just restores the type that TypeScript loses when checking `typeof x === "function"` on a generic union.
       const resolved = typeof next === "function" ? (next as (prev: T) => T)(prev.present) : next;
       const past = [...prev.past, prev.present].slice(-capacityRef.current);
       return { future: [], past, present: resolved };

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
 /**
- * Debounces `value` — the returned value lags behind `value` by
- * `delayMs`, only updating once `value` stops changing for that long.
- * Unlike `useDebounce` (which debounces a callback), this debounces a
- * value directly, for cases like "only re-run search once typing pauses"
- * without needing a separate handler function.
+ * Debounces `value`. The value this hook returns lags behind `value` and
+ * only updates once `value` stops changing for `delayMs`. Unlike
+ * `useDebounce`, which debounces a function, this hook debounces a value
+ * directly. Useful for cases like "only search again once the user stops
+ * typing", without writing a separate handler function.
  *
  * @example
  * ```tsx

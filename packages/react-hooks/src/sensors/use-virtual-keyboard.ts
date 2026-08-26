@@ -20,7 +20,7 @@ export interface VirtualKeyboardRect {
 const FALLBACK_RECT: VirtualKeyboardRect = { height: 0, width: 0, x: 0, y: 0 };
 
 const getVirtualKeyboard = (): VirtualKeyboard | undefined =>
-  // SAFETY: VirtualKeyboard is an experimental, Chromium-only API not declared in TypeScript's DOM lib; every caller reads it through optional chaining, so an unsupported browser degrades to the fallback rect rather than throwing.
+  // SAFETY: VirtualKeyboard is an experimental, Chromium-only API that TypeScript's DOM types don't include. Every caller uses optional chaining to read it, so unsupported browsers get the fallback rect instead of an error.
   (navigator as NavigatorWithVirtualKeyboard).virtualKeyboard;
 
 const readRect = (): VirtualKeyboardRect => {
@@ -39,10 +39,10 @@ const subscribe = (onStoreChange: () => void) => {
 };
 
 /**
- * `navigator.virtualKeyboard`'s `boundingRect` (Chromium-only VirtualKeyboard
- * API), updating on its `geometrychange` event. Falls back to
- * `{ x: 0, y: 0, width: 0, height: 0 }` during server rendering, before the
- * client subscribes, and where the API is unsupported.
+ * Gives you `navigator.virtualKeyboard`'s `boundingRect`. This is a
+ * Chromium-only API, and it updates on the `geometrychange` event. Falls
+ * back to `{ x: 0, y: 0, width: 0, height: 0 }` during server rendering,
+ * before the client connects, and when the API isn't supported.
  *
  * @example
  * ```tsx

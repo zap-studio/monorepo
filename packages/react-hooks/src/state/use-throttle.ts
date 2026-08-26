@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef } from "react";
 
 /**
- * Returns a throttled wrapper around `callback` — the first call runs
- * immediately (leading edge), and further calls are dropped until
- * `delayMs` has passed since that call. Unlike `useDebounce`, calls made
- * during the cooldown are discarded rather than queued for later.
- * `callback` doesn't need to be memoized — the latest one is always
- * called.
+ * Returns a throttled version of `callback`. The first call runs right
+ * away. After that, calls are ignored until `delayMs` has passed. Unlike
+ * `useDebounce`, calls made during that cooldown are dropped, not saved
+ * for later. You don't need to memoize `callback` — the latest version is
+ * always used.
  *
  * @example
  * ```tsx

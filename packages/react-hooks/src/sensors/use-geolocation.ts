@@ -55,11 +55,12 @@ const toErrorState = (error: GeolocationPositionError): GeolocationErrorState =>
 });
 
 /**
- * Wraps `navigator.geolocation`. One-shot by default (`getCurrentPosition`);
- * pass `watch: true` for continuous updates (`watchPosition`, cleaned up via
- * `clearWatch` on unmount or option change). `loading` starts `true` and the
- * effect — client-only — resolves it, so this is SSR-safe with no extra
- * handling needed.
+ * Wraps `navigator.geolocation`. By default it reads the position once
+ * (`getCurrentPosition`). Pass `watch: true` to get continuous updates
+ * instead (`watchPosition`, which stops via `clearWatch` when the
+ * component unmounts or the options change). `loading` starts as `true`
+ * and only changes on the client, so this is safe to use with server
+ * rendering without any extra handling.
  *
  * @example
  * ```tsx
@@ -93,7 +94,7 @@ export const useGeolocation = (options: UseGeolocationOptions = {}): Geolocation
     };
 
     if (watch) {
-      // oxlint-disable-next-line sonarjs/no-intrusive-permissions -- Continuous location tracking is this hook's entire purpose (watch: true); the permission prompt is the expected, user-visible consequence of opting in.
+      // oxlint-disable-next-line sonarjs/no-intrusive-permissions -- Continuous location tracking is exactly what this hook does when `watch: true` is passed. The permission prompt is expected here, since the user chose to opt in.
       const watchId = navigator.geolocation.watchPosition(
         handleSuccess,
         handleError,
@@ -102,7 +103,7 @@ export const useGeolocation = (options: UseGeolocationOptions = {}): Geolocation
       return () => navigator.geolocation.clearWatch(watchId);
     }
 
-    // oxlint-disable-next-line sonarjs/no-intrusive-permissions -- One-shot location read is this hook's entire purpose; the permission prompt is the expected, user-visible consequence of calling it.
+    // oxlint-disable-next-line sonarjs/no-intrusive-permissions -- Reading the location once is exactly what this hook does. The permission prompt is expected when the user calls it.
     navigator.geolocation.getCurrentPosition(handleSuccess, handleError, positionOptions);
     return undefined;
   }, [enableHighAccuracy, maximumAge, timeout, watch]);

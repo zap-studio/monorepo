@@ -16,16 +16,20 @@ const isSupported = (): boolean =>
   typeof HTMLElement !== "undefined" && typeof HTMLElement.prototype.togglePopover === "function";
 
 /**
- * Wraps the native Popover API (2024+ baseline) for a single ref'd
- * element — attach `ref` to the element carrying the `popover` attribute,
- * then call `show()`/`hide()`/`toggle()` imperatively. `isOpen` tracks the
- * element's open state via its own `toggle` event, so it also stays in
- * sync when the browser closes the popover itself (light-dismiss, Esc).
- * `supported: false` — the SSR-safe default — where the API doesn't exist.
+ * Wraps the browser's built-in Popover API for a single ref'd element.
+ * Attach `ref` to the element that has the `popover` attribute, then call
+ * `show()`, `hide()`, or `toggle()` to control it.
  *
- * `ref` is re-read on every commit, so a popover rendered conditionally —
- * the usual shape for a menu — is tracked as soon as React commits it,
- * rather than leaving `isOpen` stuck at `false` while it is visibly open.
+ * `isOpen` tracks whether the popover is open by listening to its own
+ * `toggle` event. This keeps `isOpen` correct even when the browser
+ * closes the popover on its own (for example, clicking outside it or
+ * pressing Esc). `supported` is `false` on browsers without this API, and
+ * also as the safe default during server-side rendering.
+ *
+ * The hook checks `ref` again after every render. This matters for
+ * popovers used in menus, which are often only rendered while open — the
+ * hook still picks them up right away, instead of leaving `isOpen` stuck
+ * at `false`.
  *
  * @example
  * ```tsx
@@ -64,7 +68,7 @@ export const usePopover = <T extends HTMLElement = HTMLElement>(): UsePopoverRes
     }
 
     const handleToggle = (event: Event) => {
-      // SAFETY: addEventListener types "toggle" as the generic Event, but the popover element only ever dispatches ToggleEvent for it.
+      // SAFETY: TypeScript types "toggle" as the generic Event, but this element only ever sends a ToggleEvent for it.
       setIsOpen((event as ToggleEvent).newState === "open");
     };
 

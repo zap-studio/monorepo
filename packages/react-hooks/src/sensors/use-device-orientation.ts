@@ -33,7 +33,7 @@ const toState = (event: DeviceOrientationEvent): DeviceOrientationState => ({
 });
 
 const requestDeviceOrientationPermission = async (): Promise<boolean> => {
-  // SAFETY: requestPermission is an iOS Safari-only static gate not declared in TypeScript's DOM lib; optional-chained, so platforms without it (the vast majority) just skip straight to "granted".
+  // SAFETY: requestPermission is a permission check that only iOS Safari has, and TypeScript's DOM types don't include it. It's optional-chained, so other platforms (most of them) skip straight to "granted".
   const requestPermission = (
     DeviceOrientationEvent as DeviceOrientationEventConstructorWithPermission
   ).requestPermission;
@@ -45,12 +45,13 @@ const requestDeviceOrientationPermission = async (): Promise<boolean> => {
 
 /**
  * Device tilt from the `deviceorientation`/`deviceorientationabsolute`
- * events (accelerometer/magnetometer) — there's no synchronous read, only
- * the event, so this starts at `{ alpha: null, beta: null, gamma: null,
- * absolute: false }` (also the SSR-safe default) until one fires. iOS
- * Safari gates this behind a user-gesture permission prompt — call
- * `requestPermission()` from a click handler before relying on the values;
- * it resolves `true` (no-op success) on platforms without the gate.
+ * events (using the accelerometer/magnetometer). There is no way to read
+ * this value directly, only to listen for the event. So this starts at
+ * `{ alpha: null, beta: null, gamma: null, absolute: false }` (also the
+ * safe default for server rendering) until the first event fires. iOS
+ * Safari requires the user to tap something first: call
+ * `requestPermission()` from a click handler before relying on the values.
+ * On platforms that don't need permission, it simply resolves to `true`.
  *
  * @example
  * ```tsx

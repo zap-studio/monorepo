@@ -12,15 +12,16 @@ interface MediaDevicesWithSelectAudioOutput {
 }
 
 /**
- * Guards `typeof navigator === "undefined"` because
- * `useExperimentalSelectAudioOutput` reads this synchronously in the hook
- * body, on every render including SSR — not just from an effect.
+ * Checks `typeof navigator === "undefined"` first.
+ * `useExperimentalSelectAudioOutput` calls this directly in the hook body
+ * on every render, including during server-side rendering, not only
+ * inside an effect.
  */
 const getSelectAudioOutput = (): SelectAudioOutput | undefined => {
   if (typeof navigator === "undefined") {
     return undefined;
   }
-  // SAFETY: MediaDevices.selectAudioOutput is read as optional here regardless of how (or whether) the resolved TypeScript version's DOM lib declares it, so a browser where it's genuinely absent (Safari, Firefox) degrades to undefined rather than throwing.
+  // SAFETY: We read MediaDevices.selectAudioOutput as optional, no matter what the TypeScript DOM types say. This way, browsers that don't have it (like Safari or Firefox) just return undefined instead of throwing an error.
   return (navigator.mediaDevices as MediaDevicesWithSelectAudioOutput | undefined)
     ?.selectAudioOutput;
 };
@@ -32,13 +33,14 @@ export interface UseExperimentalSelectAudioOutputResult {
 }
 
 /**
- * Wraps `MediaDevices.selectAudioOutput()` — Experimental per MDN,
- * Chromium-only — showing the browser's native audio output device
- * picker. Must be called from a user gesture (a click handler, not an
- * effect); resolves the picked `MediaDeviceInfo`, or `undefined` when the
- * user cancels or a Permissions Policy blocks the request
- * (`NotAllowedError`). `supported: false` — the SSR-safe default — where
- * the API doesn't exist.
+ * Wraps `MediaDevices.selectAudioOutput()`, which shows the browser's
+ * built-in picker for choosing an audio output device. MDN marks this as
+ * experimental, and it only works in Chromium browsers. You must call it
+ * from a user action, like a click handler, not from an effect. It
+ * resolves with the chosen `MediaDeviceInfo`, or `undefined` if the user
+ * cancels or a Permissions Policy blocks the request. `supported` is
+ * `false` by default (safe for server-side rendering) when the API
+ * doesn't exist.
  *
  * @example
  * ```tsx

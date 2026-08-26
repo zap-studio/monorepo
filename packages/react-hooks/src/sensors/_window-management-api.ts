@@ -1,6 +1,6 @@
-/** Minimal local model of the Window Management API — Experimental per MDN, not declared in every TypeScript DOM lib. */
+/** A small copy of the Window Management API's types. This is an experimental API and not included in TypeScript's built-in types. */
 
-/** One connected display, as reported by `getScreenDetails()` — extends the standard `Screen` with placement and identity fields. */
+/** One connected display, reported by `getScreenDetails()`. It extends the standard `Screen` type with position and identity fields. */
 export interface ScreenDetailed extends Screen {
   readonly availLeft: number;
   readonly availTop: number;
@@ -12,7 +12,7 @@ export interface ScreenDetailed extends Screen {
   readonly top: number;
 }
 
-/** The `getScreenDetails()` result — every connected display, live-updated as they change. */
+/** The result of `getScreenDetails()`. It lists every connected display and updates live when they change. */
 export interface ScreenDetails extends EventTarget {
   readonly currentScreen: ScreenDetailed;
   readonly screens: readonly ScreenDetailed[];
@@ -28,53 +28,55 @@ interface ScreenWithIsExtended {
   isExtended?: boolean;
 }
 
-/** `window.screen` with its `EventTarget` methods as optional — the intermediate shape for the cast below, since `Screen` and `EventTarget` don't otherwise overlap. */
+/** `window.screen` with its `EventTarget` methods marked optional. This is a helper shape used for the cast below, since `Screen` and `EventTarget` don't otherwise overlap. */
 interface ScreenWithOptionalEventTarget {
   addEventListener?: (type: "change", listener: () => void) => void;
   removeEventListener?: (type: "change", listener: () => void) => void;
 }
 
-/** `window.screen`'s `EventTarget` methods (its `change` event), which this TypeScript DOM lib's `Screen` interface doesn't declare — every browser that ships `screen` implements it as an `EventTarget`, so these are always present. */
+/** The `EventTarget` methods of `window.screen`, used for its `change` event. TypeScript's `Screen` type doesn't declare them, but every browser's `screen` object supports them, so they're always available. */
 export interface ScreenChangeEventTarget {
   addEventListener: (type: "change", listener: () => void) => void;
   removeEventListener: (type: "change", listener: () => void) => void;
 }
 
 /**
- * Guards `typeof window === "undefined"` because `useExperimentalWindowManagement`
- * reads this synchronously in the hook body, on every render including SSR —
- * not just from an effect.
+ * Checks `typeof window === "undefined"`. `useExperimentalWindowManagement`
+ * reads this directly in the hook body on every render, including
+ * server-side rendering, not only inside an effect.
  */
 export const getScreenDetailsFn = (): GetScreenDetails | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: window.getScreenDetails is read as optional here regardless of how (or whether) the resolved TypeScript version's DOM lib declares it, so a browser where it's genuinely absent (Safari, Firefox) degrades to undefined rather than throwing.
+  // SAFETY: window.getScreenDetails is read as optional here, no matter what the current TypeScript DOM lib declares. On a browser that truly lacks it (like Safari or Firefox), this reads as undefined instead of throwing.
   return (window as WindowWithScreenDetails).getScreenDetails;
 };
 
 /**
- * `window.screen.isExtended` — `true` once more than one display is
- * available to the device — readable without prompting for the
- * `"window-management"` permission. Only ever called client-side, as
- * `useSyncExternalStore`'s `getSnapshot` — no server guard needed, same as
- * `use-window-size.ts`'s `getSnapshot` reading `window.innerWidth` directly.
+ * Reads `window.screen.isExtended`. This is `true` once more than one
+ * display is available to the device, and you can read it without asking
+ * for the `"window-management"` permission. It only ever runs on the
+ * client, as `useSyncExternalStore`'s `getSnapshot`, so it needs no server
+ * guard — the same as `getSnapshot` in `use-window-size.ts`, which reads
+ * `window.innerWidth` directly.
  */
 export const getIsExtended = (): boolean =>
-  // SAFETY: screen.isExtended is read as optional here regardless of how (or whether) the resolved TypeScript version's DOM lib declares it, so a browser where it's genuinely absent degrades to false rather than throwing.
+  // SAFETY: screen.isExtended is read as optional here, no matter what the current TypeScript DOM lib declares. On a browser that truly lacks it, this reads as false instead of throwing.
   Boolean((window.screen as ScreenWithIsExtended).isExtended);
 
 /**
- * `window.screen` cast to expose its `addEventListener`/`removeEventListener`
- * (the `change` event) as optional members, since this TypeScript DOM lib's
- * `Screen` doesn't declare them — every browser that ships `screen`
- * implements it as an `EventTarget`. Only ever called client-side, as
- * `useSyncExternalStore`'s `subscribe` — no server guard needed, same as
- * `use-window-size.ts`'s `subscribe` calling `window.addEventListener` directly.
+ * Casts `window.screen` so its `addEventListener`/`removeEventListener`
+ * (used for the `change` event) become available. TypeScript's `Screen`
+ * type doesn't declare them, but every browser's `screen` object supports
+ * them as an `EventTarget`. This only ever runs on the client, as
+ * `useSyncExternalStore`'s `subscribe`, so it needs no server guard — the
+ * same as `subscribe` in `use-window-size.ts`, which calls
+ * `window.addEventListener` directly.
  */
 export const getScreenEventTarget = (): ScreenChangeEventTarget => {
-  // SAFETY: window.screen is cast to an all-optional interface first, so this narrows nothing TypeScript couldn't already prove — Screen structurally satisfies any all-optional shape regardless of whether addEventListener/removeEventListener actually exist at runtime.
+  // SAFETY: window.screen is first cast to a shape where these methods are optional. This is safe because any object structurally matches an all-optional shape, whether or not the methods actually exist at runtime.
   const withOptionalEventTarget = window.screen as ScreenWithOptionalEventTarget;
-  // SAFETY: every browser that ships `window.screen` implements it as an `EventTarget` (dispatching its `change` event), so the optional members above are narrowed to required here — this TypeScript DOM lib's `Screen` just doesn't declare them.
+  // SAFETY: every browser's `window.screen` supports `EventTarget` (including its `change` event), so it's safe to treat the optional methods above as always present. TypeScript's `Screen` type just doesn't declare them.
   return withOptionalEventTarget as ScreenChangeEventTarget;
 };

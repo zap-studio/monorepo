@@ -10,16 +10,18 @@ const DEFAULT_OPTIONS: MutationObserverInit = {
 };
 
 /**
- * Observes DOM mutations on the ref'd element/subtree via
- * `MutationObserver`. Attach `ref` to the element to observe. Defaults to
- * watching attributes, character data, and the full child subtree;
- * `options` overrides that. Neither `callback` nor `options` needs to be
- * memoized — the latest `callback` is always called, and `options` is
- * compared field by field, with the observer rebuilt when one changes.
+ * Watches for DOM changes inside the ref'd element, using
+ * `MutationObserver`. Attach `ref` to the element you want to watch.
  *
- * `ref` is re-read on every commit, so a subtree rendered conditionally,
- * mounted later, or swapped for another one is observed as soon as React
- * commits the change.
+ * By default it watches attribute changes, text changes, and changes
+ * anywhere inside the element's children. Pass `options` to change this.
+ *
+ * You don't need to memoize `callback` or `options`. The hook always
+ * calls the latest `callback`, and it compares `options` field by field,
+ * rebuilding the observer only when something actually changes.
+ *
+ * The hook checks `ref` again after every render, so it still works if
+ * the element appears later, is conditionally rendered, or gets replaced.
  *
  * @example
  * ```tsx

@@ -11,7 +11,7 @@ interface AbsoluteOrientationSensorInstance extends GenericSensorInstance {
   readonly quaternion: [number, number, number, number] | null;
 }
 
-/** The reading `useExperimentalAbsoluteOrientationSensor` reports — device rotation as a unit quaternion `[x, y, z, w]`. */
+/** The reading from `useExperimentalAbsoluteOrientationSensor`. It gives the device's rotation as a quaternion `[x, y, z, w]`. */
 export interface AbsoluteOrientationReading {
   quaternion: [number, number, number, number] | null;
 }
@@ -27,15 +27,16 @@ export type UseExperimentalAbsoluteOrientationSensorResult =
   UseGenericSensorResult<AbsoluteOrientationReading>;
 
 /**
- * Wraps the Generic Sensor API's `AbsoluteOrientationSensor` —
- * Experimental per MDN, Chromium-only, requires the `"accelerometer"`,
- * `"gyroscope"`, and `"magnetometer"` Permissions Policies and a secure
- * context. Reports device rotation relative to Earth's reference frame
- * (geomagnetic north) as a unit quaternion. `start()` constructs the
- * sensor and begins reporting `reading`/`activated`; a Permissions Policy
- * block or a denied permission prompt surfaces through `error` rather
- * than a thrown exception. `reading` stays `undefined` — the SSR-safe
- * default — until the first reading arrives.
+ * Reads the device's `AbsoluteOrientationSensor`. This is experimental,
+ * only works in Chrome, needs the `"accelerometer"`, `"gyroscope"`, and
+ * `"magnetometer"` permissions, and needs a secure (HTTPS) page. Reports
+ * the device's rotation compared to Earth (using magnetic north) as a
+ * quaternion.
+ *
+ * Call `start()` to create the sensor and start getting readings. If a
+ * permission is blocked or denied, you see that in `error` instead of a
+ * thrown error. `reading` stays `undefined` until the first reading
+ * arrives, which is safe for server-side rendering.
  *
  * @example
  * ```tsx

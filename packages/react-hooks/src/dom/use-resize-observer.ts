@@ -17,13 +17,13 @@ export interface UseResizeObserverResult<T extends Element> {
 const isSupported = (): boolean => typeof ResizeObserver !== "undefined";
 
 /**
- * Tracks the ref'd element's content-box size via `ResizeObserver`. Attach
- * `ref` to the element to observe. `size` starts `undefined` — the
- * SSR-safe default — until the first observation fires.
+ * Tracks the ref'd element's content size (width and height), using
+ * `ResizeObserver`. Attach `ref` to the element you want to observe.
+ * `size` starts as `undefined` — this is also the safe default for
+ * server-side rendering — until the first measurement happens.
  *
- * `ref` is re-read on every commit, so an element rendered conditionally,
- * mounted later, or swapped for another one is observed as soon as React
- * commits the change.
+ * The hook checks `ref` again after every render, so it still works if
+ * the element appears later, is conditionally rendered, or gets replaced.
  *
  * @example
  * ```tsx
@@ -48,7 +48,7 @@ export const useResizeObserver = <
     }
 
     const observer = new ResizeObserver((entries) => {
-      // SAFETY: ResizeObserver invokes its callback with one entry per observed target, and this observer only ever observes a single element via observe(element) below, so entries[0] is always present.
+      // SAFETY: ResizeObserver calls back with one entry per element it watches. This observer only ever watches one element (see observe(element) below), so entries[0] always exists.
       const entry = entries[0]!;
       setSize({ height: entry.contentRect.height, width: entry.contentRect.width });
     });

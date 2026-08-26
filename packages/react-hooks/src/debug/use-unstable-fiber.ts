@@ -11,14 +11,15 @@ export interface UseUnstableFiberResult<T extends Element> {
 }
 
 /**
- * Returns the nearest Fiber node for a ref'd DOM element, via react-dom's
- * private `__reactFiber$<id>` DOM pointer — walks up to the nearest
- * function-component ancestor when found, else the host (DOM) fiber
- * itself. `fiber` is `null` until `ref` attaches to a mounted element,
- * and stays `null` (rather than throwing) on an unrecognized internal
- * shape or in production builds. Attaching the ref schedules a re-render,
- * so the fiber is available from the commit after mount rather than
- * waiting for an unrelated render.
+ * Returns the nearest Fiber node for a DOM element you attach `ref` to.
+ * It reads React's private `__reactFiber$<id>` pointer, then walks up to
+ * the nearest function-component ancestor (or returns the DOM Fiber
+ * itself if none is found).
+ *
+ * `fiber` is `null` until `ref` attaches to a mounted element. It also
+ * stays `null` instead of throwing if the internal shape is unexpected,
+ * or in production builds. Attaching the ref triggers a re-render, so
+ * `fiber` becomes available right after mount.
  *
  * @example
  * ```tsx

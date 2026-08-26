@@ -1,4 +1,4 @@
-/** Minimal local model of the Contact Picker API — Experimental per MDN, Chromium-only, not declared in every TypeScript DOM lib. */
+/** A simple local copy of the Contact Picker API types. This API is experimental (see MDN), only works in Chromium browsers, and not every version of TypeScript's DOM types includes it. */
 export type ContactProperty = "address" | "email" | "icon" | "name" | "tel";
 
 /** A single postal address, as returned in a `ContactInfo`'s `address` field. */
@@ -15,7 +15,7 @@ export interface ContactAddress {
   readonly sortingCode: string;
 }
 
-/** A single contact returned by `ContactsManager.select()` — only the requested `ContactProperty` fields are populated. */
+/** A single contact returned by `ContactsManager.select()`. Only the fields you requested via `ContactProperty` are filled in. */
 export interface ContactInfo {
   address?: ContactAddress[];
   email?: string[];
@@ -39,14 +39,14 @@ interface NavigatorWithContacts extends Navigator {
 }
 
 /**
- * Guards `typeof navigator === "undefined"` because `useExperimentalContactPicker`
- * reads this synchronously in the hook body, on every render including SSR —
- * not just from an effect.
+ * Checks for `typeof navigator === "undefined"`. This is needed because
+ * `useExperimentalContactPicker` calls this function directly during render
+ * (including on the server), not just inside an effect.
  */
 export const getContactsManager = (): ContactsManager | undefined => {
   if (typeof navigator === "undefined") {
     return undefined;
   }
-  // SAFETY: navigator.contacts is read as optional here regardless of how (or whether) the resolved TypeScript version's DOM lib declares it, so a browser where it's genuinely absent (Safari, Firefox) degrades to undefined rather than throwing.
+  // SAFETY: we read navigator.contacts as optional, no matter what the current TypeScript DOM types say. This way, a browser that doesn't have it (Safari, Firefox) just gives us undefined instead of an error.
   return (navigator as NavigatorWithContacts).contacts;
 };

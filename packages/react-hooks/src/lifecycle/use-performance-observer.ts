@@ -8,17 +8,17 @@ export interface UsePerformanceObserverResult {
 const isSupported = (): boolean => typeof PerformanceObserver !== "undefined";
 
 /**
- * Wraps `PerformanceObserver` — long tasks, paint timing, layout shift,
- * and other performance entry types, streamed to `callback` as they
- * happen. Subscribes on mount and whenever `options` changes,
- * disconnecting the previous observer first. Neither `callback` nor
- * `options` needs to be memoized — the latest `callback` is always called
- * without re-subscribing, and `options` is compared field by field, so an
- * object literal written inline at the call site doesn't rebuild the
- * observer on every render (which, with `buffered: true`, would re-deliver
- * the whole entry buffer each time).
- * `supported: false` — the SSR-safe default — where `PerformanceObserver`
- * doesn't exist.
+ * Wraps `PerformanceObserver`. It streams performance entries — like long
+ * tasks, paint timing, and layout shifts — to `callback` as they happen.
+ * The hook subscribes on mount, and again whenever `options` changes,
+ * disconnecting the old observer first. Neither `callback` nor `options`
+ * needs to be memoized. The hook always calls the latest `callback`
+ * without re-subscribing, and it compares `options` field by field. This
+ * means you can pass a new object literal on every render without
+ * rebuilding the observer — which matters, because with `buffered: true`,
+ * rebuilding it would re-deliver every past entry again.
+ * Returns `supported: false` when `PerformanceObserver` doesn't exist,
+ * such as during server rendering.
  *
  * @example
  * ```tsx

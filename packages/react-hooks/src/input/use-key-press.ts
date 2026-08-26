@@ -5,12 +5,14 @@ const toKeyList = (keys: string[]): string[] => keys.map((key) => key.toLowerCas
 const getServerSnapshot = (): boolean => false;
 
 /**
- * Tracks whether any of the given key(s) is currently held down, matching
- * `KeyboardEvent.key` case-insensitively via `keydown`/`keyup` on `window`.
- * SSR-safe — returns `false` until the client subscribes. `target` doesn't
- * need to be a stable reference — an array is compared by its contents, so
- * an array literal written inline at the call site doesn't resubscribe on
- * every render.
+ * Tracks whether any of the given key(s) is currently held down. Matches
+ * `KeyboardEvent.key` case-insensitively, listening for `keydown`/`keyup`
+ * on `window`.
+ *
+ * Safe for server-side rendering: returns `false` until the client
+ * subscribes. You don't need to memoize `target` — arrays are compared
+ * by their contents, so writing an array literal directly at the call
+ * site won't cause extra re-subscriptions.
  *
  * @example
  * ```tsx

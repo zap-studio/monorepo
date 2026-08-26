@@ -28,23 +28,25 @@ const subscribeIsExtended = (onStoreChange: () => void) => {
 const getIsExtendedServerSnapshot = (): boolean => false;
 
 /**
- * Wraps the Window Management API — Experimental per MDN, Chromium-only,
- * requires the `"window-management"` permission and a secure context — for
- * placing windows across multiple screens.
+ * Reads and manages multiple screens, using the Window Management API.
+ * This is experimental, only works in Chrome, and needs the
+ * `"window-management"` permission, plus a secure (HTTPS) page.
  *
- * `isExtended` mirrors `window.screen.isExtended` — `true` once more than
- * one display is connected — updating on the `screen`'s `change` event,
- * and needs no permission prompt. `requestPermission()` calls
- * `window.getScreenDetails()`, resolving `false` when the API is missing
- * or the user denies it; once granted, `screens` (every connected
- * display) and `currentScreen` (the one showing this window) populate and
- * stay live, updating on the underlying `screenschange`/
- * `currentscreenchange` events — a display connecting/disconnecting, or
- * the window moving to another one. `screens`/`currentScreen` stay
- * empty/`undefined` — the SSR-safe default — until permission is granted.
+ * `isExtended` mirrors `window.screen.isExtended`: it's `true` once more
+ * than one display is connected. It updates on its own and doesn't need a
+ * permission prompt.
  *
- * Experimental per MDN, Chromium-only, not Baseline — see
- * [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Window_Management_API#browser_compatibility).
+ * Call `requestPermission()` to ask for permission and get the list of
+ * screens. It resolves `false` if the API is missing or the user denies
+ * it. Once granted, `screens` (every connected display) and
+ * `currentScreen` (the one showing this window) fill in and stay up to
+ * date on their own, for example when a display connects, disconnects, or
+ * the window moves to another screen. Both stay empty/`undefined` until
+ * permission is granted, which is safe for server-side rendering.
+ *
+ * This API is still experimental and only works in Chrome. See
+ * [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Window_Management_API#browser_compatibility)
+ * for details.
  *
  * @example
  * ```tsx
@@ -78,7 +80,7 @@ export const useExperimentalWindowManagement = (): UseExperimentalWindowManageme
       const handleScreensChange = () => setScreens([...details.screens]);
       const handleCurrentScreenChange = () => setCurrentScreen(details.currentScreen);
 
-      // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- registered inside a user-triggered `requestPermission()`, not the effect's mount body; `cleanupRef` (invoked here and on unmount by the effect further down) always removes these listeners, just via indirection the rule's matcher misses.
+      // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- These listeners are added inside `requestPermission()`, not inside the effect body, so the linter can't see the cleanup. But `cleanupRef` always removes them: here, and when the component unmounts.
       details.addEventListener("screenschange", handleScreensChange);
       details.addEventListener("currentscreenchange", handleCurrentScreenChange);
       cleanupRef.current = () => {

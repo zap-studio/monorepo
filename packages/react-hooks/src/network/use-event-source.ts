@@ -11,10 +11,11 @@ export interface UseEventSourceResult {
 }
 
 /**
- * Server-Sent Events connection state (`"connecting" | "open" | "closed"`)
- * plus the latest `message` event's `data`, wrapping an `EventSource`
- * opened for `url` and torn down on unmount or when `url` changes. Pass
- * `undefined` to stay disconnected.
+ * Tracks a Server-Sent Events connection state
+ * (`"connecting" | "open" | "closed"`) and the latest `message` event's
+ * `data`. It wraps an `EventSource` opened for `url`, and closes it when
+ * the component unmounts or when `url` changes. Pass `undefined` to stay
+ * disconnected.
  *
  * @example
  * ```tsx
@@ -37,7 +38,7 @@ export const useEventSource = (url: string | undefined): UseEventSourceResult =>
     setStatus("connecting");
 
     const handleOpen = () => setStatus("open");
-    // SAFETY: EventSource's message event always carries a UTF-8 text payload per spec; MessageEvent.data is typed `any` only because the same event type is reused by WebSocket/Worker for binary data.
+    // SAFETY: EventSource's message event always carries text data, per spec. MessageEvent.data is typed `any` only because the same event type is also used by WebSocket/Worker, which can carry binary data.
     const handleMessage = (event: MessageEvent) => setData(event.data as string);
     const handleError = () => setStatus("closed");
 

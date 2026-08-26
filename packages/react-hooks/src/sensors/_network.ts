@@ -1,9 +1,9 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
-/** Minimal local model of the Network Information API — not declared in every TypeScript DOM lib. */
+/** A small copy of the Network Information API's types, since not every TypeScript DOM lib includes it. */
 export interface NetworkInformation extends EventTarget {
   readonly downlink?: number;
-  // oxlint-disable-next-line sonarjs/max-union-size -- Models the NetworkInformation Web API's fixed effectiveType set; the 4 values are the whole spec, not something to shrink.
+  // oxlint-disable-next-line sonarjs/max-union-size -- These are all 4 values from the NetworkInformation spec's effectiveType field. The list can't be made smaller.
   readonly effectiveType?: "2g" | "3g" | "4g" | "slow-2g";
   readonly rtt?: number;
   readonly saveData?: boolean;
@@ -28,7 +28,7 @@ const SERVER_SNAPSHOT: NetworkState = {
 };
 
 const getConnection = (): NetworkInformation | undefined =>
-  // SAFETY: NetworkInformation is an experimental Web API not declared in TypeScript's DOM lib; every caller reads its fields through optional chaining, so an unsupported browser (where `connection` is genuinely absent) degrades to `undefined` rather than throwing.
+  // SAFETY: NetworkInformation is an experimental Web API that TypeScript's DOM lib doesn't declare. Every caller reads its fields with optional chaining, so a browser without `connection` reads as `undefined` instead of throwing.
   (navigator as NavigatorWithConnection).connection;
 
 const readNetworkState = (): NetworkState => {
@@ -63,14 +63,15 @@ const subscribe = (onStoreChange: () => void) => {
 };
 
 /**
- * Shared `navigator.onLine` + `navigator.connection` subscription behind
- * `useOnlineStatus` and `useNetworkState`. Not itself a public hook — hook
- * files never import one another, so shared logic lives here (mirrors
- * `@zap-studio/retry`'s `_otel.ts` convention).
+ * Shared `navigator.onLine` and `navigator.connection` subscription used by
+ * `useOnlineStatus` and `useNetworkState`. It is not a public hook itself.
+ * Hook files never import each other, so shared code lives here instead
+ * (the same pattern as `_otel.ts` in `@zap-studio/retry`).
  *
- * Caches the snapshot object by field equality so unchanged reads return the
- * same reference — required by `useSyncExternalStore` to avoid re-rendering
- * (or looping) on every read.
+ * Caches the snapshot object and only replaces it when a field actually
+ * changes, so unchanged reads return the same object reference.
+ * `useSyncExternalStore` needs this to avoid re-rendering (or looping
+ * forever) on every read.
  */
 export const useNetworkSnapshot = (): NetworkState => {
   const cacheRef = useRef<NetworkState>(SERVER_SNAPSHOT);

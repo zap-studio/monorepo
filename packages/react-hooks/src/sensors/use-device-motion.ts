@@ -33,7 +33,7 @@ const toState = (event: DeviceMotionEvent): DeviceMotionState => ({
 });
 
 const requestDeviceMotionPermission = async (): Promise<boolean> => {
-  // SAFETY: requestPermission is an iOS Safari-only static gate not declared in TypeScript's DOM lib; optional-chained, so platforms without it (the vast majority) just skip straight to "granted".
+  // SAFETY: requestPermission is a permission check that only iOS Safari has, and TypeScript's DOM types don't include it. It's optional-chained, so other platforms (most of them) skip straight to "granted".
   const requestPermission = (DeviceMotionEvent as DeviceMotionEventConstructorWithPermission)
     .requestPermission;
   if (!requestPermission) {
@@ -43,12 +43,12 @@ const requestDeviceMotionPermission = async (): Promise<boolean> => {
 };
 
 /**
- * Device acceleration from the `devicemotion` event — there's no
- * synchronous read, only the event, so this starts all-`null` (`interval:
- * 0`, also the SSR-safe default) until one fires. Same iOS Safari
- * user-gesture permission caveat as `useDeviceOrientation` —
- * `requestPermission()` resolves `true` (no-op success) on platforms
- * without the gate.
+ * Device acceleration from the `devicemotion` event. There is no way to
+ * read this value directly, only to listen for the event. So this starts
+ * with all fields `null` (`interval: 0`, also the safe default for server
+ * rendering) until the first event fires. Has the same iOS Safari
+ * permission requirement as `useDeviceOrientation`: `requestPermission()`
+ * simply resolves to `true` on platforms that don't need permission.
  *
  * @example
  * ```tsx

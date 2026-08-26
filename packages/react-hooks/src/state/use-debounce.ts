@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef } from "react";
 
 /**
- * Returns a debounced wrapper around `callback` — each call resets a
- * `delayMs` timer, so `callback` only actually runs once calls stop
- * arriving for `delayMs`, with the most recent call's arguments. Pending
- * calls are cleared on unmount. `callback` doesn't need to be memoized —
- * the latest one is always called.
+ * Returns a debounced version of `callback`. Each call restarts a
+ * `delayMs` timer, so `callback` only runs once calls stop coming in for
+ * `delayMs`. It then runs once, using the arguments from the most recent
+ * call. Any pending call is canceled when the component unmounts. You
+ * don't need to memoize `callback` — the latest version is always used.
  *
  * @example
  * ```tsx

@@ -28,12 +28,14 @@ const isAbortError = (error: unknown): boolean =>
   error instanceof Error && error.name === "AbortError";
 
 /**
- * Wraps the Contact Picker API (`navigator.contacts`) — Experimental per
- * MDN, Chromium-only, requires a secure context and a user gesture.
- * `select()` shows the OS contact picker for the given properties,
- * resolving the chosen contacts, or `undefined` if the user cancels
- * (`AbortError`) or the API is unsupported. `getProperties()` resolves
- * which `ContactProperty` values this browser can actually retrieve.
+ * Wraps the Contact Picker API (`navigator.contacts`). This API is
+ * experimental (see MDN), only works in Chromium browsers, and needs HTTPS
+ * and a user action (like a click) to work.
+ *
+ * `select()` opens the OS contact picker for the properties you ask for. It
+ * resolves with the chosen contacts, or `undefined` if the user cancels
+ * (`AbortError`) or the API isn't supported. `getProperties()` resolves with
+ * the list of `ContactProperty` values this browser can actually give you.
  *
  * @example
  * ```tsx

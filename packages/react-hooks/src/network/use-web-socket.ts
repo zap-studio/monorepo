@@ -12,10 +12,11 @@ export interface UseWebSocketResult {
 }
 
 /**
- * WebSocket connection state (`"connecting" | "open" | "closed"`) plus
- * `send()`/`close()`, wrapping a `WebSocket` opened for `url` and torn
- * down on unmount or when `url` changes. Pass `undefined` to stay
- * disconnected (e.g. before an auth token is ready).
+ * Tracks a WebSocket connection state (`"connecting" | "open" | "closed"`)
+ * and gives you `send()`/`close()` functions. It wraps a `WebSocket`
+ * opened for `url`, and closes it when the component unmounts or when
+ * `url` changes. Pass `undefined` to stay disconnected, for example
+ * while waiting for an auth token.
  *
  * @example
  * ```tsx

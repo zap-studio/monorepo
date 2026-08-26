@@ -9,12 +9,15 @@ export interface UseUnstableOwnerStackResult {
 }
 
 /**
- * Wraps React 19's `captureOwnerStack` debug API — call `captureOwnerStack()`
- * during an event handler or effect to get the JSX "owner" stack (which
- * component rendered which), the same trace React's own dev warnings use.
- * `supported: false` where the export doesn't exist (React < 19, or a
- * production build — React's own `captureOwnerStack` already returns
- * `null` there, which this wrapper surfaces as `undefined`).
+ * Wraps React 19's `captureOwnerStack` debug API. Call the returned
+ * `captureOwnerStack()` function inside an event handler or effect to get
+ * the JSX "owner" stack — which component rendered which. This is the
+ * same trace React's own dev warnings use.
+ *
+ * `supported` is `false` when this API doesn't exist: on React below
+ * version 19, or in a production build (where React's own
+ * `captureOwnerStack` already returns `null`, which this hook turns into
+ * `undefined`).
  *
  * @example
  * ```tsx
@@ -26,7 +29,7 @@ export const useUnstableOwnerStack = (): UseUnstableOwnerStackResult => {
   const supported = !isProductionBuild() && typeof captureOwnerStack === "function";
 
   const capture = useCallback((): string | undefined => {
-    // v8 ignore next -- the `?.` optional call only short-circuits on React < 19, where this named import doesn't exist; the package's own peer range (React 19) always has it, so that side is untestable here.
+    // v8 ignore next -- the `?.` here only matters on React below version 19, where this import doesn't exist. This package requires React 19, so we can't actually test that case.
     return captureOwnerStack?.() ?? undefined;
   }, []);
 

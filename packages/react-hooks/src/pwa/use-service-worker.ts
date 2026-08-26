@@ -11,12 +11,12 @@ const isSupported = (): boolean =>
   typeof navigator !== "undefined" && Boolean(navigator.serviceWorker);
 
 /**
- * The current page's Service Worker registration (if any), plus whether a
- * new worker has finished installing while an existing one already
- * controls the page — the standard "update available, reload to activate"
- * signal. `registration` is `undefined` — the SSR-safe default — until
- * the client resolves it, and permanently where Service Workers are
- * unsupported.
+ * Gives you the current page's Service Worker registration, if there is
+ * one, plus whether a new worker has finished installing while an older
+ * one is still active. This is the usual "update available, reload to
+ * activate" signal. `registration` is `undefined` by default (safe for
+ * server-side rendering) until the client resolves it, and stays
+ * `undefined` forever if Service Workers aren't supported.
  *
  * @example
  * ```tsx

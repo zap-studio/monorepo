@@ -16,10 +16,10 @@ const isSupported = (): boolean =>
   typeof navigator !== "undefined" && typeof navigator.mediaDevices?.getUserMedia === "function";
 
 /**
- * Shared `getUserMedia` request/teardown behind `useUserMedia` and
- * `useCamera`. Not itself a public hook — hook files never import one
- * another, so shared logic lives here (mirrors `@zap-studio/retry`'s
- * `_otel.ts` convention).
+ * Handles starting and stopping `getUserMedia` for both `useUserMedia`
+ * and `useCamera`. This is not a public hook. Hook files never import
+ * each other, so shared code lives here instead (the same pattern used
+ * by `@zap-studio/retry`'s `_otel.ts` file).
  */
 export const useMediaStream = (constraints: MediaStreamConstraints): UserMediaResult => {
   const [stream, setStream] = useState<MediaStream | undefined>(undefined);

@@ -11,18 +11,18 @@ export interface UseFileDropResult<T extends HTMLElement> {
 const filesFrom = (event: DragEvent): File[] => [...(event.dataTransfer?.files ?? [])];
 
 /**
- * Drag-and-drop file upload state for a single ref'd drop target, via the
- * HTML Drag and Drop API. `isOver` tracks whether a drag is currently over
- * the element; `onDrop` is called with the dropped `File[]`. `onDrop`
- * doesn't need to be memoized — the latest one is always called. Also
- * exported as `useDropzone`, an alias for the same hook.
+ * Tracks drag-and-drop file uploads for one element, using the browser's
+ * Drag and Drop API. `isOver` tells you whether a drag is currently over
+ * the element. `onDrop` is called with the dropped files as a `File[]`.
+ * You don't need to memoize `onDrop` — the hook always calls the latest
+ * version you passed in. This hook is also exported as `useDropzone`,
+ * which is just another name for the same hook.
  *
- * The listeners attach in a layout effect, before the browser paints — a
- * `drop` is one-shot, so an overlay mounted mid-drag would otherwise lose the
- * files outright. `ref` is re-read on every commit, so a drop target rendered
- * conditionally (the usual "show the overlay while dragging" pattern),
- * mounted later, or swapped for another one is wired up as soon as React
- * commits the change.
+ * The listeners attach before the browser paints. This matters because a
+ * `drop` event only fires once, so an overlay that appears in the middle
+ * of a drag could otherwise miss it. The hook also re-checks `ref` on
+ * every render, so it still works if the drop target appears later, is
+ * shown conditionally, or gets swapped for a different element.
  *
  * @example
  * ```tsx

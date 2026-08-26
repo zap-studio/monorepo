@@ -12,10 +12,12 @@ const ACTIVITY_EVENTS = [
 ] as const;
 
 /**
- * `true` once `timeoutMs` (default 60s) has passed without user activity
- * (mouse move/click, key press, touch, scroll, wheel), resetting to `false`
- * on the next activity. SSR-safe — returns `false` on the server and until
- * the first timeout elapses on the client.
+ * Returns `true` once `timeoutMs` (default 60 seconds) has passed with no
+ * user activity — mouse move, click, key press, touch, scroll, or wheel.
+ * Goes back to `false` on the next activity.
+ *
+ * Safe for server-side rendering: returns `false` on the server, and
+ * stays `false` on the client until the first timeout passes.
  *
  * @example
  * ```tsx
@@ -25,7 +27,7 @@ const ACTIVITY_EVENTS = [
 export const useIdle = (timeoutMs: number = DEFAULT_TIMEOUT_MS): boolean => {
   const [idle, setIdle] = useState(false);
 
-  // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- the returned cleanup already clears the shared `timer` (every reassignment inside resetTimer included, since it's the same closed-over variable) and removes every activity listener.
+  // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- the cleanup function below already clears the shared `timer` variable (including every time resetTimer reassigns it) and removes all activity listeners.
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 

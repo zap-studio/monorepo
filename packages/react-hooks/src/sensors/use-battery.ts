@@ -32,9 +32,10 @@ const readBatteryState = (battery: BatteryManager): BatteryState => ({
 });
 
 /**
- * Wraps the Battery Status API (`navigator.getBattery()`) — Chromium-only,
- * removed from most other browsers. `{ supported: false }` — the SSR-safe
- * default — until the client confirms `getBattery` exists and resolves it.
+ * Wraps the Battery Status API (`navigator.getBattery()`). Only Chromium
+ * browsers support this API; most other browsers removed it. Returns
+ * `{ supported: false }` (the safe default for server rendering) until the
+ * browser confirms `getBattery` exists and returns a result.
  *
  * @example
  * ```tsx
@@ -44,9 +45,9 @@ const readBatteryState = (battery: BatteryManager): BatteryState => ({
 export const useBattery = (): BatteryState => {
   const [state, setState] = useState<BatteryState>(UNSUPPORTED_STATE);
 
-  // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- the returned cleanup does call the `cleanup` closure variable, which removes every listener added in `subscribeToBattery`; the detector's cleanup matcher misses it because the removeEventListener calls sit behind that indirection instead of literally inline in the returned function.
+  // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- the returned cleanup function does call the `cleanup` variable, which removes every listener added in `subscribeToBattery`. The linter can't see this because the removeEventListener calls happen through that variable instead of directly inside the returned function.
   useEffect(() => {
-    // SAFETY: getBattery is an experimental, largely Chromium-only API not declared in TypeScript's DOM lib; guarded by the `if (!getBattery)` check below, so an unsupported browser degrades to the SSR default instead of throwing.
+    // SAFETY: getBattery is an experimental API that only Chromium browsers support, and TypeScript's DOM types don't include it. The `if (!getBattery)` check below handles browsers that don't support it, so the code uses the SSR default instead of crashing.
     const getBattery = (navigator as NavigatorWithBattery).getBattery;
     if (!getBattery) {
       return undefined;

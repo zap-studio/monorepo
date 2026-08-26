@@ -24,14 +24,13 @@ const cancelIdle = (handle: number): void => {
 };
 
 /**
- * Wraps `requestIdleCallback`/`cancelIdleCallback` — background scheduling
- * for low-priority work during a frame's idle time. Falls back to a
- * `setTimeout(fn, 1)` with a synthetic `{ didTimeout: false,
- * timeRemaining: () => 50 }` deadline on Safari, which never implemented
- * the real API. Pass `enabled: false` to pause without unmounting the
- * hook. Neither `callback` nor `options` needs to be memoized — the latest
- * `callback` is always called, and `options` is compared by its `timeout`
- * value rather than by identity.
+ * Wraps `requestIdleCallback`/`cancelIdleCallback`. These schedule
+ * low-priority work to run when the browser is idle (not busy). Safari
+ * doesn't support this API, so on Safari this hook falls back to
+ * `setTimeout(fn, 1)` with a fake deadline object. Pass `enabled: false`
+ * to pause without unmounting the hook. Neither `callback` nor `options`
+ * needs to be memoized — the hook always uses the latest `callback`, and
+ * only restarts when `options.timeout` actually changes.
  *
  * @example
  * ```tsx

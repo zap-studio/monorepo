@@ -42,16 +42,19 @@ const matchesCombo = (event: KeyboardEvent, combo: ParsedCombo): boolean =>
   event.metaKey === combo.meta;
 
 /**
- * Registers keyboard shortcuts as `"ctrl+s"`-style combo strings mapped to
- * handlers, matched on `keydown` against `window`. Modifiers (`ctrl`/
- * `control`, `shift`, `alt`, `meta`/`cmd`/`command`) must all match exactly
- * — a plain `"s"` binding never fires while `ctrl` is held. `bindings`
- * doesn't need to be memoized — the latest map is always read, without
- * re-subscribing.
+ * Registers keyboard shortcuts using combo strings like `"ctrl+s"`,
+ * mapped to handler functions. Matches against `keydown` events on
+ * `window`. All modifiers you list (`ctrl`/`control`, `shift`, `alt`,
+ * `meta`/`cmd`/`command`) must be held exactly — a plain `"s"` binding
+ * never fires while `ctrl` is also held.
  *
- * The listener attaches in a layout effect, before the browser paints — a
- * `keydown` missed in the gap would also lose its `preventDefault()`, letting
- * the browser's default action fire instead.
+ * You don't need to memoize `bindings`. This hook always reads the
+ * latest map without re-subscribing the listener.
+ *
+ * The listener attaches in a layout effect, before the browser paints.
+ * This matters because a `keydown` event missed in that gap would also
+ * lose its `preventDefault()` call, letting the browser's default action
+ * happen instead.
  *
  * @example
  * ```tsx

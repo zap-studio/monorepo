@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Runs `cleanup` exactly once, on unmount. Always calls the latest
- * `cleanup` — it doesn't need to be memoized, and doesn't need `[]`-style
- * discipline the way a raw `useEffect` cleanup would.
+ * Runs `cleanup` exactly once, when the component unmounts. It always
+ * calls the latest version of `cleanup`, so you don't need to memoize it
+ * or worry about dependency arrays like you would with a raw `useEffect`
+ * cleanup.
  *
  * @example
  * ```tsx

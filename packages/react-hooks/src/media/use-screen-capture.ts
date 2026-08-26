@@ -16,11 +16,12 @@ const isSupported = (): boolean =>
   typeof navigator !== "undefined" && typeof navigator.mediaDevices?.getDisplayMedia === "function";
 
 /**
- * Wraps `navigator.mediaDevices.getDisplayMedia()` — screen/window/tab
- * sharing. Manual `start()` only, since the browser requires (and this
- * hook never fakes) a real user gesture to grant it; `stream` also stops
- * itself automatically when the browser's own "Stop sharing" bar ends the
- * track, keeping `status` in sync with reality.
+ * Wraps `navigator.mediaDevices.getDisplayMedia()` for sharing a screen,
+ * window, or tab. You must call `start()` yourself from a user action,
+ * like a click, since browsers require a real user gesture and this hook
+ * never fakes one. The `stream` also stops itself automatically if the
+ * user clicks the browser's own "Stop sharing" button, so `status` always
+ * matches reality.
  *
  * @example
  * ```tsx
@@ -61,7 +62,7 @@ export const useScreenCapture = (options?: DisplayMediaStreamOptions): UseScreen
       streamRef.current = media;
       setStream(media);
       setStatus("active");
-      // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- registered on a per-call track inside a user-triggered `start()`, not the effect's mount body; `useEffect(() => stop, [stop])` below stops every track on unmount, and the listener dies with the track since it's never reused.
+      // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- this listener is added to a track created inside `start()`, which runs from a user action, not from the effect below. `useEffect(() => stop, [stop])` stops every track on unmount, and the listener goes away with the track since it's never reused.
       media.getVideoTracks()[0]?.addEventListener("ended", stop);
     } catch (caught) {
       setError(caught instanceof Error ? caught : new Error(String(caught)));

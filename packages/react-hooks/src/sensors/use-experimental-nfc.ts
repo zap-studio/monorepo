@@ -39,18 +39,24 @@ const toError = (caught: unknown): Error =>
   caught instanceof Error ? caught : new Error(String(caught));
 
 /**
- * Wraps the Web NFC API's `NDEFReader` — Experimental per MDN, Chromium on
- * Android only, and gated behind the `"nfc"` permission, a secure context,
- * and a user gesture. `scan()` prompts for that permission and starts
- * listening for tags, resolving `false` when the API is missing or the user
- * denies it; every tag that comes into range then updates `reading` with its
- * `serialNumber` and raw `records`. `stop()` aborts the scan. `write()` and
- * `makeReadOnly()` act on the next tag in range, each resolving `false`
- * rather than throwing when the tag can't be written. `error` holds the last
- * failure — a rejected call, or a tag that couldn't be decoded.
+ * Reads and writes NFC tags, using the Web NFC API's `NDEFReader`. This is
+ * experimental and only works in Chrome on Android. It needs the `"nfc"`
+ * permission, a secure (HTTPS) page, and a user gesture (like a button
+ * click) to start.
  *
- * Records are handed over undecoded: `data` is a `DataView`, so text records
- * are read with a `TextDecoder` built from the record's own `encoding`.
+ * Call `scan()` to ask for that permission and start listening for tags.
+ * It resolves `false` if the API isn't available or the user says no.
+ * Each time a tag comes into range, `reading` updates with its
+ * `serialNumber` and raw `records`. Call `stop()` to stop scanning.
+ *
+ * `write()` and `makeReadOnly()` act on the next tag that comes into
+ * range. Both resolve `false` instead of throwing when the tag can't be
+ * written. `error` holds the last failure, such as a rejected call or a
+ * tag that couldn't be read.
+ *
+ * Records come back undecoded: `data` is a `DataView`. To read a text
+ * record, decode it with a `TextDecoder` using the record's own
+ * `encoding`.
  *
  * @example
  * ```tsx
@@ -84,7 +90,7 @@ export const useExperimentalNfc = (): UseExperimentalNfcResult => {
     const reader = new NDEFReaderCtor();
 
     const handleReading = (event: Event) => {
-      // SAFETY: the "reading" event is always an NDEFReadingEvent per the Web NFC spec, but `addEventListener` on a bare EventTarget can only hand back the base `Event`.
+      // SAFETY: the Web NFC spec guarantees the "reading" event is an NDEFReadingEvent. `addEventListener` can't express that in its types, so it only gives us the base `Event` type.
       const { message, serialNumber } = event as NDEFReadingEvent;
       setReading({ records: message.records, serialNumber });
       setError(undefined);
@@ -93,7 +99,7 @@ export const useExperimentalNfc = (): UseExperimentalNfcResult => {
       setError(new Error("The NFC tag in range could not be read."));
     };
 
-    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- registered inside a user-triggered `scan()`, not the effect's mount body; `cleanupRef` (invoked here, in `stop()`, in the catch below, and on unmount by the effect further down) always removes these listeners, just via indirection the rule's matcher misses.
+    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- These listeners are added inside `scan()`, not inside the effect body, so the linter can't see the cleanup. But `cleanupRef` always removes them: here, in `stop()`, in the catch block below, and when the component unmounts.
     reader.addEventListener("reading", handleReading);
     reader.addEventListener("readingerror", handleReadingError);
     cleanupRef.current = () => {

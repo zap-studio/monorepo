@@ -18,11 +18,14 @@ const isAbortError = (error: unknown): boolean =>
   error instanceof Error && error.name === "NotAllowedError";
 
 /**
- * Wraps `window.queryLocalFonts()` (Local Font Access API) — Experimental
- * per MDN, Chromium-only, requires the `"local-fonts"` permission. `query()`
- * prompts for that permission on first call and resolves the user's
- * locally installed fonts, or `undefined` when the user denies the
- * prompt (`NotAllowedError`) or the API is unsupported.
+ * Reads the fonts installed on the user's device, using
+ * `window.queryLocalFonts()` (Local Font Access API). This is
+ * experimental, only works in Chrome, and needs the `"local-fonts"`
+ * permission.
+ *
+ * Call `query()` to ask for that permission and get the list of locally
+ * installed fonts. It returns `undefined` if the user denies the prompt or
+ * if the browser doesn't support this API.
  *
  * @example
  * ```tsx

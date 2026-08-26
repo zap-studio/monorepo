@@ -6,7 +6,7 @@ export interface UserAgentDataBrand {
   version: string;
 }
 
-/** The shape returned by `useUserAgentData` — `navigator.userAgentData`'s low-entropy fields. */
+/** The shape returned by `useUserAgentData`: the basic fields from `navigator.userAgentData`. */
 export interface UserAgentData {
   brands: readonly UserAgentDataBrand[];
   mobile: boolean;
@@ -31,11 +31,13 @@ const dataEqual = (a: UserAgentData | undefined, b: UserAgentData | undefined): 
 };
 
 /**
- * `navigator.userAgentData`'s low-entropy fields (`brands`, `mobile`,
- * `platform`) — a structured, Chromium-only replacement for parsing
- * `navigator.userAgent`. A static device capability — doesn't change at
- * runtime. `undefined` — the SSR-safe default — where User-Agent Client
- * Hints is unsupported.
+ * Gives you basic browser info (`brands`, `mobile`, `platform`) from
+ * `navigator.userAgentData`. This is a newer, more structured way to get
+ * this data instead of parsing the `navigator.userAgent` string, but it
+ * only works in Chromium browsers (like Chrome and Edge). This
+ * information doesn't change while the app is running. The value is
+ * `undefined` (the safe default for server rendering) when the
+ * User-Agent Client Hints API isn't supported.
  *
  * @example
  * ```tsx
@@ -47,7 +49,7 @@ export const useUserAgentData = (): UserAgentData | undefined => {
   const cacheRef = useRef<UserAgentData | undefined>(undefined);
 
   const getSnapshot = useCallback((): UserAgentData | undefined => {
-    // SAFETY: userAgentData (User-Agent Client Hints) is a Chromium-only API not declared in TypeScript's DOM lib; read as optional, so an unsupported browser yields undefined rather than throwing.
+    // SAFETY: userAgentData (User-Agent Client Hints) is a Chromium-only API that TypeScript's DOM types don't include. We read it as optional, so unsupported browsers give undefined instead of throwing an error.
     const next = (navigator as NavigatorWithUserAgentData).userAgentData;
     if (!dataEqual(cacheRef.current, next)) {
       cacheRef.current = next;

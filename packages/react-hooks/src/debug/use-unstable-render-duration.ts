@@ -19,7 +19,7 @@ export interface UseUnstableRenderDurationResult {
   samples: RenderDurationSample[];
 }
 
-// v8 ignore next -- selected in production builds (tested), but only ever *called* by a real <Profiler> commit, which requires a real browser under NODE_ENV=production — unreachable here since bundlers replace `process.env.NODE_ENV` at this test suite's own build time.
+// v8 ignore next -- this is picked in production builds (that part is tested), but it only gets *called* by a real `<Profiler>` commit in a real browser running under `NODE_ENV=production`. We can't reach that here, because bundlers replace `process.env.NODE_ENV` at this test suite's own build time.
 const noopOnRender: ProfilerOnRenderCallback = () => {};
 
 const NOOP_RESULT: UseUnstableRenderDurationResult = {
@@ -29,11 +29,12 @@ const NOOP_RESULT: UseUnstableRenderDurationResult = {
 };
 
 /**
- * Wraps React's `<Profiler>` `onRender` timing as a hook — pass `onRender`
- * to a `<Profiler>` wrapping the subtree to measure; `samples` accumulates
- * each render's `{ id, phase, actualDuration, baseDuration, startTime,
- * commitTime }`, capped at the last `limit` (default `20`). Records
- * nothing in production builds.
+ * Wraps React's `<Profiler>` timing as a hook. Pass the returned
+ * `onRender` to a `<Profiler>` wrapping the part of the tree you want to
+ * measure. `samples` collects each render's timing data (`id`, `phase`,
+ * `actualDuration`, `baseDuration`, `startTime`, `commitTime`), keeping
+ * only the most recent `limit` entries (default `20`). Records nothing in
+ * production builds.
  *
  * @example
  * ```tsx

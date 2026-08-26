@@ -40,12 +40,15 @@ const subscribe = (onStoreChange: () => void) => {
 };
 
 /**
- * Currently connected gamepads, via `navigator.getGamepads()`, updating on
- * `gamepadconnected`/`gamepaddisconnected`. Only exposes `id`/`index`/
- * `mapping` — live button/axis state requires polling on an animation
- * frame, out of scope for this hook. Falls back to `[]` during server
- * rendering, before the client subscribes, and where the Gamepad API is
- * unsupported.
+ * The gamepads currently connected, from `navigator.getGamepads()`.
+ * Updates when a gamepad connects or disconnects.
+ *
+ * This only gives you `id`, `index`, and `mapping` for each gamepad.
+ * Reading live button and joystick state needs polling on an animation
+ * frame, which is outside what this hook does.
+ *
+ * Returns `[]` during server rendering, before the client subscribes,
+ * and where the Gamepad API isn't supported.
  *
  * @example
  * ```tsx

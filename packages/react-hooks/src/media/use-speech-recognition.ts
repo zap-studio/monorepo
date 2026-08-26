@@ -21,7 +21,7 @@ interface SpeechRecognitionInstance {
   interimResults: boolean;
   lang: string;
   onend: (() => void) | null;
-  // SAFETY: SpeechRecognitionErrorEvent isn't part of the official DOM standard IDL (the Web Speech API is a community-group draft), so TypeScript's DOM lib may or may not declare it depending on version/editor; this hook never reads fields off the error event, only that one fired, so no shape is needed here.
+  // SAFETY: SpeechRecognitionErrorEvent is not part of the official DOM standard yet (the Web Speech API is still a draft), so TypeScript's DOM types may or may not include it. This hook only checks that an error event fired, and never reads any fields from it, so we don't need to define its shape here.
   onerror: ((event: Event) => void) | null;
   onresult: ((event: SpeechRecognitionEventLike) => void) | null;
   abort: () => void;
@@ -42,7 +42,7 @@ const getSpeechRecognitionConstructor = (): SpeechRecognitionConstructor | undef
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: SpeechRecognition (and its Safari/Chromium-prefixed webkitSpeechRecognition twin) isn't declared in TypeScript's DOM lib; every caller goes through this lookup, so an unsupported browser (Firefox) degrades to undefined rather than throwing.
+  // SAFETY: SpeechRecognition (and its prefixed version, webkitSpeechRecognition, used by Safari and Chromium) isn't declared in TypeScript's DOM types. Every caller uses this function to look it up, so an unsupported browser like Firefox gets undefined instead of an error.
   const target = window as WindowWithSpeechRecognition;
   return target.SpeechRecognition ?? target.webkitSpeechRecognition;
 };
@@ -64,11 +64,12 @@ export interface UseSpeechRecognitionResult {
 }
 
 /**
- * Wraps the Web Speech API's recognition half (`SpeechRecognition`, or its
- * `webkitSpeechRecognition` twin on Safari) — voice input. Chromium/Safari
- * only; Firefox never exposes either constructor, so `supported: false`
- * there (the SSR-safe default too), and `start()`/`stop()` then no-op.
- * `transcript` accumulates recognized text across `result` events.
+ * Wraps the voice input part of the Web Speech API (`SpeechRecognition`,
+ * or its `webkitSpeechRecognition` version on Safari). It only works in
+ * Chromium and Safari. Firefox doesn't support either one, so `supported`
+ * is `false` there (also the default for server-side rendering), and
+ * `start()`/`stop()` do nothing in that case. `transcript` builds up the
+ * recognized text as `result` events come in.
  *
  * @example
  * ```tsx

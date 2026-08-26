@@ -16,9 +16,10 @@ export interface UseCounterResult {
 }
 
 /**
- * Numeric counter state with `increment()`/`decrement()` (default step
- * `1`), `set()`, and `reset()` (back to `initialValue`). Clamped to
- * `min`/`max` when given — including `initialValue` itself.
+ * Numeric counter state with `increment()`/`decrement()` (step defaults
+ * to `1`), `set()`, and `reset()` (back to `initialValue`). If you pass
+ * `min` or `max`, the value is kept inside that range, including
+ * `initialValue` itself.
  *
  * @example
  * ```tsx

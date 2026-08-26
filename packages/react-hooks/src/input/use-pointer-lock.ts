@@ -13,12 +13,16 @@ const isSupported = (): boolean =>
   typeof document !== "undefined" && typeof document.exitPointerLock === "function";
 
 /**
- * Pointer Lock API wrapper for a single ref'd element — attach `ref` to the
- * element (e.g. a `<canvas>`) that should capture the pointer, then call
- * `request()`/`exit()` imperatively, typically from a click handler (the
- * API requires a user gesture). `locked` tracks whether that exact element
- * currently holds the lock, via `pointerlockchange`. `supported: false` —
- * the SSR-safe default — where the Pointer Lock API doesn't exist.
+ * Wraps the browser's Pointer Lock API for a single element. Attach
+ * `ref` to the element (for example, a `<canvas>`) that should capture
+ * the pointer, then call `request()` or `exit()` yourself, usually from
+ * a click handler (the browser requires a user gesture to grant the
+ * lock).
+ *
+ * `locked` tracks whether that exact element currently holds the lock,
+ * by listening for `pointerlockchange`. `supported` is `false` by
+ * default (safe for server-side rendering) and stays `false` where the
+ * Pointer Lock API doesn't exist.
  *
  * @example
  * ```tsx

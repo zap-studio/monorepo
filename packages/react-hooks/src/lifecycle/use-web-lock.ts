@@ -14,13 +14,14 @@ export interface UseWebLockResult {
 const isSupported = (): boolean => typeof navigator !== "undefined" && Boolean(navigator.locks);
 
 /**
- * Wraps the Web Locks API — async mutual exclusion for a named resource,
- * shared across same-origin tabs/workers. `runExclusive(callback)` runs
- * `callback` once the `name`d lock is granted, releasing it automatically
- * when `callback` settles (success or throw) — this hook never leaks a
- * held lock. `supported: false` — the SSR-safe default — where the Web
- * Locks API doesn't exist, and `runExclusive()` then resolves `undefined`
- * without ever calling `callback`.
+ * Wraps the Web Locks API. This lets you run code so that only one tab or
+ * worker can run it at a time, for a given lock `name`, even across
+ * different browser tabs on the same site. `runExclusive(callback)` waits
+ * until the lock is available, then runs `callback`, and always releases
+ * the lock afterward, whether `callback` succeeds or throws. So the lock
+ * is never left held by mistake. Returns `supported: false` when the Web
+ * Locks API doesn't exist, such as during server rendering. In that case,
+ * `runExclusive()` resolves to `undefined` without calling `callback`.
  *
  * @example
  * ```tsx

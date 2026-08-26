@@ -21,22 +21,26 @@ const toError = (caught: unknown): Error =>
   caught instanceof Error ? caught : new Error(String(caught));
 
 /**
- * Wraps the WebTransport API — an HTTP/3 connection to a server offering
- * reliable and unreliable, bidirectional and unidirectional data transport.
- * Connection status (`"connecting" | "connected" | "closed"`), wrapping a
- * `WebTransport` opened for `url` (an `"https://"` URL with an explicit
- * port) and torn down on unmount or when `url` changes. Pass `undefined`
- * to stay disconnected (e.g. before a session token is ready).
+ * Wraps the WebTransport API. This is an HTTP/3 connection to a server
+ * that supports both reliable and unreliable data transport, in both
+ * directions. Tracks the connection status
+ * (`"connecting" | "connected" | "closed"`), wrapping a `WebTransport`
+ * opened for `url` (an `"https://"` URL with an explicit port). The
+ * connection closes when the component unmounts or when `url` changes.
+ * Pass `undefined` to stay disconnected, for example while waiting for a
+ * session token.
  *
- * `sendDatagram()`/`lastDatagram` cover the unreliable datagram channel —
- * a persistent writer is held open for the life of the connection, and the
- * latest received chunk is kept, mirroring `useWebSocket`'s `lastMessage`.
- * `createBidirectionalStream()`/`createUnidirectionalStream()` open a
- * reliable stream on demand, handed back as the raw Web Streams objects
- * for the caller to read/write directly.
+ * `sendDatagram()` and `lastDatagram` handle the unreliable datagram
+ * channel: a writer stays open for the whole connection, and the hook
+ * keeps the most recently received chunk, similar to `useWebSocket`'s
+ * `lastMessage`. `createBidirectionalStream()` and
+ * `createUnidirectionalStream()` open a reliable stream when you need
+ * one, and return the raw Web Streams objects so you can read and write
+ * directly.
  *
- * `supported: false` — the SSR-safe default — where the API doesn't exist;
- * see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/WebTransport#browser_compatibility).
+ * Returns `supported: false` when the API doesn't exist, such as during
+ * server rendering. See
+ * [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/WebTransport#browser_compatibility).
  *
  * @example
  * ```tsx
@@ -59,7 +63,7 @@ export const useWebTransport = (
     optionsRef.current = options;
   });
 
-  // react-doctor-disable-next-line react-doctor/no-set-state-after-await-in-effect -- every setter that follows an `await` here (in `readDatagrams`, `waitForReady`, `waitForClose`) is guarded by `if (!controller.signal.aborted)`, and the cleanup below calls `controller.abort()` first; a re-run from `url` changing can't write stale state.
+  // react-doctor-disable-next-line react-doctor/no-set-state-after-await-in-effect -- every state update after an `await` here (in `readDatagrams`, `waitForReady`, `waitForClose`) checks `if (!controller.signal.aborted)` first. The cleanup function calls `controller.abort()` before anything else, so a re-run caused by `url` changing can never write stale state.
   useEffect(() => {
     if (!url || !isSupported()) {
       setStatus("closed");
@@ -84,12 +88,12 @@ export const useWebTransport = (
             return;
           }
           if (!controller.signal.aborted) {
-            // SAFETY: WebTransportDatagramDuplexStream's readable always yields Uint8Array chunks per spec; ReadableStream.read()'s `value` is typed `any` only because the interface is declared without a type parameter.
+            // SAFETY: WebTransportDatagramDuplexStream's readable always yields Uint8Array chunks, per spec. ReadableStream.read()'s `value` is typed `any` only because the interface is declared without a type parameter.
             setLastDatagram(value as Uint8Array);
           }
         }
       } catch {
-        // reader cancelled by cleanup, or the connection dropped — surfaced via `transport.closed` below
+        // The reader was cancelled by cleanup, or the connection dropped. Either way, `transport.closed` below reports it.
       }
     };
     void readDatagrams();

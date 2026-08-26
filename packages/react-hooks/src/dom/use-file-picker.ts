@@ -27,12 +27,13 @@ const isAbortError = (error: unknown): boolean =>
   error instanceof Error && error.name === "AbortError";
 
 /**
- * Wraps the File System Access API — `showOpenFilePicker`/
- * `showSaveFilePicker`/`showDirectoryPicker` — Chromium-only, no Safari/
- * Firefox support yet; `supported: false` elsewhere and every method
- * resolves `undefined` without opening a dialog. Each method also resolves
- * `undefined` (rather than throwing) when the user dismisses the native
- * picker.
+ * Wraps the File System Access API: `showOpenFilePicker`,
+ * `showSaveFilePicker`, and `showDirectoryPicker`. This API only works in
+ * Chromium browsers, not yet in Safari or Firefox. Where it's not
+ * supported, `supported` is `false` and every method resolves `undefined`
+ * without opening a dialog. Each method also resolves `undefined` instead
+ * of throwing an error when the user closes the native picker without
+ * choosing anything.
  *
  * @example
  * ```tsx

@@ -8,15 +8,15 @@ export interface ChangedProp {
   to: unknown;
 }
 
-// v8 ignore next -- selected during SSR (tested), but only ever *called* once React actually runs the effect, which requires a real browser commit under `NODE_ENV=production` — unreachable here since bundlers replace `process.env.NODE_ENV` at this test suite's own build time, before any per-test override could apply.
+// v8 ignore next -- this is picked during server-side rendering (that part is tested), but it only gets *called* once React actually runs the effect, which needs a real browser commit under `NODE_ENV=production`. We can't reach that here, since bundlers replace `process.env.NODE_ENV` at this test suite's own build time, before any per-test override could apply.
 const noop = (): void => {};
 
 /**
- * Logs which of `props`' keys changed to cause the current render —
- * `console.log`s a `name`-labeled table of `{ from, to }` per changed key,
- * or nothing when no key changed (a render caused by state/context rather
- * than these particular props). Does nothing on the mount render, since
- * there's no previous `props` to diff against, or in production builds.
+ * Logs which prop caused the current render. It prints a table (labeled
+ * with `name`) showing `{ from, to }` for each prop that changed. If no
+ * prop changed, it logs nothing — the render was probably caused by
+ * state or context instead. Does nothing on the mount render (there's no
+ * previous props to compare yet) or in production builds.
  *
  * @example
  * ```tsx

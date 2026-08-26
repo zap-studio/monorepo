@@ -10,11 +10,14 @@ const isSupported = (): boolean =>
   typeof document !== "undefined" && typeof document.startViewTransition === "function";
 
 /**
- * Wraps `document.startViewTransition()` — runs `callback` (typically a DOM
- * update) inside a native view transition, animating between the before/
- * after states. Where unsupported, `startTransition` just calls `callback`
- * directly and resolves once it settles — the recommended fallback, per
- * the spec, since the DOM update itself still needs to happen.
+ * Wraps the browser's `document.startViewTransition()` API. It runs
+ * `callback` (usually a DOM update) inside a native view transition,
+ * which animates between the before and after states.
+ *
+ * If the browser doesn't support view transitions, `startTransition` just
+ * calls `callback` directly and waits for it to finish. This is the
+ * fallback recommended by the spec, since the DOM update still needs to
+ * happen either way.
  *
  * @example
  * ```tsx

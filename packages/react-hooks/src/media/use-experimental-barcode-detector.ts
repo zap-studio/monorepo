@@ -21,12 +21,13 @@ export interface UseExperimentalBarcodeDetectorResult {
 }
 
 /**
- * Wraps the Barcode Detection API's `BarcodeDetector` — Experimental per
- * MDN, Chromium-only, no Safari/Firefox support. `detect()` scans an
- * image/video/canvas source for barcodes, resolving `undefined` — rather
- * than throwing — where the API is unsupported. A fresh `BarcodeDetector`
- * is constructed per call, scoped to the `formats` passed to the hook (all
- * supported formats, if omitted).
+ * Wraps the Barcode Detection API's `BarcodeDetector`. MDN marks this as
+ * experimental, and it only works in Chromium browsers (not Safari or
+ * Firefox). `detect()` scans an image, video, or canvas for barcodes. If
+ * the API isn't supported, it returns `undefined` instead of throwing an
+ * error. Each call creates a new `BarcodeDetector`, using the `formats`
+ * you passed to the hook (or all supported formats if you didn't pass
+ * any).
  *
  * @example
  * ```tsx

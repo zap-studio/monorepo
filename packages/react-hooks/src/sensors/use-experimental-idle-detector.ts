@@ -24,14 +24,16 @@ export interface UseExperimentalIdleDetectorResult {
 }
 
 /**
- * Wraps the Idle Detection API's `IdleDetector` — Experimental per MDN,
- * Chromium-only, requires the `"idle-detection"` permission and a secure
- * context. `start()` requests that permission (via the constructor's
- * static `requestPermission()`, resolving `false` if denied) then begins
- * reporting `userState` (`"active"`/`"idle"`) and `screenState`
- * (`"locked"`/`"unlocked"`) as they change; `stop()` tears the detector
- * down. Both states stay `undefined` — the SSR-safe default — until
- * `start()` resolves `true`.
+ * Reads the device's `IdleDetector`. This is experimental, only works in
+ * Chrome, and needs the `"idle-detection"` permission, plus a secure
+ * (HTTPS) page.
+ *
+ * Call `start()` to ask for that permission. It resolves `false` if the
+ * user denies it. Once granted, it starts reporting `userState`
+ * (`"active"` or `"idle"`) and `screenState` (`"locked"` or `"unlocked"`)
+ * whenever they change. Call `stop()` to turn the detector off. Both
+ * states stay `undefined` until `start()` resolves `true`, which is safe
+ * for server-side rendering.
  *
  * @example
  * ```tsx
@@ -81,7 +83,7 @@ export const useExperimentalIdleDetector = (): UseExperimentalIdleDetectorResult
         setUserState(detector.userState);
         setScreenState(detector.screenState);
       };
-      // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- registered inside a user-triggered `start()`, not the effect's mount body; `cleanupRef` (invoked here, in `stop()`, in the catch below, and on unmount by the effect further down) always removes this listener, just via indirection the detector's matcher misses.
+      // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- This listener is added inside `start()`, not inside the effect body, so the linter can't see the cleanup. But `cleanupRef` always removes it: here, in `stop()`, in the catch block below, and when the component unmounts.
       detector.addEventListener("change", handleChange);
       cleanupRef.current = () => {
         abortController.abort();

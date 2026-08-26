@@ -13,14 +13,15 @@ const isSupported = (): boolean =>
   typeof navigator !== "undefined" && typeof navigator.credentials !== "undefined";
 
 /**
- * Wraps the Credential Management API (`navigator.credentials`) — the
- * browser's native store for WebAuthn (public-key) credentials, the
- * only credential type still typed by TypeScript's DOM lib (Password/
- * Federated Credential support was dropped from both browsers and
- * types). Every method resolves `undefined` — rather than throwing —
- * where the API is unsupported; `get()`/`create()` still resolve `null`
- * the way the underlying API does, when there's no credential to return.
- * `supported: false` is the SSR-safe default.
+ * Wraps the Credential Management API (`navigator.credentials`).
+ * Browsers use this to store WebAuthn (public-key) credentials. This is
+ * the only credential type TypeScript's DOM types still support —
+ * Password and Federated Credential support was removed from both
+ * browsers and types. If the API isn't supported, every method resolves
+ * to `undefined` instead of throwing an error. `get()` and `create()` can
+ * still resolve to `null`, just like the real API does, when there's no
+ * credential to return. `supported` starts as `false`, which is also the
+ * safe default during server-side rendering.
  *
  * @example
  * ```tsx

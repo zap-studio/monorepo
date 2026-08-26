@@ -12,11 +12,11 @@ const isSupported = (): boolean => typeof navigator !== "undefined" && Boolean(n
 const DEFAULT_RESET_AFTER_MS = 2000;
 
 /**
- * Wraps `navigator.clipboard.writeText()` — `copy(text)` writes to the
- * clipboard and resolves `true`/`false` for success/failure; `copied`
- * mirrors that, auto-resetting to `false` after `resetAfterMs`.
- * `supported: false` — reflected as an error on `copy()` — where the
- * Clipboard API doesn't exist.
+ * Wraps `navigator.clipboard.writeText()`. Calling `copy(text)` writes
+ * text to the clipboard and resolves to `true` on success or `false` on
+ * failure. `copied` mirrors that result, then resets to `false` after
+ * `resetAfterMs`. If the Clipboard API doesn't exist, `supported` is
+ * `false` and `copy()` resolves with an error instead.
  *
  * @example
  * ```tsx

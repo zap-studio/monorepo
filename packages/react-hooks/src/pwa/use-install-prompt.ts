@@ -13,12 +13,13 @@ export interface UseInstallPromptResult {
 }
 
 /**
- * Custom "Add to Home Screen" UI, wrapping `beforeinstallprompt` (deferred
- * and replayed via `promptInstall()`, since the browser's own prompt is
- * suppressed) and `appinstalled`. `canInstall`/`installed` are both
- * `false` — the SSR-safe default — until the client observes the
- * respective event, and `canInstall` stays `false` permanently in
- * browsers that never fire `beforeinstallprompt` (Safari, Firefox).
+ * Lets you build a custom "Add to Home Screen" button. It wraps the
+ * `beforeinstallprompt` event (which it holds onto and replays later when
+ * you call `promptInstall()`, since the browser's own prompt is
+ * suppressed) and the `appinstalled` event. `canInstall` and `installed`
+ * both start as `false` (safe for server-side rendering) until the client
+ * sees the matching event. `canInstall` stays `false` forever in browsers
+ * that never fire `beforeinstallprompt`, like Safari and Firefox.
  *
  * @example
  * ```tsx
@@ -34,7 +35,7 @@ export const useInstallPrompt = (): UseInstallPromptResult => {
   useEffect(() => {
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
-      // SAFETY: beforeinstallprompt is a non-standard, Chromium-only event not declared in TypeScript's DOM lib; the listener is only ever registered on this exact event name, so the object it receives is always shaped this way at runtime.
+      // SAFETY: beforeinstallprompt is a non-standard event that only Chromium browsers fire, and it isn't declared in TypeScript's DOM types. This listener is only ever added for this exact event name, so the object it receives always has this shape at runtime.
       deferredRef.current = event as BeforeInstallPromptEvent;
       setCanInstall(true);
     };

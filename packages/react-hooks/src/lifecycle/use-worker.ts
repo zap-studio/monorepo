@@ -10,13 +10,15 @@ export interface UseWorkerResult<TMessage, TResult> {
 const isSupported = (): boolean => typeof Worker !== "undefined";
 
 /**
- * Offloads work to a `Worker`, with a promise-based `run()` instead of
- * raw `postMessage`/`onmessage` plumbing. `createWorker` is only called
- * lazily, on the first `run()` — never on mount — and the same worker
- * instance is reused across calls until `terminate()` (or unmount) tears
- * it down, after which the next `run()` creates a fresh one.
- * `supported: false` — the SSR-safe default — where Web Workers don't
- * exist, and `run()` then rejects without ever calling `createWorker`.
+ * Sends work to a `Worker` (a background thread), using a promise-based
+ * `run()` function instead of raw `postMessage`/`onmessage` code.
+ * `createWorker` is only called the first time you call `run()`, never on
+ * mount. The same worker is reused for every call, until `terminate()` is
+ * called (or the component unmounts). After that, the next `run()` call
+ * creates a new worker.
+ * Returns `supported: false` when Web Workers don't exist, such as during
+ * server rendering. In that case, `run()` rejects without ever calling
+ * `createWorker`.
  *
  * @example
  * ```tsx

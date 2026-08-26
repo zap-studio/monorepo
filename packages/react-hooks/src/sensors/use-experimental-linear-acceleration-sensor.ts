@@ -13,7 +13,7 @@ interface LinearAccelerationSensorInstance extends GenericSensorInstance {
   readonly z: number | null;
 }
 
-/** The reading `useExperimentalLinearAccelerationSensor` reports — acceleration in m/s² along each axis, gravity excluded. */
+/** The reading from `useExperimentalLinearAccelerationSensor`. Acceleration in m/s² along each axis, without gravity. */
 export interface LinearAccelerationReading {
   x: number | null;
   y: number | null;
@@ -33,15 +33,16 @@ export type UseExperimentalLinearAccelerationSensorResult =
   UseGenericSensorResult<LinearAccelerationReading>;
 
 /**
- * Wraps the Generic Sensor API's `LinearAccelerationSensor` — Experimental
- * per MDN, Chromium-only, requires the `"accelerometer"` Permissions
- * Policy and a secure context. Reports acceleration along the device's
- * x/y/z axes with the gravity component removed (unlike
- * `useExperimentalAccelerometer`). `start()` constructs the sensor and
- * begins reporting `reading`/`activated`; a Permissions Policy block or a
- * denied permission prompt surfaces through `error` rather than a thrown
- * exception. `reading` stays `undefined` — the SSR-safe default — until
- * the first reading arrives.
+ * Reads the device's `LinearAccelerationSensor`. This is experimental,
+ * only works in Chrome, needs the `"accelerometer"` permission, and needs
+ * a secure (HTTPS) page. Reports acceleration along the device's x/y/z
+ * axes, in m/s², with gravity removed. Unlike
+ * `useExperimentalAccelerometer`, gravity is not included here.
+ *
+ * Call `start()` to create the sensor and start getting readings. If a
+ * permission is blocked or denied, you see that in `error` instead of a
+ * thrown error. `reading` stays `undefined` until the first reading
+ * arrives, which is safe for server-side rendering.
  *
  * @example
  * ```tsx

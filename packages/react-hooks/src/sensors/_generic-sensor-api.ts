@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-/** Minimal local model of the Generic Sensor API — Experimental per MDN, Chromium-only, not declared in every TypeScript DOM lib. */
+/** A small copy of the Generic Sensor API's types. This is an experimental API, only in Chrome, and not included in TypeScript's built-in types. */
 export interface GenericSensorErrorEvent extends Event {
   readonly error: DOMException;
 }
@@ -29,9 +29,9 @@ interface GenericSensorWindow {
 }
 
 /**
- * Guards `typeof window === "undefined"` because every sensor hook reads
- * this synchronously in the hook body, on every render including SSR — not
- * just from an effect.
+ * Checks `typeof window === "undefined"`. Every sensor hook reads this
+ * directly in the hook body on every render, including server-side
+ * rendering, not only inside an effect.
  */
 const getGenericSensorConstructor = <TSensor extends GenericSensorInstance>(
   constructorName: string,
@@ -39,11 +39,11 @@ const getGenericSensorConstructor = <TSensor extends GenericSensorInstance>(
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: window is widened to `unknown` first, then read as a string-keyed record — none of these sensor constructors are declared on every TypeScript DOM lib, so a browser where a given one is genuinely absent (Safari, Firefox) degrades to undefined rather than throwing.
+  // SAFETY: window is first treated as `unknown`, then read as a record keyed by string. Not every TypeScript DOM lib declares these sensor constructors, so on a browser that truly lacks one (like Safari or Firefox) this reads as undefined instead of throwing.
   const untypedWindow: unknown = window;
-  // SAFETY: the sensor constructor is read by name off the widened window above; callers only ever pass a known Generic Sensor API constructor name.
+  // SAFETY: the sensor constructor is read by name from the widened window above. Callers only ever pass a known Generic Sensor API constructor name.
   const sensorWindow = untypedWindow as GenericSensorWindow;
-  // SAFETY: the property read above is `unknown` widened back to a constructor type; every caller in this file passes one of the fixed Generic Sensor API constructor names, so this only ever holds that constructor or undefined.
+  // SAFETY: the value read above is cast from `unknown` to a constructor type. Every caller in this file passes one of the fixed Generic Sensor API constructor names, so this is always that constructor or undefined.
   return sensorWindow[constructorName] as GenericSensorConstructor<TSensor> | undefined;
 };
 
@@ -58,13 +58,13 @@ export interface UseGenericSensorResult<TReading> {
 }
 
 /**
- * Shared `Sensor` subclass lifecycle (start/stop/reading/error) behind every
- * `useExperimental*Sensor` hook. Not itself a public hook — hook files never
- * import one another, so shared logic lives here (mirrors `_network.ts`'s
- * `useNetworkSnapshot` convention). `start()` constructs the sensor and
- * calls its `start()`; construction failures (e.g. a Permissions Policy
- * block) and later runtime failures (e.g. a denied permission prompt) both
- * surface through `error` rather than a thrown exception.
+ * Shared logic (start/stop/reading/error) used by every `useExperimental*Sensor`
+ * hook. It is not a public hook itself. Hook files never import each other, so
+ * shared code lives here instead (the same pattern as `useNetworkSnapshot` in
+ * `_network.ts`). The `start()` function creates the sensor and calls its
+ * `start()`. If creating the sensor fails (for example, a Permissions Policy
+ * block) or it fails later (for example, a denied permission), both cases
+ * are reported through `error` instead of throwing an exception.
  */
 export const useGenericSensor = <TSensor extends GenericSensorInstance, TReading>(
   constructorName: string,
