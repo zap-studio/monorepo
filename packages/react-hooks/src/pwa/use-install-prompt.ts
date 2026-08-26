@@ -30,18 +30,18 @@ export interface UseInstallPromptResult {
 export const useInstallPrompt = (): UseInstallPromptResult => {
   const [canInstall, setCanInstall] = useState(false);
   const [installed, setInstalled] = useState(false);
-  const deferredRef = useRef<BeforeInstallPromptEvent | null>(null);
+  const beforeInstallEventRef = useRef<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
       // SAFETY: beforeinstallprompt is a non-standard event that only Chromium browsers fire, and it isn't declared in TypeScript's DOM types. This listener is only ever added for this exact event name, so the object it receives always has this shape at runtime.
-      deferredRef.current = event as BeforeInstallPromptEvent;
+      beforeInstallEventRef.current = event as BeforeInstallPromptEvent;
       setCanInstall(true);
     };
 
     const handleAppInstalled = () => {
-      deferredRef.current = null;
+      beforeInstallEventRef.current = null;
       setCanInstall(false);
       setInstalled(true);
     };
@@ -55,13 +55,13 @@ export const useInstallPrompt = (): UseInstallPromptResult => {
   }, []);
 
   const promptInstall = useCallback(async (): Promise<"accepted" | "dismissed" | "unavailable"> => {
-    const deferred = deferredRef.current;
-    if (!deferred) {
+    const beforeInstallEvent = beforeInstallEventRef.current;
+    if (!beforeInstallEvent) {
       return "unavailable";
     }
-    await deferred.prompt();
-    const { outcome } = await deferred.userChoice;
-    deferredRef.current = null;
+    await beforeInstallEvent.prompt();
+    const { outcome } = await beforeInstallEvent.userChoice;
+    beforeInstallEventRef.current = null;
     setCanInstall(false);
     return outcome;
   }, []);
