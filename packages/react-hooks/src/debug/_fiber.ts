@@ -26,7 +26,8 @@ export interface FiberLike {
   type: unknown;
 }
 
-const MAX_WALK = 50;
+/** How many Fiber/hook/context list entries `findOwnerFiber`, `collectStateHookValues`, and `collectContextValues` walk through by default, unless a caller passes its own `maxWalk`. */
+export const DEFAULT_MAX_WALK = 50;
 
 /** Finds the DOM node's private `__reactFiber$<id>` property key, if any. */
 const getReactFiberKey = (node: Element): string | undefined =>
@@ -52,11 +53,18 @@ export const readHostFiber = (node: Element): FiberLike | undefined => {
   return bag[key] as FiberLike | undefined;
 };
 
-/** Walks up from a DOM Fiber to find the nearest ancestor that is a function component. If none is found within the walk limit, returns the highest ancestor reached. */
-export const findOwnerFiber = (hostFiber: FiberLike): FiberLike => {
+/**
+ * Walks up from a DOM Fiber to find the nearest ancestor that is a
+ * function component. If none is found within `maxWalk` steps (default
+ * `DEFAULT_MAX_WALK`), returns the highest ancestor reached.
+ */
+export const findOwnerFiber = (
+  hostFiber: FiberLike,
+  maxWalk: number = DEFAULT_MAX_WALK,
+): FiberLike => {
   let current: FiberLike | null = hostFiber;
   let last = hostFiber;
-  for (let i = 0; i < MAX_WALK && current; i += 1) {
+  for (let i = 0; i < maxWalk && current; i += 1) {
     if (typeof current.type === "function") {
       return current;
     }
@@ -75,14 +83,21 @@ export const findOwnerFiber = (hostFiber: FiberLike): FiberLike => {
  * counting every hook, not just state hooks. Use this when a hook reads
  * its own caller's Fiber: set `skip` to the number of hooks this hook
  * itself calls, so its own state doesn't get mixed in with the caller's.
+ *
+ * `maxWalk` caps how many hooks after `skip` get visited (default
+ * `DEFAULT_MAX_WALK`).
  */
-export const collectStateHookValues = (head: HookNode | null, skip = 0): unknown[] => {
+export const collectStateHookValues = (
+  head: HookNode | null,
+  skip: number = 0,
+  maxWalk: number = DEFAULT_MAX_WALK,
+): unknown[] => {
   const values: unknown[] = [];
   let node = head;
   for (let i = 0; i < skip && node; i += 1) {
     node = node.next;
   }
-  for (let i = 0; i < MAX_WALK && node; i += 1) {
+  for (let i = 0; i < maxWalk && node; i += 1) {
     if (node.queue) {
       values.push(node.memoizedState);
     }
@@ -91,11 +106,18 @@ export const collectStateHookValues = (head: HookNode | null, skip = 0): unknown
   return values;
 };
 
-/** `useContext()` values read by a Fiber, via its `dependencies.firstContext` list. */
-export const collectContextValues = (fiber: FiberLike): unknown[] => {
+/**
+ * `useContext()` values read by a Fiber, via its `dependencies.firstContext`
+ * list. `maxWalk` caps how many context entries get visited (default
+ * `DEFAULT_MAX_WALK`).
+ */
+export const collectContextValues = (
+  fiber: FiberLike,
+  maxWalk: number = DEFAULT_MAX_WALK,
+): unknown[] => {
   const values: unknown[] = [];
   let node = fiber.dependencies?.firstContext ?? null;
-  for (let i = 0; i < MAX_WALK && node; i += 1) {
+  for (let i = 0; i < maxWalk && node; i += 1) {
     values.push(node.memoizedValue);
     node = node.next;
   }

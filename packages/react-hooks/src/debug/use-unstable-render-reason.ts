@@ -20,6 +20,12 @@ export interface UseUnstableRenderReasonResult<T extends Element> {
   ref: RefObject<T | null>;
 }
 
+/** Options accepted by `useUnstableRenderReason`. */
+export interface UseUnstableRenderReasonOptions {
+  /** How many Fiber ancestors, hooks, and context entries to walk through before giving up. Defaults to `DEFAULT_MAX_WALK` (50). */
+  maxWalk?: number;
+}
+
 interface RenderSnapshot {
   context: unknown[];
   props: Record<string, unknown> | null;
@@ -36,10 +42,10 @@ const EMPTY_SNAPSHOT: RenderSnapshot = { context: [], props: null, state: [] };
  */
 const OWN_HOOK_COUNT = 6;
 
-const snapshotOf = (fiber: FiberLike): RenderSnapshot => ({
-  context: collectContextValues(fiber),
+const snapshotOf = (fiber: FiberLike, maxWalk: number | undefined): RenderSnapshot => ({
+  context: collectContextValues(fiber, maxWalk),
   props: fiber.memoizedProps,
-  state: collectStateHookValues(fiber.memoizedState, OWN_HOOK_COUNT),
+  state: collectStateHookValues(fiber.memoizedState, OWN_HOOK_COUNT, maxWalk),
 });
 
 const classify = (
@@ -84,15 +90,20 @@ const classify = (
  * component's hook list. If you call a stateful hook before this one, it
  * will be miscounted as belonging to this hook.
  *
+ * `options.maxWalk` caps how many Fiber ancestors, hooks, and context
+ * entries get walked while computing the reason. Defaults to 50; pass a
+ * higher number for a deeply nested tree, or a lower one to bail out sooner.
+ *
  * @example
  * ```tsx
  * const { ref, reason } = useUnstableRenderReason<HTMLDivElement>();
  * return <div ref={ref}>{reason}</div>;
  * ```
  */
-export const useUnstableRenderReason = <
-  T extends Element = HTMLElement,
->(): UseUnstableRenderReasonResult<T> => {
+export const useUnstableRenderReason = <T extends Element = HTMLElement>(
+  options?: UseUnstableRenderReasonOptions,
+): UseUnstableRenderReasonResult<T> => {
+  const maxWalk = options?.maxWalk;
   const ref = useRef<T | null>(null);
   const hasSeenFiberRef = useRef(false);
   const previousRef = useRef<RenderSnapshot>(EMPTY_SNAPSHOT);
@@ -113,7 +124,7 @@ export const useUnstableRenderReason = <
       if (!hostFiber) {
         return "unknown";
       }
-      const current = snapshotOf(findOwnerFiber(hostFiber));
+      const current = snapshotOf(findOwnerFiber(hostFiber, maxWalk), maxWalk);
       const nextReason = classify(hasSeenFiberRef.current, current, previousRef.current);
       hasSeenFiberRef.current = true;
       previousRef.current = current;

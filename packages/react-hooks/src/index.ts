@@ -290,7 +290,10 @@ export type { UseToggleResult } from "./state/use-toggle.ts";
 export { useToggle } from "./state/use-toggle.ts";
 export { useTouchSupport } from "./sensors/use-touch-support.ts";
 export { useUnmount } from "./lifecycle/use-unmount.ts";
-export type { UseUnstableFiberResult } from "./debug/use-unstable-fiber.ts";
+export type {
+  UseUnstableFiberOptions,
+  UseUnstableFiberResult,
+} from "./debug/use-unstable-fiber.ts";
 export { useUnstableFiber } from "./debug/use-unstable-fiber.ts";
 export { useUnstableIsFirstRender } from "./debug/use-unstable-is-first-render.ts";
 export type { UseUnstableOwnerStackResult } from "./debug/use-unstable-owner-stack.ts";
@@ -303,6 +306,7 @@ export type {
 export { useUnstableRenderDuration } from "./debug/use-unstable-render-duration.ts";
 export type {
   RenderReason,
+  UseUnstableRenderReasonOptions,
   UseUnstableRenderReasonResult,
 } from "./debug/use-unstable-render-reason.ts";
 export { useUnstableRenderReason } from "./debug/use-unstable-render-reason.ts";
