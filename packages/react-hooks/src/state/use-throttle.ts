@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+
 /**
  * Returns a throttled version of `callback`. The first call runs right
  * away. After that, calls are ignored until `delayMs` has passed. Unlike
@@ -18,7 +20,7 @@ export const useThrottle = <Args extends unknown[]>(
   delayMs: number,
 ): ((...args: Args) => void) => {
   const callbackRef = useRef(callback);
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     callbackRef.current = callback;
   });
   const coolingDownRef = useRef(false);

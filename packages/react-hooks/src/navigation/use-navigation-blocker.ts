@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 import { getNavigation, type NavigateEvent } from "./_navigation-api.ts";
 
 /** The shape returned by `useNavigationBlocker`. */
@@ -37,7 +38,7 @@ export const useNavigationBlocker = (
 ): NavigationBlockerResult => {
   const [blocked, setBlocked] = useState(false);
   const shouldBlockRef = useRef(shouldBlock);
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     shouldBlockRef.current = shouldBlock;
   });
   const resolveRef = useRef<(() => void) | null>(null);

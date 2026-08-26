@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+
 interface LegacyMouseEvent extends MouseEvent {
   readonly toElement?: Element | null;
 }
@@ -19,7 +21,7 @@ interface LegacyMouseEvent extends MouseEvent {
  */
 export const usePageLeave = (onPageLeave: () => void): void => {
   const onPageLeaveRef = useRef(onPageLeave);
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     onPageLeaveRef.current = onPageLeave;
   });
 

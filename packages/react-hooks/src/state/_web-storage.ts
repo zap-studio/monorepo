@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+
 /** A new value, or a function that returns one based on the previous value. Same shape as `useState`'s setter. */
 export type SetStoredValue<T> = T | ((prev: T) => T);
 
@@ -34,7 +36,7 @@ export const useWebStorage = <T>(
   );
 
   const initialValueRef = useRef(initialValue);
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     initialValueRef.current = initialValue;
   });
 

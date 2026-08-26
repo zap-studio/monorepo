@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+
 /** One received message, as tracked by `useWindowMessage`. */
 export interface WindowMessage<T> {
   data: T;
@@ -36,7 +38,7 @@ export const useWindowMessage = <T = unknown>(originFilter?: string): UseWindowM
   const [lastMessage, setLastMessage] = useState<WindowMessage<T> | undefined>(undefined);
   const [lastError, setLastError] = useState<MessageEvent | undefined>(undefined);
   const originFilterRef = useRef(originFilter);
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     originFilterRef.current = originFilter;
   });
 
