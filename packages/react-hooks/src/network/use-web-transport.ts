@@ -79,11 +79,13 @@ export const useWebTransport = (
       try {
         for (;;) {
           const { done, value } = await reader.read();
-          if (done || cancelled) {
+          if (done) {
             return;
           }
-          // SAFETY: WebTransportDatagramDuplexStream's readable always yields Uint8Array chunks per spec; ReadableStream.read()'s `value` is typed `any` only because the interface is declared without a type parameter.
-          setLastDatagram(value as Uint8Array);
+          if (!cancelled) {
+            // SAFETY: WebTransportDatagramDuplexStream's readable always yields Uint8Array chunks per spec; ReadableStream.read()'s `value` is typed `any` only because the interface is declared without a type parameter.
+            setLastDatagram(value as Uint8Array);
+          }
         }
       } catch {
         // reader cancelled by cleanup, or the connection dropped — surfaced via `transport.closed` below
