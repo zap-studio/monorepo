@@ -1,5 +1,6 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
+/** Minimal local model of the Network Information API — not declared in every TypeScript DOM lib. */
 export interface NetworkInformation extends EventTarget {
   readonly downlink?: number;
   // oxlint-disable-next-line sonarjs/max-union-size -- Models the NetworkInformation Web API's fixed effectiveType set; the 4 values are the whole spec, not something to shrink.

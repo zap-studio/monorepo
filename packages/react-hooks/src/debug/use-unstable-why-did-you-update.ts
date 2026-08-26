@@ -8,6 +8,9 @@ export interface ChangedProp {
   to: unknown;
 }
 
+// v8 ignore next -- selected during SSR (tested), but only ever *called* once React actually runs the effect, which requires a real browser commit under `NODE_ENV=production` — unreachable here since bundlers replace `process.env.NODE_ENV` at this test suite's own build time, before any per-test override could apply.
+const noop = (): void => {};
+
 /**
  * Logs which of `props`' keys changed to cause the current render —
  * `console.log`s a `name`-labeled table of `{ from, to }` per changed key,
@@ -23,9 +26,6 @@ export interface ChangedProp {
  * }
  * ```
  */
-// v8 ignore next -- selected during SSR (tested), but only ever *called* once React actually runs the effect, which requires a real browser commit under `NODE_ENV=production` — unreachable here since bundlers replace `process.env.NODE_ENV` at this test suite's own build time, before any per-test override could apply.
-const noop = (): void => {};
-
 export const useUnstableWhyDidYouUpdate = (name: string, props: Record<string, unknown>): void => {
   const previousPropsRef = useRef<Record<string, unknown> | undefined>(undefined);
   const skip = isProductionBuild();

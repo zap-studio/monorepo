@@ -10,23 +10,27 @@ export interface FileSystemDirectoryHandle {
   readonly name: string;
 }
 
+/** One accepted file type entry, as passed to `showOpenFilePicker`/`showSaveFilePicker`. */
 export interface FilePickerAcceptType {
   accept: Record<string, string[]>;
   description?: string;
 }
 
+/** Options `showOpenFilePicker` accepts. */
 export interface OpenFilePickerOptions {
   excludeAcceptAllOption?: boolean;
   multiple?: boolean;
   types?: FilePickerAcceptType[];
 }
 
+/** Options `showSaveFilePicker` accepts. */
 export interface SaveFilePickerOptions {
   excludeAcceptAllOption?: boolean;
   suggestedName?: string;
   types?: FilePickerAcceptType[];
 }
 
+/** Options `showDirectoryPicker` accepts. */
 export interface DirectoryPickerOptions {
   id?: string;
   mode?: "read" | "readwrite";

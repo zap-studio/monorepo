@@ -1,5 +1,6 @@
 /** Minimal local model of the Idle Detection API — Experimental per MDN, Chromium-only, not declared in every TypeScript DOM lib. */
 export type IdleScreenState = "locked" | "unlocked";
+/** Whether the user has interacted with the device within the detector's idle threshold. */
 export type IdleUserState = "active" | "idle";
 
 /** Options `IdleDetector.start()` accepts. */

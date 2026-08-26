@@ -9,12 +9,14 @@ export interface ContextDependency {
   next: ContextDependency | null;
 }
 
+/** One node in a Fiber's `memoizedState` linked list — one entry per hook call, in call order. */
 export interface HookNode {
   memoizedState: unknown;
   next: HookNode | null;
   queue: unknown;
 }
 
+/** Local model of the react-dom Fiber fields this file's helpers read. */
 export interface FiberLike {
   alternate: FiberLike | null;
   dependencies: { firstContext: ContextDependency | null } | null;
@@ -30,16 +32,16 @@ const MAX_WALK = 50;
 const getReactFiberKey = (node: Element): string | undefined =>
   Object.keys(node).find((key) => key.startsWith("__reactFiber$"));
 
-/**
- * Reads the Fiber react-dom attaches to a mounted DOM node via its private
- * `__reactFiber$<id>` pointer. Returns `undefined` for a node react-dom
- * never mounted, or where the shape doesn't match what's expected.
- */
 /** A DOM node carrying react-dom's private per-instance Fiber pointers, keyed by the pointer's own name (`__reactFiber$<id>`). */
 interface FiberBearingElement extends Element {
   [fiberKey: string]: unknown;
 }
 
+/**
+ * Reads the Fiber react-dom attaches to a mounted DOM node via its private
+ * `__reactFiber$<id>` pointer. Returns `undefined` for a node react-dom
+ * never mounted, or where the shape doesn't match what's expected.
+ */
 export const readHostFiber = (node: Element): FiberLike | undefined => {
   const key = getReactFiberKey(node);
   if (!key) {
@@ -103,6 +105,7 @@ export const collectContextValues = (fiber: FiberLike): unknown[] => {
 export const arraysDiffer = (a: unknown[], b: unknown[]): boolean =>
   a.length !== b.length || a.some((value, index) => !Object.is(value, b[index]));
 
+/** Shallow key-by-key equality check for two props objects (from consecutive `memoizedProps` reads). */
 export const propsDiffer = (
   a: Record<string, unknown> | null,
   b: Record<string, unknown> | null,

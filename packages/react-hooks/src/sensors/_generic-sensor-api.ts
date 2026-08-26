@@ -5,6 +5,7 @@ export interface GenericSensorErrorEvent extends Event {
   readonly error: DOMException;
 }
 
+/** Shape common to every Generic Sensor API sensor instance (`Accelerometer`, `Gyroscope`, etc). */
 export interface GenericSensorInstance extends EventTarget {
   readonly activated: boolean;
   readonly hasReading: boolean;
