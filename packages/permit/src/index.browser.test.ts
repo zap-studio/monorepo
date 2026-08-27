@@ -101,7 +101,7 @@ interface TestContext {
   };
 }
 
-describe(allow, () => {
+describe("allow", () => {
   it("should return a function that always returns 'allow'", async () => {
     await Promise.resolve();
     const policyFn = allow();
@@ -125,7 +125,7 @@ describe(allow, () => {
   });
 });
 
-describe(deny, () => {
+describe("deny", () => {
   it("should return a function that always returns 'deny'", async () => {
     await Promise.resolve();
     const policyFn = deny();
@@ -149,7 +149,7 @@ describe(deny, () => {
   });
 });
 
-describe(when, () => {
+describe("when", () => {
   it("should return 'allow' when condition returns true", async () => {
     await Promise.resolve();
     const policyFn = when(() => true);
@@ -202,7 +202,7 @@ describe(when, () => {
   });
 });
 
-describe(and, () => {
+describe("and", () => {
   it("should return true when all conditions are true", async () => {
     await Promise.resolve();
     const condition = and(
@@ -281,7 +281,7 @@ describe(and, () => {
   });
 });
 
-describe(or, () => {
+describe("or", () => {
   it("should return true when any condition is true", async () => {
     await Promise.resolve();
     const condition = or(
@@ -364,7 +364,7 @@ describe(or, () => {
   });
 });
 
-describe(mergePoliciesAnd, () => {
+describe("mergePoliciesAnd", () => {
   it("should deny when called with no policies", async () => {
     await Promise.resolve();
     const policy = mergePoliciesAnd<TestContext, typeof resources, typeof actions>();
@@ -382,7 +382,7 @@ describe(mergePoliciesAnd, () => {
   });
 });
 
-describe(mergePoliciesOr, () => {
+describe("mergePoliciesOr", () => {
   it("should deny when called with no policies", async () => {
     await Promise.resolve();
     const policy = mergePoliciesOr<TestContext, typeof resources, typeof actions>();
@@ -400,7 +400,7 @@ describe(mergePoliciesOr, () => {
   });
 });
 
-describe(not, () => {
+describe("not", () => {
   it("should negate a true condition", async () => {
     await Promise.resolve();
     const condition = not(() => true);
@@ -449,7 +449,7 @@ describe(not, () => {
   });
 });
 
-describe(has, () => {
+describe("has", () => {
   it("should return true when context property equals value", async () => {
     await Promise.resolve();
     const condition = has<TestContext["user"], "role">("role", "admin");
@@ -497,7 +497,7 @@ describe(has, () => {
   });
 });
 
-describe(collectInheritedRoles, () => {
+describe("collectInheritedRoles", () => {
   type Role = "guest" | "user" | "moderator" | "admin";
 
   const hierarchy: RoleHierarchy<Role> = {
@@ -580,7 +580,7 @@ describe(collectInheritedRoles, () => {
   });
 });
 
-describe(hasRole, () => {
+describe("hasRole", () => {
   type Role = "guest" | "user" | "admin";
 
   const hierarchy: RoleHierarchy<Role> = {
@@ -709,7 +709,7 @@ describe(hasRole, () => {
   });
 });
 
-describe(createPolicy, () => {
+describe("createPolicy", () => {
   it("should create a policy with can method", async () => {
     await Promise.resolve();
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
@@ -1330,7 +1330,7 @@ describe(createPolicy, () => {
   });
 });
 
-describe(mergePoliciesAnd, () => {
+describe("mergePoliciesAnd", () => {
   it("should return a policy with can method", async () => {
     await Promise.resolve();
     const policy1 = createPolicy<TestContext, typeof resources, typeof actions>({
@@ -1603,7 +1603,7 @@ describe(mergePoliciesAnd, () => {
   });
 });
 
-describe(mergePoliciesOr, () => {
+describe("mergePoliciesOr", () => {
   it("should return a policy with can method", async () => {
     await Promise.resolve();
     const policy1 = createPolicy<TestContext, typeof resources, typeof actions>({

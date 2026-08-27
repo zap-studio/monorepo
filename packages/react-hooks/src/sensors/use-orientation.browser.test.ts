@@ -30,7 +30,7 @@ const setScreenOrientation = (info: ScreenOrientation | undefined) => {
   });
 };
 
-describe(useOrientation, () => {
+describe("useOrientation", () => {
   it("reports the current orientation from screen.orientation", () => {
     const { info } = createOrientationMock({ angle: 90, type: LANDSCAPE_PRIMARY });
     setScreenOrientation(info);

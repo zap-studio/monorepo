@@ -54,7 +54,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useExperimentalGyroscope, () => {
+describe("useExperimentalGyroscope", () => {
   it("reports supported: false when the Generic Sensor API is unavailable", () => {
     vi.stubGlobal("Gyroscope", undefined);
 

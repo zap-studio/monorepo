@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useAsync } from "./use-async.ts";
 
-describe(useAsync, () => {
+describe("useAsync", () => {
   it("starts loading: true with no data/error", () => {
     const { result } = renderHook(() => useAsync(() => Promise.resolve(1)));
 

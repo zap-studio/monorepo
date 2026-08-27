@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { PolicyError } from "./errors.ts";
 
-describe(PolicyError, () => {
+describe("PolicyError", () => {
   describe("constructor", () => {
     it("should create an error with the provided message", () => {
       const error = new PolicyError("Policy evaluation failed");

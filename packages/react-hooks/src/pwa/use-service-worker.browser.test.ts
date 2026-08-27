@@ -34,7 +34,7 @@ afterEach(() => {
   setServiceWorkerContainer(undefined);
 });
 
-describe(useServiceWorker, () => {
+describe("useServiceWorker", () => {
   it("reports supported: false when navigator.serviceWorker is unavailable", () => {
     setServiceWorkerContainer(undefined);
 

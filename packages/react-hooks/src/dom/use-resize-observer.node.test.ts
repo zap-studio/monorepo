@@ -9,7 +9,7 @@ const TestComponent = () => {
   return createElement("div", { ref }, size ? "sized" : "unsized");
 };
 
-describe(useResizeObserver, () => {
+describe("useResizeObserver", () => {
   it("renders unsized on the server, before any observation can fire", () => {
     const html = renderToString(createElement(TestComponent));
 

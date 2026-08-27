@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `${clientX},${clientY}`;
 };
 
-describe(useMousePosition, () => {
+describe("useMousePosition", () => {
   it("renders 0,0 on the server, before any mousemove can fire", () => {
     const html = renderToString(createElement(TestComponent));
 

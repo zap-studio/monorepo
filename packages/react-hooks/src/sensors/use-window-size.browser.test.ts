@@ -8,7 +8,7 @@ const setWindowSize = (width: number, height: number) => {
   Object.defineProperty(window, "innerHeight", { configurable: true, value: height });
 };
 
-describe(useWindowSize, () => {
+describe("useWindowSize", () => {
   it("reports the current window size", () => {
     setWindowSize(1024, 768);
 

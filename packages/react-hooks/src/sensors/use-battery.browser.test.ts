@@ -34,7 +34,7 @@ const setNavigatorGetBattery = (getBattery: (() => Promise<BatteryManager>) | un
   });
 };
 
-describe(useBattery, () => {
+describe("useBattery", () => {
   it("reports unsupported when the Battery Status API is unavailable", () => {
     setNavigatorGetBattery(undefined);
 

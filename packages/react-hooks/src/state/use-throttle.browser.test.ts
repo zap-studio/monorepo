@@ -11,7 +11,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe(useThrottle, () => {
+describe("useThrottle", () => {
   it("calls the callback immediately on the first call (leading edge)", () => {
     const callback = vi.fn();
     const { result } = renderHook(() => useThrottle(callback, 500));

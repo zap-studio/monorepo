@@ -8,7 +8,7 @@ const TestComponent = () => {
   return String(useDevicePixelRatio());
 };
 
-describe(useDevicePixelRatio, () => {
+describe("useDevicePixelRatio", () => {
   it("renders 1 on the server, before window can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

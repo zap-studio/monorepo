@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `${language},${languages.join(";")}`;
 };
 
-describe(usePreferredLanguage, () => {
+describe("usePreferredLanguage", () => {
   it('falls back to "en" on the server, before navigator can be read', () => {
     const html = renderToString(createElement(TestComponent));
 

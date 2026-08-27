@@ -9,7 +9,7 @@ const TestComponent = () => {
   return String(value);
 };
 
-describe(useLocalStorage, () => {
+describe("useLocalStorage", () => {
   it("renders the initial value on the server, before localStorage can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

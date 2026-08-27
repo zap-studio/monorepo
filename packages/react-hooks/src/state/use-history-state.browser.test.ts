@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { useHistoryState } from "./use-history-state.ts";
 
-describe(useHistoryState, () => {
+describe("useHistoryState", () => {
   it("starts at the initial value with no undo/redo available", () => {
     const { result } = renderHook(() => useHistoryState("a"));
 

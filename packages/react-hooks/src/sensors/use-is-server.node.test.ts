@@ -9,7 +9,7 @@ const TestComponent = () => {
   return isServer ? "true" : "false";
 };
 
-describe(useIsServer, () => {
+describe("useIsServer", () => {
   it("renders true on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

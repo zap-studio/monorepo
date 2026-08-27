@@ -9,7 +9,7 @@ const TestComponent = () => {
   return supported ? "true" : "false";
 };
 
-describe(useCredential, () => {
+describe("useCredential", () => {
   it("renders supported: false on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

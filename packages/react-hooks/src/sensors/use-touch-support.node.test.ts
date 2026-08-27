@@ -9,7 +9,7 @@ const TestComponent = () => {
   return hasTouch ? "true" : "false";
 };
 
-describe(useTouchSupport, () => {
+describe("useTouchSupport", () => {
   it("renders false on the server, before navigator can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

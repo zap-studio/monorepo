@@ -9,7 +9,7 @@ const TestComponent = () => {
   return createElement("div", { ref }, hovered ? "true" : "false");
 };
 
-describe(useHover, () => {
+describe("useHover", () => {
   it("renders false on the server, before any mouseenter can fire", () => {
     const html = renderToString(createElement(TestComponent));
 

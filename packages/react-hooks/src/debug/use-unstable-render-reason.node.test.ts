@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe(useUnstableRenderReason, () => {
+describe("useUnstableRenderReason", () => {
   it("renders unknown on the server, before any ref can attach", () => {
     const html = renderToString(createElement(TestComponent));
 

@@ -9,7 +9,7 @@ const TestComponent = () => {
   return createElement("div", { ref }, isOver ? "true" : "false");
 };
 
-describe(useFileDrop, () => {
+describe("useFileDrop", () => {
   it("renders false on the server, before any drag event can fire", () => {
     const html = renderToString(createElement(TestComponent));
 

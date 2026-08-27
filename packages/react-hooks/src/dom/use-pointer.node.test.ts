@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `${pointerType},${isDown}`;
 };
 
-describe(usePointer, () => {
+describe("usePointer", () => {
   it("renders the all-empty/false initial state on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

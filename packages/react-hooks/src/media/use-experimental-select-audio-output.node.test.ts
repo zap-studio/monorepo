@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useExperimentalSelectAudioOutput, () => {
+describe("useExperimentalSelectAudioOutput", () => {
   it("renders supported: false on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

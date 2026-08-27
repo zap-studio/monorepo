@@ -22,7 +22,7 @@ afterEach(() => {
   setPointerLockElement(null);
 });
 
-describe(usePointerLock, () => {
+describe("usePointerLock", () => {
   it("reports supported: true when the Pointer Lock API exists", () => {
     setPointerLockSupport(true);
 

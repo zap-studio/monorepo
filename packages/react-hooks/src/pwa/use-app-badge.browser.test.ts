@@ -22,7 +22,7 @@ afterEach(() => {
   setBadgeSupport(undefined);
 });
 
-describe(useAppBadge, () => {
+describe("useAppBadge", () => {
   it("reports supported: true when the Badging API exists", () => {
     setBadgeSupport({
       clearAppBadge: vi.fn(async () => undefined),

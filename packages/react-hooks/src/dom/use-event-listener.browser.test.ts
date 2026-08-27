@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useEventListener } from "./use-event-listener.ts";
 
-describe(useEventListener, () => {
+describe("useEventListener", () => {
   it("attaches to window by default target and calls the handler", () => {
     const handler = vi.fn();
     renderHook(() => useEventListener(window, "click", handler));
@@ -139,7 +139,7 @@ describe(useEventListener, () => {
     rerender();
     rerender();
 
-    expect(addEventListener.mock.calls.length).toBe(initialCalls);
+    expect(addEventListener.mock.calls).toHaveLength(initialCalls);
   });
 
   it("re-subscribes when a boolean capture option flips", () => {
@@ -154,7 +154,7 @@ describe(useEventListener, () => {
     const initialCalls = addEventListener.mock.calls.length;
     rerender({ capture: true });
 
-    expect(addEventListener.mock.calls.length).toBe(initialCalls + 1);
+    expect(addEventListener.mock.calls).toHaveLength(initialCalls + 1);
 
     window.dispatchEvent(new Event("click"));
     expect(handler).toHaveBeenCalledTimes(1);
@@ -171,7 +171,7 @@ describe(useEventListener, () => {
     const initialCalls = addEventListener.mock.calls.length;
     rerender({ once: true });
 
-    expect(addEventListener.mock.calls.length).toBe(initialCalls + 1);
+    expect(addEventListener.mock.calls).toHaveLength(initialCalls + 1);
   });
 
   it("only calls the handler once with the once option", () => {
@@ -196,7 +196,7 @@ describe(useEventListener, () => {
     const initialCalls = addEventListener.mock.calls.length;
     rerender({ passive: false });
 
-    expect(addEventListener.mock.calls.length).toBe(initialCalls + 1);
+    expect(addEventListener.mock.calls).toHaveLength(initialCalls + 1);
   });
 
   it("forwards an abort signal and re-subscribes when it changes", () => {

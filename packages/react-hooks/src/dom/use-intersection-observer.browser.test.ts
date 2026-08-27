@@ -49,7 +49,7 @@ afterEach(() => {
   FakeIntersectionObserver.instances = [];
 });
 
-describe(useIntersectionObserver, () => {
+describe("useIntersectionObserver", () => {
   it("starts with inView: false and no entry", () => {
     vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
     const div = renderObservedDiv();

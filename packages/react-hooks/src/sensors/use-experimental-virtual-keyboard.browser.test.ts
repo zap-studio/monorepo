@@ -32,7 +32,7 @@ const setNavigatorVirtualKeyboard = (keyboard: VirtualKeyboard | undefined) => {
   Object.defineProperty(navigator, "virtualKeyboard", { configurable: true, value: keyboard });
 };
 
-describe(useExperimentalVirtualKeyboard, () => {
+describe("useExperimentalVirtualKeyboard", () => {
   it("reports the current on-screen keyboard bounding rect", () => {
     const { keyboard } = createVirtualKeyboardMock({ height: 300, width: 400, x: 0, y: 500 });
     setNavigatorVirtualKeyboard(keyboard);

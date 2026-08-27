@@ -33,7 +33,7 @@ afterEach(() => {
   Reflect.deleteProperty(window.screen, "isExtended");
 });
 
-describe(useExperimentalWindowManagement, () => {
+describe("useExperimentalWindowManagement", () => {
   it("reports supported: false when getScreenDetails is unavailable", () => {
     vi.stubGlobal("getScreenDetails", undefined);
 

@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `${canGoBack},${currentEntry === null ? "null" : "defined"},${entries.length}`;
 };
 
-describe(useNavigation, () => {
+describe("useNavigation", () => {
   it("falls back to the empty snapshot on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

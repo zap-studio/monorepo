@@ -9,7 +9,7 @@ const TestComponent = () => {
   return prefersDark ? "true" : "false";
 };
 
-describe(usePrefersDarkMode, () => {
+describe("usePrefersDarkMode", () => {
   it("renders false on the server, before matchMedia can run", () => {
     const html = renderToString(createElement(TestComponent));
 

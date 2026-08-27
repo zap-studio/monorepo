@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { useRenderDuration } from "./use-render-duration.ts";
 
-describe(useRenderDuration, () => {
+describe("useRenderDuration", () => {
   it("starts with no samples", () => {
     const { result } = renderHook(() => useRenderDuration());
 

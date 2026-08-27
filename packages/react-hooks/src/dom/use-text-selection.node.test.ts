@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `[${text}]`;
 };
 
-describe(useTextSelection, () => {
+describe("useTextSelection", () => {
   it("renders an empty selection on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

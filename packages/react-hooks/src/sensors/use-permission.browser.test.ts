@@ -27,7 +27,7 @@ const setNavigatorPermissions = (
   });
 };
 
-describe(usePermission, () => {
+describe("usePermission", () => {
   it("starts undefined before the query resolves", () => {
     setNavigatorPermissions(() => new Promise(() => {}));
 

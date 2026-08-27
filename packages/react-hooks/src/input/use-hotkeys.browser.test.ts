@@ -7,7 +7,7 @@ const dispatchKeyDown = (init: KeyboardEventInit) => {
   return window.dispatchEvent(new KeyboardEvent("keydown", { cancelable: true, ...init }));
 };
 
-describe(useHotkeys, () => {
+describe("useHotkeys", () => {
   it("calls the handler when a plain key combo matches", async () => {
     const handler = vi.fn();
     renderHook(() => useHotkeys({ enter: handler }));

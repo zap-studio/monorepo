@@ -9,7 +9,7 @@ const TestComponent = () => {
   return "ok";
 };
 
-describe(useEventListener, () => {
+describe("useEventListener", () => {
   it("renders without touching any global during server rendering", () => {
     const html = renderToString(createElement(TestComponent));
 

@@ -7,7 +7,7 @@ afterEach(() => {
   window.sessionStorage.clear();
 });
 
-describe(useSessionStorage, () => {
+describe("useSessionStorage", () => {
   it("returns the initial value when nothing is stored", () => {
     const { result } = renderHook(() => useSessionStorage("draft", ""));
 

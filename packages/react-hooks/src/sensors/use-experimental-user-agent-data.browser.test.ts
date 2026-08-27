@@ -7,7 +7,7 @@ const setUserAgentData = (data: unknown) => {
   Object.defineProperty(navigator, "userAgentData", { configurable: true, value: data });
 };
 
-describe(useExperimentalUserAgentData, () => {
+describe("useExperimentalUserAgentData", () => {
   it("reports navigator.userAgentData when available", () => {
     setUserAgentData({
       brands: [{ brand: "Chromium", version: "130" }],

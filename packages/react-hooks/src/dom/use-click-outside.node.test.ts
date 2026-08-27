@@ -9,7 +9,7 @@ const TestComponent = () => {
   return createElement("div", { ref });
 };
 
-describe(useClickOutside, () => {
+describe("useClickOutside", () => {
   it("renders without touching document during server rendering", () => {
     const html = renderToString(createElement(TestComponent));
 

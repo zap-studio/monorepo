@@ -9,7 +9,7 @@ const TestComponent = () => {
   return status;
 };
 
-describe(useCamera, () => {
+describe("useCamera", () => {
   it('renders "idle" on the server, before start() can be called', () => {
     const html = renderToString(createElement(TestComponent));
 

@@ -22,7 +22,7 @@ afterEach(() => {
   setFullscreenElement(null);
 });
 
-describe(useFullscreen, () => {
+describe("useFullscreen", () => {
   it("reports supported: true when the Fullscreen API exists", () => {
     setFullscreenSupport(true);
 

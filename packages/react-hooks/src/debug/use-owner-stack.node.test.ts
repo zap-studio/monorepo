@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe(useOwnerStack, () => {
+describe("useOwnerStack", () => {
   it("renders without throwing during server rendering", () => {
     expect(() => renderToString(createElement(TestComponent))).not.toThrow();
   });

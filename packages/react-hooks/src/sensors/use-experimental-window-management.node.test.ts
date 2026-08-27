@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `${supported}-${isExtended}`;
 };
 
-describe(useExperimentalWindowManagement, () => {
+describe("useExperimentalWindowManagement", () => {
   it("renders supported: false and isExtended: false on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

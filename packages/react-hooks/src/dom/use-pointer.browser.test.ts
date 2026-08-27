@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { usePointer } from "./use-pointer.ts";
 
-describe(usePointer, () => {
+describe("usePointer", () => {
   it("starts with the all-empty/false initial state", () => {
     const { result } = renderHook(() => usePointer());
 

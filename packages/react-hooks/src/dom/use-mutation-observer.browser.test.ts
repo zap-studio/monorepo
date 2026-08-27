@@ -24,7 +24,7 @@ const renderObservedDiv = (callback: (mutations: MutationRecord[]) => void) => {
   };
 };
 
-describe(useMutationObserver, () => {
+describe("useMutationObserver", () => {
   it("calls the callback when an attribute changes on the ref'd element", async () => {
     const callback = vi.fn();
     const div = renderObservedDiv(callback);

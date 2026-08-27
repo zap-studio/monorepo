@@ -9,7 +9,7 @@ const TestComponent = () => {
   return createElement("div", { ref });
 };
 
-describe(useMutationObserver, () => {
+describe("useMutationObserver", () => {
   it("renders without touching MutationObserver during server rendering", () => {
     const html = renderToString(createElement(TestComponent));
 

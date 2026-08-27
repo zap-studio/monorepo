@@ -9,7 +9,7 @@ const TestComponent = () => {
   return isActive ? "true" : "false";
 };
 
-describe(useUserActivation, () => {
+describe("useUserActivation", () => {
   it("renders false on the server, before navigator.userActivation can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

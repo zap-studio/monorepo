@@ -38,7 +38,7 @@ afterEach(() => {
   setPictureInPictureElement(null);
 });
 
-describe(usePictureInPicture, () => {
+describe("usePictureInPicture", () => {
   it("reports supported: true when document.pictureInPictureEnabled is true", () => {
     setPictureInPictureSupport(true);
 

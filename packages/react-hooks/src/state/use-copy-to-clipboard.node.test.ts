@@ -9,7 +9,7 @@ const TestComponent = () => {
   return copied ? "true" : "false";
 };
 
-describe(useCopyToClipboard, () => {
+describe("useCopyToClipboard", () => {
   it("renders copied: false on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

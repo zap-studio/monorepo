@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useUnmount } from "./use-unmount.ts";
 
-describe(useUnmount, () => {
+describe("useUnmount", () => {
   it("does not call the cleanup during server rendering", () => {
     const cleanup = vi.fn();
     const TestComponent = () => {

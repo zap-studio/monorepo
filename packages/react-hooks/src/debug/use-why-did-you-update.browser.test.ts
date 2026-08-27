@@ -7,7 +7,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe(useWhyDidYouUpdate, () => {
+describe("useWhyDidYouUpdate", () => {
   it("does not log on the mount render", () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
 

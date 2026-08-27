@@ -9,7 +9,7 @@ const TestComponent = () => {
   return String(map.get("a"));
 };
 
-describe(useMap, () => {
+describe("useMap", () => {
   it("renders the initial entries on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

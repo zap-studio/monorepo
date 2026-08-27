@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useClickOutside } from "./use-click-outside.ts";
 
-describe(useClickOutside, () => {
+describe("useClickOutside", () => {
   it("calls onOutside when a mousedown lands outside the ref'd element", () => {
     const onOutside = vi.fn();
     const inside = document.createElement("div");

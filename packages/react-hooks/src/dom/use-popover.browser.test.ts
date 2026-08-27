@@ -23,7 +23,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(usePopover, () => {
+describe("usePopover", () => {
   it("reports supported: true when togglePopover exists", () => {
     const { result } = renderHook(() => usePopover());
 

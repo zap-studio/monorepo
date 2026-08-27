@@ -9,7 +9,7 @@ const TestComponent = () => {
   return createElement("div", { ref }, inView ? "true" : "false");
 };
 
-describe(useIntersectionObserver, () => {
+describe("useIntersectionObserver", () => {
   it("renders false on the server, before any observation can fire", () => {
     const html = renderToString(createElement(TestComponent));
 

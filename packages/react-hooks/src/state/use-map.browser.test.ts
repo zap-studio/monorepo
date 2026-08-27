@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { useMap } from "./use-map.ts";
 
-describe(useMap, () => {
+describe("useMap", () => {
   it("starts empty by default", () => {
     const { result } = renderHook(() => useMap<string, number>());
 

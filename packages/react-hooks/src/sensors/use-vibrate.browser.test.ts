@@ -7,7 +7,7 @@ const setNavigatorVibrate = (vibrate: ((pattern: VibratePattern) => boolean) | u
   Object.defineProperty(navigator, "vibrate", { configurable: true, value: vibrate });
 };
 
-describe(useVibrate, () => {
+describe("useVibrate", () => {
   it("reports supported: true when navigator.vibrate exists", () => {
     setNavigatorVibrate(vi.fn(() => true));
 

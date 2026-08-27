@@ -7,7 +7,7 @@ afterEach(() => {
   document.body.style.overflow = "";
 });
 
-describe(useLockBodyScroll, () => {
+describe("useLockBodyScroll", () => {
   it("sets body overflow to hidden by default", () => {
     renderHook(() => useLockBodyScroll());
 

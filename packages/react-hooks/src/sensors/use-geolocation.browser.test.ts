@@ -35,7 +35,7 @@ const fakePosition = {
 
 const fakeError = { code: 1, message: "User denied Geolocation" };
 
-describe(useGeolocation, () => {
+describe("useGeolocation", () => {
   it("starts in a loading state", () => {
     const geolocation = createGeolocationMock();
     setNavigatorGeolocation(geolocation);

@@ -89,7 +89,7 @@ afterEach(async () => {
   await deleteTestDatabase();
 });
 
-describe(useIndexedDB, () => {
+describe("useIndexedDB", () => {
   it('starts "loading" with the initial value', () => {
     const { result } = renderHook(() => useIndexedDB("count", 0));
 

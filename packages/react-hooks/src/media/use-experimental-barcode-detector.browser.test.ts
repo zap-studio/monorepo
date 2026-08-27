@@ -7,7 +7,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useExperimentalBarcodeDetector, () => {
+describe("useExperimentalBarcodeDetector", () => {
   it("reports supported: false when the Barcode Detection API is unavailable", () => {
     vi.stubGlobal("BarcodeDetector", undefined);
 

@@ -23,7 +23,7 @@ afterEach(() => {
   setGetUserMedia(undefined);
 });
 
-describe(useUserMedia, () => {
+describe("useUserMedia", () => {
   it('starts "idle" with no stream', () => {
     setGetUserMedia(() => Promise.resolve(makeStream()));
 

@@ -28,7 +28,7 @@ const renderFiberDiv = (props: { label: string }) => {
   };
 };
 
-describe(useUnstableFiber, () => {
+describe("useUnstableFiber", () => {
   it("starts with fiber: null before mount", () => {
     const { result } = renderHook(() => useUnstableFiber());
 

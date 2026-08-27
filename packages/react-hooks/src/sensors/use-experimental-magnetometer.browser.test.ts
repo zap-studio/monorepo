@@ -54,7 +54,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useExperimentalMagnetometer, () => {
+describe("useExperimentalMagnetometer", () => {
   it("reports supported: false when the Generic Sensor API is unavailable", () => {
     vi.stubGlobal("Magnetometer", undefined);
 

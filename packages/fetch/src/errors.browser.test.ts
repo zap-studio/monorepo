@@ -9,7 +9,7 @@ const INVALID_EMAIL_MESSAGE = "Invalid email";
 const REQUIRED_FIELD_MESSAGE = "Required field";
 const INVALID_VALUE_MESSAGE = "Invalid value";
 
-describe(FetchError, () => {
+describe("FetchError", () => {
   describe("constructor", () => {
     it("should create an error with the provided message", () => {
       const mockResponse = new Response(null, { status: 404 });
@@ -87,7 +87,7 @@ describe(FetchError, () => {
   });
 });
 
-describe(ValidationError, () => {
+describe("ValidationError", () => {
   describe("constructor", () => {
     it("should create an error with issues as JSON message", () => {
       const issues: StandardSchemaV1.Issue[] = [

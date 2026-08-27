@@ -9,7 +9,7 @@ const TestComponent = () => {
   return isPressed ? "true" : "false";
 };
 
-describe(useKeyPress, () => {
+describe("useKeyPress", () => {
   it("renders false on the server, before any key event can fire", () => {
     const html = renderToString(createElement(TestComponent));
 

@@ -9,7 +9,7 @@ const TestComponent = () => {
   return supported ? "true" : "false";
 };
 
-describe(usePaymentRequest, () => {
+describe("usePaymentRequest", () => {
   it("renders false on the server, before PaymentRequest can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

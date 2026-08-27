@@ -49,7 +49,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useExperimentalNfc, () => {
+describe("useExperimentalNfc", () => {
   it("reports supported: false when the Web NFC API is unavailable", () => {
     vi.stubGlobal("NDEFReader", undefined);
 

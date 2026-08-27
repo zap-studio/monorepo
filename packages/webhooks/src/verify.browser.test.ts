@@ -45,7 +45,7 @@ const captureThrownError = async <T>(run: () => T | Promise<T>): Promise<unknown
   return undefined;
 };
 
-describe(createHmacVerifier, () => {
+describe("createHmacVerifier", () => {
   const createMockContext = (
     body: string | Uint8Array,
     signature?: string,

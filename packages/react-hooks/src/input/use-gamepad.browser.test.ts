@@ -29,7 +29,7 @@ afterEach(() => {
   setGamepads([]);
 });
 
-describe(useGamepad, () => {
+describe("useGamepad", () => {
   it("starts with no connected gamepads", () => {
     setGamepads([]);
 

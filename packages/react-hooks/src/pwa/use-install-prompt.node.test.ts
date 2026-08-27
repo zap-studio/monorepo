@@ -9,7 +9,7 @@ const TestComponent = () => {
   return canInstall ? "true" : "false";
 };
 
-describe(useInstallPrompt, () => {
+describe("useInstallPrompt", () => {
   it("renders false on the server, before beforeinstallprompt can fire", () => {
     const html = renderToString(createElement(TestComponent));
 

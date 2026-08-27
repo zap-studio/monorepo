@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useIdleCallback } from "./use-idle-callback.ts";
 
-describe(useIdleCallback, () => {
+describe("useIdleCallback", () => {
   it("renders without touching requestIdleCallback during server rendering", () => {
     const callback = vi.fn();
     const TestComponent = () => {

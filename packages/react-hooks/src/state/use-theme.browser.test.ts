@@ -8,7 +8,7 @@ afterEach(() => {
   window.localStorage.clear();
 });
 
-describe(useTheme, () => {
+describe("useTheme", () => {
   it('defaults to theme: "system"', () => {
     const { matchMedia } = createMatchMediaMock(false);
     vi.spyOn(window, "matchMedia").mockImplementation(matchMedia);

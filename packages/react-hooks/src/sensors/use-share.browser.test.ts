@@ -11,7 +11,7 @@ const setNavigatorCanShare = (canShare: ((data?: ShareData) => boolean) | undefi
   Object.defineProperty(navigator, "canShare", { configurable: true, value: canShare });
 };
 
-describe(useShare, () => {
+describe("useShare", () => {
   it("reports supported: true when navigator.share exists", () => {
     setNavigatorShare(vi.fn());
 

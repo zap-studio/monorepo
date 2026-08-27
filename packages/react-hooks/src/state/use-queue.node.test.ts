@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `${first},${last}`;
 };
 
-describe(useQueue, () => {
+describe("useQueue", () => {
   it("renders the initial values on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

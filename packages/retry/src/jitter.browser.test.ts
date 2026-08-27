@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { applyJitter } from "./jitter.ts";
 
-describe(applyJitter, () => {
+describe("applyJitter", () => {
   it("returns delayMs unchanged when jitter is omitted", () => {
     expect(applyJitter(1000)).toBe(1000);
   });

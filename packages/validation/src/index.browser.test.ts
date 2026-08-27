@@ -64,7 +64,7 @@ const captureThrownError = (run: () => unknown): unknown => {
   throw new Error("Expected function to throw");
 };
 
-describe(ValidationError, () => {
+describe("ValidationError", () => {
   it("should store issues and stringify them in the message", () => {
     const issues: StandardSchemaV1.Issue[] = [
       { message: FIELD_REQUIRED_MESSAGE },
@@ -79,7 +79,7 @@ describe(ValidationError, () => {
   });
 });
 
-describe(isStandardSchema, () => {
+describe("isStandardSchema", () => {
   it("should return true for valid Standard Schema objects", () => {
     const schema = createMockSchema(() => ({ value: "test" }));
 
@@ -125,7 +125,7 @@ describe(isStandardSchema, () => {
   });
 });
 
-describe(createStandardValidator, () => {
+describe("createStandardValidator", () => {
   it("should return a reusable async validator for synchronous schemas", async () => {
     const schema = createMockSchema((input) => ({
       value: String(input),
@@ -188,7 +188,7 @@ describe(createStandardValidator, () => {
   });
 });
 
-describe(createStandardValidatorSync, () => {
+describe("createStandardValidatorSync", () => {
   it("should validate using a synchronous Standard Schema and return the result", () => {
     const schema: StandardSchemaV1<unknown, string> = {
       "~standard": {
@@ -264,7 +264,7 @@ describe(createStandardValidatorSync, () => {
   });
 });
 
-describe(standardValidate, () => {
+describe("standardValidate", () => {
   describe("synchronous validation", () => {
     it("should validate data against a synchronous schema", async () => {
       const schema = createMockSchema((input) => ({
@@ -434,7 +434,7 @@ describe(standardValidate, () => {
   });
 });
 
-describe(standardValidateSync, () => {
+describe("standardValidateSync", () => {
   describe("synchronous validation", () => {
     it("should validate data against a synchronous schema", () => {
       const schema = createMockSchema((input) => ({

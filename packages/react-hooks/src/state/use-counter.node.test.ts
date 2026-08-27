@@ -9,7 +9,7 @@ const TestComponent = () => {
   return String(count);
 };
 
-describe(useCounter, () => {
+describe("useCounter", () => {
   it("renders the initial value on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

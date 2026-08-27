@@ -9,7 +9,7 @@ const TestComponent = () => {
   return String(gamepads.length);
 };
 
-describe(useGamepad, () => {
+describe("useGamepad", () => {
   it("renders an empty list on the server, before navigator.getGamepads() can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

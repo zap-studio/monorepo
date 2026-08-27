@@ -48,7 +48,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useExperimentalAmbientLightSensor, () => {
+describe("useExperimentalAmbientLightSensor", () => {
   it("reports supported: false when the Generic Sensor API is unavailable", () => {
     vi.stubGlobal("AmbientLightSensor", undefined);
 

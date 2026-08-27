@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useBeforeUnload } from "./use-before-unload.ts";
 
-describe(useBeforeUnload, () => {
+describe("useBeforeUnload", () => {
   it("calls the handler when beforeunload fires", async () => {
     const handler = vi.fn();
     renderHook(() => useBeforeUnload(handler));

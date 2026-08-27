@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useDeviceOrientation } from "./use-device-orientation.ts";
 
-describe(useDeviceOrientation, () => {
+describe("useDeviceOrientation", () => {
   it("starts with all-null orientation and supported reflecting DeviceOrientationEvent", () => {
     const { result } = renderHook(() => useDeviceOrientation());
 

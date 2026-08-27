@@ -9,7 +9,7 @@ const TestComponent = () => {
   return cookiesEnabled ? "true" : "false";
 };
 
-describe(useCookieEnabled, () => {
+describe("useCookieEnabled", () => {
   it("renders false on the server, before navigator can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

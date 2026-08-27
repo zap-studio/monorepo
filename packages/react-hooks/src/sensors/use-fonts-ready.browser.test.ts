@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { useFontsReady } from "./use-fonts-ready.ts";
 
-describe(useFontsReady, () => {
+describe("useFontsReady", () => {
   it("starts false", () => {
     const { result } = renderHook(() => useFontsReady());
 

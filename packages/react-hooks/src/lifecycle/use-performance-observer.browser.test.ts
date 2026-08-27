@@ -35,7 +35,7 @@ afterEach(() => {
   Object.defineProperty(window, "PerformanceObserver", { configurable: true, value: undefined });
 });
 
-describe(usePerformanceObserver, () => {
+describe("usePerformanceObserver", () => {
   it("reports supported: true when PerformanceObserver exists", () => {
     installMockPerformanceObserver();
 

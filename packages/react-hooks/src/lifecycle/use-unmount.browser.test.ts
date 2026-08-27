@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useUnmount } from "./use-unmount.ts";
 
-describe(useUnmount, () => {
+describe("useUnmount", () => {
   it("does not call the cleanup while mounted", () => {
     const cleanup = vi.fn();
     renderHook(() => useUnmount(cleanup));

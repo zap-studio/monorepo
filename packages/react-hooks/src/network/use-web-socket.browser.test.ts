@@ -36,7 +36,7 @@ afterEach(() => {
   Object.defineProperty(window, "WebSocket", { configurable: true, value: undefined });
 });
 
-describe(useWebSocket, () => {
+describe("useWebSocket", () => {
   it('starts as "connecting" and opens a socket for the given url', () => {
     installMockWebSocket();
 

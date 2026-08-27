@@ -50,7 +50,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useExperimentalRelativeOrientationSensor, () => {
+describe("useExperimentalRelativeOrientationSensor", () => {
   it("reports supported: false when the Generic Sensor API is unavailable", () => {
     vi.stubGlobal("RelativeOrientationSensor", undefined);
 

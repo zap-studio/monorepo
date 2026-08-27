@@ -9,7 +9,7 @@ const TestComponent = () => {
   return loading ? "true" : "false";
 };
 
-describe(useAsync, () => {
+describe("useAsync", () => {
   it("renders loading: true on the server, before the effect can run", () => {
     const html = renderToString(createElement(TestComponent));
 

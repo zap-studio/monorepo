@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useUpdateEffect } from "./use-update-effect.ts";
 
-describe(useUpdateEffect, () => {
+describe("useUpdateEffect", () => {
   it("does not call the effect on the mount render", () => {
     const effect = vi.fn();
     renderHook(() => useUpdateEffect(effect, []));

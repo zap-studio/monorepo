@@ -9,7 +9,7 @@ const TestComponent = () => {
   return value;
 };
 
-describe(useSessionStorage, () => {
+describe("useSessionStorage", () => {
   it("renders the initial value on the server, before sessionStorage can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

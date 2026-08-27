@@ -9,7 +9,7 @@ const TestComponent = () => {
   return matches ? "true" : "false";
 };
 
-describe(useMediaQuery, () => {
+describe("useMediaQuery", () => {
   it("renders false on the server, before matchMedia can run", () => {
     const html = renderToString(createElement(TestComponent));
 

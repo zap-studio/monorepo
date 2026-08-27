@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { useOwnerStack } from "./use-owner-stack.ts";
 
-describe(useOwnerStack, () => {
+describe("useOwnerStack", () => {
   it("reports supported: true on this React version", () => {
     const { result } = renderHook(() => useOwnerStack());
 

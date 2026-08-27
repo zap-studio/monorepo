@@ -9,7 +9,7 @@ const TestComponent = () => {
   return supported ? "true" : "false";
 };
 
-describe(useViewTransition, () => {
+describe("useViewTransition", () => {
   it("renders supported: false on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

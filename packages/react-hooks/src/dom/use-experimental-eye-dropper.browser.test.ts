@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useExperimentalEyeDropper, () => {
+describe("useExperimentalEyeDropper", () => {
   it("reports supported: false when the EyeDropper API is unavailable", () => {
     vi.stubGlobal("EyeDropper", undefined);
 

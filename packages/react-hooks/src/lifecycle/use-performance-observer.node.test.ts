@@ -9,7 +9,7 @@ const TestComponent = () => {
   return supported ? "true" : "false";
 };
 
-describe(usePerformanceObserver, () => {
+describe("usePerformanceObserver", () => {
   it("renders without crashing during server rendering", () => {
     // Node itself implements PerformanceObserver natively, so `supported` genuinely reflects
     // that here — unlike browser-only APIs, there's no "always false during SSR" guarantee to assert.

@@ -19,7 +19,7 @@ afterEach(() => {
   setClipboardSupport(undefined);
 });
 
-describe(useCopyToClipboard, () => {
+describe("useCopyToClipboard", () => {
   it("starts with copied: false", () => {
     const { result } = renderHook(() => useCopyToClipboard());
 

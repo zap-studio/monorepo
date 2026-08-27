@@ -8,7 +8,7 @@ const TestComponent = () => {
   return useDocumentVisibility();
 };
 
-describe(useDocumentVisibility, () => {
+describe("useDocumentVisibility", () => {
   it('falls back to "visible" on the server, before document can be read', () => {
     const html = renderToString(createElement(TestComponent));
 

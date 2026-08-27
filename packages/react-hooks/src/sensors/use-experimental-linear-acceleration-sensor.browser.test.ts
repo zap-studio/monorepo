@@ -56,7 +56,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useExperimentalLinearAccelerationSensor, () => {
+describe("useExperimentalLinearAccelerationSensor", () => {
   it("reports supported: false when the Generic Sensor API is unavailable", () => {
     vi.stubGlobal("LinearAccelerationSensor", undefined);
 

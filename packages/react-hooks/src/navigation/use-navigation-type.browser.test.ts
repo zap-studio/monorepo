@@ -9,7 +9,7 @@ afterEach(() => {
   performance.getEntriesByType = originalGetEntriesByType;
 });
 
-describe(useNavigationType, () => {
+describe("useNavigationType", () => {
   it("reads the type off the navigation timing entry", () => {
     performance.getEntriesByType = ((type: string) =>
       type === "navigation"

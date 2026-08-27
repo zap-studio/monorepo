@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe(useRenderDuration, () => {
+describe("useRenderDuration", () => {
   it("renders with no samples on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

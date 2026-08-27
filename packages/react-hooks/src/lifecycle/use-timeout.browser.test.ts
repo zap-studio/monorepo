@@ -11,7 +11,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe(useTimeout, () => {
+describe("useTimeout", () => {
   it("calls the callback after the delay elapses", () => {
     const callback = vi.fn();
     renderHook(() => useTimeout(callback, 1000));

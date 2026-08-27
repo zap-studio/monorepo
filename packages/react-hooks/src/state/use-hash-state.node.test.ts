@@ -9,7 +9,7 @@ const TestComponent = () => {
   return hash === "" ? "empty" : hash;
 };
 
-describe(useHashState, () => {
+describe("useHashState", () => {
   it("falls back to an empty hash on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `${pathname},${state === null ? "null" : String(state)}`;
 };
 
-describe(usePopState, () => {
+describe("usePopState", () => {
   it("falls back to pathname '/' and state null on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

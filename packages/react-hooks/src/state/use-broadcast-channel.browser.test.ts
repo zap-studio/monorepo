@@ -11,7 +11,7 @@ afterEach(() => {
   globalThis.BroadcastChannel = OriginalBroadcastChannel;
 });
 
-describe(useBroadcastChannel, () => {
+describe("useBroadcastChannel", () => {
   it("reports supported: false and postMessage() no-ops when BroadcastChannel is unsupported", () => {
     Reflect.deleteProperty(globalThis, "BroadcastChannel");
 

@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createMatchMediaMock } from "./_media-query-test-utils.ts";
 import { useIsMobile } from "./use-is-mobile.ts";
 
-describe(useIsMobile, () => {
+describe("useIsMobile", () => {
   it("returns true when the viewport is below the default 768px breakpoint", () => {
     const { matchMedia } = createMatchMediaMock(true);
     vi.spyOn(window, "matchMedia").mockImplementation(matchMedia);

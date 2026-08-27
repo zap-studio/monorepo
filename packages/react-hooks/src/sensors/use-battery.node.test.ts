@@ -9,7 +9,7 @@ const TestComponent = () => {
   return supported ? "true" : "false";
 };
 
-describe(useBattery, () => {
+describe("useBattery", () => {
   it("renders unsupported on the server, before the effect can run", () => {
     const html = renderToString(createElement(TestComponent));
 

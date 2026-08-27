@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `${supported},${active}`;
 };
 
-describe(useWakeLock, () => {
+describe("useWakeLock", () => {
   it("renders unsupported and inactive on the server, without touching navigator", () => {
     const html = renderToString(createElement(TestComponent));
 

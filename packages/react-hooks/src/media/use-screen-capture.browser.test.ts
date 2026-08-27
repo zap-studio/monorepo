@@ -28,7 +28,7 @@ afterEach(() => {
   setGetDisplayMedia(undefined);
 });
 
-describe(useScreenCapture, () => {
+describe("useScreenCapture", () => {
   it('starts "idle" with no stream', () => {
     setGetDisplayMedia(() => Promise.resolve(makeStream()));
 

@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe(useRenderCount, () => {
+describe("useRenderCount", () => {
   it("renders 1 on the first server render", () => {
     const html = renderToString(createElement(TestComponent));
 

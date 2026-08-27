@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `${value},${canUndo},${canRedo}`;
 };
 
-describe(useHistoryState, () => {
+describe("useHistoryState", () => {
   it("renders the initial value on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

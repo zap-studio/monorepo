@@ -30,7 +30,7 @@ afterEach(() => {
   Object.defineProperty(window, "EventSource", { configurable: true, value: undefined });
 });
 
-describe(useEventSource, () => {
+describe("useEventSource", () => {
   it('starts as "connecting" and opens a source for the given url', () => {
     installMockEventSource();
 

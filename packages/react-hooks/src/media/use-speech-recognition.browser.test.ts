@@ -68,7 +68,7 @@ afterEach(() => {
   });
 });
 
-describe(useSpeechRecognition, () => {
+describe("useSpeechRecognition", () => {
   it("reports supported: true when SpeechRecognition exists", () => {
     installMockSpeechRecognition();
 

@@ -16,7 +16,7 @@ afterEach(() => {
   setUserActivation(undefined);
 });
 
-describe(useUserActivation, () => {
+describe("useUserActivation", () => {
   it("reflects the initial navigator.userActivation state", () => {
     setUserActivation({ hasBeenActive: false, isActive: false });
 

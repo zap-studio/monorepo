@@ -22,7 +22,7 @@ afterEach(() => {
   setLocksSupport(undefined);
 });
 
-describe(useWebLock, () => {
+describe("useWebLock", () => {
   it("reports supported: true when navigator.locks exists", () => {
     setLocksSupport(() => Promise.resolve(undefined));
 

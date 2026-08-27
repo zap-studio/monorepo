@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `${x},${y}`;
 };
 
-describe(useScrollPosition, () => {
+describe("useScrollPosition", () => {
   it("renders 0,0 on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

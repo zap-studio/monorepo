@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useTimeout } from "./use-timeout.ts";
 
-describe(useTimeout, () => {
+describe("useTimeout", () => {
   it("does not schedule during server rendering", () => {
     const callback = vi.fn();
     const TestComponent = () => {

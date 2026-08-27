@@ -9,7 +9,7 @@ const TestComponent = () => {
   return theme;
 };
 
-describe(useTheme, () => {
+describe("useTheme", () => {
   it('renders theme: "system" on the server, before matchMedia/localStorage can be read', () => {
     const html = renderToString(createElement(TestComponent));
 

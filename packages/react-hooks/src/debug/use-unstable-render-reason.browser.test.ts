@@ -54,7 +54,7 @@ const renderChildWithContext = (props: { label: string }, contextValue: string) 
   };
 };
 
-describe(useUnstableRenderReason, () => {
+describe("useUnstableRenderReason", () => {
   it("classifies a hook with no attached ref as unknown", () => {
     const { result } = renderHook(() => useUnstableRenderReason());
 

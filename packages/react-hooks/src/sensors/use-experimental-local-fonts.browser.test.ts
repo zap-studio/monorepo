@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useExperimentalLocalFonts, () => {
+describe("useExperimentalLocalFonts", () => {
   it("reports supported: false when queryLocalFonts is unavailable", () => {
     vi.stubGlobal("queryLocalFonts", undefined);
 

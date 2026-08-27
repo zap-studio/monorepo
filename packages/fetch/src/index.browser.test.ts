@@ -71,7 +71,7 @@ const captureRejectedError = async (run: () => Promise<unknown>): Promise<unknow
   throw new Error("Expected promise to reject");
 };
 
-describe($fetch, () => {
+describe("$fetch", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
@@ -431,7 +431,7 @@ describe($fetch, () => {
   });
 });
 
-describe(createFetch, () => {
+describe("createFetch", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {

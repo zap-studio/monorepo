@@ -9,7 +9,7 @@ const TestComponent = () => {
   return set.has("a") ? "true" : "false";
 };
 
-describe(useSet, () => {
+describe("useSet", () => {
   it("renders the initial values on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

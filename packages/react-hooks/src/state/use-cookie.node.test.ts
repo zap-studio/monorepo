@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `${supported},${value === undefined ? "undefined" : value}`;
 };
 
-describe(useCookie, () => {
+describe("useCookie", () => {
   it("falls back to unsupported/undefined on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

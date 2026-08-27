@@ -9,7 +9,7 @@ const TestComponent = () => {
   return supported ? "true" : "false";
 };
 
-describe(useStorageEstimate, () => {
+describe("useStorageEstimate", () => {
   it("renders unsupported on the server, before navigator can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

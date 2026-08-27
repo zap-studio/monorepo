@@ -9,7 +9,7 @@ const TestComponent = () => {
   return permission;
 };
 
-describe(useNotificationPermission, () => {
+describe("useNotificationPermission", () => {
   it('renders "unsupported" on the server, before Notification can be read', () => {
     const html = renderToString(createElement(TestComponent));
 

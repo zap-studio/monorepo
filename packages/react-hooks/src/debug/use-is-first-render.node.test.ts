@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe(useIsFirstRender, () => {
+describe("useIsFirstRender", () => {
   it("renders true on the first server render", () => {
     const html = renderToString(createElement(TestComponent));
 

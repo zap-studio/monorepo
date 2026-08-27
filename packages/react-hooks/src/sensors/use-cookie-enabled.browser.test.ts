@@ -7,7 +7,7 @@ const setCookieEnabled = (value: boolean) => {
   Object.defineProperty(navigator, "cookieEnabled", { configurable: true, value });
 };
 
-describe(useCookieEnabled, () => {
+describe("useCookieEnabled", () => {
   it("is true when navigator.cookieEnabled is true", () => {
     setCookieEnabled(true);
 

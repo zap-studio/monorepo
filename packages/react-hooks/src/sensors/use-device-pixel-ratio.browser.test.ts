@@ -33,7 +33,7 @@ const createMatchMediaMock = () => {
   };
 };
 
-describe(useDevicePixelRatio, () => {
+describe("useDevicePixelRatio", () => {
   it("reports the current window.devicePixelRatio", () => {
     setDevicePixelRatio(2);
     const { matchMedia } = createMatchMediaMock();

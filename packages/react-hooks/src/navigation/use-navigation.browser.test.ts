@@ -44,7 +44,7 @@ const fakeEntry = (url: string): NavigationHistoryEntry => {
   return { url } as unknown as NavigationHistoryEntry;
 };
 
-describe(useNavigation, () => {
+describe("useNavigation", () => {
   it("reports the current navigation state", () => {
     const entryA = fakeEntry("/a");
     const { nav } = createNavigationMock({

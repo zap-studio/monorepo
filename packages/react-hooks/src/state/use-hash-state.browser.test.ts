@@ -9,7 +9,7 @@ afterEach(() => {
   location.hash = "";
 });
 
-describe(useHashState, () => {
+describe("useHashState", () => {
   it("reads the current location.hash", () => {
     location.hash = "#initial";
 

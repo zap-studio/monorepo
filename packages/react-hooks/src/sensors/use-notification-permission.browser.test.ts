@@ -23,7 +23,7 @@ const setMockNotification = (permission: NotificationPermission) => {
   Object.defineProperty(window, "Notification", { configurable: true, value: MockNotification });
 };
 
-describe(useNotificationPermission, () => {
+describe("useNotificationPermission", () => {
   it("reports the current Notification.permission", () => {
     setMockNotification("default");
 

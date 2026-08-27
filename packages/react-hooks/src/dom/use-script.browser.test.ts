@@ -13,7 +13,7 @@ const scriptFor = (src: string): HTMLScriptElement | null => {
   return document.querySelector(`script[src="${src}"]`);
 };
 
-describe(useScript, () => {
+describe("useScript", () => {
   it("starts with status: loading and appends a <script> tag", () => {
     const src = uniqueSrc();
     const { result } = renderHook(() => useScript(src));

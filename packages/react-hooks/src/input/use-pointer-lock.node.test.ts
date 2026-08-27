@@ -9,7 +9,7 @@ const TestComponent = () => {
   return locked ? "true" : "false";
 };
 
-describe(usePointerLock, () => {
+describe("usePointerLock", () => {
   it("renders false on the server, before pointerlockchange can fire", () => {
     const html = renderToString(createElement(TestComponent));
 

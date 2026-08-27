@@ -41,7 +41,7 @@ const setNavigatorConnection = (connection: NetworkInformation | undefined) => {
   });
 };
 
-describe(useNetworkState, () => {
+describe("useNetworkState", () => {
   it("reports online status and connection info", () => {
     setNavigatorOnLine(true);
     const { connection } = createConnectionMock({

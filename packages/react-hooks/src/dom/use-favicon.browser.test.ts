@@ -13,7 +13,7 @@ afterEach(() => {
   }
 });
 
-describe(useFavicon, () => {
+describe("useFavicon", () => {
   it('creates a <link rel="icon"> when none exists', () => {
     renderHook(() => useFavicon("/favicon.svg"));
 

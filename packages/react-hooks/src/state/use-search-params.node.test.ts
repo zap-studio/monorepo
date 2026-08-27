@@ -9,7 +9,7 @@ const TestComponent = () => {
   return searchParams.size === 0 ? "empty" : searchParams.toString();
 };
 
-describe(useSearchParams, () => {
+describe("useSearchParams", () => {
   it("falls back to empty params on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

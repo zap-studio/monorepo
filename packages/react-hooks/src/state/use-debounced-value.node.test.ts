@@ -8,7 +8,7 @@ const TestComponent = () => {
   return useDebouncedValue("initial", 500);
 };
 
-describe(useDebouncedValue, () => {
+describe("useDebouncedValue", () => {
   it("renders the initial value on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

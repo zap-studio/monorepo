@@ -9,7 +9,7 @@ const TestComponent = () => {
   return supported ? "true" : "false";
 };
 
-describe(useAppBadge, () => {
+describe("useAppBadge", () => {
   it("renders false on the server, before navigator.setAppBadge can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

@@ -9,7 +9,7 @@ const TestComponent = () => {
   return createElement("div", { ref }, isOpen ? "true" : "false");
 };
 
-describe(usePopover, () => {
+describe("usePopover", () => {
   it("renders false on the server, before any toggle event can fire", () => {
     const html = renderToString(createElement(TestComponent));
 

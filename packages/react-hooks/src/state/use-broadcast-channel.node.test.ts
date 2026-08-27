@@ -9,7 +9,7 @@ const TestComponent = () => {
   return lastMessage === undefined ? "undefined" : lastMessage;
 };
 
-describe(useBroadcastChannel, () => {
+describe("useBroadcastChannel", () => {
   it("renders with no lastMessage on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

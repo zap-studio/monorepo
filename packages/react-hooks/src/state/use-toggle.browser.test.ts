@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { useToggle } from "./use-toggle.ts";
 
-describe(useToggle, () => {
+describe("useToggle", () => {
   it("defaults to false", () => {
     const { result } = renderHook(() => useToggle());
 

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useDeviceMotion } from "./use-device-motion.ts";
 
-describe(useDeviceMotion, () => {
+describe("useDeviceMotion", () => {
   it("starts with all-null motion and supported reflecting DeviceMotionEvent", () => {
     const { result } = renderHook(() => useDeviceMotion());
 

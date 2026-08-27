@@ -9,7 +9,7 @@ const TestComponent = () => {
   return supported ? "true" : "false";
 };
 
-describe(useExperimentalAbsoluteOrientationSensor, () => {
+describe("useExperimentalAbsoluteOrientationSensor", () => {
   it("renders supported: false on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

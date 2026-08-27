@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `${loading},${coords === undefined},${error === undefined}`;
 };
 
-describe(useGeolocation, () => {
+describe("useGeolocation", () => {
   it("renders the initial loading state on the server, before the effect can run", () => {
     const html = renderToString(createElement(TestComponent));
 

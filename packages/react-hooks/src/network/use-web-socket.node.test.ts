@@ -9,7 +9,7 @@ const TestComponent = () => {
   return status;
 };
 
-describe(useWebSocket, () => {
+describe("useWebSocket", () => {
   it('renders "closed" on the server when no url is given', () => {
     const html = renderToString(createElement(TestComponent));
 

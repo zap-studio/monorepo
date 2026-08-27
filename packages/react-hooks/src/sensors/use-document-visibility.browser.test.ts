@@ -10,7 +10,7 @@ const setDocumentVisibility = (state: DocumentVisibilityState) => {
   });
 };
 
-describe(useDocumentVisibility, () => {
+describe("useDocumentVisibility", () => {
   it("reports the current document.visibilityState", () => {
     setDocumentVisibility("hidden");
 

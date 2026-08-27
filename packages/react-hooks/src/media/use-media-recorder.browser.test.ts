@@ -50,7 +50,7 @@ afterEach(() => {
   Object.defineProperty(window, "MediaRecorder", { configurable: true, value: undefined });
 });
 
-describe(useMediaRecorder, () => {
+describe("useMediaRecorder", () => {
   it("reports supported: true when MediaRecorder exists", () => {
     installMockMediaRecorder();
 

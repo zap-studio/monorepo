@@ -47,7 +47,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useResizeObserver, () => {
+describe("useResizeObserver", () => {
   it("starts with size: undefined", () => {
     vi.stubGlobal("ResizeObserver", FakeResizeObserver);
     const div = renderObservedDiv();

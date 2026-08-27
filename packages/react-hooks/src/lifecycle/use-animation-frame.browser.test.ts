@@ -35,7 +35,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useAnimationFrame, () => {
+describe("useAnimationFrame", () => {
   it("schedules a frame on mount", () => {
     renderHook(() => useAnimationFrame(vi.fn()));
 

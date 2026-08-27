@@ -19,7 +19,7 @@ const renderHoverDiv = () => {
   };
 };
 
-describe(useHover, () => {
+describe("useHover", () => {
   it("starts not hovered", () => {
     const hover = renderHoverDiv();
 

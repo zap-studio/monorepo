@@ -20,7 +20,7 @@ const setNavigatorContacts = (
   Object.defineProperty(navigator, "contacts", { configurable: true, value: contacts });
 };
 
-describe(useExperimentalContactPicker, () => {
+describe("useExperimentalContactPicker", () => {
   it("reports supported: false when navigator.contacts is unavailable", () => {
     setNavigatorContacts(undefined);
 

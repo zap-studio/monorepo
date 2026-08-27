@@ -49,7 +49,7 @@ const createRecordingLogger = (): Logger & {
   };
 };
 
-describe(WebhookRouter, () => {
+describe("WebhookRouter", () => {
   const encoder = new TextEncoder();
 
   const createRequest = (

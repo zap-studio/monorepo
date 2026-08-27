@@ -36,7 +36,7 @@ afterEach(() => {
   Object.defineProperty(window, "cancelIdleCallback", { configurable: true, value: undefined });
 });
 
-describe(useIdleCallback, () => {
+describe("useIdleCallback", () => {
   it("schedules via requestIdleCallback when supported", () => {
     const mock = setIdleCallbackSupport(true);
     renderHook(() => useIdleCallback(vi.fn()));

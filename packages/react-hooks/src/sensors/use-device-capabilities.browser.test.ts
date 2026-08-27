@@ -11,7 +11,7 @@ const setDeviceMemory = (value: number | undefined) => {
   Object.defineProperty(navigator, "deviceMemory", { configurable: true, value });
 };
 
-describe(useDeviceCapabilities, () => {
+describe("useDeviceCapabilities", () => {
   it("reports hardwareConcurrency and deviceMemory when both are available", () => {
     setHardwareConcurrency(8);
     setDeviceMemory(4);

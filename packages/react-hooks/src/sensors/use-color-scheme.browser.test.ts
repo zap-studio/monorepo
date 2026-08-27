@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createMatchMediaMock } from "./_media-query-test-utils.ts";
 import { useColorScheme } from "./use-color-scheme.ts";
 
-describe(useColorScheme, () => {
+describe("useColorScheme", () => {
   it('returns "dark" when the OS prefers dark mode', () => {
     const { matchMedia } = createMatchMediaMock(true);
     vi.spyOn(window, "matchMedia").mockImplementation(matchMedia);

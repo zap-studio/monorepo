@@ -11,7 +11,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe(useThrottledValue, () => {
+describe("useThrottledValue", () => {
   it("starts equal to the initial value", () => {
     const { result } = renderHook(() => useThrottledValue("a", 500));
 

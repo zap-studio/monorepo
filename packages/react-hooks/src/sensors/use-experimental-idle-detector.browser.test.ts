@@ -41,7 +41,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useExperimentalIdleDetector, () => {
+describe("useExperimentalIdleDetector", () => {
   it("reports supported: false when the Idle Detection API is unavailable", () => {
     vi.stubGlobal("IdleDetector", undefined);
 

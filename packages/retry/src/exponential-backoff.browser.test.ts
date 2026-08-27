@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { exponentialBackoff } from "./exponential-backoff.ts";
 
-describe(exponentialBackoff, () => {
+describe("exponentialBackoff", () => {
   it("retries with base delay at first attempt", () => {
     const policy = exponentialBackoff({
       baseDelayMs: 100,

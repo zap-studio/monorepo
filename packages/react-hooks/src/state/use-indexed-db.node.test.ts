@@ -9,7 +9,7 @@ const TestComponent = () => {
   return String(value);
 };
 
-describe(useIndexedDB, () => {
+describe("useIndexedDB", () => {
   it("renders the initial value on the server, before the effect can run", () => {
     const html = renderToString(createElement(TestComponent));
 

@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useExperimentalContactPicker, () => {
+describe("useExperimentalContactPicker", () => {
   it("renders supported: false on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

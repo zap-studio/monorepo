@@ -9,7 +9,7 @@ const TestComponent = () => {
   return previous === undefined ? "undefined" : String(previous);
 };
 
-describe(usePrevious, () => {
+describe("usePrevious", () => {
   it("renders undefined on the server, before any render has committed", () => {
     const html = renderToString(createElement(TestComponent));
 

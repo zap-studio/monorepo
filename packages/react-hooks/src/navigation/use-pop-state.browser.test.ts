@@ -7,7 +7,7 @@ afterEach(() => {
   window.history.replaceState(null, "", "/");
 });
 
-describe(usePopState, () => {
+describe("usePopState", () => {
   it("reports the current location.pathname and history.state", () => {
     window.history.pushState({ from: "test" }, "", "/initial");
 

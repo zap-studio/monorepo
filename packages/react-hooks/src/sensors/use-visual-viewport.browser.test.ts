@@ -38,7 +38,7 @@ const setWindowVisualViewport = (viewport: VisualViewport | null) => {
   Object.defineProperty(window, "visualViewport", { configurable: true, value: viewport });
 };
 
-describe(useVisualViewport, () => {
+describe("useVisualViewport", () => {
   it("reports the current window.visualViewport", () => {
     const { viewport } = createVisualViewportMock({
       height: 500,

@@ -19,7 +19,7 @@ const setNavigatorCredentials = (
   Object.defineProperty(navigator, "credentials", { configurable: true, value: credentials });
 };
 
-describe(useCredential, () => {
+describe("useCredential", () => {
   it("reports supported: false when navigator.credentials is unavailable", () => {
     setNavigatorCredentials(undefined);
 

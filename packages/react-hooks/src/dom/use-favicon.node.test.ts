@@ -9,7 +9,7 @@ const TestComponent = () => {
   return "ok";
 };
 
-describe(useFavicon, () => {
+describe("useFavicon", () => {
   it("renders without touching document.head during server rendering", () => {
     const html = renderToString(createElement(TestComponent));
 

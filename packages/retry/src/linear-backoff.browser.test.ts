@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { linearBackoff } from "./linear-backoff.ts";
 
-describe(linearBackoff, () => {
+describe("linearBackoff", () => {
   it("retries with base delay at first attempt", () => {
     const policy = linearBackoff({
       baseDelayMs: 100,

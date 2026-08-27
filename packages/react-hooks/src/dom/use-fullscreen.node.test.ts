@@ -9,7 +9,7 @@ const TestComponent = () => {
   return createElement("div", { ref }, isFullscreen ? "true" : "false");
 };
 
-describe(useFullscreen, () => {
+describe("useFullscreen", () => {
   it("renders false on the server, before any fullscreenchange can fire", () => {
     const html = renderToString(createElement(TestComponent));
 

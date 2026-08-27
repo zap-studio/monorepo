@@ -14,7 +14,7 @@ const setNavigatorLanguage = (language: string, languages: readonly string[]) =>
   });
 };
 
-describe(usePreferredLanguage, () => {
+describe("usePreferredLanguage", () => {
   it("reports navigator.language and navigator.languages", () => {
     setNavigatorLanguage("fr-FR", ["fr-FR", "en-US"]);
 

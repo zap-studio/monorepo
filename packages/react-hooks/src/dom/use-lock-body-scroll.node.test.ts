@@ -9,7 +9,7 @@ const TestComponent = () => {
   return "ok";
 };
 
-describe(useLockBodyScroll, () => {
+describe("useLockBodyScroll", () => {
   it("renders without touching document.body during server rendering", () => {
     const html = renderToString(createElement(TestComponent));
 

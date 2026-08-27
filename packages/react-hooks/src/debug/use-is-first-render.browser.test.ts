@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { useIsFirstRender } from "./use-is-first-render.ts";
 
-describe(useIsFirstRender, () => {
+describe("useIsFirstRender", () => {
   it("is true on mount, then false on every later render", () => {
     const { rerender, result } = renderHook(() => useIsFirstRender());
 

@@ -10,7 +10,7 @@ const setNavigatorOnLine = (value: boolean) => {
   });
 };
 
-describe(useOnlineStatus, () => {
+describe("useOnlineStatus", () => {
   it("reflects navigator.onLine on mount", () => {
     setNavigatorOnLine(false);
 

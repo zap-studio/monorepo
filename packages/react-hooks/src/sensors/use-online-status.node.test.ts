@@ -9,7 +9,7 @@ const TestComponent = () => {
   return isOnline ? "true" : "false";
 };
 
-describe(useOnlineStatus, () => {
+describe("useOnlineStatus", () => {
   it("renders true on the server, before navigator.onLine can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

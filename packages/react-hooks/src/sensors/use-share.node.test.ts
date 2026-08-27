@@ -9,7 +9,7 @@ const TestComponent = () => {
   return supported ? "true" : "false";
 };
 
-describe(useShare, () => {
+describe("useShare", () => {
   it("renders unsupported on the server, without touching navigator", () => {
     const html = renderToString(createElement(TestComponent));
 

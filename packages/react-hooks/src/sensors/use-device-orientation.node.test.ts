@@ -9,7 +9,7 @@ const TestComponent = () => {
   return [alpha, beta, gamma, absolute, supported].join(",");
 };
 
-describe(useDeviceOrientation, () => {
+describe("useDeviceOrientation", () => {
   it("renders all-null orientation and unsupported on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

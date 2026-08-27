@@ -9,7 +9,7 @@ const TestComponent = () => {
   return supported ? "true" : "false";
 };
 
-describe(useExperimentalBarcodeDetector, () => {
+describe("useExperimentalBarcodeDetector", () => {
   it("renders supported: false on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

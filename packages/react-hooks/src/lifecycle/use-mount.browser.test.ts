@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useMount } from "./use-mount.ts";
 
-describe(useMount, () => {
+describe("useMount", () => {
   it("calls the effect once on mount", () => {
     const effect = vi.fn();
     renderHook(() => useMount(effect));

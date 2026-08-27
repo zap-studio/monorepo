@@ -9,7 +9,7 @@ const TestComponent = () => {
   return isClient ? "true" : "false";
 };
 
-describe(useIsClient, () => {
+describe("useIsClient", () => {
   it("renders false on the server, before the client has mounted", () => {
     const html = renderToString(createElement(TestComponent));
 

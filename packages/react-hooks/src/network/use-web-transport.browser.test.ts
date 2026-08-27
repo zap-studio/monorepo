@@ -91,7 +91,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useWebTransport, () => {
+describe("useWebTransport", () => {
   it('starts as "connecting" and opens a transport for the given url', () => {
     installMockWebTransport();
 

@@ -41,7 +41,7 @@ const setWindowNavigation = (nav: Navigation | undefined) => {
   });
 };
 
-describe(useNavigationBlocker, () => {
+describe("useNavigationBlocker", () => {
   it("blocks and intercepts when shouldBlock returns true", () => {
     const { nav, fireNavigate } = createNavigationMock();
     setWindowNavigation(nav);

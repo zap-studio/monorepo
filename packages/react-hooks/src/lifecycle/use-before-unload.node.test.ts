@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useBeforeUnload } from "./use-before-unload.ts";
 
-describe(useBeforeUnload, () => {
+describe("useBeforeUnload", () => {
   it("renders without touching window during server rendering", () => {
     const handler = vi.fn();
     const TestComponent = () => {

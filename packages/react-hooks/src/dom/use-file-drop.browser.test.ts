@@ -27,7 +27,7 @@ const renderDropzone = (onDrop: (files: File[]) => void) => {
   };
 };
 
-describe(useFileDrop, () => {
+describe("useFileDrop", () => {
   it("starts with isOver: false", () => {
     const zone = renderDropzone(() => {});
 

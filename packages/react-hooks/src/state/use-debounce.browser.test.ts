@@ -11,7 +11,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe(useDebounce, () => {
+describe("useDebounce", () => {
   it("does not call the callback immediately", () => {
     const callback = vi.fn();
     const { result } = renderHook(() => useDebounce(callback, 500));

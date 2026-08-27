@@ -35,7 +35,7 @@ const setDocumentHidden = (hidden: boolean) => {
   });
 };
 
-describe(useWakeLock, () => {
+describe("useWakeLock", () => {
   it("reports supported: true when navigator.wakeLock exists", () => {
     setNavigatorWakeLock(() => Promise.resolve(createSentinelMock()));
 

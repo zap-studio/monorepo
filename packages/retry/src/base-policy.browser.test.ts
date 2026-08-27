@@ -44,7 +44,7 @@ const createRecordingLogger = (): Logger & {
   };
 };
 
-describe(defaultSleep, () => {
+describe("defaultSleep", () => {
   it("resolves immediately when delay is non-positive", async () => {
     await expect(defaultSleep(0)).resolves.toBeUndefined();
   });
@@ -665,7 +665,7 @@ describe("runRetryPolicy defaults", () => {
 });
 
 describe("test helpers", () => {
-  describe(createSequencePolicy, () => {
+  describe("createSequencePolicy", () => {
     it("falls back to a terminal decision when constructed without decisions", () => {
       const policy = createSequencePolicy([]);
 
@@ -696,7 +696,7 @@ describe("test helpers", () => {
     });
   });
 
-  describe(expectFailureResult, () => {
+  describe("expectFailureResult", () => {
     it("returns the failure result unchanged", () => {
       const policy = createSequencePolicy([]);
       const failure = {

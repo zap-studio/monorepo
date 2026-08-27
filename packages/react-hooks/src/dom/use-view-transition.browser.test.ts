@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useViewTransition } from "./use-view-transition.ts";
 
-describe(useViewTransition, () => {
+describe("useViewTransition", () => {
   it("reports supported: true when startViewTransition exists", () => {
     const original = document.startViewTransition;
     Object.defineProperty(document, "startViewTransition", {

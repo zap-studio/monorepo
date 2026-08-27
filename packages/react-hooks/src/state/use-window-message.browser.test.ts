@@ -6,7 +6,7 @@ import { useWindowMessage } from "./use-window-message.ts";
 const MESSAGE_ORIGIN = "https://example.com";
 const TRUSTED_ORIGIN = "https://trusted.example";
 
-describe(useWindowMessage, () => {
+describe("useWindowMessage", () => {
   it("starts with no lastMessage/lastError", () => {
     const { result } = renderHook(() => useWindowMessage<string>());
 

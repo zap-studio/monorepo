@@ -9,7 +9,7 @@ const TestComponent = () => {
   return [state.online, state.effectiveType, state.downlink, state.rtt, state.saveData].join(",");
 };
 
-describe(useNetworkState, () => {
+describe("useNetworkState", () => {
   it("renders online:true with undefined connection fields on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

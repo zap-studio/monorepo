@@ -9,7 +9,7 @@ const TestComponent = () => {
   return value ? "true" : "false";
 };
 
-describe(useToggle, () => {
+describe("useToggle", () => {
   it("renders false on the server by default", () => {
     const html = renderToString(createElement(TestComponent));
 

@@ -9,7 +9,7 @@ const TestComponent = () => {
   return [acceleration, interval, supported].join(",");
 };
 
-describe(useDeviceMotion, () => {
+describe("useDeviceMotion", () => {
   it("renders null acceleration and unsupported on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

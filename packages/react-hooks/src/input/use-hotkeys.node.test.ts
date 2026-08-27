@@ -9,7 +9,7 @@ const TestComponent = () => {
   return "rendered";
 };
 
-describe(useHotkeys, () => {
+describe("useHotkeys", () => {
   it("renders on the server without touching window", () => {
     const html = renderToString(createElement(TestComponent));
 

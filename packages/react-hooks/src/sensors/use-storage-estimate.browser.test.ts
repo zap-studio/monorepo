@@ -10,7 +10,7 @@ const setNavigatorStorage = (estimate: (() => Promise<StorageEstimate>) | undefi
   });
 };
 
-describe(useStorageEstimate, () => {
+describe("useStorageEstimate", () => {
   it("starts unsupported: false but with usage/quota undefined while loading", () => {
     setNavigatorStorage(() => new Promise(() => {}));
 

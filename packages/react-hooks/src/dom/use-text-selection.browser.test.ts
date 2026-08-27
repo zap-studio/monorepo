@@ -18,7 +18,7 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe(useTextSelection, () => {
+describe("useTextSelection", () => {
   it("starts with an empty selection", () => {
     const { result } = renderHook(() => useTextSelection());
 

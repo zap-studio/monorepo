@@ -7,7 +7,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useRenderCount, () => {
+describe("useRenderCount", () => {
   it("starts at 1 and increments on each render", () => {
     const { rerender, result } = renderHook(() => useRenderCount());
 

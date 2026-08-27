@@ -5,7 +5,7 @@ import { AbortError, RetryError } from "./errors.ts";
 const RETRY_EXHAUSTED_MESSAGE = "Retry exhausted";
 const RETRY_ABORTED_MESSAGE = "Retry aborted";
 
-describe(RetryError, () => {
+describe("RetryError", () => {
   it("stores message and context fields", () => {
     const lastError = new Error("boom");
     const error = new RetryError(RETRY_EXHAUSTED_MESSAGE, {
@@ -32,7 +32,7 @@ describe(RetryError, () => {
   });
 });
 
-describe(AbortError, () => {
+describe("AbortError", () => {
   it("stores message and optional cause", () => {
     const cause = new Error("root-cause");
     const error = new AbortError(RETRY_ABORTED_MESSAGE, { cause });

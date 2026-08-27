@@ -9,7 +9,7 @@ const TestComponent = () => {
   return status;
 };
 
-describe(useScript, () => {
+describe("useScript", () => {
   it("renders loading on the server, before any script tag can settle", () => {
     const html = renderToString(createElement(TestComponent));
 

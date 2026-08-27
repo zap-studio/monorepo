@@ -8,7 +8,7 @@ const TestComponent = () => {
   return useThrottledValue("initial", 500);
 };
 
-describe(useThrottledValue, () => {
+describe("useThrottledValue", () => {
   it("renders the initial value on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

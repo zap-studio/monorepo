@@ -38,7 +38,7 @@ afterEach(() => {
   });
 });
 
-describe(useSpeechSynthesis, () => {
+describe("useSpeechSynthesis", () => {
   it("reports supported: true when window.speechSynthesis exists", () => {
     installMockSpeechSynthesis();
 

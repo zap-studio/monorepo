@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe(useUnstableFiber, () => {
+describe("useUnstableFiber", () => {
   it("renders null on the server, before any ref can attach", () => {
     const html = renderToString(createElement(TestComponent));
 

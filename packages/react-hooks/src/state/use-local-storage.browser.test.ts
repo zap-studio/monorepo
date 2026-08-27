@@ -7,7 +7,7 @@ afterEach(() => {
   window.localStorage.clear();
 });
 
-describe(useLocalStorage, () => {
+describe("useLocalStorage", () => {
   it("returns the initial value when nothing is stored", () => {
     const { result } = renderHook(() => useLocalStorage("count", 0));
 
@@ -144,7 +144,7 @@ describe("useLocalStorage initialValue stability", () => {
     rerender();
     rerender();
 
-    expect(addEventListener.mock.calls.length).toBe(initialCalls);
+    expect(addEventListener.mock.calls).toHaveLength(initialCalls);
   });
 
   it("still falls back to the latest initial value when the key is cleared in another tab", () => {

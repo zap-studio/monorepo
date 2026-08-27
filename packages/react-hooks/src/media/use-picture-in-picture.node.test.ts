@@ -9,7 +9,7 @@ const TestComponent = () => {
   return active ? "true" : "false";
 };
 
-describe(usePictureInPicture, () => {
+describe("usePictureInPicture", () => {
   it("renders false on the server, before pictureinpicture events can fire", () => {
     const html = renderToString(createElement(TestComponent));
 

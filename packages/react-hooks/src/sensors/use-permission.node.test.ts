@@ -9,7 +9,7 @@ const TestComponent = () => {
   return state === undefined ? "undefined" : state;
 };
 
-describe(usePermission, () => {
+describe("usePermission", () => {
   it("renders undefined on the server, before the effect can run", () => {
     const html = renderToString(createElement(TestComponent));
 

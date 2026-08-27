@@ -9,7 +9,7 @@ const TestComponent = () => {
   return uaData === undefined ? "undefined" : "defined";
 };
 
-describe(useExperimentalUserAgentData, () => {
+describe("useExperimentalUserAgentData", () => {
   it("renders undefined on the server, before navigator can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

@@ -22,7 +22,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useExperimentalSelectAudioOutput, () => {
+describe("useExperimentalSelectAudioOutput", () => {
   it("reports supported: false when selectAudioOutput is unavailable", () => {
     setSelectAudioOutput(undefined);
 

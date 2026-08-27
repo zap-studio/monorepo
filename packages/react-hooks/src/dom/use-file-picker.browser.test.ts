@@ -23,7 +23,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useFilePicker, () => {
+describe("useFilePicker", () => {
   it("reports supported: false when the File System Access API is unavailable", () => {
     stubUnsupported();
 

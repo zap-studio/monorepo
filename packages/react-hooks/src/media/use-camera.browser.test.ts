@@ -23,7 +23,7 @@ afterEach(() => {
   setGetUserMedia(undefined);
 });
 
-describe(useCamera, () => {
+describe("useCamera", () => {
   it("defaults to video-only when no options are given", async () => {
     const getUserMedia = vi.fn(() => Promise.resolve(makeStream()));
     setGetUserMedia(getUserMedia);

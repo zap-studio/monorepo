@@ -9,7 +9,7 @@ const TestComponent = () => {
   return supported ? "true" : "false";
 };
 
-describe(useWebLock, () => {
+describe("useWebLock", () => {
   it("renders without crashing during server rendering", () => {
     // Node itself implements the Web Locks API natively, so `supported` genuinely reflects
     // that here — unlike browser-only APIs, there's no "always false during SSR" guarantee to assert.

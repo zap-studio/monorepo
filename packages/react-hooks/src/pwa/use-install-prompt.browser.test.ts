@@ -18,7 +18,7 @@ const makeBeforeInstallPromptEvent = (
   });
 };
 
-describe(useInstallPrompt, () => {
+describe("useInstallPrompt", () => {
   it("starts with canInstall: false, installed: false", () => {
     const { result } = renderHook(() => useInstallPrompt());
 

@@ -9,7 +9,7 @@ const TestComponent = () => {
   return status;
 };
 
-describe(useUserMedia, () => {
+describe("useUserMedia", () => {
   it('renders "idle" on the server, before start() can be called', () => {
     const html = renderToString(createElement(TestComponent));
 

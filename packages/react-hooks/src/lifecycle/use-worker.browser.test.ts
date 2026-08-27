@@ -30,7 +30,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useWorker, () => {
+describe("useWorker", () => {
   it("run() rejects and never creates a worker when unsupported", async () => {
     reset();
     vi.stubGlobal("Worker", undefined);

@@ -12,7 +12,7 @@ afterEach(() => {
   setScroll(0, 0);
 });
 
-describe(useScrollPosition, () => {
+describe("useScrollPosition", () => {
   it("starts at { x: 0, y: 0 }", () => {
     const { result } = renderHook(() => useScrollPosition());
 

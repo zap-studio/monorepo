@@ -13,7 +13,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe(useWhyDidYouUpdate, () => {
+describe("useWhyDidYouUpdate", () => {
   it("renders without touching console during server rendering", () => {
     const html = renderToString(createElement(TestComponent, { value: 1 }));
 

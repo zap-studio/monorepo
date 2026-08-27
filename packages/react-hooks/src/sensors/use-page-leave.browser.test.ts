@@ -8,7 +8,7 @@ const dispatchMouseOut = (relatedTarget: EventTarget | null) => {
   document.dispatchEvent(event);
 };
 
-describe(usePageLeave, () => {
+describe("usePageLeave", () => {
   it("calls the handler when the pointer leaves the viewport", async () => {
     const onPageLeave = vi.fn();
     renderHook(() => usePageLeave(onPageLeave));

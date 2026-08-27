@@ -9,7 +9,7 @@ const TestComponent = () => {
   return `${width}x${height}`;
 };
 
-describe(useExperimentalVirtualKeyboard, () => {
+describe("useExperimentalVirtualKeyboard", () => {
   it("falls back to 0x0 on the server, before navigator can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

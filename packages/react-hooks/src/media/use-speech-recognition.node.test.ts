@@ -9,7 +9,7 @@ const TestComponent = () => {
   return supported ? "true" : "false";
 };
 
-describe(useSpeechRecognition, () => {
+describe("useSpeechRecognition", () => {
   it("renders false on the server, before SpeechRecognition can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

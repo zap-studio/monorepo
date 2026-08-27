@@ -43,7 +43,7 @@ afterEach(() => {
   Object.defineProperty(window, "PaymentRequest", { configurable: true, value: undefined });
 });
 
-describe(usePaymentRequest, () => {
+describe("usePaymentRequest", () => {
   it('starts "idle" and reports supported: true when PaymentRequest exists', () => {
     installMockPaymentRequest();
 

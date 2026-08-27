@@ -7,7 +7,7 @@ const dispatchKey = (type: "keydown" | "keyup", key: string) => {
   window.dispatchEvent(new KeyboardEvent(type, { key }));
 };
 
-describe(useKeyPress, () => {
+describe("useKeyPress", () => {
   it("starts as false before any key is pressed", () => {
     const { result } = renderHook(() => useKeyPress("Shift"));
 
@@ -107,7 +107,7 @@ describe("useKeyPress target stability", () => {
     rerender();
     rerender();
 
-    expect(addEventListener.mock.calls.length).toBe(initialCalls);
+    expect(addEventListener.mock.calls).toHaveLength(initialCalls);
 
     await act(async () => {
       dispatchKey("keydown", "ArrowLeft");

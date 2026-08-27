@@ -9,7 +9,7 @@ const TestComponent = () => {
   return blocked ? "true" : "false";
 };
 
-describe(useNavigationBlocker, () => {
+describe("useNavigationBlocker", () => {
   it("renders false on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

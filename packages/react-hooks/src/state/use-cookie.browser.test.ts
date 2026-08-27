@@ -49,7 +49,7 @@ const setCookieStore = (store: CookieStore | undefined) => {
   });
 };
 
-describe(useCookie, () => {
+describe("useCookie", () => {
   it("reports supported: false when the Cookie Store API is unsupported", () => {
     setCookieStore(undefined);
 

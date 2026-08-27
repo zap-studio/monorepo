@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useInterval } from "./use-interval.ts";
 
-describe(useInterval, () => {
+describe("useInterval", () => {
   it("does not schedule during server rendering", () => {
     const callback = vi.fn();
     const TestComponent = () => {
