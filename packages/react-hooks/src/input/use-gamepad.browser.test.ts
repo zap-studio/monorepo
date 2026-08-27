@@ -39,11 +39,12 @@ describe(useGamepad, () => {
   });
 
   it("reflects gamepads already present on mount", () => {
-    setGamepads([makeGamepad({ id: "Pad A", index: 0 })]);
+    const pad = makeGamepad({ id: "Pad A", index: 0 });
+    setGamepads([pad]);
 
     const { result } = renderHook(() => useGamepad());
 
-    expect(result.current).toEqual([{ id: "Pad A", index: 0, mapping: "standard" }]);
+    expect(result.current).toEqual([pad]);
   });
 
   it("adds a gamepad when gamepadconnected fires", async () => {
@@ -52,12 +53,13 @@ describe(useGamepad, () => {
     const { result } = renderHook(() => useGamepad());
     expect(result.current).toEqual([]);
 
+    const pad = makeGamepad({ id: "Pad A", index: 0 });
     await act(async () => {
-      setGamepads([makeGamepad({ id: "Pad A", index: 0 })]);
+      setGamepads([pad]);
       window.dispatchEvent(new Event("gamepadconnected"));
     });
 
-    expect(result.current).toEqual([{ id: "Pad A", index: 0, mapping: "standard" }]);
+    expect(result.current).toEqual([pad]);
   });
 
   it("removes a gamepad when gamepaddisconnected fires", async () => {
@@ -75,11 +77,12 @@ describe(useGamepad, () => {
   });
 
   it("skips null slots returned by getGamepads()", () => {
-    setGamepads([null, makeGamepad({ id: "Pad B", index: 1 }), null]);
+    const pad = makeGamepad({ id: "Pad B", index: 1 });
+    setGamepads([null, pad, null]);
 
     const { result } = renderHook(() => useGamepad());
 
-    expect(result.current).toEqual([{ id: "Pad B", index: 1, mapping: "standard" }]);
+    expect(result.current).toEqual([pad]);
   });
 
   it("returns an empty array when the Gamepad API is unsupported", () => {

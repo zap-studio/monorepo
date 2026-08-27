@@ -173,7 +173,6 @@ export { useFilePicker } from "./dom/use-file-picker.ts";
 export { useFontsReady } from "./sensors/use-fonts-ready.ts";
 export type { UseFullscreenResult } from "./dom/use-fullscreen.ts";
 export { useFullscreen } from "./dom/use-fullscreen.ts";
-export type { GamepadInfo } from "./input/use-gamepad.ts";
 export { useGamepad } from "./input/use-gamepad.ts";
 export type {
   GeolocationCoordinatesState,
