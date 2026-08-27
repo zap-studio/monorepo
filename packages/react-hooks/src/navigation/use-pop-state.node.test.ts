@@ -6,7 +6,7 @@ import { usePopState } from "./use-pop-state.ts";
 
 const TestComponent = () => {
   const { pathname, state } = usePopState();
-  return `${pathname},${state === null ? "null" : String(state)}`;
+  return `${pathname},${state === null ? "null" : JSON.stringify(state)}`;
 };
 
 describe("usePopState", () => {

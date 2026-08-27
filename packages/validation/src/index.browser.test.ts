@@ -561,6 +561,6 @@ describe("standardValidateSync", () => {
   it("should throw when a malformed schema synchronously returns null", () => {
     const schema = createMockSchema(() => null as unknown as StandardSchemaV1.Result<unknown>);
 
-    expect(() => standardValidateSync("test", schema)).toThrow();
+    expect(() => standardValidateSync("test", schema)).toThrow(TypeError);
   });
 });

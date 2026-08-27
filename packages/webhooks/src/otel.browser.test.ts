@@ -32,12 +32,16 @@ describe("HEADERS_GETTER", () => {
 describe("WebhookRouter OpenTelemetry", () => {
   const exporter = new InMemorySpanExporter();
 
-  const createRequest = (path: string, body?: unknown, headers?: HeadersInit): Request =>
-    new Request(new URL(path, "https://example.com"), {
+  const createRequest = (path: string, body?: unknown, headers?: HeadersInit): Request => {
+    const init: RequestInit = {
       body: body === undefined ? null : JSON.stringify(body),
       method: "POST",
-      ...(headers === undefined ? {} : { headers }),
-    });
+    };
+    if (headers !== undefined) {
+      init.headers = headers;
+    }
+    return new Request(new URL(path, "https://example.com"), init);
+  };
 
   beforeAll(() => {
     const provider = new BasicTracerProvider({

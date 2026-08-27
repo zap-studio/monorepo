@@ -514,9 +514,8 @@ describe("result mode (throwOnExhausted: false)", () => {
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(1);
     expect(failure.error).toBeInstanceOf(RetryError);
-    if (failure.error instanceof RetryError) {
-      expect(failure.error.lastError).toBe(notAnError);
-    }
+    // SAFETY: the toBeInstanceOf assertion above guarantees failure.error is a RetryError.
+    expect((failure.error as RetryError).lastError).toBe(notAnError);
     expect(execute).toHaveBeenCalledTimes(1);
     expect(policy.seen).toStrictEqual([]);
   });

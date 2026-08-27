@@ -56,12 +56,16 @@ describe("WebhookRouter", () => {
     path: string,
     body?: unknown,
     init?: { headers?: HeadersInit; method?: string },
-  ): Request =>
-    new Request(new URL(path, REQUEST_BASE_URL), {
+  ): Request => {
+    const requestInit: RequestInit = {
       body: body === undefined ? null : JSON.stringify(body),
       method: init?.method ?? "POST",
-      ...(init?.headers === undefined ? {} : { headers: init.headers }),
-    });
+    };
+    if (init?.headers !== undefined) {
+      requestInit.headers = init.headers;
+    }
+    return new Request(new URL(path, REQUEST_BASE_URL), requestInit);
+  };
 
   describe("Basic routing", () => {
     it("should support schema-first route registration at creation time", async () => {

@@ -47,16 +47,23 @@ describe("useWebSocket", () => {
     expect(MockWebSocket.instances[0]?.url).toBe(SOCKET_URL);
   });
 
-  it('becomes "open" when the socket opens', async () => {
-    installMockWebSocket();
-    const { result } = renderHook(() => useWebSocket(SOCKET_URL));
+  it.each([
+    { event: "open", expectedStatus: "open" },
+    { event: "close", expectedStatus: "closed" },
+    { event: "error", expectedStatus: "closed" },
+  ])(
+    'becomes "$expectedStatus" when the socket receives a(n) $event event',
+    async ({ event, expectedStatus }) => {
+      installMockWebSocket();
+      const { result } = renderHook(() => useWebSocket(SOCKET_URL));
 
-    await act(async () => {
-      MockWebSocket.instances[0]?.dispatchEvent(new Event("open"));
-    });
+      await act(async () => {
+        MockWebSocket.instances[0]?.dispatchEvent(new Event(event));
+      });
 
-    expect(result.current.status).toBe("open");
-  });
+      expect(result.current.status).toBe(expectedStatus);
+    },
+  );
 
   it("captures the last message received", async () => {
     installMockWebSocket();
@@ -78,28 +85,6 @@ describe("useWebSocket", () => {
     });
 
     expect(MockWebSocket.instances[0]?.sent).toEqual(["ping"]);
-  });
-
-  it('becomes "closed" when the socket closes', async () => {
-    installMockWebSocket();
-    const { result } = renderHook(() => useWebSocket(SOCKET_URL));
-
-    await act(async () => {
-      MockWebSocket.instances[0]?.dispatchEvent(new Event("close"));
-    });
-
-    expect(result.current.status).toBe("closed");
-  });
-
-  it('becomes "closed" on a socket error', async () => {
-    installMockWebSocket();
-    const { result } = renderHook(() => useWebSocket(SOCKET_URL));
-
-    await act(async () => {
-      MockWebSocket.instances[0]?.dispatchEvent(new Event("error"));
-    });
-
-    expect(result.current.status).toBe("closed");
   });
 
   it("close() closes the underlying socket", async () => {

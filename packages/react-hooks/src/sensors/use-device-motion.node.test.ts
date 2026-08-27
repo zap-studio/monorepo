@@ -6,7 +6,7 @@ import { useDeviceMotion } from "./use-device-motion.ts";
 
 const TestComponent = () => {
   const { acceleration, interval, supported } = useDeviceMotion();
-  return [acceleration, interval, supported].join(",");
+  return [acceleration === null ? "" : JSON.stringify(acceleration), interval, supported].join(",");
 };
 
 describe("useDeviceMotion", () => {
