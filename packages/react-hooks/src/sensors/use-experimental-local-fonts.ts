@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import {
   getQueryLocalFonts,
@@ -54,5 +54,5 @@ export const useExperimentalLocalFonts = (): UseExperimentalLocalFontsResult => 
     [],
   );
 
-  return { query, supported };
+  return useMemo(() => ({ query, supported }), [query, supported]);
 };

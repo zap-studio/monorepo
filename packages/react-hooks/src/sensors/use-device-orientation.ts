@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface DeviceOrientationEventConstructorWithPermission {
   requestPermission?: () => Promise<"denied" | "granted">;
@@ -76,5 +76,8 @@ export const useDeviceOrientation = (): UseDeviceOrientationResult => {
     };
   }, []);
 
-  return { ...state, requestPermission: requestDeviceOrientationPermission, supported };
+  return useMemo(
+    () => ({ ...state, requestPermission: requestDeviceOrientationPermission, supported }),
+    [state, supported],
+  );
 };

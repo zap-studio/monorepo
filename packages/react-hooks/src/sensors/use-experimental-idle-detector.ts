@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   getIdleDetectorConstructor,
@@ -105,5 +105,8 @@ export const useExperimentalIdleDetector = (): UseExperimentalIdleDetectorResult
 
   useEffect(() => () => cleanupRef.current?.(), []);
 
-  return { requestPermission, screenState, start, stop, supported, userState };
+  return useMemo(
+    () => ({ requestPermission, screenState, start, stop, supported, userState }),
+    [requestPermission, screenState, start, stop, supported, userState],
+  );
 };

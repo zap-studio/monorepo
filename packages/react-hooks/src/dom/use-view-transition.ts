@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 /** The shape returned by `useViewTransition`. */
 export interface UseViewTransitionResult {
@@ -41,5 +41,5 @@ export const useViewTransition = (): UseViewTransitionResult => {
     [],
   );
 
-  return { startTransition, supported };
+  return useMemo(() => ({ startTransition, supported }), [startTransition, supported]);
 };

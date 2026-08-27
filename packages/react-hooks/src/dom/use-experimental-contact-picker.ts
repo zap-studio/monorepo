@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import {
   getContactsManager,
@@ -74,5 +74,5 @@ export const useExperimentalContactPicker = (): UseExperimentalContactPickerResu
     return contacts ? contacts.getProperties() : undefined;
   }, []);
 
-  return { getProperties, select, supported };
+  return useMemo(() => ({ getProperties, select, supported }), [getProperties, select, supported]);
 };

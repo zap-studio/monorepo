@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import { getEyeDropperConstructor, type EyeDropperOpenOptions } from "./_eye-dropper-api.ts";
 
@@ -45,5 +45,5 @@ export const useExperimentalEyeDropper = (): UseExperimentalEyeDropperResult => 
     }
   }, []);
 
-  return { open, supported };
+  return useMemo(() => ({ open, supported }), [open, supported]);
 };

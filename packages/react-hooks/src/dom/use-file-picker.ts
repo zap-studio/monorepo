@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import {
   getFileSystemAccess,
@@ -98,5 +98,8 @@ export const useFilePicker = (): UseFilePickerResult => {
     [],
   );
 
-  return { showDirectoryPicker, showOpenFilePicker, showSaveFilePicker, supported };
+  return useMemo(
+    () => ({ showDirectoryPicker, showOpenFilePicker, showSaveFilePicker, supported }),
+    [showDirectoryPicker, showOpenFilePicker, showSaveFilePicker, supported],
+  );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface DeviceMotionEventConstructorWithPermission {
   requestPermission?: () => Promise<"denied" | "granted">;
@@ -69,5 +69,8 @@ export const useDeviceMotion = (): UseDeviceMotionResult => {
     return () => window.removeEventListener("devicemotion", handleMotion);
   }, []);
 
-  return { ...state, requestPermission: requestDeviceMotionPermission, supported };
+  return useMemo(
+    () => ({ ...state, requestPermission: requestDeviceMotionPermission, supported }),
+    [state, supported],
+  );
 };

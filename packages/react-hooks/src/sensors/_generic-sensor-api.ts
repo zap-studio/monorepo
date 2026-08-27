@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 /** A small copy of the Generic Sensor API's types. This is an experimental API, only in Chrome, and not included in TypeScript's built-in types. */
 export interface GenericSensorErrorEvent extends Event {
@@ -115,5 +115,8 @@ export const useGenericSensor = <TSensor extends GenericSensorInstance, TReading
 
   useEffect(() => () => stop(), [stop]);
 
-  return { activated, error, reading, start, stop, supported };
+  return useMemo(
+    () => ({ activated, error, reading, start, stop, supported }),
+    [activated, error, reading, start, stop, supported],
+  );
 };
