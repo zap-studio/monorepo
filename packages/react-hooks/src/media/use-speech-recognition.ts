@@ -21,7 +21,6 @@ interface SpeechRecognitionInstance {
   interimResults: boolean;
   lang: string;
   onend: (() => void) | null;
-  // SAFETY: SpeechRecognitionErrorEvent is not part of the official DOM standard yet (the Web Speech API is still a draft), so TypeScript's DOM types may or may not include it. This hook only checks that an error event fired, and never reads any fields from it, so we don't need to define its shape here.
   onerror: ((event: Event) => void) | null;
   onresult: ((event: SpeechRecognitionEventLike) => void) | null;
   abort: () => void;
