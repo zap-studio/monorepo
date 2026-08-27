@@ -4,5 +4,5 @@ import { defineConfig } from "oxlint";
 
 export default defineConfig({
   extends: [base, vitest],
-  ignorePatterns: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "packages/oxlint/src/anti-slop/**"],
+  ignorePatterns: ["packages/oxlint/src/anti-slop/**"],
 });
