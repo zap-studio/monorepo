@@ -3,11 +3,6 @@ import { configDefaults, defineConfig } from "vitest/config";
 
 const isCI = process.env.CI !== undefined;
 const exclude = [...configDefaults.exclude, "**/dist/**", "**/package.json"];
-const pureBarrelFiles = [
-  "packages/oxlint/src/index.ts",
-  "packages/react-hooks/src/index.ts",
-  "packages/retry/src/index.ts",
-];
 
 export default defineConfig({
   resolve: {
@@ -15,7 +10,7 @@ export default defineConfig({
   },
   test: {
     coverage: {
-      exclude: [...exclude, ...pureBarrelFiles],
+      exclude: [...exclude],
       provider: "v8",
       reporter: ["lcov", "text"],
     },
