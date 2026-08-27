@@ -8,8 +8,11 @@ class FakeResizeObserver implements ResizeObserver {
   static instances: FakeResizeObserver[] = [];
   readonly callback: ResizeObserverCallback;
   readonly disconnect = vi.fn();
-  readonly observe = vi.fn();
+  readonly observe = vi.fn((target: Element) => {
+    this.target = target;
+  });
   readonly unobserve = vi.fn();
+  target: Element | undefined;
 
   constructor(callback: ResizeObserverCallback) {
     this.callback = callback;
@@ -17,7 +20,10 @@ class FakeResizeObserver implements ResizeObserver {
   }
 
   trigger(width: number, height: number): void {
-    this.callback([{ contentRect: { height, width } } as ResizeObserverEntry], this);
+    this.callback(
+      [{ contentRect: { height, width }, target: this.target } as ResizeObserverEntry],
+      this,
+    );
   }
 }
 
@@ -61,6 +67,23 @@ describe(useResizeObserver, () => {
     });
 
     expect(div.current.size).toEqual({ height: 100, width: 200 });
+  });
+
+  it("ignores an entry for a different target", () => {
+    vi.stubGlobal("ResizeObserver", FakeResizeObserver);
+    const div = renderObservedDiv();
+    const [observer] = FakeResizeObserver.instances;
+
+    act(() => {
+      observer?.callback(
+        [
+          { contentRect: { height: 999, width: 999 }, target: document.createElement("span") },
+        ] as unknown as ResizeObserverEntry[],
+        observer,
+      );
+    });
+
+    expect(div.current.size).toBeUndefined();
   });
 
   it("does not observe when no element is attached to the ref", () => {

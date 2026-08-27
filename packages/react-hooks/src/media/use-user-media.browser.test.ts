@@ -119,6 +119,28 @@ describe(useUserMedia, () => {
 
     expect(stream.track.stop).toHaveBeenCalledTimes(1);
   });
+
+  it("stops a stream that resolves after unmount instead of keeping it running", async () => {
+    const stream = makeStream();
+    let resolveGetUserMedia: (value: MediaStream) => void = () => undefined;
+    setGetUserMedia(
+      () =>
+        new Promise((resolve) => {
+          resolveGetUserMedia = resolve;
+        }),
+    );
+
+    const { result, unmount } = renderHook(() => useUserMedia({ video: true }));
+    const started = act(async () => {
+      await result.current.start();
+    });
+
+    unmount();
+    resolveGetUserMedia(stream);
+    await started;
+
+    expect(stream.track.stop).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("useUserMedia constraint stability", () => {

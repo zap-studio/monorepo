@@ -6,11 +6,13 @@ import { useScreenCapture } from "./use-screen-capture.ts";
 function makeStream() {
   const track = new EventTarget() as MediaStreamTrack & EventTarget;
   Object.assign(track, { stop: vi.fn() });
-  return {
+  const stream = new EventTarget() as MediaStream & EventTarget;
+  Object.assign(stream, {
     getTracks: () => [track],
     getVideoTracks: () => [track],
     track,
-  } as unknown as MediaStream & { track: MediaStreamTrack & EventTarget };
+  });
+  return stream as MediaStream & { track: MediaStreamTrack & EventTarget };
 }
 
 function setGetDisplayMedia(
@@ -106,7 +108,7 @@ describe(useScreenCapture, () => {
     expect(result.current.status).toBe("idle");
   });
 
-  it('auto-stops when the video track ends (browser "Stop sharing" bar)', async () => {
+  it('auto-stops when the stream becomes inactive (browser "Stop sharing" bar)', async () => {
     const stream = makeStream();
     setGetDisplayMedia(() => Promise.resolve(stream));
 
@@ -117,7 +119,7 @@ describe(useScreenCapture, () => {
     expect(result.current.status).toBe("active");
 
     await act(async () => {
-      stream.track.dispatchEvent(new Event("ended"));
+      stream.dispatchEvent(new Event("inactive"));
     });
 
     expect(result.current.status).toBe("idle");
@@ -133,6 +135,28 @@ describe(useScreenCapture, () => {
     });
 
     unmount();
+
+    expect(stream.track.stop).toHaveBeenCalledTimes(1);
+  });
+
+  it("stops a stream that resolves after unmount instead of keeping it running", async () => {
+    const stream = makeStream();
+    let resolveGetDisplayMedia: (value: MediaStream) => void = () => undefined;
+    setGetDisplayMedia(
+      () =>
+        new Promise((resolve) => {
+          resolveGetDisplayMedia = resolve;
+        }),
+    );
+
+    const { result, unmount } = renderHook(() => useScreenCapture());
+    const started = act(async () => {
+      await result.current.start();
+    });
+
+    unmount();
+    resolveGetDisplayMedia(stream);
+    await started;
 
     expect(stream.track.stop).toHaveBeenCalledTimes(1);
   });
