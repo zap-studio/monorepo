@@ -16,11 +16,11 @@ const createSensorMock = (quaternion: [number, number, number, number]) => {
   sensor.quaternion = quaternion;
   sensor.onreading = null;
   sensor.onerror = null;
-  sensor.start = vi.fn(() => {
+  sensor.start = vi.fn<() => void>(() => {
     sensor.activated = true;
     sensor.onreading?.(new Event("reading"));
   });
-  sensor.stop = vi.fn(() => {
+  sensor.stop = vi.fn<() => void>(() => {
     sensor.activated = false;
   });
 
@@ -38,7 +38,18 @@ const createSensorMock = (quaternion: [number, number, number, number]) => {
 
 const stubAbsoluteOrientationSensor = (sensor?: ReturnType<typeof createSensorMock>["sensor"]) => {
   const AbsoluteOrientationSensorCtor = vi
-    .fn()
+    .fn<
+      () =>
+        | (EventTarget & {
+            activated: boolean;
+            onerror: ((event: Event & { error: DOMException }) => void) | null;
+            onreading: ((event: Event) => void) | null;
+            quaternion: [number, number, number, number];
+            start: () => void;
+            stop: () => void;
+          })
+        | undefined
+    >()
     .mockImplementation(function AbsoluteOrientationSensor() {
       return sensor;
     });

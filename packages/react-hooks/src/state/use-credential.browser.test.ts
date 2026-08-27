@@ -43,7 +43,7 @@ describe("useCredential", () => {
 
   it("get() forwards options and resolves the credential", async () => {
     const credential = { id: CREDENTIAL_ID, type: CREDENTIAL_TYPE };
-    const get = vi.fn().mockResolvedValue(credential);
+    const get = vi.fn<() => Promise<{ id: string; type: string }>>().mockResolvedValue(credential);
     setNavigatorCredentials({
       create: () => Promise.resolve(null),
       get,
@@ -67,7 +67,7 @@ describe("useCredential", () => {
 
   it("store() forwards the credential", async () => {
     const credential = { id: CREDENTIAL_ID, type: CREDENTIAL_TYPE };
-    const store = vi.fn().mockResolvedValue(undefined);
+    const store = vi.fn<() => Promise<undefined>>().mockResolvedValue(undefined);
     setNavigatorCredentials({
       create: () => Promise.resolve(null),
       get: () => Promise.resolve(null),
@@ -93,7 +93,9 @@ describe("useCredential", () => {
 
   it("create() forwards options and resolves the credential", async () => {
     const credential = { id: CREDENTIAL_ID, type: CREDENTIAL_TYPE };
-    const create = vi.fn().mockResolvedValue(credential);
+    const create = vi
+      .fn<() => Promise<{ id: string; type: string }>>()
+      .mockResolvedValue(credential);
     setNavigatorCredentials({
       create,
       get: () => Promise.resolve(null),
@@ -116,7 +118,7 @@ describe("useCredential", () => {
   });
 
   it("preventSilentAccess() delegates to navigator.credentials.preventSilentAccess", async () => {
-    const preventSilentAccess = vi.fn().mockResolvedValue(undefined);
+    const preventSilentAccess = vi.fn<() => Promise<undefined>>().mockResolvedValue(undefined);
     setNavigatorCredentials({
       create: () => Promise.resolve(null),
       get: () => Promise.resolve(null),

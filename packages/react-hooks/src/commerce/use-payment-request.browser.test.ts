@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { usePaymentRequest } from "./use-payment-request.ts";
 
 class MockPaymentResponse {
-  complete = vi.fn(() => Promise.resolve());
+  complete = vi.fn<() => Promise<void>>(() => Promise.resolve());
   readonly methodName = "basic-card";
 }
 

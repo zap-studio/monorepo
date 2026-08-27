@@ -7,7 +7,7 @@ const createGeolocationMock = () => {
   return {
     clearWatch: vi.fn(),
     getCurrentPosition: vi.fn(),
-    watchPosition: vi.fn(() => 1),
+    watchPosition: vi.fn<() => number>(() => 1),
   };
 };
 

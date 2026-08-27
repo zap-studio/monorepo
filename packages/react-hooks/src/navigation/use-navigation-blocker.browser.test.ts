@@ -9,10 +9,12 @@ const createNavigationMock = () => {
   const listeners = new Map<string, (event: NavigateEvent) => void>();
 
   const nav = {
-    addEventListener: vi.fn((type: string, listener: (event: NavigateEvent) => void) => {
-      listeners.set(type, listener);
-    }),
-    removeEventListener: vi.fn((type: string) => {
+    addEventListener: vi.fn<(type: string, listener: (event: NavigateEvent) => void) => void>(
+      (type: string, listener: (event: NavigateEvent) => void) => {
+        listeners.set(type, listener);
+      },
+    ),
+    removeEventListener: vi.fn<(type: string) => void>((type: string) => {
       listeners.delete(type);
     }),
   } as unknown as Navigation;
@@ -120,7 +122,7 @@ describe("useNavigationBlocker", () => {
   it("passes the destination URL to shouldBlock", () => {
     const { nav, fireNavigate } = createNavigationMock();
     setWindowNavigation(nav);
-    const shouldBlock = vi.fn(() => false);
+    const shouldBlock = vi.fn<() => boolean>(() => false);
     const event = fakeNavigateEvent({ destination: { url: "/somewhere" } as never });
 
     renderHook(() => useNavigationBlocker(shouldBlock));

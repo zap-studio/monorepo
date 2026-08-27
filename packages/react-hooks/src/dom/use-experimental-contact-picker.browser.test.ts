@@ -41,7 +41,9 @@ describe("useExperimentalContactPicker", () => {
   });
 
   it("select() forwards properties/options and resolves the chosen contacts", async () => {
-    const select = vi.fn().mockResolvedValue([{ name: ["Ada Lovelace"] }]);
+    const select = vi
+      .fn<() => Promise<{ name: string[] }[]>>()
+      .mockResolvedValue([{ name: ["Ada Lovelace"] }]);
     setNavigatorContacts({ getProperties: () => Promise.resolve([]), select });
 
     const { result } = renderHook(() => useExperimentalContactPicker());

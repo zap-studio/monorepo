@@ -8,7 +8,7 @@ class FakeResizeObserver implements ResizeObserver {
   static instances: FakeResizeObserver[] = [];
   readonly callback: ResizeObserverCallback;
   readonly disconnect = vi.fn();
-  readonly observe = vi.fn((target: Element) => {
+  readonly observe = vi.fn<(target: Element) => void>((target: Element) => {
     this.target = target;
   });
   readonly unobserve = vi.fn();

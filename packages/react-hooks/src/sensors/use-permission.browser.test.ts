@@ -60,7 +60,9 @@ describe("usePermission", () => {
   });
 
   it("queries again when the permission name changes", async () => {
-    const query = vi.fn((_descriptor: PermissionDescriptor) =>
+    const query = vi.fn<
+      (_descriptor: PermissionDescriptor) => Promise<PermissionStatus & { name: string }>
+    >((_descriptor: PermissionDescriptor) =>
       Promise.resolve(
         createPermissionStatusMock("granted").status as PermissionStatus & { name: string },
       ),

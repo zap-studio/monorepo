@@ -25,7 +25,9 @@ afterEach(() => {
 
 describe("useCamera", () => {
   it("defaults to video-only when no options are given", async () => {
-    const getUserMedia = vi.fn(() => Promise.resolve(makeStream()));
+    const getUserMedia = vi.fn<() => Promise<MediaStream & { track: MediaStreamTrack }>>(() =>
+      Promise.resolve(makeStream()),
+    );
     setGetUserMedia(getUserMedia);
 
     const { result } = renderHook(() => useCamera());
@@ -38,7 +40,9 @@ describe("useCamera", () => {
   });
 
   it("passes audio: true through when requested", async () => {
-    const getUserMedia = vi.fn(() => Promise.resolve(makeStream()));
+    const getUserMedia = vi.fn<() => Promise<MediaStream & { track: MediaStreamTrack }>>(() =>
+      Promise.resolve(makeStream()),
+    );
     setGetUserMedia(getUserMedia);
 
     const { result } = renderHook(() => useCamera({ audio: true }));
@@ -51,7 +55,9 @@ describe("useCamera", () => {
   });
 
   it("passes custom video constraints through", async () => {
-    const getUserMedia = vi.fn(() => Promise.resolve(makeStream()));
+    const getUserMedia = vi.fn<() => Promise<MediaStream & { track: MediaStreamTrack }>>(() =>
+      Promise.resolve(makeStream()),
+    );
     setGetUserMedia(getUserMedia);
     const videoConstraints = { facingMode: "user" };
 

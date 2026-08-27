@@ -35,7 +35,9 @@ describe("useExperimentalBarcodeDetector", () => {
   });
 
   it("detect() constructs a detector scoped to the given formats and returns its result", async () => {
-    const detect = vi.fn().mockResolvedValue([{ format: "qr_code", rawValue: "hello" }]);
+    const detect = vi
+      .fn<() => Promise<{ format: string; rawValue: string }[]>>()
+      .mockResolvedValue([{ format: "qr_code", rawValue: "hello" }]);
     const BarcodeDetectorCtor = vi.fn().mockImplementation(function BarcodeDetector() {
       return { detect };
     });
@@ -52,7 +54,7 @@ describe("useExperimentalBarcodeDetector", () => {
   });
 
   it("detect() constructs a detector for every format when none are given", async () => {
-    const detect = vi.fn().mockResolvedValue([]);
+    const detect = vi.fn<() => Promise<never[]>>().mockResolvedValue([]);
     const BarcodeDetectorCtor = vi.fn().mockImplementation(function BarcodeDetector() {
       return { detect };
     });
@@ -75,7 +77,9 @@ describe("useExperimentalBarcodeDetector", () => {
   });
 
   it("getSupportedFormats() delegates to the static method", async () => {
-    const getSupportedFormats = vi.fn().mockResolvedValue(["qr_code", "ean_13"]);
+    const getSupportedFormats = vi
+      .fn<() => Promise<string[]>>()
+      .mockResolvedValue(["qr_code", "ean_13"]);
     vi.stubGlobal("BarcodeDetector", { getSupportedFormats });
 
     const { result } = renderHook(() => useExperimentalBarcodeDetector());

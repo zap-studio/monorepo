@@ -42,7 +42,7 @@ describe("useFullscreen", () => {
 
   it("enter() requests fullscreen on the ref'd element", async () => {
     setFullscreenSupport(true);
-    const requestFullscreen = vi.fn(() => Promise.resolve());
+    const requestFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
     const element = { requestFullscreen } as unknown as HTMLDivElement;
 
     const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
@@ -103,7 +103,7 @@ describe("useFullscreen", () => {
   it("exit() calls document.exitFullscreen() when this element is active", async () => {
     setFullscreenSupport(true);
     const element = document.createElement("div");
-    const exitFullscreen = vi.fn(() => Promise.resolve());
+    const exitFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
     Object.defineProperty(document, "exitFullscreen", {
       configurable: true,
       value: exitFullscreen,
@@ -124,7 +124,7 @@ describe("useFullscreen", () => {
     setFullscreenSupport(true);
     const element = document.createElement("div");
     const other = document.createElement("div");
-    const exitFullscreen = vi.fn(() => Promise.resolve());
+    const exitFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
     Object.defineProperty(document, "exitFullscreen", {
       configurable: true,
       value: exitFullscreen,
@@ -158,7 +158,7 @@ describe("useFullscreen", () => {
 
   it("toggle() enters when not fullscreen", async () => {
     setFullscreenSupport(true);
-    const requestFullscreen = vi.fn(() => Promise.resolve());
+    const requestFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
     const element = { requestFullscreen } as unknown as HTMLDivElement;
 
     const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
@@ -174,7 +174,7 @@ describe("useFullscreen", () => {
   it("toggle() exits when this element is fullscreen", async () => {
     setFullscreenSupport(true);
     const element = document.createElement("div");
-    const exitFullscreen = vi.fn(() => Promise.resolve());
+    const exitFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
     Object.defineProperty(document, "exitFullscreen", {
       configurable: true,
       value: exitFullscreen,

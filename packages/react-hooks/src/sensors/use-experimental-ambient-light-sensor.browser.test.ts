@@ -16,11 +16,11 @@ const createSensorMock = (reading: { illuminance: number }) => {
   sensor.illuminance = reading.illuminance;
   sensor.onreading = null;
   sensor.onerror = null;
-  sensor.start = vi.fn(() => {
+  sensor.start = vi.fn<() => void>(() => {
     sensor.activated = true;
     sensor.onreading?.(new Event("reading"));
   });
-  sensor.stop = vi.fn(() => {
+  sensor.stop = vi.fn<() => void>(() => {
     sensor.activated = false;
   });
 
@@ -37,9 +37,22 @@ const createSensorMock = (reading: { illuminance: number }) => {
 };
 
 const stubAmbientLightSensor = (sensor?: ReturnType<typeof createSensorMock>["sensor"]) => {
-  const AmbientLightSensorCtor = vi.fn().mockImplementation(function AmbientLightSensor() {
-    return sensor;
-  });
+  const AmbientLightSensorCtor = vi
+    .fn<
+      () =>
+        | (EventTarget & {
+            activated: boolean;
+            illuminance: number;
+            onerror: ((event: Event & { error: DOMException }) => void) | null;
+            onreading: ((event: Event) => void) | null;
+            start: () => void;
+            stop: () => void;
+          })
+        | undefined
+    >()
+    .mockImplementation(function AmbientLightSensor() {
+      return sensor;
+    });
   vi.stubGlobal("AmbientLightSensor", AmbientLightSensorCtor);
   return AmbientLightSensorCtor;
 };

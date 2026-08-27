@@ -141,7 +141,8 @@ describe("useServiceWorker", () => {
   });
 
   it("ignores a resolved registration if the component unmounted first", async () => {
-    let resolveRegistration: (value: ServiceWorkerRegistration | undefined) => void = vi.fn();
+    let resolveRegistration: (value: ServiceWorkerRegistration | undefined) => void =
+      vi.fn<(value: ServiceWorkerRegistration | undefined) => void>();
     const pending = new Promise<ServiceWorkerRegistration | undefined>((resolve) => {
       resolveRegistration = resolve;
     });

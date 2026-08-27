@@ -62,7 +62,7 @@ describe("useDeviceOrientation", () => {
   });
 
   it("resolves according to the iOS permission gate when present", async () => {
-    const requestPermission = vi.fn().mockResolvedValue("denied");
+    const requestPermission = vi.fn<() => Promise<"denied">>().mockResolvedValue("denied");
     Object.defineProperty(DeviceOrientationEvent, "requestPermission", {
       configurable: true,
       value: requestPermission,

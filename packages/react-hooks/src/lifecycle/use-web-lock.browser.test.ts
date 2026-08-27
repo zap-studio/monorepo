@@ -41,9 +41,14 @@ describe("useWebLock", () => {
   });
 
   it('runExclusive() requests the named lock, holds it, and becomes "released"', async () => {
-    const request = vi.fn(
-      async (name: string, options: LockOptions, callback: (lock: Lock | null) => unknown) =>
-        callback({ mode: options.mode ?? "exclusive", name } as Lock),
+    const request = vi.fn<
+      (
+        name: string,
+        options: LockOptions,
+        callback: (lock: Lock | null) => unknown,
+      ) => Promise<unknown>
+    >(async (name: string, options: LockOptions, callback: (lock: Lock | null) => unknown) =>
+      callback({ mode: options.mode ?? "exclusive", name } as Lock),
     );
     setLocksSupport(request);
     const { result } = renderHook(() => useWebLock("my-lock"));

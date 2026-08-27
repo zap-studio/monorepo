@@ -20,7 +20,7 @@ const createCookieStoreMock = (initial: Record<string, string> = {}) => {
   };
 
   const store: CookieStore = Object.assign(target, {
-    delete: vi.fn((name: string): Promise<void> => {
+    delete: vi.fn<(name: string) => Promise<void>>((name: string): Promise<void> => {
       const existing = cookies.get(name);
       cookies.delete(name);
       if (existing) {
@@ -28,10 +28,10 @@ const createCookieStoreMock = (initial: Record<string, string> = {}) => {
       }
       return Promise.resolve();
     }),
-    get: vi.fn((name: string): Promise<CookieListItem | null> =>
-      Promise.resolve(cookies.get(name) ?? null),
+    get: vi.fn<(name: string) => Promise<CookieListItem | null>>(
+      (name: string): Promise<CookieListItem | null> => Promise.resolve(cookies.get(name) ?? null),
     ),
-    set: vi.fn((options: CookieInit): Promise<void> => {
+    set: vi.fn<(options: CookieInit) => Promise<void>>((options: CookieInit): Promise<void> => {
       const item = cookieItem(options.name, options.value);
       cookies.set(options.name, item);
       dispatchChange([item], []);
@@ -137,14 +137,14 @@ describe("useCookie", () => {
   it("ignores the initial get() result if unmounted before it resolves", async () => {
     let resolveGet: (item: CookieListItem | null) => void = () => {};
     const store: CookieStore = Object.assign(new EventTarget(), {
-      delete: vi.fn(),
-      get: vi.fn(
+      delete: vi.fn<(...args: any[]) => any>(),
+      get: vi.fn<() => Promise<CookieListItem | null>>(
         () =>
           new Promise<CookieListItem | null>((resolve) => {
             resolveGet = resolve;
           }),
       ),
-      set: vi.fn(),
+      set: vi.fn<(...args: any[]) => any>(),
     }) as unknown as CookieStore;
     setCookieStore(store);
 

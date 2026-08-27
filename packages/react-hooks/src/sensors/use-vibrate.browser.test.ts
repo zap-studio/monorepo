@@ -25,7 +25,7 @@ describe("useVibrate", () => {
   });
 
   it("calls navigator.vibrate with the given pattern and returns its result", () => {
-    const vibrate = vi.fn(() => true);
+    const vibrate = vi.fn<() => boolean>(() => true);
     setNavigatorVibrate(vibrate);
 
     const { result } = renderHook(() => useVibrate());

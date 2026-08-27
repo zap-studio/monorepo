@@ -42,7 +42,7 @@ describe("usePointerLock", () => {
 
   it("requests a lock on the ref'd element", async () => {
     setPointerLockSupport(true);
-    const requestPointerLock = vi.fn(() => Promise.resolve());
+    const requestPointerLock = vi.fn<() => Promise<void>>(() => Promise.resolve());
     const element = { requestPointerLock } as unknown as HTMLDivElement;
 
     const { result } = renderHook(() => usePointerLock<HTMLDivElement>());

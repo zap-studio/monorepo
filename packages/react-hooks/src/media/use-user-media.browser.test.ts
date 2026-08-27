@@ -35,7 +35,9 @@ describe("useUserMedia", () => {
 
   it('start() resolves the stream and becomes "active"', async () => {
     const stream = makeStream();
-    const getUserMedia = vi.fn(() => Promise.resolve(stream));
+    const getUserMedia = vi.fn<() => Promise<MediaStream & { track: MediaStreamTrack }>>(() =>
+      Promise.resolve(stream),
+    );
     setGetUserMedia(getUserMedia);
 
     const { result } = renderHook(() => useUserMedia({ video: true }));

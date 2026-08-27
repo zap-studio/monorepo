@@ -39,7 +39,11 @@ describe("useExperimentalLocalFonts", () => {
         style: "Regular",
       },
     ];
-    const queryLocalFonts = vi.fn().mockResolvedValue(fonts);
+    const queryLocalFonts = vi
+      .fn<
+        () => Promise<{ family: string; fullName: string; postscriptName: string; style: string }[]>
+      >()
+      .mockResolvedValue(fonts);
     vi.stubGlobal("queryLocalFonts", queryLocalFonts);
 
     const { result } = renderHook(() => useExperimentalLocalFonts());

@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import { useHotkeys } from "./use-hotkeys.ts";
 
 const TestComponent = () => {
-  useHotkeys({ "ctrl+s": vi.fn() });
+  useHotkeys({ "ctrl+s": vi.fn<() => void>() });
   return "rendered";
 };
 

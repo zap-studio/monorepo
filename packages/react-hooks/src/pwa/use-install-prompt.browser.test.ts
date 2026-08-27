@@ -13,7 +13,7 @@ const makeBeforeInstallPromptEvent = (
 ): BeforeInstallPromptTestEvent => {
   const event = new Event("beforeinstallprompt", { cancelable: true });
   return Object.assign(event, {
-    prompt: vi.fn(() => Promise.resolve()),
+    prompt: vi.fn<() => Promise<void>>(() => Promise.resolve()),
     userChoice: Promise.resolve({ outcome, platform: "web" }),
   });
 };

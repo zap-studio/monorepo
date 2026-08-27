@@ -478,11 +478,13 @@ describe("result mode (throwOnExhausted: false)", () => {
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
       .mockRejectedValue(new Error("fail"));
-    const sleep = vi.fn(() => new Promise<void>(() => {}));
+    const sleep = vi.fn<() => Promise<void>>(() => new Promise<void>(() => {}));
 
     const fakeSignal = {
       aborted: false,
-      addEventListener: vi.fn((_type: string, listener: EventListenerOrEventListenerObject) => {
+      addEventListener: vi.fn<
+        (_type: string, listener: EventListenerOrEventListenerObject) => void
+      >((_type: string, listener: EventListenerOrEventListenerObject) => {
         fakeSignal.aborted = true;
         (listener as () => void)();
       }),

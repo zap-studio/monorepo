@@ -10,7 +10,7 @@ const createSentinelMock = () => {
   Object.defineProperty(sentinel, "released", { configurable: true, get: () => released });
   Object.defineProperty(sentinel, "release", {
     configurable: true,
-    value: vi.fn(async () => {
+    value: vi.fn<() => Promise<void>>(async () => {
       released = true;
       sentinel.dispatchEvent(new Event("release"));
     }),

@@ -15,10 +15,12 @@ const setIdleCallbackSupport = (
   }
 
   let stored: IdleRequestCallback | undefined;
-  const requestIdleCallback = vi.fn((callback: IdleRequestCallback) => {
-    stored = callback;
-    return 1;
-  });
+  const requestIdleCallback = vi.fn<(callback: IdleRequestCallback) => number>(
+    (callback: IdleRequestCallback) => {
+      stored = callback;
+      return 1;
+    },
+  );
   Object.defineProperty(window, "requestIdleCallback", {
     configurable: true,
     value: requestIdleCallback,

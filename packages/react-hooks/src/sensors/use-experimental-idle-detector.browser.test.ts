@@ -11,7 +11,7 @@ const createIdleDetectorMock = (state: { screenState: string; userState: string 
   };
   detector.userState = state.userState;
   detector.screenState = state.screenState;
-  detector.start = vi.fn().mockResolvedValue(undefined);
+  detector.start = vi.fn<() => Promise<undefined>>().mockResolvedValue(undefined);
 
   return {
     detector,

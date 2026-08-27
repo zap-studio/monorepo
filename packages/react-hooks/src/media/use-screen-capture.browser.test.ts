@@ -5,7 +5,7 @@ import { useScreenCapture } from "./use-screen-capture.ts";
 
 const makeStream = () => {
   const track = new EventTarget() as MediaStreamTrack & EventTarget;
-  Object.assign(track, { stop: vi.fn() });
+  Object.assign(track, { stop: vi.fn<(...args: any[]) => any>() });
   const stream = new EventTarget() as MediaStream & EventTarget;
   Object.assign(stream, {
     getTracks: () => [track],
@@ -40,7 +40,9 @@ describe("useScreenCapture", () => {
 
   it('start() resolves the stream and becomes "active"', async () => {
     const stream = makeStream();
-    const getDisplayMedia = vi.fn(() => Promise.resolve(stream));
+    const getDisplayMedia = vi.fn<
+      () => Promise<MediaStream & { track: MediaStreamTrack & EventTarget }>
+    >(() => Promise.resolve(stream));
     setGetDisplayMedia(getDisplayMedia);
 
     const { result } = renderHook(() => useScreenCapture({ video: true }));

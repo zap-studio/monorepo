@@ -20,11 +20,11 @@ const createSensorMock = (reading: { x: number; y: number; z: number }) => {
   sensor.z = reading.z;
   sensor.onreading = null;
   sensor.onerror = null;
-  sensor.start = vi.fn(() => {
+  sensor.start = vi.fn<() => void>(() => {
     sensor.activated = true;
     sensor.onreading?.(new Event("reading"));
   });
-  sensor.stop = vi.fn(() => {
+  sensor.stop = vi.fn<() => void>(() => {
     sensor.activated = false;
   });
 
@@ -43,9 +43,24 @@ const createSensorMock = (reading: { x: number; y: number; z: number }) => {
 };
 
 const stubAccelerometer = (sensor?: ReturnType<typeof createSensorMock>["sensor"]) => {
-  const AccelerometerCtor = vi.fn().mockImplementation(function Accelerometer() {
-    return sensor;
-  });
+  const AccelerometerCtor = vi
+    .fn<
+      () =>
+        | (EventTarget & {
+            activated: boolean;
+            onerror: ((event: Event & { error: DOMException }) => void) | null;
+            onreading: ((event: Event) => void) | null;
+            start: () => void;
+            stop: () => void;
+            x: number;
+            y: number;
+            z: number;
+          })
+        | undefined
+    >()
+    .mockImplementation(function Accelerometer() {
+      return sensor;
+    });
   vi.stubGlobal("Accelerometer", AccelerometerCtor);
   return AccelerometerCtor;
 };
@@ -89,7 +104,7 @@ describe("useExperimentalAccelerometer", () => {
       "Permissions Policy blocks Accelerometer",
       "SecurityError",
     );
-    const AccelerometerCtor = vi.fn().mockImplementation(function Accelerometer() {
+    const AccelerometerCtor = vi.fn<() => never>().mockImplementation(function Accelerometer() {
       throw domException;
     });
     vi.stubGlobal("Accelerometer", AccelerometerCtor);
@@ -105,7 +120,7 @@ describe("useExperimentalAccelerometer", () => {
   });
 
   it("start() catches a non-DOMException construction failure without reporting error", () => {
-    const AccelerometerCtor = vi.fn().mockImplementation(function Accelerometer() {
+    const AccelerometerCtor = vi.fn<() => never>().mockImplementation(function Accelerometer() {
       throw new TypeError("boom");
     });
     vi.stubGlobal("Accelerometer", AccelerometerCtor);

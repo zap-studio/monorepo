@@ -38,7 +38,9 @@ describe("useViewTransition", () => {
 
   it("startTransition() runs the callback through startViewTransition when supported", async () => {
     const callback = vi.fn();
-    const startViewTransition = vi.fn((update: () => Promise<void> | void) => {
+    const startViewTransition = vi.fn<
+      (update: () => Promise<void> | void) => { finished: Promise<void> }
+    >((update: () => Promise<void> | void) => {
       const finished = Promise.resolve().then(() => update());
       return { finished };
     });

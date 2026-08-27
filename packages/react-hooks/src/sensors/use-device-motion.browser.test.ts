@@ -39,7 +39,7 @@ describe("useDeviceMotion", () => {
   });
 
   it("resolves according to the iOS permission gate when present", async () => {
-    const requestPermission = vi.fn().mockResolvedValue("granted");
+    const requestPermission = vi.fn<() => Promise<"granted">>().mockResolvedValue("granted");
     Object.defineProperty(DeviceMotionEvent, "requestPermission", {
       configurable: true,
       value: requestPermission,

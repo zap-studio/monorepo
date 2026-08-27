@@ -29,7 +29,7 @@ describe("useShare", () => {
   });
 
   it("calls navigator.share with the given data", async () => {
-    const share = vi.fn().mockResolvedValue(undefined);
+    const share = vi.fn<() => Promise<undefined>>().mockResolvedValue(undefined);
     setNavigatorShare(share);
 
     const { result } = renderHook(() => useShare());
@@ -41,7 +41,7 @@ describe("useShare", () => {
   });
 
   it("delegates canShare to navigator.canShare when available", () => {
-    const canShare = vi.fn(() => true);
+    const canShare = vi.fn<() => boolean>(() => true);
     setNavigatorShare(vi.fn());
     setNavigatorCanShare(canShare);
 

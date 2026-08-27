@@ -39,7 +39,9 @@ describe("useAsync", () => {
   });
 
   it("re-runs when a dependency changes", async () => {
-    const asyncFn = vi.fn((value: number) => Promise.resolve(value * 2));
+    const asyncFn = vi.fn<(value: number) => Promise<number>>((value: number) =>
+      Promise.resolve(value * 2),
+    );
     const { result, rerender } = renderHook(
       ({ value }) => useAsync(() => asyncFn(value), [value]),
       { initialProps: { value: 1 } },
@@ -55,7 +57,7 @@ describe("useAsync", () => {
 
   it("resets to loading: true when re-running", async () => {
     let resolveSecond: (value: number) => void = () => undefined;
-    const asyncFn = vi.fn((value: number) => {
+    const asyncFn = vi.fn<(value: number) => Promise<number>>((value: number) => {
       if (value === 2) {
         return new Promise<number>((resolve) => {
           resolveSecond = resolve;

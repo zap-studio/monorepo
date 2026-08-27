@@ -56,7 +56,9 @@ describe("useStorageEstimate", () => {
   });
 
   it("does not call estimate a second time on re-render", async () => {
-    const estimate = vi.fn(() => Promise.resolve({ quota: 1, usage: 1 }));
+    const estimate = vi.fn<() => Promise<{ quota: number; usage: number }>>(() =>
+      Promise.resolve({ quota: 1, usage: 1 }),
+    );
     setNavigatorStorage(estimate);
 
     const { rerender } = renderHook(() => useStorageEstimate());

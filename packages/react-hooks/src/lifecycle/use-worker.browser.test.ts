@@ -34,7 +34,7 @@ describe("useWorker", () => {
   it("run() rejects and never creates a worker when unsupported", async () => {
     reset();
     vi.stubGlobal("Worker", undefined);
-    const createWorker = vi.fn(() => new MockWorker() as unknown as Worker);
+    const createWorker = vi.fn<() => Worker>(() => new MockWorker() as unknown as Worker);
     const { result } = renderHook(() => useWorker(createWorker));
 
     let error: Error | undefined;
@@ -59,7 +59,7 @@ describe("useWorker", () => {
 
   it("does not create the worker until the first run() call", () => {
     reset();
-    const createWorker = vi.fn(() => new MockWorker() as unknown as Worker);
+    const createWorker = vi.fn<() => Worker>(() => new MockWorker() as unknown as Worker);
     renderHook(() => useWorker(createWorker));
 
     expect(createWorker).not.toHaveBeenCalled();
@@ -90,7 +90,7 @@ describe("useWorker", () => {
 
   it("reuses the same worker across multiple run() calls", async () => {
     reset();
-    const createWorker = vi.fn(() => new MockWorker() as unknown as Worker);
+    const createWorker = vi.fn<() => Worker>(() => new MockWorker() as unknown as Worker);
     const { result } = renderHook(() => useWorker<number, number>(createWorker));
 
     let firstPromise!: Promise<number>;
@@ -140,7 +140,7 @@ describe("useWorker", () => {
 
   it("terminate() terminates the worker so the next run() creates a new one", async () => {
     reset();
-    const createWorker = vi.fn(() => new MockWorker() as unknown as Worker);
+    const createWorker = vi.fn<() => Worker>(() => new MockWorker() as unknown as Worker);
     const { result } = renderHook(() => useWorker<number, number>(createWorker));
 
     let firstPromise!: Promise<number>;

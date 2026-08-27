@@ -20,11 +20,11 @@ const createSensorMock = (reading: { x: number; y: number; z: number }) => {
   sensor.z = reading.z;
   sensor.onreading = null;
   sensor.onerror = null;
-  sensor.start = vi.fn(() => {
+  sensor.start = vi.fn<() => void>(() => {
     sensor.activated = true;
     sensor.onreading?.(new Event("reading"));
   });
-  sensor.stop = vi.fn(() => {
+  sensor.stop = vi.fn<() => void>(() => {
     sensor.activated = false;
   });
 
@@ -44,7 +44,20 @@ const createSensorMock = (reading: { x: number; y: number; z: number }) => {
 
 const stubLinearAccelerationSensor = (sensor?: ReturnType<typeof createSensorMock>["sensor"]) => {
   const LinearAccelerationSensorCtor = vi
-    .fn()
+    .fn<
+      () =>
+        | (EventTarget & {
+            activated: boolean;
+            onerror: ((event: Event & { error: DOMException }) => void) | null;
+            onreading: ((event: Event) => void) | null;
+            start: () => void;
+            stop: () => void;
+            x: number;
+            y: number;
+            z: number;
+          })
+        | undefined
+    >()
     .mockImplementation(function LinearAccelerationSensor() {
       return sensor;
     });

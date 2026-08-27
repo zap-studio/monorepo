@@ -58,7 +58,7 @@ describe("usePictureInPicture", () => {
 
   it("enter() requests PiP on the ref'd element", async () => {
     setPictureInPictureSupport(true);
-    const requestPictureInPicture = vi.fn(() => Promise.resolve());
+    const requestPictureInPicture = vi.fn<() => Promise<void>>(() => Promise.resolve());
     const element = { requestPictureInPicture } as unknown as HTMLVideoElement;
 
     const { result } = renderHook(() => usePictureInPicture<HTMLVideoElement>());
@@ -109,7 +109,7 @@ describe("usePictureInPicture", () => {
   it("exit() calls document.exitPictureInPicture() when this element is active", async () => {
     setPictureInPictureSupport(true);
     const element = document.createElement("video");
-    const exitPictureInPicture = vi.fn(() => Promise.resolve());
+    const exitPictureInPicture = vi.fn<() => Promise<void>>(() => Promise.resolve());
     Object.defineProperty(document, "exitPictureInPicture", {
       configurable: true,
       value: exitPictureInPicture,
@@ -130,7 +130,7 @@ describe("usePictureInPicture", () => {
     setPictureInPictureSupport(true);
     const element = document.createElement("video");
     const other = document.createElement("video");
-    const exitPictureInPicture = vi.fn(() => Promise.resolve());
+    const exitPictureInPicture = vi.fn<() => Promise<void>>(() => Promise.resolve());
     Object.defineProperty(document, "exitPictureInPicture", {
       configurable: true,
       value: exitPictureInPicture,

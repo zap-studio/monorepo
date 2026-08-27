@@ -41,7 +41,7 @@ describe("useExperimentalSelectAudioOutput", () => {
 
   it("selectAudioOutput() forwards options and resolves the picked device", async () => {
     const selectAudioOutput = vi
-      .fn()
+      .fn<() => Promise<{ deviceId: string; kind: string; label: string }>>()
       .mockResolvedValue({ deviceId: "abc", kind: "audiooutput", label: "Speakers" });
     setSelectAudioOutput(selectAudioOutput);
 

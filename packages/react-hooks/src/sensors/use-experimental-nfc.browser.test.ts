@@ -17,14 +17,20 @@ const createReaderMock = (
   } = {},
 ) => {
   const reader = new EventTarget() as ReaderMock;
-  reader.scan = vi.fn(overrides.scan ?? (() => Promise.resolve()));
-  reader.write = vi.fn(overrides.write ?? (() => Promise.resolve()));
-  reader.makeReadOnly = vi.fn(overrides.makeReadOnly ?? (() => Promise.resolve()));
+  reader.scan = vi.fn<(options?: { signal?: AbortSignal }) => Promise<void>>(
+    overrides.scan ?? (() => Promise.resolve()),
+  );
+  reader.write = vi.fn<(message: unknown, options?: { overwrite?: boolean }) => Promise<void>>(
+    overrides.write ?? (() => Promise.resolve()),
+  );
+  reader.makeReadOnly = vi.fn<() => Promise<void>>(
+    overrides.makeReadOnly ?? (() => Promise.resolve()),
+  );
   return reader;
 };
 
 const stubNdefReader = (reader: ReaderMock) => {
-  const NDEFReaderCtor = vi.fn().mockImplementation(function NDEFReader() {
+  const NDEFReaderCtor = vi.fn<() => ReaderMock>().mockImplementation(function NDEFReader() {
     return reader;
   });
   vi.stubGlobal("NDEFReader", NDEFReaderCtor);

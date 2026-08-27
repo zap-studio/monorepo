@@ -15,9 +15,11 @@ class MockUtterance extends EventTarget {
 }
 
 const installMockSpeechSynthesis = () => {
-  const speak = vi.fn((utterance: SpeechSynthesisUtterance) => {
-    utterance.dispatchEvent(new Event("start"));
-  });
+  const speak = vi.fn<(utterance: SpeechSynthesisUtterance) => void>(
+    (utterance: SpeechSynthesisUtterance) => {
+      utterance.dispatchEvent(new Event("start"));
+    },
+  );
   const cancel = vi.fn();
   Object.defineProperty(window, "speechSynthesis", {
     configurable: true,

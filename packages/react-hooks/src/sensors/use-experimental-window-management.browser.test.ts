@@ -23,7 +23,9 @@ class MockScreenDetails extends EventTarget {
 
 const stubGetScreenDetails = (details: MockScreenDetails | (() => Promise<MockScreenDetails>)) => {
   const getScreenDetails =
-    typeof details === "function" ? details : vi.fn(() => Promise.resolve(details));
+    typeof details === "function"
+      ? details
+      : vi.fn<() => Promise<MockScreenDetails>>(() => Promise.resolve(details));
   vi.stubGlobal("getScreenDetails", getScreenDetails);
   return getScreenDetails;
 };

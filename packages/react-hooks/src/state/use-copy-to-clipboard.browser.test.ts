@@ -27,7 +27,7 @@ describe("useCopyToClipboard", () => {
   });
 
   it("copy() writes to the clipboard and becomes copied: true", async () => {
-    const writeText = vi.fn(() => Promise.resolve());
+    const writeText = vi.fn<() => Promise<void>>(() => Promise.resolve());
     setClipboardSupport(writeText);
     const { result } = renderHook(() => useCopyToClipboard());
 

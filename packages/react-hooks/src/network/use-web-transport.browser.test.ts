@@ -61,11 +61,12 @@ class MockWebTransport {
     this.resolveClosed(closeInfo ?? { closeCode: 0, reason: "" });
   }
 
-  createBidirectionalStream = vi.fn((): Promise<WebTransportBidirectionalStream> =>
-    Promise.resolve({} as WebTransportBidirectionalStream),
+  createBidirectionalStream = vi.fn<() => Promise<WebTransportBidirectionalStream>>(
+    (): Promise<WebTransportBidirectionalStream> =>
+      Promise.resolve({} as WebTransportBidirectionalStream),
   );
 
-  createUnidirectionalStream = vi.fn((): Promise<WritableStream> =>
+  createUnidirectionalStream = vi.fn<() => Promise<WritableStream>>((): Promise<WritableStream> =>
     Promise.resolve(new WritableStream()),
   );
 
