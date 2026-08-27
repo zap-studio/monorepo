@@ -65,7 +65,9 @@ describe("useFullscreen", () => {
 
   it("becomes fullscreen when fullscreenchange fires with the ref'd element active", async () => {
     setFullscreenSupport(true);
-    const element = { requestFullscreen: vi.fn() } as unknown as HTMLDivElement;
+    const element = {
+      requestFullscreen: vi.fn<() => Promise<void>>(),
+    } as unknown as HTMLDivElement;
 
     const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
@@ -80,8 +82,12 @@ describe("useFullscreen", () => {
 
   it("becomes not fullscreen when a different element is active", async () => {
     setFullscreenSupport(true);
-    const element = { requestFullscreen: vi.fn() } as unknown as HTMLDivElement;
-    const other = { requestFullscreen: vi.fn() } as unknown as HTMLDivElement;
+    const element = {
+      requestFullscreen: vi.fn<() => Promise<void>>(),
+    } as unknown as HTMLDivElement;
+    const other = {
+      requestFullscreen: vi.fn<() => Promise<void>>(),
+    } as unknown as HTMLDivElement;
 
     const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
@@ -193,7 +199,9 @@ describe("useFullscreen", () => {
 
   it("removes the fullscreenchange listener on unmount", async () => {
     setFullscreenSupport(true);
-    const element = { requestFullscreen: vi.fn() } as unknown as HTMLDivElement;
+    const element = {
+      requestFullscreen: vi.fn<() => Promise<void>>(),
+    } as unknown as HTMLDivElement;
 
     const { result, unmount } = renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;

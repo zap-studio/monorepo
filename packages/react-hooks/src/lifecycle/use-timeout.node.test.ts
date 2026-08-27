@@ -6,7 +6,7 @@ import { useTimeout } from "./use-timeout.ts";
 
 describe("useTimeout", () => {
   it("does not schedule during server rendering", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<() => void>();
     const TestComponent = () => {
       useTimeout(callback, 1000);
       return "rendered";

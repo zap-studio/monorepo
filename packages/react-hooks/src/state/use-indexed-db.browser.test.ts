@@ -15,7 +15,11 @@ const makeFailingRequest = (errorMessage: string): IDBRequest => {
 };
 
 const makeFailingTransaction = (error: unknown): IDBTransaction => {
-  const fakeStore = { delete: vi.fn(), get: vi.fn(), put: vi.fn() };
+  const fakeStore = {
+    delete: vi.fn<(key: string) => IDBRequest>(),
+    get: vi.fn<(key: string) => IDBRequest>(),
+    put: vi.fn<(value: unknown, key: string) => IDBRequest>(),
+  };
   const fake: {
     error: unknown;
     objectStore: () => typeof fakeStore;
@@ -39,9 +43,9 @@ const makeControlledOpenRequest = (options: {
 }) => {
   let onupgradeneeded: (() => void) | undefined;
   let onsuccess: (() => void) | undefined;
-  const createObjectStore = vi.fn();
+  const createObjectStore = vi.fn<(name: string) => void>();
   const fakeDb = {
-    close: vi.fn(),
+    close: vi.fn<() => void>(),
     createObjectStore,
     objectStoreNames: { contains: () => options.storeExists },
     transaction: () => ({ objectStore: () => ({ get: options.getRequest }) }),

@@ -6,7 +6,7 @@ import { useInterval } from "./use-interval.ts";
 
 describe("useInterval", () => {
   it("does not schedule during server rendering", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<() => void>();
     const TestComponent = () => {
       useInterval(callback, 1000);
       return "rendered";

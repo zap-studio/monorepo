@@ -489,7 +489,8 @@ describe("result mode (throwOnExhausted: false)", () => {
         (listener as () => void)();
       }),
       reason: "aborted-during-wait-race",
-      removeEventListener: vi.fn(),
+      removeEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
     } as unknown as AbortSignal & { aborted: boolean };
 
     const result = await runRetryPolicy(policy, execute, {

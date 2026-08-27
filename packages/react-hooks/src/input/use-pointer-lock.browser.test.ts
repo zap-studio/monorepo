@@ -6,7 +6,7 @@ import { usePointerLock } from "./use-pointer-lock.ts";
 const setPointerLockSupport = (supported: boolean) => {
   Object.defineProperty(document, "exitPointerLock", {
     configurable: true,
-    value: supported ? vi.fn() : undefined,
+    value: supported ? vi.fn<() => void>() : undefined,
   });
 };
 
@@ -69,7 +69,9 @@ describe("usePointerLock", () => {
 
   it("becomes locked when pointerlockchange fires with the ref'd element locked", async () => {
     setPointerLockSupport(true);
-    const element = { requestPointerLock: vi.fn() } as unknown as HTMLDivElement;
+    const element = {
+      requestPointerLock: vi.fn<() => Promise<void>>(),
+    } as unknown as HTMLDivElement;
 
     const { result } = renderHook(() => usePointerLock<HTMLDivElement>());
     result.current.ref.current = element;
@@ -84,8 +86,10 @@ describe("usePointerLock", () => {
 
   it("becomes unlocked when pointerlockchange fires with a different element locked", async () => {
     setPointerLockSupport(true);
-    const element = { requestPointerLock: vi.fn() } as unknown as HTMLDivElement;
-    const other = { requestPointerLock: vi.fn() } as unknown as HTMLDivElement;
+    const element = {
+      requestPointerLock: vi.fn<() => Promise<void>>(),
+    } as unknown as HTMLDivElement;
+    const other = { requestPointerLock: vi.fn<() => Promise<void>>() } as unknown as HTMLDivElement;
 
     const { result } = renderHook(() => usePointerLock<HTMLDivElement>());
     result.current.ref.current = element;
@@ -131,7 +135,9 @@ describe("usePointerLock", () => {
 
   it("removes the pointerlockchange listener on unmount", async () => {
     setPointerLockSupport(true);
-    const element = { requestPointerLock: vi.fn() } as unknown as HTMLDivElement;
+    const element = {
+      requestPointerLock: vi.fn<() => Promise<void>>(),
+    } as unknown as HTMLDivElement;
 
     const { result, unmount } = renderHook(() => usePointerLock<HTMLDivElement>());
     result.current.ref.current = element;

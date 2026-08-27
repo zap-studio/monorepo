@@ -11,14 +11,14 @@ import {
 class FakeIntersectionObserver implements IntersectionObserver {
   static instances: FakeIntersectionObserver[] = [];
   readonly callback: IntersectionObserverCallback;
-  readonly disconnect = vi.fn();
-  readonly observe = vi.fn();
+  readonly disconnect = vi.fn<() => void>();
+  readonly observe = vi.fn<(target: Element) => void>();
   readonly root = null;
   readonly rootMargin = "";
   readonly scrollMargin = "";
   readonly takeRecords = (): IntersectionObserverEntry[] => [];
   readonly thresholds: readonly number[] = [];
-  readonly unobserve = vi.fn();
+  readonly unobserve = vi.fn<(target: Element) => void>();
 
   constructor(callback: IntersectionObserverCallback) {
     this.callback = callback;

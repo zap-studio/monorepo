@@ -6,7 +6,7 @@ import { useEventListener } from "./use-event-listener.ts";
 
 describe("useEventListener", () => {
   it("attaches to window by default target and calls the handler", () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: Event) => void>();
     renderHook(() => useEventListener(window, "click", handler));
 
     window.dispatchEvent(new Event("click"));
@@ -15,7 +15,7 @@ describe("useEventListener", () => {
   });
 
   it("attaches to a ref'd element", () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: Event) => void>();
     const element = document.createElement("div");
 
     renderHook(() => {
@@ -35,8 +35,8 @@ describe("useEventListener", () => {
   });
 
   it("calls the latest handler without re-subscribing", () => {
-    const first = vi.fn();
-    const second = vi.fn();
+    const first = vi.fn<() => void>();
+    const second = vi.fn<() => void>();
 
     const { rerender } = renderHook(
       ({ handler }: { handler: () => void }) => useEventListener(window, "click", handler),
@@ -51,7 +51,7 @@ describe("useEventListener", () => {
   });
 
   it("removes the listener on unmount", () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: Event) => void>();
     const { unmount } = renderHook(() => useEventListener(window, "click", handler));
 
     unmount();
@@ -67,7 +67,7 @@ describe("useEventListener", () => {
   });
 
   it("re-subscribes when type changes", () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: Event) => void>();
     const { rerender } = renderHook(
       ({ type }: { type: string }) => useEventListener(window, type, handler),
       { initialProps: { type: "click" } },
@@ -81,7 +81,7 @@ describe("useEventListener", () => {
   });
 
   it("attaches to an element the ref only points at after the first render", () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: Event) => void>();
     const element = document.createElement("div");
     const ref: RefObject<HTMLDivElement | null> = { current: null };
 
@@ -98,7 +98,7 @@ describe("useEventListener", () => {
   });
 
   it("moves the listener when the ref points at a different element", () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: Event) => void>();
     const first = document.createElement("div");
     const second = document.createElement("div");
     const ref: RefObject<HTMLDivElement | null> = { current: first };
@@ -116,7 +116,7 @@ describe("useEventListener", () => {
   });
 
   it("detaches when the ref's element goes away", () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: Event) => void>();
     const element = document.createElement("div");
     const ref: RefObject<HTMLDivElement | null> = { current: element };
 
@@ -143,7 +143,7 @@ describe("useEventListener", () => {
   });
 
   it("re-subscribes when a boolean capture option flips", () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: Event) => void>();
     const addEventListener = vi.spyOn(window, "addEventListener");
 
     const { rerender } = renderHook(
@@ -175,7 +175,7 @@ describe("useEventListener", () => {
   });
 
   it("only calls the handler once with the once option", () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: Event) => void>();
     renderHook(() => useEventListener(window, "click", handler, { once: true }));
 
     window.dispatchEvent(new Event("click"));
@@ -200,7 +200,7 @@ describe("useEventListener", () => {
   });
 
   it("forwards an abort signal and re-subscribes when it changes", () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: Event) => void>();
     const first = new AbortController();
     const second = new AbortController();
 

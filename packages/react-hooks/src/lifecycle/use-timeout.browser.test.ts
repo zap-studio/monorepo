@@ -13,7 +13,7 @@ afterEach(() => {
 
 describe("useTimeout", () => {
   it("calls the callback after the delay elapses", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<() => void>();
     renderHook(() => useTimeout(callback, 1000));
 
     act(() => {
@@ -28,7 +28,7 @@ describe("useTimeout", () => {
   });
 
   it("does not schedule when delayMs is null", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<() => void>();
     renderHook(() => useTimeout(callback, null));
 
     act(() => {
@@ -39,7 +39,7 @@ describe("useTimeout", () => {
   });
 
   it("clears the previous timer and reschedules when delayMs changes", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<() => void>();
     const { rerender } = renderHook(({ delay }) => useTimeout(callback, delay), {
       initialProps: { delay: 1000 },
     });
@@ -61,8 +61,8 @@ describe("useTimeout", () => {
   });
 
   it("always calls the latest callback without resetting the timer", () => {
-    const firstCallback = vi.fn();
-    const secondCallback = vi.fn();
+    const firstCallback = vi.fn<() => void>();
+    const secondCallback = vi.fn<() => void>();
     const { rerender } = renderHook(({ callback }) => useTimeout(callback, 1000), {
       initialProps: { callback: firstCallback },
     });
@@ -77,7 +77,7 @@ describe("useTimeout", () => {
   });
 
   it("clears the timer on unmount", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<() => void>();
     const { unmount } = renderHook(() => useTimeout(callback, 1000));
 
     unmount();

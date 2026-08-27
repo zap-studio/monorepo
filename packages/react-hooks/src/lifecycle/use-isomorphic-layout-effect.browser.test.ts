@@ -10,8 +10,8 @@ describe("useIsomorphicLayoutEffect", () => {
   });
 
   it("runs the effect on mount and its cleanup on unmount", () => {
-    const cleanup = vi.fn();
-    const effect = vi.fn(() => cleanup);
+    const cleanup = vi.fn<() => void>();
+    const effect = vi.fn<() => () => void>(() => cleanup);
 
     const { unmount } = renderHook(() => {
       useIsomorphicLayoutEffect(effect, []);
@@ -26,7 +26,7 @@ describe("useIsomorphicLayoutEffect", () => {
   });
 
   it("re-runs when its dependencies change", () => {
-    const effect = vi.fn();
+    const effect = vi.fn<() => void>();
 
     const { rerender } = renderHook(
       ({ value }: { value: number }) => {

@@ -26,7 +26,7 @@ const renderObservedDiv = (callback: (mutations: MutationRecord[]) => void) => {
 
 describe("useMutationObserver", () => {
   it("calls the callback when an attribute changes on the ref'd element", async () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(mutations: MutationRecord[]) => void>();
     const div = renderObservedDiv(callback);
 
     div.element?.setAttribute("data-test", "1");
@@ -37,8 +37,8 @@ describe("useMutationObserver", () => {
   });
 
   it("calls the latest callback without re-subscribing", async () => {
-    const first = vi.fn();
-    const second = vi.fn();
+    const first = vi.fn<(mutations: MutationRecord[]) => void>();
+    const second = vi.fn<(mutations: MutationRecord[]) => void>();
     const box: { current: HTMLDivElement | null } = { current: null };
     const TestComponent = ({ callback }: { callback: (mutations: MutationRecord[]) => void }) => {
       const ref = useMutationObserver<HTMLDivElement>(callback);
@@ -75,7 +75,7 @@ describe("useMutationObserver", () => {
   });
 
   it("disconnects the observer on unmount", async () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(mutations: MutationRecord[]) => void>();
     const div = renderObservedDiv(callback);
     const element = div.element;
 
@@ -89,7 +89,7 @@ describe("useMutationObserver", () => {
 
 describe("useMutationObserver ref and option tracking", () => {
   it("observes a subtree that only attaches after the first render", async () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(mutations: MutationRecord[]) => void>();
     let element: HTMLDivElement | null = null;
     const TestComponent = ({ show }: { show: boolean }) => {
       const ref = useMutationObserver<HTMLDivElement>(callback);
@@ -111,8 +111,8 @@ describe("useMutationObserver ref and option tracking", () => {
   });
 
   it("does not re-observe for an options object re-created every render", () => {
-    const observe = vi.fn();
-    const disconnect = vi.fn();
+    const observe = vi.fn<(target: Node, options?: MutationObserverInit) => void>();
+    const disconnect = vi.fn<() => void>();
     vi.stubGlobal(
       "MutationObserver",
       class {
@@ -139,11 +139,11 @@ describe("useMutationObserver ref and option tracking", () => {
   });
 
   it("re-observes when an option changes", () => {
-    const observe = vi.fn();
+    const observe = vi.fn<(target: Node, options?: MutationObserverInit) => void>();
     vi.stubGlobal(
       "MutationObserver",
       class {
-        disconnect = vi.fn();
+        disconnect = vi.fn<() => void>();
         observe = observe;
         takeRecords = () => [];
       },

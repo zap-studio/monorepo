@@ -5,14 +5,14 @@ import { useUpdateEffect } from "./use-update-effect.ts";
 
 describe("useUpdateEffect", () => {
   it("does not call the effect on the mount render", () => {
-    const effect = vi.fn();
+    const effect = vi.fn<() => void>();
     renderHook(() => useUpdateEffect(effect, []));
 
     expect(effect).not.toHaveBeenCalled();
   });
 
   it("calls the effect on subsequent renders when a dependency changes", () => {
-    const effect = vi.fn();
+    const effect = vi.fn<() => void>();
     const { rerender } = renderHook(({ value }) => useUpdateEffect(effect, [value]), {
       initialProps: { value: 1 },
     });
@@ -23,7 +23,7 @@ describe("useUpdateEffect", () => {
   });
 
   it("does not call the effect again when dependencies stay the same", () => {
-    const effect = vi.fn();
+    const effect = vi.fn<() => void>();
     const { rerender } = renderHook(({ value }) => useUpdateEffect(effect, [value]), {
       initialProps: { value: 1 },
     });
@@ -34,8 +34,8 @@ describe("useUpdateEffect", () => {
   });
 
   it("runs the effect's own cleanup between updates", () => {
-    const cleanup = vi.fn();
-    const effect = vi.fn(() => cleanup);
+    const cleanup = vi.fn<() => void>();
+    const effect = vi.fn<() => () => void>(() => cleanup);
     const { rerender, unmount } = renderHook(({ value }) => useUpdateEffect(effect, [value]), {
       initialProps: { value: 1 },
     });

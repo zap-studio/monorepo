@@ -43,7 +43,7 @@ describe("useAnimationFrame", () => {
   });
 
   it("does not call the callback on the very first frame (no delta yet)", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(deltaMs: number) => void>();
     renderHook(() => useAnimationFrame(callback));
 
     act(() => {
@@ -54,7 +54,7 @@ describe("useAnimationFrame", () => {
   });
 
   it("calls the callback with the delta time on subsequent frames", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(deltaMs: number) => void>();
     renderHook(() => useAnimationFrame(callback));
 
     act(() => {
@@ -74,8 +74,8 @@ describe("useAnimationFrame", () => {
   });
 
   it("always calls the latest callback", () => {
-    const firstCallback = vi.fn();
-    const secondCallback = vi.fn();
+    const firstCallback = vi.fn<(deltaMs: number) => void>();
+    const secondCallback = vi.fn<(deltaMs: number) => void>();
     const { rerender } = renderHook(({ callback }) => useAnimationFrame(callback), {
       initialProps: { callback: firstCallback },
     });

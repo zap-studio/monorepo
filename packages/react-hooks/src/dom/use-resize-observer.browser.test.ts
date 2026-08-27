@@ -7,11 +7,11 @@ import { useResizeObserver, type UseResizeObserverResult } from "./use-resize-ob
 class FakeResizeObserver implements ResizeObserver {
   static instances: FakeResizeObserver[] = [];
   readonly callback: ResizeObserverCallback;
-  readonly disconnect = vi.fn();
+  readonly disconnect = vi.fn<() => void>();
   readonly observe = vi.fn<(target: Element) => void>((target: Element) => {
     this.target = target;
   });
-  readonly unobserve = vi.fn();
+  readonly unobserve = vi.fn<(target: Element) => void>();
   target: Element | undefined;
 
   constructor(callback: ResizeObserverCallback) {

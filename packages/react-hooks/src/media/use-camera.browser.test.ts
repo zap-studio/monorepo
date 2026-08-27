@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { useCamera } from "./use-camera.ts";
 
 const makeStream = () => {
-  const track = { stop: vi.fn() } as unknown as MediaStreamTrack;
+  const track = { stop: vi.fn<() => void>() } as unknown as MediaStreamTrack;
   return { getTracks: () => [track], track } as unknown as MediaStream & {
     track: MediaStreamTrack;
   };

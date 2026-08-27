@@ -10,7 +10,7 @@ const dispatchMouseOut = (relatedTarget: EventTarget | null) => {
 
 describe("usePageLeave", () => {
   it("calls the handler when the pointer leaves the viewport", async () => {
-    const onPageLeave = vi.fn();
+    const onPageLeave = vi.fn<() => void>();
     renderHook(() => usePageLeave(onPageLeave));
 
     await act(async () => {
@@ -21,7 +21,7 @@ describe("usePageLeave", () => {
   });
 
   it("does not call the handler when moving between elements inside the page", async () => {
-    const onPageLeave = vi.fn();
+    const onPageLeave = vi.fn<() => void>();
     renderHook(() => usePageLeave(onPageLeave));
 
     await act(async () => {
@@ -32,8 +32,8 @@ describe("usePageLeave", () => {
   });
 
   it("always calls the latest handler without re-subscribing", async () => {
-    const firstHandler = vi.fn();
-    const secondHandler = vi.fn();
+    const firstHandler = vi.fn<() => void>();
+    const secondHandler = vi.fn<() => void>();
     const { rerender } = renderHook(({ handler }) => usePageLeave(handler), {
       initialProps: { handler: firstHandler },
     });

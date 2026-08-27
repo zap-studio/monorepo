@@ -5,7 +5,7 @@ import { useBeforeUnload } from "./use-before-unload.ts";
 
 describe("useBeforeUnload", () => {
   it("calls the handler when beforeunload fires", async () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: BeforeUnloadEvent) => void>();
     renderHook(() => useBeforeUnload(handler));
 
     await act(async () => {
@@ -16,7 +16,7 @@ describe("useBeforeUnload", () => {
   });
 
   it("does not attach a listener when enabled: false", async () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: BeforeUnloadEvent) => void>();
     renderHook(() => useBeforeUnload(handler, false));
 
     await act(async () => {
@@ -27,8 +27,8 @@ describe("useBeforeUnload", () => {
   });
 
   it("always calls the latest handler without re-subscribing", async () => {
-    const firstHandler = vi.fn();
-    const secondHandler = vi.fn();
+    const firstHandler = vi.fn<(event: BeforeUnloadEvent) => void>();
+    const secondHandler = vi.fn<(event: BeforeUnloadEvent) => void>();
     const { rerender } = renderHook(({ handler }) => useBeforeUnload(handler), {
       initialProps: { handler: firstHandler },
     });
@@ -43,7 +43,7 @@ describe("useBeforeUnload", () => {
   });
 
   it("removes the listener on unmount", async () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: BeforeUnloadEvent) => void>();
     const { unmount } = renderHook(() => useBeforeUnload(handler));
     unmount();
 
@@ -55,7 +55,7 @@ describe("useBeforeUnload", () => {
   });
 
   it("removes and re-adds the listener when enabled toggles", async () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: BeforeUnloadEvent) => void>();
     const { rerender } = renderHook(({ enabled }) => useBeforeUnload(handler, enabled), {
       initialProps: { enabled: false },
     });

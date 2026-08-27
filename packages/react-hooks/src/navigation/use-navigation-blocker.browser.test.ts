@@ -31,7 +31,7 @@ const fakeNavigateEvent = (overrides: Partial<NavigateEvent> = {}): NavigateEven
     destination: { url: "/next" },
     downloadRequest: null,
     hashChange: false,
-    intercept: vi.fn(),
+    intercept: vi.fn<(options: { handler: () => Promise<void> }) => void>(),
     ...overrides,
   } as unknown as NavigateEvent;
 };

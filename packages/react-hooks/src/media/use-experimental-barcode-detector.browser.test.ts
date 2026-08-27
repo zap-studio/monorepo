@@ -38,9 +38,11 @@ describe("useExperimentalBarcodeDetector", () => {
     const detect = vi
       .fn<() => Promise<{ format: string; rawValue: string }[]>>()
       .mockResolvedValue([{ format: "qr_code", rawValue: "hello" }]);
-    const BarcodeDetectorCtor = vi.fn().mockImplementation(function BarcodeDetector() {
-      return { detect };
-    });
+    const BarcodeDetectorCtor = vi
+      .fn<new (options?: { formats?: string[] }) => { detect: typeof detect }>()
+      .mockImplementation(function BarcodeDetector() {
+        return { detect };
+      });
     vi.stubGlobal("BarcodeDetector", BarcodeDetectorCtor);
 
     const { result } = renderHook(() => useExperimentalBarcodeDetector(["qr_code"]));
@@ -55,9 +57,11 @@ describe("useExperimentalBarcodeDetector", () => {
 
   it("detect() constructs a detector for every format when none are given", async () => {
     const detect = vi.fn<() => Promise<never[]>>().mockResolvedValue([]);
-    const BarcodeDetectorCtor = vi.fn().mockImplementation(function BarcodeDetector() {
-      return { detect };
-    });
+    const BarcodeDetectorCtor = vi
+      .fn<new (options?: { formats?: string[] }) => { detect: typeof detect }>()
+      .mockImplementation(function BarcodeDetector() {
+        return { detect };
+      });
     vi.stubGlobal("BarcodeDetector", BarcodeDetectorCtor);
 
     const { result } = renderHook(() => useExperimentalBarcodeDetector());

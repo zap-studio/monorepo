@@ -64,7 +64,7 @@ describe("usePerformanceObserver", () => {
 
   it("calls the callback with the entry list and observer", () => {
     installMockPerformanceObserver();
-    const callback = vi.fn();
+    const callback = vi.fn<PerformanceObserverCallback>();
     renderHook(() => usePerformanceObserver(callback, { entryTypes: ["longtask"] }));
 
     const observer = MockPerformanceObserver.instances[0]!;
@@ -78,8 +78,8 @@ describe("usePerformanceObserver", () => {
 
   it("always calls the latest callback", () => {
     installMockPerformanceObserver();
-    const firstCallback = vi.fn();
-    const secondCallback = vi.fn();
+    const firstCallback = vi.fn<PerformanceObserverCallback>();
+    const secondCallback = vi.fn<PerformanceObserverCallback>();
     const { rerender } = renderHook(
       ({ callback }) => usePerformanceObserver(callback, { entryTypes: ["longtask"] }),
       { initialProps: { callback: firstCallback } },

@@ -6,7 +6,7 @@ import { useBeforeUnload } from "./use-before-unload.ts";
 
 describe("useBeforeUnload", () => {
   it("renders without touching window during server rendering", () => {
-    const handler = vi.fn();
+    const handler = vi.fn<(event: BeforeUnloadEvent) => void>();
     const TestComponent = () => {
       useBeforeUnload(handler);
       return "rendered";

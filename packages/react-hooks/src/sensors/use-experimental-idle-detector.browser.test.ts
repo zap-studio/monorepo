@@ -79,7 +79,9 @@ describe("useExperimentalIdleDetector", () => {
 
   it("start() resolves false and cleans up when the detector fails to start", async () => {
     const { detector } = createIdleDetectorMock({ screenState: "unlocked", userState: "active" });
-    detector.start = vi.fn().mockRejectedValue(new Error("permission denied"));
+    detector.start = vi
+      .fn<() => Promise<undefined>>()
+      .mockRejectedValue(new Error("permission denied"));
     stubIdleDetector({ detector, requestPermission: () => Promise.resolve("granted") });
 
     const { result } = renderHook(() => useExperimentalIdleDetector());

@@ -8,7 +8,7 @@ describe("useViewTransition", () => {
     const original = document.startViewTransition;
     Object.defineProperty(document, "startViewTransition", {
       configurable: true,
-      value: vi.fn(),
+      value: vi.fn<(update: () => Promise<void> | void) => { finished: Promise<void> }>(),
     });
 
     const { result } = renderHook(() => useViewTransition());
@@ -37,7 +37,7 @@ describe("useViewTransition", () => {
   });
 
   it("startTransition() runs the callback through startViewTransition when supported", async () => {
-    const callback = vi.fn();
+    const callback = vi.fn<() => Promise<void> | void>();
     const startViewTransition = vi.fn<
       (update: () => Promise<void> | void) => { finished: Promise<void> }
     >((update: () => Promise<void> | void) => {
@@ -67,7 +67,7 @@ describe("useViewTransition", () => {
       configurable: true,
       value: undefined,
     });
-    const callback = vi.fn();
+    const callback = vi.fn<() => Promise<void> | void>();
 
     const { result } = renderHook(() => useViewTransition());
     await result.current.startTransition(callback);

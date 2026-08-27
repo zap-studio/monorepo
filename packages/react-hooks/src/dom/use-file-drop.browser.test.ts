@@ -60,7 +60,7 @@ describe("useFileDrop", () => {
   });
 
   it("calls onDrop with the dropped files and resets isOver", () => {
-    const onDrop = vi.fn();
+    const onDrop = vi.fn<(files: File[]) => void>();
     const zone = renderDropzone(onDrop);
     const file = new File(["hello"], "hello.txt", { type: "text/plain" });
 
@@ -79,7 +79,7 @@ describe("useFileDrop", () => {
   });
 
   it("calls onDrop with an empty array when the drop event has no dataTransfer", () => {
-    const onDrop = vi.fn();
+    const onDrop = vi.fn<(files: File[]) => void>();
     const zone = renderDropzone(onDrop);
 
     act(() => {
@@ -101,8 +101,8 @@ describe("useFileDrop", () => {
   });
 
   it("calls the latest onDrop without re-subscribing", () => {
-    const first = vi.fn();
-    const second = vi.fn();
+    const first = vi.fn<(files: File[]) => void>();
+    const second = vi.fn<(files: File[]) => void>();
     const box: { current: HTMLDivElement | null } = { current: null };
     const TestComponent = ({ onDrop }: { onDrop: (files: File[]) => void }) => {
       const { ref } = useFileDrop<HTMLDivElement>(onDrop);
@@ -131,7 +131,7 @@ describe("useFileDrop", () => {
   });
 
   it("removes listeners on unmount", () => {
-    const onDrop = vi.fn();
+    const onDrop = vi.fn<(files: File[]) => void>();
     const zone = renderDropzone(onDrop);
     const element = zone.current.ref.current;
 
@@ -151,7 +151,7 @@ describe("useFileDrop", () => {
 
 describe("useFileDrop ref tracking", () => {
   it("wires up a drop target that only attaches after the first render", () => {
-    const onDrop = vi.fn();
+    const onDrop = vi.fn<(files: File[]) => void>();
     let latest!: UseFileDropResult<HTMLDivElement>;
     const TestComponent = ({ show }: { show: boolean }) => {
       latest = useFileDrop<HTMLDivElement>(onDrop);

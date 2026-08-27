@@ -6,7 +6,7 @@ import { useUnmount } from "./use-unmount.ts";
 
 describe("useUnmount", () => {
   it("does not call the cleanup during server rendering", () => {
-    const cleanup = vi.fn();
+    const cleanup = vi.fn<() => void>();
     const TestComponent = () => {
       useUnmount(cleanup);
       return "rendered";

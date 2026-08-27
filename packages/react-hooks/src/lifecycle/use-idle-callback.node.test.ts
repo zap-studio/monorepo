@@ -6,7 +6,7 @@ import { useIdleCallback } from "./use-idle-callback.ts";
 
 describe("useIdleCallback", () => {
   it("renders without touching requestIdleCallback during server rendering", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(deadline: IdleDeadline) => void>();
     const TestComponent = () => {
       useIdleCallback(callback);
       return "rendered";

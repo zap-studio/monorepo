@@ -20,7 +20,7 @@ const installMockSpeechSynthesis = () => {
       utterance.dispatchEvent(new Event("start"));
     },
   );
-  const cancel = vi.fn();
+  const cancel = vi.fn<() => void>();
   Object.defineProperty(window, "speechSynthesis", {
     configurable: true,
     value: { cancel, speak },

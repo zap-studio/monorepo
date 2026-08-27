@@ -6,7 +6,7 @@ import { useUpdateEffect } from "./use-update-effect.ts";
 
 describe("useUpdateEffect", () => {
   it("does not call the effect during server rendering", () => {
-    const effect = vi.fn();
+    const effect = vi.fn<() => void>();
     const TestComponent = () => {
       useUpdateEffect(effect, []);
       return "rendered";

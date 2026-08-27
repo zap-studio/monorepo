@@ -13,7 +13,7 @@ afterEach(() => {
 
 describe("useDebounce", () => {
   it("does not call the callback immediately", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(value: string) => void>();
     const { result } = renderHook(() => useDebounce(callback, 500));
 
     act(() => {
@@ -24,7 +24,7 @@ describe("useDebounce", () => {
   });
 
   it("calls the callback once the delay elapses", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(value: string) => void>();
     const { result } = renderHook(() => useDebounce(callback, 500));
 
     act(() => {
@@ -38,7 +38,7 @@ describe("useDebounce", () => {
   });
 
   it("resets the timer on each call, only firing once with the last args", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(value: string) => void>();
     const { result } = renderHook(() => useDebounce(callback, 500));
 
     act(() => {
@@ -54,8 +54,8 @@ describe("useDebounce", () => {
   });
 
   it("always calls the latest callback reference", () => {
-    const firstCallback = vi.fn();
-    const secondCallback = vi.fn();
+    const firstCallback = vi.fn<(value: string) => void>();
+    const secondCallback = vi.fn<(value: string) => void>();
     const { result, rerender } = renderHook(({ callback }) => useDebounce(callback, 500), {
       initialProps: { callback: firstCallback },
     });
@@ -79,7 +79,7 @@ describe("useDebounce", () => {
   });
 
   it("clears the pending timer on unmount", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(value: string) => void>();
     const { result, unmount } = renderHook(() => useDebounce(callback, 500));
 
     act(() => {

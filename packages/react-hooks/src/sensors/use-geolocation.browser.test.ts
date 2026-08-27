@@ -5,8 +5,25 @@ import { useGeolocation } from "./use-geolocation.ts";
 
 const createGeolocationMock = () => {
   return {
-    clearWatch: vi.fn(),
-    getCurrentPosition: vi.fn(),
+    clearWatch: vi.fn<(watchId: number) => void>(),
+    getCurrentPosition: vi.fn<
+      (
+        successCallback: (position: {
+          coords: {
+            accuracy: number;
+            altitude: number | null;
+            altitudeAccuracy: number | null;
+            heading: number | null;
+            latitude: number;
+            longitude: number;
+            speed: number | null;
+          };
+          timestamp: number;
+        }) => void,
+        errorCallback?: (error: { code: number; message: string }) => void,
+        options?: PositionOptions,
+      ) => void
+    >(),
     watchPosition: vi.fn<() => number>(() => 1),
   };
 };

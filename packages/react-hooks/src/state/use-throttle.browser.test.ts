@@ -13,7 +13,7 @@ afterEach(() => {
 
 describe("useThrottle", () => {
   it("calls the callback immediately on the first call (leading edge)", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(value: string) => void>();
     const { result } = renderHook(() => useThrottle(callback, 500));
 
     act(() => {
@@ -24,7 +24,7 @@ describe("useThrottle", () => {
   });
 
   it("drops calls made during the cooldown window", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(value: string) => void>();
     const { result } = renderHook(() => useThrottle(callback, 500));
 
     act(() => {
@@ -37,7 +37,7 @@ describe("useThrottle", () => {
   });
 
   it("allows a new call once the cooldown elapses", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(value: string) => void>();
     const { result } = renderHook(() => useThrottle(callback, 500));
 
     act(() => {
@@ -52,8 +52,8 @@ describe("useThrottle", () => {
   });
 
   it("always calls the latest callback reference", () => {
-    const firstCallback = vi.fn();
-    const secondCallback = vi.fn();
+    const firstCallback = vi.fn<(value: string) => void>();
+    const secondCallback = vi.fn<(value: string) => void>();
     const { result, rerender } = renderHook(({ callback }) => useThrottle(callback, 500), {
       initialProps: { callback: firstCallback },
     });
@@ -74,7 +74,7 @@ describe("useThrottle", () => {
   });
 
   it("clears the cooldown timer on unmount", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<(value: string) => void>();
     const { result, unmount } = renderHook(() => useThrottle(callback, 500));
 
     act(() => {

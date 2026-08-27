@@ -25,7 +25,10 @@ const setIdleCallbackSupport = (
     configurable: true,
     value: requestIdleCallback,
   });
-  Object.defineProperty(window, "cancelIdleCallback", { configurable: true, value: vi.fn() });
+  Object.defineProperty(window, "cancelIdleCallback", {
+    configurable: true,
+    value: vi.fn<(handle: number) => void>(),
+  });
 
   return {
     fire: (deadline: IdleDeadline) => stored?.(deadline),
@@ -48,7 +51,7 @@ describe("useIdleCallback", () => {
 
   it("calls the callback with the idle deadline", () => {
     const mock = setIdleCallbackSupport(true);
-    const callback = vi.fn();
+    const callback = vi.fn<(deadline: IdleDeadline) => void>();
     renderHook(() => useIdleCallback(callback));
 
     const deadline = { didTimeout: false, timeRemaining: () => 42 } as IdleDeadline;
@@ -61,7 +64,7 @@ describe("useIdleCallback", () => {
 
   it("falls back to setTimeout when requestIdleCallback is unsupported", async () => {
     setIdleCallbackSupport(false);
-    const callback = vi.fn();
+    const callback = vi.fn<(deadline: IdleDeadline) => void>();
     renderHook(() => useIdleCallback(callback));
 
     await act(async () => {

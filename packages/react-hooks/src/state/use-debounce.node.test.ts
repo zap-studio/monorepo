@@ -6,7 +6,7 @@ import { useDebounce } from "./use-debounce.ts";
 
 describe("useDebounce", () => {
   it("renders without touching timers during server rendering", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<() => void>();
     const TestComponent = () => {
       useDebounce(callback, 500);
       return "rendered";

@@ -13,7 +13,7 @@ afterEach(() => {
 
 describe("useInterval", () => {
   it("calls the callback every delay", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<() => void>();
     renderHook(() => useInterval(callback, 1000));
 
     act(() => {
@@ -24,7 +24,7 @@ describe("useInterval", () => {
   });
 
   it("does not schedule when delayMs is null", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<() => void>();
     renderHook(() => useInterval(callback, null));
 
     act(() => {
@@ -35,7 +35,7 @@ describe("useInterval", () => {
   });
 
   it("restarts the interval when delayMs changes", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<() => void>();
     const { rerender } = renderHook(({ delay }) => useInterval(callback, delay), {
       initialProps: { delay: 1000 },
     });
@@ -57,8 +57,8 @@ describe("useInterval", () => {
   });
 
   it("always calls the latest callback without resetting the interval", () => {
-    const firstCallback = vi.fn();
-    const secondCallback = vi.fn();
+    const firstCallback = vi.fn<() => void>();
+    const secondCallback = vi.fn<() => void>();
     const { rerender } = renderHook(({ callback }) => useInterval(callback, 1000), {
       initialProps: { callback: firstCallback },
     });
@@ -73,7 +73,7 @@ describe("useInterval", () => {
   });
 
   it("clears the interval on unmount", () => {
-    const callback = vi.fn();
+    const callback = vi.fn<() => void>();
     const { unmount } = renderHook(() => useInterval(callback, 1000));
 
     unmount();
