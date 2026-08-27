@@ -4,8 +4,7 @@ export interface EyeDropperOpenOptions {
 }
 
 /** A simple local copy of the EyeDropper API types. It only works in Chromium browsers, and not every version of TypeScript's DOM types includes it. */
-// fallow-ignore-next-line unused-type
-export interface EyeDropperResult {
+interface EyeDropperResult {
   sRGBHex: string;
 }
 
