@@ -1,6 +1,6 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 
-import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+import { useTrackedRefElement } from "../lifecycle/_tracked-ref-element.ts";
 
 /** The shape returned by `usePictureInPicture`. */
 export interface UsePictureInPictureResult<T extends HTMLVideoElement> {
@@ -55,10 +55,7 @@ export const usePictureInPicture = <
     await document.exitPictureInPicture();
   }, []);
 
-  const [element, setElement] = useState<T | null>(null);
-  useIsomorphicLayoutEffect(() => {
-    setElement(ref.current);
-  });
+  const element = useTrackedRefElement(ref);
 
   useEffect(() => {
     if (!isSupported() || !element) {

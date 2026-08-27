@@ -1,4 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+
+import { useLatestRef } from "./_latest-ref.ts";
 
 /**
  * A `setInterval` wrapper for React. Calls `callback` every `delayMs`
@@ -13,10 +15,7 @@ import { useEffect, useRef } from "react";
  * ```
  */
 export const useInterval = (callback: () => void, delayMs: number | null): void => {
-  const callbackRef = useRef(callback);
-  useEffect(() => {
-    callbackRef.current = callback;
-  });
+  const callbackRef = useLatestRef(callback);
 
   useEffect(() => {
     if (delayMs === null) {

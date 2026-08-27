@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
 
 import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+
+import { usePendingTimeoutRef } from "./_pending-timeout-ref.ts";
 
 /**
  * Returns a throttled version of `callback`. The first call runs right
@@ -24,16 +26,7 @@ export const useThrottle = <Args extends unknown[]>(
     callbackRef.current = callback;
   });
   const coolingDownRef = useRef(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(
-    () => () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    },
-    [],
-  );
+  const timeoutRef = usePendingTimeoutRef();
 
   return useCallback(
     (...args: Args): void => {

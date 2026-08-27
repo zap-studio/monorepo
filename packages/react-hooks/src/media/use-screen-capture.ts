@@ -1,16 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { type UserMediaResult, useMediaCapture } from "./_user-media.ts";
 
 /** Status reported by `useScreenCapture`. */
-export type ScreenCaptureStatus = "active" | "error" | "idle" | "requesting";
+export type ScreenCaptureStatus = UserMediaResult["status"];
 
 /** The shape returned by `useScreenCapture`. */
-export interface UseScreenCaptureResult {
-  error: Error | undefined;
-  start: () => Promise<void>;
-  status: ScreenCaptureStatus;
-  stop: () => void;
-  stream: MediaStream | undefined;
-}
+export type UseScreenCaptureResult = UserMediaResult;
 
 const isSupported = (): boolean =>
   typeof navigator !== "undefined" && typeof navigator.mediaDevices?.getDisplayMedia === "function";
@@ -29,61 +23,11 @@ const isSupported = (): boolean =>
  * <button onClick={start}>Share screen</button>
  * ```
  */
-export const useScreenCapture = (options?: DisplayMediaStreamOptions): UseScreenCaptureResult => {
-  const [stream, setStream] = useState<MediaStream | undefined>(undefined);
-  const [status, setStatus] = useState<ScreenCaptureStatus>("idle");
-  const [error, setError] = useState<Error | undefined>(undefined);
-  const streamRef = useRef<MediaStream | null>(null);
-
-  const optionsRef = useRef(options);
-  useEffect(() => {
-    optionsRef.current = options;
+export const useScreenCapture = (options?: DisplayMediaStreamOptions): UseScreenCaptureResult =>
+  useMediaCapture({
+    args: options,
+    capture: (currentOptions) => navigator.mediaDevices.getDisplayMedia(currentOptions),
+    onStarted: (media, stop) => media.addEventListener("inactive", stop),
+    supported: isSupported,
+    unsupportedMessage: "getDisplayMedia is not supported by this browser.",
   });
-
-  const isMountedRef = useRef(true);
-
-  const stop = useCallback((): void => {
-    for (const track of streamRef.current?.getTracks() ?? []) {
-      track.stop();
-    }
-    streamRef.current = null;
-    setStream(undefined);
-    setStatus("idle");
-  }, []);
-
-  const start = useCallback(async (): Promise<void> => {
-    if (!isSupported()) {
-      setError(new Error("getDisplayMedia is not supported by this browser."));
-      setStatus("error");
-      return;
-    }
-    setStatus("requesting");
-    setError(undefined);
-    try {
-      const media = await navigator.mediaDevices.getDisplayMedia(optionsRef.current);
-      if (!isMountedRef.current) {
-        for (const track of media.getTracks()) {
-          track.stop();
-        }
-        return;
-      }
-      streamRef.current = media;
-      setStream(media);
-      setStatus("active");
-      media.addEventListener("inactive", stop);
-    } catch (caught) {
-      setError(caught instanceof Error ? caught : new Error(String(caught)));
-      setStatus("error");
-    }
-  }, [stop]);
-
-  useEffect(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-      stop();
-    };
-  }, [stop]);
-
-  return { error, start, status, stop, stream };
-};

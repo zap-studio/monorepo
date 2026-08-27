@@ -15,19 +15,40 @@ export interface UserMediaResult {
 const isSupported = (): boolean =>
   typeof navigator !== "undefined" && typeof navigator.mediaDevices?.getUserMedia === "function";
 
+/** Config accepted by the shared `useMediaCapture` implementation. */
+export interface UseMediaCaptureOptions<Args> {
+  /** Latest arguments passed to `capture`; read fresh on every `start()` call. */
+  args: Args;
+  /** Requests the `MediaStream`, e.g. `getUserMedia`/`getDisplayMedia`. */
+  capture: (args: Args) => Promise<MediaStream>;
+  /** Runs once a capture succeeds, e.g. to auto-stop on a native "inactive" event. */
+  onStarted?: (media: MediaStream, stop: () => void) => void;
+  /** Reports whether the underlying browser API exists. */
+  supported: () => boolean;
+  /** Error message used when `supported()` is `false`. */
+  unsupportedMessage: string;
+}
+
 /**
- * Handles starting and stopping `getUserMedia` for both `useUserMedia`
- * and `useCamera`.
+ * Shared start/stop/status lifecycle for a `MediaStream`-producing browser
+ * API. Backs `useMediaStream` (`getUserMedia`) and `useScreenCapture`
+ * (`getDisplayMedia`) — they only differ in how the stream is requested.
  */
-export const useMediaStream = (constraints: MediaStreamConstraints): UserMediaResult => {
+export const useMediaCapture = <Args>({
+  args,
+  capture,
+  onStarted,
+  supported,
+  unsupportedMessage,
+}: UseMediaCaptureOptions<Args>): UserMediaResult => {
   const [stream, setStream] = useState<MediaStream | undefined>(undefined);
   const [status, setStatus] = useState<MediaStreamStatus>("idle");
   const [error, setError] = useState<Error | undefined>(undefined);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const constraintsRef = useRef(constraints);
+  const optionsRef = useRef({ args, capture, onStarted, supported, unsupportedMessage });
   useEffect(() => {
-    constraintsRef.current = constraints;
+    optionsRef.current = { args, capture, onStarted, supported, unsupportedMessage };
   });
 
   const isMountedRef = useRef(true);
@@ -42,15 +63,16 @@ export const useMediaStream = (constraints: MediaStreamConstraints): UserMediaRe
   }, []);
 
   const start = useCallback(async (): Promise<void> => {
-    if (!isSupported()) {
-      setError(new Error("getUserMedia is not supported by this browser."));
+    const current = optionsRef.current;
+    if (!current.supported()) {
+      setError(new Error(current.unsupportedMessage));
       setStatus("error");
       return;
     }
     setStatus("requesting");
     setError(undefined);
     try {
-      const media = await navigator.mediaDevices.getUserMedia(constraintsRef.current);
+      const media = await current.capture(current.args);
       if (!isMountedRef.current) {
         for (const track of media.getTracks()) {
           track.stop();
@@ -60,11 +82,12 @@ export const useMediaStream = (constraints: MediaStreamConstraints): UserMediaRe
       streamRef.current = media;
       setStream(media);
       setStatus("active");
+      current.onStarted?.(media, stop);
     } catch (caught) {
       setError(caught instanceof Error ? caught : new Error(String(caught)));
       setStatus("error");
     }
-  }, []);
+  }, [stop]);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -76,3 +99,15 @@ export const useMediaStream = (constraints: MediaStreamConstraints): UserMediaRe
 
   return { error, start, status, stop, stream };
 };
+
+/**
+ * Handles starting and stopping `getUserMedia` for both `useUserMedia`
+ * and `useCamera`.
+ */
+export const useMediaStream = (constraints: MediaStreamConstraints): UserMediaResult =>
+  useMediaCapture({
+    args: constraints,
+    capture: (currentConstraints) => navigator.mediaDevices.getUserMedia(currentConstraints),
+    supported: isSupported,
+    unsupportedMessage: "getUserMedia is not supported by this browser.",
+  });

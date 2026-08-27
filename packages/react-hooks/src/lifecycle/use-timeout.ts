@@ -1,4 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+
+import { useLatestRef } from "./_latest-ref.ts";
 
 /**
  * A `setTimeout` wrapper for React. Runs `callback` once, after `delayMs`
@@ -14,10 +16,7 @@ import { useEffect, useRef } from "react";
  * ```
  */
 export const useTimeout = (callback: () => void, delayMs: number | null): void => {
-  const callbackRef = useRef(callback);
-  useEffect(() => {
-    callbackRef.current = callback;
-  });
+  const callbackRef = useLatestRef(callback);
 
   useEffect(() => {
     if (delayMs === null) {

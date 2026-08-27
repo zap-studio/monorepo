@@ -1,6 +1,6 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 
-import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+import { useTrackedRefElement } from "../lifecycle/_tracked-ref-element.ts";
 
 /** The shape returned by `usePopover`. */
 export interface UsePopoverResult<T extends HTMLElement> {
@@ -57,10 +57,7 @@ export const usePopover = <T extends HTMLElement = HTMLElement>(): UsePopoverRes
     ref.current?.togglePopover();
   }, []);
 
-  const [element, setElement] = useState<T | null>(null);
-  useIsomorphicLayoutEffect(() => {
-    setElement(ref.current);
-  });
+  const element = useTrackedRefElement(ref);
 
   useEffect(() => {
     if (!isSupported() || !element) {

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 
+import { usePendingTimeoutRef } from "./_pending-timeout-ref.ts";
+
 /**
  * Returns a debounced version of `callback`. Each call restarts a
  * `delayMs` timer, so `callback` only runs once calls stop coming in for
@@ -21,16 +23,7 @@ export const useDebounce = <Args extends unknown[]>(
   useEffect(() => {
     callbackRef.current = callback;
   });
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(
-    () => () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    },
-    [],
-  );
+  const timeoutRef = usePendingTimeoutRef();
 
   return useCallback(
     (...args: Args): void => {
