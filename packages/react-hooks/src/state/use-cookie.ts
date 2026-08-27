@@ -36,8 +36,7 @@ export interface CookieStore extends EventTarget {
 /**
  * The Cookie Store API only works in Chromium browsers, and not every
  * version of TypeScript's DOM types knows about it. So we define our own
- * small type for it above, with just what this hook needs. Same idea as
- * `navigation/_navigation-api.ts` for the Navigation API.
+ * small type for it above, with just what this hook needs.
  *
  * We cast to this local type instead of extending `Window`, so it never
  * conflicts with whatever `Window.cookieStore` typing a given TypeScript
