@@ -11,6 +11,8 @@ const createMatchMediaMock = () => {
   const lists: { query: string; matchMediaList: MediaQueryList; listener?: () => void }[] = [];
 
   const matchMedia = vi.fn<(query: string) => MediaQueryList>((query: string) => {
+    // SAFETY: the hook only calls addEventListener/removeEventListener on the
+    // returned MediaQueryList, both of which this mock implements.
     const list = {
       addEventListener: (_type: "change", listener: () => void) => {
         const entry = lists.find((item) => item.matchMediaList === list);

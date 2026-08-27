@@ -8,6 +8,9 @@ import { useBattery } from "./use-battery.ts";
 const createBatteryMock = (
   initial: Pick<BatteryManager, "charging" | "chargingTime" | "dischargingTime" | "level">,
 ) => {
+  // SAFETY: the hook only calls addEventListener/removeEventListener (inherited from
+  // EventTarget) and reads charging/chargingTime/dischargingTime/level, which are all
+  // defined via Object.defineProperties below.
   const battery = new EventTarget() as unknown as BatteryManager;
   let state = { ...initial };
 

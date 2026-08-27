@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { useExperimentalAmbientLightSensor } from "./use-experimental-ambient-light-sensor.ts";
 
 const createSensorMock = (reading: { illuminance: number }) => {
+  // SAFETY: the assignments right below set every field of the intersection type (activated, illuminance, onerror, onreading, start, stop), so this EventTarget really does satisfy the AmbientLightSensor-shaped mock by the time any test reads from it.
   const sensor = new EventTarget() as EventTarget & {
     activated: boolean;
     illuminance: number;

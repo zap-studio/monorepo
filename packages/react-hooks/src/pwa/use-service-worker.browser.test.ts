@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { useServiceWorker } from "./use-service-worker.ts";
 
 const createInstallingWorker = (): ServiceWorker => {
+  // SAFETY: useServiceWorker only reads `.state` and calls addEventListener/removeEventListener("statechange", ...) on the installing worker; a real EventTarget supplies the listener methods and `state` is defined right below via Object.defineProperty.
   const worker = new EventTarget() as ServiceWorker;
   Object.defineProperty(worker, "state", {
     configurable: true,
@@ -14,6 +15,7 @@ const createInstallingWorker = (): ServiceWorker => {
 };
 
 const createRegistration = (installing: ServiceWorker | null): ServiceWorkerRegistration => {
+  // SAFETY: useServiceWorker only reads `.installing` and calls addEventListener/removeEventListener("updatefound", ...) on the registration; a real EventTarget supplies the listener methods and `installing` is defined right below via Object.defineProperty.
   const registration = new EventTarget() as ServiceWorkerRegistration;
   Object.defineProperty(registration, "installing", { configurable: true, value: installing });
   return registration;
@@ -80,6 +82,7 @@ describe("useServiceWorker", () => {
   it("becomes updateAvailable: true once a new worker installs while a controller is active", async () => {
     const worker = createInstallingWorker();
     const registration = createRegistration(worker);
+    // SAFETY: useServiceWorker only ever checks `navigator.serviceWorker.controller` for truthiness (to decide whether an install counts as an update), never reads any of its members, so an empty object is a sufficient stand-in.
     setServiceWorkerContainer({
       controller: {} as ServiceWorker,
       getRegistration: () => Promise.resolve(registration),
@@ -125,6 +128,7 @@ describe("useServiceWorker", () => {
 
   it("ignores updatefound when the registration has no installing worker", async () => {
     const registration = createRegistration(null);
+    // SAFETY: useServiceWorker only ever checks `navigator.serviceWorker.controller` for truthiness (to decide whether an install counts as an update), never reads any of its members, so an empty object is a sufficient stand-in.
     setServiceWorkerContainer({
       controller: {} as ServiceWorker,
       getRegistration: () => Promise.resolve(registration),

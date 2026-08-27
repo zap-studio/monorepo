@@ -41,6 +41,10 @@ const createMockSchemaFunction = <T>(
     },
   });
 
+  // SAFETY: the Object.assign call above attaches a "~standard" object using this
+  // function's own `validateFn` argument, so `fn` structurally satisfies
+  // StandardSchemaV1<unknown, T> for the same T the caller instantiated, even though
+  // its static type is still the plain `() => void` declared two lines above.
   return fn as unknown as StandardSchemaV1<unknown, T>;
 };
 
@@ -329,6 +333,9 @@ describe("standardValidate", () => {
     it("should await Promise-based validation", async () => {
       const schema = createMockSchema(async (input) => {
         await Promise.resolve();
+        // SAFETY: this test only ever invokes the schema via `standardValidate(123, schema, ...)`
+        // below, so `input` is always the literal number 123 at runtime, even though the
+        // validate callback's parameter type is `unknown`.
         return { value: input as number };
       });
 
@@ -376,6 +383,7 @@ describe("standardValidate", () => {
       );
 
       expect(error).toBeInstanceOf(ValidationError);
+      // SAFETY: the toBeInstanceOf assertion above guarantees error is a ValidationError.
       expect((error as ValidationError).issues).toStrictEqual(issues);
     });
 
@@ -509,6 +517,7 @@ describe("standardValidateSync", () => {
       );
 
       expect(error).toBeInstanceOf(ValidationError);
+      // SAFETY: the toBeInstanceOf assertion above guarantees error is a ValidationError.
       expect((error as ValidationError).issues).toStrictEqual(issues);
     });
 
@@ -551,6 +560,9 @@ describe("standardValidateSync", () => {
   });
 
   it("should pass through a non-object synchronous result from a malformed schema unchanged", () => {
+    // SAFETY: this schema is a deliberately malformed test fixture that returns a bare number
+    // instead of a real StandardSchemaV1.Result, to exercise the pass-through behavior for
+    // non-object synchronous results.
     const schema = createMockSchema(() => 42 as unknown as StandardSchemaV1.Result<unknown>);
 
     const result = standardValidateSync("test", schema);
@@ -559,6 +571,8 @@ describe("standardValidateSync", () => {
   });
 
   it("should throw when a malformed schema synchronously returns null", () => {
+    // SAFETY: this schema is a deliberately malformed test fixture that returns null instead of
+    // a real StandardSchemaV1.Result, to exercise the TypeError thrown for a malformed result.
     const schema = createMockSchema(() => null as unknown as StandardSchemaV1.Result<unknown>);
 
     expect(() => standardValidateSync("test", schema)).toThrow(TypeError);

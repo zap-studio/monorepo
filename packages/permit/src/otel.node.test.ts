@@ -16,6 +16,7 @@ import { allow, createPolicy, mergePoliciesOr } from "./index.ts";
 const createSchema = <T>(): StandardSchemaV1<T, T> => {
   return {
     "~standard": {
+      // SAFETY: this test-only schema is only ever wired to `resources.post`, and every value it validates in this file is a `post` object literal already shaped as `Post` (authorId, id), so trusting `value` as `T` here never actually crosses a real validation boundary.
       validate: (value: unknown) => ({ value: value as T }),
       vendor: "test",
       version: 1,

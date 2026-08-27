@@ -20,6 +20,8 @@ class FakeResizeObserver implements ResizeObserver {
   }
 
   trigger(width: number, height: number): void {
+    // SAFETY: the hook's observer callback only reads entry.target and
+    // entry.contentRect.{height,width}, both of which this fake entry supplies.
     this.callback(
       [{ contentRect: { height, width }, target: this.target } as ResizeObserverEntry],
       this,
@@ -75,6 +77,9 @@ describe("useResizeObserver", () => {
     const [observer] = FakeResizeObserver.instances;
 
     act(() => {
+      // SAFETY: this entry's target is a freshly created <span> that was never
+      // passed to observer.observe, so the hook's `observed.target === element`
+      // filter drops it; only target and contentRect are read, both provided here.
       observer?.callback(
         [
           { contentRect: { height: 999, width: 999 }, target: document.createElement("span") },

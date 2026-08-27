@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { useExperimentalMagnetometer } from "./use-experimental-magnetometer.ts";
 
 const createSensorMock = (reading: { x: number; y: number; z: number }) => {
+  // SAFETY: the assignments right below set every field of the intersection type (activated, onerror, onreading, start, stop, x, y, z), so this EventTarget really does satisfy the Magnetometer-shaped mock by the time any test reads from it.
   const sensor = new EventTarget() as EventTarget & {
     activated: boolean;
     onerror: ((event: Event & { error: DOMException }) => void) | null;

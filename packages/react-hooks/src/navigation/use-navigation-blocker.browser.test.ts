@@ -8,6 +8,8 @@ import { useNavigationBlocker } from "./use-navigation-blocker.ts";
 const createNavigationMock = () => {
   const listeners = new Map<string, (event: NavigateEvent) => void>();
 
+  // SAFETY: this fake implements only addEventListener/removeEventListener, the two
+  // members the hook actually reads from `nav` (see use-navigation-blocker.ts).
   const nav = {
     addEventListener: vi.fn<(type: string, listener: (event: NavigateEvent) => void) => void>(
       (type: string, listener: (event: NavigateEvent) => void) => {
@@ -26,6 +28,9 @@ const createNavigationMock = () => {
 };
 
 const fakeNavigateEvent = (overrides: Partial<NavigateEvent> = {}): NavigateEvent => {
+  // SAFETY: this fake exposes exactly the members handleNavigate reads
+  // (canIntercept, hashChange, downloadRequest, destination.url, intercept) —
+  // see use-navigation-blocker.ts.
   return {
     canIntercept: true,
     destination: { url: "/next" },
@@ -123,6 +128,9 @@ describe("useNavigationBlocker", () => {
     const { nav, fireNavigate } = createNavigationMock();
     setWindowNavigation(nav);
     const shouldBlock = vi.fn<() => boolean>(() => false);
+    // SAFETY: handleNavigate only reads destination.url (see use-navigation-blocker.ts),
+    // so a partial override with just `url` is sufficient even though it doesn't satisfy
+    // the full NavigateDestination shape.
     const event = fakeNavigateEvent({ destination: { url: "/somewhere" } as never });
 
     renderHook(() => useNavigationBlocker(shouldBlock));
@@ -145,7 +153,13 @@ describe("useNavigationBlocker", () => {
       fireNavigate(event);
     });
 
+    // SAFETY: event.intercept is the `vi.fn<(options: { handler: () => Promise<void> }) => void>()`
+    // created in fakeNavigateEvent, so it is actually a mock with a `.mock` property despite the
+    // NavigateEvent type not exposing one.
     const interceptMock = event.intercept as unknown as ReturnType<typeof vi.fn>;
+    // SAFETY: the act() block above triggered handleNavigate, which calls
+    // `navigateEvent.intercept({ handler: waitForProceed })` exactly once, so
+    // mock.calls[0][0] is that { handler } object passed by the hook.
     const options = interceptMock.mock.calls[0]?.[0] as { handler: () => Promise<void> };
     let settled = false;
     const pending = options.handler().then(() => {
@@ -174,7 +188,13 @@ describe("useNavigationBlocker", () => {
       fireNavigate(event);
     });
 
+    // SAFETY: event.intercept is the `vi.fn<(options: { handler: () => Promise<void> }) => void>()`
+    // created in fakeNavigateEvent, so it is actually a mock with a `.mock` property despite the
+    // NavigateEvent type not exposing one.
     const interceptMock = event.intercept as unknown as ReturnType<typeof vi.fn>;
+    // SAFETY: the act() block above triggered handleNavigate, which calls
+    // `navigateEvent.intercept({ handler: waitForProceed })` exactly once, so
+    // mock.calls[0][0] is that { handler } object passed by the hook.
     const options = interceptMock.mock.calls[0]?.[0] as { handler: () => Promise<void> };
     let settled = false;
     void options.handler().then(() => {

@@ -4,14 +4,20 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { useScreenCapture } from "./use-screen-capture.ts";
 
 const makeStream = () => {
+  // SAFETY: the hook only ever calls track.stop() on entries from getTracks(),
+  // and Object.assign below adds that stop() mock to this EventTarget.
   const track = new EventTarget() as MediaStreamTrack & EventTarget;
   Object.assign(track, { stop: vi.fn<(...args: any[]) => any>() });
+  // SAFETY: onStarted only uses stream.addEventListener/removeEventListener("inactive", ...),
+  // which EventTarget provides natively; getTracks/getVideoTracks are added below.
   const stream = new EventTarget() as MediaStream & EventTarget;
   Object.assign(stream, {
     getTracks: () => [track],
     getVideoTracks: () => [track],
     track,
   });
+  // SAFETY: the Object.assign above attached `track` alongside the getTracks/getVideoTracks
+  // methods the hook relies on, so the stream genuinely carries a `track` property here.
   return stream as MediaStream & { track: MediaStreamTrack & EventTarget };
 };
 

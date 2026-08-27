@@ -34,6 +34,9 @@ describe("useWorker", () => {
   it("run() rejects and never creates a worker when unsupported", async () => {
     reset();
     vi.stubGlobal("Worker", undefined);
+    // SAFETY: MockWorker extends EventTarget (add/removeEventListener, dispatchEvent) and
+    // implements postMessage and terminate itself, the only Worker members useWorker's
+    // run()/terminate() touch; Worker is stubbed undefined above so this factory is never invoked.
     const createWorker = vi.fn<() => Worker>(() => new MockWorker() as unknown as Worker);
     const { result } = renderHook(() => useWorker(createWorker));
 
@@ -42,6 +45,8 @@ describe("useWorker", () => {
       try {
         await result.current.run("x");
       } catch (caught) {
+        // SAFETY: run()'s only rejection path (see use-worker.ts) rejects with
+        // `new Error("Web Workers are not supported by this browser.")`, so caught is an Error.
         error = caught as Error;
       }
     });
@@ -52,6 +57,9 @@ describe("useWorker", () => {
 
   it("reports supported: true when Worker exists", () => {
     reset();
+    // SAFETY: this test only reads result.current.supported, which useWorker derives from
+    // `typeof Worker !== "undefined"` and never calls a method on the created worker, so
+    // MockWorker's lack of the rest of the Worker interface (onmessage, dispatchEvent shape) is unused.
     const { result } = renderHook(() => useWorker(() => new MockWorker() as unknown as Worker));
 
     expect(result.current.supported).toBe(true);
@@ -59,6 +67,8 @@ describe("useWorker", () => {
 
   it("does not create the worker until the first run() call", () => {
     reset();
+    // SAFETY: this test never calls run(), so createWorker (and thus this cast) is asserted
+    // never to be invoked; the assertion below just confirms that.
     const createWorker = vi.fn<() => Worker>(() => new MockWorker() as unknown as Worker);
     renderHook(() => useWorker(createWorker));
 
@@ -68,6 +78,9 @@ describe("useWorker", () => {
   it("run() posts the message and resolves with the response", async () => {
     reset();
     const { result } = renderHook(() =>
+      // SAFETY: useWorker's run() only calls addEventListener/removeEventListener (from
+      // MockWorker's EventTarget base) and postMessage (implemented on MockWorker below) on the
+      // worker it creates, so MockWorker satisfies every Worker member this test path exercises.
       useWorker<number, number>(() => new MockWorker() as unknown as Worker),
     );
 
@@ -90,6 +103,9 @@ describe("useWorker", () => {
 
   it("reuses the same worker across multiple run() calls", async () => {
     reset();
+    // SAFETY: this test drives both run() calls through worker.postMessage and dispatches
+    // "message" events consumed via worker.addEventListener/removeEventListener, all of which
+    // MockWorker provides (postMessage directly, the listener methods via its EventTarget base).
     const createWorker = vi.fn<() => Worker>(() => new MockWorker() as unknown as Worker);
     const { result } = renderHook(() => useWorker<number, number>(createWorker));
 
@@ -116,6 +132,9 @@ describe("useWorker", () => {
 
   it("run() rejects when the worker fires an error event", async () => {
     reset();
+    // SAFETY: this test drives rejection via worker.dispatchEvent(new ErrorEvent(...)), which
+    // MockWorker's EventTarget base handles, and run()'s handleError listener only reads
+    // event.message and calls worker.removeEventListener, both satisfied here.
     const { result } = renderHook(() => useWorker(() => new MockWorker() as unknown as Worker));
 
     let runPromise!: Promise<unknown>;
@@ -131,6 +150,8 @@ describe("useWorker", () => {
       try {
         await runPromise;
       } catch (caught) {
+        // SAFETY: run()'s handleError listener rejects with `new Error(event.message)` (see
+        // use-worker.ts), so the rejection this test catches is always an Error.
         error = caught as Error;
       }
     });
@@ -140,6 +161,9 @@ describe("useWorker", () => {
 
   it("terminate() terminates the worker so the next run() creates a new one", async () => {
     reset();
+    // SAFETY: this test asserts on worker.terminated after calling result.current.terminate(),
+    // which useWorker implements as workerRef.current?.terminate() — the terminate() method
+    // MockWorker implements directly (setting this.terminated = true).
     const createWorker = vi.fn<() => Worker>(() => new MockWorker() as unknown as Worker);
     const { result } = renderHook(() => useWorker<number, number>(createWorker));
 
@@ -172,6 +196,9 @@ describe("useWorker", () => {
   it("terminates the worker on unmount", async () => {
     reset();
     const { result, unmount } = renderHook(() =>
+      // SAFETY: this test asserts worker.terminated after unmount(), which triggers useWorker's
+      // `useEffect(() => terminate, [terminate])` cleanup calling workerRef.current?.terminate(),
+      // the terminate() method MockWorker implements directly.
       useWorker(() => new MockWorker() as unknown as Worker),
     );
 

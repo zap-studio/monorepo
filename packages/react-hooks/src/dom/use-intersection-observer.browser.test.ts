@@ -26,6 +26,7 @@ class FakeIntersectionObserver implements IntersectionObserver {
   }
 
   trigger(isIntersecting: boolean): void {
+    // SAFETY: useIntersectionObserver only ever reads `entry?.isIntersecting` from the entry it receives, and every assertion in this file only checks `entry?.isIntersecting` too, so a partial entry with just that field is all this mock needs.
     this.callback([{ isIntersecting } as IntersectionObserverEntry], this);
   }
 }

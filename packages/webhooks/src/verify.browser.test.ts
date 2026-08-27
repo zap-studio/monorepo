@@ -73,6 +73,9 @@ describe("createHmacVerifier", () => {
     );
 
     const data = typeof body === "string" ? encoder.encode(body) : body;
+    // SAFETY: `data` is a plain, non-shared Uint8Array (either from encoder.encode()
+    // or the caller's own Uint8Array), which satisfies BufferSource at runtime even
+    // though its ArrayBufferLike buffer type isn't structurally assignable here.
     const signature = await crypto.subtle.sign("HMAC", key, data as BufferSource);
 
     return toHex(new Uint8Array(signature));
@@ -177,6 +180,9 @@ describe("createHmacVerifier", () => {
   });
 
   it("rejects unsupported algorithms", async () => {
+    // SAFETY: "md5" is deliberately not a member of HmacAlgorithm — this test exists
+    // to prove createHmacVerifier rejects it at runtime, so the cast intentionally
+    // bypasses the compile-time union check that would otherwise catch this call.
     const error = await captureThrownError(() =>
       createHmacVerifier({
         algo: "md5" as HmacAlgorithm,
@@ -265,6 +271,9 @@ describe("@zap-studio/webhooks browser runtime", () => {
       false,
       ["sign"],
     );
+    // SAFETY: `body` is the caller's plain, non-shared Uint8Array parameter, which
+    // satisfies BufferSource at runtime even though its ArrayBufferLike buffer type
+    // isn't structurally assignable here.
     const signature = await crypto.subtle.sign("HMAC", key, body as BufferSource);
     return Array.from(new Uint8Array(signature), (byte) => byte.toString(16).padStart(2, "0")).join(
       "",

@@ -16,6 +16,9 @@ const createReaderMock = (
     write?: (message: unknown, options?: { overwrite?: boolean }) => Promise<void>;
   } = {},
 ) => {
+  // SAFETY: scan/write/makeReadOnly are assigned on `reader` immediately below, and
+  // EventTarget already supplies addEventListener/removeEventListener/dispatchEvent,
+  // which is everything the hook calls on the NDEFReader instance.
   const reader = new EventTarget() as ReaderMock;
   reader.scan = vi.fn<(options?: { signal?: AbortSignal }) => Promise<void>>(
     overrides.scan ?? (() => Promise.resolve()),
@@ -42,6 +45,8 @@ const fireReading = (
   serialNumber: string,
   records: { recordType: string }[],
 ) => {
+  // SAFETY: handleReading only destructures `message` and `serialNumber` off the
+  // "reading" event, and both are set right below before the event is dispatched.
   const event = new Event("reading") as Event & {
     message: { records: { recordType: string }[] };
     serialNumber: string;

@@ -6,6 +6,8 @@ import { useOrientation } from "./use-orientation.ts";
 const LANDSCAPE_PRIMARY = "landscape-primary";
 
 const createOrientationMock = (initial: Pick<ScreenOrientation, "angle" | "type">) => {
+  // SAFETY: the hook only calls addEventListener/removeEventListener (inherited from
+  // EventTarget) and reads the `angle`/`type` getters defined via Object.defineProperties below.
   const info = new EventTarget() as unknown as ScreenOrientation;
   let state = { ...initial };
 

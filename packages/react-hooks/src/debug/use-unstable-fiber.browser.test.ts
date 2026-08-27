@@ -63,6 +63,7 @@ describe("useUnstableFiber", () => {
   });
 
   it("fails closed to null when reading the internal shape throws", () => {
+    // SAFETY: readHostFiber's first move is Object.keys(node), which invokes this Proxy's ownKeys trap and throws before any other Element member is ever touched, so the Proxy never needs to behave like a real HTMLDivElement — useUnstableFiber's try/catch swallows the throw and returns fiber: null, which is exactly what this test asserts.
     const throwing = new Proxy(
       {},
       {
@@ -88,10 +89,12 @@ describe("useUnstableFiber", () => {
       return: null,
       type: "div",
     };
+    // SAFETY: this is a real DOM div from document.createElement; casting to Record<string, unknown> only lifts TypeScript's restriction on assigning an arbitrary string key (`__reactFiber$fake`), mirroring how React actually attaches its private Fiber pointer, which getReactFiberKey in _fiber.ts looks for via Object.keys.
     const element = document.createElement("div") as unknown as Record<string, unknown>;
     element["__reactFiber$fake"] = fakeFiber;
 
     const { rerender, result } = renderHook(() => useUnstableFiber<HTMLDivElement>());
+    // SAFETY: `element` is the same document.createElement("div") result from above (now carrying `__reactFiber$fake`), so it already is an HTMLDivElement — this cast just restores that type after the Record<string, unknown> widening two lines up.
     result.current.ref.current = element as unknown as HTMLDivElement;
     rerender();
 

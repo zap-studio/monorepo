@@ -47,6 +47,9 @@ describe("useWindowMessage", () => {
   });
 
   it("uses the latest originFilter without re-subscribing", async () => {
+    // SAFETY: renderHook's initialProps type is inferred from this literal, so the
+    // widening assertion is only there to let `rerender` later pass a defined
+    // originFilter string; the initial value itself is genuinely undefined.
     const { rerender, result } = renderHook(
       ({ originFilter }: { originFilter: string | undefined }) =>
         useWindowMessage<string>(originFilter),
@@ -83,6 +86,8 @@ describe("useWindowMessage", () => {
     const calls: [unknown, string][] = [];
 
     act(() => {
+      // SAFETY: postMessage() only calls targetWindow.postMessage(message, targetOrigin),
+      // and this fake target implements exactly that method with a matching signature.
       result.current.postMessage(target as unknown as Window, "hi", MESSAGE_ORIGIN);
     });
 

@@ -106,6 +106,7 @@ describe("useUnstableRenderReason", () => {
   });
 
   it("fails closed to unknown when reading the internal shape throws", () => {
+    // SAFETY: readHostFiber() calls Object.keys(node) before touching any HTMLDivElement-specific member, and computeReason wraps that call in try/catch (see use-unstable-render-reason.ts) — so this Proxy only needs to throw from ownKeys(), it never needs to actually implement HTMLDivElement.
     const throwing = new Proxy(
       {},
       {
@@ -148,11 +149,13 @@ describe("useUnstableRenderReason", () => {
       return: null,
       type: "div",
     };
+    // SAFETY: `element` is a real HTMLDivElement from document.createElement; it's only retyped as a plain string-keyed record so the fake `__reactFiber$fake` property below can be assigned the way react-dom would attach its private fiber pointer (see readHostFiber in _fiber.ts).
     const element = document.createElement("div") as unknown as Record<string, unknown>;
 
     const { rerender, result } = renderHook(() => useUnstableRenderReason<HTMLDivElement>());
 
     element["__reactFiber$fake"] = nullPropsFiber;
+    // SAFETY: `element` is still the same real HTMLDivElement created above — only its static type was widened to Record<string, unknown> above, so casting back to HTMLDivElement here just restores its actual runtime type.
     result.current.ref.current = element as unknown as HTMLDivElement;
     rerender();
     expect(result.current.reason).toBe("mount");

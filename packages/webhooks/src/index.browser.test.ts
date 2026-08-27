@@ -244,6 +244,9 @@ describe("WebhookRouter", () => {
       );
 
       expect(response.status).toBe(400);
+      // SAFETY: the schema above requires `amount` and the route handler responds with the
+      // router's standard { error, issues } validation-failure JSON body on rejection, matching
+      // this shape.
       const body = (await response.json()) as {
         error: string;
         issues: { message: string; path?: string[] }[];
@@ -267,6 +270,8 @@ describe("WebhookRouter", () => {
       const response = await router.handle(createRequest(PAYMENT_WEBHOOK_PATH, { amount: 10 }));
 
       expect(response.status).toBe(400);
+      // SAFETY: the schema above rejects a payload missing `currency`, so the router responds
+      // with its standard { error, issues } validation-failure JSON body, which includes `error`.
       const body = (await response.json()) as { error: string };
       expect(body.error).toBe("validation failed");
     });
@@ -415,6 +420,8 @@ describe("WebhookRouter", () => {
       );
 
       expect(response.status).toBe(400);
+      // SAFETY: the custom schema above always fails with an `issues` array containing a "nested"
+      // path entry, so the router's standard validation-failure JSON body has this shape.
       const body = (await response.json()) as {
         issues: { message: string; path?: string[] }[];
       };
@@ -453,6 +460,9 @@ describe("WebhookRouter", () => {
         "~standard": {
           validate: (value) => {
             order.push("validate");
+            // SAFETY: this test always calls the router with { id: "1" } (see
+            // router.handle(createRequest("/webhooks/ordered", { id: "1" })) below), so `value`
+            // is always an object matching { id: string } here.
             return { value: value as { id: string } };
           },
           vendor: "test",
@@ -896,6 +906,7 @@ describe("WebhookRouter", () => {
         await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(observedError).toBeInstanceOf(Error);
+        // SAFETY: the toBeInstanceOf assertion above guarantees observedError is an Error.
         expect((observedError as Error).message).toBe("Internal server error");
       });
 
@@ -1032,6 +1043,9 @@ describe("WebhookRouter", () => {
           "~standard": {
             validate: (value) => {
               order.push("validate");
+              // SAFETY: this test always calls the router with { id: "1" } (see
+              // router.handle(createRequest("/webhooks/full", { id: "1" })) below), so `value`
+              // is always an object matching { id: string } here.
               return { value: value as { id: string } };
             },
             vendor: "test",
@@ -1302,6 +1316,9 @@ describe("Path normalization", () => {
   it("should normalize registered paths missing a leading slash or with a trailing slash", async () => {
     const router = createWebhookRouter();
 
+    // SAFETY: this test deliberately passes a malformed route key ("stripe/", missing the
+    // leading slash and with a trailing slash) to exercise the router's path-normalization
+    // behavior; the cast only satisfies the route-key type since real callers pass "/stripe".
     router.register("stripe/" as "/stripe", () => Response.json("ok"));
 
     const response = await router.handle(createRequest(STRIPE_WEBHOOK_PATH));
@@ -1322,6 +1339,9 @@ describe("Path normalization", () => {
   it("should collapse duplicate slashes in routes and request paths", async () => {
     const router = createWebhookRouter();
 
+    // SAFETY: this test deliberately passes a malformed route key ("//stripe//events", with
+    // duplicate slashes) to exercise the router's slash-collapsing normalization behavior; the
+    // cast only satisfies the route-key type since real callers pass "/stripe/events".
     router.register("//stripe//events" as "/stripe/events", () => Response.json("ok"));
 
     const response = await router.handle(createRequest("/webhooks//stripe/events"));

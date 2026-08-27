@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { usePermission } from "./use-permission.ts";
 
 const createPermissionStatusMock = (initialState: PermissionState) => {
+  // SAFETY: usePermission only calls status.addEventListener/removeEventListener (native EventTarget methods) and reads status.state (defined right below via Object.defineProperty), so this EventTarget already provides every member the hook touches on a PermissionStatus.
   const status = new EventTarget() as unknown as PermissionStatus;
   let state = initialState;
 
@@ -64,17 +65,20 @@ describe("usePermission", () => {
       (_descriptor: PermissionDescriptor) => Promise<PermissionStatus & { name: string }>
     >((_descriptor: PermissionDescriptor) =>
       Promise.resolve(
+        // SAFETY: the `& { name: string }` intersection only satisfies this query mock's declared return type; usePermission never reads `.name` off the resolved status, only `.state` and add/removeEventListener, all of which createPermissionStatusMock's status already provides.
         createPermissionStatusMock("granted").status as PermissionStatus & { name: string },
       ),
     );
     setNavigatorPermissions(query);
 
+    // SAFETY: "geolocation" is one of the DOM lib's own PermissionName union members; usePermission only forwards `name` unchanged into permissions.query({ name }), so widening this literal to the union type it already belongs to changes nothing at runtime.
     const { rerender } = renderHook(({ name }) => usePermission(name), {
       initialProps: { name: "geolocation" as PermissionName },
     });
 
     await waitFor(() => expect(query).toHaveBeenCalledTimes(1));
 
+    // SAFETY: "camera" is likewise a real PermissionName union member, and usePermission only re-queries with this value as an opaque string, so the cast doesn't paper over a mismatched runtime shape.
     rerender({ name: "camera" as PermissionName });
 
     await waitFor(() => expect(query).toHaveBeenCalledTimes(2));

@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { useExperimentalAbsoluteOrientationSensor } from "./use-experimental-absolute-orientation-sensor.ts";
 
 const createSensorMock = (quaternion: [number, number, number, number]) => {
+  // SAFETY: the assignments right below set every field of the intersection type (activated, quaternion, onerror, onreading, start, stop), so this EventTarget really does satisfy the AbsoluteOrientationSensor-shaped mock by the time any test reads from it.
   const sensor = new EventTarget() as EventTarget & {
     activated: boolean;
     onerror: ((event: Event & { error: DOMException }) => void) | null;

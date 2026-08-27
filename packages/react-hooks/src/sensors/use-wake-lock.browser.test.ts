@@ -4,6 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 import { useWakeLock } from "./use-wake-lock.ts";
 
 const createSentinelMock = () => {
+  // SAFETY: the hook only calls sentinel.release(), sentinel.addEventListener("release", ...)
+  // (inherited from EventTarget), and reads `released` (unused by the hook itself but part of
+  // the real WakeLockSentinel shape) — all defined right below.
   const sentinel = new EventTarget() as unknown as WakeLockSentinel;
   let released = false;
 

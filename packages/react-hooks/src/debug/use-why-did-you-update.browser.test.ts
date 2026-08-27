@@ -36,6 +36,7 @@ describe("useWhyDidYouUpdate", () => {
 
     const { rerender } = renderHook(
       ({ props }: { props: Record<string, unknown> }) => useWhyDidYouUpdate("X", props),
+      // SAFETY: `{ a: 1 }` already structurally satisfies Record<string, unknown>; the cast only widens the inferred initialProps type so the later `rerender({ props: { b: 2 } })` below, with a different key, still type-checks against the same hook render.
       { initialProps: { props: { a: 1 } as Record<string, unknown> } },
     );
 

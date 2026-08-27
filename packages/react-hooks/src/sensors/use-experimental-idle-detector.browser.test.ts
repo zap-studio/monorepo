@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { useExperimentalIdleDetector } from "./use-experimental-idle-detector.ts";
 
 const createIdleDetectorMock = (state: { screenState: string; userState: string }) => {
+  // SAFETY: the assignments right below set every field of the intersection type (screenState, start, userState), so this EventTarget really does satisfy the IdleDetector-shaped mock by the time any test reads from it.
   const detector = new EventTarget() as EventTarget & {
     screenState: string;
     start: (options: { signal?: AbortSignal; threshold?: number }) => Promise<void>;

@@ -48,6 +48,7 @@ describe("useWebLock", () => {
         callback: (lock: Lock | null) => unknown,
       ) => Promise<unknown>
     >(async (name: string, options: LockOptions, callback: (lock: Lock | null) => unknown) =>
+      // SAFETY: `mode` and `name` are the DOM `Lock` interface's only two members, and both are set on the object literal above, so it already has the full shape of `Lock`.
       callback({ mode: options.mode ?? "exclusive", name } as Lock),
     );
     setLocksSupport(request);

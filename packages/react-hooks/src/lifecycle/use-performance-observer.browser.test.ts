@@ -68,8 +68,10 @@ describe("usePerformanceObserver", () => {
     renderHook(() => usePerformanceObserver(callback, { entryTypes: ["longtask"] }));
 
     const observer = MockPerformanceObserver.instances[0]!;
+    // SAFETY: usePerformanceObserver's internal callback wrapper (`(list, obs) => callbackRef.current(list, obs)` in use-performance-observer.ts) only forwards `list` by reference to `callback`, never reading its members, and the assertion below checks `list` by identity — so an empty object stand-in is safe.
     const list = {} as PerformanceObserverEntryList;
     act(() => {
+      // SAFETY: `observer` is the MockPerformanceObserver instance the hook itself constructed via `new PerformanceObserver(...)` (intercepted by our mocked global); the wrapper above only forwards it by reference and the assertion below compares it by identity, so it never needs to implement the real PerformanceObserver interface.
       observer.callback(list, observer as unknown as PerformanceObserver);
     });
 
@@ -88,6 +90,7 @@ describe("usePerformanceObserver", () => {
     rerender({ callback: secondCallback });
     const observer = MockPerformanceObserver.instances[0]!;
     act(() => {
+      // SAFETY: this test only checks which callback fired and how many times, not the argument values, and usePerformanceObserver's wrapper never reads list/obs members — so an empty object and the MockPerformanceObserver instance are safe stand-ins for the two positional arguments here.
       observer.callback(
         {} as PerformanceObserverEntryList,
         observer as unknown as PerformanceObserver,

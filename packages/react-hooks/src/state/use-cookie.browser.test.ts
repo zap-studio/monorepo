@@ -19,6 +19,7 @@ const createCookieStoreMock = (initial: Record<string, string> = {}) => {
     store.dispatchEvent(Object.assign(new Event("change"), { changed, deleted }));
   };
 
+  // SAFETY: useCookie only ever calls get/set/delete (with these exact signatures) plus addEventListener/removeEventListener on the store; `target` is a real EventTarget so those listener methods work natively, and the assigned delete/get/set mocks below cover the rest of what useCookie reads.
   const store: CookieStore = Object.assign(target, {
     delete: vi.fn<(name: string) => Promise<void>>((name: string): Promise<void> => {
       const existing = cookies.get(name);
@@ -136,6 +137,7 @@ describe("useCookie", () => {
 
   it("ignores the initial get() result if unmounted before it resolves", async () => {
     let resolveGet: (item: CookieListItem | null) => void = () => {};
+    // SAFETY: this test unmounts before its single `store.get(name)` call resolves and never calls set()/remove(), so `delete`/`set` only need to type-check as CookieStore methods; `get` and the real EventTarget it's assigned onto (for useCookie's addEventListener/removeEventListener) are the only members actually exercised.
     const store: CookieStore = Object.assign(new EventTarget(), {
       delete: vi.fn<(...args: any[]) => any>(),
       get: vi.fn<() => Promise<CookieListItem | null>>(

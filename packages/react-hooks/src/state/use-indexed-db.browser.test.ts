@@ -11,6 +11,7 @@ const makeFailingRequest = (errorMessage: string): IDBRequest => {
     error: errorMessage,
   };
   queueMicrotask(() => fake.onerror?.());
+  // SAFETY: this fake only fires onerror, so it only needs the members useIndexedDB touches on a failing request — error (read in onerror) and the onerror/onsuccess handler slots the hook assigns.
   return fake as unknown as IDBRequest;
 };
 
@@ -30,6 +31,7 @@ const makeFailingTransaction = (error: unknown): IDBTransaction => {
     objectStore: () => fakeStore,
   };
   queueMicrotask(() => fake.onerror?.());
+  // SAFETY: this fake only implements what putValue/deleteValue touch on a transaction — objectStore() returning a store with put/delete/get, the oncomplete/onerror handler slots, and error read in onerror.
   return fake as unknown as IDBTransaction;
 };
 
@@ -72,6 +74,7 @@ const makeControlledOpenRequest = (options: {
     onupgradeneeded?.();
     onsuccess?.();
   });
+  // SAFETY: fake implements exactly what openDatabase assigns/reads on the open request — onupgradeneeded, onsuccess, onerror setters and the result getter — driven manually by the queueMicrotask above instead of a real async open.
   return { createObjectStore, request: fake as unknown as IDBOpenDBRequest };
 };
 
@@ -172,6 +175,7 @@ describe("useIndexedDB", () => {
       getRequest: () => {
         const fake: { onsuccess?: (() => void) | null; result?: number } = { result: 1 };
         queueMicrotask(() => fake.onsuccess?.());
+        // SAFETY: getValue's success path only assigns request.onsuccess and reads request.result, so this minimal fake — driven by the queueMicrotask above — satisfies IDBRequest for this read-succeeds case.
         return fake as unknown as IDBRequest;
       },
       storeExists: true,
@@ -226,6 +230,7 @@ describe("useIndexedDB", () => {
 
   it('becomes "error" when opening the database fails', async () => {
     vi.spyOn(indexedDB, "open").mockImplementation(
+      // SAFETY: this simulates open() itself failing; openDatabase only touches the request members makeFailingRequest already fakes (error, onerror), and IDBOpenDBRequest's extra members like onupgradeneeded are never reached before onerror fires.
       () => makeFailingRequest("open boom") as unknown as IDBOpenDBRequest,
     );
 
