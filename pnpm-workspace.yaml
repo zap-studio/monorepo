@@ -23,7 +23,7 @@ catalog:
   "@opentelemetry/sdk-trace-base": ^2.10.0
   "@standard-schema/spec": ^1.1.0
   "@stylexjs/eslint-plugin": ^0.19.0
-  "@tanstack/eslint-plugin-query": ^5.102.3
+  "@tanstack/eslint-plugin-query": ^5.102.5
   "@tanstack/eslint-plugin-router": ^1.162.0
   "@testing-library/dom": ^10.4.1
   "@testing-library/react": ^16.3.2
