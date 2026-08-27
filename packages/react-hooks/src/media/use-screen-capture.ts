@@ -40,6 +40,8 @@ export const useScreenCapture = (options?: DisplayMediaStreamOptions): UseScreen
     optionsRef.current = options;
   });
 
+  const isMountedRef = useRef(true);
+
   const stop = useCallback((): void => {
     for (const track of streamRef.current?.getTracks() ?? []) {
       track.stop();
@@ -59,18 +61,29 @@ export const useScreenCapture = (options?: DisplayMediaStreamOptions): UseScreen
     setError(undefined);
     try {
       const media = await navigator.mediaDevices.getDisplayMedia(optionsRef.current);
+      if (!isMountedRef.current) {
+        for (const track of media.getTracks()) {
+          track.stop();
+        }
+        return;
+      }
       streamRef.current = media;
       setStream(media);
       setStatus("active");
-      // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- this listener is added to a track created inside `start()`, which runs from a user action, not from the effect below. `useEffect(() => stop, [stop])` stops every track on unmount, and the listener goes away with the track since it's never reused.
-      media.getVideoTracks()[0]?.addEventListener("ended", stop);
+      media.addEventListener("inactive", stop);
     } catch (caught) {
       setError(caught instanceof Error ? caught : new Error(String(caught)));
       setStatus("error");
     }
   }, [stop]);
 
-  useEffect(() => stop, [stop]);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      stop();
+    };
+  }, [stop]);
 
   return { error, start, status, stop, stream };
 };
