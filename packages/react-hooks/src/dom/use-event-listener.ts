@@ -26,6 +26,16 @@ const resolveTarget = (target: EventListenerTarget): EventTarget | null => {
   return "current" in target ? target.current : target;
 };
 
+const assignIfDefined = <T, K extends keyof T>(
+  target: T,
+  key: K,
+  value: T[K] | undefined,
+): void => {
+  if (value !== undefined) {
+    target[key] = value;
+  }
+};
+
 const normalizeOptions = (
   options: AddEventListenerOptions | boolean | undefined,
 ): NormalizedOptions => {
@@ -36,12 +46,8 @@ const normalizeOptions = (
     capture: options?.capture ?? false,
     once: options?.once ?? false,
   };
-  if (options?.passive !== undefined) {
-    normalized.passive = options.passive;
-  }
-  if (options?.signal !== undefined) {
-    normalized.signal = options.signal;
-  }
+  assignIfDefined(normalized, "passive", options?.passive);
+  assignIfDefined(normalized, "signal", options?.signal);
   return normalized;
 };
 
