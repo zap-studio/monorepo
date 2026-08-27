@@ -4,10 +4,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import { usePerformanceObserver } from "./use-performance-observer.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = usePerformanceObserver(vi.fn(), { entryTypes: ["longtask"] });
   return supported ? "true" : "false";
-}
+};
 
 describe(usePerformanceObserver, () => {
   it("renders without crashing during server rendering", () => {

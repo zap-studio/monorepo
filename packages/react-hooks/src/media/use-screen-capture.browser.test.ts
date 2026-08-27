@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useScreenCapture } from "./use-screen-capture.ts";
 
-function makeStream() {
+const makeStream = () => {
   const track = new EventTarget() as MediaStreamTrack & EventTarget;
   Object.assign(track, { stop: vi.fn() });
   const stream = new EventTarget() as MediaStream & EventTarget;
@@ -13,16 +13,16 @@ function makeStream() {
     track,
   });
   return stream as MediaStream & { track: MediaStreamTrack & EventTarget };
-}
+};
 
-function setGetDisplayMedia(
+const setGetDisplayMedia = (
   fn: ((options?: DisplayMediaStreamOptions) => Promise<MediaStream>) | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "mediaDevices", {
     configurable: true,
     value: fn ? { getDisplayMedia: fn } : undefined,
   });
-}
+};
 
 afterEach(() => {
   setGetDisplayMedia(undefined);

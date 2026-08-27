@@ -8,6 +8,18 @@ import { VerificationError } from "./errors.ts";
 import { createWebhookRouter, WebhookRouter } from "./index.ts";
 import { createHmacVerifier } from "./verify.ts";
 
+const PAYMENT_WEBHOOK_PATH = "/webhooks/payment";
+const TEST_WEBHOOK_PATH = "/webhooks/test";
+const UNKNOWN_WEBHOOK_PATH = "/webhooks/unknown";
+const STRIPE_WEBHOOK_PATH = "/webhooks/stripe";
+const SIGNATURE_HEADER_NAME = "x-signature";
+const SHOULD_NOT_RUN_MESSAGE = "should not run";
+const GLOBAL_BEFORE_STEP = "global-before";
+const ROUTE_BEFORE_STEP = "route-before";
+const GLOBAL_AFTER_STEP = "global-after";
+const ROUTE_AFTER_STEP = "route-after";
+const REQUEST_BASE_URL = "https://example.com";
+
 const createRecordingLogger = (): Logger & {
   calls: {
     level: string;
@@ -45,7 +57,7 @@ describe(WebhookRouter, () => {
     body?: unknown,
     init?: { headers?: HeadersInit; method?: string },
   ): Request =>
-    new Request(new URL(path, "https://example.com"), {
+    new Request(new URL(path, REQUEST_BASE_URL), {
       body: body === undefined ? null : JSON.stringify(body),
       method: init?.method ?? "POST",
       ...(init?.headers === undefined ? {} : { headers: init.headers }),
@@ -61,7 +73,7 @@ describe(WebhookRouter, () => {
         }),
       });
 
-      const response = await router.handle(createRequest("/webhooks/payment", { amount: 100 }));
+      const response = await router.handle(createRequest(PAYMENT_WEBHOOK_PATH, { amount: 100 }));
 
       expect(response.status).toBe(200);
       await expect(response.json()).resolves.toBe(100);
@@ -79,7 +91,7 @@ describe(WebhookRouter, () => {
         return Response.json("success");
       });
 
-      const response = await router.handle(createRequest("/webhooks/test", { id: "123" }));
+      const response = await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "123" }));
 
       expect(response.status).toBe(200);
       await expect(response.json()).resolves.toBe("success");
@@ -88,7 +100,7 @@ describe(WebhookRouter, () => {
     it("should return 404 for unregistered paths", async () => {
       const router = createWebhookRouter();
 
-      const response = await router.handle(createRequest("/webhooks/unknown", { id: "123" }));
+      const response = await router.handle(createRequest(UNKNOWN_WEBHOOK_PATH, { id: "123" }));
 
       expect(response.status).toBe(404);
       await expect(response.json()).resolves.toStrictEqual({
@@ -111,7 +123,7 @@ describe(WebhookRouter, () => {
 
     it("should not read the request body when the route is unknown", async () => {
       const router = createWebhookRouter();
-      const request = createRequest("/webhooks/unknown", { id: "123" });
+      const request = createRequest(UNKNOWN_WEBHOOK_PATH, { id: "123" });
 
       const response = await router.handle(request);
 
@@ -133,7 +145,7 @@ describe(WebhookRouter, () => {
       });
 
       const paymentResponse = await router.handle(
-        createRequest("/webhooks/payment", { amount: 42 }),
+        createRequest(PAYMENT_WEBHOOK_PATH, { amount: 42 }),
       );
       const userResponse = await router.handle(createRequest("/webhooks/user", { name: "ada" }));
 
@@ -150,7 +162,7 @@ describe(WebhookRouter, () => {
 
       router.register("/test", () => undefined);
 
-      const response = await router.handle(createRequest("/webhooks/test", { id: "123" }));
+      const response = await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "123" }));
 
       expect(response.status).toBe(200);
       await expect(response.json()).resolves.toBe("ok");
@@ -171,7 +183,7 @@ describe(WebhookRouter, () => {
           method: request.method,
           path,
           rawBody,
-          signature: request.headers.get("x-signature"),
+          signature: request.headers.get(SIGNATURE_HEADER_NAME),
         });
         return undefined;
       });
@@ -179,7 +191,7 @@ describe(WebhookRouter, () => {
       const body = { id: "123" };
       await router.handle(
         createRequest("/webhooks/meta", body, {
-          headers: { "x-signature": "sig" },
+          headers: { [SIGNATURE_HEADER_NAME]: "sig" },
         }),
       );
 
@@ -205,7 +217,7 @@ describe(WebhookRouter, () => {
       });
 
       const response = await router.handle(
-        createRequest("/webhooks/payment", { amount: 10, currency: "usd" }),
+        createRequest(PAYMENT_WEBHOOK_PATH, { amount: 10, currency: "usd" }),
       );
 
       expect(response.status).toBe(200);
@@ -219,12 +231,12 @@ describe(WebhookRouter, () => {
       const router = createWebhookRouter();
 
       router.register("/payment", {
-        handler: () => Response.json("should not run"),
+        handler: () => Response.json(SHOULD_NOT_RUN_MESSAGE),
         schema: z.object({ amount: z.number() }),
       });
 
       const response = await router.handle(
-        createRequest("/webhooks/payment", { amount: "not a number" }),
+        createRequest(PAYMENT_WEBHOOK_PATH, { amount: "not a number" }),
       );
 
       expect(response.status).toBe(400);
@@ -241,14 +253,14 @@ describe(WebhookRouter, () => {
       const router = createWebhookRouter();
 
       router.register("/payment", {
-        handler: () => Response.json("should not run"),
+        handler: () => Response.json(SHOULD_NOT_RUN_MESSAGE),
         schema: z.object({
           amount: z.number(),
           currency: z.string(),
         }),
       });
 
-      const response = await router.handle(createRequest("/webhooks/payment", { amount: 10 }));
+      const response = await router.handle(createRequest(PAYMENT_WEBHOOK_PATH, { amount: 10 }));
 
       expect(response.status).toBe(400);
       const body = (await response.json()) as { error: string };
@@ -390,7 +402,7 @@ describe(WebhookRouter, () => {
 
       const router = createWebhookRouter();
       router.register("/paths", {
-        handler: () => Response.json("should not run"),
+        handler: () => Response.json(SHOULD_NOT_RUN_MESSAGE),
         schema,
       });
 
@@ -550,7 +562,7 @@ describe(WebhookRouter, () => {
       const router = createWebhookRouter();
 
       router.register("/strict", {
-        handler: () => Response.json("should not run"),
+        handler: () => Response.json(SHOULD_NOT_RUN_MESSAGE),
         schema: z.object({ id: z.string() }),
       });
 
@@ -598,7 +610,7 @@ describe(WebhookRouter, () => {
           return undefined;
         });
 
-        await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(order).toStrictEqual(["before", "handler"]);
       });
@@ -622,7 +634,7 @@ describe(WebhookRouter, () => {
           return undefined;
         });
 
-        await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(order).toStrictEqual(["first", "second", "handler"]);
       });
@@ -660,7 +672,7 @@ describe(WebhookRouter, () => {
           return undefined;
         });
 
-        const response = await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        const response = await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(handlerRan).toBe(false);
         expect(response.status).toBe(500);
@@ -685,7 +697,7 @@ describe(WebhookRouter, () => {
           return undefined;
         });
 
-        await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(order).toStrictEqual(["handler", "after"]);
       });
@@ -706,7 +718,7 @@ describe(WebhookRouter, () => {
 
         router.register("/test", () => undefined);
 
-        await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(order).toStrictEqual(["first", "second"]);
       });
@@ -724,7 +736,7 @@ describe(WebhookRouter, () => {
 
         router.register("/test", () => Response.json({ done: true }, { status: 201 }));
 
-        const response = await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        const response = await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(observedStatus).toBe(201);
         expect(observedBody).toStrictEqual({ done: true });
@@ -745,7 +757,7 @@ describe(WebhookRouter, () => {
           throw new Error("handler failed");
         });
 
-        const response = await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        const response = await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(afterRan).toBe(false);
         expect(response.status).toBe(500);
@@ -762,7 +774,7 @@ describe(WebhookRouter, () => {
           throw new Error("boom");
         });
 
-        const response = await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        const response = await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(response.status).toBe(503);
         await expect(response.json()).resolves.toStrictEqual({
@@ -785,7 +797,7 @@ describe(WebhookRouter, () => {
 
         router.register("/test", () => undefined);
 
-        const response = await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        const response = await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(observedMessage).toBe("bad signature");
         expect(response.status).toBe(401);
@@ -800,14 +812,14 @@ describe(WebhookRouter, () => {
             return undefined;
           },
           verify: createHmacVerifier({
-            headerName: "x-signature",
+            headerName: SIGNATURE_HEADER_NAME,
             secret: "secret",
           }),
         });
 
         router.register("/test", () => undefined);
 
-        const response = await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        const response = await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(observedError).toBeInstanceOf(VerificationError);
         expect(response.status).toBe(500);
@@ -823,7 +835,7 @@ describe(WebhookRouter, () => {
 
         router.register("/test", () => undefined);
 
-        const response = await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        const response = await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         await expect(response.json()).resolves.toStrictEqual({
           from: "onError",
@@ -840,7 +852,7 @@ describe(WebhookRouter, () => {
           throw new Error("boom");
         });
 
-        const response = await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        const response = await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(response.status).toBe(500);
         await expect(response.json()).resolves.toStrictEqual({
@@ -855,7 +867,7 @@ describe(WebhookRouter, () => {
           throw "string error";
         });
 
-        const response = await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        const response = await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(response.status).toBe(500);
         await expect(response.json()).resolves.toStrictEqual({
@@ -877,7 +889,7 @@ describe(WebhookRouter, () => {
           throw { reason: "object" };
         });
 
-        await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(observedError).toBeInstanceOf(Error);
         expect((observedError as Error).message).toBe("Internal server error");
@@ -911,13 +923,13 @@ describe(WebhookRouter, () => {
 
         const router = createWebhookRouter({
           before: () => {
-            order.push("global-before");
+            order.push(GLOBAL_BEFORE_STEP);
           },
         });
 
         router.register("/test", {
           before: () => {
-            order.push("route-before");
+            order.push(ROUTE_BEFORE_STEP);
           },
           handler: () => {
             order.push("handler");
@@ -925,9 +937,9 @@ describe(WebhookRouter, () => {
           },
         });
 
-        await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
-        expect(order).toStrictEqual(["global-before", "route-before", "handler"]);
+        expect(order).toStrictEqual([GLOBAL_BEFORE_STEP, ROUTE_BEFORE_STEP, "handler"]);
       });
 
       it("should execute route-level after hooks before global after hooks", async () => {
@@ -935,13 +947,13 @@ describe(WebhookRouter, () => {
 
         const router = createWebhookRouter({
           after: () => {
-            order.push("global-after");
+            order.push(GLOBAL_AFTER_STEP);
           },
         });
 
         router.register("/test", {
           after: () => {
-            order.push("route-after");
+            order.push(ROUTE_AFTER_STEP);
           },
           handler: () => {
             order.push("handler");
@@ -949,9 +961,9 @@ describe(WebhookRouter, () => {
           },
         });
 
-        await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
-        expect(order).toStrictEqual(["handler", "route-after", "global-after"]);
+        expect(order).toStrictEqual(["handler", ROUTE_AFTER_STEP, GLOBAL_AFTER_STEP]);
       });
 
       it("should support multiple route-level hooks", async () => {
@@ -982,7 +994,7 @@ describe(WebhookRouter, () => {
           },
         });
 
-        await router.handle(createRequest("/webhooks/test", { id: "1" }));
+        await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(order).toStrictEqual(["before-1", "before-2", "handler", "after-1", "after-2"]);
       });
@@ -1025,10 +1037,10 @@ describe(WebhookRouter, () => {
 
         const router = createWebhookRouter({
           after: () => {
-            order.push("global-after");
+            order.push(GLOBAL_AFTER_STEP);
           },
           before: () => {
-            order.push("global-before");
+            order.push(GLOBAL_BEFORE_STEP);
           },
           verify: () => {
             order.push("verify");
@@ -1037,10 +1049,10 @@ describe(WebhookRouter, () => {
 
         router.register("/full", {
           after: () => {
-            order.push("route-after");
+            order.push(ROUTE_AFTER_STEP);
           },
           before: () => {
-            order.push("route-before");
+            order.push(ROUTE_BEFORE_STEP);
           },
           handler: () => {
             order.push("handler");
@@ -1052,13 +1064,13 @@ describe(WebhookRouter, () => {
         await router.handle(createRequest("/webhooks/full", { id: "1" }));
 
         expect(order).toStrictEqual([
-          "global-before",
-          "route-before",
+          GLOBAL_BEFORE_STEP,
+          ROUTE_BEFORE_STEP,
           "verify",
           "validate",
           "handler",
-          "route-after",
-          "global-after",
+          ROUTE_AFTER_STEP,
+          GLOBAL_AFTER_STEP,
         ]);
       });
     });
@@ -1161,7 +1173,7 @@ describe(WebhookRouter, () => {
 
       router.register("/payment", () => undefined);
 
-      const wrongPrefix = await router.handle(createRequest("/webhooks/payment", { id: "123" }));
+      const wrongPrefix = await router.handle(createRequest(PAYMENT_WEBHOOK_PATH, { id: "123" }));
       expect(wrongPrefix.status).toBe(404);
 
       const noPrefix = await router.handle(createRequest("/payment", { id: "123" }));
@@ -1173,7 +1185,7 @@ describe(WebhookRouter, () => {
 
       router.register("/test", () => Response.json("success"));
 
-      const response = await router.handle(createRequest("/webhooks/test", { id: "123" }));
+      const response = await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "123" }));
 
       expect(response.status).toBe(200);
       await expect(response.json()).resolves.toBe("success");
@@ -1267,7 +1279,7 @@ describe(WebhookRouter, () => {
 
 describe("Path normalization", () => {
   const createRequest = (path: string): Request =>
-    new Request(new URL(path, "https://example.com"), {
+    new Request(new URL(path, REQUEST_BASE_URL), {
       body: JSON.stringify({}),
       method: "POST",
     });
@@ -1277,7 +1289,7 @@ describe("Path normalization", () => {
 
     router.register("/stripe", () => Response.json("ok"));
 
-    const response = await router.handle(createRequest("/webhooks/stripe"));
+    const response = await router.handle(createRequest(STRIPE_WEBHOOK_PATH));
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toBe("ok");
@@ -1288,7 +1300,7 @@ describe("Path normalization", () => {
 
     router.register("stripe/" as "/stripe", () => Response.json("ok"));
 
-    const response = await router.handle(createRequest("/webhooks/stripe"));
+    const response = await router.handle(createRequest(STRIPE_WEBHOOK_PATH));
 
     expect(response.status).toBe(200);
   });
@@ -1328,7 +1340,7 @@ describe("Path normalization", () => {
 
     router.register("/stripe", () => Response.json("ok"));
 
-    const response = await router.handle(createRequest("/webhooks/stripe"));
+    const response = await router.handle(createRequest(STRIPE_WEBHOOK_PATH));
 
     expect(response.status).toBe(200);
   });
@@ -1408,7 +1420,7 @@ describe("@zap-studio/webhooks browser runtime", () => {
 
 describe("logging", () => {
   const createRequest = (path: string, body?: unknown): Request =>
-    new Request(new URL(path, "https://example.com"), {
+    new Request(new URL(path, REQUEST_BASE_URL), {
       body: body === undefined ? null : JSON.stringify(body),
       method: "POST",
     });
@@ -1417,11 +1429,11 @@ describe("logging", () => {
     const logger = createRecordingLogger();
     const router = createWebhookRouter({ logger }).register("/test", () => undefined);
 
-    await router.handle(createRequest("/webhooks/test", { id: "1" }));
+    await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
     expect(logger.calls).toStrictEqual([
       {
-        context: { path: "/webhooks/test" },
+        context: { path: TEST_WEBHOOK_PATH },
         level: "debug",
         message: "webhook delivery attempt",
       },
@@ -1437,11 +1449,11 @@ describe("logging", () => {
     const logger = createRecordingLogger();
     const router = createWebhookRouter({ logger });
 
-    await router.handle(createRequest("/webhooks/unknown", { id: "1" }));
+    await router.handle(createRequest(UNKNOWN_WEBHOOK_PATH, { id: "1" }));
 
     expect(logger.calls).toStrictEqual([
       {
-        context: { path: "/webhooks/unknown" },
+        context: { path: UNKNOWN_WEBHOOK_PATH },
         level: "debug",
         message: "webhook delivery attempt",
       },
@@ -1459,13 +1471,13 @@ describe("logging", () => {
       logger,
       onError: () => Response.json({}, { status: 401 }),
       verify: createHmacVerifier({
-        headerName: "x-signature",
+        headerName: SIGNATURE_HEADER_NAME,
         secret: "secret",
       }),
     });
     router.register("/test", () => undefined);
 
-    await router.handle(createRequest("/webhooks/test", { id: "1" }));
+    await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
     const warnCall = logger.calls.find((call) => call.message === "webhook verification failed");
     expect(warnCall).toBeDefined();
@@ -1475,7 +1487,7 @@ describe("logging", () => {
   it("does not log anything when no logger is provided", async () => {
     const router = createWebhookRouter().register("/test", () => undefined);
 
-    const response = await router.handle(createRequest("/webhooks/test", { id: "1" }));
+    const response = await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
     expect(response.status).toBe(200);
   });

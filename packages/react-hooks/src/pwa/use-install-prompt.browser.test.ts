@@ -8,15 +8,15 @@ type BeforeInstallPromptTestEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 };
 
-function makeBeforeInstallPromptEvent(
+const makeBeforeInstallPromptEvent = (
   outcome: "accepted" | "dismissed",
-): BeforeInstallPromptTestEvent {
+): BeforeInstallPromptTestEvent => {
   const event = new Event("beforeinstallprompt", { cancelable: true });
   return Object.assign(event, {
     prompt: vi.fn(() => Promise.resolve()),
     userChoice: Promise.resolve({ outcome, platform: "web" }),
   });
-}
+};
 
 describe(useInstallPrompt, () => {
   it("starts with canInstall: false, installed: false", () => {

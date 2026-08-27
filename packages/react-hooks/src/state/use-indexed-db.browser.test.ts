@@ -6,15 +6,15 @@ import { useIndexedDB } from "./use-indexed-db.ts";
 // `.error` is a raw string, not an Error instance — this matches real IndexedDB
 // behavior, where `.error` is a DOMException (which does not extend Error), so
 // these tests also exercise the `caught instanceof Error` false branch downstream.
-function makeFailingRequest(errorMessage: string): IDBRequest {
+const makeFailingRequest = (errorMessage: string): IDBRequest => {
   const fake: { error: string; onerror?: (() => void) | null; onsuccess?: (() => void) | null } = {
     error: errorMessage,
   };
   queueMicrotask(() => fake.onerror?.());
   return fake as unknown as IDBRequest;
-}
+};
 
-function makeFailingTransaction(error: unknown): IDBTransaction {
+const makeFailingTransaction = (error: unknown): IDBTransaction => {
   const fakeStore = { delete: vi.fn(), get: vi.fn(), put: vi.fn() };
   const fake: {
     error: unknown;
@@ -27,16 +27,16 @@ function makeFailingTransaction(error: unknown): IDBTransaction {
   };
   queueMicrotask(() => fake.onerror?.());
   return fake as unknown as IDBTransaction;
-}
+};
 
 // A fully-controlled fake IDBOpenDBRequest whose onupgradeneeded/onsuccess fire
 // via a microtask, with a fake `db.transaction(...).objectStore(...).get()`
 // wired to `getRequest` — lets tests control read-timing precisely, instead of
 // racing a real (and much slower) native IndexedDB open.
-function makeControlledOpenRequest(options: {
+const makeControlledOpenRequest = (options: {
   getRequest?: () => IDBRequest;
   storeExists: boolean;
-}) {
+}) => {
   let onupgradeneeded: (() => void) | undefined;
   let onsuccess: (() => void) | undefined;
   const createObjectStore = vi.fn();
@@ -69,16 +69,16 @@ function makeControlledOpenRequest(options: {
     onsuccess?.();
   });
   return { createObjectStore, request: fake as unknown as IDBOpenDBRequest };
-}
+};
 
-function deleteTestDatabase(): Promise<void> {
+const deleteTestDatabase = (): Promise<void> => {
   return new Promise((resolve) => {
     const request = indexedDB.deleteDatabase("zap-studio-react-hooks");
     request.onsuccess = () => resolve();
     request.onerror = () => resolve();
     request.onblocked = () => resolve();
   });
-}
+};
 
 beforeEach(async () => {
   await deleteTestDatabase();

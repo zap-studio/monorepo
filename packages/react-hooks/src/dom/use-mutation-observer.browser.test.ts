@@ -4,9 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useMutationObserver } from "./use-mutation-observer.ts";
 
-function renderObservedDiv(callback: (mutations: MutationRecord[]) => void) {
+const renderObservedDiv = (callback: (mutations: MutationRecord[]) => void) => {
   let element: HTMLDivElement | null = null;
-  function TestComponent() {
+  const TestComponent = () => {
     const ref = useMutationObserver<HTMLDivElement>(callback);
     return createElement("div", {
       ref: (node: HTMLDivElement | null) => {
@@ -14,7 +14,7 @@ function renderObservedDiv(callback: (mutations: MutationRecord[]) => void) {
         ref.current = node;
       },
     });
-  }
+  };
   const { unmount } = render(createElement(TestComponent));
   return {
     get element() {
@@ -22,7 +22,7 @@ function renderObservedDiv(callback: (mutations: MutationRecord[]) => void) {
     },
     unmount,
   };
-}
+};
 
 describe(useMutationObserver, () => {
   it("calls the callback when an attribute changes on the ref'd element", async () => {
@@ -40,7 +40,7 @@ describe(useMutationObserver, () => {
     const first = vi.fn();
     const second = vi.fn();
     const box: { current: HTMLDivElement | null } = { current: null };
-    function TestComponent({ callback }: { callback: (mutations: MutationRecord[]) => void }) {
+    const TestComponent = ({ callback }: { callback: (mutations: MutationRecord[]) => void }) => {
       const ref = useMutationObserver<HTMLDivElement>(callback);
       return createElement("div", {
         ref: (node: HTMLDivElement | null) => {
@@ -48,7 +48,7 @@ describe(useMutationObserver, () => {
           ref.current = node;
         },
       });
-    }
+    };
     const { rerender } = render(createElement(TestComponent, { callback: first }));
 
     rerender(createElement(TestComponent, { callback: second }));
@@ -91,7 +91,7 @@ describe("useMutationObserver ref and option tracking", () => {
   it("observes a subtree that only attaches after the first render", async () => {
     const callback = vi.fn();
     let element: HTMLDivElement | null = null;
-    function TestComponent({ show }: { show: boolean }) {
+    const TestComponent = ({ show }: { show: boolean }) => {
       const ref = useMutationObserver<HTMLDivElement>(callback);
       return show
         ? createElement("div", {
@@ -101,7 +101,7 @@ describe("useMutationObserver ref and option tracking", () => {
             },
           })
         : null;
-    }
+    };
     const { rerender } = render(createElement(TestComponent, { show: false }));
 
     rerender(createElement(TestComponent, { show: true }));
@@ -122,10 +122,10 @@ describe("useMutationObserver ref and option tracking", () => {
       },
     );
 
-    function TestComponent() {
+    const TestComponent = () => {
       const ref = useMutationObserver<HTMLDivElement>(() => {}, { attributes: true });
       return createElement("div", { ref });
-    }
+    };
     const { rerender } = render(createElement(TestComponent));
 
     expect(observe).toHaveBeenCalledTimes(1);
@@ -149,10 +149,10 @@ describe("useMutationObserver ref and option tracking", () => {
       },
     );
 
-    function TestComponent({ subtree }: { subtree: boolean }) {
+    const TestComponent = ({ subtree }: { subtree: boolean }) => {
       const ref = useMutationObserver<HTMLDivElement>(() => {}, { attributes: true, subtree });
       return createElement("div", { ref });
-    }
+    };
     const { rerender } = render(createElement(TestComponent, { subtree: false }));
 
     expect(observe).toHaveBeenCalledTimes(1);

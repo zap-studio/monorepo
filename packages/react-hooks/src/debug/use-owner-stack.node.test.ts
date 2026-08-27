@@ -4,10 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useOwnerStack } from "./use-owner-stack.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useOwnerStack();
   return supported ? "true" : "false";
-}
+};
 
 afterEach(() => {
   vi.unstubAllEnvs();

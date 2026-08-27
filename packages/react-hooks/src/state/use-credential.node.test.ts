@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useCredential } from "./use-credential.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useCredential();
   return supported ? "true" : "false";
-}
+};
 
 describe(useCredential, () => {
   it("renders supported: false on the server", () => {

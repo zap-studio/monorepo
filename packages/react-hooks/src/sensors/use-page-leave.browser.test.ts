@@ -3,10 +3,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import { usePageLeave } from "./use-page-leave.ts";
 
-function dispatchMouseOut(relatedTarget: EventTarget | null) {
+const dispatchMouseOut = (relatedTarget: EventTarget | null) => {
   const event = new MouseEvent("mouseout", { relatedTarget });
   document.dispatchEvent(event);
-}
+};
 
 describe(usePageLeave, () => {
   it("calls the handler when the pointer leaves the viewport", async () => {

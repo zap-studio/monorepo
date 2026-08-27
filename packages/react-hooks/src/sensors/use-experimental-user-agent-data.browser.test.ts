@@ -3,9 +3,9 @@ import { describe, expect, it } from "vitest";
 
 import { useExperimentalUserAgentData } from "./use-experimental-user-agent-data.ts";
 
-function setUserAgentData(data: unknown) {
+const setUserAgentData = (data: unknown) => {
   Object.defineProperty(navigator, "userAgentData", { configurable: true, value: data });
-}
+};
 
 describe(useExperimentalUserAgentData, () => {
   it("reports navigator.userAgentData when available", () => {

@@ -3,7 +3,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useCredential } from "./use-credential.ts";
 
-function setNavigatorCredentials(
+const CREDENTIAL_ID = "user@example.com";
+const CREDENTIAL_TYPE = "public-key";
+
+const setNavigatorCredentials = (
   credentials:
     | {
         create: (options?: unknown) => Promise<unknown>;
@@ -12,9 +15,9 @@ function setNavigatorCredentials(
         store: (credential: unknown) => Promise<void>;
       }
     | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "credentials", { configurable: true, value: credentials });
-}
+};
 
 describe(useCredential, () => {
   it("reports supported: false when navigator.credentials is unavailable", () => {
@@ -39,7 +42,7 @@ describe(useCredential, () => {
   });
 
   it("get() forwards options and resolves the credential", async () => {
-    const credential = { id: "user@example.com", type: "public-key" };
+    const credential = { id: CREDENTIAL_ID, type: CREDENTIAL_TYPE };
     const get = vi.fn().mockResolvedValue(credential);
     setNavigatorCredentials({
       create: () => Promise.resolve(null),
@@ -63,7 +66,7 @@ describe(useCredential, () => {
   });
 
   it("store() forwards the credential", async () => {
-    const credential = { id: "user@example.com", type: "public-key" };
+    const credential = { id: CREDENTIAL_ID, type: CREDENTIAL_TYPE };
     const store = vi.fn().mockResolvedValue(undefined);
     setNavigatorCredentials({
       create: () => Promise.resolve(null),
@@ -84,12 +87,12 @@ describe(useCredential, () => {
     const { result } = renderHook(() => useCredential());
 
     await expect(
-      result.current.store({ id: "user@example.com", type: "public-key" }),
+      result.current.store({ id: CREDENTIAL_ID, type: CREDENTIAL_TYPE }),
     ).resolves.toBeUndefined();
   });
 
   it("create() forwards options and resolves the credential", async () => {
-    const credential = { id: "user@example.com", type: "public-key" };
+    const credential = { id: CREDENTIAL_ID, type: CREDENTIAL_TYPE };
     const create = vi.fn().mockResolvedValue(credential);
     setNavigatorCredentials({
       create,

@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useAppBadge } from "./use-app-badge.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useAppBadge();
   return supported ? "true" : "false";
-}
+};
 
 describe(useAppBadge, () => {
   it("renders false on the server, before navigator.setAppBadge can be read", () => {

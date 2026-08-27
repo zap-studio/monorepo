@@ -4,10 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useRenderCount } from "./use-render-count.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const count = useRenderCount();
   return String(count);
-}
+};
 
 afterEach(() => {
   vi.unstubAllEnvs();

@@ -10,6 +10,8 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { HEADERS_GETTER } from "./_otel.ts";
 import { createWebhookRouter } from "./index.ts";
 
+const STRIPE_WEBHOOK_PATH = "/webhooks/stripe";
+
 describe("HEADERS_GETTER", () => {
   it("reads a header value by key", () => {
     const headers = new Headers({ traceparent: "00-a-b-01" });
@@ -57,7 +59,7 @@ describe("WebhookRouter OpenTelemetry", () => {
     const router = createWebhookRouter();
     router.register("/stripe", () => Response.json({ ok: true }));
 
-    await router.handle(createRequest("/webhooks/stripe"));
+    await router.handle(createRequest(STRIPE_WEBHOOK_PATH));
 
     const spans = exporter.getFinishedSpans();
     const delivery = spans.find((span) => span.kind === SpanKind.SERVER);
@@ -65,7 +67,7 @@ describe("WebhookRouter OpenTelemetry", () => {
 
     expect(delivery?.name).toBe("POST /webhooks/stripe");
     expect(delivery?.attributes["http.request.method"]).toBe("POST");
-    expect(delivery?.attributes["url.path"]).toBe("/webhooks/stripe");
+    expect(delivery?.attributes["url.path"]).toBe(STRIPE_WEBHOOK_PATH);
     expect(handler?.name).toBe("webhook.handler /stripe");
     expect(handler?.parentSpanContext?.spanId).toBe(delivery?.spanContext().spanId);
   });
@@ -74,7 +76,7 @@ describe("WebhookRouter OpenTelemetry", () => {
     const router = createWebhookRouter();
     router.register("/stripe", () => Response.json({ ok: true }));
 
-    await router.handle(createRequest("/webhooks/stripe"));
+    await router.handle(createRequest(STRIPE_WEBHOOK_PATH));
 
     const delivery = exporter.getFinishedSpans().find((span) => span.kind === SpanKind.SERVER);
     expect(delivery?.attributes["http.response.status_code"]).toBe(200);
@@ -97,7 +99,7 @@ describe("WebhookRouter OpenTelemetry", () => {
       throw new Error("handler exploded");
     });
 
-    await router.handle(createRequest("/webhooks/stripe"));
+    await router.handle(createRequest(STRIPE_WEBHOOK_PATH));
 
     const spans = exporter.getFinishedSpans();
     const handler = spans.find((span) => span.kind === SpanKind.INTERNAL);
@@ -113,7 +115,7 @@ describe("WebhookRouter OpenTelemetry", () => {
     router.register("/stripe", () => Response.json({ ok: true }));
 
     await router.handle(
-      createRequest("/webhooks/stripe", undefined, {
+      createRequest(STRIPE_WEBHOOK_PATH, undefined, {
         traceparent: `00-${traceId}-${parentSpanId}-01`,
       }),
     );

@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { usePictureInPicture } from "./use-picture-in-picture.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { active } = usePictureInPicture();
   return active ? "true" : "false";
-}
+};
 
 describe(usePictureInPicture, () => {
   it("renders false on the server, before pictureinpicture events can fire", () => {

@@ -5,9 +5,9 @@ import type { BatteryManager } from "./use-battery.ts";
 
 import { useBattery } from "./use-battery.ts";
 
-function createBatteryMock(
+const createBatteryMock = (
   initial: Pick<BatteryManager, "charging" | "chargingTime" | "dischargingTime" | "level">,
-) {
+) => {
   const battery = new EventTarget() as unknown as BatteryManager;
   let state = { ...initial };
 
@@ -25,14 +25,14 @@ function createBatteryMock(
       battery.dispatchEvent(new Event("levelchange"));
     },
   };
-}
+};
 
-function setNavigatorGetBattery(getBattery: (() => Promise<BatteryManager>) | undefined) {
+const setNavigatorGetBattery = (getBattery: (() => Promise<BatteryManager>) | undefined) => {
   Object.defineProperty(navigator, "getBattery", {
     configurable: true,
     value: getBattery,
   });
-}
+};
 
 describe(useBattery, () => {
   it("reports unsupported when the Battery Status API is unavailable", () => {

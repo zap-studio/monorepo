@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useNetworkState } from "./use-network-state.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const state = useNetworkState();
   return [state.online, state.effectiveType, state.downlink, state.rtt, state.saveData].join(",");
-}
+};
 
 describe(useNetworkState, () => {
   it("renders online:true with undefined connection fields on the server", () => {

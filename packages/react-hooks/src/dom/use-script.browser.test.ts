@@ -4,14 +4,14 @@ import { describe, expect, it } from "vitest";
 import { useScript } from "./use-script.ts";
 
 let counter = 0;
-function uniqueSrc(): string {
+const uniqueSrc = (): string => {
   counter += 1;
   return `https://example.com/script-${counter}.js`;
-}
+};
 
-function scriptFor(src: string): HTMLScriptElement | null {
+const scriptFor = (src: string): HTMLScriptElement | null => {
   return document.querySelector(`script[src="${src}"]`);
-}
+};
 
 describe(useScript, () => {
   it("starts with status: loading and appends a <script> tag", () => {

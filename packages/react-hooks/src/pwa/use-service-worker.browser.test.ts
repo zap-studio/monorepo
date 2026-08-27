@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useServiceWorker } from "./use-service-worker.ts";
 
-function createInstallingWorker(): ServiceWorker {
+const createInstallingWorker = (): ServiceWorker => {
   const worker = new EventTarget() as ServiceWorker;
   Object.defineProperty(worker, "state", {
     configurable: true,
@@ -11,24 +11,24 @@ function createInstallingWorker(): ServiceWorker {
     writable: true,
   });
   return worker;
-}
+};
 
-function createRegistration(installing: ServiceWorker | null): ServiceWorkerRegistration {
+const createRegistration = (installing: ServiceWorker | null): ServiceWorkerRegistration => {
   const registration = new EventTarget() as ServiceWorkerRegistration;
   Object.defineProperty(registration, "installing", { configurable: true, value: installing });
   return registration;
-}
+};
 
-function setServiceWorkerContainer(
+const setServiceWorkerContainer = (
   container:
     | {
         controller: ServiceWorker | null;
         getRegistration: () => Promise<ServiceWorkerRegistration | undefined>;
       }
     | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "serviceWorker", { configurable: true, value: container });
-}
+};
 
 afterEach(() => {
   setServiceWorkerContainer(undefined);

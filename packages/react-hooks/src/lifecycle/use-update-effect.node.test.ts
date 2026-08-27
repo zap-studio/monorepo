@@ -7,10 +7,10 @@ import { useUpdateEffect } from "./use-update-effect.ts";
 describe(useUpdateEffect, () => {
   it("does not call the effect during server rendering", () => {
     const effect = vi.fn();
-    function TestComponent() {
+    const TestComponent = () => {
       useUpdateEffect(effect, []);
       return "rendered";
-    }
+    };
 
     const html = renderToString(createElement(TestComponent));
 

@@ -3,19 +3,19 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { usePointerLock } from "./use-pointer-lock.ts";
 
-function setPointerLockSupport(supported: boolean) {
+const setPointerLockSupport = (supported: boolean) => {
   Object.defineProperty(document, "exitPointerLock", {
     configurable: true,
     value: supported ? vi.fn() : undefined,
   });
-}
+};
 
-function setPointerLockElement(element: Element | null) {
+const setPointerLockElement = (element: Element | null) => {
   Object.defineProperty(document, "pointerLockElement", {
     configurable: true,
     value: element,
   });
-}
+};
 
 afterEach(() => {
   setPointerLockSupport(true);

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useWebLock } from "./use-web-lock.ts";
 
-function setLocksSupport(
+const setLocksSupport = (
   request:
     | ((
         name: string,
@@ -11,12 +11,12 @@ function setLocksSupport(
         callback: (lock: Lock | null) => unknown,
       ) => Promise<unknown>)
     | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "locks", {
     configurable: true,
     value: request ? { request } : undefined,
   });
-}
+};
 
 afterEach(() => {
   setLocksSupport(undefined);

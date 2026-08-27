@@ -4,10 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useUnstableRenderReason } from "./use-unstable-render-reason.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { reason, ref } = useUnstableRenderReason<HTMLDivElement>();
   return createElement("div", { ref }, reason);
-}
+};
 
 afterEach(() => {
   vi.unstubAllEnvs();

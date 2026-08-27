@@ -7,10 +7,10 @@ import { useTimeout } from "./use-timeout.ts";
 describe(useTimeout, () => {
   it("does not schedule during server rendering", () => {
     const callback = vi.fn();
-    function TestComponent() {
+    const TestComponent = () => {
       useTimeout(callback, 1000);
       return "rendered";
-    }
+    };
 
     const html = renderToString(createElement(TestComponent));
 

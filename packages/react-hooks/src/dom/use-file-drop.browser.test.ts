@@ -4,20 +4,20 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useDropzone, useFileDrop, type UseFileDropResult } from "./use-file-drop.ts";
 
-function dragEventWithFiles(type: string, files: File[]): DragEvent {
+const dragEventWithFiles = (type: string, files: File[]): DragEvent => {
   const dataTransfer = new DataTransfer();
   for (const file of files) {
     dataTransfer.items.add(file);
   }
   return new DragEvent(type, { dataTransfer });
-}
+};
 
-function renderDropzone(onDrop: (files: File[]) => void) {
+const renderDropzone = (onDrop: (files: File[]) => void) => {
   let latest!: UseFileDropResult<HTMLDivElement>;
-  function TestComponent() {
+  const TestComponent = () => {
     latest = useFileDrop<HTMLDivElement>(onDrop);
     return createElement("div", { ref: latest.ref });
-  }
+  };
   const { unmount } = render(createElement(TestComponent));
   return {
     get current() {
@@ -25,7 +25,7 @@ function renderDropzone(onDrop: (files: File[]) => void) {
     },
     unmount,
   };
-}
+};
 
 describe(useFileDrop, () => {
   it("starts with isOver: false", () => {
@@ -104,7 +104,7 @@ describe(useFileDrop, () => {
     const first = vi.fn();
     const second = vi.fn();
     const box: { current: HTMLDivElement | null } = { current: null };
-    function TestComponent({ onDrop }: { onDrop: (files: File[]) => void }) {
+    const TestComponent = ({ onDrop }: { onDrop: (files: File[]) => void }) => {
       const { ref } = useFileDrop<HTMLDivElement>(onDrop);
       return createElement("div", {
         ref: (node: HTMLDivElement | null) => {
@@ -112,7 +112,7 @@ describe(useFileDrop, () => {
           ref.current = node;
         },
       });
-    }
+    };
     const { rerender } = render(createElement(TestComponent, { onDrop: first }));
 
     rerender(createElement(TestComponent, { onDrop: second }));
@@ -153,10 +153,10 @@ describe("useFileDrop ref tracking", () => {
   it("wires up a drop target that only attaches after the first render", () => {
     const onDrop = vi.fn();
     let latest!: UseFileDropResult<HTMLDivElement>;
-    function TestComponent({ show }: { show: boolean }) {
+    const TestComponent = ({ show }: { show: boolean }) => {
       latest = useFileDrop<HTMLDivElement>(onDrop);
       return show ? createElement("div", { ref: latest.ref }) : null;
-    }
+    };
     const { rerender } = render(createElement(TestComponent, { show: false }));
 
     rerender(createElement(TestComponent, { show: true }));

@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useExperimentalUserAgentData } from "./use-experimental-user-agent-data.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const uaData = useExperimentalUserAgentData();
   return uaData === undefined ? "undefined" : "defined";
-}
+};
 
 describe(useExperimentalUserAgentData, () => {
   it("renders undefined on the server, before navigator can be read", () => {

@@ -30,12 +30,12 @@ class FakeIntersectionObserver implements IntersectionObserver {
   }
 }
 
-function renderObservedDiv() {
+const renderObservedDiv = () => {
   let latest!: UseIntersectionObserverResult<HTMLDivElement>;
-  function TestComponent() {
+  const TestComponent = () => {
     latest = useIntersectionObserver<HTMLDivElement>();
     return createElement("div", { ref: latest.ref });
-  }
+  };
   const { unmount } = render(createElement(TestComponent));
   return {
     get current() {
@@ -43,7 +43,7 @@ function renderObservedDiv() {
     },
     unmount,
   };
-}
+};
 
 afterEach(() => {
   FakeIntersectionObserver.instances = [];
@@ -115,10 +115,10 @@ describe("useIntersectionObserver ref and option tracking", () => {
     vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
 
     let latest!: UseIntersectionObserverResult<HTMLDivElement>;
-    function TestComponent({ show }: { show: boolean }) {
+    const TestComponent = ({ show }: { show: boolean }) => {
       latest = useIntersectionObserver<HTMLDivElement>();
       return show ? createElement("div", { ref: latest.ref }) : null;
-    }
+    };
     const { rerender } = render(createElement(TestComponent, { show: false }));
 
     expect(FakeIntersectionObserver.instances).toHaveLength(0);
@@ -138,13 +138,13 @@ describe("useIntersectionObserver ref and option tracking", () => {
   it("does not rebuild the observer for an options object re-created every render", () => {
     vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
 
-    function TestComponent() {
+    const TestComponent = () => {
       const { ref } = useIntersectionObserver<HTMLDivElement>({
         rootMargin: "10px",
         threshold: 0.5,
       });
       return createElement("div", { ref });
-    }
+    };
     const { rerender } = render(createElement(TestComponent));
 
     expect(FakeIntersectionObserver.instances).toHaveLength(1);
@@ -159,10 +159,10 @@ describe("useIntersectionObserver ref and option tracking", () => {
   it("rebuilds the observer when an option changes, including a threshold array", () => {
     vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
 
-    function TestComponent({ threshold }: { threshold: number[] }) {
+    const TestComponent = ({ threshold }: { threshold: number[] }) => {
       const { ref } = useIntersectionObserver<HTMLDivElement>({ threshold });
       return createElement("div", { ref });
-    }
+    };
     const { rerender } = render(createElement(TestComponent, { threshold: [0, 1] }));
 
     expect(FakeIntersectionObserver.instances).toHaveLength(1);

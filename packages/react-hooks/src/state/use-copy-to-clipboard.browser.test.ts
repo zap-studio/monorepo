@@ -3,12 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useCopyToClipboard } from "./use-copy-to-clipboard.ts";
 
-function setClipboardSupport(writeText: ((text: string) => Promise<void>) | undefined) {
+const setClipboardSupport = (writeText: ((text: string) => Promise<void>) | undefined) => {
   Object.defineProperty(navigator, "clipboard", {
     configurable: true,
     value: writeText ? { writeText } : undefined,
   });
-}
+};
 
 beforeEach(() => {
   vi.useFakeTimers();

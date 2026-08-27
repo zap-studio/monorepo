@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useToggle } from "./use-toggle.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const [value] = useToggle();
   return value ? "true" : "false";
-}
+};
 
 describe(useToggle, () => {
   it("renders false on the server by default", () => {

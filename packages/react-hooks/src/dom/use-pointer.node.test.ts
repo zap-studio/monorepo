@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { usePointer } from "./use-pointer.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { isDown, pointerType } = usePointer();
   return `${pointerType},${isDown}`;
-}
+};
 
 describe(usePointer, () => {
   it("renders the all-empty/false initial state on the server", () => {

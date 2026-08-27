@@ -4,12 +4,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { usePopover, type UsePopoverResult } from "./use-popover.ts";
 
-function renderPopoverDiv() {
+const renderPopoverDiv = () => {
   let latest!: UsePopoverResult<HTMLDivElement>;
-  function TestComponent() {
+  const TestComponent = () => {
     latest = usePopover<HTMLDivElement>();
     return createElement("div", { popover: "manual", ref: latest.ref });
-  }
+  };
   const { unmount } = render(createElement(TestComponent));
   return {
     get current() {
@@ -17,7 +17,7 @@ function renderPopoverDiv() {
     },
     unmount,
   };
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -108,10 +108,10 @@ describe(usePopover, () => {
 describe("usePopover ref tracking", () => {
   it("tracks a popover that only attaches after the first render", async () => {
     let latest!: UsePopoverResult<HTMLDivElement>;
-    function TestComponent({ show }: { show: boolean }) {
+    const TestComponent = ({ show }: { show: boolean }) => {
       latest = usePopover<HTMLDivElement>();
       return show ? createElement("div", { popover: "manual", ref: latest.ref }) : null;
-    }
+    };
     const { rerender } = render(createElement(TestComponent, { show: false }));
 
     rerender(createElement(TestComponent, { show: true }));

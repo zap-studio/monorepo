@@ -5,11 +5,11 @@ import type { CookieInit, CookieListItem, CookieStore } from "./use-cookie.ts";
 
 import { useCookie } from "./use-cookie.ts";
 
-function cookieItem(name: string, value: string): CookieListItem {
+const cookieItem = (name: string, value: string): CookieListItem => {
   return { domain: null, expires: null, name, path: "/", sameSite: "lax", value };
-}
+};
 
-function createCookieStoreMock(initial: Record<string, string> = {}) {
+const createCookieStoreMock = (initial: Record<string, string> = {}) => {
   const target = new EventTarget();
   const cookies = new Map<string, CookieListItem>(
     Object.entries(initial).map(([name, value]) => [name, cookieItem(name, value)]),
@@ -40,14 +40,14 @@ function createCookieStoreMock(initial: Record<string, string> = {}) {
   }) as unknown as CookieStore;
 
   return { dispatchChange, store };
-}
+};
 
-function setCookieStore(store: CookieStore | undefined) {
+const setCookieStore = (store: CookieStore | undefined) => {
   Object.defineProperty(window, "cookieStore", {
     configurable: true,
     get: () => store,
   });
-}
+};
 
 describe(useCookie, () => {
   it("reports supported: false when the Cookie Store API is unsupported", () => {

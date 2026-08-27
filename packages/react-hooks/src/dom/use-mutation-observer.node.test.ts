@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useMutationObserver } from "./use-mutation-observer.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const ref = useMutationObserver<HTMLDivElement>(() => {});
   return createElement("div", { ref });
-}
+};
 
 describe(useMutationObserver, () => {
   it("renders without touching MutationObserver during server rendering", () => {

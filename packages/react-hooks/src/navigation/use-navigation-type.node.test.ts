@@ -4,9 +4,9 @@ import { describe, expect, it } from "vitest";
 
 import { useNavigationType } from "./use-navigation-type.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   return useNavigationType();
-}
+};
 
 describe(useNavigationType, () => {
   it('falls back to "navigate" on the server', () => {

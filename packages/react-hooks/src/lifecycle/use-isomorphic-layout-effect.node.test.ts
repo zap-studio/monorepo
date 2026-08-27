@@ -4,10 +4,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useIsomorphicLayoutEffect } from "./use-isomorphic-layout-effect.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   useIsomorphicLayoutEffect(() => {}, []);
   return "ok";
-}
+};
 
 describe("useIsomorphicLayoutEffect", () => {
   it("falls back to useEffect where there is no document", () => {

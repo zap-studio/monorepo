@@ -3,9 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useKeyPress } from "./use-key-press.ts";
 
-function dispatchKey(type: "keydown" | "keyup", key: string) {
+const dispatchKey = (type: "keydown" | "keyup", key: string) => {
   window.dispatchEvent(new KeyboardEvent(type, { key }));
-}
+};
 
 describe(useKeyPress, () => {
   it("starts as false before any key is pressed", () => {

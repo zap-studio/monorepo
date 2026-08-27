@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useWakeLock } from "./use-wake-lock.ts";
 
-function createSentinelMock() {
+const createSentinelMock = () => {
   const sentinel = new EventTarget() as unknown as WakeLockSentinel;
   let released = false;
 
@@ -17,23 +17,23 @@ function createSentinelMock() {
   });
 
   return sentinel;
-}
+};
 
-function setNavigatorWakeLock(
+const setNavigatorWakeLock = (
   request: ((type: "screen") => Promise<WakeLockSentinel>) | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "wakeLock", {
     configurable: true,
     value: request ? { request } : undefined,
   });
-}
+};
 
-function setDocumentHidden(hidden: boolean) {
+const setDocumentHidden = (hidden: boolean) => {
   Object.defineProperty(document, "visibilityState", {
     configurable: true,
     get: () => (hidden ? "hidden" : "visible"),
   });
-}
+};
 
 describe(useWakeLock, () => {
   it("reports supported: true when navigator.wakeLock exists", () => {

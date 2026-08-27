@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useExperimentalMagnetometer } from "./use-experimental-magnetometer.ts";
 
-function createSensorMock(reading: { x: number; y: number; z: number }) {
+const createSensorMock = (reading: { x: number; y: number; z: number }) => {
   const sensor = new EventTarget() as EventTarget & {
     activated: boolean;
     onerror: ((event: Event & { error: DOMException }) => void) | null;
@@ -40,15 +40,15 @@ function createSensorMock(reading: { x: number; y: number; z: number }) {
     },
     sensor,
   };
-}
+};
 
-function stubMagnetometer(sensor?: ReturnType<typeof createSensorMock>["sensor"]) {
+const stubMagnetometer = (sensor?: ReturnType<typeof createSensorMock>["sensor"]) => {
   const MagnetometerCtor = vi.fn().mockImplementation(function Magnetometer() {
     return sensor;
   });
   vi.stubGlobal("Magnetometer", MagnetometerCtor);
   return MagnetometerCtor;
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

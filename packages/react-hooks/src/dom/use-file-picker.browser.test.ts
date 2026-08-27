@@ -5,17 +5,19 @@ import type { FileSystemDirectoryHandle, FileSystemFileHandle } from "./_file-sy
 
 import { useFilePicker } from "./use-file-picker.ts";
 
-function abortError(): Error {
+const DISK_ERROR_MESSAGE = "disk error";
+
+const abortError = (): Error => {
   const error = new Error("The user aborted a request.");
   error.name = "AbortError";
   return error;
-}
+};
 
-function stubUnsupported() {
+const stubUnsupported = () => {
   vi.stubGlobal("showOpenFilePicker", undefined);
   vi.stubGlobal("showSaveFilePicker", undefined);
   vi.stubGlobal("showDirectoryPicker", undefined);
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -62,11 +64,11 @@ describe(useFilePicker, () => {
   it("showOpenFilePicker() rethrows non-abort errors", async () => {
     vi.stubGlobal(
       "showOpenFilePicker",
-      vi.fn(() => Promise.reject(new Error("disk error"))),
+      vi.fn(() => Promise.reject(new Error(DISK_ERROR_MESSAGE))),
     );
 
     const { result } = renderHook(() => useFilePicker());
-    await expect(result.current.showOpenFilePicker()).rejects.toThrow("disk error");
+    await expect(result.current.showOpenFilePicker()).rejects.toThrow(DISK_ERROR_MESSAGE);
   });
 
   it("showOpenFilePicker() resolves undefined when unsupported", async () => {
@@ -100,11 +102,11 @@ describe(useFilePicker, () => {
   it("showSaveFilePicker() rethrows non-abort errors", async () => {
     vi.stubGlobal(
       "showSaveFilePicker",
-      vi.fn(() => Promise.reject(new Error("disk error"))),
+      vi.fn(() => Promise.reject(new Error(DISK_ERROR_MESSAGE))),
     );
 
     const { result } = renderHook(() => useFilePicker());
-    await expect(result.current.showSaveFilePicker()).rejects.toThrow("disk error");
+    await expect(result.current.showSaveFilePicker()).rejects.toThrow(DISK_ERROR_MESSAGE);
   });
 
   it("showSaveFilePicker() resolves undefined when unsupported", async () => {
@@ -138,11 +140,11 @@ describe(useFilePicker, () => {
   it("showDirectoryPicker() rethrows non-abort errors", async () => {
     vi.stubGlobal(
       "showDirectoryPicker",
-      vi.fn(() => Promise.reject(new Error("disk error"))),
+      vi.fn(() => Promise.reject(new Error(DISK_ERROR_MESSAGE))),
     );
 
     const { result } = renderHook(() => useFilePicker());
-    await expect(result.current.showDirectoryPicker()).rejects.toThrow("disk error");
+    await expect(result.current.showDirectoryPicker()).rejects.toThrow(DISK_ERROR_MESSAGE);
   });
 
   it("showDirectoryPicker() resolves undefined when unsupported", async () => {

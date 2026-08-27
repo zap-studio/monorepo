@@ -9,29 +9,33 @@ type ReaderMock = EventTarget & {
   write: (message: unknown, options?: { overwrite?: boolean }) => Promise<void>;
 };
 
-function createReaderMock(
+const createReaderMock = (
   overrides: {
     makeReadOnly?: () => Promise<void>;
     scan?: (options?: { signal?: AbortSignal }) => Promise<void>;
     write?: (message: unknown, options?: { overwrite?: boolean }) => Promise<void>;
   } = {},
-) {
+) => {
   const reader = new EventTarget() as ReaderMock;
   reader.scan = vi.fn(overrides.scan ?? (() => Promise.resolve()));
   reader.write = vi.fn(overrides.write ?? (() => Promise.resolve()));
   reader.makeReadOnly = vi.fn(overrides.makeReadOnly ?? (() => Promise.resolve()));
   return reader;
-}
+};
 
-function stubNdefReader(reader: ReaderMock) {
+const stubNdefReader = (reader: ReaderMock) => {
   const NDEFReaderCtor = vi.fn().mockImplementation(function NDEFReader() {
     return reader;
   });
   vi.stubGlobal("NDEFReader", NDEFReaderCtor);
   return NDEFReaderCtor;
-}
+};
 
-function fireReading(reader: ReaderMock, serialNumber: string, records: { recordType: string }[]) {
+const fireReading = (
+  reader: ReaderMock,
+  serialNumber: string,
+  records: { recordType: string }[],
+) => {
   const event = new Event("reading") as Event & {
     message: { records: { recordType: string }[] };
     serialNumber: string;
@@ -39,7 +43,7 @@ function fireReading(reader: ReaderMock, serialNumber: string, records: { record
   event.message = { records };
   event.serialNumber = serialNumber;
   reader.dispatchEvent(event);
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

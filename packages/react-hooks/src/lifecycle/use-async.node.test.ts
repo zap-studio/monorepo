@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useAsync } from "./use-async.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { loading } = useAsync(() => Promise.resolve(1));
   return loading ? "true" : "false";
-}
+};
 
 describe(useAsync, () => {
   it("renders loading: true on the server, before the effect can run", () => {

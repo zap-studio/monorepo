@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useExperimentalAbsoluteOrientationSensor } from "./use-experimental-absolute-orientation-sensor.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useExperimentalAbsoluteOrientationSensor();
   return supported ? "true" : "false";
-}
+};
 
 describe(useExperimentalAbsoluteOrientationSensor, () => {
   it("renders supported: false on the server", () => {

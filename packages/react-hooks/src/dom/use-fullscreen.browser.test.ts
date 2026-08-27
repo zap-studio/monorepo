@@ -3,19 +3,19 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useFullscreen } from "./use-fullscreen.ts";
 
-function setFullscreenSupport(supported: boolean) {
+const setFullscreenSupport = (supported: boolean) => {
   Object.defineProperty(document, "fullscreenEnabled", {
     configurable: true,
     value: supported,
   });
-}
+};
 
-function setFullscreenElement(element: Element | null) {
+const setFullscreenElement = (element: Element | null) => {
   Object.defineProperty(document, "fullscreenElement", {
     configurable: true,
     value: element,
   });
-}
+};
 
 afterEach(() => {
   setFullscreenSupport(true);

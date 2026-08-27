@@ -3,13 +3,13 @@ import { describe, expect, it } from "vitest";
 
 import { useDeviceCapabilities } from "./use-device-capabilities.ts";
 
-function setHardwareConcurrency(value: number) {
+const setHardwareConcurrency = (value: number) => {
   Object.defineProperty(navigator, "hardwareConcurrency", { configurable: true, value });
-}
+};
 
-function setDeviceMemory(value: number | undefined) {
+const setDeviceMemory = (value: number | undefined) => {
   Object.defineProperty(navigator, "deviceMemory", { configurable: true, value });
-}
+};
 
 describe(useDeviceCapabilities, () => {
   it("reports hardwareConcurrency and deviceMemory when both are available", () => {

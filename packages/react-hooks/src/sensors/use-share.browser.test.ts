@@ -3,13 +3,13 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useShare } from "./use-share.ts";
 
-function setNavigatorShare(share: ((data: ShareData) => Promise<void>) | undefined) {
+const setNavigatorShare = (share: ((data: ShareData) => Promise<void>) | undefined) => {
   Object.defineProperty(navigator, "share", { configurable: true, value: share });
-}
+};
 
-function setNavigatorCanShare(canShare: ((data?: ShareData) => boolean) | undefined) {
+const setNavigatorCanShare = (canShare: ((data?: ShareData) => boolean) | undefined) => {
   Object.defineProperty(navigator, "canShare", { configurable: true, value: canShare });
-}
+};
 
 describe(useShare, () => {
   it("reports supported: true when navigator.share exists", () => {

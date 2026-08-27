@@ -3,11 +3,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useExperimentalLocalFonts } from "./use-experimental-local-fonts.ts";
 
-function notAllowedError(): Error {
+const notAllowedError = (): Error => {
   const error = new Error("Permission denied.");
   error.name = "NotAllowedError";
   return error;
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

@@ -3,9 +3,9 @@ import { describe, expect, it } from "vitest";
 
 import { useCookieEnabled } from "./use-cookie-enabled.ts";
 
-function setCookieEnabled(value: boolean) {
+const setCookieEnabled = (value: boolean) => {
   Object.defineProperty(navigator, "cookieEnabled", { configurable: true, value });
-}
+};
 
 describe(useCookieEnabled, () => {
   it("is true when navigator.cookieEnabled is true", () => {

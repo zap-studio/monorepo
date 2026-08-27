@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useFavicon } from "./use-favicon.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   useFavicon("/favicon.svg");
   return "ok";
-}
+};
 
 describe(useFavicon, () => {
   it("renders without touching document.head during server rendering", () => {

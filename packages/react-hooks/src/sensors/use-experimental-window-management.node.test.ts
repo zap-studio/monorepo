@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useExperimentalWindowManagement } from "./use-experimental-window-management.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { isExtended, supported } = useExperimentalWindowManagement();
   return `${supported}-${isExtended}`;
-}
+};
 
 describe(useExperimentalWindowManagement, () => {
   it("renders supported: false and isExtended: false on the server", () => {

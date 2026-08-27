@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useCookieEnabled } from "./use-cookie-enabled.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const cookiesEnabled = useCookieEnabled();
   return cookiesEnabled ? "true" : "false";
-}
+};
 
 describe(useCookieEnabled, () => {
   it("renders false on the server, before navigator can be read", () => {

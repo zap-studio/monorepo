@@ -4,10 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useUnstableFiber } from "./use-unstable-fiber.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { fiber, ref } = useUnstableFiber<HTMLDivElement>();
   return createElement("div", { ref }, fiber ? "found" : "null");
-}
+};
 
 afterEach(() => {
   vi.unstubAllEnvs();

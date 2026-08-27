@@ -3,22 +3,22 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useGeolocation } from "./use-geolocation.ts";
 
-function createGeolocationMock() {
+const createGeolocationMock = () => {
   return {
     clearWatch: vi.fn(),
     getCurrentPosition: vi.fn(),
     watchPosition: vi.fn(() => 1),
   };
-}
+};
 
-function setNavigatorGeolocation(
+const setNavigatorGeolocation = (
   geolocation: ReturnType<typeof createGeolocationMock> | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "geolocation", {
     configurable: true,
     get: () => geolocation,
   });
-}
+};
 
 const fakePosition = {
   coords: {

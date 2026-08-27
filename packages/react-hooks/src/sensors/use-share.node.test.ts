@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useShare } from "./use-share.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useShare();
   return supported ? "true" : "false";
-}
+};
 
 describe(useShare, () => {
   it("renders unsupported on the server, without touching navigator", () => {

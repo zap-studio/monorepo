@@ -7,10 +7,10 @@ import { useIdleCallback } from "./use-idle-callback.ts";
 describe(useIdleCallback, () => {
   it("renders without touching requestIdleCallback during server rendering", () => {
     const callback = vi.fn();
-    function TestComponent() {
+    const TestComponent = () => {
       useIdleCallback(callback);
       return "rendered";
-    }
+    };
 
     const html = renderToString(createElement(TestComponent));
 

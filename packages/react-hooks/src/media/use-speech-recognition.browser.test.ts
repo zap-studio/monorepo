@@ -42,23 +42,23 @@ class MockRecognition {
   }
 }
 
-function installMockSpeechRecognition() {
+const installMockSpeechRecognition = () => {
   MockRecognition.instances = [];
   Object.defineProperty(window, "SpeechRecognition", {
     configurable: true,
     value: MockRecognition,
   });
-}
+};
 
-function makeResultEvent(transcripts: string[]): MockRecognitionEvent {
+const makeResultEvent = (transcripts: string[]): MockRecognitionEvent => {
   const results: Record<number, MockRecognitionResult> & { length: number } = {
     length: transcripts.length,
   };
-  transcripts.forEach((transcript, index) => {
+  for (const [index, transcript] of transcripts.entries()) {
     results[index] = { 0: { transcript }, length: 1 };
-  });
+  }
   return { results };
-}
+};
 
 afterEach(() => {
   Object.defineProperty(window, "SpeechRecognition", { configurable: true, value: undefined });

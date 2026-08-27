@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useExperimentalRelativeOrientationSensor } from "./use-experimental-relative-orientation-sensor.ts";
 
-function createSensorMock(quaternion: [number, number, number, number]) {
+const createSensorMock = (quaternion: [number, number, number, number]) => {
   const sensor = new EventTarget() as EventTarget & {
     activated: boolean;
     onerror: ((event: Event & { error: DOMException }) => void) | null;
@@ -34,9 +34,9 @@ function createSensorMock(quaternion: [number, number, number, number]) {
     },
     sensor,
   };
-}
+};
 
-function stubRelativeOrientationSensor(sensor?: ReturnType<typeof createSensorMock>["sensor"]) {
+const stubRelativeOrientationSensor = (sensor?: ReturnType<typeof createSensorMock>["sensor"]) => {
   const RelativeOrientationSensorCtor = vi
     .fn()
     .mockImplementation(function RelativeOrientationSensor() {
@@ -44,7 +44,7 @@ function stubRelativeOrientationSensor(sensor?: ReturnType<typeof createSensorMo
     });
   vi.stubGlobal("RelativeOrientationSensor", RelativeOrientationSensorCtor);
   return RelativeOrientationSensorCtor;
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

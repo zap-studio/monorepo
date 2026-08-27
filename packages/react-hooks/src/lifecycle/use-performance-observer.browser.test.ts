@@ -23,13 +23,13 @@ class MockPerformanceObserver {
   }
 }
 
-function installMockPerformanceObserver() {
+const installMockPerformanceObserver = () => {
   MockPerformanceObserver.instances = [];
   Object.defineProperty(window, "PerformanceObserver", {
     configurable: true,
     value: MockPerformanceObserver,
   });
-}
+};
 
 afterEach(() => {
   Object.defineProperty(window, "PerformanceObserver", { configurable: true, value: undefined });

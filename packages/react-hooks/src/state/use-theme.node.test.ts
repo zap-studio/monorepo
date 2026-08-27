@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useTheme } from "./use-theme.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { theme } = useTheme();
   return theme;
-}
+};
 
 describe(useTheme, () => {
   it('renders theme: "system" on the server, before matchMedia/localStorage can be read', () => {

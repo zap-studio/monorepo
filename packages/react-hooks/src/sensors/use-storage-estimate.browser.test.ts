@@ -3,12 +3,12 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useStorageEstimate } from "./use-storage-estimate.ts";
 
-function setNavigatorStorage(estimate: (() => Promise<StorageEstimate>) | undefined) {
+const setNavigatorStorage = (estimate: (() => Promise<StorageEstimate>) | undefined) => {
   Object.defineProperty(navigator, "storage", {
     configurable: true,
     value: estimate ? { estimate } : undefined,
   });
-}
+};
 
 describe(useStorageEstimate, () => {
   it("starts unsupported: false but with usage/quota undefined while loading", () => {

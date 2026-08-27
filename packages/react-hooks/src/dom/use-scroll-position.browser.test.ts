@@ -3,10 +3,10 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { useScrollPosition } from "./use-scroll-position.ts";
 
-function setScroll(x: number, y: number) {
+const setScroll = (x: number, y: number) => {
   Object.defineProperty(window, "scrollX", { configurable: true, value: x });
   Object.defineProperty(window, "scrollY", { configurable: true, value: y });
-}
+};
 
 afterEach(() => {
   setScroll(0, 0);

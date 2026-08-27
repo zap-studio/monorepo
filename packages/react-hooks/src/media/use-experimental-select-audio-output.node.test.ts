@@ -4,10 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useExperimentalSelectAudioOutput } from "./use-experimental-select-audio-output.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useExperimentalSelectAudioOutput();
   return supported ? "true" : "false";
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

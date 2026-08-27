@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useIndexedDB } from "./use-indexed-db.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { value } = useIndexedDB("count", 0);
   return String(value);
-}
+};
 
 describe(useIndexedDB, () => {
   it("renders the initial value on the server, before the effect can run", () => {

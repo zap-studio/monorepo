@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useLockBodyScroll } from "./use-lock-body-scroll.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   useLockBodyScroll();
   return "ok";
-}
+};
 
 describe(useLockBodyScroll, () => {
   it("renders without touching document.body during server rendering", () => {

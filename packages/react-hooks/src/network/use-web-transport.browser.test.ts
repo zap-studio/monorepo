@@ -3,6 +3,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useWebTransport } from "./use-web-transport.ts";
 
+const TRANSPORT_URL = "https://example.com:4999/wt";
+const NO_ROUTE_ERROR = "no route to host";
+const STREAM_REFUSED_ERROR = "stream refused";
+
 class MockWebTransport {
   static instances: MockWebTransport[] = [];
 
@@ -34,19 +38,18 @@ class MockWebTransport {
       this.rejectClosed = reject;
     });
 
-    const self = this;
     this.datagrams = {
       readable: new ReadableStream({
-        start(controller) {
-          self.incomingController = controller;
+        start: (controller) => {
+          this.incomingController = controller;
         },
       }),
       writable: new WritableStream({
-        write(chunk) {
-          if (self.writeShouldFail) {
+        write: (chunk) => {
+          if (this.writeShouldFail) {
             throw new Error("datagram queue full");
           }
-          self.writtenChunks.push(chunk);
+          this.writtenChunks.push(chunk);
         },
       }),
     };
@@ -79,10 +82,10 @@ class MockWebTransport {
   }
 }
 
-function installMockWebTransport() {
+const installMockWebTransport = () => {
   MockWebTransport.instances = [];
   vi.stubGlobal("WebTransport", MockWebTransport);
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -92,16 +95,16 @@ describe(useWebTransport, () => {
   it('starts as "connecting" and opens a transport for the given url', () => {
     installMockWebTransport();
 
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
 
     expect(result.current.status).toBe("connecting");
     expect(MockWebTransport.instances).toHaveLength(1);
-    expect(MockWebTransport.instances[0]?.url).toBe("https://example.com:4999/wt");
+    expect(MockWebTransport.instances[0]?.url).toBe(TRANSPORT_URL);
   });
 
   it('becomes "connected" once `ready` resolves', async () => {
     installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
 
     await act(async () => {
       MockWebTransport.instances[0]?.open();
@@ -112,30 +115,30 @@ describe(useWebTransport, () => {
 
   it('becomes "closed" with an error when `ready` rejects', async () => {
     installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
 
     await act(async () => {
-      MockWebTransport.instances[0]?.failReady(new Error("no route to host"));
+      MockWebTransport.instances[0]?.failReady(new Error(NO_ROUTE_ERROR));
     });
 
     await waitFor(() => expect(result.current.status).toBe("closed"));
-    expect(result.current.error?.message).toBe("no route to host");
+    expect(result.current.error?.message).toBe(NO_ROUTE_ERROR);
   });
 
   it("wraps a non-Error rejection in an Error", async () => {
     installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
 
     await act(async () => {
-      MockWebTransport.instances[0]?.failReady("no route to host");
+      MockWebTransport.instances[0]?.failReady(NO_ROUTE_ERROR);
     });
 
-    await waitFor(() => expect(result.current.error?.message).toBe("no route to host"));
+    await waitFor(() => expect(result.current.error?.message).toBe(NO_ROUTE_ERROR));
   });
 
   it('becomes "closed" once `closed` resolves', async () => {
     installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
 
     await act(async () => {
       MockWebTransport.instances[0]?.open();
@@ -151,7 +154,7 @@ describe(useWebTransport, () => {
 
   it("captures the last datagram received", async () => {
     installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
 
     await act(async () => {
@@ -163,7 +166,7 @@ describe(useWebTransport, () => {
 
   it("sendDatagram() writes to the outgoing datagram stream", async () => {
     installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
 
     await act(async () => {
@@ -175,7 +178,7 @@ describe(useWebTransport, () => {
 
   it("sendDatagram() sets error and resolves false when the write rejects", async () => {
     installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
     if (transport) {
       transport.writeShouldFail = true;
@@ -190,7 +193,7 @@ describe(useWebTransport, () => {
 
   it('becomes "closed" with an error when `closed` rejects', async () => {
     installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
 
     await act(async () => {
       MockWebTransport.instances[0]?.failClosed(new Error("connection lost"));
@@ -202,7 +205,7 @@ describe(useWebTransport, () => {
 
   it("createBidirectionalStream() resolves the underlying stream", async () => {
     installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
 
     let stream: WebTransportBidirectionalStream | undefined;
@@ -216,20 +219,20 @@ describe(useWebTransport, () => {
 
   it("createBidirectionalStream() sets error and returns undefined when it rejects", async () => {
     installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
-    transport?.createBidirectionalStream.mockRejectedValueOnce(new Error("stream refused"));
+    transport?.createBidirectionalStream.mockRejectedValueOnce(new Error(STREAM_REFUSED_ERROR));
 
     await act(async () => {
       await expect(result.current.createBidirectionalStream()).resolves.toBeUndefined();
     });
 
-    await waitFor(() => expect(result.current.error?.message).toBe("stream refused"));
+    await waitFor(() => expect(result.current.error?.message).toBe(STREAM_REFUSED_ERROR));
   });
 
   it("createUnidirectionalStream() resolves the underlying stream", async () => {
     installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
 
     let stream: WritableStream | undefined;
@@ -243,20 +246,20 @@ describe(useWebTransport, () => {
 
   it("createUnidirectionalStream() sets error and returns undefined when it rejects", async () => {
     installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
-    transport?.createUnidirectionalStream.mockRejectedValueOnce(new Error("stream refused"));
+    transport?.createUnidirectionalStream.mockRejectedValueOnce(new Error(STREAM_REFUSED_ERROR));
 
     await act(async () => {
       await expect(result.current.createUnidirectionalStream()).resolves.toBeUndefined();
     });
 
-    await waitFor(() => expect(result.current.error?.message).toBe("stream refused"));
+    await waitFor(() => expect(result.current.error?.message).toBe(STREAM_REFUSED_ERROR));
   });
 
   it("close() closes the underlying transport", async () => {
     installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
 
     await act(async () => {
       result.current.close({ closeCode: 1, reason: "done" });
@@ -268,7 +271,7 @@ describe(useWebTransport, () => {
 
   it("closes the transport on unmount", () => {
     installMockWebTransport();
-    const { unmount } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
 
     unmount();
 
@@ -277,7 +280,7 @@ describe(useWebTransport, () => {
 
   it("ignores a stale `ready` resolution once cancelled by unmount", async () => {
     installMockWebTransport();
-    const { unmount } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
 
     // `open()` schedules the `ready`-continuation as a microtask; `unmount()` aborts
@@ -289,7 +292,7 @@ describe(useWebTransport, () => {
 
   it("ignores a stale `ready` rejection once cancelled by unmount", async () => {
     installMockWebTransport();
-    const { unmount } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
 
     transport?.failReady(new Error("too late"));
@@ -299,7 +302,7 @@ describe(useWebTransport, () => {
 
   it("ignores a stale `closed` resolution once cancelled by unmount", async () => {
     installMockWebTransport();
-    const { unmount } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
 
     transport?.close();
@@ -309,7 +312,7 @@ describe(useWebTransport, () => {
 
   it("ignores a stale `closed` rejection once cancelled by unmount", async () => {
     installMockWebTransport();
-    const { unmount } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
 
     transport?.failClosed(new Error("too late"));
@@ -319,7 +322,7 @@ describe(useWebTransport, () => {
 
   it("ignores a stale datagram once cancelled by unmount", async () => {
     installMockWebTransport();
-    const { result, unmount } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result, unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
 
     transport?.incomingController?.enqueue(new Uint8Array([1]));
@@ -353,7 +356,7 @@ describe(useWebTransport, () => {
   it("reports supported: false when the WebTransport API is unavailable", () => {
     vi.stubGlobal("WebTransport", undefined);
 
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
 
     expect(result.current.supported).toBe(false);
     expect(result.current.status).toBe("closed");
@@ -362,7 +365,7 @@ describe(useWebTransport, () => {
   it("resolves false/undefined from the imperative methods when unsupported", async () => {
     vi.stubGlobal("WebTransport", undefined);
 
-    const { result } = renderHook(() => useWebTransport("https://example.com:4999/wt"));
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
 
     await expect(result.current.sendDatagram(new Uint8Array([1]))).resolves.toBe(false);
     await expect(result.current.createBidirectionalStream()).resolves.toBeUndefined();

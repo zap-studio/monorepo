@@ -3,11 +3,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useAppBadge } from "./use-app-badge.ts";
 
-function setBadgeSupport(
+const setBadgeSupport = (
   api:
     | { clearAppBadge: () => Promise<void>; setAppBadge: (count?: number) => Promise<void> }
     | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "setAppBadge", {
     configurable: true,
     value: api?.setAppBadge,
@@ -16,7 +16,7 @@ function setBadgeSupport(
     configurable: true,
     value: api?.clearAppBadge,
   });
-}
+};
 
 afterEach(() => {
   setBadgeSupport(undefined);

@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useEventSource } from "./use-event-source.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { status } = useEventSource(undefined);
   return status;
-}
+};
 
 describe(useEventSource, () => {
   it('renders "closed" on the server when no url is given', () => {

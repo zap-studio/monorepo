@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useGamepad } from "./use-gamepad.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const gamepads = useGamepad();
   return String(gamepads.length);
-}
+};
 
 describe(useGamepad, () => {
   it("renders an empty list on the server, before navigator.getGamepads() can be read", () => {

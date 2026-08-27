@@ -6,7 +6,7 @@ import { useAnimationFrame } from "./use-animation-frame.ts";
 let rafCallbacks = new Map<number, FrameRequestCallback>();
 let nextHandle = 0;
 
-function installMockRaf() {
+const installMockRaf = () => {
   rafCallbacks = new Map();
   nextHandle = 0;
   vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
@@ -17,15 +17,15 @@ function installMockRaf() {
   vi.stubGlobal("cancelAnimationFrame", (handle: number) => {
     rafCallbacks.delete(handle);
   });
-}
+};
 
-function flushFrame(time: number) {
+const flushFrame = (time: number) => {
   const pending = [...rafCallbacks.values()];
   rafCallbacks.clear();
   for (const callback of pending) {
     callback(time);
   }
-}
+};
 
 beforeEach(() => {
   installMockRaf();

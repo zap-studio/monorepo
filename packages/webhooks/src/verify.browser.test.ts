@@ -5,6 +5,9 @@ import type { WebhookContext } from "./types.ts";
 import { VerificationError } from "./errors.ts";
 import { createHmacVerifier } from "./verify.ts";
 
+const SIGNATURE_HEADER_NAME = "X-Hub-Signature-256";
+const INVALID_SIGNATURE_MESSAGE = "Invalid signature for header: X-Hub-Signature-256";
+
 const encoder = new TextEncoder();
 
 type HmacAlgorithm = "sha1" | "sha256" | "sha384" | "sha512";
@@ -80,7 +83,7 @@ describe(createHmacVerifier, () => {
     const secret = "my-secret";
     const signature = await generateValidSignature(body, secret);
     const verify = createHmacVerifier({
-      headerName: "X-Hub-Signature-256",
+      headerName: SIGNATURE_HEADER_NAME,
       secret,
     });
 
@@ -89,7 +92,7 @@ describe(createHmacVerifier, () => {
 
   it("fails when the signature header is missing", async () => {
     const verify = createHmacVerifier({
-      headerName: "X-Hub-Signature-256",
+      headerName: SIGNATURE_HEADER_NAME,
       secret: "my-secret",
     });
 
@@ -104,7 +107,7 @@ describe(createHmacVerifier, () => {
 
   it("fails when the signature is invalid", async () => {
     const verify = createHmacVerifier({
-      headerName: "X-Hub-Signature-256",
+      headerName: SIGNATURE_HEADER_NAME,
       secret: "my-secret",
     });
 
@@ -112,14 +115,14 @@ describe(createHmacVerifier, () => {
 
     expect(error).toBeInstanceOf(VerificationError);
     expect(error).toMatchObject({
-      message: "Invalid signature for header: X-Hub-Signature-256",
+      message: INVALID_SIGNATURE_MESSAGE,
       name: "VerificationError",
     });
   });
 
   it("fails when the signature is valid hex but the wrong length", async () => {
     const verify = createHmacVerifier({
-      headerName: "X-Hub-Signature-256",
+      headerName: SIGNATURE_HEADER_NAME,
       secret: "my-secret",
     });
 
@@ -127,7 +130,7 @@ describe(createHmacVerifier, () => {
 
     expect(error).toBeInstanceOf(VerificationError);
     expect(error).toMatchObject({
-      message: "Invalid signature for header: X-Hub-Signature-256",
+      message: INVALID_SIGNATURE_MESSAGE,
       name: "VerificationError",
     });
   });
@@ -137,7 +140,7 @@ describe(createHmacVerifier, () => {
     const secret = "my-secret";
     const signature = await generateValidSignature(body, secret);
     const verify = createHmacVerifier({
-      headerName: "X-Hub-Signature-256",
+      headerName: SIGNATURE_HEADER_NAME,
       secret,
     });
 
@@ -149,7 +152,7 @@ describe(createHmacVerifier, () => {
     const secret = "my-secret";
     const signature = await generateValidSignature(body, secret);
     const verify = createHmacVerifier({
-      headerName: "X-Hub-Signature-256",
+      headerName: SIGNATURE_HEADER_NAME,
       secret,
     });
 
@@ -177,7 +180,7 @@ describe(createHmacVerifier, () => {
     const error = await captureThrownError(() =>
       createHmacVerifier({
         algo: "md5" as HmacAlgorithm,
-        headerName: "X-Hub-Signature-256",
+        headerName: SIGNATURE_HEADER_NAME,
         secret: "my-secret",
       }),
     );
@@ -195,7 +198,7 @@ describe(createHmacVerifier, () => {
     const secret = "my-secret";
     const signature = await generateValidSignature(body, secret);
     const verify = createHmacVerifier({
-      headerName: "X-Hub-Signature-256",
+      headerName: SIGNATURE_HEADER_NAME,
       secret,
     });
 
@@ -206,7 +209,7 @@ describe(createHmacVerifier, () => {
 
     expect(error).toBeInstanceOf(VerificationError);
     expect(error).toMatchObject({
-      message: "Invalid signature for header: X-Hub-Signature-256",
+      message: INVALID_SIGNATURE_MESSAGE,
       name: "VerificationError",
     });
   });
@@ -216,7 +219,7 @@ describe(createHmacVerifier, () => {
     const secret = "my-secret";
     const signature = await generateValidSignature(body, secret);
     const verify = createHmacVerifier({
-      headerName: "X-Hub-Signature-256",
+      headerName: SIGNATURE_HEADER_NAME,
       secret,
     });
 
@@ -235,7 +238,7 @@ describe(createHmacVerifier, () => {
     try {
       error = await captureThrownError(() =>
         createHmacVerifier({
-          headerName: "X-Hub-Signature-256",
+          headerName: SIGNATURE_HEADER_NAME,
           secret: "my-secret",
         }),
       );
@@ -273,7 +276,7 @@ describe("@zap-studio/webhooks browser runtime", () => {
     const secret = "browser-secret";
     const signature = await signBody(body, secret);
     const verify = createHmacVerifier({
-      headerName: "X-Hub-Signature-256",
+      headerName: SIGNATURE_HEADER_NAME,
       secret,
     });
 

@@ -3,22 +3,22 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useExperimentalContactPicker } from "./use-experimental-contact-picker.ts";
 
-function abortError(): Error {
+const abortError = (): Error => {
   const error = new Error("The user aborted the request.");
   error.name = "AbortError";
   return error;
-}
+};
 
-function setNavigatorContacts(
+const setNavigatorContacts = (
   contacts:
     | {
         getProperties: () => Promise<string[]>;
         select: (properties: string[], options?: { multiple?: boolean }) => Promise<unknown[]>;
       }
     | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "contacts", { configurable: true, value: contacts });
-}
+};
 
 describe(useExperimentalContactPicker, () => {
   it("reports supported: false when navigator.contacts is unavailable", () => {

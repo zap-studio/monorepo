@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useWebLock } from "./use-web-lock.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useWebLock("my-lock");
   return supported ? "true" : "false";
-}
+};
 
 describe(useWebLock, () => {
   it("renders without crashing during server rendering", () => {

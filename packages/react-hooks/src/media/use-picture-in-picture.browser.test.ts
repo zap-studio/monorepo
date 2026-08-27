@@ -4,26 +4,26 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { usePictureInPicture, type UsePictureInPictureResult } from "./use-picture-in-picture.ts";
 
-function setPictureInPictureSupport(supported: boolean) {
+const setPictureInPictureSupport = (supported: boolean) => {
   Object.defineProperty(document, "pictureInPictureEnabled", {
     configurable: true,
     value: supported,
   });
-}
+};
 
-function setPictureInPictureElement(element: Element | null) {
+const setPictureInPictureElement = (element: Element | null) => {
   Object.defineProperty(document, "pictureInPictureElement", {
     configurable: true,
     value: element,
   });
-}
+};
 
-function renderPipVideo() {
+const renderPipVideo = () => {
   let latest!: UsePictureInPictureResult<HTMLVideoElement>;
-  function TestComponent() {
+  const TestComponent = () => {
     latest = usePictureInPicture<HTMLVideoElement>();
     return createElement("video", { ref: latest.ref });
-  }
+  };
   const { unmount } = render(createElement(TestComponent));
   return {
     get current() {
@@ -31,7 +31,7 @@ function renderPipVideo() {
     },
     unmount,
   };
-}
+};
 
 afterEach(() => {
   setPictureInPictureSupport(true);

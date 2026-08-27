@@ -3,11 +3,11 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useDevicePixelRatio } from "./use-device-pixel-ratio.ts";
 
-function setDevicePixelRatio(value: number) {
+const setDevicePixelRatio = (value: number) => {
   Object.defineProperty(window, "devicePixelRatio", { configurable: true, value });
-}
+};
 
-function createMatchMediaMock() {
+const createMatchMediaMock = () => {
   const lists: { query: string; matchMediaList: MediaQueryList; listener?: () => void }[] = [];
 
   const matchMedia = vi.fn((query: string) => {
@@ -31,7 +31,7 @@ function createMatchMediaMock() {
     },
     matchMedia,
   };
-}
+};
 
 describe(useDevicePixelRatio, () => {
   it("reports the current window.devicePixelRatio", () => {

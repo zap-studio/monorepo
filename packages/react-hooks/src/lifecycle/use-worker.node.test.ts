@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useWorker } from "./use-worker.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useWorker(() => ({}) as Worker);
   return supported ? "true" : "false";
-}
+};
 
 describe(useWorker, () => {
   it("renders false on the server, before Worker can be read", () => {

@@ -3,6 +3,9 @@ import { describe, expect, it } from "vitest";
 
 import { useWindowMessage } from "./use-window-message.ts";
 
+const MESSAGE_ORIGIN = "https://example.com";
+const TRUSTED_ORIGIN = "https://trusted.example";
+
 describe(useWindowMessage, () => {
   it("starts with no lastMessage/lastError", () => {
     const { result } = renderHook(() => useWindowMessage<string>());
@@ -15,20 +18,18 @@ describe(useWindowMessage, () => {
     const { result } = renderHook(() => useWindowMessage<string>());
 
     await act(async () => {
-      window.dispatchEvent(
-        new MessageEvent("message", { data: "hello", origin: "https://example.com" }),
-      );
+      window.dispatchEvent(new MessageEvent("message", { data: "hello", origin: MESSAGE_ORIGIN }));
     });
 
     expect(result.current.lastMessage).toEqual({
       data: "hello",
-      origin: "https://example.com",
+      origin: MESSAGE_ORIGIN,
       source: null,
     });
   });
 
   it("filters out messages from other origins when originFilter is set", async () => {
-    const { result } = renderHook(() => useWindowMessage<string>("https://trusted.example"));
+    const { result } = renderHook(() => useWindowMessage<string>(TRUSTED_ORIGIN));
 
     await act(async () => {
       window.dispatchEvent(
@@ -39,7 +40,7 @@ describe(useWindowMessage, () => {
 
     await act(async () => {
       window.dispatchEvent(
-        new MessageEvent("message", { data: "trusted", origin: "https://trusted.example" }),
+        new MessageEvent("message", { data: "trusted", origin: TRUSTED_ORIGIN }),
       );
     });
     expect(result.current.lastMessage?.data).toBe("trusted");
@@ -52,7 +53,7 @@ describe(useWindowMessage, () => {
       { initialProps: { originFilter: undefined as string | undefined } },
     );
 
-    rerender({ originFilter: "https://trusted.example" });
+    rerender({ originFilter: TRUSTED_ORIGIN });
 
     await act(async () => {
       window.dispatchEvent(
@@ -65,7 +66,7 @@ describe(useWindowMessage, () => {
 
   it("records a messageerror event", async () => {
     const { result } = renderHook(() => useWindowMessage<string>());
-    const errorEvent = new MessageEvent("messageerror", { origin: "https://example.com" });
+    const errorEvent = new MessageEvent("messageerror", { origin: MESSAGE_ORIGIN });
 
     await act(async () => {
       window.dispatchEvent(errorEvent);
@@ -82,10 +83,10 @@ describe(useWindowMessage, () => {
     const calls: [unknown, string][] = [];
 
     act(() => {
-      result.current.postMessage(target as unknown as Window, "hi", "https://example.com");
+      result.current.postMessage(target as unknown as Window, "hi", MESSAGE_ORIGIN);
     });
 
-    expect(calls).toEqual([["hi", "https://example.com"]]);
+    expect(calls).toEqual([["hi", MESSAGE_ORIGIN]]);
   });
 
   it("removes the message/messageerror listeners on unmount", async () => {
@@ -94,7 +95,7 @@ describe(useWindowMessage, () => {
 
     await act(async () => {
       window.dispatchEvent(
-        new MessageEvent("message", { data: "after-unmount", origin: "https://example.com" }),
+        new MessageEvent("message", { data: "after-unmount", origin: MESSAGE_ORIGIN }),
       );
     });
 

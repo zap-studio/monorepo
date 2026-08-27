@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useExperimentalIdleDetector } from "./use-experimental-idle-detector.ts";
 
-function createIdleDetectorMock(state: { screenState: string; userState: string }) {
+const createIdleDetectorMock = (state: { screenState: string; userState: string }) => {
   const detector = new EventTarget() as EventTarget & {
     screenState: string;
     start: (options: { signal?: AbortSignal; threshold?: number }) => Promise<void>;
@@ -21,12 +21,12 @@ function createIdleDetectorMock(state: { screenState: string; userState: string 
       detector.dispatchEvent(new Event("change"));
     },
   };
-}
+};
 
-function stubIdleDetector(options: {
+const stubIdleDetector = (options: {
   detector?: ReturnType<typeof createIdleDetectorMock>["detector"];
   requestPermission: () => Promise<"denied" | "granted" | "prompt">;
-}) {
+}) => {
   const IdleDetectorCtor = Object.assign(
     vi.fn().mockImplementation(function IdleDetector() {
       return options.detector;
@@ -35,7 +35,7 @@ function stubIdleDetector(options: {
   );
   vi.stubGlobal("IdleDetector", IdleDetectorCtor);
   return IdleDetectorCtor;
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

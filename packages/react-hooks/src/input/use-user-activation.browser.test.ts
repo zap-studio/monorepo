@@ -3,12 +3,14 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { useUserActivation } from "./use-user-activation.ts";
 
-function setUserActivation(activation: { hasBeenActive: boolean; isActive: boolean } | undefined) {
+const setUserActivation = (
+  activation: { hasBeenActive: boolean; isActive: boolean } | undefined,
+) => {
   Object.defineProperty(navigator, "userActivation", {
     configurable: true,
     value: activation,
   });
-}
+};
 
 afterEach(() => {
   setUserActivation(undefined);

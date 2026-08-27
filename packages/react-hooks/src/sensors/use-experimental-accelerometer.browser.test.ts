@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useExperimentalAccelerometer } from "./use-experimental-accelerometer.ts";
 
-function createSensorMock(reading: { x: number; y: number; z: number }) {
+const createSensorMock = (reading: { x: number; y: number; z: number }) => {
   const sensor = new EventTarget() as EventTarget & {
     activated: boolean;
     onerror: ((event: Event & { error: DOMException }) => void) | null;
@@ -40,15 +40,15 @@ function createSensorMock(reading: { x: number; y: number; z: number }) {
     },
     sensor,
   };
-}
+};
 
-function stubAccelerometer(sensor?: ReturnType<typeof createSensorMock>["sensor"]) {
+const stubAccelerometer = (sensor?: ReturnType<typeof createSensorMock>["sensor"]) => {
   const AccelerometerCtor = vi.fn().mockImplementation(function Accelerometer() {
     return sensor;
   });
   vi.stubGlobal("Accelerometer", AccelerometerCtor);
   return AccelerometerCtor;
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

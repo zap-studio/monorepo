@@ -4,9 +4,9 @@ import { describe, expect, it } from "vitest";
 
 import { useStandaloneMode } from "./use-standalone-mode.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   return useStandaloneMode() ? "true" : "false";
-}
+};
 
 describe(useStandaloneMode, () => {
   it('renders "false" on the server, before matchMedia can run', () => {

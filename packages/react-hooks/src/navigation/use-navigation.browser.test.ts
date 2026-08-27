@@ -12,7 +12,7 @@ interface MockState {
   entries: NavigationHistoryEntry[];
 }
 
-function createNavigationMock(initial: MockState) {
+const createNavigationMock = (initial: MockState) => {
   const target = new EventTarget();
   let state = { ...initial };
 
@@ -31,18 +31,18 @@ function createNavigationMock(initial: MockState) {
       nav.dispatchEvent(new Event("currententrychange"));
     },
   };
-}
+};
 
-function setWindowNavigation(nav: Navigation | undefined) {
+const setWindowNavigation = (nav: Navigation | undefined) => {
   Object.defineProperty(window, "navigation", {
     configurable: true,
     get: () => nav,
   });
-}
+};
 
-function fakeEntry(url: string): NavigationHistoryEntry {
+const fakeEntry = (url: string): NavigationHistoryEntry => {
   return { url } as unknown as NavigationHistoryEntry;
-}
+};
 
 describe(useNavigation, () => {
   it("reports the current navigation state", () => {

@@ -4,9 +4,9 @@ import { describe, expect, it } from "vitest";
 
 import { useColorScheme } from "./use-color-scheme.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   return useColorScheme();
-}
+};
 
 describe(useColorScheme, () => {
   it('renders "light" on the server, before matchMedia can run', () => {

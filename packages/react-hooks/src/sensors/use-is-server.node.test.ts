@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useIsServer } from "./use-is-server.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const isServer = useIsServer();
   return isServer ? "true" : "false";
-}
+};
 
 describe(useIsServer, () => {
   it("renders true on the server", () => {

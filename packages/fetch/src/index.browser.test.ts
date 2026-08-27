@@ -3,13 +3,34 @@ import type { Logger } from "@zap-studio/logger";
 import { isStandardSchema } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
 import { type } from "arktype";
-import * as v from "valibot";
-import { number, object, string } from "valibot";
+import { array, boolean, email, number, object, optional, pipe, string } from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
 import { FetchError } from "./errors.ts";
 import { $fetch, api, createFetch, GLOBAL_DEFAULTS } from "./index.ts";
+
+const TEST_URL = "https://api.example.com/test";
+const USER_URL = "https://api.example.com/user";
+const NOT_A_NUMBER_VALUE = "not-a-number";
+const MISSING_URL = "https://api.example.com/missing";
+const BEARER_TOKEN_123 = "Bearer token123";
+const CUSTOM_HEADER_VALUE = "custom-value";
+const CONTENT_TYPE_HEADER = "Content-Type";
+const USER_1_URL = "https://api.example.com/users/1";
+const USERS_URL = "https://api.example.com/users";
+const BASE_URL_TRAILING_SLASH = "https://api.example.com/";
+const BASE_URL = "https://api.example.com";
+const OTHER_API_USERS_URL = "https://other-api.example.com/users";
+const BEARER_DEFAULT_TOKEN = "Bearer default-token";
+const BEARER_TOKEN = "Bearer token";
+const UPDATED_USER_NAME = "John Updated";
+const PATCHED_USER_NAME = "John Patched";
+const EMAIL_TYPE_TAG = "string.email";
+const MOCK_EMAIL = "test@example.com";
+const INVALID_EMAIL_VALUE = "not-an-email";
+const STATUS_URL = "https://api.example.com/status";
+const ITEMS_URL = "https://api.example.com/items";
 
 const createRecordingLogger = (): Logger & {
   calls: {
@@ -40,7 +61,7 @@ const createRecordingLogger = (): Logger & {
   };
 };
 
-async function captureRejectedError(run: () => Promise<unknown>): Promise<unknown> {
+const captureRejectedError = async (run: () => Promise<unknown>): Promise<unknown> => {
   try {
     await run();
   } catch (error) {
@@ -48,7 +69,7 @@ async function captureRejectedError(run: () => Promise<unknown>): Promise<unknow
   }
 
   throw new Error("Expected promise to reject");
-}
+};
 
 describe($fetch, () => {
   let fetchMock: ReturnType<typeof vi.fn>;
@@ -69,9 +90,9 @@ describe($fetch, () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await $fetch("https://api.example.com/test");
+      await $fetch(TEST_URL);
 
-      expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/test", expect.any(Object));
+      expect(fetchMock).toHaveBeenCalledWith(TEST_URL, expect.any(Object));
     });
 
     it("should return raw Response when no schema is provided", async () => {
@@ -80,7 +101,7 @@ describe($fetch, () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await $fetch("https://api.example.com/test");
+      const result = await $fetch(TEST_URL);
 
       expect(result).toBeInstanceOf(Response);
       expect(result).toBe(mockResponse);
@@ -92,14 +113,14 @@ describe($fetch, () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await $fetch("https://api.example.com/test", {
+      await $fetch(TEST_URL, {
         credentials: "include",
         method: "POST",
         mode: "cors",
       });
 
       expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/test",
+        TEST_URL,
         expect.objectContaining({
           credentials: "include",
           method: "POST",
@@ -117,12 +138,9 @@ describe($fetch, () => {
         });
         fetchMock.mockResolvedValue(mockResponse);
 
-        await $fetch("https://api.example.com/test", { method });
+        await $fetch(TEST_URL, { method });
 
-        expect(fetchMock).toHaveBeenCalledWith(
-          "https://api.example.com/test",
-          expect.objectContaining({ method }),
-        );
+        expect(fetchMock).toHaveBeenCalledWith(TEST_URL, expect.objectContaining({ method }));
 
         fetchMock.mockClear();
       }
@@ -142,7 +160,7 @@ describe($fetch, () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await $fetch("https://api.example.com/user", UserSchema);
+      const result = await $fetch(USER_URL, UserSchema);
 
       expect(result).toStrictEqual(userData);
     });
@@ -154,7 +172,7 @@ describe($fetch, () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await $fetch("https://api.example.com/user", UserSchema);
+      const result = await $fetch(USER_URL, UserSchema);
 
       expect(result).toStrictEqual(userData);
       expect(result).toHaveProperty("id", 42);
@@ -162,25 +180,23 @@ describe($fetch, () => {
     });
 
     it("should throw ValidationError when validation fails and throwOnValidationError is true (default)", async () => {
-      const invalidData = { id: "not-a-number", name: 123 };
+      const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
       const mockResponse = new Response(JSON.stringify(invalidData), {
         status: 200,
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await expect($fetch("https://api.example.com/user", UserSchema)).rejects.toThrow(
-        ValidationError,
-      );
+      await expect($fetch(USER_URL, UserSchema)).rejects.toThrow(ValidationError);
     });
 
     it("should return result object with issues when validation fails and throwOnValidationError is false", async () => {
-      const invalidData = { id: "not-a-number", name: 123 };
+      const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
       const mockResponse = new Response(JSON.stringify(invalidData), {
         status: 200,
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await $fetch("https://api.example.com/user", UserSchema, {
+      const result = await $fetch(USER_URL, UserSchema, {
         throwOnValidationError: false,
       });
 
@@ -195,7 +211,7 @@ describe($fetch, () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await $fetch("https://api.example.com/user", UserSchema, {
+      const result = await $fetch(USER_URL, UserSchema, {
         throwOnValidationError: false,
       });
 
@@ -211,7 +227,7 @@ describe($fetch, () => {
       const jsonSpy = vi.spyOn(mockResponse, "json");
       fetchMock.mockResolvedValue(mockResponse);
 
-      await $fetch("https://api.example.com/user", UserSchema);
+      await $fetch(USER_URL, UserSchema);
 
       expect(jsonSpy).toHaveBeenCalledWith();
     });
@@ -225,7 +241,7 @@ describe($fetch, () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await expect($fetch("https://api.example.com/missing")).rejects.toThrow(FetchError);
+      await expect($fetch(MISSING_URL)).rejects.toThrow(FetchError);
     });
 
     it("should return Response without throwing when throwOnFetchError is false", async () => {
@@ -235,7 +251,7 @@ describe($fetch, () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await $fetch("https://api.example.com/missing", {
+      const result = await $fetch(MISSING_URL, {
         throwOnFetchError: false,
       });
 
@@ -288,16 +304,16 @@ describe($fetch, () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await $fetch("https://api.example.com/test", {
+      await $fetch(TEST_URL, {
         headers: {
-          Authorization: "Bearer token123",
-          "X-Custom-Header": "custom-value",
+          Authorization: BEARER_TOKEN_123,
+          "X-Custom-Header": CUSTOM_HEADER_VALUE,
         },
       });
 
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe("Bearer token123");
-      expect(calledHeaders.get("X-Custom-Header")).toBe("custom-value");
+      expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN_123);
+      expect(calledHeaders.get("X-Custom-Header")).toBe(CUSTOM_HEADER_VALUE);
     });
 
     it("should auto-set Content-Type to application/json when schema and json are provided", async () => {
@@ -307,13 +323,13 @@ describe($fetch, () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await $fetch("https://api.example.com/user", UserSchema, {
+      await $fetch(USER_URL, UserSchema, {
         json: { name: "New User" },
         method: "POST",
       });
 
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Content-Type")).toBe("application/json");
+      expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json");
     });
 
     it("should not override existing Content-Type header", async () => {
@@ -323,16 +339,16 @@ describe($fetch, () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await $fetch("https://api.example.com/user", UserSchema, {
+      await $fetch(USER_URL, UserSchema, {
         headers: {
-          "Content-Type": "application/json; charset=utf-8",
+          [CONTENT_TYPE_HEADER]: "application/json; charset=utf-8",
         },
         json: { name: "New User" },
         method: "POST",
       });
 
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Content-Type")).toBe("application/json; charset=utf-8");
+      expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json; charset=utf-8");
     });
   });
 
@@ -350,7 +366,7 @@ describe($fetch, () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const bodyData = { email: "user@example.com", name: "New User" };
-      await $fetch("https://api.example.com/user", UserSchema, {
+      await $fetch(USER_URL, UserSchema, {
         json: bodyData,
         method: "POST",
       });
@@ -366,7 +382,7 @@ describe($fetch, () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const bodyData = { email: "user@example.com", name: "New User" };
-      await $fetch("https://api.example.com/user", {
+      await $fetch(USER_URL, {
         json: bodyData,
         method: "POST",
       });
@@ -374,7 +390,7 @@ describe($fetch, () => {
       const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
       expect(calledBody).toBe(JSON.stringify(bodyData));
       const calledHeaders = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
-      expect(calledHeaders.get("Content-Type")).toBe("application/json");
+      expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json");
     });
 
     it("should stringify array json when no schema is provided", async () => {
@@ -384,7 +400,7 @@ describe($fetch, () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const bodyData = [{ token_id: "token_123" }];
-      await $fetch("https://api.example.com/user", {
+      await $fetch(USER_URL, {
         json: bodyData,
         method: "POST",
       });
@@ -392,7 +408,7 @@ describe($fetch, () => {
       const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
       expect(calledBody).toBe(JSON.stringify(bodyData));
       const calledHeaders = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
-      expect(calledHeaders.get("Content-Type")).toBe("application/json");
+      expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json");
     });
 
     it("should not stringify body when no schema is provided", async () => {
@@ -470,12 +486,12 @@ describe(createFetch, () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const { $fetch: customFetch } = createFetch({
-        baseURL: "https://api.example.com",
+        baseURL: BASE_URL,
       });
 
       await customFetch("users");
 
-      expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", expect.any(Object));
+      expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
     });
 
     it("should handle baseURL with trailing slash", async () => {
@@ -485,12 +501,12 @@ describe(createFetch, () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const { $fetch: customFetch } = createFetch({
-        baseURL: "https://api.example.com/",
+        baseURL: BASE_URL_TRAILING_SLASH,
       });
 
       await customFetch("users");
 
-      expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", expect.any(Object));
+      expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
     });
 
     it("should handle input with leading slash", async () => {
@@ -500,12 +516,12 @@ describe(createFetch, () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const { $fetch: customFetch } = createFetch({
-        baseURL: "https://api.example.com",
+        baseURL: BASE_URL,
       });
 
       await customFetch("/users");
 
-      expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", expect.any(Object));
+      expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
     });
 
     it("should handle both baseURL with trailing and input with leading slash", async () => {
@@ -515,12 +531,12 @@ describe(createFetch, () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const { $fetch: customFetch } = createFetch({
-        baseURL: "https://api.example.com/",
+        baseURL: BASE_URL_TRAILING_SLASH,
       });
 
       await customFetch("/users");
 
-      expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", expect.any(Object));
+      expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
     });
 
     it("should not modify absolute URLs", async () => {
@@ -530,15 +546,12 @@ describe(createFetch, () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const { $fetch: customFetch } = createFetch({
-        baseURL: "https://api.example.com",
+        baseURL: BASE_URL,
       });
 
-      await customFetch("https://other-api.example.com/users");
+      await customFetch(OTHER_API_USERS_URL);
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        "https://other-api.example.com/users",
-        expect.any(Object),
-      );
+      expect(fetchMock).toHaveBeenCalledWith(OTHER_API_USERS_URL, expect.any(Object));
     });
 
     it("should resolve protocol-relative URLs with the base protocol", async () => {
@@ -548,15 +561,12 @@ describe(createFetch, () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const { $fetch: customFetch } = createFetch({
-        baseURL: "https://api.example.com",
+        baseURL: BASE_URL,
       });
 
       await customFetch("//other-api.example.com/users");
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        "https://other-api.example.com/users",
-        expect.any(Object),
-      );
+      expect(fetchMock).toHaveBeenCalledWith(OTHER_API_USERS_URL, expect.any(Object));
     });
 
     it("should work without baseURL", async () => {
@@ -567,9 +577,9 @@ describe(createFetch, () => {
 
       const { $fetch: customFetch } = createFetch();
 
-      await customFetch("https://api.example.com/users");
+      await customFetch(USERS_URL);
 
-      expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", expect.any(Object));
+      expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
     });
   });
 
@@ -582,15 +592,15 @@ describe(createFetch, () => {
 
       const { $fetch: customFetch } = createFetch({
         headers: {
-          Authorization: "Bearer default-token",
+          Authorization: BEARER_DEFAULT_TOKEN,
           "X-API-Key": "api-key-123",
         },
       });
 
-      await customFetch("https://api.example.com/users");
+      await customFetch(USERS_URL);
 
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe("Bearer default-token");
+      expect(calledHeaders.get("Authorization")).toBe(BEARER_DEFAULT_TOKEN);
       expect(calledHeaders.get("X-API-Key")).toBe("api-key-123");
     });
 
@@ -602,11 +612,11 @@ describe(createFetch, () => {
 
       const { $fetch: customFetch } = createFetch({
         headers: {
-          Authorization: "Bearer default-token",
+          Authorization: BEARER_DEFAULT_TOKEN,
         },
       });
 
-      await customFetch("https://api.example.com/users", {
+      await customFetch(USERS_URL, {
         headers: {
           Authorization: "Bearer override-token",
         },
@@ -624,19 +634,19 @@ describe(createFetch, () => {
 
       const { $fetch: customFetch } = createFetch({
         headers: {
-          Authorization: "Bearer default-token",
+          Authorization: BEARER_DEFAULT_TOKEN,
           "X-Default-Header": "default-value",
         },
       });
 
-      await customFetch("https://api.example.com/users", {
+      await customFetch(USERS_URL, {
         headers: {
           "X-Request-Header": "request-value",
         },
       });
 
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe("Bearer default-token");
+      expect(calledHeaders.get("Authorization")).toBe(BEARER_DEFAULT_TOKEN);
       expect(calledHeaders.get("X-Default-Header")).toBe("default-value");
       expect(calledHeaders.get("X-Request-Header")).toBe("request-value");
     });
@@ -656,7 +666,7 @@ describe(createFetch, () => {
         },
       });
 
-      await customFetch("https://api.example.com/users");
+      await customFetch(USERS_URL);
 
       expect(fetchMock).toHaveBeenCalledWith(
         "https://api.example.com/users?locale=en&page=2",
@@ -675,7 +685,7 @@ describe(createFetch, () => {
         throwOnFetchError: false,
       });
 
-      const result = await customFetch("https://api.example.com/missing");
+      const result = await customFetch(MISSING_URL);
 
       expect(result).toBeInstanceOf(Response);
       expect(result.status).toBe(404);
@@ -686,7 +696,7 @@ describe(createFetch, () => {
         id: number(),
         name: string(),
       });
-      const invalidData = { id: "not-a-number", name: 123 };
+      const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
       const mockResponse = new Response(JSON.stringify(invalidData), {
         status: 200,
       });
@@ -696,7 +706,7 @@ describe(createFetch, () => {
         throwOnValidationError: false,
       });
 
-      const result = await customFetch("https://api.example.com/user", UserSchema);
+      const result = await customFetch(USER_URL, UserSchema);
 
       expect(result).toHaveProperty("issues");
     });
@@ -713,7 +723,7 @@ describe(createFetch, () => {
       });
 
       await expect(
-        customFetch("https://api.example.com/missing", {
+        customFetch(MISSING_URL, {
           throwOnFetchError: true,
         }),
       ).rejects.toThrow(FetchError);
@@ -724,7 +734,7 @@ describe(createFetch, () => {
         id: number(),
         name: string(),
       });
-      const invalidData = { id: "not-a-number", name: 123 };
+      const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
       const mockResponse = new Response(JSON.stringify(invalidData), {
         status: 200,
       });
@@ -735,7 +745,7 @@ describe(createFetch, () => {
       });
 
       await expect(
-        customFetch("https://api.example.com/user", UserSchema, {
+        customFetch(USER_URL, UserSchema, {
           throwOnValidationError: true,
         }),
       ).rejects.toThrow(ValidationError);
@@ -755,7 +765,7 @@ describe(createFetch, () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const { $fetch: customFetch } = createFetch({
-        baseURL: "https://api.example.com",
+        baseURL: BASE_URL,
       });
 
       const result = await customFetch("/user", UserSchema);
@@ -770,7 +780,7 @@ describe(createFetch, () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const { $fetch: customFetch } = createFetch({
-        baseURL: "https://api.example.com",
+        baseURL: BASE_URL,
       });
 
       const result = await customFetch("/test");
@@ -786,9 +796,9 @@ describe(createFetch, () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const { $fetch: customFetch } = createFetch({
-        baseURL: "https://api.example.com",
+        baseURL: BASE_URL,
         headers: {
-          Authorization: "Bearer token",
+          Authorization: BEARER_TOKEN,
         },
       });
 
@@ -800,10 +810,10 @@ describe(createFetch, () => {
       const firstCallHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
       const secondCallHeaders = fetchMock.mock.calls[1]?.[1]?.headers as Headers;
 
-      expect(firstCallHeaders.get("Authorization")).toBe("Bearer token");
-      expect(secondCallHeaders.get("Authorization")).toBe("Bearer token");
+      expect(firstCallHeaders.get("Authorization")).toBe(BEARER_TOKEN);
+      expect(secondCallHeaders.get("Authorization")).toBe(BEARER_TOKEN);
 
-      expect(fetchMock.mock.calls[0]?.[0]).toBe("https://api.example.com/users");
+      expect(fetchMock.mock.calls[0]?.[0]).toBe(USERS_URL);
       expect(fetchMock.mock.calls[1]?.[0]).toBe("https://api.example.com/posts");
     });
   });
@@ -833,9 +843,9 @@ describe(createFetch, () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const { api: customApi } = createFetch({
-        baseURL: "https://api.example.com",
+        baseURL: BASE_URL,
         headers: {
-          Authorization: "Bearer token",
+          Authorization: BEARER_TOKEN,
         },
       });
 
@@ -843,14 +853,14 @@ describe(createFetch, () => {
 
       expect(result).toStrictEqual(userData);
       expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users/1",
+        USER_1_URL,
         expect.objectContaining({
           method: "GET",
         }),
       );
 
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe("Bearer token");
+      expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
     });
   });
 });
@@ -880,10 +890,10 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await api.get("https://api.example.com/users/1", UserSchema);
+      await api.get(USER_1_URL, UserSchema);
 
       expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users/1",
+        USER_1_URL,
         expect.objectContaining({ method: "GET" }),
       );
     });
@@ -895,7 +905,7 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await api.get("https://api.example.com/users/1", UserSchema);
+      const result = await api.get(USER_1_URL, UserSchema);
 
       expect(result).toStrictEqual(userData);
     });
@@ -907,20 +917,20 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await api.get("https://api.example.com/users/1", UserSchema, {
+      await api.get(USER_1_URL, UserSchema, {
         credentials: "include",
-        headers: { Authorization: "Bearer token123" },
+        headers: { Authorization: BEARER_TOKEN_123 },
       });
 
       expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users/1",
+        USER_1_URL,
         expect.objectContaining({
           credentials: "include",
           method: "GET",
         }),
       );
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe("Bearer token123");
+      expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN_123);
     });
   });
 
@@ -932,10 +942,10 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await api.post("https://api.example.com/users", UserSchema);
+      await api.post(USERS_URL, UserSchema);
 
       expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users",
+        USERS_URL,
         expect.objectContaining({ method: "POST" }),
       );
     });
@@ -947,7 +957,7 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await api.post("https://api.example.com/users", UserSchema);
+      const result = await api.post(USERS_URL, UserSchema);
 
       expect(result).toStrictEqual(userData);
     });
@@ -960,7 +970,7 @@ describe("api convenience methods", () => {
       fetchMock.mockResolvedValue(mockResponse);
 
       const bodyData = { name: "John" };
-      await api.post("https://api.example.com/users", UserSchema, {
+      await api.post(USERS_URL, UserSchema, {
         json: bodyData,
       });
 
@@ -975,60 +985,60 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await api.post("https://api.example.com/users", UserSchema, {
+      await api.post(USERS_URL, UserSchema, {
         credentials: "same-origin",
-        headers: { "X-Custom-Header": "custom-value" },
+        headers: { "X-Custom-Header": CUSTOM_HEADER_VALUE },
       });
 
       expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users",
+        USERS_URL,
         expect.objectContaining({
           credentials: "same-origin",
           method: "POST",
         }),
       );
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("X-Custom-Header")).toBe("custom-value");
+      expect(calledHeaders.get("X-Custom-Header")).toBe(CUSTOM_HEADER_VALUE);
     });
   });
 
   describe("api.put", () => {
     it("should make a PUT request", async () => {
-      const userData = { id: 1, name: "John Updated" };
+      const userData = { id: 1, name: UPDATED_USER_NAME };
       const mockResponse = new Response(JSON.stringify(userData), {
         status: 200,
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await api.put("https://api.example.com/users/1", UserSchema);
+      await api.put(USER_1_URL, UserSchema);
 
       expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users/1",
+        USER_1_URL,
         expect.objectContaining({ method: "PUT" }),
       );
     });
 
     it("should validate response against schema", async () => {
-      const userData = { id: 1, name: "John Updated" };
+      const userData = { id: 1, name: UPDATED_USER_NAME };
       const mockResponse = new Response(JSON.stringify(userData), {
         status: 200,
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await api.put("https://api.example.com/users/1", UserSchema);
+      const result = await api.put(USER_1_URL, UserSchema);
 
       expect(result).toStrictEqual(userData);
     });
 
     it("should handle json request bodies", async () => {
-      const userData = { id: 1, name: "John Updated" };
+      const userData = { id: 1, name: UPDATED_USER_NAME };
       const mockResponse = new Response(JSON.stringify(userData), {
         status: 200,
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const bodyData = { name: "John Updated" };
-      await api.put("https://api.example.com/users/1", UserSchema, {
+      const bodyData = { name: UPDATED_USER_NAME };
+      await api.put(USER_1_URL, UserSchema, {
         json: bodyData,
       });
 
@@ -1037,66 +1047,66 @@ describe("api convenience methods", () => {
     });
 
     it("should pass additional options to fetch", async () => {
-      const userData = { id: 1, name: "John Updated" };
+      const userData = { id: 1, name: UPDATED_USER_NAME };
       const mockResponse = new Response(JSON.stringify(userData), {
         status: 200,
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await api.put("https://api.example.com/users/1", UserSchema, {
-        headers: { Authorization: "Bearer token" },
+      await api.put(USER_1_URL, UserSchema, {
+        headers: { Authorization: BEARER_TOKEN },
         mode: "cors",
       });
 
       expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users/1",
+        USER_1_URL,
         expect.objectContaining({
           method: "PUT",
           mode: "cors",
         }),
       );
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe("Bearer token");
+      expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
     });
   });
 
   describe("api.patch", () => {
     it("should make a PATCH request", async () => {
-      const userData = { id: 1, name: "John Patched" };
+      const userData = { id: 1, name: PATCHED_USER_NAME };
       const mockResponse = new Response(JSON.stringify(userData), {
         status: 200,
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await api.patch("https://api.example.com/users/1", UserSchema);
+      await api.patch(USER_1_URL, UserSchema);
 
       expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users/1",
+        USER_1_URL,
         expect.objectContaining({ method: "PATCH" }),
       );
     });
 
     it("should validate response against schema", async () => {
-      const userData = { id: 1, name: "John Patched" };
+      const userData = { id: 1, name: PATCHED_USER_NAME };
       const mockResponse = new Response(JSON.stringify(userData), {
         status: 200,
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await api.patch("https://api.example.com/users/1", UserSchema);
+      const result = await api.patch(USER_1_URL, UserSchema);
 
       expect(result).toStrictEqual(userData);
     });
 
     it("should handle json request bodies", async () => {
-      const userData = { id: 1, name: "John Patched" };
+      const userData = { id: 1, name: PATCHED_USER_NAME };
       const mockResponse = new Response(JSON.stringify(userData), {
         status: 200,
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const bodyData = { name: "John Patched" };
-      await api.patch("https://api.example.com/users/1", UserSchema, {
+      const bodyData = { name: PATCHED_USER_NAME };
+      await api.patch(USER_1_URL, UserSchema, {
         json: bodyData,
       });
 
@@ -1105,19 +1115,19 @@ describe("api convenience methods", () => {
     });
 
     it("should pass additional options to fetch", async () => {
-      const userData = { id: 1, name: "John Patched" };
+      const userData = { id: 1, name: PATCHED_USER_NAME };
       const mockResponse = new Response(JSON.stringify(userData), {
         status: 200,
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await api.patch("https://api.example.com/users/1", UserSchema, {
+      await api.patch(USER_1_URL, UserSchema, {
         cache: "no-store",
         headers: { "X-Patch-Header": "patch-value" },
       });
 
       expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users/1",
+        USER_1_URL,
         expect.objectContaining({
           cache: "no-store",
           method: "PATCH",
@@ -1136,10 +1146,10 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await api.delete("https://api.example.com/users/1", UserSchema);
+      await api.delete(USER_1_URL, UserSchema);
 
       expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users/1",
+        USER_1_URL,
         expect.objectContaining({ method: "DELETE" }),
       );
     });
@@ -1151,7 +1161,7 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await api.delete("https://api.example.com/users/1", UserSchema);
+      const result = await api.delete(USER_1_URL, UserSchema);
 
       expect(result).toStrictEqual(userData);
     });
@@ -1163,20 +1173,20 @@ describe("api convenience methods", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await api.delete("https://api.example.com/users/1", UserSchema, {
+      await api.delete(USER_1_URL, UserSchema, {
         credentials: "include",
-        headers: { Authorization: "Bearer token" },
+        headers: { Authorization: BEARER_TOKEN },
       });
 
       expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users/1",
+        USER_1_URL,
         expect.objectContaining({
           credentials: "include",
           method: "DELETE",
         }),
       );
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe("Bearer token");
+      expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
     });
   });
 
@@ -1190,21 +1200,19 @@ describe("api convenience methods", () => {
 
       // All api methods require a schema - testing with TypeScript compile-time check
       // The schema is always the second parameter
-      const result = await api.get("https://api.example.com/users/1", UserSchema);
+      const result = await api.get(USER_1_URL, UserSchema);
 
       expect(result).toStrictEqual(userData);
     });
 
     it("should throw ValidationError on validation failure (default)", async () => {
-      const invalidData = { id: "not-a-number", name: 123 };
+      const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
       const mockResponse = new Response(JSON.stringify(invalidData), {
         status: 200,
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await expect(api.get("https://api.example.com/users/1", UserSchema)).rejects.toThrow(
-        ValidationError,
-      );
+      await expect(api.get(USER_1_URL, UserSchema)).rejects.toThrow(ValidationError);
     });
 
     it("should throw FetchError on non-ok response (default)", async () => {
@@ -1220,13 +1228,13 @@ describe("api convenience methods", () => {
     });
 
     it("should respect throwOnValidationError option", async () => {
-      const invalidData = { id: "not-a-number", name: 123 };
+      const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
       const mockResponse = new Response(JSON.stringify(invalidData), {
         status: 200,
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      const result = await api.get("https://api.example.com/users/1", UserSchema, {
+      const result = await api.get(USER_1_URL, UserSchema, {
         throwOnValidationError: false,
       });
 
@@ -1276,14 +1284,14 @@ describe("request input normalization", () => {
   it("accepts URL instances as input", async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
 
-    await $fetch(new URL("/users", "https://api.example.com"));
+    await $fetch(new URL("/users", BASE_URL));
 
-    expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", expect.any(Object));
+    expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
   });
 
   it("accepts a Request input with no options", async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
-    const request = new Request("https://api.example.com/users", {
+    const request = new Request(USERS_URL, {
       headers: { A: "1" },
       method: "POST",
     });
@@ -1292,12 +1300,12 @@ describe("request input normalization", () => {
 
     const [sentRequest] = fetchMock.mock.calls[0] as [Request, RequestInit];
     expect(sentRequest).toBeInstanceOf(Request);
-    expect(sentRequest.url).toBe("https://api.example.com/users");
+    expect(sentRequest.url).toBe(USERS_URL);
   });
 
   it("clones Request inputs, merges headers, and lets request-level options win", async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
-    const request = new Request("https://api.example.com/users", {
+    const request = new Request(USERS_URL, {
       headers: { A: "1", B: "2" },
       method: "POST",
     });
@@ -1309,7 +1317,7 @@ describe("request input normalization", () => {
 
     expect(sentRequest).toBeInstanceOf(Request);
     expect(sentRequest).not.toBe(request);
-    expect(sentRequest.url).toBe("https://api.example.com/users");
+    expect(sentRequest.url).toBe(USERS_URL);
     expect(init.method).toBe("PATCH");
     expect(headers.get("A")).toBe("1");
     expect(headers.get("B")).toBe("20");
@@ -1333,25 +1341,25 @@ describe("json and body conflicts", () => {
     const options = { body: "raw", json: { name: "Zap" }, method: "POST" };
 
     // @ts-expect-error body and json are intentionally both provided to test the runtime guard.
-    await expect($fetch("https://api.example.com/users", options)).rejects.toThrow(TypeError);
+    await expect($fetch(USERS_URL, options)).rejects.toThrow(TypeError);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("sets Content-Type when default headers exist without one", async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
     const { $fetch: customFetch } = createFetch({
-      headers: { Authorization: "Bearer token" },
+      headers: { Authorization: BEARER_TOKEN },
     });
 
-    await customFetch("https://api.example.com/users", {
+    await customFetch(USERS_URL, {
       json: { name: "Zap" },
       method: "POST",
     });
 
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
     const headers = new Headers(init.headers);
-    expect(headers.get("Authorization")).toBe("Bearer token");
-    expect(headers.get("Content-Type")).toBe("application/json");
+    expect(headers.get("Authorization")).toBe(BEARER_TOKEN);
+    expect(headers.get(CONTENT_TYPE_HEADER)).toBe("application/json");
   });
 });
 
@@ -1370,7 +1378,7 @@ describe("URL and search param resolution", () => {
   it("merges default, URL, and request search params in that order", async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
     const { $fetch: customFetch } = createFetch({
-      baseURL: "https://api.example.com",
+      baseURL: BASE_URL,
       searchParams: { locale: "en", page: "1" },
     });
 
@@ -1386,7 +1394,7 @@ describe("URL and search param resolution", () => {
   it("accepts native URLSearchParams constructor input", async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
 
-    await $fetch("https://api.example.com/users", {
+    await $fetch(USERS_URL, {
       searchParams: new URLSearchParams({ q: "test" }),
     });
 
@@ -1414,7 +1422,7 @@ describe("URL and search param resolution", () => {
   it("merges search params before a fragment when the path already has a query", async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
     const { $fetch: customFetch } = createFetch({
-      baseURL: "https://api.example.com/",
+      baseURL: BASE_URL_TRAILING_SLASH,
     });
 
     await customFetch("items?sort=name#results", {
@@ -1447,23 +1455,23 @@ describe("method helper", () => {
   it("supports raw Response calls without a schema", async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
 
-    const result = await api.delete("https://api.example.com/users/1", {
+    const result = await api.delete(USER_1_URL, {
       headers: { A: "1" },
     });
 
     expect(result).toBeInstanceOf(Response);
     expect(fetchMock).toHaveBeenCalledWith(
-      "https://api.example.com/users/1",
+      USER_1_URL,
       expect.objectContaining({ method: "DELETE" }),
     );
   });
 
   it("preserves throwOnValidationError: true when explicitly provided", async () => {
-    const invalidData = { id: "not-a-number", name: 123 };
+    const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
     fetchMock.mockResolvedValue(new Response(JSON.stringify(invalidData)));
 
     await expect(
-      api.put("https://api.example.com/users/1", UserSchema, {
+      api.put(USER_1_URL, UserSchema, {
         throwOnValidationError: true,
       }),
     ).rejects.toThrow(ValidationError);
@@ -1473,12 +1481,12 @@ describe("method helper", () => {
     const userData = { id: 1, name: "John" };
     fetchMock.mockResolvedValue(new Response(JSON.stringify(userData)));
 
-    await api.patch("https://api.example.com/users/1", UserSchema, {
+    await api.patch(USER_1_URL, UserSchema, {
       method: "POST",
     } as never);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      "https://api.example.com/users/1",
+      USER_1_URL,
       expect.objectContaining({ method: "PATCH" }),
     );
   });
@@ -1501,7 +1509,7 @@ describe("@zap-studio/fetch browser runtime", () => {
 
   it("normalizes native Request inputs without losing browser Headers semantics", async () => {
     fetchMock.mockResolvedValue(new Response("ok"));
-    const request = new Request("https://api.example.com/users", {
+    const request = new Request(USERS_URL, {
       headers: { A: "1", B: "2" },
       method: "POST",
     });
@@ -1513,7 +1521,7 @@ describe("@zap-studio/fetch browser runtime", () => {
 
     expect(sentRequest).toBeInstanceOf(Request);
     expect(sentRequest).not.toBe(request);
-    expect(sentRequest.url).toBe("https://api.example.com/users");
+    expect(sentRequest.url).toBe(USERS_URL);
     expect(init.method).toBe("PATCH");
     expect([headers.get("A"), headers.get("B"), headers.get("C")]).toStrictEqual(["1", "20", "3"]);
   });
@@ -1547,7 +1555,7 @@ describe("@zap-studio/fetch browser runtime", () => {
   it("resolves browser URL and URLSearchParams inputs consistently", async () => {
     fetchMock.mockResolvedValue(new Response("ok"));
     const { $fetch: customFetch } = createFetch({
-      baseURL: "https://api.example.com",
+      baseURL: BASE_URL,
     });
 
     await customFetch("users#team", { searchParams: { q: "zap" } });
@@ -1567,14 +1575,14 @@ describe("@zap-studio/fetch browser runtime", () => {
     });
     fetchMock.mockResolvedValue(response);
 
-    const result = await $fetch("https://api.example.com/users", {
+    const result = await $fetch(USERS_URL, {
       headers: { Accept: "application/json" },
     });
 
     expect(result).toBe(response);
     expect(result).toBeInstanceOf(Response);
     expect(fetchMock).toHaveBeenCalledWith(
-      "https://api.example.com/users",
+      USERS_URL,
       expect.objectContaining({
         headers: expect.any(Headers),
       }),
@@ -1585,7 +1593,7 @@ describe("@zap-studio/fetch browser runtime", () => {
     fetchMock.mockResolvedValue(new Response("ok"));
 
     await $fetch(
-      new Request("https://api.example.com/users", {
+      new Request(USERS_URL, {
         headers: { A: "1" },
         method: "POST",
       }),
@@ -1597,14 +1605,14 @@ describe("@zap-studio/fetch browser runtime", () => {
     const firstCall = fetchMock.mock.calls[0];
     const [request, init] = firstCall ?? [];
     expect(request).toBeInstanceOf(Request);
-    expect((request as Request).url).toBe("https://api.example.com/users");
+    expect((request as Request).url).toBe(USERS_URL);
     expect(new Headers((init as RequestInit).headers).get("B")).toBe("2");
   });
 
   it("serializes json bodies and preserves explicit content type casing", async () => {
     fetchMock.mockResolvedValue(new Response("ok"));
 
-    await $fetch("https://api.example.com/users", {
+    await $fetch(USERS_URL, {
       headers: { "content-type": "application/vnd.api+json" },
       json: { name: "Zap" },
       method: "POST",
@@ -1621,8 +1629,8 @@ describe("@zap-studio/fetch browser runtime", () => {
   it("applies browser fetch defaults from createFetch", async () => {
     fetchMock.mockResolvedValue(new Response("ok"));
     const client = createFetch({
-      baseURL: "https://api.example.com",
-      headers: { Authorization: "Bearer token" },
+      baseURL: BASE_URL,
+      headers: { Authorization: BEARER_TOKEN },
     });
 
     await client.$fetch("/users", {
@@ -1634,7 +1642,7 @@ describe("@zap-studio/fetch browser runtime", () => {
     const [url, init] = firstCall ?? [];
     const headers = new Headers((init as RequestInit).headers);
     expect(url).toBe("https://api.example.com/users?page=1");
-    expect(headers.get("authorization")).toBe("Bearer token");
+    expect(headers.get("authorization")).toBe(BEARER_TOKEN);
     expect(headers.get("accept")).toBe("application/json");
   });
 });
@@ -1666,12 +1674,12 @@ describe("$fetch with ArkType schemas", () => {
 
   it("should validate with ArkType object schema", async () => {
     const schema = type({
-      email: "string.email",
+      email: EMAIL_TYPE_TAG,
       id: "number",
       name: "string",
     });
 
-    const mockData = { email: "test@example.com", id: 1, name: "Test User" };
+    const mockData = { email: MOCK_EMAIL, id: 1, name: "Test User" };
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
@@ -1681,18 +1689,18 @@ describe("$fetch with ArkType schemas", () => {
       statusText: "OK",
     });
 
-    const result = await $fetch("https://api.example.com/user", schema);
+    const result = await $fetch(USER_URL, schema);
 
     expect(result).toStrictEqual(mockData);
   });
 
   it("should throw ValidationError on invalid data with ArkType", async () => {
     const schema = type({
-      email: "string.email",
+      email: EMAIL_TYPE_TAG,
       id: "number",
     });
 
-    const invalidData = { email: "not-an-email", id: 1 };
+    const invalidData = { email: INVALID_EMAIL_VALUE, id: 1 };
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
@@ -1702,16 +1710,16 @@ describe("$fetch with ArkType schemas", () => {
       statusText: "OK",
     });
 
-    await expect($fetch("https://api.example.com/user", schema)).rejects.toThrow(ValidationError);
+    await expect($fetch(USER_URL, schema)).rejects.toThrow(ValidationError);
   });
 
   it("should return validation result when throwOnValidationError is false with ArkType", async () => {
     const schema = type({
-      email: "string.email",
+      email: EMAIL_TYPE_TAG,
       id: "number",
     });
 
-    const invalidData = { email: "not-an-email", id: 1 };
+    const invalidData = { email: INVALID_EMAIL_VALUE, id: 1 };
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
@@ -1721,7 +1729,7 @@ describe("$fetch with ArkType schemas", () => {
       statusText: "OK",
     });
 
-    const result = await $fetch("https://api.example.com/user", schema, {
+    const result = await $fetch(USER_URL, schema, {
       throwOnValidationError: false,
     });
 
@@ -1731,11 +1739,11 @@ describe("$fetch with ArkType schemas", () => {
 
   it("should return successful validation result when data is valid and throwOnValidationError is false", async () => {
     const schema = type({
-      email: "string.email",
+      email: EMAIL_TYPE_TAG,
       id: "number",
     });
 
-    const validData = { email: "test@example.com", id: 1 };
+    const validData = { email: MOCK_EMAIL, id: 1 };
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
@@ -1745,7 +1753,7 @@ describe("$fetch with ArkType schemas", () => {
       statusText: "OK",
     });
 
-    const result = await $fetch("https://api.example.com/user", schema, {
+    const result = await $fetch(USER_URL, schema, {
       throwOnValidationError: false,
     });
 
@@ -1773,7 +1781,7 @@ describe("$fetch with ArkType schemas", () => {
       statusText: "OK",
     });
 
-    const result = await $fetch("https://api.example.com/users", schema);
+    const result = await $fetch(USERS_URL, schema);
 
     expect(result).toStrictEqual(mockData);
   });
@@ -1790,7 +1798,7 @@ describe("$fetch with ArkType schemas", () => {
       statusText: "OK",
     });
 
-    const result = await api.get("https://api.example.com/status", schema);
+    const result = await api.get(STATUS_URL, schema);
 
     expect(result).toStrictEqual(mockData);
   });
@@ -1808,7 +1816,7 @@ describe("$fetch with ArkType schemas", () => {
       statusText: "Created",
     });
 
-    const result = await api.post("https://api.example.com/items", schema, {
+    const result = await api.post(ITEMS_URL, schema, {
       body: JSON.stringify(body),
     });
 
@@ -1857,13 +1865,13 @@ describe("$fetch with ArkType schemas", () => {
 
 describe("Valibot Standard Schema compatibility", () => {
   it("should expose ~standard property", () => {
-    const schema = v.object({ id: v.number() });
+    const schema = object({ id: number() });
     expect("~standard" in schema).toBeTruthy();
     expect(schema["~standard"]).toBeDefined();
   });
 
   it("should be recognized by isStandardSchema", () => {
-    const schema = v.object({ id: v.number() });
+    const schema = object({ id: number() });
     expect(isStandardSchema(schema)).toBeTruthy();
   });
 });
@@ -1881,13 +1889,13 @@ describe("$fetch with Valibot schemas", () => {
   });
 
   it("should validate with Valibot object schema", async () => {
-    const schema = v.object({
-      email: v.pipe(v.string(), v.email()),
-      id: v.number(),
-      name: v.string(),
+    const schema = object({
+      email: pipe(string(), email()),
+      id: number(),
+      name: string(),
     });
 
-    const mockData = { email: "test@example.com", id: 1, name: "Test User" };
+    const mockData = { email: MOCK_EMAIL, id: 1, name: "Test User" };
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
@@ -1897,18 +1905,18 @@ describe("$fetch with Valibot schemas", () => {
       statusText: "OK",
     });
 
-    const result = await $fetch("https://api.example.com/user", schema);
+    const result = await $fetch(USER_URL, schema);
 
     expect(result).toStrictEqual(mockData);
   });
 
   it("should throw ValidationError on invalid data with Valibot", async () => {
-    const schema = v.object({
-      email: v.pipe(v.string(), v.email()),
-      id: v.number(),
+    const schema = object({
+      email: pipe(string(), email()),
+      id: number(),
     });
 
-    const invalidData = { email: "not-an-email", id: 1 };
+    const invalidData = { email: INVALID_EMAIL_VALUE, id: 1 };
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
@@ -1918,16 +1926,16 @@ describe("$fetch with Valibot schemas", () => {
       statusText: "OK",
     });
 
-    await expect($fetch("https://api.example.com/user", schema)).rejects.toThrow(ValidationError);
+    await expect($fetch(USER_URL, schema)).rejects.toThrow(ValidationError);
   });
 
   it("should return validation result when throwOnValidationError is false with Valibot", async () => {
-    const schema = v.object({
-      email: v.pipe(v.string(), v.email()),
-      id: v.number(),
+    const schema = object({
+      email: pipe(string(), email()),
+      id: number(),
     });
 
-    const invalidData = { email: "not-an-email", id: 1 };
+    const invalidData = { email: INVALID_EMAIL_VALUE, id: 1 };
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
@@ -1937,7 +1945,7 @@ describe("$fetch with Valibot schemas", () => {
       statusText: "OK",
     });
 
-    const result = await $fetch("https://api.example.com/user", schema, {
+    const result = await $fetch(USER_URL, schema, {
       throwOnValidationError: false,
     });
 
@@ -1946,12 +1954,12 @@ describe("$fetch with Valibot schemas", () => {
   });
 
   it("should return successful validation result when data is valid and throwOnValidationError is false", async () => {
-    const schema = v.object({
-      email: v.pipe(v.string(), v.email()),
-      id: v.number(),
+    const schema = object({
+      email: pipe(string(), email()),
+      id: number(),
     });
 
-    const validData = { email: "test@example.com", id: 1 };
+    const validData = { email: MOCK_EMAIL, id: 1 };
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
@@ -1961,7 +1969,7 @@ describe("$fetch with Valibot schemas", () => {
       statusText: "OK",
     });
 
-    const result = await $fetch("https://api.example.com/user", schema, {
+    const result = await $fetch(USER_URL, schema, {
       throwOnValidationError: false,
     });
 
@@ -1971,10 +1979,10 @@ describe("$fetch with Valibot schemas", () => {
   });
 
   it("should work with Valibot array schemas", async () => {
-    const schema = v.array(
-      v.object({
-        id: v.number(),
-        name: v.string(),
+    const schema = array(
+      object({
+        id: number(),
+        name: string(),
       }),
     );
 
@@ -1991,13 +1999,13 @@ describe("$fetch with Valibot schemas", () => {
       statusText: "OK",
     });
 
-    const result = await $fetch("https://api.example.com/users", schema);
+    const result = await $fetch(USERS_URL, schema);
 
     expect(result).toStrictEqual(mockData);
   });
 
   it("should work with api.get using Valibot", async () => {
-    const schema = v.object({ success: v.boolean() });
+    const schema = object({ success: boolean() });
     const mockData = { success: true };
 
     fetchMock.mockResolvedValue({
@@ -2008,13 +2016,13 @@ describe("$fetch with Valibot schemas", () => {
       statusText: "OK",
     });
 
-    const result = await api.get("https://api.example.com/status", schema);
+    const result = await api.get(STATUS_URL, schema);
 
     expect(result).toStrictEqual(mockData);
   });
 
   it("should work with api.post using Valibot", async () => {
-    const schema = v.object({ created: v.boolean(), id: v.number() });
+    const schema = object({ created: boolean(), id: number() });
     const mockData = { created: true, id: 123 };
     const body = { name: "New Item" };
 
@@ -2026,7 +2034,7 @@ describe("$fetch with Valibot schemas", () => {
       statusText: "Created",
     });
 
-    const result = await api.post("https://api.example.com/items", schema, {
+    const result = await api.post(ITEMS_URL, schema, {
       body: JSON.stringify(body),
     });
 
@@ -2034,10 +2042,10 @@ describe("$fetch with Valibot schemas", () => {
   });
 
   it("should work with Valibot optional fields", async () => {
-    const schema = v.object({
-      description: v.optional(v.string()),
-      id: v.number(),
-      name: v.string(),
+    const schema = object({
+      description: optional(string()),
+      id: number(),
+      name: string(),
     });
 
     const mockData = { id: 1, name: "Product" };
@@ -2088,7 +2096,7 @@ describe("$fetch with Zod schemas", () => {
       name: z.string(),
     });
 
-    const mockData = { email: "test@example.com", id: 1, name: "Test User" };
+    const mockData = { email: MOCK_EMAIL, id: 1, name: "Test User" };
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
@@ -2098,7 +2106,7 @@ describe("$fetch with Zod schemas", () => {
       statusText: "OK",
     });
 
-    const result = await $fetch("https://api.example.com/user", schema);
+    const result = await $fetch(USER_URL, schema);
 
     expect(result).toStrictEqual(mockData);
   });
@@ -2109,7 +2117,7 @@ describe("$fetch with Zod schemas", () => {
       id: z.number(),
     });
 
-    const invalidData = { email: "not-an-email", id: 1 };
+    const invalidData = { email: INVALID_EMAIL_VALUE, id: 1 };
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
@@ -2119,7 +2127,7 @@ describe("$fetch with Zod schemas", () => {
       statusText: "OK",
     });
 
-    await expect($fetch("https://api.example.com/user", schema)).rejects.toThrow(ValidationError);
+    await expect($fetch(USER_URL, schema)).rejects.toThrow(ValidationError);
   });
 
   it("should return validation result when throwOnValidationError is false with Zod", async () => {
@@ -2128,7 +2136,7 @@ describe("$fetch with Zod schemas", () => {
       id: z.number(),
     });
 
-    const invalidData = { email: "not-an-email", id: 1 };
+    const invalidData = { email: INVALID_EMAIL_VALUE, id: 1 };
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
@@ -2138,7 +2146,7 @@ describe("$fetch with Zod schemas", () => {
       statusText: "OK",
     });
 
-    const result = await $fetch("https://api.example.com/user", schema, {
+    const result = await $fetch(USER_URL, schema, {
       throwOnValidationError: false,
     });
 
@@ -2152,7 +2160,7 @@ describe("$fetch with Zod schemas", () => {
       id: z.number(),
     });
 
-    const validData = { email: "test@example.com", id: 1 };
+    const validData = { email: MOCK_EMAIL, id: 1 };
 
     fetchMock.mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
@@ -2162,7 +2170,7 @@ describe("$fetch with Zod schemas", () => {
       statusText: "OK",
     });
 
-    const result = await $fetch("https://api.example.com/user", schema, {
+    const result = await $fetch(USER_URL, schema, {
       throwOnValidationError: false,
     });
 
@@ -2192,7 +2200,7 @@ describe("$fetch with Zod schemas", () => {
       statusText: "OK",
     });
 
-    const result = await $fetch("https://api.example.com/users", schema);
+    const result = await $fetch(USERS_URL, schema);
 
     expect(result).toStrictEqual(mockData);
   });
@@ -2209,7 +2217,7 @@ describe("$fetch with Zod schemas", () => {
       statusText: "OK",
     });
 
-    const result = await api.get("https://api.example.com/status", schema);
+    const result = await api.get(STATUS_URL, schema);
 
     expect(result).toStrictEqual(mockData);
   });
@@ -2227,7 +2235,7 @@ describe("$fetch with Zod schemas", () => {
       statusText: "Created",
     });
 
-    const result = await api.post("https://api.example.com/items", schema, {
+    const result = await api.post(ITEMS_URL, schema, {
       body: JSON.stringify(body),
     });
 
@@ -2252,11 +2260,11 @@ describe("logging", () => {
     const { $fetch: instanceFetch } = createFetch({ logger });
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true }), { status: 200 }));
 
-    await instanceFetch("https://api.example.com/users", { method: "POST" });
+    await instanceFetch(USERS_URL, { method: "POST" });
 
     expect(logger.calls).toStrictEqual([
       {
-        context: { method: "POST", url: "https://api.example.com/users" },
+        context: { method: "POST", url: USERS_URL },
         level: "debug",
         message: "fetch request",
       },
@@ -2264,7 +2272,7 @@ describe("logging", () => {
         context: {
           method: "POST",
           status: 200,
-          url: "https://api.example.com/users",
+          url: USERS_URL,
         },
         level: "debug",
         message: "fetch response",
@@ -2282,11 +2290,11 @@ describe("logging", () => {
       new Response(null, { status: 500, statusText: "Internal Server Error" }),
     );
 
-    await instanceFetch("https://api.example.com/users");
+    await instanceFetch(USERS_URL);
 
     expect(logger.calls).toStrictEqual([
       {
-        context: { method: "GET", url: "https://api.example.com/users" },
+        context: { method: "GET", url: USERS_URL },
         level: "debug",
         message: "fetch request",
       },
@@ -2294,7 +2302,7 @@ describe("logging", () => {
         context: {
           method: "GET",
           status: 500,
-          url: "https://api.example.com/users",
+          url: USERS_URL,
         },
         level: "warn",
         message: "fetch response",
@@ -2307,16 +2315,14 @@ describe("logging", () => {
     const { $fetch: instanceFetch } = createFetch({ logger });
     const schema = z.object({ id: z.number() });
     fetchMock.mockResolvedValue(
-      new Response(JSON.stringify({ id: "not-a-number" }), { status: 200 }),
+      new Response(JSON.stringify({ id: NOT_A_NUMBER_VALUE }), { status: 200 }),
     );
 
-    await expect(instanceFetch("https://api.example.com/users/1", schema)).rejects.toBeInstanceOf(
-      ValidationError,
-    );
+    await expect(instanceFetch(USER_1_URL, schema)).rejects.toBeInstanceOf(ValidationError);
 
     const errorCall = logger.calls.find((call) => call.level === "error");
     expect(errorCall?.message).toBe("fetch validation failed");
-    expect(errorCall?.context?.["url"]).toBe("https://api.example.com/users/1");
+    expect(errorCall?.context?.["url"]).toBe(USER_1_URL);
   });
 
   it("logs a validation failure at error when throwOnValidationError is false", async () => {
@@ -2324,10 +2330,10 @@ describe("logging", () => {
     const { $fetch: instanceFetch } = createFetch({ logger });
     const schema = z.object({ id: z.number() });
     fetchMock.mockResolvedValue(
-      new Response(JSON.stringify({ id: "not-a-number" }), { status: 200 }),
+      new Response(JSON.stringify({ id: NOT_A_NUMBER_VALUE }), { status: 200 }),
     );
 
-    const result = await instanceFetch("https://api.example.com/users/1", schema, {
+    const result = await instanceFetch(USER_1_URL, schema, {
       throwOnValidationError: false,
     });
 
@@ -2339,6 +2345,6 @@ describe("logging", () => {
   it("does not log anything when no logger is provided", async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
 
-    await expect($fetch("https://api.example.com/users")).resolves.toBeInstanceOf(Response);
+    await expect($fetch(USERS_URL)).resolves.toBeInstanceOf(Response);
   });
 });

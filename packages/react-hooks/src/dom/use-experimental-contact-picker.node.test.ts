@@ -4,10 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useExperimentalContactPicker } from "./use-experimental-contact-picker.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useExperimentalContactPicker();
   return supported ? "true" : "false";
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

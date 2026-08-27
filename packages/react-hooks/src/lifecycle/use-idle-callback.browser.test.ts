@@ -3,11 +3,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useIdleCallback } from "./use-idle-callback.ts";
 
-function setIdleCallbackSupport(
+const setIdleCallbackSupport = (
   supported: boolean,
 ):
   | { fire: (deadline: IdleDeadline) => void; requestIdleCallback: ReturnType<typeof vi.fn> }
-  | undefined {
+  | undefined => {
   if (!supported) {
     Object.defineProperty(window, "requestIdleCallback", { configurable: true, value: undefined });
     Object.defineProperty(window, "cancelIdleCallback", { configurable: true, value: undefined });
@@ -29,7 +29,7 @@ function setIdleCallbackSupport(
     fire: (deadline: IdleDeadline) => stored?.(deadline),
     requestIdleCallback,
   };
-}
+};
 
 afterEach(() => {
   Object.defineProperty(window, "requestIdleCallback", { configurable: true, value: undefined });

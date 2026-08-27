@@ -21,6 +21,10 @@ import {
   when,
 } from "./index.ts";
 
+const POST_WRITE_ACTION = "post:write";
+const COMMENT_READ_ACTION = "comment:read";
+const POST_DELETE_ACTION = "post:delete";
+
 const createRecordingLogger = (): Logger & {
   calls: {
     level: string;
@@ -51,7 +55,7 @@ const createRecordingLogger = (): Logger & {
 };
 
 // Helper to create a mock Standard Schema
-function createSchema<T>(): StandardSchemaV1<T, T> {
+const createSchema = <T>(): StandardSchemaV1<T, T> => {
   return {
     "~standard": {
       validate: (value: unknown) => ({ value: value as T }),
@@ -59,7 +63,7 @@ function createSchema<T>(): StandardSchemaV1<T, T> {
       version: 1,
     },
   };
-}
+};
 
 // Test resource types
 interface Post {
@@ -87,11 +91,13 @@ const actions = {
   post: ["read", "write", "delete", "publish"],
 } as const satisfies Actions<typeof resources>;
 
+type TestRole = "admin" | "guest" | "user";
+
 // Test context type
 interface TestContext {
   user: {
     id: string;
-    role: "guest" | "user" | "admin";
+    role: TestRole;
   };
 }
 
@@ -787,7 +793,7 @@ describe(createPolicy, () => {
       visibility: "public" as const,
     };
 
-    await expect(policy.can(ctx, "post:write", post)).resolves.toBeFalsy();
+    await expect(policy.can(ctx, POST_WRITE_ACTION, post)).resolves.toBeFalsy();
   });
 
   it("should deny malformed permission strings", async () => {
@@ -866,7 +872,7 @@ describe(createPolicy, () => {
     const ctx: TestContext = { user: { id: "user-1", role: "guest" } };
     const comment: Comment = { authorId: "user-1", id: "1", postId: "1" };
 
-    await expect(policy.can(ctx, "comment:read", comment)).resolves.toBeFalsy();
+    await expect(policy.can(ctx, COMMENT_READ_ACTION, comment)).resolves.toBeFalsy();
   });
 
   it("should evaluate when() conditions", async () => {
@@ -915,8 +921,8 @@ describe(createPolicy, () => {
     await expect(policy.can(ctx, "post:read", publicPost)).resolves.toBeTruthy();
     await expect(policy.can(ctx, "post:read", privatePost)).resolves.toBeFalsy();
     await expect(policy.can(ctx, "post:read", ownPost)).resolves.toBeTruthy();
-    await expect(policy.can(ctx, "post:write", ownPost)).resolves.toBeTruthy();
-    await expect(policy.can(ctx, "post:write", publicPost)).resolves.toBeFalsy();
+    await expect(policy.can(ctx, POST_WRITE_ACTION, ownPost)).resolves.toBeTruthy();
+    await expect(policy.can(ctx, POST_WRITE_ACTION, publicPost)).resolves.toBeFalsy();
   });
 
   it("should deny when resource type has no rules", async () => {
@@ -935,7 +941,7 @@ describe(createPolicy, () => {
     const ctx: TestContext = { user: { id: "user-1", role: "admin" } };
     const comment = { authorId: "user-1", id: "1", postId: "post-1" };
 
-    await expect(policy.can(ctx, "comment:read", comment)).resolves.toBeFalsy();
+    await expect(policy.can(ctx, COMMENT_READ_ACTION, comment)).resolves.toBeFalsy();
   });
 
   it("should deny when action has no rule defined", async () => {
@@ -961,7 +967,7 @@ describe(createPolicy, () => {
       visibility: "public" as const,
     };
 
-    await expect(policy.can(ctx, "post:write", post)).resolves.toBeFalsy();
+    await expect(policy.can(ctx, POST_WRITE_ACTION, post)).resolves.toBeFalsy();
   });
 
   it("should work with complex conditions using and/or/not", async () => {
@@ -1021,8 +1027,8 @@ describe(createPolicy, () => {
         policy.can(admin, "post:read", privatePost),
         policy.can(user, "post:read", publicPost),
         policy.can(user, "post:read", privatePost),
-        policy.can(user, "post:delete", privatePost),
-        policy.can(user, "post:delete", {
+        policy.can(user, POST_DELETE_ACTION, privatePost),
+        policy.can(user, POST_DELETE_ACTION, {
           ...privatePost,
           visibility: "public" as const,
         }),
@@ -1058,7 +1064,7 @@ describe(createPolicy, () => {
       postId: "post-1",
     };
 
-    await expect(policy.can(ctx, "comment:read", comment)).resolves.toBeFalsy();
+    await expect(policy.can(ctx, COMMENT_READ_ACTION, comment)).resolves.toBeFalsy();
   });
 
   it("should deny when resource validation reports issues", async () => {
@@ -1311,14 +1317,14 @@ describe(createPolicy, () => {
     await expect(
       Promise.all([
         policy.can(guest, "post:read", post),
-        policy.can(guest, "post:write", post),
-        policy.can(guest, "post:delete", post),
+        policy.can(guest, POST_WRITE_ACTION, post),
+        policy.can(guest, POST_DELETE_ACTION, post),
         policy.can(user, "post:read", post),
-        policy.can(user, "post:write", post),
-        policy.can(user, "post:delete", post),
+        policy.can(user, POST_WRITE_ACTION, post),
+        policy.can(user, POST_DELETE_ACTION, post),
         policy.can(admin, "post:read", post),
-        policy.can(admin, "post:write", post),
-        policy.can(admin, "post:delete", post),
+        policy.can(admin, POST_WRITE_ACTION, post),
+        policy.can(admin, POST_DELETE_ACTION, post),
       ]),
     ).resolves.toStrictEqual([true, false, false, true, true, false, true, true, true]);
   });
@@ -1447,7 +1453,7 @@ describe(mergePoliciesAnd, () => {
     };
 
     await expect(merged.can(ctx, "post:read", post)).resolves.toBeTruthy();
-    await expect(merged.can(ctx, "post:write", post)).resolves.toBeFalsy();
+    await expect(merged.can(ctx, POST_WRITE_ACTION, post)).resolves.toBeFalsy();
   });
 
   it("should work with empty policies array", async () => {
@@ -1720,7 +1726,7 @@ describe(mergePoliciesOr, () => {
     };
 
     await expect(merged.can(ctx, "post:read", post)).resolves.toBeTruthy();
-    await expect(merged.can(ctx, "post:write", post)).resolves.toBeFalsy();
+    await expect(merged.can(ctx, POST_WRITE_ACTION, post)).resolves.toBeFalsy();
   });
 
   it("should work with empty policies array", async () => {
@@ -1842,9 +1848,9 @@ describe(mergePoliciesOr, () => {
     // Cannot read other's private post (neither policy allows)
     await expect(merged.can(user, "post:read", privateOtherPost)).resolves.toBeFalsy();
     // Can write own post (owner policy allows)
-    await expect(merged.can(user, "post:write", privateOwnPost)).resolves.toBeTruthy();
+    await expect(merged.can(user, POST_WRITE_ACTION, privateOwnPost)).resolves.toBeTruthy();
     // Cannot write other's post (neither policy allows)
-    await expect(merged.can(user, "post:write", publicPost)).resolves.toBeFalsy();
+    await expect(merged.can(user, POST_WRITE_ACTION, publicPost)).resolves.toBeFalsy();
   });
 });
 

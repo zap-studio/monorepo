@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useExperimentalGyroscope } from "./use-experimental-gyroscope.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useExperimentalGyroscope();
   return supported ? "true" : "false";
-}
+};
 
 describe(useExperimentalGyroscope, () => {
   it("renders supported: false on the server", () => {

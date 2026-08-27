@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { usePermission } from "./use-permission.ts";
 
-function createPermissionStatusMock(initialState: PermissionState) {
+const createPermissionStatusMock = (initialState: PermissionState) => {
   const status = new EventTarget() as unknown as PermissionStatus;
   let state = initialState;
 
@@ -16,16 +16,16 @@ function createPermissionStatusMock(initialState: PermissionState) {
     },
     status,
   };
-}
+};
 
-function setNavigatorPermissions(
+const setNavigatorPermissions = (
   query: ((descriptor: PermissionDescriptor) => Promise<PermissionStatus>) | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "permissions", {
     configurable: true,
     value: query ? { query } : undefined,
   });
-}
+};
 
 describe(usePermission, () => {
   it("starts undefined before the query resolves", () => {

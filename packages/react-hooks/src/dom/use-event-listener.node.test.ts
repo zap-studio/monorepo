@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useEventListener } from "./use-event-listener.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   useEventListener(undefined, "click", () => {});
   return "ok";
-}
+};
 
 describe(useEventListener, () => {
   it("renders without touching any global during server rendering", () => {

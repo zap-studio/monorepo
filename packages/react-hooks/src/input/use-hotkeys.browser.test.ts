@@ -3,9 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useHotkeys } from "./use-hotkeys.ts";
 
-function dispatchKeyDown(init: KeyboardEventInit) {
+const dispatchKeyDown = (init: KeyboardEventInit) => {
   return window.dispatchEvent(new KeyboardEvent("keydown", { cancelable: true, ...init }));
-}
+};
 
 describe(useHotkeys, () => {
   it("calls the handler when a plain key combo matches", async () => {

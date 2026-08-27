@@ -4,10 +4,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useHotkeys } from "./use-hotkeys.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   useHotkeys({ "ctrl+s": vi.fn() });
   return "rendered";
-}
+};
 
 describe(useHotkeys, () => {
   it("renders on the server without touching window", () => {

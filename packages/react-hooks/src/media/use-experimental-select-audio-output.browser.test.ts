@@ -3,20 +3,20 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useExperimentalSelectAudioOutput } from "./use-experimental-select-audio-output.ts";
 
-function notAllowedError(): Error {
+const notAllowedError = (): Error => {
   const error = new Error("Permission denied.");
   error.name = "NotAllowedError";
   return error;
-}
+};
 
-function setSelectAudioOutput(
+const setSelectAudioOutput = (
   selectAudioOutput: ((options?: unknown) => Promise<unknown>) | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "mediaDevices", {
     configurable: true,
     value: selectAudioOutput ? { selectAudioOutput } : {},
   });
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

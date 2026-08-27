@@ -22,9 +22,9 @@ class MockWorker extends EventTarget {
   }
 }
 
-function reset() {
+const reset = () => {
   MockWorker.instances = [];
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

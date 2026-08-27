@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useClickOutside } from "./use-click-outside.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const ref = useClickOutside<HTMLDivElement>(() => {});
   return createElement("div", { ref });
-}
+};
 
 describe(useClickOutside, () => {
   it("renders without touching document during server rendering", () => {

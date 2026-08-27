@@ -5,12 +5,12 @@ import type { VirtualKeyboard } from "./use-experimental-virtual-keyboard.ts";
 
 import { useExperimentalVirtualKeyboard } from "./use-experimental-virtual-keyboard.ts";
 
-function createVirtualKeyboardMock(initial: {
+const createVirtualKeyboardMock = (initial: {
   height: number;
   width: number;
   x: number;
   y: number;
-}) {
+}) => {
   const keyboard = new EventTarget() as unknown as VirtualKeyboard;
   let rect = { ...initial };
 
@@ -26,11 +26,11 @@ function createVirtualKeyboardMock(initial: {
       keyboard.dispatchEvent(new Event("geometrychange"));
     },
   };
-}
+};
 
-function setNavigatorVirtualKeyboard(keyboard: VirtualKeyboard | undefined) {
+const setNavigatorVirtualKeyboard = (keyboard: VirtualKeyboard | undefined) => {
   Object.defineProperty(navigator, "virtualKeyboard", { configurable: true, value: keyboard });
-}
+};
 
 describe(useExperimentalVirtualKeyboard, () => {
   it("reports the current on-screen keyboard bounding rect", () => {

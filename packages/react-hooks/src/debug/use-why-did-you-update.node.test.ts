@@ -4,10 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useWhyDidYouUpdate } from "./use-why-did-you-update.ts";
 
-function TestComponent(props: { value: number }) {
+const TestComponent = (props: { value: number }) => {
   useWhyDidYouUpdate("TestComponent", props);
   return "ok";
-}
+};
 
 afterEach(() => {
   vi.unstubAllEnvs();

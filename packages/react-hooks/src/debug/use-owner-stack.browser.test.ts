@@ -30,16 +30,16 @@ describe(useOwnerStack, () => {
   it("captureOwnerStack() returns a real stack string when called from a rendered owner", () => {
     let captured: string | undefined;
 
-    function Child() {
+    const Child = () => {
       const { captureOwnerStack: capture } = useOwnerStack();
       useEffect(() => {
         captured = capture();
       });
       return null;
-    }
-    function Parent() {
+    };
+    const Parent = () => {
       return createElement(Child);
-    }
+    };
 
     render(createElement(Parent));
 

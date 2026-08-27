@@ -3,11 +3,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useExperimentalEyeDropper } from "./use-experimental-eye-dropper.ts";
 
-function abortError(): Error {
+const abortError = (): Error => {
   const error = new Error("The user chose not to pick a color.");
   error.name = "AbortError";
   return error;
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

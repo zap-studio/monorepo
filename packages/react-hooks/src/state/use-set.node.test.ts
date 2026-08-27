@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useSet } from "./use-set.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { set } = useSet<string>(["a"]);
   return set.has("a") ? "true" : "false";
-}
+};
 
 describe(useSet, () => {
   it("renders the initial values on the server", () => {

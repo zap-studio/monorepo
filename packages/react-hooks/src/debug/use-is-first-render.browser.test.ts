@@ -21,10 +21,10 @@ describe(useIsFirstRender, () => {
 describe("useIsFirstRender under StrictMode", () => {
   it("is true on both passes of the double-invoked mount render", () => {
     const seen: boolean[] = [];
-    function TestComponent() {
+    const TestComponent = () => {
       seen.push(useIsFirstRender());
       return null;
-    }
+    };
     render(createElement(StrictMode, null, createElement(TestComponent)));
 
     expect(seen.length).toBeGreaterThan(0);

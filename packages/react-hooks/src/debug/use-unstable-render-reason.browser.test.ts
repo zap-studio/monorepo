@@ -11,9 +11,9 @@ interface ChildHandle {
   setCount: (value: number) => void;
 }
 
-function renderChild(props: { label: string }) {
+const renderChild = (props: { label: string }) => {
   let latest!: ChildHandle;
-  function Child({ label }: { label: string }) {
+  const Child = ({ label }: { label: string }) => {
     const { reason, ref } = useUnstableRenderReason<HTMLDivElement>();
     // A non-dispatch-capable hook (no `.queue`) called after useUnstableRenderReason, alongside the useState below — exercises both sides of collectStateHookValues' per-node filter.
     useRef(null);
@@ -21,7 +21,7 @@ function renderChild(props: { label: string }) {
     const contextValue = useContext(TestContext);
     latest = { reason, setCount };
     return createElement("div", { ref }, `${label}-${count}-${contextValue}`);
-  }
+  };
 
   const { rerender } = render(createElement(Child, props));
   return {
@@ -30,16 +30,16 @@ function renderChild(props: { label: string }) {
     },
     rerender: (nextProps: { label: string }) => rerender(createElement(Child, nextProps)),
   };
-}
+};
 
-function renderChildWithContext(props: { label: string }, contextValue: string) {
+const renderChildWithContext = (props: { label: string }, contextValue: string) => {
   let latest!: ChildHandle;
-  function Child({ label }: { label: string }) {
+  const Child = ({ label }: { label: string }) => {
     const { reason, ref } = useUnstableRenderReason<HTMLDivElement>();
     const value = useContext(TestContext);
     latest = { reason, setCount: () => {} };
     return createElement("div", { ref }, `${label}-${value}`);
-  }
+  };
 
   const wrap = (elementProps: { label: string }, value: string) =>
     createElement(TestContext.Provider, { value }, createElement(Child, elementProps));
@@ -52,7 +52,7 @@ function renderChildWithContext(props: { label: string }, contextValue: string) 
     rerender: (nextProps: { label: string }, nextContextValue: string) =>
       rerender(wrap(nextProps, nextContextValue)),
   };
-}
+};
 
 describe(useUnstableRenderReason, () => {
   it("classifies a hook with no attached ref as unknown", () => {

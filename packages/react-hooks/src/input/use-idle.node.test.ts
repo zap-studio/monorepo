@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useIdle } from "./use-idle.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const isIdle = useIdle(1000);
   return isIdle ? "true" : "false";
-}
+};
 
 describe(useIdle, () => {
   it("renders false on the server, before any timer can elapse", () => {

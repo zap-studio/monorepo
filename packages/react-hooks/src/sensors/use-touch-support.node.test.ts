@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useTouchSupport } from "./use-touch-support.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const hasTouch = useTouchSupport();
   return hasTouch ? "true" : "false";
-}
+};
 
 describe(useTouchSupport, () => {
   it("renders false on the server, before navigator can be read", () => {

@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useScript } from "./use-script.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { status } = useScript("https://example.com/ssr-probe.js");
   return status;
-}
+};
 
 describe(useScript, () => {
   it("renders loading on the server, before any script tag can settle", () => {

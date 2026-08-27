@@ -7,10 +7,10 @@ import { useMount } from "./use-mount.ts";
 describe(useMount, () => {
   it("does not call the effect during server rendering", () => {
     const effect = vi.fn();
-    function TestComponent() {
+    const TestComponent = () => {
       useMount(effect);
       return "rendered";
-    }
+    };
 
     const html = renderToString(createElement(TestComponent));
 

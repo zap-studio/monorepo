@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useNavigation } from "./use-navigation.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { canGoBack, currentEntry, entries } = useNavigation();
   return `${canGoBack},${currentEntry === null ? "null" : "defined"},${entries.length}`;
-}
+};
 
 describe(useNavigation, () => {
   it("falls back to the empty snapshot on the server", () => {

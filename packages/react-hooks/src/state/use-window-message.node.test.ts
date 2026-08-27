@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useWindowMessage } from "./use-window-message.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { lastMessage } = useWindowMessage<string>();
   return lastMessage === undefined ? "undefined" : "defined";
-}
+};
 
 describe(useWindowMessage, () => {
   it("renders with no lastMessage on the server", () => {

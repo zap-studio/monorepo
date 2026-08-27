@@ -11,9 +11,14 @@ import {
   standardValidateSync,
 } from "./index.ts";
 
-function createMockSchema<T>(
+const FIELD_REQUIRED_MESSAGE = "Field is required";
+const MUST_BE_NUMBER_MESSAGE = "Must be a number";
+const INVALID_VALUE_MESSAGE = "Invalid value";
+const VALIDATION_FAILED_MESSAGE = "Validation failed";
+
+const createMockSchema = <T>(
   validateFn: (input: unknown) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>,
-): StandardSchemaV1<unknown, T> {
+): StandardSchemaV1<unknown, T> => {
   return {
     "~standard": {
       validate: validateFn,
@@ -21,11 +26,11 @@ function createMockSchema<T>(
       version: 1,
     },
   };
-}
+};
 
-function createMockSchemaFunction<T>(
+const createMockSchemaFunction = <T>(
   validateFn: (input: unknown) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>,
-): StandardSchemaV1<unknown, T> {
+): StandardSchemaV1<unknown, T> => {
   const fn = (): void => undefined;
 
   Object.assign(fn, {
@@ -37,9 +42,9 @@ function createMockSchemaFunction<T>(
   });
 
   return fn as unknown as StandardSchemaV1<unknown, T>;
-}
+};
 
-async function captureRejectedError(run: () => Promise<unknown>): Promise<unknown> {
+const captureRejectedError = async (run: () => Promise<unknown>): Promise<unknown> => {
   try {
     await run();
   } catch (error) {
@@ -47,9 +52,9 @@ async function captureRejectedError(run: () => Promise<unknown>): Promise<unknow
   }
 
   throw new Error("Expected promise to reject");
-}
+};
 
-function captureThrownError(run: () => unknown): unknown {
+const captureThrownError = (run: () => unknown): unknown => {
   try {
     run();
   } catch (error) {
@@ -57,13 +62,13 @@ function captureThrownError(run: () => unknown): unknown {
   }
 
   throw new Error("Expected function to throw");
-}
+};
 
 describe(ValidationError, () => {
   it("should store issues and stringify them in the message", () => {
     const issues: StandardSchemaV1.Issue[] = [
-      { message: "Field is required" },
-      { message: "Must be a number" },
+      { message: FIELD_REQUIRED_MESSAGE },
+      { message: MUST_BE_NUMBER_MESSAGE },
     ];
 
     const error = new ValidationError(issues);
@@ -142,7 +147,7 @@ describe(createStandardValidator, () => {
   });
 
   it("should return issues without throwing", async () => {
-    const issues: StandardSchemaV1.Issue[] = [{ message: "Invalid value" }];
+    const issues: StandardSchemaV1.Issue[] = [{ message: INVALID_VALUE_MESSAGE }];
     const schema = createMockSchema(() => ({ issues }));
 
     const validate = createStandardValidator(schema);
@@ -164,7 +169,7 @@ describe(createStandardValidator, () => {
 
   it("should throw ValidationError when throwOnError is true", async () => {
     const schema = createMockSchema(() => ({
-      issues: [{ message: "Invalid value" }],
+      issues: [{ message: INVALID_VALUE_MESSAGE }],
     }));
 
     const validate = createStandardValidator(schema);
@@ -173,7 +178,7 @@ describe(createStandardValidator, () => {
   });
 
   it("should return result object when throwOnError is false", async () => {
-    const issues: StandardSchemaV1.Issue[] = [{ message: "Invalid value" }];
+    const issues: StandardSchemaV1.Issue[] = [{ message: INVALID_VALUE_MESSAGE }];
     const schema = createMockSchema(() => ({ issues }));
 
     const validate = createStandardValidator(schema);
@@ -202,7 +207,7 @@ describe(createStandardValidatorSync, () => {
   });
 
   it("should return issues without throwing", () => {
-    const issues: StandardSchemaV1.Issue[] = [{ message: "Invalid value" }];
+    const issues: StandardSchemaV1.Issue[] = [{ message: INVALID_VALUE_MESSAGE }];
     const schema = createMockSchema(() => ({ issues }));
 
     const validate = createStandardValidatorSync(schema);
@@ -224,7 +229,7 @@ describe(createStandardValidatorSync, () => {
 
   it("should throw ValidationError when throwOnError is true", () => {
     const schema = createMockSchema(() => ({
-      issues: [{ message: "Invalid value" }],
+      issues: [{ message: INVALID_VALUE_MESSAGE }],
     }));
 
     const validate = createStandardValidatorSync(schema);
@@ -233,7 +238,7 @@ describe(createStandardValidatorSync, () => {
   });
 
   it("should return result object when throwOnError is false", () => {
-    const issues: StandardSchemaV1.Issue[] = [{ message: "Invalid value" }];
+    const issues: StandardSchemaV1.Issue[] = [{ message: INVALID_VALUE_MESSAGE }];
     const schema = createMockSchema(() => ({ issues }));
 
     const validate = createStandardValidatorSync(schema);
@@ -350,7 +355,7 @@ describe(standardValidate, () => {
   describe("validation failure", () => {
     it("should throw ValidationError when throwOnError is true", async () => {
       const schema = createMockSchema(() => ({
-        issues: [{ message: "Invalid value" }],
+        issues: [{ message: INVALID_VALUE_MESSAGE }],
       }));
 
       await expect(standardValidate("invalid", schema, { throwOnError: true })).rejects.toThrow(
@@ -360,8 +365,8 @@ describe(standardValidate, () => {
 
     it("should include issues in thrown ValidationError", async () => {
       const issues: StandardSchemaV1.Issue[] = [
-        { message: "Field is required" },
-        { message: "Must be a number", path: [{ key: "age" }] },
+        { message: FIELD_REQUIRED_MESSAGE },
+        { message: MUST_BE_NUMBER_MESSAGE, path: [{ key: "age" }] },
       ];
 
       const schema = createMockSchema(() => ({ issues }));
@@ -375,7 +380,7 @@ describe(standardValidate, () => {
     });
 
     it("should return result object with issues when throwOnError is false", async () => {
-      const issues: StandardSchemaV1.Issue[] = [{ message: "Validation failed" }];
+      const issues: StandardSchemaV1.Issue[] = [{ message: VALIDATION_FAILED_MESSAGE }];
 
       const schema = createMockSchema(() => ({ issues }));
 
@@ -387,7 +392,7 @@ describe(standardValidate, () => {
     });
 
     it("should return result object with issues when options are omitted", async () => {
-      const issues: StandardSchemaV1.Issue[] = [{ message: "Validation failed" }];
+      const issues: StandardSchemaV1.Issue[] = [{ message: VALIDATION_FAILED_MESSAGE }];
       const schema = createMockSchema(() => ({ issues }));
 
       const result = await standardValidate("invalid", schema);
@@ -483,7 +488,7 @@ describe(standardValidateSync, () => {
   describe("validation failure", () => {
     it("should throw ValidationError when throwOnError is true", () => {
       const schema = createMockSchema(() => ({
-        issues: [{ message: "Invalid value" }],
+        issues: [{ message: INVALID_VALUE_MESSAGE }],
       }));
 
       expect(() => standardValidateSync("invalid", schema, { throwOnError: true })).toThrow(
@@ -493,8 +498,8 @@ describe(standardValidateSync, () => {
 
     it("should include issues in thrown ValidationError", () => {
       const issues: StandardSchemaV1.Issue[] = [
-        { message: "Field is required" },
-        { message: "Must be a number", path: [{ key: "age" }] },
+        { message: FIELD_REQUIRED_MESSAGE },
+        { message: MUST_BE_NUMBER_MESSAGE, path: [{ key: "age" }] },
       ];
 
       const schema = createMockSchema(() => ({ issues }));
@@ -508,7 +513,7 @@ describe(standardValidateSync, () => {
     });
 
     it("should return result object with issues when throwOnError is false", () => {
-      const issues: StandardSchemaV1.Issue[] = [{ message: "Validation failed" }];
+      const issues: StandardSchemaV1.Issue[] = [{ message: VALIDATION_FAILED_MESSAGE }];
 
       const schema = createMockSchema(() => ({ issues }));
 
@@ -520,7 +525,7 @@ describe(standardValidateSync, () => {
     });
 
     it("should return result object with issues when options are omitted", () => {
-      const issues: StandardSchemaV1.Issue[] = [{ message: "Validation failed" }];
+      const issues: StandardSchemaV1.Issue[] = [{ message: VALIDATION_FAILED_MESSAGE }];
       const schema = createMockSchema(() => ({ issues }));
 
       const result = standardValidateSync("invalid", schema);

@@ -7,10 +7,10 @@ import { useAnimationFrame } from "./use-animation-frame.ts";
 describe(useAnimationFrame, () => {
   it("renders without touching requestAnimationFrame during server rendering", () => {
     const callback = vi.fn();
-    function TestComponent() {
+    const TestComponent = () => {
       useAnimationFrame(callback);
       return "rendered";
-    }
+    };
 
     const html = renderToString(createElement(TestComponent));
 

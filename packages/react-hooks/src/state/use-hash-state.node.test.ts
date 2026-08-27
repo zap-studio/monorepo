@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useHashState } from "./use-hash-state.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const [hash] = useHashState();
   return hash === "" ? "empty" : hash;
-}
+};
 
 describe(useHashState, () => {
   it("falls back to an empty hash on the server", () => {

@@ -13,7 +13,7 @@ import type { Actions, Resources } from "./types.ts";
 
 import { allow, createPolicy, mergePoliciesOr } from "./index.ts";
 
-function createSchema<T>(): StandardSchemaV1<T, T> {
+const createSchema = <T>(): StandardSchemaV1<T, T> => {
   return {
     "~standard": {
       validate: (value: unknown) => ({ value: value as T }),
@@ -21,7 +21,7 @@ function createSchema<T>(): StandardSchemaV1<T, T> {
       version: 1,
     },
   };
-}
+};
 
 interface Post {
   authorId: string;

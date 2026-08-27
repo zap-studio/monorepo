@@ -5,7 +5,7 @@ import type { Navigation, NavigateEvent } from "./_navigation-api.ts";
 
 import { useNavigationBlocker } from "./use-navigation-blocker.ts";
 
-function createNavigationMock() {
+const createNavigationMock = () => {
   const listeners = new Map<string, (event: NavigateEvent) => void>();
 
   const nav = {
@@ -21,9 +21,9 @@ function createNavigationMock() {
     fireNavigate: (event: NavigateEvent) => listeners.get("navigate")?.(event),
     nav,
   };
-}
+};
 
-function fakeNavigateEvent(overrides: Partial<NavigateEvent> = {}): NavigateEvent {
+const fakeNavigateEvent = (overrides: Partial<NavigateEvent> = {}): NavigateEvent => {
   return {
     canIntercept: true,
     destination: { url: "/next" },
@@ -32,14 +32,14 @@ function fakeNavigateEvent(overrides: Partial<NavigateEvent> = {}): NavigateEven
     intercept: vi.fn(),
     ...overrides,
   } as unknown as NavigateEvent;
-}
+};
 
-function setWindowNavigation(nav: Navigation | undefined) {
+const setWindowNavigation = (nav: Navigation | undefined) => {
   Object.defineProperty(window, "navigation", {
     configurable: true,
     get: () => nav,
   });
-}
+};
 
 describe(useNavigationBlocker, () => {
   it("blocks and intercepts when shouldBlock returns true", () => {

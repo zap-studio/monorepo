@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useExperimentalEyeDropper } from "./use-experimental-eye-dropper.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useExperimentalEyeDropper();
   return supported ? "true" : "false";
-}
+};
 
 describe(useExperimentalEyeDropper, () => {
   it("renders supported: false on the server", () => {

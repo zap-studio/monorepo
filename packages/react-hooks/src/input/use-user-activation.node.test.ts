@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useUserActivation } from "./use-user-activation.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { isActive } = useUserActivation();
   return isActive ? "true" : "false";
-}
+};
 
 describe(useUserActivation, () => {
   it("renders false on the server, before navigator.userActivation can be read", () => {

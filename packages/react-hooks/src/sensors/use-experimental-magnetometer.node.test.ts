@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useExperimentalMagnetometer } from "./use-experimental-magnetometer.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useExperimentalMagnetometer();
   return supported ? "true" : "false";
-}
+};
 
 describe(useExperimentalMagnetometer, () => {
   it("renders supported: false on the server", () => {

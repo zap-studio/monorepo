@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useExperimentalIdleDetector } from "./use-experimental-idle-detector.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useExperimentalIdleDetector();
   return supported ? "true" : "false";
-}
+};
 
 describe(useExperimentalIdleDetector, () => {
   it("renders supported: false on the server", () => {

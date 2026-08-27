@@ -7,10 +7,10 @@ import { useInterval } from "./use-interval.ts";
 describe(useInterval, () => {
   it("does not schedule during server rendering", () => {
     const callback = vi.fn();
-    function TestComponent() {
+    const TestComponent = () => {
       useInterval(callback, 1000);
       return "rendered";
-    }
+    };
 
     const html = renderToString(createElement(TestComponent));
 

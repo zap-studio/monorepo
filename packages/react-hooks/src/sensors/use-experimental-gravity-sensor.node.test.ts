@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useExperimentalGravitySensor } from "./use-experimental-gravity-sensor.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useExperimentalGravitySensor();
   return supported ? "true" : "false";
-}
+};
 
 describe(useExperimentalGravitySensor, () => {
   it("renders supported: false on the server", () => {

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useExperimentalGravitySensor } from "./use-experimental-gravity-sensor.ts";
 
-function createSensorMock(reading: { x: number; y: number; z: number }) {
+const createSensorMock = (reading: { x: number; y: number; z: number }) => {
   const sensor = new EventTarget() as EventTarget & {
     activated: boolean;
     onerror: ((event: Event & { error: DOMException }) => void) | null;
@@ -40,15 +40,15 @@ function createSensorMock(reading: { x: number; y: number; z: number }) {
     },
     sensor,
   };
-}
+};
 
-function stubGravitySensor(sensor?: ReturnType<typeof createSensorMock>["sensor"]) {
+const stubGravitySensor = (sensor?: ReturnType<typeof createSensorMock>["sensor"]) => {
   const GravitySensorCtor = vi.fn().mockImplementation(function GravitySensor() {
     return sensor;
   });
   vi.stubGlobal("GravitySensor", GravitySensorCtor);
   return GravitySensorCtor;
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

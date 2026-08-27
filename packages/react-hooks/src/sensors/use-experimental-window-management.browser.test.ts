@@ -3,9 +3,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useExperimentalWindowManagement } from "./use-experimental-window-management.ts";
 
-function stubIsExtended(isExtended: boolean) {
+const BUILT_IN_DISPLAY_LABEL = "Built-in Display";
+const EXTERNAL_DISPLAY_LABEL = "External Display";
+
+const stubIsExtended = (isExtended: boolean) => {
   Object.defineProperty(window.screen, "isExtended", { configurable: true, value: isExtended });
-}
+};
 
 class MockScreenDetails extends EventTarget {
   currentScreen: unknown;
@@ -18,12 +21,12 @@ class MockScreenDetails extends EventTarget {
   }
 }
 
-function stubGetScreenDetails(details: MockScreenDetails | (() => Promise<MockScreenDetails>)) {
+const stubGetScreenDetails = (details: MockScreenDetails | (() => Promise<MockScreenDetails>)) => {
   const getScreenDetails =
     typeof details === "function" ? details : vi.fn(() => Promise.resolve(details));
   vi.stubGlobal("getScreenDetails", getScreenDetails);
   return getScreenDetails;
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -58,8 +61,8 @@ describe(useExperimentalWindowManagement, () => {
   });
 
   it("populates screens and currentScreen once permission is granted", async () => {
-    const primary = { isPrimary: true, label: "Built-in Display" };
-    const secondary = { isPrimary: false, label: "External Display" };
+    const primary = { isPrimary: true, label: BUILT_IN_DISPLAY_LABEL };
+    const secondary = { isPrimary: false, label: EXTERNAL_DISPLAY_LABEL };
     stubGetScreenDetails(new MockScreenDetails([primary, secondary], primary));
 
     const { result } = renderHook(() => useExperimentalWindowManagement());
@@ -73,7 +76,7 @@ describe(useExperimentalWindowManagement, () => {
   });
 
   it("updates screens on a screenschange event", async () => {
-    const primary = { label: "Built-in Display" };
+    const primary = { label: BUILT_IN_DISPLAY_LABEL };
     const details = new MockScreenDetails([primary], primary);
     stubGetScreenDetails(details);
 
@@ -82,7 +85,7 @@ describe(useExperimentalWindowManagement, () => {
       await result.current.requestPermission();
     });
 
-    const secondary = { label: "External Display" };
+    const secondary = { label: EXTERNAL_DISPLAY_LABEL };
     details.screens = [primary, secondary];
     await act(async () => {
       details.dispatchEvent(new Event("screenschange"));
@@ -92,8 +95,8 @@ describe(useExperimentalWindowManagement, () => {
   });
 
   it("updates currentScreen on a currentscreenchange event", async () => {
-    const primary = { label: "Built-in Display" };
-    const secondary = { label: "External Display" };
+    const primary = { label: BUILT_IN_DISPLAY_LABEL };
+    const secondary = { label: EXTERNAL_DISPLAY_LABEL };
     const details = new MockScreenDetails([primary, secondary], primary);
     stubGetScreenDetails(details);
 

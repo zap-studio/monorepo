@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { useGamepad } from "./use-gamepad.ts";
 
-function makeGamepad(overrides: Partial<Gamepad> = {}): Gamepad {
+const makeGamepad = (overrides: Partial<Gamepad> = {}): Gamepad => {
   return {
     axes: [],
     buttons: [],
@@ -16,14 +16,14 @@ function makeGamepad(overrides: Partial<Gamepad> = {}): Gamepad {
     vibrationActuator: null,
     ...overrides,
   } as Gamepad;
-}
+};
 
-function setGamepads(gamepads: Array<Gamepad | null> | undefined) {
+const setGamepads = (gamepads: Array<Gamepad | null> | undefined) => {
   Object.defineProperty(navigator, "getGamepads", {
     configurable: true,
     value: gamepads === undefined ? undefined : () => gamepads,
   });
-}
+};
 
 afterEach(() => {
   setGamepads([]);

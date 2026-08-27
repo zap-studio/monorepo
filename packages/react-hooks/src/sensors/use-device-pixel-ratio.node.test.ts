@@ -4,9 +4,9 @@ import { describe, expect, it } from "vitest";
 
 import { useDevicePixelRatio } from "./use-device-pixel-ratio.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   return String(useDevicePixelRatio());
-}
+};
 
 describe(useDevicePixelRatio, () => {
   it("renders 1 on the server, before window can be read", () => {

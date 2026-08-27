@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useExperimentalGyroscope } from "./use-experimental-gyroscope.ts";
 
-function createSensorMock(reading: { x: number; y: number; z: number }) {
+const createSensorMock = (reading: { x: number; y: number; z: number }) => {
   const sensor = new EventTarget() as EventTarget & {
     activated: boolean;
     onerror: ((event: Event & { error: DOMException }) => void) | null;
@@ -40,15 +40,15 @@ function createSensorMock(reading: { x: number; y: number; z: number }) {
     },
     sensor,
   };
-}
+};
 
-function stubGyroscope(sensor?: ReturnType<typeof createSensorMock>["sensor"]) {
+const stubGyroscope = (sensor?: ReturnType<typeof createSensorMock>["sensor"]) => {
   const GyroscopeCtor = vi.fn().mockImplementation(function Gyroscope() {
     return sensor;
   });
   vi.stubGlobal("Gyroscope", GyroscopeCtor);
   return GyroscopeCtor;
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

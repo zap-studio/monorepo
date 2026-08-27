@@ -27,12 +27,12 @@ class FakeResizeObserver implements ResizeObserver {
   }
 }
 
-function renderObservedDiv() {
+const renderObservedDiv = () => {
   let latest!: UseResizeObserverResult<HTMLDivElement>;
-  function TestComponent() {
+  const TestComponent = () => {
     latest = useResizeObserver<HTMLDivElement>();
     return createElement("div", { ref: latest.ref });
-  }
+  };
   const { unmount } = render(createElement(TestComponent));
   return {
     get current() {
@@ -40,7 +40,7 @@ function renderObservedDiv() {
     },
     unmount,
   };
-}
+};
 
 afterEach(() => {
   FakeResizeObserver.instances = [];
@@ -120,10 +120,10 @@ describe("useResizeObserver ref tracking", () => {
     FakeResizeObserver.instances = [];
 
     let latest!: UseResizeObserverResult<HTMLDivElement>;
-    function TestComponent({ show }: { show: boolean }) {
+    const TestComponent = ({ show }: { show: boolean }) => {
       latest = useResizeObserver<HTMLDivElement>();
       return show ? createElement("div", { ref: latest.ref }) : null;
-    }
+    };
     const { rerender } = render(createElement(TestComponent, { show: false }));
 
     expect(FakeResizeObserver.instances).toHaveLength(0);

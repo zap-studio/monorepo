@@ -7,10 +7,10 @@ import { useUnmount } from "./use-unmount.ts";
 describe(useUnmount, () => {
   it("does not call the cleanup during server rendering", () => {
     const cleanup = vi.fn();
-    function TestComponent() {
+    const TestComponent = () => {
       useUnmount(cleanup);
       return "rendered";
-    }
+    };
 
     const html = renderToString(createElement(TestComponent));
 

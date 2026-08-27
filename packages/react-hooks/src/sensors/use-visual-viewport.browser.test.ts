@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { useVisualViewport } from "./use-visual-viewport.ts";
 
-function createVisualViewportMock(initial: {
+const createVisualViewportMock = (initial: {
   height: number;
   offsetLeft: number;
   offsetTop: number;
@@ -11,7 +11,7 @@ function createVisualViewportMock(initial: {
   pageTop: number;
   scale: number;
   width: number;
-}) {
+}) => {
   const viewport = new EventTarget() as unknown as VisualViewport;
   let state = { ...initial };
 
@@ -32,11 +32,11 @@ function createVisualViewportMock(initial: {
     },
     viewport,
   };
-}
+};
 
-function setWindowVisualViewport(viewport: VisualViewport | null) {
+const setWindowVisualViewport = (viewport: VisualViewport | null) => {
   Object.defineProperty(window, "visualViewport", { configurable: true, value: viewport });
-}
+};
 
 describe(useVisualViewport, () => {
   it("reports the current window.visualViewport", () => {

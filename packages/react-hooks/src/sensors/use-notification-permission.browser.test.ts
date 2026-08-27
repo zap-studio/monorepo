@@ -18,10 +18,10 @@ class MockNotification {
   close() {}
 }
 
-function setMockNotification(permission: NotificationPermission) {
+const setMockNotification = (permission: NotificationPermission) => {
   MockNotification.permission = permission;
   Object.defineProperty(window, "Notification", { configurable: true, value: MockNotification });
-}
+};
 
 describe(useNotificationPermission, () => {
   it("reports the current Notification.permission", () => {

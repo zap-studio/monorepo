@@ -5,6 +5,10 @@ import { describe, expect, it } from "vitest";
 
 import { FetchError } from "./errors.ts";
 
+const INVALID_EMAIL_MESSAGE = "Invalid email";
+const REQUIRED_FIELD_MESSAGE = "Required field";
+const INVALID_VALUE_MESSAGE = "Invalid value";
+
 describe(FetchError, () => {
   describe("constructor", () => {
     it("should create an error with the provided message", () => {
@@ -88,7 +92,7 @@ describe(ValidationError, () => {
     it("should create an error with issues as JSON message", () => {
       const issues: StandardSchemaV1.Issue[] = [
         {
-          message: "Invalid email",
+          message: INVALID_EMAIL_MESSAGE,
           path: ["email"],
         },
       ];
@@ -100,7 +104,7 @@ describe(ValidationError, () => {
     it("should set the name property to 'ValidationError'", () => {
       const issues: StandardSchemaV1.Issue[] = [
         {
-          message: "Required field",
+          message: REQUIRED_FIELD_MESSAGE,
           path: ["name"],
         },
       ];
@@ -112,7 +116,7 @@ describe(ValidationError, () => {
     it("should set the issues property", () => {
       const issues: StandardSchemaV1.Issue[] = [
         {
-          message: "Invalid value",
+          message: INVALID_VALUE_MESSAGE,
           path: ["age"],
         },
       ];
@@ -165,21 +169,21 @@ describe(ValidationError, () => {
     it("should handle single issue", () => {
       const issues: StandardSchemaV1.Issue[] = [
         {
-          message: "Required field",
+          message: REQUIRED_FIELD_MESSAGE,
           path: ["username"],
         },
       ];
       const error = new ValidationError(issues);
 
       expect(error.issues).toHaveLength(1);
-      expect(error.issues[0]?.message).toBe("Required field");
+      expect(error.issues[0]?.message).toBe(REQUIRED_FIELD_MESSAGE);
       expect(error.issues[0]?.path).toStrictEqual(["username"]);
     });
 
     it("should handle multiple issues", () => {
       const issues: StandardSchemaV1.Issue[] = [
         {
-          message: "Invalid email",
+          message: INVALID_EMAIL_MESSAGE,
           path: ["email"],
         },
         {
@@ -194,7 +198,7 @@ describe(ValidationError, () => {
       const error = new ValidationError(issues);
 
       expect(error.issues).toHaveLength(3);
-      expect(error.issues[0]?.message).toBe("Invalid email");
+      expect(error.issues[0]?.message).toBe(INVALID_EMAIL_MESSAGE);
       expect(error.issues[1]?.message).toBe("Invalid phone");
       expect(error.issues[2]?.message).toBe("Invalid age");
     });
@@ -212,7 +216,7 @@ describe(ValidationError, () => {
     it("should format issues as pretty-printed JSON", () => {
       const issues: StandardSchemaV1.Issue[] = [
         {
-          message: "Invalid value",
+          message: INVALID_VALUE_MESSAGE,
           path: ["field"],
         },
       ];
@@ -220,7 +224,7 @@ describe(ValidationError, () => {
       const expectedMessage = JSON.stringify(issues, null, 2);
 
       expect(error.message).toBe(expectedMessage);
-      expect(error.message).toContain("Invalid value");
+      expect(error.message).toContain(INVALID_VALUE_MESSAGE);
       expect(error.message).toContain("field");
     });
 

@@ -25,14 +25,14 @@ class MockPaymentRequest {
   }
 }
 
-function installMockPaymentRequest() {
+const installMockPaymentRequest = () => {
   MockPaymentRequest.instances = [];
   MockPaymentRequest.nextShow = undefined;
   Object.defineProperty(window, "PaymentRequest", {
     configurable: true,
     value: MockPaymentRequest,
   });
-}
+};
 
 const methodData: PaymentMethodData[] = [{ supportedMethods: "basic-card" }];
 const details: PaymentDetailsInit = {

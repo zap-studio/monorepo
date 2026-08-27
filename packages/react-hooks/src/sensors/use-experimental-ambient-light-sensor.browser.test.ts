@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useExperimentalAmbientLightSensor } from "./use-experimental-ambient-light-sensor.ts";
 
-function createSensorMock(reading: { illuminance: number }) {
+const createSensorMock = (reading: { illuminance: number }) => {
   const sensor = new EventTarget() as EventTarget & {
     activated: boolean;
     illuminance: number;
@@ -34,15 +34,15 @@ function createSensorMock(reading: { illuminance: number }) {
     },
     sensor,
   };
-}
+};
 
-function stubAmbientLightSensor(sensor?: ReturnType<typeof createSensorMock>["sensor"]) {
+const stubAmbientLightSensor = (sensor?: ReturnType<typeof createSensorMock>["sensor"]) => {
   const AmbientLightSensorCtor = vi.fn().mockImplementation(function AmbientLightSensor() {
     return sensor;
   });
   vi.stubGlobal("AmbientLightSensor", AmbientLightSensorCtor);
   return AmbientLightSensorCtor;
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();

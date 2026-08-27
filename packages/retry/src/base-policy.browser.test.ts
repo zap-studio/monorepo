@@ -12,6 +12,9 @@ import {
 import { defaultSleep, runRetryPolicy } from "./base-policy.ts";
 import { AbortError, RetryError } from "./errors.ts";
 
+const MAX_ATTEMPTS_REASON = "max-attempts-reached";
+const ABORTED_BEFORE_START_MESSAGE = "aborted-before-start";
+
 const createRecordingLogger = (): Logger & {
   calls: {
     level: string;
@@ -97,7 +100,7 @@ describe("throw mode (runRetryPolicy default)", () => {
   it("throws RetryError from default onExhausted when retries stop", async () => {
     const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
-      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
+      { delayMs: 0, reason: MAX_ATTEMPTS_REASON, shouldRetry: false },
     ]);
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValueOnce(new Error("fail-1"));
@@ -135,10 +138,10 @@ describe("throw mode (runRetryPolicy default)", () => {
     const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
     const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
     const controller = new AbortController();
-    controller.abort(new Error("aborted-before-start"));
+    controller.abort(new Error(ABORTED_BEFORE_START_MESSAGE));
 
     await expect(runRetryPolicy(policy, execute, { signal: controller.signal })).rejects.toThrow(
-      "aborted-before-start",
+      ABORTED_BEFORE_START_MESSAGE,
     );
     expect(execute).not.toHaveBeenCalled();
   });
@@ -211,7 +214,7 @@ describe("throw mode (runRetryPolicy default)", () => {
 describe("result mode (throwOnExhausted: false)", () => {
   it("returns terminal result instead of throwing when retries stop", async () => {
     const policy = createSequencePolicy([
-      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
+      { delayMs: 0, reason: MAX_ATTEMPTS_REASON, shouldRetry: false },
     ]);
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
@@ -262,7 +265,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
     const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
     const controller = new AbortController();
-    controller.abort("aborted-before-start");
+    controller.abort(ABORTED_BEFORE_START_MESSAGE);
 
     const result = await runRetryPolicy(policy, execute, {
       signal: controller.signal,
@@ -271,7 +274,7 @@ describe("result mode (throwOnExhausted: false)", () => {
 
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(0);
-    expect(failure.error.message).toBe("aborted-before-start");
+    expect(failure.error.message).toBe(ABORTED_BEFORE_START_MESSAGE);
     expect(failure.error).toBeInstanceOf(AbortError);
     expect(execute).not.toHaveBeenCalled();
   });
@@ -524,7 +527,7 @@ describe("logging", () => {
     const logger = createRecordingLogger();
     const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
-      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
+      { delayMs: 0, reason: MAX_ATTEMPTS_REASON, shouldRetry: false },
     ]);
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValueOnce(new Error("fail-1"));
@@ -542,7 +545,7 @@ describe("logging", () => {
         context: {
           attempts: 2,
           error: expect.any(Error),
-          reason: "max-attempts-reached",
+          reason: MAX_ATTEMPTS_REASON,
         },
         level: "warn",
         message: "retry policy exhausted",
@@ -554,7 +557,7 @@ describe("logging", () => {
     const logger = createRecordingLogger();
     const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
-      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
+      { delayMs: 0, reason: MAX_ATTEMPTS_REASON, shouldRetry: false },
     ]);
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValueOnce(new Error("fail-1"));
@@ -576,7 +579,7 @@ describe("logging", () => {
         context: {
           attempts: 2,
           error: expect.any(Error),
-          reason: "max-attempts-reached",
+          reason: MAX_ATTEMPTS_REASON,
         },
         level: "warn",
         message: "retry policy exhausted",
@@ -645,7 +648,7 @@ describe("runRetryPolicy defaults", () => {
     const policy: RetryPolicy = {
       next: () => ({
         delayMs: 0,
-        reason: "max-attempts-reached",
+        reason: MAX_ATTEMPTS_REASON,
         shouldRetry: false,
       }),
     };

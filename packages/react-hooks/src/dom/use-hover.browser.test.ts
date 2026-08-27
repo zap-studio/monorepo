@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useHover, type UseHoverResult } from "./use-hover.ts";
 
-function renderHoverDiv() {
+const renderHoverDiv = () => {
   let latest!: UseHoverResult<HTMLDivElement>;
-  function TestComponent() {
+  const TestComponent = () => {
     latest = useHover<HTMLDivElement>();
     return createElement("div", { ref: latest.ref });
-  }
+  };
   const { unmount } = render(createElement(TestComponent));
   return {
     get current() {
@@ -17,7 +17,7 @@ function renderHoverDiv() {
     },
     unmount,
   };
-}
+};
 
 describe(useHover, () => {
   it("starts not hovered", () => {
@@ -74,10 +74,10 @@ describe(useHover, () => {
 describe("useHover ref tracking", () => {
   it("tracks an element that only attaches after the first render", () => {
     let latest!: UseHoverResult<HTMLDivElement>;
-    function TestComponent({ show }: { show: boolean }) {
+    const TestComponent = ({ show }: { show: boolean }) => {
       latest = useHover<HTMLDivElement>();
       return show ? createElement("div", { ref: latest.ref }) : null;
-    }
+    };
     const { rerender } = render(createElement(TestComponent, { show: false }));
 
     rerender(createElement(TestComponent, { show: true }));
@@ -91,10 +91,10 @@ describe("useHover ref tracking", () => {
 
   it("moves the listeners when the ref points at a different element", () => {
     let latest!: UseHoverResult<HTMLDivElement>;
-    function TestComponent({ which }: { which: string }) {
+    const TestComponent = ({ which }: { which: string }) => {
       latest = useHover<HTMLDivElement>();
       return createElement("div", { key: which, ref: latest.ref });
-    }
+    };
     const { rerender } = render(createElement(TestComponent, { which: "a" }));
     const first = latest.ref.current;
 

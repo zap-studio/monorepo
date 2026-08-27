@@ -4,10 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useIsFirstRender } from "./use-is-first-render.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const isFirst = useIsFirstRender();
   return isFirst ? "true" : "false";
-}
+};
 
 afterEach(() => {
   vi.unstubAllEnvs();

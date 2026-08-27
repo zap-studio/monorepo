@@ -4,10 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useRenderDuration } from "./use-render-duration.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { samples } = useRenderDuration();
   return String(samples.length);
-}
+};
 
 afterEach(() => {
   vi.unstubAllEnvs();

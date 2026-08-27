@@ -4,9 +4,9 @@ import { describe, expect, it } from "vitest";
 
 import { useDebouncedValue } from "./use-debounced-value.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   return useDebouncedValue("initial", 500);
-}
+};
 
 describe(useDebouncedValue, () => {
   it("renders the initial value on the server", () => {

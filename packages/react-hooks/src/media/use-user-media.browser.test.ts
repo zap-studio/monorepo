@@ -3,21 +3,21 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useUserMedia } from "./use-user-media.ts";
 
-function makeStream() {
+const makeStream = () => {
   const track = { stop: vi.fn() } as unknown as MediaStreamTrack;
   return { getTracks: () => [track], track } as unknown as MediaStream & {
     track: MediaStreamTrack;
   };
-}
+};
 
-function setGetUserMedia(
+const setGetUserMedia = (
   fn: ((constraints?: MediaStreamConstraints) => Promise<MediaStream>) | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "mediaDevices", {
     configurable: true,
     value: fn ? { getUserMedia: fn } : undefined,
   });
-}
+};
 
 afterEach(() => {
   setGetUserMedia(undefined);

@@ -11,12 +11,12 @@ import { useUnstableFiber, type UseUnstableFiberResult } from "./use-unstable-fi
  * only attaches during that render's own commit. Renders once, then
  * "settles" with a same-props re-render so the ref has a commit to read.
  */
-function renderFiberDiv(props: { label: string }) {
+const renderFiberDiv = (props: { label: string }) => {
   let latest!: UseUnstableFiberResult<HTMLDivElement>;
-  function TestComponent({ label }: { label: string }) {
+  const TestComponent = ({ label }: { label: string }) => {
     latest = useUnstableFiber<HTMLDivElement>();
     return createElement("div", { ref: latest.ref }, label);
-  }
+  };
   const { rerender, unmount } = render(createElement(TestComponent, props));
   rerender(createElement(TestComponent, props));
   return {
@@ -26,7 +26,7 @@ function renderFiberDiv(props: { label: string }) {
     rerender: (nextProps: { label: string }) => rerender(createElement(TestComponent, nextProps)),
     unmount,
   };
-}
+};
 
 describe(useUnstableFiber, () => {
   it("starts with fiber: null before mount", () => {
@@ -102,10 +102,10 @@ describe(useUnstableFiber, () => {
 describe("useUnstableFiber ref tracking", () => {
   it("resolves the fiber without an extra manual re-render", () => {
     let latest!: UseUnstableFiberResult<HTMLDivElement>;
-    function TestComponent() {
+    const TestComponent = () => {
       latest = useUnstableFiber<HTMLDivElement>();
       return createElement("div", { ref: latest.ref });
-    }
+    };
     render(createElement(TestComponent));
 
     expect(latest.fiber).not.toBeNull();

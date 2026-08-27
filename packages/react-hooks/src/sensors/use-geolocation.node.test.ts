@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useGeolocation } from "./use-geolocation.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { coords, error, loading } = useGeolocation();
   return `${loading},${coords === undefined},${error === undefined}`;
-}
+};
 
 describe(useGeolocation, () => {
   it("renders the initial loading state on the server, before the effect can run", () => {

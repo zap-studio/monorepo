@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useDeviceCapabilities } from "./use-device-capabilities.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { hardwareConcurrency, deviceMemory } = useDeviceCapabilities();
   return `${hardwareConcurrency},${deviceMemory}`;
-}
+};
 
 describe(useDeviceCapabilities, () => {
   it("renders 0,undefined on the server, before navigator can be read", () => {

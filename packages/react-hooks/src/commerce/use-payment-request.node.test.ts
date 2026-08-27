@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { usePaymentRequest } from "./use-payment-request.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = usePaymentRequest();
   return supported ? "true" : "false";
-}
+};
 
 describe(usePaymentRequest, () => {
   it("renders false on the server, before PaymentRequest can be read", () => {

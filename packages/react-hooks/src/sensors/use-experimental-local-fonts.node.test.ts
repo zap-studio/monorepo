@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useExperimentalLocalFonts } from "./use-experimental-local-fonts.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useExperimentalLocalFonts();
   return supported ? "true" : "false";
-}
+};
 
 describe(useExperimentalLocalFonts, () => {
   it("renders supported: false on the server", () => {

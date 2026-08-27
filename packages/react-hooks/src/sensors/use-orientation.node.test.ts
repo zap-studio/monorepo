@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { useOrientation } from "./use-orientation.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { angle, type } = useOrientation();
   return `${angle},${type ?? "undefined"}`;
-}
+};
 
 describe(useOrientation, () => {
   it("falls back to angle 0 and undefined type on the server", () => {
