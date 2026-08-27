@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useSessionStorage } from "./use-session-storage.ts";
 
@@ -45,5 +45,18 @@ describe("useSessionStorage", () => {
 
     expect(result.current[0]).toBe("");
     expect(window.sessionStorage.getItem("draft")).toBeNull();
+  });
+
+  it("sets an error when writing to sessionStorage throws", () => {
+    vi.spyOn(window.sessionStorage, "setItem").mockImplementation(() => {
+      throw new DOMException("quota exceeded");
+    });
+    const { result } = renderHook(() => useSessionStorage("draft", ""));
+
+    act(() => {
+      result.current[1]("hello");
+    });
+
+    expect(result.current[3]).toBeInstanceOf(DOMException);
   });
 });

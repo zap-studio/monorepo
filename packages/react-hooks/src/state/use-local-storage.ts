@@ -13,12 +13,13 @@ const getLocalStorage = (): Storage => window.localStorage;
  * `initialValue` if nothing is stored or the stored JSON is invalid. Also
  * syncs across tabs on the same origin, using the `storage` event.
  * `remove()` clears the key and resets the value to `initialValue`. If
- * reading or writing storage fails (for example: quota exceeded, private
- * browsing), the error is ignored and the state still updates in memory.
+ * reading, writing, or removing fails (for example: quota exceeded,
+ * private browsing), the state still updates in memory and the error is
+ * returned as the 4th tuple element (`null` otherwise).
  *
  * @example
  * ```tsx
- * const [theme, setTheme, clearTheme] = useLocalStorage("theme", "light");
+ * const [theme, setTheme, clearTheme, themeError] = useLocalStorage("theme", "light");
  * ```
  */
 export const useLocalStorage = <T>(key: string, initialValue: T): UseLocalStorageResult<T> =>

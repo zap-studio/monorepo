@@ -135,6 +135,57 @@ describe("useLocalStorage", () => {
   });
 });
 
+describe("useLocalStorage error state", () => {
+  it("has a null error when nothing has failed", () => {
+    const { result } = renderHook(() => useLocalStorage("count", 0));
+
+    expect(result.current[3]).toBeNull();
+  });
+
+  it("sets an error when writing to localStorage throws", () => {
+    vi.spyOn(window.localStorage, "setItem").mockImplementation(() => {
+      throw new DOMException("quota exceeded");
+    });
+    const { result } = renderHook(() => useLocalStorage("count", 0));
+
+    act(() => {
+      result.current[1](5);
+    });
+
+    expect(result.current[3]).toBeInstanceOf(DOMException);
+  });
+
+  it("clears a previous error once a write succeeds", () => {
+    const setItem = vi.spyOn(window.localStorage, "setItem").mockImplementationOnce(() => {
+      throw new DOMException("quota exceeded");
+    });
+    const { result } = renderHook(() => useLocalStorage("count", 0));
+
+    act(() => {
+      result.current[1](5);
+    });
+    setItem.mockRestore();
+    act(() => {
+      result.current[1](6);
+    });
+
+    expect(result.current[3]).toBeNull();
+  });
+
+  it("sets an error when removing from localStorage throws", () => {
+    vi.spyOn(window.localStorage, "removeItem").mockImplementation(() => {
+      throw new DOMException("removal failed");
+    });
+    const { result } = renderHook(() => useLocalStorage("count", 0));
+
+    act(() => {
+      result.current[2]();
+    });
+
+    expect(result.current[3]).toBeInstanceOf(DOMException);
+  });
+});
+
 describe("useLocalStorage initialValue stability", () => {
   it("does not re-add the storage listener for an object literal re-created every render", () => {
     const addEventListener = vi.spyOn(window, "addEventListener");

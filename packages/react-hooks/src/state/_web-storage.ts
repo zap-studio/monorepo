@@ -10,6 +10,7 @@ export type WebStorageResult<T> = [
   value: T,
   setValue: (next: SetStoredValue<T>) => void,
   remove: () => void,
+  error: unknown,
 ];
 
 const readStoredValue = <T>(storage: Storage, key: string, initialValue: T): T => {
@@ -34,6 +35,7 @@ export const useWebStorage = <T>(
   const [value, setValueState] = useState<T>(() =>
     typeof window === "undefined" ? initialValue : readStoredValue(getStorage(), key, initialValue),
   );
+  const [error, setError] = useState<unknown>(null);
 
   const initialValueRef = useRef(initialValue);
   useIsomorphicLayoutEffect(() => {
@@ -46,8 +48,9 @@ export const useWebStorage = <T>(
       const resolved = typeof next === "function" ? (next as (prev: T) => T)(value) : next;
       try {
         getStorage().setItem(key, JSON.stringify(resolved));
-      } catch {
-        // Storage write failed (for example: quota exceeded, private browsing). The state still updates in memory.
+        setError(null);
+      } catch (writeError) {
+        setError(writeError);
       }
       setValueState(resolved);
     },
@@ -57,8 +60,9 @@ export const useWebStorage = <T>(
   const remove = useCallback((): void => {
     try {
       getStorage().removeItem(key);
-    } catch {
-      // Storage removal failed. The state still resets in memory.
+      setError(null);
+    } catch (removeError) {
+      setError(removeError);
     }
     setValueState(initialValueRef.current);
   }, [key, getStorage]);
@@ -68,15 +72,20 @@ export const useWebStorage = <T>(
       if (event.key !== key || event.storageArea !== getStorage()) {
         return;
       }
-      // SAFETY: this event is for the exact key this hook manages, and only this hook writes to it. So when newValue is not null, it always parses back into a T.
-      setValueState(
-        event.newValue === null ? initialValueRef.current : (JSON.parse(event.newValue) as T),
-      );
+      try {
+        // SAFETY: this event is for the exact key this hook manages, and only this hook writes to it. So when newValue is not null, it always parses back into a T.
+        setValueState(
+          event.newValue === null ? initialValueRef.current : (JSON.parse(event.newValue) as T),
+        );
+        setError(null);
+      } catch (parseError) {
+        setError(parseError);
+      }
     };
 
     window.addEventListener("storage", handleStorageEvent);
     return () => window.removeEventListener("storage", handleStorageEvent);
   }, [key, getStorage]);
 
-  return [value, setValue, remove];
+  return [value, setValue, remove, error];
 };
