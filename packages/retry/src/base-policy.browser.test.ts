@@ -12,6 +12,11 @@ import {
 import { defaultSleep, runRetryPolicy } from "./base-policy.ts";
 import { AbortError, RetryError } from "./errors.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 const MAX_ATTEMPTS_REASON = "max-attempts-reached";
 const ABORTED_BEFORE_START_MESSAGE = "aborted-before-start";
 
@@ -173,7 +178,7 @@ describe("throw mode (runRetryPolicy default)", () => {
     // `signal.addEventListener`/`removeEventListener`; this stub implements exactly those members
     // (the no-op listener mocks are never invoked because `aborted` flips true on the 3rd read,
     // tripping the synchronous check inside sleepWithAbortSignal before a listener is registered).
-    const fakeSignal = {
+    const fakeSignal = asTestDouble<AbortSignal>({
       get aborted() {
         readCount += 1;
         return readCount >= 3;
@@ -183,7 +188,7 @@ describe("throw mode (runRetryPolicy default)", () => {
       reason: "abort-immediate-sleep-check",
       removeEventListener:
         vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
-    } as unknown as AbortSignal;
+    });
 
     await expect(runRetryPolicy(policy, execute, { signal: fakeSignal })).rejects.toThrow(
       "abort-immediate-sleep-check",
@@ -291,14 +296,14 @@ describe("result mode (throwOnExhausted: false)", () => {
     // SAFETY: `aborted` is already true, so buildAbortResult short-circuits on the `signal.aborted`/
     // `signal.reason` reads before any wait is scheduled; addEventListener/removeEventListener are
     // never called, so this stub only needs to satisfy the members runRetryPolicy actually reads here.
-    const fakeSignal = {
+    const fakeSignal = asTestDouble<AbortSignal>({
       aborted: true,
       addEventListener:
         vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
       reason: abortError,
       removeEventListener:
         vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
-    } as unknown as AbortSignal;
+    });
 
     const result = await runRetryPolicy(policy, execute, {
       signal: fakeSignal,
@@ -355,14 +360,14 @@ describe("result mode (throwOnExhausted: false)", () => {
     // SAFETY: `aborted` is already true and `reason` is `undefined`, which is exactly what
     // buildAbortResult/toAbortError read to exercise the "undefined reason" fallback branch;
     // addEventListener/removeEventListener are unused here since no wait is ever scheduled.
-    const fakeSignal = {
+    const fakeSignal = asTestDouble<AbortSignal>({
       aborted: true,
       addEventListener:
         vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
       reason: undefined,
       removeEventListener:
         vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
-    } as unknown as AbortSignal;
+    });
 
     const result = await runRetryPolicy(policy, execute, {
       signal: fakeSignal,
@@ -463,7 +468,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     // earlier `signal.aborted` checks in the result-mode loop pass through) and `reason` are read
     // by runRetryPolicy's abort handling here; addEventListener/removeEventListener are unused
     // no-op stubs since the abort is observed via a synchronous `aborted` read, not a fired event.
-    const fakeSignal = {
+    const fakeSignal = asTestDouble<AbortSignal>({
       get aborted() {
         readCount += 1;
         return readCount >= 3;
@@ -473,7 +478,7 @@ describe("result mode (throwOnExhausted: false)", () => {
       reason: "aborted-from-wait-catch",
       removeEventListener:
         vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
-    } as unknown as AbortSignal;
+    });
 
     const result = await runRetryPolicy(policy, execute, {
       signal: fakeSignal,
@@ -498,7 +503,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     // this stub's addEventListener actually fires the registered listener (flipping `aborted` first),
     // exercising the real `signal.addEventListener`/`aborted`/`reason` surface sleepWithAbortSignal
     // uses, so the cast to `AbortSignal & { aborted: boolean }` covers everything read here.
-    const fakeSignal = {
+    const fakeSignal = asTestDouble<AbortSignal & { aborted: boolean }>({
       aborted: false,
       addEventListener: vi.fn<
         (_type: string, listener: EventListenerOrEventListenerObject) => void
@@ -512,7 +517,7 @@ describe("result mode (throwOnExhausted: false)", () => {
       reason: "aborted-during-wait-race",
       removeEventListener:
         vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
-    } as unknown as AbortSignal & { aborted: boolean };
+    });
 
     const result = await runRetryPolicy(policy, execute, {
       signal: fakeSignal,

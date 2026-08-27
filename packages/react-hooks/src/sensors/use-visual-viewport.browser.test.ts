@@ -3,6 +3,11 @@ import { describe, expect, it } from "vitest";
 
 import { useVisualViewport } from "./use-visual-viewport.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 const createVisualViewportMock = (initial: {
   height: number;
   offsetLeft: number;
@@ -14,7 +19,7 @@ const createVisualViewportMock = (initial: {
 }) => {
   // SAFETY: the hook only calls addEventListener/removeEventListener (inherited from
   // EventTarget) and reads the seven numeric getters defined via Object.defineProperties below.
-  const viewport = new EventTarget() as unknown as VisualViewport;
+  const viewport = asTestDouble<VisualViewport>(new EventTarget());
   let state = { ...initial };
 
   Object.defineProperties(viewport, {

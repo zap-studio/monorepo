@@ -5,6 +5,11 @@ import type { VirtualKeyboard } from "./use-experimental-virtual-keyboard.ts";
 
 import { useExperimentalVirtualKeyboard } from "./use-experimental-virtual-keyboard.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 const createVirtualKeyboardMock = (initial: {
   height: number;
   width: number;
@@ -15,7 +20,7 @@ const createVirtualKeyboardMock = (initial: {
   // add/removeEventListener; boundingRect is defined as a getter just below, and
   // EventTarget already supplies the listener methods, so this fake satisfies
   // every member the hook actually touches.
-  const keyboard = new EventTarget() as unknown as VirtualKeyboard;
+  const keyboard = asTestDouble<VirtualKeyboard>(new EventTarget());
   let rect = { ...initial };
 
   Object.defineProperty(keyboard, "boundingRect", {

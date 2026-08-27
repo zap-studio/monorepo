@@ -3,6 +3,11 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useDevicePixelRatio } from "./use-device-pixel-ratio.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 const setDevicePixelRatio = (value: number) => {
   Object.defineProperty(window, "devicePixelRatio", { configurable: true, value });
 };
@@ -13,7 +18,7 @@ const createMatchMediaMock = () => {
   const matchMedia = vi.fn<(query: string) => MediaQueryList>((query: string) => {
     // SAFETY: the hook only calls addEventListener/removeEventListener on the
     // returned MediaQueryList, both of which this mock implements.
-    const list = {
+    const list = asTestDouble<MediaQueryList>({
       addEventListener: (_type: "change", listener: () => void) => {
         const entry = lists.find((item) => item.matchMediaList === list);
         if (entry) {
@@ -21,7 +26,7 @@ const createMatchMediaMock = () => {
         }
       },
       removeEventListener: () => {},
-    } as unknown as MediaQueryList;
+    });
     lists.push({ matchMediaList: list, query });
     return list;
   });

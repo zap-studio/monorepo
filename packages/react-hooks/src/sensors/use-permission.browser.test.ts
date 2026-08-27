@@ -3,9 +3,14 @@ import { describe, expect, it, vi } from "vitest";
 
 import { usePermission } from "./use-permission.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 const createPermissionStatusMock = (initialState: PermissionState) => {
   // SAFETY: usePermission only calls status.addEventListener/removeEventListener (native EventTarget methods) and reads status.state (defined right below via Object.defineProperty), so this EventTarget already provides every member the hook touches on a PermissionStatus.
-  const status = new EventTarget() as unknown as PermissionStatus;
+  const status = asTestDouble<PermissionStatus>(new EventTarget());
   let state = initialState;
 
   Object.defineProperty(status, "state", { configurable: true, get: () => state });

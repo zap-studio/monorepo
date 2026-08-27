@@ -5,6 +5,11 @@ import type { CookieInit, CookieListItem, CookieStore } from "./use-cookie.ts";
 
 import { useCookie } from "./use-cookie.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 const cookieItem = (name: string, value: string): CookieListItem => {
   return { domain: null, expires: null, name, path: "/", sameSite: "lax", value };
 };
@@ -20,25 +25,28 @@ const createCookieStoreMock = (initial: Record<string, string> = {}) => {
   };
 
   // SAFETY: useCookie only ever calls get/set/delete (with these exact signatures) plus addEventListener/removeEventListener on the store; `target` is a real EventTarget so those listener methods work natively, and the assigned delete/get/set mocks below cover the rest of what useCookie reads.
-  const store: CookieStore = Object.assign(target, {
-    delete: vi.fn<(name: string) => Promise<void>>((name: string): Promise<void> => {
-      const existing = cookies.get(name);
-      cookies.delete(name);
-      if (existing) {
-        dispatchChange([], [existing]);
-      }
-      return Promise.resolve();
+  const store: CookieStore = asTestDouble<CookieStore>(
+    Object.assign(target, {
+      delete: vi.fn<(name: string) => Promise<void>>((name: string): Promise<void> => {
+        const existing = cookies.get(name);
+        cookies.delete(name);
+        if (existing) {
+          dispatchChange([], [existing]);
+        }
+        return Promise.resolve();
+      }),
+      get: vi.fn<(name: string) => Promise<CookieListItem | null>>(
+        (name: string): Promise<CookieListItem | null> =>
+          Promise.resolve(cookies.get(name) ?? null),
+      ),
+      set: vi.fn<(options: CookieInit) => Promise<void>>((options: CookieInit): Promise<void> => {
+        const item = cookieItem(options.name, options.value);
+        cookies.set(options.name, item);
+        dispatchChange([item], []);
+        return Promise.resolve();
+      }),
     }),
-    get: vi.fn<(name: string) => Promise<CookieListItem | null>>(
-      (name: string): Promise<CookieListItem | null> => Promise.resolve(cookies.get(name) ?? null),
-    ),
-    set: vi.fn<(options: CookieInit) => Promise<void>>((options: CookieInit): Promise<void> => {
-      const item = cookieItem(options.name, options.value);
-      cookies.set(options.name, item);
-      dispatchChange([item], []);
-      return Promise.resolve();
-    }),
-  }) as unknown as CookieStore;
+  );
 
   return { dispatchChange, store };
 };
@@ -138,16 +146,18 @@ describe("useCookie", () => {
   it("ignores the initial get() result if unmounted before it resolves", async () => {
     let resolveGet: (item: CookieListItem | null) => void = () => {};
     // SAFETY: this test unmounts before its single `store.get(name)` call resolves and never calls set()/remove(), so `delete`/`set` only need to type-check as CookieStore methods; `get` and the real EventTarget it's assigned onto (for useCookie's addEventListener/removeEventListener) are the only members actually exercised.
-    const store: CookieStore = Object.assign(new EventTarget(), {
-      delete: vi.fn<(...args: any[]) => any>(),
-      get: vi.fn<() => Promise<CookieListItem | null>>(
-        () =>
-          new Promise<CookieListItem | null>((resolve) => {
-            resolveGet = resolve;
-          }),
-      ),
-      set: vi.fn<(...args: any[]) => any>(),
-    }) as unknown as CookieStore;
+    const store: CookieStore = asTestDouble<CookieStore>(
+      Object.assign(new EventTarget(), {
+        delete: vi.fn<(...args: any[]) => any>(),
+        get: vi.fn<() => Promise<CookieListItem | null>>(
+          () =>
+            new Promise<CookieListItem | null>((resolve) => {
+              resolveGet = resolve;
+            }),
+        ),
+        set: vi.fn<(...args: any[]) => any>(),
+      }),
+    );
     setCookieStore(store);
 
     const { unmount } = renderHook(() => useCookie("theme"));

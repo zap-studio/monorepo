@@ -6,6 +6,11 @@ import { useWindowMessage } from "./use-window-message.ts";
 const MESSAGE_ORIGIN = "https://example.com";
 const TRUSTED_ORIGIN = "https://trusted.example";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 describe("useWindowMessage", () => {
   it("starts with no lastMessage/lastError", () => {
     const { result } = renderHook(() => useWindowMessage<string>());
@@ -88,7 +93,7 @@ describe("useWindowMessage", () => {
     act(() => {
       // SAFETY: postMessage() only calls targetWindow.postMessage(message, targetOrigin),
       // and this fake target implements exactly that method with a matching signature.
-      result.current.postMessage(target as unknown as Window, "hi", MESSAGE_ORIGIN);
+      result.current.postMessage(asTestDouble<Window>(target), "hi", MESSAGE_ORIGIN);
     });
 
     expect(calls).toEqual([["hi", MESSAGE_ORIGIN]]);

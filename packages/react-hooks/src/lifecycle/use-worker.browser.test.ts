@@ -3,6 +3,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useWorker } from "./use-worker.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 class MockWorker extends EventTarget {
   static instances: MockWorker[] = [];
   postedMessages: unknown[] = [];
@@ -37,7 +42,7 @@ describe("useWorker", () => {
     // SAFETY: MockWorker extends EventTarget (add/removeEventListener, dispatchEvent) and
     // implements postMessage and terminate itself, the only Worker members useWorker's
     // run()/terminate() touch; Worker is stubbed undefined above so this factory is never invoked.
-    const createWorker = vi.fn<() => Worker>(() => new MockWorker() as unknown as Worker);
+    const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
     const { result } = renderHook(() => useWorker(createWorker));
 
     let error: Error | undefined;
@@ -60,7 +65,7 @@ describe("useWorker", () => {
     // SAFETY: this test only reads result.current.supported, which useWorker derives from
     // `typeof Worker !== "undefined"` and never calls a method on the created worker, so
     // MockWorker's lack of the rest of the Worker interface (onmessage, dispatchEvent shape) is unused.
-    const { result } = renderHook(() => useWorker(() => new MockWorker() as unknown as Worker));
+    const { result } = renderHook(() => useWorker(() => asTestDouble<Worker>(new MockWorker())));
 
     expect(result.current.supported).toBe(true);
   });
@@ -69,7 +74,7 @@ describe("useWorker", () => {
     reset();
     // SAFETY: this test never calls run(), so createWorker (and thus this cast) is asserted
     // never to be invoked; the assertion below just confirms that.
-    const createWorker = vi.fn<() => Worker>(() => new MockWorker() as unknown as Worker);
+    const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
     renderHook(() => useWorker(createWorker));
 
     expect(createWorker).not.toHaveBeenCalled();
@@ -81,7 +86,7 @@ describe("useWorker", () => {
       // SAFETY: useWorker's run() only calls addEventListener/removeEventListener (from
       // MockWorker's EventTarget base) and postMessage (implemented on MockWorker below) on the
       // worker it creates, so MockWorker satisfies every Worker member this test path exercises.
-      useWorker<number, number>(() => new MockWorker() as unknown as Worker),
+      useWorker<number, number>(() => asTestDouble<Worker>(new MockWorker())),
     );
 
     let responsePromise!: Promise<number>;
@@ -106,7 +111,7 @@ describe("useWorker", () => {
     // SAFETY: this test drives both run() calls through worker.postMessage and dispatches
     // "message" events consumed via worker.addEventListener/removeEventListener, all of which
     // MockWorker provides (postMessage directly, the listener methods via its EventTarget base).
-    const createWorker = vi.fn<() => Worker>(() => new MockWorker() as unknown as Worker);
+    const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
     const { result } = renderHook(() => useWorker<number, number>(createWorker));
 
     let firstPromise!: Promise<number>;
@@ -135,7 +140,7 @@ describe("useWorker", () => {
     // SAFETY: this test drives rejection via worker.dispatchEvent(new ErrorEvent(...)), which
     // MockWorker's EventTarget base handles, and run()'s handleError listener only reads
     // event.message and calls worker.removeEventListener, both satisfied here.
-    const { result } = renderHook(() => useWorker(() => new MockWorker() as unknown as Worker));
+    const { result } = renderHook(() => useWorker(() => asTestDouble<Worker>(new MockWorker())));
 
     let runPromise!: Promise<unknown>;
     act(() => {
@@ -164,7 +169,7 @@ describe("useWorker", () => {
     // SAFETY: this test asserts on worker.terminated after calling result.current.terminate(),
     // which useWorker implements as workerRef.current?.terminate() — the terminate() method
     // MockWorker implements directly (setting this.terminated = true).
-    const createWorker = vi.fn<() => Worker>(() => new MockWorker() as unknown as Worker);
+    const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
     const { result } = renderHook(() => useWorker<number, number>(createWorker));
 
     let firstPromise!: Promise<number>;
@@ -199,7 +204,7 @@ describe("useWorker", () => {
       // SAFETY: this test asserts worker.terminated after unmount(), which triggers useWorker's
       // `useEffect(() => terminate, [terminate])` cleanup calling workerRef.current?.terminate(),
       // the terminate() method MockWorker implements directly.
-      useWorker(() => new MockWorker() as unknown as Worker),
+      useWorker(() => asTestDouble<Worker>(new MockWorker())),
     );
 
     let runPromise!: Promise<unknown>;

@@ -3,6 +3,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { usePointerLock } from "./use-pointer-lock.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 const setPointerLockSupport = (supported: boolean) => {
   Object.defineProperty(document, "exitPointerLock", {
     configurable: true,
@@ -44,7 +49,7 @@ describe("usePointerLock", () => {
     setPointerLockSupport(true);
     const requestPointerLock = vi.fn<() => Promise<void>>(() => Promise.resolve());
     // SAFETY: usePointerLock's request() only calls element.requestPointerLock() on the ref'd element, so a fake exposing just that member stands in for HTMLDivElement here.
-    const element = { requestPointerLock } as unknown as HTMLDivElement;
+    const element = asTestDouble<HTMLDivElement>({ requestPointerLock });
 
     const { result } = renderHook(() => usePointerLock<HTMLDivElement>());
     result.current.ref.current = element;
@@ -71,9 +76,9 @@ describe("usePointerLock", () => {
   it("becomes locked when pointerlockchange fires with the ref'd element locked", async () => {
     setPointerLockSupport(true);
     // SAFETY: the pointerlockchange handler only compares this element to document.pointerLockElement by reference (===), so a fake exposing just requestPointerLock stands in for HTMLDivElement here.
-    const element = {
+    const element = asTestDouble<HTMLDivElement>({
       requestPointerLock: vi.fn<() => Promise<void>>(),
-    } as unknown as HTMLDivElement;
+    });
 
     const { result } = renderHook(() => usePointerLock<HTMLDivElement>());
     result.current.ref.current = element;
@@ -89,11 +94,13 @@ describe("usePointerLock", () => {
   it("becomes unlocked when pointerlockchange fires with a different element locked", async () => {
     setPointerLockSupport(true);
     // SAFETY: this is the ref'd element; the handler only compares it to document.pointerLockElement by reference, so a fake exposing just requestPointerLock is enough.
-    const element = {
+    const element = asTestDouble<HTMLDivElement>({
       requestPointerLock: vi.fn<() => Promise<void>>(),
-    } as unknown as HTMLDivElement;
+    });
     // SAFETY: this fake stands in for the "other" element that steals the lock; the handler only compares it to document.pointerLockElement by reference, and requestPointerLock is never invoked on it in this test.
-    const other = { requestPointerLock: vi.fn<() => Promise<void>>() } as unknown as HTMLDivElement;
+    const other = asTestDouble<HTMLDivElement>({
+      requestPointerLock: vi.fn<() => Promise<void>>(),
+    });
 
     const { result } = renderHook(() => usePointerLock<HTMLDivElement>());
     result.current.ref.current = element;
@@ -140,9 +147,9 @@ describe("usePointerLock", () => {
   it("removes the pointerlockchange listener on unmount", async () => {
     setPointerLockSupport(true);
     // SAFETY: after unmount the pointerlockchange listener is removed, so this element only needs to satisfy the ref assignment; requestPointerLock and reference equality with document.pointerLockElement are the only members the hook would have touched.
-    const element = {
+    const element = asTestDouble<HTMLDivElement>({
       requestPointerLock: vi.fn<() => Promise<void>>(),
-    } as unknown as HTMLDivElement;
+    });
 
     const { result, unmount } = renderHook(() => usePointerLock<HTMLDivElement>());
     result.current.ref.current = element;

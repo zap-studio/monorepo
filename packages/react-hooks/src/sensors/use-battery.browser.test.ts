@@ -5,13 +5,18 @@ import type { BatteryManager } from "./use-battery.ts";
 
 import { useBattery } from "./use-battery.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 const createBatteryMock = (
   initial: Pick<BatteryManager, "charging" | "chargingTime" | "dischargingTime" | "level">,
 ) => {
   // SAFETY: the hook only calls addEventListener/removeEventListener (inherited from
   // EventTarget) and reads charging/chargingTime/dischargingTime/level, which are all
   // defined via Object.defineProperties below.
-  const battery = new EventTarget() as unknown as BatteryManager;
+  const battery = asTestDouble<BatteryManager>(new EventTarget());
   let state = { ...initial };
 
   Object.defineProperties(battery, {

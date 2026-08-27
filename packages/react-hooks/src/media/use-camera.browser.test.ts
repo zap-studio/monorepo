@@ -3,13 +3,19 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useCamera } from "./use-camera.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 const makeStream = () => {
   // SAFETY: useMediaCapture's stop()/unmount cleanup only ever calls `track.stop()` on each track, so a stub exposing just `stop` covers every MediaStreamTrack member the hook under test reads.
-  const track = { stop: vi.fn<() => void>() } as unknown as MediaStreamTrack;
+  const track = asTestDouble<MediaStreamTrack>({ stop: vi.fn<() => void>() });
   // SAFETY: useMediaCapture only calls `stream.getTracks()` on the resolved MediaStream (to stop it); `track` is exposed solely so this test file can assert on it directly, so a stub with just those two members covers every MediaStream member the hook and the tests read.
-  return { getTracks: () => [track], track } as unknown as MediaStream & {
-    track: MediaStreamTrack;
-  };
+  return asTestDouble<MediaStream & { track: MediaStreamTrack }>({
+    getTracks: () => [track],
+    track,
+  });
 };
 
 const setGetUserMedia = (

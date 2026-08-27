@@ -21,6 +21,11 @@ import {
   when,
 } from "./index.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 const POST_WRITE_ACTION = "post:write";
 const COMMENT_READ_ACTION = "comment:read";
 const POST_DELETE_ACTION = "post:delete";
@@ -859,11 +864,11 @@ describe("createPolicy", () => {
 
   it("should deny when the actions map has no entry for a resource type", async () => {
     await Promise.resolve();
-    // SAFETY: `comment: undefined` deliberately violates the Actions shape to simulate a runtime actions map with no entry for a resource type; the double cast is required because the literal doesn't satisfy `typeof actions` directly.
-    const brokenActions = {
+    // SAFETY: `comment: undefined` deliberately violates the Actions shape to simulate a runtime actions map with no entry for a resource type.
+    const brokenActions = asTestDouble<typeof actions>({
       comment: undefined,
       post: ["read"],
-    } as unknown as typeof actions;
+    });
     const policy = createPolicy<TestContext, typeof resources, typeof brokenActions>({
       actions: brokenActions,
       resources,
@@ -1048,10 +1053,10 @@ describe("createPolicy", () => {
 
   it("should deny when actions for a resource are missing at runtime", async () => {
     await Promise.resolve();
-    // SAFETY: this object only defines "post" and omits "comment" to simulate an actions map missing an entry for a resource type at runtime; the double cast is required because the literal doesn't satisfy Actions<typeof resources> directly.
-    const badActions = {
+    // SAFETY: this object only defines "post" and omits "comment" to simulate an actions map missing an entry for a resource type at runtime.
+    const badActions = asTestDouble<Actions<typeof resources>>({
       post: actions.post,
-    } as unknown as Actions<typeof resources>;
+    });
 
     const policy = createPolicy<TestContext, typeof resources, typeof badActions>({
       actions: badActions,
@@ -1162,7 +1167,7 @@ describe("createPolicy", () => {
     await Promise.resolve();
     // SAFETY: this test deliberately supplies `undefined` where a schema is required, to verify createPolicy throws PolicyError when a resource schema is missing at runtime.
     const brokenResources = {
-      post: undefined as unknown as StandardSchemaV1,
+      post: asTestDouble<StandardSchemaV1>(undefined),
     } satisfies Resources<"post">;
 
     const brokenActions = {
@@ -1221,16 +1226,16 @@ describe("createPolicy", () => {
   });
 
   it("should deny when an allowed action has no validator entry at runtime", async () => {
-    // SAFETY: this object omits the "comment" entry that `typeof resources` requires, simulating a resources map missing an entry at runtime; the double cast is required because the literal doesn't satisfy `typeof resources` directly.
-    const runtimeResources = {
+    // SAFETY: this object omits the "comment" entry that `typeof resources` requires, simulating a resources map missing an entry at runtime.
+    const runtimeResources = asTestDouble<typeof resources>({
       post: createSchema<Post>(),
-    } as unknown as typeof resources;
+    });
 
-    // SAFETY: this object adds a "profile" action not present in `typeof actions`, simulating an allowed action with no validator entry at runtime; the double cast is required because the literal doesn't satisfy `typeof actions` directly.
-    const runtimeActions = {
+    // SAFETY: this object adds a "profile" action not present in `typeof actions`, simulating an allowed action with no validator entry at runtime.
+    const runtimeActions = asTestDouble<typeof actions>({
       ...actions,
       profile: ["read"],
-    } as unknown as typeof actions;
+    });
 
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
       actions: runtimeActions,

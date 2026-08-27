@@ -3,6 +3,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { usePerformanceObserver } from "./use-performance-observer.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 class MockPerformanceObserver {
   static instances: MockPerformanceObserver[] = [];
   disconnected = false;
@@ -72,7 +77,7 @@ describe("usePerformanceObserver", () => {
     const list = {} as PerformanceObserverEntryList;
     act(() => {
       // SAFETY: `observer` is the MockPerformanceObserver instance the hook itself constructed via `new PerformanceObserver(...)` (intercepted by our mocked global); the wrapper above only forwards it by reference and the assertion below compares it by identity, so it never needs to implement the real PerformanceObserver interface.
-      observer.callback(list, observer as unknown as PerformanceObserver);
+      observer.callback(list, asTestDouble<PerformanceObserver>(observer));
     });
 
     expect(callback).toHaveBeenCalledWith(list, observer);
@@ -93,7 +98,7 @@ describe("usePerformanceObserver", () => {
       // SAFETY: this test only checks which callback fired and how many times, not the argument values, and usePerformanceObserver's wrapper never reads list/obs members — so an empty object and the MockPerformanceObserver instance are safe stand-ins for the two positional arguments here.
       observer.callback(
         {} as PerformanceObserverEntryList,
-        observer as unknown as PerformanceObserver,
+        asTestDouble<PerformanceObserver>(observer),
       );
     });
 

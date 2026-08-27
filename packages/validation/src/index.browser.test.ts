@@ -11,6 +11,11 @@ import {
   standardValidateSync,
 } from "./index.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 const FIELD_REQUIRED_MESSAGE = "Field is required";
 const MUST_BE_NUMBER_MESSAGE = "Must be a number";
 const INVALID_VALUE_MESSAGE = "Invalid value";
@@ -45,7 +50,7 @@ const createMockSchemaFunction = <T>(
   // function's own `validateFn` argument, so `fn` structurally satisfies
   // StandardSchemaV1<unknown, T> for the same T the caller instantiated, even though
   // its static type is still the plain `() => void` declared two lines above.
-  return fn as unknown as StandardSchemaV1<unknown, T>;
+  return asTestDouble<StandardSchemaV1<unknown, T>>(fn);
 };
 
 const captureRejectedError = async (run: () => Promise<unknown>): Promise<unknown> => {
@@ -563,7 +568,7 @@ describe("standardValidateSync", () => {
     // SAFETY: this schema is a deliberately malformed test fixture that returns a bare number
     // instead of a real StandardSchemaV1.Result, to exercise the pass-through behavior for
     // non-object synchronous results.
-    const schema = createMockSchema(() => 42 as unknown as StandardSchemaV1.Result<unknown>);
+    const schema = createMockSchema(() => asTestDouble<StandardSchemaV1.Result<unknown>>(42));
 
     const result = standardValidateSync("test", schema);
 
@@ -573,7 +578,7 @@ describe("standardValidateSync", () => {
   it("should throw when a malformed schema synchronously returns null", () => {
     // SAFETY: this schema is a deliberately malformed test fixture that returns null instead of
     // a real StandardSchemaV1.Result, to exercise the TypeError thrown for a malformed result.
-    const schema = createMockSchema(() => null as unknown as StandardSchemaV1.Result<unknown>);
+    const schema = createMockSchema(() => asTestDouble<StandardSchemaV1.Result<unknown>>(null));
 
     expect(() => standardValidateSync("test", schema)).toThrow(TypeError);
   });

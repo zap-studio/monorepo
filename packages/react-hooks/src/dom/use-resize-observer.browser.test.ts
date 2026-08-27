@@ -4,6 +4,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useResizeObserver, type UseResizeObserverResult } from "./use-resize-observer.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 class FakeResizeObserver implements ResizeObserver {
   static instances: FakeResizeObserver[] = [];
   readonly callback: ResizeObserverCallback;
@@ -81,9 +86,9 @@ describe("useResizeObserver", () => {
       // passed to observer.observe, so the hook's `observed.target === element`
       // filter drops it; only target and contentRect are read, both provided here.
       observer?.callback(
-        [
+        asTestDouble<ResizeObserverEntry[]>([
           { contentRect: { height: 999, width: 999 }, target: document.createElement("span") },
-        ] as unknown as ResizeObserverEntry[],
+        ]),
         observer,
       );
     });

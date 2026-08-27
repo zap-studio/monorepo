@@ -3,6 +3,11 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { useNavigationType } from "./use-navigation-type.ts";
 
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 const originalGetEntriesByType = performance.getEntriesByType.bind(performance);
 
 afterEach(() => {
@@ -14,7 +19,7 @@ describe("useNavigationType", () => {
     // SAFETY: readNavigationType only reads `.type` off the first element returned by getEntriesByType("navigation"), so a fake entry with just a `type` field satisfies the hook's actual usage; the outer cast only matches this stand-in function's simpler signature to performance.getEntriesByType's real type.
     performance.getEntriesByType = ((type: string) =>
       type === "navigation"
-        ? [{ type: "reload" } as unknown as PerformanceNavigationTiming]
+        ? [asTestDouble<PerformanceNavigationTiming>({ type: "reload" })]
         : []) as typeof performance.getEntriesByType;
 
     const { result } = renderHook(() => useNavigationType());
