@@ -15,16 +15,13 @@ const readGamepads = (): Gamepad[] => {
   return pads;
 };
 
+const COMPARED_FIELDS = ["id", "index", "mapping", "connected", "timestamp"] as const;
+
+const gamepadEqual = (a: Gamepad, b: Gamepad | undefined): boolean =>
+  COMPARED_FIELDS.every((field) => a[field] === b?.[field]);
+
 const gamepadsEqual = (a: Gamepad[], b: Gamepad[]): boolean =>
-  a.length === b.length &&
-  a.every(
-    (pad, i) =>
-      pad.id === b[i]?.id &&
-      pad.index === b[i]?.index &&
-      pad.mapping === b[i]?.mapping &&
-      pad.connected === b[i]?.connected &&
-      pad.timestamp === b[i]?.timestamp,
-  );
+  a.length === b.length && a.every((pad, i) => gamepadEqual(pad, b[i]));
 
 const getServerSnapshot = (): Gamepad[] => EMPTY_GAMEPADS;
 
