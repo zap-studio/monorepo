@@ -1,3 +1,5 @@
+// fallow-ignore-file code-duplication -- variadic-arity overload signatures (fn1..fn9); one shared implementation below, nothing to extract
+
 /**
  * Left-to-right function composition, for use with the standalone, curried
  * combinators in this package (`@zap-studio/monads/result`,
