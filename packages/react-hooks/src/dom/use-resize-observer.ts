@@ -48,8 +48,10 @@ export const useResizeObserver = <
     }
 
     const observer = new ResizeObserver((entries) => {
-      // SAFETY: ResizeObserver calls back with one entry per element it watches. This observer only ever watches one element (see observe(element) below), so entries[0] always exists.
-      const entry = entries[0]!;
+      const entry = entries.find((observed) => observed.target === element);
+      if (!entry) {
+        return;
+      }
       setSize({ height: entry.contentRect.height, width: entry.contentRect.width });
     });
 
