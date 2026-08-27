@@ -23,5 +23,5 @@ export const useInterval = (callback: () => void, delayMs: number | null): void 
     }
     const id = setInterval(() => callbackRef.current(), delayMs);
     return () => clearInterval(id);
-  }, [delayMs]);
+  }, [callbackRef, delayMs]);
 };

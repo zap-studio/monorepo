@@ -85,6 +85,7 @@ export const useEventListener = <E extends Event = Event>(
 
   const { capture, once, passive, signal } = normalizeOptions(options);
 
+  // react-doctor-disable-next-line react-doctor/effect-needs-cleanup -- cleanup is returned below (removeEventListener); the early-return branch has nothing to clean up.
   useIsomorphicLayoutEffect(() => {
     if (!element) {
       return undefined;

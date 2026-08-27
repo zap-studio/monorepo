@@ -32,6 +32,6 @@ export const useDebounce = <Args extends unknown[]>(
       }
       timeoutRef.current = setTimeout(() => callbackRef.current(...args), delayMs);
     },
-    [delayMs],
+    [delayMs, timeoutRef],
   );
 };

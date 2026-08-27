@@ -27,7 +27,11 @@ export const useScreenCapture = (options?: DisplayMediaStreamOptions): UseScreen
   useMediaCapture({
     args: options,
     capture: (currentOptions) => navigator.mediaDevices.getDisplayMedia(currentOptions),
-    onStarted: (media, stop) => media.addEventListener("inactive", stop),
+    onStarted: (media, stop) => {
+      // react-doctor-disable-next-line react-doctor/effect-needs-cleanup -- the returned cleanup below IS invoked, by useMediaCapture's stop() (see _user-media.ts); the rule can't trace that indirection.
+      media.addEventListener("inactive", stop);
+      return () => media.removeEventListener("inactive", stop);
+    },
     supported: isSupported,
     unsupportedMessage: "getDisplayMedia is not supported by this browser.",
   });

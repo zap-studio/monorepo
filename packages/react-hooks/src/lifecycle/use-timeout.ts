@@ -24,5 +24,5 @@ export const useTimeout = (callback: () => void, delayMs: number | null): void =
     }
     const id = setTimeout(() => callbackRef.current(), delayMs);
     return () => clearTimeout(id);
-  }, [delayMs]);
+  }, [callbackRef, delayMs]);
 };

@@ -39,6 +39,6 @@ export const useThrottle = <Args extends unknown[]>(
         timeoutRef.current = null;
       }, delayMs);
     },
-    [delayMs],
+    [delayMs, timeoutRef],
   );
 };

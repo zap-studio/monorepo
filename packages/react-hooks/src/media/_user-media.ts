@@ -21,8 +21,12 @@ export interface UseMediaCaptureOptions<Args> {
   args: Args;
   /** Requests the `MediaStream`, e.g. `getUserMedia`/`getDisplayMedia`. */
   capture: (args: Args) => Promise<MediaStream>;
-  /** Runs once a capture succeeds, e.g. to auto-stop on a native "inactive" event. */
-  onStarted?: (media: MediaStream, stop: () => void) => void;
+  /**
+   * Runs once a capture succeeds, e.g. to auto-stop on a native "inactive"
+   * event. Return a cleanup to undo it (e.g. remove the listener); it runs
+   * on every `stop()` — manual, unmount, or the event calling `stop` itself.
+   */
+  onStarted?: (media: MediaStream, stop: () => void) => (() => void) | void;
   /** Reports whether the underlying browser API exists. */
   supported: () => boolean;
   /** Error message used when `supported()` is `false`. */
@@ -45,6 +49,7 @@ export const useMediaCapture = <Args>({
   const [status, setStatus] = useState<MediaStreamStatus>("idle");
   const [error, setError] = useState<Error | undefined>(undefined);
   const streamRef = useRef<MediaStream | null>(null);
+  const startedCleanupRef = useRef<(() => void) | null>(null);
 
   const optionsRef = useRef({ args, capture, onStarted, supported, unsupportedMessage });
   useEffect(() => {
@@ -54,6 +59,8 @@ export const useMediaCapture = <Args>({
   const isMountedRef = useRef(true);
 
   const stop = useCallback((): void => {
+    startedCleanupRef.current?.();
+    startedCleanupRef.current = null;
     for (const track of streamRef.current?.getTracks() ?? []) {
       track.stop();
     }
@@ -82,7 +89,7 @@ export const useMediaCapture = <Args>({
       streamRef.current = media;
       setStream(media);
       setStatus("active");
-      current.onStarted?.(media, stop);
+      startedCleanupRef.current = current.onStarted?.(media, stop) ?? null;
     } catch (caught) {
       setError(caught instanceof Error ? caught : new Error(String(caught)));
       setStatus("error");

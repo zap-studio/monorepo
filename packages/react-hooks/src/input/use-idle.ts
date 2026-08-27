@@ -27,6 +27,7 @@ const ACTIVITY_EVENTS = [
 export const useIdle = (timeoutMs: number = DEFAULT_TIMEOUT_MS): boolean => {
   const [idle, setIdle] = useState(false);
 
+  // react-doctor-disable-next-line react-doctor/effect-needs-cleanup -- cleanup is returned below: clearTimeout(timer) plus removeEventListener for every ACTIVITY_EVENTS entry.
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 
