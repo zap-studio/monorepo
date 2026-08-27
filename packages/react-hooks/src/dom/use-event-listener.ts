@@ -92,21 +92,15 @@ export const useEventListener = <E extends Event = Event>(
 
     // SAFETY: we trust the caller's type parameter `E` here. TypeScript can't figure out `E` from a runtime string like `type`, so we cast the native `Event` to `E` based on what the caller declared (or the default `Event` type).
     const listener = (event: Event) => handlerRef.current(event as E);
-    // SAFETY: TypeScript's `exactOptionalPropertyTypes` won't let us set `passive`/`signal` to `undefined` directly, but browsers treat an `undefined` value the same as leaving the field out. We write this options object at both the add and remove calls, instead of sharing one variable, so it's easy to match each `addEventListener` with its `removeEventListener`.
-    element.addEventListener(type, listener, {
+    const listenerOptions: AddEventListenerOptions = {
       capture,
       once,
-      passive,
-      signal,
-    } as AddEventListenerOptions);
+      ...(passive !== undefined && { passive }),
+      ...(signal !== undefined && { signal }),
+    };
+    element.addEventListener(type, listener, listenerOptions);
     return () => {
-      // SAFETY: this is the same options object as the `addEventListener` call above, and it's safe for the same reason: browsers treat an `undefined` value the same as leaving the field out.
-      element.removeEventListener(type, listener, {
-        capture,
-        once,
-        passive,
-        signal,
-      } as AddEventListenerOptions);
+      element.removeEventListener(type, listener, listenerOptions);
     };
   }, [element, type, capture, once, passive, signal]);
 };
