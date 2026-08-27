@@ -1,7 +1,6 @@
 import { useCallback, useRef } from "react";
 
 import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
-
 import { usePendingTimeoutRef } from "./_pending-timeout-ref.ts";
 
 /**
