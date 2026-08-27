@@ -5,8 +5,7 @@ import { describe, expect, it } from "vitest";
 import { useThrottledValue } from "./use-throttled-value.ts";
 
 function TestComponent() {
-  const value = useThrottledValue("initial", 500);
-  return value;
+  return useThrottledValue("initial", 500);
 }
 
 describe(useThrottledValue, () => {

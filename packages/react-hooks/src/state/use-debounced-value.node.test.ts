@@ -5,8 +5,7 @@ import { describe, expect, it } from "vitest";
 import { useDebouncedValue } from "./use-debounced-value.ts";
 
 function TestComponent() {
-  const value = useDebouncedValue("initial", 500);
-  return value;
+  return useDebouncedValue("initial", 500);
 }
 
 describe(useDebouncedValue, () => {

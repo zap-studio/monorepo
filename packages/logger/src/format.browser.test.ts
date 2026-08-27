@@ -129,7 +129,7 @@ describe("prettyFormat", () => {
     vi.stubGlobal("process", undefined);
     const [prefix] = prettyFormat(baseRecord()) as [string];
 
-    expect(prefix).toMatch(/\d{2}:\d{2}:\d{2}\.\d{3}/);
+    expect(prefix).toMatch(/\d{2}:\d{2}:\d{2}\.\d{3}/u);
     expect(prefix).toContain("INFO");
     expect(prefix).toContain("server started");
   });
