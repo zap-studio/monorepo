@@ -8,7 +8,7 @@ const NO_ROUTE_ERROR = "no route to host";
 const STREAM_REFUSED_ERROR = "stream refused";
 
 class MockWebTransport {
-  static instances: MockWebTransport[] = [];
+  static readonly instances: MockWebTransport[] = [];
 
   closeCalled = false;
   closeInfo: WebTransportCloseInfo | undefined;
@@ -85,7 +85,7 @@ class MockWebTransport {
 }
 
 const installMockWebTransport = () => {
-  MockWebTransport.instances = [];
+  MockWebTransport.instances.length = 0;
   vi.stubGlobal("WebTransport", MockWebTransport);
 };
 

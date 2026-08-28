@@ -10,7 +10,7 @@ import { useResizeObserver, type UseResizeObserverResult } from "./use-resize-ob
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 class FakeResizeObserver implements ResizeObserver {
-  static instances: FakeResizeObserver[] = [];
+  static readonly instances: FakeResizeObserver[] = [];
   readonly callback: ResizeObserverCallback;
   readonly disconnect = vi.fn<() => void>();
   readonly observe = vi.fn<(target: Element) => void>((target: Element) => {
@@ -50,7 +50,7 @@ const renderObservedDiv = () => {
 };
 
 afterEach(() => {
-  FakeResizeObserver.instances = [];
+  FakeResizeObserver.instances.length = 0;
   vi.unstubAllGlobals();
 });
 
@@ -127,7 +127,7 @@ describe("useResizeObserver", () => {
 describe("useResizeObserver ref tracking", () => {
   it("observes an element that only attaches after the first render", () => {
     vi.stubGlobal("ResizeObserver", FakeResizeObserver);
-    FakeResizeObserver.instances = [];
+    FakeResizeObserver.instances.length = 0;
 
     let latest!: UseResizeObserverResult<HTMLDivElement>;
     const TestComponent = ({ show }: { show: boolean }) => {

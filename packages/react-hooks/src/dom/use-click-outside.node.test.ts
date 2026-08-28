@@ -2,6 +2,7 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
+import { html } from "../tests/_html.ts";
 import { useClickOutside } from "./use-click-outside.ts";
 
 const TestComponent = () => {
@@ -11,8 +12,8 @@ const TestComponent = () => {
 
 describe("useClickOutside", () => {
   it("renders without touching document during server rendering", () => {
-    const html = renderToString(createElement(TestComponent));
+    const output = renderToString(createElement(TestComponent));
 
-    expect(html).toBe("<div></div>");
+    expect(output).toBe(html`<div></div>`);
   });
 });

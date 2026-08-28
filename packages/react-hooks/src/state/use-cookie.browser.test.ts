@@ -24,31 +24,36 @@ const createCookieStoreMock = (initial: Record<string, string> = {}) => {
     store.dispatchEvent(Object.assign(new Event("change"), { changed, deleted }));
   };
 
+  const deleteCookie = vi.fn<(name: string) => Promise<void>>((name: string): Promise<void> => {
+    const existing = cookies.get(name);
+    cookies.delete(name);
+    if (existing) {
+      dispatchChange([], [existing]);
+    }
+    return Promise.resolve();
+  });
+  const setCookie = vi.fn<(options: CookieInit) => Promise<void>>(
+    (options: CookieInit): Promise<void> => {
+      const item = cookieItem(options.name, options.value);
+      cookies.set(options.name, item);
+      dispatchChange([item], []);
+      return Promise.resolve();
+    },
+  );
+
   // SAFETY: useCookie only ever calls get/set/delete (with these exact signatures) plus addEventListener/removeEventListener on the store; `target` is a real EventTarget so those listener methods work natively, and the assigned delete/get/set mocks below cover the rest of what useCookie reads.
   const store: CookieStore = asTestDouble<CookieStore>(
     Object.assign(target, {
-      delete: vi.fn<(name: string) => Promise<void>>((name: string): Promise<void> => {
-        const existing = cookies.get(name);
-        cookies.delete(name);
-        if (existing) {
-          dispatchChange([], [existing]);
-        }
-        return Promise.resolve();
-      }),
+      delete: deleteCookie,
       get: vi.fn<(name: string) => Promise<CookieListItem | null>>(
         (name: string): Promise<CookieListItem | null> =>
           Promise.resolve(cookies.get(name) ?? null),
       ),
-      set: vi.fn<(options: CookieInit) => Promise<void>>((options: CookieInit): Promise<void> => {
-        const item = cookieItem(options.name, options.value);
-        cookies.set(options.name, item);
-        dispatchChange([item], []);
-        return Promise.resolve();
-      }),
+      set: setCookie,
     }),
   );
 
-  return { dispatchChange, store };
+  return { deleteCookie, dispatchChange, setCookie, store };
 };
 
 const setCookieStore = (store: CookieStore | undefined) => {
@@ -87,7 +92,7 @@ describe("useCookie", () => {
   });
 
   it("set() writes the cookie and updates value via the change event", async () => {
-    const { store } = createCookieStoreMock();
+    const { setCookie, store } = createCookieStoreMock();
     setCookieStore(store);
 
     const { result } = renderHook(() => useCookie("theme"));
@@ -97,12 +102,12 @@ describe("useCookie", () => {
       await result.current.set("dark", { path: "/" });
     });
 
-    expect(store.set).toHaveBeenCalledWith({ name: "theme", path: "/", value: "dark" });
+    expect(setCookie).toHaveBeenCalledWith({ name: "theme", path: "/", value: "dark" });
     expect(result.current.value).toBe("dark");
   });
 
   it("remove() deletes the cookie and clears value via the change event", async () => {
-    const { store } = createCookieStoreMock({ theme: "dark" });
+    const { deleteCookie, store } = createCookieStoreMock({ theme: "dark" });
     setCookieStore(store);
 
     const { result } = renderHook(() => useCookie("theme"));
@@ -112,7 +117,7 @@ describe("useCookie", () => {
       await result.current.remove();
     });
 
-    expect(store.delete).toHaveBeenCalledWith("theme");
+    expect(deleteCookie).toHaveBeenCalledWith("theme");
     expect(result.current.value).toBeUndefined();
   });
 

@@ -9,7 +9,7 @@ import { usePerformanceObserver } from "./use-performance-observer.ts";
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 class MockPerformanceObserver {
-  static instances: MockPerformanceObserver[] = [];
+  static readonly instances: MockPerformanceObserver[] = [];
   disconnected = false;
   observedOptions: PerformanceObserverInit | undefined;
   readonly callback: PerformanceObserverCallback;
@@ -29,7 +29,7 @@ class MockPerformanceObserver {
 }
 
 const installMockPerformanceObserver = () => {
-  MockPerformanceObserver.instances = [];
+  MockPerformanceObserver.instances.length = 0;
   Object.defineProperty(window, "PerformanceObserver", {
     configurable: true,
     value: MockPerformanceObserver,
@@ -121,7 +121,7 @@ describe("usePerformanceObserver", () => {
 describe("usePerformanceObserver option stability", () => {
   it("does not rebuild the observer for an options object re-created every render", () => {
     vi.stubGlobal("PerformanceObserver", MockPerformanceObserver);
-    MockPerformanceObserver.instances = [];
+    MockPerformanceObserver.instances.length = 0;
 
     const { rerender } = renderHook(() =>
       usePerformanceObserver(() => {}, { buffered: true, entryTypes: ["mark"] }),
@@ -137,7 +137,7 @@ describe("usePerformanceObserver option stability", () => {
 
   it("rebuilds the observer when an option actually changes", () => {
     vi.stubGlobal("PerformanceObserver", MockPerformanceObserver);
-    MockPerformanceObserver.instances = [];
+    MockPerformanceObserver.instances.length = 0;
 
     const { rerender } = renderHook(
       ({ type }: { type: string }) => usePerformanceObserver(() => {}, { type }),

@@ -4,6 +4,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useDropzone, useFileDrop, type UseFileDropResult } from "./use-file-drop.ts";
 
+interface MutableBox {
+  current: HTMLDivElement | null;
+}
+
 const dragEventWithFiles = (type: string, files: File[]): DragEvent => {
   const dataTransfer = new DataTransfer();
   for (const file of files) {
@@ -104,7 +108,7 @@ describe("useFileDrop", () => {
   it("calls the latest onDrop without re-subscribing", () => {
     const first = vi.fn<(files: File[]) => void>();
     const second = vi.fn<(files: File[]) => void>();
-    const box: { current: HTMLDivElement | null } = { current: null };
+    const box: MutableBox = { current: null };
     const TestComponent = ({ onDrop }: { onDrop: (files: File[]) => void }) => {
       const { ref } = useFileDrop<HTMLDivElement>(onDrop);
       return createElement("div", {

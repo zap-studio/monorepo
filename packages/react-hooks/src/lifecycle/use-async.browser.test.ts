@@ -56,7 +56,7 @@ describe("useAsync", () => {
   });
 
   it("resets to loading: true when re-running", async () => {
-    let resolveSecond: (value: number) => void = () => undefined;
+    let resolveSecond: (value: number) => void = (_value: number) => undefined;
     const asyncFn = vi.fn<(value: number) => Promise<number>>((value: number) => {
       if (value === 2) {
         return new Promise<number>((resolve) => {
@@ -84,7 +84,7 @@ describe("useAsync", () => {
   });
 
   it("ignores a resolution from a stale run after deps change", async () => {
-    let resolveFirst: (value: string) => void = () => undefined;
+    let resolveFirst: (value: string) => void = (_value: string) => undefined;
     const first = new Promise<string>((resolve) => {
       resolveFirst = resolve;
     });
@@ -105,7 +105,7 @@ describe("useAsync", () => {
   });
 
   it("ignores a resolution that arrives after unmount", async () => {
-    let resolve: (value: number) => void = () => undefined;
+    let resolve: (value: number) => void = (_value: number) => undefined;
     const pending = new Promise<number>((res) => {
       resolve = res;
     });
@@ -122,7 +122,7 @@ describe("useAsync", () => {
   });
 
   it("ignores a rejection that arrives after unmount", async () => {
-    let reject: (reason: Error) => void = () => undefined;
+    let reject: (reason: Error) => void = (_reason: Error) => undefined;
     const pending = new Promise<number>((_res, rej) => {
       reject = rej;
     });

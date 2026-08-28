@@ -8,14 +8,20 @@ import { useUserMedia } from "./use-user-media.ts";
 // scattering `as unknown as X` chains through the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
-const makeStream = () => {
+interface StreamFixture {
+  stop: ReturnType<typeof vi.fn<() => void>>;
+  stream: MediaStream;
+}
+
+const makeStream = (): StreamFixture => {
+  const stop = vi.fn<() => void>();
   // SAFETY: useMediaCapture's stop()/unmount cleanup only ever calls `track.stop()` on each track, so a stub exposing just `stop` covers every MediaStreamTrack member the hook under test reads.
-  const track = asTestDouble<MediaStreamTrack>({ stop: vi.fn<() => void>() });
-  // SAFETY: useMediaCapture only calls `stream.getTracks()` on the resolved MediaStream (to stop it); `track` is exposed solely so this test file can assert on it directly, so a stub with just those two members covers every MediaStream member the hook and the tests read.
-  return asTestDouble<MediaStream & { track: MediaStreamTrack }>({
+  const track = asTestDouble<MediaStreamTrack>({ stop });
+  // SAFETY: useMediaCapture only calls `stream.getTracks()` on the resolved MediaStream (to stop it), so a stub with just that member covers every MediaStream member the hook reads.
+  const stream = asTestDouble<MediaStream>({
     getTracks: () => [track],
-    track,
   });
+  return { stop, stream };
 };
 
 const setGetUserMedia = (
@@ -33,7 +39,7 @@ afterEach(() => {
 
 describe("useUserMedia", () => {
   it('starts "idle" with no stream', () => {
-    setGetUserMedia(() => Promise.resolve(makeStream()));
+    setGetUserMedia(() => Promise.resolve(makeStream().stream));
 
     const { result } = renderHook(() => useUserMedia({ video: true }));
 
@@ -42,10 +48,8 @@ describe("useUserMedia", () => {
   });
 
   it('start() resolves the stream and becomes "active"', async () => {
-    const stream = makeStream();
-    const getUserMedia = vi.fn<() => Promise<MediaStream & { track: MediaStreamTrack }>>(() =>
-      Promise.resolve(stream),
-    );
+    const { stream } = makeStream();
+    const getUserMedia = vi.fn<() => Promise<MediaStream>>(() => Promise.resolve(stream));
     setGetUserMedia(getUserMedia);
 
     const { result } = renderHook(() => useUserMedia({ video: true }));
@@ -99,7 +103,7 @@ describe("useUserMedia", () => {
   });
 
   it("stop() stops every track and resets to idle", async () => {
-    const stream = makeStream();
+    const { stop, stream } = makeStream();
     setGetUserMedia(() => Promise.resolve(stream));
 
     const { result } = renderHook(() => useUserMedia({ video: true }));
@@ -111,13 +115,13 @@ describe("useUserMedia", () => {
       result.current.stop();
     });
 
-    expect(stream.track.stop).toHaveBeenCalledTimes(1);
+    expect(stop).toHaveBeenCalledTimes(1);
     expect(result.current.status).toBe("idle");
     expect(result.current.stream).toBeUndefined();
   });
 
   it("stops the stream on unmount", async () => {
-    const stream = makeStream();
+    const { stop, stream } = makeStream();
     setGetUserMedia(() => Promise.resolve(stream));
 
     const { result, unmount } = renderHook(() => useUserMedia({ video: true }));
@@ -127,12 +131,12 @@ describe("useUserMedia", () => {
 
     unmount();
 
-    expect(stream.track.stop).toHaveBeenCalledTimes(1);
+    expect(stop).toHaveBeenCalledTimes(1);
   });
 
   it("stops a stream that resolves after unmount instead of keeping it running", async () => {
-    const stream = makeStream();
-    let resolveGetUserMedia: (value: MediaStream) => void = () => undefined;
+    const { stop, stream } = makeStream();
+    let resolveGetUserMedia: (value: MediaStream) => void = (_value: MediaStream) => undefined;
     setGetUserMedia(
       () =>
         new Promise((resolve) => {
@@ -149,7 +153,7 @@ describe("useUserMedia", () => {
     resolveGetUserMedia(stream);
     await started;
 
-    expect(stream.track.stop).toHaveBeenCalledTimes(1);
+    expect(stop).toHaveBeenCalledTimes(1);
   });
 });
 

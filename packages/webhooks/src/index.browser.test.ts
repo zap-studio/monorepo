@@ -739,7 +739,7 @@ describe("WebhookRouter", () => {
 
       it("should receive response in after hooks", async () => {
         let observedStatus = -1;
-        let observedBody: unknown = null;
+        let observedBody: { done: boolean } | null = null;
 
         const router = createWebhookRouter({
           after: async (_ctx, response) => {
@@ -890,7 +890,7 @@ describe("WebhookRouter", () => {
       });
 
       it("should normalize a non-Error into an Error before calling onError", async () => {
-        let observedError: unknown = null;
+        let observedError: Error | null = null;
 
         const router = createWebhookRouter({
           onError: (error) => {
@@ -906,8 +906,9 @@ describe("WebhookRouter", () => {
         await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
         expect(observedError).toBeInstanceOf(Error);
-        // SAFETY: the toBeInstanceOf assertion above guarantees observedError is an Error.
-        expect((observedError as Error).message).toBe("Internal server error");
+        if (observedError instanceof Error) {
+          expect(observedError.message).toBe("Internal server error");
+        }
       });
 
       it("should handle different error types", async () => {

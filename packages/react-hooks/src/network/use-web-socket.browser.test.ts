@@ -6,7 +6,7 @@ import { useWebSocket } from "./use-web-socket.ts";
 const SOCKET_URL = "wss://example.com";
 
 class MockWebSocket extends EventTarget {
-  static instances: MockWebSocket[] = [];
+  static readonly instances: MockWebSocket[] = [];
   closed = false;
   sent: unknown[] = [];
   readonly url: string;
@@ -28,7 +28,7 @@ class MockWebSocket extends EventTarget {
 }
 
 const installMockWebSocket = () => {
-  MockWebSocket.instances = [];
+  MockWebSocket.instances.length = 0;
   Object.defineProperty(window, "WebSocket", { configurable: true, value: MockWebSocket });
 };
 

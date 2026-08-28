@@ -2,6 +2,7 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { html } from "../tests/_html.ts";
 import { useUnstableRenderReason } from "./use-unstable-render-reason.ts";
 
 const TestComponent = () => {
@@ -15,16 +16,16 @@ afterEach(() => {
 
 describe("useUnstableRenderReason", () => {
   it("renders unknown on the server, before any ref can attach", () => {
-    const html = renderToString(createElement(TestComponent));
+    const output = renderToString(createElement(TestComponent));
 
-    expect(html).toBe("<div>unknown</div>");
+    expect(output).toBe(html`<div>unknown</div>`);
   });
 
   it("no-ops (unknown) in production builds", () => {
     vi.stubEnv("NODE_ENV", "production");
 
-    const html = renderToString(createElement(TestComponent));
+    const output = renderToString(createElement(TestComponent));
 
-    expect(html).toBe("<div>unknown</div>");
+    expect(output).toBe(html`<div>unknown</div>`);
   });
 });

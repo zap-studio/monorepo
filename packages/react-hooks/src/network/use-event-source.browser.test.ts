@@ -6,7 +6,7 @@ import { useEventSource } from "./use-event-source.ts";
 const STREAM_URL = "https://example.com/stream";
 
 class MockEventSource extends EventTarget {
-  static instances: MockEventSource[] = [];
+  static readonly instances: MockEventSource[] = [];
   closed = false;
   readonly url: string;
 
@@ -22,7 +22,7 @@ class MockEventSource extends EventTarget {
 }
 
 const installMockEventSource = () => {
-  MockEventSource.instances = [];
+  MockEventSource.instances.length = 0;
   Object.defineProperty(window, "EventSource", { configurable: true, value: MockEventSource });
 };
 

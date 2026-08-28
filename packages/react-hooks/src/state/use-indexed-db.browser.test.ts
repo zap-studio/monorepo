@@ -11,8 +11,14 @@ const asTestDouble = <T>(value: unknown): T => value as T;
 // `.error` is a raw string, not an Error instance — this matches real IndexedDB
 // behavior, where `.error` is a DOMException (which does not extend Error), so
 // these tests also exercise the `caught instanceof Error` false branch downstream.
+interface FailingRequestFixture {
+  error: string;
+  onerror?: (() => void) | null;
+  onsuccess?: (() => void) | null;
+}
+
 const makeFailingRequest = (errorMessage: string): IDBRequest => {
-  const fake: { error: string; onerror?: (() => void) | null; onsuccess?: (() => void) | null } = {
+  const fake: FailingRequestFixture = {
     error: errorMessage,
   };
   queueMicrotask(() => fake.onerror?.());
@@ -20,18 +26,25 @@ const makeFailingRequest = (errorMessage: string): IDBRequest => {
   return asTestDouble<IDBRequest>(fake);
 };
 
+interface SuccessfulReadFixture {
+  onsuccess?: (() => void) | null;
+  result?: number;
+}
+
+interface FailingTransactionFixture<Store> {
+  error: unknown;
+  objectStore: () => Store;
+  oncomplete?: (() => void) | null;
+  onerror?: (() => void) | null;
+}
+
 const makeFailingTransaction = (error: unknown): IDBTransaction => {
   const fakeStore = {
     delete: vi.fn<(key: string) => IDBRequest>(),
     get: vi.fn<(key: string) => IDBRequest>(),
     put: vi.fn<(value: unknown, key: string) => IDBRequest>(),
   };
-  const fake: {
-    error: unknown;
-    objectStore: () => typeof fakeStore;
-    oncomplete?: (() => void) | null;
-    onerror?: (() => void) | null;
-  } = {
+  const fake: FailingTransactionFixture<typeof fakeStore> = {
     error,
     objectStore: () => fakeStore,
   };
@@ -178,7 +191,7 @@ describe("useIndexedDB", () => {
   it("ignores a resolved read if the component unmounted first", async () => {
     const { request } = makeControlledOpenRequest({
       getRequest: () => {
-        const fake: { onsuccess?: (() => void) | null; result?: number } = { result: 1 };
+        const fake: SuccessfulReadFixture = { result: 1 };
         queueMicrotask(() => fake.onsuccess?.());
         // SAFETY: getValue's success path only assigns request.onsuccess and reads request.result, so this minimal fake — driven by the queueMicrotask above — satisfies IDBRequest for this read-succeeds case.
         return asTestDouble<IDBRequest>(fake);

@@ -9,7 +9,7 @@ import {
 } from "./use-intersection-observer.ts";
 
 class FakeIntersectionObserver implements IntersectionObserver {
-  static instances: FakeIntersectionObserver[] = [];
+  static readonly instances: FakeIntersectionObserver[] = [];
   readonly callback: IntersectionObserverCallback;
   readonly disconnect = vi.fn<() => void>();
   readonly observe = vi.fn<(target: Element) => void>();
@@ -47,7 +47,7 @@ const renderObservedDiv = () => {
 };
 
 afterEach(() => {
-  FakeIntersectionObserver.instances = [];
+  FakeIntersectionObserver.instances.length = 0;
 });
 
 describe("useIntersectionObserver", () => {

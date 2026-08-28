@@ -3,22 +3,25 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useScreenCapture } from "./use-screen-capture.ts";
 
-const makeStream = () => {
+interface StreamFixture {
+  stop: ReturnType<typeof vi.fn<() => void>>;
+  stream: MediaStream;
+}
+
+const makeStream = (): StreamFixture => {
+  const stop = vi.fn<() => void>();
   // SAFETY: the hook only ever calls track.stop() on entries from getTracks(),
   // and Object.assign below adds that stop() mock to this EventTarget.
   const track = new EventTarget() as MediaStreamTrack & EventTarget;
-  Object.assign(track, { stop: vi.fn<(...args: any[]) => any>() });
+  Object.assign(track, { stop });
   // SAFETY: onStarted only uses stream.addEventListener/removeEventListener("inactive", ...),
   // which EventTarget provides natively; getTracks/getVideoTracks are added below.
   const stream = new EventTarget() as MediaStream & EventTarget;
   Object.assign(stream, {
     getTracks: () => [track],
     getVideoTracks: () => [track],
-    track,
   });
-  // SAFETY: the Object.assign above attached `track` alongside the getTracks/getVideoTracks
-  // methods the hook relies on, so the stream genuinely carries a `track` property here.
-  return stream as MediaStream & { track: MediaStreamTrack & EventTarget };
+  return { stop, stream };
 };
 
 const setGetDisplayMedia = (
@@ -36,7 +39,7 @@ afterEach(() => {
 
 describe("useScreenCapture", () => {
   it('starts "idle" with no stream', () => {
-    setGetDisplayMedia(() => Promise.resolve(makeStream()));
+    setGetDisplayMedia(() => Promise.resolve(makeStream().stream));
 
     const { result } = renderHook(() => useScreenCapture());
 
@@ -45,10 +48,8 @@ describe("useScreenCapture", () => {
   });
 
   it('start() resolves the stream and becomes "active"', async () => {
-    const stream = makeStream();
-    const getDisplayMedia = vi.fn<
-      () => Promise<MediaStream & { track: MediaStreamTrack & EventTarget }>
-    >(() => Promise.resolve(stream));
+    const { stream } = makeStream();
+    const getDisplayMedia = vi.fn<() => Promise<MediaStream>>(() => Promise.resolve(stream));
     setGetDisplayMedia(getDisplayMedia);
 
     const { result } = renderHook(() => useScreenCapture({ video: true }));
@@ -100,7 +101,7 @@ describe("useScreenCapture", () => {
   });
 
   it("stop() stops every track and resets to idle", async () => {
-    const stream = makeStream();
+    const { stop, stream } = makeStream();
     setGetDisplayMedia(() => Promise.resolve(stream));
 
     const { result } = renderHook(() => useScreenCapture());
@@ -112,12 +113,12 @@ describe("useScreenCapture", () => {
       result.current.stop();
     });
 
-    expect(stream.track.stop).toHaveBeenCalledTimes(1);
+    expect(stop).toHaveBeenCalledTimes(1);
     expect(result.current.status).toBe("idle");
   });
 
   it('auto-stops when the stream becomes inactive (browser "Stop sharing" bar)', async () => {
-    const stream = makeStream();
+    const { stream } = makeStream();
     setGetDisplayMedia(() => Promise.resolve(stream));
 
     const { result } = renderHook(() => useScreenCapture());
@@ -134,7 +135,7 @@ describe("useScreenCapture", () => {
   });
 
   it("stops the stream on unmount", async () => {
-    const stream = makeStream();
+    const { stop, stream } = makeStream();
     setGetDisplayMedia(() => Promise.resolve(stream));
 
     const { result, unmount } = renderHook(() => useScreenCapture());
@@ -144,12 +145,12 @@ describe("useScreenCapture", () => {
 
     unmount();
 
-    expect(stream.track.stop).toHaveBeenCalledTimes(1);
+    expect(stop).toHaveBeenCalledTimes(1);
   });
 
   it("stops a stream that resolves after unmount instead of keeping it running", async () => {
-    const stream = makeStream();
-    let resolveGetDisplayMedia: (value: MediaStream) => void = () => undefined;
+    const { stop, stream } = makeStream();
+    let resolveGetDisplayMedia: (value: MediaStream) => void = (_value: MediaStream) => undefined;
     setGetDisplayMedia(
       () =>
         new Promise((resolve) => {
@@ -166,7 +167,7 @@ describe("useScreenCapture", () => {
     resolveGetDisplayMedia(stream);
     await started;
 
-    expect(stream.track.stop).toHaveBeenCalledTimes(1);
+    expect(stop).toHaveBeenCalledTimes(1);
   });
 });
 

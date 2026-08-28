@@ -9,7 +9,7 @@ import { useWorker } from "./use-worker.ts";
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 class MockWorker extends EventTarget {
-  static instances: MockWorker[] = [];
+  static readonly instances: MockWorker[] = [];
   postedMessages: unknown[] = [];
   terminated = false;
 
@@ -28,7 +28,7 @@ class MockWorker extends EventTarget {
 }
 
 const reset = () => {
-  MockWorker.instances = [];
+  MockWorker.instances.length = 0;
 };
 
 afterEach(() => {

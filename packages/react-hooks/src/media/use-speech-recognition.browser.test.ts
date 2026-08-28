@@ -13,7 +13,7 @@ interface MockRecognitionEvent {
 }
 
 class MockRecognition {
-  static instances: MockRecognition[] = [];
+  static readonly instances: MockRecognition[] = [];
   continuous = false;
   interimResults = false;
   lang = "";
@@ -43,7 +43,7 @@ class MockRecognition {
 }
 
 const installMockSpeechRecognition = () => {
-  MockRecognition.instances = [];
+  MockRecognition.instances.length = 0;
   Object.defineProperty(window, "SpeechRecognition", {
     configurable: true,
     value: MockRecognition,

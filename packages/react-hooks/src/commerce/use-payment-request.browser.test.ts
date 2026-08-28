@@ -8,9 +8,15 @@ class MockPaymentResponse {
   readonly methodName = "basic-card";
 }
 
+interface MockPaymentRequestState {
+  nextShow: (() => Promise<MockPaymentResponse>) | undefined;
+}
+
 class MockPaymentRequest {
-  static instances: MockPaymentRequest[] = [];
-  static nextShow: (() => Promise<MockPaymentResponse>) | undefined;
+  static readonly instances: MockPaymentRequest[] = [];
+  static readonly state: MockPaymentRequestState = {
+    nextShow: undefined,
+  };
   readonly methodData: PaymentMethodData[];
   readonly details: PaymentDetailsInit;
 
@@ -21,13 +27,13 @@ class MockPaymentRequest {
   }
 
   show() {
-    return MockPaymentRequest.nextShow?.() ?? Promise.resolve(new MockPaymentResponse());
+    return MockPaymentRequest.state.nextShow?.() ?? Promise.resolve(new MockPaymentResponse());
   }
 }
 
 const installMockPaymentRequest = () => {
-  MockPaymentRequest.instances = [];
-  MockPaymentRequest.nextShow = undefined;
+  MockPaymentRequest.instances.length = 0;
+  MockPaymentRequest.state.nextShow = undefined;
   Object.defineProperty(window, "PaymentRequest", {
     configurable: true,
     value: MockPaymentRequest,
@@ -92,7 +98,8 @@ describe("usePaymentRequest", () => {
 
   it('becomes "error" and resolves undefined when the user cancels the sheet', async () => {
     installMockPaymentRequest();
-    MockPaymentRequest.nextShow = () => Promise.reject(new DOMException("cancelled", "AbortError"));
+    MockPaymentRequest.state.nextShow = () =>
+      Promise.reject(new DOMException("cancelled", "AbortError"));
     const { result } = renderHook(() => usePaymentRequest());
 
     let response: PaymentResponse | undefined;
@@ -107,7 +114,7 @@ describe("usePaymentRequest", () => {
 
   it("wraps a non-Error rejection", async () => {
     installMockPaymentRequest();
-    MockPaymentRequest.nextShow = () => Promise.reject("cancelled");
+    MockPaymentRequest.state.nextShow = () => Promise.reject("cancelled");
     const { result } = renderHook(() => usePaymentRequest());
 
     await act(async () => {

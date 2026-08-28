@@ -8,11 +8,15 @@ import { usePointerLock } from "./use-pointer-lock.ts";
 // scattering `as unknown as X` chains through the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
-const setPointerLockSupport = (supported: boolean) => {
+const setPointerLockSupport = (
+  supported: boolean,
+): ReturnType<typeof vi.fn<() => void>> | undefined => {
+  const exitPointerLock = supported ? vi.fn<() => void>() : undefined;
   Object.defineProperty(document, "exitPointerLock", {
     configurable: true,
-    value: supported ? vi.fn<() => void>() : undefined,
+    value: exitPointerLock,
   });
+  return exitPointerLock;
 };
 
 const setPointerLockElement = (element: Element | null) => {
@@ -120,7 +124,7 @@ describe("usePointerLock", () => {
   });
 
   it("calls document.exitPointerLock() on exit()", () => {
-    setPointerLockSupport(true);
+    const exitPointerLock = setPointerLockSupport(true);
 
     const { result } = renderHook(() => usePointerLock());
 
@@ -128,7 +132,7 @@ describe("usePointerLock", () => {
       result.current.exit();
     });
 
-    expect(document.exitPointerLock).toHaveBeenCalledTimes(1);
+    expect(exitPointerLock).toHaveBeenCalledTimes(1);
   });
 
   it("no-ops request()/exit() when unsupported", async () => {

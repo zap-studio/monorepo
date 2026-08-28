@@ -4,6 +4,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useMutationObserver } from "./use-mutation-observer.ts";
 
+interface MutableBox {
+  current: HTMLDivElement | null;
+}
+
 const renderObservedDiv = (callback: (mutations: MutationRecord[]) => void) => {
   let element: HTMLDivElement | null = null;
   const TestComponent = () => {
@@ -42,7 +46,7 @@ describe("useMutationObserver", () => {
   it("calls the latest callback without re-subscribing", async () => {
     const first = vi.fn<(mutations: MutationRecord[]) => void>();
     const second = vi.fn<(mutations: MutationRecord[]) => void>();
-    const box: { current: HTMLDivElement | null } = { current: null };
+    const box: MutableBox = { current: null };
     const TestComponent = ({ callback }: { callback: (mutations: MutationRecord[]) => void }) => {
       const ref = useMutationObserver<HTMLDivElement>(callback);
       return createElement("div", {

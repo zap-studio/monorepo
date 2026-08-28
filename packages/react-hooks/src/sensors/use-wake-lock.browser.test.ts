@@ -15,16 +15,18 @@ const createSentinelMock = () => {
   const sentinel = asTestDouble<WakeLockSentinel>(new EventTarget());
   let released = false;
 
+  const release = vi.fn<() => Promise<void>>(async () => {
+    released = true;
+    sentinel.dispatchEvent(new Event("release"));
+  });
+
   Object.defineProperty(sentinel, "released", { configurable: true, get: () => released });
   Object.defineProperty(sentinel, "release", {
     configurable: true,
-    value: vi.fn<() => Promise<void>>(async () => {
-      released = true;
-      sentinel.dispatchEvent(new Event("release"));
-    }),
+    value: release,
   });
 
-  return sentinel;
+  return { release, sentinel };
 };
 
 const setNavigatorWakeLock = (
@@ -45,7 +47,8 @@ const setDocumentHidden = (hidden: boolean) => {
 
 describe("useWakeLock", () => {
   it("reports supported: true when navigator.wakeLock exists", () => {
-    setNavigatorWakeLock(() => Promise.resolve(createSentinelMock()));
+    const { sentinel } = createSentinelMock();
+    setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
     const { result } = renderHook(() => useWakeLock());
 
@@ -62,7 +65,7 @@ describe("useWakeLock", () => {
   });
 
   it("becomes active after request() acquires a sentinel", async () => {
-    const sentinel = createSentinelMock();
+    const { sentinel } = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
     const { result } = renderHook(() => useWakeLock());
@@ -75,7 +78,7 @@ describe("useWakeLock", () => {
   });
 
   it("becomes inactive after release()", async () => {
-    const sentinel = createSentinelMock();
+    const { release, sentinel } = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
     const { result } = renderHook(() => useWakeLock());
@@ -88,11 +91,11 @@ describe("useWakeLock", () => {
     });
 
     expect(result.current.active).toBe(false);
-    expect(sentinel.release).toHaveBeenCalledTimes(1);
+    expect(release).toHaveBeenCalledTimes(1);
   });
 
   it("becomes inactive when the sentinel's own release event fires", async () => {
-    const sentinel = createSentinelMock();
+    const { sentinel } = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
     const { result } = renderHook(() => useWakeLock());
@@ -109,7 +112,7 @@ describe("useWakeLock", () => {
 
   it("releases proactively when the document becomes hidden", async () => {
     setDocumentHidden(false);
-    const sentinel = createSentinelMock();
+    const { release, sentinel } = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
     const { result } = renderHook(() => useWakeLock());
@@ -123,12 +126,12 @@ describe("useWakeLock", () => {
     });
 
     expect(result.current.active).toBe(false);
-    expect(sentinel.release).toHaveBeenCalledTimes(1);
+    expect(release).toHaveBeenCalledTimes(1);
   });
 
   it("does not release when visibilitychange fires while still visible", async () => {
     setDocumentHidden(false);
-    const sentinel = createSentinelMock();
+    const { release, sentinel } = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
     const { result } = renderHook(() => useWakeLock());
@@ -141,11 +144,11 @@ describe("useWakeLock", () => {
     });
 
     expect(result.current.active).toBe(true);
-    expect(sentinel.release).not.toHaveBeenCalled();
+    expect(release).not.toHaveBeenCalled();
   });
 
   it("releases the active lock on unmount", async () => {
-    const sentinel = createSentinelMock();
+    const { release, sentinel } = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
     const { result, unmount } = renderHook(() => useWakeLock());
@@ -155,7 +158,7 @@ describe("useWakeLock", () => {
 
     unmount();
 
-    expect(sentinel.release).toHaveBeenCalledTimes(1);
+    expect(release).toHaveBeenCalledTimes(1);
   });
 
   it("no-ops request()/release() when unsupported", async () => {

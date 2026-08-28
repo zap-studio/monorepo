@@ -3,6 +3,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useWhyDidYouUpdate } from "./use-why-did-you-update.ts";
 
+interface TestProps {
+  [key: string]: unknown;
+  a?: number;
+  b?: number;
+  value?: number;
+}
+
 afterEach(() => {
   vi.restoreAllMocks();
 });
@@ -34,10 +41,10 @@ describe("useWhyDidYouUpdate", () => {
   it("detects added and removed keys as changes", () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
 
+    const initialProps: TestProps = { a: 1 };
     const { rerender } = renderHook(
-      ({ props }: { props: Record<string, unknown> }) => useWhyDidYouUpdate("X", props),
-      // SAFETY: `{ a: 1 }` already structurally satisfies Record<string, unknown>; the cast only widens the inferred initialProps type so the later `rerender({ props: { b: 2 } })` below, with a different key, still type-checks against the same hook render.
-      { initialProps: { props: { a: 1 } as Record<string, unknown> } },
+      ({ props }: { props: TestProps }) => useWhyDidYouUpdate("X", props),
+      { initialProps: { props: initialProps } },
     );
 
     rerender({ props: { b: 2 } });

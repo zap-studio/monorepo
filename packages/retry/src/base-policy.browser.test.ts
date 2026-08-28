@@ -20,6 +20,10 @@ const asTestDouble = <T>(value: unknown): T => value as T;
 const MAX_ATTEMPTS_REASON = "max-attempts-reached";
 const ABORTED_BEFORE_START_MESSAGE = "aborted-before-start";
 
+interface CircularFixture {
+  self?: unknown;
+}
+
 const createRecordingLogger = (): Logger & {
   calls: {
     level: string;
@@ -337,7 +341,7 @@ describe("result mode (throwOnExhausted: false)", () => {
   it("normalizes non-serializable abort reasons to fallback message", async () => {
     const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
     const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
-    const circular: { self?: unknown } = {};
+    const circular: CircularFixture = {};
     circular.self = circular;
     const controller = new AbortController();
     controller.abort(circular);

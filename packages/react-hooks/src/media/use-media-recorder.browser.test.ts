@@ -6,7 +6,7 @@ import { useMediaRecorder } from "./use-media-recorder.ts";
 const WEBM_MIME_TYPE = "video/webm";
 
 class MockMediaRecorder extends EventTarget {
-  static instances: MockMediaRecorder[] = [];
+  static readonly instances: MockMediaRecorder[] = [];
 
   static isTypeSupported(mimeType: string) {
     return mimeType === WEBM_MIME_TYPE;
@@ -40,7 +40,7 @@ class MockMediaRecorder extends EventTarget {
 }
 
 const installMockMediaRecorder = () => {
-  MockMediaRecorder.instances = [];
+  MockMediaRecorder.instances.length = 0;
   Object.defineProperty(window, "MediaRecorder", { configurable: true, value: MockMediaRecorder });
 };
 
