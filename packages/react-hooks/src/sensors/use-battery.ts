@@ -47,7 +47,7 @@ export const useBattery = (): BatteryState => {
   const [battery, setBattery] = useState<BatteryManager | undefined>(undefined);
 
   useEffect(() => {
-    // SAFETY: getBattery is an experimental API that only Chromium browsers support, and TypeScript's DOM types don't include it. The `if (!getBattery)` check below handles browsers that don't support it, so the code uses the SSR default instead of crashing.
+    // SAFETY: getBattery isn't declared on Navigator. The `if (!getBattery)` check below handles browsers that don't support it, so the code uses the SSR default instead of crashing.
     const getBattery = (navigator as NavigatorWithBattery).getBattery;
     if (!getBattery) {
       return undefined;

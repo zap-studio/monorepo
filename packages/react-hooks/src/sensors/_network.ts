@@ -1,6 +1,6 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
-/** A small copy of the Network Information API's types, since not every TypeScript DOM lib includes it. */
+/** A small copy of the Network Information API's types, not declared elsewhere. */
 export interface NetworkInformation extends EventTarget {
   readonly downlink?: number;
   // oxlint-disable-next-line sonarjs/max-union-size -- These are all 4 values from the NetworkInformation spec's effectiveType field. The list can't be made smaller.
@@ -28,7 +28,7 @@ const SERVER_SNAPSHOT: NetworkState = {
 };
 
 const getConnection = (): NetworkInformation | undefined =>
-  // SAFETY: NetworkInformation is an experimental Web API that TypeScript's DOM lib doesn't declare. Every caller reads its fields with optional chaining, so a browser without `connection` reads as `undefined` instead of throwing.
+  // SAFETY: connection isn't declared on Navigator. Every caller reads its fields with optional chaining, so a browser without `connection` reads as `undefined` instead of throwing.
   (navigator as NavigatorWithConnection).connection;
 
 const readNetworkState = (): NetworkState => {

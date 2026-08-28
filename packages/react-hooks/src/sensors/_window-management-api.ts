@@ -1,4 +1,4 @@
-/** A small copy of the Window Management API's types. This is an experimental API and not included in TypeScript's built-in types. */
+/** A small copy of the Window Management API's types. This is an experimental API, not declared elsewhere. */
 
 /** One connected display, reported by `getScreenDetails()`. It extends the standard `Screen` type with position and identity fields. */
 export interface ScreenDetailed extends Screen {
@@ -34,7 +34,7 @@ interface ScreenWithOptionalEventTarget {
   removeEventListener?: (type: "change", listener: () => void) => void;
 }
 
-/** The `EventTarget` methods of `window.screen`, used for its `change` event. TypeScript's `Screen` type doesn't declare them, but every browser's `screen` object supports them, so they're always available. */
+/** The `EventTarget` methods of `window.screen`, used for its `change` event. Not declared on `Screen`, but every browser's `screen` object supports them, so they're always available. */
 export interface ScreenChangeEventTarget {
   addEventListener: (type: "change", listener: () => void) => void;
   removeEventListener: (type: "change", listener: () => void) => void;
@@ -49,7 +49,7 @@ export const getScreenDetailsFn = (): GetScreenDetails | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: window.getScreenDetails is read as optional here, no matter what the current TypeScript DOM lib declares. On a browser that truly lacks it (like Safari or Firefox), this reads as undefined instead of throwing.
+  // SAFETY: getScreenDetails isn't declared on Window; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
   return (window as WindowWithScreenDetails).getScreenDetails;
 };
 
@@ -62,21 +62,18 @@ export const getScreenDetailsFn = (): GetScreenDetails | undefined => {
  * `window.innerWidth` directly.
  */
 export const getIsExtended = (): boolean =>
-  // SAFETY: screen.isExtended is read as optional here, no matter what the current TypeScript DOM lib declares. On a browser that truly lacks it, this reads as false instead of throwing.
+  // SAFETY: isExtended isn't declared on Screen; read as optional so an unsupported browser reads as false instead of throwing.
   Boolean((window.screen as ScreenWithIsExtended).isExtended);
 
 /**
  * Casts `window.screen` so its `addEventListener`/`removeEventListener`
- * (used for the `change` event) become available. TypeScript's `Screen`
- * type doesn't declare them, but every browser's `screen` object supports
- * them as an `EventTarget`. This only ever runs on the client, as
- * `useSyncExternalStore`'s `subscribe`, so it needs no server guard — the
- * same as `subscribe` in `use-window-size.ts`, which calls
- * `window.addEventListener` directly.
+ * (used for the `change` event) become available. This only ever runs on
+ * the client, as `useSyncExternalStore`'s `subscribe`, so it needs no
+ * server guard — the same as `subscribe` in `use-window-size.ts`, which
+ * calls `window.addEventListener` directly.
  */
 export const getScreenEventTarget = (): ScreenChangeEventTarget => {
-  // SAFETY: window.screen is first cast to a shape where these methods are optional. This is safe because any object structurally matches an all-optional shape, whether or not the methods actually exist at runtime.
+  // SAFETY: Screen's addEventListener/removeEventListener aren't declared, though every browser's `screen` supports them as an EventTarget. Cast through an all-optional shape first, then treated as always present.
   const withOptionalEventTarget = window.screen as ScreenWithOptionalEventTarget;
-  // SAFETY: every browser's `window.screen` supports `EventTarget` (including its `change` event), so it's safe to treat the optional methods above as always present. TypeScript's `Screen` type just doesn't declare them.
   return withOptionalEventTarget as ScreenChangeEventTarget;
 };

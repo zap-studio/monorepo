@@ -49,7 +49,7 @@ export const useExperimentalUserAgentData = (): UserAgentData | undefined => {
   const cacheRef = useRef<UserAgentData | undefined>(undefined);
 
   const getSnapshot = useCallback((): UserAgentData | undefined => {
-    // SAFETY: userAgentData (User-Agent Client Hints) is a Chromium-only API that TypeScript's DOM types don't include. We read it as optional, so unsupported browsers give undefined instead of throwing an error.
+    // SAFETY: userAgentData (User-Agent Client Hints) isn't declared on Navigator; read as optional so unsupported browsers give undefined instead of throwing.
     const next = (navigator as NavigatorWithUserAgentData).userAgentData;
     if (!dataEqual(cacheRef.current, next)) {
       cacheRef.current = next;

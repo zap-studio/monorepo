@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-/** A small copy of the Generic Sensor API's types. This is an experimental API, only in Chrome, and not included in TypeScript's built-in types. */
+/** A small copy of the Generic Sensor API's types. This is an experimental, Chrome-only API, not declared elsewhere. */
 export interface GenericSensorErrorEvent extends Event {
   readonly error: DOMException;
 }
@@ -39,11 +39,9 @@ const getGenericSensorConstructor = <TSensor extends GenericSensorInstance>(
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: window is first treated as `unknown`, then read as a record keyed by string. Not every TypeScript DOM lib declares these sensor constructors, so on a browser that truly lacks one (like Safari or Firefox) this reads as undefined instead of throwing.
+  // SAFETY: these sensor constructors aren't declared on Window. Widened through `unknown` and read by name; callers only ever pass one of this file's fixed constructor names, so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
   const untypedWindow: unknown = window;
-  // SAFETY: the sensor constructor is read by name from the widened window above. Callers only ever pass a known Generic Sensor API constructor name.
   const sensorWindow = untypedWindow as GenericSensorWindow;
-  // SAFETY: the value read above is cast from `unknown` to a constructor type. Every caller in this file passes one of the fixed Generic Sensor API constructor names, so this is always that constructor or undefined.
   return sensorWindow[constructorName] as GenericSensorConstructor<TSensor> | undefined;
 };
 

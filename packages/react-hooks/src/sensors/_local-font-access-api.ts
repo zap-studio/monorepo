@@ -1,4 +1,4 @@
-/** A small copy of the Local Font Access API's types. This is an experimental API, only in Chrome, and not included in TypeScript's built-in types. */
+/** A small copy of the Local Font Access API's types. This is an experimental, Chrome-only API, not declared elsewhere. */
 export interface LocalFontData {
   blob(): Promise<Blob>;
   readonly family: string;
@@ -27,6 +27,6 @@ export const getQueryLocalFonts = (): QueryLocalFonts | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: window.queryLocalFonts is read as optional here, no matter what the current TypeScript DOM lib declares. On a browser that truly lacks it (like Safari or Firefox), this reads as undefined instead of throwing.
+  // SAFETY: queryLocalFonts isn't declared on Window; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
   return (window as WindowWithQueryLocalFonts).queryLocalFonts;
 };

@@ -35,7 +35,7 @@ export const useDeviceCapabilities = (): DeviceCapabilities => {
   const cacheRef = useRef<DeviceCapabilities>(SERVER_SNAPSHOT);
 
   const getSnapshot = useCallback((): DeviceCapabilities => {
-    // SAFETY: deviceMemory is a Chromium-only field from the Device Memory API, and TypeScript's DOM types don't include it. It's read as optional, so an unsupported browser gives `undefined` instead of crashing.
+    // SAFETY: deviceMemory isn't declared on Navigator; read as optional so an unsupported browser gives `undefined` instead of crashing.
     const deviceMemory = (navigator as NavigatorWithDeviceMemory).deviceMemory;
     const next: DeviceCapabilities = {
       ...(deviceMemory !== undefined && { deviceMemory }),

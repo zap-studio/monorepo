@@ -14,10 +14,10 @@ const isSupported = (): boolean =>
 
 /**
  * Wraps the Credential Management API (`navigator.credentials`).
- * Browsers use this to store WebAuthn (public-key) credentials. This is
- * the only credential type TypeScript's DOM types still support —
- * Password and Federated Credential support was removed from both
- * browsers and types. If the API isn't supported, every method resolves
+ * Browsers use this to store WebAuthn (public-key) credentials — the only
+ * credential type still supported; Password and Federated Credential
+ * support was removed from both browsers and types. If the API isn't
+ * supported, every method resolves
  * to `undefined` instead of throwing an error. `get()` and `create()` can
  * still resolve to `null`, just like the real API does, when there's no
  * credential to return. `supported` starts as `false`, which is also the

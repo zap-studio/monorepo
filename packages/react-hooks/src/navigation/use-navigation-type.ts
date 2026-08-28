@@ -12,7 +12,7 @@ const readNavigationType = (): NavigationEntryType => {
   if (!isSupported()) {
     return FALLBACK_NAVIGATION_TYPE;
   }
-  // SAFETY: TypeScript's DOM types don't narrow the result of getEntriesByType("navigation") to the right type, but the spec guarantees every entry returned for "navigation" is a PerformanceNavigationTiming.
+  // SAFETY: getEntriesByType("navigation") isn't narrowed to the right type, but the spec guarantees every entry returned for "navigation" is a PerformanceNavigationTiming.
   const [entry] = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
   return entry?.type ?? FALLBACK_NAVIGATION_TYPE;
 };

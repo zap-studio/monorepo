@@ -1,7 +1,6 @@
 /**
  * A small local type definition for the Barcode Detection API. MDN marks
- * this API as experimental. It only works in Chromium browsers, and not
- * every version of TypeScript's DOM types includes it.
+ * this API as experimental. It only works in Chromium browsers.
  */
 export type BarcodeFormat =
   | "aztec"
@@ -60,6 +59,6 @@ export const getBarcodeDetectorConstructor = (): BarcodeDetectorConstructor | un
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: We read window.BarcodeDetector as optional, no matter what the TypeScript DOM types say. This way, browsers that don't have it (like Safari or Firefox) just return undefined instead of throwing an error.
+  // SAFETY: BarcodeDetector isn't declared on Window; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
   return (window as BarcodeDetectionWindow).BarcodeDetector;
 };

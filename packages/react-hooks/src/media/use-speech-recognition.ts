@@ -25,7 +25,7 @@ const getSpeechRecognitionConstructor = (): SpeechRecognitionConstructor | undef
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: SpeechRecognition (and its prefixed version, webkitSpeechRecognition, used by Safari and Chromium) still has no constructor declared on Window in TypeScript's DOM types, even in TypeScript 7 (only the event/result types like SpeechRecognitionEvent are built in now). Every caller uses this function to look it up, so an unsupported browser like Firefox gets undefined instead of an error.
+  // SAFETY: SpeechRecognition (and its prefixed webkitSpeechRecognition, used by Safari and Chromium) has no constructor declared on Window. Every caller uses this function to look it up, so an unsupported browser like Firefox gets undefined instead of an error.
   const target = window as WindowWithSpeechRecognition;
   return target.SpeechRecognition ?? target.webkitSpeechRecognition;
 };

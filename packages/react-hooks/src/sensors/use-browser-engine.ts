@@ -10,7 +10,7 @@ interface NavigatorWithUserAgentData extends Navigator {
 const subscribe = () => () => {};
 
 const detectEngine = (): BrowserEngine => {
-  // SAFETY: userAgentData (User-Agent Client Hints) is a Chromium-only API that TypeScript's DOM types don't include. Its mere presence, not its contents, is what identifies Blink here.
+  // SAFETY: userAgentData (User-Agent Client Hints) isn't declared on Navigator. Its mere presence, not its contents, is what identifies Blink here.
   if ((navigator as NavigatorWithUserAgentData).userAgentData) {
     return "blink";
   }

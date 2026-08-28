@@ -1,4 +1,4 @@
-/** A small copy of the Idle Detection API's types. This is an experimental API, only in Chrome, and not included in TypeScript's built-in types. */
+/** A small copy of the Idle Detection API's types. This is an experimental, Chrome-only API, not declared elsewhere. */
 export type IdleScreenState = "locked" | "unlocked";
 /** Whether the user has interacted with the device within the detector's idle threshold. */
 export type IdleUserState = "active" | "idle";
@@ -33,6 +33,6 @@ export const getIdleDetectorConstructor = (): IdleDetectorConstructor | undefine
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: window.IdleDetector is read as optional here, no matter what the current TypeScript DOM lib declares. On a browser that truly lacks it (like Safari or Firefox), this reads as undefined instead of throwing.
+  // SAFETY: IdleDetector isn't declared on Window; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
   return (window as IdleDetectionWindow).IdleDetector;
 };

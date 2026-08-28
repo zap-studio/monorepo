@@ -35,7 +35,7 @@ export const useInstallPrompt = (): UseInstallPromptResult => {
   useEffect(() => {
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
-      // SAFETY: beforeinstallprompt is a non-standard event that only Chromium browsers fire, and it isn't declared in TypeScript's DOM types. This listener is only ever added for this exact event name, so the object it receives always has this shape at runtime.
+      // SAFETY: beforeinstallprompt is a non-standard, Chromium-only event, not declared. This listener is only ever added for this exact event name, so the object it receives always has this shape at runtime.
       beforeInstallEventRef.current = event as BeforeInstallPromptEvent;
       setCanInstall(true);
     };

@@ -20,7 +20,7 @@ export interface VirtualKeyboardRect {
 const FALLBACK_RECT: VirtualKeyboardRect = { height: 0, width: 0, x: 0, y: 0 };
 
 const getVirtualKeyboard = (): VirtualKeyboard | undefined =>
-  // SAFETY: VirtualKeyboard is an experimental, Chromium-only API that TypeScript's DOM types don't include. Every caller uses optional chaining to read it, so unsupported browsers get the fallback rect instead of an error.
+  // SAFETY: VirtualKeyboard isn't declared on Navigator. Every caller uses optional chaining to read it, so unsupported browsers get the fallback rect instead of an error.
   (navigator as NavigatorWithVirtualKeyboard).virtualKeyboard;
 
 const readRect = (): VirtualKeyboardRect => {

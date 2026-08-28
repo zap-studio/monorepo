@@ -1,4 +1,4 @@
-/** A simple local copy of the Contact Picker API types. This API is experimental (see MDN), only works in Chromium browsers, and not every version of TypeScript's DOM types includes it. */
+/** A simple local copy of the Contact Picker API types. This API is experimental (see MDN) and only works in Chromium browsers. */
 export type ContactProperty = "address" | "email" | "icon" | "name" | "tel";
 
 /** A single postal address, as returned in a `ContactInfo`'s `address` field. */
@@ -47,6 +47,6 @@ export const getContactsManager = (): ContactsManager | undefined => {
   if (typeof navigator === "undefined") {
     return undefined;
   }
-  // SAFETY: we read navigator.contacts as optional, no matter what the current TypeScript DOM types say. This way, a browser that doesn't have it (Safari, Firefox) just gives us undefined instead of an error.
+  // SAFETY: contacts isn't declared on Navigator; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
   return (navigator as NavigatorWithContacts).contacts;
 };

@@ -1,23 +1,18 @@
 /**
- * `Navigation`, `NavigateEvent`, and `NavigationHistoryEntry` below are all
- * TypeScript 7's own native DOM types for the Navigation API — used bare,
- * ambient, no import needed.
+ * `Navigation`, `NavigateEvent`, and `NavigationHistoryEntry` are ambient
+ * global types for the Navigation API — used bare, no import needed.
  */
 
 /**
- * Shared helper that reads `window.navigation` (the Navigation API). Both
- * `useNavigation` and `useNavigationBlocker` use this function. It lives
- * here instead of in a hook file because hook files should never import
- * from each other.
+ * Shared helper that reads `window.navigation`. Both `useNavigation` and
+ * `useNavigationBlocker` use this; it lives here instead of a hook file
+ * because hook files should never import from each other.
  *
- * TypeScript 7's DOM lib declares `Window.navigation` as always present,
- * but the Navigation API only works in Chromium-based browsers (Chrome,
- * Edge) — Safari and Firefox leave it `undefined` at runtime regardless of
- * what the type says. This function's own return type widens back to
- * `Navigation | undefined` to match that.
+ * The Navigation API only works in Chromium browsers (Chrome, Edge) —
+ * Safari and Firefox leave `window.navigation` `undefined` at runtime, so
+ * this function's return type widens back to `Navigation | undefined`.
  *
- * This function is only ever called in the browser, never during server
- * rendering. Because of that, it doesn't need its own check for
- * `typeof window === "undefined"` like a public hook would.
+ * Only ever called in the browser, never during server rendering, so it
+ * doesn't need its own `typeof window === "undefined"` check.
  */
 export const getNavigation = (): Navigation | undefined => window.navigation;

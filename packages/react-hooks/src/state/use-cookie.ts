@@ -2,17 +2,14 @@ import { useCallback, useEffect, useState } from "react";
 
 /**
  * `CookieChangeEvent`, `CookieInit`, `CookieListItem`, and `CookieStore`
- * below are all TypeScript 7's own native DOM types for the Cookie Store
- * API — used bare, ambient, no import needed. Nothing here re-exports them
- * under those names; callers on TypeScript 7 already have them globally.
+ * below are ambient global types for the Cookie Store API — used bare, no
+ * import needed, and not re-exported under those names.
  */
 
 /**
- * TypeScript 7's DOM lib declares `Window.cookieStore` as always present,
- * but the Cookie Store API only works in Chromium browsers — Safari and
- * Firefox leave it `undefined` at runtime regardless of what the type says.
- * This function's own return type widens back to `CookieStore | undefined`
- * to match that.
+ * The Cookie Store API only works in Chromium browsers — Safari and
+ * Firefox leave `window.cookieStore` `undefined` at runtime, so this
+ * function's return type widens back to `CookieStore | undefined`.
  *
  * This function runs on every render, not just inside `useEffect`. During
  * server-side rendering, `window` does not exist at all, so we check for

@@ -21,7 +21,7 @@ const getSelectAudioOutput = (): SelectAudioOutput | undefined => {
   if (typeof navigator === "undefined") {
     return undefined;
   }
-  // SAFETY: We read MediaDevices.selectAudioOutput as optional, no matter what the TypeScript DOM types say. This way, browsers that don't have it (like Safari or Firefox) just return undefined instead of throwing an error.
+  // SAFETY: selectAudioOutput isn't declared on MediaDevices; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
   return (navigator.mediaDevices as MediaDevicesWithSelectAudioOutput | undefined)
     ?.selectAudioOutput;
 };

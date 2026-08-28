@@ -3,8 +3,6 @@ import { useCallback, useMemo } from "react";
 import {
   getFileSystemAccess,
   type DirectoryPickerOptions,
-  type FileSystemDirectoryHandle,
-  type FileSystemFileHandle,
   type OpenFilePickerOptions,
   type SaveFilePickerOptions,
 } from "./_file-system-access-api.ts";

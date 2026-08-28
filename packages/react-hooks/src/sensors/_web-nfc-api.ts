@@ -1,4 +1,4 @@
-/** A small copy of the Web NFC API's types. This is an experimental API, only in Chrome on Android, and not included in TypeScript's built-in types. */
+/** A small copy of the Web NFC API's types. This is an experimental API, only in Chrome on Android, not declared elsewhere. */
 
 /** A single NDEF record, as carried by a scanned message's `records`. */
 export interface NDEFRecord {
@@ -71,6 +71,6 @@ export const getNdefReaderConstructor = (): NDEFReaderConstructor | undefined =>
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: window.NDEFReader is read as optional here, no matter what the current TypeScript DOM lib declares. On a browser that truly lacks it (like Safari, Firefox, or desktop Chrome), this reads as undefined instead of throwing.
+  // SAFETY: NDEFReader isn't declared on Window; read as optional so an unsupported browser (Safari, Firefox, desktop Chrome) gives undefined instead of throwing.
   return (window as WebNfcWindow).NDEFReader;
 };
