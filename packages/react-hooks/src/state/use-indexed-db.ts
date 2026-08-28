@@ -42,12 +42,12 @@ const getValue = async <T>(key: string, initialValue: T): Promise<T> => {
   }
 };
 
-const putValue = async <T>(key: string, value: T): Promise<void> => {
+const write = async (mutate: (store: IDBObjectStore) => void): Promise<void> => {
   const db = await openDatabase();
   try {
     await new Promise<void>((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, "readwrite");
-      tx.objectStore(STORE_NAME).put(value, key);
+      mutate(tx.objectStore(STORE_NAME));
       tx.oncomplete = () => resolve();
       tx.onerror = () => reject(tx.error ?? new Error(TRANSACTION_FAILED));
     });
@@ -56,19 +56,15 @@ const putValue = async <T>(key: string, value: T): Promise<void> => {
   }
 };
 
-const deleteValue = async (key: string): Promise<void> => {
-  const db = await openDatabase();
-  try {
-    await new Promise<void>((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, "readwrite");
-      tx.objectStore(STORE_NAME).delete(key);
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error ?? new Error(TRANSACTION_FAILED));
-    });
-  } finally {
-    db.close();
-  }
-};
+const putValue = <T>(key: string, value: T): Promise<void> =>
+  write((store) => {
+    store.put(value, key);
+  });
+
+const deleteValue = (key: string): Promise<void> =>
+  write((store) => {
+    store.delete(key);
+  });
 
 /** Status reported by `useIndexedDB`. */
 export type IndexedDBStatus = "error" | "loading" | "ready";
