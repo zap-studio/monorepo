@@ -34,14 +34,7 @@ export { useCamera } from "./media/use-camera.ts";
 export { useClickOutside } from "./dom/use-click-outside.ts";
 export type { ColorScheme } from "./sensors/use-color-scheme.ts";
 export { useColorScheme } from "./sensors/use-color-scheme.ts";
-export type {
-  CookieChangeEvent,
-  CookieInit,
-  CookieListItem,
-  CookieStore,
-  SetCookieOptions,
-  UseCookieResult,
-} from "./state/use-cookie.ts";
+export type { SetCookieOptions, UseCookieResult } from "./state/use-cookie.ts";
 export { useCookie } from "./state/use-cookie.ts";
 export { useCookieEnabled } from "./sensors/use-cookie-enabled.ts";
 export type { UseCopyToClipboardResult } from "./state/use-copy-to-clipboard.ts";
