@@ -41,6 +41,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Docs** — Clarified what `Unstable` and `Experimental` mean in the README and the docs site: `Unstable` warns that this package could break on a React upgrade (private Fiber internals); `Experimental` warns that the wrapped browser API itself can change or ship in fewer browsers. Also simplified inline TSDoc comments across the package — the wording editors show on hover — and removed internal asides (cross-package references, a repeated "not a public hook" note) that had leaked into them.
 - **Input** (`input/`) — `useGamepad` returns [`Gamepad`](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad) objects instead of the truncated `GamepadInfo` (`id`/`index`/`mapping` only), exposing `axes`, `buttons`, `connected`, `timestamp`, and `hapticActuators`/`vibrationActuator` directly. `GamepadInfo` is removed. **Breaking change.**
 - **State** (`state/`) — `useLocalStorage`/`useSessionStorage` now return a 4th tuple element: the error from the last failed read, write, or remove (quota exceeded, private browsing, malformed JSON), `null` otherwise. Previously these failures were silently swallowed and only visible in memory as a fallback to `initialValue`.
+- **Lifecycle** (`lifecycle/`) — `useMount` and `useAsync` now hold `effect`/`asyncFn` in a ref instead of a `react-hooks/exhaustive-deps` lint-disable, satisfying the rule with no change in behavior.
 
 ## [1.0.0]
 

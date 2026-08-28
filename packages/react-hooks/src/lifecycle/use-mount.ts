@@ -14,7 +14,6 @@ import { useEffect, useRef } from "react";
  */
 export const useMount = (effect: () => void): void => {
   const effectRef = useRef(effect);
-  effectRef.current = effect;
 
   useEffect(() => {
     effectRef.current();
