@@ -1,9 +1,12 @@
 import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { FileSystemDirectoryHandle, FileSystemFileHandle } from "./_file-system-access-api.ts";
-
 import { useFilePicker } from "./use-file-picker.ts";
+
+// SAFETY: single explicit escape hatch for casting test doubles / deliberately
+// non-conforming fixtures to a type they don't structurally satisfy, instead of
+// scattering `as unknown as X` chains through the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
 
 const DISK_ERROR_MESSAGE = "disk error";
 
@@ -44,7 +47,7 @@ describe("useFilePicker", () => {
     // SAFETY: the hook's showOpenFilePicker() only calls the stubbed picker and
     // returns its resolved value untouched (checked below via toBe(handles)),
     // so the minimal shape here never needs to satisfy the full handle interface.
-    const handles = [{ kind: "file", name: "a.txt" }] as FileSystemFileHandle[];
+    const handles = asTestDouble<FileSystemFileHandle[]>([{ kind: "file", name: "a.txt" }]);
     vi.stubGlobal(
       "showOpenFilePicker",
       vi.fn(() => Promise.resolve(handles)),
@@ -85,7 +88,7 @@ describe("useFilePicker", () => {
     // SAFETY: the hook's showSaveFilePicker() only calls the stubbed picker and
     // returns its resolved value untouched (checked below via toBe(handle)),
     // so the minimal shape here never needs to satisfy the full handle interface.
-    const handle = { kind: "file", name: "a.txt" } as FileSystemFileHandle;
+    const handle = asTestDouble<FileSystemFileHandle>({ kind: "file", name: "a.txt" });
     vi.stubGlobal(
       "showSaveFilePicker",
       vi.fn(() => Promise.resolve(handle)),
@@ -126,7 +129,7 @@ describe("useFilePicker", () => {
     // SAFETY: the hook's showDirectoryPicker() only calls the stubbed picker and
     // returns its resolved value untouched (checked below via toBe(handle)),
     // so the minimal shape here never needs to satisfy the full handle interface.
-    const handle = { kind: "directory", name: "dir" } as FileSystemDirectoryHandle;
+    const handle = asTestDouble<FileSystemDirectoryHandle>({ kind: "directory", name: "dir" });
     vi.stubGlobal(
       "showDirectoryPicker",
       vi.fn(() => Promise.resolve(handle)),

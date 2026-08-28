@@ -73,7 +73,8 @@ export const getIsExtended = (): boolean =>
  * calls `window.addEventListener` directly.
  */
 export const getScreenEventTarget = (): ScreenChangeEventTarget => {
-  // SAFETY: Screen's addEventListener/removeEventListener aren't declared, though every browser's `screen` supports them as an EventTarget. Cast through an all-optional shape first, then treated as always present.
+  // SAFETY: Screen's addEventListener/removeEventListener aren't declared, so it's cast through an all-optional shape first.
   const withOptionalEventTarget = window.screen as ScreenWithOptionalEventTarget;
+  // SAFETY: every browser's `screen` supports these as an EventTarget, so they're safe to treat as always present.
   return withOptionalEventTarget as ScreenChangeEventTarget;
 };

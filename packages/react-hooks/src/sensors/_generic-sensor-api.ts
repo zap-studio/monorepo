@@ -39,9 +39,11 @@ const getGenericSensorConstructor = <TSensor extends GenericSensorInstance>(
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: these sensor constructors aren't declared on Window. Widened through `unknown` and read by name; callers only ever pass one of this file's fixed constructor names, so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
+  // SAFETY: these sensor constructors aren't declared on Window, so it's widened to `unknown` first.
   const untypedWindow: unknown = window;
+  // SAFETY: read by name below; callers only ever pass one of this file's fixed constructor names.
   const sensorWindow = untypedWindow as GenericSensorWindow;
+  // SAFETY: an unsupported browser (Safari, Firefox) gives undefined here instead of throwing.
   return sensorWindow[constructorName] as GenericSensorConstructor<TSensor> | undefined;
 };
 

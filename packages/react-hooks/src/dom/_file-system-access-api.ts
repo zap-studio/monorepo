@@ -1,15 +1,3 @@
-/** A simple local copy of the File System Access API types. It only works in Chromium browsers, and not every version of TypeScript's DOM types includes it. */
-export interface FileSystemFileHandle {
-  readonly kind: "file";
-  readonly name: string;
-}
-
-/** A simple local copy of the File System Access API types. It only works in Chromium browsers, and not every version of TypeScript's DOM types includes it. */
-export interface FileSystemDirectoryHandle {
-  readonly kind: "directory";
-  readonly name: string;
-}
-
 /** One accepted file type entry, as passed to `showOpenFilePicker`/`showSaveFilePicker`. */
 export interface FilePickerAcceptType {
   accept: Record<string, string[]>;
@@ -51,6 +39,6 @@ export const getFileSystemAccess = (): FileSystemAccessWindow => {
   if (typeof window === "undefined") {
     return {};
   }
-  // SAFETY: we read these File System Access API functions as optional, no matter what the current TypeScript DOM types say. This way, a browser that doesn't have them (Safari, Firefox) just gives us undefined instead of an error.
+  // SAFETY: these File System Access functions aren't declared on Window; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
   return window as FileSystemAccessWindow;
 };
