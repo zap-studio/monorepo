@@ -24,7 +24,7 @@ export const useRenderCount = (): number => {
   if (isProductionBuild()) {
     return countRef.current;
   }
-  // oxlint-disable-next-line react-doctor/no-ref-current-in-render -- this hook's whole job is counting real render attempts, including ones React throws away. Moving this into an effect would count commits instead, which defeats the purpose.
+  // oxlint-disable-next-line react-doctor/no-ref-current-in-render -- this hook counts every render attempt, even the ones React throws away. An effect would count commits instead, which is not what we want.
   countRef.current += 1;
   return countRef.current;
 };

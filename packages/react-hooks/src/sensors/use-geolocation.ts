@@ -94,7 +94,7 @@ export const useGeolocation = (options: UseGeolocationOptions = {}): Geolocation
     };
 
     if (watch) {
-      // oxlint-disable-next-line sonarjs/no-intrusive-permissions -- Continuous location tracking is exactly what this hook does when `watch: true` is passed. The permission prompt is expected here, since the user chose to opt in.
+      // oxlint-disable-next-line sonarjs/no-intrusive-permissions -- tracking the location is what this hook does when you pass `watch: true`. The user asks for it, so the permission prompt is expected.
       const watchId = navigator.geolocation.watchPosition(
         handleSuccess,
         handleError,
@@ -103,7 +103,7 @@ export const useGeolocation = (options: UseGeolocationOptions = {}): Geolocation
       return () => navigator.geolocation.clearWatch(watchId);
     }
 
-    // oxlint-disable-next-line sonarjs/no-intrusive-permissions -- Reading the location once is exactly what this hook does. The permission prompt is expected when the user calls it.
+    // oxlint-disable-next-line sonarjs/no-intrusive-permissions -- reading the location once is what this hook does. The user calls it, so the permission prompt is expected.
     navigator.geolocation.getCurrentPosition(handleSuccess, handleError, positionOptions);
     return undefined;
   }, [enableHighAccuracy, maximumAge, timeout, watch]);

@@ -3,7 +3,7 @@ import { useCallback, useRef, useSyncExternalStore } from "react";
 /** A small copy of the Network Information API's types, not declared elsewhere. */
 export interface NetworkInformation extends EventTarget {
   readonly downlink?: number;
-  // oxlint-disable-next-line sonarjs/max-union-size -- These are all 4 values from the NetworkInformation spec's effectiveType field. The list can't be made smaller.
+  // oxlint-disable-next-line sonarjs/max-union-size -- these are the only 4 values that the NetworkInformation spec allows for effectiveType. We cannot make the list shorter.
   readonly effectiveType?: "2g" | "3g" | "4g" | "slow-2g";
   readonly rtt?: number;
   readonly saveData?: boolean;
@@ -16,7 +16,7 @@ interface NavigatorWithConnection extends Navigator {
 /** The shape returned by `useNetworkState` (and `useOnlineStatus`'s `.online`). */
 export interface NetworkState {
   downlink?: number;
-  // oxlint-disable-next-line sonarjs/max-union-size -- Same fixed NetworkInformation effectiveType set as above.
+  // oxlint-disable-next-line sonarjs/max-union-size -- same fixed effectiveType values as above.
   effectiveType?: "2g" | "3g" | "4g" | "slow-2g";
   online: boolean;
   rtt?: number;

@@ -22,6 +22,6 @@ export const useUpdateEffect = (effect: EffectCallback, deps?: DependencyList): 
       return undefined;
     }
     return effect();
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- deps is passed straight through from the caller, just like useEffect's own dependency array. This hook has no way to know its contents ahead of time.
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- `deps` comes from the caller, like the dependency array of useEffect. This hook cannot know what is inside it.
   }, deps);
 };

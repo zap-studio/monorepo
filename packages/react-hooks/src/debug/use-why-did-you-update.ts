@@ -8,7 +8,7 @@ export interface ChangedProp {
   to: unknown;
 }
 
-// v8 ignore next -- this is picked during server-side rendering (that part is tested), but it only gets *called* once React actually runs the effect, which needs a real browser commit under `NODE_ENV=production`. We can't reach that here, since bundlers replace `process.env.NODE_ENV` at this test suite's own build time, before any per-test override could apply.
+// v8 ignore next -- server-side rendering picks this, and we test that part. But it only runs when React runs the effect, which needs a real browser commit with `NODE_ENV=production`. Tests cannot reach it, because bundlers replace `process.env.NODE_ENV` when this test suite is built, before a test can change it.
 const noop = (): void => {};
 
 /**
@@ -44,7 +44,7 @@ export const useWhyDidYouUpdate = (name: string, props: Record<string, unknown>)
               }
             }
             if (Object.keys(changed).length > 0) {
-              // oxlint-disable-next-line no-console -- this hook's entire purpose is logging a props diff for local debugging.
+              // oxlint-disable-next-line no-console -- the whole point of this hook is to log a props diff for local debugging.
               console.log(`[why-did-you-update] ${name}`, changed);
             }
           }

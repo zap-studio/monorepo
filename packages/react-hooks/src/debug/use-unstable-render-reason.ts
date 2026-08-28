@@ -111,7 +111,7 @@ export const useUnstableRenderReason = <T extends Element = HTMLElement>(
   const [reason, setReason] = useState<RenderReason>("unknown");
 
   const computeReason = (): RenderReason => {
-    /* v8 ignore next 3 -- computeReason only runs inside the effect below. That effect never runs during server-side rendering, so a Node test can't reach this. We also can't force a production build at test time, since bundlers replace `process.env.NODE_ENV` before this test suite's own build runs. */
+    /* v8 ignore next 3 -- computeReason only runs inside the effect below, and that effect never runs during server-side rendering, so a Node test cannot reach this. We also cannot force a production build at test time, because bundlers replace `process.env.NODE_ENV` before this test suite is built. */
     if (isProductionBuild()) {
       return "unknown";
     }

@@ -29,7 +29,7 @@ const getOrCreateEntry = (src: string, async: boolean | undefined): ScriptEntry 
     return existing;
   }
 
-  // oxlint-disable-next-line github/no-dynamic-script-tag -- loading a script on demand is exactly what this hook does. The src comes from the caller, just like any other URL this codebase fetches.
+  // oxlint-disable-next-line github/no-dynamic-script-tag -- loading a script on demand is what this hook does. The caller gives the src, like any other URL we fetch.
   const script = document.createElement("script");
   script.src = src;
   script.async = async ?? true;

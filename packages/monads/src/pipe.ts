@@ -1,4 +1,4 @@
-// fallow-ignore-file code-duplication -- variadic-arity overload signatures (fn1..fn9); one shared implementation below, nothing to extract
+// fallow-ignore-file code-duplication -- these are overload signatures, one per number of arguments (fn1..fn9). They share the one implementation below, so there is nothing to extract
 
 /**
  * Left-to-right function composition, for use with the standalone, curried

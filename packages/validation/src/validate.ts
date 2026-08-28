@@ -24,7 +24,7 @@ const isPromiseLike = <T>(value: T | PromiseLike<T>): value is PromiseLike<T> =>
     return false;
   }
 
-  // oxlint-disable-next-line github/no-then -- feature-detecting a `then` method to duck-type a thenable, not chaining a Promise.
+  // oxlint-disable-next-line github/no-then -- we look for a `then` method to detect a thenable. We do not chain a Promise.
   return "then" in value && typeof value.then === "function";
 };
 

@@ -48,9 +48,9 @@ const viewportsEqual = (a: VisualViewportState, b: VisualViewportState): boolean
 const getServerSnapshot = (): VisualViewportState => FALLBACK_VIEWPORT;
 
 const subscribe = (onStoreChange: () => void) => {
-  // oxlint-disable-next-line github/prefer-observers -- VisualViewport is its own event target. It isn't an element, so ResizeObserver or IntersectionObserver can't attach to it. Its resize/scroll events are the only way to detect changes.
+  // oxlint-disable-next-line github/prefer-observers -- VisualViewport is not an element, so ResizeObserver and IntersectionObserver cannot watch it. Its resize and scroll events are the only way to see changes.
   window.visualViewport?.addEventListener("resize", onStoreChange);
-  // oxlint-disable-next-line github/prefer-observers -- Same VisualViewport target as above. There's no element to observe.
+  // oxlint-disable-next-line github/prefer-observers -- same VisualViewport target as above. There is no element to watch.
   window.visualViewport?.addEventListener("scroll", onStoreChange);
   return () => {
     window.visualViewport?.removeEventListener("resize", onStoreChange);

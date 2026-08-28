@@ -24,7 +24,7 @@ export const tracer: Tracer = trace.getTracer(pkg.name, pkg.version);
  * delivery's `traceparent` (and any other registered propagator fields) so
  * the delivery span continues the sender's trace instead of starting a new one.
  */
-// fallow-ignore-next-line code-duplication -- mirrors fetch/_otel.ts by design; packages stay dependency-free of each other
+// fallow-ignore-next-line code-duplication -- this copies fetch/_otel.ts on purpose, so the two packages do not depend on each other
 export const HEADERS_GETTER: TextMapGetter<Headers> = {
   get(carrier, key) {
     return carrier.get(key) ?? undefined;

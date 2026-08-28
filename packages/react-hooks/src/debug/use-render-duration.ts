@@ -20,7 +20,7 @@ export interface UseRenderDurationResult {
   samples: RenderDurationSample[];
 }
 
-// v8 ignore next -- this is picked in production builds (that part is tested), but it only gets *called* by a real `<Profiler>` commit in a real browser running under `NODE_ENV=production`. We can't reach that here, because bundlers replace `process.env.NODE_ENV` at this test suite's own build time.
+// v8 ignore next -- production builds pick this, and we test that part. But it only runs on a real `<Profiler>` commit, in a real browser, with `NODE_ENV=production`. Tests cannot reach it, because bundlers replace `process.env.NODE_ENV` when this test suite is built.
 const noopOnRender: ProfilerOnRenderCallback = () => {};
 
 const NOOP_RESULT: UseRenderDurationResult = {

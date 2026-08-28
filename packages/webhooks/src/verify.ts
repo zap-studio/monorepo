@@ -18,7 +18,7 @@ export const constantTimeEquals = (a: Uint8Array, b: Uint8Array): boolean => {
 
   let result = 0;
   for (let i = 0; i < a.length; i += 1) {
-    // v8 ignore next -- `?? 0` fallback is unreachable: a Uint8Array never holds `undefined` at an in-bounds index, this exists only to satisfy noUncheckedIndexedAccess.
+    // v8 ignore next -- the `?? 0` fallback never runs, because a Uint8Array never holds `undefined` at a valid index. It is only here for noUncheckedIndexedAccess.
     result |= (a[i] ?? 0) ^ (b[i] ?? 0);
   }
 

@@ -150,7 +150,7 @@ describe("useExperimentalNfc", () => {
   });
 
   it("normalizes a non-Error rejection", async () => {
-    // oxlint-disable-next-line prefer-promise-reject-errors -- exercising the non-Error rejection path the DOM can produce.
+    // oxlint-disable-next-line prefer-promise-reject-errors -- we test the case where the DOM rejects with a value that is not an Error.
     const reader = createReaderMock({ scan: () => Promise.reject("nope") });
     stubNdefReader(reader);
 

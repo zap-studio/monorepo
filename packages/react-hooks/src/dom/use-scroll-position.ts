@@ -14,7 +14,7 @@ const positionsEqual = (a: ScrollPosition, b: ScrollPosition): boolean =>
 const getServerSnapshot = (): ScrollPosition => FALLBACK_POSITION;
 
 const subscribe = (onStoreChange: () => void) => {
-  // oxlint-disable-next-line github/prefer-observers -- IntersectionObserver reports if one element is visible, not the window's scroll position. There's no way to get scrollX/scrollY from it, so the "scroll" event is the right tool here.
+  // oxlint-disable-next-line github/prefer-observers -- IntersectionObserver tells us if an element is visible, not where the window scrolled. It cannot give scrollX or scrollY, so we need the "scroll" event.
   window.addEventListener("scroll", onStoreChange);
   return () => window.removeEventListener("scroll", onStoreChange);
 };

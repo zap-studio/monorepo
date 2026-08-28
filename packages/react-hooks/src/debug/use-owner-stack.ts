@@ -29,7 +29,7 @@ export const useOwnerStack = (): UseOwnerStackResult => {
   const supported = !isProductionBuild() && typeof captureOwnerStack === "function";
 
   const capture = useCallback((): string | undefined => {
-    // v8 ignore next -- the `?.` here only matters on React below version 19, where this import doesn't exist. This package requires React 19, so we can't actually test that case.
+    // v8 ignore next -- the `?.` only matters on React below 19, where this import does not exist. This package needs React 19, so we cannot test that case.
     return captureOwnerStack?.() ?? undefined;
   }, []);
 
