@@ -76,7 +76,11 @@ export const useWebTransport = (
     setStatus("connecting");
     setError(undefined);
 
-    const reader = transport.datagrams.readable.getReader();
+    // `WebTransportDatagramDuplexStream.readable` is declared without a type
+    // parameter, so its reader defaults to `any`. The spec guarantees
+    // `Uint8Array` chunks; pinning it here types `value` for the loop below.
+    const reader: ReadableStreamDefaultReader<Uint8Array> =
+      transport.datagrams.readable.getReader();
     const writer = transport.datagrams.writable.getWriter();
     writerRef.current = writer;
 
@@ -88,8 +92,7 @@ export const useWebTransport = (
             return;
           }
           if (!controller.signal.aborted) {
-            // SAFETY: WebTransportDatagramDuplexStream's readable always yields Uint8Array chunks, per spec. ReadableStream.read()'s `value` is typed `any` only because the interface is declared without a type parameter.
-            setLastDatagram(value as Uint8Array);
+            setLastDatagram(value);
           }
         }
       } catch {

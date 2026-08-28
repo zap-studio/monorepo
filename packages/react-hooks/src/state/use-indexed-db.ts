@@ -1,8 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { isUpdaterFunction } from "./_updater.ts";
+
 const DB_NAME = "zap-studio-react-hooks";
 const STORE_NAME = "use-indexed-db";
 const DB_VERSION = 1;
+
+/**
+ * Fallbacks for the `error` property, which an `IDBRequest`/`IDBTransaction`
+ * always populates before firing its `error` event, but types as nullable.
+ */
+const REQUEST_FAILED = "The IndexedDB request failed.";
+const TRANSACTION_FAILED = "The IndexedDB transaction failed.";
 
 const isSupported = (): boolean => typeof indexedDB !== "undefined";
 
@@ -15,8 +24,7 @@ const openDatabase = (): Promise<IDBDatabase> =>
       }
     };
     request.onsuccess = () => resolve(request.result);
-    // SAFETY: by the time an IDBRequest's `error` event fires, its `error` property is always set. So this is never null in practice.
-    request.onerror = () => reject(request.error);
+    request.onerror = () => reject(request.error ?? new Error(REQUEST_FAILED));
   });
 
 const getValue = async <T>(key: string, initialValue: T): Promise<T> => {
@@ -27,8 +35,7 @@ const getValue = async <T>(key: string, initialValue: T): Promise<T> => {
       // SAFETY: only this hook writes to this key (through putValue below), so a stored entry is always a T. If there's no entry (undefined), we fall back to initialValue.
       request.onsuccess = () =>
         resolve(request.result === undefined ? initialValue : (request.result as T));
-      // SAFETY: see openDatabase — an IDBRequest's `error` is always populated when its `error` event fires.
-      request.onerror = () => reject(request.error);
+      request.onerror = () => reject(request.error ?? new Error(REQUEST_FAILED));
     });
   } finally {
     db.close();
@@ -42,8 +49,7 @@ const putValue = async <T>(key: string, value: T): Promise<void> => {
       const tx = db.transaction(STORE_NAME, "readwrite");
       tx.objectStore(STORE_NAME).put(value, key);
       tx.oncomplete = () => resolve();
-      // SAFETY: see openDatabase — an IDBTransaction's `error` is always populated when its `error` event fires.
-      tx.onerror = () => reject(tx.error);
+      tx.onerror = () => reject(tx.error ?? new Error(TRANSACTION_FAILED));
     });
   } finally {
     db.close();
@@ -57,8 +63,7 @@ const deleteValue = async (key: string): Promise<void> => {
       const tx = db.transaction(STORE_NAME, "readwrite");
       tx.objectStore(STORE_NAME).delete(key);
       tx.oncomplete = () => resolve();
-      // SAFETY: see openDatabase — an IDBTransaction's `error` is always populated when its `error` event fires.
-      tx.onerror = () => reject(tx.error);
+      tx.onerror = () => reject(tx.error ?? new Error(TRANSACTION_FAILED));
     });
   } finally {
     db.close();
@@ -138,9 +143,7 @@ export const useIndexedDB = <T>(key: string, initialValue: T): UseIndexedDBResul
 
   const setValue = useCallback(
     async (next: T | ((prev: T) => T)): Promise<void> => {
-      // SAFETY: the typeof check above already confirms `next` is a function here. This cast just restores the type that TypeScript loses when checking `typeof x === "function"` on a generic union.
-      const resolved =
-        typeof next === "function" ? (next as (prev: T) => T)(valueRef.current) : next;
+      const resolved = isUpdaterFunction(next) ? next(valueRef.current) : next;
       setValueState(resolved);
       try {
         await putValue(key, resolved);

@@ -64,9 +64,8 @@ export const usePopover = <T extends HTMLElement = HTMLElement>(): UsePopoverRes
       return undefined;
     }
 
-    const handleToggle = (event: Event) => {
-      // SAFETY: TypeScript types "toggle" as the generic Event, but this element only ever sends a ToggleEvent for it.
-      setIsOpen((event as ToggleEvent).newState === "open");
+    const handleToggle = (event: ToggleEvent) => {
+      setIsOpen(event.newState === "open");
     };
 
     element.addEventListener("toggle", handleToggle);

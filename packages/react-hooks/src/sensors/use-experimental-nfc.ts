@@ -144,9 +144,8 @@ export const useExperimentalNfc = (): UseExperimentalNfcResult => {
       return undefined;
     }
     const { abortController, reader } = session;
-    const handleReading = (event: Event) => {
-      // SAFETY: the Web NFC spec guarantees the "reading" event is an NDEFReadingEvent. `addEventListener` can't express that in its types, so it only gives us the base `Event` type.
-      const { message, serialNumber } = event as NDEFReadingEvent;
+    const handleReading = (event: NDEFReadingEvent) => {
+      const { message, serialNumber } = event;
       setReading({ records: message.records, serialNumber });
       setError(undefined);
     };

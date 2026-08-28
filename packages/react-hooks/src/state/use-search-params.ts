@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { isUpdaterFunction } from "./_updater.ts";
+
 /** Anything `new URLSearchParams()` itself accepts. */
 export type SearchParamsInit = ConstructorParameters<typeof URLSearchParams>[0];
 
@@ -50,11 +52,7 @@ export const useSearchParams = (): [URLSearchParams, SetSearchParams] => {
 
   const setSearchParams = useCallback<SetSearchParams>(
     (next, options) => {
-      const resolvedInit =
-        typeof next === "function"
-          ? // SAFETY: the typeof check above already confirms `next` is a function here. This cast just restores the type that TypeScript loses when checking `typeof x === "function"` on a generic union.
-            (next as (prev: URLSearchParams) => SearchParamsInit)(searchParams)
-          : next;
+      const resolvedInit = isUpdaterFunction(next) ? next(searchParams) : next;
       const nextParams = new URLSearchParams(resolvedInit);
       const url = buildUrl(nextParams);
       if (options?.replace) {

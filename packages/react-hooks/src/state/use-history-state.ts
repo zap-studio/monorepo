@@ -1,12 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { isUpdaterFunction } from "./_updater.ts";
+
 const DEFAULT_CAPACITY = 100;
 
+/**
+ * `past` and `future` are both stored newest-first, so the entry `undo()`
+ * and `redo()` need is always the head. That lets {@link isNonEmptyStack}
+ * narrow them to a tuple with a definite first element, which a `.length`
+ * check alone cannot express.
+ */
 interface HistoryStack<T> {
   future: readonly T[];
   past: readonly T[];
   present: T;
 }
+
+const isNonEmptyStack = <T>(entries: readonly T[]): entries is readonly [T, ...T[]] =>
+  entries.length > 0;
 
 /** The shape returned by `useHistoryState`. */
 export interface UseHistoryStateResult<T> {
@@ -52,24 +63,21 @@ export const useHistoryState = <T>(
 
   const set = useCallback((next: T | ((prev: T) => T)) => {
     setStack((prev) => {
-      // SAFETY: the typeof check above already confirms `next` is a function here. This cast just restores the type that TypeScript loses when checking `typeof x === "function"` on a generic union.
-      const resolved = typeof next === "function" ? (next as (prev: T) => T)(prev.present) : next;
-      const past = [...prev.past, prev.present].slice(-capacityRef.current);
+      const resolved = isUpdaterFunction(next) ? next(prev.present) : next;
+      const past = [prev.present, ...prev.past].slice(0, capacityRef.current);
       return { future: [], past, present: resolved };
     });
   }, []);
 
   const undo = useCallback(() => {
     setStack((prev) => {
-      if (prev.past.length === 0) {
+      if (!isNonEmptyStack(prev.past)) {
         return prev;
       }
-      const previous = prev.past.at(-1);
-      // SAFETY: the length check above guarantees at least one element, so `at(-1)` is never undefined here.
-      const present = previous as T;
+      const [present, ...past] = prev.past;
       return {
         future: [prev.present, ...prev.future],
-        past: prev.past.slice(0, -1),
+        past,
         present,
       };
     });
@@ -77,13 +85,11 @@ export const useHistoryState = <T>(
 
   const redo = useCallback(() => {
     setStack((prev) => {
-      const [next, ...rest] = prev.future;
-      if (prev.future.length === 0) {
+      if (!isNonEmptyStack(prev.future)) {
         return prev;
       }
-      // SAFETY: the length check above guarantees at least one element, so the destructured first element is never undefined here.
-      const present = next as T;
-      return { future: rest, past: [...prev.past, prev.present], present };
+      const [present, ...future] = prev.future;
+      return { future, past: [prev.present, ...prev.past], present };
     });
   }, []);
 

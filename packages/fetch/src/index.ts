@@ -83,8 +83,7 @@ const mergeHeaders = (base?: HeadersInit, override?: HeadersInit): Headers | und
   return merged;
 };
 
-// SAFETY: Every property of `ExtendedRequestInit` is optional, so `{}` is already a structurally valid value; the cast only pins the type.
-const EMPTY_OPTIONS = {} as ExtendedRequestInit;
+const EMPTY_OPTIONS: ExtendedRequestInit = {};
 
 /**
  * Normalizes fetch `input` and request-level options into a consistent internal shape.
@@ -106,8 +105,7 @@ const normalizeRequest = (input: FetchInput, options?: ExtendedRequestInit): Nor
   const request = new Request(input);
   const { headers, ...rest } = options ?? {};
   const mergedHeaders = mergeHeaders(request.headers, headers);
-  // SAFETY: `rest` is `options` with only the `headers` key removed, so it's already structurally an `ExtendedRequestInit` minus `headers`, which is set below.
-  const normalizedOptions = { ...rest } as ExtendedRequestInit;
+  const normalizedOptions: ExtendedRequestInit = { ...rest };
 
   if (mergedHeaders !== undefined) {
     normalizedOptions.headers = mergedHeaders;

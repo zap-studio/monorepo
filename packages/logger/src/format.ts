@@ -175,9 +175,14 @@ const isCloudflareWorkers = (): boolean =>
  * - Anywhere else without a `process` global (browsers): unconditionally,
  *   on the assumption it's a devtools-like console.
  */
+/** `globalThis` widened with the optional `process` global Node/Bun/Deno expose. */
+interface GlobalThisWithProcess {
+  process?: unknown;
+}
+
 const isColorSupported = (): boolean => {
   // SAFETY: `process` isn't declared on `globalThis`'s type in browser/edge targets; this reads it as an optional untyped property, validated below by `isNodeProcessLike`.
-  const proc: unknown = (globalThis as { process?: unknown }).process;
+  const proc: unknown = (globalThis as GlobalThisWithProcess).process;
   if (isNodeProcessLike(proc)) {
     return Boolean(proc.stdout?.isTTY) && proc.env?.["NO_COLOR"] === undefined;
   }

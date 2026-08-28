@@ -16,10 +16,10 @@ afterEach(() => {
 
 describe("useNavigationType", () => {
   it("reads the type off the navigation timing entry", () => {
-    // SAFETY: readNavigationType only reads `.type` off the first element returned by getEntriesByType("navigation"), so a fake entry with just a `type` field satisfies the hook's actual usage; the outer cast only matches this stand-in function's simpler signature to performance.getEntriesByType's real type.
+    // SAFETY: readNavigationType only reads `.entryType` (to narrow) and `.type` off the first element returned by getEntriesByType("navigation"), so a fake entry with just those two fields satisfies the hook's actual usage; the outer cast only matches this stand-in function's simpler signature to performance.getEntriesByType's real type.
     performance.getEntriesByType = ((type: string) =>
       type === "navigation"
-        ? [asTestDouble<PerformanceNavigationTiming>({ type: "reload" })]
+        ? [asTestDouble<PerformanceNavigationTiming>({ entryType: "navigation", type: "reload" })]
         : []) as typeof performance.getEntriesByType;
 
     const { result } = renderHook(() => useNavigationType());

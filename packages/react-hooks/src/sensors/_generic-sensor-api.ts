@@ -24,9 +24,24 @@ type GenericSensorConstructor<TSensor extends GenericSensorInstance> = new (
   options?: GenericSensorOptions,
 ) => TSensor;
 
-interface GenericSensorWindow {
-  [constructorName: string]: unknown;
-}
+/** Every Generic Sensor API constructor this package looks up on `window`. */
+export type GenericSensorConstructorName =
+  | "AbsoluteOrientationSensor"
+  | "Accelerometer"
+  | "AmbientLightSensor"
+  | "GravitySensor"
+  | "Gyroscope"
+  | "LinearAccelerationSensor"
+  | "Magnetometer"
+  | "RelativeOrientationSensor";
+
+/**
+ * `window` widened with the sensor constructors, each optional because an
+ * unsupported browser (Safari, Firefox) leaves them undefined.
+ */
+type WindowWithGenericSensors<TSensor extends GenericSensorInstance> = Window & {
+  readonly [K in GenericSensorConstructorName]?: GenericSensorConstructor<TSensor>;
+};
 
 /**
  * Checks `typeof window === "undefined"`. Every sensor hook reads this
@@ -34,17 +49,13 @@ interface GenericSensorWindow {
  * rendering, not only inside an effect.
  */
 const getGenericSensorConstructor = <TSensor extends GenericSensorInstance>(
-  constructorName: string,
+  constructorName: GenericSensorConstructorName,
 ): GenericSensorConstructor<TSensor> | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: these sensor constructors aren't declared on Window, so it's widened to `unknown` first.
-  const untypedWindow: unknown = window;
-  // SAFETY: read by name below; callers only ever pass one of this file's fixed constructor names.
-  const sensorWindow = untypedWindow as GenericSensorWindow;
-  // SAFETY: an unsupported browser (Safari, Firefox) gives undefined here instead of throwing.
-  return sensorWindow[constructorName] as GenericSensorConstructor<TSensor> | undefined;
+  // SAFETY: these sensor constructors aren't declared on Window; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
+  return (window as WindowWithGenericSensors<TSensor>)[constructorName];
 };
 
 /** The shape returned by every public Generic Sensor API hook. */
@@ -65,7 +76,7 @@ export interface UseGenericSensorResult<TReading> {
  * are reported through `error` instead of throwing an exception.
  */
 export const useGenericSensor = <TSensor extends GenericSensorInstance, TReading>(
-  constructorName: string,
+  constructorName: GenericSensorConstructorName,
   readReading: (sensor: TSensor) => TReading,
   options?: GenericSensorOptions,
 ): UseGenericSensorResult<TReading> => {

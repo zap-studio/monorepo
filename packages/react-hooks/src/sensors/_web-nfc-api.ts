@@ -43,8 +43,34 @@ export interface NDEFReadingEvent extends Event {
   readonly serialNumber: string;
 }
 
+/** The events an `NDEFReader` dispatches, keyed by event name. */
+interface NDEFReaderEventMap {
+  reading: NDEFReadingEvent;
+  readingerror: Event;
+}
+
 interface NDEFReader extends EventTarget {
+  addEventListener<K extends keyof NDEFReaderEventMap>(
+    type: K,
+    listener: (this: NDEFReader, event: NDEFReaderEventMap[K]) => void,
+    options?: AddEventListenerOptions | boolean,
+  ): void;
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: AddEventListenerOptions | boolean,
+  ): void;
   makeReadOnly(options?: { signal?: AbortSignal }): Promise<void>;
+  removeEventListener<K extends keyof NDEFReaderEventMap>(
+    type: K,
+    listener: (this: NDEFReader, event: NDEFReaderEventMap[K]) => void,
+    options?: EventListenerOptions | boolean,
+  ): void;
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: EventListenerOptions | boolean,
+  ): void;
   scan(options?: { signal?: AbortSignal }): Promise<void>;
   write(
     message: NDEFMessageSource,

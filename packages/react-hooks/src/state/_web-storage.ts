@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+import { isUpdaterFunction } from "./_updater.ts";
 
 /** A new value, or a function that returns one based on the previous value. Same shape as `useState`'s setter. */
 export type SetStoredValue<T> = T | ((prev: T) => T);
@@ -44,8 +45,7 @@ export const useWebStorage = <T>(
 
   const setValue = useCallback(
     (next: SetStoredValue<T>): void => {
-      // SAFETY: the typeof check above already confirms `next` is a function here. This cast just restores the type that TypeScript loses when checking `typeof x === "function"` on a generic union.
-      const resolved = typeof next === "function" ? (next as (prev: T) => T)(value) : next;
+      const resolved = isUpdaterFunction(next) ? next(value) : next;
       try {
         getStorage().setItem(key, JSON.stringify(resolved));
         setError(null);

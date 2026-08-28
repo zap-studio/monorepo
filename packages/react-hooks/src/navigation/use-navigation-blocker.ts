@@ -54,9 +54,7 @@ export const useNavigationBlocker = (
         resolveRef.current = resolve;
       });
 
-    const handleNavigate = (event: Event) => {
-      // SAFETY: this listener is only ever added for the "navigate" event, so the event object always matches NavigateEvent at runtime. Navigation's addEventListener isn't overloaded per event name, so only the base Event type is inferred here.
-      const navigateEvent = event as NavigateEvent;
+    const handleNavigate = (navigateEvent: NavigateEvent) => {
       if (
         !navigateEvent.canIntercept ||
         navigateEvent.hashChange ||

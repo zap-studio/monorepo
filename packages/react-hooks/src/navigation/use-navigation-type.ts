@@ -8,13 +8,21 @@ const FALLBACK_NAVIGATION_TYPE: NavigationEntryType = "navigate";
 const isSupported = (): boolean =>
   typeof performance !== "undefined" && typeof performance.getEntriesByType === "function";
 
+/**
+ * Narrows a {@link PerformanceEntry} on its `entryType` discriminant. The
+ * spec guarantees a `"navigation"` entry is a `PerformanceNavigationTiming`,
+ * and `getEntriesByType` is typed too widely to say so.
+ */
+const isNavigationTimingEntry = (
+  entry: PerformanceEntry | undefined,
+): entry is PerformanceNavigationTiming => entry?.entryType === "navigation";
+
 const readNavigationType = (): NavigationEntryType => {
   if (!isSupported()) {
     return FALLBACK_NAVIGATION_TYPE;
   }
-  // SAFETY: getEntriesByType("navigation") isn't narrowed to the right type, but the spec guarantees every entry returned for "navigation" is a PerformanceNavigationTiming.
-  const [entry] = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
-  return entry?.type ?? FALLBACK_NAVIGATION_TYPE;
+  const [entry] = performance.getEntriesByType("navigation");
+  return isNavigationTimingEntry(entry) ? entry.type : FALLBACK_NAVIGATION_TYPE;
 };
 
 const getServerSnapshot = (): NavigationEntryType => FALLBACK_NAVIGATION_TYPE;
