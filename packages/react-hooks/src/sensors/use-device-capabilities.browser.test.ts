@@ -28,6 +28,6 @@ describe("useDeviceCapabilities", () => {
 
     const { result } = renderHook(() => useDeviceCapabilities());
 
-    expect(result.current).toEqual({ deviceMemory: undefined, hardwareConcurrency: 4 });
+    expect(result.current).toEqual({ hardwareConcurrency: 4 });
   });
 });

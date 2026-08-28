@@ -59,7 +59,7 @@ describe("useGeolocation", () => {
 
     const { result } = renderHook(() => useGeolocation());
 
-    expect(result.current).toEqual({ coords: undefined, error: undefined, loading: true });
+    expect(result.current).toEqual({ loading: true });
   });
 
   it("reports coords once getCurrentPosition succeeds", async () => {
@@ -83,7 +83,6 @@ describe("useGeolocation", () => {
         longitude: 2.3522,
         speed: null,
       },
-      error: undefined,
       loading: false,
     });
   });
@@ -99,7 +98,7 @@ describe("useGeolocation", () => {
       onError?.(fakeError);
     });
 
-    expect(result.current).toEqual({ coords: undefined, error: fakeError, loading: false });
+    expect(result.current).toEqual({ error: fakeError, loading: false });
   });
 
   it("uses watchPosition and clears the watch on unmount when watch: true", () => {

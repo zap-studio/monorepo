@@ -90,11 +90,7 @@ describe("useNetworkState", () => {
     const { result } = renderHook(() => useNetworkState());
 
     expect(result.current).toEqual({
-      downlink: undefined,
-      effectiveType: undefined,
       online: true,
-      rtt: undefined,
-      saveData: undefined,
     });
   });
 });

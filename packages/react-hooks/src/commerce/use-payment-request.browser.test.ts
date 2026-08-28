@@ -9,13 +9,13 @@ class MockPaymentResponse {
 }
 
 interface MockPaymentRequestState {
-  nextShow: (() => Promise<MockPaymentResponse>) | undefined;
+  nextShow: (() => Promise<MockPaymentResponse>) | null;
 }
 
 class MockPaymentRequest {
   static readonly instances: MockPaymentRequest[] = [];
   static readonly state: MockPaymentRequestState = {
-    nextShow: undefined,
+    nextShow: null,
   };
   readonly methodData: PaymentMethodData[];
   readonly details: PaymentDetailsInit;
@@ -33,7 +33,7 @@ class MockPaymentRequest {
 
 const installMockPaymentRequest = () => {
   MockPaymentRequest.instances.length = 0;
-  MockPaymentRequest.state.nextShow = undefined;
+  MockPaymentRequest.state.nextShow = null;
   Object.defineProperty(window, "PaymentRequest", {
     configurable: true,
     value: MockPaymentRequest,
@@ -46,7 +46,7 @@ const details: PaymentDetailsInit = {
 };
 
 afterEach(() => {
-  Object.defineProperty(window, "PaymentRequest", { configurable: true, value: undefined });
+  Reflect.deleteProperty(window, "PaymentRequest");
 });
 
 describe("usePaymentRequest", () => {

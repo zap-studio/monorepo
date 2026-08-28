@@ -37,7 +37,7 @@ const installMockPerformanceObserver = () => {
 };
 
 afterEach(() => {
-  Object.defineProperty(window, "PerformanceObserver", { configurable: true, value: undefined });
+  Reflect.deleteProperty(window, "PerformanceObserver");
 });
 
 describe("usePerformanceObserver", () => {

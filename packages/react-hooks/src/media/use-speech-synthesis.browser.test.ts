@@ -33,11 +33,8 @@ const installMockSpeechSynthesis = () => {
 };
 
 afterEach(() => {
-  Object.defineProperty(window, "speechSynthesis", { configurable: true, value: undefined });
-  Object.defineProperty(window, "SpeechSynthesisUtterance", {
-    configurable: true,
-    value: undefined,
-  });
+  Reflect.deleteProperty(window, "speechSynthesis");
+  Reflect.deleteProperty(window, "SpeechSynthesisUtterance");
 });
 
 describe("useSpeechSynthesis", () => {

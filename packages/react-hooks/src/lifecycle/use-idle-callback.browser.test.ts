@@ -9,8 +9,8 @@ const setIdleCallbackSupport = (
   | { fire: (deadline: IdleDeadline) => void; requestIdleCallback: ReturnType<typeof vi.fn> }
   | undefined => {
   if (!supported) {
-    Object.defineProperty(window, "requestIdleCallback", { configurable: true, value: undefined });
-    Object.defineProperty(window, "cancelIdleCallback", { configurable: true, value: undefined });
+    Reflect.deleteProperty(window, "requestIdleCallback");
+    Reflect.deleteProperty(window, "cancelIdleCallback");
     return undefined;
   }
 
@@ -37,8 +37,8 @@ const setIdleCallbackSupport = (
 };
 
 afterEach(() => {
-  Object.defineProperty(window, "requestIdleCallback", { configurable: true, value: undefined });
-  Object.defineProperty(window, "cancelIdleCallback", { configurable: true, value: undefined });
+  Reflect.deleteProperty(window, "requestIdleCallback");
+  Reflect.deleteProperty(window, "cancelIdleCallback");
 });
 
 describe("useIdleCallback", () => {

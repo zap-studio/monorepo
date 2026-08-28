@@ -333,7 +333,7 @@ describe("useIndexedDB", () => {
 
   it('reports supported: false-equivalent "error" status when IndexedDB is unavailable', async () => {
     const original = window.indexedDB;
-    Object.defineProperty(window, "indexedDB", { configurable: true, value: undefined });
+    Reflect.deleteProperty(window, "indexedDB");
 
     const { result } = renderHook(() => useIndexedDB("count", 0));
     await waitFor(() => expect(result.current.status).toBe("error"));

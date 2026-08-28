@@ -78,10 +78,7 @@ describe("useDeviceOrientation", () => {
 
   it("reports supported: false when DeviceOrientationEvent is unavailable", () => {
     const original = window.DeviceOrientationEvent;
-    Object.defineProperty(window, "DeviceOrientationEvent", {
-      configurable: true,
-      value: undefined,
-    });
+    Reflect.deleteProperty(window, "DeviceOrientationEvent");
 
     const { result } = renderHook(() => useDeviceOrientation());
 

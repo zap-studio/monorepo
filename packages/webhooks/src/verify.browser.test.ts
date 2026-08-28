@@ -235,10 +235,7 @@ describe("createHmacVerifier", () => {
   it("throws when Web Crypto is unavailable", async () => {
     const originalDescriptor = Object.getOwnPropertyDescriptor(globalThis, "crypto");
 
-    Object.defineProperty(globalThis, "crypto", {
-      configurable: true,
-      value: undefined,
-    });
+    Reflect.deleteProperty(globalThis, "crypto");
 
     let error: unknown;
     try {

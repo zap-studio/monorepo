@@ -864,9 +864,8 @@ describe("createPolicy", () => {
 
   it("should deny when the actions map has no entry for a resource type", async () => {
     await Promise.resolve();
-    // SAFETY: `comment: undefined` deliberately violates the Actions shape to simulate a runtime actions map with no entry for a resource type.
+    // SAFETY: omitting "comment" deliberately violates the Actions shape to simulate a runtime actions map with no entry for a resource type.
     const brokenActions = asTestDouble<typeof actions>({
-      comment: undefined,
       post: ["read"],
     });
     const policy = createPolicy<TestContext, typeof resources, typeof brokenActions>({

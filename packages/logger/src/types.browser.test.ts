@@ -7,16 +7,20 @@ describe("types", () => {
     const calls: {
       level: string;
       message: string;
-      context: Record<string, unknown> | undefined;
+      context: Record<string, unknown> | null;
     }[] = [];
 
     const logger: Logger = {
-      trace: (message, context) => calls.push({ context, level: "trace", message }),
-      debug: (message, context) => calls.push({ context, level: "debug", message }),
-      info: (message, context) => calls.push({ context, level: "info", message }),
-      warn: (message, context) => calls.push({ context, level: "warn", message }),
-      error: (message, context) => calls.push({ context, level: "error", message }),
-      fatal: (message, context) => calls.push({ context, level: "fatal", message }),
+      trace: (message, context) =>
+        calls.push({ context: context ?? null, level: "trace", message }),
+      debug: (message, context) =>
+        calls.push({ context: context ?? null, level: "debug", message }),
+      info: (message, context) => calls.push({ context: context ?? null, level: "info", message }),
+      warn: (message, context) => calls.push({ context: context ?? null, level: "warn", message }),
+      error: (message, context) =>
+        calls.push({ context: context ?? null, level: "error", message }),
+      fatal: (message, context) =>
+        calls.push({ context: context ?? null, level: "fatal", message }),
     };
 
     logger.trace("t");
@@ -27,11 +31,11 @@ describe("types", () => {
     logger.fatal("f", { fatal: true });
 
     expect(calls).toStrictEqual([
-      { context: undefined, level: "trace", message: "t" },
+      { context: null, level: "trace", message: "t" },
       { context: { id: 1 }, level: "debug", message: "d" },
-      { context: undefined, level: "info", message: "i" },
+      { context: null, level: "info", message: "i" },
       { context: { retry: true }, level: "warn", message: "w" },
-      { context: undefined, level: "error", message: "e" },
+      { context: null, level: "error", message: "e" },
       { context: { fatal: true }, level: "fatal", message: "f" },
     ]);
   });

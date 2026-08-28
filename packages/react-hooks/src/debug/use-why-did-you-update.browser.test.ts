@@ -50,8 +50,8 @@ describe("useWhyDidYouUpdate", () => {
     rerender({ props: { b: 2 } });
 
     expect(spy).toHaveBeenCalledWith("[why-did-you-update] X", {
-      a: { from: 1, to: undefined },
-      b: { from: undefined, to: 2 },
+      a: { from: 1 },
+      b: { to: 2 },
     });
   });
 

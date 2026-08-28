@@ -33,7 +33,7 @@ const installMockWebSocket = () => {
 };
 
 afterEach(() => {
-  Object.defineProperty(window, "WebSocket", { configurable: true, value: undefined });
+  Reflect.deleteProperty(window, "WebSocket");
 });
 
 describe("useWebSocket", () => {

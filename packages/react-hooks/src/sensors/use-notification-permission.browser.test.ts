@@ -73,7 +73,7 @@ describe("useNotificationPermission", () => {
   });
 
   it('requestPermission resolves "denied" without calling the API when unsupported', async () => {
-    Object.defineProperty(window, "Notification", { configurable: true, value: undefined });
+    Reflect.deleteProperty(window, "Notification");
 
     const { result } = renderHook(() => useNotificationPermission());
     expect(result.current.permission).toBe("unsupported");

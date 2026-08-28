@@ -80,6 +80,6 @@ describe("useOrientation", () => {
 
     const { result } = renderHook(() => useOrientation());
 
-    expect(result.current).toEqual({ angle: 0, type: undefined });
+    expect(result.current).toEqual({ angle: 0 });
   });
 });

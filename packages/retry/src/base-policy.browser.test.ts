@@ -362,14 +362,14 @@ describe("result mode (throwOnExhausted: false)", () => {
     const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
     const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
 
-    // SAFETY: `aborted` is already true and `reason` is `undefined`, which is exactly what
-    // buildAbortResult/toAbortError read to exercise the "undefined reason" fallback branch;
-    // addEventListener/removeEventListener are unused here since no wait is ever scheduled.
+    // SAFETY: `aborted` is already true and `reason` is omitted, so reading it yields
+    // `undefined` — exactly what buildAbortResult/toAbortError read to exercise the
+    // "undefined reason" fallback branch; addEventListener/removeEventListener are unused
+    // here since no wait is ever scheduled.
     const fakeSignal = asTestDouble<AbortSignal>({
       aborted: true,
       addEventListener:
         vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
-      reason: undefined,
       removeEventListener:
         vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
     });

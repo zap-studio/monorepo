@@ -16,7 +16,7 @@ describe("useStorageEstimate", () => {
 
     const { result } = renderHook(() => useStorageEstimate());
 
-    expect(result.current).toEqual({ quota: undefined, supported: true, usage: undefined });
+    expect(result.current).toEqual({ supported: true });
   });
 
   it("reports usage/quota once estimate resolves", async () => {
@@ -34,7 +34,7 @@ describe("useStorageEstimate", () => {
 
     const { result } = renderHook(() => useStorageEstimate());
 
-    expect(result.current).toEqual({ quota: undefined, supported: false, usage: undefined });
+    expect(result.current).toEqual({ supported: false });
   });
 
   it("ignores a resolved estimate if the component unmounted first", async () => {

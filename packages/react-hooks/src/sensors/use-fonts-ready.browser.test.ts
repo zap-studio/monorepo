@@ -18,7 +18,7 @@ describe("useFontsReady", () => {
 
   it("resolves immediately when the CSS Font Loading API is unsupported", async () => {
     const originalFonts = document.fonts;
-    Object.defineProperty(document, "fonts", { configurable: true, value: undefined });
+    Reflect.deleteProperty(document, "fonts");
 
     const { result } = renderHook(() => useFontsReady());
 

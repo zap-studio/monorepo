@@ -48,7 +48,7 @@ const installMockMediaRecorder = () => {
 const fakeStream = {} as MediaStream;
 
 afterEach(() => {
-  Object.defineProperty(window, "MediaRecorder", { configurable: true, value: undefined });
+  Reflect.deleteProperty(window, "MediaRecorder");
 });
 
 describe("useMediaRecorder", () => {

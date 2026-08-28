@@ -61,11 +61,8 @@ const makeResultEvent = (transcripts: string[]): MockRecognitionEvent => {
 };
 
 afterEach(() => {
-  Object.defineProperty(window, "SpeechRecognition", { configurable: true, value: undefined });
-  Object.defineProperty(window, "webkitSpeechRecognition", {
-    configurable: true,
-    value: undefined,
-  });
+  Reflect.deleteProperty(window, "SpeechRecognition");
+  Reflect.deleteProperty(window, "webkitSpeechRecognition");
 });
 
 describe("useSpeechRecognition", () => {

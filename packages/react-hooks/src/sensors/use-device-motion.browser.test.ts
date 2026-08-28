@@ -55,7 +55,7 @@ describe("useDeviceMotion", () => {
 
   it("reports supported: false when DeviceMotionEvent is unavailable", () => {
     const original = window.DeviceMotionEvent;
-    Object.defineProperty(window, "DeviceMotionEvent", { configurable: true, value: undefined });
+    Reflect.deleteProperty(window, "DeviceMotionEvent");
 
     const { result } = renderHook(() => useDeviceMotion());
 

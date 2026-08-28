@@ -27,7 +27,7 @@ const installMockEventSource = () => {
 };
 
 afterEach(() => {
-  Object.defineProperty(window, "EventSource", { configurable: true, value: undefined });
+  Reflect.deleteProperty(window, "EventSource");
 });
 
 describe("useEventSource", () => {
