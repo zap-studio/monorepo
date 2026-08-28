@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { html } from "../tests/_html.ts";
+import { html } from "../../tests/_html.ts";
 import { usePopover } from "./use-popover.ts";
 
 const TestComponent = () => {

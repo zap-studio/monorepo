@@ -1,6 +1,6 @@
 {
   "extends": "@zap-studio/typescript/react.json",
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
   "exclude": ["dist", "node_modules", "vite.config.ts"],
   "compilerOptions": {
     "types": []

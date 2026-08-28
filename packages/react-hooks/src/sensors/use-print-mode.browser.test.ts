@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { createMatchMediaMock } from "./_media-query-test-utils.ts";
+import { createMatchMediaMock } from "../../tests/_media-query-test-utils.ts";
 import { usePrintMode } from "./use-print-mode.ts";
 
 describe("usePrintMode", () => {

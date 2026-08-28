@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { html } from "../tests/_html.ts";
+import { html } from "../../tests/_html.ts";
 import { useUnstableFiber } from "./use-unstable-fiber.ts";
 
 const TestComponent = () => {
