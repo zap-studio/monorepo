@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   getNdefReaderConstructor,
   type NDEFMessageSource,
+  type NDEFReader,
   type NDEFReadingEvent,
   type NDEFRecord,
   type NDEFWriteOptions,
@@ -16,6 +17,12 @@ export type {
   NDEFRecordInit,
   NDEFWriteOptions,
 } from "./_web-nfc-api.ts";
+
+/** A scanning session: the reader plus the `AbortSignal` controller that stops it. */
+interface NfcSession {
+  abortController: AbortController;
+  reader: NDEFReader;
+}
 
 /** The most recent tag read while scanning. */
 export interface NfcReading {
@@ -70,11 +77,10 @@ export const useExperimentalNfc = (): UseExperimentalNfcResult => {
   const [reading, setReading] = useState<NfcReading | undefined>(undefined);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [scanning, setScanning] = useState(false);
-  const cleanupRef = useRef<(() => void) | null>(null);
+  const [session, setSession] = useState<NfcSession | null>(null);
 
   const stop = useCallback(() => {
-    cleanupRef.current?.();
-    cleanupRef.current = null;
+    setSession(null);
     setScanning(false);
   }, []);
 
@@ -84,38 +90,16 @@ export const useExperimentalNfc = (): UseExperimentalNfcResult => {
       return false;
     }
 
-    cleanupRef.current?.();
-
     const abortController = new AbortController();
     const reader = new NDEFReaderCtor();
 
-    const handleReading = (event: Event) => {
-      // SAFETY: the Web NFC spec guarantees the "reading" event is an NDEFReadingEvent. `addEventListener` can't express that in its types, so it only gives us the base `Event` type.
-      const { message, serialNumber } = event as NDEFReadingEvent;
-      setReading({ records: message.records, serialNumber });
-      setError(undefined);
-    };
-    const handleReadingError = () => {
-      setError(new Error("The NFC tag in range could not be read."));
-    };
-
-    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- These listeners are added inside `scan()`, not inside the effect body, so the linter can't see the cleanup. But `cleanupRef` always removes them: here, in `stop()`, in the catch block below, and when the component unmounts.
-    reader.addEventListener("reading", handleReading);
-    reader.addEventListener("readingerror", handleReadingError);
-    cleanupRef.current = () => {
-      abortController.abort();
-      reader.removeEventListener("reading", handleReading);
-      reader.removeEventListener("readingerror", handleReadingError);
-    };
-
     try {
       await reader.scan({ signal: abortController.signal });
+      setSession({ abortController, reader });
       setScanning(true);
       setError(undefined);
       return true;
     } catch (caught) {
-      cleanupRef.current?.();
-      cleanupRef.current = null;
       setScanning(false);
       setError(toError(caught));
       return false;
@@ -155,7 +139,29 @@ export const useExperimentalNfc = (): UseExperimentalNfcResult => {
     }
   }, []);
 
-  useEffect(() => () => cleanupRef.current?.(), []);
+  useEffect(() => {
+    if (!session) {
+      return undefined;
+    }
+    const { abortController, reader } = session;
+    const handleReading = (event: Event) => {
+      // SAFETY: the Web NFC spec guarantees the "reading" event is an NDEFReadingEvent. `addEventListener` can't express that in its types, so it only gives us the base `Event` type.
+      const { message, serialNumber } = event as NDEFReadingEvent;
+      setReading({ records: message.records, serialNumber });
+      setError(undefined);
+    };
+    const handleReadingError = () => {
+      setError(new Error("The NFC tag in range could not be read."));
+    };
+
+    reader.addEventListener("reading", handleReading);
+    reader.addEventListener("readingerror", handleReadingError);
+    return () => {
+      abortController.abort();
+      reader.removeEventListener("reading", handleReading);
+      reader.removeEventListener("readingerror", handleReadingError);
+    };
+  }, [session]);
 
   return { error, makeReadOnly, reading, scan, scanning, stop, supported, write };
 };

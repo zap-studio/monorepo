@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 import {
   getIsExtended,
@@ -65,7 +65,7 @@ export const useExperimentalWindowManagement = (): UseExperimentalWindowManageme
   );
   const [screens, setScreens] = useState<readonly ScreenDetailed[]>([]);
   const [currentScreen, setCurrentScreen] = useState<ScreenDetailed | undefined>(undefined);
-  const cleanupRef = useRef<(() => void) | null>(null);
+  const [details, setDetails] = useState<ScreenDetails | null>(null);
 
   const requestPermission = useCallback(async (): Promise<boolean> => {
     const getScreenDetails = getScreenDetailsFn();
@@ -74,29 +74,30 @@ export const useExperimentalWindowManagement = (): UseExperimentalWindowManageme
     }
 
     try {
-      const details: ScreenDetails = await getScreenDetails();
-      cleanupRef.current?.();
-
-      const handleScreensChange = () => setScreens([...details.screens]);
-      const handleCurrentScreenChange = () => setCurrentScreen(details.currentScreen);
-
-      // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- These listeners are added inside `requestPermission()`, not inside the effect body, so the linter can't see the cleanup. But `cleanupRef` always removes them: here, and when the component unmounts.
-      details.addEventListener("screenschange", handleScreensChange);
-      details.addEventListener("currentscreenchange", handleCurrentScreenChange);
-      cleanupRef.current = () => {
-        details.removeEventListener("screenschange", handleScreensChange);
-        details.removeEventListener("currentscreenchange", handleCurrentScreenChange);
-      };
-
-      handleScreensChange();
-      handleCurrentScreenChange();
+      const newDetails: ScreenDetails = await getScreenDetails();
+      setDetails(newDetails);
+      setScreens([...newDetails.screens]);
+      setCurrentScreen(newDetails.currentScreen);
       return true;
     } catch {
       return false;
     }
   }, []);
 
-  useEffect(() => () => cleanupRef.current?.(), []);
+  useEffect(() => {
+    if (!details) {
+      return undefined;
+    }
+    const handleScreensChange = () => setScreens([...details.screens]);
+    const handleCurrentScreenChange = () => setCurrentScreen(details.currentScreen);
+
+    details.addEventListener("screenschange", handleScreensChange);
+    details.addEventListener("currentscreenchange", handleCurrentScreenChange);
+    return () => {
+      details.removeEventListener("screenschange", handleScreensChange);
+      details.removeEventListener("currentscreenchange", handleCurrentScreenChange);
+    };
+  }, [details]);
 
   return { currentScreen, isExtended, requestPermission, screens, supported };
 };

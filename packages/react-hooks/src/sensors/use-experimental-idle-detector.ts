@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   getIdleDetectorConstructor,
@@ -12,6 +12,16 @@ export type {
   IdleScreenState,
   IdleUserState,
 } from "./_idle-detection-api.ts";
+
+type IdleDetectorInstance = InstanceType<
+  NonNullable<ReturnType<typeof getIdleDetectorConstructor>>
+>;
+
+/** A started idle detection session: the detector plus the `AbortSignal` controller that stops it. */
+interface IdleSession {
+  abortController: AbortController;
+  detector: IdleDetectorInstance;
+}
 
 /** The shape returned by `useExperimentalIdleDetector`. */
 export interface UseExperimentalIdleDetectorResult {
@@ -47,11 +57,10 @@ export const useExperimentalIdleDetector = (): UseExperimentalIdleDetectorResult
   const supported = Boolean(getIdleDetectorConstructor());
   const [userState, setUserState] = useState<IdleUserState | undefined>(undefined);
   const [screenState, setScreenState] = useState<IdleScreenState | undefined>(undefined);
-  const cleanupRef = useRef<(() => void) | null>(null);
+  const [session, setSession] = useState<IdleSession | null>(null);
 
   const stop = useCallback(() => {
-    cleanupRef.current?.();
-    cleanupRef.current = null;
+    setSession(null);
     setUserState(undefined);
     setScreenState(undefined);
   }, []);
@@ -74,36 +83,37 @@ export const useExperimentalIdleDetector = (): UseExperimentalIdleDetectorResult
         return false;
       }
 
-      cleanupRef.current?.();
-
       const abortController = new AbortController();
       const detector = new IdleDetectorCtor();
 
-      const handleChange = () => {
-        setUserState(detector.userState);
-        setScreenState(detector.screenState);
-      };
-      // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- This listener is added inside `start()`, not inside the effect body, so the linter can't see the cleanup. But `cleanupRef` always removes it: here, in `stop()`, in the catch block below, and when the component unmounts.
-      detector.addEventListener("change", handleChange);
-      cleanupRef.current = () => {
-        abortController.abort();
-        detector.removeEventListener("change", handleChange);
-      };
-
       try {
         await detector.start({ ...options, signal: abortController.signal });
-        handleChange();
+        setSession({ abortController, detector });
+        setUserState(detector.userState);
+        setScreenState(detector.screenState);
         return true;
       } catch {
-        cleanupRef.current?.();
-        cleanupRef.current = null;
         return false;
       }
     },
     [],
   );
 
-  useEffect(() => () => cleanupRef.current?.(), []);
+  useEffect(() => {
+    if (!session) {
+      return undefined;
+    }
+    const { abortController, detector } = session;
+    const handleChange = () => {
+      setUserState(detector.userState);
+      setScreenState(detector.screenState);
+    };
+    detector.addEventListener("change", handleChange);
+    return () => {
+      abortController.abort();
+      detector.removeEventListener("change", handleChange);
+    };
+  }, [session]);
 
   return useMemo(
     () => ({ requestPermission, screenState, start, stop, supported, userState }),

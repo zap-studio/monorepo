@@ -34,29 +34,26 @@ const isSupported = (): boolean => typeof window !== "undefined" && Boolean(wind
 export const useSpeechSynthesis = (): UseSpeechSynthesisResult => {
   const supported = isSupported();
   const [speaking, setSpeaking] = useState(false);
+  const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(null);
 
   const speak = useCallback((text: string, options: SpeakOptions = {}): void => {
     if (!isSupported()) {
       return;
     }
-    const utterance = new SpeechSynthesisUtterance(text);
+    const newUtterance = new SpeechSynthesisUtterance(text);
     if (options.voice) {
-      utterance.voice = options.voice;
+      newUtterance.voice = options.voice;
     }
     if (options.rate !== undefined) {
-      utterance.rate = options.rate;
+      newUtterance.rate = options.rate;
     }
     if (options.pitch !== undefined) {
-      utterance.pitch = options.pitch;
+      newUtterance.pitch = options.pitch;
     }
     if (options.lang !== undefined) {
-      utterance.lang = options.lang;
+      newUtterance.lang = options.lang;
     }
-    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- these listeners are added to a new `utterance` created inside `speak()`, which runs from a user action, not from the effect below. The utterance is never stored or reused, so its listeners go away once it finishes, errors, or `cancel()` (called on unmount below) stops it.
-    utterance.addEventListener("start", () => setSpeaking(true));
-    utterance.addEventListener("end", () => setSpeaking(false));
-    utterance.addEventListener("error", () => setSpeaking(false));
-    window.speechSynthesis.speak(utterance);
+    setUtterance(newUtterance);
   }, []);
 
   const cancel = useCallback((): void => {
@@ -66,6 +63,25 @@ export const useSpeechSynthesis = (): UseSpeechSynthesisResult => {
     window.speechSynthesis.cancel();
     setSpeaking(false);
   }, []);
+
+  useEffect(() => {
+    if (!utterance) {
+      return undefined;
+    }
+    const handleStart = () => setSpeaking(true);
+    const handleEnd = () => setSpeaking(false);
+    const handleError = () => setSpeaking(false);
+
+    utterance.addEventListener("start", handleStart);
+    utterance.addEventListener("end", handleEnd);
+    utterance.addEventListener("error", handleError);
+    window.speechSynthesis.speak(utterance);
+    return () => {
+      utterance.removeEventListener("start", handleStart);
+      utterance.removeEventListener("end", handleEnd);
+      utterance.removeEventListener("error", handleError);
+    };
+  }, [utterance]);
 
   useEffect(() => cancel, [cancel]);
 

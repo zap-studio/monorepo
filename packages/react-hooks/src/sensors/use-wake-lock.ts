@@ -29,30 +29,43 @@ export const useWakeLock = (): UseWakeLockResult => {
   const supported = isSupported();
   const [active, setActive] = useState(false);
   const sentinelRef = useRef<WakeLockSentinel | null>(null);
+  const [sentinel, setSentinel] = useState<WakeLockSentinel | null>(null);
 
   const release = useCallback(async (): Promise<void> => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) {
+    const current = sentinelRef.current;
+    if (!current) {
       return;
     }
     sentinelRef.current = null;
+    setSentinel(null);
     setActive(false);
-    await sentinel.release();
+    await current.release();
   }, []);
 
   const request = useCallback(async (): Promise<void> => {
     if (!isSupported()) {
       return;
     }
-    const sentinel = await navigator.wakeLock.request("screen");
-    sentinelRef.current = sentinel;
+    const newSentinel = await navigator.wakeLock.request("screen");
+    sentinelRef.current = newSentinel;
+    setSentinel(newSentinel);
     setActive(true);
-    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- this listener is added inside `request()`, which the user calls directly, not inside an effect's setup code. The `sentinel` is only stored in `sentinelRef` and never reused, so this listener naturally goes away once `release()` fires it (the effect below calls `release()` on unmount).
-    sentinel.addEventListener("release", () => {
-      sentinelRef.current = null;
-      setActive(false);
-    });
   }, []);
+
+  useEffect(() => {
+    if (!sentinel) {
+      return undefined;
+    }
+    const handleRelease = () => {
+      sentinelRef.current = null;
+      setSentinel(null);
+      setActive(false);
+    };
+    sentinel.addEventListener("release", handleRelease);
+    return () => {
+      sentinel.removeEventListener("release", handleRelease);
+    };
+  }, [sentinel]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {

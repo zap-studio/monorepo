@@ -45,6 +45,7 @@ export const useMediaRecorder = (
   const [blob, setBlob] = useState<Blob | undefined>(undefined);
   const [error, setError] = useState<Error | undefined>(undefined);
   const recorderRef = useRef<MediaRecorder | null>(null);
+  const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
   const optionsRef = useRef(options);
@@ -60,24 +61,10 @@ export const useMediaRecorder = (
     setBlob(undefined);
     chunksRef.current = [];
 
-    const recorder = new MediaRecorder(stream, optionsRef.current);
-    // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- these listeners are added to a new `recorder` created inside `start()`, which runs from a user action, not from the effect below. The unmount effect stops the recorder, and its listeners go away with it since the recorder is never reused.
-    recorder.addEventListener("dataavailable", (event: BlobEvent) => {
-      if (event.data.size > 0) {
-        chunksRef.current.push(event.data);
-      }
-    });
-    recorder.addEventListener("stop", () => {
-      setBlob(new Blob(chunksRef.current, { type: recorder.mimeType }));
-      setStatus("inactive");
-    });
-    recorder.addEventListener("error", () => {
-      setError(new Error("MediaRecorder encountered an error."));
-      setStatus("inactive");
-    });
-
-    recorder.start();
-    recorderRef.current = recorder;
+    const newRecorder = new MediaRecorder(stream, optionsRef.current);
+    newRecorder.start();
+    recorderRef.current = newRecorder;
+    setRecorder(newRecorder);
     setStatus("recording");
   }, [stream]);
 
@@ -98,6 +85,34 @@ export const useMediaRecorder = (
       setStatus("recording");
     }
   }, []);
+
+  useEffect(() => {
+    if (!recorder) {
+      return undefined;
+    }
+    const handleDataAvailable = (event: BlobEvent) => {
+      if (event.data.size > 0) {
+        chunksRef.current.push(event.data);
+      }
+    };
+    const handleStop = () => {
+      setBlob(new Blob(chunksRef.current, { type: recorder.mimeType }));
+      setStatus("inactive");
+    };
+    const handleError = () => {
+      setError(new Error("MediaRecorder encountered an error."));
+      setStatus("inactive");
+    };
+
+    recorder.addEventListener("dataavailable", handleDataAvailable);
+    recorder.addEventListener("stop", handleStop);
+    recorder.addEventListener("error", handleError);
+    return () => {
+      recorder.removeEventListener("dataavailable", handleDataAvailable);
+      recorder.removeEventListener("stop", handleStop);
+      recorder.removeEventListener("error", handleError);
+    };
+  }, [recorder]);
 
   useEffect(
     () => () => {
