@@ -14,8 +14,8 @@ import { useEffect, useState } from "react";
  */
 export const usePermission = (name: PermissionName): PermissionState | undefined => {
   const [state, setState] = useState<PermissionState | undefined>(undefined);
+  const [status, setStatus] = useState<PermissionStatus | undefined>(undefined);
 
-  // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- the cleanup function does remove the "change" listener, through the `cleanup` variable. The linter can't see this because the removeEventListener call is inside that variable, not written directly in the returned function.
   useEffect(() => {
     const permissions = navigator.permissions;
     if (!permissions) {
@@ -23,31 +23,37 @@ export const usePermission = (name: PermissionName): PermissionState | undefined
       return undefined;
     }
 
-    let cancelled = false;
-    let cleanup: (() => void) | undefined;
+    let isMounted = true;
 
-    const subscribeToPermission = async () => {
-      const status = await permissions.query({ name });
-      if (cancelled) {
+    void (async () => {
+      const result = await permissions.query({ name });
+      if (!isMounted) {
         return;
       }
-      setState(status.state);
-
-      const handleChange = () => {
-        setState(status.state);
-      };
-
-      status.addEventListener("change", handleChange);
-      cleanup = () => status.removeEventListener("change", handleChange);
-    };
-
-    void subscribeToPermission();
+      setStatus(result);
+      setState(result.state);
+    })();
 
     return () => {
-      cancelled = true;
-      cleanup?.();
+      isMounted = false;
     };
   }, [name]);
+
+  useEffect(() => {
+    if (!status) {
+      return undefined;
+    }
+
+    const handleChange = () => {
+      setState(status.state);
+    };
+
+    status.addEventListener("change", handleChange);
+
+    return () => {
+      status.removeEventListener("change", handleChange);
+    };
+  }, [status]);
 
   return state;
 };
