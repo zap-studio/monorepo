@@ -1,4 +1,4 @@
-import { type DependencyList, useEffect, useState } from "react";
+import { type DependencyList, useEffect, useRef, useState } from "react";
 
 /** The shape returned by `useAsync`. */
 export interface UseAsyncState<T> {
@@ -34,6 +34,8 @@ export const useAsync = <T>(
   deps: DependencyList = [],
 ): UseAsyncState<T> => {
   const [state, setState] = useState<UseAsyncState<T>>({ loading: true });
+  const asyncFnRef = useRef(asyncFn);
+  asyncFnRef.current = asyncFn;
 
   useEffect(() => {
     let cancelled = false;
@@ -41,7 +43,7 @@ export const useAsync = <T>(
 
     const run = async () => {
       try {
-        const data = await asyncFn();
+        const data = await asyncFnRef.current();
         if (!cancelled) {
           setState({ data, loading: false });
         }
@@ -60,7 +62,6 @@ export const useAsync = <T>(
     return () => {
       cancelled = true;
     };
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- deps comes directly from the caller, just like useEffect's own dependency array. asyncFn is left out on purpose, so callers don't need to memoize it.
   }, deps);
 
   return state;

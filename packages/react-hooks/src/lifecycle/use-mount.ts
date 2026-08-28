@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * Runs `effect` exactly once, when the component mounts. It's a thin
@@ -13,8 +13,10 @@ import { useEffect } from "react";
  * ```
  */
 export const useMount = (effect: () => void): void => {
+  const effectRef = useRef(effect);
+  effectRef.current = effect;
+
   useEffect(() => {
-    effect();
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- this runs once on mount by design, like useEffect(fn, []). Re-running it whenever `effect` changes would defeat the whole point of this hook.
+    effectRef.current();
   }, []);
 };
