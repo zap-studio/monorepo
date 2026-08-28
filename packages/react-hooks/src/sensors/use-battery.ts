@@ -45,7 +45,6 @@ const readBatteryState = (battery: BatteryManager): BatteryState => ({
 export const useBattery = (): BatteryState => {
   const [state, setState] = useState<BatteryState>(UNSUPPORTED_STATE);
 
-  // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- the returned cleanup function does call the `cleanup` variable, which removes every listener added in `subscribeToBattery`. The linter can't see this because the removeEventListener calls happen through that variable instead of directly inside the returned function.
   useEffect(() => {
     // SAFETY: getBattery is an experimental API that only Chromium browsers support, and TypeScript's DOM types don't include it. The `if (!getBattery)` check below handles browsers that don't support it, so the code uses the SSR default instead of crashing.
     const getBattery = (navigator as NavigatorWithBattery).getBattery;
