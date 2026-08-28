@@ -76,6 +76,7 @@ Every hook is also importable from its own category subpath — see [Conventions
 | `usePrintMode`                             | `true` while printing, via the `print` media query                                                                    |
 | `useNotificationPermission`                | Notifications API permission state + a `notify()` trigger                                                             |
 | `useFontsReady`                            | `true` once `document.fonts.ready` resolves — avoid FOUC on custom web fonts                                          |
+| `useBrowserEngine`                         | `"blink"`/`"gecko"`/`"webkit"`/`"unknown"`, via feature detection — no `navigator.userAgent` parsing                  |
 | `useExperimentalIdleDetector`              | Idle Detection API — `userState`/`screenState` (Experimental, Chromium-only)                                          |
 | `useExperimentalLocalFonts`                | Local Font Access API — `window.queryLocalFonts()` (Experimental, Chromium-only)                                      |
 | `useExperimentalNfc`                       | Web NFC API — scan, write, and lock NDEF tags (Experimental, Chromium on Android only)                                |

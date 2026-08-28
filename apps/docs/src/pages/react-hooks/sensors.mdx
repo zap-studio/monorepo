@@ -262,6 +262,21 @@ const fontsReady = useFontsReady();
 if (!fontsReady) return <Skeleton />;
 ```
 
+## useBrowserEngine
+
+Identifies the browser's rendering engine — `"blink"` (Chrome, Edge, Opera, and other Chromium browsers), `"gecko"` (Firefox), or `"webkit"` (Safari) — using feature detection instead of parsing `navigator.userAgent`, per [MDN's guidance against user-agent sniffing](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Browser_detection_using_the_user_agent). `"unknown"` is also the safe default for server rendering.
+
+This is a best-effort heuristic, meant for the rare cross-engine quirk that no single feature check covers — for example, only Safari requires a `requestPermission()` gesture before [`useDeviceOrientation`](#usedeviceorientation)/[`useDeviceMotion`](#usedevicemotion) report values. Prefer detecting the specific feature or API you need over branching on the engine when you can.
+
+```tsx
+const engine = useBrowserEngine();
+const { requestPermission } = useDeviceOrientation();
+
+return engine === "webkit" ? (
+  <button onClick={requestPermission}>Enable tilt controls</button>
+) : null;
+```
+
 ## useExperimentalIdleDetector
 
 Wraps the [Idle Detection API](https://developer.mozilla.org/en-US/docs/Web/API/Idle_Detection_API)'s `IdleDetector` — reports `userState` (`"active"`/`"idle"`) and `screenState` (`"locked"`/`"unlocked"`), updating on its `change` event. `start()` requests the `"idle-detection"` permission first (resolving `false` if denied), then begins reporting; `stop()` tears the detector down. Both states stay `undefined` — the SSR-safe default — until `start()` resolves `true`.

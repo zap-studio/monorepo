@@ -27,6 +27,8 @@ export { useBattery } from "./sensors/use-battery.ts";
 export { useBeforeUnload } from "./lifecycle/use-before-unload.ts";
 export type { UseBroadcastChannelResult } from "./state/use-broadcast-channel.ts";
 export { useBroadcastChannel } from "./state/use-broadcast-channel.ts";
+export type { BrowserEngine } from "./sensors/use-browser-engine.ts";
+export { useBrowserEngine } from "./sensors/use-browser-engine.ts";
 export type { UseCameraOptions, UseCameraResult } from "./media/use-camera.ts";
 export { useCamera } from "./media/use-camera.ts";
 export { useClickOutside } from "./dom/use-click-outside.ts";

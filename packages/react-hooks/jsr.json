@@ -73,6 +73,7 @@
     "./pwa/use-service-worker": "./src/pwa/use-service-worker.ts",
     "./pwa/use-standalone-mode": "./src/pwa/use-standalone-mode.ts",
     "./sensors/use-battery": "./src/sensors/use-battery.ts",
+    "./sensors/use-browser-engine": "./src/sensors/use-browser-engine.ts",
     "./sensors/use-color-scheme": "./src/sensors/use-color-scheme.ts",
     "./sensors/use-cookie-enabled": "./src/sensors/use-cookie-enabled.ts",
     "./sensors/use-device-capabilities": "./src/sensors/use-device-capabilities.ts",

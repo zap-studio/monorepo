@@ -96,6 +96,7 @@
     "./pwa/use-service-worker": "./dist/pwa/use-service-worker.js",
     "./pwa/use-standalone-mode": "./dist/pwa/use-standalone-mode.js",
     "./sensors/use-battery": "./dist/sensors/use-battery.js",
+    "./sensors/use-browser-engine": "./dist/sensors/use-browser-engine.js",
     "./sensors/use-color-scheme": "./dist/sensors/use-color-scheme.js",
     "./sensors/use-cookie-enabled": "./dist/sensors/use-cookie-enabled.js",
     "./sensors/use-device-capabilities": "./dist/sensors/use-device-capabilities.js",

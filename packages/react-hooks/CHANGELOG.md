@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - **State** (`state/`) — `useCredential`, wrapping the Credential Management API (`navigator.credentials`) for programmatic sign-in/sign-out.
+- **Sensors** (`sensors/`) — `useBrowserEngine`, identifying `"blink"`/`"gecko"`/`"webkit"` via feature detection (no `navigator.userAgent` parsing), for the rare cross-engine quirk no single feature check covers — like Safari's `requestPermission()` gesture for `useDeviceOrientation`/`useDeviceMotion`.
 - **Media** (`media/`) — `useExperimentalBarcodeDetector` (Barcode Detection API), `useExperimentalSelectAudioOutput` (audio output device selection).
 - **DOM / element interaction** (`dom/`) — `useExperimentalContactPicker` (Contact Picker API).
 - **Sensors** (`sensors/`) — `useExperimentalIdleDetector` (Idle Detection API), `useExperimentalLocalFonts` (Local Font Access API), and the Generic Sensor API family: `useExperimentalAccelerometer`, `useExperimentalLinearAccelerationSensor`, `useExperimentalGravitySensor`, `useExperimentalGyroscope`, `useExperimentalMagnetometer`, `useExperimentalAbsoluteOrientationSensor`, `useExperimentalRelativeOrientationSensor`, `useExperimentalAmbientLightSensor`.
