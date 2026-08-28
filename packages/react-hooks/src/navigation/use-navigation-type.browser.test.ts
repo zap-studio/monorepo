@@ -39,7 +39,7 @@ describe("useNavigationType", () => {
   it('falls back to "navigate" when the Navigation Timing API is unsupported', () => {
     Object.defineProperty(performance, "getEntriesByType", {
       configurable: true,
-      value: undefined,
+      value: null,
     });
 
     const { result } = renderHook(() => useNavigationType());

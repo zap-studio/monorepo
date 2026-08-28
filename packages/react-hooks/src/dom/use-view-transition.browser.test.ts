@@ -24,7 +24,10 @@ describe("useViewTransition", () => {
   });
 
   it("reports supported: false when startViewTransition is unavailable", () => {
-    Reflect.deleteProperty(document, "startViewTransition");
+    Object.defineProperty(document, "startViewTransition", {
+      configurable: true,
+      value: null,
+    });
 
     const { result } = renderHook(() => useViewTransition());
 
@@ -55,7 +58,10 @@ describe("useViewTransition", () => {
   });
 
   it("startTransition() just calls the callback directly when unsupported", async () => {
-    Reflect.deleteProperty(document, "startViewTransition");
+    Object.defineProperty(document, "startViewTransition", {
+      configurable: true,
+      value: null,
+    });
     const callback = vi.fn<() => Promise<void> | void>();
 
     const { result } = renderHook(() => useViewTransition());

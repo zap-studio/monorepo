@@ -8,11 +8,11 @@ const STARTUP_MESSAGE = "server started";
 const CLOCK_TIME_PATTERN = /\d{2}:\d{2}:\d{2}\.\d{3}/u;
 
 const baseRecord = (overrides: Partial<LogRecord> = {}): LogRecord => ({
-  context: undefined,
   level: "info",
   message: STARTUP_MESSAGE,
   timestamp: new Date("2024-01-01T00:00:00.000Z"),
   ...overrides,
+  context: overrides.context,
 });
 
 describe("classicFormat", () => {
@@ -117,7 +117,7 @@ describe("compactFormat", () => {
   });
 
   it("formats undefined and null context values as bare tokens", () => {
-    const record = baseRecord({ context: { a: undefined, b: null } });
+    const record = baseRecord({ context: { a: void 0, b: null } });
     const [line] = compactFormat(record);
     expect(line).toContain("a=undefined");
     expect(line).toContain("b=null");

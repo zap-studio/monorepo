@@ -176,7 +176,7 @@ describe("createStandardValidator", () => {
     expect(result).toStrictEqual({ id: "42" });
   });
 
-  it("should throw ValidationError when throwOnError is true", async () => {
+  it("should throw ValidationError when throwOnError is true (createStandardValidator)", async () => {
     const schema = createMockSchema(() => ({
       issues: [{ message: INVALID_VALUE_MESSAGE }],
     }));
@@ -186,7 +186,7 @@ describe("createStandardValidator", () => {
     await expect(validate("bad", { throwOnError: true })).rejects.toThrow(ValidationError);
   });
 
-  it("should return result object when throwOnError is false", async () => {
+  it("should return result object when throwOnError is false (createStandardValidator)", async () => {
     const issues: StandardSchemaV1.Issue[] = [{ message: INVALID_VALUE_MESSAGE }];
     const schema = createMockSchema(() => ({ issues }));
 
@@ -236,7 +236,7 @@ describe("createStandardValidatorSync", () => {
     expect(result).toStrictEqual({ id: "42" });
   });
 
-  it("should throw ValidationError when throwOnError is true", () => {
+  it("should throw ValidationError when throwOnError is true (createStandardValidatorSync)", () => {
     const schema = createMockSchema(() => ({
       issues: [{ message: INVALID_VALUE_MESSAGE }],
     }));
@@ -246,7 +246,7 @@ describe("createStandardValidatorSync", () => {
     expect(() => validate("bad", { throwOnError: true })).toThrow(ValidationError);
   });
 
-  it("should return result object when throwOnError is false", () => {
+  it("should return result object when throwOnError is false (createStandardValidatorSync)", () => {
     const issues: StandardSchemaV1.Issue[] = [{ message: INVALID_VALUE_MESSAGE }];
     const schema = createMockSchema(() => ({ issues }));
 
@@ -351,7 +351,7 @@ describe("standardValidate", () => {
       expect(result).toBe(123);
     });
 
-    it("should return result object when throwOnError is false", async () => {
+    it("should return result object when throwOnError is false (standardValidate)", async () => {
       const schema = createMockSchema((input) => Promise.resolve({ value: input }));
 
       const data = { name: "async" };
@@ -365,7 +365,7 @@ describe("standardValidate", () => {
   });
 
   describe("validation failure", () => {
-    it("should throw ValidationError when throwOnError is true", async () => {
+    it("should throw ValidationError when throwOnError is true (standardValidate)", async () => {
       const schema = createMockSchema(() => ({
         issues: [{ message: INVALID_VALUE_MESSAGE }],
       }));
@@ -499,7 +499,7 @@ describe("standardValidateSync", () => {
   });
 
   describe("validation failure", () => {
-    it("should throw ValidationError when throwOnError is true", () => {
+    it("should throw ValidationError when throwOnError is true (standardValidateSync)", () => {
       const schema = createMockSchema(() => ({
         issues: [{ message: INVALID_VALUE_MESSAGE }],
       }));

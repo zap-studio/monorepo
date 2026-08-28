@@ -93,7 +93,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("useWebTransport", () => {
+describe("useWebTransport connection lifecycle", () => {
   it('starts as "connecting" and opens a transport for the given url', () => {
     installMockWebTransport();
 
@@ -154,6 +154,20 @@ describe("useWebTransport", () => {
     await waitFor(() => expect(result.current.status).toBe("closed"));
   });
 
+  it('becomes "closed" with an error when `closed` rejects', async () => {
+    installMockWebTransport();
+    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
+
+    await act(async () => {
+      MockWebTransport.instances[0]?.failClosed(new Error("connection lost"));
+    });
+
+    await waitFor(() => expect(result.current.status).toBe("closed"));
+    expect(result.current.error?.message).toBe("connection lost");
+  });
+});
+
+describe("useWebTransport datagrams", () => {
   it("captures the last datagram received", async () => {
     installMockWebTransport();
     const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
@@ -192,19 +206,9 @@ describe("useWebTransport", () => {
 
     await waitFor(() => expect(result.current.error?.message).toBe("datagram queue full"));
   });
+});
 
-  it('becomes "closed" with an error when `closed` rejects', async () => {
-    installMockWebTransport();
-    const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
-
-    await act(async () => {
-      MockWebTransport.instances[0]?.failClosed(new Error("connection lost"));
-    });
-
-    await waitFor(() => expect(result.current.status).toBe("closed"));
-    expect(result.current.error?.message).toBe("connection lost");
-  });
-
+describe("useWebTransport streams", () => {
   it("createBidirectionalStream() resolves the underlying stream", async () => {
     installMockWebTransport();
     const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
@@ -258,7 +262,9 @@ describe("useWebTransport", () => {
 
     await waitFor(() => expect(result.current.error?.message).toBe(STREAM_REFUSED_ERROR));
   });
+});
 
+describe("useWebTransport close and unmount cleanup", () => {
   it("close() closes the underlying transport", async () => {
     installMockWebTransport();
     const { result } = renderHook(() => useWebTransport(TRANSPORT_URL));
@@ -341,7 +347,9 @@ describe("useWebTransport", () => {
 
     expect(result.current.lastDatagram).toBeUndefined();
   });
+});
 
+describe("useWebTransport url changes", () => {
   it('stays "closed" and opens no transport when url is undefined', () => {
     installMockWebTransport();
 
@@ -362,7 +370,9 @@ describe("useWebTransport", () => {
     expect(MockWebTransport.instances).toHaveLength(2);
     expect(MockWebTransport.instances[1]?.url).toBe("https://b.example.com:4999/wt");
   });
+});
 
+describe("useWebTransport unsupported environment", () => {
   it("reports supported: false when the WebTransport API is unavailable", () => {
     vi.stubGlobal("WebTransport", undefined);
 

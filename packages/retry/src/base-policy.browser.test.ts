@@ -225,7 +225,7 @@ describe("throw mode (runRetryPolicy default)", () => {
   });
 });
 
-describe("result mode (throwOnExhausted: false)", () => {
+describe("result mode (throwOnExhausted: false): success paths", () => {
   it("returns terminal result instead of throwing when retries stop", async () => {
     const policy = createSequencePolicy([
       { delayMs: 0, reason: MAX_ATTEMPTS_REASON, shouldRetry: false },
@@ -275,6 +275,43 @@ describe("result mode (throwOnExhausted: false)", () => {
     expect(execute).toHaveBeenNthCalledWith(2, 2);
   });
 
+  it("retries with signal and positive delay until success", async () => {
+    const policy = createSequencePolicy([{ delayMs: 10, reason: "retry", shouldRetry: true }]);
+    const controller = new AbortController();
+    const sleep = vi.fn<(delayMs: number) => Promise<void>>().mockResolvedValue();
+    const execute = vi.fn<(attempt: number) => Promise<string>>();
+    execute.mockRejectedValueOnce(new Error("fail"));
+    execute.mockResolvedValueOnce("ok");
+
+    const result = await runRetryPolicy(policy, execute, {
+      signal: controller.signal,
+      sleep,
+      throwOnExhausted: false,
+    });
+
+    expect(result).toStrictEqual({ ok: true, value: "ok" });
+    expect(sleep).toHaveBeenCalledWith(10);
+  });
+
+  it("retries with signal and zero delay until success", async () => {
+    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
+    const controller = new AbortController();
+    const execute = vi.fn<(attempt: number) => Promise<string>>();
+    execute.mockRejectedValueOnce(new Error("fail"));
+    execute.mockResolvedValueOnce("ok");
+
+    const result = await runRetryPolicy(policy, execute, {
+      signal: controller.signal,
+      throwOnExhausted: false,
+    });
+
+    expect(result).toStrictEqual({ ok: true, value: "ok" });
+    expect(execute).toHaveBeenNthCalledWith(1, 1);
+    expect(execute).toHaveBeenNthCalledWith(2, 2);
+  });
+});
+
+describe("result mode (throwOnExhausted: false): abort before and during execution", () => {
   it("returns terminal result when signal is already aborted", async () => {
     const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
     const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
@@ -384,42 +421,9 @@ describe("result mode (throwOnExhausted: false)", () => {
     expect(failure.error.message).toBe("Retry aborted.");
     expect(failure.error).toBeInstanceOf(AbortError);
   });
+});
 
-  it("retries with signal and positive delay until success", async () => {
-    const policy = createSequencePolicy([{ delayMs: 10, reason: "retry", shouldRetry: true }]);
-    const controller = new AbortController();
-    const sleep = vi.fn<(delayMs: number) => Promise<void>>().mockResolvedValue();
-    const execute = vi.fn<(attempt: number) => Promise<string>>();
-    execute.mockRejectedValueOnce(new Error("fail"));
-    execute.mockResolvedValueOnce("ok");
-
-    const result = await runRetryPolicy(policy, execute, {
-      signal: controller.signal,
-      sleep,
-      throwOnExhausted: false,
-    });
-
-    expect(result).toStrictEqual({ ok: true, value: "ok" });
-    expect(sleep).toHaveBeenCalledWith(10);
-  });
-
-  it("retries with signal and zero delay until success", async () => {
-    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
-    const controller = new AbortController();
-    const execute = vi.fn<(attempt: number) => Promise<string>>();
-    execute.mockRejectedValueOnce(new Error("fail"));
-    execute.mockResolvedValueOnce("ok");
-
-    const result = await runRetryPolicy(policy, execute, {
-      signal: controller.signal,
-      throwOnExhausted: false,
-    });
-
-    expect(result).toStrictEqual({ ok: true, value: "ok" });
-    expect(execute).toHaveBeenNthCalledWith(1, 1);
-    expect(execute).toHaveBeenNthCalledWith(2, 2);
-  });
-
+describe("result mode (throwOnExhausted: false): backoff aborts, sleep errors, and non-retryable failures", () => {
   it("returns failure result when signal aborts during backoff sleep", async () => {
     const policy = createSequencePolicy([{ delayMs: 50, reason: "retry", shouldRetry: true }]);
     const controller = new AbortController();

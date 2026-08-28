@@ -71,7 +71,7 @@ const captureRejectedError = async (run: () => Promise<unknown>): Promise<unknow
   throw new Error("Expected promise to reject");
 };
 
-describe("$fetch", () => {
+describe("$fetch basic functionality", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
@@ -84,364 +84,69 @@ describe("$fetch", () => {
     vi.restoreAllMocks();
   });
 
-  describe("basic functionality", () => {
-    it("should make a fetch request to the given URL", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+  it("should make a fetch request to the given URL", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
 
-      await $fetch(TEST_URL);
+    await $fetch(TEST_URL);
 
-      expect(fetchMock).toHaveBeenCalledWith(TEST_URL, expect.any(Object));
+    expect(fetchMock).toHaveBeenCalledWith(TEST_URL, expect.any(Object));
+  });
+
+  it("should return raw Response when no schema is provided", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const result = await $fetch(TEST_URL);
+
+    expect(result).toBeInstanceOf(Response);
+    expect(result).toBe(mockResponse);
+  });
+
+  it("should pass RequestInit options to fetch", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await $fetch(TEST_URL, {
+      credentials: "include",
+      method: "POST",
+      mode: "cors",
     });
 
-    it("should return raw Response when no schema is provided", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const result = await $fetch(TEST_URL);
-
-      expect(result).toBeInstanceOf(Response);
-      expect(result).toBe(mockResponse);
-    });
-
-    it("should pass RequestInit options to fetch", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      await $fetch(TEST_URL, {
+    expect(fetchMock).toHaveBeenCalledWith(
+      TEST_URL,
+      expect.objectContaining({
         credentials: "include",
         method: "POST",
         mode: "cors",
-      });
-
-      expect(fetchMock).toHaveBeenCalledWith(
-        TEST_URL,
-        expect.objectContaining({
-          credentials: "include",
-          method: "POST",
-          mode: "cors",
-        }),
-      );
-    });
-
-    it("should support all HTTP methods via options.method", async () => {
-      const methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"];
-
-      for (const method of methods) {
-        const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-          status: 200,
-        });
-        fetchMock.mockResolvedValue(mockResponse);
-
-        await $fetch(TEST_URL, { method });
-
-        expect(fetchMock).toHaveBeenCalledWith(TEST_URL, expect.objectContaining({ method }));
-
-        fetchMock.mockClear();
-      }
-    });
+      }),
+    );
   });
 
-  describe("schema validation", () => {
-    const UserSchema = object({
-      id: number(),
-      name: string(),
-    });
+  it("should support all HTTP methods via options.method", async () => {
+    const methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"];
 
-    it("should validate response data against the provided schema", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const result = await $fetch(USER_URL, UserSchema);
-
-      expect(result).toStrictEqual(userData);
-    });
-
-    it("should return validated data when schema validation passes", async () => {
-      const userData = { id: 42, name: "Jane Doe" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const result = await $fetch(USER_URL, UserSchema);
-
-      expect(result).toStrictEqual(userData);
-      expect(result).toHaveProperty("id", 42);
-      expect(result).toHaveProperty("name", "Jane Doe");
-    });
-
-    it("should throw ValidationError when validation fails and throwOnValidationError is true (default)", async () => {
-      const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
-      const mockResponse = new Response(JSON.stringify(invalidData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      await expect($fetch(USER_URL, UserSchema)).rejects.toThrow(ValidationError);
-    });
-
-    it("should return result object with issues when validation fails and throwOnValidationError is false", async () => {
-      const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
-      const mockResponse = new Response(JSON.stringify(invalidData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const result = await $fetch(USER_URL, UserSchema, {
-        throwOnValidationError: false,
-      });
-
-      expect(result).toHaveProperty("issues");
-      // SAFETY: the toHaveProperty("issues") assertion above confirms result has an issues array, matching the throwOnValidationError:false failure shape.
-      expect(Array.isArray((result as { issues: unknown[] }).issues)).toBeTruthy();
-    });
-
-    it("should return result object with value when validation passes and throwOnValidationError is false", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const result = await $fetch(USER_URL, UserSchema, {
-        throwOnValidationError: false,
-      });
-
-      expect(result).toHaveProperty("value");
-      // SAFETY: the toHaveProperty("value") assertion above confirms result has a value property, matching the throwOnValidationError:false success shape.
-      expect((result as { value: unknown }).value).toStrictEqual(userData);
-    });
-
-    it("should parse response as JSON when schema is provided", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      const jsonSpy = vi.spyOn(mockResponse, "json");
-      fetchMock.mockResolvedValue(mockResponse);
-
-      await $fetch(USER_URL, UserSchema);
-
-      expect(jsonSpy).toHaveBeenCalledWith();
-    });
-  });
-
-  describe("error handling", () => {
-    it("should throw FetchError on non-ok response when throwOnFetchError is true (default)", async () => {
-      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
-        status: 404,
-        statusText: "Not Found",
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      await expect($fetch(MISSING_URL)).rejects.toThrow(FetchError);
-    });
-
-    it("should return Response without throwing when throwOnFetchError is false", async () => {
-      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
-        status: 404,
-        statusText: "Not Found",
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const result = await $fetch(MISSING_URL, {
-        throwOnFetchError: false,
-      });
-
-      expect(result).toBeInstanceOf(Response);
-      expect(result.status).toBe(404);
-    });
-
-    it("should include status and response in FetchError", async () => {
-      const mockResponse = new Response(JSON.stringify({ error: "Server Error" }), {
-        status: 500,
-        statusText: "Internal Server Error",
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const error = await captureRejectedError(
-        async () => await $fetch("https://api.example.com/error"),
-      );
-
-      expect(error).toBeInstanceOf(FetchError);
-      // SAFETY: the toBeInstanceOf assertion above guarantees error is a FetchError.
-      expect((error as FetchError).status).toBe(500);
-      // SAFETY: error was confirmed to be a FetchError by the toBeInstanceOf assertion two lines above.
-      expect((error as FetchError).response).toBe(mockResponse);
-    });
-
-    it("should include status text in FetchError message", async () => {
-      const mockResponse = new Response(JSON.stringify({ error: "Forbidden" }), {
-        status: 403,
-        statusText: "Forbidden",
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const error = await captureRejectedError(
-        async () => await $fetch("https://api.example.com/forbidden"),
-      );
-
-      expect(error).toBeInstanceOf(FetchError);
-      // SAFETY: the toBeInstanceOf assertion above guarantees error is a FetchError.
-      expect((error as FetchError).message).toContain("403");
-      // SAFETY: error was confirmed to be a FetchError by the toBeInstanceOf assertion two lines above.
-      expect((error as FetchError).message).toContain("Forbidden");
-    });
-  });
-
-  describe("headers", () => {
-    const UserSchema = object({
-      id: number(),
-      name: string(),
-    });
-
-    it("should pass custom headers to fetch", async () => {
+    for (const method of methods) {
       const mockResponse = new Response(JSON.stringify({ data: "test" }), {
         status: 200,
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      await $fetch(TEST_URL, {
-        headers: {
-          Authorization: BEARER_TOKEN_123,
-          "X-Custom-Header": CUSTOM_HEADER_VALUE,
-        },
-      });
+      await $fetch(TEST_URL, { method });
 
-      // SAFETY: $fetch's mergeHeaders always builds a native Headers instance for init.headers before calling fetch, so calls[0][1].headers is a Headers.
-      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN_123);
-      expect(calledHeaders.get("X-Custom-Header")).toBe(CUSTOM_HEADER_VALUE);
-    });
+      expect(fetchMock).toHaveBeenCalledWith(TEST_URL, expect.objectContaining({ method }));
 
-    it("should auto-set Content-Type to application/json when schema and json are provided", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      await $fetch(USER_URL, UserSchema, {
-        json: { name: "New User" },
-        method: "POST",
-      });
-
-      // SAFETY: $fetch always normalizes init.headers into a native Headers instance via mergeHeaders before calling fetch.
-      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json");
-    });
-
-    it("should not override existing Content-Type header", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      await $fetch(USER_URL, UserSchema, {
-        headers: {
-          [CONTENT_TYPE_HEADER]: "application/json; charset=utf-8",
-        },
-        json: { name: "New User" },
-        method: "POST",
-      });
-
-      // SAFETY: $fetch always normalizes init.headers into a native Headers instance via mergeHeaders before calling fetch.
-      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json; charset=utf-8");
-    });
-  });
-
-  describe("body handling", () => {
-    const UserSchema = object({
-      id: number(),
-      name: string(),
-    });
-
-    it("should stringify json when schema is provided", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const bodyData = { email: "user@example.com", name: "New User" };
-      await $fetch(USER_URL, UserSchema, {
-        json: bodyData,
-        method: "POST",
-      });
-
-      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
-      expect(calledBody).toBe(JSON.stringify(bodyData));
-    });
-
-    it("should stringify plain object json when no schema is provided", async () => {
-      const mockResponse = new Response(JSON.stringify({ success: true }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const bodyData = { email: "user@example.com", name: "New User" };
-      await $fetch(USER_URL, {
-        json: bodyData,
-        method: "POST",
-      });
-
-      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
-      expect(calledBody).toBe(JSON.stringify(bodyData));
-      const calledHeaders = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
-      expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json");
-    });
-
-    it("should stringify array json when no schema is provided", async () => {
-      const mockResponse = new Response(JSON.stringify({ success: true }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const bodyData = [{ token_id: "token_123" }];
-      await $fetch(USER_URL, {
-        json: bodyData,
-        method: "POST",
-      });
-
-      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
-      expect(calledBody).toBe(JSON.stringify(bodyData));
-      const calledHeaders = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
-      expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json");
-    });
-
-    it("should not stringify body when no schema is provided", async () => {
-      const mockResponse = new Response(JSON.stringify({ success: true }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const formData = new FormData();
-      formData.append("file", "test-content");
-
-      await $fetch("https://api.example.com/upload", {
-        body: formData,
-        method: "POST",
-      });
-
-      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
-      expect(calledBody).toBe(formData);
-    });
+      fetchMock.mockClear();
+    }
   });
 });
-
-describe("createFetch", () => {
+describe("$fetch schema validation", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
@@ -454,435 +159,819 @@ describe("createFetch", () => {
     vi.restoreAllMocks();
   });
 
-  describe("factory creation", () => {
-    it("should return an object with $fetch and api properties", () => {
-      const instance = createFetch();
-
-      expect(instance).toHaveProperty("$fetch");
-      expect(instance).toHaveProperty("api");
-      expect(instance.$fetch).toBeTypeOf("function");
-      expect(instance.api).toBeTypeOf("object");
-    });
-
-    it("should create independent fetch instances", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const instance1 = createFetch({ baseURL: "https://api1.example.com" });
-      const instance2 = createFetch({ baseURL: "https://api2.example.com" });
-
-      await instance1.$fetch("/endpoint");
-      expect(fetchMock).toHaveBeenCalledWith(
-        "https://api1.example.com/endpoint",
-        expect.any(Object),
-      );
-
-      fetchMock.mockClear();
-
-      await instance2.$fetch("/endpoint");
-      expect(fetchMock).toHaveBeenCalledWith(
-        "https://api2.example.com/endpoint",
-        expect.any(Object),
-      );
-    });
+  const UserSchema = object({
+    id: number(),
+    name: string(),
   });
 
-  describe("baseURL", () => {
-    it("should prepend baseURL to relative paths", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        baseURL: BASE_URL,
-      });
-
-      await customFetch("users");
-
-      expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
+  it("should validate response data against the provided schema", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
     });
+    fetchMock.mockResolvedValue(mockResponse);
 
-    it("should handle baseURL with trailing slash", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+    const result = await $fetch(USER_URL, UserSchema);
 
-      const { $fetch: customFetch } = createFetch({
-        baseURL: BASE_URL_TRAILING_SLASH,
-      });
-
-      await customFetch("users");
-
-      expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
-    });
-
-    it("should handle input with leading slash", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        baseURL: BASE_URL,
-      });
-
-      await customFetch("/users");
-
-      expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
-    });
-
-    it("should handle both baseURL with trailing and input with leading slash", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        baseURL: BASE_URL_TRAILING_SLASH,
-      });
-
-      await customFetch("/users");
-
-      expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
-    });
-
-    it("should not modify absolute URLs", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        baseURL: BASE_URL,
-      });
-
-      await customFetch(OTHER_API_USERS_URL);
-
-      expect(fetchMock).toHaveBeenCalledWith(OTHER_API_USERS_URL, expect.any(Object));
-    });
-
-    it("should resolve protocol-relative URLs with the base protocol", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        baseURL: BASE_URL,
-      });
-
-      await customFetch("//other-api.example.com/users");
-
-      expect(fetchMock).toHaveBeenCalledWith(OTHER_API_USERS_URL, expect.any(Object));
-    });
-
-    it("should work without baseURL", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch();
-
-      await customFetch(USERS_URL);
-
-      expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
-    });
+    expect(result).toStrictEqual(userData);
   });
 
-  describe("default headers", () => {
-    it("should include default headers in all requests", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        headers: {
-          Authorization: BEARER_DEFAULT_TOKEN,
-          "X-API-Key": "api-key-123",
-        },
-      });
-
-      await customFetch(USERS_URL);
-
-      // SAFETY: customFetch merges default and request headers into a native Headers instance via mergeHeaders before calling fetch.
-      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe(BEARER_DEFAULT_TOKEN);
-      expect(calledHeaders.get("X-API-Key")).toBe("api-key-123");
+  it("should return validated data when schema validation passes", async () => {
+    const userData = { id: 42, name: "Jane Doe" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
     });
+    fetchMock.mockResolvedValue(mockResponse);
 
-    it("should allow request headers to override default headers", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+    const result = await $fetch(USER_URL, UserSchema);
 
-      const { $fetch: customFetch } = createFetch({
-        headers: {
-          Authorization: BEARER_DEFAULT_TOKEN,
-        },
-      });
-
-      await customFetch(USERS_URL, {
-        headers: {
-          Authorization: "Bearer override-token",
-        },
-      });
-
-      // SAFETY: customFetch merges default and request headers into a native Headers instance via mergeHeaders before calling fetch.
-      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe("Bearer override-token");
-    });
-
-    it("should merge default and request headers", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        headers: {
-          Authorization: BEARER_DEFAULT_TOKEN,
-          "X-Default-Header": "default-value",
-        },
-      });
-
-      await customFetch(USERS_URL, {
-        headers: {
-          "X-Request-Header": "request-value",
-        },
-      });
-
-      // SAFETY: customFetch merges default and request headers into a native Headers instance via mergeHeaders before calling fetch.
-      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe(BEARER_DEFAULT_TOKEN);
-      expect(calledHeaders.get("X-Default-Header")).toBe("default-value");
-      expect(calledHeaders.get("X-Request-Header")).toBe("request-value");
-    });
+    expect(result).toStrictEqual(userData);
+    expect(result).toHaveProperty("id", 42);
+    expect(result).toHaveProperty("name", "Jane Doe");
   });
 
-  describe("default options", () => {
-    it("should include default searchParams from factory options", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        searchParams: {
-          locale: "en",
-          page: "2",
-        },
-      });
-
-      await customFetch(USERS_URL);
-
-      expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.example.com/users?locale=en&page=2",
-        expect.any(Object),
-      );
+  it("should throw ValidationError when validation fails and throwOnValidationError is true (default)", async () => {
+    const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
+    const mockResponse = new Response(JSON.stringify(invalidData), {
+      status: 200,
     });
+    fetchMock.mockResolvedValue(mockResponse);
 
-    it("should use throwOnFetchError default from factory options", async () => {
-      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
-        status: 404,
-        statusText: "Not Found",
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        throwOnFetchError: false,
-      });
-
-      const result = await customFetch(MISSING_URL);
-
-      expect(result).toBeInstanceOf(Response);
-      expect(result.status).toBe(404);
-    });
-
-    it("should use throwOnValidationError default from factory options", async () => {
-      const UserSchema = object({
-        id: number(),
-        name: string(),
-      });
-      const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
-      const mockResponse = new Response(JSON.stringify(invalidData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        throwOnValidationError: false,
-      });
-
-      const result = await customFetch(USER_URL, UserSchema);
-
-      expect(result).toHaveProperty("issues");
-    });
-
-    it("should allow per-request override of throwOnFetchError", async () => {
-      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
-        status: 404,
-        statusText: "Not Found",
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        throwOnFetchError: false,
-      });
-
-      await expect(
-        customFetch(MISSING_URL, {
-          throwOnFetchError: true,
-        }),
-      ).rejects.toThrow(FetchError);
-    });
-
-    it("should allow per-request override of throwOnValidationError", async () => {
-      const UserSchema = object({
-        id: number(),
-        name: string(),
-      });
-      const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
-      const mockResponse = new Response(JSON.stringify(invalidData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        throwOnValidationError: false,
-      });
-
-      await expect(
-        customFetch(USER_URL, UserSchema, {
-          throwOnValidationError: true,
-        }),
-      ).rejects.toThrow(ValidationError);
-    });
+    await expect($fetch(USER_URL, UserSchema)).rejects.toThrow(ValidationError);
   });
 
-  describe("custom $fetch behavior", () => {
-    it("should behave like global $fetch with schema validation", async () => {
-      const UserSchema = object({
-        id: number(),
-        name: string(),
-      });
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+  it("should return result object with issues when validation fails and throwOnValidationError is false", async () => {
+    const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
+    const mockResponse = new Response(JSON.stringify(invalidData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
 
-      const { $fetch: customFetch } = createFetch({
-        baseURL: BASE_URL,
-      });
-
-      const result = await customFetch("/user", UserSchema);
-
-      expect(result).toStrictEqual(userData);
+    const result = await $fetch(USER_URL, UserSchema, {
+      throwOnValidationError: false,
     });
 
-    it("should behave like global $fetch without schema", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        baseURL: BASE_URL,
-      });
-
-      const result = await customFetch("/test");
-
-      expect(result).toBeInstanceOf(Response);
-      expect(result).toBe(mockResponse);
-    });
-
-    it("should apply factory defaults to all requests", async () => {
-      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const { $fetch: customFetch } = createFetch({
-        baseURL: BASE_URL,
-        headers: {
-          Authorization: BEARER_TOKEN,
-        },
-      });
-
-      await customFetch("/users");
-      await customFetch("/posts");
-
-      expect(fetchMock).toHaveBeenCalledTimes(2);
-
-      // SAFETY: customFetch always normalizes init.headers into a native Headers instance before calling fetch, so calls[0][1].headers is a Headers.
-      const firstCallHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      // SAFETY: the second customFetch call above is normalized the same way, so calls[1][1].headers is also a Headers instance.
-      const secondCallHeaders = fetchMock.mock.calls[1]?.[1]?.headers as Headers;
-
-      expect(firstCallHeaders.get("Authorization")).toBe(BEARER_TOKEN);
-      expect(secondCallHeaders.get("Authorization")).toBe(BEARER_TOKEN);
-
-      expect(fetchMock.mock.calls[0]?.[0]).toBe(USERS_URL);
-      expect(fetchMock.mock.calls[1]?.[0]).toBe("https://api.example.com/posts");
-    });
+    expect(result).toHaveProperty("issues");
+    // SAFETY: the toHaveProperty("issues") assertion above confirms result has an issues array, matching the throwOnValidationError:false failure shape.
+    expect(Array.isArray((result as { issues: unknown[] }).issues)).toBeTruthy();
   });
 
-  describe("custom api methods", () => {
-    it("should return api object with get, post, put, patch, delete methods", () => {
-      const { api: customApi } = createFetch();
+  it("should return result object with value when validation passes and throwOnValidationError is false", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
 
-      expect(customApi).toMatchObject({
-        delete: expect.any(Function),
-        get: expect.any(Function),
-        patch: expect.any(Function),
-        post: expect.any(Function),
-        put: expect.any(Function),
-      });
+    const result = await $fetch(USER_URL, UserSchema, {
+      throwOnValidationError: false,
     });
 
-    it("should apply factory defaults to api method requests", async () => {
-      const UserSchema = object({
-        id: number(),
-        name: string(),
-      });
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+    expect(result).toHaveProperty("value");
+    // SAFETY: the toHaveProperty("value") assertion above confirms result has a value property, matching the throwOnValidationError:false success shape.
+    expect((result as { value: unknown }).value).toStrictEqual(userData);
+  });
 
-      const { api: customApi } = createFetch({
-        baseURL: BASE_URL,
-        headers: {
-          Authorization: BEARER_TOKEN,
-        },
-      });
-
-      const result = await customApi.get("/users/1", UserSchema);
-
-      expect(result).toStrictEqual(userData);
-      expect(fetchMock).toHaveBeenCalledWith(
-        USER_1_URL,
-        expect.objectContaining({
-          method: "GET",
-        }),
-      );
-
-      // SAFETY: customApi.get delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
-      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
+  it("should parse response as JSON when schema is provided", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
     });
+    const jsonSpy = vi.spyOn(mockResponse, "json");
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await $fetch(USER_URL, UserSchema);
+
+    expect(jsonSpy).toHaveBeenCalledWith();
+  });
+});
+describe("$fetch error handling", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should throw FetchError on non-ok response when throwOnFetchError is true (default)", async () => {
+    const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+      status: 404,
+      statusText: "Not Found",
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await expect($fetch(MISSING_URL)).rejects.toThrow(FetchError);
+  });
+
+  it("should return Response without throwing when throwOnFetchError is false", async () => {
+    const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+      status: 404,
+      statusText: "Not Found",
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const result = await $fetch(MISSING_URL, {
+      throwOnFetchError: false,
+    });
+
+    expect(result).toBeInstanceOf(Response);
+    expect(result.status).toBe(404);
+  });
+
+  it("should include status and response in FetchError", async () => {
+    const mockResponse = new Response(JSON.stringify({ error: "Server Error" }), {
+      status: 500,
+      statusText: "Internal Server Error",
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const error = await captureRejectedError(
+      async () => await $fetch("https://api.example.com/error"),
+    );
+
+    expect(error).toBeInstanceOf(FetchError);
+    // SAFETY: the toBeInstanceOf assertion above guarantees error is a FetchError.
+    expect((error as FetchError).status).toBe(500);
+    // SAFETY: error was confirmed to be a FetchError by the toBeInstanceOf assertion two lines above.
+    expect((error as FetchError).response).toBe(mockResponse);
+  });
+
+  it("should include status text in FetchError message", async () => {
+    const mockResponse = new Response(JSON.stringify({ error: "Forbidden" }), {
+      status: 403,
+      statusText: "Forbidden",
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const error = await captureRejectedError(
+      async () => await $fetch("https://api.example.com/forbidden"),
+    );
+
+    expect(error).toBeInstanceOf(FetchError);
+    // SAFETY: the toBeInstanceOf assertion above guarantees error is a FetchError.
+    expect((error as FetchError).message).toContain("403");
+    // SAFETY: error was confirmed to be a FetchError by the toBeInstanceOf assertion two lines above.
+    expect((error as FetchError).message).toContain("Forbidden");
+  });
+});
+describe("$fetch headers", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  const UserSchema = object({
+    id: number(),
+    name: string(),
+  });
+
+  it("should pass custom headers to fetch", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await $fetch(TEST_URL, {
+      headers: {
+        Authorization: BEARER_TOKEN_123,
+        "X-Custom-Header": CUSTOM_HEADER_VALUE,
+      },
+    });
+
+    // SAFETY: $fetch's mergeHeaders always builds a native Headers instance for init.headers before calling fetch, so calls[0][1].headers is a Headers.
+    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN_123);
+    expect(calledHeaders.get("X-Custom-Header")).toBe(CUSTOM_HEADER_VALUE);
+  });
+
+  it("should auto-set Content-Type to application/json when schema and json are provided", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await $fetch(USER_URL, UserSchema, {
+      json: { name: "New User" },
+      method: "POST",
+    });
+
+    // SAFETY: $fetch always normalizes init.headers into a native Headers instance via mergeHeaders before calling fetch.
+    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json");
+  });
+
+  it("should not override existing Content-Type header", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await $fetch(USER_URL, UserSchema, {
+      headers: {
+        [CONTENT_TYPE_HEADER]: "application/json; charset=utf-8",
+      },
+      json: { name: "New User" },
+      method: "POST",
+    });
+
+    // SAFETY: $fetch always normalizes init.headers into a native Headers instance via mergeHeaders before calling fetch.
+    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json; charset=utf-8");
+  });
+});
+describe("$fetch body handling", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  const UserSchema = object({
+    id: number(),
+    name: string(),
+  });
+
+  it("should stringify json when schema is provided", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const bodyData = { email: "user@example.com", name: "New User" };
+    await $fetch(USER_URL, UserSchema, {
+      json: bodyData,
+      method: "POST",
+    });
+
+    const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+    expect(calledBody).toBe(JSON.stringify(bodyData));
+  });
+
+  it("should stringify plain object json when no schema is provided", async () => {
+    const mockResponse = new Response(JSON.stringify({ success: true }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const bodyData = { email: "user@example.com", name: "New User" };
+    await $fetch(USER_URL, {
+      json: bodyData,
+      method: "POST",
+    });
+
+    const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+    expect(calledBody).toBe(JSON.stringify(bodyData));
+    const calledHeaders = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
+    expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json");
+  });
+
+  it("should stringify array json when no schema is provided", async () => {
+    const mockResponse = new Response(JSON.stringify({ success: true }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const bodyData = [{ token_id: "token_123" }];
+    await $fetch(USER_URL, {
+      json: bodyData,
+      method: "POST",
+    });
+
+    const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+    expect(calledBody).toBe(JSON.stringify(bodyData));
+    const calledHeaders = new Headers(fetchMock.mock.calls[0]?.[1]?.headers);
+    expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json");
+  });
+
+  it("should not stringify body when no schema is provided", async () => {
+    const mockResponse = new Response(JSON.stringify({ success: true }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const formData = new FormData();
+    formData.append("file", "test-content");
+
+    await $fetch("https://api.example.com/upload", {
+      body: formData,
+      method: "POST",
+    });
+
+    const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+    expect(calledBody).toBe(formData);
   });
 });
 
-describe("api convenience methods", () => {
+describe("createFetch factory creation", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should return an object with $fetch and api properties", () => {
+    const instance = createFetch();
+
+    expect(instance).toHaveProperty("$fetch");
+    expect(instance).toHaveProperty("api");
+    expect(instance.$fetch).toBeTypeOf("function");
+    expect(instance.api).toBeTypeOf("object");
+  });
+
+  it("should create independent fetch instances", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const instance1 = createFetch({ baseURL: "https://api1.example.com" });
+    const instance2 = createFetch({ baseURL: "https://api2.example.com" });
+
+    await instance1.$fetch("/endpoint");
+    expect(fetchMock).toHaveBeenCalledWith("https://api1.example.com/endpoint", expect.any(Object));
+
+    fetchMock.mockClear();
+
+    await instance2.$fetch("/endpoint");
+    expect(fetchMock).toHaveBeenCalledWith("https://api2.example.com/endpoint", expect.any(Object));
+  });
+});
+describe("createFetch baseURL", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should prepend baseURL to relative paths", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      baseURL: BASE_URL,
+    });
+
+    await customFetch("users");
+
+    expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
+  });
+
+  it("should handle baseURL with trailing slash", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      baseURL: BASE_URL_TRAILING_SLASH,
+    });
+
+    await customFetch("users");
+
+    expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
+  });
+
+  it("should handle input with leading slash", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      baseURL: BASE_URL,
+    });
+
+    await customFetch("/users");
+
+    expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
+  });
+
+  it("should handle both baseURL with trailing and input with leading slash", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      baseURL: BASE_URL_TRAILING_SLASH,
+    });
+
+    await customFetch("/users");
+
+    expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
+  });
+
+  it("should not modify absolute URLs", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      baseURL: BASE_URL,
+    });
+
+    await customFetch(OTHER_API_USERS_URL);
+
+    expect(fetchMock).toHaveBeenCalledWith(OTHER_API_USERS_URL, expect.any(Object));
+  });
+
+  it("should resolve protocol-relative URLs with the base protocol", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      baseURL: BASE_URL,
+    });
+
+    await customFetch("//other-api.example.com/users");
+
+    expect(fetchMock).toHaveBeenCalledWith(OTHER_API_USERS_URL, expect.any(Object));
+  });
+
+  it("should work without baseURL", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch();
+
+    await customFetch(USERS_URL);
+
+    expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.any(Object));
+  });
+});
+describe("createFetch default headers", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should include default headers in all requests", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      headers: {
+        Authorization: BEARER_DEFAULT_TOKEN,
+        "X-API-Key": "api-key-123",
+      },
+    });
+
+    await customFetch(USERS_URL);
+
+    // SAFETY: customFetch merges default and request headers into a native Headers instance via mergeHeaders before calling fetch.
+    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    expect(calledHeaders.get("Authorization")).toBe(BEARER_DEFAULT_TOKEN);
+    expect(calledHeaders.get("X-API-Key")).toBe("api-key-123");
+  });
+
+  it("should allow request headers to override default headers", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      headers: {
+        Authorization: BEARER_DEFAULT_TOKEN,
+      },
+    });
+
+    await customFetch(USERS_URL, {
+      headers: {
+        Authorization: "Bearer override-token",
+      },
+    });
+
+    // SAFETY: customFetch merges default and request headers into a native Headers instance via mergeHeaders before calling fetch.
+    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    expect(calledHeaders.get("Authorization")).toBe("Bearer override-token");
+  });
+
+  it("should merge default and request headers", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      headers: {
+        Authorization: BEARER_DEFAULT_TOKEN,
+        "X-Default-Header": "default-value",
+      },
+    });
+
+    await customFetch(USERS_URL, {
+      headers: {
+        "X-Request-Header": "request-value",
+      },
+    });
+
+    // SAFETY: customFetch merges default and request headers into a native Headers instance via mergeHeaders before calling fetch.
+    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    expect(calledHeaders.get("Authorization")).toBe(BEARER_DEFAULT_TOKEN);
+    expect(calledHeaders.get("X-Default-Header")).toBe("default-value");
+    expect(calledHeaders.get("X-Request-Header")).toBe("request-value");
+  });
+});
+describe("createFetch default options", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should include default searchParams from factory options", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      searchParams: {
+        locale: "en",
+        page: "2",
+      },
+    });
+
+    await customFetch(USERS_URL);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.example.com/users?locale=en&page=2",
+      expect.any(Object),
+    );
+  });
+
+  it("should use throwOnFetchError default from factory options", async () => {
+    const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+      status: 404,
+      statusText: "Not Found",
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      throwOnFetchError: false,
+    });
+
+    const result = await customFetch(MISSING_URL);
+
+    expect(result).toBeInstanceOf(Response);
+    expect(result.status).toBe(404);
+  });
+
+  it("should use throwOnValidationError default from factory options", async () => {
+    const UserSchema = object({
+      id: number(),
+      name: string(),
+    });
+    const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
+    const mockResponse = new Response(JSON.stringify(invalidData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      throwOnValidationError: false,
+    });
+
+    const result = await customFetch(USER_URL, UserSchema);
+
+    expect(result).toHaveProperty("issues");
+  });
+
+  it("should allow per-request override of throwOnFetchError", async () => {
+    const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+      status: 404,
+      statusText: "Not Found",
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      throwOnFetchError: false,
+    });
+
+    await expect(
+      customFetch(MISSING_URL, {
+        throwOnFetchError: true,
+      }),
+    ).rejects.toThrow(FetchError);
+  });
+
+  it("should allow per-request override of throwOnValidationError", async () => {
+    const UserSchema = object({
+      id: number(),
+      name: string(),
+    });
+    const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
+    const mockResponse = new Response(JSON.stringify(invalidData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      throwOnValidationError: false,
+    });
+
+    await expect(
+      customFetch(USER_URL, UserSchema, {
+        throwOnValidationError: true,
+      }),
+    ).rejects.toThrow(ValidationError);
+  });
+});
+describe("createFetch custom $fetch behavior", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should behave like global $fetch with schema validation", async () => {
+    const UserSchema = object({
+      id: number(),
+      name: string(),
+    });
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      baseURL: BASE_URL,
+    });
+
+    const result = await customFetch("/user", UserSchema);
+
+    expect(result).toStrictEqual(userData);
+  });
+
+  it("should behave like global $fetch without schema", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      baseURL: BASE_URL,
+    });
+
+    const result = await customFetch("/test");
+
+    expect(result).toBeInstanceOf(Response);
+    expect(result).toBe(mockResponse);
+  });
+
+  it("should apply factory defaults to all requests", async () => {
+    const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { $fetch: customFetch } = createFetch({
+      baseURL: BASE_URL,
+      headers: {
+        Authorization: BEARER_TOKEN,
+      },
+    });
+
+    await customFetch("/users");
+    await customFetch("/posts");
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    // SAFETY: customFetch always normalizes init.headers into a native Headers instance before calling fetch, so calls[0][1].headers is a Headers.
+    const firstCallHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    // SAFETY: the second customFetch call above is normalized the same way, so calls[1][1].headers is also a Headers instance.
+    const secondCallHeaders = fetchMock.mock.calls[1]?.[1]?.headers as Headers;
+
+    expect(firstCallHeaders.get("Authorization")).toBe(BEARER_TOKEN);
+    expect(secondCallHeaders.get("Authorization")).toBe(BEARER_TOKEN);
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(USERS_URL);
+    expect(fetchMock.mock.calls[1]?.[0]).toBe("https://api.example.com/posts");
+  });
+});
+describe("createFetch custom api methods", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should return api object with get, post, put, patch, delete methods", () => {
+    const { api: customApi } = createFetch();
+
+    expect(customApi).toMatchObject({
+      delete: expect.any(Function),
+      get: expect.any(Function),
+      patch: expect.any(Function),
+      post: expect.any(Function),
+      put: expect.any(Function),
+    });
+  });
+
+  it("should apply factory defaults to api method requests", async () => {
+    const UserSchema = object({
+      id: number(),
+      name: string(),
+    });
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const { api: customApi } = createFetch({
+      baseURL: BASE_URL,
+      headers: {
+        Authorization: BEARER_TOKEN,
+      },
+    });
+
+    const result = await customApi.get("/users/1", UserSchema);
+
+    expect(result).toStrictEqual(userData);
+    expect(fetchMock).toHaveBeenCalledWith(
+      USER_1_URL,
+      expect.objectContaining({
+        method: "GET",
+      }),
+    );
+
+    // SAFETY: customApi.get delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
+    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
+  });
+});
+
+describe("api.get", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   const UserSchema = object({
@@ -900,386 +989,455 @@ describe("api convenience methods", () => {
     vi.restoreAllMocks();
   });
 
-  describe("api.get", () => {
-    it("should make a GET request", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      await api.get(USER_1_URL, UserSchema);
-
-      expect(fetchMock).toHaveBeenCalledWith(
-        USER_1_URL,
-        expect.objectContaining({ method: "GET" }),
-      );
+  it("should make a GET request", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
     });
+    fetchMock.mockResolvedValue(mockResponse);
 
-    it("should validate response against schema", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+    await api.get(USER_1_URL, UserSchema);
 
-      const result = await api.get(USER_1_URL, UserSchema);
-
-      expect(result).toStrictEqual(userData);
-    });
-
-    it("should pass additional options to fetch", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      await api.get(USER_1_URL, UserSchema, {
-        credentials: "include",
-        headers: { Authorization: BEARER_TOKEN_123 },
-      });
-
-      expect(fetchMock).toHaveBeenCalledWith(
-        USER_1_URL,
-        expect.objectContaining({
-          credentials: "include",
-          method: "GET",
-        }),
-      );
-      // SAFETY: api.get delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
-      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN_123);
-    });
+    expect(fetchMock).toHaveBeenCalledWith(USER_1_URL, expect.objectContaining({ method: "GET" }));
   });
 
-  describe("api.post", () => {
-    it("should make a POST request", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 201,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+  it("should validate GET response against schema", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
 
-      await api.post(USERS_URL, UserSchema);
+    const result = await api.get(USER_1_URL, UserSchema);
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        USERS_URL,
-        expect.objectContaining({ method: "POST" }),
-      );
+    expect(result).toStrictEqual(userData);
+  });
+
+  it("should pass additional GET options to fetch", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await api.get(USER_1_URL, UserSchema, {
+      credentials: "include",
+      headers: { Authorization: BEARER_TOKEN_123 },
     });
 
-    it("should validate response against schema", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 201,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+    expect(fetchMock).toHaveBeenCalledWith(
+      USER_1_URL,
+      expect.objectContaining({
+        credentials: "include",
+        method: "GET",
+      }),
+    );
+    // SAFETY: api.get delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
+    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN_123);
+  });
+});
+describe("api.post", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
 
-      const result = await api.post(USERS_URL, UserSchema);
+  const UserSchema = object({
+    id: number(),
+    name: string(),
+  });
 
-      expect(result).toStrictEqual(userData);
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should make a POST request", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 201,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await api.post(USERS_URL, UserSchema);
+
+    expect(fetchMock).toHaveBeenCalledWith(USERS_URL, expect.objectContaining({ method: "POST" }));
+  });
+
+  it("should validate POST response against schema", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 201,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const result = await api.post(USERS_URL, UserSchema);
+
+    expect(result).toStrictEqual(userData);
+  });
+
+  it("should handle POST json request bodies", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 201,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const bodyData = { name: "John" };
+    await api.post(USERS_URL, UserSchema, {
+      json: bodyData,
     });
 
-    it("should handle json request bodies", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 201,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+    const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+    expect(calledBody).toBe(JSON.stringify(bodyData));
+  });
 
-      const bodyData = { name: "John" };
-      await api.post(USERS_URL, UserSchema, {
-        json: bodyData,
-      });
+  it("should pass additional POST options to fetch", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 201,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
 
-      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
-      expect(calledBody).toBe(JSON.stringify(bodyData));
+    await api.post(USERS_URL, UserSchema, {
+      credentials: "same-origin",
+      headers: { "X-Custom-Header": CUSTOM_HEADER_VALUE },
     });
 
-    it("should pass additional options to fetch", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 201,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      await api.post(USERS_URL, UserSchema, {
+    expect(fetchMock).toHaveBeenCalledWith(
+      USERS_URL,
+      expect.objectContaining({
         credentials: "same-origin",
-        headers: { "X-Custom-Header": CUSTOM_HEADER_VALUE },
-      });
+        method: "POST",
+      }),
+    );
+    // SAFETY: api.post delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
+    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    expect(calledHeaders.get("X-Custom-Header")).toBe(CUSTOM_HEADER_VALUE);
+  });
+});
+describe("api.put", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        USERS_URL,
-        expect.objectContaining({
-          credentials: "same-origin",
-          method: "POST",
-        }),
-      );
-      // SAFETY: api.post delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
-      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("X-Custom-Header")).toBe(CUSTOM_HEADER_VALUE);
-    });
+  const UserSchema = object({
+    id: number(),
+    name: string(),
   });
 
-  describe("api.put", () => {
-    it("should make a PUT request", async () => {
-      const userData = { id: 1, name: UPDATED_USER_NAME };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
 
-      await api.put(USER_1_URL, UserSchema);
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        USER_1_URL,
-        expect.objectContaining({ method: "PUT" }),
-      );
+  it("should make a PUT request", async () => {
+    const userData = { id: 1, name: UPDATED_USER_NAME };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await api.put(USER_1_URL, UserSchema);
+
+    expect(fetchMock).toHaveBeenCalledWith(USER_1_URL, expect.objectContaining({ method: "PUT" }));
+  });
+
+  it("should validate PUT response against schema", async () => {
+    const userData = { id: 1, name: UPDATED_USER_NAME };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const result = await api.put(USER_1_URL, UserSchema);
+
+    expect(result).toStrictEqual(userData);
+  });
+
+  it("should handle PUT json request bodies", async () => {
+    const userData = { id: 1, name: UPDATED_USER_NAME };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const bodyData = { name: UPDATED_USER_NAME };
+    await api.put(USER_1_URL, UserSchema, {
+      json: bodyData,
     });
 
-    it("should validate response against schema", async () => {
-      const userData = { id: 1, name: UPDATED_USER_NAME };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+    const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+    expect(calledBody).toBe(JSON.stringify(bodyData));
+  });
 
-      const result = await api.put(USER_1_URL, UserSchema);
+  it("should pass additional PUT options to fetch", async () => {
+    const userData = { id: 1, name: UPDATED_USER_NAME };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
 
-      expect(result).toStrictEqual(userData);
+    await api.put(USER_1_URL, UserSchema, {
+      headers: { Authorization: BEARER_TOKEN },
+      mode: "cors",
     });
 
-    it("should handle json request bodies", async () => {
-      const userData = { id: 1, name: UPDATED_USER_NAME };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const bodyData = { name: UPDATED_USER_NAME };
-      await api.put(USER_1_URL, UserSchema, {
-        json: bodyData,
-      });
-
-      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
-      expect(calledBody).toBe(JSON.stringify(bodyData));
-    });
-
-    it("should pass additional options to fetch", async () => {
-      const userData = { id: 1, name: UPDATED_USER_NAME };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      await api.put(USER_1_URL, UserSchema, {
-        headers: { Authorization: BEARER_TOKEN },
+    expect(fetchMock).toHaveBeenCalledWith(
+      USER_1_URL,
+      expect.objectContaining({
+        method: "PUT",
         mode: "cors",
-      });
+      }),
+    );
+    // SAFETY: api.put delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
+    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
+  });
+});
+describe("api.patch", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        USER_1_URL,
-        expect.objectContaining({
-          method: "PUT",
-          mode: "cors",
-        }),
-      );
-      // SAFETY: api.put delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
-      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
-    });
+  const UserSchema = object({
+    id: number(),
+    name: string(),
   });
 
-  describe("api.patch", () => {
-    it("should make a PATCH request", async () => {
-      const userData = { id: 1, name: PATCHED_USER_NAME };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
 
-      await api.patch(USER_1_URL, UserSchema);
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        USER_1_URL,
-        expect.objectContaining({ method: "PATCH" }),
-      );
+  it("should make a PATCH request", async () => {
+    const userData = { id: 1, name: PATCHED_USER_NAME };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await api.patch(USER_1_URL, UserSchema);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      USER_1_URL,
+      expect.objectContaining({ method: "PATCH" }),
+    );
+  });
+
+  it("should validate PATCH response against schema", async () => {
+    const userData = { id: 1, name: PATCHED_USER_NAME };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const result = await api.patch(USER_1_URL, UserSchema);
+
+    expect(result).toStrictEqual(userData);
+  });
+
+  it("should handle PATCH json request bodies", async () => {
+    const userData = { id: 1, name: PATCHED_USER_NAME };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const bodyData = { name: PATCHED_USER_NAME };
+    await api.patch(USER_1_URL, UserSchema, {
+      json: bodyData,
     });
 
-    it("should validate response against schema", async () => {
-      const userData = { id: 1, name: PATCHED_USER_NAME };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+    const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
+    expect(calledBody).toBe(JSON.stringify(bodyData));
+  });
 
-      const result = await api.patch(USER_1_URL, UserSchema);
+  it("should pass additional PATCH options to fetch", async () => {
+    const userData = { id: 1, name: PATCHED_USER_NAME };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
 
-      expect(result).toStrictEqual(userData);
+    await api.patch(USER_1_URL, UserSchema, {
+      cache: "no-store",
+      headers: { "X-Patch-Header": "patch-value" },
     });
 
-    it("should handle json request bodies", async () => {
-      const userData = { id: 1, name: PATCHED_USER_NAME };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const bodyData = { name: PATCHED_USER_NAME };
-      await api.patch(USER_1_URL, UserSchema, {
-        json: bodyData,
-      });
-
-      const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
-      expect(calledBody).toBe(JSON.stringify(bodyData));
-    });
-
-    it("should pass additional options to fetch", async () => {
-      const userData = { id: 1, name: PATCHED_USER_NAME };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      await api.patch(USER_1_URL, UserSchema, {
+    expect(fetchMock).toHaveBeenCalledWith(
+      USER_1_URL,
+      expect.objectContaining({
         cache: "no-store",
-        headers: { "X-Patch-Header": "patch-value" },
-      });
+        method: "PATCH",
+      }),
+    );
+    // SAFETY: api.patch delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
+    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    expect(calledHeaders.get("X-Patch-Header")).toBe("patch-value");
+  });
+});
+describe("api.delete", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        USER_1_URL,
-        expect.objectContaining({
-          cache: "no-store",
-          method: "PATCH",
-        }),
-      );
-      // SAFETY: api.patch delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
-      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("X-Patch-Header")).toBe("patch-value");
-    });
+  const UserSchema = object({
+    id: number(),
+    name: string(),
   });
 
-  describe("api.delete", () => {
-    it("should make a DELETE request", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
 
-      await api.delete(USER_1_URL, UserSchema);
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        USER_1_URL,
-        expect.objectContaining({ method: "DELETE" }),
-      );
+  it("should make a DELETE request", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await api.delete(USER_1_URL, UserSchema);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      USER_1_URL,
+      expect.objectContaining({ method: "DELETE" }),
+    );
+  });
+
+  it("should validate DELETE response against schema", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const result = await api.delete(USER_1_URL, UserSchema);
+
+    expect(result).toStrictEqual(userData);
+  });
+
+  it("should pass additional DELETE options to fetch", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await api.delete(USER_1_URL, UserSchema, {
+      credentials: "include",
+      headers: { Authorization: BEARER_TOKEN },
     });
 
-    it("should validate response against schema", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const result = await api.delete(USER_1_URL, UserSchema);
-
-      expect(result).toStrictEqual(userData);
-    });
-
-    it("should pass additional options to fetch", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      await api.delete(USER_1_URL, UserSchema, {
+    expect(fetchMock).toHaveBeenCalledWith(
+      USER_1_URL,
+      expect.objectContaining({
         credentials: "include",
-        headers: { Authorization: BEARER_TOKEN },
-      });
+        method: "DELETE",
+      }),
+    );
+    // SAFETY: api.delete delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
+    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
+  });
+});
+describe("api convenience methods shared behavior", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        USER_1_URL,
-        expect.objectContaining({
-          credentials: "include",
-          method: "DELETE",
-        }),
-      );
-      // SAFETY: api.delete delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
-      const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-      expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
-    });
+  const UserSchema = object({
+    id: number(),
+    name: string(),
   });
 
-  describe("shared behavior", () => {
-    it("should always require a schema parameter", async () => {
-      const userData = { id: 1, name: "John" };
-      const mockResponse = new Response(JSON.stringify(userData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+  beforeEach(() => {
+    fetchMock = vi.fn<typeof fetch>();
+    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
 
-      // All api methods require a schema - testing with TypeScript compile-time check
-      // The schema is always the second parameter
-      const result = await api.get(USER_1_URL, UserSchema);
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
-      expect(result).toStrictEqual(userData);
+  it("should always require a schema parameter", async () => {
+    const userData = { id: 1, name: "John" };
+    const mockResponse = new Response(JSON.stringify(userData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    // All api methods require a schema - testing with TypeScript compile-time check
+    // The schema is always the second parameter
+    const result = await api.get(USER_1_URL, UserSchema);
+
+    expect(result).toStrictEqual(userData);
+  });
+
+  it("should throw ValidationError on validation failure (default)", async () => {
+    const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
+    const mockResponse = new Response(JSON.stringify(invalidData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await expect(api.get(USER_1_URL, UserSchema)).rejects.toThrow(ValidationError);
+  });
+
+  it("should throw FetchError on non-ok response (default)", async () => {
+    const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+      status: 404,
+      statusText: "Not Found",
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    await expect(api.get("https://api.example.com/users/999", UserSchema)).rejects.toThrow(
+      FetchError,
+    );
+  });
+
+  it("should respect throwOnValidationError option", async () => {
+    const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
+    const mockResponse = new Response(JSON.stringify(invalidData), {
+      status: 200,
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const result = await api.get(USER_1_URL, UserSchema, {
+      throwOnValidationError: false,
     });
 
-    it("should throw ValidationError on validation failure (default)", async () => {
-      const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
-      const mockResponse = new Response(JSON.stringify(invalidData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+    expect(result).toHaveProperty("issues");
+    // SAFETY: the toHaveProperty("issues") assertion above confirms result has an issues array.
+    expect(Array.isArray((result as { issues: unknown[] }).issues)).toBeTruthy();
+  });
 
-      await expect(api.get(USER_1_URL, UserSchema)).rejects.toThrow(ValidationError);
+  it("should respect throwOnFetchError option", async () => {
+    const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
+      status: 404,
+      statusText: "Not Found",
+    });
+    fetchMock.mockResolvedValue(mockResponse);
+
+    const result = await api.get("https://api.example.com/users/999", UserSchema, {
+      throwOnFetchError: false,
+      throwOnValidationError: false,
     });
 
-    it("should throw FetchError on non-ok response (default)", async () => {
-      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
-        status: 404,
-        statusText: "Not Found",
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      await expect(api.get("https://api.example.com/users/999", UserSchema)).rejects.toThrow(
-        FetchError,
-      );
-    });
-
-    it("should respect throwOnValidationError option", async () => {
-      const invalidData = { id: NOT_A_NUMBER_VALUE, name: 123 };
-      const mockResponse = new Response(JSON.stringify(invalidData), {
-        status: 200,
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const result = await api.get(USER_1_URL, UserSchema, {
-        throwOnValidationError: false,
-      });
-
-      expect(result).toHaveProperty("issues");
-      // SAFETY: the toHaveProperty("issues") assertion above confirms result has an issues array.
-      expect(Array.isArray((result as { issues: unknown[] }).issues)).toBeTruthy();
-    });
-
-    it("should respect throwOnFetchError option", async () => {
-      const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
-        status: 404,
-        statusText: "Not Found",
-      });
-      fetchMock.mockResolvedValue(mockResponse);
-
-      const result = await api.get("https://api.example.com/users/999", UserSchema, {
-        throwOnFetchError: false,
-        throwOnValidationError: false,
-      });
-
-      expect(result).toHaveProperty("issues");
-    });
+    expect(result).toHaveProperty("issues");
   });
 });
 
@@ -1687,13 +1845,13 @@ describe("@zap-studio/fetch browser runtime", () => {
 });
 
 describe("ArkType Standard Schema compatibility", () => {
-  it("should expose ~standard property", () => {
+  it("should expose ~standard property (ArkType)", () => {
     const schema = type({ id: "number" });
     expect("~standard" in schema).toBeTruthy();
     expect(schema["~standard"]).toBeDefined();
   });
 
-  it("should be recognized by isStandardSchema", () => {
+  it("should be recognized by isStandardSchema (ArkType)", () => {
     const schema = type({ id: "number" });
     expect(isStandardSchema(schema)).toBeTruthy();
   });
@@ -1778,7 +1936,7 @@ describe("$fetch with ArkType schemas", () => {
     expect(Array.isArray((result as { issues?: unknown }).issues)).toBeTruthy();
   });
 
-  it("should return successful validation result when data is valid and throwOnValidationError is false", async () => {
+  it("should return successful validation result when data is valid and throwOnValidationError is false (ArkType)", async () => {
     const schema = type({
       email: EMAIL_TYPE_TAG,
       id: "number",
@@ -1907,13 +2065,13 @@ describe("$fetch with ArkType schemas", () => {
 });
 
 describe("Valibot Standard Schema compatibility", () => {
-  it("should expose ~standard property", () => {
+  it("should expose ~standard property (Valibot)", () => {
     const schema = object({ id: number() });
     expect("~standard" in schema).toBeTruthy();
     expect(schema["~standard"]).toBeDefined();
   });
 
-  it("should be recognized by isStandardSchema", () => {
+  it("should be recognized by isStandardSchema (Valibot)", () => {
     const schema = object({ id: number() });
     expect(isStandardSchema(schema)).toBeTruthy();
   });
@@ -1998,7 +2156,7 @@ describe("$fetch with Valibot schemas", () => {
     expect(Array.isArray((result as { issues?: unknown }).issues)).toBeTruthy();
   });
 
-  it("should return successful validation result when data is valid and throwOnValidationError is false", async () => {
+  it("should return successful validation result when data is valid and throwOnValidationError is false (Valibot)", async () => {
     const schema = object({
       email: pipe(string(), email()),
       id: number(),
@@ -2112,13 +2270,13 @@ describe("$fetch with Valibot schemas", () => {
 });
 
 describe("Zod Standard Schema compatibility", () => {
-  it("should expose ~standard property", () => {
+  it("should expose ~standard property (Zod)", () => {
     const schema = z.object({ id: z.number() });
     expect("~standard" in schema).toBeTruthy();
     expect(schema["~standard"]).toBeDefined();
   });
 
-  it("should be recognized by isStandardSchema", () => {
+  it("should be recognized by isStandardSchema (Zod)", () => {
     const schema = z.object({ id: z.number() });
     expect(isStandardSchema(schema)).toBeTruthy();
   });
@@ -2203,7 +2361,7 @@ describe("$fetch with Zod schemas", () => {
     expect(Array.isArray((result as { issues?: unknown }).issues)).toBeTruthy();
   });
 
-  it("should return successful validation result when data is valid and throwOnValidationError is false", async () => {
+  it("should return successful validation result when data is valid and throwOnValidationError is false (Zod)", async () => {
     const schema = z.object({
       email: z.email(),
       id: z.number(),
