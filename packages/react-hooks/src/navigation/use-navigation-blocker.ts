@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
-import { getNavigation, type NavigateEvent } from "./_navigation-api.ts";
+import { getNavigation } from "./_navigation-api.ts";
 
 /** The shape returned by `useNavigationBlocker`. */
 export interface NavigationBlockerResult {
@@ -55,7 +55,7 @@ export const useNavigationBlocker = (
       });
 
     const handleNavigate = (event: Event) => {
-      // SAFETY: this listener is only ever added for the "navigate" event, so the event object always matches NavigateEvent at runtime. This type is defined locally instead of coming from TypeScript's DOM lib (see _navigation-api.ts).
+      // SAFETY: this listener is only ever added for the "navigate" event, so the event object always matches NavigateEvent at runtime. Navigation's addEventListener isn't overloaded per event name, so TypeScript only gives us the base Event type here.
       const navigateEvent = event as NavigateEvent;
       if (
         !navigateEvent.canIntercept ||
