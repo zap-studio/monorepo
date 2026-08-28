@@ -44,6 +44,7 @@ const readBatteryState = (battery: BatteryManager): BatteryState => ({
  */
 export const useBattery = (): BatteryState => {
   const [state, setState] = useState<BatteryState>(UNSUPPORTED_STATE);
+  const [battery, setBattery] = useState<BatteryManager | undefined>(undefined);
 
   useEffect(() => {
     // SAFETY: getBattery is an experimental API that only Chromium browsers support, and TypeScript's DOM types don't include it. The `if (!getBattery)` check below handles browsers that don't support it, so the code uses the SSR default instead of crashing.
@@ -52,40 +53,43 @@ export const useBattery = (): BatteryState => {
       return undefined;
     }
 
-    let cancelled = false;
-    let cleanup: (() => void) | undefined;
+    let isMounted = true;
 
-    const subscribeToBattery = async () => {
-      const battery = await getBattery.call(navigator);
-      if (cancelled) {
+    void (async () => {
+      const result = await getBattery.call(navigator);
+      if (!isMounted) {
         return;
       }
-      setState(readBatteryState(battery));
-
-      const handleChange = () => {
-        setState(readBatteryState(battery));
-      };
-
-      battery.addEventListener("chargingchange", handleChange);
-      battery.addEventListener("chargingtimechange", handleChange);
-      battery.addEventListener("dischargingtimechange", handleChange);
-      battery.addEventListener("levelchange", handleChange);
-
-      cleanup = () => {
-        battery.removeEventListener("chargingchange", handleChange);
-        battery.removeEventListener("chargingtimechange", handleChange);
-        battery.removeEventListener("dischargingtimechange", handleChange);
-        battery.removeEventListener("levelchange", handleChange);
-      };
-    };
-
-    void subscribeToBattery();
+      setBattery(result);
+      setState(readBatteryState(result));
+    })();
 
     return () => {
-      cancelled = true;
-      cleanup?.();
+      isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!battery) {
+      return undefined;
+    }
+
+    const handleChange = () => {
+      setState(readBatteryState(battery));
+    };
+
+    battery.addEventListener("chargingchange", handleChange);
+    battery.addEventListener("chargingtimechange", handleChange);
+    battery.addEventListener("dischargingtimechange", handleChange);
+    battery.addEventListener("levelchange", handleChange);
+
+    return () => {
+      battery.removeEventListener("chargingchange", handleChange);
+      battery.removeEventListener("chargingtimechange", handleChange);
+      battery.removeEventListener("dischargingtimechange", handleChange);
+      battery.removeEventListener("levelchange", handleChange);
+    };
+  }, [battery]);
 
   return state;
 };
