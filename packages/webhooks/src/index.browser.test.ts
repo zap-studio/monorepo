@@ -20,6 +20,10 @@ const GLOBAL_AFTER_STEP = "global-after";
 const ROUTE_AFTER_STEP = "route-after";
 const REQUEST_BASE_URL = "https://example.com";
 
+interface ObservedErrorFixture {
+  error: Error | null;
+}
+
 const createRecordingLogger = (): Logger & {
   calls: {
     level: string;
@@ -890,11 +894,11 @@ describe("WebhookRouter", () => {
       });
 
       it("should normalize a non-Error into an Error before calling onError", async () => {
-        let observedError: Error | null = null;
+        const observed: ObservedErrorFixture = { error: null };
 
         const router = createWebhookRouter({
           onError: (error) => {
-            observedError = error;
+            observed.error = error;
             return undefined;
           },
         });
@@ -905,10 +909,8 @@ describe("WebhookRouter", () => {
 
         await router.handle(createRequest(TEST_WEBHOOK_PATH, { id: "1" }));
 
-        expect(observedError).toBeInstanceOf(Error);
-        if (observedError instanceof Error) {
-          expect(observedError.message).toBe("Internal server error");
-        }
+        expect(observed.error).toBeInstanceOf(Error);
+        expect(observed.error?.message).toBe("Internal server error");
       });
 
       it("should handle different error types", async () => {
