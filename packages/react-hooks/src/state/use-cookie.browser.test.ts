@@ -1,8 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import type { CookieInit, CookieListItem, CookieStore } from "./use-cookie.ts";
-
 import { useCookie } from "./use-cookie.ts";
 
 // SAFETY: single explicit escape hatch for casting test doubles / deliberately
@@ -11,7 +9,7 @@ import { useCookie } from "./use-cookie.ts";
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 const cookieItem = (name: string, value: string): CookieListItem => {
-  return { domain: null, expires: null, name, path: "/", sameSite: "lax", value };
+  return { name, value };
 };
 
 const createCookieStoreMock = (initial: Record<string, string> = {}) => {

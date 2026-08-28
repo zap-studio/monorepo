@@ -1,46 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 
-/** Minimal shape of the Cookie Store API's `CookieListItem`. */
-export interface CookieListItem {
-  readonly domain: string | null;
-  readonly expires: number | null;
-  readonly name: string;
-  readonly path: string;
-  readonly sameSite: string;
-  readonly value: string;
-}
-
-/** Minimal shape of the Cookie Store API's `CookieChangeEvent`. */
-export interface CookieChangeEvent extends Event {
-  readonly changed: readonly CookieListItem[];
-  readonly deleted: readonly CookieListItem[];
-}
-
-/** Minimal shape of the Cookie Store API's `CookieInit`, for `useCookie`'s `set()`. */
-export interface CookieInit {
-  domain?: string;
-  expires?: number;
-  name: string;
-  path?: string;
-  sameSite?: "lax" | "none" | "strict";
-  value: string;
-}
-
-/** Minimal shape of the Cookie Store API's `window.cookieStore`. */
-export interface CookieStore extends EventTarget {
-  delete(name: string): Promise<void>;
-  get(name: string): Promise<CookieListItem | null>;
-  set(options: CookieInit): Promise<void>;
-}
+/**
+ * `CookieChangeEvent`, `CookieInit`, `CookieListItem`, and `CookieStore`
+ * below are all TypeScript 7's own native DOM types for the Cookie Store
+ * API — used bare, ambient, no import needed. Nothing here re-exports them
+ * under those names; callers on TypeScript 7 already have them globally.
+ */
 
 /**
- * The Cookie Store API only works in Chromium browsers, and not every
- * version of TypeScript's DOM types knows about it. So we define our own
- * small type for it above, with just what this hook needs.
- *
- * We cast to this local type instead of extending `Window`, so it never
- * conflicts with whatever `Window.cookieStore` typing a given TypeScript
- * version happens to have.
+ * TypeScript 7's DOM lib declares `Window.cookieStore` as always present,
+ * but the Cookie Store API only works in Chromium browsers — Safari and
+ * Firefox leave it `undefined` at runtime regardless of what the type says.
+ * This function's own return type widens back to `CookieStore | undefined`
+ * to match that.
  *
  * This function runs on every render, not just inside `useEffect`. During
  * server-side rendering, `window` does not exist at all, so we check for
@@ -50,8 +22,7 @@ const getCookieStore = (): CookieStore | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: we read window.cookieStore as optional here, no matter what the DOM types say. This way, a browser that doesn't have it (Safari, Firefox) gives undefined instead of throwing an error.
-  return (window as { cookieStore?: CookieStore }).cookieStore;
+  return window.cookieStore;
 };
 
 /** Options `useCookie`'s `set()` accepts, beyond the cookie's name/value. */
@@ -99,15 +70,13 @@ export const useCookie = (name: string): UseCookieResult => {
     };
     void loadInitialValue();
 
-    const handleChange = (event: Event) => {
-      // SAFETY: this listener only ever fires for the Cookie Store API's "change" event, which always has the shape of CookieChangeEvent at runtime, even though we define that type ourselves instead of using TypeScript's DOM types.
-      const changeEvent = event as CookieChangeEvent;
-      const changed = changeEvent.changed.find((cookie) => cookie.name === name);
+    const handleChange = (event: CookieChangeEvent) => {
+      const changed = event.changed.find((cookie) => cookie.name === name);
       if (changed) {
         setValueState(changed.value);
         return;
       }
-      if (changeEvent.deleted.some((cookie) => cookie.name === name)) {
+      if (event.deleted.some((cookie) => cookie.name === name)) {
         setValueState(undefined);
       }
     };
