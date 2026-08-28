@@ -74,13 +74,22 @@ User-facing API or behavior changes ship with docs in the same change:
 
 Every published package keeps a Keep a Changelog–style `CHANGELOG.md` and follows semver. Add an entry under the right heading (`Added` / `Changed` / `Fixed` / `Removed`) for anything user-visible, and bump both `package.json` and `jsr.json` versions in the same change.
 
+## GitHub releases
+
+One release per package version. Check the existing releases first with `gh release list` and `gh release view <tag>`, then copy that shape.
+
+- Tag and title are the same string: `@zap-studio/<package>@<version>`, for example `@zap-studio/fetch@2.1.1`. No `v` prefix.
+- The body is the `CHANGELOG.md` section for that version, with the same `### Added` / `### Changed` / … headings. Do not write a new text.
+- Create it with `gh release create "@zap-studio/<package>@<version>" --title "..." --notes-file <file>`, and mark it as latest only when it really is the newest release of the repo.
+
 ## Commits and PRs
 
 Conventional Commits, lowercase, imperative, short subject: `feat: add useBrowserEngine hook`, `fix: rework cookie types`. Branch off `main`; never commit straight to `main`. PRs state what changed, why, how it was validated, and whether it is breaking. Keep changes focused — no unrelated refactors. See `.github/CONTRIBUTING.md`.
 
+**Never add an agent as co-author.** No `Co-Authored-By: Claude` (or any other tool or bot) line, and no "Generated with …" footer in commit messages, PR bodies, or release notes.
+
 ## Gotchas
 
-- `.github/CONTRIBUTING.md` mentions `pnpm run check`; that script does not exist. The real gate is `pnpm run publish:check`.
 - `coverage/` and `dist/` are build output — never edit or commit fixes into them.
 - Adding a dependency means adding it to the catalog in `pnpm-workspace.yaml` first, then referencing `"catalog:"`.
 - `pnpm run fallow` fails on unused deps and exports; genuine false positives go in `.fallowrc.json`, not into a disabled check.

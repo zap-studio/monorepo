@@ -29,15 +29,19 @@ pnpm install
 
 ## Local checks
 
-Run these from the repo root:
+Run this from the repo root before you open a pull request. It runs the format check, typecheck, lint, unused-code check, tests, and build:
 
 ```bash
-pnpm run check
-pnpm run test
-pnpm --filter './packages/*' build
+pnpm run publish:check
 ```
 
-If you are changing one package, prefer the relevant package or app target via `pnpm --filter`.
+The browser tests need Chromium once:
+
+```bash
+pnpm exec playwright install --with-deps chromium
+```
+
+You can also run a single step while you work: `pnpm run typecheck`, `pnpm run lint`, `pnpm run test`, or `pnpm run build`. To run the tests of one package only, pass its path: `pnpm run test packages/fetch`. To run a script of one workspace, use `pnpm --filter <name> run <script>`.
 
 ## Issues
 
