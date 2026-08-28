@@ -10,18 +10,6 @@ permissions:
   contents: read
 
 jobs:
-  build-packages:
-    name: Build Packages
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
-      - name: Build packages
-        run: pnpm run build
-
   build-docs:
     name: Build Docs
     runs-on: ubuntu-latest
@@ -39,24 +27,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
-      - name: Build packages
-        run: pnpm run build
-      - name: Run lint
-        run: pnpm run lint
-      - name: Run format check
-        run: pnpm run format:check
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
+      - name: Run format check
+        run: pnpm run format:check
+      - name: Run typecheck
+        run: pnpm run typecheck
+      - name: Run lint
+        run: pnpm run lint
+      - name: Run fallow
+        run: pnpm run fallow
       - name: Build packages
         run: pnpm run build
       - name: Install browser
