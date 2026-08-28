@@ -12,6 +12,8 @@ export interface DeviceCapabilities {
 
 const SERVER_SNAPSHOT: DeviceCapabilities = { hardwareConcurrency: 0 };
 
+const getServerSnapshot = () => SERVER_SNAPSHOT;
+
 const capabilitiesEqual = (a: DeviceCapabilities, b: DeviceCapabilities): boolean =>
   a.hardwareConcurrency === b.hardwareConcurrency && a.deviceMemory === b.deviceMemory;
 
@@ -45,5 +47,5 @@ export const useDeviceCapabilities = (): DeviceCapabilities => {
     return cacheRef.current;
   }, []);
 
-  return useSyncExternalStore(subscribe, getSnapshot, () => SERVER_SNAPSHOT);
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
