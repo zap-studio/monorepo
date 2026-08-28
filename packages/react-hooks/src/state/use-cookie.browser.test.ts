@@ -165,13 +165,15 @@ describe("useCookie", () => {
     );
     setCookieStore(store);
 
-    const { unmount } = renderHook(() => useCookie("theme"));
+    const { result, unmount } = renderHook(() => useCookie("theme"));
     unmount();
     resolveGet(cookieItem("theme", "dark"));
 
     await act(async () => {
       await Promise.resolve();
     });
+
+    expect(result.current.value).toBeUndefined();
   });
 
   it("removes the change listener on unmount", async () => {

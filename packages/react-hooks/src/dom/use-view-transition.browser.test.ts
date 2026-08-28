@@ -39,7 +39,10 @@ describe("useViewTransition", () => {
     const startViewTransition = vi.fn<
       (update: () => Promise<void> | void) => { finished: Promise<void> }
     >((update: () => Promise<void> | void) => {
-      const finished = Promise.resolve().then(() => update());
+      const finished = (async () => {
+        await Promise.resolve();
+        return update();
+      })();
       return { finished };
     });
     Object.defineProperty(document, "startViewTransition", {

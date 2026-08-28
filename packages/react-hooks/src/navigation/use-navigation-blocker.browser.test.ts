@@ -172,9 +172,10 @@ describe("useNavigationBlocker", () => {
     // mock.calls[0][0] is that { handler } object passed by the hook.
     const options = intercept.mock.calls[0]?.[0] as { handler: () => Promise<void> };
     let settled = false;
-    const pending = options.handler().then(() => {
+    const pending = (async () => {
+      await options.handler();
       settled = true;
-    });
+    })();
 
     expect(settled).toBe(false);
 
@@ -203,9 +204,10 @@ describe("useNavigationBlocker", () => {
     // mock.calls[0][0] is that { handler } object passed by the hook.
     const options = intercept.mock.calls[0]?.[0] as { handler: () => Promise<void> };
     let settled = false;
-    void options.handler().then(() => {
+    void (async () => {
+      await options.handler();
       settled = true;
-    });
+    })();
 
     act(() => {
       result.current.reset();

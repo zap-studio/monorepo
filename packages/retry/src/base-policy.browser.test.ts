@@ -63,9 +63,10 @@ describe("defaultSleep", () => {
     const done = defaultSleep(40);
     await vi.advanceTimersByTimeAsync(39);
     let settled = false;
-    void done.then(() => {
+    void (async () => {
+      await done;
       settled = true;
-    });
+    })();
     await Promise.resolve();
     expect(settled).toBeFalsy();
     await vi.advanceTimersByTimeAsync(1);

@@ -132,7 +132,11 @@ describe("useAsync", () => {
 
     await act(async () => {
       reject(new Error("boom"));
-      await pending.catch(() => undefined);
+      try {
+        await pending;
+      } catch {
+        // Expected — pending is deliberately rejected to test post-unmount handling.
+      }
     });
 
     expect(result.current.loading).toBe(true);

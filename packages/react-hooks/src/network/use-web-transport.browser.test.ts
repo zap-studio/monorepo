@@ -282,7 +282,7 @@ describe("useWebTransport", () => {
 
   it("ignores a stale `ready` resolution once cancelled by unmount", async () => {
     installMockWebTransport();
-    const { unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
+    const { result, unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
 
     // `open()` schedules the `ready`-continuation as a microtask; `unmount()` aborts
@@ -290,36 +290,44 @@ describe("useWebTransport", () => {
     transport?.open();
     unmount();
     await act(async () => {});
+
+    expect(result.current.status).toBe("connecting");
   });
 
   it("ignores a stale `ready` rejection once cancelled by unmount", async () => {
     installMockWebTransport();
-    const { unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
+    const { result, unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
 
     transport?.failReady(new Error("too late"));
     unmount();
     await act(async () => {});
+
+    expect(result.current.status).toBe("connecting");
   });
 
   it("ignores a stale `closed` resolution once cancelled by unmount", async () => {
     installMockWebTransport();
-    const { unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
+    const { result, unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
 
     transport?.close();
     unmount();
     await act(async () => {});
+
+    expect(result.current.status).toBe("connecting");
   });
 
   it("ignores a stale `closed` rejection once cancelled by unmount", async () => {
     installMockWebTransport();
-    const { unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
+    const { result, unmount } = renderHook(() => useWebTransport(TRANSPORT_URL));
     const transport = MockWebTransport.instances[0];
 
     transport?.failClosed(new Error("too late"));
     unmount();
     await act(async () => {});
+
+    expect(result.current.status).toBe("connecting");
   });
 
   it("ignores a stale datagram once cancelled by unmount", async () => {
