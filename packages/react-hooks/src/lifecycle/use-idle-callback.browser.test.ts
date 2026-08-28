@@ -54,8 +54,8 @@ describe("useIdleCallback", () => {
     const callback = vi.fn<(deadline: IdleDeadline) => void>();
     renderHook(() => useIdleCallback(callback));
 
-    // SAFETY: the hook forwards this object unchanged from `fire` to `callback`
-    // without reading any other IdleDeadline members, so didTimeout/timeRemaining are enough.
+    // SAFETY: the hook passes this object from `fire` to `callback` without changing it, and
+    // never reads any other IdleDeadline members. So didTimeout/timeRemaining are enough.
     const deadline = { didTimeout: false, timeRemaining: () => 42 } as IdleDeadline;
     act(() => {
       mock?.fire(deadline);
@@ -74,8 +74,8 @@ describe("useIdleCallback", () => {
     });
 
     expect(callback).toHaveBeenCalledTimes(1);
-    // SAFETY: the toHaveBeenCalledTimes assertion above guarantees calls[0] exists, and the
-    // setTimeout fallback in use-idle-callback.ts always invokes it with a
+    // SAFETY: the toHaveBeenCalledTimes check above proves calls[0] exists. The setTimeout
+    // fallback in use-idle-callback.ts always calls it with a
     // { didTimeout, timeRemaining } deadline object.
     const [deadline] = callback.mock.calls[0] as [IdleDeadline];
     expect(deadline.didTimeout).toBe(false);

@@ -61,7 +61,7 @@ class MockWebTransport {
     this.resolveClosed(closeInfo ?? { closeCode: 0, reason: "" });
   }
 
-  // SAFETY: useWebTransport's createBidirectionalStream() just returns transport.createBidirectionalStream()'s resolved value straight through to the caller (see use-web-transport.ts), and this file's assertions on it only check that the mock was called, never any property of the resolved stream, so an empty object stand-in is enough.
+  // SAFETY: useWebTransport's createBidirectionalStream() passes the resolved value of transport.createBidirectionalStream() straight back to the caller (see use-web-transport.ts), and the tests here only check that the mock was called, never a property of the resolved stream, so an empty object stand-in is enough.
   createBidirectionalStream = vi.fn<() => Promise<WebTransportBidirectionalStream>>(
     (): Promise<WebTransportBidirectionalStream> =>
       Promise.resolve({} as WebTransportBidirectionalStream),

@@ -3,9 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useIndexedDB } from "./use-indexed-db.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 // `.error` is a raw string, not an Error instance — this matches real IndexedDB
@@ -22,7 +21,7 @@ const makeFailingRequest = (errorMessage: string): IDBRequest => {
     error: errorMessage,
   };
   queueMicrotask(() => fake.onerror?.());
-  // SAFETY: this fake only fires onerror, so it only needs the members useIndexedDB touches on a failing request — error (read in onerror) and the onerror/onsuccess handler slots the hook assigns.
+  // SAFETY: this fake only fires onerror. It needs only the members useIndexedDB uses on a failing request: error (read in onerror) and the onerror/onsuccess handler slots the hook sets.
   return asTestDouble<IDBRequest>(fake);
 };
 
@@ -49,7 +48,7 @@ const makeFailingTransaction = (error: unknown): IDBTransaction => {
     objectStore: () => fakeStore,
   };
   queueMicrotask(() => fake.onerror?.());
-  // SAFETY: this fake only implements what putValue/deleteValue touch on a transaction — objectStore() returning a store with put/delete/get, the oncomplete/onerror handler slots, and error read in onerror.
+  // SAFETY: this fake has only what putValue/deleteValue use on a transaction: objectStore() returning a store with put/delete/get, the oncomplete/onerror handler slots, and error, read in onerror.
   return asTestDouble<IDBTransaction>(fake);
 };
 
@@ -92,7 +91,7 @@ const makeControlledOpenRequest = (options: {
     onupgradeneeded?.();
     onsuccess?.();
   });
-  // SAFETY: fake implements exactly what openDatabase assigns/reads on the open request — onupgradeneeded, onsuccess, onerror setters and the result getter — driven manually by the queueMicrotask above instead of a real async open.
+  // SAFETY: the fake has exactly what openDatabase sets and reads on the open request: the onupgradeneeded, onsuccess and onerror setters, and the result getter. The queueMicrotask above drives it by hand instead of a real async open.
   return { createObjectStore, request: asTestDouble<IDBOpenDBRequest>(fake) };
 };
 
@@ -193,7 +192,7 @@ describe("useIndexedDB", () => {
       getRequest: () => {
         const fake: SuccessfulReadFixture = { result: 1 };
         queueMicrotask(() => fake.onsuccess?.());
-        // SAFETY: getValue's success path only assigns request.onsuccess and reads request.result, so this minimal fake — driven by the queueMicrotask above — satisfies IDBRequest for this read-succeeds case.
+        // SAFETY: getValue's success path only sets request.onsuccess and reads request.result. This small fake, driven by the queueMicrotask above, is enough as an IDBRequest when the read succeeds.
         return asTestDouble<IDBRequest>(fake);
       },
       storeExists: true,
@@ -248,7 +247,7 @@ describe("useIndexedDB", () => {
 
   it('becomes "error" when opening the database fails', async () => {
     vi.spyOn(indexedDB, "open").mockImplementation(
-      // SAFETY: this simulates open() itself failing; openDatabase only touches the request members makeFailingRequest already fakes (error, onerror), and IDBOpenDBRequest's extra members like onupgradeneeded are never reached before onerror fires.
+      // SAFETY: this simulates open() itself failing. openDatabase only uses the request members that makeFailingRequest already fakes (error, onerror). The other IDBOpenDBRequest members, like onupgradeneeded, are never reached before onerror fires.
       () => asTestDouble<IDBOpenDBRequest>(makeFailingRequest("open boom")),
     );
 

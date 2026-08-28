@@ -97,6 +97,6 @@ export const getNdefReaderConstructor = (): NDEFReaderConstructor | undefined =>
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: NDEFReader isn't declared on Window; read as optional so an unsupported browser (Safari, Firefox, desktop Chrome) gives undefined instead of throwing.
+  // SAFETY: NDEFReader is not declared on Window. We read it as optional, so a browser without support (Safari, Firefox, desktop Chrome) gives undefined instead of throwing.
   return (window as WebNfcWindow).NDEFReader;
 };

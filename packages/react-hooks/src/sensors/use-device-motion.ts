@@ -33,7 +33,7 @@ const toState = (event: DeviceMotionEvent): DeviceMotionState => ({
 });
 
 const requestDeviceMotionPermission = async (): Promise<boolean> => {
-  // SAFETY: requestPermission is an iOS Safari-only permission check, not declared on the event constructor. Optional-chained, so other platforms (most of them) skip straight to "granted".
+  // SAFETY: requestPermission is a permission check that only iOS Safari has, so it is not declared on the event constructor. We read it as optional, so other platforms (most of them) go straight to "granted".
   const requestPermission = (DeviceMotionEvent as DeviceMotionEventConstructorWithPermission)
     .requestPermission;
   if (!requestPermission) {

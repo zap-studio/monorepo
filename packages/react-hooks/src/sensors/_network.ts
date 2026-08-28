@@ -28,7 +28,7 @@ const SERVER_SNAPSHOT: NetworkState = {
 };
 
 const getConnection = (): NetworkInformation | undefined =>
-  // SAFETY: connection isn't declared on Navigator. Every caller reads its fields with optional chaining, so a browser without `connection` reads as `undefined` instead of throwing.
+  // SAFETY: connection is not declared on Navigator. Every caller reads its fields with optional chaining, so a browser without `connection` gives `undefined` instead of throwing.
   (navigator as NavigatorWithConnection).connection;
 
 const readNetworkState = (): NetworkState => {

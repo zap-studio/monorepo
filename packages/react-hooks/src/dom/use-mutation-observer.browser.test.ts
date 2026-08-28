@@ -36,7 +36,7 @@ describe("useMutationObserver", () => {
     div.element?.setAttribute("data-test", "1");
 
     await waitFor(() => expect(callback).toHaveBeenCalled());
-    // SAFETY: the waitFor above guarantees calls[0] exists, and callback is typed as
+    // SAFETY: the waitFor above proves calls[0] exists. callback is typed as
     // vi.fn<(mutations: MutationRecord[]) => void>(), so its first argument is always
     // a MutationRecord[].
     const mutations = callback.mock.calls[0]?.[0] as MutationRecord[];
@@ -112,8 +112,8 @@ describe("useMutationObserver ref and option tracking", () => {
     const { rerender } = render(createElement(TestComponent, { show: false }));
 
     rerender(createElement(TestComponent, { show: true }));
-    // SAFETY: `element` is only ever assigned inside the div's ref callback above, which
-    // always receives an HTMLDivElement | null, matching its declared type exactly.
+    // SAFETY: `element` is only set inside the div's ref callback above. That callback
+    // always gets an HTMLDivElement | null, which matches its declared type exactly.
     (element as HTMLDivElement | null)?.setAttribute("data-late", "1");
 
     await waitFor(() => expect(callback).toHaveBeenCalled());

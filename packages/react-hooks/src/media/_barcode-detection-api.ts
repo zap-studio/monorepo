@@ -59,6 +59,6 @@ export const getBarcodeDetectorConstructor = (): BarcodeDetectorConstructor | un
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: BarcodeDetector isn't declared on Window; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
+  // SAFETY: BarcodeDetector is not declared on Window. We read it as optional, so a browser without support (Safari, Firefox) gives undefined instead of throwing.
   return (window as BarcodeDetectionWindow).BarcodeDetector;
 };

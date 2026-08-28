@@ -25,6 +25,6 @@ export const getEyeDropperConstructor = (): EyeDropperConstructor | undefined =>
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: EyeDropper isn't declared on Window; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
+  // SAFETY: EyeDropper is not declared on Window. We read it as optional, so a browser without support (Safari, Firefox) gives undefined instead of throwing.
   return (window as EyeDropperWindow).EyeDropper;
 };

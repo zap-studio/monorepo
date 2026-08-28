@@ -3,9 +3,8 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useCookie } from "./use-cookie.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 const cookieItem = (name: string, value: string): CookieListItem => {
@@ -39,7 +38,7 @@ const createCookieStoreMock = (initial: Record<string, string> = {}) => {
     },
   );
 
-  // SAFETY: useCookie only ever calls get/set/delete (with these exact signatures) plus addEventListener/removeEventListener on the store; `target` is a real EventTarget so those listener methods work natively, and the assigned delete/get/set mocks below cover the rest of what useCookie reads.
+  // SAFETY: useCookie only calls get/set/delete (with these exact signatures) plus addEventListener/removeEventListener on the store. `target` is a real EventTarget, so those listener methods work on their own, and the delete/get/set mocks below cover the rest of what useCookie reads.
   const store: CookieStore = asTestDouble<CookieStore>(
     Object.assign(target, {
       delete: deleteCookie,
@@ -148,7 +147,7 @@ describe("useCookie", () => {
 
   it("ignores the initial get() result if unmounted before it resolves", async () => {
     let resolveGet: (item: CookieListItem | null) => void = () => {};
-    // SAFETY: this test unmounts before its single `store.get(name)` call resolves and never calls set()/remove(), so `delete`/`set` only need to type-check as CookieStore methods; `get` and the real EventTarget it's assigned onto (for useCookie's addEventListener/removeEventListener) are the only members actually exercised.
+    // SAFETY: this test unmounts before its single `store.get(name)` call resolves, and it never calls set() or remove(). So `delete` and `set` only need to type-check as CookieStore methods. Only `get` and the real EventTarget it is assigned onto (for useCookie's addEventListener/removeEventListener) are really used.
     const store: CookieStore = asTestDouble<CookieStore>(
       Object.assign(new EventTarget(), {
         delete: vi.fn<(...args: any[]) => any>(),

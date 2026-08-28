@@ -4,9 +4,8 @@ import { describe, expect, it } from "vitest";
 
 import { useUnstableRenderReason, type RenderReason } from "./use-unstable-render-reason.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 const TestContext = createContext("default");
@@ -111,7 +110,7 @@ describe("useUnstableRenderReason", () => {
   });
 
   it("fails closed to unknown when reading the internal shape throws", () => {
-    // SAFETY: readHostFiber() calls Object.keys(node) before touching any HTMLDivElement-specific member, and computeReason wraps that call in try/catch (see use-unstable-render-reason.ts) — so this Proxy only needs to throw from ownKeys(), it never needs to actually implement HTMLDivElement.
+    // SAFETY: readHostFiber() calls Object.keys(node) before it touches any HTMLDivElement-specific member, and computeReason wraps that call in try/catch (see use-unstable-render-reason.ts). So this Proxy only needs to throw from ownKeys(). It never needs to implement HTMLDivElement.
     const throwing = asTestDouble<HTMLDivElement>(
       new Proxy(
         {},
@@ -156,13 +155,13 @@ describe("useUnstableRenderReason", () => {
       return: null,
       type: "div",
     };
-    // SAFETY: `element` is a real HTMLDivElement from document.createElement; it's only retyped as a plain string-keyed record so the fake `__reactFiber$fake` property below can be assigned the way react-dom would attach its private fiber pointer (see readHostFiber in _fiber.ts).
+    // SAFETY: `element` is a real HTMLDivElement from document.createElement. We only retype it as a plain string-keyed record so the fake `__reactFiber$fake` property below can be set the way react-dom attaches its private fiber pointer (see readHostFiber in _fiber.ts).
     const element = asTestDouble<Record<string, unknown>>(document.createElement("div"));
 
     const { rerender, result } = renderHook(() => useUnstableRenderReason<HTMLDivElement>());
 
     element["__reactFiber$fake"] = nullPropsFiber;
-    // SAFETY: `element` is still the same real HTMLDivElement created above — only its static type was widened to Record<string, unknown> above, so casting back to HTMLDivElement here just restores its actual runtime type.
+    // SAFETY: `element` is still the same real HTMLDivElement created above. Only its static type was widened to Record<string, unknown>, so casting back to HTMLDivElement here just restores its real runtime type.
     result.current.ref.current = asTestDouble<HTMLDivElement>(element);
     rerender();
     expect(result.current.reason).toBe("mount");

@@ -97,7 +97,7 @@ export const useEventListener = <E extends Event = Event>(
       return undefined;
     }
 
-    // SAFETY: we trust the caller's type parameter `E` here. TypeScript can't figure out `E` from a runtime string like `type`, so we cast the native `Event` to `E` based on what the caller declared (or the default `Event` type).
+    // SAFETY: we trust the type parameter `E` given by the caller. TypeScript cannot work out `E` from a runtime string like `type`, so we cast the native `Event` to `E`, the type the caller declared (or the default `Event`).
     const listener = (event: Event) => handlerRef.current(event as E);
     const listenerOptions: AddEventListenerOptions = {
       capture,

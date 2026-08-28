@@ -27,7 +27,7 @@ export const usePageLeave = (onPageLeave: () => void): void => {
 
   useEffect(() => {
     const handleMouseOut = (event: MouseEvent) => {
-      // SAFETY: toElement is an old, non-standard MouseEvent field (old IE/WebKit), not declared. Read as optional, so browsers without it give undefined.
+      // SAFETY: toElement is an old, non-standard MouseEvent field (old IE/WebKit) and is not declared. We read it as optional, so browsers without it give undefined.
       const legacyRelatedTarget = (event as LegacyMouseEvent).toElement;
       if (event.relatedTarget === null && !legacyRelatedTarget) {
         onPageLeaveRef.current();

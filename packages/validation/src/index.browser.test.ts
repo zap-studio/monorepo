@@ -11,9 +11,8 @@ import {
   standardValidateSync,
 } from "./index.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 const FIELD_REQUIRED_MESSAGE = "Field is required";
@@ -46,10 +45,10 @@ const createMockSchemaFunction = <T>(
     },
   });
 
-  // SAFETY: the Object.assign call above attaches a "~standard" object using this
-  // function's own `validateFn` argument, so `fn` structurally satisfies
-  // StandardSchemaV1<unknown, T> for the same T the caller instantiated, even though
-  // its static type is still the plain `() => void` declared two lines above.
+  // SAFETY: the Object.assign call above adds a "~standard" object built from this
+  // function's own `validateFn` argument. So `fn` has the shape of
+  // StandardSchemaV1<unknown, T> for the same T the caller used, even though its
+  // static type is still the plain `() => void` declared two lines above.
   return asTestDouble<StandardSchemaV1<unknown, T>>(fn);
 };
 
@@ -338,9 +337,9 @@ describe("standardValidate", () => {
     it("should await Promise-based validation", async () => {
       const schema = createMockSchema(async (input) => {
         await Promise.resolve();
-        // SAFETY: this test only ever invokes the schema via `standardValidate(123, schema, ...)`
-        // below, so `input` is always the literal number 123 at runtime, even though the
-        // validate callback's parameter type is `unknown`.
+        // SAFETY: this test only calls the schema through `standardValidate(123, schema, ...)`
+        // below, so `input` is always the number 123 at runtime, even though the
+        // validate callback types its parameter as `unknown`.
         return { value: input as number };
       });
 
@@ -565,9 +564,9 @@ describe("standardValidateSync", () => {
   });
 
   it("should pass through a non-object synchronous result from a malformed schema unchanged", () => {
-    // SAFETY: this schema is a deliberately malformed test fixture that returns a bare number
-    // instead of a real StandardSchemaV1.Result, to exercise the pass-through behavior for
-    // non-object synchronous results.
+    // SAFETY: this schema is a broken test fixture on purpose. It returns a bare number
+    // instead of a real StandardSchemaV1.Result, so we can test how sync results that are
+    // not objects pass through.
     const schema = createMockSchema(() => asTestDouble<StandardSchemaV1.Result<unknown>>(42));
 
     const result = standardValidateSync("test", schema);
@@ -576,8 +575,8 @@ describe("standardValidateSync", () => {
   });
 
   it("should throw when a malformed schema synchronously returns null", () => {
-    // SAFETY: this schema is a deliberately malformed test fixture that returns null instead of
-    // a real StandardSchemaV1.Result, to exercise the TypeError thrown for a malformed result.
+    // SAFETY: this schema is a broken test fixture on purpose. It returns null instead of a
+    // real StandardSchemaV1.Result, so we can test the TypeError thrown for a bad result.
     const schema = createMockSchema(() => asTestDouble<StandardSchemaV1.Result<unknown>>(null));
 
     expect(() => standardValidateSync("test", schema)).toThrow(TypeError);

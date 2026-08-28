@@ -39,6 +39,6 @@ export const getFileSystemAccess = (): FileSystemAccessWindow => {
   if (typeof window === "undefined") {
     return {};
   }
-  // SAFETY: these File System Access functions aren't declared on Window; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
+  // SAFETY: these File System Access functions are not declared on Window. We read them as optional, so a browser without support (Safari, Firefox) gives undefined instead of throwing.
   return window as FileSystemAccessWindow;
 };

@@ -6,9 +6,8 @@ import { useWindowMessage } from "./use-window-message.ts";
 const MESSAGE_ORIGIN = "https://example.com";
 const TRUSTED_ORIGIN = "https://trusted.example";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 describe("useWindowMessage", () => {
@@ -52,9 +51,9 @@ describe("useWindowMessage", () => {
   });
 
   it("uses the latest originFilter without re-subscribing", async () => {
-    // SAFETY: renderHook's initialProps type is inferred from this literal, so the
-    // widening assertion is only there to let `rerender` later pass a defined
-    // originFilter string; the initial value itself is genuinely undefined.
+    // SAFETY: renderHook infers the initialProps type from this literal. The wider
+    // type is only there to let `rerender` pass a defined originFilter string
+    // later. The initial value itself really is undefined.
     const { rerender, result } = renderHook(
       ({ originFilter }: { originFilter: string | undefined }) =>
         useWindowMessage<string>(originFilter),
@@ -92,7 +91,7 @@ describe("useWindowMessage", () => {
 
     act(() => {
       // SAFETY: postMessage() only calls targetWindow.postMessage(message, targetOrigin),
-      // and this fake target implements exactly that method with a matching signature.
+      // and this fake target has exactly that method with a matching signature.
       result.current.postMessage(asTestDouble<Window>(target), "hi", MESSAGE_ORIGIN);
     });
 

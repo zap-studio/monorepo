@@ -181,7 +181,7 @@ interface GlobalThisWithProcess {
 }
 
 const isColorSupported = (): boolean => {
-  // SAFETY: `process` isn't declared on `globalThis`'s type in browser/edge targets; this reads it as an optional untyped property, validated below by `isNodeProcessLike`.
+  // SAFETY: `process` is not part of the `globalThis` type in browser and edge targets. This reads it as an optional untyped property, and `isNodeProcessLike` below checks it.
   const proc: unknown = (globalThis as GlobalThisWithProcess).process;
   if (isNodeProcessLike(proc)) {
     return Boolean(proc.stdout?.isTTY) && proc.env?.["NO_COLOR"] === undefined;

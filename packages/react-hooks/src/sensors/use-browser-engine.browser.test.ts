@@ -8,7 +8,7 @@ const setUserAgentData = (data: unknown) => {
 };
 
 const stubCssSupports = (matches: (query: string) => boolean) => {
-  // SAFETY: CSS.supports() has a two-argument (property, value) overload alongside the one-argument (conditionText) overload used here; the stub only ever needs the single-argument form.
+  // SAFETY: CSS.supports() has two overloads: one with two arguments (property, value) and one with a single argument (conditionText). The stub only needs the single-argument form used here.
   vi.spyOn(CSS, "supports").mockImplementation(matches as typeof CSS.supports);
 };
 

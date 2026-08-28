@@ -47,9 +47,9 @@ export const readHostFiber = (node: Element): FiberLike | undefined => {
   if (!key) {
     return undefined;
   }
-  // SAFETY: `__reactFiber$<id>` is React's private, undocumented pointer from a DOM node to its Fiber. It has no public type. We trust the shape React is known to use in the versions this package supports. If the shape turns out different, callers just get `undefined`/`unknown` values instead of a crash.
+  // SAFETY: `__reactFiber$<id>` is React's private pointer from a DOM node to its Fiber. React does not document it, so it has no public type. We trust the shape React uses in the versions this package supports. If the shape is different, callers just get `undefined`/`unknown` values, not a crash.
   const bag = node as FiberBearingElement;
-  // SAFETY: same private pointer as above. We trust that the value React attached here matches the Fiber shape defined in this file.
+  // SAFETY: same private pointer as above. We trust that the value React put here matches the Fiber shape defined in this file.
   return bag[key] as FiberLike | undefined;
 };
 

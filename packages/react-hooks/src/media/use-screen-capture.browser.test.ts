@@ -10,12 +10,12 @@ interface StreamFixture {
 
 const makeStream = (): StreamFixture => {
   const stop = vi.fn<() => void>();
-  // SAFETY: the hook only ever calls track.stop() on entries from getTracks(),
-  // and Object.assign below adds that stop() mock to this EventTarget.
+  // SAFETY: the hook only calls track.stop() on items from getTracks(). The
+  // Object.assign below adds that stop() mock to this EventTarget.
   const track = new EventTarget() as MediaStreamTrack & EventTarget;
   Object.assign(track, { stop });
   // SAFETY: onStarted only uses stream.addEventListener/removeEventListener("inactive", ...),
-  // which EventTarget provides natively; getTracks/getVideoTracks are added below.
+  // which EventTarget already gives us. getTracks/getVideoTracks are added below.
   const stream = new EventTarget() as MediaStream & EventTarget;
   Object.assign(stream, {
     getTracks: () => [track],

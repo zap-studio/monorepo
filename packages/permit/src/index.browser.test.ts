@@ -21,9 +21,8 @@ import {
   when,
 } from "./index.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 const POST_WRITE_ACTION = "post:write";
@@ -63,7 +62,7 @@ const createRecordingLogger = (): Logger & {
 const createSchema = <T>(): StandardSchemaV1<T, T> => {
   return {
     "~standard": {
-      // SAFETY: T is whatever the caller of createSchema<T>() instantiated it with; this validate function is only ever invoked through that generic helper.
+      // SAFETY: `T` is the type the caller gave to createSchema<T>(). This validate function only runs through that generic helper.
       validate: (value: unknown) => ({ value: value as T }),
       vendor: "test",
       version: 1,
@@ -579,10 +578,10 @@ describe("collectInheritedRoles", () => {
 
   it("should handle roles not in hierarchy", async () => {
     await Promise.resolve();
-    // SAFETY: this test fixture deliberately uses a role literal outside the Role union to exercise the "role missing from hierarchy" code path.
+    // SAFETY: this test uses a role literal outside the Role union on purpose. It covers the "role missing from hierarchy" code path.
     const roles = collectInheritedRoles(["unknown" as Role], hierarchy);
 
-    // SAFETY: same deliberately-out-of-union literal as above, used to look up the role that was just inserted.
+    // SAFETY: the same out-of-union literal as above, used to look up the role we just added.
     expect(roles.has("unknown" as Role)).toBeTruthy();
     expect(roles.size).toBe(1);
   });
@@ -870,9 +869,9 @@ describe("createPolicy - invalid and unknown permission handling", () => {
       visibility: "public",
     };
 
-    // SAFETY: "post" (missing the ":action" segment) is deliberately malformed input cast to the expected literal type to verify the runtime parser rejects it.
+    // SAFETY: "post" has no ":action" segment. It is bad input on purpose, cast to the expected literal type, to check the runtime parser rejects it.
     await expect(policy.can(ctx, "post" as "post:read", post)).resolves.toBeFalsy();
-    // SAFETY: "post:read:extra" (extra segment) is deliberately malformed input cast to the expected literal type to verify the runtime parser rejects it.
+    // SAFETY: "post:read:extra" has an extra segment. It is bad input on purpose, cast to the expected literal type, to check the runtime parser rejects it.
     await expect(policy.can(ctx, "post:read:extra" as "post:read", post)).resolves.toBeFalsy();
   });
   it("should deny unknown resource or action pairs", async () => {
@@ -898,14 +897,14 @@ describe("createPolicy - invalid and unknown permission handling", () => {
       visibility: "public",
     };
 
-    // SAFETY: "article:read" names a resource type ("article") that does not exist in `resources`, cast to the expected literal type to verify unknown resources are denied at runtime.
+    // SAFETY: "article:read" names a resource type ("article") that is not in `resources`. We cast it to the expected literal type to check unknown resources are denied at runtime.
     await expect(policy.can(ctx, "article:read" as "post:read", post)).resolves.toBeFalsy();
-    // SAFETY: "post:archive" names an action ("archive") that is not registered for "post", cast to the expected literal type to verify unknown actions are denied at runtime.
+    // SAFETY: "post:archive" names an action ("archive") that is not registered for "post". We cast it to the expected literal type to check unknown actions are denied at runtime.
     await expect(policy.can(ctx, "post:archive" as "post:read", post)).resolves.toBeFalsy();
   });
   it("should deny when the actions map has no entry for a resource type", async () => {
     await Promise.resolve();
-    // SAFETY: omitting "comment" deliberately violates the Actions shape to simulate a runtime actions map with no entry for a resource type.
+    // SAFETY: leaving out "comment" breaks the Actions shape on purpose. It simulates a runtime actions map with no entry for a resource type.
     const brokenActions = asTestDouble<typeof actions>({
       post: ["read"],
     });
@@ -929,7 +928,7 @@ describe("createPolicy - invalid and unknown permission handling", () => {
   });
   it("should deny when actions for a resource are missing at runtime", async () => {
     await Promise.resolve();
-    // SAFETY: this object only defines "post" and omits "comment" to simulate an actions map missing an entry for a resource type at runtime.
+    // SAFETY: this object only defines "post" and leaves out "comment". It simulates an actions map with no entry for a resource type at runtime.
     const badActions = asTestDouble<Actions<typeof resources>>({
       post: actions.post,
     });
@@ -958,7 +957,7 @@ describe("createPolicy - invalid and unknown permission handling", () => {
   });
   it("should deny when a resource key's action list is undefined at runtime", async () => {
     await Promise.resolve();
-    // SAFETY: "comment" is present as a key (so it passes the actions-map membership check) but its value is undefined, simulating a runtime actions map where a resource key's action list itself is missing.
+    // SAFETY: "comment" is there as a key, so it passes the actions-map membership check, but its value is undefined. It simulates a runtime actions map where the action list of a resource key is missing.
     const undefinedActionListActions = asTestDouble<typeof actions>({
       ...actions,
       comment: void 0,
@@ -982,12 +981,12 @@ describe("createPolicy - invalid and unknown permission handling", () => {
     await expect(policy.can(ctx, COMMENT_READ_ACTION, comment)).resolves.toBeFalsy();
   });
   it("should deny when an allowed action has no validator entry at runtime", async () => {
-    // SAFETY: this object omits the "comment" entry that `typeof resources` requires, simulating a resources map missing an entry at runtime.
+    // SAFETY: this object leaves out the "comment" entry that `typeof resources` needs. It simulates a resources map with a missing entry at runtime.
     const runtimeResources = asTestDouble<typeof resources>({
       post: createSchema<Post>(),
     });
 
-    // SAFETY: this object adds a "profile" action not present in `typeof actions`, simulating an allowed action with no validator entry at runtime.
+    // SAFETY: this object adds a "profile" action that is not in `typeof actions`. It simulates an allowed action with no validator entry at runtime.
     const runtimeActions = asTestDouble<typeof actions>({
       ...actions,
       profile: ["read"],
@@ -1018,7 +1017,7 @@ describe("createPolicy - invalid and unknown permission handling", () => {
 
     const ctx: TestContext = { user: { id: "user-1", role: "user" } };
 
-    // SAFETY: "profile:read" and { id: "1" } only exist through the runtime-only `profile` action added above and aren't part of the declared `typeof actions`/`typeof resources` types, so `never` is the honest cast to call `can` with them from a statically-typed test.
+    // SAFETY: "profile:read" and { id: "1" } only exist through the runtime-only `profile` action added above. They are not part of the declared `typeof actions`/`typeof resources` types, so `never` is the honest cast to call `can` with them from a typed test.
     await expect(
       policy.can(ctx, "profile:read" as never, { id: "1" } as never),
     ).resolves.toBeFalsy();
@@ -1173,7 +1172,7 @@ describe("createPolicy - resource schema validation", () => {
   it("should deny when resource validation reports issues", async () => {
     await Promise.resolve();
     const failingResources = {
-      // SAFETY: this mock only implements the "~standard" fields the policy engine actually reads (validate/vendor/version); its validate always returns an issues array to exercise the "resource validation reports issues" path.
+      // SAFETY: this mock only implements the "~standard" fields the policy engine reads (validate/vendor/version). Its validate always returns an issues array to cover the "resource validation reports issues" path.
       post: {
         "~standard": {
           validate: () => ({
@@ -1212,7 +1211,7 @@ describe("createPolicy - resource schema validation", () => {
   it("should deny when resource validation throws (no logger, no console)", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-    // SAFETY: this mock only implements the "~standard" fields the policy engine actually reads (validate/vendor/version); its validate always throws to exercise the "resource validation throws" path.
+    // SAFETY: this mock only implements the "~standard" fields the policy engine reads (validate/vendor/version). Its validate always throws to cover the "resource validation throws" path.
     const throwingResources = {
       post: {
         "~standard": {
@@ -1252,7 +1251,7 @@ describe("createPolicy - resource schema validation", () => {
   });
   it("should throw PolicyError when a resource schema is missing", async () => {
     await Promise.resolve();
-    // SAFETY: this test deliberately supplies `undefined` where a schema is required, to verify createPolicy throws PolicyError when a resource schema is missing at runtime.
+    // SAFETY: this test passes `undefined` on purpose where a schema is required. It checks that createPolicy throws PolicyError when a resource schema is missing at runtime.
     const brokenResources = {
       post: asTestDouble<StandardSchemaV1>(undefined),
     } satisfies Resources<"post">;
@@ -1275,7 +1274,7 @@ describe("createPolicy - resource schema validation", () => {
   });
   it("should support async resource schema validation", async () => {
     await Promise.resolve();
-    // SAFETY: this mock only implements the "~standard" fields the policy engine actually reads (validate/vendor/version); its validate resolves asynchronously to exercise the async resource-validation path.
+    // SAFETY: this mock only implements the "~standard" fields the policy engine reads (validate/vendor/version). Its validate resolves asynchronously to cover the async resource-validation path.
     const asyncResources = {
       post: {
         "~standard": {
@@ -1925,7 +1924,7 @@ describe("logging", () => {
   it("routes the resource validation warning through the logger instead of console.warn", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     const logger = createRecordingLogger();
-    // SAFETY: this mock only implements the "~standard" fields the policy engine actually reads (validate/vendor/version); its validate always throws so the resulting warning can be asserted through `logger.calls`.
+    // SAFETY: this mock only implements the "~standard" fields the policy engine reads (validate/vendor/version). Its validate always throws, so we can check the warning through `logger.calls`.
     const throwingResources = {
       post: {
         "~standard": {

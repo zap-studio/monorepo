@@ -21,7 +21,7 @@ import { allow, createPolicy, deny, mergePoliciesOr } from "./index.ts";
 const createSchema = <T>(): StandardSchemaV1<T, T> => {
   return {
     "~standard": {
-      // SAFETY: this test-only schema is only ever wired to `resources.post`, and every value it validates in this file is a `post` object literal already shaped as `Post` (authorId, id), so trusting `value` as `T` here never actually crosses a real validation boundary.
+      // SAFETY: this test-only schema is only used by `resources.post`. Every value it checks in this file is a `post` object literal that already has the `Post` shape (authorId, id), so `value as T` is safe and no real validation is skipped.
       validate: (value: unknown) => ({ value: value as T }),
       vendor: "test",
       version: 1,
@@ -79,7 +79,7 @@ describe("permit OpenTelemetry", () => {
     const counts: Record<string, number> = {};
     for (const point of metric?.dataPoints ?? []) {
       const decision = String(point.attributes["permit.decision"]);
-      // SAFETY: these dataPoints come from the "permit.checks" Counter metric, whose Sum aggregation always reports a numeric `value`; the SDK's DataPoint type is just wider than that guarantee.
+      // SAFETY: these dataPoints come from the "permit.checks" Counter metric. Its Sum aggregation always reports a number for `value`. The SDK's DataPoint type is just wider than that.
       counts[decision] = point.value as number;
     }
     return counts;

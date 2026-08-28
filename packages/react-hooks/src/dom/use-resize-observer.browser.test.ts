@@ -4,9 +4,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useResizeObserver, type UseResizeObserverResult } from "./use-resize-observer.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 class FakeResizeObserver implements ResizeObserver {
@@ -26,7 +25,7 @@ class FakeResizeObserver implements ResizeObserver {
 
   trigger(width: number, height: number): void {
     // SAFETY: the hook's observer callback only reads entry.target and
-    // entry.contentRect.{height,width}, both of which this fake entry supplies.
+    // entry.contentRect.{height,width}. This fake entry supplies both.
     this.callback(
       [{ contentRect: { height, width }, target: this.target } as ResizeObserverEntry],
       this,
@@ -82,9 +81,9 @@ describe("useResizeObserver", () => {
     const [observer] = FakeResizeObserver.instances;
 
     act(() => {
-      // SAFETY: this entry's target is a freshly created <span> that was never
-      // passed to observer.observe, so the hook's `observed.target === element`
-      // filter drops it; only target and contentRect are read, both provided here.
+      // SAFETY: this entry's target is a new <span> that was never passed to
+      // observer.observe, so the hook's `observed.target === element` filter
+      // drops it. Only target and contentRect are read, and both are here.
       observer?.callback(
         asTestDouble<ResizeObserverEntry[]>([
           { contentRect: { height: 999, width: 999 }, target: document.createElement("span") },

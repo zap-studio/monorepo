@@ -35,7 +35,7 @@ export const useDeviceCapabilities = (): DeviceCapabilities => {
   const cacheRef = useRef<DeviceCapabilities>(SERVER_SNAPSHOT);
 
   const getSnapshot = useCallback((): DeviceCapabilities => {
-    // SAFETY: deviceMemory isn't declared on Navigator; read as optional so an unsupported browser gives `undefined` instead of crashing.
+    // SAFETY: deviceMemory is not declared on Navigator. We read it as optional, so a browser without support gives `undefined` instead of crashing.
     const deviceMemory = (navigator as NavigatorWithDeviceMemory).deviceMemory;
     const next: DeviceCapabilities = {
       ...(deviceMemory !== undefined && { deviceMemory }),

@@ -47,6 +47,6 @@ export const getContactsManager = (): ContactsManager | undefined => {
   if (typeof navigator === "undefined") {
     return undefined;
   }
-  // SAFETY: contacts isn't declared on Navigator; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
+  // SAFETY: contacts is not declared on Navigator. We read it as optional, so a browser without support (Safari, Firefox) gives undefined instead of throwing.
   return (navigator as NavigatorWithContacts).contacts;
 };

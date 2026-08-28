@@ -3,15 +3,14 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useWakeLock } from "./use-wake-lock.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 const createSentinelMock = () => {
-  // SAFETY: the hook only calls sentinel.release(), sentinel.addEventListener("release", ...)
-  // (inherited from EventTarget), and reads `released` (unused by the hook itself but part of
-  // the real WakeLockSentinel shape) — all defined right below.
+  // SAFETY: the hook only calls sentinel.release() and sentinel.addEventListener("release", ...),
+  // which comes from EventTarget. It also reads `released`. The hook does not use `released`, but
+  // the real WakeLockSentinel has it. All of them are defined right below.
   const sentinel = asTestDouble<WakeLockSentinel>(new EventTarget());
   let released = false;
 

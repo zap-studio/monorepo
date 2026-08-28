@@ -3,16 +3,15 @@ import { describe, expect, it } from "vitest";
 
 import { useOrientation } from "./use-orientation.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 const LANDSCAPE_PRIMARY = "landscape-primary";
 
 const createOrientationMock = (initial: Pick<ScreenOrientation, "angle" | "type">) => {
-  // SAFETY: the hook only calls addEventListener/removeEventListener (inherited from
-  // EventTarget) and reads the `angle`/`type` getters defined via Object.defineProperties below.
+  // SAFETY: the hook only calls addEventListener/removeEventListener, which come from
+  // EventTarget, and reads the `angle`/`type` getters defined with Object.defineProperties below.
   const info = asTestDouble<ScreenOrientation>(new EventTarget());
   let state = { ...initial };
 

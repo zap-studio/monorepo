@@ -3,13 +3,12 @@ import { describe, expect, it, vi } from "vitest";
 
 import { usePermission } from "./use-permission.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 const createPermissionStatusMock = (initialState: PermissionState) => {
-  // SAFETY: usePermission only calls status.addEventListener/removeEventListener (native EventTarget methods) and reads status.state (defined right below via Object.defineProperty), so this EventTarget already provides every member the hook touches on a PermissionStatus.
+  // SAFETY: usePermission only calls status.addEventListener/removeEventListener, which are native EventTarget methods, and reads status.state, defined just below with Object.defineProperty. So this EventTarget has every member the hook uses on a PermissionStatus.
   const status = asTestDouble<PermissionStatus>(new EventTarget());
   let state = initialState;
 
@@ -70,20 +69,20 @@ describe("usePermission", () => {
       (_descriptor: PermissionDescriptor) => Promise<PermissionStatus & { name: string }>
     >((_descriptor: PermissionDescriptor) =>
       Promise.resolve(
-        // SAFETY: the `& { name: string }` intersection only satisfies this query mock's declared return type; usePermission never reads `.name` off the resolved status, only `.state` and add/removeEventListener, all of which createPermissionStatusMock's status already provides.
+        // SAFETY: the `& { name: string }` part only matches the return type this query mock declares. usePermission never reads `.name` on the resolved status. It only reads `.state` and calls add/removeEventListener, which createPermissionStatusMock's status already has.
         createPermissionStatusMock("granted").status as PermissionStatus & { name: string },
       ),
     );
     setNavigatorPermissions(query);
 
-    // SAFETY: "geolocation" is one of the DOM lib's own PermissionName union members; usePermission only forwards `name` unchanged into permissions.query({ name }), so widening this literal to the union type it already belongs to changes nothing at runtime.
+    // SAFETY: "geolocation" is one of the PermissionName values from the DOM lib. usePermission passes `name` straight into permissions.query({ name }). Widening the literal to a union it is already part of changes nothing at runtime.
     const { rerender } = renderHook(({ name }) => usePermission(name), {
       initialProps: { name: "geolocation" as PermissionName },
     });
 
     await waitFor(() => expect(query).toHaveBeenCalledTimes(1));
 
-    // SAFETY: "camera" is likewise a real PermissionName union member, and usePermission only re-queries with this value as an opaque string, so the cast doesn't paper over a mismatched runtime shape.
+    // SAFETY: "camera" is also a real PermissionName value. usePermission only queries again with it as a plain string, so the cast hides no wrong runtime shape.
     rerender({ name: "camera" as PermissionName });
 
     await waitFor(() => expect(query).toHaveBeenCalledTimes(2));

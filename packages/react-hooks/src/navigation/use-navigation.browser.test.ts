@@ -3,9 +3,8 @@ import { describe, expect, it } from "vitest";
 
 import { useNavigation } from "./use-navigation.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 interface MockState {
@@ -25,7 +24,7 @@ const createNavigationMock = (initial: MockState) => {
     currentEntry: { configurable: true, get: () => state.currentEntry },
     entries: { configurable: true, value: () => state.entries },
   });
-  // SAFETY: the Object.defineProperties call above added canGoBack, canGoForward, currentEntry, and entries — exactly the members Navigation adds on top of EventTarget — so this EventTarget now has every property readNavigation/subscribe in use-navigation.ts actually touch.
+  // SAFETY: the Object.defineProperties call above added canGoBack, canGoForward, currentEntry, and entries. These are exactly the members Navigation adds on top of EventTarget, so this EventTarget now has every property that readNavigation and subscribe in use-navigation.ts touch.
   const nav = asTestDouble<Navigation>(target);
 
   return {
@@ -45,7 +44,7 @@ const setWindowNavigation = (nav: Navigation | undefined) => {
 };
 
 const fakeEntry = (url: string): NavigationHistoryEntry => {
-  // SAFETY: NavigationHistoryEntry only declares a readonly `url` field, which this object provides; readNavigation and these tests only ever compare entries by reference or read `.url`, never any other member.
+  // SAFETY: NavigationHistoryEntry only declares a readonly `url` field, and this object provides it. readNavigation and these tests only compare entries by reference or read `.url`, never any other member.
   return asTestDouble<NavigationHistoryEntry>({ url });
 };
 

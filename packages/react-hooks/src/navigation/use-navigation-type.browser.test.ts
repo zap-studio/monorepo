@@ -3,9 +3,8 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { useNavigationType } from "./use-navigation-type.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 const originalGetEntriesByType = performance.getEntriesByType.bind(performance);
@@ -16,7 +15,7 @@ afterEach(() => {
 
 describe("useNavigationType", () => {
   it("reads the type off the navigation timing entry", () => {
-    // SAFETY: readNavigationType only reads `.entryType` (to narrow) and `.type` off the first element returned by getEntriesByType("navigation"), so a fake entry with just those two fields satisfies the hook's actual usage; the outer cast only matches this stand-in function's simpler signature to performance.getEntriesByType's real type.
+    // SAFETY: readNavigationType only reads `.entryType` and `.type` off the first item returned by getEntriesByType("navigation"), so a fake entry with just those two fields is enough. The outer cast only matches this stand-in function's simpler signature to the real type of performance.getEntriesByType.
     performance.getEntriesByType = ((type: string) =>
       type === "navigation"
         ? [asTestDouble<PerformanceNavigationTiming>({ entryType: "navigation", type: "reload" })]
@@ -28,7 +27,7 @@ describe("useNavigationType", () => {
   });
 
   it('falls back to "navigate" when there is no navigation timing entry', () => {
-    // SAFETY: readNavigationType only calls getEntriesByType("navigation") and destructures the first element, so a zero-arg function returning an empty array exercises the "no entry" fallback branch without needing the real multi-argument signature.
+    // SAFETY: readNavigationType only calls getEntriesByType("navigation") and reads the first item, so a function with no arguments that returns an empty array tests the "no entry" fallback. It does not need the real multi-argument signature.
     performance.getEntriesByType = (() => []) as typeof performance.getEntriesByType;
 
     const { result } = renderHook(() => useNavigationType());

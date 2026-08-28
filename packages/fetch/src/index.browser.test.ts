@@ -76,7 +76,7 @@ describe("$fetch basic functionality", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -151,7 +151,7 @@ describe("$fetch schema validation", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -212,7 +212,7 @@ describe("$fetch schema validation", () => {
     });
 
     expect(result).toHaveProperty("issues");
-    // SAFETY: the toHaveProperty("issues") assertion above confirms result has an issues array, matching the throwOnValidationError:false failure shape.
+    // SAFETY: the toHaveProperty("issues") check above proves result has an issues array. This is the failure shape of throwOnValidationError:false.
     expect(Array.isArray((result as { issues: unknown[] }).issues)).toBeTruthy();
   });
 
@@ -228,7 +228,7 @@ describe("$fetch schema validation", () => {
     });
 
     expect(result).toHaveProperty("value");
-    // SAFETY: the toHaveProperty("value") assertion above confirms result has a value property, matching the throwOnValidationError:false success shape.
+    // SAFETY: the toHaveProperty("value") check above proves result has a value property. This is the success shape of throwOnValidationError:false.
     expect((result as { value: unknown }).value).toStrictEqual(userData);
   });
 
@@ -250,7 +250,7 @@ describe("$fetch error handling", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -295,9 +295,9 @@ describe("$fetch error handling", () => {
     );
 
     expect(error).toBeInstanceOf(FetchError);
-    // SAFETY: the toBeInstanceOf assertion above guarantees error is a FetchError.
+    // SAFETY: the toBeInstanceOf check above proves error is a FetchError.
     expect((error as FetchError).status).toBe(500);
-    // SAFETY: error was confirmed to be a FetchError by the toBeInstanceOf assertion two lines above.
+    // SAFETY: the toBeInstanceOf check two lines above proves error is a FetchError.
     expect((error as FetchError).response).toBe(mockResponse);
   });
 
@@ -313,9 +313,9 @@ describe("$fetch error handling", () => {
     );
 
     expect(error).toBeInstanceOf(FetchError);
-    // SAFETY: the toBeInstanceOf assertion above guarantees error is a FetchError.
+    // SAFETY: the toBeInstanceOf check above proves error is a FetchError.
     expect((error as FetchError).message).toContain("403");
-    // SAFETY: error was confirmed to be a FetchError by the toBeInstanceOf assertion two lines above.
+    // SAFETY: the toBeInstanceOf check two lines above proves error is a FetchError.
     expect((error as FetchError).message).toContain("Forbidden");
   });
 });
@@ -324,7 +324,7 @@ describe("$fetch headers", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -350,7 +350,7 @@ describe("$fetch headers", () => {
       },
     });
 
-    // SAFETY: $fetch's mergeHeaders always builds a native Headers instance for init.headers before calling fetch, so calls[0][1].headers is a Headers.
+    // SAFETY: $fetch uses mergeHeaders to build a native Headers instance for init.headers before it calls fetch, so calls[0][1].headers is a Headers.
     const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
     expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN_123);
     expect(calledHeaders.get("X-Custom-Header")).toBe(CUSTOM_HEADER_VALUE);
@@ -368,7 +368,7 @@ describe("$fetch headers", () => {
       method: "POST",
     });
 
-    // SAFETY: $fetch always normalizes init.headers into a native Headers instance via mergeHeaders before calling fetch.
+    // SAFETY: $fetch always turns init.headers into a native Headers instance with mergeHeaders before it calls fetch.
     const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
     expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json");
   });
@@ -388,7 +388,7 @@ describe("$fetch headers", () => {
       method: "POST",
     });
 
-    // SAFETY: $fetch always normalizes init.headers into a native Headers instance via mergeHeaders before calling fetch.
+    // SAFETY: $fetch always turns init.headers into a native Headers instance with mergeHeaders before it calls fetch.
     const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
     expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json; charset=utf-8");
   });
@@ -398,7 +398,7 @@ describe("$fetch body handling", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -488,7 +488,7 @@ describe("createFetch factory creation", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -528,7 +528,7 @@ describe("createFetch baseURL", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -644,7 +644,7 @@ describe("createFetch default headers", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -667,7 +667,7 @@ describe("createFetch default headers", () => {
 
     await customFetch(USERS_URL);
 
-    // SAFETY: customFetch merges default and request headers into a native Headers instance via mergeHeaders before calling fetch.
+    // SAFETY: customFetch uses mergeHeaders to merge the default and request headers into a native Headers instance before it calls fetch.
     const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
     expect(calledHeaders.get("Authorization")).toBe(BEARER_DEFAULT_TOKEN);
     expect(calledHeaders.get("X-API-Key")).toBe("api-key-123");
@@ -691,7 +691,7 @@ describe("createFetch default headers", () => {
       },
     });
 
-    // SAFETY: customFetch merges default and request headers into a native Headers instance via mergeHeaders before calling fetch.
+    // SAFETY: customFetch uses mergeHeaders to merge the default and request headers into a native Headers instance before it calls fetch.
     const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
     expect(calledHeaders.get("Authorization")).toBe("Bearer override-token");
   });
@@ -715,7 +715,7 @@ describe("createFetch default headers", () => {
       },
     });
 
-    // SAFETY: customFetch merges default and request headers into a native Headers instance via mergeHeaders before calling fetch.
+    // SAFETY: customFetch uses mergeHeaders to merge the default and request headers into a native Headers instance before it calls fetch.
     const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
     expect(calledHeaders.get("Authorization")).toBe(BEARER_DEFAULT_TOKEN);
     expect(calledHeaders.get("X-Default-Header")).toBe("default-value");
@@ -727,7 +727,7 @@ describe("createFetch default options", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -838,7 +838,7 @@ describe("createFetch custom $fetch behavior", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -900,9 +900,9 @@ describe("createFetch custom $fetch behavior", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
 
-    // SAFETY: customFetch always normalizes init.headers into a native Headers instance before calling fetch, so calls[0][1].headers is a Headers.
+    // SAFETY: customFetch always turns init.headers into a native Headers instance before it calls fetch, so calls[0][1].headers is a Headers.
     const firstCallHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-    // SAFETY: the second customFetch call above is normalized the same way, so calls[1][1].headers is also a Headers instance.
+    // SAFETY: the second customFetch call above is handled the same way, so calls[1][1].headers is also a Headers instance.
     const secondCallHeaders = fetchMock.mock.calls[1]?.[1]?.headers as Headers;
 
     expect(firstCallHeaders.get("Authorization")).toBe(BEARER_TOKEN);
@@ -917,7 +917,7 @@ describe("createFetch custom api methods", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -965,7 +965,7 @@ describe("createFetch custom api methods", () => {
       }),
     );
 
-    // SAFETY: customApi.get delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
+    // SAFETY: customApi.get calls $fetch, and $fetch turns init.headers into a native Headers instance before it calls fetch.
     const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
     expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
   });
@@ -981,7 +981,7 @@ describe("api.get", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -1032,7 +1032,7 @@ describe("api.get", () => {
         method: "GET",
       }),
     );
-    // SAFETY: api.get delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
+    // SAFETY: api.get calls $fetch, and $fetch turns init.headers into a native Headers instance before it calls fetch.
     const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
     expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN_123);
   });
@@ -1047,7 +1047,7 @@ describe("api.post", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -1114,7 +1114,7 @@ describe("api.post", () => {
         method: "POST",
       }),
     );
-    // SAFETY: api.post delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
+    // SAFETY: api.post calls $fetch, and $fetch turns init.headers into a native Headers instance before it calls fetch.
     const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
     expect(calledHeaders.get("X-Custom-Header")).toBe(CUSTOM_HEADER_VALUE);
   });
@@ -1129,7 +1129,7 @@ describe("api.put", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -1196,7 +1196,7 @@ describe("api.put", () => {
         mode: "cors",
       }),
     );
-    // SAFETY: api.put delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
+    // SAFETY: api.put calls $fetch, and $fetch turns init.headers into a native Headers instance before it calls fetch.
     const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
     expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
   });
@@ -1211,7 +1211,7 @@ describe("api.patch", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -1281,7 +1281,7 @@ describe("api.patch", () => {
         method: "PATCH",
       }),
     );
-    // SAFETY: api.patch delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
+    // SAFETY: api.patch calls $fetch, and $fetch turns init.headers into a native Headers instance before it calls fetch.
     const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
     expect(calledHeaders.get("X-Patch-Header")).toBe("patch-value");
   });
@@ -1296,7 +1296,7 @@ describe("api.delete", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -1350,7 +1350,7 @@ describe("api.delete", () => {
         method: "DELETE",
       }),
     );
-    // SAFETY: api.delete delegates to $fetch, which normalizes init.headers into a native Headers instance before calling fetch.
+    // SAFETY: api.delete calls $fetch, and $fetch turns init.headers into a native Headers instance before it calls fetch.
     const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
     expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
   });
@@ -1365,7 +1365,7 @@ describe("api convenience methods shared behavior", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -1421,7 +1421,7 @@ describe("api convenience methods shared behavior", () => {
     });
 
     expect(result).toHaveProperty("issues");
-    // SAFETY: the toHaveProperty("issues") assertion above confirms result has an issues array.
+    // SAFETY: the toHaveProperty("issues") check above proves result has an issues array.
     expect(Array.isArray((result as { issues: unknown[] }).issues)).toBeTruthy();
   });
 
@@ -1456,7 +1456,7 @@ describe("request input normalization", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -1481,7 +1481,7 @@ describe("request input normalization", () => {
 
     await $fetch(request);
 
-    // SAFETY: $fetch(request) above was called with a bare Request and no options, so fetch was invoked with (Request, RequestInit) arguments.
+    // SAFETY: $fetch(request) above got a bare Request and no options, so fetch was called with (Request, RequestInit) arguments.
     const [sentRequest] = fetchMock.mock.calls[0] as [Request, RequestInit];
     expect(sentRequest).toBeInstanceOf(Request);
     expect(sentRequest.url).toBe(USERS_URL);
@@ -1496,7 +1496,7 @@ describe("request input normalization", () => {
 
     await $fetch(request, { headers: { B: "20", C: "3" }, method: "PATCH" });
 
-    // SAFETY: $fetch(request, options) above always invokes the underlying fetch with (Request, RequestInit) arguments.
+    // SAFETY: $fetch(request, options) above always calls the underlying fetch with (Request, RequestInit) arguments.
     const [sentRequest, init] = fetchMock.mock.calls[0] as [Request, RequestInit];
     const headers = new Headers(init.headers);
 
@@ -1515,7 +1515,7 @@ describe("json and body conflicts", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -1542,7 +1542,7 @@ describe("json and body conflicts", () => {
       method: "POST",
     });
 
-    // SAFETY: customFetch(url, options) above always calls the underlying fetch as fetch(url, init) with a RequestInit second argument.
+    // SAFETY: customFetch(url, options) above always calls the underlying fetch as fetch(url, init), so the second argument is a RequestInit.
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
     const headers = new Headers(init.headers);
     expect(headers.get("Authorization")).toBe(BEARER_TOKEN);
@@ -1555,7 +1555,7 @@ describe("URL and search param resolution", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -1633,7 +1633,7 @@ describe("method helper", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -1670,7 +1670,7 @@ describe("method helper", () => {
     const userData = { id: 1, name: "John" };
     fetchMock.mockResolvedValue(new Response(JSON.stringify(userData)));
 
-    // SAFETY: deliberately bypassing api.patch's options type, which doesn't expose method, to exercise the runtime path where the helper's own PATCH method still wins.
+    // SAFETY: we skip api.patch's options type on purpose, because it does not expose method. This tests the runtime path where the helper's own PATCH method still wins.
     await api.patch(USER_1_URL, UserSchema, {
       method: "POST",
     } as never);
@@ -1689,7 +1689,7 @@ describe("@zap-studio/fetch browser runtime", () => {
   beforeEach(() => {
     originalFetch = globalThis.fetch;
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -1707,7 +1707,7 @@ describe("@zap-studio/fetch browser runtime", () => {
 
     await $fetch(request, { headers: { B: "20", C: "3" }, method: "PATCH" });
 
-    // SAFETY: $fetch(request, options) above always invokes the underlying fetch with (Request, RequestInit) arguments.
+    // SAFETY: $fetch(request, options) above always calls the underlying fetch with (Request, RequestInit) arguments.
     const [sentRequest, init] = fetchMock.mock.calls[0] as [Request, RequestInit];
     const headers = new Headers(init.headers);
 
@@ -1797,9 +1797,9 @@ describe("@zap-studio/fetch browser runtime", () => {
     const firstCall = fetchMock.mock.calls[0];
     const [request, init] = firstCall ?? [];
     expect(request).toBeInstanceOf(Request);
-    // SAFETY: the toBeInstanceOf assertion above guarantees request is a Request.
+    // SAFETY: the toBeInstanceOf check above proves request is a Request.
     expect((request as Request).url).toBe(USERS_URL);
-    // SAFETY: the $fetch call above always invokes fetch with a RequestInit as its second argument.
+    // SAFETY: the $fetch call above always calls fetch with a RequestInit as the second argument.
     expect(new Headers((init as RequestInit).headers).get("B")).toBe("2");
   });
 
@@ -1814,9 +1814,9 @@ describe("@zap-studio/fetch browser runtime", () => {
 
     const firstCall = fetchMock.mock.calls[0];
     const [, init] = firstCall ?? [];
-    // SAFETY: the $fetch call above always invokes fetch with a RequestInit as its second argument.
+    // SAFETY: the $fetch call above always calls fetch with a RequestInit as the second argument.
     expect((init as RequestInit).body).toBe(JSON.stringify({ name: "Zap" }));
-    // SAFETY: init was captured from the same fetch call above, which always receives a RequestInit as its second argument.
+    // SAFETY: init comes from the same fetch call above, which always gets a RequestInit as the second argument.
     expect(new Headers((init as RequestInit).headers).get("content-type")).toBe(
       "application/vnd.api+json",
     );
@@ -1836,7 +1836,7 @@ describe("@zap-studio/fetch browser runtime", () => {
 
     const firstCall = fetchMock.mock.calls[0];
     const [url, init] = firstCall ?? [];
-    // SAFETY: client.$fetch above always invokes the underlying fetch with a RequestInit as its second argument.
+    // SAFETY: client.$fetch above always calls the underlying fetch with a RequestInit as the second argument.
     const headers = new Headers((init as RequestInit).headers);
     expect(url).toBe("https://api.example.com/users?page=1");
     expect(headers.get("authorization")).toBe(BEARER_TOKEN);
@@ -1862,7 +1862,7 @@ describe("$fetch with ArkType schemas", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -1932,7 +1932,7 @@ describe("$fetch with ArkType schemas", () => {
     });
 
     expect(result).toHaveProperty("issues");
-    // SAFETY: the toHaveProperty("issues") assertion above confirms result has an issues array.
+    // SAFETY: the toHaveProperty("issues") check above proves result has an issues array.
     expect(Array.isArray((result as { issues?: unknown }).issues)).toBeTruthy();
   });
 
@@ -1957,9 +1957,9 @@ describe("$fetch with ArkType schemas", () => {
     });
 
     expect(result).toHaveProperty("value");
-    // SAFETY: the toHaveProperty("value") assertion above confirms result has a value property.
+    // SAFETY: the toHaveProperty("value") check above proves result has a value property.
     expect((result as { value?: unknown }).value).toStrictEqual(validData);
-    // SAFETY: throwOnValidationError:false only adds an issues property on failure, so result may lack it; this narrows the type to check for its absence.
+    // SAFETY: throwOnValidationError:false only adds an issues property when validation fails. So result may not have it, and we make the type optional to check it is missing.
     expect((result as { issues?: unknown }).issues).toBeUndefined();
   });
 
@@ -2082,7 +2082,7 @@ describe("$fetch with Valibot schemas", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -2152,7 +2152,7 @@ describe("$fetch with Valibot schemas", () => {
     });
 
     expect(result).toHaveProperty("issues");
-    // SAFETY: the toHaveProperty("issues") assertion above confirms result has an issues array.
+    // SAFETY: the toHaveProperty("issues") check above proves result has an issues array.
     expect(Array.isArray((result as { issues?: unknown }).issues)).toBeTruthy();
   });
 
@@ -2177,9 +2177,9 @@ describe("$fetch with Valibot schemas", () => {
     });
 
     expect(result).toHaveProperty("value");
-    // SAFETY: the toHaveProperty("value") assertion above confirms result has a value property.
+    // SAFETY: the toHaveProperty("value") check above proves result has a value property.
     expect((result as { value?: unknown }).value).toStrictEqual(validData);
-    // SAFETY: throwOnValidationError:false only adds an issues property on failure, so result may lack it; this narrows the type to check for its absence.
+    // SAFETY: throwOnValidationError:false only adds an issues property when validation fails. So result may not have it, and we make the type optional to check it is missing.
     expect((result as { issues?: unknown }).issues).toBeUndefined();
   });
 
@@ -2287,7 +2287,7 @@ describe("$fetch with Zod schemas", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -2357,7 +2357,7 @@ describe("$fetch with Zod schemas", () => {
     });
 
     expect(result).toHaveProperty("issues");
-    // SAFETY: the toHaveProperty("issues") assertion above confirms result has an issues array.
+    // SAFETY: the toHaveProperty("issues") check above proves result has an issues array.
     expect(Array.isArray((result as { issues?: unknown }).issues)).toBeTruthy();
   });
 
@@ -2382,9 +2382,9 @@ describe("$fetch with Zod schemas", () => {
     });
 
     expect(result).toHaveProperty("value");
-    // SAFETY: the toHaveProperty("value") assertion above confirms result has a value property.
+    // SAFETY: the toHaveProperty("value") check above proves result has a value property.
     expect((result as { value?: unknown }).value).toStrictEqual(validData);
-    // SAFETY: throwOnValidationError:false only adds an issues property on failure, so result may lack it; this narrows the type to check for its absence.
+    // SAFETY: throwOnValidationError:false only adds an issues property when validation fails. So result may not have it, and we make the type optional to check it is missing.
     expect((result as { issues?: unknown }).issues).toBeUndefined();
   });
 
@@ -2457,7 +2457,7 @@ describe("logging", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is created via vi.fn<typeof fetch>() above, so its call signature matches the global fetch function.
+    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 

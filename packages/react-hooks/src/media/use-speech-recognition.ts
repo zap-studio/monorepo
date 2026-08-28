@@ -25,7 +25,7 @@ const getSpeechRecognitionConstructor = (): SpeechRecognitionConstructor | undef
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: SpeechRecognition (and its prefixed webkitSpeechRecognition, used by Safari and Chromium) has no constructor declared on Window. Every caller uses this function to look it up, so an unsupported browser like Firefox gets undefined instead of an error.
+  // SAFETY: Window declares no constructor for SpeechRecognition or its prefixed form webkitSpeechRecognition (used by Safari and Chromium). Every caller looks it up through this function, so a browser without support like Firefox gets undefined instead of an error.
   const target = window as WindowWithSpeechRecognition;
   return target.SpeechRecognition ?? target.webkitSpeechRecognition;
 };

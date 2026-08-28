@@ -3,9 +3,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { usePerformanceObserver } from "./use-performance-observer.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 class MockPerformanceObserver {
@@ -73,10 +72,10 @@ describe("usePerformanceObserver", () => {
     renderHook(() => usePerformanceObserver(callback, { entryTypes: ["longtask"] }));
 
     const observer = MockPerformanceObserver.instances[0]!;
-    // SAFETY: usePerformanceObserver's internal callback wrapper (`(list, obs) => callbackRef.current(list, obs)` in use-performance-observer.ts) only forwards `list` by reference to `callback`, never reading its members, and the assertion below checks `list` by identity — so an empty object stand-in is safe.
+    // SAFETY: the wrapper inside usePerformanceObserver (`(list, obs) => callbackRef.current(list, obs)` in use-performance-observer.ts) passes `list` to `callback` by reference and never reads its members. The check below compares `list` by identity, so an empty object is safe here.
     const list = {} as PerformanceObserverEntryList;
     act(() => {
-      // SAFETY: `observer` is the MockPerformanceObserver instance the hook itself constructed via `new PerformanceObserver(...)` (intercepted by our mocked global); the wrapper above only forwards it by reference and the assertion below compares it by identity, so it never needs to implement the real PerformanceObserver interface.
+      // SAFETY: `observer` is the MockPerformanceObserver instance the hook built with `new PerformanceObserver(...)`, caught by our mocked global. The wrapper above only passes it on by reference and the check below compares it by identity, so it never needs the real PerformanceObserver members.
       observer.callback(list, asTestDouble<PerformanceObserver>(observer));
     });
 
@@ -95,7 +94,7 @@ describe("usePerformanceObserver", () => {
     rerender({ callback: secondCallback });
     const observer = MockPerformanceObserver.instances[0]!;
     act(() => {
-      // SAFETY: this test only checks which callback fired and how many times, not the argument values, and usePerformanceObserver's wrapper never reads list/obs members — so an empty object and the MockPerformanceObserver instance are safe stand-ins for the two positional arguments here.
+      // SAFETY: this test only checks which callback ran and how many times, not the argument values, and the wrapper in usePerformanceObserver never reads members of list/obs. So an empty object and the MockPerformanceObserver instance are safe for the two arguments here.
       observer.callback(
         {} as PerformanceObserverEntryList,
         asTestDouble<PerformanceObserver>(observer),

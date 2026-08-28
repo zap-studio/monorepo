@@ -26,9 +26,9 @@ describe("$fetch OpenTelemetry", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is typed as vi.fn<typeof fetch>(), so its call signature and
-    // mockResolvedValue/mockRejectedValue-configured return type already match `typeof fetch`
-    // exactly; the cast only drops the extra vitest mock properties for this assignment.
+    // SAFETY: fetchMock is typed as vi.fn<typeof fetch>(), so its call signature and the
+    // return type set by mockResolvedValue/mockRejectedValue already match `typeof fetch`.
+    // The cast only drops the extra vitest mock properties for this assignment.
     globalThis.fetch = fetchMock as typeof fetch;
     exporter.reset();
   });
@@ -100,8 +100,8 @@ describe("$fetch OpenTelemetry", () => {
     await $fetch(USER_URL);
 
     // SAFETY: fetchInternal calls the global `fetch(url, init)` exactly once per $fetch
-    // call (no `request.request` branch here, since USER_URL is a string, not a Request),
-    // so calls[0] is a [string, RequestInit] tuple.
+    // call. The `request.request` branch does not run here, because USER_URL is a string,
+    // not a Request. So calls[0] is a [string, RequestInit] tuple.
     const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     const headers = new Headers(init.headers);
     expect(headers.get("traceparent")).toMatch(TRACEPARENT_PATTERN);

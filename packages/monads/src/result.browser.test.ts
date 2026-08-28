@@ -173,9 +173,9 @@ describe("unwrap", () => {
     }
 
     expect(caught).toBeInstanceOf(Error);
-    // SAFETY: the toBeInstanceOf assertion above guarantees caught is an Error.
+    // SAFETY: the toBeInstanceOf check above proves caught is an Error.
     expect((caught as Error).message).toBe("Called unwrap() on an Err value");
-    // SAFETY: caught was already narrowed to Error by the toBeInstanceOf assertion two lines above.
+    // SAFETY: the toBeInstanceOf check two lines above already proves caught is an Error.
     expect((caught as Error).cause).toBe("bad");
   });
 });

@@ -22,7 +22,7 @@ describe("$fetch OpenTelemetry active context", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock was just created with vi.fn<typeof fetch>(), so it already implements fetch's call signature; the cast only drops the Mock wrapper type to match globalThis.fetch's declared type.
+    // SAFETY: fetchMock was just created with vi.fn<typeof fetch>(), so it already has fetch's call signature. The cast only drops the Mock wrapper type to match the declared type of globalThis.fetch.
     globalThis.fetch = fetchMock as typeof fetch;
   });
 

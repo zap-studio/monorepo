@@ -137,7 +137,7 @@ const validatePayload = async <TPayload>(
   schema?: StandardSchemaV1<unknown, TPayload>,
 ): Promise<TPayload | Response> => {
   if (!schema) {
-    // SAFETY: No schema was provided, so the caller-declared `TPayload` is the route's only contract; there is nothing to validate against.
+    // SAFETY: no schema was given, so there is nothing to validate against. The `TPayload` type declared by the caller is the route's only contract.
     return parsedJson as TPayload;
   }
 

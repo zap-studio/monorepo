@@ -33,6 +33,6 @@ export const getIdleDetectorConstructor = (): IdleDetectorConstructor | undefine
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: IdleDetector isn't declared on Window; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
+  // SAFETY: IdleDetector is not declared on Window. We read it as optional, so a browser without support (Safari, Firefox) gives undefined instead of throwing.
   return (window as IdleDetectionWindow).IdleDetector;
 };

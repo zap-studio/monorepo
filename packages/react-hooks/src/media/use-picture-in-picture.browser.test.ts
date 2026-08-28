@@ -4,9 +4,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { usePictureInPicture, type UsePictureInPictureResult } from "./use-picture-in-picture.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 const setPictureInPictureSupport = (supported: boolean) => {
@@ -64,8 +63,8 @@ describe("usePictureInPicture", () => {
   it("enter() requests PiP on the ref'd element", async () => {
     setPictureInPictureSupport(true);
     const requestPictureInPicture = vi.fn<() => Promise<void>>(() => Promise.resolve());
-    // SAFETY: enter() only calls ref.current.requestPictureInPicture(); no other
-    // HTMLVideoElement members are touched in this codepath.
+    // SAFETY: enter() only calls ref.current.requestPictureInPicture(). This code path
+    // uses no other HTMLVideoElement members.
     const element = asTestDouble<HTMLVideoElement>({ requestPictureInPicture });
 
     const { result } = renderHook(() => usePictureInPicture<HTMLVideoElement>());

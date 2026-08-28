@@ -32,7 +32,7 @@ const getValue = async <T>(key: string, initialValue: T): Promise<T> => {
   try {
     return await new Promise<T>((resolve, reject) => {
       const request = db.transaction(STORE_NAME, "readonly").objectStore(STORE_NAME).get(key);
-      // SAFETY: only this hook writes to this key (through putValue below), so a stored entry is always a T. If there's no entry (undefined), we fall back to initialValue.
+      // SAFETY: only this hook writes to this key (with putValue below), so a stored entry is always a T. If there is no entry (undefined), we use initialValue instead.
       request.onsuccess = () =>
         resolve(request.result === undefined ? initialValue : (request.result as T));
       request.onerror = () => reject(request.error ?? new Error(REQUEST_FAILED));

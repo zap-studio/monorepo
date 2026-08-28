@@ -3,9 +3,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useFilePicker } from "./use-file-picker.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 const DISK_ERROR_MESSAGE = "disk error";
@@ -45,8 +44,8 @@ describe("useFilePicker", () => {
 
   it("showOpenFilePicker() resolves the picker's handles", async () => {
     // SAFETY: the hook's showOpenFilePicker() only calls the stubbed picker and
-    // returns its resolved value untouched (checked below via toBe(handles)),
-    // so the minimal shape here never needs to satisfy the full handle interface.
+    // returns its value unchanged (checked below with toBe(handles)), so this
+    // small shape never needs to match the full handle interface.
     const handles = asTestDouble<FileSystemFileHandle[]>([{ kind: "file", name: "a.txt" }]);
     vi.stubGlobal(
       "showOpenFilePicker",
@@ -86,8 +85,8 @@ describe("useFilePicker", () => {
 
   it("showSaveFilePicker() resolves the picker's handle", async () => {
     // SAFETY: the hook's showSaveFilePicker() only calls the stubbed picker and
-    // returns its resolved value untouched (checked below via toBe(handle)),
-    // so the minimal shape here never needs to satisfy the full handle interface.
+    // returns its value unchanged (checked below with toBe(handle)), so this
+    // small shape never needs to match the full handle interface.
     const handle = asTestDouble<FileSystemFileHandle>({ kind: "file", name: "a.txt" });
     vi.stubGlobal(
       "showSaveFilePicker",
@@ -127,8 +126,8 @@ describe("useFilePicker", () => {
 
   it("showDirectoryPicker() resolves the picker's handle", async () => {
     // SAFETY: the hook's showDirectoryPicker() only calls the stubbed picker and
-    // returns its resolved value untouched (checked below via toBe(handle)),
-    // so the minimal shape here never needs to satisfy the full handle interface.
+    // returns its value unchanged (checked below with toBe(handle)), so this
+    // small shape never needs to match the full handle interface.
     const handle = asTestDouble<FileSystemDirectoryHandle>({ kind: "directory", name: "dir" });
     vi.stubGlobal(
       "showDirectoryPicker",

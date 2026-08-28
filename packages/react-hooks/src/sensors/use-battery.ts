@@ -47,7 +47,7 @@ export const useBattery = (): BatteryState => {
   const [battery, setBattery] = useState<BatteryManager | undefined>(undefined);
 
   useEffect(() => {
-    // SAFETY: getBattery isn't declared on Navigator. The `if (!getBattery)` check below handles browsers that don't support it, so the code uses the SSR default instead of crashing.
+    // SAFETY: getBattery is not declared on Navigator. The `if (!getBattery)` check below catches browsers without it, so the code uses the SSR default instead of crashing.
     const getBattery = (navigator as NavigatorWithBattery).getBattery;
     if (!getBattery) {
       return undefined;

@@ -27,6 +27,6 @@ export const getQueryLocalFonts = (): QueryLocalFonts | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: queryLocalFonts isn't declared on Window; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
+  // SAFETY: queryLocalFonts is not declared on Window. We read it as optional, so a browser without support (Safari, Firefox) gives undefined instead of throwing.
   return (window as WindowWithQueryLocalFonts).queryLocalFonts;
 };

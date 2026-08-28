@@ -44,7 +44,7 @@ const installMockMediaRecorder = () => {
   Object.defineProperty(window, "MediaRecorder", { configurable: true, value: MockMediaRecorder });
 };
 
-// SAFETY: useMediaRecorder only ever forwards `stream` straight into `new MediaRecorder(stream, ...)`, which is itself replaced by MockMediaRecorder in every test here, so the hook never calls any MediaStream method on this value — an empty object stand-in is enough.
+// SAFETY: useMediaRecorder only passes `stream` straight into `new MediaRecorder(stream, ...)`, and every test here replaces MediaRecorder with MockMediaRecorder. The hook never calls a MediaStream method on this value, so an empty object is enough.
 const fakeStream = {} as MediaStream;
 
 afterEach(() => {

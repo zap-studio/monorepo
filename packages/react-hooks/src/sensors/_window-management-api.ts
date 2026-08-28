@@ -49,7 +49,7 @@ export const getScreenDetailsFn = (): GetScreenDetails | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: getScreenDetails isn't declared on Window; read as optional so an unsupported browser (Safari, Firefox) gives undefined instead of throwing.
+  // SAFETY: Window does not declare getScreenDetails. We read it as optional, so a browser without it (Safari, Firefox) gives undefined instead of throwing.
   return (window as WindowWithScreenDetails).getScreenDetails;
 };
 
@@ -62,7 +62,7 @@ export const getScreenDetailsFn = (): GetScreenDetails | undefined => {
  * `window.innerWidth` directly.
  */
 export const getIsExtended = (): boolean =>
-  // SAFETY: isExtended isn't declared on Screen; read as optional so an unsupported browser reads as false instead of throwing.
+  // SAFETY: Screen does not declare isExtended. We read it as optional, so a browser without it reads as false instead of throwing.
   Boolean((window.screen as ScreenWithIsExtended).isExtended);
 
 /**
@@ -73,8 +73,8 @@ export const getIsExtended = (): boolean =>
  * calls `window.addEventListener` directly.
  */
 export const getScreenEventTarget = (): ScreenChangeEventTarget => {
-  // SAFETY: Screen's addEventListener/removeEventListener aren't declared, so it's cast through an all-optional shape first.
+  // SAFETY: Screen does not declare addEventListener/removeEventListener, so we cast it through a shape where they are optional first.
   const withOptionalEventTarget = window.screen as ScreenWithOptionalEventTarget;
-  // SAFETY: every browser's `screen` supports these as an EventTarget, so they're safe to treat as always present.
+  // SAFETY: `screen` is an EventTarget in every browser, so these two methods are always there.
   return withOptionalEventTarget as ScreenChangeEventTarget;
 };

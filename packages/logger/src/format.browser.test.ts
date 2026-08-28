@@ -29,7 +29,7 @@ describe("classicFormat", () => {
 describe("jsonFormat", () => {
   it("produces a single JSON string with pino-style field names", () => {
     const [line] = jsonFormat(baseRecord());
-    // SAFETY: jsonFormat always returns a one-element array whose sole element is the JSON.stringify output (format.ts), so `line` is a string.
+    // SAFETY: jsonFormat always returns an array with one item, the JSON.stringify output (format.ts), so `line` is a string.
     expect(JSON.parse(line as string)).toStrictEqual({
       level: "info",
       msg: STARTUP_MESSAGE,
@@ -40,7 +40,7 @@ describe("jsonFormat", () => {
   it("flattens context fields to the top level", () => {
     const record = baseRecord({ context: { port: 3000 } });
     const [line] = jsonFormat(record);
-    // SAFETY: jsonFormat's return is always `[JSON.stringify(...)]` (format.ts), so `line` is a string even once context fields are flattened in.
+    // SAFETY: jsonFormat always returns `[JSON.stringify(...)]` (format.ts), so `line` is a string even when context fields are flattened in.
     expect(JSON.parse(line as string)).toStrictEqual({
       level: "info",
       msg: STARTUP_MESSAGE,
@@ -54,7 +54,7 @@ describe("jsonFormat", () => {
       context: { level: "hijacked", msg: "hijacked", time: -1 },
     });
     const [line] = jsonFormat(record);
-    // SAFETY: jsonFormat always returns `[JSON.stringify(...)]` (format.ts); the hijack attempt in context doesn't change the shape of what's returned.
+    // SAFETY: jsonFormat always returns `[JSON.stringify(...)]` (format.ts). The hijack attempt in context does not change that shape.
     expect(JSON.parse(line as string)).toStrictEqual({
       level: "info",
       msg: STARTUP_MESSAGE,
@@ -66,7 +66,7 @@ describe("jsonFormat", () => {
     const error = new Error("boom");
     const record = baseRecord({ context: { error } });
     const [line] = jsonFormat(record);
-    // SAFETY: jsonFormat always returns a single-element array containing the JSON.stringify string (format.ts), regardless of what context values it serializes.
+    // SAFETY: jsonFormat always returns an array with one item, the JSON.stringify string (format.ts), no matter what context values it serializes.
     const parsed = JSON.parse(line as string);
     expect(parsed.error).toMatchObject({ message: "boom", name: "Error" });
     expect(typeof parsed.error.stack).toBe("string");
@@ -75,7 +75,7 @@ describe("jsonFormat", () => {
   it("serializes bigint context values as strings", () => {
     const record = baseRecord({ context: { id: 9_007_199_254_740_993n } });
     const [line] = jsonFormat(record);
-    // SAFETY: jsonFormat always returns `[JSON.stringify(...)]` (format.ts), so `line` is the JSON string whose `id` field was serialized from the bigint context value.
+    // SAFETY: jsonFormat always returns `[JSON.stringify(...)]` (format.ts), so `line` is the JSON string that holds the `id` field made from the bigint context value.
     expect(JSON.parse(line as string).id).toBe("9007199254740993");
   });
 });
@@ -137,7 +137,7 @@ describe("prettyFormat", () => {
 
   it("includes a clock time, the uppercased level, and the message", () => {
     vi.stubGlobal("process", undefined);
-    // SAFETY: baseRecord() defaults context to undefined, so prettyFormat's `record.context === undefined ? [prefix] : ...` branch returns the single-element `[prefix]` array (format.ts), making prefix a string.
+    // SAFETY: baseRecord() leaves context undefined, so prettyFormat takes the `record.context === undefined ? [prefix] : ...` branch and returns the array `[prefix]` with one item (format.ts). So prefix is a string.
     const [prefix] = prettyFormat(baseRecord()) as [string];
 
     expect(prefix).toMatch(CLOCK_TIME_PATTERN);
@@ -155,7 +155,7 @@ describe("prettyFormat", () => {
 
   it("colors output when no process global is present", () => {
     vi.stubGlobal("process", undefined);
-    // SAFETY: baseRecord() defaults context to undefined, so prettyFormat returns `[prefix]` alone (format.ts); prefix is the color-coded string prefix, not the context array.
+    // SAFETY: baseRecord() leaves context undefined, so prettyFormat returns only `[prefix]` (format.ts). prefix is the color-coded string, not the context array.
     const [prefix] = prettyFormat(baseRecord()) as [string];
 
     expect(prefix).toContain("[");
@@ -163,7 +163,7 @@ describe("prettyFormat", () => {
 
   it("colors output on a real TTY without NO_COLOR", () => {
     vi.stubGlobal("process", { env: {}, stdout: { isTTY: true } });
-    // SAFETY: baseRecord() defaults context to undefined, so prettyFormat still returns just `[prefix]` (format.ts) even though the stubbed process here reports a TTY.
+    // SAFETY: baseRecord() leaves context undefined, so prettyFormat still returns just `[prefix]` (format.ts), even though the stubbed process here reports a TTY.
     const [prefix] = prettyFormat(baseRecord()) as [string];
 
     expect(prefix).toContain("[");
@@ -171,7 +171,7 @@ describe("prettyFormat", () => {
 
   it("skips color when not a TTY", () => {
     vi.stubGlobal("process", { env: {}, stdout: { isTTY: false } });
-    // SAFETY: baseRecord() defaults context to undefined, so prettyFormat returns only `[prefix]` (format.ts); the non-TTY stub only affects color, not the array shape.
+    // SAFETY: baseRecord() leaves context undefined, so prettyFormat returns only `[prefix]` (format.ts). The non-TTY stub only changes color, not the array shape.
     const [prefix] = prettyFormat(baseRecord()) as [string];
 
     expect(prefix).not.toContain("[");
@@ -182,7 +182,7 @@ describe("prettyFormat", () => {
       env: { NO_COLOR: "1" },
       stdout: { isTTY: true },
     });
-    // SAFETY: baseRecord() defaults context to undefined, so prettyFormat returns only `[prefix]` (format.ts); NO_COLOR only affects color, not the array shape.
+    // SAFETY: baseRecord() leaves context undefined, so prettyFormat returns only `[prefix]` (format.ts). NO_COLOR only changes color, not the array shape.
     const [prefix] = prettyFormat(baseRecord()) as [string];
 
     expect(prefix).not.toContain("[");
@@ -190,7 +190,7 @@ describe("prettyFormat", () => {
   it("skips color on Cloudflare Workers, even without a process global", () => {
     vi.stubGlobal("process", undefined);
     vi.stubGlobal("navigator", { userAgent: "Cloudflare-Workers" });
-    // SAFETY: baseRecord() defaults context to undefined, so prettyFormat returns only `[prefix]` (format.ts); the Cloudflare Workers stub only affects color detection, not the array shape.
+    // SAFETY: baseRecord() leaves context undefined, so prettyFormat returns only `[prefix]` (format.ts). The Cloudflare Workers stub only changes color detection, not the array shape.
     const [prefix] = prettyFormat(baseRecord()) as [string];
 
     expect(prefix).not.toContain("\u001b[");

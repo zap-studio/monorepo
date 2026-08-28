@@ -10,7 +10,7 @@ interface NavigatorWithUserAgentData extends Navigator {
 const subscribe = () => () => {};
 
 const detectEngine = (): BrowserEngine => {
-  // SAFETY: userAgentData (User-Agent Client Hints) isn't declared on Navigator. Its mere presence, not its contents, is what identifies Blink here.
+  // SAFETY: userAgentData (User-Agent Client Hints) is not declared on Navigator. Only its presence identifies Blink here, not what is inside it.
   if ((navigator as NavigatorWithUserAgentData).userAgentData) {
     return "blink";
   }

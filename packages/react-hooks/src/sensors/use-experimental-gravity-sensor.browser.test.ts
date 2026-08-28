@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { useExperimentalGravitySensor } from "./use-experimental-gravity-sensor.ts";
 
 const createSensorMock = (reading: { x: number; y: number; z: number }) => {
-  // SAFETY: the assignments right below set every field of the intersection type (activated, onerror, onreading, start, stop, x, y, z), so this EventTarget really does satisfy the GravitySensor-shaped mock by the time any test reads from it.
+  // SAFETY: the lines right below set every field of the intersection type (activated, onerror, onreading, start, stop, x, y, z), so this EventTarget really is a full GravitySensor-shaped mock before any test reads it.
   const sensor = new EventTarget() as EventTarget & {
     activated: boolean;
     onerror: ((event: Event & { error: DOMException }) => void) | null;

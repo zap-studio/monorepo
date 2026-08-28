@@ -4,9 +4,8 @@ import { describe, expect, it } from "vitest";
 
 import { useUnstableFiber, type UseUnstableFiberResult } from "./use-unstable-fiber.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 /**
@@ -68,7 +67,7 @@ describe("useUnstableFiber", () => {
   });
 
   it("fails closed to null when reading the internal shape throws", () => {
-    // SAFETY: readHostFiber's first move is Object.keys(node), which invokes this Proxy's ownKeys trap and throws before any other Element member is ever touched, so the Proxy never needs to behave like a real HTMLDivElement — useUnstableFiber's try/catch swallows the throw and returns fiber: null, which is exactly what this test asserts.
+    // SAFETY: readHostFiber calls Object.keys(node) first. That runs this Proxy's ownKeys trap and throws before any other Element member is touched, so the Proxy never needs to act like a real HTMLDivElement. useUnstableFiber's try/catch catches the error and returns fiber: null, which is what this test checks.
     const throwing = asTestDouble<HTMLDivElement>(
       new Proxy(
         {},
@@ -96,12 +95,12 @@ describe("useUnstableFiber", () => {
       return: null,
       type: "div",
     };
-    // SAFETY: this is a real DOM div from document.createElement; casting to Record<string, unknown> only lifts TypeScript's restriction on assigning an arbitrary string key (`__reactFiber$fake`), mirroring how React actually attaches its private Fiber pointer, which getReactFiberKey in _fiber.ts looks for via Object.keys.
+    // SAFETY: this is a real DOM div from document.createElement. Casting to Record<string, unknown> only lets us assign any string key (`__reactFiber$fake`), the same way React attaches its private Fiber pointer, which getReactFiberKey in _fiber.ts looks for with Object.keys.
     const element = asTestDouble<Record<string, unknown>>(document.createElement("div"));
     element["__reactFiber$fake"] = fakeFiber;
 
     const { rerender, result } = renderHook(() => useUnstableFiber<HTMLDivElement>());
-    // SAFETY: `element` is the same document.createElement("div") result from above (now carrying `__reactFiber$fake`), so it already is an HTMLDivElement — this cast just restores that type after the Record<string, unknown> widening two lines up.
+    // SAFETY: `element` is the same document.createElement("div") result from above, now carrying `__reactFiber$fake`. It already is an HTMLDivElement, so this cast just restores that type after the Record<string, unknown> widening two lines up.
     result.current.ref.current = asTestDouble<HTMLDivElement>(element);
     rerender();
 

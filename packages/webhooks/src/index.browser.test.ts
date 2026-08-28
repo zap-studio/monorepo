@@ -247,9 +247,8 @@ describe("Schema validation with Zod", () => {
     );
 
     expect(response.status).toBe(400);
-    // SAFETY: the schema above requires `amount` and the route handler responds with the
-    // router's standard { error, issues } validation-failure JSON body on rejection, matching
-    // this shape.
+    // SAFETY: the schema above requires `amount`, so this payload fails validation. The router
+    // then returns its standard { error, issues } JSON body, which matches this shape.
     const body = (await response.json()) as {
       error: string;
       issues: { message: string; path?: string[] }[];
@@ -273,8 +272,8 @@ describe("Schema validation with Zod", () => {
     const response = await router.handle(createRequest(PAYMENT_WEBHOOK_PATH, { amount: 10 }));
 
     expect(response.status).toBe(400);
-    // SAFETY: the schema above rejects a payload missing `currency`, so the router responds
-    // with its standard { error, issues } validation-failure JSON body, which includes `error`.
+    // SAFETY: the schema above rejects a payload with no `currency`, so the router returns its
+    // standard { error, issues } JSON body. That body always has `error`.
     const body = (await response.json()) as { error: string };
     expect(body.error).toBe("validation failed");
   });
@@ -421,8 +420,8 @@ describe("Custom schema validator", () => {
     );
 
     expect(response.status).toBe(400);
-    // SAFETY: the custom schema above always fails with an `issues` array containing a "nested"
-    // path entry, so the router's standard validation-failure JSON body has this shape.
+    // SAFETY: the custom schema above always fails and gives an `issues` array with a "nested"
+    // path entry. So the router's standard error JSON body has this shape.
     const body = (await response.json()) as {
       issues: { message: string; path?: string[] }[];
     };
@@ -463,7 +462,7 @@ describe("Request verification", () => {
           order.push("validate");
           // SAFETY: this test always calls the router with { id: "1" } (see
           // router.handle(createRequest("/webhooks/ordered", { id: "1" })) below), so `value`
-          // is always an object matching { id: string } here.
+          // is always an object like { id: string } here.
           return { value: value as { id: string } };
         },
         vendor: "test",
@@ -1044,7 +1043,7 @@ describe("Complete hook execution order", () => {
           order.push("validate");
           // SAFETY: this test always calls the router with { id: "1" } (see
           // router.handle(createRequest("/webhooks/full", { id: "1" })) below), so `value`
-          // is always an object matching { id: string } here.
+          // is always an object like { id: string } here.
           return { value: value as { id: string } };
         },
         vendor: "test",
@@ -1311,9 +1310,9 @@ describe("Path normalization", () => {
   it("should normalize registered paths missing a leading slash or with a trailing slash", async () => {
     const router = createWebhookRouter();
 
-    // SAFETY: this test deliberately passes a malformed route key ("stripe/", missing the
-    // leading slash and with a trailing slash) to exercise the router's path-normalization
-    // behavior; the cast only satisfies the route-key type since real callers pass "/stripe".
+    // SAFETY: this test passes a bad route key on purpose ("stripe/", with no leading slash and
+    // a trailing slash) to test how the router normalizes paths. The cast only satisfies the
+    // route-key type, because real callers pass "/stripe".
     router.register("stripe/" as "/stripe", () => Response.json("ok"));
 
     const response = await router.handle(createRequest(STRIPE_WEBHOOK_PATH));
@@ -1334,9 +1333,9 @@ describe("Path normalization", () => {
   it("should collapse duplicate slashes in routes and request paths", async () => {
     const router = createWebhookRouter();
 
-    // SAFETY: this test deliberately passes a malformed route key ("//stripe//events", with
-    // duplicate slashes) to exercise the router's slash-collapsing normalization behavior; the
-    // cast only satisfies the route-key type since real callers pass "/stripe/events".
+    // SAFETY: this test passes a bad route key on purpose ("//stripe//events", with double
+    // slashes) to test how the router collapses them. The cast only satisfies the route-key
+    // type, because real callers pass "/stripe/events".
     router.register("//stripe//events" as "/stripe/events", () => Response.json("ok"));
 
     const response = await router.handle(createRequest("/webhooks//stripe/events"));

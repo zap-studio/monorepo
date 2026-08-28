@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { useGamepad } from "./use-gamepad.ts";
 
 const makeGamepad = (overrides: Partial<Gamepad> = {}): Gamepad => {
-  // SAFETY: this literal sets every field useGamepad actually compares (id, index, mapping, connected, timestamp, per COMPARED_FIELDS in use-gamepad.ts) plus the rest of the Gamepad interface's own members, so it's a complete Gamepad for what this hook and these tests exercise.
+  // SAFETY: this literal sets every field useGamepad compares (id, index, mapping, connected, timestamp, see COMPARED_FIELDS in use-gamepad.ts), plus the other members of the Gamepad interface, so it is a complete Gamepad for this hook and these tests.
   return {
     axes: [],
     buttons: [],

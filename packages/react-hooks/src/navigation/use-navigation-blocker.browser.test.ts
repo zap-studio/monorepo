@@ -3,9 +3,8 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useNavigationBlocker } from "./use-navigation-blocker.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 const createNavigationMock = () => {
@@ -20,8 +19,8 @@ const createNavigationMock = () => {
     listeners.delete(type);
   });
 
-  // SAFETY: this fake implements only addEventListener/removeEventListener, the two
-  // members the hook actually reads from `nav` (see use-navigation-blocker.ts).
+  // SAFETY: this fake has only addEventListener and removeEventListener. They are the
+  // only members the hook reads from `nav` (see use-navigation-blocker.ts).
   const nav = asTestDouble<Navigation>({
     addEventListener,
     removeEventListener,
@@ -38,9 +37,9 @@ const createNavigationMock = () => {
 const fakeNavigateEvent = (overrides: Partial<NavigateEvent> = {}) => {
   const intercept = vi.fn<(options: { handler: () => Promise<void> }) => void>();
 
-  // SAFETY: this fake exposes exactly the members handleNavigate reads
-  // (canIntercept, hashChange, downloadRequest, destination.url, intercept) —
-  // see use-navigation-blocker.ts.
+  // SAFETY: this fake has exactly the members handleNavigate reads: canIntercept,
+  // hashChange, downloadRequest, destination.url and intercept. See
+  // use-navigation-blocker.ts.
   const event = asTestDouble<NavigateEvent>({
     canIntercept: true,
     destination: { url: "/next" },
@@ -141,8 +140,8 @@ describe("useNavigationBlocker", () => {
     setWindowNavigation(nav);
     const shouldBlock = vi.fn<() => boolean>(() => false);
     // SAFETY: handleNavigate only reads destination.url (see use-navigation-blocker.ts),
-    // so a partial override with just `url` is sufficient even though it doesn't satisfy
-    // the full NavigateDestination shape.
+    // so an override with just `url` is enough. It does not match the full
+    // NavigateDestination shape.
     const { event } = fakeNavigateEvent({ destination: { url: "/somewhere" } as never });
 
     renderHook(() => useNavigationBlocker(shouldBlock));
@@ -165,9 +164,9 @@ describe("useNavigationBlocker", () => {
       fireNavigate(event);
     });
 
-    // SAFETY: the act() block above triggered handleNavigate, which calls
-    // `navigateEvent.intercept({ handler: waitForProceed })` exactly once, so
-    // mock.calls[0][0] is that { handler } object passed by the hook.
+    // SAFETY: the act() block above ran handleNavigate, which calls
+    // `navigateEvent.intercept({ handler: waitForProceed })` exactly once. So
+    // mock.calls[0][0] is that { handler } object from the hook.
     const options = intercept.mock.calls[0]?.[0] as { handler: () => Promise<void> };
     let settled = false;
     const pending = (async () => {
@@ -197,9 +196,9 @@ describe("useNavigationBlocker", () => {
       fireNavigate(event);
     });
 
-    // SAFETY: the act() block above triggered handleNavigate, which calls
-    // `navigateEvent.intercept({ handler: waitForProceed })` exactly once, so
-    // mock.calls[0][0] is that { handler } object passed by the hook.
+    // SAFETY: the act() block above ran handleNavigate, which calls
+    // `navigateEvent.intercept({ handler: waitForProceed })` exactly once. So
+    // mock.calls[0][0] is that { handler } object from the hook.
     const options = intercept.mock.calls[0]?.[0] as { handler: () => Promise<void> };
     let settled = false;
     void (async () => {

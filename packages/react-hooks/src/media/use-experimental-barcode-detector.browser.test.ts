@@ -46,7 +46,7 @@ describe("useExperimentalBarcodeDetector", () => {
     vi.stubGlobal("BarcodeDetector", BarcodeDetectorCtor);
 
     const { result } = renderHook(() => useExperimentalBarcodeDetector(["qr_code"]));
-    // SAFETY: detect() just forwards this reference to the mocked `detect` above, which ignores its argument (mockResolvedValue) and never reads any HTMLImageElement member, so an empty object stands in for the image.
+    // SAFETY: detect() only passes this reference to the mocked `detect` above. That mock ignores its argument (mockResolvedValue) and never reads any HTMLImageElement member, so an empty object works as the image.
     const image = {} as HTMLImageElement;
 
     await expect(result.current.detect(image)).resolves.toEqual([
@@ -66,7 +66,7 @@ describe("useExperimentalBarcodeDetector", () => {
     vi.stubGlobal("BarcodeDetector", BarcodeDetectorCtor);
 
     const { result } = renderHook(() => useExperimentalBarcodeDetector());
-    // SAFETY: detect() just forwards this reference to the mocked `detect` above, which ignores its argument (mockResolvedValue) and never reads any HTMLImageElement member, so an empty object stands in for the image.
+    // SAFETY: detect() only passes this reference to the mocked `detect` above. That mock ignores its argument (mockResolvedValue) and never reads any HTMLImageElement member, so an empty object works as the image.
     const image = {} as HTMLImageElement;
 
     await result.current.detect(image);
@@ -79,7 +79,7 @@ describe("useExperimentalBarcodeDetector", () => {
 
     const { result } = renderHook(() => useExperimentalBarcodeDetector());
 
-    // SAFETY: BarcodeDetector is stubbed undefined, so detect() returns undefined via the `!BarcodeDetectorCtor` early return before it ever touches the image argument.
+    // SAFETY: BarcodeDetector is stubbed as undefined, so detect() returns undefined at the `!BarcodeDetectorCtor` early return, before it touches the image argument.
     await expect(result.current.detect({} as HTMLImageElement)).resolves.toBeUndefined();
   });
 

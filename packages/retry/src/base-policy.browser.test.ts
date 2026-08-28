@@ -12,9 +12,8 @@ import {
 import { defaultSleep, runRetryPolicy } from "./base-policy.ts";
 import { AbortError, RetryError } from "./errors.ts";
 
-// SAFETY: single explicit escape hatch for casting test doubles / deliberately
-// non-conforming fixtures to a type they don't structurally satisfy, instead of
-// scattering `as unknown as X` chains through the test body.
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
 const asTestDouble = <T>(value: unknown): T => value as T;
 
 const MAX_ATTEMPTS_REASON = "max-attempts-reached";
@@ -180,9 +179,9 @@ describe("throw mode (runRetryPolicy default)", () => {
 
     let readCount = 0;
     // SAFETY: runRetryPolicy's abort handling only reads `signal.aborted`/`signal.reason` and calls
-    // `signal.addEventListener`/`removeEventListener`; this stub implements exactly those members
-    // (the no-op listener mocks are never invoked because `aborted` flips true on the 3rd read,
-    // tripping the synchronous check inside sleepWithAbortSignal before a listener is registered).
+    // `signal.addEventListener`/`removeEventListener`. This stub has exactly those members. The
+    // no-op listener mocks never run, because `aborted` turns true on the 3rd read. That trips the
+    // sync check inside sleepWithAbortSignal before any listener is added.
     const fakeSignal = asTestDouble<AbortSignal>({
       get aborted() {
         readCount += 1;
@@ -335,9 +334,9 @@ describe("result mode (throwOnExhausted: false): abort before and during executi
     const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
     const abortError = new AbortError("already-aborted");
 
-    // SAFETY: `aborted` is already true, so buildAbortResult short-circuits on the `signal.aborted`/
-    // `signal.reason` reads before any wait is scheduled; addEventListener/removeEventListener are
-    // never called, so this stub only needs to satisfy the members runRetryPolicy actually reads here.
+    // SAFETY: `aborted` is already true, so buildAbortResult stops after the `signal.aborted` and
+    // `signal.reason` reads, before any wait starts. addEventListener/removeEventListener are never
+    // called, so this stub only needs the members runRetryPolicy really reads here.
     const fakeSignal = asTestDouble<AbortSignal>({
       aborted: true,
       addEventListener:
@@ -399,10 +398,10 @@ describe("result mode (throwOnExhausted: false): abort before and during executi
     const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
     const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
 
-    // SAFETY: `aborted` is already true and `reason` is omitted, so reading it yields
-    // `undefined` — exactly what buildAbortResult/toAbortError read to exercise the
-    // "undefined reason" fallback branch; addEventListener/removeEventListener are unused
-    // here since no wait is ever scheduled.
+    // SAFETY: `aborted` is already true and `reason` is left out, so reading it gives
+    // `undefined`. That is what buildAbortResult and toAbortError need to reach the
+    // "undefined reason" fallback branch. addEventListener/removeEventListener are unused
+    // here, because no wait ever starts.
     const fakeSignal = asTestDouble<AbortSignal>({
       aborted: true,
       addEventListener:
@@ -473,10 +472,10 @@ describe("result mode (throwOnExhausted: false): backoff aborts, sleep errors, a
     const sleep = vi.fn<(delayMs: number) => Promise<void>>().mockResolvedValue();
 
     let readCount = 0;
-    // SAFETY: only `aborted` (a read-count-gated getter that flips true on the 3rd read, so the
-    // earlier `signal.aborted` checks in the result-mode loop pass through) and `reason` are read
-    // by runRetryPolicy's abort handling here; addEventListener/removeEventListener are unused
-    // no-op stubs since the abort is observed via a synchronous `aborted` read, not a fired event.
+    // SAFETY: runRetryPolicy's abort handling only reads `aborted` and `reason` here. `aborted` is
+    // a getter that counts reads and turns true on the 3rd one, so the earlier `signal.aborted`
+    // checks in the result-mode loop still pass. addEventListener/removeEventListener stay unused
+    // no-op stubs, because the abort is seen by a sync `aborted` read, not by a fired event.
     const fakeSignal = asTestDouble<AbortSignal>({
       get aborted() {
         readCount += 1;
@@ -508,19 +507,19 @@ describe("result mode (throwOnExhausted: false): backoff aborts, sleep errors, a
       .mockRejectedValue(new Error("fail"));
     const sleep = vi.fn<() => Promise<void>>(() => new Promise<void>(() => {}));
 
-    // SAFETY: `sleep` never resolves, so the only way this race settles is through the abort path;
-    // this stub's addEventListener actually fires the registered listener (flipping `aborted` first),
-    // exercising the real `signal.addEventListener`/`aborted`/`reason` surface sleepWithAbortSignal
-    // uses, so the cast to `AbortSignal & { aborted: boolean }` covers everything read here.
+    // SAFETY: `sleep` never resolves, so this race can only end through the abort path. This stub's
+    // addEventListener calls the listener it was given, after setting `aborted` to true. That uses
+    // the real `signal.addEventListener`/`aborted`/`reason` members sleepWithAbortSignal needs, so
+    // the cast to `AbortSignal & { aborted: boolean }` covers everything read here.
     const fakeSignal = asTestDouble<AbortSignal & { aborted: boolean }>({
       aborted: false,
       addEventListener: vi.fn<
         (_type: string, listener: EventListenerOrEventListenerObject) => void
       >((_type: string, listener: EventListenerOrEventListenerObject) => {
         fakeSignal.aborted = true;
-        // SAFETY: sleepWithAbortSignal always registers `onAbort`, a plain zero-arg callback
-        // (`() => { reject(...) }`), never an EventListenerObject with a `handleEvent` method,
-        // so `listener` here is always callable as `() => void`.
+        // SAFETY: sleepWithAbortSignal always adds `onAbort`, a plain callback with no arguments
+        // (`() => { reject(...) }`). It is never an EventListenerObject with a `handleEvent` method,
+        // so `listener` here can always be called as `() => void`.
         (listener as () => void)();
       }),
       reason: "aborted-during-wait-race",
@@ -552,7 +551,7 @@ describe("result mode (throwOnExhausted: false): backoff aborts, sleep errors, a
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(1);
     expect(failure.error).toBeInstanceOf(RetryError);
-    // SAFETY: the toBeInstanceOf assertion above guarantees failure.error is a RetryError.
+    // SAFETY: the toBeInstanceOf check above guarantees failure.error is a RetryError.
     expect((failure.error as RetryError).lastError).toBe(notAnError);
     expect(execute).toHaveBeenCalledTimes(1);
     expect(policy.seen).toStrictEqual([]);
