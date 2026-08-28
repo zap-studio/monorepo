@@ -956,6 +956,31 @@ describe("createPolicy - invalid and unknown permission handling", () => {
 
     await expect(policy.can(ctx, COMMENT_READ_ACTION, comment)).resolves.toBeFalsy();
   });
+  it("should deny when a resource key's action list is undefined at runtime", async () => {
+    await Promise.resolve();
+    // SAFETY: "comment" is present as a key (so it passes the actions-map membership check) but its value is undefined, simulating a runtime actions map where a resource key's action list itself is missing.
+    const undefinedActionListActions = asTestDouble<typeof actions>({
+      ...actions,
+      comment: void 0,
+    });
+    const policy = createPolicy<TestContext, typeof resources, typeof undefinedActionListActions>({
+      actions: undefinedActionListActions,
+      resources,
+      rules: {
+        comment: {
+          read: allow(),
+        },
+        post: {
+          read: allow(),
+        },
+      },
+    });
+
+    const ctx: TestContext = { user: { id: "user-1", role: "guest" } };
+    const comment: Comment = { authorId: "user-1", id: "1", postId: "1" };
+
+    await expect(policy.can(ctx, COMMENT_READ_ACTION, comment)).resolves.toBeFalsy();
+  });
   it("should deny when an allowed action has no validator entry at runtime", async () => {
     // SAFETY: this object omits the "comment" entry that `typeof resources` requires, simulating a resources map missing an entry at runtime.
     const runtimeResources = asTestDouble<typeof resources>({

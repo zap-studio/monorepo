@@ -17,8 +17,10 @@ describe("useFontsReady", () => {
   });
 
   it("resolves immediately when the CSS Font Loading API is unsupported", async () => {
+    // `document.fonts` is an inherited Document.prototype getter in a real browser, so
+    // Reflect.deleteProperty on the instance is a no-op; shadow it with an own property instead.
     const originalFonts = document.fonts;
-    Reflect.deleteProperty(document, "fonts");
+    Object.defineProperty(document, "fonts", { configurable: true, value: void 0 });
 
     const { result } = renderHook(() => useFontsReady());
 

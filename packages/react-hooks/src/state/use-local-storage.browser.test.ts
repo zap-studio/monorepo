@@ -105,6 +105,22 @@ describe("useLocalStorage", () => {
     expect(result.current[0]).toBe(0);
   });
 
+  it("sets an error when a storage event's newValue fails to parse", async () => {
+    const { result } = renderHook(() => useLocalStorage("count", 0));
+
+    await act(async () => {
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key: "count",
+          newValue: "not json",
+          storageArea: window.localStorage,
+        }),
+      );
+    });
+
+    expect(result.current[3]).toBeInstanceOf(SyntaxError);
+  });
+
   it("ignores storage events for a different key or storage area", async () => {
     const { result } = renderHook(() => useLocalStorage("count", 0));
 
