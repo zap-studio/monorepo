@@ -1,6 +1,6 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
-import { getNavigation, type NavigationHistoryEntry } from "./_navigation-api.ts";
+import { getNavigation } from "./_navigation-api.ts";
 
 /** The shape returned by `useNavigation`. */
 export interface NavigationSnapshot {

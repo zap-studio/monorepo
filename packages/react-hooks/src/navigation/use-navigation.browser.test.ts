@@ -1,8 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import type { Navigation, NavigationHistoryEntry } from "./_navigation-api.ts";
-
 import { useNavigation } from "./use-navigation.ts";
 
 // SAFETY: single explicit escape hatch for casting test doubles / deliberately
