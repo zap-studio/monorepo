@@ -73,10 +73,7 @@ describe("createHmacVerifier", () => {
     );
 
     const data = typeof body === "string" ? encoder.encode(body) : body;
-    // SAFETY: `data` is a plain, non-shared Uint8Array. It comes from encoder.encode()
-    // or from the caller's own Uint8Array. It works as a BufferSource at runtime, even
-    // though its ArrayBufferLike buffer type does not match here.
-    const signature = await crypto.subtle.sign("HMAC", key, data as BufferSource);
+    const signature = await crypto.subtle.sign("HMAC", key, new Uint8Array(data));
 
     return toHex(new Uint8Array(signature));
   };
@@ -268,10 +265,7 @@ describe("@zap-studio/webhooks browser runtime", () => {
       false,
       ["sign"],
     );
-    // SAFETY: `body` is the caller's plain, non-shared Uint8Array parameter. It works
-    // as a BufferSource at runtime, even though its ArrayBufferLike buffer type does
-    // not match here.
-    const signature = await crypto.subtle.sign("HMAC", key, body as BufferSource);
+    const signature = await crypto.subtle.sign("HMAC", key, new Uint8Array(body));
     return Array.from(new Uint8Array(signature), (byte) => byte.toString(16).padStart(2, "0")).join(
       "",
     );
