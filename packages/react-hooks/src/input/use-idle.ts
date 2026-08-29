@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
@@ -26,29 +26,30 @@ const ACTIVITY_EVENTS = [
  */
 export const useIdle = (timeoutMs: number = DEFAULT_TIMEOUT_MS): boolean => {
   const [idle, setIdle] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  // react-doctor-disable-next-line react-doctor/effect-needs-cleanup -- cleanup is returned below: clearTimeout(timer) plus removeEventListener for every ACTIVITY_EVENTS entry.
+  const resetTimer = useCallback(() => {
+    setIdle(false);
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(setIdle, timeoutMs, true);
+  }, [timeoutMs]);
+
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
+    resetTimer();
+    return () => clearTimeout(timerRef.current);
+  }, [resetTimer]);
 
-    const resetTimer = () => {
-      setIdle(false);
-      clearTimeout(timer);
-      timer = setTimeout(setIdle, timeoutMs, true);
-    };
-
+  useEffect(() => {
     for (const type of ACTIVITY_EVENTS) {
       window.addEventListener(type, resetTimer);
     }
-    timer = setTimeout(setIdle, timeoutMs, true);
 
     return () => {
-      clearTimeout(timer);
       for (const type of ACTIVITY_EVENTS) {
         window.removeEventListener(type, resetTimer);
       }
     };
-  }, [timeoutMs]);
+  }, [resetTimer]);
 
   return idle;
 };
