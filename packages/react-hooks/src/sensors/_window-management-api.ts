@@ -28,14 +28,8 @@ interface ScreenWithIsExtended {
   isExtended?: boolean;
 }
 
-/** `window.screen` with its `EventTarget` methods marked optional. This is a helper shape used for the cast below, since `Screen` and `EventTarget` don't otherwise overlap. */
-interface ScreenWithOptionalEventTarget {
-  addEventListener?: (type: "change", listener: () => void) => void;
-  removeEventListener?: (type: "change", listener: () => void) => void;
-}
-
-/** The `EventTarget` methods of `window.screen`, used for its `change` event. Not declared on `Screen`, but every browser's `screen` object supports them, so they're always available. */
-export interface ScreenChangeEventTarget {
+/** The `EventTarget` methods of `window.screen`, used for its `change` event. Not declared on `Screen`, but every browser's `screen` object supports them, so they're always available. Extending `Screen` keeps this a plain narrowing of `window.screen`. */
+export interface ScreenChangeEventTarget extends Screen {
   addEventListener: (type: "change", listener: () => void) => void;
   removeEventListener: (type: "change", listener: () => void) => void;
 }
@@ -72,9 +66,6 @@ export const getIsExtended = (): boolean =>
  * server guard — the same as `subscribe` in `use-window-size.ts`, which
  * calls `window.addEventListener` directly.
  */
-export const getScreenEventTarget = (): ScreenChangeEventTarget => {
-  // SAFETY: Screen does not declare addEventListener/removeEventListener, so we cast it through a shape where they are optional first.
-  const withOptionalEventTarget = window.screen as ScreenWithOptionalEventTarget;
-  // SAFETY: `screen` is an EventTarget in every browser, so these two methods are always there.
-  return withOptionalEventTarget as ScreenChangeEventTarget;
-};
+export const getScreenEventTarget = (): ScreenChangeEventTarget =>
+  // SAFETY: Screen does not declare addEventListener/removeEventListener, but `screen` is an EventTarget in every browser, so these two methods are always there.
+  window.screen as ScreenChangeEventTarget;

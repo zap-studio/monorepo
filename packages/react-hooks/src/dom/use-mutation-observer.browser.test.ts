@@ -4,6 +4,11 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useMutationObserver } from "./use-mutation-observer.ts";
 
+/** Holds the ref'd element so reading it later is not narrowed away by control-flow analysis. */
+interface CapturedElement {
+  element: HTMLDivElement | null;
+}
+
 interface MutableBox {
   current: HTMLDivElement | null;
 }
@@ -94,13 +99,13 @@ describe("useMutationObserver", () => {
 describe("useMutationObserver ref and option tracking", () => {
   it("observes a subtree that only attaches after the first render", async () => {
     const callback = vi.fn<(mutations: MutationRecord[]) => void>();
-    let element: HTMLDivElement | null = null;
+    const captured: CapturedElement = { element: null };
     const TestComponent = ({ show }: { show: boolean }) => {
       const ref = useMutationObserver<HTMLDivElement>(callback);
       return show
         ? createElement("div", {
             ref: (node: HTMLDivElement | null) => {
-              element = node;
+              captured.element = node;
               ref.current = node;
             },
           })
@@ -109,9 +114,7 @@ describe("useMutationObserver ref and option tracking", () => {
     const { rerender } = render(createElement(TestComponent, { show: false }));
 
     rerender(createElement(TestComponent, { show: true }));
-    // SAFETY: `element` is only set inside the div's ref callback above. That callback
-    // always gets an HTMLDivElement | null, which matches its declared type exactly.
-    (element as HTMLDivElement | null)?.setAttribute("data-late", "1");
+    captured.element?.setAttribute("data-late", "1");
 
     await waitFor(() => expect(callback).toHaveBeenCalled());
   });

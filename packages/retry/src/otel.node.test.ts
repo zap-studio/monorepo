@@ -121,8 +121,9 @@ describe("retry OpenTelemetry", () => {
     const counts: Record<string, number> = {};
     for (const point of metric?.dataPoints ?? []) {
       const decision = String(point.attributes["retry.decision"]);
-      // SAFETY: these dataPoints come from the "retry.attempts" Counter metric. Its Sum aggregation always reports a number for `value`. The SDK's DataPoint type is just wider than that.
-      counts[decision] = point.value as number;
+      if (typeof point.value === "number") {
+        counts[decision] = point.value;
+      }
     }
     return counts;
   };

@@ -513,15 +513,12 @@ describe("result mode (throwOnExhausted: false): backoff aborts, sleep errors, a
     // the cast to `AbortSignal & { aborted: boolean }` covers everything read here.
     const fakeSignal = asTestDouble<AbortSignal & { aborted: boolean }>({
       aborted: false,
-      addEventListener: vi.fn<
-        (_type: string, listener: EventListenerOrEventListenerObject) => void
-      >((_type: string, listener: EventListenerOrEventListenerObject) => {
-        fakeSignal.aborted = true;
-        // SAFETY: sleepWithAbortSignal always adds `onAbort`, a plain callback with no arguments
-        // (`() => { reject(...) }`). It is never an EventListenerObject with a `handleEvent` method,
-        // so `listener` here can always be called as `() => void`.
-        (listener as () => void)();
-      }),
+      addEventListener: vi.fn<(_type: string, listener: () => void) => void>(
+        (_type: string, listener: () => void) => {
+          fakeSignal.aborted = true;
+          listener();
+        },
+      ),
       reason: "aborted-during-wait-race",
       removeEventListener:
         vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),

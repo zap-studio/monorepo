@@ -4,6 +4,11 @@ import { describe, expect, it, vi } from "vitest";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { usePermission } from "./use-permission.ts";
 
+/** `renderHook` props for the re-query test, typed so a later `rerender` can pass another name. */
+interface PermissionNameProps {
+  name: PermissionName;
+}
+
 const createPermissionStatusMock = (initialState: PermissionState) => {
   // SAFETY: usePermission only calls status.addEventListener/removeEventListener, which are native EventTarget methods, and reads status.state, defined just below with Object.defineProperty. So this EventTarget has every member the hook uses on a PermissionStatus.
   const status = asTestDouble<PermissionStatus>(new EventTarget());
@@ -62,25 +67,18 @@ describe("usePermission", () => {
   });
 
   it("queries again when the permission name changes", async () => {
-    const query = vi.fn<
-      (_descriptor: PermissionDescriptor) => Promise<PermissionStatus & { name: string }>
-    >((_descriptor: PermissionDescriptor) =>
-      Promise.resolve(
-        // SAFETY: the `& { name: string }` part only matches the return type this query mock declares. usePermission never reads `.name` on the resolved status. It only reads `.state` and calls add/removeEventListener, which createPermissionStatusMock's status already has.
-        createPermissionStatusMock("granted").status as PermissionStatus & { name: string },
-      ),
+    const query = vi.fn<(_descriptor: PermissionDescriptor) => Promise<PermissionStatus>>(
+      (_descriptor: PermissionDescriptor) =>
+        Promise.resolve(createPermissionStatusMock("granted").status),
     );
     setNavigatorPermissions(query);
 
-    // SAFETY: "geolocation" is one of the PermissionName values from the DOM lib. usePermission passes `name` straight into permissions.query({ name }). Widening the literal to a union it is already part of changes nothing at runtime.
-    const { rerender } = renderHook(({ name }) => usePermission(name), {
-      initialProps: { name: "geolocation" as PermissionName },
-    });
+    const initialProps: PermissionNameProps = { name: "geolocation" };
+    const { rerender } = renderHook(({ name }) => usePermission(name), { initialProps });
 
     await waitFor(() => expect(query).toHaveBeenCalledTimes(1));
 
-    // SAFETY: "camera" is also a real PermissionName value. usePermission only queries again with it as a plain string, so the cast hides no wrong runtime shape.
-    rerender({ name: "camera" as PermissionName });
+    rerender({ name: "camera" });
 
     await waitFor(() => expect(query).toHaveBeenCalledTimes(2));
     expect(query.mock.calls[1]?.[0]).toEqual({ name: "camera" });
