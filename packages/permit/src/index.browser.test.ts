@@ -62,8 +62,7 @@ const createRecordingLogger = (): Logger & {
 const createSchema = <T>(): StandardSchemaV1<T, T> => {
   return {
     "~standard": {
-      // SAFETY: `T` is the type the caller gave to createSchema<T>(). This validate function only runs through that generic helper.
-      validate: (value: unknown) => ({ value: value as T }),
+      validate: (value: unknown) => ({ value: asTestDouble<T>(value) }),
       vendor: "test",
       version: 1,
     },
@@ -845,11 +844,9 @@ describe("createPolicy - basic rule evaluation", () => {
   });
   it("skips inherited (non-own) enumerable properties when building validators", async () => {
     await Promise.resolve();
-    // SAFETY: `resourcesWithInherited` has the same own properties as `resources` (comment, post), plus an inherited "inherited" property that only exists to test the `for...in` loop skips non-own keys.
-    const resourcesWithInherited = Object.assign(
-      Object.create({ inherited: createSchema<Post>() }),
-      resources,
-    ) as typeof resources;
+    const resourcesWithInherited = asTestDouble<typeof resources>(
+      Object.assign(Object.create({ inherited: createSchema<Post>() }), resources),
+    );
 
     const policy = createPolicy<TestContext, typeof resources, typeof actions>({
       actions,
@@ -1203,7 +1200,7 @@ describe("createPolicy - resource schema validation", () => {
           vendor: "test",
           version: 1,
         },
-      } as StandardSchemaV1,
+      },
     } satisfies Resources<"post">;
 
     const failingActions = {
@@ -1243,7 +1240,7 @@ describe("createPolicy - resource schema validation", () => {
           vendor: "test",
           version: 1,
         },
-      } as StandardSchemaV1,
+      },
     } satisfies Resources<"post">;
 
     const throwingActions = {
@@ -1303,7 +1300,7 @@ describe("createPolicy - resource schema validation", () => {
           vendor: "test",
           version: 1,
         },
-      } as StandardSchemaV1,
+      },
     } satisfies Resources<"post">;
 
     const asyncActions = {
@@ -1955,7 +1952,7 @@ describe("logging", () => {
           vendor: "test",
           version: 1,
         },
-      } as StandardSchemaV1,
+      },
     } satisfies Resources<"post">;
     const throwingActions = {
       post: ["read"],

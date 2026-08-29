@@ -328,10 +328,7 @@ describe("standardValidate", () => {
     it("should await Promise-based validation", async () => {
       const schema = createMockSchema(async (input) => {
         await Promise.resolve();
-        // SAFETY: this test only calls the schema through `standardValidate(123, schema, ...)`
-        // below, so `input` is always the number 123 at runtime, even though the
-        // validate callback types its parameter as `unknown`.
-        return { value: input as number };
+        return { value: asTestDouble<number>(input) };
       });
 
       const result = await standardValidate(123, schema, {

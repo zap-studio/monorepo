@@ -8,6 +8,10 @@ import { VerificationError } from "./errors.ts";
 import { createWebhookRouter, WebhookRouter } from "./index.ts";
 import { createHmacVerifier } from "./verify.ts";
 
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
 const PAYMENT_WEBHOOK_PATH = "/webhooks/payment";
 const TEST_WEBHOOK_PATH = "/webhooks/test";
 const UNKNOWN_WEBHOOK_PATH = "/webhooks/unknown";
@@ -460,10 +464,7 @@ describe("Request verification", () => {
       "~standard": {
         validate: (value) => {
           order.push("validate");
-          // SAFETY: this test always calls the router with { id: "1" } (see
-          // router.handle(createRequest("/webhooks/ordered", { id: "1" })) below), so `value`
-          // is always an object like { id: string } here.
-          return { value: value as { id: string } };
+          return { value: asTestDouble<{ id: string }>(value) };
         },
         vendor: "test",
         version: 1,
@@ -1041,10 +1042,7 @@ describe("Complete hook execution order", () => {
       "~standard": {
         validate: (value) => {
           order.push("validate");
-          // SAFETY: this test always calls the router with { id: "1" } (see
-          // router.handle(createRequest("/webhooks/full", { id: "1" })) below), so `value`
-          // is always an object like { id: string } here.
-          return { value: value as { id: string } };
+          return { value: asTestDouble<{ id: string }>(value) };
         },
         vendor: "test",
         version: 1,
