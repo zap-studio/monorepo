@@ -34,19 +34,14 @@ const createMockSchema = <T>(
 
 const createMockSchemaFunction = <T>(
   validateFn: (input: unknown) => StandardSchemaV1.Result<T> | Promise<StandardSchemaV1.Result<T>>,
-): StandardSchemaV1<unknown, T> => {
-  const fn = (): void => undefined;
-
-  Object.assign(fn, {
+): StandardSchemaV1<unknown, T> =>
+  Object.assign((): void => undefined, {
     "~standard": {
       validate: validateFn,
       vendor: "test",
-      version: 1,
+      version: 1 as const,
     },
   });
-
-  return asTestDouble<StandardSchemaV1<unknown, T>>(fn);
-};
 
 const captureRejectedError = async (run: () => Promise<unknown>): Promise<unknown> => {
   try {

@@ -3,20 +3,26 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { useGamepad } from "./use-gamepad.ts";
 
+// `useGamepad` never reads `vibrationActuator` (see COMPARED_FIELDS in use-gamepad.ts), so this
+// stub only needs to satisfy `GamepadHapticActuator`'s two methods, never actually call them.
+const noopVibrationActuator: GamepadHapticActuator = {
+  playEffect: () => Promise.resolve("complete"),
+  reset: () => Promise.resolve("complete"),
+};
+
 const makeGamepad = (overrides: Partial<Gamepad> = {}): Gamepad => {
-  // SAFETY: this literal sets every field useGamepad compares (id, index, mapping, connected, timestamp, see COMPARED_FIELDS in use-gamepad.ts), plus the other members of the Gamepad interface, so it is a complete Gamepad for this hook and these tests.
-  return {
+  const gamepad: Gamepad = {
     axes: [],
     buttons: [],
     connected: true,
-    hapticActuators: [],
     id: "Test Gamepad",
     index: 0,
     mapping: "standard",
     timestamp: 0,
-    vibrationActuator: null,
+    vibrationActuator: noopVibrationActuator,
     ...overrides,
-  } as Gamepad;
+  };
+  return gamepad;
 };
 
 const setGamepads = (gamepads: Array<Gamepad | null> | undefined) => {
