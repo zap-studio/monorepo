@@ -1674,10 +1674,9 @@ describe("method helper", () => {
     const userData = { id: 1, name: "John" };
     fetchMock.mockResolvedValue(new Response(JSON.stringify(userData)));
 
-    // SAFETY: we skip api.patch's options type on purpose, because it does not expose method. This tests the runtime path where the helper's own PATCH method still wins.
     await api.patch(USER_1_URL, UserSchema, {
       method: "POST",
-    } as never);
+    });
 
     expect(fetchMock).toHaveBeenCalledWith(
       USER_1_URL,
