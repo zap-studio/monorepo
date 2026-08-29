@@ -10,8 +10,8 @@ import type { CallableLogLevel, LogRecord } from "./types.ts";
 
 /**
  * A formatter whose output is always one rendered line. Narrower than
- * {@link LogFormatter}, which any third-party formatter satisfies, so callers
- * of these built-ins do not have to narrow `unknown[]` themselves.
+ * `LogFormatter`, which any third-party formatter satisfies, so callers of
+ * these built-ins do not have to narrow `unknown[]` themselves.
  */
 type SingleLineFormatter = (record: LogRecord) => [line: string];
 

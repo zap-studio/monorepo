@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0]
+
+### Changed
+
+The four built-in formatters now declare the exact shape they return, instead of the wide `unknown[]` of the `LogFormatter` contract. `jsonFormat` and `compactFormat` return `[line: string]`; `classicFormat` and `prettyFormat` return `[line: string]` or `[line: string, context: Record<string, unknown>]`. Reading a formatter's output no longer needs a cast. `LogFormatter` itself is unchanged, so any formatter you write, and any code that stores these four as a `LogFormatter`, keeps working.
+
 ## [2.0.0]
 
 ### Added
