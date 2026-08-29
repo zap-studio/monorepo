@@ -843,6 +843,33 @@ describe("createPolicy - basic rule evaluation", () => {
 
     await expect(policy.can(ctx, POST_WRITE_ACTION, post)).resolves.toBeFalsy();
   });
+  it("skips inherited (non-own) enumerable properties when building validators", async () => {
+    await Promise.resolve();
+    // SAFETY: `resourcesWithInherited` has the same own properties as `resources` (comment, post), plus an inherited "inherited" property that only exists to test the `for...in` loop skips non-own keys.
+    const resourcesWithInherited = Object.assign(
+      Object.create({ inherited: createSchema<Post>() }),
+      resources,
+    ) as typeof resources;
+
+    const policy = createPolicy<TestContext, typeof resources, typeof actions>({
+      actions,
+      resources: resourcesWithInherited,
+      rules: {
+        comment: { read: allow() },
+        post: { read: allow() },
+      },
+    });
+
+    const ctx: TestContext = { user: { id: "user-1", role: "admin" } };
+    const post = {
+      authorId: "user-1",
+      id: "1",
+      status: "published" as const,
+      visibility: "public" as const,
+    };
+
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBeTruthy();
+  });
 });
 
 describe("createPolicy - invalid and unknown permission handling", () => {

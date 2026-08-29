@@ -8,12 +8,12 @@ import { useIndexedDB } from "./use-indexed-db.ts";
 // behavior, where `.error` is a DOMException (which does not extend Error), so
 // these tests also exercise the `caught instanceof Error` false branch downstream.
 interface FailingRequestFixture {
-  error: string;
+  error: string | undefined;
   onerror?: (() => void) | null;
   onsuccess?: (() => void) | null;
 }
 
-const makeFailingRequest = (errorMessage: string): IDBRequest => {
+const makeFailingRequest = (errorMessage: string | undefined): IDBRequest => {
   const fake: FailingRequestFixture = {
     error: errorMessage,
   };
@@ -260,6 +260,28 @@ describe("useIndexedDB", () => {
     expect(result.current.error?.message).toBe("read boom");
   });
 
+  it("falls back to a default message when opening fails without an `error`", async () => {
+    vi.spyOn(indexedDB, "open").mockImplementation(() =>
+      asTestDouble<IDBOpenDBRequest>(makeFailingRequest(undefined)),
+    );
+
+    const { result } = renderHook(() => useIndexedDB("count", 0));
+    await waitFor(() => expect(result.current.status).toBe("error"));
+
+    expect(result.current.error?.message).toBe("The IndexedDB request failed.");
+  });
+
+  it("falls back to a default message when the initial read fails without an `error`", async () => {
+    vi.spyOn(IDBObjectStore.prototype, "get").mockImplementation(() =>
+      makeFailingRequest(undefined),
+    );
+
+    const { result } = renderHook(() => useIndexedDB("count", 0));
+    await waitFor(() => expect(result.current.status).toBe("error"));
+
+    expect(result.current.error?.message).toBe("The IndexedDB request failed.");
+  });
+
   it("setValue() sets an error when the write transaction fails", async () => {
     const { result } = renderHook(() => useIndexedDB("count", 0));
     await waitFor(() => expect(result.current.status).toBe("ready"));
@@ -320,6 +342,21 @@ describe("useIndexedDB", () => {
 
     expect(result.current.error?.message).toBe("delete boom");
     expect(result.current.status).toBe("error");
+  });
+
+  it("falls back to a default message when the write transaction fails without an `error`", async () => {
+    const { result } = renderHook(() => useIndexedDB("count", 0));
+    await waitFor(() => expect(result.current.status).toBe("ready"));
+
+    vi.spyOn(IDBDatabase.prototype, "transaction").mockImplementation(() =>
+      makeFailingTransaction(undefined),
+    );
+
+    await act(async () => {
+      await result.current.setValue(5);
+    });
+
+    expect(result.current.error?.message).toBe("The IndexedDB transaction failed.");
   });
 
   it('reports supported: false-equivalent "error" status when IndexedDB is unavailable', async () => {
