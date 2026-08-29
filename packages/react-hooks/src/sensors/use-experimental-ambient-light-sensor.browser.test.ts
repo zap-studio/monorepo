@@ -1,18 +1,20 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalAmbientLightSensor } from "./use-experimental-ambient-light-sensor.ts";
 
 const createSensorMock = (reading: { illuminance: number }) => {
-  // SAFETY: the lines right below set every field of the intersection type (activated, illuminance, onerror, onreading, start, stop), so this EventTarget has the full AmbientLightSensor-shaped mock before any test reads it.
-  const sensor = new EventTarget() as EventTarget & {
-    activated: boolean;
-    illuminance: number;
-    onerror: ((event: Event & { error: DOMException }) => void) | null;
-    onreading: ((event: Event) => void) | null;
-    start: () => void;
-    stop: () => void;
-  };
+  const sensor = asTestDouble<
+    EventTarget & {
+      activated: boolean;
+      illuminance: number;
+      onerror: ((event: Event & { error: DOMException }) => void) | null;
+      onreading: ((event: Event) => void) | null;
+      start: () => void;
+      stop: () => void;
+    }
+  >(new EventTarget());
   sensor.activated = false;
   sensor.illuminance = reading.illuminance;
   sensor.onreading = null;

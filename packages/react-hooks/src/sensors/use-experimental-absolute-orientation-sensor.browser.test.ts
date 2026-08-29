@@ -1,18 +1,20 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalAbsoluteOrientationSensor } from "./use-experimental-absolute-orientation-sensor.ts";
 
 const createSensorMock = (quaternion: [number, number, number, number]) => {
-  // SAFETY: the lines right below set every field of the intersection type (activated, quaternion, onerror, onreading, start, stop), so this EventTarget really is a full AbsoluteOrientationSensor-shaped mock before any test reads it.
-  const sensor = new EventTarget() as EventTarget & {
-    activated: boolean;
-    onerror: ((event: Event & { error: DOMException }) => void) | null;
-    onreading: ((event: Event) => void) | null;
-    quaternion: [number, number, number, number];
-    start: () => void;
-    stop: () => void;
-  };
+  const sensor = asTestDouble<
+    EventTarget & {
+      activated: boolean;
+      onerror: ((event: Event & { error: DOMException }) => void) | null;
+      onreading: ((event: Event) => void) | null;
+      quaternion: [number, number, number, number];
+      start: () => void;
+      stop: () => void;
+    }
+  >(new EventTarget());
   sensor.activated = false;
   sensor.quaternion = quaternion;
   sensor.onreading = null;

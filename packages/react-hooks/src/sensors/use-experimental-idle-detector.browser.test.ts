@@ -1,15 +1,17 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalIdleDetector } from "./use-experimental-idle-detector.ts";
 
 const createIdleDetectorMock = (state: { screenState: string; userState: string }) => {
-  // SAFETY: the lines right below set every field of the intersection type (screenState, start, userState), so this EventTarget has the full IdleDetector-shaped mock before any test reads it.
-  const detector = new EventTarget() as EventTarget & {
-    screenState: string;
-    start: (options: { signal?: AbortSignal; threshold?: number }) => Promise<void>;
-    userState: string;
-  };
+  const detector = asTestDouble<
+    EventTarget & {
+      screenState: string;
+      start: (options: { signal?: AbortSignal; threshold?: number }) => Promise<void>;
+      userState: string;
+    }
+  >(new EventTarget());
   detector.userState = state.userState;
   detector.screenState = state.screenState;
   detector.start = vi.fn<() => Promise<undefined>>().mockResolvedValue(undefined);

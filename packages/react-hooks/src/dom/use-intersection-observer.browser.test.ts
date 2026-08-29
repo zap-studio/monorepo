@@ -2,6 +2,7 @@ import { act, render, renderHook } from "@testing-library/react";
 import { createElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import {
   useIntersectionObserver,
   useInView,
@@ -26,8 +27,7 @@ class FakeIntersectionObserver implements IntersectionObserver {
   }
 
   trigger(isIntersecting: boolean): void {
-    // SAFETY: useIntersectionObserver only reads `entry?.isIntersecting` from the entry it gets, and every check in this file only reads `entry?.isIntersecting` too, so this mock needs that one field and nothing else.
-    this.callback([{ isIntersecting } as IntersectionObserverEntry], this);
+    this.callback([asTestDouble<IntersectionObserverEntry>({ isIntersecting })], this);
   }
 }
 

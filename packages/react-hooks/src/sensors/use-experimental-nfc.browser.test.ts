@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalNfc } from "./use-experimental-nfc.ts";
 
 type ReaderMock = EventTarget & {
@@ -16,10 +17,7 @@ const createReaderMock = (
     write?: (message: unknown, options?: { overwrite?: boolean }) => Promise<void>;
   } = {},
 ) => {
-  // SAFETY: scan/write/makeReadOnly are set on `reader` just below, and EventTarget
-  // already gives addEventListener/removeEventListener/dispatchEvent. That is
-  // everything the hook calls on the NDEFReader instance.
-  const reader = new EventTarget() as ReaderMock;
+  const reader = asTestDouble<ReaderMock>(new EventTarget());
   reader.scan = vi.fn<(options?: { signal?: AbortSignal }) => Promise<void>>(
     overrides.scan ?? (() => Promise.resolve()),
   );
@@ -45,12 +43,12 @@ const fireReading = (
   serialNumber: string,
   records: { recordType: string }[],
 ) => {
-  // SAFETY: handleReading only reads `message` and `serialNumber` from the "reading"
-  // event, and both are set right below before the event is dispatched.
-  const event = new Event("reading") as Event & {
-    message: { records: { recordType: string }[] };
-    serialNumber: string;
-  };
+  const event = asTestDouble<
+    Event & {
+      message: { records: { recordType: string }[] };
+      serialNumber: string;
+    }
+  >(new Event("reading"));
   event.message = { records };
   event.serialNumber = serialNumber;
   reader.dispatchEvent(event);

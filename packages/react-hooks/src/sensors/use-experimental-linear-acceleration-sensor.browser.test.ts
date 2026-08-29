@@ -1,20 +1,22 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalLinearAccelerationSensor } from "./use-experimental-linear-acceleration-sensor.ts";
 
 const createSensorMock = (reading: { x: number; y: number; z: number }) => {
-  // SAFETY: the lines right below set every field of the intersection type (activated, onerror, onreading, start, stop, x, y, z), so this EventTarget has the full LinearAccelerationSensor-shaped mock before any test reads it.
-  const sensor = new EventTarget() as EventTarget & {
-    activated: boolean;
-    onerror: ((event: Event & { error: DOMException }) => void) | null;
-    onreading: ((event: Event) => void) | null;
-    start: () => void;
-    stop: () => void;
-    x: number;
-    y: number;
-    z: number;
-  };
+  const sensor = asTestDouble<
+    EventTarget & {
+      activated: boolean;
+      onerror: ((event: Event & { error: DOMException }) => void) | null;
+      onreading: ((event: Event) => void) | null;
+      start: () => void;
+      stop: () => void;
+      x: number;
+      y: number;
+      z: number;
+    }
+  >(new EventTarget());
   sensor.activated = false;
   sensor.x = reading.x;
   sensor.y = reading.y;

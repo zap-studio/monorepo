@@ -1,6 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useWebLock } from "./use-web-lock.ts";
 
 const setLocksSupport = (
@@ -48,8 +49,7 @@ describe("useWebLock", () => {
         callback: (lock: Lock | null) => unknown,
       ) => Promise<unknown>
     >(async (name: string, options: LockOptions, callback: (lock: Lock | null) => unknown) =>
-      // SAFETY: `mode` and `name` are the only two members of the DOM `Lock` interface, and the object literal above sets both, so it already has the full shape of `Lock`.
-      callback({ mode: options.mode ?? "exclusive", name } as Lock),
+      callback(asTestDouble<Lock>({ mode: options.mode ?? "exclusive", name })),
     );
     setLocksSupport(request);
     const { result } = renderHook(() => useWebLock("my-lock"));

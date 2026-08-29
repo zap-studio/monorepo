@@ -1,6 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useScreenCapture } from "./use-screen-capture.ts";
 
 interface StreamFixture {
@@ -10,13 +11,9 @@ interface StreamFixture {
 
 const makeStream = (): StreamFixture => {
   const stop = vi.fn<() => void>();
-  // SAFETY: the hook only calls track.stop() on items from getTracks(). The
-  // Object.assign below adds that stop() mock to this EventTarget.
-  const track = new EventTarget() as MediaStreamTrack & EventTarget;
+  const track = asTestDouble<MediaStreamTrack & EventTarget>(new EventTarget());
   Object.assign(track, { stop });
-  // SAFETY: onStarted only uses stream.addEventListener/removeEventListener("inactive", ...),
-  // which EventTarget already gives us. getTracks/getVideoTracks are added below.
-  const stream = new EventTarget() as MediaStream & EventTarget;
+  const stream = asTestDouble<MediaStream & EventTarget>(new EventTarget());
   Object.assign(stream, {
     getTracks: () => [track],
     getVideoTracks: () => [track],

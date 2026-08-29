@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useWebTransport } from "./use-web-transport.ts";
 
 const TRANSPORT_URL = "https://example.com:4999/wt";
@@ -61,10 +62,9 @@ class MockWebTransport {
     this.resolveClosed(closeInfo ?? { closeCode: 0, reason: "" });
   }
 
-  // SAFETY: useWebTransport's createBidirectionalStream() passes the resolved value of transport.createBidirectionalStream() straight back to the caller (see use-web-transport.ts), and the tests here only check that the mock was called, never a property of the resolved stream, so an empty object stand-in is enough.
   createBidirectionalStream = vi.fn<() => Promise<WebTransportBidirectionalStream>>(
     (): Promise<WebTransportBidirectionalStream> =>
-      Promise.resolve({} as WebTransportBidirectionalStream),
+      Promise.resolve(asTestDouble<WebTransportBidirectionalStream>({})),
   );
 
   createUnidirectionalStream = vi.fn<() => Promise<WritableStream>>((): Promise<WritableStream> =>

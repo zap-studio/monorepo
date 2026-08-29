@@ -21,10 +21,8 @@ class FakeResizeObserver implements ResizeObserver {
   }
 
   trigger(width: number, height: number): void {
-    // SAFETY: the hook's observer callback only reads entry.target and
-    // entry.contentRect.{height,width}. This fake entry supplies both.
     this.callback(
-      [{ contentRect: { height, width }, target: this.target } as ResizeObserverEntry],
+      [asTestDouble<ResizeObserverEntry>({ contentRect: { height, width }, target: this.target })],
       this,
     );
   }

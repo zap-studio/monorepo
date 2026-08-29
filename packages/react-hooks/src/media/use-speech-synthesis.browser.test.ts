@@ -1,6 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useSpeechSynthesis } from "./use-speech-synthesis.ts";
 
 class MockUtterance extends EventTarget {
@@ -68,8 +69,7 @@ describe("useSpeechSynthesis", () => {
   it("applies rate/pitch/lang/voice options to the utterance", async () => {
     const { speak } = installMockSpeechSynthesis();
     const { result } = renderHook(() => useSpeechSynthesis());
-    // SAFETY: the hook assigns `options.voice` straight to `utterance.voice` (see use-speech-synthesis.ts) and never reads any SpeechSynthesisVoice member. The check below compares `utterance.voice` by reference, so an empty object stand-in is safe.
-    const voice = {} as SpeechSynthesisVoice;
+    const voice = asTestDouble<SpeechSynthesisVoice>({});
 
     await act(async () => {
       result.current.speak("hello", { lang: "fr-FR", pitch: 1.5, rate: 0.5, voice });

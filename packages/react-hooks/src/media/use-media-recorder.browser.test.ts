@@ -1,6 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useMediaRecorder } from "./use-media-recorder.ts";
 
 const WEBM_MIME_TYPE = "video/webm";
@@ -44,8 +45,7 @@ const installMockMediaRecorder = () => {
   Object.defineProperty(window, "MediaRecorder", { configurable: true, value: MockMediaRecorder });
 };
 
-// SAFETY: useMediaRecorder only passes `stream` straight into `new MediaRecorder(stream, ...)`, and every test here replaces MediaRecorder with MockMediaRecorder. The hook never calls a MediaStream method on this value, so an empty object is enough.
-const fakeStream = {} as MediaStream;
+const fakeStream = asTestDouble<MediaStream>({});
 
 afterEach(() => {
   Reflect.deleteProperty(window, "MediaRecorder");

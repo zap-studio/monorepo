@@ -1,11 +1,11 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useServiceWorker } from "./use-service-worker.ts";
 
 const createInstallingWorker = (): ServiceWorker => {
-  // SAFETY: useServiceWorker only reads `.state` and calls addEventListener/removeEventListener("statechange", ...) on the installing worker. A real EventTarget gives the listener methods, and `state` is set right below with Object.defineProperty.
-  const worker = new EventTarget() as ServiceWorker;
+  const worker = asTestDouble<ServiceWorker>(new EventTarget());
   Object.defineProperty(worker, "state", {
     configurable: true,
     value: "installing",
@@ -15,8 +15,7 @@ const createInstallingWorker = (): ServiceWorker => {
 };
 
 const createRegistration = (installing: ServiceWorker | null): ServiceWorkerRegistration => {
-  // SAFETY: useServiceWorker only reads `.installing` and calls addEventListener/removeEventListener("updatefound", ...) on the registration. A real EventTarget gives the listener methods, and `installing` is set right below with Object.defineProperty.
-  const registration = new EventTarget() as ServiceWorkerRegistration;
+  const registration = asTestDouble<ServiceWorkerRegistration>(new EventTarget());
   Object.defineProperty(registration, "installing", { configurable: true, value: installing });
   return registration;
 };
@@ -82,9 +81,8 @@ describe("useServiceWorker", () => {
   it("becomes updateAvailable: true once a new worker installs while a controller is active", async () => {
     const worker = createInstallingWorker();
     const registration = createRegistration(worker);
-    // SAFETY: useServiceWorker only checks that `navigator.serviceWorker.controller` is truthy, to decide if an install counts as an update. It never reads any of its members, so an empty object is enough.
     setServiceWorkerContainer({
-      controller: {} as ServiceWorker,
+      controller: asTestDouble<ServiceWorker>({}),
       getRegistration: () => Promise.resolve(registration),
     });
 
@@ -128,9 +126,8 @@ describe("useServiceWorker", () => {
 
   it("ignores updatefound when the registration has no installing worker", async () => {
     const registration = createRegistration(null);
-    // SAFETY: useServiceWorker only checks that `navigator.serviceWorker.controller` is truthy, to decide if an install counts as an update. It never reads any of its members, so an empty object is enough.
     setServiceWorkerContainer({
-      controller: {} as ServiceWorker,
+      controller: asTestDouble<ServiceWorker>({}),
       getRegistration: () => Promise.resolve(registration),
     });
 

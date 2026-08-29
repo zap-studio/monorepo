@@ -1,6 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useIdleCallback } from "./use-idle-callback.ts";
 
 const setIdleCallbackSupport = (
@@ -54,9 +55,7 @@ describe("useIdleCallback", () => {
     const callback = vi.fn<(deadline: IdleDeadline) => void>();
     renderHook(() => useIdleCallback(callback));
 
-    // SAFETY: the hook passes this object from `fire` to `callback` without changing it, and
-    // never reads any other IdleDeadline members. So didTimeout/timeRemaining are enough.
-    const deadline = { didTimeout: false, timeRemaining: () => 42 } as IdleDeadline;
+    const deadline = asTestDouble<IdleDeadline>({ didTimeout: false, timeRemaining: () => 42 });
     act(() => {
       mock?.fire(deadline);
     });
