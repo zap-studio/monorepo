@@ -1,11 +1,8 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { usePerformanceObserver } from "./use-performance-observer.ts";
-
-// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
-// fully match. This keeps `as unknown as X` chains out of the test body.
-const asTestDouble = <T>(value: unknown): T => value as T;
 
 class MockPerformanceObserver {
   static readonly instances: MockPerformanceObserver[] = [];

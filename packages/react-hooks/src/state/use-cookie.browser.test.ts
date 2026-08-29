@@ -1,11 +1,8 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useCookie } from "./use-cookie.ts";
-
-// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
-// fully match. This keeps `as unknown as X` chains out of the test body.
-const asTestDouble = <T>(value: unknown): T => value as T;
 
 const cookieItem = (name: string, value: string): CookieListItem => {
   return { name, value };

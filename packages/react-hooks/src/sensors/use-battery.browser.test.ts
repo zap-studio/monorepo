@@ -3,11 +3,8 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { BatteryManager } from "./use-battery.ts";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useBattery } from "./use-battery.ts";
-
-// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
-// fully match. This keeps `as unknown as X` chains out of the test body.
-const asTestDouble = <T>(value: unknown): T => value as T;
 
 const createBatteryMock = (
   initial: Pick<BatteryManager, "charging" | "chargingTime" | "dischargingTime" | "level">,

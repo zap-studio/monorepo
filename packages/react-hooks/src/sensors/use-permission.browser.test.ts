@@ -1,11 +1,8 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { usePermission } from "./use-permission.ts";
-
-// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
-// fully match. This keeps `as unknown as X` chains out of the test body.
-const asTestDouble = <T>(value: unknown): T => value as T;
 
 const createPermissionStatusMock = (initialState: PermissionState) => {
   // SAFETY: usePermission only calls status.addEventListener/removeEventListener, which are native EventTarget methods, and reads status.state, defined just below with Object.defineProperty. So this EventTarget has every member the hook uses on a PermissionStatus.

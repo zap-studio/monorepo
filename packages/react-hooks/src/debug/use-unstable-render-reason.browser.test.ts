@@ -2,11 +2,8 @@ import { act, render, renderHook } from "@testing-library/react";
 import { createContext, createElement, useContext, useRef, useState } from "react";
 import { describe, expect, it } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useUnstableRenderReason, type RenderReason } from "./use-unstable-render-reason.ts";
-
-// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
-// fully match. This keeps `as unknown as X` chains out of the test body.
-const asTestDouble = <T>(value: unknown): T => value as T;
 
 const TestContext = createContext("default");
 

@@ -2,11 +2,8 @@ import { act, render, renderHook } from "@testing-library/react";
 import { createElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useResizeObserver, type UseResizeObserverResult } from "./use-resize-observer.ts";
-
-// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
-// fully match. This keeps `as unknown as X` chains out of the test body.
-const asTestDouble = <T>(value: unknown): T => value as T;
 
 class FakeResizeObserver implements ResizeObserver {
   static readonly instances: FakeResizeObserver[] = [];

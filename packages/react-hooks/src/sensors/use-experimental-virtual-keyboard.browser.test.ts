@@ -3,11 +3,8 @@ import { describe, expect, it } from "vitest";
 
 import type { VirtualKeyboard } from "./use-experimental-virtual-keyboard.ts";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalVirtualKeyboard } from "./use-experimental-virtual-keyboard.ts";
-
-// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
-// fully match. This keeps `as unknown as X` chains out of the test body.
-const asTestDouble = <T>(value: unknown): T => value as T;
 
 const createVirtualKeyboardMock = (initial: {
   height: number;

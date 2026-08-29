@@ -1,14 +1,11 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useWindowMessage } from "./use-window-message.ts";
 
 const MESSAGE_ORIGIN = "https://example.com";
 const TRUSTED_ORIGIN = "https://trusted.example";
-
-// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
-// fully match. This keeps `as unknown as X` chains out of the test body.
-const asTestDouble = <T>(value: unknown): T => value as T;
 
 describe("useWindowMessage", () => {
   it("starts with no lastMessage/lastError", () => {

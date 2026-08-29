@@ -1,11 +1,8 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useIndexedDB } from "./use-indexed-db.ts";
-
-// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
-// fully match. This keeps `as unknown as X` chains out of the test body.
-const asTestDouble = <T>(value: unknown): T => value as T;
 
 // `.error` is a raw string, not an Error instance — this matches real IndexedDB
 // behavior, where `.error` is a DOMException (which does not extend Error), so

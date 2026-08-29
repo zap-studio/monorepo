@@ -1,11 +1,8 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useCamera } from "./use-camera.ts";
-
-// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
-// fully match. This keeps `as unknown as X` chains out of the test body.
-const asTestDouble = <T>(value: unknown): T => value as T;
 
 const makeStream = () => {
   // SAFETY: useMediaCapture's stop() and unmount cleanup only call `track.stop()` on each track, so a stub with just `stop` covers every MediaStreamTrack member the hook under test reads.
