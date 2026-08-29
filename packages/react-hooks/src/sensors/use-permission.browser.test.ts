@@ -10,7 +10,6 @@ interface PermissionNameProps {
 }
 
 const createPermissionStatusMock = (initialState: PermissionState) => {
-  // SAFETY: usePermission only calls status.addEventListener/removeEventListener, which are native EventTarget methods, and reads status.state, defined just below with Object.defineProperty. So this EventTarget has every member the hook uses on a PermissionStatus.
   const status = asTestDouble<PermissionStatus>(new EventTarget());
   let state = initialState;
 

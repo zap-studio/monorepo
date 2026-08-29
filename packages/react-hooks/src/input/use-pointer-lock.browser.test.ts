@@ -48,7 +48,6 @@ describe("usePointerLock", () => {
   it("requests a lock on the ref'd element", async () => {
     setPointerLockSupport(true);
     const requestPointerLock = vi.fn<() => Promise<void>>(() => Promise.resolve());
-    // SAFETY: request() from usePointerLock only calls element.requestPointerLock() on the ref'd element, so a fake with only that member can stand in for HTMLDivElement here.
     const element = asTestDouble<HTMLDivElement>({ requestPointerLock });
 
     const { result } = renderHook(() => usePointerLock<HTMLDivElement>());
@@ -75,7 +74,6 @@ describe("usePointerLock", () => {
 
   it("becomes locked when pointerlockchange fires with the ref'd element locked", async () => {
     setPointerLockSupport(true);
-    // SAFETY: the pointerlockchange handler only compares this element to document.pointerLockElement by reference (===), so a fake with only requestPointerLock can stand in for HTMLDivElement here.
     const element = asTestDouble<HTMLDivElement>({
       requestPointerLock: vi.fn<() => Promise<void>>(),
     });
@@ -93,11 +91,9 @@ describe("usePointerLock", () => {
 
   it("becomes unlocked when pointerlockchange fires with a different element locked", async () => {
     setPointerLockSupport(true);
-    // SAFETY: this is the ref'd element. The handler only compares it to document.pointerLockElement by reference, so a fake with only requestPointerLock is enough.
     const element = asTestDouble<HTMLDivElement>({
       requestPointerLock: vi.fn<() => Promise<void>>(),
     });
-    // SAFETY: this fake stands in for the "other" element that takes the lock. The handler only compares it to document.pointerLockElement by reference, and this test never calls requestPointerLock on it.
     const other = asTestDouble<HTMLDivElement>({
       requestPointerLock: vi.fn<() => Promise<void>>(),
     });
@@ -146,7 +142,6 @@ describe("usePointerLock", () => {
 
   it("removes the pointerlockchange listener on unmount", async () => {
     setPointerLockSupport(true);
-    // SAFETY: after unmount the pointerlockchange listener is removed, so this element only needs to fit the ref assignment. The hook would only have used requestPointerLock and reference equality with document.pointerLockElement.
     const element = asTestDouble<HTMLDivElement>({
       requestPointerLock: vi.fn<() => Promise<void>>(),
     });

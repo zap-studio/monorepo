@@ -178,10 +178,6 @@ describe("throw mode (runRetryPolicy default)", () => {
       .mockRejectedValue(new Error("fail"));
 
     let readCount = 0;
-    // SAFETY: runRetryPolicy's abort handling only reads `signal.aborted`/`signal.reason` and calls
-    // `signal.addEventListener`/`removeEventListener`. This stub has exactly those members. The
-    // no-op listener mocks never run, because `aborted` turns true on the 3rd read. That trips the
-    // sync check inside sleepWithAbortSignal before any listener is added.
     const fakeSignal = asTestDouble<AbortSignal>({
       get aborted() {
         readCount += 1;
@@ -334,9 +330,6 @@ describe("result mode (throwOnExhausted: false): abort before and during executi
     const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
     const abortError = new AbortError("already-aborted");
 
-    // SAFETY: `aborted` is already true, so buildAbortResult stops after the `signal.aborted` and
-    // `signal.reason` reads, before any wait starts. addEventListener/removeEventListener are never
-    // called, so this stub only needs the members runRetryPolicy really reads here.
     const fakeSignal = asTestDouble<AbortSignal>({
       aborted: true,
       addEventListener:
@@ -398,10 +391,6 @@ describe("result mode (throwOnExhausted: false): abort before and during executi
     const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
     const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
 
-    // SAFETY: `aborted` is already true and `reason` is left out, so reading it gives
-    // `undefined`. That is what buildAbortResult and toAbortError need to reach the
-    // "undefined reason" fallback branch. addEventListener/removeEventListener are unused
-    // here, because no wait ever starts.
     const fakeSignal = asTestDouble<AbortSignal>({
       aborted: true,
       addEventListener:
@@ -472,10 +461,6 @@ describe("result mode (throwOnExhausted: false): backoff aborts, sleep errors, a
     const sleep = vi.fn<(delayMs: number) => Promise<void>>().mockResolvedValue();
 
     let readCount = 0;
-    // SAFETY: runRetryPolicy's abort handling only reads `aborted` and `reason` here. `aborted` is
-    // a getter that counts reads and turns true on the 3rd one, so the earlier `signal.aborted`
-    // checks in the result-mode loop still pass. addEventListener/removeEventListener stay unused
-    // no-op stubs, because the abort is seen by a sync `aborted` read, not by a fired event.
     const fakeSignal = asTestDouble<AbortSignal>({
       get aborted() {
         readCount += 1;
@@ -507,10 +492,6 @@ describe("result mode (throwOnExhausted: false): backoff aborts, sleep errors, a
       .mockRejectedValue(new Error("fail"));
     const sleep = vi.fn<() => Promise<void>>(() => new Promise<void>(() => {}));
 
-    // SAFETY: `sleep` never resolves, so this race can only end through the abort path. This stub's
-    // addEventListener calls the listener it was given, after setting `aborted` to true. That uses
-    // the real `signal.addEventListener`/`aborted`/`reason` members sleepWithAbortSignal needs, so
-    // the cast to `AbortSignal & { aborted: boolean }` covers everything read here.
     const fakeSignal = asTestDouble<AbortSignal & { aborted: boolean }>({
       aborted: false,
       addEventListener: vi.fn<(_type: string, listener: () => void) => void>(

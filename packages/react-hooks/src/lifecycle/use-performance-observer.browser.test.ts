@@ -72,7 +72,6 @@ describe("usePerformanceObserver", () => {
     // SAFETY: the wrapper inside usePerformanceObserver (`(list, obs) => callbackRef.current(list, obs)` in use-performance-observer.ts) passes `list` to `callback` by reference and never reads its members. The check below compares `list` by identity, so an empty object is safe here.
     const list = {} as PerformanceObserverEntryList;
     act(() => {
-      // SAFETY: `observer` is the MockPerformanceObserver instance the hook built with `new PerformanceObserver(...)`, caught by our mocked global. The wrapper above only passes it on by reference and the check below compares it by identity, so it never needs the real PerformanceObserver members.
       observer.callback(list, asTestDouble<PerformanceObserver>(observer));
     });
 

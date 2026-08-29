@@ -12,10 +12,6 @@ const createVirtualKeyboardMock = (initial: {
   x: number;
   y: number;
 }) => {
-  // SAFETY: the hook only reads keyboard.boundingRect and calls EventTarget's
-  // add/removeEventListener. boundingRect is defined as a getter just below, and
-  // EventTarget already gives the listener methods, so this fake has every member
-  // the hook actually touches.
   const keyboard = asTestDouble<VirtualKeyboard>(new EventTarget());
   let rect = { ...initial };
 

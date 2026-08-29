@@ -904,7 +904,6 @@ describe("createPolicy - invalid and unknown permission handling", () => {
   });
   it("should deny when the actions map has no entry for a resource type", async () => {
     await Promise.resolve();
-    // SAFETY: leaving out "comment" breaks the Actions shape on purpose. It simulates a runtime actions map with no entry for a resource type.
     const brokenActions = asTestDouble<typeof actions>({
       post: ["read"],
     });
@@ -928,7 +927,6 @@ describe("createPolicy - invalid and unknown permission handling", () => {
   });
   it("should deny when actions for a resource are missing at runtime", async () => {
     await Promise.resolve();
-    // SAFETY: this object only defines "post" and leaves out "comment". It simulates an actions map with no entry for a resource type at runtime.
     const badActions = asTestDouble<Actions<typeof resources>>({
       post: actions.post,
     });
@@ -957,7 +955,6 @@ describe("createPolicy - invalid and unknown permission handling", () => {
   });
   it("should deny when a resource key's action list is undefined at runtime", async () => {
     await Promise.resolve();
-    // SAFETY: "comment" is there as a key, so it passes the actions-map membership check, but its value is undefined. It simulates a runtime actions map where the action list of a resource key is missing.
     const undefinedActionListActions = asTestDouble<typeof actions>({
       ...actions,
       comment: void 0,
@@ -981,12 +978,10 @@ describe("createPolicy - invalid and unknown permission handling", () => {
     await expect(policy.can(ctx, COMMENT_READ_ACTION, comment)).resolves.toBeFalsy();
   });
   it("should deny when an allowed action has no validator entry at runtime", async () => {
-    // SAFETY: this object leaves out the "comment" entry that `typeof resources` needs. It simulates a resources map with a missing entry at runtime.
     const runtimeResources = asTestDouble<typeof resources>({
       post: createSchema<Post>(),
     });
 
-    // SAFETY: this object adds a "profile" action that is not in `typeof actions`. It simulates an allowed action with no validator entry at runtime.
     const runtimeActions = asTestDouble<typeof actions>({
       ...actions,
       profile: ["read"],
@@ -1251,7 +1246,6 @@ describe("createPolicy - resource schema validation", () => {
   });
   it("should throw PolicyError when a resource schema is missing", async () => {
     await Promise.resolve();
-    // SAFETY: this test passes `undefined` on purpose where a schema is required. It checks that createPolicy throws PolicyError when a resource schema is missing at runtime.
     const brokenResources = {
       post: asTestDouble<StandardSchemaV1>(undefined),
     } satisfies Resources<"post">;

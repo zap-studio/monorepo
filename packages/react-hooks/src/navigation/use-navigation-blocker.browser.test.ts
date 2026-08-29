@@ -16,8 +16,6 @@ const createNavigationMock = () => {
     listeners.delete(type);
   });
 
-  // SAFETY: this fake has only addEventListener and removeEventListener. They are the
-  // only members the hook reads from `nav` (see use-navigation-blocker.ts).
   const nav = asTestDouble<Navigation>({
     addEventListener,
     removeEventListener,
@@ -34,9 +32,6 @@ const createNavigationMock = () => {
 const fakeNavigateEvent = (overrides: Partial<NavigateEvent> = {}) => {
   const intercept = vi.fn<(options: { handler: () => Promise<void> }) => void>();
 
-  // SAFETY: this fake has exactly the members handleNavigate reads: canIntercept,
-  // hashChange, downloadRequest, destination.url and intercept. See
-  // use-navigation-blocker.ts.
   const event = asTestDouble<NavigateEvent>({
     canIntercept: true,
     destination: { url: "/next" },

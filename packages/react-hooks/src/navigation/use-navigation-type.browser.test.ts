@@ -8,8 +8,7 @@ describe("useNavigationType", () => {
   it("reads the type off the navigation timing entry", () => {
     vi.spyOn(performance, "getEntriesByType").mockImplementation((type: string) =>
       type === "navigation"
-        ? // SAFETY: readNavigationType only reads `.entryType` and `.type` off the first item, so a fake entry with just those two fields is enough.
-          [asTestDouble<PerformanceNavigationTiming>({ entryType: "navigation", type: "reload" })]
+        ? [asTestDouble<PerformanceNavigationTiming>({ entryType: "navigation", type: "reload" })]
         : [],
     );
 

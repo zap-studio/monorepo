@@ -5,9 +5,7 @@ import { asTestDouble } from "../../tests/_test-double.ts";
 import { useCamera } from "./use-camera.ts";
 
 const makeStream = () => {
-  // SAFETY: useMediaCapture's stop() and unmount cleanup only call `track.stop()` on each track, so a stub with just `stop` covers every MediaStreamTrack member the hook under test reads.
   const track = asTestDouble<MediaStreamTrack>({ stop: vi.fn<() => void>() });
-  // SAFETY: useMediaCapture only calls `stream.getTracks()` on the resolved MediaStream, to stop it. `track` is there only so this test file can assert on it directly, so a stub with just those two members covers every MediaStream member the hook and the tests read.
   return asTestDouble<MediaStream & { track: MediaStreamTrack }>({
     getTracks: () => [track],
     track,

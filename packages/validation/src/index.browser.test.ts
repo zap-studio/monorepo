@@ -45,10 +45,6 @@ const createMockSchemaFunction = <T>(
     },
   });
 
-  // SAFETY: the Object.assign call above adds a "~standard" object built from this
-  // function's own `validateFn` argument. So `fn` has the shape of
-  // StandardSchemaV1<unknown, T> for the same T the caller used, even though its
-  // static type is still the plain `() => void` declared two lines above.
   return asTestDouble<StandardSchemaV1<unknown, T>>(fn);
 };
 
@@ -564,9 +560,6 @@ describe("standardValidateSync", () => {
   });
 
   it("should pass through a non-object synchronous result from a malformed schema unchanged", () => {
-    // SAFETY: this schema is a broken test fixture on purpose. It returns a bare number
-    // instead of a real StandardSchemaV1.Result, so we can test how sync results that are
-    // not objects pass through.
     const schema = createMockSchema(() => asTestDouble<StandardSchemaV1.Result<unknown>>(42));
 
     const result = standardValidateSync("test", schema);
@@ -575,8 +568,6 @@ describe("standardValidateSync", () => {
   });
 
   it("should throw when a malformed schema synchronously returns null", () => {
-    // SAFETY: this schema is a broken test fixture on purpose. It returns null instead of a
-    // real StandardSchemaV1.Result, so we can test the TypeError thrown for a bad result.
     const schema = createMockSchema(() => asTestDouble<StandardSchemaV1.Result<unknown>>(null));
 
     expect(() => standardValidateSync("test", schema)).toThrow(TypeError);

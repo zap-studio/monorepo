@@ -11,9 +11,7 @@ interface StreamFixture {
 
 const makeStream = (): StreamFixture => {
   const stop = vi.fn<() => void>();
-  // SAFETY: useMediaCapture's stop() and unmount cleanup only call `track.stop()` on each track, so a stub with just `stop` covers every MediaStreamTrack member the hook under test reads.
   const track = asTestDouble<MediaStreamTrack>({ stop });
-  // SAFETY: useMediaCapture only calls `stream.getTracks()` on the resolved MediaStream, to stop it, so a stub with just that member covers every MediaStream member the hook reads.
   const stream = asTestDouble<MediaStream>({
     getTracks: () => [track],
   });

@@ -87,8 +87,6 @@ describe("useWindowMessage", () => {
     const calls: [unknown, string][] = [];
 
     act(() => {
-      // SAFETY: postMessage() only calls targetWindow.postMessage(message, targetOrigin),
-      // and this fake target has exactly that method with a matching signature.
       result.current.postMessage(asTestDouble<Window>(target), "hi", MESSAGE_ORIGIN);
     });
 

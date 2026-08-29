@@ -5,9 +5,6 @@ import { asTestDouble } from "../../tests/_test-double.ts";
 import { useWakeLock } from "./use-wake-lock.ts";
 
 const createSentinelMock = () => {
-  // SAFETY: the hook only calls sentinel.release() and sentinel.addEventListener("release", ...),
-  // which comes from EventTarget. It also reads `released`. The hook does not use `released`, but
-  // the real WakeLockSentinel has it. All of them are defined right below.
   const sentinel = asTestDouble<WakeLockSentinel>(new EventTarget());
   let released = false;
 

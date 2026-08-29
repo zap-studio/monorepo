@@ -78,9 +78,6 @@ describe("useResizeObserver", () => {
     const [observer] = FakeResizeObserver.instances;
 
     act(() => {
-      // SAFETY: this entry's target is a new <span> that was never passed to
-      // observer.observe, so the hook's `observed.target === element` filter
-      // drops it. Only target and contentRect are read, and both are here.
       observer?.callback(
         asTestDouble<ResizeObserverEntry[]>([
           { contentRect: { height: 999, width: 999 }, target: document.createElement("span") },

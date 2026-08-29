@@ -60,8 +60,6 @@ describe("usePictureInPicture", () => {
   it("enter() requests PiP on the ref'd element", async () => {
     setPictureInPictureSupport(true);
     const requestPictureInPicture = vi.fn<() => Promise<void>>(() => Promise.resolve());
-    // SAFETY: enter() only calls ref.current.requestPictureInPicture(). This code path
-    // uses no other HTMLVideoElement members.
     const element = asTestDouble<HTMLVideoElement>({ requestPictureInPicture });
 
     const { result } = renderHook(() => usePictureInPicture<HTMLVideoElement>());

@@ -13,8 +13,6 @@ const createVisualViewportMock = (initial: {
   scale: number;
   width: number;
 }) => {
-  // SAFETY: the hook only calls addEventListener/removeEventListener, which come from
-  // EventTarget. It also reads the seven number getters added by Object.defineProperties below.
   const viewport = asTestDouble<VisualViewport>(new EventTarget());
   let state = { ...initial };
 

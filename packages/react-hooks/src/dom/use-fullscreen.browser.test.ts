@@ -44,7 +44,6 @@ describe("useFullscreen", () => {
   it("enter() requests fullscreen on the ref'd element", async () => {
     setFullscreenSupport(true);
     const requestFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
-    // SAFETY: enter() only calls ref.current.requestFullscreen(), so a fake with just that method has every property useFullscreen reads from the ref'd element in this test.
     const element = asTestDouble<HTMLDivElement>({ requestFullscreen });
 
     const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
@@ -67,7 +66,6 @@ describe("useFullscreen", () => {
 
   it("becomes fullscreen when fullscreenchange fires with the ref'd element active", async () => {
     setFullscreenSupport(true);
-    // SAFETY: the fullscreenchange handler only compares ref.current to document.fullscreenElement by reference. It never calls a method on it, so a fake with just requestFullscreen works as an HTMLDivElement here.
     const element = asTestDouble<HTMLDivElement>({
       requestFullscreen: vi.fn<() => Promise<void>>(),
     });
@@ -85,11 +83,9 @@ describe("useFullscreen", () => {
 
   it("becomes not fullscreen when a different element is active", async () => {
     setFullscreenSupport(true);
-    // SAFETY: this element is only set as ref.current and compared by reference with document.fullscreenElement. So a fake with just requestFullscreen works as an HTMLDivElement here.
     const element = asTestDouble<HTMLDivElement>({
       requestFullscreen: vi.fn<() => Promise<void>>(),
     });
-    // SAFETY: "other" is only passed to setFullscreenElement and compared by reference. The handler never calls a method on it, so the same small fake shape is enough.
     const other = asTestDouble<HTMLDivElement>({
       requestFullscreen: vi.fn<() => Promise<void>>(),
     });
@@ -170,7 +166,6 @@ describe("useFullscreen", () => {
   it("toggle() enters when not fullscreen", async () => {
     setFullscreenSupport(true);
     const requestFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
-    // SAFETY: document.fullscreenElement is null (afterEach resets it), so toggle() takes the enter() branch. That branch only calls ref.current.requestFullscreen(), and the fake has exactly that method.
     const element = asTestDouble<HTMLDivElement>({ requestFullscreen });
 
     const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
@@ -205,7 +200,6 @@ describe("useFullscreen", () => {
 
   it("removes the fullscreenchange listener on unmount", async () => {
     setFullscreenSupport(true);
-    // SAFETY: unmount() removes the fullscreenchange listener before any event fires for this element, so it is only assigned to ref.current. A fake with just requestFullscreen works as an HTMLDivElement here.
     const element = asTestDouble<HTMLDivElement>({
       requestFullscreen: vi.fn<() => Promise<void>>(),
     });

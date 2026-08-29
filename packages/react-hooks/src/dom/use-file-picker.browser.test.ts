@@ -40,9 +40,6 @@ describe("useFilePicker", () => {
   });
 
   it("showOpenFilePicker() resolves the picker's handles", async () => {
-    // SAFETY: the hook's showOpenFilePicker() only calls the stubbed picker and
-    // returns its value unchanged (checked below with toBe(handles)), so this
-    // small shape never needs to match the full handle interface.
     const handles = asTestDouble<FileSystemFileHandle[]>([{ kind: "file", name: "a.txt" }]);
     vi.stubGlobal(
       "showOpenFilePicker",
@@ -81,9 +78,6 @@ describe("useFilePicker", () => {
   });
 
   it("showSaveFilePicker() resolves the picker's handle", async () => {
-    // SAFETY: the hook's showSaveFilePicker() only calls the stubbed picker and
-    // returns its value unchanged (checked below with toBe(handle)), so this
-    // small shape never needs to match the full handle interface.
     const handle = asTestDouble<FileSystemFileHandle>({ kind: "file", name: "a.txt" });
     vi.stubGlobal(
       "showSaveFilePicker",
@@ -122,9 +116,6 @@ describe("useFilePicker", () => {
   });
 
   it("showDirectoryPicker() resolves the picker's handle", async () => {
-    // SAFETY: the hook's showDirectoryPicker() only calls the stubbed picker and
-    // returns its value unchanged (checked below with toBe(handle)), so this
-    // small shape never needs to match the full handle interface.
     const handle = asTestDouble<FileSystemDirectoryHandle>({ kind: "directory", name: "dir" });
     vi.stubGlobal(
       "showDirectoryPicker",

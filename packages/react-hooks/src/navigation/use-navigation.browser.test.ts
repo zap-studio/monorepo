@@ -21,7 +21,6 @@ const createNavigationMock = (initial: MockState) => {
     currentEntry: { configurable: true, get: () => state.currentEntry },
     entries: { configurable: true, value: () => state.entries },
   });
-  // SAFETY: the Object.defineProperties call above added canGoBack, canGoForward, currentEntry, and entries. These are exactly the members Navigation adds on top of EventTarget, so this EventTarget now has every property that readNavigation and subscribe in use-navigation.ts touch.
   const nav = asTestDouble<Navigation>(target);
 
   return {
@@ -41,7 +40,6 @@ const setWindowNavigation = (nav: Navigation | undefined) => {
 };
 
 const fakeEntry = (url: string): NavigationHistoryEntry => {
-  // SAFETY: NavigationHistoryEntry only declares a readonly `url` field, and this object provides it. readNavigation and these tests only compare entries by reference or read `.url`, never any other member.
   return asTestDouble<NavigationHistoryEntry>({ url });
 };
 

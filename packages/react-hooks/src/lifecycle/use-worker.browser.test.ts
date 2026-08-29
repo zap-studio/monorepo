@@ -35,9 +35,6 @@ describe("useWorker", () => {
   it("run() rejects and never creates a worker when unsupported", async () => {
     reset();
     vi.stubGlobal("Worker", undefined);
-    // SAFETY: MockWorker extends EventTarget (add/removeEventListener, dispatchEvent) and has its
-    // own postMessage and terminate. These are the only Worker members useWorker's run() and
-    // terminate() use. Worker is stubbed as undefined above, so this factory never runs.
     const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
     const { result } = renderHook(() => useWorker(createWorker));
 
@@ -58,9 +55,6 @@ describe("useWorker", () => {
 
   it("reports supported: true when Worker exists", () => {
     reset();
-    // SAFETY: this test only reads result.current.supported, which useWorker gets from
-    // `typeof Worker !== "undefined"`. It never calls a method on the created worker, so the rest of
-    // the Worker interface that MockWorker does not have (onmessage, dispatchEvent shape) is unused.
     const { result } = renderHook(() => useWorker(() => asTestDouble<Worker>(new MockWorker())));
 
     expect(result.current.supported).toBe(true);
@@ -68,8 +62,6 @@ describe("useWorker", () => {
 
   it("does not create the worker until the first run() call", () => {
     reset();
-    // SAFETY: this test never calls run(), so createWorker never runs and neither does this cast.
-    // The check below confirms that.
     const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
     renderHook(() => useWorker(createWorker));
 
@@ -79,9 +71,6 @@ describe("useWorker", () => {
   it("run() posts the message and resolves with the response", async () => {
     reset();
     const { result } = renderHook(() =>
-      // SAFETY: on the worker it creates, useWorker's run() only calls
-      // addEventListener/removeEventListener (from MockWorker's EventTarget base) and postMessage
-      // (written on MockWorker), so MockWorker has every Worker member this test path uses.
       useWorker<number, number>(() => asTestDouble<Worker>(new MockWorker())),
     );
 
@@ -104,9 +93,6 @@ describe("useWorker", () => {
 
   it("reuses the same worker across multiple run() calls", async () => {
     reset();
-    // SAFETY: this test sends both run() calls through worker.postMessage and dispatches "message"
-    // events read with worker.addEventListener/removeEventListener. MockWorker has all of them:
-    // postMessage directly, and the listener methods from its EventTarget base.
     const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
     const { result } = renderHook(() => useWorker<number, number>(createWorker));
 
@@ -133,9 +119,6 @@ describe("useWorker", () => {
 
   it("run() rejects when the worker fires an error event", async () => {
     reset();
-    // SAFETY: this test causes the rejection with worker.dispatchEvent(new ErrorEvent(...)), which
-    // MockWorker's EventTarget base handles. run()'s handleError listener only reads event.message
-    // and calls worker.removeEventListener, and MockWorker has both.
     const { result } = renderHook(() => useWorker(() => asTestDouble<Worker>(new MockWorker())));
 
     let runPromise!: Promise<unknown>;
@@ -162,9 +145,6 @@ describe("useWorker", () => {
 
   it("terminate() terminates the worker so the next run() creates a new one", async () => {
     reset();
-    // SAFETY: this test checks worker.terminated after calling result.current.terminate().
-    // useWorker runs that as workerRef.current?.terminate(). MockWorker has its own terminate(),
-    // which sets this.terminated = true.
     const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
     const { result } = renderHook(() => useWorker<number, number>(createWorker));
 
@@ -197,9 +177,6 @@ describe("useWorker", () => {
   it("terminates the worker on unmount", async () => {
     reset();
     const { result, unmount } = renderHook(() =>
-      // SAFETY: this test checks worker.terminated after unmount(). That runs useWorker's
-      // `useEffect(() => terminate, [terminate])` cleanup, which calls workerRef.current?.terminate().
-      // MockWorker has its own terminate().
       useWorker(() => asTestDouble<Worker>(new MockWorker())),
     );
 
