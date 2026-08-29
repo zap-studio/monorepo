@@ -33,14 +33,14 @@ jobs:
         uses: ./.github/actions/setup-pnpm
       - name: Run format check
         run: pnpm run format:check
+      - name: Build packages
+        run: pnpm run build
       - name: Run typecheck
         run: pnpm run typecheck
       - name: Run lint
         run: pnpm run lint
       - name: Run fallow
         run: pnpm run fallow
-      - name: Build packages
-        run: pnpm run build
       - name: Install browser
         run: pnpm exec playwright install --with-deps chromium
       - name: Run tests
