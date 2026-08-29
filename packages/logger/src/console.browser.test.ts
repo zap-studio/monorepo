@@ -137,8 +137,7 @@ describe("ConsoleLogger", () => {
     logger.info("i", { requestId: "abc" });
 
     expect(infoSpy).toHaveBeenCalledTimes(1);
-    // SAFETY: the toHaveBeenCalledTimes check above proves calls[0] exists. jsonFormat returns a tuple with one string, so the only console.info argument is a string.
-    const [line] = infoSpy.mock.calls[0] as [string];
+    const [line] = infoSpy.mock.calls[0] ?? [];
     expect(JSON.parse(line)).toMatchObject({
       level: "info",
       msg: "i",

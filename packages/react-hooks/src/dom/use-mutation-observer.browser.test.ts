@@ -36,11 +36,8 @@ describe("useMutationObserver", () => {
     div.element?.setAttribute("data-test", "1");
 
     await waitFor(() => expect(callback).toHaveBeenCalled());
-    // SAFETY: the waitFor above proves calls[0] exists. callback is typed as
-    // vi.fn<(mutations: MutationRecord[]) => void>(), so its first argument is always
-    // a MutationRecord[].
-    const mutations = callback.mock.calls[0]?.[0] as MutationRecord[];
-    expect(mutations[0]?.attributeName).toBe("data-test");
+    const [mutations] = callback.mock.calls[0] ?? [];
+    expect(mutations?.[0]?.attributeName).toBe("data-test");
   });
 
   it("calls the latest callback without re-subscribing", async () => {

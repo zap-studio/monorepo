@@ -1,11 +1,8 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useNavigationBlocker } from "./use-navigation-blocker.ts";
-
-// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
-// fully match. This keeps `as unknown as X` chains out of the test body.
-const asTestDouble = <T>(value: unknown): T => value as T;
 
 const createNavigationMock = () => {
   const listeners = new Map<string, (event: NavigateEvent) => void>();
@@ -164,13 +161,10 @@ describe("useNavigationBlocker", () => {
       fireNavigate(event);
     });
 
-    // SAFETY: the act() block above ran handleNavigate, which calls
-    // `navigateEvent.intercept({ handler: waitForProceed })` exactly once. So
-    // mock.calls[0][0] is that { handler } object from the hook.
-    const options = intercept.mock.calls[0]?.[0] as { handler: () => Promise<void> };
+    const [options] = intercept.mock.calls[0] ?? [];
     let settled = false;
     const pending = (async () => {
-      await options.handler();
+      await options?.handler();
       settled = true;
     })();
 
@@ -196,13 +190,10 @@ describe("useNavigationBlocker", () => {
       fireNavigate(event);
     });
 
-    // SAFETY: the act() block above ran handleNavigate, which calls
-    // `navigateEvent.intercept({ handler: waitForProceed })` exactly once. So
-    // mock.calls[0][0] is that { handler } object from the hook.
-    const options = intercept.mock.calls[0]?.[0] as { handler: () => Promise<void> };
+    const [options] = intercept.mock.calls[0] ?? [];
     let settled = false;
     void (async () => {
-      await options.handler();
+      await options?.handler();
       settled = true;
     })();
 

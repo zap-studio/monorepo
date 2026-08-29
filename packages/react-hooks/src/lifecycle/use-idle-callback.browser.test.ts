@@ -74,12 +74,9 @@ describe("useIdleCallback", () => {
     });
 
     expect(callback).toHaveBeenCalledTimes(1);
-    // SAFETY: the toHaveBeenCalledTimes check above proves calls[0] exists. The setTimeout
-    // fallback in use-idle-callback.ts always calls it with a
-    // { didTimeout, timeRemaining } deadline object.
-    const [deadline] = callback.mock.calls[0] as [IdleDeadline];
-    expect(deadline.didTimeout).toBe(false);
-    expect(deadline.timeRemaining()).toBeGreaterThan(0);
+    const [deadline] = callback.mock.calls[0] ?? [];
+    expect(deadline?.didTimeout).toBe(false);
+    expect(deadline?.timeRemaining()).toBeGreaterThan(0);
   });
 
   it("does not schedule when enabled: false", () => {

@@ -1,14 +1,67 @@
 import type { Logger } from "@zap-studio/logger";
+import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 import { isStandardSchema } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
 import { type } from "arktype";
 import { array, boolean, email, number, object, optional, pipe, string } from "valibot";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { type Mock, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
 import { FetchError } from "./errors.ts";
 import { $fetch, api, createFetch, GLOBAL_DEFAULTS } from "./index.ts";
+
+/** The arguments a recorded `fetch` call was made with. Throws when that call never happened. */
+const fetchCall = (mock: Mock<typeof fetch>, index = 0): Parameters<typeof fetch> => {
+  const call = mock.mock.calls[index];
+  if (!call) {
+    throw new Error(`fetch was not called ${index + 1} time(s)`);
+  }
+  return call;
+};
+
+/** The `Headers` a recorded `fetch` call carried. `$fetch` always builds a native `Headers` for `init.headers`. */
+const fetchCallHeaders = (mock: Mock<typeof fetch>, index = 0): Headers => {
+  const [, init] = fetchCall(mock, index);
+  if (!(init?.headers instanceof Headers)) {
+    throw new TypeError("fetch was not called with a Headers instance");
+  }
+  return init.headers;
+};
+
+/** The `RequestInit` a recorded `fetch` call carried. */
+const fetchCallInit = (mock: Mock<typeof fetch>, index = 0): RequestInit => {
+  const [, init] = fetchCall(mock, index);
+  if (!init) {
+    throw new Error("fetch was called without a RequestInit");
+  }
+  return init;
+};
+
+/** The `Request` a recorded `fetch` call carried. */
+const fetchCallRequest = (mock: Mock<typeof fetch>, index = 0): Request => {
+  const [input] = fetchCall(mock, index);
+  if (!(input instanceof Request)) {
+    throw new TypeError("fetch was not called with a Request");
+  }
+  return input;
+};
+
+/** The value of a passing validation result. Throws when the result carries issues instead. */
+const validatedValue = <T>(result: StandardSchemaV1.Result<T>): T => {
+  if (result.issues) {
+    throw new Error(`expected validation to pass, got ${JSON.stringify(result.issues)}`);
+  }
+  return result.value;
+};
+
+/** A caught value narrowed to `FetchError`. Throws when it is something else. */
+const asFetchError = (error: unknown): FetchError => {
+  if (!(error instanceof FetchError)) {
+    throw new TypeError(`expected a FetchError, got ${String(error)}`);
+  }
+  return error;
+};
 
 const TEST_URL = "https://api.example.com/test";
 const USER_URL = "https://api.example.com/user";
@@ -72,12 +125,11 @@ const captureRejectedError = async (run: () => Promise<unknown>): Promise<unknow
 };
 
 describe("$fetch basic functionality", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -147,12 +199,11 @@ describe("$fetch basic functionality", () => {
   });
 });
 describe("$fetch schema validation", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -211,9 +262,7 @@ describe("$fetch schema validation", () => {
       throwOnValidationError: false,
     });
 
-    expect(result).toHaveProperty("issues");
-    // SAFETY: the toHaveProperty("issues") check above proves result has an issues array. This is the failure shape of throwOnValidationError:false.
-    expect(Array.isArray((result as { issues: unknown[] }).issues)).toBeTruthy();
+    expect(Array.isArray(result.issues)).toBeTruthy();
   });
 
   it("should return result object with value when validation passes and throwOnValidationError is false", async () => {
@@ -227,9 +276,7 @@ describe("$fetch schema validation", () => {
       throwOnValidationError: false,
     });
 
-    expect(result).toHaveProperty("value");
-    // SAFETY: the toHaveProperty("value") check above proves result has a value property. This is the success shape of throwOnValidationError:false.
-    expect((result as { value: unknown }).value).toStrictEqual(userData);
+    expect(validatedValue(result)).toStrictEqual(userData);
   });
 
   it("should parse response as JSON when schema is provided", async () => {
@@ -246,12 +293,11 @@ describe("$fetch schema validation", () => {
   });
 });
 describe("$fetch error handling", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -294,11 +340,8 @@ describe("$fetch error handling", () => {
       async () => await $fetch("https://api.example.com/error"),
     );
 
-    expect(error).toBeInstanceOf(FetchError);
-    // SAFETY: the toBeInstanceOf check above proves error is a FetchError.
-    expect((error as FetchError).status).toBe(500);
-    // SAFETY: the toBeInstanceOf check two lines above proves error is a FetchError.
-    expect((error as FetchError).response).toBe(mockResponse);
+    expect(asFetchError(error).status).toBe(500);
+    expect(asFetchError(error).response).toBe(mockResponse);
   });
 
   it("should include status text in FetchError message", async () => {
@@ -312,20 +355,16 @@ describe("$fetch error handling", () => {
       async () => await $fetch("https://api.example.com/forbidden"),
     );
 
-    expect(error).toBeInstanceOf(FetchError);
-    // SAFETY: the toBeInstanceOf check above proves error is a FetchError.
-    expect((error as FetchError).message).toContain("403");
-    // SAFETY: the toBeInstanceOf check two lines above proves error is a FetchError.
-    expect((error as FetchError).message).toContain("Forbidden");
+    expect(asFetchError(error).message).toContain("403");
+    expect(asFetchError(error).message).toContain("Forbidden");
   });
 });
 describe("$fetch headers", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -350,8 +389,7 @@ describe("$fetch headers", () => {
       },
     });
 
-    // SAFETY: $fetch uses mergeHeaders to build a native Headers instance for init.headers before it calls fetch, so calls[0][1].headers is a Headers.
-    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    const calledHeaders = fetchCallHeaders(fetchMock);
     expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN_123);
     expect(calledHeaders.get("X-Custom-Header")).toBe(CUSTOM_HEADER_VALUE);
   });
@@ -368,8 +406,7 @@ describe("$fetch headers", () => {
       method: "POST",
     });
 
-    // SAFETY: $fetch always turns init.headers into a native Headers instance with mergeHeaders before it calls fetch.
-    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    const calledHeaders = fetchCallHeaders(fetchMock);
     expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json");
   });
 
@@ -388,18 +425,16 @@ describe("$fetch headers", () => {
       method: "POST",
     });
 
-    // SAFETY: $fetch always turns init.headers into a native Headers instance with mergeHeaders before it calls fetch.
-    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    const calledHeaders = fetchCallHeaders(fetchMock);
     expect(calledHeaders.get(CONTENT_TYPE_HEADER)).toBe("application/json; charset=utf-8");
   });
 });
 describe("$fetch body handling", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -484,12 +519,11 @@ describe("$fetch body handling", () => {
 });
 
 describe("createFetch factory creation", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -524,12 +558,11 @@ describe("createFetch factory creation", () => {
   });
 });
 describe("createFetch baseURL", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -640,12 +673,11 @@ describe("createFetch baseURL", () => {
   });
 });
 describe("createFetch default headers", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -667,8 +699,7 @@ describe("createFetch default headers", () => {
 
     await customFetch(USERS_URL);
 
-    // SAFETY: customFetch uses mergeHeaders to merge the default and request headers into a native Headers instance before it calls fetch.
-    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    const calledHeaders = fetchCallHeaders(fetchMock);
     expect(calledHeaders.get("Authorization")).toBe(BEARER_DEFAULT_TOKEN);
     expect(calledHeaders.get("X-API-Key")).toBe("api-key-123");
   });
@@ -691,8 +722,7 @@ describe("createFetch default headers", () => {
       },
     });
 
-    // SAFETY: customFetch uses mergeHeaders to merge the default and request headers into a native Headers instance before it calls fetch.
-    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    const calledHeaders = fetchCallHeaders(fetchMock);
     expect(calledHeaders.get("Authorization")).toBe("Bearer override-token");
   });
 
@@ -715,20 +745,18 @@ describe("createFetch default headers", () => {
       },
     });
 
-    // SAFETY: customFetch uses mergeHeaders to merge the default and request headers into a native Headers instance before it calls fetch.
-    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    const calledHeaders = fetchCallHeaders(fetchMock);
     expect(calledHeaders.get("Authorization")).toBe(BEARER_DEFAULT_TOKEN);
     expect(calledHeaders.get("X-Default-Header")).toBe("default-value");
     expect(calledHeaders.get("X-Request-Header")).toBe("request-value");
   });
 });
 describe("createFetch default options", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -834,12 +862,11 @@ describe("createFetch default options", () => {
   });
 });
 describe("createFetch custom $fetch behavior", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -900,10 +927,8 @@ describe("createFetch custom $fetch behavior", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
 
-    // SAFETY: customFetch always turns init.headers into a native Headers instance before it calls fetch, so calls[0][1].headers is a Headers.
-    const firstCallHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
-    // SAFETY: the second customFetch call above is handled the same way, so calls[1][1].headers is also a Headers instance.
-    const secondCallHeaders = fetchMock.mock.calls[1]?.[1]?.headers as Headers;
+    const firstCallHeaders = fetchCallHeaders(fetchMock);
+    const secondCallHeaders = fetchCallHeaders(fetchMock, 1);
 
     expect(firstCallHeaders.get("Authorization")).toBe(BEARER_TOKEN);
     expect(secondCallHeaders.get("Authorization")).toBe(BEARER_TOKEN);
@@ -913,12 +938,11 @@ describe("createFetch custom $fetch behavior", () => {
   });
 });
 describe("createFetch custom api methods", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -965,14 +989,13 @@ describe("createFetch custom api methods", () => {
       }),
     );
 
-    // SAFETY: customApi.get calls $fetch, and $fetch turns init.headers into a native Headers instance before it calls fetch.
-    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    const calledHeaders = fetchCallHeaders(fetchMock);
     expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
   });
 });
 
 describe("api.get", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   const UserSchema = object({
     id: number(),
@@ -981,8 +1004,7 @@ describe("api.get", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -1032,13 +1054,12 @@ describe("api.get", () => {
         method: "GET",
       }),
     );
-    // SAFETY: api.get calls $fetch, and $fetch turns init.headers into a native Headers instance before it calls fetch.
-    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    const calledHeaders = fetchCallHeaders(fetchMock);
     expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN_123);
   });
 });
 describe("api.post", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   const UserSchema = object({
     id: number(),
@@ -1047,8 +1068,7 @@ describe("api.post", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -1114,13 +1134,12 @@ describe("api.post", () => {
         method: "POST",
       }),
     );
-    // SAFETY: api.post calls $fetch, and $fetch turns init.headers into a native Headers instance before it calls fetch.
-    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    const calledHeaders = fetchCallHeaders(fetchMock);
     expect(calledHeaders.get("X-Custom-Header")).toBe(CUSTOM_HEADER_VALUE);
   });
 });
 describe("api.put", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   const UserSchema = object({
     id: number(),
@@ -1129,8 +1148,7 @@ describe("api.put", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -1196,13 +1214,12 @@ describe("api.put", () => {
         mode: "cors",
       }),
     );
-    // SAFETY: api.put calls $fetch, and $fetch turns init.headers into a native Headers instance before it calls fetch.
-    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    const calledHeaders = fetchCallHeaders(fetchMock);
     expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
   });
 });
 describe("api.patch", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   const UserSchema = object({
     id: number(),
@@ -1211,8 +1228,7 @@ describe("api.patch", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -1281,13 +1297,12 @@ describe("api.patch", () => {
         method: "PATCH",
       }),
     );
-    // SAFETY: api.patch calls $fetch, and $fetch turns init.headers into a native Headers instance before it calls fetch.
-    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    const calledHeaders = fetchCallHeaders(fetchMock);
     expect(calledHeaders.get("X-Patch-Header")).toBe("patch-value");
   });
 });
 describe("api.delete", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   const UserSchema = object({
     id: number(),
@@ -1296,8 +1311,7 @@ describe("api.delete", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -1350,13 +1364,12 @@ describe("api.delete", () => {
         method: "DELETE",
       }),
     );
-    // SAFETY: api.delete calls $fetch, and $fetch turns init.headers into a native Headers instance before it calls fetch.
-    const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
+    const calledHeaders = fetchCallHeaders(fetchMock);
     expect(calledHeaders.get("Authorization")).toBe(BEARER_TOKEN);
   });
 });
 describe("api convenience methods shared behavior", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   const UserSchema = object({
     id: number(),
@@ -1365,8 +1378,7 @@ describe("api convenience methods shared behavior", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -1420,9 +1432,7 @@ describe("api convenience methods shared behavior", () => {
       throwOnValidationError: false,
     });
 
-    expect(result).toHaveProperty("issues");
-    // SAFETY: the toHaveProperty("issues") check above proves result has an issues array.
-    expect(Array.isArray((result as { issues: unknown[] }).issues)).toBeTruthy();
+    expect(Array.isArray(result.issues)).toBeTruthy();
   });
 
   it("should respect throwOnFetchError option", async () => {
@@ -1452,12 +1462,11 @@ describe("global fetch defaults", () => {
 });
 
 describe("request input normalization", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -1481,8 +1490,7 @@ describe("request input normalization", () => {
 
     await $fetch(request);
 
-    // SAFETY: $fetch(request) above got a bare Request and no options, so fetch was called with (Request, RequestInit) arguments.
-    const [sentRequest] = fetchMock.mock.calls[0] as [Request, RequestInit];
+    const sentRequest = fetchCallRequest(fetchMock);
     expect(sentRequest).toBeInstanceOf(Request);
     expect(sentRequest.url).toBe(USERS_URL);
   });
@@ -1496,8 +1504,8 @@ describe("request input normalization", () => {
 
     await $fetch(request, { headers: { B: "20", C: "3" }, method: "PATCH" });
 
-    // SAFETY: $fetch(request, options) above always calls the underlying fetch with (Request, RequestInit) arguments.
-    const [sentRequest, init] = fetchMock.mock.calls[0] as [Request, RequestInit];
+    const sentRequest = fetchCallRequest(fetchMock);
+    const init = fetchCallInit(fetchMock);
     const headers = new Headers(init.headers);
 
     expect(sentRequest).toBeInstanceOf(Request);
@@ -1511,12 +1519,11 @@ describe("request input normalization", () => {
 });
 
 describe("json and body conflicts", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -1542,8 +1549,7 @@ describe("json and body conflicts", () => {
       method: "POST",
     });
 
-    // SAFETY: customFetch(url, options) above always calls the underlying fetch as fetch(url, init), so the second argument is a RequestInit.
-    const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const init = fetchCallInit(fetchMock);
     const headers = new Headers(init.headers);
     expect(headers.get("Authorization")).toBe(BEARER_TOKEN);
     expect(headers.get(CONTENT_TYPE_HEADER)).toBe("application/json");
@@ -1551,12 +1557,11 @@ describe("json and body conflicts", () => {
 });
 
 describe("URL and search param resolution", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -1624,7 +1629,7 @@ describe("URL and search param resolution", () => {
 });
 
 describe("method helper", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   const UserSchema = object({
     id: number(),
@@ -1633,8 +1638,7 @@ describe("method helper", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -1684,13 +1688,12 @@ describe("method helper", () => {
 
 describe("@zap-studio/fetch browser runtime", () => {
   let originalFetch: typeof globalThis.fetch;
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     originalFetch = globalThis.fetch;
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -1707,8 +1710,8 @@ describe("@zap-studio/fetch browser runtime", () => {
 
     await $fetch(request, { headers: { B: "20", C: "3" }, method: "PATCH" });
 
-    // SAFETY: $fetch(request, options) above always calls the underlying fetch with (Request, RequestInit) arguments.
-    const [sentRequest, init] = fetchMock.mock.calls[0] as [Request, RequestInit];
+    const sentRequest = fetchCallRequest(fetchMock);
+    const init = fetchCallInit(fetchMock);
     const headers = new Headers(init.headers);
 
     expect(sentRequest).toBeInstanceOf(Request);
@@ -1794,13 +1797,10 @@ describe("@zap-studio/fetch browser runtime", () => {
       },
     );
 
-    const firstCall = fetchMock.mock.calls[0];
-    const [request, init] = firstCall ?? [];
-    expect(request).toBeInstanceOf(Request);
-    // SAFETY: the toBeInstanceOf check above proves request is a Request.
-    expect((request as Request).url).toBe(USERS_URL);
-    // SAFETY: the $fetch call above always calls fetch with a RequestInit as the second argument.
-    expect(new Headers((init as RequestInit).headers).get("B")).toBe("2");
+    const request = fetchCallRequest(fetchMock);
+    const init = fetchCallInit(fetchMock);
+    expect(request.url).toBe(USERS_URL);
+    expect(new Headers(init.headers).get("B")).toBe("2");
   });
 
   it("serializes json bodies and preserves explicit content type casing", async () => {
@@ -1812,14 +1812,9 @@ describe("@zap-studio/fetch browser runtime", () => {
       method: "POST",
     });
 
-    const firstCall = fetchMock.mock.calls[0];
-    const [, init] = firstCall ?? [];
-    // SAFETY: the $fetch call above always calls fetch with a RequestInit as the second argument.
-    expect((init as RequestInit).body).toBe(JSON.stringify({ name: "Zap" }));
-    // SAFETY: init comes from the same fetch call above, which always gets a RequestInit as the second argument.
-    expect(new Headers((init as RequestInit).headers).get("content-type")).toBe(
-      "application/vnd.api+json",
-    );
+    const init = fetchCallInit(fetchMock);
+    expect(init.body).toBe(JSON.stringify({ name: "Zap" }));
+    expect(new Headers(init.headers).get("content-type")).toBe("application/vnd.api+json");
   });
 
   it("applies browser fetch defaults from createFetch", async () => {
@@ -1834,10 +1829,8 @@ describe("@zap-studio/fetch browser runtime", () => {
       searchParams: { page: "1" },
     });
 
-    const firstCall = fetchMock.mock.calls[0];
-    const [url, init] = firstCall ?? [];
-    // SAFETY: client.$fetch above always calls the underlying fetch with a RequestInit as the second argument.
-    const headers = new Headers((init as RequestInit).headers);
+    const [url] = fetchCall(fetchMock);
+    const headers = new Headers(fetchCallInit(fetchMock).headers);
     expect(url).toBe("https://api.example.com/users?page=1");
     expect(headers.get("authorization")).toBe(BEARER_TOKEN);
     expect(headers.get("accept")).toBe("application/json");
@@ -1858,12 +1851,11 @@ describe("ArkType Standard Schema compatibility", () => {
 });
 
 describe("$fetch with ArkType schemas", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -1879,13 +1871,13 @@ describe("$fetch with ArkType schemas", () => {
 
     const mockData = { email: MOCK_EMAIL, id: 1, name: "Test User" };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch(USER_URL, schema);
 
@@ -1900,13 +1892,13 @@ describe("$fetch with ArkType schemas", () => {
 
     const invalidData = { email: INVALID_EMAIL_VALUE, id: 1 };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => invalidData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(invalidData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     await expect($fetch(USER_URL, schema)).rejects.toThrow(ValidationError);
   });
@@ -1919,21 +1911,19 @@ describe("$fetch with ArkType schemas", () => {
 
     const invalidData = { email: INVALID_EMAIL_VALUE, id: 1 };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => invalidData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(invalidData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch(USER_URL, schema, {
       throwOnValidationError: false,
     });
 
-    expect(result).toHaveProperty("issues");
-    // SAFETY: the toHaveProperty("issues") check above proves result has an issues array.
-    expect(Array.isArray((result as { issues?: unknown }).issues)).toBeTruthy();
+    expect(Array.isArray(result.issues)).toBeTruthy();
   });
 
   it("should return successful validation result when data is valid and throwOnValidationError is false (ArkType)", async () => {
@@ -1944,23 +1934,20 @@ describe("$fetch with ArkType schemas", () => {
 
     const validData = { email: MOCK_EMAIL, id: 1 };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => validData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(validData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch(USER_URL, schema, {
       throwOnValidationError: false,
     });
 
-    expect(result).toHaveProperty("value");
-    // SAFETY: the toHaveProperty("value") check above proves result has a value property.
-    expect((result as { value?: unknown }).value).toStrictEqual(validData);
-    // SAFETY: throwOnValidationError:false only adds an issues property when validation fails. So result may not have it, and we make the type optional to check it is missing.
-    expect((result as { issues?: unknown }).issues).toBeUndefined();
+    expect(validatedValue(result)).toStrictEqual(validData);
+    expect(result.issues).toBeUndefined();
   });
 
   it("should work with ArkType array schemas", async () => {
@@ -1974,13 +1961,13 @@ describe("$fetch with ArkType schemas", () => {
       { id: 2, name: "User 2" },
     ];
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch(USERS_URL, schema);
 
@@ -1991,13 +1978,13 @@ describe("$fetch with ArkType schemas", () => {
     const schema = type({ success: "boolean" });
     const mockData = { success: true };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await api.get(STATUS_URL, schema);
 
@@ -2009,13 +1996,13 @@ describe("$fetch with ArkType schemas", () => {
     const mockData = { created: true, id: 123 };
     const body = { name: "New Item" };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 201,
-      statusText: "Created",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 201,
+        statusText: "Created",
+      }),
+    );
 
     const result = await api.post(ITEMS_URL, schema, {
       body: JSON.stringify(body),
@@ -2033,13 +2020,13 @@ describe("$fetch with ArkType schemas", () => {
 
     const mockData = { id: 1, name: "Product" };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch("https://api.example.com/product", schema);
 
@@ -2050,13 +2037,13 @@ describe("$fetch with ArkType schemas", () => {
     const schema = type("string|number");
     const mockData = "test-string";
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch("https://api.example.com/value", schema);
 
@@ -2078,12 +2065,11 @@ describe("Valibot Standard Schema compatibility", () => {
 });
 
 describe("$fetch with Valibot schemas", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -2099,13 +2085,13 @@ describe("$fetch with Valibot schemas", () => {
 
     const mockData = { email: MOCK_EMAIL, id: 1, name: "Test User" };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch(USER_URL, schema);
 
@@ -2120,13 +2106,13 @@ describe("$fetch with Valibot schemas", () => {
 
     const invalidData = { email: INVALID_EMAIL_VALUE, id: 1 };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => invalidData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(invalidData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     await expect($fetch(USER_URL, schema)).rejects.toThrow(ValidationError);
   });
@@ -2139,21 +2125,19 @@ describe("$fetch with Valibot schemas", () => {
 
     const invalidData = { email: INVALID_EMAIL_VALUE, id: 1 };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => invalidData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(invalidData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch(USER_URL, schema, {
       throwOnValidationError: false,
     });
 
-    expect(result).toHaveProperty("issues");
-    // SAFETY: the toHaveProperty("issues") check above proves result has an issues array.
-    expect(Array.isArray((result as { issues?: unknown }).issues)).toBeTruthy();
+    expect(Array.isArray(result.issues)).toBeTruthy();
   });
 
   it("should return successful validation result when data is valid and throwOnValidationError is false (Valibot)", async () => {
@@ -2164,23 +2148,20 @@ describe("$fetch with Valibot schemas", () => {
 
     const validData = { email: MOCK_EMAIL, id: 1 };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => validData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(validData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch(USER_URL, schema, {
       throwOnValidationError: false,
     });
 
-    expect(result).toHaveProperty("value");
-    // SAFETY: the toHaveProperty("value") check above proves result has a value property.
-    expect((result as { value?: unknown }).value).toStrictEqual(validData);
-    // SAFETY: throwOnValidationError:false only adds an issues property when validation fails. So result may not have it, and we make the type optional to check it is missing.
-    expect((result as { issues?: unknown }).issues).toBeUndefined();
+    expect(validatedValue(result)).toStrictEqual(validData);
+    expect(result.issues).toBeUndefined();
   });
 
   it("should work with Valibot array schemas", async () => {
@@ -2196,13 +2177,13 @@ describe("$fetch with Valibot schemas", () => {
       { id: 2, name: "User 2" },
     ];
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch(USERS_URL, schema);
 
@@ -2213,13 +2194,13 @@ describe("$fetch with Valibot schemas", () => {
     const schema = object({ success: boolean() });
     const mockData = { success: true };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await api.get(STATUS_URL, schema);
 
@@ -2231,13 +2212,13 @@ describe("$fetch with Valibot schemas", () => {
     const mockData = { created: true, id: 123 };
     const body = { name: "New Item" };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 201,
-      statusText: "Created",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 201,
+        statusText: "Created",
+      }),
+    );
 
     const result = await api.post(ITEMS_URL, schema, {
       body: JSON.stringify(body),
@@ -2255,13 +2236,13 @@ describe("$fetch with Valibot schemas", () => {
 
     const mockData = { id: 1, name: "Product" };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch("https://api.example.com/product", schema);
 
@@ -2283,12 +2264,11 @@ describe("Zod Standard Schema compatibility", () => {
 });
 
 describe("$fetch with Zod schemas", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
@@ -2304,13 +2284,13 @@ describe("$fetch with Zod schemas", () => {
 
     const mockData = { email: MOCK_EMAIL, id: 1, name: "Test User" };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch(USER_URL, schema);
 
@@ -2325,13 +2305,13 @@ describe("$fetch with Zod schemas", () => {
 
     const invalidData = { email: INVALID_EMAIL_VALUE, id: 1 };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => invalidData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(invalidData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     await expect($fetch(USER_URL, schema)).rejects.toThrow(ValidationError);
   });
@@ -2344,21 +2324,19 @@ describe("$fetch with Zod schemas", () => {
 
     const invalidData = { email: INVALID_EMAIL_VALUE, id: 1 };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => invalidData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(invalidData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch(USER_URL, schema, {
       throwOnValidationError: false,
     });
 
-    expect(result).toHaveProperty("issues");
-    // SAFETY: the toHaveProperty("issues") check above proves result has an issues array.
-    expect(Array.isArray((result as { issues?: unknown }).issues)).toBeTruthy();
+    expect(Array.isArray(result.issues)).toBeTruthy();
   });
 
   it("should return successful validation result when data is valid and throwOnValidationError is false (Zod)", async () => {
@@ -2369,23 +2347,20 @@ describe("$fetch with Zod schemas", () => {
 
     const validData = { email: MOCK_EMAIL, id: 1 };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => validData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(validData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch(USER_URL, schema, {
       throwOnValidationError: false,
     });
 
-    expect(result).toHaveProperty("value");
-    // SAFETY: the toHaveProperty("value") check above proves result has a value property.
-    expect((result as { value?: unknown }).value).toStrictEqual(validData);
-    // SAFETY: throwOnValidationError:false only adds an issues property when validation fails. So result may not have it, and we make the type optional to check it is missing.
-    expect((result as { issues?: unknown }).issues).toBeUndefined();
+    expect(validatedValue(result)).toStrictEqual(validData);
+    expect(result.issues).toBeUndefined();
   });
 
   it("should work with Zod array schemas", async () => {
@@ -2401,13 +2376,13 @@ describe("$fetch with Zod schemas", () => {
       { id: 2, name: "User 2" },
     ];
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await $fetch(USERS_URL, schema);
 
@@ -2418,13 +2393,13 @@ describe("$fetch with Zod schemas", () => {
     const schema = z.object({ success: z.boolean() });
     const mockData = { success: true };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 200,
-      statusText: "OK",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     const result = await api.get(STATUS_URL, schema);
 
@@ -2436,13 +2411,13 @@ describe("$fetch with Zod schemas", () => {
     const mockData = { created: true, id: 123 };
     const body = { name: "New Item" };
 
-    fetchMock.mockResolvedValue({
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => mockData,
-      ok: true,
-      status: 201,
-      statusText: "Created",
-    });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(mockData), {
+        headers: { "content-type": "application/json" },
+        status: 201,
+        statusText: "Created",
+      }),
+    );
 
     const result = await api.post(ITEMS_URL, schema, {
       body: JSON.stringify(body),
@@ -2453,12 +2428,11 @@ describe("$fetch with Zod schemas", () => {
 });
 
 describe("logging", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock comes from vi.fn<typeof fetch>() above, so it has the same call signature as the global fetch.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {

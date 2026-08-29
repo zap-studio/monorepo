@@ -38,9 +38,7 @@ describe("ConsoleLogger trace-log correlation", () => {
     });
     span.end();
 
-    // SAFETY: logger.info() above calls console.info with one formatted JSON
-    // string from jsonFormat, so the first recorded call is a [string] tuple.
-    const [line] = infoSpy.mock.calls[0] as [string];
+    const [line] = infoSpy.mock.calls[0] ?? [];
     const parsed = JSON.parse(line);
     expect(parsed.trace_id).toBe(span.spanContext().traceId);
     expect(parsed.span_id).toBe(span.spanContext().spanId);
@@ -52,9 +50,7 @@ describe("ConsoleLogger trace-log correlation", () => {
 
     logger.info("checkpoint", { userId: "u1" });
 
-    // SAFETY: logger.info() above calls console.info with one formatted JSON
-    // string from jsonFormat, so the first recorded call is a [string] tuple.
-    const [line] = infoSpy.mock.calls[0] as [string];
+    const [line] = infoSpy.mock.calls[0] ?? [];
     const parsed = JSON.parse(line);
     expect(parsed.trace_id).toBeUndefined();
     expect(parsed.span_id).toBeUndefined();
@@ -69,9 +65,7 @@ describe("ConsoleLogger trace-log correlation", () => {
     });
     span.end();
 
-    // SAFETY: logger.info() above calls console.info with one formatted JSON
-    // string from jsonFormat, so the first recorded call is a [string] tuple.
-    const [line] = infoSpy.mock.calls[0] as [string];
+    const [line] = infoSpy.mock.calls[0] ?? [];
     const parsed = JSON.parse(line);
     expect(parsed.trace_id).toBe("explicit");
   });

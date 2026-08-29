@@ -77,9 +77,8 @@ describe("useFileDrop", () => {
     });
 
     expect(onDrop).toHaveBeenCalledTimes(1);
-    // SAFETY: the toHaveBeenCalledTimes check above guarantees calls[0] exists, and onDrop takes only one parameter, a File[], so the args tuple of its first call is [File[]].
-    const [files] = onDrop.mock.calls[0] as [File[]];
-    expect(files.map((f) => f.name)).toEqual(["hello.txt"]);
+    const [files] = onDrop.mock.calls[0] ?? [];
+    expect(files?.map((f) => f.name)).toEqual(["hello.txt"]);
     expect(zone.current.isOver).toBe(false);
   });
 

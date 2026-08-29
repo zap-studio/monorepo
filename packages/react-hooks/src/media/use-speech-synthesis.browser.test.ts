@@ -75,25 +75,22 @@ describe("useSpeechSynthesis", () => {
       result.current.speak("hello", { lang: "fr-FR", pitch: 1.5, rate: 0.5, voice });
     });
 
-    // SAFETY: installMockSpeechSynthesis() ran first, so isSupported() is true and speak() always calls window.speechSynthesis.speak(utterance) exactly once. So calls[0]?.[0] is always the SpeechSynthesisUtterance that was passed, never undefined.
-    const utterance = speak.mock.calls[0]?.[0] as SpeechSynthesisUtterance;
-    expect(utterance.lang).toBe("fr-FR");
-    expect(utterance.pitch).toBe(1.5);
-    expect(utterance.rate).toBe(0.5);
-    expect(utterance.voice).toBe(voice);
+    const [utterance] = speak.mock.calls[0] ?? [];
+    expect(utterance?.lang).toBe("fr-FR");
+    expect(utterance?.pitch).toBe(1.5);
+    expect(utterance?.rate).toBe(0.5);
+    expect(utterance?.voice).toBe(voice);
   });
 
   it("becomes speaking: false when the utterance ends", async () => {
-    installMockSpeechSynthesis();
+    const { speak } = installMockSpeechSynthesis();
     const { result } = renderHook(() => useSpeechSynthesis());
 
     let utterance: SpeechSynthesisUtterance | undefined;
     await act(async () => {
       result.current.speak("hello");
     });
-    // SAFETY: window.speechSynthesis.speak was installed as the vi.fn() mock from installMockSpeechSynthesis() above, so casting it to ReturnType<typeof vi.fn> to reach `.mock` is correct. The act() call above makes sure `result.current.speak("hello")` called it, so calls[0]?.[0] is the SpeechSynthesisUtterance it received, never undefined.
-    utterance = (window.speechSynthesis.speak as ReturnType<typeof vi.fn>).mock
-      .calls[0]?.[0] as SpeechSynthesisUtterance;
+    [utterance] = speak.mock.calls[0] ?? [];
 
     await act(async () => {
       utterance?.dispatchEvent(new Event("end"));
@@ -103,18 +100,16 @@ describe("useSpeechSynthesis", () => {
   });
 
   it("becomes speaking: false when the utterance errors", async () => {
-    installMockSpeechSynthesis();
+    const { speak } = installMockSpeechSynthesis();
     const { result } = renderHook(() => useSpeechSynthesis());
 
     await act(async () => {
       result.current.speak("hello");
     });
-    // SAFETY: window.speechSynthesis.speak was installed as the vi.fn() mock from installMockSpeechSynthesis() above, so casting it to ReturnType<typeof vi.fn> to reach `.mock` is correct. The act() call above makes sure `result.current.speak("hello")` called it, so calls[0]?.[0] is the SpeechSynthesisUtterance it received, never undefined.
-    const utterance = (window.speechSynthesis.speak as ReturnType<typeof vi.fn>).mock
-      .calls[0]?.[0] as SpeechSynthesisUtterance;
+    const [utterance] = speak.mock.calls[0] ?? [];
 
     await act(async () => {
-      utterance.dispatchEvent(new Event("error"));
+      utterance?.dispatchEvent(new Event("error"));
     });
 
     expect(result.current.speaking).toBe(false);

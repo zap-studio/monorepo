@@ -5,15 +5,24 @@ import {
   InMemorySpanExporter,
   SimpleSpanProcessor,
 } from "@opentelemetry/sdk-trace-base";
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { type Mock, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { $fetch } from "./index.ts";
+
+/** The arguments a recorded `fetch` call was made with. Throws when that call never happened. */
+const fetchCall = (mock: Mock<typeof fetch>, index = 0): Parameters<typeof fetch> => {
+  const call = mock.mock.calls[index];
+  if (!call) {
+    throw new Error(`fetch was not called ${index + 1} time(s)`);
+  }
+  return call;
+};
 
 const USER_URL = "https://api.example.com/users/1";
 const TRACEPARENT_PATTERN = /^00-[0-9a-f]{32}-[0-9a-f]{16}-0[01]$/u;
 
 describe("$fetch OpenTelemetry", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
   const exporter = new InMemorySpanExporter();
 
   beforeAll(() => {
@@ -26,10 +35,7 @@ describe("$fetch OpenTelemetry", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    // SAFETY: fetchMock is typed as vi.fn<typeof fetch>(), so its call signature and the
-    // return type set by mockResolvedValue/mockRejectedValue already match `typeof fetch`.
-    // The cast only drops the extra vitest mock properties for this assignment.
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
     exporter.reset();
   });
 
@@ -99,11 +105,8 @@ describe("$fetch OpenTelemetry", () => {
 
     await $fetch(USER_URL);
 
-    // SAFETY: fetchInternal calls the global `fetch(url, init)` exactly once per $fetch
-    // call. The `request.request` branch does not run here, because USER_URL is a string,
-    // not a Request. So calls[0] is a [string, RequestInit] tuple.
-    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
-    const headers = new Headers(init.headers);
+    const [, init] = fetchCall(fetchMock);
+    const headers = new Headers(init?.headers);
     expect(headers.get("traceparent")).toMatch(TRACEPARENT_PATTERN);
   });
 });
