@@ -51,7 +51,6 @@ catalog:
   oxlint-tsgolint: ^7.0.2001
   playwright: ^1.62.1
   publint: ^0.3.24
-  react-doctor: ^0.9.12
   react: ^19.2.8
   react-dom: ^19.2.8
   tsdown: ^0.22.14

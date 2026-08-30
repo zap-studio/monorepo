@@ -12,7 +12,6 @@
     "lint:fix": "pnpm exec oxlint --fix --type-aware --type-check",
     "prepare": "lefthook install",
     "publish:check": "pnpm run build && pnpm run format:check && pnpm run typecheck && pnpm run lint && pnpm run fallow && pnpm run test",
-    "react-doctor": "react-doctor --scope full --verbose",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "for f in packages/*/tsconfig.json apps/*/tsconfig.json; do tsc --noEmit -p \"$f\" || exit 1; done"
@@ -31,7 +30,6 @@
     "oxlint-tsgolint": "catalog:",
     "playwright": "catalog:",
     "publint": "catalog:",
-    "react-doctor": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "unplugin-unused": "catalog:",
