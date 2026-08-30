@@ -12,4 +12,11 @@ import { defineConfig } from "oxlint";
 export default defineConfig({
   extends: [base, react, reactDoctor, jsxRuntimeAutomatic, vitest],
   ignorePatterns: ["packages/oxlint/src/anti-slop/**"],
+  overrides: [
+    {
+      files: ["packages/react-hooks/**/*.browser.test.ts"],
+      jsPlugins: testingLibraryJsPlugins,
+      rules: testingLibraryRulesFinal,
+    },
+  ],
 });
