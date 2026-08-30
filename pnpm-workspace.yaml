@@ -38,13 +38,13 @@ catalog:
   eslint-plugin-jest-dom: ^5.10.1
   eslint-plugin-playwright: ^2.11.0
   eslint-plugin-regexp: ^3.2.0
-  eslint-plugin-solid: ^0.16.1
+  eslint-plugin-solid: ^0.17.0
   eslint-plugin-sonarjs: ^4.2.0
   eslint-plugin-storybook: ^10.5.10
   eslint-plugin-tailwindcss: ^4.4.0
   eslint-plugin-testing-library: ^7.16.2
   fallow: ^3.20.0
-  lefthook: ^2.1.10
+  lefthook: ^2.1.12
   oxfmt: ^0.65.0
   oxlint: ^1.80.0
   oxlint-plugin-react-doctor: ^0.9.12
@@ -61,6 +61,6 @@ catalog:
   vitest: ^4.1.11
   vocs: ^2.8.5
   waku: 1.0.0-beta.6
-  wrangler: ^4.127.0
-  zod: ^4.4.3
+  wrangler: ^4.127.1
+  zod: ^4.5.2
   unplugin-unused: ^0.5.7
