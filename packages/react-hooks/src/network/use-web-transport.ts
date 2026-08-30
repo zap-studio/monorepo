@@ -66,6 +66,7 @@ export const useWebTransport = (
   // oxlint-disable-next-line react-doctor/no-set-state-after-await-in-effect -- every state update after an `await` here (in `readDatagrams`, `waitForReady`, `waitForClose`) checks `if (!controller.signal.aborted)` first. The cleanup function calls `controller.abort()` before anything else, so a re-run caused by `url` changing can never write stale state.
   useEffect(() => {
     if (!url || !isSupported()) {
+      // oxlint-disable-next-line react/set-state-in-effect -- we need this when `url` changes from a value to `undefined` after mount. It closes a transport that was open. On mount with no `url`, this call does nothing, because the state is already "closed".
       setStatus("closed");
       return undefined;
     }

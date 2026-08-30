@@ -29,6 +29,7 @@ export const useEventSource = (url: string | undefined): UseEventSourceResult =>
 
   useEffect(() => {
     if (!url) {
+      // oxlint-disable-next-line react/set-state-in-effect -- we need this when `url` changes from a value to `undefined` after mount. It closes a source that was open. On mount with no `url`, this call does nothing, because the state is already "closed".
       setStatus("closed");
       return undefined;
     }
