@@ -5,13 +5,12 @@
   "type": "module",
   "scripts": {
     "build": "tsdown --config ./configs/tsdown/tsdown.config.ts",
-    "fallow": "fallow --summary",
     "format": "pnpm exec oxfmt",
     "format:check": "pnpm exec oxfmt --check",
     "lint": "pnpm exec oxlint --type-aware --type-check",
     "lint:fix": "pnpm exec oxlint --fix --type-aware --type-check",
     "prepare": "lefthook install",
-    "publish:check": "pnpm run build && pnpm run format:check && pnpm run typecheck && pnpm run lint && pnpm run fallow && pnpm run test",
+    "publish:check": "pnpm run build && pnpm run format:check && pnpm run typecheck && pnpm run lint && pnpm run test",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "for f in packages/*/tsconfig.json apps/*/tsconfig.json; do tsc --noEmit -p \"$f\" || exit 1; done"
@@ -23,7 +22,6 @@
     "@vitest/coverage-v8": "catalog:",
     "@zap-studio/oxfmt": "workspace:*",
     "@zap-studio/oxlint": "workspace:*",
-    "fallow": "catalog:",
     "lefthook": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",

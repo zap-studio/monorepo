@@ -39,7 +39,6 @@ report.[0-9]*.[0-9]*.json
 
 # Tool caches
 .cache/
-.fallow/
 .eslintcache
 .parcel-cache/
 .vercel/

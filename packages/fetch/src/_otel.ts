@@ -23,7 +23,6 @@ export const tracer: Tracer = trace.getTracer(pkg.name, pkg.version);
  * `TextMapSetter` for the Web `Headers` API, used to inject `traceparent`
  * (and any other registered propagator fields) into the outgoing request.
  */
-// fallow-ignore-next-line code-duplication -- this copies webhooks/_otel.ts on purpose, so the two packages do not depend on each other
 export const HEADERS_SETTER: TextMapSetter<Headers> = {
   set(carrier, key, value) {
     carrier.set(key, value);

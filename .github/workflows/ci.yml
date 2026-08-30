@@ -39,8 +39,6 @@ jobs:
         run: pnpm run typecheck
       - name: Run lint
         run: pnpm run lint
-      - name: Run fallow
-        run: pnpm run fallow
       - name: Install browser
         run: pnpm exec playwright install --with-deps chromium
       - name: Run tests
