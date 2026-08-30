@@ -26,6 +26,5 @@ export const useIsFirstRender = (): boolean => {
   if (isProductionBuild()) {
     return false;
   }
-  // oxlint-disable-next-line react-doctor/no-ref-current-in-render -- we only read the ref, and it always holds a committed value, so both StrictMode renders agree. The write happens in the mount effect above.
   return !mountedRef.current;
 };
