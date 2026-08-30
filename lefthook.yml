@@ -2,7 +2,7 @@ pre-commit:
   parallel: true
   jobs:
     - name: lint
-      run: pnpm run lint:fix
+      run: pnpm exec oxlint --fix --type-aware --type-check {staged_files}
       glob:
         - "**/*.js"
         - "**/*.jsx"
@@ -10,7 +10,7 @@ pre-commit:
         - "**/*.tsx"
       stage_fixed: true
     - name: format
-      run: pnpm run format
+      run: pnpm exec oxfmt {staged_files}
       glob:
         - "**/*.js"
         - "**/*.jsx"
