@@ -65,3 +65,6 @@ todo.json
 
 # Local superpowers skill artifacts
 docs/superpowers/
+
+# Claude Code local config and skills
+.claude/
