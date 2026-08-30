@@ -26,5 +26,6 @@ export const useIsFirstRender = (): boolean => {
   if (isProductionBuild()) {
     return false;
   }
+  // oxlint-disable-next-line react/refs -- reading the ref during render is the point: it reflects whether the mount effect has run yet, which cannot be known any other way.
   return !mountedRef.current;
 };

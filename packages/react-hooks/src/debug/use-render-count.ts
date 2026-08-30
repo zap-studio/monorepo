@@ -22,9 +22,11 @@ import { isProductionBuild } from "./_env.ts";
 export const useRenderCount = (): number => {
   const countRef = useRef(0);
   if (isProductionBuild()) {
+    // oxlint-disable-next-line react/refs -- see the disable below: this hook reads the ref during render on purpose.
     return countRef.current;
   }
-  // oxlint-disable-next-line react-doctor/no-ref-current-in-render -- this hook counts every render attempt, even the ones React throws away. An effect would count commits instead, which is not what we want.
+  // oxlint-disable-next-line react-doctor/no-ref-current-in-render, react/refs -- this hook counts every render attempt, even the ones React throws away. An effect would count commits instead, which is not what we want.
   countRef.current += 1;
+  // oxlint-disable-next-line react/refs -- same intentional read as above.
   return countRef.current;
 };

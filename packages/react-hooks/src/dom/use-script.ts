@@ -71,6 +71,7 @@ export const useScript = (src: string, options?: UseScriptOptions): UseScriptRes
   useEffect(() => {
     const entry = getOrCreateEntry(src, options?.async);
     entry.refCount += 1;
+    // oxlint-disable-next-line react/set-state-in-effect -- `registry` is a module-level store shared across every instance loading the same `src`; another instance may have advanced `entry.status` since this instance's lazy initial state read it, so it must be re-synced here.
     setStatus(entry.status);
 
     const handleLoad = () => setStatus("ready");

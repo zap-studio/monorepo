@@ -28,16 +28,20 @@ export const useIdle = (timeoutMs: number = DEFAULT_TIMEOUT_MS): boolean => {
   const [idle, setIdle] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  const resetTimer = useCallback(() => {
-    setIdle(false);
+  const scheduleTimeout = useCallback(() => {
     clearTimeout(timerRef.current);
     timerRef.current = setTimeout(setIdle, timeoutMs, true);
   }, [timeoutMs]);
 
+  const resetTimer = useCallback(() => {
+    setIdle(false);
+    scheduleTimeout();
+  }, [scheduleTimeout]);
+
   useEffect(() => {
-    resetTimer();
+    scheduleTimeout();
     return () => clearTimeout(timerRef.current);
-  }, [resetTimer]);
+  }, [scheduleTimeout]);
 
   useEffect(() => {
     for (const type of ACTIVITY_EVENTS) {
