@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 
 /** Status reported by `useScript`. */
 export type ScriptStatus = "error" | "idle" | "loading" | "ready";
@@ -65,30 +65,44 @@ const getOrCreateEntry = (src: string, async: boolean | undefined): ScriptEntry 
  * if (status === "ready") renderMap();
  * ```
  */
+const getServerSnapshot = (): ScriptStatus => "loading";
+
 export const useScript = (src: string, options?: UseScriptOptions): UseScriptResult => {
-  const [status, setStatus] = useState<ScriptStatus>(() => registry.get(src)?.status ?? "loading");
+  const async = options?.async;
+  const removeOnUnmount = options?.removeOnUnmount;
+
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      const entry = getOrCreateEntry(src, async);
+      entry.script.addEventListener("load", onStoreChange);
+      entry.script.addEventListener("error", onStoreChange);
+      return () => {
+        entry.script.removeEventListener("load", onStoreChange);
+        entry.script.removeEventListener("error", onStoreChange);
+      };
+    },
+    [src, async],
+  );
+
+  const getSnapshot = useCallback(
+    (): ScriptStatus => registry.get(src)?.status ?? "loading",
+    [src],
+  );
+
+  const status = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   useEffect(() => {
-    const entry = getOrCreateEntry(src, options?.async);
+    const entry = getOrCreateEntry(src, async);
     entry.refCount += 1;
-    // oxlint-disable-next-line react/set-state-in-effect -- `registry` is a module-level store shared across every instance loading the same `src`; another instance may have advanced `entry.status` since this instance's lazy initial state read it, so it must be re-synced here.
-    setStatus(entry.status);
-
-    const handleLoad = () => setStatus("ready");
-    const handleError = () => setStatus("error");
-    entry.script.addEventListener("load", handleLoad);
-    entry.script.addEventListener("error", handleError);
 
     return () => {
-      entry.script.removeEventListener("load", handleLoad);
-      entry.script.removeEventListener("error", handleError);
       entry.refCount -= 1;
-      if (entry.refCount <= 0 && options?.removeOnUnmount) {
+      if (entry.refCount <= 0 && removeOnUnmount) {
         entry.script.remove();
         registry.delete(src);
       }
     };
-  }, [src, options?.async, options?.removeOnUnmount]);
+  }, [src, async, removeOnUnmount]);
 
   return { status };
 };
