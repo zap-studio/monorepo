@@ -39,7 +39,7 @@ Four tools gate `pnpm run publish:check`. Know what each one is for, so a failur
 | **react-doctor** (`pnpm run react-doctor`) | A React-specific audit (hooks rules, ref-in-render, effect patterns). Not part of `publish:check`. Run it by hand after you touch `packages/react-hooks`.                                                                                                                               |
 | **v8**                                     | Not a linter. It is Vitest's coverage provider (see `coverage.provider` in the root Vitest config). It measures which lines your tests run. A `v8 ignore` comment tells it that a line cannot be reached in tests on purpose, so coverage does not fail on it.                          |
 
-For working through an oxlint finding, deciding whether a disable comment is the right call, or writing a SAFETY comment for an `as` cast, use the `lint-finding-workflow` skill instead of guessing — it has the exact rule and format.
+For working through an oxlint finding, deciding whether a disable comment is the right call, or writing a SAFETY comment for an `as` cast, use the `review-linting` skill instead of guessing — it has the exact rule and format.
 
 ## Language
 
@@ -76,15 +76,16 @@ Conventional Commits, lowercase, imperative, short subject: `feat: add useBrowse
 
 ## Skills
 
-These live in `.claude/skills/` and load on demand — read the pointed-to `SKILL.md` instead of re-deriving the workflow:
+These live in `.claude/skills/` and load on demand — read the pointed-to `SKILL.md` instead of re-deriving the workflow. Skill names always start with a verb (`bump-and-changelog`).
 
-| Skill                        | Use when                                                                                                 |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `lint-finding-workflow`      | An oxlint finding needs a fix or a disable comment, or a runtime `as` cast needs a SAFETY comment.       |
-| `release-and-changelog`      | Bumping a package version, writing a changelog entry, or creating a GitHub release.                      |
-| `package-scaffolding`        | Adding a new package, a new dependency, or a new/removed export.                                         |
-| `docs-sync-workflow`         | A user-facing API or behavior change needs matching docs pages, sidebar entry, or README updates.        |
-| `false-positive-unused-deps` | fallow or tsdown reports an unused dependency that is actually used, before adding it to an ignore list. |
+| Skill                | Use when                                                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `review-linting`     | An oxlint finding needs a fix or a disable comment, or a runtime `as` cast needs a SAFETY comment.                              |
+| `bump-and-changelog` | Deciding a SemVer level, bumping a package's version (and its workspace dependents), and writing the changelog entry.           |
+| `release`            | Working out release order, tagging, and creating GitHub releases for packages that already have a bumped version and changelog. |
+| `scaffold-package`   | Adding a new package, a new dependency, or a new/removed export.                                                                |
+| `sync-docs`          | A user-facing API or behavior change needs matching docs pages, sidebar entry, or README updates.                               |
+| `fix-unused-deps`    | fallow or tsdown reports an unused dependency that is actually used, before adding it to an ignore list.                        |
 
 ## This document can go stale
 
