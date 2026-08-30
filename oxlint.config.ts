@@ -14,6 +14,12 @@ export default defineConfig({
   ignorePatterns: ["packages/oxlint/src/anti-slop/**"],
   overrides: [
     {
+      files: ["packages/react-hooks/**"],
+      rules: {
+        "react-doctor/react-compiler-no-manual-memoization": "off",
+      },
+    },
+    {
       files: ["packages/react-hooks/**/*.browser.test.ts"],
       jsPlugins: testingLibraryJsPlugins,
       rules: testingLibraryRulesFinal,
