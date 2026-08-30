@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { useIsClient } from "./use-is-client.ts";
+
 /** The `coords` shape `useGeolocation` reports on success — a flattened `GeolocationCoordinates`. */
 export interface GeolocationCoordinatesState {
   accuracy: number;
@@ -71,11 +73,13 @@ const toErrorState = (error: GeolocationPositionError): GeolocationErrorState =>
 export const useGeolocation = (options: UseGeolocationOptions = {}): GeolocationState => {
   const { enableHighAccuracy, maximumAge, timeout, watch = false } = options;
 
+  const isClient = useIsClient();
+  const supported = isClient && typeof navigator !== "undefined" && !!navigator.geolocation;
+
   const [state, setState] = useState<GeolocationState>(INITIAL_STATE);
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      setState({ error: UNSUPPORTED_ERROR, loading: false });
+    if (!supported) {
       return undefined;
     }
 
@@ -106,7 +110,7 @@ export const useGeolocation = (options: UseGeolocationOptions = {}): Geolocation
     // oxlint-disable-next-line sonarjs/no-intrusive-permissions -- reading the location once is what this hook does. The user calls it, so the permission prompt is expected.
     navigator.geolocation.getCurrentPosition(handleSuccess, handleError, positionOptions);
     return undefined;
-  }, [enableHighAccuracy, maximumAge, timeout, watch]);
+  }, [supported, enableHighAccuracy, maximumAge, timeout, watch]);
 
-  return state;
+  return isClient && !supported ? { error: UNSUPPORTED_ERROR, loading: false } : state;
 };

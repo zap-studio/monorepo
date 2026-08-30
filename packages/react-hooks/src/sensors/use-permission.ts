@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { useIsClient } from "./use-is-client.ts";
+
 /**
  * Gives you the state of a browser permission (`"granted"`, `"denied"`, or
  * `"prompt"`) using `navigator.permissions.query({ name })`. It updates
@@ -13,20 +15,21 @@ import { useEffect, useState } from "react";
  * ```
  */
 export const usePermission = (name: PermissionName): PermissionState | undefined => {
+  const isClient = useIsClient();
+  const supported = isClient && typeof navigator !== "undefined" && !!navigator.permissions;
+
   const [state, setState] = useState<PermissionState | undefined>(undefined);
   const [status, setStatus] = useState<PermissionStatus | undefined>(undefined);
 
   useEffect(() => {
-    const permissions = navigator.permissions;
-    if (!permissions) {
-      setState(undefined);
+    if (!supported) {
       return undefined;
     }
 
     let isMounted = true;
 
     void (async () => {
-      const result = await permissions.query({ name });
+      const result = await navigator.permissions.query({ name });
       if (!isMounted) {
         return;
       }
@@ -37,7 +40,7 @@ export const usePermission = (name: PermissionName): PermissionState | undefined
     return () => {
       isMounted = false;
     };
-  }, [name]);
+  }, [supported, name]);
 
   useEffect(() => {
     if (!status) {

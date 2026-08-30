@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { useIsClient } from "./use-is-client.ts";
+
 /**
  * `true` once `document.fonts.ready` resolves, meaning custom web fonts
  * have finished loading. Starts as `false` (also the safe default for
@@ -14,11 +16,12 @@ import { useEffect, useState } from "react";
  * ```
  */
 export const useFontsReady = (): boolean => {
-  const [ready, setReady] = useState(false);
+  const isClient = useIsClient();
+  const supported = isClient && typeof document !== "undefined" && !!document.fonts;
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (typeof document === "undefined" || !document.fonts) {
-      setReady(true);
+    if (!supported) {
       return undefined;
     }
 
@@ -27,7 +30,7 @@ export const useFontsReady = (): boolean => {
     const waitForFonts = async () => {
       await document.fonts.ready;
       if (!cancelled) {
-        setReady(true);
+        setLoaded(true);
       }
     };
 
@@ -36,7 +39,7 @@ export const useFontsReady = (): boolean => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [supported]);
 
-  return ready;
+  return supported ? loaded : isClient;
 };

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useIsClient } from "../sensors/use-is-client.ts";
 import { isUpdaterFunction } from "./_updater.ts";
 
 const DB_NAME = "zap-studio-react-hooks";
@@ -14,6 +15,8 @@ const REQUEST_FAILED = "The IndexedDB request failed.";
 const TRANSACTION_FAILED = "The IndexedDB transaction failed.";
 
 const isSupported = (): boolean => typeof indexedDB !== "undefined";
+
+const UNSUPPORTED_ERROR = new Error("IndexedDB is not supported by this browser.");
 
 const openDatabase = (): Promise<IDBDatabase> =>
   new Promise((resolve, reject) => {
@@ -95,6 +98,9 @@ export interface UseIndexedDBResult<T> {
  * ```
  */
 export const useIndexedDB = <T>(key: string, initialValue: T): UseIndexedDBResult<T> => {
+  const isClient = useIsClient();
+  const supported = isClient && isSupported();
+
   const [value, setValueState] = useState<T>(initialValue);
   const [status, setStatus] = useState<IndexedDBStatus>("loading");
   const [error, setError] = useState<Error | undefined>(undefined);
@@ -106,13 +112,12 @@ export const useIndexedDB = <T>(key: string, initialValue: T): UseIndexedDBResul
   });
 
   useEffect(() => {
-    if (!isSupported()) {
-      setStatus("error");
-      setError(new Error("IndexedDB is not supported by this browser."));
+    if (!supported) {
       return undefined;
     }
 
     let cancelled = false;
+    // oxlint-disable-next-line react/set-state-in-effect -- we need this when `key` changes after mount. It resets the status from the old key ("ready" or "error") back to "loading". On mount, this call does nothing, because the state is already "loading".
     setStatus("loading");
 
     const load = async () => {
@@ -135,7 +140,7 @@ export const useIndexedDB = <T>(key: string, initialValue: T): UseIndexedDBResul
     return () => {
       cancelled = true;
     };
-  }, [key]);
+  }, [supported, key]);
 
   const setValue = useCallback(
     async (next: T | ((prev: T) => T)): Promise<void> => {
@@ -161,5 +166,11 @@ export const useIndexedDB = <T>(key: string, initialValue: T): UseIndexedDBResul
     }
   }, [key]);
 
-  return { error, remove, setValue, status, value };
+  return {
+    error: isClient && !supported ? UNSUPPORTED_ERROR : error,
+    remove,
+    setValue,
+    status: isClient && !supported ? "error" : status,
+    value,
+  };
 };

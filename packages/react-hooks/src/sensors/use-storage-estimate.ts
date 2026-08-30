@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { useIsClient } from "./use-is-client.ts";
+
 /** The shape returned by `useStorageEstimate`. */
 export interface StorageEstimateState {
   quota?: number;
@@ -10,7 +12,10 @@ export interface StorageEstimateState {
 const isSupported = (): boolean =>
   typeof navigator !== "undefined" && typeof navigator.storage?.estimate === "function";
 
-const INITIAL_STATE: StorageEstimateState = { supported: false };
+interface EstimateData {
+  quota?: number;
+  usage?: number;
+}
 
 /**
  * Reads `usage` and `quota` from `navigator.storage.estimate()` once, when
@@ -25,15 +30,14 @@ const INITIAL_STATE: StorageEstimateState = { supported: false };
  * ```
  */
 export const useStorageEstimate = (): StorageEstimateState => {
-  const [state, setState] = useState<StorageEstimateState>(INITIAL_STATE);
+  const isClient = useIsClient();
+  const supported = isClient && isSupported();
+  const [data, setData] = useState<EstimateData>({});
 
   useEffect(() => {
-    if (!isSupported()) {
-      setState({ supported: false });
+    if (!supported) {
       return undefined;
     }
-
-    setState({ supported: true });
 
     let cancelled = false;
 
@@ -42,9 +46,8 @@ export const useStorageEstimate = (): StorageEstimateState => {
       if (cancelled) {
         return;
       }
-      setState({
+      setData({
         ...(estimate.quota !== undefined && { quota: estimate.quota }),
-        supported: true,
         ...(estimate.usage !== undefined && { usage: estimate.usage }),
       });
     };
@@ -54,7 +57,7 @@ export const useStorageEstimate = (): StorageEstimateState => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [supported]);
 
-  return state;
+  return { ...data, supported };
 };
